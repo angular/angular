@@ -1,10 +1,9 @@
-
 /**
  * @license
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ReferenceGraph} from '../src/reference_graph';
@@ -46,7 +45,7 @@ describe('entry_point reference graph', () => {
     expect(graph.pathFrom('beta', 'alpha')).toEqual(['beta', 'delta', 'alpha']);
   });
 
-  it('should not report a path that doesn\'t exist', () => {
+  it("should not report a path that doesn't exist", () => {
     expect(graph.pathFrom('gamma', 'beta')).toBeNull();
   });
 });

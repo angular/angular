@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ZoneType} from '../zone-impl';
@@ -37,16 +37,24 @@ export class TaskTrackingZoneSpec implements ZoneSpec {
     throw new Error('Unknown task format: ' + type);
   }
 
-  onScheduleTask(parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
-      Task {
+  onScheduleTask(
+    parentZoneDelegate: ZoneDelegate,
+    currentZone: Zone,
+    targetZone: Zone,
+    task: Task,
+  ): Task {
     (task as any)['creationLocation'] = new Error(`Task '${task.type}' from '${task.source}'.`);
     const tasks = this.getTasksFor(task.type);
     tasks.push(task);
     return parentZoneDelegate.scheduleTask(targetZone, task);
   }
 
-  onCancelTask(parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
-      any {
+  onCancelTask(
+    parentZoneDelegate: ZoneDelegate,
+    currentZone: Zone,
+    targetZone: Zone,
+    task: Task,
+  ): any {
     const tasks = this.getTasksFor(task.type);
     for (let i = 0; i < tasks.length; i++) {
       if (tasks[i] == task) {
@@ -58,8 +66,13 @@ export class TaskTrackingZoneSpec implements ZoneSpec {
   }
 
   onInvokeTask(
-      parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task,
-      applyThis: any, applyArgs: any): any {
+    parentZoneDelegate: ZoneDelegate,
+    currentZone: Zone,
+    targetZone: Zone,
+    task: Task,
+    applyThis: any,
+    applyArgs: any,
+  ): any {
     if (task.type === 'eventTask' || task.data?.isPeriodic)
       return parentZoneDelegate.invokeTask(targetZone, task, applyThis, applyArgs);
     const tasks = this.getTasksFor(task.type);

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {producerAccessed, SIGNAL} from '@angular/core/primitives/signals';
@@ -14,7 +14,7 @@ import {Signal} from '../../render3/reactivity/api';
 import {INPUT_SIGNAL_NODE, InputSignalNode, REQUIRED_UNSET_VALUE} from './input_signal_node';
 
 /**
- * @developerPreview
+ * @publicAPI
  *
  * Options for signal inputs.
  */
@@ -37,18 +37,20 @@ export interface InputOptions<T, TransformT> {
 /**
  * Signal input options without the transform option.
  *
- * @developerPreview
+ * @publicAPI
  */
 export type InputOptionsWithoutTransform<T> =
-    // Note: We still keep a notion of `transform` for auto-completion.
-    Omit<InputOptions<T, T>, 'transform'>&{transform?: undefined};
+  // Note: We still keep a notion of `transform` for auto-completion.
+  Omit<InputOptions<T, T>, 'transform'> & {transform?: undefined};
 /**
  * Signal input options with the transform option required.
  *
- * @developerPreview
+ * @publicAPI
  */
-export type InputOptionsWithTransform<T, TransformT> =
-    Required<Pick<InputOptions<T, TransformT>, 'transform'>>&InputOptions<T, TransformT>;
+export type InputOptionsWithTransform<T, TransformT> = Required<
+  Pick<InputOptions<T, TransformT>, 'transform'>
+> &
+  InputOptions<T, TransformT>;
 
 export const ɵINPUT_SIGNAL_BRAND_READ_TYPE = /* @__PURE__ */ Symbol();
 export const ɵINPUT_SIGNAL_BRAND_WRITE_TYPE = /* @__PURE__ */ Symbol();
@@ -75,7 +77,7 @@ export const ɵINPUT_SIGNAL_BRAND_WRITE_TYPE = /* @__PURE__ */ Symbol();
  *
  * @see {@link InputSignal} for additional information.
  *
- * @developerPreview
+ * @publicAPI
  */
 export interface InputSignalWithTransform<T, TransformT> extends Signal<T> {
   [SIGNAL]: InputSignalNode<T, TransformT>;
@@ -92,7 +94,7 @@ export interface InputSignalWithTransform<T, TransformT> extends Signal<T> {
  *
  * @see {@link InputOptionsWithTransform} for inputs with transforms.
  *
- * @developerPreview
+ * @publicAPI
  */
 export interface InputSignal<T> extends InputSignalWithTransform<T, T> {}
 
@@ -104,8 +106,9 @@ export interface InputSignal<T> extends InputSignalWithTransform<T, T> {}
  * @param options Additional options for the input. e.g. a transform, or an alias.
  */
 export function createInputSignal<T, TransformT>(
-    initialValue: T,
-    options?: InputOptions<T, TransformT>): InputSignalWithTransform<T, TransformT> {
+  initialValue: T,
+  options?: InputOptions<T, TransformT>,
+): InputSignalWithTransform<T, TransformT> {
   const node: InputSignalNode<T, TransformT> = Object.create(INPUT_SIGNAL_NODE);
 
   node.value = initialValue;
@@ -120,8 +123,9 @@ export function createInputSignal<T, TransformT>(
 
     if (node.value === REQUIRED_UNSET_VALUE) {
       throw new RuntimeError(
-          RuntimeErrorCode.REQUIRED_INPUT_NO_VALUE,
-          ngDevMode && 'Input is required but no value is available yet.');
+        RuntimeErrorCode.REQUIRED_INPUT_NO_VALUE,
+        ngDevMode && 'Input is required but no value is available yet.',
+      );
     }
 
     return node.value;

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Type} from '../../interface/type';
@@ -22,7 +22,6 @@ export function renderStringify(value: any): string {
   // appears to be faster than calling `value.toString` (see `render_stringify` benchmark).
   return String(value);
 }
-
 
 /**
  * Used to stringify a value so that it can be displayed in an error message.

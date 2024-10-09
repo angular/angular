@@ -23,6 +23,7 @@ For example:
 Cypress: ng add @cypress/schematic
 Nightwatch: ng add @nightwatch/schematics
 WebdriverIO: ng add @wdio/schematics
+Playwright: ng add playwright-ng-schematics
 Puppeteer: ng add @puppeteer/ng-schematics
 
 Would you like to add a package with "e2e" capabilities now?
@@ -30,6 +31,7 @@ No
 ❯ Cypress
 Nightwatch
 WebdriverIO
+Playwright
 Puppeteer
 
 </docs-code>
@@ -55,4 +57,5 @@ Note, their isn't anything "special" about running your tests with any of the in
 | Cypress      | [Getting started with Cypress](https://docs.cypress.io/guides/end-to-end-testing/writing-your-first-end-to-end-test) |
 | Nightwatch   | [Getting started with Nightwatch](https://nightwatchjs.org/guide/writing-tests/introduction.html)                    |
 | WebdriverIO  | [Getting started with Webdriver.io](https://webdriver.io/docs/gettingstarted)                                        |
+| Playwright   | [Getting started with Playwright](https://playwright.dev/docs/writing-tests)                                         |
 | Puppeteer    | [Getting started with Puppeteer](https://pptr.dev)                                                                   |

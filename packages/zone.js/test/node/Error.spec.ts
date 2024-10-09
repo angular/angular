@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 describe('ZoneAwareError', () => {
@@ -23,7 +23,7 @@ describe('ZoneAwareError', () => {
 
   it('should support prepareStackTrace', () => {
     const originalPrepareStackTrace = (<any>Error).prepareStackTrace;
-    (<any>Error).prepareStackTrace = function(error: Error, stack: string) {
+    (<any>Error).prepareStackTrace = function (error: Error, stack: string) {
       return stack;
     };
     let obj: any = new Object();
@@ -34,13 +34,13 @@ describe('ZoneAwareError', () => {
 
   it('should not add additional stacktrace from Zone when use prepareStackTrace', () => {
     const originalPrepareStackTrace = (<any>Error).prepareStackTrace;
-    (<any>Error).prepareStackTrace = function(error: Error, stack: string) {
+    (<any>Error).prepareStackTrace = function (error: Error, stack: string) {
       return stack;
     };
     let obj: any = new Object();
     Error.captureStackTrace(obj);
     expect(obj.stack.length).not.toBe(0);
-    obj.stack.forEach(function(st: any) {
+    obj.stack.forEach(function (st: any) {
       expect(st.getFunctionName()).not.toEqual('zoneCaptureStackTrace');
     });
     (<any>Error).prepareStackTrace = originalPrepareStackTrace;

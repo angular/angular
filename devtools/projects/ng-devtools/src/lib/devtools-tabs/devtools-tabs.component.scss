@@ -67,6 +67,10 @@ ng-injector-tree.hidden {
   -webkit-user-select: text;
   -ms-user-select: text;
   user-select: text;
+
+  &.unsupported-version {
+    color: red;
+  }
 }
 
 mat-icon {
@@ -89,6 +93,10 @@ mat-icon {
 :host-context(.dark-theme) {
   #version-number {
     color: #5caace;
+
+    &.unsupported-version {
+      color: red;
+    }
   }
 
   .inspector-active {

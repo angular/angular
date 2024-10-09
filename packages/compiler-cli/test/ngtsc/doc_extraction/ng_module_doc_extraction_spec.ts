@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {DocEntry} from '@angular/compiler-cli/src/ngtsc/docs';
@@ -25,7 +25,9 @@ runInEachFileSystem(() => {
     });
 
     it('should extract NgModule info', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         import {Directive, NgModule} from '@angular/core';
 
         @Directive({selector: 'some-tag'})
@@ -33,7 +35,8 @@ runInEachFileSystem(() => {
 
         @NgModule({declarations: [SomeDirective]})
         export class SomeNgModule { }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 

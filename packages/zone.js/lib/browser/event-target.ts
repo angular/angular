@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 export function eventTargetPatch(_global: any, api: _ZonePrivate) {
@@ -12,7 +12,7 @@ export function eventTargetPatch(_global: any, api: _ZonePrivate) {
     return;
   }
   const {eventNames, zoneSymbolEventNames, TRUE_STR, FALSE_STR, ZONE_SYMBOL_PREFIX} =
-      api.getGlobalObjects()!;
+    api.getGlobalObjects()!;
   //  predefine all __zone_symbol__ + eventName + true/false string
   for (let i = 0; i < eventNames.length; i++) {
     const eventName = eventNames[i];

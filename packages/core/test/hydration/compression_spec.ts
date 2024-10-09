@@ -3,11 +3,15 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {compressNodeLocation, decompressNodeLocation} from '../../src/hydration/compression';
-import {NodeNavigationStep, REFERENCE_NODE_BODY, REFERENCE_NODE_HOST} from '../../src/hydration/interfaces';
+import {
+  NodeNavigationStep,
+  REFERENCE_NODE_BODY,
+  REFERENCE_NODE_HOST,
+} from '../../src/hydration/interfaces';
 
 describe('compression of node location', () => {
   it('should handle basic cases', () => {

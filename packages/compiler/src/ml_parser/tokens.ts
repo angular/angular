@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ParseSourceSpan} from '../parse_util';
@@ -38,21 +38,53 @@ export const enum TokenType {
   BLOCK_CLOSE,
   BLOCK_PARAMETER,
   INCOMPLETE_BLOCK_OPEN,
+  LET_START,
+  LET_VALUE,
+  LET_END,
+  INCOMPLETE_LET,
   EOF,
 }
 
-export type Token = TagOpenStartToken|TagOpenEndToken|TagOpenEndVoidToken|TagCloseToken|
-    IncompleteTagOpenToken|TextToken|InterpolationToken|EncodedEntityToken|CommentStartToken|
-    CommentEndToken|CdataStartToken|CdataEndToken|AttributeNameToken|AttributeQuoteToken|
-    AttributeValueTextToken|AttributeValueInterpolationToken|DocTypeToken|ExpansionFormStartToken|
-    ExpansionCaseValueToken|ExpansionCaseExpressionStartToken|ExpansionCaseExpressionEndToken|
-    ExpansionFormEndToken|EndOfFileToken|BlockParameterToken|BlockOpenStartToken|BlockOpenEndToken|
-    BlockCloseToken|IncompleteBlockOpenToken;
+export type Token =
+  | TagOpenStartToken
+  | TagOpenEndToken
+  | TagOpenEndVoidToken
+  | TagCloseToken
+  | IncompleteTagOpenToken
+  | TextToken
+  | InterpolationToken
+  | EncodedEntityToken
+  | CommentStartToken
+  | CommentEndToken
+  | CdataStartToken
+  | CdataEndToken
+  | AttributeNameToken
+  | AttributeQuoteToken
+  | AttributeValueTextToken
+  | AttributeValueInterpolationToken
+  | DocTypeToken
+  | ExpansionFormStartToken
+  | ExpansionCaseValueToken
+  | ExpansionCaseExpressionStartToken
+  | ExpansionCaseExpressionEndToken
+  | ExpansionFormEndToken
+  | EndOfFileToken
+  | BlockParameterToken
+  | BlockOpenStartToken
+  | BlockOpenEndToken
+  | BlockCloseToken
+  | IncompleteBlockOpenToken
+  | LetStartToken
+  | LetValueToken
+  | LetEndToken
+  | IncompleteLetToken;
 
-export type InterpolatedTextToken = TextToken|InterpolationToken|EncodedEntityToken;
+export type InterpolatedTextToken = TextToken | InterpolationToken | EncodedEntityToken;
 
 export type InterpolatedAttributeToken =
-    AttributeValueTextToken|AttributeValueInterpolationToken|EncodedEntityToken;
+  | AttributeValueTextToken
+  | AttributeValueInterpolationToken
+  | EncodedEntityToken;
 
 export interface TokenBase {
   type: TokenType;
@@ -86,14 +118,15 @@ export interface IncompleteTagOpenToken extends TokenBase {
 }
 
 export interface TextToken extends TokenBase {
-  type: TokenType.TEXT|TokenType.ESCAPABLE_RAW_TEXT|TokenType.RAW_TEXT;
+  type: TokenType.TEXT | TokenType.ESCAPABLE_RAW_TEXT | TokenType.RAW_TEXT;
   parts: [text: string];
 }
 
 export interface InterpolationToken extends TokenBase {
   type: TokenType.INTERPOLATION;
-  parts: [startMarker: string, expression: string, endMarker: string]|
-      [startMarker: string, expression: string];
+  parts:
+    | [startMarker: string, expression: string, endMarker: string]
+    | [startMarker: string, expression: string];
 }
 
 export interface EncodedEntityToken extends TokenBase {
@@ -128,7 +161,7 @@ export interface AttributeNameToken extends TokenBase {
 
 export interface AttributeQuoteToken extends TokenBase {
   type: TokenType.ATTR_QUOTE;
-  parts: [quote: '\''|'"'];
+  parts: [quote: "'" | '"'];
 }
 
 export interface AttributeValueTextToken extends TokenBase {
@@ -138,8 +171,9 @@ export interface AttributeValueTextToken extends TokenBase {
 
 export interface AttributeValueInterpolationToken extends TokenBase {
   type: TokenType.ATTR_VALUE_INTERPOLATION;
-  parts: [startMarker: string, expression: string, endMarker: string]|
-      [startMarker: string, expression: string];
+  parts:
+    | [startMarker: string, expression: string, endMarker: string]
+    | [startMarker: string, expression: string];
 }
 
 export interface DocTypeToken extends TokenBase {
@@ -199,5 +233,25 @@ export interface BlockCloseToken extends TokenBase {
 
 export interface IncompleteBlockOpenToken extends TokenBase {
   type: TokenType.INCOMPLETE_BLOCK_OPEN;
+  parts: [name: string];
+}
+
+export interface LetStartToken extends TokenBase {
+  type: TokenType.LET_START;
+  parts: [name: string];
+}
+
+export interface LetValueToken extends TokenBase {
+  type: TokenType.LET_VALUE;
+  parts: [value: string];
+}
+
+export interface LetEndToken extends TokenBase {
+  type: TokenType.LET_END;
+  parts: [];
+}
+
+export interface IncompleteLetToken extends TokenBase {
+  type: TokenType.INCOMPLETE_LET;
   parts: [name: string];
 }

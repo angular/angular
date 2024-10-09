@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /*
@@ -282,3 +282,99 @@ export const EventType = {
    */
   CUSTOM: '_custom',
 };
+
+/** All event types that do not bubble or capture and need a polyfill. */
+export const MOUSE_SPECIAL_EVENT_TYPES = [
+  EventType.MOUSEENTER,
+  EventType.MOUSELEAVE,
+  'pointerenter',
+  'pointerleave',
+];
+
+/** All event types that are registered in the bubble phase. */
+export const BUBBLE_EVENT_TYPES = [
+  EventType.CLICK,
+  EventType.DBLCLICK,
+  EventType.FOCUSIN,
+  EventType.FOCUSOUT,
+  EventType.KEYDOWN,
+  EventType.KEYUP,
+  EventType.KEYPRESS,
+  EventType.MOUSEOVER,
+  EventType.MOUSEOUT,
+  EventType.SUBMIT,
+  EventType.TOUCHSTART,
+  EventType.TOUCHEND,
+  EventType.TOUCHMOVE,
+  'touchcancel',
+
+  'auxclick',
+  'change',
+  'compositionstart',
+  'compositionupdate',
+  'compositionend',
+  'beforeinput',
+  'input',
+  'select',
+
+  'copy',
+  'cut',
+  'paste',
+  'mousedown',
+  'mouseup',
+  'wheel',
+  'contextmenu',
+
+  'dragover',
+  'dragenter',
+  'dragleave',
+  'drop',
+  'dragstart',
+  'dragend',
+
+  'pointerdown',
+  'pointermove',
+  'pointerup',
+  'pointercancel',
+  'pointerover',
+  'pointerout',
+  'gotpointercapture',
+  'lostpointercapture',
+
+  // Video events.
+  'ended',
+  'loadedmetadata',
+
+  // Page visibility events.
+  'pagehide',
+  'pageshow',
+  'visibilitychange',
+
+  // Content visibility events.
+  'beforematch',
+];
+
+/** All event types that are registered in the capture phase. */
+export const CAPTURE_EVENT_TYPES = [
+  EventType.FOCUS,
+  EventType.BLUR,
+  EventType.ERROR,
+  EventType.LOAD,
+  EventType.TOGGLE,
+];
+
+/**
+ * Whether or not an event type should be registered in the capture phase.
+ * @param eventType
+ * @returns bool
+ */
+export const isCaptureEventType = (eventType: string) =>
+  CAPTURE_EVENT_TYPES.indexOf(eventType) >= 0;
+
+/** All event types that are registered early.  */
+const EARLY_EVENT_TYPES = BUBBLE_EVENT_TYPES.concat(CAPTURE_EVENT_TYPES);
+
+/**
+ * Whether or not an event type is registered in the early contract.
+ */
+export const isEarlyEventType = (eventType: string) => EARLY_EVENT_TYPES.indexOf(eventType) >= 0;

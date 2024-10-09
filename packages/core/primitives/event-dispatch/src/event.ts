@@ -3,12 +3,11 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
-import * as dom from './dom';
 import {EventHandlerInfo} from './event_handler';
-import {EventType} from './event_type';
+import {isCaptureEventType, EventType} from './event_type';
 import {KeyCode} from './key_code';
 
 /**
@@ -42,10 +41,10 @@ export function getBrowserEventType(eventType: string) {
  * @return Information needed to uninstall the event handler eventually.
  */
 export function addEventListener(
-    element: Element,
-    eventType: string,
-    handler: (event: Event) => void,
-    ): EventHandlerInfo {
+  element: Element,
+  eventType: string,
+  handler: (event: Event) => void,
+): EventHandlerInfo {
   // All event handlers are registered in the bubbling
   // phase.
   //
@@ -62,9 +61,7 @@ export function addEventListener(
   // handled in the capture phase.
   let capture = false;
 
-  if (eventType === EventType.FOCUS || eventType === EventType.BLUR ||
-      eventType === EventType.ERROR || eventType === EventType.LOAD ||
-      eventType === EventType.TOGGLE) {
+  if (isCaptureEventType(eventType)) {
     capture = true;
   }
   element.addEventListener(eventType, handler, capture);
@@ -82,11 +79,7 @@ export function addEventListener(
  */
 export function removeEventListener(element: Element, info: EventHandlerInfo) {
   if (element.removeEventListener) {
-    element.removeEventListener(
-        info.eventType,
-        info.handler as EventListener,
-        info.capture,
-    );
+    element.removeEventListener(info.eventType, info.handler as EventListener, info.capture);
     // `detachEvent` is an old DOM API.
     // tslint:disable-next-line:no-any
   } else if ((element as any).detachEvent) {
@@ -144,15 +137,15 @@ let isMac: boolean = typeof navigator !== 'undefined' && /Macintosh/.test(naviga
  */
 function isMiddleClick(e: Event): boolean {
   return (
-      // `which` is an old DOM API.
+    // `which` is an old DOM API.
+    // tslint:disable-next-line:no-any
+    (e as any).which === 2 ||
+    // `which` is an old DOM API.
+    // tslint:disable-next-line:no-any
+    ((e as any).which == null &&
+      // `button` is an old DOM API.
       // tslint:disable-next-line:no-any
-      (e as any).which === 2 ||
-      // `which` is an old DOM API.
-      // tslint:disable-next-line:no-any
-      ((e as any).which == null &&
-       // `button` is an old DOM API.
-       // tslint:disable-next-line:no-any
-       (e as any).button === 4)  // middle click for IE
+      (e as any).button === 4) // middle click for IE
   );
 }
 
@@ -165,28 +158,35 @@ function isMiddleClick(e: Event): boolean {
  */
 export function isModifiedClickEvent(e: Event): boolean {
   return (
-      // `metaKey` is an old DOM API.
-      // tslint:disable-next-line:no-any
-      (isMac && (e as any).metaKey) ||
-      // `ctrlKey` is an old DOM API.
-      // tslint:disable-next-line:no-any
-      (!isMac && (e as any).ctrlKey) || isMiddleClick(e) ||
-      // `shiftKey` is an old DOM API.
-      // tslint:disable-next-line:no-any
-      (e as any).shiftKey);
+    // `metaKey` is an old DOM API.
+    // tslint:disable-next-line:no-any
+    (isMac && (e as any).metaKey) ||
+    // `ctrlKey` is an old DOM API.
+    // tslint:disable-next-line:no-any
+    (!isMac && (e as any).ctrlKey) ||
+    isMiddleClick(e) ||
+    // `shiftKey` is an old DOM API.
+    // tslint:disable-next-line:no-any
+    (e as any).shiftKey
+  );
 }
 
 /** Whether we are on WebKit (e.g., Chrome). */
-export const isWebKit: boolean = typeof navigator !== 'undefined' &&
-    !/Opera/.test(navigator.userAgent) && /WebKit/.test(navigator.userAgent);
+export const isWebKit: boolean =
+  typeof navigator !== 'undefined' &&
+  !/Opera/.test(navigator.userAgent) &&
+  /WebKit/.test(navigator.userAgent);
 
 /** Whether we are on IE. */
-export const isIe: boolean = typeof navigator !== 'undefined' &&
-    (/MSIE/.test(navigator.userAgent) || /Trident/.test(navigator.userAgent));
+export const isIe: boolean =
+  typeof navigator !== 'undefined' &&
+  (/MSIE/.test(navigator.userAgent) || /Trident/.test(navigator.userAgent));
 
 /** Whether we are on Gecko (e.g., Firefox). */
-export const isGecko: boolean = typeof navigator !== 'undefined' &&
-    !/Opera|WebKit/.test(navigator.userAgent) && /Gecko/.test(navigator.product);
+export const isGecko: boolean =
+  typeof navigator !== 'undefined' &&
+  !/Opera|WebKit/.test(navigator.userAgent) &&
+  /Gecko/.test(navigator.product);
 
 /**
  * Determines and returns whether the given element is a valid target for
@@ -220,18 +220,19 @@ export function isValidActionKeyTarget(el: Element): boolean {
  */
 function hasModifierKey(e: Event): boolean {
   return (
-      // `ctrlKey` is an old DOM API.
-      // tslint:disable-next-line:no-any
-      (e as any).ctrlKey ||
-      // `shiftKey` is an old DOM API.
-      // tslint:disable-next-line:no-any
-      (e as any).shiftKey ||
-      // `altKey` is an old DOM API.
-      // tslint:disable-next-line:no-any
-      (e as any).altKey ||
-      // `metaKey` is an old DOM API.
-      // tslint:disable-next-line:no-any
-      (e as any).metaKey);
+    // `ctrlKey` is an old DOM API.
+    // tslint:disable-next-line:no-any
+    (e as any).ctrlKey ||
+    // `shiftKey` is an old DOM API.
+    // tslint:disable-next-line:no-any
+    (e as any).shiftKey ||
+    // `altKey` is an old DOM API.
+    // tslint:disable-next-line:no-any
+    (e as any).altKey ||
+    // `metaKey` is an old DOM API.
+    // tslint:disable-next-line:no-any
+    (e as any).metaKey
+  );
 }
 
 /**
@@ -283,12 +284,12 @@ export function shouldCallPreventDefaultOnNativeHtmlControl(e: Event): boolean {
  */
 export function isActionKeyEvent(e: Event): boolean {
   let key =
-      // `which` is an old DOM API.
-      // tslint:disable-next-line:no-any
-      (e as any).which ||
-      // `keyCode` is an old DOM API.
-      // tslint:disable-next-line:no-any
-      (e as any).keyCode;
+    // `which` is an old DOM API.
+    // tslint:disable-next-line:no-any
+    (e as any).which ||
+    // `keyCode` is an old DOM API.
+    // tslint:disable-next-line:no-any
+    (e as any).keyCode;
   if (!key && (e as KeyboardEvent).key) {
     key = ACTION_KEY_TO_KEYCODE[(e as KeyboardEvent).key];
   }
@@ -316,8 +317,11 @@ export function isActionKeyEvent(e: Event): boolean {
     return false;
   }
 
-  const type =
-      (el.getAttribute('role') || (el as HTMLInputElement).type || el.tagName).toUpperCase();
+  const type = (
+    el.getAttribute('role') ||
+    (el as HTMLInputElement).type ||
+    el.tagName
+  ).toUpperCase();
   const isSpecificTriggerKey = IDENTIFIER_TO_KEY_TRIGGER_MAPPING[type] % key === 0;
   const isDefaultTriggerKey = !(type in IDENTIFIER_TO_KEY_TRIGGER_MAPPING) && key === KeyCode.ENTER;
   const hasType = el.tagName.toUpperCase() !== 'INPUT' || !!(el as HTMLInputElement).type;
@@ -331,8 +335,9 @@ export function isActionKeyEvent(e: Event): boolean {
  */
 function isFocusable(el: Element): boolean {
   return (
-      (el.tagName in NATIVELY_FOCUSABLE_ELEMENTS || hasSpecifiedTabIndex(el)) &&
-      !(el as HTMLInputElement).disabled);
+    (el.tagName in NATIVELY_FOCUSABLE_ELEMENTS || hasSpecifiedTabIndex(el)) &&
+    !(el as HTMLInputElement).disabled
+  );
 }
 
 /**
@@ -343,7 +348,7 @@ function hasSpecifiedTabIndex(element: Element): boolean {
   // IE returns 0 for an unset tabIndex, so we must use getAttributeNode(),
   // which returns an object with a 'specified' property if tabIndex is
   // specified.  This works on other browsers, too.
-  const attrNode = element.getAttributeNode('tabindex');  // Must be lowercase!
+  const attrNode = element.getAttributeNode('tabindex'); // Must be lowercase!
   return attrNode != null && attrNode.specified;
 }
 
@@ -359,12 +364,12 @@ const NATIVELY_FOCUSABLE_ELEMENTS: {[key: string]: number} = {
 /** @return True, if the Space key was pressed. */
 export function isSpaceKeyEvent(e: Event): boolean {
   const key =
-      // `which` is an old DOM API.
-      // tslint:disable-next-line:no-any
-      (e as any).which ||
-      // `keyCode` is an old DOM API.
-      // tslint:disable-next-line:no-any
-      (e as any).keyCode;
+    // `which` is an old DOM API.
+    // tslint:disable-next-line:no-any
+    (e as any).which ||
+    // `keyCode` is an old DOM API.
+    // tslint:disable-next-line:no-any
+    (e as any).keyCode;
   const el = getTarget(e);
   const elementName = ((el as HTMLInputElement).type || el.tagName).toUpperCase();
   return key === KeyCode.SPACE && elementName !== 'CHECKBOX';
@@ -388,21 +393,18 @@ export function isSpaceKeyEvent(e: Event): boolean {
  *     mouseenter/mouseleave event is defined.
  * @return True if the event is a mouseenter/mouseleave event.
  */
-export function isMouseSpecialEvent(
-    e: Event,
-    type: string,
-    element: Element,
-    ): boolean {
+export function isMouseSpecialEvent(e: Event, type: string, element: Element): boolean {
   // `relatedTarget` is an old DOM API.
   // tslint:disable-next-line:no-any
   const related = (e as any).relatedTarget as Node;
 
   return (
-      ((e.type === EventType.MOUSEOVER && type === EventType.MOUSEENTER) ||
-       (e.type === EventType.MOUSEOUT && type === EventType.MOUSELEAVE) ||
-       (e.type === EventType.POINTEROVER && type === EventType.POINTERENTER) ||
-       (e.type === EventType.POINTEROUT && type === EventType.POINTERLEAVE)) &&
-      (!related || (related !== element && !dom.contains(element, related))));
+    ((e.type === EventType.MOUSEOVER && type === EventType.MOUSEENTER) ||
+      (e.type === EventType.MOUSEOUT && type === EventType.MOUSELEAVE) ||
+      (e.type === EventType.POINTEROVER && type === EventType.POINTERENTER) ||
+      (e.type === EventType.POINTEROUT && type === EventType.POINTERLEAVE)) &&
+    (!related || (related !== element && !element.contains(related)))
+  );
 }
 
 /**
@@ -426,7 +428,7 @@ export function createMouseSpecialEvent(e: Event, target: Element): Event {
   // its type.
   //
   // tslint:disable-next-line:no-any
-  const copy: {-readonly[P in keyof Event]?: Event[P]} = {};
+  const copy: {-readonly [P in keyof Event]?: Event[P]} = {};
   for (const property in e) {
     if (property === 'srcElement' || property === 'target') {
       continue;
@@ -467,10 +469,10 @@ export function createMouseSpecialEvent(e: Event, target: Element): Event {
  * @param event A touch event.
  */
 export function getTouchData(
-    event: TouchEvent,
-    ): {clientX: number; clientY: number; screenX: number; screenY: number}|null {
+  event: TouchEvent,
+): {clientX: number; clientY: number; screenX: number; screenY: number} | null {
   const touch =
-      (event.changedTouches && event.changedTouches[0]) || (event.touches && event.touches[0]);
+    (event.changedTouches && event.changedTouches[0]) || (event.touches && event.touches[0]);
   if (!touch) {
     return null;
   }
@@ -502,8 +504,8 @@ declare interface SyntheticMouseEvent extends Event {
  *     this function.
  */
 export function recreateTouchEventAsClick(event: TouchEvent): MouseEvent {
-  const click: {-readonly[P in keyof MouseEvent]?: MouseEvent[P];}&
-      Partial<SyntheticMouseEvent> = {};
+  const click: {-readonly [P in keyof MouseEvent]?: MouseEvent[P]} & Partial<SyntheticMouseEvent> =
+    {};
   click['originalEventType'] = event.type;
   click['type'] = EventType.CLICK;
   for (const property in event) {
@@ -638,8 +640,9 @@ export function isNativeHTMLControl(el: Element): boolean {
  */
 function isNativelyActivatable(el: Element): boolean {
   return (
-      el.tagName.toUpperCase() === 'BUTTON' ||
-      (!!(el as HTMLInputElement).type && (el as HTMLInputElement).type.toUpperCase() === 'FILE'));
+    el.tagName.toUpperCase() === 'BUTTON' ||
+    (!!(el as HTMLInputElement).type && (el as HTMLInputElement).type.toUpperCase() === 'FILE')
+  );
 }
 
 /**

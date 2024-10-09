@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 'use strict';
@@ -16,6 +16,5 @@ function loadTask(fileName, taskName) {
   const task = taskName ? taskModule[taskName] : taskModule;
   return task(gulp);
 }
-
 
 gulp.task('changelog:zonejs', loadTask('changelog-zonejs'));

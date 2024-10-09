@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {createPlatformFactory, PlatformRef} from '@angular/core';
@@ -15,8 +15,4 @@ import {ɵplatformCoreDynamic as platformCoreDynamic} from '@angular/platform-br
  * @publicApi
  */
 export const platformCoreDynamicTesting: (extraProviders?: any[]) => PlatformRef =
-    createPlatformFactory(
-        platformCoreDynamic,
-        'coreDynamicTesting',
-        [],
-    );
+  createPlatformFactory(platformCoreDynamic, 'coreDynamicTesting', []);

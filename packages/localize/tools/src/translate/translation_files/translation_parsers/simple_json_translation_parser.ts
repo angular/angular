@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {MessageId, ɵParsedTranslation, ɵparseTranslation} from '@angular/localize';
 import {extname} from 'path';
@@ -38,8 +38,10 @@ export class SimpleJsonTranslationParser implements TranslationParser<SimpleJson
     const diagnostics = new Diagnostics();
     // For this to be parsable, the extension must be `.json` and the contents must include "locale"
     // and "translations" keys.
-    if (extname(filePath) !== '.json' ||
-        !(contents.includes('"locale"') && contents.includes('"translations"'))) {
+    if (
+      extname(filePath) !== '.json' ||
+      !(contents.includes('"locale"') && contents.includes('"translations"'))
+    ) {
       diagnostics.warn('File does not have .json extension.');
       return {canParse: false, diagnostics};
     }

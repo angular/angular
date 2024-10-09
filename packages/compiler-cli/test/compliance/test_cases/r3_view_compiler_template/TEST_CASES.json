@@ -398,6 +398,17 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should break large element creation chains",
+      "inputFiles": [
+        "create_many_elements.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }

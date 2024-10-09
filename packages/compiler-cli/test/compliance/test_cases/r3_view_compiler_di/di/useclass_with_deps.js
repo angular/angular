@@ -1,13 +1,13 @@
 MyService.ɵprov = /*@__PURE__*/ $r3$.ɵɵdefineInjectable({
   token: MyService,
-  factory: function MyService_Factory(t) {
-    let r = null;
-    if (t) {
-      r = new t();
+  factory: function MyService_Factory(__ngFactoryType__) {
+    let __ngConditionalFactory__ = null;
+    if (__ngFactoryType__) {
+      __ngConditionalFactory__ = new __ngFactoryType__();
     } else {
-      r = new MyAlternateService($r3$.ɵɵinject(SomeDep));
+      __ngConditionalFactory__ = new MyAlternateService($r3$.ɵɵinject(SomeDep));
     }
-    return r;
+    return __ngConditionalFactory__;
   },
   providedIn: 'root'
 });

@@ -1,1 +1,1 @@
-OtherDirective.ɵfac = function OtherDirective_Factory(t) {return new (t || OtherDirective)(); };
+OtherDirective.ɵfac = function OtherDirective_Factory(__ngFactoryType__) {return new (__ngFactoryType__ || OtherDirective)(); };

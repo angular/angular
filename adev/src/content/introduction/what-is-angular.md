@@ -25,8 +25,7 @@ system" href="guide/components" link="Get started with Components">
   testable.
   </docs-card>
   <docs-card title="Get fast state updates with fine-grained reactivity based on Signals" href="guide/signals" link="Explore Angular Signals">
-  Our fine-grained reactivity model, combined with compile-time optimizations, simplify development,
-  and helps build faster apps by default.
+  Our fine-grained reactivity model, combined with compile-time optimizations, simplifies development and helps build faster apps by default.
 
   Granularly track how and where state is used throughout an application, giving the framework the power to render fast updates via highly optimized instructions.
   </docs-card>
@@ -81,7 +80,7 @@ more">
   <docs-card title="Clear support policies and predictable release schedule" href="reference/releases" link="Versioning & releasing">
   Angular's predictable, time-based release schedule gives your organization confidence in the
   stability and backwards compatibility of the framework. Long Term Support (LTS) windows make sure
-  you get critical security fixes when you need them. First party update tools, guides and automated
+  you get critical security fixes when you need them. First-party update tools, guides and automated
   migration schematics help keep your apps up-to-date with the latest advancements to the framework
   and the web platform.
   </docs-card>
@@ -91,16 +90,16 @@ more">
 
 <docs-card-container>
   <docs-card title="Reach users everywhere with internationalization support" href="guide/i18n" link="Internationalization">
-  Angular's internationalization features handles message translations and formatting, including
+  Angular's internationalization features handle message translations and formatting, including
   support for unicode standard ICU syntax.
   </docs-card>
-  <docs-card title="Protect your users with security by default" href="guide/security" link="Security">
+  <docs-card title="Protect your users with security by default" href="best-practices/security" link="Security">
   In collaboration with Google's world-class security engineers, Angular aims to make development
   safe by default. Built-in security features, including HTML sanitization and
   trusted type support, help protect your users from common vulnerabilities like
   cross-site scripting and cross-site request forgery.
   </docs-card>
-  <docs-card title="Keep large teams productive with Vite and esbuild" href="tools/cli/esbuild" link="ESBuild and Vite">
+  <docs-card title="Keep large teams productive with Vite and esbuild" href="tools/cli/build-system-migration" link="ESBuild and Vite">
   Angular CLI includes a fast, modern build pipeline using Vite and ESBuild. Developers report
   building projects with hundreds of thousands of lines of code in less than a minute.
   </docs-card>
@@ -125,20 +124,20 @@ more">
 
 <docs-card-container>
   <docs-card title="Courses, blogs and resources" href="https://devlibrary.withgoogle.com/products/angular?sort=added" link="Check out DevLibrary">
-  Our community is composed of talented developers, writers, instructors, podcasters and more. The Google for Developers library is just a sample of the high quality resources available for new and experienced developers to continue developing.
+  Our community is composed of talented developers, writers, instructors, podcasters, and more. The Google for Developers library is just a sample of the high quality resources available for new and experienced developers to continue developing.
   </docs-card>
   <docs-card title="Open Source" href="https://github.com/angular/angular/blob/main/CONTRIBUTING.md" link="Contribute to Angular">
   We are thankful for the open source contributors who make Angular a better framework for everyone. From fixing a typo in the docs, to adding major features, we encourage anyone interested to get started on our GitHub.
   </docs-card>
   <docs-card title="Community partnerships" href="https://developers.google.com/community/experts/directory?specialization=angular" link="Meet the Angular GDEs">
-  Our team partners with individuals, educators and enterprises to ensure we consistently are supporting developers. Angular Google Developer Experts (GDEs) represent community leaders around the world educating, organizing and developing with Angular. Enterprise partnerships help ensure that Angular scales well for technology industry leaders.
+  Our team partners with individuals, educators, and enterprises to ensure we consistently are supporting developers. Angular Google Developer Experts (GDEs) represent community leaders around the world educating, organizing, and developing with Angular. Enterprise partnerships help ensure that Angular scales well for technology industry leaders.
   </docs-card>
   <docs-card title="Partnering with other Google technologies">
   Angular partners closely with other Google technologies and teams to improve the web.
 
-  Our ongoing partnership with Chrome’s Aurora actively explores improvements to user experience across the web developing built-in performance optimizations like NgOptimizedImage and improvements to Angular’s Core Web Vitals.
+  Our ongoing partnership with Chrome’s Aurora actively explores improvements to user experience across the web, developing built-in performance optimizations like NgOptimizedImage and improvements to Angular’s Core Web Vitals.
 
-  We are also working with [Firebase](https://firebase.google.com/), [Tensorflow](https://www.tensorflow.org/), [Flutter](https://flutter.dev/), [Material Design](https://m3.material.io/) and [Google Cloud](https://cloud.google.com/) to ensure we provide meaningful integrations across the developer workflow.
+  We are also working with [Firebase](https://firebase.google.com/), [Tensorflow](https://www.tensorflow.org/), [Flutter](https://flutter.dev/), [Material Design](https://m3.material.io/), and [Google Cloud](https://cloud.google.com/) to ensure we provide meaningful integrations across the developer workflow.
   </docs-card>
 </docs-card-container>
 

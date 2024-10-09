@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as ir from '../../ir';
@@ -58,7 +58,6 @@ export function parseHostStyleProperties(job: CompilationJob): void {
   }
 }
 
-
 /**
  * Checks whether property name is a custom CSS property.
  * See: https://www.w3.org/TR/css-variables-1
@@ -69,21 +68,19 @@ function isCssCustomProperty(name: string): boolean {
 
 function hyphenate(value: string): string {
   return value
-      .replace(
-          /[a-z][A-Z]/g,
-          v => {
-            return v.charAt(0) + '-' + v.charAt(1);
-          })
-      .toLowerCase();
+    .replace(/[a-z][A-Z]/g, (v) => {
+      return v.charAt(0) + '-' + v.charAt(1);
+    })
+    .toLowerCase();
 }
 
-function parseProperty(name: string): {property: string, suffix: string|null} {
+function parseProperty(name: string): {property: string; suffix: string | null} {
   const overrideIndex = name.indexOf('!important');
   if (overrideIndex !== -1) {
     name = overrideIndex > 0 ? name.substring(0, overrideIndex) : '';
   }
 
-  let suffix: string|null = null;
+  let suffix: string | null = null;
   let property = name;
   const unitIndex = name.lastIndexOf('.');
   if (unitIndex > 0) {

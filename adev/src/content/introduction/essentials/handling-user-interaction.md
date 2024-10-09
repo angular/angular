@@ -11,13 +11,13 @@ You can add an event handler to an element by:
 1. Adding an attribute with the events name inside of parentheses
 2. Specify what JavaScript statement you want to run when it fires
 
-```html
+```angular-html
 <button (click)="save()">Save</button>
 ```
 
 For example, if we wanted to create a button that would run a `transformText` function when the `click` event is fired, it would look like the following:
 
-```ts
+```angular-ts
 // text-transformer.component.ts
 @Component({
   standalone: true,
@@ -38,14 +38,17 @@ export class TextTransformer {
 
 Other common examples of event listeners include:
 
-- `<input (keyup)="validateInput()" />`
-- `<input (keydown)="updateInput()" />`
+```angular-html
+<input (keyup)="validateInput()" />
+<input (keydown)="updateInput()" />
+```
+
 
 ### $event
 
-If you need to access the [event](https://developer.mozilla.org/en-US/docs/Web/API/Event) object, Angular provides an implicit `$event` variable that you can pass to a function:
+If you need to access the [event](https://developer.mozilla.org/docs/Web/API/Event) object, Angular provides an implicit `$event` variable that you can pass to a function:
 
-```html
+```angular-html
 <button (click)="createUser($event)">Submit</button>
 ```
 

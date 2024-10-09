@@ -4,7 +4,7 @@ In previous activities you used the `inject()` function to make resources availa
 
 You specify the resources as parameters to the `constructor` function of a component. Angular will make those resources available to your component.
 <br><br>
-In this activity you will learn to use constructor-based dependency injection.
+In this activity, you will learn how to use constructor-based dependency injection.
 
 <hr>
 

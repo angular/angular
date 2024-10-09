@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {defer, Observable} from 'rxjs';
@@ -21,7 +21,7 @@ describe('Observable.defer', () => {
   it('defer func callback should run in the correct zone', () => {
     observable1 = constructorZone1.run(() => {
       return defer(() => {
-        return new Observable<number>(subscribe => {
+        return new Observable<number>((subscribe) => {
           log.push('setup');
           expect(Zone.current.name).toEqual(constructorZone1.name);
           subscribe.next(1);

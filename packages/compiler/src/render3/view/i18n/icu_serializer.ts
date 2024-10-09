@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as i18n from '../../../i18n/i18n_ast';
@@ -16,21 +16,23 @@ class IcuSerializerVisitor implements i18n.Visitor {
   }
 
   visitContainer(container: i18n.Container): any {
-    return container.children.map(child => child.visit(this)).join('');
+    return container.children.map((child) => child.visit(this)).join('');
   }
 
   visitIcu(icu: i18n.Icu): any {
-    const strCases =
-        Object.keys(icu.cases).map((k: string) => `${k} {${icu.cases[k].visit(this)}}`);
+    const strCases = Object.keys(icu.cases).map(
+      (k: string) => `${k} {${icu.cases[k].visit(this)}}`,
+    );
     const result = `{${icu.expressionPlaceholder}, ${icu.type}, ${strCases.join(' ')}}`;
     return result;
   }
 
   visitTagPlaceholder(ph: i18n.TagPlaceholder): any {
-    return ph.isVoid ?
-        this.formatPh(ph.startName) :
-        `${this.formatPh(ph.startName)}${ph.children.map(child => child.visit(this)).join('')}${
-            this.formatPh(ph.closeName)}`;
+    return ph.isVoid
+      ? this.formatPh(ph.startName)
+      : `${this.formatPh(ph.startName)}${ph.children
+          .map((child) => child.visit(this))
+          .join('')}${this.formatPh(ph.closeName)}`;
   }
 
   visitPlaceholder(ph: i18n.Placeholder): any {
@@ -38,8 +40,9 @@ class IcuSerializerVisitor implements i18n.Visitor {
   }
 
   visitBlockPlaceholder(ph: i18n.BlockPlaceholder): any {
-    return `${this.formatPh(ph.startName)}${ph.children.map(child => child.visit(this)).join('')}${
-        this.formatPh(ph.closeName)}`;
+    return `${this.formatPh(ph.startName)}${ph.children
+      .map((child) => child.visit(this))
+      .join('')}${this.formatPh(ph.closeName)}`;
   }
 
   visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): any {

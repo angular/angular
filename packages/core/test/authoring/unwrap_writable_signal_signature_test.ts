@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /**
@@ -13,11 +13,9 @@
  */
 
 import {input, model, signal, ɵunwrapWritableSignal as unwrapWritableSignal} from '@angular/core';
-// clang-format off
 // import preserved to simplify `.d.ts` emit and simplify the `type_tester` logic.
 // tslint:disable-next-line no-duplicate-imports
 import {InputSignal, WritableSignal} from '@angular/core';
-// clang-format on
 
 export class SignalModelSignatureTest {
   /** string | undefined */
@@ -27,7 +25,7 @@ export class SignalModelSignatureTest {
   requiredModel = unwrapWritableSignal(model.required<string>());
 
   /** string | number */
-  writableSignal = unwrapWritableSignal(signal<string|number>(0));
+  writableSignal = unwrapWritableSignal(signal<string | number>(0));
 
   /** InputSignal<string | undefined> */
   optionalReadonlySignal = unwrapWritableSignal(input<string>());
@@ -39,6 +37,7 @@ export class SignalModelSignatureTest {
   primitiveValue = unwrapWritableSignal(123);
 
   /** (value: string | null | undefined) => number */
-  getterFunction =
-      unwrapWritableSignal((value: string|null|undefined) => value ? parseInt(value) : 0);
+  getterFunction = unwrapWritableSignal((value: string | null | undefined) =>
+    value ? parseInt(value) : 0,
+  );
 }

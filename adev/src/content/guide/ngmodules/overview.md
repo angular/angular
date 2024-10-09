@@ -28,7 +28,7 @@ NgModule metadata does the following:
 * Imports other modules with the components, directives, and pipes that components in the current module need
 * Provides services that other application components can use
 
-Every Angular application has at least one module, the root module.
+Every Module-based Angular application has at least one module, the root module.
 You [bootstrap](guide/ngmodules/bootstrapping) that module to launch the application.
 
 The root module is all you need in an application with few components.
@@ -37,7 +37,7 @@ You then import these modules into the root module.
 
 ## The basic NgModule
 
-The [Angular CLI](/tools/cli) generates the following basic `AppModule` when creating a new application.
+The [Angular CLI](/tools/cli) generates the following basic `AppModule` when creating a new application with the `--no-standalone` option.
 
 <docs-code header="src/app/app.module.ts">
 import { BrowserModule } from '@angular/platform-browser';

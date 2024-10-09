@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ParseSourceFile} from '@angular/compiler';
@@ -15,12 +15,13 @@ import {ClassDeclaration, DeclarationNode} from '../../reflection';
  */
 export enum IdentifierKind {
   Property,
-  Method,  // TODO: No longer being used. To be removed together with `MethodIdentifier`.
+  Method, // TODO: No longer being used. To be removed together with `MethodIdentifier`.
   Element,
   Template,
   Attribute,
   Reference,
   Variable,
+  LetDeclaration,
 }
 
 /**
@@ -39,7 +40,7 @@ interface ExpressionIdentifier extends TemplateIdentifier {
    * ReferenceIdentifier or VariableIdentifier in the template that this identifier targets, if
    * any. If the target is `null`, it points to a declaration on the component class.
    * */
-  target: ReferenceIdentifier|VariableIdentifier|null;
+  target: ReferenceIdentifier | VariableIdentifier | LetDeclarationIdentifier | null;
 }
 
 /** Describes a property accessed in a template. */
@@ -94,14 +95,14 @@ export interface ReferenceIdentifier extends TemplateIdentifier {
   /** The target of this reference. If the target is not known, this is `null`. */
   target: {
     /** The template AST node that the reference targets. */
-    node: ElementIdentifier|TemplateIdentifier;
+    node: ElementIdentifier | TemplateIdentifier;
 
     /**
      * The directive on `node` that the reference targets. If no directive is targeted, this is
      * `null`.
      */
     directive: ClassDeclaration | null;
-  }|null;
+  } | null;
 }
 
 /** Describes a template variable like "foo" in `<div *ngFor="let foo of foos"></div>`. */
@@ -109,18 +110,32 @@ export interface VariableIdentifier extends TemplateIdentifier {
   kind: IdentifierKind.Variable;
 }
 
+/** Describes a `@let` declaration in a template. */
+export interface LetDeclarationIdentifier extends TemplateIdentifier {
+  kind: IdentifierKind.LetDeclaration;
+}
+
 /**
  * Identifiers recorded at the top level of the template, without any context about the HTML nodes
  * they were discovered in.
  */
-export type TopLevelIdentifier = PropertyIdentifier|ElementIdentifier|TemplateNodeIdentifier|
-    ReferenceIdentifier|VariableIdentifier|MethodIdentifier;
+export type TopLevelIdentifier =
+  | PropertyIdentifier
+  | ElementIdentifier
+  | TemplateNodeIdentifier
+  | ReferenceIdentifier
+  | VariableIdentifier
+  | MethodIdentifier
+  | LetDeclarationIdentifier;
 
 /**
  * Describes the absolute byte offsets of a text anchor in a source code.
  */
 export class AbsoluteSourceSpan {
-  constructor(public start: number, public end: number) {}
+  constructor(
+    public start: number,
+    public end: number,
+  ) {}
 }
 
 /**
@@ -128,12 +143,12 @@ export class AbsoluteSourceSpan {
  */
 export interface IndexedComponent {
   name: string;
-  selector: string|null;
+  selector: string | null;
   file: ParseSourceFile;
   template: {
-    identifiers: Set<TopLevelIdentifier>,
-    usedComponents: Set<DeclarationNode>,
-    isInline: boolean,
+    identifiers: Set<TopLevelIdentifier>;
+    usedComponents: Set<DeclarationNode>;
+    isInline: boolean;
     file: ParseSourceFile;
   };
   errors: Error[];

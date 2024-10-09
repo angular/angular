@@ -8,4 +8,4 @@ organization members to initiate a benchmark comparison via a GitHub comment in 
 
 ### Docs
 
-See ![the benchmark documentation](../../docs/BENCHMARKS.md).
+See ![the benchmark documentation](../../contributing-docs/running-benchmarks.md).

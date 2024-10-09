@@ -45,7 +45,7 @@
       {
         "match": "Copyright Google LLC",
         "allow-single-line-comments": false,
-        "default": "@license\nCopyright Google LLC All Rights Reserved.\n\nUse of this source code is governed by an MIT-style license that can be\nfound in the LICENSE file at https://angular.io/license"
+        "default": "@license\nCopyright Google LLC All Rights Reserved.\n\nUse of this source code is governed by an MIT-style license that can be\nfound in the LICENSE file at https://angular.dev/license"
       }
     ],
     "no-console": [true, "log"],
@@ -65,7 +65,7 @@
       "packages/platform-browser/src/",
       "packages/router/src/"
     ],
-    "semicolon": [true],
+    "semicolon": [true, "always", "ignore-bound-class-methods"],
     "variable-name": [true, "ban-keywords"],
     "no-inner-declarations": [true, "function"],
     "no-debugger": true,
@@ -93,7 +93,7 @@
       {
         "match": "Copyright Google LLC",
         "allow-single-line-comments": false,
-        "default": "@license\nCopyright Google LLC All Rights Reserved.\n\nUse of this source code is governed by an MIT-style license that can be\nfound in the LICENSE file at https://angular.io/license"
+        "default": "@license\nCopyright Google LLC All Rights Reserved.\n\nUse of this source code is governed by an MIT-style license that can be\nfound in the LICENSE file at https://angular.dev/license"
       }
     ],
     "no-console": [true, "log"],
@@ -111,8 +111,6 @@
   "linterOptions": {
     "exclude": [
       "**/node_modules/**/*",
-      // Ignore AIO and integration tests.
-      "./aio/**/*",
       "./integration/**/*",
       // Ignore output directories
       "./built/**/*",

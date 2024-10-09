@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /**
@@ -47,7 +47,7 @@ export interface ResourceLoader {
    * if the file has already been loaded.
    * @throws An Error if pre-loading is not available.
    */
-  preload(resolvedUrl: string, context: ResourceLoaderContext): Promise<void>|undefined;
+  preload(resolvedUrl: string, context: ResourceLoaderContext): Promise<void> | undefined;
 
   /**
    * Preprocess the content data of an inline resource, asynchronously.
@@ -81,10 +81,26 @@ export interface ResourceLoaderContext {
    * * Resources referenced via a component's `template` or `templateUrl` properties are of type
    * `template`.
    */
-  type: 'style'|'template';
+  type: 'style' | 'template';
 
   /**
    * The absolute path to the file that contains the resource or reference to the resource.
    */
   containingFile: string;
+
+  /**
+   * For style resources, the placement of the style within the containing file with lower numbers
+   * being before higher numbers.
+   * The value is primarily used by the Angular CLI to create a deterministic identifier for each
+   * style in HMR scenarios.
+   * This is undefined for templates.
+   */
+  order?: number;
+
+  /**
+   * The name of the class that defines the component using the resource.
+   * This allows identifying the source usage of a resource in cases where multiple components are
+   * contained in a single source file.
+   */
+  className: string;
 }

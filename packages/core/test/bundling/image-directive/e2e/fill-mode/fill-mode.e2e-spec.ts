@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /* tslint:disable:no-console  */
@@ -27,19 +27,22 @@ describe('NgOptimizedImage directive', () => {
     // Image loading order is not guaranteed, so all logs, rather than single entry
     // needs to be checked in order to test whether a given error message is present.
     const expectErrorMessageInLogs = (logs: logging.Entry[], message: string) => {
-      expect(logs.some((log) => {
-        return log.message.includes(message);
-      })).toBeTruthy();
+      expect(
+        logs.some((log) => {
+          return log.message.includes(message);
+        }),
+      ).toBeTruthy();
     };
 
     expectErrorMessageInLogs(
-        logs,
-        'NG02952: The NgOptimizedImage directive (activated on an \\u003Cimg> element ' +
-            'with the `ngSrc=\\"/e2e/logo-500w.jpg\\"`) has detected that the height ' +
-            'of the fill-mode image is zero. This is likely because the containing element ' +
-            'does not have the CSS \'position\' property set to one of the following: ' +
-            '\\"relative\\", \\"fixed\\", or \\"absolute\\". To fix this problem, ' +
-            'make sure the container element has the CSS \'position\' ' +
-            'property defined and the height of the element is not zero.');
+      logs,
+      'NG02952: The NgOptimizedImage directive (activated on an \\u003Cimg> element ' +
+        'with the `ngSrc=\\"/e2e/logo-500w.jpg\\"`) has detected that the height ' +
+        'of the fill-mode image is zero. This is likely because the containing element ' +
+        "does not have the CSS 'position' property set to one of the following: " +
+        '\\"relative\\", \\"fixed\\", or \\"absolute\\". To fix this problem, ' +
+        "make sure the container element has the CSS 'position' " +
+        'property defined and the height of the element is not zero.',
+    );
   });
 });

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -24,6 +24,9 @@ import {
   SimpleChanges,
   ViewContainerRef,
   ɵRuntimeError as RuntimeError,
+  Signal,
+  input,
+  computed,
 } from '@angular/core';
 import {combineLatest, of, Subscription} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
@@ -33,6 +36,30 @@ import {Data} from '../models';
 import {ChildrenOutletContexts} from '../router_outlet_context';
 import {ActivatedRoute} from '../router_state';
 import {PRIMARY_OUTLET} from '../shared';
+
+/**
+ * An `InjectionToken` provided by the `RouterOutlet` and can be set using the `routerOutletData`
+ * input.
+ *
+ * When unset, this value is `null` by default.
+ *
+ * @usageNotes
+ *
+ * To set the data from the template of the component with `router-outlet`:
+ * ```
+ * <router-outlet [routerOutletData]="{name: 'Angular'}" />
+ * ```
+ *
+ * To read the data in the routed component:
+ * ```
+ * data = inject(ROUTER_OUTLET_DATA) as Signal<{name: string}>;
+ * ```
+ *
+ * @publicApi
+ */
+export const ROUTER_OUTLET_DATA = new InjectionToken<Signal<unknown | undefined>>(
+  ngDevMode ? 'RouterOutlet data' : '',
+);
 
 /**
  * An interface that defines the contract for developing a component outlet for the `Router`.
@@ -207,6 +234,13 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
    */
   @Output('detach') detachEvents = new EventEmitter<unknown>();
 
+  /**
+   * Data that will be provided to the child injector through the `ROUTER_OUTLET_DATA` token.
+   *
+   * When unset, the value of the token is `undefined` by default.
+   */
+  readonly routerOutletData = input<unknown>(undefined);
+
   private parentContexts = inject(ChildrenOutletContexts);
   private location = inject(ViewContainerRef);
   private changeDetector = inject(ChangeDetectorRef);
@@ -356,7 +390,12 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     const snapshot = activatedRoute.snapshot;
     const component = snapshot.component!;
     const childContexts = this.parentContexts.getOrCreateContext(this.name).children;
-    const injector = new OutletInjector(activatedRoute, childContexts, location.injector);
+    const injector = new OutletInjector(
+      activatedRoute,
+      childContexts,
+      location.injector,
+      this.routerOutletData,
+    );
 
     this.activated = location.createComponent(component, {
       index: location.length,
@@ -373,17 +412,29 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
 
 class OutletInjector implements Injector {
   /**
-   * A special flag that allows to identify the `OutletInjector` without
-   * referring to the class itself. This is required as a temporary solution,
-   * to have a special handling for this injector in core. Eventually, this
-   * injector should just become an `EnvironmentInjector` without special logic.
+   * This injector has a special handing for the `ActivatedRoute` and
+   * `ChildrenOutletContexts` tokens: it returns corresponding values for those
+   * tokens dynamically. This behavior is different from the regular injector logic,
+   * when we initialize and store a value, which is later returned for all inject
+   * requests.
+   *
+   * In some cases (e.g. when using `@defer`), this dynamic behavior requires special
+   * handling. This function allows to identify an instance of the `OutletInjector` and
+   * create an instance of it without referring to the class itself (so this logic can
+   * be invoked from the `core` package). This helps to retain dynamic behavior for the
+   * mentioned tokens.
+   *
+   * Note: it's a temporary solution and we should explore how to support this case better.
    */
-  private __ngOutletInjector = true;
+  private __ngOutletInjector(parentInjector: Injector) {
+    return new OutletInjector(this.route, this.childContexts, parentInjector, this.outletData);
+  }
 
   constructor(
     private route: ActivatedRoute,
     private childContexts: ChildrenOutletContexts,
     private parent: Injector,
+    private outletData: Signal<unknown>,
   ) {}
 
   get(token: any, notFoundValue?: any): any {
@@ -393,6 +444,10 @@ class OutletInjector implements Injector {
 
     if (token === ChildrenOutletContexts) {
       return this.childContexts;
+    }
+
+    if (token === ROUTER_OUTLET_DATA) {
+      return this.outletData;
     }
 
     return this.parent.get(token, notFoundValue);

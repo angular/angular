@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import type {ɵGlobalDevModeUtils as GlobalDevModeUtils, Type} from '@angular/core';
@@ -83,6 +83,7 @@ export function getDirectiveName(dir: Type<unknown> | undefined | null): string 
 }
 
 export function highlightSelectedElement(el: Node): void {
+  unHighlight();
   selectedElementOverlay = addHighlightForElement(el);
 }
 

@@ -32,14 +32,14 @@ By default, `HttpClient` assumes that servers will return JSON data. When intera
 | - | - |
 | `'json'` (default) | JSON data of the given generic type |
 | `'text'` | string data |
-| `'arraybuffer'` | [`ArrayBuffer`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer) containing the raw response bytes |
-| `'blob'` | [`Blob`](https://developer.mozilla.org/en-US/docs/Web/API/Blob) instance |
+| `'arraybuffer'` | [`ArrayBuffer`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer) containing the raw response bytes |
+| `'blob'` | [`Blob`](https://developer.mozilla.org/docs/Web/API/Blob) instance |
 
 For example, you can ask `HttpClient` to download the raw bytes of a `.jpeg` image into an `ArrayBuffer`:
 
 <docs-code language="ts">
 http.get('/images/dog.jpg', {responseType: 'arraybuffer'}).subscribe(buffer => {
-  console.log('The image is ' + buffer.length + ' bytes large');
+  console.log('The image is ' + buffer.byteLength + ' bytes large');
 });
 </docs-code>
 
@@ -67,10 +67,10 @@ Many different types of values can be provided as the request's `body`, and `Htt
 | - | - |
 | string | Plain text |
 | number, boolean, array, or plain object | JSON |
-| [`ArrayBuffer`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer) | raw data from the buffer |
-| [`Blob`](https://developer.mozilla.org/en-US/docs/Web/API/Blob) | raw data with the `Blob`'s content type |
-| [`FormData`](https://developer.mozilla.org/en-US/docs/Web/API/FormData) | `multipart/form-data` encoded data |
-| [`HttpParams`](api/common/http/HttpParams) or [`URLSearchParams`](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams) | `application/x-www-form-urlencoded` formatted string |
+| [`ArrayBuffer`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer) | raw data from the buffer |
+| [`Blob`](https://developer.mozilla.org/docs/Web/API/Blob) | raw data with the `Blob`'s content type |
+| [`FormData`](https://developer.mozilla.org/docs/Web/API/FormData) | `multipart/form-data` encoded data |
+| [`HttpParams`](api/common/http/HttpParams) or [`URLSearchParams`](https://developer.mozilla.org/docs/Web/API/URLSearchParams) | `application/x-www-form-urlencoded` formatted string |
 
 IMPORTANT: Remember to `.subscribe()` to mutation request `Observable`s in order to actually fire the request.
 
@@ -128,7 +128,7 @@ IMPORTANT: Instances of `HttpHeaders` are _immutable_ and cannot be directly cha
 const baseHeaders = new HttpHeaders().set('X-Debug-Level', 'minimal');
 
 http.get<Config>('/api/config', {
-  params: baseParams.set('X-Debug-Level', 'verbose'),
+  headers: baseHeaders.set('X-Debug-Level', 'verbose'),
 }).subscribe(config => {
   // ...
 });
@@ -203,7 +203,7 @@ There are two ways an HTTP request can fail:
 * A network or connection error can prevent the request from reaching the backend server.
 * The backend can receive the request but fail to process it, and return an error response.
 
-`HttpClient` captures both kinds of errors in an `HttpErrorResponse` which it returns through the `Observable`'s error channel. Network errors have a `status` code of `0` and an `error` which is an instance of [`ProgressEvent`](https://developer.mozilla.org/en-US/docs/Web/API/ProgressEvent). Backend errors have the failing `status` code returned by the backend, and the error response as the `error`. Inspect the response to identify the error's cause and the appropriate action to handle the error.
+`HttpClient` captures both kinds of errors in an `HttpErrorResponse` which it returns through the `Observable`'s error channel. Network errors have a `status` code of `0` and an `error` which is an instance of [`ProgressEvent`](https://developer.mozilla.org/docs/Web/API/ProgressEvent). Backend errors have the failing `status` code returned by the backend, and the error response as the `error`. Inspect the response to identify the error's cause and the appropriate action to handle the error.
 
 The [RxJS library](https://rxjs.dev/) offers several operators which can be useful for error handling.
 
@@ -242,15 +242,18 @@ export class UserService {
 }
 </docs-code>
 
-Within a component, you can combine `NgIf` with the `async` pipe to render the UI for the data only after it's finished loading:
+Within a component, you can combine `@if` with the `async` pipe to render the UI for the data only after it's finished loading:
 
 <docs-code language="ts">
+import { AsyncPipe } from '@angular/common';
 @Component({
+  standalone: true,
+  imports: [AsyncPipe],
   template: `
-    <ng-container *ngIf="user$ | async as user">
+    @if (user$ | async; as user) {
       <p>Name: {{ user.name }}</p>
       <p>Biography: {{ user.biography }}</p>
-    </ng-container>
+    }
   `,
 })
 export class UserProfileComponent {
@@ -260,7 +263,7 @@ export class UserProfileComponent {
   constructor(private userService: UserService) {}
 
   ngOnInit(): void {
-    this.user$ = userService.getUser(this.userId);
+    this.user$ = this.userService.getUser(this.userId);
   }
 }
 </docs-code>

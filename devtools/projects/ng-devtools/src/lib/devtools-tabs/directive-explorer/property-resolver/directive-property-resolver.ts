@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {FlatTreeControl} from '@angular/cdk/tree';
@@ -157,8 +157,8 @@ export class DirectivePropertyResolver {
       propPointer = inputLabels.has(propName)
         ? inputProps
         : outputLabels.has(propName)
-        ? outputProps
-        : stateProps;
+          ? outputProps
+          : stateProps;
       propPointer[propName] = this.directiveProperties[propName];
     });
 

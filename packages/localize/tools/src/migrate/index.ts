@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {getFileSystem, Logger} from '@angular/compiler-cli/private/localize';
@@ -39,10 +39,11 @@ export function migrateFiles({
 
   if (Object.keys(mapping).length === 0) {
     logger.warn(
-        `Mapping file at ${absoluteMappingPath} is empty. Either there are no messages ` +
-        `that need to be migrated, or the extraction step failed to find them.`);
+      `Mapping file at ${absoluteMappingPath} is empty. Either there are no messages ` +
+        `that need to be migrated, or the extraction step failed to find them.`,
+    );
   } else {
-    translationFilePaths.forEach(path => {
+    translationFilePaths.forEach((path) => {
       const absolutePath = fs.resolve(rootPath, path);
       const sourceCode = fs.readFile(absolutePath);
       fs.writeFile(absolutePath, migrateFile(sourceCode, mapping));

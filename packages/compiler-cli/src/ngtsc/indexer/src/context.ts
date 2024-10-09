@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {BoundTarget, DirectiveMeta, ParseSourceFile} from '@angular/compiler';
@@ -16,7 +16,7 @@ export interface ComponentMeta extends DirectiveMeta {
   /**
    * Unparsed selector of the directive, or null if the directive does not have a selector.
    */
-  selector: string|null;
+  selector: string | null;
 }
 
 /**
@@ -27,7 +27,7 @@ export interface ComponentInfo {
   declaration: ClassDeclaration;
 
   /** Component template selector if it exists, otherwise null. */
-  selector: string|null;
+  selector: string | null;
 
   /**
    * BoundTarget containing the parsed template. Can also be used to query for directives used in

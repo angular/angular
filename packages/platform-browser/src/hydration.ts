@@ -3,11 +3,24 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {HttpTransferCacheOptions, ɵwithHttpTransferCache} from '@angular/common/http';
-import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, inject, makeEnvironmentProviders, NgZone, Provider, ɵConsole as Console, ɵformatRuntimeError as formatRuntimeError, ɵwithDomHydration as withDomHydration, ɵwithI18nSupport} from '@angular/core';
+import {
+  ENVIRONMENT_INITIALIZER,
+  EnvironmentProviders,
+  inject,
+  makeEnvironmentProviders,
+  NgZone,
+  Provider,
+  ɵConsole as Console,
+  ɵformatRuntimeError as formatRuntimeError,
+  ɵwithDomHydration as withDomHydration,
+  ɵwithEventReplay,
+  ɵwithI18nSupport,
+  ɵZONELESS_ENABLED as ZONELESS_ENABLED,
+} from '@angular/core';
 
 import {RuntimeErrorCode} from './errors';
 
@@ -21,6 +34,7 @@ export enum HydrationFeatureKind {
   NoHttpTransferCache,
   HttpTransferCacheOptions,
   I18nSupport,
+  EventReplay,
 }
 
 /**
@@ -37,8 +51,10 @@ export interface HydrationFeature<FeatureKind extends HydrationFeatureKind> {
  * Helper function to create an object that represents a Hydration feature.
  */
 function hydrationFeature<FeatureKind extends HydrationFeatureKind>(
-    ɵkind: FeatureKind, ɵproviders: Provider[] = [],
-    ɵoptions: unknown = {}): HydrationFeature<FeatureKind> {
+  ɵkind: FeatureKind,
+  ɵproviders: Provider[] = [],
+  ɵoptions: unknown = {},
+): HydrationFeature<FeatureKind> {
   return {ɵkind, ɵproviders};
 }
 
@@ -48,8 +64,7 @@ function hydrationFeature<FeatureKind extends HydrationFeatureKind>(
  *
  * @publicApi
  */
-export function withNoHttpTransferCache():
-    HydrationFeature<HydrationFeatureKind.NoHttpTransferCache> {
+export function withNoHttpTransferCache(): HydrationFeature<HydrationFeatureKind.NoHttpTransferCache> {
   // This feature has no providers and acts as a flag that turns off
   // HTTP transfer cache (which otherwise is turned on by default).
   return hydrationFeature(HydrationFeatureKind.NoHttpTransferCache);
@@ -64,11 +79,13 @@ export function withNoHttpTransferCache():
  * @publicApi
  */
 export function withHttpTransferCacheOptions(
-    options: HttpTransferCacheOptions,
-    ): HydrationFeature<HydrationFeatureKind.HttpTransferCacheOptions> {
+  options: HttpTransferCacheOptions,
+): HydrationFeature<HydrationFeatureKind.HttpTransferCacheOptions> {
   // This feature has no providers and acts as a flag to pass options to the HTTP transfer cache.
   return hydrationFeature(
-      HydrationFeatureKind.HttpTransferCacheOptions, ɵwithHttpTransferCache(options));
+    HydrationFeatureKind.HttpTransferCacheOptions,
+    ɵwithHttpTransferCache(options),
+  );
 }
 
 /**
@@ -82,30 +99,55 @@ export function withI18nSupport(): HydrationFeature<HydrationFeatureKind.I18nSup
 }
 
 /**
+ * Enables support for replaying user events (e.g. `click`s) that happened on a page
+ * before hydration logic has completed. Once an application is hydrated, all captured
+ * events are replayed and relevant event listeners are executed.
+ *
+ * @usageNotes
+ *
+ * Basic example of how you can enable event replay in your application when
+ * `bootstrapApplication` function is used:
+ * ```
+ * bootstrapApplication(AppComponent, {
+ *   providers: [provideClientHydration(withEventReplay())]
+ * });
+ * ```
+ * @publicApi
+ * @see {@link provideClientHydration}
+ */
+export function withEventReplay(): HydrationFeature<HydrationFeatureKind.EventReplay> {
+  return hydrationFeature(HydrationFeatureKind.EventReplay, ɵwithEventReplay());
+}
+
+/**
  * Returns an `ENVIRONMENT_INITIALIZER` token setup with a function
  * that verifies whether compatible ZoneJS was used in an application
  * and logs a warning in a console if it's not the case.
  */
 function provideZoneJsCompatibilityDetector(): Provider[] {
-  return [{
-    provide: ENVIRONMENT_INITIALIZER,
-    useValue: () => {
-      const ngZone = inject(NgZone);
-      // Checking `ngZone instanceof NgZone` would be insufficient here,
-      // because custom implementations might use NgZone as a base class.
-      if (ngZone.constructor !== NgZone) {
-        const console = inject(Console);
-        const message = formatRuntimeError(
+  return [
+    {
+      provide: ENVIRONMENT_INITIALIZER,
+      useValue: () => {
+        const ngZone = inject(NgZone);
+        const isZoneless = inject(ZONELESS_ENABLED);
+        // Checking `ngZone instanceof NgZone` would be insufficient here,
+        // because custom implementations might use NgZone as a base class.
+        if (!isZoneless && ngZone.constructor !== NgZone) {
+          const console = inject(Console);
+          const message = formatRuntimeError(
             RuntimeErrorCode.UNSUPPORTED_ZONEJS_INSTANCE,
             'Angular detected that hydration was enabled for an application ' +
-                'that uses a custom or a noop Zone.js implementation. ' +
-                'This is not yet a fully supported configuration.');
-        // tslint:disable-next-line:no-console
-        console.warn(message);
-      }
+              'that uses a custom or a noop Zone.js implementation. ' +
+              'This is not yet a fully supported configuration.',
+          );
+          // tslint:disable-next-line:no-console
+          console.warn(message);
+        }
+      },
+      multi: true,
     },
-    multi: true,
-  }];
+  ];
 }
 
 /**
@@ -119,9 +161,12 @@ function provideZoneJsCompatibilityDetector(): Provider[] {
  * transferring this cache to the client to avoid extra HTTP requests. Learn more about data caching
  * [here](guide/ssr#caching-data-when-using-httpclient).
  *
- * These functions allow you to disable some of the default features or configure features
+ * These functions allow you to disable some of the default features or enable new ones:
+ *
  * * {@link withNoHttpTransferCache} to disable HTTP transfer cache
  * * {@link withHttpTransferCacheOptions} to configure some HTTP transfer cache options
+ * * {@link withI18nSupport} to enable hydration support for i18n blocks
+ * * {@link withEventReplay} to enable support for replaying user events
  *
  * @usageNotes
  *
@@ -146,18 +191,22 @@ function provideZoneJsCompatibilityDetector(): Provider[] {
  *
  * @see {@link withNoHttpTransferCache}
  * @see {@link withHttpTransferCacheOptions}
+ * @see {@link withI18nSupport}
+ * @see {@link withEventReplay}
  *
  * @param features Optional features to configure additional router behaviors.
  * @returns A set of providers to enable hydration.
  *
  * @publicApi
  */
-export function provideClientHydration(...features: HydrationFeature<HydrationFeatureKind>[]):
-    EnvironmentProviders {
+export function provideClientHydration(
+  ...features: HydrationFeature<HydrationFeatureKind>[]
+): EnvironmentProviders {
   const providers: Provider[] = [];
   const featuresKind = new Set<HydrationFeatureKind>();
-  const hasHttpTransferCacheOptions =
-      featuresKind.has(HydrationFeatureKind.HttpTransferCacheOptions);
+  const hasHttpTransferCacheOptions = featuresKind.has(
+    HydrationFeatureKind.HttpTransferCacheOptions,
+  );
 
   for (const {ɵproviders, ɵkind} of features) {
     featuresKind.add(ɵkind);
@@ -167,19 +216,24 @@ export function provideClientHydration(...features: HydrationFeature<HydrationFe
     }
   }
 
-  if (typeof ngDevMode !== 'undefined' && ngDevMode &&
-      featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) && hasHttpTransferCacheOptions) {
+  if (
+    typeof ngDevMode !== 'undefined' &&
+    ngDevMode &&
+    featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) &&
+    hasHttpTransferCacheOptions
+  ) {
     // TODO: Make this a runtime error
     throw new Error(
-        'Configuration error: found both withHttpTransferCacheOptions() and withNoHttpTransferCache() in the same call to provideClientHydration(), which is a contradiction.');
+      'Configuration error: found both withHttpTransferCacheOptions() and withNoHttpTransferCache() in the same call to provideClientHydration(), which is a contradiction.',
+    );
   }
 
   return makeEnvironmentProviders([
-    (typeof ngDevMode !== 'undefined' && ngDevMode) ? provideZoneJsCompatibilityDetector() : [],
+    typeof ngDevMode !== 'undefined' && ngDevMode ? provideZoneJsCompatibilityDetector() : [],
     withDomHydration(),
-    ((featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) || hasHttpTransferCacheOptions) ?
-         [] :
-         ɵwithHttpTransferCache({})),
+    featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) || hasHttpTransferCacheOptions
+      ? []
+      : ɵwithHttpTransferCache({}),
     providers,
   ]);
 }

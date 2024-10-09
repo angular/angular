@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {createPlatformFactory, NgModule, PlatformRef, StaticProvider} from '@angular/core';
@@ -20,8 +20,10 @@ export * from './private_export_testing';
  * @publicApi
  */
 export const platformBrowserDynamicTesting = createPlatformFactory(
-    platformCoreDynamicTesting, 'browserDynamicTesting',
-    INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS);
+  platformCoreDynamicTesting,
+  'browserDynamicTesting',
+  INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS,
+);
 
 /**
  * NgModule for testing.
@@ -30,9 +32,6 @@ export const platformBrowserDynamicTesting = createPlatformFactory(
  */
 @NgModule({
   exports: [BrowserTestingModule],
-  providers: [
-    {provide: TestComponentRenderer, useClass: DOMTestComponentRenderer},
-  ]
+  providers: [{provide: TestComponentRenderer, useClass: DOMTestComponentRenderer}],
 })
-export class BrowserDynamicTestingModule {
-}
+export class BrowserDynamicTestingModule {}

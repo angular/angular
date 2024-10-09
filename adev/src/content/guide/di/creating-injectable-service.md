@@ -19,7 +19,7 @@ Angular helps you follow these principles by making it easy to factor your appli
 
 ## Service examples
 
-Here's an example of a service class that logs to the browser console.
+Here's an example of a service class that logs to the browser console:
 
 <docs-code header="src/app/logger.service.ts (class)" language="typescript">
 export class Logger {
@@ -31,7 +31,7 @@ export class Logger {
 
 Services can depend on other services.
 For example, here's a `HeroService` that depends on the `Logger` service, and also uses `BackendService` to get heroes.
-That service in turn might depend on the `HttpClient` service to fetch heroes asynchronously from a server.
+That service in turn might depend on the `HttpClient` service to fetch heroes asynchronously from a server:
 
 <docs-code header="src/app/hero.service.ts (class)" language="typescript"
            highlight="[5,6,10,12]">
@@ -54,7 +54,7 @@ export class HeroService {
 
 ## Creating an injectable service
 
-Angular CLI provides a command to create a new service. In the following example, you add a new service to your application, which was created earlier with the `ng new` command.
+The Angular CLI provides a command to create a new service. In the following example, you add a new service to an existing application.
 
 To generate a new `HeroService` class in the `src/app/heroes` folder, follow these steps:
 
@@ -64,7 +64,7 @@ To generate a new `HeroService` class in the `src/app/heroes` folder, follow the
 ng generate service heroes/hero
 </docs-code>
 
-This command creates the following default `HeroService`.
+This command creates the following default `HeroService`:
 
 <docs-code header="src/app/heroes/hero.service.ts (CLI-generated)" language="typescript">
 import { Injectable } from '@angular/core';
@@ -100,11 +100,11 @@ For clarity and maintainability, it is recommended that you define components an
 
 ## Injecting services
 
-To inject a service as a dependency into a component, you can use component's `constructor()` and supply a constructor argument with the dependency type.
+To inject a service as a dependency into a component, you can use the component's `constructor()` and supply a constructor argument with the dependency type.
 
 The following example specifies the `HeroService` in the `HeroListComponent` constructor.
-The type of the `heroService` is `HeroService`.
-Angular recognizes the `HeroService` type as a dependency, since that class was previously annotated with the `@Injectable` decorator.
+The type of `heroService` is `HeroService`.
+Angular recognizes the `HeroService` type as a dependency, since that class was previously annotated with the `@Injectable` decorator:
 
 <docs-code header="src/app/heroes/hero-list.component (constructor signature)" language="typescript">
   constructor(heroService: HeroService)
@@ -113,10 +113,7 @@ Angular recognizes the `HeroService` type as a dependency, since that class was 
 ## Injecting services in other services
 
 When a service depends on another service, follow the same pattern as injecting into a component.
-In the following example `HeroService` depends on a `Logger` service to report its activities.
-
-1. Import the `Logger` service.
-2. Then inject the `Logger` service in the `HeroService` `constructor()` by specifying `private logger: Logger`.
+In the following example, `HeroService` depends on a `Logger` service to report its activities:
 
 <docs-code header="src/app/heroes/hero.service.ts" language="typescript"
            highlight="[3,9,12]">
@@ -142,6 +139,6 @@ In this example, the `getHeroes()` method uses the `Logger` service by logging a
 ## What's next
 
 <docs-pill-row>
-  <docs-pill href="/guide/di/dependency-injection-providers" title="Configure dependencies"/>
+  <docs-pill href="/guide/di/dependency-injection-providers" title="Configuring dependency providers"/>
   <docs-pill href="/guide/di/dependency-injection-providers#using-an-injectiontoken-object" title="`InjectionTokens`"/>
 </docs-pill-row>

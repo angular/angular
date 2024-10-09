@@ -3,25 +3,25 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {MissingTranslationStrategy, ViewEncapsulation} from './core';
 import {noUndefined} from './util';
 
 export class CompilerConfig {
-  public defaultEncapsulation: ViewEncapsulation|null;
+  public defaultEncapsulation: ViewEncapsulation | null;
   public preserveWhitespaces: boolean;
   public strictInjectionParameters: boolean;
 
   constructor({
     defaultEncapsulation = ViewEncapsulation.Emulated,
     preserveWhitespaces,
-    strictInjectionParameters
+    strictInjectionParameters,
   }: {
-    defaultEncapsulation?: ViewEncapsulation,
-    preserveWhitespaces?: boolean,
-    strictInjectionParameters?: boolean,
+    defaultEncapsulation?: ViewEncapsulation;
+    preserveWhitespaces?: boolean;
+    strictInjectionParameters?: boolean;
   } = {}) {
     this.defaultEncapsulation = defaultEncapsulation;
     this.preserveWhitespaces = preserveWhitespacesDefault(noUndefined(preserveWhitespaces));
@@ -30,6 +30,8 @@ export class CompilerConfig {
 }
 
 export function preserveWhitespacesDefault(
-    preserveWhitespacesOption: boolean|null, defaultSetting = false): boolean {
+  preserveWhitespacesOption: boolean | null,
+  defaultSetting = false,
+): boolean {
   return preserveWhitespacesOption === null ? defaultSetting : preserveWhitespacesOption;
 }

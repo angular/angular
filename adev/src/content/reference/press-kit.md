@@ -46,7 +46,10 @@ In this example, we’ve adapted the shield to create an Angular Signals logo va
 ![Angular Signals logo](assets/images/press-kit/angular_signals.png#medium "Angular Signals logo")
 </docs-step>
 
-<docs-step title="Do’s and don’ts of adapting the brand">
+<docs-step title="Do’s and don’ts of using Angular's brand">
+If you are creating your own logo, we encourage differentiating your logo from ours to not cause confusion. When adapting the logo, you are free to change and adapt the colors and shape to make it your own.
+  
+When representing Angular with the original logo, please follow these guidelines:
 ![Rhubarb the small cat](assets/images/press-kit/do_and_dont.png "Rhubarb the small cat")
 </docs-step>
 
@@ -61,4 +64,4 @@ In 2023 , we announced a modernized logo with v17. We advise against using the f
 ### AngularJS
 
 AngularJS is the v1.x predecessor of modern Angular. We advise against using this logo to prevent confusion.
-Read more about the discontinued LTS (Long Term Support) for AngularJS on our [blog](https://blog.angular.io/discontinued-long-term-support-for-angularjs-cc066b82e65a).
+Read more about the discontinued LTS (Long Term Support) for AngularJS on our [blog](https://blog.angular.dev/discontinued-long-term-support-for-angularjs-cc066b82e65a).

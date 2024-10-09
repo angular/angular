@@ -3,31 +3,22 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
-import {fakeAsync, tick} from '@angular/core/testing';
+import {TestBed, fakeAsync, tick} from '@angular/core/testing';
 import {DefaultUrlSerializer, Event, NavigationEnd, NavigationStart} from '@angular/router';
 import {Subject} from 'rxjs';
 import {filter, switchMap, take} from 'rxjs/operators';
 
 import {Scroll} from '../src/events';
 import {RouterScroller} from '../src/router_scroller';
+import {ApplicationRef, ɵNoopNgZone as NoopNgZone} from '@angular/core';
 
 // TODO: add tests that exercise the `withInMemoryScrolling` feature of the provideRouter function
-const fakeZone = {
-  runOutsideAngular: (fn: any) => fn(),
-  run: (fn: any) => fn(),
-};
 describe('RouterScroller', () => {
   it('defaults to disabled', () => {
     const events = new Subject<Event>();
-    const router = <any>{
-      events,
-      parseUrl: (url: any) => new DefaultUrlSerializer().parse(url),
-      triggerEvent: (e: any) => events.next(e),
-    };
-
     const viewportScroller = jasmine.createSpyObj('viewportScroller', [
       'getScrollPosition',
       'scrollToPosition',
@@ -35,11 +26,14 @@ describe('RouterScroller', () => {
       'setHistoryScrollRestoration',
     ]);
     setScroll(viewportScroller, 0, 0);
-    const scroller = new RouterScroller(
-      new DefaultUrlSerializer(),
-      {events} as any,
-      viewportScroller,
-      fakeZone as any,
+    const scroller = TestBed.runInInjectionContext(
+      () =>
+        new RouterScroller(
+          new DefaultUrlSerializer(),
+          {events} as any,
+          viewportScroller,
+          new NoopNgZone(),
+        ),
     );
 
     expect((scroller as any).options.scrollPositionRestoration).toBe('disabled');
@@ -226,12 +220,15 @@ describe('RouterScroller', () => {
     ]);
     setScroll(viewportScroller, 0, 0);
 
-    const scroller = new RouterScroller(
-      new DefaultUrlSerializer(),
-      transitions,
-      viewportScroller,
-      fakeZone as any,
-      {scrollPositionRestoration, anchorScrolling},
+    const scroller = TestBed.runInInjectionContext(
+      () =>
+        new RouterScroller(
+          new DefaultUrlSerializer(),
+          transitions,
+          viewportScroller,
+          new NoopNgZone(),
+          {scrollPositionRestoration, anchorScrolling},
+        ),
     );
     scroller.init();
 

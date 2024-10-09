@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import ts from 'typescript';
@@ -13,11 +13,17 @@ import {ngErrorCode} from './util';
 
 export class FatalDiagnosticError extends Error {
   constructor(
-      readonly code: ErrorCode, readonly node: ts.Node,
-      readonly diagnosticMessage: string|ts.DiagnosticMessageChain,
-      readonly relatedInformation?: ts.DiagnosticRelatedInformation[]) {
-    super(`FatalDiagnosticError: Code: ${code}, Message: ${
-        ts.flattenDiagnosticMessageText(diagnosticMessage, '\n')}`);
+    readonly code: ErrorCode,
+    readonly node: ts.Node,
+    readonly diagnosticMessage: string | ts.DiagnosticMessageChain,
+    readonly relatedInformation?: ts.DiagnosticRelatedInformation[],
+  ) {
+    super(
+      `FatalDiagnosticError: Code: ${code}, Message: ${ts.flattenDiagnosticMessageText(
+        diagnosticMessage,
+        '\n',
+      )}`,
+    );
 
     // Extending `Error` ends up breaking some internal tests. This appears to be a known issue
     // when extending errors in TS and the workaround is to explicitly set the prototype.
@@ -40,11 +46,15 @@ export class FatalDiagnosticError extends Error {
 }
 
 export function makeDiagnostic(
-    code: ErrorCode, node: ts.Node, messageText: string|ts.DiagnosticMessageChain,
-    relatedInformation?: ts.DiagnosticRelatedInformation[]): ts.DiagnosticWithLocation {
+  code: ErrorCode,
+  node: ts.Node,
+  messageText: string | ts.DiagnosticMessageChain,
+  relatedInformation?: ts.DiagnosticRelatedInformation[],
+  category: ts.DiagnosticCategory = ts.DiagnosticCategory.Error,
+): ts.DiagnosticWithLocation {
   node = ts.getOriginalNode(node);
   return {
-    category: ts.DiagnosticCategory.Error,
+    category,
     code: ngErrorCode(code),
     file: ts.getOriginalNode(node).getSourceFile(),
     start: node.getStart(undefined, false),
@@ -55,7 +65,9 @@ export function makeDiagnostic(
 }
 
 export function makeDiagnosticChain(
-    messageText: string, next?: ts.DiagnosticMessageChain[]): ts.DiagnosticMessageChain {
+  messageText: string,
+  next?: ts.DiagnosticMessageChain[],
+): ts.DiagnosticMessageChain {
   return {
     category: ts.DiagnosticCategory.Message,
     code: 0,
@@ -65,7 +77,9 @@ export function makeDiagnosticChain(
 }
 
 export function makeRelatedInformation(
-    node: ts.Node, messageText: string): ts.DiagnosticRelatedInformation {
+  node: ts.Node,
+  messageText: string,
+): ts.DiagnosticRelatedInformation {
   node = ts.getOriginalNode(node);
   return {
     category: ts.DiagnosticCategory.Message,
@@ -78,8 +92,9 @@ export function makeRelatedInformation(
 }
 
 export function addDiagnosticChain(
-    messageText: string|ts.DiagnosticMessageChain,
-    add: ts.DiagnosticMessageChain[]): ts.DiagnosticMessageChain {
+  messageText: string | ts.DiagnosticMessageChain,
+  add: ts.DiagnosticMessageChain[],
+): ts.DiagnosticMessageChain {
   if (typeof messageText === 'string') {
     return makeDiagnosticChain(messageText, add);
   }
@@ -104,6 +119,8 @@ export function isFatalDiagnosticError(err: any): err is FatalDiagnosticError {
  * compilation in order to add some g3 specific info to it.
  */
 export function isLocalCompilationDiagnostics(diagnostic: ts.Diagnostic): boolean {
-  return diagnostic.code === ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST) ||
-      diagnostic.code === ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION);
+  return (
+    diagnostic.code === ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST) ||
+    diagnostic.code === ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION)
+  );
 }

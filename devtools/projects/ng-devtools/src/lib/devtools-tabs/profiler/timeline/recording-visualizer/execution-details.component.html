@@ -5,7 +5,7 @@
     <th class="value">Time</th>
   </thead>
   <tbody>
-    @for (entry of data; track $index) {
+    @for (entry of data(); track $index) {
       <tr>
         <td class="name">
           {{ entry.directive }}

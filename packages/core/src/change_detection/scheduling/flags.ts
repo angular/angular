@@ -3,8 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
-/** Flag to enable/disable the zoneless scheduler as default provider with zone scheduling. */
-export const alwaysProvideZonelessScheduler = true;
+export const SCHEDULE_IN_ROOT_ZONE_DEFAULT = false;

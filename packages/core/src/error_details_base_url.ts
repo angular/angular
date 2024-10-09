@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /**
@@ -13,7 +13,7 @@
  *  - packages/compiler-cli/src/ngtsc/diagnostics/src/error_details_base_url.ts
  *  - packages/core/src/error_details_base_url.ts
  */
-export const ERROR_DETAILS_PAGE_BASE_URL = 'https://angular.io/errors';
+export const ERROR_DETAILS_PAGE_BASE_URL = 'https://angular.dev/errors';
 
 /**
  * URL for the XSS security documentation.

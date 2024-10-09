@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /**
@@ -15,7 +15,7 @@ export interface AstHost<TExpression> {
    * Get the name of the symbol represented by the given expression node, or `null` if it is not a
    * symbol.
    */
-  getSymbolName(node: TExpression): string|null;
+  getSymbolName(node: TExpression): string | null;
 
   /**
    * Return `true` if the given expression is a string literal, or false otherwise.

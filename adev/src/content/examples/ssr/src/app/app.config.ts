@@ -14,8 +14,7 @@ import {InMemoryDataService} from './in-memory-data.service';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
-    // TODO: Enable using Fetch API when disabling `HttpClientInMemoryWebApiModule`.
-    provideHttpClient(/* withFetch()*/),
+    provideHttpClient(withFetch()),
     provideClientHydration(),
     provideProtractorTestingSupport(), // essential for e2e testing
 

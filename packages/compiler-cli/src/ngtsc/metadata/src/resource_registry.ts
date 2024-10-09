@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import ts from 'typescript';
@@ -19,7 +19,7 @@ import {ClassDeclaration} from '../../reflection';
  * If the resource is inline, the `path` will be `null`.
  */
 export interface Resource {
-  path: AbsoluteFsPath|null;
+  path: AbsoluteFsPath | null;
   expression: ts.Expression;
 }
 
@@ -82,7 +82,7 @@ export class ResourceRegistry {
     this.componentToTemplateMap.set(component, templateResource);
   }
 
-  getTemplate(component: ClassDeclaration): Resource|null {
+  getTemplate(component: ClassDeclaration): Resource | null {
     if (!this.componentToTemplateMap.has(component)) {
       return null;
     }

@@ -17,6 +17,7 @@ export enum PagePrefix {
   PLAYGROUND = 'playground',
   REFERENCE = 'reference',
   TUTORIALS = 'tutorials',
+  UPDATE = 'update-guide',
 }
 
 // The enum with the default pages for each main tab
@@ -25,4 +26,5 @@ export enum DefaultPage {
   REFERENCE = 'api',
   TUTORIALS = 'tutorials',
   PLAYGROUND = 'playground',
+  UPDATE = 'update-guide',
 }

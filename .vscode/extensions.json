@@ -6,6 +6,5 @@
   "recommendations": [
     "BazelBuild.vscode-bazel",
     "ms-vscode.vscode-typescript-tslint-plugin",
-    "xaver.clang-format",
   ],
 }

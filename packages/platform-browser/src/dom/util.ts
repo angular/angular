@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ɵglobal as global} from '@angular/core';
@@ -21,7 +21,7 @@ export function exportNgVar(name: string, value: any): void {
     // - closure declares globals itself for minified names, which sometimes clobber our `ng` global
     // - we can't declare a closure extern as the namespace `ng` is already used within Google
     //   for typings for angularJS (via `goog.provide('ng....')`).
-    const ng = global['ng'] = (global['ng'] as {[key: string]: any} | undefined) || {};
+    const ng = (global['ng'] = (global['ng'] as {[key: string]: any} | undefined) || {});
     ng[name] = value;
   }
 }

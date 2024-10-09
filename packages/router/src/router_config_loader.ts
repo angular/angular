@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -21,7 +21,8 @@ import {finalize, map, mergeMap, refCount, tap} from 'rxjs/operators';
 
 import {DefaultExport, LoadedRouterConfig, Route, Routes} from './models';
 import {wrapIntoObservable} from './utils/collection';
-import {assertStandalone, standardizeConfig, validateConfig} from './utils/config';
+import {assertStandalone, validateConfig} from './utils/config';
+import {standardizeConfig} from './components/empty_outlet';
 
 /**
  * The DI token for a router configuration.

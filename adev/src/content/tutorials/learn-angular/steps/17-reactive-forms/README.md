@@ -12,7 +12,7 @@ In this activity, you'll learn how to setup reactive forms.
 
 In `app.component.ts`, import `ReactiveFormsModule` from `@angular/forms` and add it to the `imports` array of the component.
 
-```ts
+```angular-ts
 import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
@@ -60,7 +60,7 @@ Each `FormGroup` should be attached to a form using the `[formGroup]` directive.
 
 In addition, each `FormControl` can be attached with the `formControlName` directive and assigned to the corresponding property. Update the template with the following form code:
 
-```html
+```angular-html
 <form [formGroup]="profileForm">
   <label>
     Name
@@ -80,7 +80,7 @@ In addition, each `FormControl` can be attached with the `formControlName` direc
 
 When you want to access data from the `FormGroup`, it can be done by accessing the value of the `FormGroup`. Update the `template` to display the form values:
 
-```html
+```angular-html
 ...
 <h2>Profile Form</h2>
 <p>Name: {{ profileForm.value.name }}</p>
@@ -108,7 +108,7 @@ handleSubmit() {
 You have access to the form values, now it is time to handle the submission event and use the `handleSubmit` method.
 Angular has an event handler for this specific purpose called `ngSubmit`. Update the form element to call the `handleSubmit` method when the form is submitted.
 
-<docs-code language="html" highlight="[3]">
+<docs-code language="angular-html" highlight="[3]">
 <form
   [formGroup]="profileForm"
   (ngSubmit)="handleSubmit()">

@@ -1,5 +1,5 @@
 // #docregion
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, signal} from '@angular/core';
 import {AsyncPipe} from '@angular/common';
 import {sharedImports} from '../shared/shared';
 
@@ -16,16 +16,16 @@ import {TwainService} from './twain.service';
       <i>{{ quote | async }}</i>
     </p>
     <button type="button" (click)="getQuote()">Next quote</button>
-    @if (errorMessage) {
-      <p class="error">{{ errorMessage }}</p>
+    @if (errorMessage()) {
+      <p class="error">{{ errorMessage() }}</p>
     }`,
   // #enddocregion template
   styles: ['.twain { font-style: italic; } .error { color: red; }'],
   imports: [AsyncPipe, sharedImports],
 })
 export class TwainComponent implements OnInit {
-  errorMessage!: string;
-  quote!: Observable<string>;
+  errorMessage = signal('');
+  quote?: Observable<string>;
 
   constructor(private twainService: TwainService) {}
 
@@ -35,12 +35,11 @@ export class TwainComponent implements OnInit {
 
   // #docregion get-quote
   getQuote() {
-    this.errorMessage = '';
+    this.errorMessage.set('');
     this.quote = this.twainService.getQuote().pipe(
       startWith('...'),
       catchError((err: any) => {
-        // Wait a turn because errorMessage already set once this turn
-        setTimeout(() => (this.errorMessage = err.message || err.toString()));
+        this.errorMessage.set(err.message || err.toString());
         return of('...'); // reset message to placeholder
       }),
     );

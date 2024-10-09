@@ -5,7 +5,7 @@
 Zone['countingZoneSpec'] = {
   name: 'counterZone',
   // setTimeout
-  onScheduleTask: function(delegate, current, target, task) {
+  onScheduleTask: function (delegate, current, target, task) {
     this.data.count += 1;
     delegate.scheduleTask(target, task);
   },
@@ -13,23 +13,23 @@ Zone['countingZoneSpec'] = {
   // fires when...
   // - clearTimeout
   // - setTimeout finishes
-  onInvokeTask: function(delegate, current, target, task, applyThis, applyArgs) {
+  onInvokeTask: function (delegate, current, target, task, applyThis, applyArgs) {
     delegate.invokeTask(target, task, applyThis, applyArgs);
     this.data.count -= 1;
   },
 
-  onHasTask: function(delegate, current, target, hasTask) {
+  onHasTask: function (delegate, current, target, hasTask) {
     if (this.data.count === 0 && !this.data.flushed) {
       this.data.flushed = true;
       target.run(this.onFlush);
     }
   },
 
-  counter: function() {
+  counter: function () {
     return this.data.count;
   },
 
   data: {count: 0, flushed: false},
 
-  onFlush: function() {}
+  onFlush: function () {},
 };

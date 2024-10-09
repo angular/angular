@@ -1,7 +1,7 @@
 # Copyright Google LLC All Rights Reserved.
 #
 # Use of this source code is governed by an MIT-style license that can be
-# found in the LICENSE file at https://angular.io/license
+# found in the LICENSE file at https://angular.dev/license
 
 NgPartialCompilationInfo = provider(
     fields = {"enabled": "Whether partial compilation is enabled."},
@@ -15,7 +15,7 @@ ng_partial_compilation_flag = rule(
     build_setting = config.bool(flag = True),
 )
 
-def _partial_compilation_transition_impl(settings, attr):
+def _partial_compilation_transition_impl(_settings, _attr):
     return {"//packages/bazel/src:partial_compilation": True}
 
 partial_compilation_transition = transition(

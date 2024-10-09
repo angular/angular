@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -18,6 +18,9 @@ import {TraceEventFactory} from '../trace_event_factory';
 describe('chrome driver extension', () => {
   const CHROME45_USER_AGENT =
     '"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2499.0 Safari/537.36"';
+
+  const HEADLESSCHROME124_USER_AGENT =
+    '"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/124.0.6314.0 Safari/537.36"';
 
   let log: any[];
   let extension: ChromeDriverExtension;
@@ -437,8 +440,16 @@ describe('chrome driver extension', () => {
 
     it('should match chrome browsers', () => {
       expect(createExtension().supports({'browserName': 'chrome'})).toBe(true);
-
       expect(createExtension().supports({'browserName': 'Chrome'})).toBe(true);
+      expect(createExtension().supports({'browserName': 'chrome-headless-shell'})).toBe(true);
+    });
+
+    it('should parse chrome version from user agent', () => {
+      expect(
+        createExtension(null, HEADLESSCHROME124_USER_AGENT).supports({
+          'browserName': 'chrome-headless-shell',
+        }),
+      ).toBe(true);
     });
   });
 });

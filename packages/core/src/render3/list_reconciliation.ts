@@ -3,11 +3,14 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {TrackByFunction} from '../change_detection';
+import {formatRuntimeError, RuntimeErrorCode} from '../errors';
 import {assertNotSame} from '../util/assert';
+
+import {stringifyForError} from './util/stringify_utils';
 
 /**
  * A type representing the live collection to be reconciled with any new (incoming) collection. This
@@ -48,8 +51,12 @@ export abstract class LiveCollection<T, V> {
 }
 
 function valuesMatching<V>(
-    liveIdx: number, liveValue: V, newIdx: number, newValue: V,
-    trackBy: TrackByFunction<V>): number {
+  liveIdx: number,
+  liveValue: V,
+  newIdx: number,
+  newValue: V,
+  trackBy: TrackByFunction<V>,
+): number {
   if (liveIdx === newIdx && Object.is(liveValue, newValue)) {
     // matching and no value identity to update
     return 1;
@@ -59,6 +66,16 @@ function valuesMatching<V>(
   }
 
   return 0;
+}
+
+function recordDuplicateKeys(keyToIdx: Map<unknown, Set<number>>, key: unknown, idx: number): void {
+  const idxSoFar = keyToIdx.get(key);
+
+  if (idxSoFar !== undefined) {
+    idxSoFar.add(idx);
+  } else {
+    keyToIdx.set(key, new Set([idx]));
+  }
 }
 
 /**
@@ -85,13 +102,17 @@ function valuesMatching<V>(
  *     incoming collection;
  */
 export function reconcile<T, V>(
-    liveCollection: LiveCollection<T, V>, newCollection: Iterable<V>|undefined|null,
-    trackByFn: TrackByFunction<V>): void {
-  let detachedItems: UniqueValueMultiKeyMap<unknown, T>|undefined = undefined;
-  let liveKeysInTheFuture: Set<unknown>|undefined = undefined;
+  liveCollection: LiveCollection<T, V>,
+  newCollection: Iterable<V> | undefined | null,
+  trackByFn: TrackByFunction<V>,
+): void {
+  let detachedItems: UniqueValueMultiKeyMap<unknown, T> | undefined = undefined;
+  let liveKeysInTheFuture: Set<unknown> | undefined = undefined;
 
   let liveStartIdx = 0;
   let liveEndIdx = liveCollection.length - 1;
+
+  const duplicateKeys = ngDevMode ? new Map<unknown, Set<number>>() : undefined;
 
   if (Array.isArray(newCollection)) {
     let newEndIdx = newCollection.length - 1;
@@ -100,8 +121,18 @@ export function reconcile<T, V>(
       // compare from the beginning
       const liveStartValue = liveCollection.at(liveStartIdx);
       const newStartValue = newCollection[liveStartIdx];
-      const isStartMatching =
-          valuesMatching(liveStartIdx, liveStartValue, liveStartIdx, newStartValue, trackByFn);
+
+      if (ngDevMode) {
+        recordDuplicateKeys(duplicateKeys!, trackByFn(liveStartIdx, newStartValue), liveStartIdx);
+      }
+
+      const isStartMatching = valuesMatching(
+        liveStartIdx,
+        liveStartValue,
+        liveStartIdx,
+        newStartValue,
+        trackByFn,
+      );
       if (isStartMatching !== 0) {
         if (isStartMatching < 0) {
           liveCollection.updateValue(liveStartIdx, newStartValue);
@@ -114,8 +145,18 @@ export function reconcile<T, V>(
       // TODO(perf): do _all_ the matching from the end
       const liveEndValue = liveCollection.at(liveEndIdx);
       const newEndValue = newCollection[newEndIdx];
-      const isEndMatching =
-          valuesMatching(liveEndIdx, liveEndValue, newEndIdx, newEndValue, trackByFn);
+
+      if (ngDevMode) {
+        recordDuplicateKeys(duplicateKeys!, trackByFn(newEndIdx, newEndValue), newEndIdx);
+      }
+
+      const isEndMatching = valuesMatching(
+        liveEndIdx,
+        liveEndValue,
+        newEndIdx,
+        newEndValue,
+        trackByFn,
+      );
       if (isEndMatching !== 0) {
         if (isEndMatching < 0) {
           liveCollection.updateValue(liveEndIdx, newEndValue);
@@ -150,8 +191,12 @@ export function reconcile<T, V>(
       // Fallback to the slow path: we need to learn more about the content of the live and new
       // collections.
       detachedItems ??= new UniqueValueMultiKeyMap();
-      liveKeysInTheFuture ??=
-          initLiveItemsInTheFuture(liveCollection, liveStartIdx, liveEndIdx, trackByFn);
+      liveKeysInTheFuture ??= initLiveItemsInTheFuture(
+        liveCollection,
+        liveStartIdx,
+        liveEndIdx,
+        trackByFn,
+      );
 
       // Check if I'm inserting a previously detached item: if so, attach it here
       if (attachPreviouslyDetached(liveCollection, detachedItems, liveStartIdx, newStartKey)) {
@@ -177,10 +222,14 @@ export function reconcile<T, V>(
     // - more items in the new collection => insert
     while (liveStartIdx <= newEndIdx) {
       createOrAttach(
-          liveCollection, detachedItems, trackByFn, liveStartIdx, newCollection[liveStartIdx]);
+        liveCollection,
+        detachedItems,
+        trackByFn,
+        liveStartIdx,
+        newCollection[liveStartIdx],
+      );
       liveStartIdx++;
     }
-
   } else if (newCollection != null) {
     // iterable - immediately fallback to the slow path
     const newCollectionIterator = newCollection[Symbol.iterator]();
@@ -188,8 +237,18 @@ export function reconcile<T, V>(
     while (!newIterationResult.done && liveStartIdx <= liveEndIdx) {
       const liveValue = liveCollection.at(liveStartIdx);
       const newValue = newIterationResult.value;
-      const isStartMatching =
-          valuesMatching(liveStartIdx, liveValue, liveStartIdx, newValue, trackByFn);
+
+      if (ngDevMode) {
+        recordDuplicateKeys(duplicateKeys!, trackByFn(liveStartIdx, newValue), liveStartIdx);
+      }
+
+      const isStartMatching = valuesMatching(
+        liveStartIdx,
+        liveValue,
+        liveStartIdx,
+        newValue,
+        trackByFn,
+      );
       if (isStartMatching !== 0) {
         // found a match - move on, but update value
         if (isStartMatching < 0) {
@@ -199,8 +258,12 @@ export function reconcile<T, V>(
         newIterationResult = newCollectionIterator.next();
       } else {
         detachedItems ??= new UniqueValueMultiKeyMap();
-        liveKeysInTheFuture ??=
-            initLiveItemsInTheFuture(liveCollection, liveStartIdx, liveEndIdx, trackByFn);
+        liveKeysInTheFuture ??= initLiveItemsInTheFuture(
+          liveCollection,
+          liveStartIdx,
+          liveEndIdx,
+          trackByFn,
+        );
 
         // Check if I'm inserting a previously detached item: if so, attach it here
         const newKey = trackByFn(liveStartIdx, newValue);
@@ -227,8 +290,12 @@ export function reconcile<T, V>(
     // previously detached one
     while (!newIterationResult.done) {
       createOrAttach(
-          liveCollection, detachedItems, trackByFn, liveCollection.length,
-          newIterationResult.value);
+        liveCollection,
+        detachedItems,
+        trackByFn,
+        liveCollection.length,
+        newIterationResult.value,
+      );
       newIterationResult = newCollectionIterator.next();
     }
   }
@@ -239,17 +306,47 @@ export function reconcile<T, V>(
     liveCollection.destroy(liveCollection.detach(liveEndIdx--));
   }
 
-
   // - destroy items that were detached but never attached again.
-  detachedItems?.forEach(item => {
+  detachedItems?.forEach((item) => {
     liveCollection.destroy(item);
   });
+
+  // report duplicate keys (dev mode only)
+  if (ngDevMode) {
+    let duplicatedKeysMsg = [];
+    for (const [key, idxSet] of duplicateKeys!) {
+      if (idxSet.size > 1) {
+        const idx = [...idxSet].sort((a, b) => a - b);
+        for (let i = 1; i < idx.length; i++) {
+          duplicatedKeysMsg.push(
+            `key "${stringifyForError(key)}" at index "${idx[i - 1]}" and "${idx[i]}"`,
+          );
+        }
+      }
+    }
+
+    if (duplicatedKeysMsg.length > 0) {
+      const message = formatRuntimeError(
+        RuntimeErrorCode.LOOP_TRACK_DUPLICATE_KEYS,
+        'The provided track expression resulted in duplicated keys for a given collection. ' +
+          'Adjust the tracking expression such that it uniquely identifies all the items in the collection. ' +
+          'Duplicated keys were: \n' +
+          duplicatedKeysMsg.join(', \n') +
+          '.',
+      );
+
+      // tslint:disable-next-line:no-console
+      console.warn(message);
+    }
+  }
 }
 
 function attachPreviouslyDetached<T, V>(
-    prevCollection: LiveCollection<T, V>,
-    detachedItems: UniqueValueMultiKeyMap<unknown, T>|undefined, index: number,
-    key: unknown): boolean {
+  prevCollection: LiveCollection<T, V>,
+  detachedItems: UniqueValueMultiKeyMap<unknown, T> | undefined,
+  index: number,
+  key: unknown,
+): boolean {
   if (detachedItems !== undefined && detachedItems.has(key)) {
     prevCollection.attach(index, detachedItems.get(key)!);
     detachedItems.delete(key);
@@ -259,9 +356,12 @@ function attachPreviouslyDetached<T, V>(
 }
 
 function createOrAttach<T, V>(
-    liveCollection: LiveCollection<T, V>,
-    detachedItems: UniqueValueMultiKeyMap<unknown, T>|undefined,
-    trackByFn: TrackByFunction<unknown>, index: number, value: V) {
+  liveCollection: LiveCollection<T, V>,
+  detachedItems: UniqueValueMultiKeyMap<unknown, T> | undefined,
+  trackByFn: TrackByFunction<unknown>,
+  index: number,
+  value: V,
+) {
   if (!attachPreviouslyDetached(liveCollection, detachedItems, index, trackByFn(index, value))) {
     const newItem = liveCollection.create(index, value);
     liveCollection.attach(index, newItem);
@@ -271,8 +371,11 @@ function createOrAttach<T, V>(
 }
 
 function initLiveItemsInTheFuture<T>(
-    liveCollection: LiveCollection<unknown, unknown>, start: number, end: number,
-    trackByFn: TrackByFunction<unknown>): Set<unknown> {
+  liveCollection: LiveCollection<unknown, unknown>,
+  start: number,
+  end: number,
+  trackByFn: TrackByFunction<unknown>,
+): Set<unknown> {
   const keys = new Set();
   for (let i = start; i <= end; i++) {
     keys.add(trackByFn(i, liveCollection.at(i)));
@@ -298,7 +401,7 @@ export class UniqueValueMultiKeyMap<K, V> {
   // A map that acts as a linked list of values - each value maps to the next value in this "linked
   // list" (this only works if values are unique). Allocated lazily to avoid memory consumption when
   // there are no duplicated values.
-  private _vMap: Map<V, V>|undefined = undefined;
+  private _vMap: Map<V, V> | undefined = undefined;
 
   has(key: K): boolean {
     return this.kvMap.has(key);
@@ -318,7 +421,7 @@ export class UniqueValueMultiKeyMap<K, V> {
     return true;
   }
 
-  get(key: K): V|undefined {
+  get(key: K): V | undefined {
     return this.kvMap.get(key);
   }
 
@@ -326,8 +429,7 @@ export class UniqueValueMultiKeyMap<K, V> {
     if (this.kvMap.has(key)) {
       let prevValue = this.kvMap.get(key)!;
       ngDevMode &&
-          assertNotSame(
-              prevValue, value, `Detected a duplicated value ${value} for the key ${key}`);
+        assertNotSame(prevValue, value, `Detected a duplicated value ${value} for the key ${key}`);
 
       if (this._vMap === undefined) {
         this._vMap = new Map();

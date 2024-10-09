@@ -3,10 +3,17 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
-import {forwardRef, Injectable, InjectionToken, Injector, NgModule, ɵcreateInjector as createInjector} from '@angular/core';
+import {
+  forwardRef,
+  Injectable,
+  InjectionToken,
+  Injector,
+  NgModule,
+  ɵcreateInjector as createInjector,
+} from '@angular/core';
 import {AOT_TOKEN, AotModule, AotService} from 'app_built/src/module';
 
 describe('NgModule', () => {
@@ -25,24 +32,19 @@ describe('NgModule', () => {
     });
   });
 
-
-
   describe('JIT', () => {
     @Injectable({providedIn: null})
-    class Service {
-    }
+    class Service {}
 
     @NgModule({
       providers: [Service],
     })
-    class JitModule {
-    }
+    class JitModule {}
 
     @NgModule({
       imports: [JitModule],
     })
-    class JitAppModule {
-    }
+    class JitAppModule {}
 
     it('works', () => {
       createInjector(JitAppModule);
@@ -52,20 +54,18 @@ describe('NgModule', () => {
       @NgModule({
         imports: [forwardRef(() => BModule)],
       })
-      class AModule {
-      }
+      class AModule {}
 
       @NgModule({
         imports: [AModule],
       })
-      class BModule {
-      }
+      class BModule {}
 
-      expect(() => createInjector(AModule))
-          .toThrowError(
-              'NG0200: Circular dependency in DI detected for AModule. ' +
-              'Dependency path: AModule > BModule > AModule. ' +
-              'Find more at https://angular.io/errors/NG0200');
+      expect(() => createInjector(AModule)).toThrowError(
+        'NG0200: Circular dependency in DI detected for AModule. ' +
+          'Dependency path: AModule > BModule > AModule. ' +
+          'Find more at https://angular.dev/errors/NG0200',
+      );
     });
 
     it('merges imports and exports', () => {
@@ -73,20 +73,17 @@ describe('NgModule', () => {
       @NgModule({
         providers: [{provide: TOKEN, useValue: 'provided from A'}],
       })
-      class AModule {
-      }
+      class AModule {}
       @NgModule({
         providers: [{provide: TOKEN, useValue: 'provided from B'}],
       })
-      class BModule {
-      }
+      class BModule {}
 
       @NgModule({
         imports: [AModule],
         exports: [BModule],
       })
-      class CModule {
-      }
+      class CModule {}
 
       const injector = createInjector(CModule);
       expect(injector.get(TOKEN)).toEqual('provided from B');

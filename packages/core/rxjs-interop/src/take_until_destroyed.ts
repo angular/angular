@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {assertInInjectionContext, DestroyRef, inject} from '@angular/core';
@@ -26,7 +26,7 @@ export function takeUntilDestroyed<T>(destroyRef?: DestroyRef): MonoTypeOperator
     destroyRef = inject(DestroyRef);
   }
 
-  const destroyed$ = new Observable<void>(observer => {
+  const destroyed$ = new Observable<void>((observer) => {
     const unregisterFn = destroyRef!.onDestroy(observer.next.bind(observer));
     return unregisterFn;
   });

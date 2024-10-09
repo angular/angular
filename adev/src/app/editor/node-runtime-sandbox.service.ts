@@ -107,7 +107,10 @@ export class NodeRuntimeSandbox {
 
       console.timeEnd('Load time');
     } catch (error: any) {
-      this.setErrorState(error.message);
+      // If we're already in an error state, throw away the most recent error which may have happened because
+      // we were in the error state already and tried to do more things after terminating.
+      const message = this.nodeRuntimeState.error()?.message ?? error.message;
+      this.setErrorState(message);
     }
   }
 
@@ -250,7 +253,7 @@ export class NodeRuntimeSandbox {
       this.setLoading(LoadingStep.READY);
   }
 
-  async writeFile(path: string, content: string | Buffer): Promise<void> {
+  async writeFile(path: string, content: string | Uint8Array): Promise<void> {
     const webContainer = await this.webContainerPromise!;
 
     try {
@@ -267,6 +270,16 @@ export class NodeRuntimeSandbox {
       } else {
         throw err;
       }
+    }
+  }
+
+  async renameFile(oldPath: string, newPath: string): Promise<void> {
+    const webContainer = await this.webContainerPromise!;
+
+    try {
+      await webContainer.fs.rename(oldPath, newPath);
+    } catch (err: any) {
+      throw err;
     }
   }
 
@@ -372,7 +385,9 @@ export class NodeRuntimeSandbox {
     this.setLoading(LoadingStep.BOOT);
 
     if (!this.webContainerPromise) {
-      this.webContainerPromise = WebContainer.boot();
+      this.webContainerPromise = WebContainer.boot({
+        workdirName: 'angular',
+      });
     }
     return await this.webContainerPromise;
   }

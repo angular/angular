@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Inject, Injectable, StaticProvider} from '@angular/core';
@@ -216,7 +216,11 @@ export class ChromeDriverExtension extends WebDriverExtension {
   }
 
   override supports(capabilities: {[key: string]: any}): boolean {
-    return this._majorChromeVersion >= 44 && capabilities['browserName'].toLowerCase() === 'chrome';
+    const browserName = capabilities['browserName'].toLowerCase();
+    return (
+      this._majorChromeVersion >= 44 &&
+      (browserName === 'chrome' || browserName === 'chrome-headless-shell')
+    );
   }
 }
 

@@ -3,12 +3,11 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ɵɵinjectAttribute} from '../render3/instructions/di_attr';
 import {makeParamDecorator} from '../util/decorators';
-
 
 /**
  * Type of the Attribute decorator / constructor function.
@@ -38,7 +37,7 @@ export interface AttributeDecorator {
    *
    */
   (name: string): any;
-  new(name: string): Attribute;
+  new (name: string): Attribute;
 }
 
 /**
@@ -60,6 +59,9 @@ export interface Attribute {
  * @publicApi
  */
 export const Attribute: AttributeDecorator = makeParamDecorator(
-    'Attribute',
-    (attributeName?: string) =>
-        ({attributeName, __NG_ELEMENT_ID__: () => ɵɵinjectAttribute(attributeName!)}));
+  'Attribute',
+  (attributeName?: string) => ({
+    attributeName,
+    __NG_ELEMENT_ID__: () => ɵɵinjectAttribute(attributeName!),
+  }),
+);

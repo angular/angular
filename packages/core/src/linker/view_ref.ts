@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
@@ -11,7 +11,7 @@ import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
 /**
  * Represents an Angular view.
  *
- * @see {@link ChangeDetectorRef#usage-notes Change detection usage}
+ * @see [Change detection usage](/api/core/ChangeDetectorRef?tab=usage-notes)
  *
  * @publicApi
  */
@@ -99,14 +99,4 @@ export abstract class EmbeddedViewRef<C> extends ViewRef {
    * The root nodes for this embedded view.
    */
   abstract get rootNodes(): any[];
-}
-
-/**
- * Interface for tracking root `ViewRef`s in `ApplicationRef`.
- *
- * NOTE: Importing `ApplicationRef` here directly creates circular dependency, which is why we have
- * a subset of the `ApplicationRef` interface `ViewRefTracker` here.
- */
-export interface ViewRefTracker {
-  detachView(viewRef: ViewRef): void;
 }

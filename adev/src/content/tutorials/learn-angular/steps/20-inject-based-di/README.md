@@ -4,7 +4,7 @@ Creating an injectable service is the first part of the dependency injection (DI
 
 Note: Injection contexts are beyond the scope of this tutorial, but you can find more information in the [Angular Docs](guide/di/dependency-injection-context) if you would like to learn more.
 
-In this activity you'll learn how to inject a service and use it in a component.
+In this activity, you'll learn how to inject a service and use it in a component.
 
 <hr>
 

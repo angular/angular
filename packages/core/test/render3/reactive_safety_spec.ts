@@ -3,12 +3,30 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, ComponentFactoryResolver, createComponent, createEnvironmentInjector, effect, ENVIRONMENT_INITIALIZER, EnvironmentInjector, EventEmitter, inject, Injectable, InjectionToken, NgModule, Output, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {
+  Component,
+  ComponentFactoryResolver,
+  createComponent,
+  createEnvironmentInjector,
+  effect,
+  ENVIRONMENT_INITIALIZER,
+  EnvironmentInjector,
+  EventEmitter,
+  inject,
+  Injectable,
+  InjectionToken,
+  NgModule,
+  Output,
+  TemplateRef,
+  ViewChild,
+  ViewContainerRef,
+} from '@angular/core';
 import {getActiveConsumer} from '@angular/core/primitives/signals';
 import {createInjector} from '@angular/core/src/di/create_injector';
+import {setUseMicrotaskEffectsByDefault} from '@angular/core/src/render3/reactivity/effect';
 import {TestBed} from '@angular/core/testing';
 
 /*
@@ -17,6 +35,12 @@ import {TestBed} from '@angular/core/testing';
  */
 
 describe('reactive safety', () => {
+  let prev: boolean;
+  beforeEach(() => {
+    prev = setUseMicrotaskEffectsByDefault(false);
+  });
+  afterEach(() => setUseMicrotaskEffectsByDefault(prev));
+
   describe('view creation', () => {
     it('should be safe to call ViewContainerRef.createEmbeddedView', () => {
       @Component({
@@ -146,28 +170,33 @@ describe('reactive safety', () => {
     it('should be safe to inject a token provided with a factory', () => {
       const token = new InjectionToken<string>('');
       const injector = createEnvironmentInjector(
-          [
-            {
-              provide: token,
-              useFactory: () => {
-                expect(getActiveConsumer()).toBe(null);
-                return '';
-              },
+        [
+          {
+            provide: token,
+            useFactory: () => {
+              expect(getActiveConsumer()).toBe(null);
+              return '';
             },
-          ],
-          TestBed.inject(EnvironmentInjector));
+          },
+        ],
+        TestBed.inject(EnvironmentInjector),
+      );
       expectNotToThrowInReactiveContext(() => injector.get(token));
     });
 
     it('should be safe to use an ENVIRONMENT_INITIALIZER', () => {
-      expectNotToThrowInReactiveContext(
-          () => createEnvironmentInjector(
-              [{
-                provide: ENVIRONMENT_INITIALIZER,
-                useValue: () => expect(getActiveConsumer()).toBe(null),
-                multi: true,
-              }],
-              TestBed.inject(EnvironmentInjector)));
+      expectNotToThrowInReactiveContext(() =>
+        createEnvironmentInjector(
+          [
+            {
+              provide: ENVIRONMENT_INITIALIZER,
+              useValue: () => expect(getActiveConsumer()).toBe(null),
+              multi: true,
+            },
+          ],
+          TestBed.inject(EnvironmentInjector),
+        ),
+      );
     });
 
     it('should be safe to use an NgModule initializer', () => {
@@ -177,8 +206,9 @@ describe('reactive safety', () => {
           expect(getActiveConsumer()).toBe(null);
         }
       }
-      expectNotToThrowInReactiveContext(
-          () => createInjector(TestModule, TestBed.inject(EnvironmentInjector)));
+      expectNotToThrowInReactiveContext(() =>
+        createInjector(TestModule, TestBed.inject(EnvironmentInjector)),
+      );
     });
 
     it('should be safe to destroy an injector', () => {
@@ -215,8 +245,11 @@ describe('reactive safety', () => {
 
 function expectNotToThrowInReactiveContext(fn: () => void): void {
   const injector = TestBed.inject(EnvironmentInjector);
-  effect(() => {
-    expect(fn).not.toThrow();
-  }, {injector});
+  effect(
+    () => {
+      expect(fn).not.toThrow();
+    },
+    {injector},
+  );
   TestBed.flushEffects();
 }

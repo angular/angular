@@ -1,7 +1,7 @@
 // Karma configuration file, see link for more information
 // https://karma-runner.github.io/1.0/config/configuration-file.html
 
-const {getAdjustedChromeBinPathForWindows} = require('../aio/tools/windows-chromium-path');
+const {getAdjustedChromeBinPathForWindows} = require('../adev/tools/windows-chromium-path');
 
 process.env.CHROME_BIN = getAdjustedChromeBinPathForWindows();
 

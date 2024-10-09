@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /**
@@ -18,7 +18,10 @@ export class FatalLinkerError extends Error {
    * @param node The AST node where the error occurred.
    * @param message A description of the error.
    */
-  constructor(public node: unknown, message: string) {
+  constructor(
+    public node: unknown,
+    message: string,
+  ) {
     super(message);
   }
 }

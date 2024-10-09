@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ApplicationRef, PLATFORM_ID} from '@angular/core';
@@ -30,8 +30,7 @@ const serviceWorkerModuleApi = 'ServiceWorkerModule';
     let swRegisterSpy: jasmine.Spy;
 
     const untilStable = () => {
-      const appRef: ApplicationRef = TestBed.inject(ApplicationRef);
-      return appRef.isStable.pipe(filter(Boolean), take(1)).toPromise();
+      return TestBed.inject(ApplicationRef).whenStable();
     };
 
     beforeEach(
@@ -168,7 +167,12 @@ const serviceWorkerModuleApi = 'ServiceWorkerModule';
                 provideServiceWorker('sw.js'),
                 {
                   provide: ApplicationRef,
-                  useValue: {isStable: isStableSub.asObservable(), afterTick: new Subject()},
+                  useValue: {
+                    isStable: isStableSub.asObservable(),
+                    whenStable: () => isStableSub.pipe(filter(Boolean), take(1)),
+                    afterTick: new Subject(),
+                    onDestroy: () => {},
+                  },
                 },
                 {provide: PLATFORM_ID, useValue: 'browser'},
                 {
@@ -183,7 +187,12 @@ const serviceWorkerModuleApi = 'ServiceWorkerModule';
               providers: [
                 {
                   provide: ApplicationRef,
-                  useValue: {isStable: isStableSub.asObservable(), afterTick: new Subject()},
+                  useValue: {
+                    isStable: isStableSub.asObservable(),
+                    whenStable: () => isStableSub.pipe(filter(Boolean), take(1)),
+                    afterTick: new Subject(),
+                    onDestroy: () => {},
+                  },
                 },
                 {provide: PLATFORM_ID, useValue: 'browser'},
                 {

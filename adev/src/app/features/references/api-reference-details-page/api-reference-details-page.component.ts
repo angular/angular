@@ -11,17 +11,19 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  Injector,
   OnInit,
   ViewChild,
+  afterNextRender,
   inject,
   signal,
 } from '@angular/core';
-import {DOCUMENT, NgFor, NgIf} from '@angular/common';
+import {DOCUMENT} from '@angular/common';
 import {MatTabGroup, MatTabsModule} from '@angular/material/tabs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {distinctUntilChanged, map} from 'rxjs/operators';
 import {DocContent, DocViewer} from '@angular/docs';
-import {ActivatedRoute, Router, RouterLink} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {ApiItemType} from './../interfaces/api-item-type';
 import {ReferenceScrollHandler} from '../services/reference-scroll-handler.service';
 import {
@@ -34,13 +36,15 @@ import {
   API_REFERENCE_TAB_BODY_CLASS_NAME,
   API_REFERENCE_TAB_URL_ATTRIBUTE,
 } from '../constants/api-reference-prerender.constants';
+import {AppScroller} from '../../../app-scroller';
 
 @Component({
   selector: 'adev-reference-page',
   standalone: true,
-  imports: [DocViewer, NgIf, NgFor, MatTabsModule, RouterLink],
+  imports: [DocViewer, MatTabsModule],
   templateUrl: './api-reference-details-page.component.html',
   styleUrls: ['./api-reference-details-page.component.scss'],
+  providers: [ReferenceScrollHandler],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ApiReferenceDetailsPage implements OnInit, AfterViewInit {
@@ -51,6 +55,8 @@ export default class ApiReferenceDetailsPage implements OnInit, AfterViewInit {
   private readonly document = inject(DOCUMENT);
   private readonly router = inject(Router);
   private readonly scrollHandler = inject(ReferenceScrollHandler);
+  private readonly appScroller = inject(AppScroller);
+  private readonly injector = inject(Injector);
 
   ApiItemType = ApiItemType;
 
@@ -61,8 +67,16 @@ export default class ApiReferenceDetailsPage implements OnInit, AfterViewInit {
   membersMarginTopInPx = this.scrollHandler.membersMarginTopInPx;
   selectedTabIndex = signal(0);
 
+  constructor() {
+    this.appScroller.disableScrolling = true;
+  }
+
   ngOnInit(): void {
     this.setPageContent();
+  }
+
+  ngOnDestroy() {
+    this.appScroller.disableScrolling = false;
   }
 
   ngAfterViewInit(): void {
@@ -83,7 +97,7 @@ export default class ApiReferenceDetailsPage implements OnInit, AfterViewInit {
       )
       .subscribe((doc: DocContent | undefined) => {
         this.setContentForPageSections(doc);
-        this.setActiveTab();
+        afterNextRender(() => this.setActiveTab(), {injector: this.injector});
       });
   }
 

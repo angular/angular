@@ -59,8 +59,6 @@ If Angular handles an event within a component with OnPush strategy, the framewo
 
 As an example, if Angular handles an event within `MainComponent`, the framework will run change detection in the entire component tree. Angular will ignore the subtree with root `LoginComponent` because it has `OnPush` and the event happened outside of its scope.
 
-<img alt="Change detection propagation from OnPush component" src="assets/images/best-practices/runtime-performance/on-push-trigger.svg">
-
 ```mermaid
 graph TD;
     app[AppComponent] --- header[HeaderComponent];

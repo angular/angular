@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import ts from 'typescript';
@@ -23,9 +23,10 @@ export interface ReuseExistingSourceFileImportsTracker {
    * Map of import declarations that need to be updated to include the
    * given symbols.
    */
-  updatedImports:
-      Map<ts.ImportDeclaration,
-          {propertyName: ts.Identifier, fileUniqueAlias: ts.Identifier|null}[]>;
+  updatedImports: Map<
+    ts.ImportDeclaration,
+    {propertyName: ts.Identifier; fileUniqueAlias: ts.Identifier | null}[]
+  >;
 
   /**
    * Set of re-used alias import declarations.
@@ -36,18 +37,20 @@ export interface ReuseExistingSourceFileImportsTracker {
   reusedAliasDeclarations: Set<AliasImportDeclaration>;
 
   /** Generates a unique identifier for a name in the given file. */
-  generateUniqueIdentifier(file: ts.SourceFile, symbolName: string): ts.Identifier|null;
+  generateUniqueIdentifier(file: ts.SourceFile, symbolName: string): ts.Identifier | null;
 }
 
 /** Attempts to re-use original source file imports for the given request. */
 export function attemptToReuseExistingSourceFileImports(
-    tracker: ReuseExistingSourceFileImportsTracker, sourceFile: ts.SourceFile,
-    request: ImportRequest<ts.SourceFile>): ts.Identifier|[ts.Identifier, ts.Identifier]|null {
+  tracker: ReuseExistingSourceFileImportsTracker,
+  sourceFile: ts.SourceFile,
+  request: ImportRequest<ts.SourceFile>,
+): ts.Identifier | [ts.Identifier, ts.Identifier] | null {
   // Walk through all source-file top-level statements and search for import declarations
   // that already match the specified "moduleName" and can be updated to import the
   // given symbol. If no matching import can be found, the last import in the source-file
   // will be used as starting point for a new import that will be generated.
-  let candidateImportToBeUpdated: ts.ImportDeclaration|null = null;
+  let candidateImportToBeUpdated: ts.ImportDeclaration | null = null;
 
   for (let i = sourceFile.statements.length - 1; i >= 0; i--) {
     const statement = sourceFile.statements[i];
@@ -86,11 +89,22 @@ export function attemptToReuseExistingSourceFileImports(
 
       // Named imports can be re-used if a specific symbol is requested.
       if (ts.isNamedImports(namedBindings) && request.exportSymbolName !== null) {
-        const existingElement = namedBindings.elements.find(e => {
+        const existingElement = namedBindings.elements.find((e) => {
           // TODO: Consider re-using type-only imports efficiently.
-          return !e.isTypeOnly &&
-              (e.propertyName ? e.propertyName.text === request.exportSymbolName :
-                                e.name.text === request.exportSymbolName);
+          let nameMatches: boolean;
+
+          if (request.unsafeAliasOverride) {
+            // If a specific alias is passed, both the original name and alias have to match.
+            nameMatches =
+              e.propertyName?.text === request.exportSymbolName &&
+              e.name.text === request.unsafeAliasOverride;
+          } else {
+            nameMatches = e.propertyName
+              ? e.propertyName.text === request.exportSymbolName
+              : e.name.text === request.exportSymbolName;
+          }
+
+          return !e.isTypeOnly && nameMatches;
         });
 
         if (existingElement !== undefined) {
@@ -116,7 +130,9 @@ export function attemptToReuseExistingSourceFileImports(
   }
   const symbolsToBeImported = tracker.updatedImports.get(candidateImportToBeUpdated)!;
   const propertyName = ts.factory.createIdentifier(request.exportSymbolName);
-  const fileUniqueAlias = tracker.generateUniqueIdentifier(sourceFile, request.exportSymbolName);
+  const fileUniqueAlias = request.unsafeAliasOverride
+    ? ts.factory.createIdentifier(request.unsafeAliasOverride)
+    : tracker.generateUniqueIdentifier(sourceFile, request.exportSymbolName);
 
   // Since it can happen that multiple classes need to be imported within the
   // specified source file and we want to add the identifiers to the existing

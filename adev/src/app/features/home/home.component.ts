@@ -13,7 +13,6 @@ import {
   Component,
   ElementRef,
   Injector,
-  NgZone,
   OnDestroy,
   OnInit,
   PLATFORM_ID,
@@ -21,7 +20,7 @@ import {
   inject,
 } from '@angular/core';
 import {WINDOW, shouldReduceMotion, isIos} from '@angular/docs';
-import {RouterLink} from '@angular/router';
+import {ActivatedRoute, RouterLink} from '@angular/router';
 
 import {injectAsync} from '../../core/services/inject-async';
 
@@ -45,11 +44,12 @@ export default class Home implements OnInit, AfterViewInit, OnDestroy {
 
   private readonly document = inject(DOCUMENT);
   private readonly injector = inject(Injector);
-  private readonly ngZone = inject(NgZone);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly window = inject(WINDOW);
+  private readonly activatedRoute = inject(ActivatedRoute);
 
   protected readonly tutorialFiles = TUTORIALS_HOMEPAGE_DIRECTORY;
+  protected readonly isUwu = 'uwu' in this.activatedRoute.snapshot.queryParams;
   private element!: HTMLDivElement;
   private homeAnimation?: HomeAnimation;
   private intersectionObserver: IntersectionObserver | undefined;
@@ -63,7 +63,7 @@ export default class Home implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  ngAfterViewInit(): void {
+  ngAfterViewInit() {
     this.element = this.home.nativeElement;
 
     if (isPlatformBrowser(this.platformId)) {
@@ -74,10 +74,8 @@ export default class Home implements OnInit, AfterViewInit, OnDestroy {
       // at the end of the page, and to load the embedded editor.
       this.initIntersectionObserver();
 
-      if (this.isWebGLAvailable() && !shouldReduceMotion()) {
-        this.ngZone.runOutsideAngular(async () => {
-          await this.loadHomeAnimation();
-        });
+      if (this.isWebGLAvailable() && !shouldReduceMotion() && !this.isUwu) {
+        this.loadHomeAnimation();
       }
     }
   }

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -29,6 +29,14 @@ const Delete1KWorker: Worker = {
   prepare: () => $('#create1KRows').click(),
   work: () => {
     $('#deleteAll').click();
+  },
+};
+
+const SelectWorker: Worker = {
+  id: 'select',
+  prepare: () => $('#create1KRows').click(),
+  work: () => {
+    $('tbody>tr:nth-of-type(2)>td:nth-of-type(2)>a').click();
   },
 };
 
@@ -59,7 +67,7 @@ const testPackageName = process.env['BAZEL_TARGET']!.split(':')[0].split('/').po
 describe('js-web-frameworks benchmark perf', () => {
   afterEach(verifyNoBrowserErrors);
 
-  [Create1KWorker, Delete1KWorker, UpdateWorker, SwapWorker].forEach((worker) => {
+  [Create1KWorker, Delete1KWorker, UpdateWorker, SelectWorker, SwapWorker].forEach((worker) => {
     describe(worker.id, () => {
       it(`should run benchmark for ${testPackageName}`, async () => {
         await runTableBenchmark({

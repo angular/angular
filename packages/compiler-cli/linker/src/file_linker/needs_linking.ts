@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {declarationFunctions} from './partial_linkers/partial_linker_selector';
@@ -24,5 +24,5 @@ import {declarationFunctions} from './partial_linkers/partial_linker_selector';
  * @returns whether the source file may contain declarations that need to be linked.
  */
 export function needsLinking(path: string, source: string): boolean {
-  return declarationFunctions.some(fn => source.includes(fn));
+  return declarationFunctions.some((fn) => source.includes(fn));
 }

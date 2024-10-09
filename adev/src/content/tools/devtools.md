@@ -4,7 +4,7 @@ Angular DevTools is a browser extension that provides debugging and profiling ca
 
 <docs-video src="https://www.youtube.com/embed/bavWOHZM6zE"/>
 
-Install Angular DevTools from the [Chrome Web Store](https://chrome.google.com/webstore/detail/angular-developer-tools/ienfalfjdbdpebioblfackkekamfmbnh) or from [Firefox Addons](https://addons.mozilla.org/en-GB/firefox/addon/angular-devtools/).
+Install Angular DevTools from the [Chrome Web Store](https://chrome.google.com/webstore/detail/angular-developer-tools/ienfalfjdbdpebioblfackkekamfmbnh) or from [Firefox Addons](https://addons.mozilla.org/firefox/addon/angular-devtools/).
 
 You can open Chrome or Firefox DevTools on any web page by pressing <kbd>F12</kbd> or <kbd><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd></kbd> (Windows or Linux) and <kbd><kbd>Fn</kbd>+<kbd>F12</kbd></kbd> or <kbd><kbd>Cmd</kbd>+<kbd>Option</kbd>+<kbd>I</kbd></kbd> (Mac).
 Once browser DevTools is open and Angular DevTools is installed, you can find it under the "Angular" tab.
@@ -19,8 +19,8 @@ When you open the extension, you'll see two additional tabs:
 
 | Tabs                                     | Details |
 |:---                                      |:---     |
-| [Components](tools/devtools#components) | Lets you explore the components and directives in your application and preview or edit their state.                    |
-| [Profiler](tools/devtools#profiler)     | Lets you profile your application and understand what the performance bottleneck is during change detection execution. |
+| [Components](tools/devtools#debug-your-application) | Lets you explore the components and directives in your application and preview or edit their state.                    |
+| [Profiler](tools/devtools#profile-your-application)     | Lets you profile your application and understand what the performance bottleneck is during change detection execution. |
 
 <img src="assets/images/guide/devtools/devtools-tabs.png" alt="A screenshot of the top of Angular DevTools illustrating two tabs in the upper-left corner, one labeled 'Components' and another labeled 'Profiler'.">
 
@@ -108,7 +108,7 @@ Interact with your application to trigger change detection and generate data Ang
 To finish recording, click the circle again to **Stop recording**.
 
 You can also import an existing recording.
-Read more about this feature in the [Import recording](tools/devtools#import-recording) section.
+Read more about this feature in the [Import recording](tools/devtools#import-and-export-recordings) section.
 
 ### Understand your application's execution
 
@@ -170,3 +170,27 @@ Click the **Save Profile** button at the top-right of a recorded profiling sessi
 Later, import the file in the initial view of the profiler by clicking the **Choose file** input.
 
 <img src="assets/images/guide/devtools/save-profile.png" alt="A screenshot of the 'Profiler' tab displaying change detection cycles. On the right side a 'Save Profile' button is visible.">
+
+ ## Inspect your injectors
+
+ Note: The Injector Tree is available for Angular Applications built with version 17 or higher.
+
+### View the injector hierarchy of your application
+
+ The **Injector Tree** tab lets you explore the structure of the Injectors configured in your application. Here you will see two trees representing the [injector hierarchy](guide/di/hierarchical-dependency-injection) of your application. One tree is your environment hierarchy, the other is your element hierarchy.
+
+<img src="assets/images/guide/devtools/di-injector-tree.png" alt="A screenshot of the 'Profiler' tab displaying the injector tree tab in Angular Devtools visualizing the injector graph for an example application.">
+
+ ### Visualize resolution paths
+
+ When a specific injector is selected, the path that Angular's dependency injection algorithm traverses from that injector to the root is highlighted. For element injectors, this includes highlighting the environment injectors that the dependency injection algorithm jumps to when a dependency cannot be resolved in the element hierarchy.
+
+See [resolution rules](guide/di/hierarchical-dependency-injection#resolution-rules) for more details about how Angular resolves resolution paths. 
+
+<img src="assets/images/guide/devtools/di-injector-tree-selected.png" alt="A screenshot of the 'Profiler' tab displaying how the injector tree visualize highlights resolution paths when an injector is selected.">
+
+ ### View injector providers
+
+ Clicking an injector that has configured providers will display those providers in a list on the right of the injector tree view. Here you can view the provided token and it's type.
+
+<img src="assets/images/guide/devtools/di-injector-tree-providers.png" alt="A screenshot of the 'Profiler' tab displaying how providers are made visible when an injector is selected.">

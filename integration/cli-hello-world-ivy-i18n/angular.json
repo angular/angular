@@ -18,11 +18,14 @@
       },
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular/build:application",
           "options": {
-            "outputPath": "dist",
+            "outputHashing": "none",
+            "outputPath": {
+              "base": "dist",
+              "browser": ""
+            },
             "index": "src/index.html",
-            "main": "src/main.ts",
             "polyfills": [
               "zone.js",
               "@angular/localize/init"
@@ -33,19 +36,17 @@
             "scripts": [],
             "progress": false,
             "optimization": false,
-            "buildOptimizer": false,
-            "i18nMissingTranslation": "error"
+            "i18nMissingTranslation": "error",
+            "browser": "src/main.ts"
           },
           "configurations": {
             "production": {
               "optimization": true,
-              "outputHashing": "all",
+              "outputHashing": "none",
               "sourceMap": false,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -70,26 +71,26 @@
           }
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
-            "browserTarget": "cli-hello-world-ivy-i18n:build"
+            "buildTarget": "cli-hello-world-ivy-i18n:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "cli-hello-world-ivy-i18n:build:production"
+              "buildTarget": "cli-hello-world-ivy-i18n:build:production"
             },
             "fr": {
-              "browserTarget": "cli-hello-world-ivy-i18n:build:production,fr"
+              "buildTarget": "cli-hello-world-ivy-i18n:build:production,fr"
             },
             "de": {
-              "browserTarget": "cli-hello-world-ivy-i18n:build:production,de"
+              "buildTarget": "cli-hello-world-ivy-i18n:build:production,de"
             }
           }
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "@angular/build:extract-i18n",
           "options": {
-            "browserTarget": "cli-hello-world-ivy-i18n:build",
+            "buildTarget": "cli-hello-world-ivy-i18n:build",
             "outputPath": "src/locale"
           }
         },
@@ -111,7 +112,7 @@
           }
         },
         "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
+          "builder": "@angular/build:tslint",
           "options": {
             "tsConfig": ["tsconfig.app.json", "tsconfig.spec.json", "e2e/tsconfig.json"],
             "exclude": ["**/node_modules/**"]
@@ -142,5 +143,11 @@
         }
       }
     }
+  },
+  "cli": {
+    "cache": {
+      "enabled": false
+    },
+    "analytics": false
   }
 }

@@ -4,7 +4,7 @@ Sometimes app development requires you to send data into a component. This data 
 
 Angular uses a concept called `Input`. This is similar to `props` in other frameworks. To create an `Input` property, use the `@Input` decorator.
 
-In this activity you'll learn how to use the `@Input` decorator to send information to components.
+In this activity, you'll learn how to use the `@Input` decorator to send information to components.
 
 <hr>
 
@@ -18,20 +18,20 @@ class UserComponent {
 
 When you are ready to pass in a value through an `Input`, values can be set in templates using the attribute syntax. Here's an example:
 
-<docs-code header="app.component.ts" language="ts" highlight="[3]">
+<docs-code header="app.component.ts" language="angular-ts" highlight="[3]">
 @Component({
   ...
-  template: `<app-user occupation="Angular Developer"><app-user/>`
+  template: `<app-user occupation="Angular Developer"></app-user>`
 })
 class AppComponent {}
 </docs-code>
 
 Make sure you bind the property `occupation` in your `UserComponent`.
 
-<docs-code header="user.component.ts" language="ts">
+<docs-code header="user.component.ts" language="angular-ts">
 @Component({
   ...
-  template: `<p>The user's name is {{occupation}}</p>`
+  template: `<p>The user's occupation is {{occupation}}</p>`
 })
 </docs-code>
 

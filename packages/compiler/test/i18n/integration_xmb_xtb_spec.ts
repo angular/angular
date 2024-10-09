@@ -3,14 +3,20 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Xmb} from '@angular/compiler/src/i18n/serializers/xmb';
 import {waitForAsync} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {configureCompiler, createComponent, HTML, serializeTranslations, validateHtml} from './integration_common';
+import {
+  configureCompiler,
+  createComponent,
+  HTML,
+  serializeTranslations,
+  validateHtml,
+} from './integration_common';
 
 // TODO(alxhub): figure out if this test is still relevant.
 xdescribe('i18n XMB/XTB integration spec', () => {
@@ -18,10 +24,10 @@ xdescribe('i18n XMB/XTB integration spec', () => {
     beforeEach(waitForAsync(() => configureCompiler(XTB + LF_LINE_ENDING_XTB, 'xtb')));
 
     it('should extract from templates', () => {
-      const serializer = new Xmb();
+      const serializer = new Xmb(/* preservePlaceholders */ true);
       const serializedXmb = serializeTranslations(HTML, serializer);
 
-      XMB.forEach(x => {
+      XMB.forEach((x) => {
         expect(serializedXmb).toContain(x);
       });
       expect(serializedXmb).toContain(LF_LINE_ENDING_XMB);
@@ -37,10 +43,10 @@ xdescribe('i18n XMB/XTB integration spec', () => {
     beforeEach(waitForAsync(() => configureCompiler(XTB + CRLF_LINE_ENDING_XTB, 'xtb')));
 
     it('should extract from templates (with CRLF line endings)', () => {
-      const serializer = new Xmb();
+      const serializer = new Xmb(/* preservePlaceholders */ true);
       const serializedXmb = serializeTranslations(HTML.replace(/\n/g, '\r\n'), serializer);
 
-      XMB.forEach(x => {
+      XMB.forEach((x) => {
         expect(serializedXmb).toContain(x);
       });
       expect(serializedXmb).toContain(CRLF_LINE_ENDING_XMB);
@@ -52,7 +58,6 @@ xdescribe('i18n XMB/XTB integration spec', () => {
     });
   });
 });
-
 
 const XTB = `
 <translationbundle>
@@ -122,7 +127,7 @@ const XMB = [
   `<msg id="i18n17"><source>file.ts:43</source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex>&lt;b&gt;</ph>many<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex>&lt;/b&gt;</ph>} }</msg>`,
   `<msg id="4085484936881858615" desc="desc"><source>file.ts:46,52</source>{VAR_PLURAL, plural, =0 {Found no results} =1 {Found one result} other {Found <ph name="INTERPOLATION"><ex>{{response.getItemsList().length}}</ex>{{response.getItemsList().length}}</ph> results} }</msg>`,
   `<msg id="4035252431381981115"><source>file.ts:54</source>foo<ph name="START_LINK"><ex>&lt;a&gt;</ex>&lt;a&gt;</ph>bar<ph name="CLOSE_LINK"><ex>&lt;/a&gt;</ex>&lt;/a&gt;</ph></msg>`,
-  `<msg id="5339604010413301604"><source>file.ts:56</source><ph name="MAP_NAME"><ex>{{ &apos;test&apos; //i18n(ph=&quot;map name&quot;) }}</ex>{{ &apos;test&apos; //i18n(ph=&quot;map name&quot;) }}</ph></msg>`
+  `<msg id="5339604010413301604"><source>file.ts:56</source><ph name="MAP_NAME"><ex>{{ &apos;test&apos; //i18n(ph=&quot;map name&quot;) }}</ex>{{ &apos;test&apos; //i18n(ph=&quot;map name&quot;) }}</ph></msg>`,
 ];
 
 const LF_LINE_ENDING_XMB = ``;

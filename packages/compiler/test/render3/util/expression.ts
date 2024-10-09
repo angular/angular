@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {AbsoluteSourceSpan} from '@angular/compiler';
@@ -23,7 +23,7 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
   // This method is defined to reconcile the type of ExpressionSourceHumanizer
   // since both RecursiveAstVisitor and Visitor define the visit() method in
   // their interfaces.
-  override visit(node: e.AST|t.Node, context?: any) {
+  override visit(node: e.AST | t.Node, context?: any) {
     if (node instanceof e.AST) {
       node.visit(this, context);
     } else {
@@ -202,6 +202,10 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
     block.expression?.visit(this);
     block.expressionAlias?.visit(this);
     t.visitAll(this, block.children);
+  }
+
+  visitLetDeclaration(decl: t.LetDeclaration) {
+    decl.value.visit(this);
   }
 }
 

@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT} from '@angular/common';
+import {DOCUMENT, isPlatformBrowser} from '@angular/common';
 import {
   DestroyRef,
   EnvironmentInjector,
   Injectable,
-  NgZone,
   OnDestroy,
+  PLATFORM_ID,
   afterNextRender,
   inject,
   signal,
@@ -27,22 +27,21 @@ import {
   MEMBER_ID_ATTRIBUTE,
 } from '../constants/api-reference-prerender.constants';
 import {WINDOW} from '@angular/docs';
+import {Router} from '@angular/router';
+import {AppScroller} from '../../../app-scroller';
 
 export const SCROLL_EVENT_DELAY = 20;
 export const SCROLL_THRESHOLD = 20;
 
-interface ReferenceScrollHandlerInterface {
-  setupListeners(tocSelector: string): void;
-  updateMembersMarginTop(selectorOfTheElementToAlign: string): void;
-}
-
 @Injectable()
-export class ReferenceScrollHandler implements OnDestroy, ReferenceScrollHandlerInterface {
+export class ReferenceScrollHandler implements OnDestroy {
   private readonly destroyRef = inject(DestroyRef);
   private readonly document = inject(DOCUMENT);
   private readonly injector = inject(EnvironmentInjector);
-  private readonly ngZone = inject(NgZone);
   private readonly window = inject(WINDOW);
+  private readonly router = inject(Router);
+  private readonly appScroller = inject(AppScroller);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   private readonly cardOffsetTop = new Map<string, number>();
   private resizeObserver: ResizeObserver | null = null;
@@ -54,13 +53,38 @@ export class ReferenceScrollHandler implements OnDestroy, ReferenceScrollHandler
   }
 
   setupListeners(tocSelector: string): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
     this.setupCodeToCListeners(tocSelector);
     this.setupMemberCardListeners();
     this.setScrollEventHandlers();
     this.listenToResizeCardContainer();
+    this.setupFragmentChangeListener();
+  }
+
+  private setupFragmentChangeListener() {
+    this.router.routerState.root.fragment
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((fragment) => {
+        // If there is no fragment or the scroll event has a position (traversing through history),
+        // allow the scroller to handler scrolling instead of going to the fragment
+        if (!fragment || this.appScroller.lastScrollEvent?.position) {
+          this.appScroller.scroll();
+          return;
+        }
+
+        const card = this.document.getElementById(fragment) as HTMLDivElement | null;
+        this.scrollToCard(card);
+      });
   }
 
   updateMembersMarginTop(selectorOfTheElementToAlign: string): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
     const elementToAlign = this.document.querySelector<HTMLElement>(selectorOfTheElementToAlign);
 
     if (elementToAlign) {
@@ -75,35 +99,45 @@ export class ReferenceScrollHandler implements OnDestroy, ReferenceScrollHandler
       return;
     }
 
-    this.ngZone.runOutsideAngular(() => {
-      fromEvent(tocContainer, 'click')
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe((event) => {
-          // Get the card member ID from the attributes
-          const target =
-            event.target instanceof HTMLButtonElement
-              ? event.target
-              : this.findButtonElement(event.target as HTMLElement);
-          const memberId = this.getMemberId(target);
+    fromEvent(tocContainer, 'click')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event) => {
+        if (event.target instanceof HTMLAnchorElement) {
+          event.stopPropagation();
+          return;
+        }
 
-          if (memberId) {
-            const card = this.document.querySelector<HTMLDivElement>(`#${memberId}`);
-            this.scrollToCard(card);
-          }
-        });
-    });
+        // Get the card member ID from the attributes
+        const target =
+          event.target instanceof HTMLButtonElement
+            ? event.target
+            : this.findButtonElement(event.target as HTMLElement);
+        const memberId = this.getMemberId(target);
+
+        if (memberId) {
+          this.router.navigate([], {fragment: memberId, replaceUrl: true});
+        }
+      });
   }
 
   private setupMemberCardListeners(): void {
-    this.ngZone.runOutsideAngular(() => {
-      this.getAllMemberCards().forEach((card) => {
-        this.cardOffsetTop.set(card.id, card.offsetTop);
-        fromEvent(card, 'click')
-          .pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe(() => {
-            this.scrollToCard(card);
-          });
-      });
+    this.getAllMemberCards().forEach((card) => {
+      this.cardOffsetTop.set(card.id, card.offsetTop);
+      const header = card.querySelector('header');
+
+      if (!header) {
+        return;
+      }
+      fromEvent(header, 'click')
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((event) => {
+          const target = event.target as HTMLElement;
+          if (target instanceof HTMLAnchorElement) {
+            return;
+          }
+
+          this.router.navigate([], {fragment: card.id, replaceUrl: true});
+        });
     });
   }
 
@@ -113,9 +147,7 @@ export class ReferenceScrollHandler implements OnDestroy, ReferenceScrollHandler
       takeUntilDestroyed(this.destroyRef),
     );
 
-    this.ngZone.runOutsideAngular(() => {
-      scroll$.subscribe(() => this.setActiveCodeLine());
-    });
+    scroll$.subscribe(() => this.setActiveCodeLine());
   }
 
   private listenToResizeCardContainer(): void {
@@ -209,12 +241,10 @@ export class ReferenceScrollHandler implements OnDestroy, ReferenceScrollHandler
     this.resizeObserver?.disconnect();
 
     this.resizeObserver = new ResizeObserver((_) => {
-      this.ngZone.run(() => {
-        const offsetTop = tabBody.getBoundingClientRect().top;
-        if (offsetTop) {
-          this.membersMarginTopInPx.set(offsetTop);
-        }
-      });
+      const offsetTop = tabBody.getBoundingClientRect().top;
+      if (offsetTop) {
+        this.membersMarginTopInPx.set(offsetTop);
+      }
     });
 
     this.resizeObserver.observe(tabBody);
@@ -233,10 +263,4 @@ export class ReferenceScrollHandler implements OnDestroy, ReferenceScrollHandler
 
     return null;
   }
-}
-
-export class ReferenceScrollHandlerNoop implements ReferenceScrollHandlerInterface {
-  membersMarginTopInPx = signal<number>(0);
-  setupListeners(_tocSelector: string): void {}
-  updateMembersMarginTop(_selectorOfTheElementToAlign: string): void {}
 }

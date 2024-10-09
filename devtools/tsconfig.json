@@ -46,6 +46,7 @@
   },
   "angularCompilerOptions": {
     "strictTemplates": true,
-    "strictInjectionParameters": true
+    "strictInjectionParameters": true,
+    "unusedStandaloneImports": "error"
   }
 }

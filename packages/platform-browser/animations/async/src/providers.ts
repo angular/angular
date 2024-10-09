@@ -3,11 +3,19 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {DOCUMENT} from '@angular/common';
-import {ANIMATION_MODULE_TYPE, EnvironmentProviders, makeEnvironmentProviders, NgZone, RendererFactory2, ɵperformanceMarkFeature as performanceMarkFeature} from '@angular/core';
+import {
+  ANIMATION_MODULE_TYPE,
+  EnvironmentProviders,
+  makeEnvironmentProviders,
+  NgZone,
+  RendererFactory2,
+  ɵperformanceMarkFeature as performanceMarkFeature,
+  InjectionToken,
+} from '@angular/core';
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 
 import {AsyncAnimationRendererFactory} from './async_animation_renderer';
@@ -18,7 +26,7 @@ import {AsyncAnimationRendererFactory} from './async_animation_renderer';
  * to learn more about animations in Angular.
  *
  * When you use this function instead of the eager `provideAnimations()`, animations won't be
- * renderered until the renderer is loaded.
+ * rendered until the renderer is loaded.
  *
  * @usageNotes
  *
@@ -38,10 +46,10 @@ import {AsyncAnimationRendererFactory} from './async_animation_renderer';
  * @param type pass `'noop'` as argument to disable animations.
  *
  * @publicApi
- * @developerPreview
  */
-export function provideAnimationsAsync(type: 'animations'|'noop' = 'animations'):
-    EnvironmentProviders {
+export function provideAnimationsAsync(
+  type: 'animations' | 'noop' = 'animations',
+): EnvironmentProviders {
   performanceMarkFeature('NgAsyncAnimations');
   return makeEnvironmentProviders([
     {

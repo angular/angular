@@ -1,0 +1,43 @@
+// Table
+
+@mixin docs-table {
+  .docs-table {
+    overflow-x: auto;
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-block: 1rem;
+      font-size: 0.875rem;
+      line-height: 160%;
+      letter-spacing: -0.00875rem;
+    }
+
+    th {
+      text-align: left;
+      padding-block: 0.4rem;
+      padding-inline-end: 1.5rem;
+      border-block: 1px solid var(--senary-contrast);
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    tr {
+      td {
+        padding-block: 0.85rem;
+        vertical-align: top;
+        &:not(:last-child) {
+          padding-inline-end: 1rem;
+        }
+      }
+      td:first-child {
+        padding-inline-end: 1.62rem;
+        vertical-align: top;
+        min-width: 10ch;
+      }
+      &:not(:last-child) {
+        border-block-end: 1px solid var(--senary-contrast);
+      }
+    }
+  }
+}

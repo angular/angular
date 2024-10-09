@@ -81,7 +81,7 @@
       z-index: 0;
     }
 
-    &:has(.hljs-ln-line-highlighted) {
+    &:has(.shiki-ln-line-highlighted) {
       &::before {
         background: var(--red-to-pink-to-purple-horizontal-gradient);
       }
@@ -95,8 +95,8 @@
     }
   }
 
-  .hljs-ln-line-argument,
-  .hljs-ln-line-option {
+  .shiki-ln-line-argument,
+  .shiki-ln-line-option {
     padding: 0.1rem 0.2rem 0.2rem;
     margin-inline: 0.1rem;
     color: var(--quaternary-contrast);
@@ -110,12 +110,12 @@
       background: var(--septenary-contrast);
     }
 
-    &.hljs-ln-line-highlighted {
+    &.shiki-ln-line-highlighted {
       color: var(--primary-contrast);
       background: var(--senary-contrast);
     }
   }
-  .hljs-ln-line-argument {
+  .shiki-ln-line-argument {
     margin-inline-start: 0.2rem;
   }
 }

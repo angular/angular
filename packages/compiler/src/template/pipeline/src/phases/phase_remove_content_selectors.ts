@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as ir from '../../ir';
@@ -37,8 +37,10 @@ function isSelectAttribute(name: string) {
 /**
  * Looks up an element in the given map by xref ID.
  */
-function lookupInXrefMap(map: Map<ir.XrefId, ir.ConsumesSlotOpTrait&ir.CreateOp>, xref: ir.XrefId):
-    ir.ConsumesSlotOpTrait&ir.CreateOp {
+function lookupInXrefMap(
+  map: Map<ir.XrefId, ir.ConsumesSlotOpTrait & ir.CreateOp>,
+  xref: ir.XrefId,
+): ir.ConsumesSlotOpTrait & ir.CreateOp {
   const el = map.get(xref);
   if (el === undefined) {
     throw new Error('All attributes should have an slottable target.');

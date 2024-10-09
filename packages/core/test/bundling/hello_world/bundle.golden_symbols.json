@@ -9,7 +9,10 @@
     "name": "APP_INITIALIZER"
   },
   {
-    "name": "AfterRenderEventManager"
+    "name": "AfterRenderManager"
+  },
+  {
+    "name": "AfterRenderPhase"
   },
   {
     "name": "AnonymousSubject"
@@ -97,6 +100,9 @@
   },
   {
     "name": "ENVIRONMENT_INITIALIZER"
+  },
+  {
+    "name": "EffectScheduler"
   },
   {
     "name": "ElementRef"
@@ -267,7 +273,7 @@
     "name": "PRESERVE_HOST_CONTENT"
   },
   {
-    "name": "PendingTasks"
+    "name": "PendingTasksInternal"
   },
   {
     "name": "PlatformRef"
@@ -279,10 +285,16 @@
     "name": "REACTIVE_LVIEW_CONSUMER_NODE"
   },
   {
+    "name": "REACTIVE_NODE"
+  },
+  {
     "name": "RendererFactory2"
   },
   {
     "name": "RuntimeError"
+  },
+  {
+    "name": "SCHEDULE_IN_ROOT_ZONE"
   },
   {
     "name": "SIGNAL"
@@ -307,6 +319,9 @@
   },
   {
     "name": "Subscription"
+  },
+  {
+    "name": "TEMPORARY_CONSUMER_NODE"
   },
   {
     "name": "TESTABILITY"
@@ -339,10 +354,22 @@
     "name": "ZONELESS_SCHEDULER_DISABLED"
   },
   {
+    "name": "ZoneAwareEffectScheduler"
+  },
+  {
     "name": "ZoneStablePendingTask"
   },
   {
+    "name": "_AfterRenderImpl"
+  },
+  {
+    "name": "_ComponentFactoryResolver"
+  },
+  {
     "name": "_DOM"
+  },
+  {
+    "name": "_Injector"
   },
   {
     "name": "_NullComponentFactoryResolver"
@@ -360,9 +387,6 @@
     "name": "_currentInjector"
   },
   {
-    "name": "_global"
-  },
-  {
     "name": "_icuContainerIterate"
   },
   {
@@ -378,9 +402,6 @@
     "name": "_retrieveHydrationInfoImpl"
   },
   {
-    "name": "_wrapInTimeout"
-  },
-  {
     "name": "activeConsumer"
   },
   {
@@ -391,6 +412,9 @@
   },
   {
     "name": "allocLFrame"
+  },
+  {
+    "name": "angularZoneInstanceIdProperty"
   },
   {
     "name": "applyNodes"
@@ -414,6 +438,9 @@
     "name": "assertConsumerNode"
   },
   {
+    "name": "assertNotDestroyed"
+  },
+  {
     "name": "attachPatchData"
   },
   {
@@ -424,6 +451,9 @@
   },
   {
     "name": "bloomHasToken"
+  },
+  {
+    "name": "bootstrap"
   },
   {
     "name": "callHook"
@@ -457,6 +487,12 @@
   },
   {
     "name": "configureViewWithDirective"
+  },
+  {
+    "name": "consumerBeforeComputation"
+  },
+  {
+    "name": "consumerDestroy"
   },
   {
     "name": "consumerIsLive"
@@ -627,6 +663,9 @@
     "name": "getNextLContainer"
   },
   {
+    "name": "getNgZoneOptions"
+  },
+  {
     "name": "getNodeInjectable"
   },
   {
@@ -678,6 +717,9 @@
     "name": "handleUnhandledError"
   },
   {
+    "name": "hasApplyArgsData"
+  },
+  {
     "name": "icuContainerIterate"
   },
   {
@@ -723,7 +765,16 @@
     "name": "internalImportProvidersFrom"
   },
   {
+    "name": "internalProvideZoneChangeDetection"
+  },
+  {
     "name": "invokeHostBindingsInCreationMode"
+  },
+  {
+    "name": "isAngularZoneProperty"
+  },
+  {
+    "name": "isApplicationBootstrapConfig"
   },
   {
     "name": "isComponentDef"
@@ -813,7 +864,7 @@
     "name": "ngOnChangesSetInput"
   },
   {
-    "name": "ngZoneApplicationErrorHandlerFactory"
+    "name": "ngZoneInstanceId"
   },
   {
     "name": "noop"
@@ -888,10 +939,16 @@
     "name": "retrieveHydrationInfo"
   },
   {
+    "name": "runEffectsInView"
+  },
+  {
     "name": "saveNameToExportMap"
   },
   {
-    "name": "scheduleCallback"
+    "name": "scheduleCallbackWithMicrotask"
+  },
+  {
+    "name": "scheduleCallbackWithRafRace"
   },
   {
     "name": "searchTokensOnInjector"
@@ -951,6 +1008,9 @@
     "name": "uniqueIdCounter"
   },
   {
+    "name": "unregisterLView"
+  },
+  {
     "name": "unwrapRNode"
   },
   {
@@ -961,6 +1021,9 @@
   },
   {
     "name": "viewAttachedToChangeDetector"
+  },
+  {
+    "name": "viewShouldHaveReactiveConsumer"
   },
   {
     "name": "walkProviderTree"

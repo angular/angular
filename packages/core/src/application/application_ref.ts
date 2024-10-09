@@ -3,13 +3,16 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import '../util/ng_jit_mode';
 
-import {setActiveConsumer, setThrowInvalidWriteToSignalError} from '@angular/core/primitives/signals';
-import {Observable, Subject} from 'rxjs';
+import {
+  setActiveConsumer,
+  setThrowInvalidWriteToSignalError,
+} from '@angular/core/primitives/signals';
+import {Observable, Subject, Subscription} from 'rxjs';
 import {first, map} from 'rxjs/operators';
 
 import {ZONELESS_ENABLED} from '../change_detection/scheduling/zoneless_scheduling';
@@ -18,7 +21,7 @@ import {inject} from '../di';
 import {Injectable} from '../di/injectable';
 import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
-import {EnvironmentInjector} from '../di/r3_injector';
+import {EnvironmentInjector, type R3Injector} from '../di/r3_injector';
 import {ErrorHandler, INTERNAL_APPLICATION_ERROR_HANDLER} from '../error_handler';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
@@ -26,20 +29,22 @@ import {ComponentFactory, ComponentRef} from '../linker/component_factory';
 import {ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {ViewRef} from '../linker/view_ref';
-import {PendingTasks} from '../pending_tasks';
-import {AfterRenderEventManager} from '../render3/after_render_hooks';
+import {PendingTasksInternal} from '../pending_tasks';
+import {RendererFactory2} from '../render/api';
+import {AfterRenderManager} from '../render3/after_render/manager';
 import {ComponentFactory as R3ComponentFactory} from '../render3/component_ref';
 import {isStandalone} from '../render3/definition';
 import {ChangeDetectionMode, detectChangesInternal} from '../render3/instructions/change_detection';
 import {FLAGS, LView, LViewFlags} from '../render3/interfaces/view';
 import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from '../render3/util/global_utils';
-import {requiresRefreshOrTraversal} from '../render3/util/view_utils';
+import {removeLViewOnDestroy, requiresRefreshOrTraversal} from '../render3/util/view_utils';
 import {ViewRef as InternalViewRef} from '../render3/view_ref';
 import {TESTABILITY} from '../testability/testability';
 import {isPromise} from '../util/lang';
 import {NgZone} from '../zone/ng_zone';
 
 import {ApplicationInitStatus} from './application_init';
+import {EffectScheduler} from '../render3/reactivity/root_effect_scheduler';
 
 /**
  * A DI token that provides a set of callbacks to
@@ -51,9 +56,9 @@ import {ApplicationInitStatus} from './application_init';
  *
  * @publicApi
  */
-export const APP_BOOTSTRAP_LISTENER =
-    new InjectionToken<ReadonlyArray<(compRef: ComponentRef<any>) => void>>(
-        ngDevMode ? 'appBootstrapListener' : '');
+export const APP_BOOTSTRAP_LISTENER = new InjectionToken<
+  ReadonlyArray<(compRef: ComponentRef<any>) => void>
+>(ngDevMode ? 'appBootstrapListener' : '');
 
 export function publishDefaultGlobalUtils() {
   ngDevMode && _publishDefaultGlobalUtils();
@@ -65,10 +70,9 @@ export function publishDefaultGlobalUtils() {
 export function publishSignalConfiguration(): void {
   setThrowInvalidWriteToSignalError(() => {
     throw new RuntimeError(
-        RuntimeErrorCode.SIGNAL_WRITE_FROM_ILLEGAL_CONTEXT,
-        ngDevMode &&
-            'Writing to signals is not allowed in a `computed` or an `effect` by default. ' +
-                'Use `allowSignalWrites` in the `CreateEffectOptions` to enable this inside effects.');
+      RuntimeErrorCode.SIGNAL_WRITE_FROM_ILLEGAL_CONTEXT,
+      ngDevMode && 'Writing to signals is not allowed in a `computed`.',
+    );
   });
 }
 
@@ -83,7 +87,10 @@ export function isBoundToModule<C>(cf: ComponentFactory<C>): boolean {
  * @publicApi
  */
 export class NgProbeToken {
-  constructor(public name: string, public token: any) {}
+  constructor(
+    public name: string,
+    public token: any,
+  ) {}
 }
 
 /**
@@ -93,13 +100,13 @@ export class NgProbeToken {
  */
 export interface BootstrapOptions {
   /**
-   * Optionally specify which `NgZone` should be used.
+   * Optionally specify which `NgZone` should be used when not configured in the providers.
    *
    * - Provide your own `NgZone` instance.
    * - `zone.js` - Use default `NgZone` which requires `Zone.js`.
    * - `noop` - Use `NoopNgZone` which does nothing.
    */
-  ngZone?: NgZone|'zone.js'|'noop';
+  ngZone?: NgZone | 'zone.js' | 'noop';
 
   /**
    * Optionally specify coalescing event change detections or not.
@@ -151,10 +158,15 @@ export interface BootstrapOptions {
    * - calling `ChangeDetectorRef.markForCheck`
    * - calling `ComponentRef.setInput`
    * - updating a signal that is read in a template
-   * - when bound host or template listeners are triggered
    * - attaching a view that is marked dirty
    * - removing a view
    * - registering a render hook (templates are only refreshed if render hooks do one of the above)
+   *
+   * @deprecated This option was introduced out of caution as a way for developers to opt out of the
+   *    new behavior in v18 which schedule change detection for the above events when they occur
+   *    outside the Zone. After monitoring the results post-release, we have determined that this
+   *    feature is working as desired and do not believe it should ever be disabled by setting
+   *    this option to `true`.
    */
   ignoreChangesOutsideZone?: boolean;
 }
@@ -163,7 +175,10 @@ export interface BootstrapOptions {
 const MAXIMUM_REFRESH_RERUNS = 10;
 
 export function _callAndReportToErrorHandler(
-    errorHandler: ErrorHandler, ngZone: NgZone, callback: () => any): any {
+  errorHandler: ErrorHandler,
+  ngZone: NgZone,
+  callback: () => any,
+): any {
   try {
     const result = callback();
     if (isPromise(result)) {
@@ -182,7 +197,7 @@ export function _callAndReportToErrorHandler(
   }
 }
 
-export function optionsReducer<T extends Object>(dst: T, objs: T|T[]): T {
+export function optionsReducer<T extends Object>(dst: T, objs: T | T[]): T {
   if (Array.isArray(objs)) {
     return objs.reduce(optionsReducer, dst);
   }
@@ -292,15 +307,36 @@ export class ApplicationRef {
   /** @internal */
   _views: InternalViewRef<unknown>[] = [];
   private readonly internalErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
-  private readonly afterRenderEffectManager = inject(AfterRenderEventManager);
+  private readonly afterRenderManager = inject(AfterRenderManager);
   private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
+  private readonly rootEffectScheduler = inject(EffectScheduler);
+
+  /**
+   * Current dirty state of the application across a number of dimensions (views, afterRender hooks,
+   * etc).
+   *
+   * A flag set here means that `tick()` will attempt to resolve the dirtiness when executed.
+   *
+   * @internal
+   */
+  dirtyFlags = ApplicationRefDirtyFlags.None;
+
+  /**
+   * Like `dirtyFlags` but don't cause `tick()` to loop.
+   *
+   * @internal
+   */
+  deferredDirtyFlags = ApplicationRefDirtyFlags.None;
 
   // Needed for ComponentFixture temporarily during migration of autoDetect behavior
   // Eventually the hostView of the fixture should just attach to ApplicationRef.
   private externalTestViews: Set<InternalViewRef<unknown>> = new Set();
-  private beforeRender = new Subject<boolean>();
   /** @internal */
   afterTick = new Subject<void>();
+  /** @internal */
+  get allViews(): Array<InternalViewRef<unknown>> {
+    return [...this.externalTestViews.keys(), ...this._views];
+  }
 
   /**
    * Indicates whether this instance was destroyed.
@@ -323,8 +359,27 @@ export class ApplicationRef {
   /**
    * Returns an Observable that indicates when the application is stable or unstable.
    */
-  public readonly isStable: Observable<boolean> =
-      inject(PendingTasks).hasPendingTasks.pipe(map(pending => !pending));
+  public readonly isStable: Observable<boolean> = inject(PendingTasksInternal).hasPendingTasks.pipe(
+    map((pending) => !pending),
+  );
+
+  /**
+   * @returns A promise that resolves when the application becomes stable
+   */
+  whenStable(): Promise<void> {
+    let subscription: Subscription;
+    return new Promise<void>((resolve) => {
+      subscription = this.isStable.subscribe({
+        next: (stable) => {
+          if (stable) {
+            resolve();
+          }
+        },
+      });
+    }).finally(() => {
+      subscription.unsubscribe();
+    });
+  }
 
   private readonly _injector = inject(EnvironmentInjector);
   /**
@@ -371,7 +426,7 @@ export class ApplicationRef {
    *
    * {@example core/ts/platform/platform.ts region='domNode'}
    */
-  bootstrap<C>(component: Type<C>, rootSelectorOrNode?: string|any): ComponentRef<C>;
+  bootstrap<C>(component: Type<C>, rootSelectorOrNode?: string | any): ComponentRef<C>;
 
   /**
    * Bootstrap a component onto the element identified by its selector or, optionally, to a
@@ -413,8 +468,10 @@ export class ApplicationRef {
    * @deprecated Passing Component factories as the `Application.bootstrap` function argument is
    *     deprecated. Pass Component Types instead.
    */
-  bootstrap<C>(componentFactory: ComponentFactory<C>, rootSelectorOrNode?: string|any):
-      ComponentRef<C>;
+  bootstrap<C>(
+    componentFactory: ComponentFactory<C>,
+    rootSelectorOrNode?: string | any,
+  ): ComponentRef<C>;
 
   /**
    * Bootstrap a component onto the element identified by its selector or, optionally, to a
@@ -453,19 +510,22 @@ export class ApplicationRef {
    *
    * {@example core/ts/platform/platform.ts region='domNode'}
    */
-  bootstrap<C>(componentOrFactory: ComponentFactory<C>|Type<C>, rootSelectorOrNode?: string|any):
-      ComponentRef<C> {
+  bootstrap<C>(
+    componentOrFactory: ComponentFactory<C> | Type<C>,
+    rootSelectorOrNode?: string | any,
+  ): ComponentRef<C> {
     (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
     const isComponentFactory = componentOrFactory instanceof ComponentFactory;
     const initStatus = this._injector.get(ApplicationInitStatus);
 
     if (!initStatus.done) {
       const standalone = !isComponentFactory && isStandalone(componentOrFactory);
-      const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) &&
-          'Cannot bootstrap as there are still asynchronous initializers running.' +
-              (standalone ?
-                   '' :
-                   ' Bootstrap components in the `ngDoBootstrap` method of the root module.');
+      const errorMessage =
+        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        'Cannot bootstrap as there are still asynchronous initializers running.' +
+          (standalone
+            ? ''
+            : ' Bootstrap components in the `ngDoBootstrap` method of the root module.');
       throw new RuntimeError(RuntimeErrorCode.ASYNC_INITIALIZERS_STILL_RUNNING, errorMessage);
     }
 
@@ -479,8 +539,9 @@ export class ApplicationRef {
     this.componentTypes.push(componentFactory.componentType);
 
     // Create a factory associated with the current module if it's not bound to some other
-    const ngModule =
-        isBoundToModule(componentFactory) ? undefined : this._injector.get(NgModuleRef);
+    const ngModule = isBoundToModule(componentFactory)
+      ? undefined
+      : this._injector.get(NgModuleRef);
     const selectorOrNode = rootSelectorOrNode || componentFactory.selector;
     const compRef = componentFactory.create(Injector.NULL, [], selectorOrNode, ngModule);
     const nativeElement = compRef.location.nativeElement;
@@ -512,26 +573,29 @@ export class ApplicationRef {
    * detection pass during which all change detection must complete.
    */
   tick(): void {
-    this._tick(true);
+    if (!this.zonelessEnabled) {
+      this.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeGlobal;
+    }
+    this._tick();
   }
 
   /** @internal */
-  _tick(refreshViews: boolean): void {
+  _tick(): void {
     (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
     if (this._runningTick) {
       throw new RuntimeError(
-          RuntimeErrorCode.RECURSIVE_APPLICATION_REF_TICK,
-          ngDevMode && 'ApplicationRef.tick is called recursively');
+        RuntimeErrorCode.RECURSIVE_APPLICATION_REF_TICK,
+        ngDevMode && 'ApplicationRef.tick is called recursively',
+      );
     }
 
     const prevConsumer = setActiveConsumer(null);
     try {
       this._runningTick = true;
+      this.synchronize();
 
-      this.detectChangesInAttachedViews(refreshViews);
-
-      if ((typeof ngDevMode === 'undefined' || ngDevMode)) {
-        for (let view of this._views) {
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        for (let view of this.allViews) {
           view.checkNoChanges();
         }
       }
@@ -545,45 +609,128 @@ export class ApplicationRef {
     }
   }
 
-  private detectChangesInAttachedViews(refreshViews: boolean) {
+  /**
+   * Performs the core work of synchronizing the application state with the UI, resolving any
+   * pending dirtiness (potentially in a loop).
+   */
+  private synchronize(): void {
+    let rendererFactory: RendererFactory2 | null = null;
+    if (!(this._injector as R3Injector).destroyed) {
+      rendererFactory = this._injector.get(RendererFactory2, null, {optional: true});
+    }
+
+    // When beginning synchronization, all deferred dirtiness becomes active dirtiness.
+    this.dirtyFlags |= this.deferredDirtyFlags;
+    this.deferredDirtyFlags = ApplicationRefDirtyFlags.None;
+
     let runs = 0;
-    const afterRenderEffectManager = this.afterRenderEffectManager;
-    while (runs < MAXIMUM_REFRESH_RERUNS) {
-      if (refreshViews) {
-        const isFirstPass = runs === 0;
-        this.beforeRender.next(isFirstPass);
-        for (let {_lView, notifyErrorHandler} of this._views) {
-          detectChangesInViewIfRequired(
-              _lView, notifyErrorHandler, isFirstPass, this.zonelessEnabled);
-        }
-      }
-      runs++;
-
-      afterRenderEffectManager.executeInternalCallbacks();
-      // If we have a newly dirty view after running internal callbacks, recheck the views again
-      // before running user-provided callbacks
-      if ([...this.externalTestViews.keys(), ...this._views].some(
-              ({_lView}) => requiresRefreshOrTraversal(_lView))) {
-        continue;
-      }
-
-      afterRenderEffectManager.execute();
-      // If after running all afterRender callbacks we have no more views that need to be refreshed,
-      // we can break out of the loop
-      if (![...this.externalTestViews.keys(), ...this._views].some(
-              ({_lView}) => requiresRefreshOrTraversal(_lView))) {
-        break;
-      }
+    while (this.dirtyFlags !== ApplicationRefDirtyFlags.None && runs++ < MAXIMUM_REFRESH_RERUNS) {
+      this.synchronizeOnce(rendererFactory);
     }
 
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && runs >= MAXIMUM_REFRESH_RERUNS) {
       throw new RuntimeError(
-          RuntimeErrorCode.INFINITE_CHANGE_DETECTION,
-          ngDevMode &&
-              'Infinite change detection while refreshing application views. ' +
-                  'Ensure views are not calling `markForCheck` on every template execution or ' +
-                  'that afterRender hooks always mark views for check.',
+        RuntimeErrorCode.INFINITE_CHANGE_DETECTION,
+        ngDevMode &&
+          'Infinite change detection while refreshing application views. ' +
+            'Ensure views are not calling `markForCheck` on every template execution or ' +
+            'that afterRender hooks always mark views for check.',
       );
+    }
+  }
+
+  /**
+   * Perform a single synchronization pass.
+   */
+  private synchronizeOnce(rendererFactory: RendererFactory2 | null): void {
+    // If we happened to loop, deferred dirtiness can be processed as active dirtiness again.
+    this.dirtyFlags |= this.deferredDirtyFlags;
+    this.deferredDirtyFlags = ApplicationRefDirtyFlags.None;
+
+    // First, process any dirty root effects.
+    if (this.dirtyFlags & ApplicationRefDirtyFlags.RootEffects) {
+      this.dirtyFlags &= ~ApplicationRefDirtyFlags.RootEffects;
+      this.rootEffectScheduler.flush();
+    }
+
+    // First check dirty views, if there are any.
+    if (this.dirtyFlags & ApplicationRefDirtyFlags.ViewTreeAny) {
+      // Change detection on views starts in targeted mode (only check components if they're
+      // marked as dirty) unless global checking is specifically requested via APIs like
+      // `ApplicationRef.tick()` and the `NgZone` integration.
+      const useGlobalCheck = Boolean(this.dirtyFlags & ApplicationRefDirtyFlags.ViewTreeGlobal);
+
+      // Clear the view-related dirty flags.
+      this.dirtyFlags &= ~ApplicationRefDirtyFlags.ViewTreeAny;
+
+      // Set the AfterRender bit, as we're checking views and will need to run afterRender hooks.
+      this.dirtyFlags |= ApplicationRefDirtyFlags.AfterRender;
+
+      // Check all potentially dirty views.
+      for (let {_lView, notifyErrorHandler} of this.allViews) {
+        detectChangesInViewIfRequired(
+          _lView,
+          notifyErrorHandler,
+          useGlobalCheck,
+          this.zonelessEnabled,
+        );
+      }
+
+      // If `markForCheck()` was called during view checking, it will have set the `ViewTreeCheck`
+      // flag. We clear the flag here because, for backwards compatibility, `markForCheck()`
+      // during view checking doesn't cause the view to be re-checked.
+      this.dirtyFlags &= ~ApplicationRefDirtyFlags.ViewTreeCheck;
+
+      // Check if any views are still dirty after checking and we need to loop back.
+      this.syncDirtyFlagsWithViews();
+      if (
+        this.dirtyFlags &
+        (ApplicationRefDirtyFlags.ViewTreeAny | ApplicationRefDirtyFlags.RootEffects)
+      ) {
+        // If any views or effects are still dirty after checking, loop back before running render
+        // hooks.
+        return;
+      }
+    } else {
+      // If we skipped refreshing views above, there might still be unflushed animations
+      // because we never called `detectChangesInternal` on the views.
+      rendererFactory?.begin?.();
+      rendererFactory?.end?.();
+    }
+
+    // Even if there were no dirty views, afterRender hooks might still be dirty.
+    if (this.dirtyFlags & ApplicationRefDirtyFlags.AfterRender) {
+      this.dirtyFlags &= ~ApplicationRefDirtyFlags.AfterRender;
+      this.afterRenderManager.execute();
+
+      // afterRender hooks might influence dirty flags.
+    }
+    this.syncDirtyFlagsWithViews();
+  }
+
+  /**
+   * Checks `allViews` for views which require refresh/traversal, and updates `dirtyFlags`
+   * accordingly, with two potential behaviors:
+   *
+   * 1. If any of our views require updating, then this adds the `ViewTreeTraversal` dirty flag.
+   *    This _should_ be a no-op, since the scheduler should've added the flag at the same time the
+   *    view was marked as needing updating.
+   *
+   *    TODO(alxhub): figure out if this behavior is still needed for edge cases.
+   *
+   * 2. If none of our views require updating, then clear the view-related `dirtyFlag`s. This
+   *    happens when the scheduler is notified of a view becoming dirty, but the view itself isn't
+   *    reachable through traversal from our roots (e.g. it's detached from the CD tree).
+   */
+  private syncDirtyFlagsWithViews(): void {
+    if (this.allViews.some(({_lView}) => requiresRefreshOrTraversal(_lView))) {
+      // If after running all afterRender callbacks new views are dirty, ensure we loop back.
+      this.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeTraversal;
+      return;
+    } else {
+      // Even though this flag may be set, none of _our_ views require traversal, and so the
+      // `ApplicationRef` doesn't require any repeated checking.
+      this.dirtyFlags &= ~ApplicationRefDirtyFlags.ViewTreeAny;
     }
   }
 
@@ -594,7 +741,7 @@ export class ApplicationRef {
    */
   attachView(viewRef: ViewRef): void {
     (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
-    const view = (viewRef as InternalViewRef<unknown>);
+    const view = viewRef as InternalViewRef<unknown>;
     this._views.push(view);
     view.attachToAppRef(this);
   }
@@ -604,7 +751,7 @@ export class ApplicationRef {
    */
   detachView(viewRef: ViewRef): void {
     (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
-    const view = (viewRef as InternalViewRef<unknown>);
+    const view = viewRef as InternalViewRef<unknown>;
     remove(this._views, view);
     view.detachFromAppRef();
   }
@@ -617,11 +764,12 @@ export class ApplicationRef {
     const listeners = this._injector.get(APP_BOOTSTRAP_LISTENER, []);
     if (ngDevMode && !Array.isArray(listeners)) {
       throw new RuntimeError(
-          RuntimeErrorCode.INVALID_MULTI_PROVIDER,
-          'Unexpected type of the `APP_BOOTSTRAP_LISTENER` token value ' +
-              `(expected an array, but got ${typeof listeners}). ` +
-              'Please check that the `APP_BOOTSTRAP_LISTENER` token is configured as a ' +
-              '`multi: true` provider.');
+        RuntimeErrorCode.INVALID_MULTI_PROVIDER,
+        'Unexpected type of the `APP_BOOTSTRAP_LISTENER` token value ' +
+          `(expected an array, but got ${typeof listeners}). ` +
+          'Please check that the `APP_BOOTSTRAP_LISTENER` token is configured as a ' +
+          '`multi: true` provider.',
+      );
     }
     [...this._bootstrapListeners, ...listeners].forEach((listener) => listener(componentRef));
   }
@@ -632,7 +780,7 @@ export class ApplicationRef {
 
     try {
       // Call all the lifecycle hooks.
-      this._destroyListeners.forEach(listener => listener());
+      this._destroyListeners.forEach((listener) => listener());
 
       // Destroy all registered views.
       this._views.slice().forEach((view) => view.destroy());
@@ -667,15 +815,12 @@ export class ApplicationRef {
   destroy(): void {
     if (this._destroyed) {
       throw new RuntimeError(
-          RuntimeErrorCode.APPLICATION_REF_ALREADY_DESTROYED,
-          ngDevMode && 'This instance of the `ApplicationRef` has already been destroyed.');
+        RuntimeErrorCode.APPLICATION_REF_ALREADY_DESTROYED,
+        ngDevMode && 'This instance of the `ApplicationRef` has already been destroyed.',
+      );
     }
 
-    // This is a temporary type to represent an instance of an R3Injector, which can be destroyed.
-    // The type will be replaced with a different one once destroyable injector type is available.
-    type DestroyableInjector = Injector&{destroy?: Function, destroyed?: boolean};
-
-    const injector = this._injector as DestroyableInjector;
+    const injector = this._injector as R3Injector;
 
     // Check that this injector instance supports destroy operation.
     if (injector.destroy && !injector.destroyed) {
@@ -694,9 +839,12 @@ export class ApplicationRef {
 
   private warnIfDestroyed() {
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && this._destroyed) {
-      console.warn(formatRuntimeError(
+      console.warn(
+        formatRuntimeError(
           RuntimeErrorCode.APPLICATION_REF_ALREADY_DESTROYED,
-          'This instance of the `ApplicationRef` has already been destroyed.'));
+          'This instance of the `ApplicationRef` has already been destroyed.',
+        ),
+      );
     }
   }
 }
@@ -708,7 +856,41 @@ export function remove<T>(list: T[], el: T): void {
   }
 }
 
-let whenStableStore: WeakMap<ApplicationRef, Promise<void>>|undefined;
+export const enum ApplicationRefDirtyFlags {
+  None = 0,
+
+  /**
+   * A global change detection round has been requested.
+   */
+  ViewTreeGlobal = 0b00000001,
+
+  /**
+   * Part of the view tree is marked for traversal.
+   */
+  ViewTreeTraversal = 0b00000010,
+
+  /**
+   * Part of the view tree is marked to be checked (dirty).
+   */
+  ViewTreeCheck = 0b00000100,
+
+  /**
+   * Helper for any view tree bit being set.
+   */
+  ViewTreeAny = ViewTreeGlobal | ViewTreeTraversal | ViewTreeCheck,
+
+  /**
+   * After render hooks need to run.
+   */
+  AfterRender = 0b00001000,
+
+  /**
+   * Effects at the `ApplicationRef` level.
+   */
+  RootEffects = 0b00010000,
+}
+
+let whenStableStore: WeakMap<ApplicationRef, Promise<void>> | undefined;
 /**
  * Returns a Promise that resolves when the application becomes stable after this method is called
  * the first time.
@@ -720,8 +902,10 @@ export function whenStable(applicationRef: ApplicationRef): Promise<void> {
     return cachedWhenStable;
   }
 
-  const whenStablePromise =
-      applicationRef.isStable.pipe(first((isStable) => isStable)).toPromise().then(() => void 0);
+  const whenStablePromise = applicationRef.isStable
+    .pipe(first((isStable) => isStable))
+    .toPromise()
+    .then(() => void 0);
   whenStableStore.set(applicationRef, whenStablePromise);
 
   // Be a good citizen and clean the store `onDestroy` even though we are using `WeakMap`.
@@ -730,20 +914,24 @@ export function whenStable(applicationRef: ApplicationRef): Promise<void> {
   return whenStablePromise;
 }
 
-
 export function detectChangesInViewIfRequired(
-    lView: LView, notifyErrorHandler: boolean, isFirstPass: boolean, zonelessEnabled: boolean) {
+  lView: LView,
+  notifyErrorHandler: boolean,
+  isFirstPass: boolean,
+  zonelessEnabled: boolean,
+) {
   // When re-checking, only check views which actually need it.
   if (!isFirstPass && !requiresRefreshOrTraversal(lView)) {
     return;
   }
 
-  const mode = (isFirstPass && !zonelessEnabled) ?
-      // The first pass is always in Global mode, which includes `CheckAlways` views.
-      // When using zoneless, all root views must be explicitly marked for refresh, even if they are
-      // `CheckAlways`.
-      ChangeDetectionMode.Global :
-      // Only refresh views with the `RefreshView` flag or views is a changed signal
-      ChangeDetectionMode.Targeted;
+  const mode =
+    isFirstPass && !zonelessEnabled
+      ? // The first pass is always in Global mode, which includes `CheckAlways` views.
+        // When using zoneless, all root views must be explicitly marked for refresh, even if they are
+        // `CheckAlways`.
+        ChangeDetectionMode.Global
+      : // Only refresh views with the `RefreshView` flag or views is a changed signal
+        ChangeDetectionMode.Targeted;
   detectChangesInternal(lView, notifyErrorHandler, mode);
 }

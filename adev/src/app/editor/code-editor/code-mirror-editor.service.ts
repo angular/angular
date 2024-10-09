@@ -340,6 +340,34 @@ export class CodeMirrorEditor {
     this.changeCurrentFile(filename);
   }
 
+  async renameFile(oldPath: string, newPath: string) {
+    const content = await this.nodeRuntimeSandbox.readFile(oldPath).catch((error) => {
+      // empty content if file does not exist
+      if (error.message.includes('ENOENT')) return '';
+      else throw error;
+    });
+
+    await this.nodeRuntimeSandbox.renameFile(oldPath, newPath).catch((error) => {
+      throw error;
+    });
+
+    this.embeddedTutorialManager.tutorialFiles.update((files) => {
+      delete files[oldPath];
+      files[newPath] = content;
+      return files;
+    });
+
+    this.embeddedTutorialManager.openFiles.update((files) => [
+      ...files.filter((file) => file !== oldPath),
+      newPath,
+    ]);
+
+    this.setProjectFiles();
+    this.updateVfsEnv();
+    this.saveLibrariesTypes();
+    this.changeCurrentFile(newPath);
+  }
+
   async deleteFile(deletedFile: string): Promise<void> {
     await this.nodeRuntimeSandbox.deleteFile(deletedFile);
 

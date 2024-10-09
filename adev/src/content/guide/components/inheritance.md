@@ -24,7 +24,7 @@ When a component extends another component or a directive, it inherits all the m
 the base class's decorator and the base class's decorated members. This includes the selector,
 template, styles, host bindings, inputs, outputs, lifecycle methods, and any other settings.
 
-```ts
+```angular-ts
 @Component({
   selector: 'base-listbox',
   template: `

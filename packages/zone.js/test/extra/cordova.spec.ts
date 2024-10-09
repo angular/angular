@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 describe('cordova test', () => {
   it('cordova.exec() should be patched as macroTask', (done) => {
@@ -17,23 +17,29 @@ describe('cordova test', () => {
 
     zone.run(() => {
       cordova.exec(
-          () => {
-            expect(Zone.current.name).toEqual('cordova');
-          },
-          () => {
-            fail('should not fail');
-          },
-          'service', 'successAction', ['arg0', 'arg1']);
+        () => {
+          expect(Zone.current.name).toEqual('cordova');
+        },
+        () => {
+          fail('should not fail');
+        },
+        'service',
+        'successAction',
+        ['arg0', 'arg1'],
+      );
 
       cordova.exec(
-          () => {
-            fail('should not success');
-          },
-          () => {
-            expect(Zone.current.name).toEqual('cordova');
-            done();
-          },
-          'service', 'failAction', ['arg0', 'arg1']);
+        () => {
+          fail('should not success');
+        },
+        () => {
+          expect(Zone.current.name).toEqual('cordova');
+          done();
+        },
+        'service',
+        'failAction',
+        ['arg0', 'arg1'],
+      );
     });
   });
 });

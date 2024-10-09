@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 'use strict';
@@ -22,6 +22,9 @@ const THRESHOLD_PERCENT = 5;
 const currentSizes = JSON.parse(fs.readFileSync('/tmp/current.log', 'utf8'));
 const allLimitSizes = JSON.parse(fs.readFileSync(limitFile, 'utf8'));
 const limitSizes = allLimitSizes[project];
+if (!limitSizes) {
+  throw new Error(`ERROR: Project '${project}' is missing from limit file ${limitFile}.`);
+}
 
 // Check current sizes against limits.
 let failed = false;

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as o from '../../../../output/output_ast';
@@ -23,18 +23,22 @@ export function generateTrackVariables(job: CompilationJob): void {
         continue;
       }
 
-      op.track = ir.transformExpressionsInExpression(op.track, expr => {
-        if (expr instanceof ir.LexicalReadExpr) {
-          if (op.varNames.$index.has(expr.name)) {
-            return o.variable('$index');
-          } else if (expr.name === op.varNames.$implicit) {
-            return o.variable('$item');
-          }
+      op.track = ir.transformExpressionsInExpression(
+        op.track,
+        (expr) => {
+          if (expr instanceof ir.LexicalReadExpr) {
+            if (op.varNames.$index.has(expr.name)) {
+              return o.variable('$index');
+            } else if (expr.name === op.varNames.$implicit) {
+              return o.variable('$item');
+            }
 
-          // TODO: handle prohibited context variables (emit as globals?)
-        }
-        return expr;
-      }, ir.VisitorContextFlag.None);
+            // TODO: handle prohibited context variables (emit as globals?)
+          }
+          return expr;
+        },
+        ir.VisitorContextFlag.None,
+      );
     }
   }
 }

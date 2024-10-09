@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {isPlatformBrowser} from '@angular/common';
@@ -17,8 +17,8 @@ import {
   NgZone,
   PLATFORM_ID,
 } from '@angular/core';
-import {merge, Observable, of} from 'rxjs';
-import {delay, filter, take} from 'rxjs/operators';
+import {merge, from, Observable, of} from 'rxjs';
+import {delay, take} from 'rxjs/operators';
 
 import {NgswCommChannel} from './low_level';
 import {SwPush} from './push';
@@ -40,6 +40,7 @@ export function ngswAppInitializer(
     }
 
     const ngZone = injector.get(NgZone);
+    const appRef = injector.get(ApplicationRef);
 
     // Set up the `controllerchange` event listener outside of
     // the Angular zone to avoid unnecessary change detections,
@@ -48,10 +49,13 @@ export function ngswAppInitializer(
       // Wait for service worker controller changes, and fire an INITIALIZE action when a new SW
       // becomes active. This allows the SW to initialize itself even if there is no application
       // traffic.
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (navigator.serviceWorker.controller !== null) {
-          navigator.serviceWorker.controller.postMessage({action: 'INITIALIZE'});
-        }
+      const sw = navigator.serviceWorker;
+      const onControllerChange = () => sw.controller?.postMessage({action: 'INITIALIZE'});
+
+      sw.addEventListener('controllerchange', onControllerChange);
+
+      appRef.onDestroy(() => {
+        sw.removeEventListener('controllerchange', onControllerChange);
       });
     });
 
@@ -72,9 +76,10 @@ export function ngswAppInitializer(
           readyToRegister$ = delayWithTimeout(+args[0] || 0);
           break;
         case 'registerWhenStable':
+          const whenStable$ = from(injector.get(ApplicationRef).whenStable());
           readyToRegister$ = !args[0]
-            ? whenStable(injector)
-            : merge(whenStable(injector), delayWithTimeout(+args[0]));
+            ? whenStable$
+            : merge(whenStable$, delayWithTimeout(+args[0]));
           break;
         default:
           // Unknown strategy.
@@ -102,11 +107,6 @@ export function ngswAppInitializer(
 
 function delayWithTimeout(timeout: number): Observable<unknown> {
   return of(null).pipe(delay(timeout));
-}
-
-function whenStable(injector: Injector): Observable<unknown> {
-  const appRef = injector.get(ApplicationRef);
-  return appRef.isStable.pipe(filter((stable) => stable));
 }
 
 export function ngswCommChannelFactory(

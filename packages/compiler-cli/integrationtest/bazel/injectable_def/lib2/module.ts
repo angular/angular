@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Component, Injector, NgModule} from '@angular/core';
@@ -28,5 +28,4 @@ export class Lib2Cmp {
   exports: [Lib2Cmp],
   imports: [Lib1Module],
 })
-export class Lib2Module {
-}
+export class Lib2Module {}

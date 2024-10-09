@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /**
@@ -41,5 +41,5 @@ export interface DeclarationScope<TSharedConstantScope, TExpression> {
    * @returns a reference to a reference object for where the shared constant statements will be
    *     inserted, or `null` if it is not possible to have a shared scope.
    */
-  getConstantScopeRef(expression: TExpression): TSharedConstantScope|null;
+  getConstantScopeRef(expression: TExpression): TSharedConstantScope | null;
 }

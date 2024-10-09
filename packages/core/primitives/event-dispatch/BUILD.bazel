@@ -1,6 +1,4 @@
-load("//tools:defaults.bzl", "ts_library", "tsec_test")
-load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
-load("@npm//@bazel/terser:index.bzl", "terser_minified")
+load("//tools:defaults.bzl", "esbuild", "ts_library", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -12,6 +10,9 @@ ts_library(
         ],
     ),
     module_name = "@angular/core/primitives/event-dispatch",
+    deps = [
+        "//packages/core/src/util",  # Implicit dependency on ngDevMode
+    ],
 )
 
 tsec_test(
@@ -29,17 +30,18 @@ filegroup(
     visibility = ["//visibility:public"],
 )
 
-rollup_bundle(
-    name = "contract_bundle",
-    args = ["--no-sourcemap"],
-    entry_point = ":contract_binary.ts",
-    format = "esm",
-    deps = [":event-dispatch"],
-)
-
-terser_minified(
+esbuild(
     name = "contract_bundle_min",
-    src = ":contract_bundle",
-    config_file = ":terser.config.json",
-    sourcemap = False,
+    args = {
+        "sourcemap": False,
+        "resolveExtensions": [
+            ".mjs",
+        ],
+        "legalComments": "none",
+    },
+    entry_point = ":contract_binary.ts",
+    format = "iife",
+    minify = True,
+    sourcemap = "inline",
+    deps = [":event-dispatch"],
 )

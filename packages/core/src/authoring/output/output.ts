@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {assertInInjectionContext} from '../../di';
@@ -13,7 +13,7 @@ import {OutputEmitterRef} from './output_emitter_ref';
 /**
  * Options for declaring an output.
  *
- * @developerPreview
+ * @publicAPI
  */
 export interface OutputOptions {
   alias?: string;
@@ -33,8 +33,8 @@ export interface OutputOptions {
  *
  * To use `output()`, import the function from `@angular/core`.
  *
- * ```
- * import {output} from '@angular/core`;
+ * ```ts
+ * import {output} from '@angular/core';
  * ```
  *
  * Inside your component, introduce a new class member and initialize
@@ -58,9 +58,8 @@ export interface OutputOptions {
  *   this.nameChange.emit(newName);
  * }
  * ```
- *
- * @developerPreview
  * @initializerApiFunction {"showTypesInSignaturePreview": true}
+ * @publicAPI
  */
 export function output<T = void>(opts?: OutputOptions): OutputEmitterRef<T> {
   ngDevMode && assertInInjectionContext(output);

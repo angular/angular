@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /**
@@ -35,7 +35,7 @@ export interface AbstractType<T> extends Function {
 }
 
 export interface Type<T> extends Function {
-  new(...args: any[]): T;
+  new (...args: any[]): T;
 }
 
 export type Mutable<T extends {[x: string]: any}, K extends string> = {
@@ -68,5 +68,5 @@ export type Mutable<T extends {[x: string]: any}, K extends string> = {
  * ```
  */
 export type Writable<T> = {
-  -readonly[K in keyof T]: T[K];
+  -readonly [K in keyof T]: T[K];
 };

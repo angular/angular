@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 declare global {
@@ -607,7 +607,7 @@ declare global {
      * previously. When `__Zone_ignore_on_properties` is setup, we should not see those properties
      * on targets.
      */
-    __Zone_ignore_on_properties?: {target: any; ignoreProperties: string[];}[];
+    __Zone_ignore_on_properties?: {target: any; ignoreProperties: string[]}[];
 
     /**
      * Define the event names of the passive listeners.
@@ -636,6 +636,15 @@ declare global {
      * trace.
      */
     __zone_symbol__DISABLE_WRAPPING_UNCAUGHT_PROMISE_REJECTION?: boolean;
+
+    /**
+     * https://github.com/angular/angular/issues/47579
+     *
+     * Enables the default `beforeunload` handling behavior, allowing the result of the event
+     * handling invocation to be set on the event's `returnValue`. The browser may then prompt
+     * the user with a string returned from the event handler.
+     */
+    __zone_symbol__enable_beforeunload?: boolean;
   }
 
   /**

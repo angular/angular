@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ApplicationRef, Injector, ɵglobal as global} from '@angular/core';
@@ -22,13 +22,19 @@ describe('profiler', () => {
   beforeEach(() => {
     enableDebugTools({
       injector: Injector.create({
-        providers: [{
-          provide: ApplicationRef,
-          useValue: jasmine.createSpyObj(
-              'ApplicationRef', ['bootstrap', 'tick', 'attachView', 'detachView']),
-          deps: []
-        }]
-      })
+        providers: [
+          {
+            provide: ApplicationRef,
+            useValue: jasmine.createSpyObj('ApplicationRef', [
+              'bootstrap',
+              'tick',
+              'attachView',
+              'detachView',
+            ]),
+            deps: [],
+          },
+        ],
+      }),
     } as ComponentRef<any>);
   });
 

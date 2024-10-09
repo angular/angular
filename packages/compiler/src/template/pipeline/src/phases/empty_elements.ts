@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as ir from '../../ir';
@@ -35,7 +35,7 @@ export function collapseEmptyInstructions(job: CompilationJob): void {
       const [startKind, mergedKind] = opReplacements;
 
       // Locate the previous (non-ignored) op.
-      let prevOp: ir.CreateOp|null = op.prev;
+      let prevOp: ir.CreateOp | null = op.prev;
       while (prevOp !== null && IGNORED_OP_KINDS.has(prevOp.kind)) {
         prevOp = prevOp.prev;
       }

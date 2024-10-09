@@ -1,64 +1,62 @@
 {
   "cli-hello-world": {
     "uncompressed": {
-      "runtime": 908,
-      "main": 127322,
+      "main": 132425,
       "polyfills": 33792
     }
   },
   "cli-hello-world-ivy-i18n": {
     "uncompressed": {
-      "runtime": 926,
-      "main": 125263,
-      "polyfills": 34676
+      "main": 135813,
+      "polyfills": 35883
     }
   },
   "cli-hello-world-lazy": {
     "uncompressed": {
-      "runtime": 2734,
-      "main": 231349,
+      "main": 108611,
       "polyfills": 34169,
-      "src_app_lazy_lazy_routes_ts": 487
+      "lazy.routes": 388
     }
   },
   "forms": {
     "uncompressed": {
-      "runtime": 888,
-      "main": 166256,
+      "main": 176726,
       "polyfills": 33772
     }
   },
   "animations": {
     "uncompressed": {
-      "runtime": 2704,
-      "main": 283017,
-      "polyfills": 33817,
-      "src_app_open-close_component_ts": 1321
+      "main": 143167,
+      "polyfills": 34023,
+      "open-close.component": 1190
     }
   },
   "animations-async": {
     "uncompressed": {
-      "runtime": 2906,
-      "main": 221187,
+      "main": 86540,
       "polyfills": 33782,
-      "node_modules_angular_animations_fesm2022_browser_mjs": 63949,
-      "default-node_modules_angular_animations_fesm2022_animations_mjs": 4264,
-      "src_app_open-close_component_ts": 1321
+      "browser": 63949,
+      "open-close.component": 1218
     }
   },
   "standalone-bootstrap": {
     "uncompressed": {
-      "runtime": 918,
-      "main": 85055,
+      "main": 94769,
       "polyfills": 33802
     }
   },
   "defer": {
     "uncompressed": {
-      "runtime": 2689,
-      "main": 115193,
+      "main": 11497,
       "polyfills": 33807,
-      "src_app_defer_component_ts": 450
+      "defer.component": 371
+    }
+  },
+  "platform-server-hydration/browser": {
+    "uncompressed": {
+      "main": 212989,
+      "polyfills": 33807,
+      "event-dispatch-contract.min": 476
     }
   }
 }

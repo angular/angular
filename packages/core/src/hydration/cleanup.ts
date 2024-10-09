@@ -3,15 +3,27 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ApplicationRef} from '../application/application_ref';
-import {CONTAINER_HEADER_OFFSET, DEHYDRATED_VIEWS, LContainer} from '../render3/interfaces/container';
+import {
+  CONTAINER_HEADER_OFFSET,
+  DEHYDRATED_VIEWS,
+  LContainer,
+} from '../render3/interfaces/container';
 import {Renderer} from '../render3/interfaces/renderer';
 import {RNode} from '../render3/interfaces/renderer_dom';
 import {isLContainer, isLView} from '../render3/interfaces/type_checks';
-import {HEADER_OFFSET, HOST, HYDRATION, LView, PARENT, RENDERER, TVIEW} from '../render3/interfaces/view';
+import {
+  HEADER_OFFSET,
+  HOST,
+  HYDRATION,
+  LView,
+  PARENT,
+  RENDERER,
+  TVIEW,
+} from '../render3/interfaces/view';
 import {nativeRemoveNode} from '../render3/node_manipulation';
 import {EMPTY_ARRAY} from '../util/empty';
 
@@ -64,6 +76,15 @@ function removeDehydratedView(dehydratedView: DehydratedContainerView, renderer:
  */
 function cleanupLContainer(lContainer: LContainer) {
   removeDehydratedViews(lContainer);
+
+  // The host could be an LView if this container is on a component node.
+  // In this case, descend into host LView for further cleanup. See also
+  // LContainer[HOST] docs for additional information.
+  const hostLView = lContainer[HOST];
+  if (isLView(hostLView)) {
+    cleanupLView(hostLView);
+  }
+
   for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
     cleanupLView(lContainer[i] as LView);
   }
@@ -102,10 +123,6 @@ export function cleanupDehydratedViews(appRef: ApplicationRef) {
       if (isLView(lNode)) {
         cleanupLView(lNode);
       } else {
-        // Cleanup in the root component view
-        const componentLView = lNode[HOST] as LView<unknown>;
-        cleanupLView(componentLView);
-
         // Cleanup in all views within this view container
         cleanupLContainer(lNode);
       }

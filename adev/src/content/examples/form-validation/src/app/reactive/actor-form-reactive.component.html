@@ -7,7 +7,7 @@
 
     <div [hidden]="formDir.submitted">
 
-      <div class="cross-validation" [class.cross-validation-error]="actorForm.errors?.['unambiguousRole'] && (actorForm.touched || actorForm.dirty)">
+      <div class="cross-validation" [class.cross-validation-error]="actorForm.hasError('unambiguousRole') && (actorForm.touched || actorForm.dirty)">
         <div class="form-group">
 
           <label for="name">Name</label>
@@ -18,13 +18,13 @@
           <div *ngIf="name.invalid && (name.dirty || name.touched)"
               class="alert alert-danger">
 
-            <div *ngIf="name.errors?.['required']">
+            <div *ngIf="name.hasError('required')">
               Name is required.
             </div>
-            <div *ngIf="name.errors?.['minlength']">
+            <div *ngIf="name.hasError('minlength')">
               Name must be at least 4 characters long.
             </div>
-            <div *ngIf="name.errors?.['forbiddenName']">
+            <div *ngIf="name.hasError('forbiddenName')">
               Name cannot be Bob.
             </div>
           </div>
@@ -38,14 +38,14 @@
 
           <div *ngIf="role.pending">Validating...</div>
           <div *ngIf="role.invalid" class="alert alert-danger role-errors">
-            <div *ngIf="role.errors?.['uniqueRole']">
+            <div *ngIf="role.hasError('uniqueRole')">
               Role is already taken.
             </div>
           </div>
         </div>
 
         <!-- #docregion cross-validation-error-message -->
-        <div *ngIf="actorForm.errors?.['unambiguousRole'] && (actorForm.touched || actorForm.dirty)" class="cross-validation-error-message alert alert-danger">
+        <div *ngIf="actorForm.hasError('unambiguousRole') && (actorForm.touched || actorForm.dirty)" class="cross-validation-error-message alert alert-danger">
             Name cannot match role or audiences will be confused.
         </div>
         <!-- #enddocregion cross-validation-error-message -->
@@ -59,7 +59,7 @@
         </select>
 
         <div *ngIf="skill.invalid && skill.touched" class="alert alert-danger">
-          <div *ngIf="skill.errors?.['required']">Skill is required.</div>
+          <div *ngIf="skill.hasError('required')">Skill is required.</div>
         </div>
       </div>
 

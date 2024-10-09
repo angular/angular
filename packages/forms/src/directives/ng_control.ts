@@ -3,13 +3,12 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {AbstractControlDirective} from './abstract_control_directive';
 import {ControlContainer} from './control_container';
 import {ControlValueAccessor} from './control_value_accessor';
-
 
 /**
  * @description
@@ -25,19 +24,19 @@ export abstract class NgControl extends AbstractControlDirective {
    *
    * @internal
    */
-  _parent: ControlContainer|null = null;
+  _parent: ControlContainer | null = null;
 
   /**
    * @description
    * The name for the control
    */
-  name: string|number|null = null;
+  name: string | number | null = null;
 
   /**
    * @description
    * The value accessor for the control
    */
-  valueAccessor: ControlValueAccessor|null = null;
+  valueAccessor: ControlValueAccessor | null = null;
 
   /**
    * @description

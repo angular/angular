@@ -3,7 +3,7 @@ directives and pipes used inside a component template.
 
 ## Syntax
 
-```html
+```angular-html
 @defer ( on <trigger>; when <condition>; prefetch on <trigger>; prefetch when <condition> ) {
   <!-- deferred template fragment -->
   <calendar-cmp />
@@ -54,7 +54,7 @@ Configures prefetching of the defer block used in the `@defer` parameters, but d
 rendering. Rendering is handled by the standard `on` and `when` conditions. Separate multiple
 prefetch configurations with a semicolon.
 
-```html
+```angular-html
 @defer (prefetch on <trigger>; prefetch when <condition>) {
   <!-- deferred template fragment -->
 }

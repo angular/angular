@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as ir from '../../ir';
@@ -27,7 +27,7 @@ export function assignI18nSlotDependencies(job: CompilationJob) {
     let i18nExpressionsInProgress: ir.I18nExpressionOp[] = [];
 
     // Non-null  while we are iterating through an i18nStart/i18nEnd pair
-    let state: BlockState|null = null;
+    let state: BlockState | null = null;
 
     for (const createOp of unit.create) {
       if (createOp.kind === ir.OpKind.I18nStart) {
@@ -54,9 +54,12 @@ export function assignI18nSlotDependencies(job: CompilationJob) {
             break;
           }
 
-          if (state !== null && updateOp.kind === ir.OpKind.I18nExpression &&
-              updateOp.usage === ir.I18nExpressionFor.I18nText &&
-              updateOp.i18nOwner === state.blockXref) {
+          if (
+            state !== null &&
+            updateOp.kind === ir.OpKind.I18nExpression &&
+            updateOp.usage === ir.I18nExpressionFor.I18nText &&
+            updateOp.i18nOwner === state.blockXref
+          ) {
             const opToRemove = updateOp;
             updateOp = updateOp.next!;
             ir.OpList.remove<ir.UpdateOp>(opToRemove);

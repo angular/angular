@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ChangeDetectorRef} from '../change_detection/change_detection';
@@ -105,18 +105,22 @@ export abstract class ComponentFactory<C> {
    * The inputs of the component.
    */
   abstract get inputs(): {
-    propName: string,
-    templateName: string,
-    transform?: (value: any) => any,
+    propName: string;
+    templateName: string;
+    transform?: (value: any) => any;
+    isSignal: boolean;
   }[];
   /**
    * The outputs of the component.
    */
-  abstract get outputs(): {propName: string, templateName: string}[];
+  abstract get outputs(): {propName: string; templateName: string}[];
   /**
    * Creates a new component.
    */
   abstract create(
-      injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string|any,
-      environmentInjector?: EnvironmentInjector|NgModuleRef<any>): ComponentRef<C>;
+    injector: Injector,
+    projectableNodes?: any[][],
+    rootSelectorOrNode?: string | any,
+    environmentInjector?: EnvironmentInjector | NgModuleRef<any>,
+  ): ComponentRef<C>;
 }

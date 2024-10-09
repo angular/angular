@@ -1,0 +1,11 @@
+package(default_visibility = ["//visibility:private"])
+
+filegroup(
+    name = "icons",
+    srcs = glob([
+        "*.svg",
+    ]),
+    visibility = [
+        "//adev/shared-docs:__pkg__",
+    ],
+)

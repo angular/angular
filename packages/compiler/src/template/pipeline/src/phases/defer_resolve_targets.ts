@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as ir from '../../ir';
@@ -31,7 +31,8 @@ export function resolveDeferTargetNames(job: ComponentCompilationJob): void {
       }
       if (!Array.isArray(op.localRefs)) {
         throw new Error(
-            'LocalRefs were already processed, but were needed to resolve defer targets.');
+          'LocalRefs were already processed, but were needed to resolve defer targets.',
+        );
       }
 
       for (const ref of op.localRefs) {
@@ -47,10 +48,13 @@ export function resolveDeferTargetNames(job: ComponentCompilationJob): void {
   }
 
   function resolveTrigger(
-      deferOwnerView: ViewCompilationUnit, op: ir.DeferOnOp,
-      placeholderView: ir.XrefId|null): void {
+    deferOwnerView: ViewCompilationUnit,
+    op: ir.DeferOnOp,
+    placeholderView: ir.XrefId | null,
+  ): void {
     switch (op.trigger.kind) {
       case ir.DeferTriggerKind.Idle:
+      case ir.DeferTriggerKind.Never:
       case ir.DeferTriggerKind.Immediate:
       case ir.DeferTriggerKind.Timer:
         return;
@@ -68,9 +72,11 @@ export function resolveDeferTargetNames(job: ComponentCompilationJob): void {
             throw new Error('AssertionError: could not find placeholder view for defer on trigger');
           }
           for (const placeholderOp of placeholder.create) {
-            if (ir.hasConsumesSlotTrait(placeholderOp) &&
-                (ir.isElementOrContainerOp(placeholderOp) ||
-                 placeholderOp.kind === ir.OpKind.Projection)) {
+            if (
+              ir.hasConsumesSlotTrait(placeholderOp) &&
+              (ir.isElementOrContainerOp(placeholderOp) ||
+                placeholderOp.kind === ir.OpKind.Projection)
+            ) {
               op.trigger.targetXref = placeholderOp.xref;
               op.trigger.targetView = placeholderView;
               op.trigger.targetSlotViewSteps = -1;
@@ -80,8 +86,8 @@ export function resolveDeferTargetNames(job: ComponentCompilationJob): void {
           }
           return;
         }
-        let view: ViewCompilationUnit|null =
-            placeholderView !== null ? job.views.get(placeholderView)! : deferOwnerView;
+        let view: ViewCompilationUnit | null =
+          placeholderView !== null ? job.views.get(placeholderView)! : deferOwnerView;
         let step = placeholderView !== null ? -1 : 0;
 
         while (view !== null) {
@@ -115,7 +121,13 @@ export function resolveDeferTargetNames(job: ComponentCompilationJob): void {
           break;
         case ir.OpKind.DeferOn:
           const deferOp = defers.get(op.defer)!;
-          resolveTrigger(unit, op, deferOp.placeholderView);
+          resolveTrigger(
+            unit,
+            op,
+            op.modifier === ir.DeferOpModifierKind.HYDRATE
+              ? deferOp.mainView
+              : deferOp.placeholderView,
+          );
           break;
       }
     }
@@ -123,5 +135,5 @@ export function resolveDeferTargetNames(job: ComponentCompilationJob): void {
 }
 
 class Scope {
-  targets = new Map<string, {xref: ir.XrefId, slot: ir.SlotHandle}>();
+  targets = new Map<string, {xref: ir.XrefId; slot: ir.SlotHandle}>();
 }

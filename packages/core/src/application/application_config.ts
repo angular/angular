@@ -1,10 +1,9 @@
-
 /**
  * @license
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {EnvironmentProviders, Provider} from '../di';
@@ -18,7 +17,7 @@ export interface ApplicationConfig {
   /**
    * List of providers that should be available to the root component and all its children.
    */
-  providers: Array<Provider|EnvironmentProviders>;
+  providers: Array<Provider | EnvironmentProviders>;
 }
 
 /**
@@ -30,7 +29,10 @@ export interface ApplicationConfig {
  * @publicApi
  */
 export function mergeApplicationConfig(...configs: ApplicationConfig[]): ApplicationConfig {
-  return configs.reduce((prev, curr) => {
-    return Object.assign(prev, curr, {providers: [...prev.providers, ...curr.providers]});
-  }, {providers: []});
+  return configs.reduce(
+    (prev, curr) => {
+      return Object.assign(prev, curr, {providers: [...prev.providers, ...curr.providers]});
+    },
+    {providers: []},
+  );
 }

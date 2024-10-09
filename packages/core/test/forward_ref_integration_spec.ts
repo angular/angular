@@ -3,11 +3,21 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {CommonModule} from '@angular/common';
-import {asNativeElements, Component, ContentChildren, Directive, forwardRef, Inject, NgModule, NO_ERRORS_SCHEMA, QueryList} from '@angular/core';
+import {
+  asNativeElements,
+  Component,
+  ContentChildren,
+  Directive,
+  forwardRef,
+  Inject,
+  NgModule,
+  NO_ERRORS_SCHEMA,
+  QueryList,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -19,7 +29,7 @@ class ModuleFrame {
   name: string = 'moduleFram';
 }
 
-describe('forwardRef integration', function() {
+describe('forwardRef integration', function () {
   beforeEach(() => {
     TestBed.configureTestingModule({imports: [Module], declarations: [App]});
   });
@@ -36,18 +46,16 @@ describe('forwardRef integration', function() {
   imports: [CommonModule],
   providers: [forwardRef(() => ModuleFrame)],
   declarations: [forwardRef(() => Door), forwardRef(() => Lock)],
-  exports: [forwardRef(() => Door), forwardRef(() => Lock)]
+  exports: [forwardRef(() => Door), forwardRef(() => Lock)],
 })
-class Module {
-}
+class Module {}
 
 @Component({
   selector: 'app',
   viewProviders: [forwardRef(() => Frame)],
   template: `<door><lock></lock></door>`,
 })
-class App {
-}
+class App {}
 
 @Component({
   selector: 'door',

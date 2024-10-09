@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as ir from '../../ir';
@@ -22,12 +22,14 @@ export function configureDeferInstructions(job: ComponentCompilationJob): void {
       }
 
       if (op.placeholderMinimumTime !== null) {
-        op.placeholderConfig =
-            new ir.ConstCollectedExpr(literalOrArrayLiteral([op.placeholderMinimumTime]));
+        op.placeholderConfig = new ir.ConstCollectedExpr(
+          literalOrArrayLiteral([op.placeholderMinimumTime]),
+        );
       }
       if (op.loadingMinimumTime !== null || op.loadingAfterTime !== null) {
         op.loadingConfig = new ir.ConstCollectedExpr(
-            literalOrArrayLiteral([op.loadingMinimumTime, op.loadingAfterTime]));
+          literalOrArrayLiteral([op.loadingMinimumTime, op.loadingAfterTime]),
+        );
       }
     }
   }

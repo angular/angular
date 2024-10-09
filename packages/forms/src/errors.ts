@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /**
@@ -11,7 +11,6 @@
  * Reserved error code range: 1000-1999.
  */
 export const enum RuntimeErrorCode {
-
   // Structure validation errors (10xx)
   NO_CONTROLS = 1000,
   MISSING_CONTROL = 1001,
@@ -38,5 +37,4 @@ export const enum RuntimeErrorCode {
   NGMODEL_IN_FORM_GROUP_NAME = 1351,
   NGMODEL_WITHOUT_NAME = 1352,
   NGMODELGROUP_IN_FORM_GROUP = 1353,
-
 }

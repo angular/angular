@@ -3,17 +3,15 @@
 The `output()` function declares an output in a directive or component.
 Outputs allow you to emit values to parent components.
 
-HELPFUL: The `output()` function is currently in [developer preview](/guide/releases#developer-preview).
-
 <docs-code language="ts" highlight="[[5], [8]]">
 import {Component, output} from '@angular/core';
 
 @Component({...})
 export class MyComp {
-  onNameChange = output<string>()    // OutputEmitterRef<string>
+  nameChange = output<string>()    // OutputEmitterRef<string>
 
   setNewName(newName: string) {
-    this.onNameChange.emit(newName);
+    this.nameChange.emit(newName);
   }
 }
 </docs-code>
@@ -21,8 +19,8 @@ export class MyComp {
 An output is automatically recognized by Angular whenever you use the `output` function as an initializer of a class member.
 Parent components can listen to outputs in templates by using the event binding syntax.
 
-```html
-<my-comp (onNameChange)="showNewName($event)" />
+```angular-html
+<my-comp (nameChange)="showNewName($event)" />
 ```
 
 ## Aliasing an output
@@ -32,11 +30,11 @@ You can alias outputs to change their public name to be different.
 
 ```typescript
 class MyComp {
-  onNameChange = output({alias: 'ngxNameChange'});
+  nameChange = output({alias: 'ngxNameChange'});
 }
 ```
 
-This allows users to bind to your output using `(ngxNameChange)`, while inside your component you can access the output emitter using `this.onNameChange`.
+This allows users to bind to your output using `(ngxNameChange)`, while inside your component you can access the output emitter using `this.nameChange`.
 
 ## Subscribing programmatically
 
@@ -46,7 +44,7 @@ In those cases, parents can subscribe to outputs by directly accessing the prope
 ```ts
 const myComp = viewContainerRef.createComponent(...);
 
-myComp.instance.onNameChange.subscribe(newName => {
+myComp.instance.nameChange.subscribe(newName => {
   console.log(newName);
 });
 ```
@@ -87,13 +85,13 @@ import {outputToObservable} from '@angular/core/rxjs-interop';
 
 @Component(...)
 class MyComp {
-  onNameChange = output<string>();
+  nameChange = output<string>();
 }
 
 // Instance reference to `MyComp`.
 const myComp: MyComp;
 
-outputToObservable(this.myComp.instance.onNameChange) // Observable<string>
+outputToObservable(this.myComp.instance.nameChange) // Observable<string>
   .pipe(...)
   .subscribe(...);
 </docs-code>

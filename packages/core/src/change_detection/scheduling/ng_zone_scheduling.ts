@@ -3,28 +3,39 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Subscription} from 'rxjs';
 
 import {ApplicationRef} from '../../application/application_ref';
-import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, inject, Injectable, InjectionToken, makeEnvironmentProviders, StaticProvider} from '../../di';
-import {ErrorHandler, INTERNAL_APPLICATION_ERROR_HANDLER} from '../../error_handler';
+import {
+  ENVIRONMENT_INITIALIZER,
+  EnvironmentProviders,
+  inject,
+  Injectable,
+  InjectionToken,
+  makeEnvironmentProviders,
+  StaticProvider,
+} from '../../di';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
-import {PendingTasks} from '../../pending_tasks';
+import {PendingTasksInternal} from '../../pending_tasks';
 import {performanceMarkFeature} from '../../util/performance';
 import {NgZone} from '../../zone';
 import {InternalNgZoneOptions} from '../../zone/ng_zone';
 
-import {alwaysProvideZonelessScheduler} from './flags';
-import {ChangeDetectionScheduler, ZONELESS_SCHEDULER_DISABLED} from './zoneless_scheduling';
-import {ChangeDetectionSchedulerImpl} from './zoneless_scheduling_impl';
+import {
+  ChangeDetectionScheduler,
+  ZONELESS_SCHEDULER_DISABLED,
+  ZONELESS_ENABLED,
+  SCHEDULE_IN_ROOT_ZONE,
+} from './zoneless_scheduling';
+import {SCHEDULE_IN_ROOT_ZONE_DEFAULT} from './flags';
 
 @Injectable({providedIn: 'root'})
 export class NgZoneChangeDetectionScheduler {
   private readonly zone = inject(NgZone);
-  private readonly changeDetectionScheduler = inject(ChangeDetectionScheduler, {optional: true});
+  private readonly changeDetectionScheduler = inject(ChangeDetectionScheduler);
   private readonly applicationRef = inject(ApplicationRef);
 
   private _onMicrotaskEmptySubscription?: Subscription;
@@ -39,13 +50,13 @@ export class NgZoneChangeDetectionScheduler {
         // `onMicroTaskEmpty` can happen _during_ the zoneless scheduler change detection because
         // zone.run(() => {}) will result in `checkStable` at the end of the `zone.run` closure
         // and emit `onMicrotaskEmpty` synchronously if run coalsecing is false.
-        if (this.changeDetectionScheduler?.runningTick) {
+        if (this.changeDetectionScheduler.runningTick) {
           return;
         }
         this.zone.run(() => {
           this.applicationRef.tick();
         });
-      }
+      },
     });
   }
 
@@ -54,31 +65,44 @@ export class NgZoneChangeDetectionScheduler {
   }
 }
 
-
 /**
  * Internal token used to verify that `provideZoneChangeDetection` is not used
  * with the bootstrapModule API.
  */
 export const PROVIDED_NG_ZONE = new InjectionToken<boolean>(
-    (typeof ngDevMode === 'undefined' || ngDevMode) ? 'provideZoneChangeDetection token' : '');
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'provideZoneChangeDetection token' : '',
+  {factory: () => false},
+);
 
-export function internalProvideZoneChangeDetection(
-    {ngZoneFactory, ignoreChangesOutsideZone}:
-        {ngZoneFactory: () => NgZone, ignoreChangesOutsideZone?: boolean}): StaticProvider[] {
+export function internalProvideZoneChangeDetection({
+  ngZoneFactory,
+  ignoreChangesOutsideZone,
+  scheduleInRootZone,
+}: {
+  ngZoneFactory?: () => NgZone;
+  ignoreChangesOutsideZone?: boolean;
+  scheduleInRootZone?: boolean;
+}): StaticProvider[] {
+  ngZoneFactory ??= () =>
+    new NgZone({...getNgZoneOptions(), scheduleInRootZone} as InternalNgZoneOptions);
   return [
     {provide: NgZone, useFactory: ngZoneFactory},
     {
       provide: ENVIRONMENT_INITIALIZER,
       multi: true,
       useFactory: () => {
-        const ngZoneChangeDetectionScheduler =
-            inject(NgZoneChangeDetectionScheduler, {optional: true});
-        if ((typeof ngDevMode === 'undefined' || ngDevMode) &&
-            ngZoneChangeDetectionScheduler === null) {
+        const ngZoneChangeDetectionScheduler = inject(NgZoneChangeDetectionScheduler, {
+          optional: true,
+        });
+        if (
+          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+          ngZoneChangeDetectionScheduler === null
+        ) {
           throw new RuntimeError(
-              RuntimeErrorCode.MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP,
-              `A required Injectable was not found in the dependency injection tree. ` +
-                  'If you are bootstrapping an NgModule, make sure that the `BrowserModule` is imported.');
+            RuntimeErrorCode.MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP,
+            `A required Injectable was not found in the dependency injection tree. ` +
+              'If you are bootstrapping an NgModule, make sure that the `BrowserModule` is imported.',
+          );
         }
         return () => ngZoneChangeDetectionScheduler!.initialize();
       },
@@ -91,24 +115,16 @@ export function internalProvideZoneChangeDetection(
         return () => {
           service.initialize();
         };
-      }
+      },
     },
-    {provide: INTERNAL_APPLICATION_ERROR_HANDLER, useFactory: ngZoneApplicationErrorHandlerFactory},
     // Always disable scheduler whenever explicitly disabled, even if another place called
     // `provideZoneChangeDetection` without the 'ignore' option.
     ignoreChangesOutsideZone === true ? {provide: ZONELESS_SCHEDULER_DISABLED, useValue: true} : [],
-    // TODO(atscott): This should move to the same places that zone change detection is provided by
-    // default instead of being in the zone scheduling providers.
-    alwaysProvideZonelessScheduler || ignoreChangesOutsideZone === false ?
-        {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl} :
-        [],
+    {
+      provide: SCHEDULE_IN_ROOT_ZONE,
+      useValue: scheduleInRootZone ?? SCHEDULE_IN_ROOT_ZONE_DEFAULT,
+    },
   ];
-}
-
-export function ngZoneApplicationErrorHandlerFactory() {
-  const zone = inject(NgZone);
-  const userErrorHandler = inject(ErrorHandler);
-  return (e: unknown) => zone.runOutsideAngular(() => userErrorHandler.handleError(e));
 }
 
 /**
@@ -133,19 +149,22 @@ export function ngZoneApplicationErrorHandlerFactory() {
  */
 export function provideZoneChangeDetection(options?: NgZoneOptions): EnvironmentProviders {
   const ignoreChangesOutsideZone = options?.ignoreChangesOutsideZone;
+  const scheduleInRootZone = (options as any)?.scheduleInRootZone;
   const zoneProviders = internalProvideZoneChangeDetection({
     ngZoneFactory: () => {
       const ngZoneOptions = getNgZoneOptions(options);
+      ngZoneOptions.scheduleInRootZone = scheduleInRootZone;
       if (ngZoneOptions.shouldCoalesceEventChangeDetection) {
         performanceMarkFeature('NgZone_CoalesceEvent');
       }
       return new NgZone(ngZoneOptions);
     },
-    ignoreChangesOutsideZone
+    ignoreChangesOutsideZone,
+    scheduleInRootZone,
   });
   return makeEnvironmentProviders([
-    (typeof ngDevMode === 'undefined' || ngDevMode) ? {provide: PROVIDED_NG_ZONE, useValue: true} :
-                                                      [],
+    {provide: PROVIDED_NG_ZONE, useValue: true},
+    {provide: ZONELESS_ENABLED, useValue: false},
     zoneProviders,
   ]);
 }
@@ -208,10 +227,15 @@ export interface NgZoneOptions {
    * - calling `ChangeDetectorRef.markForCheck`
    * - calling `ComponentRef.setInput`
    * - updating a signal that is read in a template
-   * - when bound host or template listeners are triggered
    * - attaching a view that is marked dirty
    * - removing a view
    * - registering a render hook (templates are only refreshed if render hooks do one of the above)
+   *
+   * @deprecated This option was introduced out of caution as a way for developers to opt out of the
+   *    new behavior in v18 which schedule change detection for the above events when they occur
+   *    outside the Zone. After monitoring the results post-release, we have determined that this
+   *    feature is working as desired and do not believe it should ever be disabled by setting
+   *    this option to `true`.
    */
   ignoreChangesOutsideZone?: boolean;
 }
@@ -232,7 +256,7 @@ export class ZoneStablePendingTask {
   private readonly subscription = new Subscription();
   private initialized = false;
   private readonly zone = inject(NgZone);
-  private readonly pendingTasks = inject(PendingTasks);
+  private readonly pendingTasks = inject(PendingTasksInternal);
 
   initialize() {
     if (this.initialized) {
@@ -240,32 +264,39 @@ export class ZoneStablePendingTask {
     }
     this.initialized = true;
 
-    let task: number|null = null;
+    let task: number | null = null;
     if (!this.zone.isStable && !this.zone.hasPendingMacrotasks && !this.zone.hasPendingMicrotasks) {
       task = this.pendingTasks.add();
     }
 
     this.zone.runOutsideAngular(() => {
-      this.subscription.add(this.zone.onStable.subscribe(() => {
-        NgZone.assertNotInAngularZone();
+      this.subscription.add(
+        this.zone.onStable.subscribe(() => {
+          NgZone.assertNotInAngularZone();
 
-        // Check whether there are no pending macro/micro tasks in the next tick
-        // to allow for NgZone to update the state.
-        queueMicrotask(() => {
-          if (task !== null && !this.zone.hasPendingMacrotasks && !this.zone.hasPendingMicrotasks) {
-            this.pendingTasks.remove(task);
-            task = null;
-          }
-        });
-      }));
+          // Check whether there are no pending macro/micro tasks in the next tick
+          // to allow for NgZone to update the state.
+          queueMicrotask(() => {
+            if (
+              task !== null &&
+              !this.zone.hasPendingMacrotasks &&
+              !this.zone.hasPendingMicrotasks
+            ) {
+              this.pendingTasks.remove(task);
+              task = null;
+            }
+          });
+        }),
+      );
     });
 
-    this.subscription.add(this.zone.onUnstable.subscribe(() => {
-      NgZone.assertInAngularZone();
-      task ??= this.pendingTasks.add();
-    }));
+    this.subscription.add(
+      this.zone.onUnstable.subscribe(() => {
+        NgZone.assertInAngularZone();
+        task ??= this.pendingTasks.add();
+      }),
+    );
   }
-
 
   ngOnDestroy() {
     this.subscription.unsubscribe();

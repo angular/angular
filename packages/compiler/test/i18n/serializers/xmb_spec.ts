@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {MessageBundle} from '@angular/compiler/src/i18n/message_bundle';
@@ -47,7 +47,7 @@ lines</p>
 
 <!ELEMENT ex (#PCDATA)>
 ]>
-<messagebundle>
+<messagebundle handler="angular">
   <msg id="7056919470098446707"><source>file.ts:3</source>translatable element <ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex>&lt;b&gt;</ph>with placeholders<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex>&lt;/b&gt;</ph> <ph name="INTERPOLATION"><ex>{{ interpolation}}</ex>{{ interpolation}}</ph></msg>
   <msg id="2981514368455622387"><source>file.ts:4</source>{VAR_PLURAL, plural, =0 {<ph name="START_PARAGRAPH"><ex>&lt;p&gt;</ex>&lt;p&gt;</ph>test<ph name="CLOSE_PARAGRAPH"><ex>&lt;/p&gt;</ex>&lt;/p&gt;</ph>} }</msg>
   <msg id="7999024498831672133" desc="d" meaning="m"><source>file.ts:5</source>foo</msg>
@@ -70,16 +70,15 @@ lines</msg>
 
   it('should throw when trying to load an xmb file', () => {
     expect(() => {
-      const serializer = new Xmb();
+      const serializer = new Xmb(/* preservePlaceholders */ true);
       serializer.load(XMB, 'url');
     }).toThrowError(/Unsupported/);
   });
 });
 
-
-function toXmb(html: string, url: string, locale: string|null = null): string {
-  const catalog = new MessageBundle(new HtmlParser, [], {}, locale);
-  const serializer = new Xmb();
+function toXmb(html: string, url: string, locale: string | null = null): string {
+  const catalog = new MessageBundle(new HtmlParser(), [], {}, locale);
+  const serializer = new Xmb(/* preservePlaceholders */ true);
 
   catalog.updateFromTemplate(html, url, DEFAULT_INTERPOLATION_CONFIG);
 

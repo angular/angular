@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {APP_ID as APP_ID_TOKEN, PLATFORM_ID} from '@angular/core';
@@ -13,13 +13,10 @@ import {getDocument} from '../src/render3/interfaces/document';
 import {makeStateKey, TransferState} from '../src/transfer_state';
 
 function removeScriptTag(doc: Document, id: string) {
-  const existing = doc.getElementById(id);
-  if (existing) {
-    doc.body.removeChild(existing);
-  }
+  doc.getElementById(id)?.remove();
 }
 
-function addScriptTag(doc: Document, appId: string, data: object|string) {
+function addScriptTag(doc: Document, appId: string, data: object | string) {
   const script = doc.createElement('script');
   const id = appId + '-state';
   script.id = id;
@@ -43,8 +40,10 @@ describe('TransferState', () => {
   beforeEach(() => {
     doc = getDocument();
     TestBed.configureTestingModule({
-      providers:
-          [{provide: APP_ID_TOKEN, useValue: APP_ID}, {provide: PLATFORM_ID, useValue: 'browser'}],
+      providers: [
+        {provide: APP_ID_TOKEN, useValue: APP_ID},
+        {provide: PLATFORM_ID, useValue: 'browser'},
+      ],
     });
   });
 
@@ -70,21 +69,21 @@ describe('TransferState', () => {
     expect(transferState.hasKey(TEST_KEY)).toBe(true);
   });
 
-  it('supports setting and accessing value \'0\' via get', () => {
+  it("supports setting and accessing value '0' via get", () => {
     const transferState: TransferState = TestBed.inject(TransferState);
     transferState.set(TEST_KEY, 0);
     expect(transferState.get(TEST_KEY, 20)).toBe(0);
     expect(transferState.hasKey(TEST_KEY)).toBe(true);
   });
 
-  it('supports setting and accessing value \'false\' via get', () => {
+  it("supports setting and accessing value 'false' via get", () => {
     const transferState: TransferState = TestBed.inject(TransferState);
     transferState.set(BOOLEAN_KEY, false);
     expect(transferState.get(BOOLEAN_KEY, true)).toBe(false);
     expect(transferState.hasKey(BOOLEAN_KEY)).toBe(true);
   });
 
-  it('supports setting and accessing value \'null\' via get', () => {
+  it("supports setting and accessing value 'null' via get", () => {
     const transferState: TransferState = TestBed.inject(TransferState);
     transferState.set(TEST_KEY, null);
     expect(transferState.get(TEST_KEY, 20 as any)).toBe(null);
@@ -136,18 +135,19 @@ describe('TransferState', () => {
     expect(transferState.isEmpty).toBeTrue();
 
     transferState.set(DELAYED_KEY, '</script><script>alert(\'Hello&\' + "World");');
-    expect(transferState.toJson())
-        .toBe(`{"delayed":"\\u003C/script>\\u003Cscript>alert('Hello&' + \\"World\\");"}`);
+    expect(transferState.toJson()).toBe(
+      `{"delayed":"\\u003C/script>\\u003Cscript>alert('Hello&' + \\"World\\");"}`,
+    );
   });
 
   it('should decode `\\u003C` (<) when restoring stating', () => {
-    const encodedState =
-        `{"delayed":"\\u003C/script>\\u003Cscript>alert('Hello&' + \\"World\\");"}`;
+    const encodedState = `{"delayed":"\\u003C/script>\\u003Cscript>alert('Hello&' + \\"World\\");"}`;
     addScriptTag(doc, APP_ID, encodedState);
     const transferState = TestBed.inject(TransferState);
 
     expect(transferState.toJson()).toBe(encodedState);
-    expect(transferState.get(DELAYED_KEY, null))
-        .toBe('</script><script>alert(\'Hello&\' + "World");');
+    expect(transferState.get(DELAYED_KEY, null)).toBe(
+      '</script><script>alert(\'Hello&\' + "World");',
+    );
   });
 });

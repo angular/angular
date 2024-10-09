@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {DOCUMENT, IMAGE_LOADER, NgOptimizedImage} from '@angular/common';
@@ -18,10 +18,12 @@ import {Component, Inject} from '@angular/core';
     <img ngSrc="/e2e/b.png" width="50" height="50" priority>
     <img ngSrc="/e2e/c.png" width="50" height="50">
   `,
-  providers: [{
-    provide: IMAGE_LOADER,
-    useValue: (config: {src: string}) => `https://angular.io/assets/images/${config.src}`
-  }],
+  providers: [
+    {
+      provide: IMAGE_LOADER,
+      useValue: (config: {src: string}) => `https://angular.io/assets/images/${config.src}`,
+    },
+  ],
 })
 export class PreconnectCheckComponent {
   constructor(@Inject(DOCUMENT) private doc: Document) {

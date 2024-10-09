@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as ir from '../../ir';
@@ -14,8 +14,8 @@ import {CompilationJob} from '../compilation';
  */
 export function wrapI18nIcus(job: CompilationJob): void {
   for (const unit of job.units) {
-    let currentI18nOp: ir.I18nStartOp|null = null;
-    let addedI18nId: ir.XrefId|null = null;
+    let currentI18nOp: ir.I18nStartOp | null = null;
+    let addedI18nId: ir.XrefId | null = null;
     for (const op of unit.create) {
       switch (op.kind) {
         case ir.OpKind.I18nStart:
@@ -29,7 +29,9 @@ export function wrapI18nIcus(job: CompilationJob): void {
             addedI18nId = job.allocateXrefId();
             // ICU i18n start/end ops should not receive source spans.
             ir.OpList.insertBefore<ir.CreateOp>(
-                ir.createI18nStartOp(addedI18nId, op.message, undefined, null), op);
+              ir.createI18nStartOp(addedI18nId, op.message, undefined, null),
+              op,
+            );
           }
           break;
         case ir.OpKind.IcuEnd:

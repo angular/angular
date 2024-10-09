@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {NgOptimizedImage, provideImgixLoader} from '@angular/common';
@@ -11,7 +11,8 @@ import {Component} from '@angular/core';
 
 @Component({
   selector: 'basic',
-  styles: [`
+  styles: [
+    `
     h1 {
       display: flex;
       align-items: center;
@@ -31,7 +32,8 @@ import {Component} from '@angular/core';
       width: 100%;
       height: auto;
     }
-  `],
+  `,
+  ],
   template: `
     <h1> 
       <img ngSrc="a.png" width="50" height="50" priority ngSrcset="1x, 2x">
@@ -46,5 +48,4 @@ import {Component} from '@angular/core';
   imports: [NgOptimizedImage],
   providers: [provideImgixLoader('https://aurora-project.imgix.net')],
 })
-export class PlaygroundComponent {
-}
+export class PlaygroundComponent {}

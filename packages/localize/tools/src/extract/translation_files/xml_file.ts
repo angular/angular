@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 interface Options {
@@ -21,8 +21,10 @@ export class XmlFile {
   }
 
   startTag(
-      name: string, attributes: Record<string, string|undefined> = {},
-      {selfClosing = false, preserveWhitespace}: Options = {}): this {
+    name: string,
+    attributes: Record<string, string | undefined> = {},
+    {selfClosing = false, preserveWhitespace}: Options = {},
+  ): this {
     if (!this.preservingWhitespace) {
       this.output += this.indent;
     }
@@ -102,5 +104,7 @@ const _ESCAPED_CHARS: [RegExp, string][] = [
 
 function escapeXml(text: string): string {
   return _ESCAPED_CHARS.reduce(
-      (text: string, entry: [RegExp, string]) => text.replace(entry[0], entry[1]), text);
+    (text: string, entry: [RegExp, string]) => text.replace(entry[0], entry[1]),
+    text,
+  );
 }

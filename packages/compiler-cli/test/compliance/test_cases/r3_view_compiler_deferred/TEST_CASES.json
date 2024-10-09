@@ -142,6 +142,36 @@
       ]
     },
     {
+      "description": "should generate a deferred block with hydrate triggers",
+      "inputFiles": ["defer_with_hydrate_triggers.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "defer_with_hydrate_triggers_template.js",
+              "generated": "defer_with_hydrate_triggers.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should insert hydrate triggers before all other triggers",
+      "inputFiles": ["defer_hydrate_order.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "defer_hydrate_order_template.js",
+              "generated": "defer_hydrate_order.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
       "description": "should generate a deferred block with a `when` trigger that has a pipe",
       "inputFiles": ["deferred_when_with_pipe.ts"],
       "expectations": [

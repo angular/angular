@@ -2,13 +2,13 @@
 
 Pipes are functions that are used to transform data in templates. In general, pipes are "pure" functions that don't cause side effects. Angular has a number of helpful built-in pipes you can import and use in your components. You can also create a custom pipe.
 
-In this activity you will import a pipe and use it in the template.
+In this activity, you will import a pipe and use it in the template.
 
 <hr>
 
 To use a pipe in a template include it in an interpolated expression. Check out this example:
 
-<docs-code language="ts" highlight="[1,5,6]">
+<docs-code language="angular-ts" highlight="[1,5,6]">
 import {UpperCasePipe} from '@angular/common';
 
 @Component({

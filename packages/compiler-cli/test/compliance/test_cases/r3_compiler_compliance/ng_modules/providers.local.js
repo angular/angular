@@ -1,5 +1,5 @@
 export class FooModule {}
-FooModule.ɵfac = function FooModule_Factory(t) { return new (t || FooModule)(); };
+FooModule.ɵfac = function FooModule_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || FooModule)(); };
 FooModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: FooModule });
 FooModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ providers: [
     Thing,

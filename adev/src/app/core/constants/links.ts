@@ -8,5 +8,6 @@
 
 export const GITHUB = 'https://github.com/angular/angular';
 export const X = 'https://x.com/angular';
-export const MEDIUM = 'https://blog.angular.io';
-export const YOUTUBE = 'https://www.youtube.com/channel/UCbn1OgGei-DV7aSRo_HaAiw';
+export const MEDIUM = 'https://blog.angular.dev';
+export const YOUTUBE = 'https://www.youtube.com/angular';
+export const DISCORD = 'https://discord.gg/angular';

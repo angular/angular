@@ -3,18 +3,31 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ɵgetDOM as getDOM} from '@angular/common';
-import {Directive, ElementRef, forwardRef, Inject, InjectionToken, Optional, Provider, Renderer2} from '@angular/core';
+import {
+  Directive,
+  ElementRef,
+  forwardRef,
+  Inject,
+  InjectionToken,
+  Optional,
+  Provider,
+  Renderer2,
+} from '@angular/core';
 
-import {BaseControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
+import {
+  BaseControlValueAccessor,
+  ControlValueAccessor,
+  NG_VALUE_ACCESSOR,
+} from './control_value_accessor';
 
 export const DEFAULT_VALUE_ACCESSOR: Provider = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => DefaultValueAccessor),
-  multi: true
+  multi: true,
 };
 
 /**
@@ -32,15 +45,15 @@ function _isAndroid(): boolean {
  * the "compositionend" event occurs.
  * @publicApi
  */
-export const COMPOSITION_BUFFER_MODE =
-    new InjectionToken<boolean>(ngDevMode ? 'CompositionEventMode' : '');
+export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>(
+  ngDevMode ? 'CompositionEventMode' : '',
+);
 
 /**
  * The default `ControlValueAccessor` for writing a value and listening to changes on input
  * elements. The accessor is used by the `FormControlDirective`, `FormControlName`, and
  * `NgModel` directives.
  *
- * {@searchKeywords ngDefaultControl}
  *
  * @usageNotes
  *
@@ -72,7 +85,7 @@ export const COMPOSITION_BUFFER_MODE =
  */
 @Directive({
   selector:
-      'input:not([type=checkbox])[formControlName],textarea[formControlName],input:not([type=checkbox])[formControl],textarea[formControl],input:not([type=checkbox])[ngModel],textarea[ngModel],[ngDefaultControl]',
+    'input:not([type=checkbox])[formControlName],textarea[formControlName],input:not([type=checkbox])[formControl],textarea[formControl],input:not([type=checkbox])[ngModel],textarea[ngModel],[ngDefaultControl]',
   // TODO: vsavkin replace the above selector with the one below it once
   // https://github.com/angular/angular/issues/3011 is implemented
   // selector: '[ngModel],[formControl],[formControlName]',
@@ -80,17 +93,19 @@ export const COMPOSITION_BUFFER_MODE =
     '(input)': '$any(this)._handleInput($event.target.value)',
     '(blur)': 'onTouched()',
     '(compositionstart)': '$any(this)._compositionStart()',
-    '(compositionend)': '$any(this)._compositionEnd($event.target.value)'
+    '(compositionend)': '$any(this)._compositionEnd($event.target.value)',
   },
-  providers: [DEFAULT_VALUE_ACCESSOR]
+  providers: [DEFAULT_VALUE_ACCESSOR],
 })
 export class DefaultValueAccessor extends BaseControlValueAccessor implements ControlValueAccessor {
   /** Whether the user is creating a composition string (IME events). */
   private _composing = false;
 
   constructor(
-      renderer: Renderer2, elementRef: ElementRef,
-      @Optional() @Inject(COMPOSITION_BUFFER_MODE) private _compositionMode: boolean) {
+    renderer: Renderer2,
+    elementRef: ElementRef,
+    @Optional() @Inject(COMPOSITION_BUFFER_MODE) private _compositionMode: boolean,
+  ) {
     super(renderer, elementRef);
     if (this._compositionMode == null) {
       this._compositionMode = !_isAndroid();

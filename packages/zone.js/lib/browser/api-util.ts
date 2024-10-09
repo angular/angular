@@ -3,11 +3,37 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
-import {globalSources, patchEventPrototype, patchEventTarget, zoneSymbolEventNames} from '../common/events';
-import {ADD_EVENT_LISTENER_STR, ArraySlice, attachOriginToPatched, bindArguments, FALSE_STR, isBrowser, isIEOrEdge, isMix, isNode, ObjectCreate, ObjectDefineProperty, ObjectGetOwnPropertyDescriptor, patchClass, patchMacroTask, patchMethod, patchOnProperties, REMOVE_EVENT_LISTENER_STR, TRUE_STR, wrapWithCurrentZone, ZONE_SYMBOL_PREFIX} from '../common/utils';
+import {
+  globalSources,
+  patchEventPrototype,
+  patchEventTarget,
+  zoneSymbolEventNames,
+} from '../common/events';
+import {
+  ADD_EVENT_LISTENER_STR,
+  ArraySlice,
+  attachOriginToPatched,
+  bindArguments,
+  FALSE_STR,
+  isBrowser,
+  isIEOrEdge,
+  isMix,
+  isNode,
+  ObjectCreate,
+  ObjectDefineProperty,
+  ObjectGetOwnPropertyDescriptor,
+  patchClass,
+  patchMacroTask,
+  patchMethod,
+  patchOnProperties,
+  REMOVE_EVENT_LISTENER_STR,
+  TRUE_STR,
+  wrapWithCurrentZone,
+  ZONE_SYMBOL_PREFIX,
+} from '../common/utils';
 import {ZoneType} from '../zone-impl';
 
 import {patchCallbacks} from './browser-util';
@@ -34,7 +60,7 @@ export function patchUtil(Zone: ZoneType): void {
     }
     if (global[SYMBOL_BLACK_LISTED_EVENTS]) {
       (Zone as any)[SYMBOL_BLACK_LISTED_EVENTS] = (Zone as any)[SYMBOL_UNPATCHED_EVENTS] =
-          global[SYMBOL_BLACK_LISTED_EVENTS];
+        global[SYMBOL_BLACK_LISTED_EVENTS];
     }
     api.patchEventPrototype = patchEventPrototype;
     api.patchEventTarget = patchEventTarget;
@@ -60,7 +86,7 @@ export function patchUtil(Zone: ZoneType): void {
       FALSE_STR,
       ZONE_SYMBOL_PREFIX,
       ADD_EVENT_LISTENER_STR,
-      REMOVE_EVENT_LISTENER_STR
+      REMOVE_EVENT_LISTENER_STR,
     });
   });
 }

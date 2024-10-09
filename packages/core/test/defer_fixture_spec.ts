@@ -3,11 +3,11 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {Component, PLATFORM_ID} from '@angular/core';
+import {Component, PLATFORM_ID, ɵPendingTasks as PendingTasks} from '@angular/core';
 import {DeferBlockBehavior, DeferBlockState, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -16,11 +16,9 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
   standalone: true,
   template: `<div class="more">More Deferred Component</div>`,
 })
-class SecondDeferredComp {
-}
+class SecondDeferredComp {}
 
 const COMMON_PROVIDERS = [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}];
-
 
 describe('DeferFixture', () => {
   it('should start in manual behavior mode', async () => {
@@ -34,16 +32,12 @@ describe('DeferFixture', () => {
             <second-deferred-comp />
           }
         </div>
-      `
+      `,
     })
-    class DeferComp {
-    }
+    class DeferComp {}
 
     TestBed.configureTestingModule({
-      imports: [
-        DeferComp,
-        SecondDeferredComp,
-      ],
+      imports: [DeferComp, SecondDeferredComp],
       providers: COMMON_PROVIDERS,
       deferBlockBehavior: DeferBlockBehavior.Manual,
       teardown: {destroyAfterEach: true},
@@ -65,16 +59,12 @@ describe('DeferFixture', () => {
             <second-deferred-comp />
           }
         </div>
-        `
+        `,
     })
-    class DeferComp {
-    }
+    class DeferComp {}
 
     TestBed.configureTestingModule({
-      imports: [
-        DeferComp,
-        SecondDeferredComp,
-      ],
+      imports: [DeferComp, SecondDeferredComp],
       providers: COMMON_PROVIDERS,
     });
 
@@ -94,17 +84,14 @@ describe('DeferFixture', () => {
             <second-deferred-comp />
           }
         </div>
-      `
+      `,
     })
     class DeferComp {
       shouldLoad = false;
     }
 
     TestBed.configureTestingModule({
-      imports: [
-        DeferComp,
-        SecondDeferredComp,
-      ],
+      imports: [DeferComp, SecondDeferredComp],
       providers: COMMON_PROVIDERS,
     });
 
@@ -115,7 +102,7 @@ describe('DeferFixture', () => {
     componentFixture.componentInstance.shouldLoad = true;
     componentFixture.detectChanges();
 
-    await componentFixture.whenStable();  // await loading of deps
+    await componentFixture.whenStable(); // await loading of deps
 
     expect(el.querySelector('.more')).toBeDefined();
   });
@@ -131,17 +118,14 @@ describe('DeferFixture', () => {
             <second-deferred-comp />
           }
         </div>
-      `
+      `,
     })
     class DeferComp {
       shouldLoad = false;
     }
 
     TestBed.configureTestingModule({
-      imports: [
-        DeferComp,
-        SecondDeferredComp,
-      ],
+      imports: [DeferComp, SecondDeferredComp],
       providers: COMMON_PROVIDERS,
       deferBlockBehavior: DeferBlockBehavior.Manual,
     });
@@ -153,7 +137,7 @@ describe('DeferFixture', () => {
     componentFixture.componentInstance.shouldLoad = true;
     componentFixture.detectChanges();
 
-    await componentFixture.whenStable();  // await loading of deps
+    await componentFixture.whenStable(); // await loading of deps
 
     expect(el.querySelectorAll('.more').length).toBe(0);
   });
@@ -169,16 +153,45 @@ describe('DeferFixture', () => {
             <second-deferred-comp />
           }
         </div>
-      `
+      `,
+    })
+    class DeferComp {}
+
+    TestBed.configureTestingModule({
+      imports: [DeferComp, SecondDeferredComp],
+      providers: COMMON_PROVIDERS,
+      deferBlockBehavior: DeferBlockBehavior.Manual,
+    });
+
+    const componentFixture = TestBed.createComponent(DeferComp);
+    const deferBlock = (await componentFixture.getDeferBlocks())[0];
+    const el = componentFixture.nativeElement as HTMLElement;
+    await deferBlock.render(DeferBlockState.Complete);
+    expect(el.querySelector('.more')).toBeDefined();
+  });
+
+  it('should not wait forever if application is unstable for a long time', async () => {
+    @Component({
+      selector: 'defer-comp',
+      standalone: true,
+      imports: [SecondDeferredComp],
+      template: `
+        <div>
+          @defer (on immediate) {
+            <second-deferred-comp />
+          }
+        </div>
+      `,
     })
     class DeferComp {
+      constructor(taskService: PendingTasks) {
+        // Add a task and never remove it. Keeps application unstable forever
+        taskService.add();
+      }
     }
 
     TestBed.configureTestingModule({
-      imports: [
-        DeferComp,
-        SecondDeferredComp,
-      ],
+      imports: [DeferComp, SecondDeferredComp],
       providers: COMMON_PROVIDERS,
       deferBlockBehavior: DeferBlockBehavior.Manual,
     });
@@ -202,16 +215,12 @@ describe('DeferFixture', () => {
             <second-deferred-comp />
           }
         </div>
-      `
+      `,
     })
-    class DeferComp {
-    }
+    class DeferComp {}
 
     TestBed.configureTestingModule({
-      imports: [
-        DeferComp,
-        SecondDeferredComp,
-      ],
+      imports: [DeferComp, SecondDeferredComp],
       providers: COMMON_PROVIDERS,
       deferBlockBehavior: DeferBlockBehavior.Manual,
     });
@@ -236,16 +245,12 @@ describe('DeferFixture', () => {
             <span class="ph">This is placeholder content</span>
           }
         </div>
-      `
+      `,
     })
-    class DeferComp {
-    }
+    class DeferComp {}
 
     TestBed.configureTestingModule({
-      imports: [
-        DeferComp,
-        SecondDeferredComp,
-      ],
+      imports: [DeferComp, SecondDeferredComp],
       providers: COMMON_PROVIDERS,
       deferBlockBehavior: DeferBlockBehavior.Manual,
     });
@@ -273,16 +278,12 @@ describe('DeferFixture', () => {
             <span class="loading">Loading...</span>
           }w
         </div>
-      `
+      `,
     })
-    class DeferComp {
-    }
+    class DeferComp {}
 
     TestBed.configureTestingModule({
-      imports: [
-        DeferComp,
-        SecondDeferredComp,
-      ],
+      imports: [DeferComp, SecondDeferredComp],
       providers: COMMON_PROVIDERS,
       deferBlockBehavior: DeferBlockBehavior.Manual,
     });
@@ -310,16 +311,12 @@ describe('DeferFixture', () => {
             <span class="error">Flagrant Error!</span>
           }
         </div>
-      `
+      `,
     })
-    class DeferComp {
-    }
+    class DeferComp {}
 
     TestBed.configureTestingModule({
-      imports: [
-        DeferComp,
-        SecondDeferredComp,
-      ],
+      imports: [DeferComp, SecondDeferredComp],
       providers: COMMON_PROVIDERS,
       deferBlockBehavior: DeferBlockBehavior.Manual,
     });
@@ -345,16 +342,12 @@ describe('DeferFixture', () => {
             <second-deferred-comp />
           }
         </div>
-      `
+      `,
     })
-    class DeferComp {
-    }
+    class DeferComp {}
 
     TestBed.configureTestingModule({
-      imports: [
-        DeferComp,
-        SecondDeferredComp,
-      ],
+      imports: [DeferComp, SecondDeferredComp],
       providers: COMMON_PROVIDERS,
       deferBlockBehavior: DeferBlockBehavior.Manual,
     });
@@ -364,10 +357,10 @@ describe('DeferFixture', () => {
     try {
       await deferBlock.render(DeferBlockState.Placeholder);
     } catch (er: any) {
-      expect(er.message)
-          .toBe(
-              'Tried to render this defer block in the `Placeholder` state, but' +
-              ' there was no @placeholder block defined in a template.');
+      expect(er.message).toBe(
+        'Tried to render this defer block in the `Placeholder` state, but' +
+          ' there was no @placeholder block defined in a template.',
+      );
     }
   });
 
@@ -386,16 +379,12 @@ describe('DeferFixture', () => {
             Placeholder
           }
         </div>
-      `
+      `,
     })
-    class DeferComp {
-    }
+    class DeferComp {}
 
     TestBed.configureTestingModule({
-      imports: [
-        DeferComp,
-        SecondDeferredComp,
-      ],
+      imports: [DeferComp, SecondDeferredComp],
       providers: COMMON_PROVIDERS,
       deferBlockBehavior: DeferBlockBehavior.Manual,
     });
@@ -426,8 +415,7 @@ describe('DeferFixture', () => {
         </div>
       `,
     })
-    class DeferredComp {
-    }
+    class DeferredComp {}
 
     @Component({
       selector: 'defer-comp',
@@ -439,18 +427,13 @@ describe('DeferFixture', () => {
             <deferred-comp />
           }
         </div>
-      `
+      `,
     })
-    class DeferComp {
-    }
+    class DeferComp {}
 
     TestBed.configureTestingModule({
-      imports: [
-        DeferComp,
-        DeferredComp,
-        SecondDeferredComp,
-      ],
-      providers: COMMON_PROVIDERS
+      imports: [DeferComp, DeferredComp, SecondDeferredComp],
+      providers: COMMON_PROVIDERS,
     });
 
     const componentFixture = TestBed.createComponent(DeferComp);

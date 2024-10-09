@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ZoneType} from '../zone-impl';
@@ -18,12 +18,14 @@ export function patchSocketIo(Zone: ZoneType): void {
         rt: true,
         diff: (task: any, delegate: any) => {
           return task.callback === delegate;
-        }
+        },
       });
       // also patch io.Socket.prototype.on/off/removeListener/removeAllListeners
       io.Socket.prototype.on = io.Socket.prototype.addEventListener;
-      io.Socket.prototype.off = io.Socket.prototype.removeListener =
-          io.Socket.prototype.removeAllListeners = io.Socket.prototype.removeEventListener;
+      io.Socket.prototype.off =
+        io.Socket.prototype.removeListener =
+        io.Socket.prototype.removeAllListeners =
+          io.Socket.prototype.removeEventListener;
     };
   });
 }

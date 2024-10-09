@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {
   AnimationOptions,
@@ -14,10 +14,7 @@ import {
   ɵPRE_STYLE as PRE_STYLE,
   ɵStyleDataMap,
 } from '@angular/animations';
-import {
-  ɵChangeDetectionScheduler as ChangeDetectionScheduler,
-  ɵWritable as Writable,
-} from '@angular/core';
+import {ɵWritable as Writable} from '@angular/core';
 
 import {AnimationTimelineInstruction} from '../dsl/animation_timeline_instruction';
 import {AnimationTransitionFactory} from '../dsl/animation_transition_factory';
@@ -624,7 +621,6 @@ export class TransitionAnimationEngine {
     public bodyNode: any,
     public driver: AnimationDriver,
     private _normalizer: AnimationStyleNormalizer,
-    private readonly scheduler: ChangeDetectionScheduler | null,
   ) {}
 
   get queuedPlayers(): TransitionAnimationPlayer[] {
@@ -816,7 +812,6 @@ export class TransitionAnimationEngine {
 
   removeNode(namespaceId: string, element: any, context: any): void {
     if (isElementNode(element)) {
-      this.scheduler?.notify();
       const ns = namespaceId ? this._fetchNamespace(namespaceId) : null;
       if (ns) {
         ns.removeNode(element, context);

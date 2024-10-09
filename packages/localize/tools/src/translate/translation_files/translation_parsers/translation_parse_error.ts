@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {ParseErrorLevel, ParseSourceSpan} from '@angular/compiler';
 
@@ -12,8 +12,10 @@ import {ParseErrorLevel, ParseSourceSpan} from '@angular/compiler';
  */
 export class TranslationParseError extends Error {
   constructor(
-      public span: ParseSourceSpan, public msg: string,
-      public level: ParseErrorLevel = ParseErrorLevel.ERROR) {
+    public span: ParseSourceSpan,
+    public msg: string,
+    public level: ParseErrorLevel = ParseErrorLevel.ERROR,
+  ) {
     super(contextualMessage(span, msg, level));
   }
 }

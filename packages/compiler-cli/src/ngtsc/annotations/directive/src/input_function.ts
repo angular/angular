@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import ts from 'typescript';
@@ -37,25 +37,31 @@ export const INPUT_INITIALIZER_FN: InitializerApiFunction = {
  * input mapping if possible.
  */
 export function tryParseSignalInputMapping(
-    member: Pick<ClassMember, 'name'|'value'|'accessLevel'>, reflector: ReflectionHost,
-    importTracker: ImportedSymbolsTracker): InputMapping|null {
+  member: Pick<ClassMember, 'name' | 'value' | 'accessLevel'>,
+  reflector: ReflectionHost,
+  importTracker: ImportedSymbolsTracker,
+): InputMapping | null {
   if (member.value === null) {
     return null;
   }
 
-  const signalInput =
-      tryParseInitializerApi([INPUT_INITIALIZER_FN], member.value, reflector, importTracker);
+  const signalInput = tryParseInitializerApi(
+    [INPUT_INITIALIZER_FN],
+    member.value,
+    reflector,
+    importTracker,
+  );
   if (signalInput === null) {
     return null;
   }
 
   validateAccessOfInitializerApiMember(signalInput, member);
 
-  const optionsNode = (signalInput.isRequired ? signalInput.call.arguments[0] :
-                                                signalInput.call.arguments[1]) as ts.Expression |
-      undefined;
+  const optionsNode = (
+    signalInput.isRequired ? signalInput.call.arguments[0] : signalInput.call.arguments[1]
+  ) as ts.Expression | undefined;
   const options =
-      optionsNode !== undefined ? parseAndValidateInputAndOutputOptions(optionsNode) : null;
+    optionsNode !== undefined ? parseAndValidateInputAndOutputOptions(optionsNode) : null;
   const classPropertyName = member.name;
 
   return {

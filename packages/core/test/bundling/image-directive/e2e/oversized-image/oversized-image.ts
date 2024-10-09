@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {IMAGE_LOADER, ImageLoaderConfig, NgOptimizedImage} from '@angular/common';
@@ -11,7 +11,7 @@ import {Component} from '@angular/core';
 
 const imageLoader = {
   provide: IMAGE_LOADER,
-  useFactory: () => (config: ImageLoaderConfig) => config.src
+  useFactory: () => (config: ImageLoaderConfig) => config.src,
 };
 
 @Component({
@@ -31,9 +31,7 @@ const imageLoader = {
       </div>
      `,
 })
-export class OversizedImageComponentPassing {
-}
-
+export class OversizedImageComponentPassing {}
 
 @Component({
   selector: 'oversized-image-failing',
@@ -47,5 +45,4 @@ export class OversizedImageComponentPassing {
        </div>
       `,
 })
-export class OversizedImageComponentFailing {
-}
+export class OversizedImageComponentFailing {}

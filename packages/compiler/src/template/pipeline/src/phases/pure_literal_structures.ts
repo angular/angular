@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as o from '../../../../output/output_ast';
@@ -13,19 +13,23 @@ import type {CompilationJob} from '../compilation';
 export function generatePureLiteralStructures(job: CompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.update) {
-      ir.transformExpressionsInOp(op, (expr, flags) => {
-        if (flags & ir.VisitorContextFlag.InChildOperation) {
+      ir.transformExpressionsInOp(
+        op,
+        (expr, flags) => {
+          if (flags & ir.VisitorContextFlag.InChildOperation) {
+            return expr;
+          }
+
+          if (expr instanceof o.LiteralArrayExpr) {
+            return transformLiteralArray(expr);
+          } else if (expr instanceof o.LiteralMapExpr) {
+            return transformLiteralMap(expr);
+          }
+
           return expr;
-        }
-
-        if (expr instanceof o.LiteralArrayExpr) {
-          return transformLiteralArray(expr);
-        } else if (expr instanceof o.LiteralMapExpr) {
-          return transformLiteralMap(expr);
-        }
-
-        return expr;
-      }, ir.VisitorContextFlag.None);
+        },
+        ir.VisitorContextFlag.None,
+      );
     }
   }
 }
@@ -54,11 +58,9 @@ function transformLiteralMap(expr: o.LiteralMapExpr): o.Expression {
     } else {
       const idx = nonConstantArgs.length;
       nonConstantArgs.push(entry.value);
-      derivedEntries.push(new o.LiteralMapEntry(
-          entry.key,
-          new ir.PureFunctionParameterExpr(idx),
-          entry.quoted,
-          ));
+      derivedEntries.push(
+        new o.LiteralMapEntry(entry.key, new ir.PureFunctionParameterExpr(idx), entry.quoted),
+      );
     }
   }
   return new ir.PureFunctionExpr(o.literalMap(derivedEntries), nonConstantArgs);

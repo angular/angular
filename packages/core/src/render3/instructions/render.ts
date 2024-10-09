@@ -3,13 +3,24 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {retrieveHydrationInfo} from '../../hydration/utils';
 import {assertEqual, assertNotReactive} from '../../util/assert';
 import {RenderFlags} from '../interfaces/definition';
-import {CONTEXT, FLAGS, HOST, HYDRATION, INJECTOR, LView, LViewFlags, QUERIES, TVIEW, TView} from '../interfaces/view';
+import {
+  CONTEXT,
+  FLAGS,
+  HOST,
+  HYDRATION,
+  INJECTOR,
+  LView,
+  LViewFlags,
+  QUERIES,
+  TVIEW,
+  TView,
+} from '../interfaces/view';
 import {enterView, leaveView} from '../state';
 import {getComponentLViewByIndex, isCreationMode} from '../util/view_utils';
 
@@ -119,7 +130,6 @@ export function renderView<T>(tView: TView, lView: LView<T>, context: T): void {
     if (components !== null) {
       renderChildComponents(lView, components);
     }
-
   } catch (error) {
     // If we didn't manage to get past the first template pass due to
     // an error, mark the view as corrupted so we can try to recover.

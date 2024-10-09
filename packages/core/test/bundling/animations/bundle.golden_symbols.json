@@ -18,7 +18,10 @@
     "name": "APP_INITIALIZER"
   },
   {
-    "name": "AfterRenderEventManager"
+    "name": "AfterRenderManager"
+  },
+  {
+    "name": "AfterRenderPhase"
   },
   {
     "name": "AnimationAstBuilderContext"
@@ -238,6 +241,9 @@
   },
   {
     "name": "EVENT_MANAGER_PLUGINS"
+  },
+  {
+    "name": "EffectScheduler"
   },
   {
     "name": "ElementInstructionMap"
@@ -462,7 +468,7 @@
     "name": "PRESERVE_HOST_CONTENT"
   },
   {
-    "name": "PendingTasks"
+    "name": "PendingTasksInternal"
   },
   {
     "name": "PlatformRef"
@@ -472,6 +478,9 @@
   },
   {
     "name": "REACTIVE_LVIEW_CONSUMER_NODE"
+  },
+  {
+    "name": "REACTIVE_NODE"
   },
   {
     "name": "REMOVE_STYLES_ON_COMPONENT_DESTROY"
@@ -487,6 +496,9 @@
   },
   {
     "name": "RuntimeError"
+  },
+  {
+    "name": "SCHEDULE_IN_ROOT_ZONE"
   },
   {
     "name": "SELF_TOKEN_REGEX"
@@ -532,6 +544,9 @@
   },
   {
     "name": "Subscription"
+  },
+  {
+    "name": "TEMPORARY_CONSUMER_NODE"
   },
   {
     "name": "TESTABILITY"
@@ -600,7 +615,13 @@
     "name": "ZONELESS_SCHEDULER_DISABLED"
   },
   {
+    "name": "ZoneAwareEffectScheduler"
+  },
+  {
     "name": "ZoneStablePendingTask"
+  },
+  {
+    "name": "_AfterRenderImpl"
   },
   {
     "name": "_AnimationDriver"
@@ -609,10 +630,16 @@
     "name": "_CACHED_BODY"
   },
   {
+    "name": "_ComponentFactoryResolver"
+  },
+  {
     "name": "_DOM"
   },
   {
     "name": "_IS_WEBKIT"
+  },
+  {
+    "name": "_Injector"
   },
   {
     "name": "_NullComponentFactoryResolver"
@@ -675,9 +702,6 @@
     "name": "_wasLastNodeCreated"
   },
   {
-    "name": "_wrapInTimeout"
-  },
-  {
     "name": "activeConsumer"
   },
   {
@@ -687,13 +711,16 @@
     "name": "addPropertyBinding"
   },
   {
-    "name": "addToViewTree"
+    "name": "addToEndOfViewTree"
   },
   {
     "name": "allocExpando"
   },
   {
     "name": "allocLFrame"
+  },
+  {
+    "name": "angularZoneInstanceIdProperty"
   },
   {
     "name": "animate"
@@ -726,6 +753,9 @@
     "name": "assertConsumerNode"
   },
   {
+    "name": "assertNotDestroyed"
+  },
+  {
     "name": "attachPatchData"
   },
   {
@@ -739,6 +769,9 @@
   },
   {
     "name": "bloomHasToken"
+  },
+  {
+    "name": "bootstrap"
   },
   {
     "name": "buildAnimationAst"
@@ -798,6 +831,12 @@
     "name": "configureViewWithDirective"
   },
   {
+    "name": "consumerBeforeComputation"
+  },
+  {
+    "name": "consumerDestroy"
+  },
+  {
     "name": "consumerIsLive"
   },
   {
@@ -837,6 +876,9 @@
     "name": "createLView"
   },
   {
+    "name": "createLinkElement"
+  },
+  {
     "name": "createNodeInjector"
   },
   {
@@ -844,6 +886,9 @@
   },
   {
     "name": "createPlatformFactory"
+  },
+  {
+    "name": "createStyleElement"
   },
   {
     "name": "createTView"
@@ -993,6 +1038,9 @@
     "name": "getFirstLContainer"
   },
   {
+    "name": "getInitialLViewFlagsFromDef"
+  },
+  {
     "name": "getInjectImplementation"
   },
   {
@@ -1018,6 +1066,9 @@
   },
   {
     "name": "getNextLContainer"
+  },
+  {
+    "name": "getNgZoneOptions"
   },
   {
     "name": "getNodeInjectable"
@@ -1089,6 +1140,9 @@
     "name": "handleUnhandledError"
   },
   {
+    "name": "hasApplyArgsData"
+  },
+  {
     "name": "hasTagAndTypeMatch"
   },
   {
@@ -1140,6 +1194,9 @@
     "name": "internalImportProvidersFrom"
   },
   {
+    "name": "internalProvideZoneChangeDetection"
+  },
+  {
     "name": "interpolateParams"
   },
   {
@@ -1153,6 +1210,12 @@
   },
   {
     "name": "invokeQuery"
+  },
+  {
+    "name": "isAngularZoneProperty"
+  },
+  {
+    "name": "isApplicationBootstrapConfig"
   },
   {
     "name": "isComponentDef"
@@ -1290,7 +1353,7 @@
     "name": "ngOnChangesSetInput"
   },
   {
-    "name": "ngZoneApplicationErrorHandlerFactory"
+    "name": "ngZoneInstanceId"
   },
   {
     "name": "noSideEffects"
@@ -1374,6 +1437,9 @@
     "name": "removeClass"
   },
   {
+    "name": "removeElements"
+  },
+  {
     "name": "removeFromArray"
   },
   {
@@ -1410,10 +1476,16 @@
     "name": "roundOffset"
   },
   {
+    "name": "runEffectsInView"
+  },
+  {
     "name": "saveNameToExportMap"
   },
   {
-    "name": "scheduleCallback"
+    "name": "scheduleCallbackWithMicrotask"
+  },
+  {
+    "name": "scheduleCallbackWithRafRace"
   },
   {
     "name": "searchTokensOnInjector"
@@ -1500,6 +1572,9 @@
     "name": "uniqueIdCounter"
   },
   {
+    "name": "unregisterLView"
+  },
+  {
     "name": "unwrapRNode"
   },
   {
@@ -1510,6 +1585,9 @@
   },
   {
     "name": "viewAttachedToChangeDetector"
+  },
+  {
+    "name": "viewShouldHaveReactiveConsumer"
   },
   {
     "name": "visitDslNode"

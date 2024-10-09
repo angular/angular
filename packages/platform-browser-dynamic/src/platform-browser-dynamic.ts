@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {createPlatformFactory} from '@angular/core';
@@ -19,4 +19,7 @@ export {JitCompilerFactory} from './compiler_factory';
  * @publicApi
  */
 export const platformBrowserDynamic = createPlatformFactory(
-    platformCoreDynamic, 'browserDynamic', INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS);
+  platformCoreDynamic,
+  'browserDynamic',
+  INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS,
+);

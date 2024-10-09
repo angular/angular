@@ -3,14 +3,13 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import ts from 'typescript';
 import {DeclarationNode} from '../../../reflection';
 
 import {TemplateId} from '../../api';
-
 
 const TEMPLATE_ID = Symbol('ngTemplateId');
 const NEXT_TEMPLATE_ID = Symbol('ngNextTemplateId');
@@ -31,9 +30,9 @@ export function getTemplateId(clazz: DeclarationNode): TemplateId {
   return node[TEMPLATE_ID]!;
 }
 
-function allocateTemplateId(sf: ts.SourceFile&Partial<HasNextTemplateId>): TemplateId {
+function allocateTemplateId(sf: ts.SourceFile & Partial<HasNextTemplateId>): TemplateId {
   if (sf[NEXT_TEMPLATE_ID] === undefined) {
     sf[NEXT_TEMPLATE_ID] = 1;
   }
-  return (`tcb${sf[NEXT_TEMPLATE_ID]!++}`) as TemplateId;
+  return `tcb${sf[NEXT_TEMPLATE_ID]!++}` as TemplateId;
 }

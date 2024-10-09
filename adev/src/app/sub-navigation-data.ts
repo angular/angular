@@ -11,6 +11,7 @@ import {NavigationItem} from '@angular/docs';
 // These 2 imports are expected to be red because they are generated a build time
 import FIRST_APP_TUTORIAL_NAV_DATA from '../../src/assets/tutorials/first-app/routes.json';
 import LEARN_ANGULAR_TUTORIAL_NAV_DATA from '../../src/assets/tutorials/learn-angular/routes.json';
+import DEFERRABLE_VIEWS_TUTORIAL_NAV_DATA from '../../src/assets/tutorials/deferrable-views/routes.json';
 
 import {DefaultPage} from './core/enums/pages';
 import {getApiNavigationItems} from './features/references/helpers/manifest.helper';
@@ -30,6 +31,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'What is Angular?',
         path: 'overview',
         contentPath: 'introduction/what-is-angular',
+      },
+      {
+        label: 'Installation',
+        path: 'installation',
+        contentPath: 'introduction/installation',
       },
       {
         label: 'Essentials',
@@ -171,7 +177,7 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         ],
       },
       {
-        label: 'Template Syntax',
+        label: 'Templates',
         children: [
           {
             label: 'Overview',
@@ -179,44 +185,14 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/templates/overview',
           },
           {
-            label: 'Text interpolation',
-            path: 'guide/templates/interpolation',
-            contentPath: 'guide/templates/interpolation',
-          },
-          {
-            label: 'Template statements',
-            path: 'guide/templates/template-statements',
-            contentPath: 'guide/templates/template-statements',
-          },
-          {
-            label: 'Understanding binding',
+            label: 'Binding dynamic text, properties and attributes',
             path: 'guide/templates/binding',
             contentPath: 'guide/templates/binding',
           },
           {
-            label: 'Property binding',
-            path: 'guide/templates/property-binding',
-            contentPath: 'guide/templates/property-binding',
-          },
-          {
-            label: 'Property binding best practices',
-            path: 'guide/templates/property-binding-best-practices',
-            contentPath: 'guide/templates/property-binding-best-practices',
-          },
-          {
-            label: 'Attribute binding',
-            path: 'guide/templates/attribute-binding',
-            contentPath: 'guide/templates/attribute-binding',
-          },
-          {
-            label: 'Class and style binding',
-            path: 'guide/templates/class-binding',
-            contentPath: 'guide/templates/class-binding',
-          },
-          {
-            label: 'Event binding',
-            path: 'guide/templates/event-binding',
-            contentPath: 'guide/templates/event-binding',
+            label: 'Adding event listeners',
+            path: 'guide/templates/event-listeners',
+            contentPath: 'guide/templates/event-listeners',
           },
           {
             label: 'Two-way binding',
@@ -230,48 +206,43 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
           },
           {
             label: 'Pipes',
-            children: [
-              {
-                label: 'Overview',
-                path: 'guide/pipes',
-                contentPath: 'guide/pipes/overview',
-              },
-              {
-                label: 'Using a pipe in a template',
-                path: 'guide/pipes/template',
-                contentPath: 'guide/pipes/template',
-              },
-              {
-                label: 'Custom pipes',
-                path: 'guide/pipes/transform-data',
-                contentPath: 'guide/pipes/transform-data',
-              },
-              {
-                label: 'Pipe precedence in expressions',
-                path: 'guide/pipes/precedence',
-                contentPath: 'guide/pipes/precedence',
-              },
-              {
-                label: 'Change detection with pipes',
-                path: 'guide/pipes/change-detection',
-                contentPath: 'guide/pipes/change-detection',
-              },
-              {
-                label: 'Unwrapping data from an observable',
-                path: 'guide/pipes/unwrapping-data-observables',
-                contentPath: 'guide/pipes/unwrapping-data-observables',
-              },
-            ],
+            path: 'guide/templates/pipes',
+            contentPath: 'guide/templates/pipes',
           },
           {
-            label: 'Template reference variables',
-            path: 'guide/templates/reference-variables',
-            contentPath: 'guide/templates/reference-variables',
+            label: 'Slotting child content with ng-content',
+            path: 'guide/templates/ng-content',
+            contentPath: 'guide/templates/ng-content',
           },
           {
-            label: 'SVG as templates',
-            path: 'guide/templates/svg-in-templates',
-            contentPath: 'guide/templates/svg-in-templates',
+            label: 'Create template fragments with ng-template',
+            path: 'guide/templates/ng-template',
+            contentPath: 'guide/templates/ng-template',
+          },
+          {
+            label: 'Grouping elements with ng-container',
+            path: 'guide/templates/ng-container',
+            contentPath: 'guide/templates/ng-container',
+          },
+          {
+            label: 'Variables in templates',
+            path: 'guide/templates/variables',
+            contentPath: 'guide/templates/variables',
+          },
+          {
+            label: 'Deferred loading with @defer',
+            path: 'guide/templates/defer',
+            contentPath: 'guide/templates/defer',
+          },
+          {
+            label: 'Expression syntax',
+            path: 'guide/templates/expression-syntax',
+            contentPath: 'guide/templates/expression-syntax',
+          },
+          {
+            label: 'Whitespace in templates',
+            path: 'guide/templates/whitespace',
+            contentPath: 'guide/templates/whitespace',
           },
         ],
       },
@@ -474,6 +445,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'Performance',
         children: [
           {
+            label: 'Overview',
+            path: 'guide/performance',
+            contentPath: 'guide/performance/overview',
+          },
+          {
             label: 'Deferrable views',
             path: 'guide/defer',
             contentPath: 'guide/defer',
@@ -640,6 +616,12 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
           },
         ],
       },
+      {
+        label: 'Experimental features',
+        children: [
+          {label: 'Zoneless', path: 'guide/experimental/zoneless', contentPath: 'guide/zoneless'},
+        ],
+      },
     ],
   },
   {
@@ -679,9 +661,9 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'tools/cli/end-to-end',
           },
           {
-            label: 'ESBuild',
-            path: 'tools/cli/esbuild',
-            contentPath: 'tools/cli/esbuild',
+            label: 'Migrating to new build system',
+            path: 'tools/cli/build-system-migration',
+            contentPath: 'tools/cli/build-system-migration',
           },
           {
             label: 'Build environments',
@@ -891,6 +873,7 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
 export const TUTORIALS_SUB_NAVIGATION_DATA: NavigationItem[] = [
   FIRST_APP_TUTORIAL_NAV_DATA,
   LEARN_ANGULAR_TUTORIAL_NAV_DATA,
+  DEFERRABLE_VIEWS_TUTORIAL_NAV_DATA,
   {
     path: DefaultPage.TUTORIALS,
     contentPath: 'tutorials/home',
@@ -1039,6 +1022,10 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
           {
             label: 'config',
             path: 'cli/generate/config',
+          },
+          {
+            label: 'directive',
+            path: 'cli/generate/directive',
           },
           {
             label: 'enum',
@@ -1234,6 +1221,11 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'reference/errors/NG0507',
       },
       {
+        label: 'NG0602: Disallowed function call inside reactive context',
+        path: 'errors/NG0602',
+        contentPath: 'reference/errors/NG0602',
+      },
+      {
         label: 'NG05104: Root element was not found',
         path: 'errors/NG05104',
         contentPath: 'reference/errors/NG05104',
@@ -1247,6 +1239,31 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'NG0912: Component ID generation collision',
         path: 'errors/NG0912',
         contentPath: 'reference/errors/NG0912',
+      },
+      {
+        label: 'NG0913: Runtime Performance Warnings',
+        path: 'errors/NG0913',
+        contentPath: 'reference/errors/NG0913',
+      },
+      {
+        label: 'NG0950: Required input is accessed before a value is set.',
+        path: 'errors/NG0950',
+        contentPath: 'reference/errors/NG0950',
+      },
+      {
+        label: 'NG0951: Child query result is required but no value is available.',
+        path: 'errors/NG0951',
+        contentPath: 'reference/errors/NG0951',
+      },
+      {
+        label: 'NG0955: Track expression resulted in duplicated keys for a given collection',
+        path: 'errors/NG0955',
+        contentPath: 'reference/errors/NG0955',
+      },
+      {
+        label: 'NG0956: Tracking expression caused re-creation of the DOM structure',
+        path: 'errors/NG0956',
+        contentPath: 'reference/errors/NG0956',
       },
       {
         label: 'NG1001: Argument Not Literal',
@@ -1269,9 +1286,9 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'reference/errors/NG3003',
       },
       {
-        label: 'NG5000: Hydration with unsupported Zone.js instance.',
-        path: 'errors/NG5000',
-        contentPath: 'reference/errors/NG5000',
+        label: 'NG05000: Hydration with unsupported Zone.js instance.',
+        path: 'errors/NG05000',
+        contentPath: 'reference/errors/NG05000',
       },
       {
         label: 'NG6100: NgModule.id Set to module.id anti-pattern',
@@ -1348,6 +1365,16 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         path: 'extended-diagnostics/NG8109',
         contentPath: 'reference/extended-diagnostics/NG8109',
       },
+      {
+        label: 'NG8111: Functions must be invoked in event bindings',
+        path: 'extended-diagnostics/NG8111',
+        contentPath: 'reference/extended-diagnostics/NG8111',
+      },
+      {
+        label: 'NG8113: Unused Standalone Imports',
+        path: 'extended-diagnostics/NG8113',
+        contentPath: 'reference/extended-diagnostics/NG8113',
+      },
     ],
   },
   {
@@ -1359,6 +1386,10 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
     label: 'Version compatibility',
     path: 'reference/versions',
     contentPath: 'reference/versions',
+  },
+  {
+    label: 'Update guide',
+    path: 'update-guide',
   },
   {
     label: 'Configurations',
@@ -1399,19 +1430,19 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'reference/migrations/standalone',
       },
       {
-        label: 'ModuleWithProviders',
-        path: 'reference/migrations/module-with-providers',
-        contentPath: 'reference/migrations/module-with-providers',
-      },
-      {
-        label: 'Typed Forms',
-        path: 'reference/migrations/typed-forms',
-        contentPath: 'reference/migrations/typed-forms',
-      },
-      {
         label: 'Control Flow Syntax',
         path: 'reference/migrations/control-flow',
         contentPath: 'reference/migrations/control-flow',
+      },
+      {
+        label: 'inject() Function',
+        path: 'reference/migrations/inject-function',
+        contentPath: 'reference/migrations/inject-function',
+      },
+      {
+        label: 'Lazy-loaded routes',
+        path: 'reference/migrations/route-lazy-loading',
+        contentPath: 'reference/migrations/route-lazy-loading',
       },
     ],
   },

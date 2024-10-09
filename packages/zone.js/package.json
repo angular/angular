@@ -1,25 +1,23 @@
 {
   "name": "zone.js",
-  "version": "0.14.4",
+  "version": "0.15.0",
   "description": "Zones for JavaScript",
   "main": "./bundles/zone.umd.js",
   "module": "./fesm2015/zone.js",
   "es2015": "./fesm2015/zone.js",
   "fesm2015": "./fesm2015/zone.js",
   "typings": "./zone.d.ts",
-  "dependencies": {
-    "tslib": "^2.3.0"
-  },
   "devDependencies": {
     "@externs/nodejs": "^1.5.0",
     "@types/node": "^10.9.4",
-    "domino": "https://github.com/angular/domino.git#9e7881d2ac1e5977cefbc557f935931ec23f6658",
+    "domino": "https://github.com/angular/domino.git#8f228f8862540c6ccd14f76b5a1d9bb5458618af",
     "google-closure-compiler": "^20240317.0.0",
     "jest": "^29.0",
     "jest-environment-jsdom": "^29.0.3",
     "jest-environment-node": "^29.0.3",
     "mocha": "^10.2.0",
-    "mock-require": "3.0.3"
+    "mock-require": "3.0.3",
+    "tslib": "^2.3.0"
   },
   "scripts": {
     "electrontest": "cd test/extra && node electron.js",

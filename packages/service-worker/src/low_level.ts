@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {concat, ConnectableObservable, defer, fromEvent, Observable, of, throwError} from 'rxjs';
@@ -66,7 +66,7 @@ export interface VersionReadyEvent {
 
 /**
  * A union of all event types that can be emitted by
- * {@link api/service-worker/SwUpdate#versionUpdates SwUpdate#versionUpdates}.
+ * {@link SwUpdate#versionUpdates}.
  *
  * @publicApi
  */

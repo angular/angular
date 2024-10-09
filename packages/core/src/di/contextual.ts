@@ -3,16 +3,19 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {InjectorProfilerContext, setInjectorProfilerContext} from '../render3/debug/injector_profiler';
+import {
+  InjectorProfilerContext,
+  setInjectorProfilerContext,
+} from '../render3/debug/injector_profiler';
 
 import {getInjectImplementation, setInjectImplementation} from './inject_switch';
 import type {Injector} from './injector';
 import {getCurrentInjector, setCurrentInjector} from './injector_compatibility';
-import {R3Injector} from './r3_injector';
+import {assertNotDestroyed, R3Injector} from './r3_injector';
 
 /**
  * Runs the given function in the [context](guide/di/dependency-injection-context) of the given
@@ -30,7 +33,7 @@ import {R3Injector} from './r3_injector';
  */
 export function runInInjectionContext<ReturnT>(injector: Injector, fn: () => ReturnT): ReturnT {
   if (injector instanceof R3Injector) {
-    injector.assertNotDestroyed();
+    assertNotDestroyed(injector);
   }
 
   let prevInjectorProfilerContext: InjectorProfilerContext;
@@ -67,9 +70,10 @@ export function assertInInjectionContext(debugFn: Function): void {
   // from being retained in the bundle regardless of minification.
   if (!isInInjectionContext()) {
     throw new RuntimeError(
-        RuntimeErrorCode.MISSING_INJECTION_CONTEXT,
-        ngDevMode &&
-            (debugFn.name +
-             '() can only be used within an injection context such as a constructor, a factory function, a field initializer, or a function used with `runInInjectionContext`'));
+      RuntimeErrorCode.MISSING_INJECTION_CONTEXT,
+      ngDevMode &&
+        debugFn.name +
+          '() can only be used within an injection context such as a constructor, a factory function, a field initializer, or a function used with `runInInjectionContext`',
+    );
   }
 }

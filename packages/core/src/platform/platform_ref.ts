@@ -3,35 +3,30 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationInitStatus} from '../application/application_init';
 import {compileNgModuleFactory} from '../application/application_ngmodule_factory_compiler';
-import {_callAndReportToErrorHandler, ApplicationRef, BootstrapOptions, optionsReducer, remove} from '../application/application_ref';
-import {getNgZoneOptions, internalProvideZoneChangeDetection, PROVIDED_NG_ZONE} from '../change_detection/scheduling/ng_zone_scheduling';
-import {Injectable, InjectionToken, Injector} from '../di';
-import {ErrorHandler} from '../error_handler';
+import {
+  _callAndReportToErrorHandler,
+  BootstrapOptions,
+  optionsReducer,
+} from '../application/application_ref';
+import {
+  getNgZoneOptions,
+  internalProvideZoneChangeDetection,
+} from '../change_detection/scheduling/ng_zone_scheduling';
+import {ChangeDetectionScheduler} from '../change_detection/scheduling/zoneless_scheduling';
+import {ChangeDetectionSchedulerImpl} from '../change_detection/scheduling/zoneless_scheduling_impl';
+import {Injectable, Injector} from '../di';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {DEFAULT_LOCALE_ID} from '../i18n/localization';
-import {LOCALE_ID} from '../i18n/tokens';
 import {Type} from '../interface/type';
 import {CompilerOptions} from '../linker';
-import {InternalNgModuleRef, NgModuleFactory, NgModuleRef} from '../linker/ng_module_factory';
-import {setLocaleId} from '../render3';
+import {NgModuleFactory, NgModuleRef} from '../linker/ng_module_factory';
 import {createNgModuleRefWithProviders} from '../render3/ng_module_ref';
-import {stringify} from '../util/stringify';
-import {getNgZone} from '../zone/ng_zone';
-
-
-/**
- * Internal token that allows to register extra callbacks that should be invoked during the
- * `PlatformRef.destroy` operation. This token is needed to avoid a direct reference to the
- * `PlatformRef` class (i.e. register the callback via `PlatformRef.onDestroy`), thus making the
- * entire class tree-shakeable.
- */
-export const PLATFORM_DESTROY_LISTENERS =
-    new InjectionToken<Set<VoidFunction>>(ngDevMode ? 'PlatformDestroyListeners' : '');
+import {getNgZone, NgZone} from '../zone/ng_zone';
+import {bootstrap} from './bootstrap';
+import {PLATFORM_DESTROY_LISTENERS} from './platform_destroy_listeners';
 
 /**
  * The Angular platform is the entry point for Angular on a web page.
@@ -57,64 +52,37 @@ export class PlatformRef {
    * @deprecated Passing NgModule factories as the `PlatformRef.bootstrapModuleFactory` function
    *     argument is deprecated. Use the `PlatformRef.bootstrapModule` API instead.
    */
-  bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>, options?: BootstrapOptions):
-      Promise<NgModuleRef<M>> {
-    // Note: We need to create the NgZone _before_ we instantiate the module,
-    // as instantiating the module creates some providers eagerly.
-    // So we create a mini parent injector that just contains the new NgZone and
-    // pass that as parent to the NgModuleFactory.
-    const ngZone = getNgZone(options?.ngZone, getNgZoneOptions({
-                               eventCoalescing: options?.ngZoneEventCoalescing,
-                               runCoalescing: options?.ngZoneRunCoalescing
-                             }));
-    // Note: Create ngZoneInjector within ngZone.run so that all of the instantiated services are
-    // created within the Angular zone
-    // Do not try to replace ngZone.run with ApplicationRef#run because ApplicationRef would then be
-    // created outside of the Angular zone.
-    return ngZone.run(() => {
-      const ignoreChangesOutsideZone = options?.ignoreChangesOutsideZone;
-      const moduleRef = createNgModuleRefWithProviders(
-          moduleFactory.moduleType,
-          this.injector,
-          internalProvideZoneChangeDetection(
-              {ngZoneFactory: () => ngZone, ignoreChangesOutsideZone}),
-      );
-
-      if ((typeof ngDevMode === 'undefined' || ngDevMode) &&
-          moduleRef.injector.get(PROVIDED_NG_ZONE, null) !== null) {
-        throw new RuntimeError(
-            RuntimeErrorCode.PROVIDER_IN_WRONG_CONTEXT,
-            '`bootstrapModule` does not support `provideZoneChangeDetection`. Use `BootstrapOptions` instead.');
-      }
-
-      const exceptionHandler = moduleRef.injector.get(ErrorHandler, null);
-      if ((typeof ngDevMode === 'undefined' || ngDevMode) && exceptionHandler === null) {
-        throw new RuntimeError(
-            RuntimeErrorCode.MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP,
-            'No ErrorHandler. Is platform module (BrowserModule) included?');
-      }
-      ngZone.runOutsideAngular(() => {
-        const subscription = ngZone.onError.subscribe({
-          next: (error: any) => {
-            exceptionHandler!.handleError(error);
-          }
-        });
-        moduleRef.onDestroy(() => {
-          remove(this._modules, moduleRef);
-          subscription.unsubscribe();
-        });
+  bootstrapModuleFactory<M>(
+    moduleFactory: NgModuleFactory<M>,
+    options?: BootstrapOptions,
+  ): Promise<NgModuleRef<M>> {
+    const scheduleInRootZone = (options as any)?.scheduleInRootZone;
+    const ngZoneFactory = () =>
+      getNgZone(options?.ngZone, {
+        ...getNgZoneOptions({
+          eventCoalescing: options?.ngZoneEventCoalescing,
+          runCoalescing: options?.ngZoneRunCoalescing,
+        }),
+        scheduleInRootZone,
       });
-      return _callAndReportToErrorHandler(exceptionHandler!, ngZone, () => {
-        const initStatus: ApplicationInitStatus = moduleRef.injector.get(ApplicationInitStatus);
-        initStatus.runInitializers();
-        return initStatus.donePromise.then(() => {
-          // If the `LOCALE_ID` provider is defined at bootstrap then we set the value for ivy
-          const localeId = moduleRef.injector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
-          setLocaleId(localeId || DEFAULT_LOCALE_ID);
-          this._moduleDoBootstrap(moduleRef);
-          return moduleRef;
-        });
-      });
+    const ignoreChangesOutsideZone = options?.ignoreChangesOutsideZone;
+    const allAppProviders = [
+      internalProvideZoneChangeDetection({
+        ngZoneFactory,
+        ignoreChangesOutsideZone,
+      }),
+      {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
+    ];
+    const moduleRef = createNgModuleRefWithProviders(
+      moduleFactory.moduleType,
+      this.injector,
+      allAppProviders,
+    );
+
+    return bootstrap({
+      moduleRef,
+      allPlatformModules: this._modules,
+      platformInjector: this.injector,
     });
   }
 
@@ -135,29 +103,15 @@ export class PlatformRef {
    *
    */
   bootstrapModule<M>(
-      moduleType: Type<M>,
-      compilerOptions: (CompilerOptions&BootstrapOptions)|
-      Array<CompilerOptions&BootstrapOptions> = []): Promise<NgModuleRef<M>> {
+    moduleType: Type<M>,
+    compilerOptions:
+      | (CompilerOptions & BootstrapOptions)
+      | Array<CompilerOptions & BootstrapOptions> = [],
+  ): Promise<NgModuleRef<M>> {
     const options = optionsReducer({}, compilerOptions);
-    return compileNgModuleFactory(this.injector, options, moduleType)
-        .then(moduleFactory => this.bootstrapModuleFactory(moduleFactory, options));
-  }
-
-  private _moduleDoBootstrap(moduleRef: InternalNgModuleRef<any>): void {
-    const appRef = moduleRef.injector.get(ApplicationRef);
-    if (moduleRef._bootstrapComponents.length > 0) {
-      moduleRef._bootstrapComponents.forEach(f => appRef.bootstrap(f));
-    } else if (moduleRef.instance.ngDoBootstrap) {
-      moduleRef.instance.ngDoBootstrap(appRef);
-    } else {
-      throw new RuntimeError(
-          RuntimeErrorCode.BOOTSTRAP_COMPONENTS_NOT_FOUND,
-          ngDevMode &&
-              `The module ${stringify(moduleRef.instance.constructor)} was bootstrapped, ` +
-                  `but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. ` +
-                  `Please define one of these.`);
-    }
-    this._modules.push(moduleRef);
+    return compileNgModuleFactory(this.injector, options, moduleType).then((moduleFactory) =>
+      this.bootstrapModuleFactory(moduleFactory, options),
+    );
   }
 
   /**
@@ -182,15 +136,16 @@ export class PlatformRef {
   destroy() {
     if (this._destroyed) {
       throw new RuntimeError(
-          RuntimeErrorCode.PLATFORM_ALREADY_DESTROYED,
-          ngDevMode && 'The platform has already been destroyed!');
+        RuntimeErrorCode.PLATFORM_ALREADY_DESTROYED,
+        ngDevMode && 'The platform has already been destroyed!',
+      );
     }
-    this._modules.slice().forEach(module => module.destroy());
-    this._destroyListeners.forEach(listener => listener());
+    this._modules.slice().forEach((module) => module.destroy());
+    this._destroyListeners.forEach((listener) => listener());
 
     const destroyListeners = this._injector.get(PLATFORM_DESTROY_LISTENERS, null);
     if (destroyListeners) {
-      destroyListeners.forEach(listener => listener());
+      destroyListeners.forEach((listener) => listener());
       destroyListeners.clear();
     }
 

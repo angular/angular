@@ -3,10 +3,18 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, createEnvironmentInjector, EnvironmentInjector, Injector, Signal, signal} from '@angular/core';
+import {
+  Component,
+  computed,
+  createEnvironmentInjector,
+  EnvironmentInjector,
+  Injector,
+  Signal,
+  signal,
+} from '@angular/core';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {take, toArray} from 'rxjs/operators';
@@ -19,8 +27,7 @@ describe('toObservable()', () => {
     template: '',
     standalone: true,
   })
-  class Cmp {
-  }
+  class Cmp {}
 
   beforeEach(() => {
     fixture = TestBed.createComponent(Cmp);
@@ -67,8 +74,8 @@ describe('toObservable()', () => {
     let currentError: any = null;
 
     const sub = counter$.subscribe({
-      next: value => currentValue = value,
-      error: err => currentError = err,
+      next: (value) => (currentValue = value),
+      error: (err) => (currentError = err),
     });
 
     flushEffects();
@@ -163,7 +170,7 @@ describe('toObservable()', () => {
       // Read emits. If we are still tracked in the effect, this will cause an infinite loop by
       // triggering the effect again.
       emits();
-      emits.update(v => v + 1);
+      emits.update((v) => v + 1);
     });
     flushEffects();
     expect(emits()).toBe(1);

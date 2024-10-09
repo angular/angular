@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {serializeNodes} from '../../src/i18n/digest';
@@ -18,37 +18,40 @@ describe('MessageBundle', () => {
     let messages: MessageBundle;
 
     beforeEach(() => {
-      messages = new MessageBundle(new HtmlParser, [], {});
+      messages = new MessageBundle(new HtmlParser(), [], {});
     });
 
     it('should extract the message to the catalog', () => {
       messages.updateFromTemplate(
-          '<p i18n="m|d">Translate Me</p>', 'url', DEFAULT_INTERPOLATION_CONFIG);
-      expect(humanizeMessages(messages)).toEqual([
-        'Translate Me (m|d)',
-      ]);
+        '<p i18n="m|d">Translate Me</p>',
+        'url',
+        DEFAULT_INTERPOLATION_CONFIG,
+      );
+      expect(humanizeMessages(messages)).toEqual(['Translate Me (m|d)']);
     });
 
     it('should extract and dedup messages', () => {
       messages.updateFromTemplate(
-          '<p i18n="m|d@@1">Translate Me</p><p i18n="@@2">Translate Me</p><p i18n="@@2">Translate Me</p>',
-          'url', DEFAULT_INTERPOLATION_CONFIG);
-      expect(humanizeMessages(messages)).toEqual([
-        'Translate Me (m|d)',
-        'Translate Me (|)',
-      ]);
+        '<p i18n="m|d@@1">Translate Me</p><p i18n="@@2">Translate Me</p><p i18n="@@2">Translate Me</p>',
+        'url',
+        DEFAULT_INTERPOLATION_CONFIG,
+      );
+      expect(humanizeMessages(messages)).toEqual(['Translate Me (m|d)', 'Translate Me (|)']);
     });
   });
 });
 
 class _TestSerializer extends Serializer {
   override write(messages: i18n.Message[]): string {
-    return messages.map(msg => `${serializeNodes(msg.nodes)} (${msg.meaning}|${msg.description})`)
-        .join('//');
+    return messages
+      .map((msg) => `${serializeNodes(msg.nodes)} (${msg.meaning}|${msg.description})`)
+      .join('//');
   }
 
-  override load(content: string, url: string):
-      {locale: string|null, i18nNodesByMsgId: {[id: string]: i18n.Node[]}} {
+  override load(
+    content: string,
+    url: string,
+  ): {locale: string | null; i18nNodesByMsgId: {[id: string]: i18n.Node[]}} {
     return {locale: null, i18nNodesByMsgId: {}};
   }
 

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {addTNodeAndUpdateInsertBeforeIndex} from '@angular/core/src/render3/i18n/i18n_insert_before_index';
@@ -12,19 +12,18 @@ import {TNode, TNodeType} from '@angular/core/src/render3/interfaces/node';
 import {HEADER_OFFSET} from '@angular/core/src/render3/interfaces/view';
 import {matchTNode} from '../matchers';
 
-
 describe('addTNodeAndUpdateInsertBeforeIndex', () => {
-  function tNode(index: number, type: TNodeType, insertBeforeIndex: number|null = null): TNode {
+  function tNode(index: number, type: TNodeType, insertBeforeIndex: number | null = null): TNode {
     const tNode = createTNode(null!, null, type, index, null, null);
     tNode.insertBeforeIndex = insertBeforeIndex;
     return tNode;
   }
 
-  function tPlaceholderElementNode(index: number, insertBeforeIndex: number|null = null) {
+  function tPlaceholderElementNode(index: number, insertBeforeIndex: number | null = null) {
     return tNode(index, TNodeType.Placeholder, insertBeforeIndex);
   }
 
-  function tI18NTextNode(index: number, insertBeforeIndex: number|null = null) {
+  function tI18NTextNode(index: number, insertBeforeIndex: number | null = null) {
     return tNode(index, TNodeType.Element, insertBeforeIndex);
   }
 
@@ -44,7 +43,9 @@ describe('addTNodeAndUpdateInsertBeforeIndex', () => {
           tPlaceholderElementNode(HEADER_OFFSET + 1),
         ];
         addTNodeAndUpdateInsertBeforeIndex(
-            previousTNodes, tPlaceholderElementNode(HEADER_OFFSET + 2));
+          previousTNodes,
+          tPlaceholderElementNode(HEADER_OFFSET + 2),
+        );
         expect(previousTNodes).toEqual([
           matchTNode({index: HEADER_OFFSET + 0, insertBeforeIndex: null}),
           matchTNode({index: HEADER_OFFSET + 1, insertBeforeIndex: null}),
@@ -60,7 +61,9 @@ describe('addTNodeAndUpdateInsertBeforeIndex', () => {
           tPlaceholderElementNode(HEADER_OFFSET + 2),
         ];
         addTNodeAndUpdateInsertBeforeIndex(
-            previousTNodes, tPlaceholderElementNode(HEADER_OFFSET + 0));
+          previousTNodes,
+          tPlaceholderElementNode(HEADER_OFFSET + 0),
+        );
         expect(previousTNodes).toEqual([
           matchTNode({index: HEADER_OFFSET + 1, insertBeforeIndex: HEADER_OFFSET + 0}),
           matchTNode({index: HEADER_OFFSET + 2, insertBeforeIndex: HEADER_OFFSET + 0}),
@@ -75,7 +78,9 @@ describe('addTNodeAndUpdateInsertBeforeIndex', () => {
           tPlaceholderElementNode(HEADER_OFFSET + 1),
         ];
         addTNodeAndUpdateInsertBeforeIndex(
-            previousTNodes, tPlaceholderElementNode(HEADER_OFFSET + 0));
+          previousTNodes,
+          tPlaceholderElementNode(HEADER_OFFSET + 0),
+        );
         expect(previousTNodes).toEqual([
           matchTNode({index: HEADER_OFFSET + 2, insertBeforeIndex: HEADER_OFFSET + 1}),
           matchTNode({index: HEADER_OFFSET + 3, insertBeforeIndex: HEADER_OFFSET + 1}),
@@ -91,7 +96,9 @@ describe('addTNodeAndUpdateInsertBeforeIndex', () => {
           tPlaceholderElementNode(HEADER_OFFSET + 0),
         ];
         addTNodeAndUpdateInsertBeforeIndex(
-            previousTNodes, tPlaceholderElementNode(HEADER_OFFSET + 3));
+          previousTNodes,
+          tPlaceholderElementNode(HEADER_OFFSET + 3),
+        );
         expect(previousTNodes).toEqual([
           matchTNode({index: HEADER_OFFSET + 5, insertBeforeIndex: HEADER_OFFSET + 0}),
           matchTNode({index: HEADER_OFFSET + 6, insertBeforeIndex: HEADER_OFFSET + 0}),
@@ -168,18 +175,30 @@ describe('addTNodeAndUpdateInsertBeforeIndex', () => {
     it('should rearrange the nodes', () => {
       const previousTNodes: TNode[] = [];
       addTNodeAndUpdateInsertBeforeIndex(
-          previousTNodes, tPlaceholderElementNode(HEADER_OFFSET + 2));
+        previousTNodes,
+        tPlaceholderElementNode(HEADER_OFFSET + 2),
+      );
       addTNodeAndUpdateInsertBeforeIndex(
-          previousTNodes, tPlaceholderElementNode(HEADER_OFFSET + 8));
+        previousTNodes,
+        tPlaceholderElementNode(HEADER_OFFSET + 8),
+      );
       addTNodeAndUpdateInsertBeforeIndex(
-          previousTNodes, tPlaceholderElementNode(HEADER_OFFSET + 4));
+        previousTNodes,
+        tPlaceholderElementNode(HEADER_OFFSET + 4),
+      );
       addTNodeAndUpdateInsertBeforeIndex(
-          previousTNodes, tPlaceholderElementNode(HEADER_OFFSET + 5));
+        previousTNodes,
+        tPlaceholderElementNode(HEADER_OFFSET + 5),
+      );
       addTNodeAndUpdateInsertBeforeIndex(previousTNodes, tI18NTextNode(HEADER_OFFSET + 9));
       addTNodeAndUpdateInsertBeforeIndex(
-          previousTNodes, tPlaceholderElementNode(HEADER_OFFSET + 3));
+        previousTNodes,
+        tPlaceholderElementNode(HEADER_OFFSET + 3),
+      );
       addTNodeAndUpdateInsertBeforeIndex(
-          previousTNodes, tPlaceholderElementNode(HEADER_OFFSET + 7));
+        previousTNodes,
+        tPlaceholderElementNode(HEADER_OFFSET + 7),
+      );
       expect(previousTNodes).toEqual([
         matchTNode({index: HEADER_OFFSET + 2, insertBeforeIndex: HEADER_OFFSET + 9}),
         matchTNode({index: HEADER_OFFSET + 8, insertBeforeIndex: HEADER_OFFSET + 4}),

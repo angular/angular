@@ -41,6 +41,12 @@ If neither option is supplied, the flag remains in its default state, as listed 
 
 Array options can be provided in two forms: `--option value1 value2` or `--option value1 --option value2`.
 
+### Key/value options
+
+Some options like `--define` expect an array of `key=value` pairs as their values.
+Just like array options, key/value options can be provided in two forms:
+`--define 'KEY_1="value1"' KEY_2=true` or `--define 'KEY_1="value1"' --define KEY_2=true`.
+
 ### Relative paths
 
 Options that specify files can be given as absolute paths, or as paths relative to the current working directory, which is generally either the workspace or project root.

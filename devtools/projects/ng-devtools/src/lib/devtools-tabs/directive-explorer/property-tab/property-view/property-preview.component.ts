@@ -3,10 +3,10 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, computed, input, output} from '@angular/core';
 import {PropType} from 'protocol';
 
 import {FlatNode} from '../../property-resolver/element-property-resolver';
@@ -18,13 +18,14 @@ import {FlatNode} from '../../property-resolver/element-property-resolver';
   standalone: true,
 })
 export class PropertyPreviewComponent {
-  @Input({required: true}) node!: FlatNode;
-  @Output() inspect = new EventEmitter<void>();
+  readonly node = input.required<FlatNode>();
+  readonly inspect = output<void>();
 
-  get isClickableProp(): boolean {
+  readonly isClickableProp = computed(() => {
+    const node = this.node();
     return (
-      this.node.prop.descriptor.type === PropType.Function ||
-      this.node.prop.descriptor.type === PropType.HTMLNode
+      node.prop.descriptor.type === PropType.Function ||
+      node.prop.descriptor.type === PropType.HTMLNode
     );
-  }
+  });
 }

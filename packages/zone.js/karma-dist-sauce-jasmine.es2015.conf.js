@@ -1,5 +1,4 @@
-
-module.exports = function(config) {
+module.exports = function (config) {
   require('./karma-dist-jasmine.conf.js')(config);
   require('./sauce.es2015.conf')(config);
   config.files.push('build/test/wtf_mock.js');

@@ -78,7 +78,7 @@ an `<ng-container>` element, which would then wrap the other one, like so:
 
 This would work as intended without introducing any new unnecessary elements in the DOM.
 
-For more information see [one structural directive per element](guide/structural-directives#one-per-element).
+For more information see [one structural directive per element](guide/directives/structural-directives#one-structural-directive-per-element).
 
 ### Use alongside ngTemplateOutlet
 

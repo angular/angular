@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {assertParentView} from './assert';
@@ -17,15 +17,25 @@ import {assertTNodeType} from './node_assert';
 import {getProjectionNodes} from './node_manipulation';
 import {getLViewParent, unwrapRNode} from './util/view_utils';
 
-
 export function collectNativeNodes(
-    tView: TView, lView: LView, tNode: TNode|null, result: any[],
-    isProjection: boolean = false): any[] {
+  tView: TView,
+  lView: LView,
+  tNode: TNode | null,
+  result: any[],
+  isProjection: boolean = false,
+): any[] {
   while (tNode !== null) {
+    // Let declarations don't have corresponding DOM nodes so we skip over them.
+    if (tNode.type === TNodeType.LetDeclaration) {
+      tNode = isProjection ? tNode.projectionNext : tNode.next;
+      continue;
+    }
+
     ngDevMode &&
-        assertTNodeType(
-            tNode,
-            TNodeType.AnyRNode | TNodeType.AnyContainer | TNodeType.Projection | TNodeType.Icu);
+      assertTNodeType(
+        tNode,
+        TNodeType.AnyRNode | TNodeType.AnyContainer | TNodeType.Projection | TNodeType.Icu,
+      );
 
     const lNode = lView[tNode.index];
     if (lNode !== null) {
@@ -44,8 +54,8 @@ export function collectNativeNodes(
       collectNativeNodes(tView, lView, tNode.child, result);
     } else if (tNodeType & TNodeType.Icu) {
       const nextRNode = icuContainerIterate(tNode as TIcuContainerNode, lView);
-      let rNode: RNode|null;
-      while (rNode = nextRNode()) {
+      let rNode: RNode | null;
+      while ((rNode = nextRNode())) {
         result.push(rNode);
       }
     } else if (tNodeType & TNodeType.Projection) {

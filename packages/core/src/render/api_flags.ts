@@ -3,11 +3,10 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ViewEncapsulation} from '../metadata/view';
-
 
 /**
  * Used by `RendererFactory2` to associate custom rendering data and styles
@@ -40,8 +39,13 @@ export interface RendererType2 {
    * This is useful for renderers that delegate to other renderers.
    */
   data: {[kind: string]: any};
-}
 
+  /**
+   * A function added by the {@link ɵɵExternalStylesFeature} and used by the framework to create
+   * the list of external runtime style URLs.
+   */
+  getExternalStyles?: ((encapsulationId?: string) => string[]) | null;
+}
 
 /**
  * Flags for renderer-specific style modifiers.
@@ -58,5 +62,5 @@ export enum RendererStyleFlags2 {
   /**
    * Marks a style as using dash case naming (this-is-dash-case).
    */
-  DashCase = 1 << 1
+  DashCase = 1 << 1,
 }

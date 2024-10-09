@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 /* tslint:disable:no-console  */
 import {renderApplication} from '@angular/platform-server';
@@ -14,7 +14,7 @@ import {readFileSync} from 'node:fs';
 
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
-const indexHtml = readFileSync(join(browserDistFolder, 'index.html'), 'utf-8');
+const indexHtml = readFileSync(join(browserDistFolder, 'index.csr.html'), 'utf-8');
 
 async function runTest() {
   // Test and validate the errors are printed in the console.

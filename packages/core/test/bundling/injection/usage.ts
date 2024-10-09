@@ -3,10 +3,14 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ɵcreateInjector as createInjector, ɵɵdefineInjectable, ɵɵdefineInjector} from '@angular/core';
+import {
+  ɵcreateInjector as createInjector,
+  ɵɵdefineInjectable,
+  ɵɵdefineInjector,
+} from '@angular/core';
 
 export class RootService {
   static ɵprov = ɵɵdefineInjectable({
@@ -25,7 +29,7 @@ export class ScopedService {
 
   doSomething(): void {
     // tslint:disable-next-line:no-console
-    console.log('Ensure this isn\'t tree-shaken.');
+    console.log("Ensure this isn't tree-shaken.");
   }
 }
 

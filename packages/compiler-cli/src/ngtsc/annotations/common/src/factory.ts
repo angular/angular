@@ -3,10 +3,14 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
-import {compileDeclareFactoryFunction, compileFactoryFunction, R3FactoryMetadata} from '@angular/compiler';
+import {
+  compileDeclareFactoryFunction,
+  compileFactoryFunction,
+  R3FactoryMetadata,
+} from '@angular/compiler';
 
 import {CompileResult} from '../../../transform';
 
@@ -19,7 +23,7 @@ export function compileNgFactoryDefField(metadata: R3FactoryMetadata): CompileRe
     initializer: res.expression,
     statements: res.statements,
     type: res.type,
-    deferrableImports: null
+    deferrableImports: null,
   };
 }
 
@@ -30,6 +34,6 @@ export function compileDeclareFactory(metadata: R3FactoryMetadata): CompileResul
     initializer: res.expression,
     statements: res.statements,
     type: res.type,
-    deferrableImports: null
+    deferrableImports: null,
   };
 }

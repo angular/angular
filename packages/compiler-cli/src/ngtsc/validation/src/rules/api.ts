@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import ts from 'typescript';
@@ -23,5 +23,5 @@ export interface SourceFileValidatorRule {
    * contain the issue that the rule is enforcing.
    * @param node Node to be checked.
    */
-  checkNode(node: ts.Node): ts.Diagnostic|ts.Diagnostic[]|null;
+  checkNode(node: ts.Node): ts.Diagnostic | ts.Diagnostic[] | null;
 }

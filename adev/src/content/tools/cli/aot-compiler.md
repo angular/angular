@@ -72,9 +72,9 @@ There are three phases of AOT compilation.
 
 You write metadata in a *subset* of TypeScript that must conform to the following general constraints:
 
-* Limit [expression syntax](#expression-syntax) to the supported subset of JavaScript
+* Limit [expression syntax](#expression-syntax-limitations) to the supported subset of JavaScript
 * Only reference exported symbols after [code folding](#code-folding)
-* Only call [functions supported](#supported-functions) by the compiler
+* Only call [functions supported](#supported-classes-and-functions) by the compiler
 * Input/Outputs and data-bound class members must be public or protected.For additional guidelines and instructions on preparing an application for AOT compilation, see [Angular: Writing AOT-friendly applications](https://medium.com/sparkles-blog/angular-writing-aot-friendly-applications-7b64c8afbe3f).
 
 HELPFUL: Errors in AOT compilation commonly occur because of metadata that does not conform to the compiler's requirements \(as described more fully below\).

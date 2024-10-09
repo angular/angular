@@ -105,7 +105,7 @@ $column-width: calc(50% - #{$resizer-width} - var(--layout-padding));
   margin-block-start: var(--layout-padding);
   cursor: col-resize;
   align-self: stretch;
-  height: var(--fixed-content-height);
+  height: 100vh;
 
   &::before {
     content: '';
@@ -133,7 +133,7 @@ $column-width: calc(50% - #{$resizer-width} - var(--layout-padding));
   width: 100%;
   min-width: 300px;
   padding-block-start: var(--layout-padding);
-  height: var(--fixed-content-height);
+  height: 100vh;
 }
 
 .adev-split-tutorial {

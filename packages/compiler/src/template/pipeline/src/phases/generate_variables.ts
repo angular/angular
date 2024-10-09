@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as o from '../../../../output/output_ast';
@@ -36,7 +36,7 @@ export function generateVariables(job: ComponentCompilationJob): void {
  * @param `parentScope` a scope extracted from the parent view which captures any variables which
  *     should be inherited by this view. `null` if the current view is the root view.
  */
-function recursivelyProcessView(view: ViewCompilationUnit, parentScope: Scope|null): void {
+function recursivelyProcessView(view: ViewCompilationUnit, parentScope: Scope | null): void {
   // Extract a `Scope` from this view.
   const scope = getScopeForView(view, parentScope);
 
@@ -61,14 +61,12 @@ function recursivelyProcessView(view: ViewCompilationUnit, parentScope: Scope|nu
       case ir.OpKind.Listener:
       case ir.OpKind.TwoWayListener:
         // Prepend variables to listener handler functions.
-        op.handlerOps.prepend(generateVariablesInScopeForView(view, scope));
+        op.handlerOps.prepend(generateVariablesInScopeForView(view, scope, true));
         break;
     }
   }
 
-  // Prepend the declarations for all available variables in scope to the `update` block.
-  const preambleOps = generateVariablesInScopeForView(view, scope);
-  view.update.prepend(preambleOps);
+  view.update.prepend(generateVariablesInScopeForView(view, scope, false));
 }
 
 /**
@@ -92,9 +90,14 @@ interface Scope {
   references: Reference[];
 
   /**
+   * `@let` declarations collected from the view.
+   */
+  letDeclarations: LetDeclaration[];
+
+  /**
    * `Scope` of the parent view, if any.
    */
-  parent: Scope|null;
+  parent: Scope | null;
 }
 
 /**
@@ -127,10 +130,24 @@ interface Reference {
 }
 
 /**
+ * Information about `@let` declaration collected from a view.
+ */
+interface LetDeclaration {
+  /** `XrefId` of the `@let` declaration that the reference is pointing to. */
+  targetId: ir.XrefId;
+
+  /** Slot in which the declaration is stored. */
+  targetSlot: ir.SlotHandle;
+
+  /** Variable referring to the declaration. */
+  variable: ir.IdentifierVariable;
+}
+
+/**
  * Process a view and generate a `Scope` representing the variables available for reference within
  * that view.
  */
-function getScopeForView(view: ViewCompilationUnit, parent: Scope|null): Scope {
+function getScopeForView(view: ViewCompilationUnit, parent: Scope | null): Scope {
   const scope: Scope = {
     view: view.xref,
     viewContextVariable: {
@@ -141,6 +158,7 @@ function getScopeForView(view: ViewCompilationUnit, parent: Scope|null): Scope {
     contextVariables: new Map<string, ir.SemanticVariable>(),
     aliases: view.aliases,
     references: [],
+    letDeclarations: [],
     parent,
   };
 
@@ -149,6 +167,7 @@ function getScopeForView(view: ViewCompilationUnit, parent: Scope|null): Scope {
       kind: ir.SemanticVariableKind.Identifier,
       name: null,
       identifier,
+      local: false,
     });
   }
 
@@ -171,9 +190,23 @@ function getScopeForView(view: ViewCompilationUnit, parent: Scope|null): Scope {
               kind: ir.SemanticVariableKind.Identifier,
               name: null,
               identifier: op.localRefs[offset].name,
+              local: false,
             },
           });
         }
+        break;
+
+      case ir.OpKind.DeclareLet:
+        scope.letDeclarations.push({
+          targetId: op.xref,
+          targetSlot: op.handle,
+          variable: {
+            kind: ir.SemanticVariableKind.Identifier,
+            name: null,
+            identifier: op.declaredName,
+            local: false,
+          },
+        });
         break;
     }
   }
@@ -188,16 +221,24 @@ function getScopeForView(view: ViewCompilationUnit, parent: Scope|null): Scope {
  * itself may have inherited variables, etc.
  */
 function generateVariablesInScopeForView(
-    view: ViewCompilationUnit, scope: Scope): ir.VariableOp<ir.UpdateOp>[] {
+  view: ViewCompilationUnit,
+  scope: Scope,
+  isListener: boolean,
+): ir.VariableOp<ir.UpdateOp>[] {
   const newOps: ir.VariableOp<ir.UpdateOp>[] = [];
 
   if (scope.view !== view.xref) {
     // Before generating variables for a parent view, we need to switch to the context of the parent
     // view with a `nextContext` expression. This context switching operation itself declares a
     // variable, because the context of the view may be referenced directly.
-    newOps.push(ir.createVariableOp(
-        view.job.allocateXrefId(), scope.viewContextVariable, new ir.NextContextExpr(),
-        ir.VariableFlags.None));
+    newOps.push(
+      ir.createVariableOp(
+        view.job.allocateXrefId(),
+        scope.viewContextVariable,
+        new ir.NextContextExpr(),
+        ir.VariableFlags.None,
+      ),
+    );
   }
 
   // Add variables for all context variables available in this scope's view.
@@ -207,26 +248,55 @@ function generateVariablesInScopeForView(
     // We either read the context, or, if the variable is CTX_REF, use the context directly.
     const variable = value === ir.CTX_REF ? context : new o.ReadPropExpr(context, value);
     // Add the variable declaration.
-    newOps.push(ir.createVariableOp(
-        view.job.allocateXrefId(), scope.contextVariables.get(name)!, variable,
-        ir.VariableFlags.None));
+    newOps.push(
+      ir.createVariableOp(
+        view.job.allocateXrefId(),
+        scope.contextVariables.get(name)!,
+        variable,
+        ir.VariableFlags.None,
+      ),
+    );
   }
 
   for (const alias of scopeView.aliases) {
-    newOps.push(ir.createVariableOp(
-        view.job.allocateXrefId(), alias, alias.expression.clone(), ir.VariableFlags.AlwaysInline));
+    newOps.push(
+      ir.createVariableOp(
+        view.job.allocateXrefId(),
+        alias,
+        alias.expression.clone(),
+        ir.VariableFlags.AlwaysInline,
+      ),
+    );
   }
 
   // Add variables for all local references declared for elements in this scope.
   for (const ref of scope.references) {
-    newOps.push(ir.createVariableOp(
-        view.job.allocateXrefId(), ref.variable,
-        new ir.ReferenceExpr(ref.targetId, ref.targetSlot, ref.offset), ir.VariableFlags.None));
+    newOps.push(
+      ir.createVariableOp(
+        view.job.allocateXrefId(),
+        ref.variable,
+        new ir.ReferenceExpr(ref.targetId, ref.targetSlot, ref.offset),
+        ir.VariableFlags.None,
+      ),
+    );
+  }
+
+  if (scope.view !== view.xref || isListener) {
+    for (const decl of scope.letDeclarations) {
+      newOps.push(
+        ir.createVariableOp<ir.UpdateOp>(
+          view.job.allocateXrefId(),
+          decl.variable,
+          new ir.ContextLetReferenceExpr(decl.targetId, decl.targetSlot),
+          ir.VariableFlags.None,
+        ),
+      );
+    }
   }
 
   if (scope.parent !== null) {
     // Recursively add variables from the parent scope.
-    newOps.push(...generateVariablesInScopeForView(view, scope.parent));
+    newOps.push(...generateVariablesInScopeForView(view, scope.parent, false));
   }
   return newOps;
 }

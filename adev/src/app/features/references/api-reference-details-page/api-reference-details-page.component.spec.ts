@@ -8,7 +8,7 @@
 
 import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
-import {TestBed, waitForAsync} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {MatTabGroupHarness} from '@angular/material/tabs/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {ReferenceScrollHandler} from '../services/reference-scroll-handler.service';
@@ -68,15 +68,15 @@ describe('ApiReferenceDetailsPage', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render tabs for all elements with tab attribute', waitForAsync(async () => {
+  it('should render tabs for all elements with tab attribute', async () => {
     const matTabGroup = await loader.getHarness(MatTabGroupHarness);
 
     const tabs = await matTabGroup.getTabs();
 
     expect(tabs.length).toBe(4);
-  }));
+  });
 
-  it('should display members cards when API tab is active', waitForAsync(async () => {
+  it('should display members cards when API tab is active', async () => {
     const matTabGroup = await loader.getHarness(MatTabGroupHarness);
     const tabs = await matTabGroup.getTabs();
 
@@ -94,7 +94,7 @@ describe('ApiReferenceDetailsPage', () => {
 
     membersCard = harness.fixture.debugElement.query(By.css('.docs-reference-members-container'));
     expect(membersCard).toBeTruthy();
-  }));
+  });
 
   it('should setup scroll listeners when API members are loaded', () => {
     const setupListenersSpy = spyOn(fakeApiReferenceScrollHandler, 'setupListeners');

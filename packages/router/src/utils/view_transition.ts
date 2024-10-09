@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /// <reference types="dom-view-transitions" />
@@ -108,7 +108,10 @@ export function createViewTransition(
   return injector.get(NgZone).runOutsideAngular(() => {
     if (!document.startViewTransition || transitionOptions.skipNextTransition) {
       transitionOptions.skipNextTransition = false;
-      return Promise.resolve();
+      // The timing of `startViewTransition` is closer to a macrotask. It won't be called
+      // until the current event loop exits so we use a promise resolved in a timeout instead
+      // of Promise.resolve().
+      return new Promise((resolve) => setTimeout(resolve));
     }
 
     let resolveViewTransitionStarted: () => void;
@@ -136,6 +139,9 @@ export function createViewTransition(
  */
 function createRenderPromise(injector: Injector) {
   return new Promise<void>((resolve) => {
-    afterNextRender(resolve, {injector});
+    // Wait for the microtask queue to empty after the next render happens (by waiting a macrotask).
+    // This ensures any follow-up renders in the microtask queue are completed before the
+    // view transition starts animating.
+    afterNextRender({read: () => setTimeout(resolve)}, {injector});
   });
 }

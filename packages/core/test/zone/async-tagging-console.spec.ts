@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {AsyncStackTaggingZoneSpec} from '../../src/zone/async-stack-tagging';
 
@@ -28,9 +28,11 @@ describe('AsyncTaggingConsoleTest', () => {
       scheduleAsyncTaskSpy.calls.reset();
       startAsyncTaskSpy.calls.reset();
       finishAsyncTaskSpy.calls.reset();
-      asyncStackTaggingZone = Zone.current.fork(new AsyncStackTaggingZoneSpec('test', {
-        createTask: scheduleAsyncTaskSpy,
-      }));
+      asyncStackTaggingZone = Zone.current.fork(
+        new AsyncStackTaggingZoneSpec('test', {
+          createTask: scheduleAsyncTaskSpy,
+        }),
+      );
     });
 
     it('setTimeout', (done: DoneFn) => {
@@ -114,8 +116,11 @@ describe('AsyncTaggingConsoleTest', () => {
     }
 
     // Only run test when addEventListener is patched by zone.js
-    if (document && document.addEventListener &&
-        (document.addEventListener as any)[Zone.__symbol__('OriginalDelegate')]) {
+    if (
+      document &&
+      document.addEventListener &&
+      (document.addEventListener as any)[Zone.__symbol__('OriginalDelegate')]
+    ) {
       it('button click', () => {
         asyncStackTaggingZone.run(() => {
           const button = document.createElement('button');
@@ -127,8 +132,9 @@ describe('AsyncTaggingConsoleTest', () => {
           button.dispatchEvent(clickEvent);
           button.dispatchEvent(clickEvent);
           button.removeEventListener('click', handler);
-          expect(scheduleAsyncTaskSpy)
-              .toHaveBeenCalledWith('Zone - HTMLButtonElement.addEventListener:click');
+          expect(scheduleAsyncTaskSpy).toHaveBeenCalledWith(
+            'Zone - HTMLButtonElement.addEventListener:click',
+          );
           expect(startAsyncTaskSpy.calls.count()).toBe(2);
           expect(finishAsyncTaskSpy.calls.count()).toBe(2);
         });

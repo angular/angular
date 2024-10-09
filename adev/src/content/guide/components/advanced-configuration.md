@@ -22,11 +22,11 @@ needs to perform. In this mode, the framework only checks if a component's DOM n
 Additionally, when an OnPush component is checked, Angular _also_ checks all of its ancestor
 components, traversing upwards through the application tree.
 
-## PreserveWhitespace
+## PreserveWhitespaces
 
 By default, Angular removes and collapses superfluous whitespace in templates, most commonly from
-newlines and indentation. You can change this setting by explicitly setting `preserveWhitespace` to
-false in a component's metadata.
+newlines and indentation. You can change this setting by explicitly setting `preserveWhitespaces` to
+`true` in a component's metadata.
 
 ## Custom element schemas
 
@@ -34,7 +34,7 @@ By default, Angular throws an error when it encounters an unknown HTML element. 
 disable this behavior for a component by including `CUSTOM_ELEMENTS_SCHEMA` in the `schemas`
 property in your component metadata.
 
-```ts
+```angular-ts
 import {Component, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 
 @Component({

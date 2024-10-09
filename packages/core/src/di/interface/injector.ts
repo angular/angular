@@ -3,9 +3,8 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
-
 
 /**
  * Special flag indicating that a decorator is of type `Inject`. It's used to make `Inject`
@@ -13,7 +12,7 @@
  * Note: this flag is not included into the `InjectFlags` since it's an internal-only API.
  */
 export const enum DecoratorFlags {
-  Inject = -1
+  Inject = -1,
 }
 
 /**

@@ -1,3 +1,71 @@
+# [0.15.0](https://github.com/angular/angular/compare/zone.js-0.14.10...zone.js-0.15.0) (2024-08-15)
+
+
+### Bug Fixes
+
+* **zone.js:** Add support for addition jest functions. ([#57280](https://github.com/angular/angular/issues/57280)) ([e1240c6](https://github.com/angular/angular/commit/e1240c6f5d9a3d68ccef7ffbf0a0646ad1164cd8)), closes [#57277](https://github.com/angular/angular/issues/57277)
+* **zone.js:** Update the default behavior of fakeAsync to flush after the test ([#57240](https://github.com/angular/angular/issues/57240)) ([70e8b40](https://github.com/angular/angular/commit/70e8b40750e894bc1439713cd508d8bd9fafb7a4))
+
+
+### BREAKING CHANGES
+
+* **zone.js:** `fakeAsync` will now flush pending timers at the end of
+the given function by default. To opt-out of this, you can use `{flush:
+false}` in options parameter of `fakeAsync`
+
+
+
+## [0.14.10](https://github.com/angular/angular/compare/zone.js-0.14.8...zone.js-0.14.10) (2024-08-05)
+
+
+### Features
+
+* **zone.js:** Add 'flush' parameter option to fakeAsync to flush after the test ([#57137](https://github.com/angular/angular/issues/57137)) ([99d679d](https://github.com/angular/angular/commit/99d679d6061d731a04930824e92f247bb94f21e7))
+
+
+
+## [0.14.8](https://github.com/angular/angular/compare/zone.js-0.14.7...zone.js-0.14.8) (2024-07-17)
+
+
+### Bug Fixes
+
+* **zone.js:** allow enabling default `beforeunload` handling ([#55875](https://github.com/angular/angular/issues/55875)) ([b8d5882](https://github.com/angular/angular/commit/b8d5882127a6e9944d30a7e0c87c2e2c59b352e6)), closes [#47579](https://github.com/angular/angular/issues/47579)
+* **zone.js:** support `Timeout.refresh` in Node.js ([#56852](https://github.com/angular/angular/issues/56852)) ([982f1b1](https://github.com/angular/angular/commit/982f1b125147e4292716f9524bef75423b70c71c)), closes [#56586](https://github.com/angular/angular/issues/56586)
+
+
+
+## [0.14.7](https://github.com/angular/angular/compare/zone.js-0.14.6...zone.js-0.14.7) (2024-06-06)
+
+
+### Bug Fixes
+
+* **zone.js:** do not mutate event listener options (may be readonly) ([#55796](https://github.com/angular/angular/issues/55796)) ([85c1719](https://github.com/angular/angular/commit/85c171920ae2b1861896fa6c2d5d7dc8f030a445)), closes [#54142](https://github.com/angular/angular/issues/54142)
+* **zone.js:** store remove abort listener on the scheduled task ([#56160](https://github.com/angular/angular/issues/56160)) ([4a3800a](https://github.com/angular/angular/commit/4a3800a6a0ae9d667dd961c6e4029c01c6819988)), closes [#56148](https://github.com/angular/angular/issues/56148)
+
+
+
+## [0.14.6](https://github.com/angular/angular/compare/zone.js-0.14.4...zone.js-0.14.6) (2024-05-16)
+
+
+### Bug Fixes
+
+* **zone.js:** add missing APIs to Node.js `fs` patch ([#54396](https://github.com/angular/angular/issues/54396)) ([9e07b62](https://github.com/angular/angular/commit/9e07b621ead050d27d36cde0549b01ac3f1e9e73))
+* **zone.js:** correctly bundle `zone-patch-rxjs` ([#55826](https://github.com/angular/angular/issues/55826)) ([20a530a](https://github.com/angular/angular/commit/20a530acb6ca6efe73cb97c64e9d23a0f5d912c8)), closes [#55825](https://github.com/angular/angular/issues/55825)
+* **zone.js:** remove `abort` listener on a signal when actual event is removed ([#55339](https://github.com/angular/angular/issues/55339)) ([a9460d0](https://github.com/angular/angular/commit/a9460d08a0e95dcd8fcd0ea7eca8470af921bfe2)), closes [#54739](https://github.com/angular/angular/issues/54739)
+
+
+
+## [0.14.5](https://github.com/angular/angular/compare/zone.js-0.14.4...zone.js-0.14.5) (2024-04-30)
+
+
+### Bug Fixes
+
+* **zone.js:** Add 'declare' to each interface to prevent renaming ([#54966](https://github.com/angular/angular/issues/54966)) ([b3d045b](https://github.com/angular/angular/commit/b3d045b9a4383d97ea3c5d770d9413ffed35d760))
+* **zone.js:** make sure fakeasync use the same id pool with native ([#54600](https://github.com/angular/angular/issues/54600)) ([ddbf6bb](https://github.com/angular/angular/commit/ddbf6bb038d101daf5280abbd2a0efaa0b7fd3a0)), closes [#54323](https://github.com/angular/angular/issues/54323)
+* **zone.js:** should not clear onhandler when remove capture listener ([#54602](https://github.com/angular/angular/issues/54602)) ([e44b077](https://github.com/angular/angular/commit/e44b077cbd4fc1ac16b3edd0fea758842ce6e29f)), closes [#54581](https://github.com/angular/angular/issues/54581)
+
+
+
 ## [0.14.4](https://github.com/angular/angular/compare/zone.js-0.14.3...zone.js-0.14.4) (2024-02-13)
 
 

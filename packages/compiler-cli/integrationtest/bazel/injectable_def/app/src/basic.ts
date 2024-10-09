@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Component, NgModule} from '@angular/core';
@@ -15,17 +15,11 @@ import {Lib2Module} from 'lib2_built/module';
   selector: 'id-app',
   template: '<lib2-cmp></lib2-cmp>',
 })
-export class AppComponent {
-}
+export class AppComponent {}
 
 @NgModule({
-  imports: [
-    Lib2Module,
-    BrowserModule,
-    ServerModule,
-  ],
+  imports: [Lib2Module, BrowserModule, ServerModule],
   declarations: [AppComponent],
   bootstrap: [AppComponent],
 })
-export class BasicAppModule {
-}
+export class BasicAppModule {}

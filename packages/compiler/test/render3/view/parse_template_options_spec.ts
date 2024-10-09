@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ParseSourceSpan} from '../../../src/parse_util';
@@ -35,17 +35,22 @@ describe('collectCommentNodes', () => {
     const templateCommentsOptionEnabled = parseTemplate(html, '', {collectCommentNodes: true});
     expect(templateCommentsOptionEnabled.commentNodes!.length).toEqual(2);
     expect(templateCommentsOptionEnabled.commentNodes![0]).toBeInstanceOf(Comment);
-    expect(templateCommentsOptionEnabled.commentNodes![0].value)
-        .toEqual('eslint-disable-next-line');
-    expect(templateCommentsOptionEnabled.commentNodes![0].sourceSpan)
-        .toBeInstanceOf(ParseSourceSpan);
-    expect(templateCommentsOptionEnabled.commentNodes![0].sourceSpan.toString())
-        .toEqual('<!-- eslint-disable-next-line -->');
+    expect(templateCommentsOptionEnabled.commentNodes![0].value).toEqual(
+      'eslint-disable-next-line',
+    );
+    expect(templateCommentsOptionEnabled.commentNodes![0].sourceSpan).toBeInstanceOf(
+      ParseSourceSpan,
+    );
+    expect(templateCommentsOptionEnabled.commentNodes![0].sourceSpan.toString()).toEqual(
+      '<!-- eslint-disable-next-line -->',
+    );
     expect(templateCommentsOptionEnabled.commentNodes![1]).toBeInstanceOf(Comment);
     expect(templateCommentsOptionEnabled.commentNodes![1].value).toEqual('some nested comment');
-    expect(templateCommentsOptionEnabled.commentNodes![1].sourceSpan)
-        .toBeInstanceOf(ParseSourceSpan);
-    expect(templateCommentsOptionEnabled.commentNodes![1].sourceSpan.toString())
-        .toEqual('<!-- some nested comment -->');
+    expect(templateCommentsOptionEnabled.commentNodes![1].sourceSpan).toBeInstanceOf(
+      ParseSourceSpan,
+    );
+    expect(templateCommentsOptionEnabled.commentNodes![1].sourceSpan.toString()).toEqual(
+      '<!-- some nested comment -->',
+    );
   });
 });

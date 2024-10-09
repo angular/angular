@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {AST, Binary, TmplAstNode} from '@angular/compiler';
@@ -20,14 +20,15 @@ import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '.
  * This check should only be use if `strictNullChecks` is enabled,
  * otherwise it would produce inaccurate results.
  */
-class NullishCoalescingNotNullableCheck extends
-    TemplateCheckWithVisitor<ErrorCode.NULLISH_COALESCING_NOT_NULLABLE> {
+class NullishCoalescingNotNullableCheck extends TemplateCheckWithVisitor<ErrorCode.NULLISH_COALESCING_NOT_NULLABLE> {
+  override readonly canVisitStructuralAttributes = false;
   override code = ErrorCode.NULLISH_COALESCING_NOT_NULLABLE as const;
 
   override visitNode(
-      ctx: TemplateContext<ErrorCode.NULLISH_COALESCING_NOT_NULLABLE>,
-      component: ts.ClassDeclaration,
-      node: TmplAstNode|AST): NgTemplateDiagnostic<ErrorCode.NULLISH_COALESCING_NOT_NULLABLE>[] {
+    ctx: TemplateContext<ErrorCode.NULLISH_COALESCING_NOT_NULLABLE>,
+    component: ts.ClassDeclaration,
+    node: TmplAstNode | AST,
+  ): NgTemplateDiagnostic<ErrorCode.NULLISH_COALESCING_NOT_NULLABLE>[] {
     if (!(node instanceof Binary) || node.operation !== '??') return [];
 
     const symbolLeft = ctx.templateTypeChecker.getSymbolOfNode(node.left, component);
@@ -50,27 +51,30 @@ class NullishCoalescingNotNullableCheck extends
     if (symbol.kind !== SymbolKind.Expression) {
       return [];
     }
-    const templateMapping =
-        ctx.templateTypeChecker.getTemplateMappingAtTcbLocation(symbol.tcbLocation);
+    const templateMapping = ctx.templateTypeChecker.getTemplateMappingAtTcbLocation(
+      symbol.tcbLocation,
+    );
     if (templateMapping === null) {
       return [];
     }
     const diagnostic = ctx.makeTemplateDiagnostic(
-        templateMapping.span,
-        `The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed.`);
+      templateMapping.span,
+      `The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed.`,
+    );
     return [diagnostic];
   }
 }
 
 export const factory: TemplateCheckFactory<
-    ErrorCode.NULLISH_COALESCING_NOT_NULLABLE,
-    ExtendedTemplateDiagnosticName.NULLISH_COALESCING_NOT_NULLABLE> = {
+  ErrorCode.NULLISH_COALESCING_NOT_NULLABLE,
+  ExtendedTemplateDiagnosticName.NULLISH_COALESCING_NOT_NULLABLE
+> = {
   code: ErrorCode.NULLISH_COALESCING_NOT_NULLABLE,
   name: ExtendedTemplateDiagnosticName.NULLISH_COALESCING_NOT_NULLABLE,
   create: (options: NgCompilerOptions) => {
     // Require `strictNullChecks` to be enabled.
     const strictNullChecks =
-        options.strictNullChecks === undefined ? !!options.strict : !!options.strictNullChecks;
+      options.strictNullChecks === undefined ? !!options.strict : !!options.strictNullChecks;
     if (!strictNullChecks) {
       return null;
     }

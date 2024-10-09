@@ -25,7 +25,7 @@ In the `HomeComponent` there is only a single housing location. In this step, yo
 
 1. In `src/app/home/home.component.ts`, remove the `housingLocation` property from the `HomeComponent` class.
 1. Update the `HomeComponent` class to have a property called `housingLocationList`. Update your code to match the following code:
-    <docs-code header="Add housingLocationList property" path="adev/src/content/tutorials/first-app/steps/09-services/src/app/home/home.component.ts" visibleLines="31-136"/>
+    <docs-code header="Add housingLocationList property" path="adev/src/content/tutorials/first-app/steps/09-services/src/app/home/home.component.ts" visibleLines="26-131"/>
 
     IMPORTANT: Do not remove the `@Component` decorator, you will update that code in an upcoming step.
 
@@ -35,7 +35,7 @@ In the `HomeComponent` there is only a single housing location. In this step, yo
 Now the app has a dataset that you can use to display the entries in the browser using the `ngFor` directive.
 
 1. Update the `<app-housing-location>` tag in the template code to this:
-    <docs-code header="Add ngFor to HomeComponent template" path="adev/src/content/tutorials/first-app/steps/09-services/src/app/home/home.component.ts" visibleLines="[21,24]"/>
+    <docs-code header="Add ngFor to HomeComponent template" path="adev/src/content/tutorials/first-app/steps/09-services/src/app/home/home.component.ts" visibleLines="[17,22]"/>
 
     Note, in the code `[housingLocation] = "housingLocation"` the `housingLocation` value now refers to the variable used in the `ngFor` directive. Before this change, it referred to the property on the `HomeComponent` class.
 

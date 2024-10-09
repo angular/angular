@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 /// <reference types="node" />
 import * as fs from 'fs';
@@ -60,11 +60,10 @@ function createTestSupportFor(basePath: string) {
     'lib': Object.freeze([
       path.resolve(basePath, 'node_modules/typescript/lib/lib.es6.d.ts'),
     ]) as string[],
-    // clang-format off
-    'paths': Object.freeze({'@angular/*': ['./node_modules/@angular/*']}) as {[index: string]: string[]}
-    // clang-format on
+    'paths': Object.freeze({'@angular/*': ['./node_modules/@angular/*']}) as {
+      [index: string]: string[];
+    },
   };
-
 
   return {
     // We normalize the basePath into a posix path, so that multiple assertions which compare
@@ -74,7 +73,7 @@ function createTestSupportFor(basePath: string) {
     writeFiles,
     createCompilerOptions,
     shouldExist,
-    shouldNotExist
+    shouldNotExist,
   };
 
   function ensureDirExists(absolutePathToDir: string) {
@@ -157,7 +156,7 @@ export function setup(): TestSupport {
 }
 
 export function expectNoDiagnostics(options: ng.CompilerOptions, diags: readonly ts.Diagnostic[]) {
-  const errorDiags = diags.filter(d => d.category !== ts.DiagnosticCategory.Message);
+  const errorDiags = diags.filter((d) => d.category !== ts.DiagnosticCategory.Message);
   if (errorDiags.length) {
     throw new Error(`Expected no diagnostics: ${ng.formatDiagnostics(errorDiags)}`);
   }
@@ -165,8 +164,9 @@ export function expectNoDiagnostics(options: ng.CompilerOptions, diags: readonly
 
 export function expectNoDiagnosticsInProgram(options: ng.CompilerOptions, p: ng.Program) {
   expectNoDiagnostics(options, [
-    ...p.getNgStructuralDiagnostics(), ...p.getTsSemanticDiagnostics(),
-    ...p.getNgSemanticDiagnostics()
+    ...p.getNgStructuralDiagnostics(),
+    ...p.getTsSemanticDiagnostics(),
+    ...p.getNgSemanticDiagnostics(),
   ]);
 }
 

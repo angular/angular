@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ErrorHandler} from '../src/error_handler';
@@ -21,7 +21,7 @@ function errorToString(error: any) {
   const errorHandler = new ErrorHandler();
   (errorHandler as any)._console = logger as any;
   errorHandler.handleError(error);
-  return logger.res.map(line => line.map(x => `${x}`).join('#')).join('\n');
+  return logger.res.map((line) => line.map((x) => `${x}`).join('#')).join('\n');
 }
 
 describe('ErrorHandler', () => {

@@ -1,0 +1,39 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+ts_library(
+    name = "migration_lib",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    deps = [
+        "//packages/compiler-cli",
+        "//packages/compiler-cli/src/ngtsc/annotations",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/imports",
+        "//packages/compiler-cli/src/ngtsc/metadata",
+        "//packages/compiler-cli/src/ngtsc/reflection",
+        "//packages/core/schematics/utils/tsurge",
+        "@npm//@types/node",
+        "@npm//typescript",
+    ],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*.spec.ts"],
+    ),
+    deps = [
+        ":migration_lib",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
+        "//packages/core/schematics/utils/tsurge",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    deps = [":test_lib"],
+)

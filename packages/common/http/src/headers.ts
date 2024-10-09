@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 interface Update {
@@ -56,21 +56,15 @@ export class HttpHeaders {
           const index = line.indexOf(':');
           if (index > 0) {
             const name = line.slice(0, index);
-            const key = name.toLowerCase();
             const value = line.slice(index + 1).trim();
-            this.maybeSetNormalizedName(name, key);
-            if (this.headers.has(key)) {
-              this.headers.get(key)!.push(value);
-            } else {
-              this.headers.set(key, [value]);
-            }
+            this.addHeaderEntry(name, value);
           }
         });
       };
     } else if (typeof Headers !== 'undefined' && headers instanceof Headers) {
       this.headers = new Map<string, string[]>();
-      headers.forEach((values: string, name: string) => {
-        this.setHeaderEntries(name, values);
+      headers.forEach((value: string, name: string) => {
+        this.addHeaderEntry(name, value);
       });
     } else {
       this.lazyInit = () => {
@@ -246,6 +240,16 @@ export class HttpHeaders {
           }
         }
         break;
+    }
+  }
+
+  private addHeaderEntry(name: string, value: string) {
+    const key = name.toLowerCase();
+    this.maybeSetNormalizedName(name, key);
+    if (this.headers.has(key)) {
+      this.headers.get(key)!.push(value);
+    } else {
+      this.headers.set(key, [value]);
     }
   }
 

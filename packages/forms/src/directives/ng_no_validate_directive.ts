@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Directive} from '@angular/core';
@@ -29,7 +29,6 @@ import {Directive} from '@angular/core';
   selector: 'form:not([ngNoForm]):not([ngNativeValidate])',
   host: {'novalidate': ''},
 })
-export class ɵNgNoValidate {
-}
+export class ɵNgNoValidate {}
 
 export {ɵNgNoValidate as NgNoValidate};

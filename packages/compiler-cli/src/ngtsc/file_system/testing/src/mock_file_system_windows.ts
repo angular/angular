@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 /// <reference types="node" />
 import * as p from 'path';
@@ -25,7 +25,7 @@ export class MockFileSystemWindows extends MockFileSystem {
     return this.normalize(p.win32.join(basePath, ...paths)) as T;
   }
 
-  override relative<T extends PathString>(from: T, to: T): PathSegment|AbsoluteFsPath {
+  override relative<T extends PathString>(from: T, to: T): PathSegment | AbsoluteFsPath {
     return this.normalize(p.win32.relative(from, to)) as PathSegment | AbsoluteFsPath;
   }
 

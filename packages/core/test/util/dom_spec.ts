@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {escapeCommentText} from '@angular/core/src/util/dom';
@@ -26,8 +26,9 @@ describe('comment node text escaping', () => {
     });
 
     it('should escape multiple markers', () => {
-      expect(escapeCommentText('before-->inline-->after'))
-          .toEqual('before--\u200b>\u200binline--\u200b>\u200bafter');
+      expect(escapeCommentText('before-->inline-->after')).toEqual(
+        'before--\u200b>\u200binline--\u200b>\u200bafter',
+      );
     });
 
     it('should caver the spec', () => {

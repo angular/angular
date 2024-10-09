@@ -3,12 +3,10 @@
 **Model inputs** are a special type of input that enable a component to propagate new values
 back to another component.
 
-HELPFUL: Model inputs are currently in [developer preview](/reference/releases#developer-preview).
-
 When creating a component, you can define a model input similarly to how you create a standard
 input.
 
-```typescript
+```angular-ts
 import {Component, model, input} from '@angular/core';
 
 @Component({...})
@@ -27,7 +25,7 @@ the component author to write values into the property**.
 In other respects, you can use model inputs the same way you use standard inputs. You can read the
 value by calling the signal function, including in reactive contexts like `computed` and `effect`.
 
-```typescript
+```angular-ts
 import {Component, model, input} from '@angular/core';
 
 @Component({
@@ -53,7 +51,7 @@ values can flow in both directions.
 
 You can bind a writable signal to a model input.
 
-```typescript
+```angular-ts
 @Component({
   ...,
   // `checked` is a model input.
@@ -74,7 +72,7 @@ itself, not the _value_ of the signal.
 
 You can bind a plain JavaScript property to a model input.
 
-```typescript
+```angular-ts
 @Component({
   ...,
   // `checked` is a model input.
@@ -96,7 +94,7 @@ When you declare a model input in a component or directive, Angular automaticall
 corresponding [output](guide/components/outputs) for that model. The output's name is the model
 input's name suffixed with "Change".
 
-```typescript
+```angular-ts
 @Directive({...})
 export class CustomCheckbox {
   // This automatically creates an output named "checkedChange".
@@ -111,7 +109,7 @@ its `set` or `update` methods.
 ## Customizing model inputs
 
 You can mark a model input as required or provide an alias in the same way as a
-[standard input](guide/signal-inputs).
+[standard input](guide/signals/inputs).
 
 Model inputs do not support input transforms.
 
@@ -130,9 +128,7 @@ through the template.
 
 ## When to use model inputs
 
-Use model inputs in components that exist to modify a value based on user interaction.
-Custom form controls, such as a date picker or combobox, should use model inputs for their
-primary value.
-
-Avoid using model inputs as a convenience to avoid introducing an additional class property for
-containing local state.
+Use model inputs when you want a component to support two-way binding. This is typically 
+appropriate when a component exists to modify a value based on user interaction. Most commonly, 
+custom form controls such as a date picker or combobox should use model inputs for their primary 
+value.

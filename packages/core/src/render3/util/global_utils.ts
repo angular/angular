@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {assertDefined} from '../../util/assert';
 import {global} from '../../util/global';
@@ -12,10 +12,23 @@ import {setProfiler} from '../profiler';
 import {isSignal} from '../reactivity/api';
 
 import {applyChanges} from './change_detection_utils';
-import {getComponent, getContext, getDirectiveMetadata, getDirectives, getHostElement, getInjector, getListeners, getOwningComponent, getRootComponents} from './discovery_utils';
-import {getDependenciesFromInjectable, getInjectorMetadata, getInjectorProviders, getInjectorResolutionPath} from './injector_discovery_utils';
-
-
+import {
+  getComponent,
+  getContext,
+  getDirectiveMetadata,
+  getDirectives,
+  getHostElement,
+  getInjector,
+  getListeners,
+  getOwningComponent,
+  getRootComponents,
+} from './discovery_utils';
+import {
+  getDependenciesFromInjectable,
+  getInjectorMetadata,
+  getInjectorProviders,
+  getInjectorResolutionPath,
+} from './injector_discovery_utils';
 
 /**
  * This file introduces series of globally accessible debug tools
@@ -33,6 +46,13 @@ import {getDependenciesFromInjectable, getInjectorMetadata, getInjectorProviders
  * tools are patched (window.ng).
  * */
 export const GLOBAL_PUBLISH_EXPANDO_KEY = 'ng';
+
+// Typing for externally published global util functions
+// Ideally we should be able to use `NgGlobalPublishUtils` using declaration merging but that doesn't work with API extractor yet.
+// Have included the typings to have type safety when working with editors that support it (VSCode).
+interface NgGlobalPublishUtils {
+  ɵgetLoadedRoutes(route: any): any;
+}
 
 const globalUtilsFunctions = {
   /**
@@ -58,7 +78,8 @@ const globalUtilsFunctions = {
   'applyChanges': applyChanges,
   'isSignal': isSignal,
 };
-type GlobalUtilsFunctions = keyof typeof globalUtilsFunctions;
+type CoreGlobalUtilsFunctions = keyof typeof globalUtilsFunctions;
+type ExternalGlobalUtilsFunctions = keyof NgGlobalPublishUtils;
 
 let _published = false;
 /**
@@ -71,9 +92,13 @@ export function publishDefaultGlobalUtils() {
   if (!_published) {
     _published = true;
 
-    setupFrameworkInjectorProfiler();
+    if (typeof window !== 'undefined') {
+      // Only configure the injector profiler when running in the browser.
+      setupFrameworkInjectorProfiler();
+    }
+
     for (const [methodName, method] of Object.entries(globalUtilsFunctions)) {
-      publishGlobalUtil(methodName as GlobalUtilsFunctions, method);
+      publishGlobalUtil(methodName as CoreGlobalUtilsFunctions, method);
     }
   }
 }
@@ -89,14 +114,31 @@ export type GlobalDevModeUtils = {
  * Publishes the given function to `window.ng` so that it can be
  * used from the browser console when an application is not in production.
  */
-export function publishGlobalUtil<K extends GlobalUtilsFunctions>(
-    name: K, fn: typeof globalUtilsFunctions[K]): void {
+export function publishGlobalUtil<K extends CoreGlobalUtilsFunctions>(
+  name: K,
+  fn: (typeof globalUtilsFunctions)[K],
+): void {
+  publishUtil(name, fn);
+}
+
+/**
+ * Publishes the given function to `window.ng` from package other than @angular/core
+ * So that it can be used from the browser console when an application is not in production.
+ */
+export function publishExternalGlobalUtil<K extends ExternalGlobalUtilsFunctions>(
+  name: K,
+  fn: NgGlobalPublishUtils[K],
+): void {
+  publishUtil(name, fn);
+}
+
+function publishUtil(name: string, fn: Function) {
   if (typeof COMPILED === 'undefined' || !COMPILED) {
     // Note: we can't export `ng` when using closure enhanced optimization as:
     // - closure declares globals itself for minified names, which sometimes clobber our `ng` global
     // - we can't declare a closure extern as the namespace `ng` is already used within Google
     //   for typings for AngularJS (via `goog.provide('ng....')`).
-    const w = global as GlobalDevModeUtils;
+    const w = global;
     ngDevMode && assertDefined(fn, 'function not defined');
 
     w[GLOBAL_PUBLISH_EXPANDO_KEY] ??= {} as any;

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {CommonModule, NgSwitch, NgSwitchCase, NgSwitchDefault} from '@angular/common';
@@ -109,31 +109,6 @@ describe('NgSwitch', () => {
 
       getComponent().switchValue = '1';
       detectChangesAndExpectText('when default');
-    });
-
-    it('should warn if === and == give different results', () => {
-      const template =
-        '<ul [ngSwitch]="switchValue">' +
-        '<li *ngSwitchCase="1">when one</li>' +
-        '<li *ngSwitchDefault>when default</li>' +
-        '</ul>';
-
-      const consoleWarnSpy = spyOn(console, 'warn');
-
-      fixture = createTestComponent(template);
-      getComponent().switchValue = '1';
-      detectChangesAndExpectText('when default');
-
-      expect(consoleWarnSpy.calls.count()).toBe(1);
-      expect(consoleWarnSpy.calls.argsFor(0)[0]).toBe(
-        'NG02001: As of Angular v17 the NgSwitch directive uses strict equality comparison === instead of == to match different cases. ' +
-          `Previously the case value "1" matched switch expression value "'1'", but this is no longer the case with the stricter equality check. ` +
-          'Your comparison results return different results using === vs. == and you should adjust your ngSwitch expression and / or values to conform with the strict equality requirements.',
-      );
-
-      getComponent().switchValue = 1;
-      detectChangesAndExpectText('when one');
-      expect(consoleWarnSpy.calls.count()).toBe(1); // no calls to warn when both equality operators agree
     });
   });
 

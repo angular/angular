@@ -34,6 +34,7 @@ export const CLI_TOC = '.adev-reference-cli-toc';
     './cli-reference-details-page.component.scss',
     '../api-reference-details-page/api-reference-details-page.component.scss',
   ],
+  providers: [ReferenceScrollHandler],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class CliReferenceDetailsPage implements OnInit {

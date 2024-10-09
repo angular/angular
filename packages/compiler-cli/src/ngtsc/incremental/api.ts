@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import ts from 'typescript';
@@ -21,12 +21,12 @@ export interface IncrementalBuild<AnalysisT, FileTypeCheckDataT> {
   /**
    * Retrieve the prior analysis work, if any, done for the given source file.
    */
-  priorAnalysisFor(sf: ts.SourceFile): AnalysisT[]|null;
+  priorAnalysisFor(sf: ts.SourceFile): AnalysisT[] | null;
 
   /**
    * Retrieve the prior type-checking work, if any, that's been done for the given source file.
    */
-  priorTypeCheckingResultsFor(fileSf: ts.SourceFile): FileTypeCheckDataT|null;
+  priorTypeCheckingResultsFor(fileSf: ts.SourceFile): FileTypeCheckDataT | null;
 
   /**
    * Reports that template type-checking has completed successfully, with a map of type-checking

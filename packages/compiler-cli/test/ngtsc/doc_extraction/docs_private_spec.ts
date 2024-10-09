@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {DocEntry} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
@@ -26,38 +26,48 @@ runInEachFileSystem(() => {
     }
 
     it('should omit constant annotated with `@docsPrivate`', () => {
-      expect(test(`
+      expect(
+        test(`
         /** @docsPrivate <reason> */
         export const bla = true;
-      `)).toEqual([]);
+      `),
+      ).toEqual([]);
     });
 
     it('should omit class annotated with `@docsPrivate`', () => {
-      expect(test(`
+      expect(
+        test(`
         /** @docsPrivate <reason> */
         export class Bla {}
-      `)).toEqual([]);
+      `),
+      ).toEqual([]);
     });
 
     it('should omit function annotated with `@docsPrivate`', () => {
-      expect(test(`
+      expect(
+        test(`
         /** @docsPrivate <reason> */
         export function bla() {};
-      `)).toEqual([]);
+      `),
+      ).toEqual([]);
     });
 
     it('should omit interface annotated with `@docsPrivate`', () => {
-      expect(test(`
+      expect(
+        test(`
         /** @docsPrivate <reason> */
         export interface BlaFunction {}
-      `)).toEqual([]);
+      `),
+      ).toEqual([]);
     });
 
     it('should error if marked as private without reasoning', () => {
-      expect(() => test(`
+      expect(() =>
+        test(`
         /** @docsPrivate */
         export interface BlaFunction {}
-      `)).toThrowError(/Entry "BlaFunction" is marked as "@docsPrivate" but without reasoning./);
+      `),
+      ).toThrowError(/Entry "BlaFunction" is marked as "@docsPrivate" but without reasoning./);
     });
   });
 });

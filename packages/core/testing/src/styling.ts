@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /**
@@ -47,7 +47,7 @@ export function getSortedStyle(element: Element): string {
   const names: string[] = Object.keys(styles);
   names.sort();
   let sorted = '';
-  names.forEach(key => {
+  names.forEach((key) => {
     const value = styles[key];
     if (value != null && value !== '') {
       if (sorted !== '') sorted += ' ';

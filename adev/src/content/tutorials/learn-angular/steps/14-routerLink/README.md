@@ -29,7 +29,7 @@ import { RouterLink, RouterOutlet } from '@angular/router';
 
 To use the `RouterLink` directive, replace the `href` attributes with `routerLink`. Update the template with this change.
 
-```ts
+```angular-ts
 import { RouterLink, RouterOutlet } from '@angular/router';
 
 @Component({

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /**
@@ -54,6 +54,8 @@ export declare interface EventInfo {
    * as a `click`. Only used when a11y click events is on.
    */
   eiack?: boolean;
+  /** Whether action resolution has already run on this `EventInfo`. */
+  eir?: boolean;
 }
 
 /** Added for readability when accessing stable property names. */
@@ -112,11 +114,7 @@ export function getAction(eventInfo: EventInfo) {
 }
 
 /** Added for readability when accessing stable property names. */
-export function setAction(
-    eventInfo: EventInfo,
-    actionName: string,
-    actionElement: Element,
-) {
+export function setAction(eventInfo: EventInfo, actionName: string, actionElement: Element) {
   eventInfo.eia = [actionName, actionElement];
 }
 
@@ -155,6 +153,16 @@ export function setA11yClickKey(eventInfo: EventInfo, a11yClickKey: boolean) {
   eventInfo.eiack = a11yClickKey;
 }
 
+/** Added for readability when accessing stable property names. */
+export function getResolved(eventInfo: EventInfo) {
+  return eventInfo.eir;
+}
+
+/** Added for readability when accessing stable property names. */
+export function setResolved(eventInfo: EventInfo, resolved: boolean) {
+  eventInfo.eir = resolved;
+}
+
 /** Clones an `EventInfo` */
 export function cloneEventInfo(eventInfo: EventInfo): EventInfo {
   return {
@@ -166,6 +174,7 @@ export function cloneEventInfo(eventInfo: EventInfo): EventInfo {
     timeStamp: eventInfo.timeStamp,
     eirp: eventInfo.eirp,
     eiack: eventInfo.eiack,
+    eir: eventInfo.eir,
   };
 }
 
@@ -176,15 +185,15 @@ export function cloneEventInfo(eventInfo: EventInfo): EventInfo {
  * parameters vs. an `Object` literal reduces code size.
  */
 export function createEventInfoFromParameters(
-    eventType: string,
-    event: Event,
-    targetElement: Element,
-    container: Element,
-    timestamp: number,
-    action?: ActionInfoInternal,
-    isReplay?: boolean,
-    a11yClickKey?: boolean,
-    ): EventInfo {
+  eventType: string,
+  event: Event,
+  targetElement: Element,
+  container: Element,
+  timestamp: number,
+  action?: ActionInfoInternal,
+  isReplay?: boolean,
+  a11yClickKey?: boolean,
+): EventInfo {
   return {
     eventType,
     event,
@@ -213,7 +222,11 @@ export function createEventInfo({
   isReplay,
   a11yClickKey,
 }: {
-  eventType: string; event: Event; targetElement: Element; container: Element; timestamp: number;
+  eventType: string;
+  event: Event;
+  targetElement: Element;
+  container: Element;
+  timestamp: number;
   action?: ActionInfo;
   isReplay?: boolean;
   a11yClickKey?: boolean;
@@ -287,7 +300,7 @@ export class EventInfoWrapper {
     };
   }
 
-  setAction(action: ActionInfo|undefined) {
+  setAction(action: ActionInfo | undefined) {
     if (!action) {
       unsetAction(this.eventInfo);
       return;
@@ -301,6 +314,14 @@ export class EventInfoWrapper {
 
   setIsReplay(replay: boolean) {
     setIsReplay(this.eventInfo, replay);
+  }
+
+  getResolved() {
+    return getResolved(this.eventInfo);
+  }
+
+  setResolved(resolved: boolean) {
+    setResolved(this.eventInfo, resolved);
   }
 
   clone() {

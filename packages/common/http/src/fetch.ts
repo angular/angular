@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {inject, Injectable, NgZone} from '@angular/core';
@@ -13,13 +13,13 @@ import {HttpBackend} from './backend';
 import {HttpHeaders} from './headers';
 import {HttpRequest} from './request';
 import {
+  HTTP_STATUS_CODE_OK,
   HttpDownloadProgressEvent,
   HttpErrorResponse,
   HttpEvent,
   HttpEventType,
   HttpHeaderResponse,
   HttpResponse,
-  HttpStatusCode,
 } from './response';
 
 const XSSI_PREFIX = /^\)\]\}',?\n/;
@@ -52,9 +52,11 @@ function getResponseUrl(response: Response): string | null {
  */
 @Injectable()
 export class FetchBackend implements HttpBackend {
-  // We need to bind the native fetch to its context or it will throw an "illegal invocation"
+  // We use an arrow function to always reference the current global implementation of `fetch`.
+  // This is helpful for cases when the global `fetch` implementation is modified by external code,
+  // see https://github.com/angular/angular/issues/57527.
   private readonly fetchImpl =
-    inject(FetchFactory, {optional: true})?.fetch ?? fetch.bind(globalThis);
+    inject(FetchFactory, {optional: true})?.fetch ?? ((...args) => globalThis.fetch(...args));
   private readonly ngZone = inject(NgZone);
 
   handle(request: HttpRequest<any>): Observable<HttpEvent<any>> {
@@ -76,7 +78,12 @@ export class FetchBackend implements HttpBackend {
     let response;
 
     try {
-      const fetchPromise = this.fetchImpl(request.urlWithParams, {signal, ...init});
+      // Run fetch outside of Angular zone.
+      // This is due to Node.js fetch implementation (Undici) which uses a number of setTimeouts to check if
+      // the response should eventually timeout which causes extra CD cycles every 500ms
+      const fetchPromise = this.ngZone.runOutsideAngular(() =>
+        this.fetchImpl(request.urlWithParams, {signal, ...init}),
+      );
 
       // Make sure Zone.js doesn't trigger false-positive unhandled promise
       // error in case the Promise is rejected synchronously. See function
@@ -180,7 +187,7 @@ export class FetchBackend implements HttpBackend {
 
     // Same behavior as the XhrBackend
     if (status === 0) {
-      status = body ? HttpStatusCode.Ok : 0;
+      status = body ? HTTP_STATUS_CODE_OK : 0;
     }
 
     // ok determines whether the response will be transmitted on the event or
@@ -245,10 +252,12 @@ export class FetchBackend implements HttpBackend {
     req.headers.forEach((name, values) => (headers[name] = values.join(',')));
 
     // Add an Accept header if one isn't present already.
-    headers['Accept'] ??= 'application/json, text/plain, */*';
+    if (!req.headers.has('Accept')) {
+      headers['Accept'] = 'application/json, text/plain, */*';
+    }
 
     // Auto-detect the Content-Type header if one isn't present already.
-    if (!headers['Content-Type']) {
+    if (!req.headers.has('Content-Type')) {
       const detectedType = req.detectContentTypeHeader();
       // Sometimes Content-Type detection fails.
       if (detectedType !== null) {

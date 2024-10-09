@@ -78,7 +78,7 @@ The following example shows you how to display the current value using interpola
 The displayed value changes as you update the form control element.
 
 Reactive forms provide access to information about a given control through properties and methods provided with each instance.
-These properties and methods of the underlying [AbstractControl](api/forms/AbstractControl "API reference") class are used to control form state and determine when to display messages when handling [input validation](#basic-form-validation "Learn more about validating form input").
+These properties and methods of the underlying [AbstractControl](api/forms/AbstractControl "API reference") class are used to control form state and determine when to display messages when handling [input validation](#validating-form-input "Learn more about validating form input").
 
 Read about other `FormControl` properties and methods in the [API Reference](api/forms/FormControl "Detailed syntax reference").
 
@@ -395,7 +395,7 @@ Initially, the form contains one `Alias` field. To add another field, click the 
 ## Reactive forms API summary
 
 The following table lists the base classes and services used to create and manage reactive form controls.
-For complete syntax details, see the API reference documentation for the [Forms package](api/forms "API reference").
+For complete syntax details, see the API reference documentation for the [Forms package](api#forms "API reference").
 
 ### Classes
 

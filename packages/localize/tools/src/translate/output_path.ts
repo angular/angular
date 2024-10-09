@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {AbsoluteFsPath, PathManipulation} from '@angular/compiler-cli/private/localize';
 
@@ -24,6 +24,7 @@ export interface OutputPathFn {
  */
 export function getOutputPathFn(fs: PathManipulation, outputFolder: AbsoluteFsPath): OutputPathFn {
   const [pre, post] = outputFolder.split('{{LOCALE}}');
-  return post === undefined ? (_locale, relativePath) => fs.join(pre, relativePath) :
-                              (locale, relativePath) => fs.join(pre + locale + post, relativePath);
+  return post === undefined
+    ? (_locale, relativePath) => fs.join(pre, relativePath)
+    : (locale, relativePath) => fs.join(pre + locale + post, relativePath);
 }

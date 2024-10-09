@@ -3,10 +3,19 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
-import {assertInInjectionContext, DestroyRef, inject, OutputOptions, OutputRef, OutputRefSubscription, ɵRuntimeError, ɵRuntimeErrorCode} from '@angular/core';
+import {
+  assertInInjectionContext,
+  DestroyRef,
+  inject,
+  OutputOptions,
+  OutputRef,
+  OutputRefSubscription,
+  ɵRuntimeError,
+  ɵRuntimeErrorCode,
+} from '@angular/core';
 import {Observable} from 'rxjs';
 
 import {takeUntilDestroyed} from './take_until_destroyed';
@@ -31,15 +40,16 @@ class OutputFromObservableRef<T> implements OutputRef<T> {
   subscribe(callbackFn: (value: T) => void): OutputRefSubscription {
     if (this.destroyed) {
       throw new ɵRuntimeError(
-          ɵRuntimeErrorCode.OUTPUT_REF_DESTROYED,
-          ngDevMode &&
-              'Unexpected subscription to destroyed `OutputRef`. ' +
-                  'The owning directive/component is destroyed.');
+        ɵRuntimeErrorCode.OUTPUT_REF_DESTROYED,
+        ngDevMode &&
+          'Unexpected subscription to destroyed `OutputRef`. ' +
+            'The owning directive/component is destroyed.',
+      );
     }
 
     // Stop yielding more values when the directive/component is already destroyed.
     const subscription = this.source.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: value => callbackFn(value),
+      next: (value) => callbackFn(value),
     });
 
     return {
@@ -73,7 +83,9 @@ class OutputFromObservableRef<T> implements OutputRef<T> {
  * @developerPreview
  */
 export function outputFromObservable<T>(
-    observable: Observable<T>, opts?: OutputOptions): OutputRef<T> {
+  observable: Observable<T>,
+  opts?: OutputOptions,
+): OutputRef<T> {
   ngDevMode && assertInInjectionContext(outputFromObservable);
   return new OutputFromObservableRef<T>(observable);
 }

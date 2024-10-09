@@ -1,8 +1,8 @@
-<ng-property-view-header [directive]="directive" (viewSource)="viewSource.emit()"></ng-property-view-header>
+<ng-property-view-header [directive]="directive()" (viewSource)="viewSource.emit()"></ng-property-view-header>
 <ng-property-view-body
-  [controller]="controller"
-  [directiveInputControls]="directiveInputControls"
-  [directiveOutputControls]="directiveOutputControls"
-  [directiveStateControls]="directiveStateControls"
+  [controller]="controller()"
+  [directiveInputControls]="directiveInputControls()"
+  [directiveOutputControls]="directiveOutputControls()"
+  [directiveStateControls]="directiveStateControls()"
   (inspect)="inspect.emit($event)"
 ></ng-property-view-body>

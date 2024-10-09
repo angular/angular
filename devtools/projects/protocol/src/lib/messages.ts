@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {InjectionToken, InjectOptions, Injector, Type, ViewEncapsulation} from '@angular/core';
@@ -238,7 +238,7 @@ export interface Events {
   shutdown: () => void;
   queryNgAvailability: () => void;
   ngAvailability: (config: {
-    version: string | undefined | boolean;
+    version: string | undefined;
     devMode: boolean;
     ivy: boolean;
     hydration: boolean;

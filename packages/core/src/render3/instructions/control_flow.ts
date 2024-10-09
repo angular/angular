@@ -3,12 +3,13 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {setActiveConsumer} from '@angular/core/primitives/signals';
 
 import {TrackByFunction} from '../../change_detection';
+import {formatRuntimeError, RuntimeErrorCode} from '../../errors';
 import {DehydratedContainerView} from '../../hydration/interfaces';
 import {findMatchingDehydratedView} from '../../hydration/views';
 import {assertDefined, assertFunction} from '../../util/assert';
@@ -18,13 +19,27 @@ import {bindingUpdated} from '../bindings';
 import {CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {ComponentTemplate} from '../interfaces/definition';
 import {TNode} from '../interfaces/node';
-import {CONTEXT, DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, HYDRATION, LView, TVIEW, TView} from '../interfaces/view';
+import {
+  CONTEXT,
+  DECLARATION_COMPONENT_VIEW,
+  HEADER_OFFSET,
+  HYDRATION,
+  LView,
+  TVIEW,
+  TView,
+} from '../interfaces/view';
 import {LiveCollection, reconcile} from '../list_reconciliation';
 import {destroyLView, detachView} from '../node_manipulation';
 import {getLView, getSelectedIndex, getTView, nextBindingIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {getConstant, getTNode} from '../util/view_utils';
-import {addLViewToLContainer, createAndRenderEmbeddedLView, getLViewFromLContainer, removeLViewFromLContainer, shouldAddViewToDom} from '../view_manipulation';
+import {
+  addLViewToLContainer,
+  createAndRenderEmbeddedLView,
+  getLViewFromLContainer,
+  removeLViewFromLContainer,
+  shouldAddViewToDom,
+} from '../view_manipulation';
 
 import {declareTemplate} from './template';
 
@@ -44,10 +59,11 @@ export function ɵɵconditional<T>(matchingTemplateIndex: number, contextValue?:
   const hostLView = getLView();
   const bindingIndex = nextBindingIndex();
   const prevMatchingTemplateIndex: number =
-      hostLView[bindingIndex] !== NO_CHANGE ? hostLView[bindingIndex] : -1;
-  const prevContainer = prevMatchingTemplateIndex !== -1 ?
-      getLContainer(hostLView, HEADER_OFFSET + prevMatchingTemplateIndex) :
-      undefined;
+    hostLView[bindingIndex] !== NO_CHANGE ? hostLView[bindingIndex] : -1;
+  const prevContainer =
+    prevMatchingTemplateIndex !== -1
+      ? getLContainer(hostLView, HEADER_OFFSET + prevMatchingTemplateIndex)
+      : undefined;
   const viewInContainerIdx = 0;
 
   if (bindingUpdated(hostLView, bindingIndex, matchingTemplateIndex)) {
@@ -66,14 +82,20 @@ export function ɵɵconditional<T>(matchingTemplateIndex: number, contextValue?:
         const nextContainer = getLContainer(hostLView, nextLContainerIndex);
         const templateTNode = getExistingTNode(hostLView[TVIEW], nextLContainerIndex);
 
-        const dehydratedView =
-            findMatchingDehydratedView(nextContainer, templateTNode.tView!.ssrId);
-        const embeddedLView =
-            createAndRenderEmbeddedLView(hostLView, templateTNode, contextValue, {dehydratedView});
+        const dehydratedView = findMatchingDehydratedView(
+          nextContainer,
+          templateTNode.tView!.ssrId,
+        );
+        const embeddedLView = createAndRenderEmbeddedLView(hostLView, templateTNode, contextValue, {
+          dehydratedView,
+        });
 
         addLViewToLContainer(
-            nextContainer, embeddedLView, viewInContainerIdx,
-            shouldAddViewToDom(templateTNode, dehydratedView));
+          nextContainer,
+          embeddedLView,
+          viewInContainerIdx,
+          shouldAddViewToDom(templateTNode, dehydratedView),
+        );
       }
     } finally {
       setActiveConsumer(prevConsumer);
@@ -81,7 +103,7 @@ export function ɵɵconditional<T>(matchingTemplateIndex: number, contextValue?:
   } else if (prevContainer !== undefined) {
     // We might keep displaying the same template but the actual value of the expression could have
     // changed - re-bind in context.
-    const lView = getLViewFromLContainer<T|undefined>(prevContainer, viewInContainerIdx);
+    const lView = getLViewFromLContainer<T | undefined>(prevContainer, viewInContainerIdx);
     if (lView !== undefined) {
       lView[CONTEXT] = contextValue;
     }
@@ -89,7 +111,11 @@ export function ɵɵconditional<T>(matchingTemplateIndex: number, contextValue?:
 }
 
 export class RepeaterContext<T> {
-  constructor(private lContainer: LContainer, public $implicit: T, public $index: number) {}
+  constructor(
+    private lContainer: LContainer,
+    public $implicit: T,
+    public $index: number,
+  ) {}
 
   get $count(): number {
     return this.lContainer.length - CONTAINER_HEADER_OFFSET;
@@ -121,8 +147,10 @@ export function ɵɵrepeaterTrackByIdentity<T>(_: number, value: T) {
 
 class RepeaterMetadata {
   constructor(
-      public hasEmptyBlock: boolean, public trackByFn: TrackByFunction<unknown>,
-      public liveCollection?: LiveCollectionLContainerImpl) {}
+    public hasEmptyBlock: boolean,
+    public trackByFn: TrackByFunction<unknown>,
+    public liveCollection?: LiveCollectionLContainerImpl,
+  ) {}
 }
 
 /**
@@ -152,47 +180,110 @@ class RepeaterMetadata {
  * @codeGenApi
  */
 export function ɵɵrepeaterCreate(
-    index: number, templateFn: ComponentTemplate<unknown>, decls: number, vars: number,
-    tagName: string|null, attrsIndex: number|null, trackByFn: TrackByFunction<unknown>,
-    trackByUsesComponentInstance?: boolean, emptyTemplateFn?: ComponentTemplate<unknown>,
-    emptyDecls?: number, emptyVars?: number, emptyTagName?: string|null,
-    emptyAttrsIndex?: number|null): void {
+  index: number,
+  templateFn: ComponentTemplate<unknown>,
+  decls: number,
+  vars: number,
+  tagName: string | null,
+  attrsIndex: number | null,
+  trackByFn: TrackByFunction<unknown>,
+  trackByUsesComponentInstance?: boolean,
+  emptyTemplateFn?: ComponentTemplate<unknown>,
+  emptyDecls?: number,
+  emptyVars?: number,
+  emptyTagName?: string | null,
+  emptyAttrsIndex?: number | null,
+): void {
   performanceMarkFeature('NgControlFlow');
 
   ngDevMode &&
-      assertFunction(
-          trackByFn, `A track expression must be a function, was ${typeof trackByFn} instead.`);
+    assertFunction(
+      trackByFn,
+      `A track expression must be a function, was ${typeof trackByFn} instead.`,
+    );
 
   const lView = getLView();
   const tView = getTView();
   const hasEmptyBlock = emptyTemplateFn !== undefined;
   const hostLView = getLView();
-  const boundTrackBy = trackByUsesComponentInstance ?
-      // We only want to bind when necessary, because it produces a
+  const boundTrackBy = trackByUsesComponentInstance
+    ? // We only want to bind when necessary, because it produces a
       // new function. For pure functions it's not necessary.
-      trackByFn.bind(hostLView[DECLARATION_COMPONENT_VIEW][CONTEXT]) :
-      trackByFn;
+      trackByFn.bind(hostLView[DECLARATION_COMPONENT_VIEW][CONTEXT])
+    : trackByFn;
   const metadata = new RepeaterMetadata(hasEmptyBlock, boundTrackBy);
   hostLView[HEADER_OFFSET + index] = metadata;
 
   declareTemplate(
-      lView, tView, index + 1, templateFn, decls, vars, tagName,
-      getConstant(tView.consts, attrsIndex));
+    lView,
+    tView,
+    index + 1,
+    templateFn,
+    decls,
+    vars,
+    tagName,
+    getConstant(tView.consts, attrsIndex),
+  );
 
   if (hasEmptyBlock) {
     ngDevMode &&
-        assertDefined(emptyDecls, 'Missing number of declarations for the empty repeater block.');
+      assertDefined(emptyDecls, 'Missing number of declarations for the empty repeater block.');
     ngDevMode &&
-        assertDefined(emptyVars, 'Missing number of bindings for the empty repeater block.');
+      assertDefined(emptyVars, 'Missing number of bindings for the empty repeater block.');
 
     declareTemplate(
-        lView, tView, index + 2, emptyTemplateFn, emptyDecls!, emptyVars!, emptyTagName,
-        getConstant(tView.consts, emptyAttrsIndex));
+      lView,
+      tView,
+      index + 2,
+      emptyTemplateFn,
+      emptyDecls!,
+      emptyVars!,
+      emptyTagName,
+      getConstant(tView.consts, emptyAttrsIndex),
+    );
   }
 }
 
-class LiveCollectionLContainerImpl extends
-    LiveCollection<LView<RepeaterContext<unknown>>, unknown> {
+function isViewExpensiveToRecreate(lView: LView): boolean {
+  // assumption: anything more than a text node with a binding is considered "expensive"
+  return lView.length - HEADER_OFFSET > 2;
+}
+
+class OperationsCounter {
+  created = 0;
+  destroyed = 0;
+
+  reset() {
+    this.created = 0;
+    this.destroyed = 0;
+  }
+
+  recordCreate() {
+    this.created++;
+  }
+
+  recordDestroy() {
+    this.destroyed++;
+  }
+
+  /**
+   * A method indicating if the entire collection was re-created as part of the reconciliation pass.
+   * Used to warn developers about the usage of a tracking function that might result in excessive
+   * amount of view creation / destroy operations.
+   *
+   * @returns boolean value indicating if a live collection was re-created
+   */
+  wasReCreated(collectionLen: number): boolean {
+    return collectionLen > 0 && this.created === this.destroyed && this.created === collectionLen;
+  }
+}
+
+class LiveCollectionLContainerImpl extends LiveCollection<
+  LView<RepeaterContext<unknown>>,
+  unknown
+> {
+  operationsCounter = ngDevMode ? new OperationsCounter() : undefined;
+
   /**
    Property indicating if indexes in the repeater context need to be updated following the live
    collection changes. Index updates are necessary if and only if views are inserted / removed in
@@ -200,7 +291,10 @@ class LiveCollectionLContainerImpl extends
  */
   private needsIndexUpdate = false;
   constructor(
-      private lContainer: LContainer, private hostLView: LView, private templateTNode: TNode) {
+    private lContainer: LContainer,
+    private hostLView: LView,
+    private templateTNode: TNode,
+  ) {
     super();
   }
 
@@ -214,33 +308,45 @@ class LiveCollectionLContainerImpl extends
     const dehydratedView = lView[HYDRATION] as DehydratedContainerView;
     this.needsIndexUpdate ||= index !== this.length;
     addLViewToLContainer(
-        this.lContainer, lView, index, shouldAddViewToDom(this.templateTNode, dehydratedView));
+      this.lContainer,
+      lView,
+      index,
+      shouldAddViewToDom(this.templateTNode, dehydratedView),
+    );
   }
   override detach(index: number): LView<RepeaterContext<unknown>> {
     this.needsIndexUpdate ||= index !== this.length - 1;
     return detachExistingView<RepeaterContext<unknown>>(this.lContainer, index);
   }
   override create(index: number, value: unknown): LView<RepeaterContext<unknown>> {
-    const dehydratedView =
-        findMatchingDehydratedView(this.lContainer, this.templateTNode.tView!.ssrId);
+    const dehydratedView = findMatchingDehydratedView(
+      this.lContainer,
+      this.templateTNode.tView!.ssrId,
+    );
     const embeddedLView = createAndRenderEmbeddedLView(
-        this.hostLView, this.templateTNode, new RepeaterContext(this.lContainer, value, index),
-        {dehydratedView});
+      this.hostLView,
+      this.templateTNode,
+      new RepeaterContext(this.lContainer, value, index),
+      {dehydratedView},
+    );
+    this.operationsCounter?.recordCreate();
 
     return embeddedLView;
   }
   override destroy(lView: LView<RepeaterContext<unknown>>): void {
     destroyLView(lView[TVIEW], lView);
+    this.operationsCounter?.recordDestroy();
   }
   override updateValue(index: number, value: unknown): void {
     this.getLView(index)[CONTEXT].$implicit = value;
   }
 
-  reset() {
+  reset(): void {
     this.needsIndexUpdate = false;
+    this.operationsCounter?.reset();
   }
 
-  updateIndexes() {
+  updateIndexes(): void {
     if (this.needsIndexUpdate) {
       for (let i = 0; i < this.length; i++) {
         this.getLView(i)[CONTEXT].$index = i;
@@ -260,26 +366,48 @@ class LiveCollectionLContainerImpl extends
  * @param collection - the collection instance to be checked for changes
  * @codeGenApi
  */
-export function ɵɵrepeater(collection: Iterable<unknown>|undefined|null): void {
+export function ɵɵrepeater(collection: Iterable<unknown> | undefined | null): void {
   const prevConsumer = setActiveConsumer(null);
   const metadataSlotIdx = getSelectedIndex();
   try {
     const hostLView = getLView();
     const hostTView = hostLView[TVIEW];
     const metadata = hostLView[metadataSlotIdx] as RepeaterMetadata;
+    const containerIndex = metadataSlotIdx + 1;
+    const lContainer = getLContainer(hostLView, containerIndex);
 
     if (metadata.liveCollection === undefined) {
-      const containerIndex = metadataSlotIdx + 1;
-      const lContainer = getLContainer(hostLView, containerIndex);
       const itemTemplateTNode = getExistingTNode(hostTView, containerIndex);
-      metadata.liveCollection =
-          new LiveCollectionLContainerImpl(lContainer, hostLView, itemTemplateTNode);
+      metadata.liveCollection = new LiveCollectionLContainerImpl(
+        lContainer,
+        hostLView,
+        itemTemplateTNode,
+      );
     } else {
       metadata.liveCollection.reset();
     }
 
     const liveCollection = metadata.liveCollection;
     reconcile(liveCollection, collection, metadata.trackByFn);
+
+    // Warn developers about situations where the entire collection was re-created as part of the
+    // reconciliation pass. Note that this warning might be "overreacting" and report cases where
+    // the collection re-creation is the intended behavior. Still, the assumption is that most of
+    // the time it is undesired.
+    if (
+      ngDevMode &&
+      metadata.trackByFn === ɵɵrepeaterTrackByIdentity &&
+      liveCollection.operationsCounter?.wasReCreated(liveCollection.length) &&
+      isViewExpensiveToRecreate(getExistingLViewFromLContainer(lContainer, 0))
+    ) {
+      const message = formatRuntimeError(
+        RuntimeErrorCode.LOOP_TRACK_RECREATE,
+        `The configured tracking expression (track by identity) caused re-creation of the entire collection of size ${liveCollection.length}. ` +
+          'This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. ' +
+          'Please review the "track expression" and make sure that it uniquely identifies items in a collection.',
+      );
+      console.warn(message);
+    }
 
     // moves in the container might caused context's index to get out of order, re-adjust if needed
     liveCollection.updateIndexes();
@@ -293,13 +421,22 @@ export function ɵɵrepeater(collection: Iterable<unknown>|undefined|null): void
         const lContainerForEmpty = getLContainer(hostLView, emptyTemplateIndex);
         if (isCollectionEmpty) {
           const emptyTemplateTNode = getExistingTNode(hostTView, emptyTemplateIndex);
-          const dehydratedView =
-              findMatchingDehydratedView(lContainerForEmpty, emptyTemplateTNode.tView!.ssrId);
+          const dehydratedView = findMatchingDehydratedView(
+            lContainerForEmpty,
+            emptyTemplateTNode.tView!.ssrId,
+          );
           const embeddedLView = createAndRenderEmbeddedLView(
-              hostLView, emptyTemplateTNode, undefined, {dehydratedView});
+            hostLView,
+            emptyTemplateTNode,
+            undefined,
+            {dehydratedView},
+          );
           addLViewToLContainer(
-              lContainerForEmpty, embeddedLView, 0,
-              shouldAddViewToDom(emptyTemplateTNode, dehydratedView));
+            lContainerForEmpty,
+            embeddedLView,
+            0,
+            shouldAddViewToDom(emptyTemplateTNode, dehydratedView),
+          );
         } else {
           removeLViewFromLContainer(lContainerForEmpty, 0);
         }

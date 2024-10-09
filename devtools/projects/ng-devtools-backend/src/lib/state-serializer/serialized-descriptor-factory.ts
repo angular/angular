@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ContainerType, Descriptor, NestedProp, PropType} from 'protocol';
@@ -325,11 +325,11 @@ function getLevelDescriptorValue(
   const isReadonly = isSignal(prop);
   switch (type) {
     case PropType.Array:
-      return prop.map((_: any, idx: number) =>
+      return value.map((_: any, idx: number) =>
         continuation(value, idx, isReadonly, currentLevel + 1, level),
       );
     case PropType.Object:
-      return getKeys(prop).reduce(
+      return getKeys(value).reduce(
         (accumulator, propName) => {
           if (!ignoreList.has(propName)) {
             accumulator[propName] = continuation(

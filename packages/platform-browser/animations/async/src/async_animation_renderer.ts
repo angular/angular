@@ -3,19 +3,41 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ɵAnimationEngine as AnimationEngine, ɵAnimationRenderer as AnimationRenderer, ɵAnimationRendererFactory as AnimationRendererFactory} from '@angular/animations/browser';
-import {inject, Injectable, NgZone, OnDestroy, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ɵAnimationRendererType as AnimationRendererType, ɵChangeDetectionScheduler as ChangeDetectionScheduler, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {
+  ɵAnimationEngine as AnimationEngine,
+  ɵAnimationRenderer as AnimationRenderer,
+  ɵAnimationRendererFactory as AnimationRendererFactory,
+} from '@angular/animations/browser';
+import {
+  inject,
+  Injectable,
+  NgZone,
+  OnDestroy,
+  Renderer2,
+  RendererFactory2,
+  RendererStyleFlags2,
+  RendererType2,
+  ɵAnimationRendererType as AnimationRendererType,
+  ɵChangeDetectionScheduler as ChangeDetectionScheduler,
+  ɵNotificationSource as NotificationSource,
+  ɵRuntimeError as RuntimeError,
+  Injector,
+  InjectionToken,
+} from '@angular/core';
 import {ɵRuntimeErrorCode as RuntimeErrorCode} from '@angular/platform-browser';
 
 const ANIMATION_PREFIX = '@';
 
 @Injectable()
 export class AsyncAnimationRendererFactory implements OnDestroy, RendererFactory2 {
-  private _rendererFactoryPromise: Promise<AnimationRendererFactory>|null = null;
+  private _rendererFactoryPromise: Promise<AnimationRendererFactory> | null = null;
   private readonly scheduler = inject(ChangeDetectionScheduler, {optional: true});
+  private readonly loadingSchedulerFn = inject(ɵASYNC_ANIMATION_LOADING_SCHEDULER_FN, {
+    optional: true,
+  });
   private _engine?: AnimationEngine;
 
   /**
@@ -23,13 +45,15 @@ export class AsyncAnimationRendererFactory implements OnDestroy, RendererFactory
    * @param moduleImpl allows to provide a mock implmentation (or will load the animation module)
    */
   constructor(
-      private doc: Document, private delegate: RendererFactory2, private zone: NgZone,
-      private animationType: 'animations'|'noop', private moduleImpl?: Promise<{
-        ɵcreateEngine:
-            (type: 'animations'|'noop', doc: Document,
-             scheduler: ChangeDetectionScheduler|null) => AnimationEngine,
-        ɵAnimationRendererFactory: typeof AnimationRendererFactory
-      }>) {}
+    private doc: Document,
+    private delegate: RendererFactory2,
+    private zone: NgZone,
+    private animationType: 'animations' | 'noop',
+    private moduleImpl?: Promise<{
+      ɵcreateEngine: (type: 'animations' | 'noop', doc: Document) => AnimationEngine;
+      ɵAnimationRendererFactory: typeof AnimationRendererFactory;
+    }>,
+  ) {}
 
   /** @nodoc */
   ngOnDestroy(): void {
@@ -46,26 +70,40 @@ export class AsyncAnimationRendererFactory implements OnDestroy, RendererFactory
    * @internal
    */
   private loadImpl(): Promise<AnimationRendererFactory> {
-    const moduleImpl = this.moduleImpl ?? import('@angular/animations/browser');
+    // Note on the `.then(m => m)` part below: Closure compiler optimizations in g3 require
+    // `.then` to be present for a dynamic import (or an import should be `await`ed) to detect
+    // the set of imported symbols.
+    const loadFn = () => this.moduleImpl ?? import('@angular/animations/browser').then((m) => m);
 
-    return moduleImpl
-        .catch((e) => {
-          throw new RuntimeError(
-              RuntimeErrorCode.ANIMATION_RENDERER_ASYNC_LOADING_FAILURE,
-              (typeof ngDevMode === 'undefined' || ngDevMode) &&
-                  'Async loading for animations package was ' +
-                      'enabled, but loading failed. Angular falls back to using regular rendering. ' +
-                      'No animations will be displayed and their styles won\'t be applied.');
-        })
-        .then(({ɵcreateEngine, ɵAnimationRendererFactory}) => {
-          // We can't create the renderer yet because we might need the hostElement and the type
-          // Both are provided in createRenderer().
-          this._engine = ɵcreateEngine(this.animationType, this.doc, this.scheduler);
-          const rendererFactory =
-              new ɵAnimationRendererFactory(this.delegate, this._engine, this.zone);
-          this.delegate = rendererFactory;
-          return rendererFactory;
-        });
+    let moduleImplPromise: typeof this.moduleImpl;
+    if (this.loadingSchedulerFn) {
+      moduleImplPromise = this.loadingSchedulerFn(loadFn);
+    } else {
+      moduleImplPromise = loadFn();
+    }
+
+    return moduleImplPromise
+      .catch((e) => {
+        throw new RuntimeError(
+          RuntimeErrorCode.ANIMATION_RENDERER_ASYNC_LOADING_FAILURE,
+          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+            'Async loading for animations package was ' +
+              'enabled, but loading failed. Angular falls back to using regular rendering. ' +
+              "No animations will be displayed and their styles won't be applied.",
+        );
+      })
+      .then(({ɵcreateEngine, ɵAnimationRendererFactory}) => {
+        // We can't create the renderer yet because we might need the hostElement and the type
+        // Both are provided in createRenderer().
+        this._engine = ɵcreateEngine(this.animationType, this.doc);
+        const rendererFactory = new ɵAnimationRendererFactory(
+          this.delegate,
+          this._engine,
+          this.zone,
+        );
+        this.delegate = rendererFactory;
+        return rendererFactory;
+      });
   }
 
   /**
@@ -99,15 +137,18 @@ export class AsyncAnimationRendererFactory implements OnDestroy, RendererFactory
     }
 
     this._rendererFactoryPromise
-        ?.then((animationRendererFactory) => {
-          const animationRenderer =
-              animationRendererFactory.createRenderer(hostElement, rendererType);
-          dynamicRenderer.use(animationRenderer);
-        })
-        .catch(e => {
-          // Permanently use regular renderer when loading fails.
-          dynamicRenderer.use(renderer);
-        });
+      ?.then((animationRendererFactory) => {
+        const animationRenderer = animationRendererFactory.createRenderer(
+          hostElement,
+          rendererType,
+        );
+        dynamicRenderer.use(animationRenderer);
+        this.scheduler?.notify(NotificationSource.AsyncAnimationsLoaded);
+      })
+      .catch((e) => {
+        // Permanently use regular renderer when loading fails.
+        dynamicRenderer.use(renderer);
+      });
 
     return dynamicRenderer;
   }
@@ -131,7 +172,7 @@ export class AsyncAnimationRendererFactory implements OnDestroy, RendererFactory
  */
 export class DynamicDelegationRenderer implements Renderer2 {
   // List of callbacks that need to be replayed on the animation renderer once its loaded
-  private replay: ((renderer: Renderer2) => void)[]|null = [];
+  private replay: ((renderer: Renderer2) => void)[] | null = [];
   readonly ɵtype = AnimationRendererType.Delegated;
 
   constructor(private delegate: Renderer2) {}
@@ -160,7 +201,7 @@ export class DynamicDelegationRenderer implements Renderer2 {
     this.delegate.destroy();
   }
 
-  createElement(name: string, namespace?: string|null) {
+  createElement(name: string, namespace?: string | null) {
     return this.delegate.createElement(name, namespace);
   }
 
@@ -172,7 +213,7 @@ export class DynamicDelegationRenderer implements Renderer2 {
     return this.delegate.createText(value);
   }
 
-  get destroyNode(): ((node: any) => void)|null {
+  get destroyNode(): ((node: any) => void) | null {
     return this.delegate.destroyNode;
   }
 
@@ -180,15 +221,15 @@ export class DynamicDelegationRenderer implements Renderer2 {
     this.delegate.appendChild(parent, newChild);
   }
 
-  insertBefore(parent: any, newChild: any, refChild: any, isMove?: boolean|undefined): void {
+  insertBefore(parent: any, newChild: any, refChild: any, isMove?: boolean | undefined): void {
     this.delegate.insertBefore(parent, newChild, refChild, isMove);
   }
 
-  removeChild(parent: any, oldChild: any, isHostElement?: boolean|undefined): void {
+  removeChild(parent: any, oldChild: any, isHostElement?: boolean | undefined): void {
     this.delegate.removeChild(parent, oldChild, isHostElement);
   }
 
-  selectRootElement(selectorOrNode: any, preserveContent?: boolean|undefined): any {
+  selectRootElement(selectorOrNode: any, preserveContent?: boolean | undefined): any {
     return this.delegate.selectRootElement(selectorOrNode, preserveContent);
   }
 
@@ -200,11 +241,11 @@ export class DynamicDelegationRenderer implements Renderer2 {
     return this.delegate.nextSibling(node);
   }
 
-  setAttribute(el: any, name: string, value: string, namespace?: string|null|undefined): void {
+  setAttribute(el: any, name: string, value: string, namespace?: string | null | undefined): void {
     this.delegate.setAttribute(el, name, value, namespace);
   }
 
-  removeAttribute(el: any, name: string, namespace?: string|null|undefined): void {
+  removeAttribute(el: any, name: string, namespace?: string | null | undefined): void {
     this.delegate.removeAttribute(el, name, namespace);
   }
 
@@ -216,11 +257,11 @@ export class DynamicDelegationRenderer implements Renderer2 {
     this.delegate.removeClass(el, name);
   }
 
-  setStyle(el: any, style: string, value: any, flags?: RendererStyleFlags2|undefined): void {
+  setStyle(el: any, style: string, value: any, flags?: RendererStyleFlags2 | undefined): void {
     this.delegate.setStyle(el, style, value, flags);
   }
 
-  removeStyle(el: any, style: string, flags?: RendererStyleFlags2|undefined): void {
+  removeStyle(el: any, style: string, flags?: RendererStyleFlags2 | undefined): void {
     this.delegate.removeStyle(el, style, flags);
   }
 
@@ -251,3 +292,12 @@ export class DynamicDelegationRenderer implements Renderer2 {
     return this.replay !== null && propOrEventName.startsWith(ANIMATION_PREFIX);
   }
 }
+
+/**
+ * Provides a custom scheduler function for the async loading of the animation package.
+ *
+ * Private token for investigation purposes
+ */
+export const ɵASYNC_ANIMATION_LOADING_SCHEDULER_FN = new InjectionToken<<T>(loadFn: () => T) => T>(
+  ngDevMode ? 'async_animation_loading_scheduler_fn' : '',
+);

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {WrappedNodeExpr} from '@angular/compiler';
@@ -24,7 +24,9 @@ interface WithDefaultImportDeclaration {
  * default import.
  */
 export function attachDefaultImportDeclaration(
-    expr: WrappedNodeExpr<unknown>, importDecl: ts.ImportDeclaration): void {
+  expr: WrappedNodeExpr<unknown>,
+  importDecl: ts.ImportDeclaration,
+): void {
   (expr as WithDefaultImportDeclaration)[DefaultImportDeclaration] = importDecl;
 }
 
@@ -32,8 +34,9 @@ export function attachDefaultImportDeclaration(
  * Obtains the default import declaration that `expr` depends on, or `null` if there is no such
  * dependency.
  */
-export function getDefaultImportDeclaration(expr: WrappedNodeExpr<unknown>): ts.ImportDeclaration|
-    null {
+export function getDefaultImportDeclaration(
+  expr: WrappedNodeExpr<unknown>,
+): ts.ImportDeclaration | null {
   return (expr as WithDefaultImportDeclaration)[DefaultImportDeclaration] ?? null;
 }
 
@@ -93,10 +96,10 @@ export class DefaultImportTracker {
    * This transformer must run after any other transformers which call `recordUsedImport`.
    */
   importPreservingTransformer(): ts.TransformerFactory<ts.SourceFile> {
-    return context => {
-      let clausesToPreserve: Set<ts.Declaration>|null = null;
+    return (context) => {
+      let clausesToPreserve: Set<ts.Declaration> | null = null;
 
-      return sourceFile => {
+      return (sourceFile) => {
         const clausesForFile = this.sourceFileToUsedImports.get(sourceFile.fileName);
 
         if (clausesForFile !== undefined) {

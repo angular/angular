@@ -22,6 +22,7 @@ describe('ApiItemsSection', () => {
 
   const fakeFeaturedGroup: ApiItemsGroup = {
     title: 'Featured',
+    id: 'featured',
     isFeatured: true,
     items: [
       {
@@ -48,6 +49,7 @@ describe('ApiItemsSection', () => {
 
   const fakeGroup: ApiItemsGroup = {
     title: 'Example group',
+    id: 'example',
     isFeatured: false,
     items: [
       {title: 'Fake Title', itemType: ApiItemType.CONST, url: 'api/fakeTitle', isFeatured: false},

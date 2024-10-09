@@ -1,5 +1,5 @@
 load("//tools:defaults.bzl", "ng_module", "tsec_test")
-load("@npm//@angular/build-tooling/bazel/api-gen:generate_api_docs.bzl", "generate_api_docs")
+load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", "generate_api_docs")
 
 package(default_visibility = ["//visibility:public"])
 

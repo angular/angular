@@ -2,14 +2,14 @@
 
 Often when building web applications, you need to repeat some code a specific number of times - for example, given an array of names, you may want to display each name in a `<p>` tag.
 
-In this activity you'll learn how to use `@for` to repeat elements in a template.
+In this activity, you'll learn how to use `@for` to repeat elements in a template.
 <hr/>
 
 The syntax that enables repeating elements in a template is `@for`.
 
 Here's an example of how to use the `@for` syntax in a component:
 
-```ts
+```angular-ts
 @Component({
   ...
   template: `
@@ -42,7 +42,7 @@ In the `AppComponent` class, add a property called `users` that contains users a
 <docs-step title="Update the template">
 Update the template to display each user name in a `p` element using the `@for` template syntax.
 
-```ts
+```angular-html
 @for (user of users; track user.id) {
   <p>{{ user.name }}</p>
 }

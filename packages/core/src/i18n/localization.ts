@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {getLocalePluralCase} from './locale_data_api';
@@ -16,7 +16,7 @@ const pluralMapping = ['zero', 'one', 'two', 'few', 'many'];
 export function getPluralCase(value: string, locale: string): string {
   const plural = getLocalePluralCase(locale)(parseInt(value, 10));
   const result = pluralMapping[plural];
-  return (result !== undefined) ? result : 'other';
+  return result !== undefined ? result : 'other';
 }
 
 /**

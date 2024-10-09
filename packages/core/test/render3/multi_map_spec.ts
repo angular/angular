@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {UniqueValueMultiKeyMap} from '@angular/core/src/render3/list_reconciliation';
@@ -48,7 +48,11 @@ describe('MultiMap', () => {
     const items: string[][] = [];
 
     map.forEach((v, k) => items.push([v, k]));
-    expect(items).toEqual([['v1', 'km'], ['v2', 'km'], ['v', 'ks']]);
+    expect(items).toEqual([
+      ['v1', 'km'],
+      ['v2', 'km'],
+      ['v', 'ks'],
+    ]);
   });
 
   it('should throw upon detecting duplicate values', () => {

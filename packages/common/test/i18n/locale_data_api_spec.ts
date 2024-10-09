@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import localeEn from '@angular/common/locales/en';
@@ -23,7 +23,7 @@ import {
   getLocaleMonthNames,
   getNumberOfCurrencyDigits,
   TranslationWidth,
-} from '../../src/i18n/locale_data_api';
+} from '@angular/common';
 
 describe('locale data api', () => {
   beforeAll(() => {

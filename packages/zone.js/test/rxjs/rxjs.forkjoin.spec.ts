@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {forkJoin, from, Observable, range} from 'rxjs';
@@ -25,17 +25,18 @@ describe('Observable.forkjoin', () => {
 
     subscriptionZone.run(() => {
       observable1.subscribe(
-          (result: any) => {
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-            log.push(result);
-          },
-          () => {
-            fail('should not call error');
-          },
-          () => {
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-            log.push('completed');
-          });
+        (result: any) => {
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+          log.push(result);
+        },
+        () => {
+          fail('should not call error');
+        },
+        () => {
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+          log.push('completed');
+        },
+      );
     });
 
     expect(log).toEqual([[2, 5], 'completed']);
@@ -51,17 +52,18 @@ describe('Observable.forkjoin', () => {
 
     subscriptionZone.run(() => {
       observable1.subscribe(
-          (result: any) => {
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-            log.push(result);
-          },
-          () => {
-            fail('should not call error');
-          },
-          () => {
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-            log.push('completed');
-          });
+        (result: any) => {
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+          log.push(result);
+        },
+        () => {
+          fail('should not call error');
+        },
+        () => {
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+          log.push('completed');
+        },
+      );
     });
 
     expect(log).toEqual([7, 'completed']);

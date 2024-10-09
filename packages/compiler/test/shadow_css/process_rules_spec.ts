@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {CssRule, processRules} from '@angular/compiler/src/shadow_css';
@@ -48,17 +48,21 @@ describe('ShadowCss, processRules', () => {
 
   describe('modify rules', () => {
     it('should allow to change the selector while preserving whitespaces', () => {
-      expect(processRules(
-                 '@import a; b {c {d}} e {f}',
-                 (cssRule: CssRule) => new CssRule(cssRule.selector + '2', cssRule.content)))
-          .toEqual('@import a2; b2 {c {d}} e2 {f}');
+      expect(
+        processRules(
+          '@import a; b {c {d}} e {f}',
+          (cssRule: CssRule) => new CssRule(cssRule.selector + '2', cssRule.content),
+        ),
+      ).toEqual('@import a2; b2 {c {d}} e2 {f}');
     });
 
     it('should allow to change the content', () => {
       expect(
-          processRules(
-              'a {b}', (cssRule: CssRule) => new CssRule(cssRule.selector, cssRule.content + '2')))
-          .toEqual('a {b2}');
+        processRules(
+          'a {b}',
+          (cssRule: CssRule) => new CssRule(cssRule.selector, cssRule.content + '2'),
+        ),
+      ).toEqual('a {b2}');
     });
   });
 });

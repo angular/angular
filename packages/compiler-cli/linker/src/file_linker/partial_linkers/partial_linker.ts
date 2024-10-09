@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {ConstantPool, outputAst as o, R3PartialDeclaration} from '@angular/compiler';
 
@@ -28,6 +28,8 @@ export interface PartialLinker<TExpression> {
    *     `R3DeclareComponentMetadata` interfaces.
    */
   linkPartialDeclaration(
-      constantPool: ConstantPool, metaObj: AstObject<R3PartialDeclaration, TExpression>,
-      version: string): LinkedDefinition;
+    constantPool: ConstantPool,
+    metaObj: AstObject<R3PartialDeclaration, TExpression>,
+    version: string,
+  ): LinkedDefinition;
 }

@@ -3,29 +3,57 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {SecurityContext} from '../../../../../core';
 import * as i18n from '../../../../../i18n/i18n_ast';
 import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
-import {BindingKind, I18nExpressionFor, I18nParamResolutionTime, OpKind, TemplateKind} from '../enums';
+import {
+  BindingKind,
+  DeferOpModifierKind,
+  I18nExpressionFor,
+  I18nParamResolutionTime,
+  OpKind,
+  TemplateKind,
+} from '../enums';
 import type {ConditionalCaseExpr} from '../expression';
 import {SlotHandle} from '../handle';
 import {Op, XrefId} from '../operations';
-import {ConsumesVarsTrait, DependsOnSlotContextOpTrait, TRAIT_CONSUMES_VARS, TRAIT_DEPENDS_ON_SLOT_CONTEXT} from '../traits';
+import {
+  ConsumesVarsTrait,
+  DependsOnSlotContextOpTrait,
+  TRAIT_CONSUMES_VARS,
+  TRAIT_DEPENDS_ON_SLOT_CONTEXT,
+} from '../traits';
 import type {HostPropertyOp} from './host';
 import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
-
 
 /**
  * An operation usable on the update side of the IR.
  */
 export type UpdateOp =
-    ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|TwoWayPropertyOp|AttributeOp|StylePropOp|
-    ClassPropOp|StyleMapOp|ClassMapOp|InterpolateTextOp|AdvanceOp|VariableOp<UpdateOp>|BindingOp|
-    HostPropertyOp|ConditionalOp|I18nExpressionOp|I18nApplyOp|RepeaterOp|DeferWhenOp;
+  | ListEndOp<UpdateOp>
+  | StatementOp<UpdateOp>
+  | PropertyOp
+  | TwoWayPropertyOp
+  | AttributeOp
+  | StylePropOp
+  | ClassPropOp
+  | StyleMapOp
+  | ClassMapOp
+  | InterpolateTextOp
+  | AdvanceOp
+  | VariableOp<UpdateOp>
+  | BindingOp
+  | HostPropertyOp
+  | ConditionalOp
+  | I18nExpressionOp
+  | I18nApplyOp
+  | RepeaterOp
+  | DeferWhenOp
+  | StoreLetOp;
 
 /**
  * A logical operation to perform string interpolation on a text node.
@@ -54,7 +82,10 @@ export interface InterpolateTextOp extends Op<UpdateOp>, ConsumesVarsTrait {
  * Create an `InterpolationTextOp`.
  */
 export function createInterpolateTextOp(
-    xref: XrefId, interpolation: Interpolation, sourceSpan: ParseSourceSpan): InterpolateTextOp {
+  xref: XrefId,
+  interpolation: Interpolation,
+  sourceSpan: ParseSourceSpan,
+): InterpolateTextOp {
   return {
     kind: OpKind.InterpolateText,
     target: xref,
@@ -68,12 +99,14 @@ export function createInterpolateTextOp(
 
 export class Interpolation {
   constructor(
-      readonly strings: string[], readonly expressions: o.Expression[],
-      readonly i18nPlaceholders: string[]) {
+    readonly strings: string[],
+    readonly expressions: o.Expression[],
+    readonly i18nPlaceholders: string[],
+  ) {
     if (i18nPlaceholders.length !== 0 && i18nPlaceholders.length !== expressions.length) {
-      throw new Error(`Expected ${
-          expressions.length} placeholders to match interpolation expression count, but got ${
-          i18nPlaceholders.length}`);
+      throw new Error(
+        `Expected ${expressions.length} placeholders to match interpolation expression count, but got ${i18nPlaceholders.length}`,
+      );
     }
   }
 }
@@ -103,17 +136,17 @@ export interface BindingOp extends Op<UpdateOp> {
   /**
    * Expression which is bound to the property.
    */
-  expression: o.Expression|Interpolation;
+  expression: o.Expression | Interpolation;
 
   /**
    * The unit of the bound value.
    */
-  unit: string|null;
+  unit: string | null;
 
   /**
    * The security context of the binding.
    */
-  securityContext: SecurityContext|SecurityContext[];
+  securityContext: SecurityContext | SecurityContext[];
 
   /**
    * Whether the binding is a TextAttribute (e.g. `some-attr="some-value"`).
@@ -128,10 +161,10 @@ export interface BindingOp extends Op<UpdateOp> {
   /**
    * Whether this binding is on a structural template.
    */
-  templateKind: TemplateKind|null;
+  templateKind: TemplateKind | null;
 
-  i18nContext: XrefId|null;
-  i18nMessage: i18n.Message|null;
+  i18nContext: XrefId | null;
+  i18nMessage: i18n.Message | null;
 
   sourceSpan: ParseSourceSpan;
 }
@@ -140,10 +173,18 @@ export interface BindingOp extends Op<UpdateOp> {
  * Create a `BindingOp`, not yet transformed into a particular type of binding.
  */
 export function createBindingOp(
-    target: XrefId, kind: BindingKind, name: string, expression: o.Expression|Interpolation,
-    unit: string|null, securityContext: SecurityContext|SecurityContext[], isTextAttribute: boolean,
-    isStructuralTemplateAttribute: boolean, templateKind: TemplateKind|null,
-    i18nMessage: i18n.Message|null, sourceSpan: ParseSourceSpan): BindingOp {
+  target: XrefId,
+  kind: BindingKind,
+  name: string,
+  expression: o.Expression | Interpolation,
+  unit: string | null,
+  securityContext: SecurityContext | SecurityContext[],
+  isTextAttribute: boolean,
+  isStructuralTemplateAttribute: boolean,
+  templateKind: TemplateKind | null,
+  i18nMessage: i18n.Message | null,
+  sourceSpan: ParseSourceSpan,
+): BindingOp {
   return {
     kind: OpKind.Binding,
     bindingKind: kind,
@@ -181,7 +222,7 @@ export interface PropertyOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
   /**
    * Expression which is bound to the property.
    */
-  expression: o.Expression|Interpolation;
+  expression: o.Expression | Interpolation;
 
   /**
    * Whether this property is an animation trigger.
@@ -191,12 +232,12 @@ export interface PropertyOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
   /**
    * The security context of the binding.
    */
-  securityContext: SecurityContext|SecurityContext[];
+  securityContext: SecurityContext | SecurityContext[];
 
   /**
    * The sanitizer for this property.
    */
-  sanitizer: o.Expression|null;
+  sanitizer: o.Expression | null;
 
   isStructuralTemplateAttribute: boolean;
 
@@ -204,10 +245,10 @@ export interface PropertyOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
    * The kind of template targeted by the binding, or null if this binding does not target a
    * template.
    */
-  templateKind: TemplateKind|null;
+  templateKind: TemplateKind | null;
 
-  i18nContext: XrefId|null;
-  i18nMessage: i18n.Message|null;
+  i18nContext: XrefId | null;
+  i18nMessage: i18n.Message | null;
 
   sourceSpan: ParseSourceSpan;
 }
@@ -216,11 +257,17 @@ export interface PropertyOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
  * Create a `PropertyOp`.
  */
 export function createPropertyOp(
-    target: XrefId, name: string, expression: o.Expression|Interpolation,
-    isAnimationTrigger: boolean, securityContext: SecurityContext|SecurityContext[],
-    isStructuralTemplateAttribute: boolean, templateKind: TemplateKind|null,
-    i18nContext: XrefId|null, i18nMessage: i18n.Message|null,
-    sourceSpan: ParseSourceSpan): PropertyOp {
+  target: XrefId,
+  name: string,
+  expression: o.Expression | Interpolation,
+  isAnimationTrigger: boolean,
+  securityContext: SecurityContext | SecurityContext[],
+  isStructuralTemplateAttribute: boolean,
+  templateKind: TemplateKind | null,
+  i18nContext: XrefId | null,
+  i18nMessage: i18n.Message | null,
+  sourceSpan: ParseSourceSpan,
+): PropertyOp {
   return {
     kind: OpKind.Property,
     target,
@@ -243,8 +290,10 @@ export function createPropertyOp(
 /**
  * A logical operation representing the property binding side of a two-way binding in the update IR.
  */
-export interface TwoWayPropertyOp extends Op<UpdateOp>, ConsumesVarsTrait,
-                                          DependsOnSlotContextOpTrait {
+export interface TwoWayPropertyOp
+  extends Op<UpdateOp>,
+    ConsumesVarsTrait,
+    DependsOnSlotContextOpTrait {
   kind: OpKind.TwoWayProperty;
 
   /**
@@ -265,12 +314,12 @@ export interface TwoWayPropertyOp extends Op<UpdateOp>, ConsumesVarsTrait,
   /**
    * The security context of the binding.
    */
-  securityContext: SecurityContext|SecurityContext[];
+  securityContext: SecurityContext | SecurityContext[];
 
   /**
    * The sanitizer for this property.
    */
-  sanitizer: o.Expression|null;
+  sanitizer: o.Expression | null;
 
   isStructuralTemplateAttribute: boolean;
 
@@ -278,10 +327,10 @@ export interface TwoWayPropertyOp extends Op<UpdateOp>, ConsumesVarsTrait,
    * The kind of template targeted by the binding, or null if this binding does not target a
    * template.
    */
-  templateKind: TemplateKind|null;
+  templateKind: TemplateKind | null;
 
-  i18nContext: XrefId|null;
-  i18nMessage: i18n.Message|null;
+  i18nContext: XrefId | null;
+  i18nMessage: i18n.Message | null;
 
   sourceSpan: ParseSourceSpan;
 }
@@ -290,10 +339,16 @@ export interface TwoWayPropertyOp extends Op<UpdateOp>, ConsumesVarsTrait,
  * Create a `TwoWayPropertyOp`.
  */
 export function createTwoWayPropertyOp(
-    target: XrefId, name: string, expression: o.Expression,
-    securityContext: SecurityContext|SecurityContext[], isStructuralTemplateAttribute: boolean,
-    templateKind: TemplateKind|null, i18nContext: XrefId|null, i18nMessage: i18n.Message|null,
-    sourceSpan: ParseSourceSpan): TwoWayPropertyOp {
+  target: XrefId,
+  name: string,
+  expression: o.Expression,
+  securityContext: SecurityContext | SecurityContext[],
+  isStructuralTemplateAttribute: boolean,
+  templateKind: TemplateKind | null,
+  i18nContext: XrefId | null,
+  i18nMessage: i18n.Message | null,
+  sourceSpan: ParseSourceSpan,
+): TwoWayPropertyOp {
   return {
     kind: OpKind.TwoWayProperty,
     target,
@@ -331,20 +386,24 @@ export interface StylePropOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnS
   /**
    * Expression which is bound to the property.
    */
-  expression: o.Expression|Interpolation;
+  expression: o.Expression | Interpolation;
 
   /**
    * The unit of the bound value.
    */
-  unit: string|null;
+  unit: string | null;
 
   sourceSpan: ParseSourceSpan;
 }
 
 /** Create a `StylePropOp`. */
 export function createStylePropOp(
-    xref: XrefId, name: string, expression: o.Expression|Interpolation, unit: string|null,
-    sourceSpan: ParseSourceSpan): StylePropOp {
+  xref: XrefId,
+  name: string,
+  expression: o.Expression | Interpolation,
+  unit: string | null,
+  sourceSpan: ParseSourceSpan,
+): StylePropOp {
   return {
     kind: OpKind.StyleProp,
     target: xref,
@@ -386,8 +445,11 @@ export interface ClassPropOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnS
  * Create a `ClassPropOp`.
  */
 export function createClassPropOp(
-    xref: XrefId, name: string, expression: o.Expression,
-    sourceSpan: ParseSourceSpan): ClassPropOp {
+  xref: XrefId,
+  name: string,
+  expression: o.Expression,
+  sourceSpan: ParseSourceSpan,
+): ClassPropOp {
   return {
     kind: OpKind.ClassProp,
     target: xref,
@@ -414,14 +476,17 @@ export interface StyleMapOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
   /**
    * Expression which is bound to the property.
    */
-  expression: o.Expression|Interpolation;
+  expression: o.Expression | Interpolation;
 
   sourceSpan: ParseSourceSpan;
 }
 
 /** Create a `StyleMapOp`. */
 export function createStyleMapOp(
-    xref: XrefId, expression: o.Expression|Interpolation, sourceSpan: ParseSourceSpan): StyleMapOp {
+  xref: XrefId,
+  expression: o.Expression | Interpolation,
+  sourceSpan: ParseSourceSpan,
+): StyleMapOp {
   return {
     kind: OpKind.StyleMap,
     target: xref,
@@ -447,7 +512,7 @@ export interface ClassMapOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
   /**
    * Expression which is bound to the property.
    */
-  expression: o.Expression|Interpolation;
+  expression: o.Expression | Interpolation;
 
   sourceSpan: ParseSourceSpan;
 }
@@ -456,7 +521,10 @@ export interface ClassMapOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
  * Create a `ClassMapOp`.
  */
 export function createClassMapOp(
-    xref: XrefId, expression: o.Expression|Interpolation, sourceSpan: ParseSourceSpan): ClassMapOp {
+  xref: XrefId,
+  expression: o.Expression | Interpolation,
+  sourceSpan: ParseSourceSpan,
+): ClassMapOp {
   return {
     kind: OpKind.ClassMap,
     target: xref,
@@ -482,7 +550,7 @@ export interface AttributeOp extends Op<UpdateOp> {
   /**
    * The namespace of the attribute (or null if none).
    */
-  namespace: string|null;
+  namespace: string | null;
 
   /**
    * The name of the attribute.
@@ -492,17 +560,17 @@ export interface AttributeOp extends Op<UpdateOp> {
   /**
    * The value of the attribute.
    */
-  expression: o.Expression|Interpolation;
+  expression: o.Expression | Interpolation;
 
   /**
    * The security context of the binding.
    */
-  securityContext: SecurityContext|SecurityContext[];
+  securityContext: SecurityContext | SecurityContext[];
 
   /**
    * The sanitizer for this attribute.
    */
-  sanitizer: o.Expression|null;
+  sanitizer: o.Expression | null;
 
   /**
    * Whether the binding is a TextAttribute (e.g. `some-attr="some-value"`).
@@ -518,14 +586,14 @@ export interface AttributeOp extends Op<UpdateOp> {
    * The kind of template targeted by the binding, or null if this binding does not target a
    * template.
    */
-  templateKind: TemplateKind|null;
+  templateKind: TemplateKind | null;
 
   /**
    * The i18n context, if this is an i18n attribute.
    */
-  i18nContext: XrefId|null;
+  i18nContext: XrefId | null;
 
-  i18nMessage: i18n.Message|null;
+  i18nMessage: i18n.Message | null;
 
   sourceSpan: ParseSourceSpan;
 }
@@ -534,10 +602,17 @@ export interface AttributeOp extends Op<UpdateOp> {
  * Create an `AttributeOp`.
  */
 export function createAttributeOp(
-    target: XrefId, namespace: string|null, name: string, expression: o.Expression|Interpolation,
-    securityContext: SecurityContext|SecurityContext[], isTextAttribute: boolean,
-    isStructuralTemplateAttribute: boolean, templateKind: TemplateKind|null,
-    i18nMessage: i18n.Message|null, sourceSpan: ParseSourceSpan): AttributeOp {
+  target: XrefId,
+  namespace: string | null,
+  name: string,
+  expression: o.Expression | Interpolation,
+  securityContext: SecurityContext | SecurityContext[],
+  isTextAttribute: boolean,
+  isStructuralTemplateAttribute: boolean,
+  templateKind: TemplateKind | null,
+  i18nMessage: i18n.Message | null,
+  sourceSpan: ParseSourceSpan,
+): AttributeOp {
   return {
     kind: OpKind.Attribute,
     target,
@@ -588,8 +663,10 @@ export function createAdvanceOp(delta: number, sourceSpan: ParseSourceSpan): Adv
 /**
  * Logical operation representing a conditional expression in the update IR.
  */
-export interface ConditionalOp extends Op<ConditionalOp>, DependsOnSlotContextOpTrait,
-                                       ConsumesVarsTrait {
+export interface ConditionalOp
+  extends Op<ConditionalOp>,
+    DependsOnSlotContextOpTrait,
+    ConsumesVarsTrait {
   kind: OpKind.Conditional;
 
   /**
@@ -602,7 +679,7 @@ export interface ConditionalOp extends Op<ConditionalOp>, DependsOnSlotContextOp
    * The main test expression (for a switch), or `null` (for an if, which has no test
    * expression).
    */
-  test: o.Expression|null;
+  test: o.Expression | null;
 
   /**
    * Each possible embedded view that could be displayed has a condition (or is default). This
@@ -614,13 +691,13 @@ export interface ConditionalOp extends Op<ConditionalOp>, DependsOnSlotContextOp
    * After processing, this will be a single collapsed Joost-expression that evaluates the
    * conditions, and yields the slot number of the template which should be displayed.
    */
-  processed: o.Expression|null;
+  processed: o.Expression | null;
 
   /**
    * Control flow conditionals can accept a context value (this is a result of specifying an
    * alias). This expression will be passed to the conditional instruction's context parameter.
    */
-  contextValue: o.Expression|null;
+  contextValue: o.Expression | null;
 
   sourceSpan: ParseSourceSpan;
 }
@@ -629,8 +706,11 @@ export interface ConditionalOp extends Op<ConditionalOp>, DependsOnSlotContextOp
  * Create a conditional op, which will display an embedded view according to a condtion.
  */
 export function createConditionalOp(
-    target: XrefId, test: o.Expression|null, conditions: Array<ConditionalCaseExpr>,
-    sourceSpan: ParseSourceSpan): ConditionalOp {
+  target: XrefId,
+  test: o.Expression | null,
+  conditions: Array<ConditionalCaseExpr>,
+  sourceSpan: ParseSourceSpan,
+): ConditionalOp {
   return {
     kind: OpKind.Conditional,
     target,
@@ -664,8 +744,11 @@ export interface RepeaterOp extends Op<UpdateOp>, DependsOnSlotContextOpTrait {
 }
 
 export function createRepeaterOp(
-    repeaterCreate: XrefId, targetSlot: SlotHandle, collection: o.Expression,
-    sourceSpan: ParseSourceSpan): RepeaterOp {
+  repeaterCreate: XrefId,
+  targetSlot: SlotHandle,
+  collection: o.Expression,
+  sourceSpan: ParseSourceSpan,
+): RepeaterOp {
   return {
     kind: OpKind.Repeater,
     target: repeaterCreate,
@@ -691,21 +774,24 @@ export interface DeferWhenOp extends Op<UpdateOp>, DependsOnSlotContextOpTrait, 
   expr: o.Expression;
 
   /**
-   * Whether to emit the prefetch version of the instruction.
+   * Modifier set on the trigger by the user (e.g. `hydrate`, `prefetch` etc).
    */
-  prefetch: boolean;
+  modifier: DeferOpModifierKind;
 
   sourceSpan: ParseSourceSpan;
 }
 
 export function createDeferWhenOp(
-    target: XrefId, expr: o.Expression, prefetch: boolean,
-    sourceSpan: ParseSourceSpan): DeferWhenOp {
+  target: XrefId,
+  expr: o.Expression,
+  modifier: DeferOpModifierKind,
+  sourceSpan: ParseSourceSpan,
+): DeferWhenOp {
   return {
     kind: OpKind.DeferWhen,
     target,
     expr,
-    prefetch,
+    modifier,
     sourceSpan,
     ...NEW_OP,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
@@ -719,8 +805,10 @@ export function createDeferWhenOp(
  * TODO: This can represent expressions used in both i18n attributes and normal i18n content. We
  * may want to split these into two different op types, deriving from the same base class.
  */
-export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
-                                          DependsOnSlotContextOpTrait {
+export interface I18nExpressionOp
+  extends Op<UpdateOp>,
+    ConsumesVarsTrait,
+    DependsOnSlotContextOpTrait {
   kind: OpKind.I18nExpression;
 
   /**
@@ -760,7 +848,7 @@ export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
    */
   expression: o.Expression;
 
-  icuPlaceholder: XrefId|null;
+  icuPlaceholder: XrefId | null;
 
   /**
    * The i18n placeholder associated with this expression. This can be null if the expression is
@@ -768,7 +856,7 @@ export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
    * other expressions in the ICU placeholder and assigned to the translated message under the ICU
    * placeholder name.
    */
-  i18nPlaceholder: string|null;
+  i18nPlaceholder: string | null;
 
   /**
    * The time that this expression is resolved.
@@ -793,10 +881,18 @@ export interface I18nExpressionOp extends Op<UpdateOp>, ConsumesVarsTrait,
  * Create an i18n expression op.
  */
 export function createI18nExpressionOp(
-    context: XrefId, target: XrefId, i18nOwner: XrefId, handle: SlotHandle,
-    expression: o.Expression, icuPlaceholder: XrefId|null, i18nPlaceholder: string|null,
-    resolutionTime: I18nParamResolutionTime, usage: I18nExpressionFor, name: string,
-    sourceSpan: ParseSourceSpan): I18nExpressionOp {
+  context: XrefId,
+  target: XrefId,
+  i18nOwner: XrefId,
+  handle: SlotHandle,
+  expression: o.Expression,
+  icuPlaceholder: XrefId | null,
+  i18nPlaceholder: string | null,
+  resolutionTime: I18nParamResolutionTime,
+  usage: I18nExpressionFor,
+  name: string,
+  sourceSpan: ParseSourceSpan,
+): I18nExpressionOp {
   return {
     kind: OpKind.I18nExpression,
     context,
@@ -843,12 +939,53 @@ export interface I18nApplyOp extends Op<UpdateOp> {
  * Creates an op to apply i18n expression ops.
  */
 export function createI18nApplyOp(
-    owner: XrefId, handle: SlotHandle, sourceSpan: ParseSourceSpan): I18nApplyOp {
+  owner: XrefId,
+  handle: SlotHandle,
+  sourceSpan: ParseSourceSpan,
+): I18nApplyOp {
   return {
     kind: OpKind.I18nApply,
     owner,
     handle,
     sourceSpan,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * Op to store the current value of a `@let` declaration.
+ */
+export interface StoreLetOp extends Op<UpdateOp>, ConsumesVarsTrait {
+  kind: OpKind.StoreLet;
+  sourceSpan: ParseSourceSpan;
+
+  /** Name that the user set when declaring the `@let`. */
+  declaredName: string;
+
+  /** XrefId of the slot in which the call may write its value. */
+  target: XrefId;
+
+  /** Value of the `@let` declaration. */
+  value: o.Expression;
+}
+
+/**
+ * Creates a `StoreLetOp`.
+ */
+export function createStoreLetOp(
+  target: XrefId,
+  declaredName: string,
+  value: o.Expression,
+  sourceSpan: ParseSourceSpan,
+): StoreLetOp {
+  return {
+    kind: OpKind.StoreLet,
+    target,
+    declaredName,
+    value,
+    sourceSpan,
+    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
+    ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,
   };
 }

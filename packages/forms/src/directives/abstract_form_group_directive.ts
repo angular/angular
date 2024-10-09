@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Directive, OnDestroy, OnInit} from '@angular/core';
@@ -11,10 +11,8 @@ import {Directive, OnDestroy, OnInit} from '@angular/core';
 import {FormGroup} from '../model/form_group';
 
 import {ControlContainer} from './control_container';
-import {Form} from './form_interface';
+import type {Form} from './form_interface';
 import {controlPath} from './shared';
-
-
 
 /**
  * @description
@@ -68,7 +66,7 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
    * @description
    * The top-level directive for this group if present, otherwise null.
    */
-  override get formDirective(): Form|null {
+  override get formDirective(): Form | null {
     return this._parent ? this._parent.formDirective : null;
   }
 

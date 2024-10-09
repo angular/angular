@@ -1,10 +1,10 @@
 <div class="wrapper" @stagger>
-  @for (bar of internalData; track $index) {
+  @for (bar of internalData(); track $index) {
     <div
       @appear
-      (click)="barClick.emit(originalData[$index])"
+      (click)="barClick.emit(data()[$index])"
       class="bar"
-      [style.backgroundColor]="color"
+      [style.backgroundColor]="color()"
       [style.width.%]="bar.width"
       [matTooltip]="bar.text">
       <span>{{ bar.text }}</span>

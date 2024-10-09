@@ -12,7 +12,10 @@
     "name": "APP_INITIALIZER"
   },
   {
-    "name": "AfterRenderEventManager"
+    "name": "AfterRenderManager"
+  },
+  {
+    "name": "AfterRenderPhase"
   },
   {
     "name": "AnonymousSubject"
@@ -147,6 +150,9 @@
     "name": "EVENT_MANAGER_PLUGINS"
   },
   {
+    "name": "EffectScheduler"
+  },
+  {
     "name": "ElementRef"
   },
   {
@@ -183,6 +189,9 @@
     "name": "HTTP_ROOT_INTERCEPTOR_FNS"
   },
   {
+    "name": "HTTP_TRANSFER_CACHE_ORIGIN_MAP"
+  },
+  {
     "name": "HttpEventType"
   },
   {
@@ -193,9 +202,6 @@
   },
   {
     "name": "HttpResponseBase"
-  },
-  {
-    "name": "HttpStatusCode"
   },
   {
     "name": "HydrationFeatureKind"
@@ -384,13 +390,16 @@
     "name": "PRESERVE_HOST_CONTENT"
   },
   {
-    "name": "PendingTasks"
+    "name": "PendingTasksInternal"
   },
   {
     "name": "R3Injector"
   },
   {
     "name": "REACTIVE_LVIEW_CONSUMER_NODE"
+  },
+  {
+    "name": "REACTIVE_NODE"
   },
   {
     "name": "REFERENCE_NODE_BODY"
@@ -405,6 +414,9 @@
     "name": "REMOVE_STYLES_ON_COMPONENT_DESTROY"
   },
   {
+    "name": "REQ_URL"
+  },
+  {
     "name": "RESPONSE_TYPE"
   },
   {
@@ -415,6 +427,9 @@
   },
   {
     "name": "RuntimeError"
+  },
+  {
+    "name": "SCHEDULE_IN_ROOT_ZONE"
   },
   {
     "name": "SIGNAL"
@@ -462,6 +477,9 @@
     "name": "Subscription"
   },
   {
+    "name": "TEMPORARY_CONSUMER_NODE"
+  },
+  {
     "name": "TESTABILITY"
   },
   {
@@ -475,9 +493,6 @@
   },
   {
     "name": "TransferState"
-  },
-  {
-    "name": "URL2"
   },
   {
     "name": "USE_VALUE"
@@ -498,10 +513,22 @@
     "name": "ZONELESS_SCHEDULER_DISABLED"
   },
   {
+    "name": "ZoneAwareEffectScheduler"
+  },
+  {
     "name": "ZoneStablePendingTask"
   },
   {
+    "name": "_AfterRenderImpl"
+  },
+  {
+    "name": "_ComponentFactoryResolver"
+  },
+  {
     "name": "_DOM"
+  },
+  {
+    "name": "_Injector"
   },
   {
     "name": "_NullComponentFactoryResolver"
@@ -526,9 +553,6 @@
   },
   {
     "name": "_getInsertInFrontOfRNodeWithI18n"
-  },
-  {
-    "name": "_global"
   },
   {
     "name": "_icuContainerIterate"
@@ -558,9 +582,6 @@
     "name": "_wasLastNodeCreated"
   },
   {
-    "name": "_wrapInTimeout"
-  },
-  {
     "name": "activeConsumer"
   },
   {
@@ -571,6 +592,9 @@
   },
   {
     "name": "allocLFrame"
+  },
+  {
+    "name": "angularZoneInstanceIdProperty"
   },
   {
     "name": "appendChild"
@@ -600,6 +624,9 @@
     "name": "assertConsumerNode"
   },
   {
+    "name": "assertNotDestroyed"
+  },
+  {
     "name": "attachPatchData"
   },
   {
@@ -610,6 +637,9 @@
   },
   {
     "name": "bloomHasToken"
+  },
+  {
+    "name": "bootstrap"
   },
   {
     "name": "calcSerializedContainerSize"
@@ -660,6 +690,12 @@
     "name": "configureViewWithDirective"
   },
   {
+    "name": "consumerBeforeComputation"
+  },
+  {
+    "name": "consumerDestroy"
+  },
+  {
     "name": "consumerIsLive"
   },
   {
@@ -693,6 +729,9 @@
     "name": "createLView"
   },
   {
+    "name": "createLinkElement"
+  },
+  {
     "name": "createNodeInjector"
   },
   {
@@ -700,6 +739,9 @@
   },
   {
     "name": "createOperatorSubscriber"
+  },
+  {
+    "name": "createStyleElement"
   },
   {
     "name": "createTView"
@@ -745,9 +787,6 @@
   },
   {
     "name": "diPublicInInjector"
-  },
-  {
-    "name": "enableHydrationRuntimeSupport"
   },
   {
     "name": "enterDI"
@@ -930,6 +969,9 @@
     "name": "handleUnhandledError"
   },
   {
+    "name": "hasApplyArgsData"
+  },
+  {
     "name": "hasInSkipHydrationBlockFlag"
   },
   {
@@ -990,7 +1032,16 @@
     "name": "internalImportProvidersFrom"
   },
   {
+    "name": "internalProvideZoneChangeDetection"
+  },
+  {
     "name": "invokeHostBindingsInCreationMode"
+  },
+  {
+    "name": "isAngularZoneProperty"
+  },
+  {
+    "name": "isApplicationBootstrapConfig"
   },
   {
     "name": "isArrayLike"
@@ -1137,9 +1188,6 @@
     "name": "nativeInsertBefore"
   },
   {
-    "name": "nativeParentNode"
-  },
-  {
     "name": "nativeRemoveNode"
   },
   {
@@ -1149,7 +1197,7 @@
     "name": "ngOnChangesSetInput"
   },
   {
-    "name": "ngZoneApplicationErrorHandlerFactory"
+    "name": "ngZoneInstanceId"
   },
   {
     "name": "nonNull"
@@ -1203,9 +1251,6 @@
     "name": "profiler"
   },
   {
-    "name": "provideZoneChangeDetection"
-  },
-  {
     "name": "readableStreamLikeToAsyncGenerator"
   },
   {
@@ -1225,6 +1270,9 @@
   },
   {
     "name": "removeDehydratedViews"
+  },
+  {
+    "name": "removeElements"
   },
   {
     "name": "removeFromArray"
@@ -1254,13 +1302,19 @@
     "name": "retrieveHydrationInfoImpl"
   },
   {
+    "name": "runEffectsInView"
+  },
+  {
     "name": "saveNameToExportMap"
   },
   {
     "name": "scheduleAsyncIterable"
   },
   {
-    "name": "scheduleCallback"
+    "name": "scheduleCallbackWithMicrotask"
+  },
+  {
+    "name": "scheduleCallbackWithRafRace"
   },
   {
     "name": "searchTokensOnInjector"
@@ -1344,6 +1398,9 @@
     "name": "uniqueIdCounter"
   },
   {
+    "name": "unregisterLView"
+  },
+  {
     "name": "unwrapRNode"
   },
   {
@@ -1356,6 +1413,9 @@
     "name": "viewAttachedToChangeDetector"
   },
   {
+    "name": "viewShouldHaveReactiveConsumer"
+  },
+  {
     "name": "walkProviderTree"
   },
   {
@@ -1363,6 +1423,9 @@
   },
   {
     "name": "whenStableStore"
+  },
+  {
+    "name": "withDomHydration"
   },
   {
     "name": "writeDirectClass"

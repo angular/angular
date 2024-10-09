@@ -42,8 +42,8 @@ export class HomeComponent {
       return;
     }
 
-    this.filteredLocationList = this.housingLocationList.filter(
-      (housingLocation) => housingLocation?.city.toLowerCase().includes(text.toLowerCase()),
+    this.filteredLocationList = this.housingLocationList.filter((housingLocation) =>
+      housingLocation?.city.toLowerCase().includes(text.toLowerCase()),
     );
   }
 }

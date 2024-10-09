@@ -1,0 +1,129 @@
+:host {
+  .docs-example-viewer-preview {
+    .docs-dark-mode & {
+      background: var(--gray-100);
+    }
+    @media screen and (prefers-color-scheme: dark) {
+      background: var(--gray-100);
+    }
+    .docs-light-mode & {
+      background: var(--page-background);
+    }
+  }
+}
+
+.docs-example-viewer {
+  border: 1px solid var(--senary-contrast);
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+// Example viewer header
+.docs-example-viewer-actions {
+  background: var(--subtle-purple);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--senary-contrast);
+  transition: background 0.3s ease, border-color 0.3s ease;
+  padding-inline-end: 0.65rem;
+  font-family: var(--inter-tight-font);
+
+  mat-tab-group {
+    max-width: calc(100% - 140px);
+  }
+
+  span:first-of-type {
+    background-image: var(--purple-to-blue-horizontal-gradient);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+
+    padding: 0.7rem 1.1rem;
+    font-size: 0.875rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.4rem;
+    letter-spacing: -0.00875rem;
+    margin: 0;
+    word-wrap: break-word;
+    width: fit-content;
+  }
+
+  .docs-example-viewer-icons {
+    display: flex;
+    gap: 0.75rem;
+
+    svg {
+      fill: var(--gray-400);
+    }
+  }
+
+  a,
+  button {
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    height: 24px;
+    width: 24px;
+    path {
+      transition: fill 0.3s ease;
+    }
+
+    &:hover {
+      svg {
+        fill: var(--tertiary-contrast);
+      }
+    }
+  }
+}
+
+// Example viewer code
+.docs-example-viewer-code-wrapper {
+  position: relative;
+  font-size: 0.875rem;
+  // TODO: only show this if there is a preview
+  // border-block-end: 1px solid var(--senary-contrast);
+  transition: border-color 0.3s ease;
+  container: viewerblock / inline-size;
+  background-color: var(--octonary-contrast);
+
+  button[docs-copy-source-code] {
+    top: 0.31rem;
+  }
+}
+
+// stylelint-disable-next-line
+::ng-deep {
+  .docs-example-viewer-preview {
+    // stylelint-disable-next-line
+    all: initial;
+    display: block;
+    padding: 1rem;
+    border-block-start: 1px solid var(--senary-contrast);
+
+    *,
+    code::before,
+    code,
+    pre,
+    a,
+    i,
+    p,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    ol,
+    ul,
+    li,
+    hr,
+    input,
+    select,
+    table {
+      all: revert;
+    }
+  }
+}

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 // TODO: @JiaLiPassion, try to add it into travis/saucelabs test after saucelabs support Firefox 52+
@@ -18,15 +18,18 @@
 const webdriver = require('selenium-webdriver');
 const capabilities = webdriver.Capabilities.firefox();
 const driver = new webdriver.Builder()
-                   .usingServer('http://localhost:4444/wd/hub')
-                   .withCapabilities(capabilities)
-                   .build();
+  .usingServer('http://localhost:4444/wd/hub')
+  .withCapabilities(capabilities)
+  .build();
 driver.get('http://localhost:8080/test.html');
 driver.executeAsyncScript((cb) => {
   window.setTimeout(cb, 1000);
 });
 
 // test case2 addEventHandler in firefox cross site context
-driver.findElement(webdriver.By.css('#thetext')).getText().then(function(text) {
-  console.log(text);
-});
+driver
+  .findElement(webdriver.By.css('#thetext'))
+  .getText()
+  .then(function (text) {
+    console.log(text);
+  });

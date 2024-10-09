@@ -1,15 +1,51 @@
 [
   {
+    "name": "AfterRenderPhase"
+  },
+  {
+    "name": "AnonymousSubject"
+  },
+  {
+    "name": "BehaviorSubject"
+  },
+  {
     "name": "CIRCULAR"
   },
   {
+    "name": "COMPLETE_NOTIFICATION"
+  },
+  {
+    "name": "ChangeDetectionScheduler"
+  },
+  {
+    "name": "ConsumerObserver"
+  },
+  {
+    "name": "DestroyRef"
+  },
+  {
     "name": "EMPTY_ARRAY"
+  },
+  {
+    "name": "EMPTY_OBSERVER"
+  },
+  {
+    "name": "EMPTY_PAYLOAD"
+  },
+  {
+    "name": "EMPTY_SUBSCRIPTION"
   },
   {
     "name": "ENVIRONMENT_INITIALIZER"
   },
   {
     "name": "EnvironmentInjector"
+  },
+  {
+    "name": "ErrorHandler"
+  },
+  {
+    "name": "EventEmitter"
   },
   {
     "name": "INJECTOR"
@@ -57,7 +93,22 @@
     "name": "NULL_INJECTOR"
   },
   {
+    "name": "NgZone"
+  },
+  {
+    "name": "NodeInjectorDestroyRef"
+  },
+  {
     "name": "NullInjector"
+  },
+  {
+    "name": "ObjectUnsubscribedError"
+  },
+  {
+    "name": "Observable"
+  },
+  {
+    "name": "PendingTasksInternal"
   },
   {
     "name": "R3Injector"
@@ -66,7 +117,19 @@
     "name": "RuntimeError"
   },
   {
+    "name": "SafeSubscriber"
+  },
+  {
     "name": "ScopedService"
+  },
+  {
+    "name": "Subject"
+  },
+  {
+    "name": "Subscriber"
+  },
+  {
+    "name": "Subscription"
   },
   {
     "name": "THROW_IF_NOT_FOUND"
@@ -75,7 +138,19 @@
     "name": "USE_VALUE"
   },
   {
+    "name": "UnsubscriptionError"
+  },
+  {
+    "name": "_AfterRenderImpl"
+  },
+  {
+    "name": "_Injector"
+  },
+  {
     "name": "__forward_ref__"
+  },
+  {
+    "name": "_bind"
   },
   {
     "name": "_currentInjector"
@@ -87,13 +162,52 @@
     "name": "activeConsumer"
   },
   {
+    "name": "angularZoneInstanceIdProperty"
+  },
+  {
+    "name": "arrRemove"
+  },
+  {
+    "name": "assertNotDestroyed"
+  },
+  {
+    "name": "bind"
+  },
+  {
+    "name": "checkStable"
+  },
+  {
+    "name": "config"
+  },
+  {
+    "name": "context"
+  },
+  {
+    "name": "convertToBitFlags"
+  },
+  {
+    "name": "createErrorClass"
+  },
+  {
     "name": "createInjector"
+  },
+  {
+    "name": "createLFrame"
+  },
+  {
+    "name": "createNotification"
   },
   {
     "name": "deepForEach"
   },
   {
     "name": "deepForEachProvider"
+  },
+  {
+    "name": "errorContext"
+  },
+  {
+    "name": "execFinalizer"
   },
   {
     "name": "forEachSingleProvider"
@@ -108,6 +222,9 @@
     "name": "getFactoryDef"
   },
   {
+    "name": "getInjectImplementation"
+  },
+  {
     "name": "getInjectableDef"
   },
   {
@@ -117,13 +234,37 @@
     "name": "getNullInjector"
   },
   {
+    "name": "getOriginalError"
+  },
+  {
     "name": "getOwnDefinition"
+  },
+  {
+    "name": "getPromiseCtor"
+  },
+  {
+    "name": "handleStoppedNotification"
+  },
+  {
+    "name": "handleUnhandledError"
+  },
+  {
+    "name": "hasApplyArgsData"
+  },
+  {
+    "name": "identity"
   },
   {
     "name": "importProvidersFrom"
   },
   {
+    "name": "inject"
+  },
+  {
     "name": "injectArgs"
+  },
+  {
+    "name": "injectDestroyRef"
   },
   {
     "name": "injectInjectorOnly"
@@ -132,10 +273,22 @@
     "name": "injectableDefOrInjectorDefFactory"
   },
   {
+    "name": "instructionState"
+  },
+  {
     "name": "internalImportProvidersFrom"
   },
   {
+    "name": "isAngularZoneProperty"
+  },
+  {
     "name": "isEnvironmentProviders"
+  },
+  {
+    "name": "isFunction"
+  },
+  {
+    "name": "isSubscription"
   },
   {
     "name": "isTypeProvider"
@@ -145,6 +298,24 @@
   },
   {
     "name": "makeRecord"
+  },
+  {
+    "name": "ngZoneInstanceId"
+  },
+  {
+    "name": "noop"
+  },
+  {
+    "name": "noop2"
+  },
+  {
+    "name": "observable"
+  },
+  {
+    "name": "onEnter"
+  },
+  {
+    "name": "onLeave"
   },
   {
     "name": "processInjectorTypesWithProviders"
@@ -163,6 +334,12 @@
   },
   {
     "name": "stringify"
+  },
+  {
+    "name": "timeoutProvider"
+  },
+  {
+    "name": "updateMicroTaskStatus"
   },
   {
     "name": "walkProviderTree"

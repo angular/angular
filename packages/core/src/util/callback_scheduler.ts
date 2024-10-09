@@ -3,10 +3,10 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
-import {global} from './global';
+import {noop} from './noop';
 
 /**
  * Gets a scheduling function that runs the callback after the first of setTimeout and
@@ -34,40 +34,41 @@ import {global} from './global';
  *
  * @returns a function to cancel the scheduled callback
  */
-export function scheduleCallback(callback: Function, useNativeTimers = true): () => void {
-  // Note: the `scheduleCallback` is used in the `NgZone` class, but we cannot use the
-  // `inject` function. The `NgZone` instance may be created manually, and thus the injection
-  // context will be unavailable. This might be enough to check whether `requestAnimationFrame` is
-  // available because otherwise, we'll fall back to `setTimeout`.
-  const hasRequestAnimationFrame = typeof global['requestAnimationFrame'] === 'function';
-  let nativeRequestAnimationFrame =
-      hasRequestAnimationFrame ? global['requestAnimationFrame'] : null;
-  let nativeSetTimeout = global['setTimeout'];
-  if (typeof Zone !== 'undefined' && useNativeTimers) {
-    if (hasRequestAnimationFrame) {
-      nativeRequestAnimationFrame =
-          global[Zone.__symbol__('requestAnimationFrame')] ?? nativeRequestAnimationFrame;
+export function scheduleCallbackWithRafRace(callback: Function): () => void {
+  let timeoutId: number;
+  let animationFrameId: number;
+  function cleanup() {
+    callback = noop;
+    try {
+      if (animationFrameId !== undefined && typeof cancelAnimationFrame === 'function') {
+        cancelAnimationFrame(animationFrameId);
+      }
+      if (timeoutId !== undefined) {
+        clearTimeout(timeoutId);
+      }
+    } catch {
+      // Clearing/canceling can fail in tests due to the timing of functions being patched and unpatched
+      // Just ignore the errors - we protect ourselves from this issue by also making the callback a no-op.
     }
-    nativeSetTimeout = global[Zone.__symbol__('setTimeout')] ?? nativeSetTimeout;
+  }
+  timeoutId = setTimeout(() => {
+    callback();
+    cleanup();
+  }) as unknown as number;
+  if (typeof requestAnimationFrame === 'function') {
+    animationFrameId = requestAnimationFrame(() => {
+      callback();
+      cleanup();
+    });
   }
 
-  let executeCallback = true;
-  nativeSetTimeout(() => {
-    if (!executeCallback) {
-      return;
-    }
-    executeCallback = false;
-    callback();
-  });
-  nativeRequestAnimationFrame?.(() => {
-    if (!executeCallback) {
-      return;
-    }
-    executeCallback = false;
-    callback();
-  });
+  return () => cleanup();
+}
+
+export function scheduleCallbackWithMicrotask(callback: Function): () => void {
+  queueMicrotask(() => callback());
 
   return () => {
-    executeCallback = false;
+    callback = noop;
   };
 }

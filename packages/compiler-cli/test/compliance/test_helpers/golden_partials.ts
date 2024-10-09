@@ -3,15 +3,15 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 const headerStart =
-    '/****************************************************************************************************\n' +
-    ' * PARTIAL FILE: ';
+  '/****************************************************************************************************\n' +
+  ' * PARTIAL FILE: ';
 
 const headerEnd =
-    '\n ****************************************************************************************************/\n';
+  '\n ****************************************************************************************************/\n';
 
 /**
  * Render the partially compiled files into a single golden partial output string.
@@ -19,7 +19,7 @@ const headerEnd =
  * @param files The partially compiled files to be rendered.
  */
 export function renderGoldenPartial(files: PartiallyCompiledFile[]): string {
-  return files.map(file => `${headerStart + file.path + headerEnd}${file.content}`).join('\n');
+  return files.map((file) => `${headerStart + file.path + headerEnd}${file.content}`).join('\n');
 }
 
 /**

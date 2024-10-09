@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {DATE_PIPE_DEFAULT_OPTIONS, DatePipe} from '@angular/common';
@@ -145,7 +145,19 @@ describe('DatePipe', () => {
       );
     });
 
+    it('should take timezone into account with timezone offset', () => {
+      expect(pipe.transform('2017-01-11T00:00:00', 'mediumDate', '-1200')).toEqual('Jan 10, 2017');
+    });
+
+    it('should support an empty string for the timezone', () => {
+      expect(pipe.transform('2017-01-11T00:00:00', 'mediumDate', '')).toEqual('Jan 11, 2017');
+    });
+
     it('should take timezone into account', () => {
+      expect(pipe.transform('2017-01-11T00:00:00', 'mediumDate', '-1200')).toEqual('Jan 10, 2017');
+    });
+
+    it('should take timezone into account with timezone offset', () => {
       expect(pipe.transform('2017-01-11T00:00:00', 'mediumDate', '-1200')).toEqual('Jan 10, 2017');
     });
 

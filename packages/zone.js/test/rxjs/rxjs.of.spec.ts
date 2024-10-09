@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {Observable, of} from 'rxjs';
 
@@ -24,17 +24,18 @@ describe('Observable.of', () => {
 
     subscriptionZone.run(() => {
       observable1.subscribe(
-          (result: any) => {
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-            log.push(result);
-          },
-          () => {
-            fail('should not call error');
-          },
-          () => {
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-            log.push('completed');
-          });
+        (result: any) => {
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+          log.push(result);
+        },
+        () => {
+          fail('should not call error');
+        },
+        () => {
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+          log.push('completed');
+        },
+      );
     });
 
     expect(log).toEqual([1, 2, 3, 'completed']);

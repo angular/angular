@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {absoluteFrom} from '@angular/compiler-cli';
@@ -60,7 +60,9 @@ export interface CodeActionMeta {
  * Convert the span of `textChange` in the TCB to the span of the template.
  */
 export function convertFileTextChangeInTcb(
-    changes: readonly tss.FileTextChanges[], compiler: NgCompiler): tss.FileTextChanges[] {
+  changes: readonly tss.FileTextChanges[],
+  compiler: NgCompiler,
+): tss.FileTextChanges[] {
   const ttc = compiler.getTemplateTypeChecker();
   const fileTextChanges: tss.FileTextChanges[] = [];
   for (const fileTextChange of changes) {
@@ -69,7 +71,7 @@ export function convertFileTextChangeInTcb(
       continue;
     }
     const textChanges: tss.TextChange[] = [];
-    let fileName: string|undefined;
+    let fileName: string | undefined;
     const seenTextChangeInTemplate = new Set<string>();
     for (const textChange of fileTextChange.textChanges) {
       const templateMap = ttc.getTemplateMappingAtTcbLocation({
@@ -135,4 +137,5 @@ export enum FixIdForCodeFixesAll {
   FIX_MISSING_MEMBER = 'fixMissingMember',
   FIX_INVALID_BANANA_IN_BOX = 'fixInvalidBananaInBox',
   FIX_MISSING_IMPORT = 'fixMissingImport',
+  FIX_UNUSED_STANDALONE_IMPORTS = 'fixUnusedStandaloneImports',
 }

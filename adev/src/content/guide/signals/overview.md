@@ -69,7 +69,7 @@ produces a compilation error, because `doubleCount` is not a `WritableSignal`.
 
 #### Computed signal dependencies are dynamic
 
-Only the signals actually read during the derivation are tracked. For example, in this computed the `count` signal is only read if the `showCount` signal is true:
+Only the signals actually read during the derivation are tracked. For example, in this `computed` the `count` signal is only read if the `showCount` signal is true:
 
 ```ts
 const showCount = signal(false);

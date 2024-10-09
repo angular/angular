@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {isShapeOf, ShapeOf} from './is_shape_of';
@@ -31,7 +31,8 @@ describe('isShapeOf', () => {
 
   it('should not match if missing property', () => {
     expect(isShapeOf({required: 1}, {required: true, missing: true})).toBeFalse();
-    expect(isShapeOf({required: true, extra: 'is ok'}, {required: true, missing: true}))
-        .toBeFalse();
+    expect(
+      isShapeOf({required: true, extra: 'is ok'}, {required: true, missing: true}),
+    ).toBeFalse();
   });
 });

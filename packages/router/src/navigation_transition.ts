@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Location} from '@angular/common';
@@ -51,7 +51,14 @@ import {
   RouteConfigLoadStart,
   RoutesRecognized,
 } from './events';
-import {GuardResult, NavigationBehaviorOptions, QueryParamsHandling, Route, Routes} from './models';
+import {
+  GuardResult,
+  NavigationBehaviorOptions,
+  QueryParamsHandling,
+  RedirectCommand,
+  Route,
+  Routes,
+} from './models';
 import {
   isNavigationCancelingError,
   isRedirectingNavigationCancelingError,
@@ -260,6 +267,12 @@ export interface Navigation {
    */
   finalUrl?: UrlTree;
   /**
+   * `UrlTree` to use when updating the browser URL for the navigation when `extras.browserUrl` is
+   * defined.
+   * @internal
+   */
+  readonly targetBrowserUrl?: UrlTree | string;
+  /**
    * TODO(atscott): If we want to make StateManager public, they will need access to this. Note that
    * it's already eventually exposed through router.routerState.
    * @internal
@@ -315,18 +328,14 @@ export interface NavigationTransition {
  */
 interface InternalRouterInterface {
   config: Routes;
-  // All of these are public API of router interface and can change during runtime because they are
-  // writeable. Ideally, these would be removed and the values retrieved instead from the values
-  // available in DI.
-  errorHandler: (error: any) => any;
   navigated: boolean;
   routeReuseStrategy: RouteReuseStrategy;
   onSameUrlNavigation: 'reload' | 'ignore';
 }
 
-export const NAVIGATION_ERROR_HANDLER = new InjectionToken<(error: NavigationError) => void>(
-  typeof ngDevMode === 'undefined' || ngDevMode ? 'navigation error handler' : '',
-);
+export const NAVIGATION_ERROR_HANDLER = new InjectionToken<
+  (error: NavigationError) => unknown | RedirectCommand
+>(typeof ngDevMode === 'undefined' || ngDevMode ? 'navigation error handler' : '');
 
 @Injectable({providedIn: 'root'})
 export class NavigationTransitions {
@@ -468,6 +477,10 @@ export class NavigationTransitions {
               id: t.id,
               initialUrl: t.rawUrl,
               extractedUrl: t.extractedUrl,
+              targetBrowserUrl:
+                typeof t.extras.browserUrl === 'string'
+                  ? this.urlSerializer.parse(t.extras.browserUrl)
+                  : t.extras.browserUrl,
               trigger: t.source,
               extras: t.extras,
               previousNavigation: !this.lastSuccessfulNavigation
@@ -849,13 +862,35 @@ export class NavigationTransitions {
                 overallTransitionState.targetSnapshot ?? undefined,
               );
 
-              this.events.next(navigationError);
               try {
-                runInInjectionContext(this.environmentInjector, () =>
-                  this.navigationErrorHandler?.(navigationError),
+                const navigationErrorHandlerResult = runInInjectionContext(
+                  this.environmentInjector,
+                  () => this.navigationErrorHandler?.(navigationError),
                 );
-                const errorHandlerResult = router.errorHandler(e);
-                overallTransitionState.resolve(!!errorHandlerResult);
+
+                if (navigationErrorHandlerResult instanceof RedirectCommand) {
+                  const {message, cancellationCode} = redirectingNavigationError(
+                    this.urlSerializer,
+                    navigationErrorHandlerResult,
+                  );
+                  this.events.next(
+                    new NavigationCancel(
+                      overallTransitionState.id,
+                      this.urlSerializer.serialize(overallTransitionState.extractedUrl),
+                      message,
+                      cancellationCode,
+                    ),
+                  );
+                  this.events.next(
+                    new RedirectRequest(
+                      navigationErrorHandlerResult.redirectTo,
+                      navigationErrorHandlerResult.navigationBehaviorOptions,
+                    ),
+                  );
+                } else {
+                  this.events.next(navigationError);
+                  throw e;
+                }
               } catch (ee) {
                 // TODO(atscott): consider flipping the default behavior of
                 // resolveNavigationPromiseOnError to be `resolve(false)` when
@@ -873,6 +908,7 @@ export class NavigationTransitions {
                 }
               }
             }
+
             return EMPTY;
           }),
         );
@@ -922,12 +958,14 @@ export class NavigationTransitions {
     // The extracted URL is the part of the URL that this application cares about. `extract` may
     // return only part of the browser URL and that part may have not changed even if some other
     // portion of the URL did.
-    const extractedBrowserUrl = this.urlHandlingStrategy.extract(
+    const currentBrowserUrl = this.urlHandlingStrategy.extract(
       this.urlSerializer.parse(this.location.path(true)),
     );
+    const targetBrowserUrl =
+      this.currentNavigation?.targetBrowserUrl ?? this.currentNavigation?.extractedUrl;
     return (
-      extractedBrowserUrl.toString() !== this.currentTransition?.extractedUrl.toString() &&
-      !this.currentTransition?.extras.skipLocationChange
+      currentBrowserUrl.toString() !== targetBrowserUrl?.toString() &&
+      !this.currentNavigation?.extras.skipLocationChange
     );
   }
 }

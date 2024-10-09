@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Reference} from '../../imports';
@@ -21,7 +21,9 @@ import {ClassPropertyMapping, ClassPropertyName} from './property_mapping';
  * followed.
  */
 export function flattenInheritedDirectiveMetadata(
-    reader: MetadataReader, dir: Reference<ClassDeclaration>): DirectiveMeta|null {
+  reader: MetadataReader,
+  dir: Reference<ClassDeclaration>,
+): DirectiveMeta | null {
   const topMeta = reader.getDirectiveMetadata(dir);
   if (topMeta === null) {
     return null;
@@ -34,7 +36,7 @@ export function flattenInheritedDirectiveMetadata(
   const undeclaredInputFields = new Set<ClassPropertyName>();
   const restrictedInputFields = new Set<ClassPropertyName>();
   const stringLiteralInputFields = new Set<ClassPropertyName>();
-  let hostDirectives: HostDirectiveMeta[]|null = null;
+  let hostDirectives: HostDirectiveMeta[] | null = null;
   let isDynamic = false;
   let inputs = ClassPropertyMapping.empty<InputMapping>();
   let outputs = ClassPropertyMapping.empty();

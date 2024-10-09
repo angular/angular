@@ -9,7 +9,7 @@ Angular CLI includes four builders typically used as `build` targets:
 | Builder                                         | Purpose                                                                                                                                                                           |
 | ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `@angular-devkit/build-angular:browser`         | Bundles a client-side application for use in a browser with [Webpack](https://webpack.js.org/).                                                                                   |
-| `@angular-devkit/build-angular:browser-esbuild` | Bundles a client-side application for use in a browser with [esbuild](https://esbuild.github.io/). See [`browser-esbuild` documentation](tools/cli/esbuild) for more information. |
+| `@angular-devkit/build-angular:browser-esbuild` | Bundles a client-side application for use in a browser with [esbuild](https://esbuild.github.io/). See [`browser-esbuild` documentation](tools/cli/build-system-migration#manual-migration-to-the-compatibility-builder) for more information. |
 | `@angular-devkit/build-angular:application`     | Builds an application with a client-side bundle, a Node server, and build-time prerendered routes with [esbuild](https://esbuild.github.io/).                                     |
 | `@angular-devkit/build-angular:ng-packagr`      | Builds an Angular library adhering to [Angular Package Format](tools/libraries/angular-package-format).                                                                           |
 
@@ -130,7 +130,7 @@ If the best option is to use a CommonJS dependency, you can disable these warnin
 ## Configuring browser compatibility
 
 The Angular CLI uses [Browserslist](https://github.com/browserslist/browserslist) to ensure compatibility with different browser versions.
-Depending on supported browsers, Angular will automatically polyfill and transform certain JavaScript and CSS features to ensure the built application does not use a feature which has not been implemented by a supported browser.
+Depending on supported browsers, Angular will automatically transform certain JavaScript and CSS features to ensure the built application does not use a feature which has not been implemented by a supported browser. However, the Angular CLI will not automatically add polyfills to supplement missing Web APIs. Use the `polyfills` option in `angular.json` to add polyfills.
 
 Internally, the Angular CLI uses the below default `browserslist` configuration which matches the [browsers that are supported](reference/versions#browser-support) by Angular.
 
@@ -145,7 +145,7 @@ Firefox ESR
 
 </docs-code>
 
-To override the internal configuration, run [`ng generate config browserslist`](cli/generate#config-command), which generates a `.browserslistrc` configuration file in the project directory.
+To override the internal configuration, run [`ng generate config browserslist`](cli/generate/config), which generates a `.browserslistrc` configuration file in the project directory.
 
 See the [browserslist repository](https://github.com/browserslist/browserslist) for more examples of how to target specific browsers and versions.
 Avoid expanding this list to more browsers. Even if your application code more broadly compatible, Angular itself might not be.

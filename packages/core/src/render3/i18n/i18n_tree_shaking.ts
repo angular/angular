@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /**
@@ -17,15 +17,18 @@ import {TIcuContainerNode} from '../interfaces/node';
 import {RNode} from '../interfaces/renderer_dom';
 import {LView} from '../interfaces/view';
 
-
-let _icuContainerIterate: (tIcuContainerNode: TIcuContainerNode, lView: LView) =>
-    (() => RNode | null);
+let _icuContainerIterate: (
+  tIcuContainerNode: TIcuContainerNode,
+  lView: LView,
+) => () => RNode | null;
 
 /**
  * Iterator which provides ability to visit all of the `TIcuContainerNode` root `RNode`s.
  */
-export function icuContainerIterate(tIcuContainerNode: TIcuContainerNode, lView: LView): () =>
-    RNode | null {
+export function icuContainerIterate(
+  tIcuContainerNode: TIcuContainerNode,
+  lView: LView,
+): () => RNode | null {
   return _icuContainerIterate(tIcuContainerNode, lView);
 }
 
@@ -36,7 +39,8 @@ export function icuContainerIterate(tIcuContainerNode: TIcuContainerNode, lView:
  * bundler to tree shake ICU logic and only load it if ICU instruction is executed.
  */
 export function ensureIcuContainerVisitorLoaded(
-    loader: () => ((tIcuContainerNode: TIcuContainerNode, lView: LView) => (() => RNode | null))) {
+  loader: () => (tIcuContainerNode: TIcuContainerNode, lView: LView) => () => RNode | null,
+) {
   if (_icuContainerIterate === undefined) {
     // Do not inline this function. We want to keep `ensureIcuContainerVisitorLoaded` light, so it
     // can be inlined into call-site.

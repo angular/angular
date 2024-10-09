@@ -248,6 +248,12 @@
           "description": "The declaring NgModule exports this component."
         },
         {
+          "name": "export-default",
+          "type": "boolean",
+          "default": false,
+          "description": "Use default export for the component instead of a named export."
+        },
+        {
           "name": "flat",
           "type": "boolean",
           "default": false,

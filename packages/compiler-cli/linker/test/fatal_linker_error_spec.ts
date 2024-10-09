@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {FatalLinkerError, isFatalLinkerError} from '../src/fatal_linker_error';
@@ -11,8 +11,9 @@ import {FatalLinkerError, isFatalLinkerError} from '../src/fatal_linker_error';
 describe('FatalLinkerError', () => {
   it('should expose the `node` and `message`', () => {
     const node = {};
-    expect(new FatalLinkerError(node, 'Some message'))
-        .toEqual(jasmine.objectContaining({node, message: 'Some message'}));
+    expect(new FatalLinkerError(node, 'Some message')).toEqual(
+      jasmine.objectContaining({node, message: 'Some message'}),
+    );
   });
 });
 

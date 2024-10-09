@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /* tslint:disable:no-console  */
@@ -16,7 +16,7 @@ describe('Image performance warnings', () => {
   it('should log a warning when a LCP image is loaded lazily', async () => {
     await browser.get('/e2e/image-perf-warnings-lazy');
     // Wait for load event
-    await new Promise(resolve => setTimeout(resolve, 600));
+    await new Promise((resolve) => setTimeout(resolve, 600));
     // Verify that both images were rendered.
     const imgs = element.all(by.css('img'));
     let srcA = await imgs.get(0).getAttribute('src');

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import ts from 'typescript';
@@ -38,8 +38,10 @@ export interface ResourceHost {
    * the implementation's `resourceNameToFileName` resolution fails.
    */
   resourceNameToFileName(
-      resourceName: string, containingFilePath: string,
-      fallbackResolve?: (url: string, fromFile: string) => string | null): string|null;
+    resourceName: string,
+    containingFilePath: string,
+    fallbackResolve?: (url: string, fromFile: string) => string | null,
+  ): string | null;
 
   /**
    * Load a referenced resource either statically or asynchronously. If the host returns a
@@ -47,13 +49,13 @@ export interface ResourceHost {
    * `loadNgStructureAsync()`. Returning  `Promise<string>` outside `loadNgStructureAsync()` will
    * cause a diagnostics error or an exception to be thrown.
    */
-  readResource(fileName: string): Promise<string>|string;
+  readResource(fileName: string): Promise<string> | string;
 
   /**
    * Get the absolute paths to the changed files that triggered the current compilation
    * or `undefined` if this is not an incremental build.
    */
-  getModifiedResourceFiles?(): Set<string>|undefined;
+  getModifiedResourceFiles?(): Set<string> | undefined;
 
   /**
    * Transform an inline or external resource asynchronously.
@@ -66,8 +68,10 @@ export interface ResourceHost {
    * @param context Information regarding the resource such as the type and containing file.
    * @returns A promise of either the transformed resource data or null if no transformation occurs.
    */
-  transformResource?
-      (data: string, context: ResourceHostContext): Promise<TransformResourceResult|null>;
+  transformResource?(
+    data: string,
+    context: ResourceHostContext,
+  ): Promise<TransformResourceResult | null>;
 }
 
 /**
@@ -83,11 +87,27 @@ export interface ResourceHostContext {
   /**
    * The absolute path to the resource file. If the resource is inline, the value will be null.
    */
-  readonly resourceFile: string|null;
+  readonly resourceFile: string | null;
   /**
    * The absolute path to the file that contains the resource or reference to the resource.
    */
   readonly containingFile: string;
+
+  /**
+   * For style resources, the placement of the style within the containing file with lower numbers
+   * being before higher numbers.
+   * The value is primarily used by the Angular CLI to create a deterministic identifier for each
+   * style in HMR scenarios.
+   * This is undefined for templates.
+   */
+  readonly order?: number;
+
+  /**
+   * The name of the class that defines the component using the resource.
+   * This allows identifying the source usage of a resource in cases where multiple components are
+   * contained in a single source file.
+   */
+  className: string;
 }
 
 /**
@@ -106,5 +126,7 @@ export interface TransformResourceResult {
  * A `ts.CompilerHost` interface which supports some number of optional methods in addition to the
  * core interface.
  */
-export interface ExtendedTsCompilerHost extends ts.CompilerHost, Partial<ResourceHost>,
-                                                Partial<UnifiedModulesHost> {}
+export interface ExtendedTsCompilerHost
+  extends ts.CompilerHost,
+    Partial<ResourceHost>,
+    Partial<UnifiedModulesHost> {}

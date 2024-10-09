@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as o from '../../../../output/output_ast';
@@ -37,8 +37,11 @@ export function mergeNextContextExpressions(job: CompilationJob): void {
 function mergeNextContextsInOps(ops: ir.OpList<ir.UpdateOp>): void {
   for (const op of ops) {
     // Look for a candidate operation to maybe merge.
-    if (op.kind !== ir.OpKind.Statement || !(op.statement instanceof o.ExpressionStatement) ||
-        !(op.statement.expr instanceof ir.NextContextExpr)) {
+    if (
+      op.kind !== ir.OpKind.Statement ||
+      !(op.statement instanceof o.ExpressionStatement) ||
+      !(op.statement.expr instanceof ir.NextContextExpr)
+    ) {
       continue;
     }
 
@@ -46,8 +49,11 @@ function mergeNextContextsInOps(ops: ir.OpList<ir.UpdateOp>): void {
 
     // Try to merge this `ir.NextContextExpr`.
     let tryToMerge = true;
-    for (let candidate = op.next!; candidate.kind !== ir.OpKind.ListEnd && tryToMerge;
-         candidate = candidate.next!) {
+    for (
+      let candidate = op.next!;
+      candidate.kind !== ir.OpKind.ListEnd && tryToMerge;
+      candidate = candidate.next!
+    ) {
       ir.visitExpressionsInOp(candidate, (expr, flags) => {
         if (!ir.isIrExpression(expr)) {
           return expr;
@@ -72,6 +78,7 @@ function mergeNextContextsInOps(ops: ir.OpList<ir.UpdateOp>): void {
             break;
           case ir.ExpressionKind.GetCurrentView:
           case ir.ExpressionKind.Reference:
+          case ir.ExpressionKind.ContextLetReference:
             // Can't merge past a dependency on the context.
             tryToMerge = false;
             break;

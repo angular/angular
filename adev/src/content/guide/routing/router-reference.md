@@ -39,7 +39,7 @@ const appRoutes: Routes = [
   { path: '**', component: PageNotFoundComponent }
 ];
 export const appConfig: ApplicationConfig = {
-    providers: [provideRouter(routes, withDebugTracing())]
+    providers: [provideRouter(appRoutes, withDebugTracing())]
 }
 ```
 

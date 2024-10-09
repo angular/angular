@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /**
@@ -154,6 +154,11 @@ export enum ErrorCode {
    * pipe.
    */
   COMPONENT_UNKNOWN_DEFERRED_IMPORT = 2022,
+
+  /**
+   * Raised when a `standalone: false` component is declared but `strictStandalone` is set.
+   */
+  NON_STANDALONE_NOT_ALLOWED = 2023,
 
   SYMBOL_NOT_EXPORTED = 3001,
   /**
@@ -358,6 +363,15 @@ export enum ErrorCode {
    */
   DEFERRED_DEPENDENCY_IMPORTED_EAGERLY = 8014,
 
+  /** An expression is trying to write to an `@let` declaration. */
+  ILLEGAL_LET_WRITE = 8015,
+
+  /** An expression is trying to read an `@let` before it has been defined. */
+  LET_USED_BEFORE_DEFINITION = 8016,
+
+  /** A `@let` declaration conflicts with another symbol in the same scope. */
+  CONFLICTING_LET_DECLARATION = 8017,
+
   /**
    * A two way binding in a template has an incorrect syntax,
    * parentheses outside brackets. For example:
@@ -435,7 +449,6 @@ export enum ErrorCode {
    */
   OPTIONAL_CHAIN_NOT_NULLABLE = 8107,
 
-
   /**
    * `ngSkipHydration` should not be a binding (it should be a static attribute).
    *
@@ -473,6 +486,37 @@ export enum ErrorCode {
    * ```
    */
   UNSUPPORTED_INITIALIZER_API_USAGE = 8110,
+
+  /**
+   * A function in an event binding is not called.
+   *
+   * For example:
+   * ```
+   * <button (click)="myFunc"></button>
+   * ```
+   *
+   * This will not call `myFunc` when the button is clicked. Instead, it should be
+   * `<button (click)="myFunc()"></button>`.
+   */
+  UNINVOKED_FUNCTION_IN_EVENT_BINDING = 8111,
+
+  /**
+   * A `@let` declaration in a template isn't used.
+   *
+   * For example:
+   * ```
+   * @let used = 1; <!-- Not an error -->
+   * @let notUsed = 2; <!-- Error -->
+   *
+   * {{used}}
+   * ```
+   */
+  UNUSED_LET_DECLARATION = 8112,
+
+  /**
+   * A symbol referenced in `@Component.imports` isn't being used within the template.
+   */
+  UNUSED_STANDALONE_IMPORTS = 8113,
 
   /**
    * The template type-checking engine would need to generate an inline type check block for a

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {getActiveConsumer} from '@angular/core/primitives/signals';
@@ -23,9 +23,11 @@ export function assertNotInReactiveContext(debugFn: Function, extraContext?: str
   // from being retained in the bundle regardless of minification.
   if (getActiveConsumer() !== null) {
     throw new RuntimeError(
-        RuntimeErrorCode.ASSERTION_NOT_INSIDE_REACTIVE_CONTEXT,
-        ngDevMode &&
-            `${debugFn.name}() cannot be called from within a reactive context.${
-                extraContext ? ` ${extraContext}` : ''}`);
+      RuntimeErrorCode.ASSERTION_NOT_INSIDE_REACTIVE_CONTEXT,
+      ngDevMode &&
+        `${debugFn.name}() cannot be called from within a reactive context.${
+          extraContext ? ` ${extraContext}` : ''
+        }`,
+    );
   }
 }

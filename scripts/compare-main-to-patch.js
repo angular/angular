@@ -5,7 +5,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 'use strict';
@@ -27,10 +27,6 @@ const semver = require('semver');
 const ignoreCommitPatterns = [
   'release:',
   'docs: release notes',
-  // These commits are created to update cli command docs sources with the most recent sha (stored
-  // in `aio/package.json`). Separate commits are generated for main and patch branches and since
-  // it's purely an infrastructure-related change, we ignore these commits while comparing main
-  // and patch diffs to look for delta.
   'build(docs-infra): upgrade cli command docs sources',
 ];
 

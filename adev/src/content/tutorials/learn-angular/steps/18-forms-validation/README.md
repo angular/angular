@@ -41,7 +41,7 @@ profileForm = new FormGroup({
 To determine if a form is valid, the `FormGroup` class has a `valid` property.
 You can use this property to dynamically bind attributes. Update the submit `button` to be enabled based on the validity of the form.
 
-```html
+```angular-html
 <button type="submit" [disabled]="!profileForm.valid">Submit</button>
 ```
 

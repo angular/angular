@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import ts from 'typescript';
 import {AbsoluteFsPath, PathString} from './types';
@@ -28,8 +28,12 @@ export function stripExtension<T extends PathString>(path: T): T {
 export function getSourceFileOrError(program: ts.Program, fileName: AbsoluteFsPath): ts.SourceFile {
   const sf = program.getSourceFile(fileName);
   if (sf === undefined) {
-    throw new Error(`Program does not contain "${fileName}" - available files are ${
-        program.getSourceFiles().map(sf => sf.fileName).join(', ')}`);
+    throw new Error(
+      `Program does not contain "${fileName}" - available files are ${program
+        .getSourceFiles()
+        .map((sf) => sf.fileName)
+        .join(', ')}`,
+    );
   }
   return sf;
 }

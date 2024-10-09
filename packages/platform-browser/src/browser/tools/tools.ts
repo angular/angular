@@ -3,11 +3,13 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ComponentRef} from '@angular/core';
+
 import {exportNgVar} from '../../dom/util';
+
 import {AngularProfiler} from './common_tools';
 
 const PROFILER_GLOBAL_NAME = 'profiler';

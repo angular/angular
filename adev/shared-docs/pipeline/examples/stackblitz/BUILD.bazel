@@ -1,0 +1,41 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "stackblitz",
+    srcs = glob(
+        [
+            "*.ts",
+        ],
+        exclude = [
+            "index.ts",
+        ],
+    ),
+    deps = [
+        "//adev/shared-docs/pipeline/examples/shared",
+        "//adev/shared-docs/pipeline/guides",
+        "@npm//@types/jsdom",
+        "@npm//@types/node",
+        "@npm//fast-glob",
+        "@npm//jsdom",
+    ],
+)
+
+ts_library(
+    name = "index",
+    srcs = [
+        "index.ts",
+    ],
+    visibility = [
+        "//adev/shared-docs:__subpackages__",
+    ],
+    deps = [
+        ":stackblitz",
+        "@npm//@types/node",
+    ],
+)
+
+exports_files([
+    "index.ts",
+])

@@ -3,13 +3,13 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 /* tslint:disable:no-console  */
 import {APP_BASE_HREF} from '@angular/common';
 import {renderModule} from '@angular/platform-server';
 import express from 'express';
-import {AppServerModule} from './src/main.server';
+import AppServerModule from './src/main.server';
 import {fileURLToPath} from 'node:url';
 import {dirname, join, resolve} from 'node:path';
 import {readFileSync} from 'node:fs';
@@ -18,7 +18,7 @@ import './prerender';
 const app = express();
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
-const indexHtml = readFileSync(join(browserDistFolder, 'index.html'), 'utf-8');
+const indexHtml = readFileSync(join(browserDistFolder, 'index.csr.html'), 'utf-8');
 
 // Serve static files from /browser
 app.get(

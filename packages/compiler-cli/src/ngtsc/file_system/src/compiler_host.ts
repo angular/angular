@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /// <reference types="node" />
@@ -14,12 +14,16 @@ import {absoluteFrom} from './helpers';
 import {FileSystem} from './types';
 
 export class NgtscCompilerHost implements ts.CompilerHost {
-  constructor(protected fs: FileSystem, protected options: ts.CompilerOptions = {}) {}
+  constructor(
+    protected fs: FileSystem,
+    protected options: ts.CompilerOptions = {},
+  ) {}
 
-  getSourceFile(fileName: string, languageVersion: ts.ScriptTarget): ts.SourceFile|undefined {
+  getSourceFile(fileName: string, languageVersion: ts.ScriptTarget): ts.SourceFile | undefined {
     const text = this.readFile(fileName);
-    return text !== undefined ? ts.createSourceFile(fileName, text, languageVersion, true) :
-                                undefined;
+    return text !== undefined
+      ? ts.createSourceFile(fileName, text, languageVersion, true)
+      : undefined;
   }
 
   getDefaultLibFileName(options: ts.CompilerOptions): string {
@@ -31,9 +35,12 @@ export class NgtscCompilerHost implements ts.CompilerHost {
   }
 
   writeFile(
-      fileName: string, data: string, writeByteOrderMark: boolean,
-      onError: ((message: string) => void)|undefined,
-      sourceFiles?: ReadonlyArray<ts.SourceFile>): void {
+    fileName: string,
+    data: string,
+    writeByteOrderMark: boolean,
+    onError: ((message: string) => void) | undefined,
+    sourceFiles?: ReadonlyArray<ts.SourceFile>,
+  ): void {
     const path = absoluteFrom(fileName);
     this.fs.ensureDir(this.fs.dirname(path));
     this.fs.writeFile(path, data);
@@ -67,7 +74,7 @@ export class NgtscCompilerHost implements ts.CompilerHost {
     return this.fs.exists(absPath) && this.fs.stat(absPath).isFile();
   }
 
-  readFile(fileName: string): string|undefined {
+  readFile(fileName: string): string | undefined {
     const absPath = this.fs.resolve(fileName);
     if (!this.fileExists(absPath)) {
       return undefined;

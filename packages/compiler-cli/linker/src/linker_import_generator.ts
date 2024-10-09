@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {AstFactory, ImportGenerator, ImportRequest} from '../../src/ngtsc/translator';
 
@@ -17,10 +17,13 @@ import {FatalLinkerError} from './fatal_linker_error';
  * must be achieved by property access on an `ng` namespace identifier, which is passed in via the
  * constructor.
  */
-export class LinkerImportGenerator<TStatement, TExpression> implements
-    ImportGenerator<null, TExpression> {
-  constructor(private factory: AstFactory<TStatement, TExpression>, private ngImport: TExpression) {
-  }
+export class LinkerImportGenerator<TStatement, TExpression>
+  implements ImportGenerator<null, TExpression>
+{
+  constructor(
+    private factory: AstFactory<TStatement, TExpression>,
+    private ngImport: TExpression,
+  ) {}
 
   addImport(request: ImportRequest<null>): TExpression {
     this.assertModuleName(request.exportModuleSpecifier);
@@ -35,7 +38,9 @@ export class LinkerImportGenerator<TStatement, TExpression> implements
   private assertModuleName(moduleName: string): void {
     if (moduleName !== '@angular/core') {
       throw new FatalLinkerError(
-          this.ngImport, `Unable to import from anything other than '@angular/core'`);
+        this.ngImport,
+        `Unable to import from anything other than '@angular/core'`,
+      );
     }
   }
 }

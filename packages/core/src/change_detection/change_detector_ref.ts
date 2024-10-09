@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {InjectFlags} from '../di';
@@ -127,13 +127,13 @@ export abstract class ChangeDetectorRef {
   static __NG_ELEMENT_ID__: (flags: InjectFlags) => ChangeDetectorRef = injectChangeDetectorRef;
 }
 
-
-
 /** Returns a ChangeDetectorRef (a.k.a. a ViewRef) */
 export function injectChangeDetectorRef(flags: InjectFlags): ChangeDetectorRef {
   return createViewRef(
-      getCurrentTNode()!, getLView(),
-      (flags & InternalInjectFlags.ForPipe) === InternalInjectFlags.ForPipe);
+    getCurrentTNode()!,
+    getLView(),
+    (flags & InternalInjectFlags.ForPipe) === InternalInjectFlags.ForPipe,
+  );
 }
 
 /**
@@ -148,12 +148,15 @@ function createViewRef(tNode: TNode, lView: LView, isPipe: boolean): ChangeDetec
   if (isComponentHost(tNode) && !isPipe) {
     // The LView represents the location where the component is declared.
     // Instead we want the LView for the component View and so we need to look it up.
-    const componentView = getComponentLViewByIndex(tNode.index, lView);  // look down
+    const componentView = getComponentLViewByIndex(tNode.index, lView); // look down
     return new ViewRef(componentView, componentView);
-  } else if (tNode.type & (TNodeType.AnyRNode | TNodeType.AnyContainer | TNodeType.Icu)) {
+  } else if (
+    tNode.type &
+    (TNodeType.AnyRNode | TNodeType.AnyContainer | TNodeType.Icu | TNodeType.LetDeclaration)
+  ) {
     // The LView represents the location where the injection is requested from.
     // We need to locate the containing LView (in case where the `lView` is an embedded view)
-    const hostComponentView = lView[DECLARATION_COMPONENT_VIEW];  // look up
+    const hostComponentView = lView[DECLARATION_COMPONENT_VIEW]; // look up
     return new ViewRef(hostComponentView, lView);
   }
   return null!;

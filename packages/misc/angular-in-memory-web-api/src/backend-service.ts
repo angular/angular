@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {HttpHeaders} from '@angular/common/http';
@@ -727,8 +727,8 @@ export abstract class BackendService {
       db instanceof Observable
         ? db
         : typeof (db as any).then === 'function'
-        ? from(db as Promise<any>)
-        : of(db);
+          ? from(db as Promise<any>)
+          : of(db);
     db$.pipe(first()).subscribe((d: {}) => {
       this.db = d;
       this.dbReadySubject && this.dbReadySubject.next(true);

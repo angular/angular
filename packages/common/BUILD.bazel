@@ -47,10 +47,9 @@ ng_package(
     # Dependencies on the full npm_package cause long re-builds.
     visibility = [
         "//adev:__pkg__",
-        "//aio:__pkg__",
-        "//aio/content/examples:__subpackages__",
-        "//aio/tools/examples:__pkg__",
+        "//adev/shared-docs:__subpackages__",
         "//integration:__subpackages__",
+        "//modules/ssr-benchmarks:__subpackages__",
         "//packages/bazel/test/ng_package:__pkg__",
         "//packages/compiler-cli/integrationtest:__pkg__",
         "//packages/compiler-cli/test:__pkg__",
@@ -85,7 +84,7 @@ api_golden_test(
         "//packages/common",
     ],
     entry_point = "angular/packages/common/src/errors.d.ts",
-    golden = "angular/goldens/public-api/common/errors.md",
+    golden = "angular/goldens/public-api/common/errors.api.md",
 )
 
 filegroup(

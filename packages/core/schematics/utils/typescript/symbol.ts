@@ -3,13 +3,15 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import ts from 'typescript';
 
-export function getValueSymbolOfDeclaration(node: ts.Node, typeChecker: ts.TypeChecker): ts.Symbol|
-    undefined {
+export function getValueSymbolOfDeclaration(
+  node: ts.Node,
+  typeChecker: ts.TypeChecker,
+): ts.Symbol | undefined {
   let symbol = typeChecker.getSymbolAtLocation(node);
 
   while (symbol && symbol.flags & ts.SymbolFlags.Alias) {
@@ -21,11 +23,23 @@ export function getValueSymbolOfDeclaration(node: ts.Node, typeChecker: ts.TypeC
 
 /** Checks whether a node is referring to a specific import specifier. */
 export function isReferenceToImport(
-    typeChecker: ts.TypeChecker, node: ts.Node, importSpecifier: ts.ImportSpecifier): boolean {
+  typeChecker: ts.TypeChecker,
+  node: ts.Node,
+  importSpecifier: ts.ImportSpecifier,
+): boolean {
+  // If this function is called on an identifier (should be most cases), we can quickly rule out
+  // non-matches by comparing the identifier's string and the local name of the import specifier
+  // which saves us some calls to the type checker.
+  if (ts.isIdentifier(node) && node.text !== importSpecifier.name.text) {
+    return false;
+  }
+
   const nodeSymbol = typeChecker.getTypeAtLocation(node).getSymbol();
   const importSymbol = typeChecker.getTypeAtLocation(importSpecifier).getSymbol();
-  return !!(nodeSymbol?.declarations?.[0] && importSymbol?.declarations?.[0]) &&
-      nodeSymbol.declarations[0] === importSymbol.declarations[0];
+  return (
+    !!(nodeSymbol?.declarations?.[0] && importSymbol?.declarations?.[0]) &&
+    nodeSymbol.declarations[0] === importSymbol.declarations[0]
+  );
 }
 
 /** Checks whether a node's type is nullable (`null`, `undefined` or `void`). */
@@ -44,9 +58,11 @@ export function isNullableType(typeChecker: ts.TypeChecker, node: ts.Node) {
   // through all of its sub-nodes and look for nullable types.
   if (typeNode) {
     (function walk(current: ts.Node) {
-      if (current.kind === ts.SyntaxKind.NullKeyword ||
-          current.kind === ts.SyntaxKind.UndefinedKeyword ||
-          current.kind === ts.SyntaxKind.VoidKeyword) {
+      if (
+        current.kind === ts.SyntaxKind.NullKeyword ||
+        current.kind === ts.SyntaxKind.UndefinedKeyword ||
+        current.kind === ts.SyntaxKind.VoidKeyword
+      ) {
         hasSeenNullableType = true;
         // Note that we don't descend into type literals, because it may cause
         // us to mis-identify the root type as nullable, because it has a nullable
@@ -65,10 +81,14 @@ export function isNullableType(typeChecker: ts.TypeChecker, node: ts.Node) {
  * type that has the same name as one of the passed-in ones.
  */
 export function hasOneOfTypes(
-    typeChecker: ts.TypeChecker, node: ts.Node, types: string[]): boolean {
+  typeChecker: ts.TypeChecker,
+  node: ts.Node,
+  types: string[],
+): boolean {
   const type = typeChecker.getTypeAtLocation(node);
-  const typeNode =
-      type ? typeChecker.typeToTypeNode(type, undefined, ts.NodeBuilderFlags.None) : undefined;
+  const typeNode = type
+    ? typeChecker.typeToTypeNode(type, undefined, ts.NodeBuilderFlags.None)
+    : undefined;
   let hasMatch = false;
   if (typeNode) {
     (function walk(current: ts.Node) {

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ApplicationRef, Component, NgModule} from '@angular/core';
@@ -15,15 +15,13 @@ import {TriggerComponent} from './trigger';
   selector: 'dep',
   template: 'dep',
 })
-export class DepComponent {
-}
+export class DepComponent {}
 
 @NgModule({
   declarations: [DepComponent, TriggerComponent],
   imports: [BrowserModule],
   bootstrap: [TriggerComponent],
 })
-export class Module {
-}
+export class Module {}
 
 (window as any).appReady = platformBrowser().bootstrapModule(Module, {ngZone: 'noop'});

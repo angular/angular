@@ -9,7 +9,10 @@
     "name": "APP_INITIALIZER"
   },
   {
-    "name": "AfterRenderEventManager"
+    "name": "AfterRenderManager"
+  },
+  {
+    "name": "AfterRenderPhase"
   },
   {
     "name": "AnonymousSubject"
@@ -178,6 +181,9 @@
   },
   {
     "name": "EVENT_MANAGER_PLUGINS"
+  },
+  {
+    "name": "EffectScheduler"
   },
   {
     "name": "ElementRef"
@@ -399,7 +405,7 @@
     "name": "PRESERVE_HOST_CONTENT_DEFAULT"
   },
   {
-    "name": "PendingTasks"
+    "name": "PendingTasksInternal"
   },
   {
     "name": "R3Injector"
@@ -421,6 +427,9 @@
   },
   {
     "name": "RuntimeError"
+  },
+  {
+    "name": "SCHEDULE_IN_ROOT_ZONE"
   },
   {
     "name": "SIGNAL"
@@ -462,6 +471,9 @@
     "name": "Subscription"
   },
   {
+    "name": "TEMPORARY_CONSUMER_NODE"
+  },
+  {
     "name": "TESTABILITY"
   },
   {
@@ -498,10 +510,22 @@
     "name": "ZONELESS_SCHEDULER_DISABLED"
   },
   {
+    "name": "ZoneAwareEffectScheduler"
+  },
+  {
     "name": "ZoneStablePendingTask"
   },
   {
+    "name": "_AfterRenderImpl"
+  },
+  {
+    "name": "_ComponentFactoryResolver"
+  },
+  {
     "name": "_DOM"
+  },
+  {
+    "name": "_Injector"
   },
   {
     "name": "_NullComponentFactoryResolver"
@@ -532,9 +556,6 @@
   },
   {
     "name": "_getInsertInFrontOfRNodeWithI18n"
-  },
-  {
-    "name": "_global"
   },
   {
     "name": "_icuContainerIterate"
@@ -573,9 +594,6 @@
     "name": "_wasLastNodeCreated"
   },
   {
-    "name": "_wrapInTimeout"
-  },
-  {
     "name": "activeConsumer"
   },
   {
@@ -585,13 +603,16 @@
     "name": "addPropertyBinding"
   },
   {
-    "name": "addToViewTree"
+    "name": "addToEndOfViewTree"
   },
   {
     "name": "allocExpando"
   },
   {
     "name": "allocLFrame"
+  },
+  {
+    "name": "angularZoneInstanceIdProperty"
   },
   {
     "name": "appendChild"
@@ -624,6 +645,9 @@
     "name": "assertConsumerNode"
   },
   {
+    "name": "assertNotDestroyed"
+  },
+  {
     "name": "attachPatchData"
   },
   {
@@ -634,6 +658,9 @@
   },
   {
     "name": "bloomHasToken"
+  },
+  {
+    "name": "bootstrap"
   },
   {
     "name": "callHook"
@@ -675,6 +702,15 @@
     "name": "configureViewWithDirective"
   },
   {
+    "name": "consumerAfterComputation"
+  },
+  {
+    "name": "consumerBeforeComputation"
+  },
+  {
+    "name": "consumerDestroy"
+  },
+  {
     "name": "consumerIsLive"
   },
   {
@@ -714,10 +750,16 @@
     "name": "createLView"
   },
   {
+    "name": "createLinkElement"
+  },
+  {
     "name": "createNodeInjector"
   },
   {
     "name": "createNotification"
+  },
+  {
+    "name": "createStyleElement"
   },
   {
     "name": "createTView"
@@ -730,6 +772,9 @@
   },
   {
     "name": "deepForEachProvider"
+  },
+  {
+    "name": "defaultEquals"
   },
   {
     "name": "defaultErrorHandler"
@@ -870,6 +915,9 @@
     "name": "getFirstNativeNode"
   },
   {
+    "name": "getInitialLViewFlagsFromDef"
+  },
+  {
     "name": "getInjectImplementation"
   },
   {
@@ -913,6 +961,9 @@
   },
   {
     "name": "getOrCreateComponentTView"
+  },
+  {
+    "name": "getOrCreateEnvironmentInjector"
   },
   {
     "name": "getOrCreateInjectable"
@@ -975,6 +1026,9 @@
     "name": "handleUnhandledError"
   },
   {
+    "name": "hasApplyArgsData"
+  },
+  {
     "name": "hasInSkipHydrationBlockFlag"
   },
   {
@@ -1023,10 +1077,13 @@
     "name": "init_UnsubscriptionError"
   },
   {
+    "name": "init_action_resolver"
+  },
+  {
     "name": "init_advance"
   },
   {
-    "name": "init_after_render_hooks"
+    "name": "init_after_render_effect"
   },
   {
     "name": "init_all"
@@ -1042,6 +1099,9 @@
   },
   {
     "name": "init_api3"
+  },
+  {
+    "name": "init_api4"
   },
   {
     "name": "init_api_flags"
@@ -1089,6 +1149,9 @@
     "name": "init_attribute"
   },
   {
+    "name": "init_attribute2"
+  },
+  {
     "name": "init_attribute_interpolation"
   },
   {
@@ -1101,13 +1164,25 @@
     "name": "init_bindings"
   },
   {
+    "name": "init_bootstrap"
+  },
+  {
+    "name": "init_bootstrap_app_scoped"
+  },
+  {
     "name": "init_bypass"
+  },
+  {
+    "name": "init_cache"
   },
   {
     "name": "init_cached_injector_service"
   },
   {
     "name": "init_callback_scheduler"
+  },
+  {
+    "name": "init_chained_injector"
   },
   {
     "name": "init_change_detection"
@@ -1123,6 +1198,9 @@
   },
   {
     "name": "init_change_detector_ref"
+  },
+  {
+    "name": "init_char"
   },
   {
     "name": "init_class_differ"
@@ -1299,6 +1377,9 @@
     "name": "init_discovery_utils"
   },
   {
+    "name": "init_dispatcher"
+  },
+  {
     "name": "init_document"
   },
   {
@@ -1306,6 +1387,9 @@
   },
   {
     "name": "init_dom_triggers"
+  },
+  {
+    "name": "init_earlyeventcontract"
   },
   {
     "name": "init_effect"
@@ -1365,7 +1449,43 @@
     "name": "init_esm"
   },
   {
+    "name": "init_event"
+  },
+  {
+    "name": "init_event_contract_container"
+  },
+  {
+    "name": "init_event_contract_defines"
+  },
+  {
+    "name": "init_event_delegation_utils"
+  },
+  {
+    "name": "init_event_dispatch"
+  },
+  {
+    "name": "init_event_dispatcher"
+  },
+  {
     "name": "init_event_emitter"
+  },
+  {
+    "name": "init_event_info"
+  },
+  {
+    "name": "init_event_replay"
+  },
+  {
+    "name": "init_event_type"
+  },
+  {
+    "name": "init_eventcontract"
+  },
+  {
+    "name": "init_exhaustive_check_no_changes"
+  },
+  {
+    "name": "init_external_styles_feature"
   },
   {
     "name": "init_fields"
@@ -1392,7 +1512,13 @@
     "name": "init_graph"
   },
   {
+    "name": "init_hmr"
+  },
+  {
     "name": "init_hooks"
+  },
+  {
+    "name": "init_hooks2"
   },
   {
     "name": "init_host_attribute_token"
@@ -1402,6 +1528,9 @@
   },
   {
     "name": "init_host_property"
+  },
+  {
+    "name": "init_host_tag_name_token"
   },
   {
     "name": "init_html_sanitizer"
@@ -1545,10 +1674,16 @@
     "name": "init_jit_options"
   },
   {
+    "name": "init_key_code"
+  },
+  {
     "name": "init_keyvalue_differs"
   },
   {
     "name": "init_lang"
+  },
+  {
+    "name": "init_let_declaration"
   },
   {
     "name": "init_lift"
@@ -1578,6 +1713,9 @@
     "name": "init_lview_tracking"
   },
   {
+    "name": "init_manager"
+  },
+  {
     "name": "init_map"
   },
   {
@@ -1594,6 +1732,9 @@
   },
   {
     "name": "init_metadata_attr"
+  },
+  {
+    "name": "init_microtask_effect"
   },
   {
     "name": "init_misc_utils"
@@ -1701,6 +1842,9 @@
     "name": "init_partial"
   },
   {
+    "name": "init_patch"
+  },
+  {
     "name": "init_pending_tasks"
   },
   {
@@ -1722,10 +1866,16 @@
     "name": "init_platform_core_providers"
   },
   {
+    "name": "init_platform_destroy_listeners"
+  },
+  {
     "name": "init_platform_ref"
   },
   {
     "name": "init_profiler"
+  },
+  {
+    "name": "init_profiler2"
   },
   {
     "name": "init_projection"
@@ -1735,6 +1885,9 @@
   },
   {
     "name": "init_property2"
+  },
+  {
+    "name": "init_property3"
   },
   {
     "name": "init_property_interpolation"
@@ -1776,9 +1929,6 @@
     "name": "init_query_reactive"
   },
   {
-    "name": "init_queue_state_update"
-  },
-  {
     "name": "init_r3_injector"
   },
   {
@@ -1804,6 +1954,12 @@
   },
   {
     "name": "init_resource_loading"
+  },
+  {
+    "name": "init_restriction"
+  },
+  {
+    "name": "init_root_effect_scheduler"
   },
   {
     "name": "init_sanitization"
@@ -1965,6 +2121,12 @@
     "name": "init_view_container_ref"
   },
   {
+    "name": "init_view_context"
+  },
+  {
+    "name": "init_view_effect_runner"
+  },
+  {
     "name": "init_view_engine_compatibility_prebound"
   },
   {
@@ -2037,6 +2199,9 @@
     "name": "internalImportProvidersFrom"
   },
   {
+    "name": "internalProvideZoneChangeDetection"
+  },
+  {
     "name": "invokeAllTriggerCleanupFns"
   },
   {
@@ -2047,6 +2212,12 @@
   },
   {
     "name": "invokeTriggerCleanupFns"
+  },
+  {
+    "name": "isAngularZoneProperty"
+  },
+  {
+    "name": "isApplicationBootstrapConfig"
   },
   {
     "name": "isComponentDef"
@@ -2086,6 +2257,9 @@
   },
   {
     "name": "isNodeMatchingSelectorList"
+  },
+  {
+    "name": "isPlatformBrowser"
   },
   {
     "name": "isPlatformServer"
@@ -2175,16 +2349,13 @@
     "name": "nativeInsertBefore"
   },
   {
-    "name": "nativeParentNode"
-  },
-  {
     "name": "nextNgElementId"
   },
   {
     "name": "ngOnChangesSetInput"
   },
   {
-    "name": "ngZoneApplicationErrorHandlerFactory"
+    "name": "ngZoneInstanceId"
   },
   {
     "name": "nonNull"
@@ -2229,9 +2400,6 @@
     "name": "profiler"
   },
   {
-    "name": "provideZoneChangeDetection"
-  },
-  {
     "name": "refreshContentQueries"
   },
   {
@@ -2245,6 +2413,9 @@
   },
   {
     "name": "remove"
+  },
+  {
+    "name": "removeElements"
   },
   {
     "name": "removeFromArray"
@@ -2280,13 +2451,19 @@
     "name": "retrieveHydrationInfo"
   },
   {
+    "name": "runEffectsInView"
+  },
+  {
     "name": "saveNameToExportMap"
   },
   {
     "name": "saveResolvedLocalsInData"
   },
   {
-    "name": "scheduleCallback"
+    "name": "scheduleCallbackWithMicrotask"
+  },
+  {
+    "name": "scheduleCallbackWithRafRace"
   },
   {
     "name": "searchTokensOnInjector"
@@ -2355,9 +2532,6 @@
     "name": "stringifyCSSSelector"
   },
   {
-    "name": "throwError"
-  },
-  {
     "name": "throwProviderNotFoundError"
   },
   {
@@ -2373,6 +2547,9 @@
     "name": "uniqueIdCounter"
   },
   {
+    "name": "unregisterLView"
+  },
+  {
     "name": "unwrapRNode"
   },
   {
@@ -2383,6 +2560,9 @@
   },
   {
     "name": "viewAttachedToChangeDetector"
+  },
+  {
+    "name": "viewShouldHaveReactiveConsumer"
   },
   {
     "name": "walkProviderTree"
@@ -2404,9 +2584,6 @@
   },
   {
     "name": "ɵɵdefer"
-  },
-  {
-    "name": "ɵɵdeferWhen"
   },
   {
     "name": "ɵɵdefineComponent"

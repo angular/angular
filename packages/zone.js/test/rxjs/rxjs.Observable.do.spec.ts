@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {Observable, of} from 'rxjs';
 import {tap} from 'rxjs/operators';
@@ -26,26 +26,29 @@ describe('Observable.tap', () => {
     });
 
     observable1 = doZone1.run(() => {
-      return observable1.pipe(tap((v: any) => {
-        log.push(v);
-        expect(Zone.current.name).toEqual(doZone1.name);
-      }));
+      return observable1.pipe(
+        tap((v: any) => {
+          log.push(v);
+          expect(Zone.current.name).toEqual(doZone1.name);
+        }),
+      );
     });
 
     subscriptionZone.run(() => {
       observable1.subscribe(
-          (result: any) => {
-            log.push('result' + result);
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-          },
-          (err: any) => {
-            fail('should not call error');
-          },
-          () => {
-            log.push('completed');
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-            expect(log).toEqual([1, 'result1', 'completed']);
-          });
+        (result: any) => {
+          log.push('result' + result);
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+        },
+        (err: any) => {
+          fail('should not call error');
+        },
+        () => {
+          log.push('completed');
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+          expect(log).toEqual([1, 'result1', 'completed']);
+        },
+      );
     });
   });
 });

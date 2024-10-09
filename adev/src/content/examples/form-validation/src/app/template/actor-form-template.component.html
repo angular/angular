@@ -6,7 +6,7 @@
   <form #actorForm="ngForm" appUnambiguousRole>
   <!-- #enddocregion cross-validation-register-validator -->
     <div [hidden]="actorForm.submitted">
-      <div class="cross-validation" [class.cross-validation-error]="actorForm.errors?.['unambiguousRole'] && (actorForm.touched || actorForm.dirty)">
+      <div class="cross-validation" [class.cross-validation-error]="actorForm.hasError('unambiguousRole') && (actorForm.touched || actorForm.dirty)">
         <div class="form-group">
           <label for="name">Name</label>
           <!-- #docregion name-with-error-msg -->
@@ -19,13 +19,13 @@
           <div *ngIf="name.invalid && (name.dirty || name.touched)"
               class="alert">
 
-            <div *ngIf="name.errors?.['required']">
+            <div *ngIf="name.hasError('required')">
               Name is required.
             </div>
-            <div *ngIf="name.errors?.['minlength']">
+            <div *ngIf="name.hasError('minlength')">
               Name must be at least 4 characters long.
             </div>
-            <div *ngIf="name.errors?.['forbiddenName']">
+            <div *ngIf="name.hasError('forbiddenName')">
               Name cannot be Bob.
             </div>
 
@@ -46,14 +46,14 @@
           <!-- #enddocregion role-input -->
           <div *ngIf="role.pending">Validating...</div>
           <div *ngIf="role.invalid" class="alert role-errors">
-            <div *ngIf="role.errors?.['uniqueRole']">
+            <div *ngIf="role.hasError('uniqueRole')">
               Role is already taken.
             </div>
           </div>
         </div>
 
         <!-- #docregion cross-validation-error-message -->
-        <div *ngIf="actorForm.errors?.['unambiguousRole'] && (actorForm.touched || actorForm.dirty)" class="cross-validation-error-message alert">
+        <div *ngIf="actorForm.hasError('unambiguousRole') && (actorForm.touched || actorForm.dirty)" class="cross-validation-error-message alert">
             Name cannot match role.
         </div>
         <!-- #enddocregion cross-validation-error-message -->

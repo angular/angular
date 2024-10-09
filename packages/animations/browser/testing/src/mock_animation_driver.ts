@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {AnimationPlayer, AUTO_STYLE, NoopAnimationPlayer, ɵStyleDataMap} from '@angular/animations';
 import {
@@ -31,10 +31,6 @@ export class MockAnimationDriver implements AnimationDriver {
   validateAnimatableStyleProperty(prop: string): boolean {
     const cssProp = ɵcamelCaseToDashCase(prop);
     return ɵvalidateWebAnimatableStyleProperty(cssProp);
-  }
-
-  matchesElement(_element: any, _selector: string): boolean {
-    return false;
   }
 
   containsElement(elm1: any, elm2: any): boolean {

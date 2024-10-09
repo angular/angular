@@ -61,6 +61,9 @@
   <nav
     class="adev-nav-primary docs-scroll-hide"
     [class.adev-nav-primary--open]="isMobileNavigationOpened()"
+    [class.adev-nav-primary--rc]="currentDocsVersionMode === 'rc'"
+    [class.adev-nav-primary--next]="currentDocsVersionMode === 'next'"
+    [class.adev-nav-primary--deprecated]="currentDocsVersionMode === 'deprecated'"
   >
     <button
       type="button"
@@ -79,7 +82,8 @@
       >
         <a aria-label="Angular homepage" routerLink="/">
           <!-- Logo Symbol -->
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 223 236" width="32">
+          @if(!isUwu) {
+          <svg class="angular-logo" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 223 236" width="32">
             <g clip-path="url(#a)">
               <path
                 fill="url(#b)"
@@ -122,7 +126,14 @@
               </clipPath>
             </defs>
           </svg>
-          <div class="adev-beta-version">Beta Docs</div>
+        } @else {
+          <img
+            src="assets/images/uwu.png"
+            style="width: auto; margin: 0"
+            class="uwu-logo"
+            alt="Angular logo"
+            height="34"/>
+        }
         </a>
 
         <!-- Version picker for v18+ -->
@@ -154,14 +165,14 @@
             <ul class="adev-mini-menu adev-version-picker" cdkMenu>
               @for (item of versions(); track item) {
               <li>
-                <button
+                <a
                   type="button"
                   cdkMenuItem
-                  (click)="redirectToDocsVersion(item.url)"
+                  [href]="item.url"
                   [attr.aria-label]="item.displayName"
                 >
                   <span>{{ item.displayName }}</span>
-                </button>
+              </a>
               </li>
               }
             </ul>
@@ -367,6 +378,24 @@
                     d="M7.59948 19.0428C7.59948 18.8069 7.59118 18.182 7.58656 17.3526C4.89071 17.9526 4.32164 16.0201 4.32164 16.0201C3.88087 14.8718 3.24533 14.5663 3.24533 14.5663C2.36518 13.9492 3.31179 13.9621 3.31179 13.9621C4.28471 14.0323 4.79656 14.9868 4.79656 14.9868C5.66102 16.5052 7.06456 16.0672 7.61748 15.8125C7.70564 15.17 7.95579 14.732 8.23271 14.4837C6.08056 14.2331 3.81764 13.3801 3.81764 9.57199C3.81764 8.48737 4.19564 7.6003 4.81548 6.90522C4.71625 6.65414 4.38302 5.64384 4.91056 4.27537C4.91056 4.27537 5.72471 4.00814 7.57594 5.29399C8.34856 5.07384 9.17795 4.96307 10.0027 4.95937C10.8256 4.96307 11.6546 5.07384 12.429 5.29399C14.2793 4.00814 15.0921 4.27537 15.0921 4.27537C15.621 5.64337 15.2883 6.65368 15.1881 6.90522C15.8093 7.6003 16.1841 8.48737 16.1841 9.57199C16.1841 13.3898 13.9179 14.2298 11.7589 14.4758C12.1073 14.7828 12.4166 15.3892 12.4166 16.3165C12.4166 17.6452 12.4041 18.7174 12.4041 19.0428C12.4041 19.3091 12.579 19.6178 13.071 19.5205C16.9193 18.2041 19.6936 14.4814 19.6936 10.0926C19.6936 4.60353 15.3538 0.154297 10.0009 0.154297C4.64887 0.154297 0.309021 4.60353 0.309021 10.0926C0.309483 14.4828 3.08656 18.2078 6.9381 19.5218C7.42225 19.6128 7.59948 19.3058 7.59948 19.0428Z"
                   />
                 </svg>
+              </a>
+            </li>
+            <li>
+              <a [href]="DISCORD" cdkMenuItem title="Angular Discord" target="_blank" rel="noopener">
+                <!-- Discord Icon -->
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 127.14 96.36"
+                    width="20"
+                    height="20"
+                    fill="none"
+                    >
+                    <path
+                      fill-rule="evenodd"
+                      clip-rule="evenodd"
+                      d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,110.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"
+                    />
+                  </svg>
               </a>
             </li>
           </ul>

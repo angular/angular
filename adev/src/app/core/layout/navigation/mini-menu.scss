@@ -77,6 +77,8 @@
 }
 
 .adev-version-picker {
+  overflow-y: auto;
+  max-height: 90vh;
   top: 30px;
   left: 10px;
   position: absolute;
@@ -86,8 +88,8 @@
     padding-inline: 0;
   }
 
-  li button {
-    min-height: fit-content;
+  li a {
+    line-height: 1em;
   }
 
   @include mq.for-tablet {

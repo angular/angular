@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {BrowserViewportScroller, ViewportScroller} from '../src/viewport_scroller';
@@ -108,8 +108,8 @@ describe('BrowserViewportScroller', () => {
       return {
         anchorNode,
         cleanup: () => {
-          document.body.removeChild(tallItem);
-          document.body.removeChild(anchorNode);
+          tallItem.remove();
+          anchorNode.remove();
         },
       };
     }
@@ -128,8 +128,8 @@ describe('BrowserViewportScroller', () => {
       return {
         anchorNode,
         cleanup: () => {
-          document.body.removeChild(tallItem);
-          document.body.removeChild(elementWithShadowRoot);
+          tallItem.remove();
+          elementWithShadowRoot.remove();
         },
       };
     }

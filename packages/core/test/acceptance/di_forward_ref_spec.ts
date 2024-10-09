@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Component, Directive, forwardRef, Host, Inject, ViewChild} from '@angular/core';
@@ -26,13 +26,12 @@ describe('di with forwardRef', () => {
       }
 
       @Component({template: '<div dirA dirB></div>'})
-      class MyComp {
-      }
+      class MyComp {}
 
       TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp]});
-      expect(() => TestBed.createComponent(MyComp))
-          .toThrowError(
-              'NG0200: Circular dependency in DI detected for DirectiveA. Find more at https://angular.io/errors/NG0200');
+      expect(() => TestBed.createComponent(MyComp)).toThrowError(
+        'NG0200: Circular dependency in DI detected for DirectiveA. Find more at https://angular.dev/errors/NG0200',
+      );
     });
 
     describe('flags', () => {

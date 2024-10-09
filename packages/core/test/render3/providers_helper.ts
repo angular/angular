@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Component, Directive, Provider, Type, ViewEncapsulation} from '@angular/core';
@@ -19,11 +19,11 @@ export interface ComponentTest {
 }
 
 export function expectProvidersScenario(defs: {
-  app?: ComponentTest,
-  parent?: ComponentTest,
-  viewChild?: ComponentTest,
-  contentChild?: ComponentTest,
-  ngModule?: Type<any>,
+  app?: ComponentTest;
+  parent?: ComponentTest;
+  viewChild?: ComponentTest;
+  contentChild?: ComponentTest;
+  ngModule?: Type<any>;
 }): void {
   @Component({
     standalone: true,
@@ -33,7 +33,6 @@ export function expectProvidersScenario(defs: {
     providers: defs.viewChild?.providers ?? [],
     viewProviders: defs.viewChild?.viewProviders ?? [],
   })
-
   class ViewChildComponent {
     constructor() {
       defs.viewChild?.componentAssertion?.();
@@ -45,7 +44,6 @@ export function expectProvidersScenario(defs: {
     selector: 'view-child',
     providers: defs.viewChild?.directiveProviders ?? [],
   })
-
   class ViewChildDirective {
     constructor() {
       defs.viewChild?.directiveAssertion?.();
@@ -76,7 +74,6 @@ export function expectProvidersScenario(defs: {
       defs.contentChild?.directiveAssertion?.();
     }
   }
-
 
   @Component({
     standalone: true,
@@ -129,7 +126,6 @@ export function expectProvidersScenario(defs: {
     providers: defs.app?.providers ?? [],
     viewProviders: defs.app?.viewProviders ?? [],
   })
-
   class App {
     constructor() {
       defs.app?.componentAssertion?.();
@@ -141,7 +137,8 @@ export function expectProvidersScenario(defs: {
   });
   const fixture = TestBed.createComponent(App);
   fixture.detectChanges();
-  expect(fixture.nativeElement.innerHTML)
-      .toEqual('<parent><view-child>view-child</view-child></parent>');
+  expect(fixture.nativeElement.innerHTML).toEqual(
+    '<parent><view-child>view-child</view-child></parent>',
+  );
   fixture.destroy();
 }

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 export {HttpBackend, HttpHandler} from './src/backend';
@@ -57,6 +57,7 @@ export {
 export {
   HttpTransferCacheOptions,
   withHttpTransferCache as ɵwithHttpTransferCache,
+  HTTP_TRANSFER_CACHE_ORIGIN_MAP,
 } from './src/transfer_cache';
 export {HttpXhrBackend} from './src/xhr';
 export {HttpXsrfTokenExtractor} from './src/xsrf';

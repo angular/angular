@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {ViewEncapsulation} from '../../metadata/view';
 
@@ -12,27 +12,29 @@ export interface JitCompilerOptions {
   preserveWhitespaces?: boolean;
 }
 
-let jitOptions: JitCompilerOptions|null = null;
+let jitOptions: JitCompilerOptions | null = null;
 
 export function setJitOptions(options: JitCompilerOptions): void {
   if (jitOptions !== null) {
     if (options.defaultEncapsulation !== jitOptions.defaultEncapsulation) {
       ngDevMode &&
-          console.error(
-              'Provided value for `defaultEncapsulation` can not be changed once it has been set.');
+        console.error(
+          'Provided value for `defaultEncapsulation` can not be changed once it has been set.',
+        );
       return;
     }
     if (options.preserveWhitespaces !== jitOptions.preserveWhitespaces) {
       ngDevMode &&
-          console.error(
-              'Provided value for `preserveWhitespaces` can not be changed once it has been set.');
+        console.error(
+          'Provided value for `preserveWhitespaces` can not be changed once it has been set.',
+        );
       return;
     }
   }
   jitOptions = options;
 }
 
-export function getJitOptions(): JitCompilerOptions|null {
+export function getJitOptions(): JitCompilerOptions | null {
   return jitOptions;
 }
 

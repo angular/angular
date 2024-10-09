@@ -3,14 +3,19 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /** @fileoverview provides adapters for communicating with the ng compiler */
 
 import {ConfigurationHost} from '@angular/compiler-cli';
 import {NgCompilerAdapter} from '@angular/compiler-cli/src/ngtsc/core/api';
-import {AbsoluteFsPath, FileStats, PathSegment, PathString} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {
+  AbsoluteFsPath,
+  FileStats,
+  PathSegment,
+  PathString,
+} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {isShim} from '@angular/compiler-cli/src/ngtsc/shims';
 import {getRootDirs} from '@angular/compiler-cli/src/ngtsc/util/src/typescript';
 import * as p from 'path';
@@ -24,7 +29,7 @@ export class LanguageServiceAdapter implements NgCompilerAdapter {
   readonly entryPoint = null;
   readonly constructionDiagnostics: ts.Diagnostic[] = [];
   readonly ignoreForEmit: Set<ts.SourceFile> = new Set();
-  readonly unifiedModulesHost = null;  // only used in Bazel
+  readonly unifiedModulesHost = null; // only used in Bazel
   readonly rootDirs: AbsoluteFsPath[];
 
   /**
@@ -39,8 +44,10 @@ export class LanguageServiceAdapter implements NgCompilerAdapter {
   }
 
   resourceNameToFileName(
-      url: string, fromFile: string,
-      fallbackResolve?: (url: string, fromFile: string) => string | null): string|null {
+    url: string,
+    fromFile: string,
+    fallbackResolve?: (url: string, fromFile: string) => string | null,
+  ): string | null {
     // If we are trying to resolve a `.css` file, see if we can find a pre-compiled file with the
     // same name instead. That way, we can provide go-to-definition for the pre-compiled files which
     // would generally be the desired behavior.
@@ -69,7 +76,7 @@ export class LanguageServiceAdapter implements NgCompilerAdapter {
     return this.project.fileExists(fileName);
   }
 
-  readFile(fileName: string): string|undefined {
+  readFile(fileName: string): string | undefined {
     return this.project.readFile(fileName);
   }
 
@@ -122,7 +129,7 @@ export class LanguageServiceAdapter implements NgCompilerAdapter {
     return snapshot.getText(0, snapshot.getLength());
   }
 
-  getModifiedResourceFiles(): Set<string>|undefined {
+  getModifiedResourceFiles(): Set<string> | undefined {
     const modifiedFiles = new Set<string>();
     for (const [fileName, oldVersion] of this.lastReadResourceVersion) {
       if (this.project.getScriptVersion(fileName) !== oldVersion) {
@@ -165,10 +172,19 @@ export class LSParseConfigHost implements ConfigurationHost {
       },
     };
   }
+  readdir(path: AbsoluteFsPath): PathSegment[] {
+    return this.serverHost.readDirectory(
+      path,
+      undefined,
+      undefined,
+      undefined,
+      /* depth */ 1,
+    ) as PathSegment[];
+  }
   pwd(): AbsoluteFsPath {
     return this.serverHost.getCurrentDirectory() as AbsoluteFsPath;
   }
-  extname(path: AbsoluteFsPath|PathSegment): string {
+  extname(path: AbsoluteFsPath | PathSegment): string {
     return p.extname(path);
   }
   resolve(...paths: string[]): AbsoluteFsPath {

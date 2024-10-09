@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -29,24 +29,39 @@ import {RuntimeErrorCode} from '../errors';
  */
 export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
   constructor(
+    /** Reference to the current item from the collection. */
     public $implicit: T,
+
+    /**
+     * The value of the iterable expression. Useful when the expression is
+     * more complex then a property access, for example when using the async pipe
+     * (`userStreams | async`).
+     */
     public ngForOf: U,
+
+    /** Returns an index of the current item in the collection. */
     public index: number,
+
+    /** Returns total amount of items in the collection. */
     public count: number,
   ) {}
 
+  // Indicates whether this is the first item in the collection.
   get first(): boolean {
     return this.index === 0;
   }
 
+  // Indicates whether this is the last item in the collection.
   get last(): boolean {
     return this.index === this.count - 1;
   }
 
+  // Indicates whether an index of this item in the collection is even.
   get even(): boolean {
     return this.index % 2 === 0;
   }
 
+  // Indicates whether an index of this item in the collection is odd.
   get odd(): boolean {
     return !this.even;
   }
@@ -213,7 +228,7 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
 
   /**
    * A reference to the template that is stamped out for each item in the iterable.
-   * @see [template reference variable](guide/templates/reference-variables)
+   * @see [template reference variable](guide/templates/variables#template-reference-variables)
    */
   @Input()
   set ngForTemplate(value: TemplateRef<NgForOfContext<T, U>>) {

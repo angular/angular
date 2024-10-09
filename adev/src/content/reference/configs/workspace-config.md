@@ -34,21 +34,21 @@ For more information, see [Workspace and project file structure](reference/confi
 
 The following properties are a set of options that customize the Angular CLI.
 
-| Property              | Details                                                                                                                                                                    | Value type                                            | Default value |
-|:---                   |:---                                                                                                                                                                        |:---                                                   |:---           |
-| `analytics`           | Share anonymous usage data with the Angular Team. A boolean value indicates whether or not to share data, while a UUID string shares data using a pseudonymous identifier. | `boolean` |  `string`                          | `false`       |
-| `cache`               | Control [persistent disk cache](cli/cache) used by [Angular CLI Builders](tools/cli/cli-builder).                                                                          | [Cache options](#cache-options)                       | `{}`          |
-| `schematicCollections`| List schematics collections to use in `ng generate`.                                                                                                                       | `string[]`                                            | `[]`          |
-| `packageManager`      | The preferred package manager tool to use.                                                                                                                                 | `npm` | `cnpm` | `pnpm` | `yarn` | `npm`         |
-| `warnings`            | Control Angular CLI specific console warnings.                                                                                                                             | [Warnings options](#warnings-options)                 | `{}`          |
+| Property              | Details                                                                                                                                                                    | Value type                            | Default value |
+|:---                   |:---                                                                                                                                                                        |:---                                   |:---           |
+| `analytics`           | Share anonymous usage data with the Angular Team. A boolean value indicates whether or not to share data, while a UUID string shares data using a pseudonymous identifier. | `boolean` \| `string`                 | `false`       |
+| `cache`               | Control [persistent disk cache](cli/cache) used by [Angular CLI Builders](tools/cli/cli-builder).                                                                          | [Cache options](#cache-options)       | `{}`          |
+| `schematicCollections`| List schematics collections to use in `ng generate`.                                                                                                                       | `string[]`                            | `[]`          |
+| `packageManager`      | The preferred package manager tool to use.                                                                                                                                 | `npm` \| `cnpm` \| `pnpm` \| `yarn`   | `npm`         |
+| `warnings`            | Control Angular CLI specific console warnings.                                                                                                                             | [Warnings options](#warnings-options) | `{}`          |
 
 ### Cache options
 
-| Property      | Details                                                                                                                                                                                                                                      | Value type                           | Default value    |
-|:---           |:---                                                                                                                                                                                                                                          |:---                                  |:---              |
-| `enabled`     | Configure whether disk caching is enabled for builds.                                                                                                                                                                                        | `boolean`                            | `true`           |
-| `environment` | Configure in which environment disk cache is enabled.<br><br>* `ci` enables caching only in continuous integration (CI) environments.<br>* `local` enables caching only *outside* of CI environments.<br>* `all` enables caching everywhere. | `local` | `ci` | `all` | `local`          |
-| `path`        | The directory used to stored cache results.                                                                                                                                                                                                  | `string`                             | `.angular/cache` |
+| Property      | Details                                                                                                                                                                                                                                      | Value type               | Default value    |
+|:---           |:---                                                                                                                                                                                                                                          |:---                      |:---              |
+| `enabled`     | Configure whether disk caching is enabled for builds.                                                                                                                                                                                        | `boolean`                | `true`           |
+| `environment` | Configure in which environment disk cache is enabled.<br><br>* `ci` enables caching only in continuous integration (CI) environments.<br>* `local` enables caching only *outside* of CI environments.<br>* `all` enables caching everywhere. | `local` \| `ci` \| `all` | `local`          |
+| `path`        | The directory used to stored cache results.                                                                                                                                                                                                  | `string`                 | `.angular/cache` |
 
 ### Warnings options
 
@@ -63,7 +63,7 @@ The following top-level configuration properties are available for each project,
 | Property      | Details                                                                                                                                                                              | Value type                                                      | Default value   |
 |:---           |:---                                                                                                                                                                                  |:---                                                             |:---             |
 | `root`        | The root directory for this project's files, relative to the workspace directory. Empty for the initial application, which resides at the top level of the workspace.                | `string`                                                        | None (required) |
-| `projectType` | One of "application" or "library" An application can run independently in a browser, while a library cannot.                                                                         | `application` | `library`                                | None (required) |
+| `projectType` | One of "application" or "library" An application can run independently in a browser, while a library cannot.                                                                         | `application` \| `library`                                      | None (required) |
 | `sourceRoot`  | The root directory for this project's source files.                                                                                                                                  | `string`                                                        | `''`            |
 | `prefix`      | A string that Angular prepends to selectors when generating new components, directives, and pipes using `ng generate`. Can be customized to identify an application or feature area. | `string`                                                        | `'app'`         |
 | `schematics`  | A set of schematics that customize the `ng generate` sub-command option defaults for this project. See the [Generation schematics](#schematics) section.                             | See [schematics](#schematics)                                   | `{}`            |
@@ -139,7 +139,7 @@ Each target under `architect` has the following properties:
 |:---             |:---                                                                                                                                                                                                                                                    |
 | `builder`       | The CLI builder used to create this target in the form of `<package-name>:<builder-name>`.                                                                                                                                                             |
 | `options`       | Build target default options.                                                                                                                                                                                                                          |
-| `configurations`| Alternative configurations for executing the target. Each configuration sets the default options for that intended environment, overriding the associated value under `options`. See [Alternate build configurations](#alternate-build-configs) below. |
+| `configurations`| Alternative configurations for executing the target. Each configuration sets the default options for that intended environment, overriding the associated value under `options`. See [Alternate build configurations](#alternate-build-configurations) below. |
 
 For example, to configure a build with optimizations disabled:
 
@@ -220,7 +220,7 @@ For details of those options and their possible values, see the [Angular CLI Ref
 | `scripts`                  | An object containing JavaScript files to add to the application. The scripts are loaded exactly as if you had added them in a `<script>` tag inside `index.html`. See more in the [Styles and scripts configuration](#styles-and-scripts-configuration) section.       |
 | `budgets`                  | Default size-budget type and thresholds for all or parts of your application. You can configure the builder to report a warning or an error when the output reaches or exceeds a threshold size. See [Configure size budgets](tools/cli/build#configure-size-budgets). |
 | `fileReplacements`         | An object containing files and their compile-time replacements. See more in [Configure target-specific file replacements](tools/cli/build#configure-target-specific-file-replacements).                                                                                |
-| `index`                    | A base HTML document which loads the application. See more in [Index configuration](#index-config).                                                                                                                                                                    |
+| `index`                    | A base HTML document which loads the application. See more in [Index configuration](#index-configuration).                                                                                                                                                                    |
 
 ## Complex configuration values
 
@@ -409,8 +409,8 @@ Several options can be used to fine-tune the optimization of an application.
 | Options   | Details                                                        | Value type                                                                     | Default value |
 |:---       |:---                                                            |:---                                                                            |:---           |
 | `scripts` | Enables optimization of the scripts output.                    | `boolean`                                                                      | `true`        |
-| `styles`  | Enables optimization of the styles output.                     | `boolean` | [Styles optimization options](#styles-optimization-options) | `true`        |
-| `fonts`   | Enables optimization for fonts. This requires internet access. | `boolean` | [Fonts optimization options](#fonts-optimization-options)   | `true`        |
+| `styles`  | Enables optimization of the styles output.                     | `boolean` \| [Styles optimization options](#styles-optimization-options) | `true`        |
+| `fonts`   | Enables optimization for fonts. This requires internet access. | `boolean` \| [Fonts optimization options](#fonts-optimization-options)   | `true`        |
 
 #### Styles optimization options
 

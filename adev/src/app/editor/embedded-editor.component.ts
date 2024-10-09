@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {NgIf, isPlatformBrowser} from '@angular/common';
+import {isPlatformBrowser} from '@angular/common';
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   DestroyRef,
@@ -44,11 +45,12 @@ export const LARGE_EDITOR_WIDTH_BREAKPOINT = 950;
 export const LARGE_EDITOR_HEIGHT_BREAKPOINT = 550;
 
 @Component({
-  standalone: true,
   selector: EMBEDDED_EDITOR_SELECTOR,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [AngularSplitModule, CodeEditor, Preview, Terminal, MatTabsModule, IconComponent],
   templateUrl: './embedded-editor.component.html',
   styleUrls: ['./embedded-editor.component.scss'],
-  imports: [AngularSplitModule, CodeEditor, Preview, Terminal, NgIf, MatTabsModule, IconComponent],
   providers: [EditorUiState],
 })
 export class EmbeddedEditor implements OnInit, AfterViewInit, OnDestroy {

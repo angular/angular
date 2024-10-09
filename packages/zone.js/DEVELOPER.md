@@ -1,6 +1,8 @@
 To run tests
 ------------
 
+*Note*: some of these tests no longer run. Be sure to check that CI is green.
+
 Make sure your environment is set up with:
 
 `yarn`
@@ -21,7 +23,7 @@ Run tslint:
 
 `yarn lint`
 
-Run format with clang-format:
+Run format with prettier:
 
 `yarn format`
 
@@ -35,7 +37,7 @@ Before Commit
 Please make sure you pass all following checks before commit
 
 - yarn gulp lint (tslint)
-- yarn gulp format (clang-format)
+- yarn gulp format (prettier)
 - yarn promisetest (promise a+ test)
 - yarn bazel test //packages/zone.js/... (all tests)
 
@@ -76,7 +78,7 @@ Releasing `zone.js` is a two step process.
 
 ```
 rm -rf node_modules && yarn install
-export PREVIOUS_ZONE_TAG=`git tag -l 'zone.js-0.11.*' | tail -n1`
+export PREVIOUS_ZONE_TAG=`git tag -l 'zone.js-0.15.*' | tail -n1`
 export VERSION=`(cd packages/zone.js; npm version patch --no-git-tag-version)`
 export VERSION=${VERSION#v}
 export TAG="zone.js-${VERSION}"

@@ -3,12 +3,14 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
+import {NotificationSource} from '../change_detection/scheduling/zoneless_scheduling';
+import type {ApplicationRef} from '../core';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {EmbeddedViewRef, ViewRefTracker} from '../linker/view_ref';
+import {EmbeddedViewRef} from '../linker/view_ref';
 import {removeFromArray} from '../util/array_utils';
 import {assertEqual} from '../util/assert';
 
@@ -17,10 +19,29 @@ import {checkNoChangesInternal, detectChangesInternal} from './instructions/chan
 import {markViewDirty} from './instructions/mark_view_dirty';
 import {CONTAINER_HEADER_OFFSET, VIEW_REFS} from './interfaces/container';
 import {isLContainer, isRootView} from './interfaces/type_checks';
-import {CONTEXT, DECLARATION_LCONTAINER, FLAGS, LView, LViewFlags, PARENT, TVIEW} from './interfaces/view';
-import {destroyLView, detachMovedView, detachView, detachViewFromDOM, trackMovedView} from './node_manipulation';
-import {storeLViewOnDestroy, updateAncestorTraversalFlagsOnAttach} from './util/view_utils';
-
+import {
+  CONTEXT,
+  DECLARATION_LCONTAINER,
+  FLAGS,
+  LView,
+  LViewFlags,
+  PARENT,
+  REACTIVE_TEMPLATE_CONSUMER,
+  TVIEW,
+} from './interfaces/view';
+import {
+  destroyLView,
+  detachMovedView,
+  detachView,
+  detachViewFromDOM,
+  trackMovedView,
+} from './node_manipulation';
+import {CheckNoChangesMode} from './state';
+import {
+  markViewForRefresh,
+  storeLViewOnDestroy,
+  updateAncestorTraversalFlagsOnAttach,
+} from './util/view_utils';
 
 // Needed due to tsickle downleveling where multiple `implements` with classes creates
 // multiple @extends in Closure annotations, which is illegal. This workaround fixes
@@ -28,7 +49,7 @@ import {storeLViewOnDestroy, updateAncestorTraversalFlagsOnAttach} from './util/
 interface ChangeDetectorRefInterface extends ChangeDetectorRef {}
 
 export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterface {
-  private _appRef: ViewRefTracker|null = null;
+  private _appRef: ApplicationRef | null = null;
   private _attachedToViewContainer = false;
 
   get rootNodes(): any[] {
@@ -38,29 +59,43 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
   }
 
   constructor(
-      /**
-       * This represents `LView` associated with the component when ViewRef is a ChangeDetectorRef.
-       *
-       * When ViewRef is created for a dynamic component, this also represents the `LView` for the
-       * component.
-       *
-       * For a "regular" ViewRef created for an embedded view, this is the `LView` for the embedded
-       * view.
-       *
-       * @internal
-       */
-      public _lView: LView,
+    /**
+     * This represents `LView` associated with the component when ViewRef is a ChangeDetectorRef.
+     *
+     * When ViewRef is created for a dynamic component, this also represents the `LView` for the
+     * component.
+     *
+     * For a "regular" ViewRef created for an embedded view, this is the `LView` for the embedded
+     * view.
+     *
+     * @internal
+     */
+    public _lView: LView,
 
-      /**
-       * This represents the `LView` associated with the point where `ChangeDetectorRef` was
-       * requested.
-       *
-       * This may be different from `_lView` if the `_cdRefInjectingView` is an embedded view.
-       */
-      private _cdRefInjectingView?: LView, readonly notifyErrorHandler = true) {}
+    /**
+     * This represents the `LView` associated with the point where `ChangeDetectorRef` was
+     * requested.
+     *
+     * This may be different from `_lView` if the `_cdRefInjectingView` is an embedded view.
+     */
+    private _cdRefInjectingView?: LView,
+    readonly notifyErrorHandler = true,
+  ) {}
 
   get context(): T {
     return this._lView[CONTEXT] as unknown as T;
+  }
+
+  /**
+   * Reports whether the given view is considered dirty according to the different marking mechanisms.
+   */
+  get dirty(): boolean {
+    return (
+      !!(
+        this._lView[FLAGS] &
+        (LViewFlags.Dirty | LViewFlags.RefreshView | LViewFlags.HasChildViewsToRefresh)
+      ) || !!this._lView[REACTIVE_TEMPLATE_CONSUMER]?.dirty
+    );
   }
 
   /**
@@ -73,7 +108,8 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
       // Note: We have a warning message here because the `@deprecated` JSDoc will not be picked
       // up for assignments on the setter. We want to let users know about the deprecated usage.
       console.warn(
-          'Angular: Replacing the `context` object of an `EmbeddedViewRef` is deprecated.');
+        'Angular: Replacing the `context` object of an `EmbeddedViewRef` is deprecated.',
+      );
     }
 
     this._lView[CONTEXT] = value as unknown as {};
@@ -93,9 +129,11 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
         const index = viewRefs ? viewRefs.indexOf(this) : -1;
         if (index > -1) {
           ngDevMode &&
-              assertEqual(
-                  index, parent.indexOf(this._lView) - CONTAINER_HEADER_OFFSET,
-                  'An attached view should be in the same position within its container as its ViewRef in the VIEW_REFS array.');
+            assertEqual(
+              index,
+              parent.indexOf(this._lView) - CONTAINER_HEADER_OFFSET,
+              'An attached view should be in the same position within its container as its ViewRef in the VIEW_REFS array.',
+            );
           detachView(parent, index);
           removeFromArray(viewRefs!, index);
         }
@@ -141,7 +179,11 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
    * ```
    */
   markForCheck(): void {
-    markViewDirty(this._cdRefInjectingView || this._lView);
+    markViewDirty(this._cdRefInjectingView || this._lView, NotificationSource.MarkForCheck);
+  }
+
+  markForRefresh(): void {
+    markViewForRefresh(this._cdRefInjectingView || this._lView);
   }
 
   /**
@@ -301,15 +343,20 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
    */
   checkNoChanges(): void {
     if (ngDevMode) {
-      checkNoChangesInternal(this._lView, this.notifyErrorHandler);
+      checkNoChangesInternal(
+        this._lView,
+        CheckNoChangesMode.OnlyDirtyViews,
+        this.notifyErrorHandler,
+      );
     }
   }
 
   attachToViewContainerRef() {
     if (this._appRef) {
       throw new RuntimeError(
-          RuntimeErrorCode.VIEW_ALREADY_ATTACHED,
-          ngDevMode && 'This view is already attached directly to the ApplicationRef!');
+        RuntimeErrorCode.VIEW_ALREADY_ATTACHED,
+        ngDevMode && 'This view is already attached directly to the ApplicationRef!',
+      );
     }
     this._attachedToViewContainer = true;
   }
@@ -324,11 +371,12 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
     detachViewFromDOM(this._lView[TVIEW], this._lView);
   }
 
-  attachToAppRef(appRef: ViewRefTracker) {
+  attachToAppRef(appRef: ApplicationRef) {
     if (this._attachedToViewContainer) {
       throw new RuntimeError(
-          RuntimeErrorCode.VIEW_ALREADY_ATTACHED,
-          ngDevMode && 'This view is already attached to a ViewContainer!');
+        RuntimeErrorCode.VIEW_ALREADY_ATTACHED,
+        ngDevMode && 'This view is already attached to a ViewContainer!',
+      );
     }
     this._appRef = appRef;
     const isRoot = isRootView(this._lView);

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ɵsetRootDomAdapter as setRootDomAdapter} from '@angular/common';
@@ -65,7 +65,7 @@ export class DominoAdapter extends BrowserDomAdapter {
   }
 
   /** @deprecated No longer being used in Ivy code. To be removed in version 14. */
-  override getGlobalEventTarget(doc: Document, target: string): EventTarget|null {
+  override getGlobalEventTarget(doc: Document, target: string): EventTarget | null {
     if (target === 'window') {
       return doc.defaultView;
     }

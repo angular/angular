@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -33,7 +33,7 @@ import {of, Subject} from 'rxjs';
 
 import {INPUT_BINDER, RoutedComponentInputBinder} from './directives/router_outlet';
 import {Event, NavigationError, stringifyEvent} from './events';
-import {Routes} from './models';
+import {RedirectCommand, Routes} from './models';
 import {NAVIGATION_ERROR_HANDLER, NavigationTransitions} from './navigation_transition';
 import {Router} from './router';
 import {InMemoryScrollingOptions, ROUTER_CONFIGURATION, RouterConfigOptions} from './router_config';
@@ -270,7 +270,8 @@ const BOOTSTRAP_DONE = new InjectionToken<Subject<void>>(
  *
  * When set to `EnabledBlocking`, the initial navigation starts before the root
  * component is created. The bootstrap is blocked until the initial navigation is complete. This
- * value is required for [server-side rendering](guide/ssr) to work.
+ * value should be set in case you use [server-side rendering](guide/ssr), but do not enable
+ * [hydration](guide/hydration) for your application.
  *
  * When set to `EnabledNonBlocking`, the initial navigation starts after the root component has been
  * created. The bootstrap is not blocked on the completion of the initial navigation.
@@ -321,8 +322,9 @@ export type InitialNavigationFeature =
 /**
  * Configures initial navigation to start before the root component is created.
  *
- * The bootstrap is blocked until the initial navigation is complete. This value is required for
- * [server-side rendering](guide/ssr) to work.
+ * The bootstrap is blocked until the initial navigation is complete. This should be set in case
+ * you use [server-side rendering](guide/ssr), but do not enable [hydration](guide/hydration) for
+ * your application.
  *
  * @usageNotes
  *
@@ -648,6 +650,12 @@ export type NavigationErrorHandlerFeature =
  * This function is run inside application's [injection context](guide/di/dependency-injection-context)
  * so you can use the [`inject`](api/core/inject) function.
  *
+ * This function can return a `RedirectCommand` to convert the error to a redirect, similar to returning
+ * a `UrlTree` or `RedirectCommand` from a guard. This will also prevent the `Router` from emitting
+ * `NavigationError`; it will instead emit `NavigationCancel` with code NavigationCancellationCode.Redirect.
+ * Return values other than `RedirectCommand` are ignored and do not change any behavior with respect to
+ * how the `Router` handles the error.
+ *
  * @usageNotes
  *
  * Basic example of how you can use the error handler option:
@@ -672,7 +680,7 @@ export type NavigationErrorHandlerFeature =
  * @publicApi
  */
 export function withNavigationErrorHandler(
-  handler: (error: NavigationError) => void,
+  handler: (error: NavigationError) => unknown | RedirectCommand,
 ): NavigationErrorHandlerFeature {
   const providers = [
     {
@@ -722,6 +730,24 @@ export type ViewTransitionsFeature = RouterFeature<RouterFeatureKind.ViewTransit
  * );
  * ```
  *
+ * The router bindings information from any of the following sources:
+ *
+ *  - query parameters
+ *  - path and matrix parameters
+ *  - static route data
+ *  - data from resolvers
+ *
+ * Duplicate keys are resolved in the same order from above, from least to greatest,
+ * meaning that resolvers have the highest precedence and override any of the other information
+ * from the route.
+ *
+ * Importantly, when an input does not have an item in the route data with a matching key, this
+ * input is set to `undefined`. This prevents previous information from being
+ * retained if the data got removed from the route (i.e. if a query parameter is removed).
+ * Default values can be provided with a resolver on the route to ensure the value is always present
+ * or an input and use an input transform in the component.
+ *
+ * @see {@link guide/components/inputs#input-transforms input transforms}
  * @returns A set of providers for use with `provideRouter`.
  */
 export function withComponentInputBinding(): ComponentInputBindingFeature {
@@ -758,7 +784,7 @@ export function withComponentInputBinding(): ComponentInputBindingFeature {
  * @returns A set of providers for use with `provideRouter`.
  * @see https://developer.chrome.com/docs/web-platform/view-transitions/
  * @see https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API
- * @experimental
+ * @developerPreview
  */
 export function withViewTransitions(
   options?: ViewTransitionsFeatureOptions,

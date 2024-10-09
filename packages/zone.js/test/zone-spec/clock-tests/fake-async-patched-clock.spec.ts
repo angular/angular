@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 describe('fake async unpatched clock tests', () => {
@@ -64,4 +64,4 @@ describe('fake async unpatched clock tests', () => {
     jasmine.clock().tick(100);
     expect(spy).toHaveBeenCalled();
   });
-})
+});

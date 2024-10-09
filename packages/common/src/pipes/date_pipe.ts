@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Inject, InjectionToken, LOCALE_ID, Optional, Pipe, PipeTransform} from '@angular/core';
@@ -58,7 +58,6 @@ export const DATE_PIPE_DEFAULT_OPTIONS = new InjectionToken<DatePipeConfig>(
   ngDevMode ? 'DATE_PIPE_DEFAULT_OPTIONS' : '',
 );
 
-// clang-format off
 /**
  * @ngModule CommonModule
  * @description
@@ -217,7 +216,6 @@ export const DATE_PIPE_DEFAULT_OPTIONS = new InjectionToken<DatePipeConfig>(
  *
  * @publicApi
  */
-// clang-format on
 @Pipe({
   name: 'date',
   standalone: true,
@@ -236,10 +234,10 @@ export class DatePipe implements PipeTransform {
    * custom format string.  When not provided, the `DatePipe` looks for the value using the
    * `DATE_PIPE_DEFAULT_OPTIONS` injection token (and reads the `dateFormat` property).
    * If the token is not configured, the `mediumDate` is used as a value.
-   * @param timezone A timezone offset (such as `'+0430'`), or a standard UTC/GMT, or continental US
-   * timezone abbreviation. When not provided, the `DatePipe` looks for the value using the
-   * `DATE_PIPE_DEFAULT_OPTIONS` injection token (and reads the `timezone` property). If the token
-   * is not configured, the end-user's local system timezone is used as a value.
+   * @param timezone A timezone offset (such as `'+0430'`). When not provided, the `DatePipe`
+   * looks for the value using the `DATE_PIPE_DEFAULT_OPTIONS` injection token (and reads
+   * the `timezone` property). If the token is not configured, the end-user's local system
+   * timezone is used as a value.
    * @param locale A locale code for the locale format rules to use.
    * When not supplied, uses the value of `LOCALE_ID`, which is `en-US` by default.
    * See [Setting your app locale](guide/i18n/locale-id).

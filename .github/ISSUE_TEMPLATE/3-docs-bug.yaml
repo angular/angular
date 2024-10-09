@@ -1,5 +1,5 @@
-name: 'Docs or angular.io Bug Report'
-description: Report an issue in Angular's documentation or angular.io application
+name: 'Docs or angular.dev Bug Report'
+description: Report an issue in Angular's documentation or angular.dev application
 
 body:
   - type: textarea

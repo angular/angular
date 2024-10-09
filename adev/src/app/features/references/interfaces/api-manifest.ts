@@ -8,12 +8,17 @@
 
 import {ApiItemType} from './api-item-type';
 
-export interface ApiManifestItem {
+export interface ApiManifestEntry {
   name: string;
   type: ApiItemType;
   isDeprecated?: boolean;
 }
 
-export interface ApiManifest {
-  [packageName: string]: ApiManifestItem[];
+export interface ApiManifestPackage {
+  moduleName: string;
+  normalizedModuleName: string;
+  moduleLabel: string;
+  entries: ApiManifestEntry[];
 }
+
+export type ApiManifest = ApiManifestPackage[];

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {HttpHeaders} from '@angular/common/http/src/headers';
@@ -44,6 +44,16 @@ describe('HttpHeaders', () => {
       });
 
       expect(headers.getAll('foo')).toEqual(['second']);
+    });
+
+    it('should keep all values when initialized from a Headers object with duplicate headers', () => {
+      const standardHeaders = new Headers([
+        ['Set-Cookie', 'cookie1=foo'],
+        ['Set-Cookie', 'cookie2=bar'],
+      ]);
+      const headers = new HttpHeaders(standardHeaders);
+
+      expect(headers.getAll('Set-Cookie')).toEqual(['cookie1=foo', 'cookie2=bar']);
     });
 
     it('should throw an error when null is passed as header', () => {

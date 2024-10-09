@@ -4,7 +4,9 @@
 
 <docs-video src="https://www.youtube.com/embed/x5PZwb4XurU" title="Getting started with standalone components"/>
 
-As of version 15.2.0, Angular offers a [schematic](tools/cli/schematics) to help project authors convert existing projects to the standalone APIs. The schematic aims to transform as much code as possible automatically, but it may require some manual fixes by the project author. Run the schematic with the following command:
+This schematic helps to transform components, directive and pipes in existing projects to become standalone. The schematic aims to transform as much code as possible automatically, but it may require some manual fixes by the project author.
+
+Run the schematic using the following command:
 
 <docs-code language="shell">
 

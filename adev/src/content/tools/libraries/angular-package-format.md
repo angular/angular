@@ -26,21 +26,16 @@ The following example shows a simplified version of the `@angular/core` package'
 
 ```markdown
 node_modules/@angular/core
-├── README.md  
-├── package.json  
-├── index.d.ts  
-├── esm2022  
-│   ├── core.mjs
-│   ├── index.mjs
-│   ├── public_api.mjs
-│   └── testing  
-├── fesm2022  
+├── README.md
+├── package.json
+├── index.d.ts
+├── fesm2022
 │   ├── core.mjs
 │   ├── core.mjs.map
 │   ├── testing.mjs
 │   └── testing.mjs.map
-└── testing  
-    └── index.d.ts  
+└── testing
+    └── index.d.ts
 ```
 
 This table describes the file layout under `node_modules/@angular/core` annotated to describe the purpose of files and directories:
@@ -50,8 +45,6 @@ This table describes the file layout under `node_modules/@angular/core` annotate
 | `README.md`                                                                                                                                               | Package README, used by npmjs web UI.                                                                                                                                                                          |
 | `package.json`                                                                                                                                            | Primary `package.json`, describing the package itself as well as all available entrypoints and code formats. This file contains the "exports" mapping used by runtimes and tools to perform module resolution. |
 | `index.d.ts`                                                                                                                                               | Bundled `.d.ts` for the primary entrypoint `@angular/core`.                                                                                                                                                    |
-| `esm2022/` <br /> &nbsp;&nbsp;─ `core.mjs` <br /> &nbsp;&nbsp;─ `index.mjs` <br /> &nbsp;&nbsp;─ `public_api.mjs`                                         | Tree of `@angular/core` sources in unflattened ES2022 format.                                                                                                                                                  |
-| `esm2022/testing/`                                                                                                                                        | Tree of the `@angular/core/testing` entrypoint in unflattened ES2022 format.                                                                                                                                   |
 | `fesm2022/` <br /> &nbsp;&nbsp;─ `core.mjs` <br /> &nbsp;&nbsp;─ `core.mjs.map` <br /> &nbsp;&nbsp;─ `testing.mjs` <br /> &nbsp;&nbsp;─ `testing.mjs.map` | Code for all entrypoints in flattened \(FESM\) ES2022 format, along with source maps.                                                                                                                           |
 | `testing/`                                                                                                                                                | Directory representing the "testing" entrypoint.                                                                                                                                                               |
 | `testing/index.d.ts`                                                                                                                                    | Bundled `.d.ts` for the `@angular/core/testing` entrypoint.                                                                                                                                                     |
@@ -96,14 +89,10 @@ The `"exports"` field has the following structure:
   },
   ".": {
     "types": "./core.d.ts",
-    "esm": "./esm2022/core.mjs",
-    "esm2022": "./esm2022/core.mjs",
     "default": "./fesm2022/core.mjs"
   },
   "./testing": {
     "types": "./testing/testing.d.ts",
-    "esm": "./esm2022/testing/testing.mjs",
-    "esm2022": "./esm2022/testing/testing.mjs",
     "default": "./fesm2022/testing.mjs"
   }
 }
@@ -116,8 +105,6 @@ For each entrypoint, the available formats are:
 | Formats                   | Details |
 |:---                       |:---     |
 | Typings \(`.d.ts` files\) | `.d.ts` files are used by TypeScript when depending on a given package.                                                                                                           |
-| `es2022`                  | ES2022 code flattened into a single source file.                                                                                                                                  |
-| `esm2022`                 | ES2022 code in unflattened source files \(this format is included for experimentation - see [this discussion of defaults](#note-about-the-defaults-in-packagejson) for details\). |
 | `default`               | ES2022 code flattened into a single source.
 
 Tooling that is aware of these keys may preferentially select a desirable code format from `"exports"`.
@@ -262,14 +249,6 @@ To generate a flattened ES Module index file, use the following configuration op
 </docs-code>
 
 Once the index file \(for example, `my-ui-lib.js`\) is generated by ngc, bundlers and optimizers like Rollup can be used to produce the flattened ESM file.
-
-#### Note about the defaults in package.json
-
-As of webpack v4, the flattening of ES modules optimization should not be necessary for webpack users. It should be possible to get better code-splitting without flattening of modules in webpack.
-In practice, size regressions can still be seen when using unflattened modules as input for webpack v4.
-This is why `module` and `es2022` package.json entries still point to FESM files.
-This issue is being investigated. It is expected to switch the `module` and `es2022` package.json entry points to unflattened files after the size regression issue is resolved.
-The APF currently includes unflattened ESM2022 code for the purpose of validating such a future change.
 
 ### "sideEffects" flag
 

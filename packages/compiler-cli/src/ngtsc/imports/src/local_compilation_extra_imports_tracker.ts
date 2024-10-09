@@ -3,13 +3,12 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import ts from 'typescript';
 
 import {getContainingImportDeclaration} from '../../reflection/src/typescript';
-
 
 /**
  * A tool to track extra imports to be added to the generated files in the local compilation mode.
@@ -37,7 +36,22 @@ export class LocalCompilationExtraImportsTracker {
   private readonly localImportsMap = new Map<string, Set<string>>();
   private readonly globalImportsSet = new Set<string>();
 
+  /** Names of the files marked for extra import generation. */
+  private readonly markedFilesSet = new Set<string>();
+
   constructor(private readonly typeChecker: ts.TypeChecker) {}
+
+  /**
+   * Marks the source file for extra imports generation.
+   *
+   * The extra imports are generated only for the files marked through this method. In other words,
+   * the method {@link getImportsForFile} returns empty if the file is not marked. This allows the
+   * consumers of this tool to avoid generating extra imports for unrelated files (e.g., non-Angular
+   * files)
+   */
+  markFileForExtraImportGeneration(sf: ts.SourceFile) {
+    this.markedFilesSet.add(sf.fileName);
+  }
 
   /**
    * Adds an extra import to be added to the generated file of a specific source file.
@@ -62,7 +76,7 @@ export class LocalCompilationExtraImportsTracker {
    * to smallest possible candidate files instead of all files.
    */
   addGlobalImportFromIdentifier(node: ts.Node): void {
-    let identifier: ts.Identifier|null = null;
+    let identifier: ts.Identifier | null = null;
     if (ts.isIdentifier(node)) {
       identifier = node;
     } else if (ts.isPropertyAccessExpression(node) && ts.isIdentifier(node.expression)) {
@@ -78,7 +92,6 @@ export class LocalCompilationExtraImportsTracker {
       return;
     }
 
-
     const importClause = sym.declarations[0];
     const decl = getContainingImportDeclaration(importClause);
 
@@ -91,10 +104,11 @@ export class LocalCompilationExtraImportsTracker {
    * Returns the list of all module names that the given file should include as its extra imports.
    */
   getImportsForFile(sf: ts.SourceFile): string[] {
-    return [
-      ...this.globalImportsSet,
-      ...(this.localImportsMap.get(sf.fileName) ?? []),
-    ];
+    if (!this.markedFilesSet.has(sf.fileName)) {
+      return [];
+    }
+
+    return [...this.globalImportsSet, ...(this.localImportsMap.get(sf.fileName) ?? [])];
   }
 }
 

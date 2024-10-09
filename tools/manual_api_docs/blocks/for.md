@@ -1,8 +1,8 @@
 The `@for` block repeatedly renders content of a block for each item in a collection.
 
-@syntax
+## Syntax
 
-```html
+```angular-html
 @for (item of items; track item.name) {
 <li>{{ item.name }}</li>
 } @empty {
@@ -10,7 +10,7 @@ The `@for` block repeatedly renders content of a block for each item in a collec
 }
 ```
 
-@description
+## Description
 
 The `@for` block renders its content in response to changes in a collection. Collections can be any
 JavaScript [iterable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols),
@@ -19,7 +19,7 @@ but there are performance advantages of using a regular `Array`.
 You can optionally include an `@empty` section immediately after the `@for` block content. The
 content of the `@empty` block displays when there are no items.
 
-<h3> track and objects identity </h3>
+### `track` and objects identity
 
 The value of the `track` expression determines a key used to associate array items with the views in
 the DOM. Having clear indication of the item identity allows Angular to execute a minimal set of DOM
@@ -33,7 +33,7 @@ For collections that remain static , `track $index` provides a straightforward t
 collections experiencing additions, deletions, or reordering, opt for a
 unique property of each item as the tracking key.
 
-<h3> `$index` and other contextual variables </h3>
+### `$index` and other contextual variables
 
 Inside `@for` contents, several implicit variables are always available:
 
@@ -48,7 +48,7 @@ Inside `@for` contents, several implicit variables are always available:
 
 These variables are always available with these names, but can be aliased via a `let` segment:
 
-```html
+```angular-html
 @for (item of items; track item.id; let idx = $index, e = $even) {
 Item #{{ idx }}: {{ item.name }}
 }

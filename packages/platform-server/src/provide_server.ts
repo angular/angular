@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {EnvironmentProviders, makeEnvironmentProviders} from '@angular/core';
@@ -27,8 +27,5 @@ import {PLATFORM_SERVER_PROVIDERS} from './server';
  * @returns A set of providers to setup the server.
  */
 export function provideServerRendering(): EnvironmentProviders {
-  return makeEnvironmentProviders([
-    provideNoopAnimations(),
-    ...PLATFORM_SERVER_PROVIDERS,
-  ]);
+  return makeEnvironmentProviders([provideNoopAnimations(), ...PLATFORM_SERVER_PROVIDERS]);
 }

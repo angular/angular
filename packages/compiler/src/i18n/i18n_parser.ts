@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Lexer as ExpressionLexer} from '../expression_parser/lexer';
@@ -22,18 +22,31 @@ const _expParser = new ExpressionParser(new ExpressionLexer());
 export type VisitNodeFn = (html: html.Node, i18n: i18n.Node) => i18n.Node;
 
 export interface I18nMessageFactory {
-  (nodes: html.Node[], meaning: string|undefined, description: string|undefined,
-   customId: string|undefined, visitNodeFn?: VisitNodeFn): i18n.Message;
+  (
+    nodes: html.Node[],
+    meaning: string | undefined,
+    description: string | undefined,
+    customId: string | undefined,
+    visitNodeFn?: VisitNodeFn,
+  ): i18n.Message;
 }
 
 /**
  * Returns a function converting html nodes to an i18n Message given an interpolationConfig
  */
 export function createI18nMessageFactory(
-    interpolationConfig: InterpolationConfig, containerBlocks: Set<string>): I18nMessageFactory {
-  const visitor = new _I18nVisitor(_expParser, interpolationConfig, containerBlocks);
+  interpolationConfig: InterpolationConfig,
+  containerBlocks: Set<string>,
+  retainEmptyTokens: boolean,
+): I18nMessageFactory {
+  const visitor = new _I18nVisitor(
+    _expParser,
+    interpolationConfig,
+    containerBlocks,
+    retainEmptyTokens,
+  );
   return (nodes, meaning, description, customId, visitNodeFn) =>
-             visitor.toI18nMessage(nodes, meaning, description, customId, visitNodeFn);
+    visitor.toI18nMessage(nodes, meaning, description, customId, visitNodeFn);
 }
 
 interface I18nMessageVisitorContext {
@@ -51,14 +64,19 @@ function noopVisitNodeFn(_html: html.Node, i18n: i18n.Node): i18n.Node {
 
 class _I18nVisitor implements html.Visitor {
   constructor(
-      private _expressionParser: ExpressionParser,
-      private _interpolationConfig: InterpolationConfig,
-      private _containerBlocks: Set<string>,
+    private _expressionParser: ExpressionParser,
+    private _interpolationConfig: InterpolationConfig,
+    private _containerBlocks: Set<string>,
+    private readonly _retainEmptyTokens: boolean,
   ) {}
 
   public toI18nMessage(
-      nodes: html.Node[], meaning = '', description = '', customId = '',
-      visitNodeFn: VisitNodeFn|undefined): i18n.Message {
+    nodes: html.Node[],
+    meaning = '',
+    description = '',
+    customId = '',
+    visitNodeFn: VisitNodeFn | undefined,
+  ): i18n.Message {
     const context: I18nMessageVisitorContext = {
       isIcu: nodes.length == 1 && nodes[0] instanceof html.Expansion,
       icuDepth: 0,
@@ -71,21 +89,29 @@ class _I18nVisitor implements html.Visitor {
     const i18nodes: i18n.Node[] = html.visitAll(this, nodes, context);
 
     return new i18n.Message(
-        i18nodes, context.placeholderToContent, context.placeholderToMessage, meaning, description,
-        customId);
+      i18nodes,
+      context.placeholderToContent,
+      context.placeholderToMessage,
+      meaning,
+      description,
+      customId,
+    );
   }
 
   visitElement(el: html.Element, context: I18nMessageVisitorContext): i18n.Node {
     const children = html.visitAll(this, el.children, context);
     const attrs: {[k: string]: string} = {};
-    el.attrs.forEach(attr => {
+    el.attrs.forEach((attr) => {
       // Do not visit the attributes, translatable ones are top-level ASTs
       attrs[attr.name] = attr.value;
     });
 
     const isVoid: boolean = getHtmlTagDefinition(el.name).isVoid;
-    const startPhName =
-        context.placeholderRegistry.getStartTagPlaceholderName(el.name, attrs, isVoid);
+    const startPhName = context.placeholderRegistry.getStartTagPlaceholderName(
+      el.name,
+      attrs,
+      isVoid,
+    );
     context.placeholderToContent[startPhName] = {
       text: el.startSourceSpan.toString(),
       sourceSpan: el.startSourceSpan,
@@ -102,28 +128,41 @@ class _I18nVisitor implements html.Visitor {
     }
 
     const node = new i18n.TagPlaceholder(
-        el.name, attrs, startPhName, closePhName, children, isVoid, el.sourceSpan,
-        el.startSourceSpan, el.endSourceSpan);
+      el.name,
+      attrs,
+      startPhName,
+      closePhName,
+      children,
+      isVoid,
+      el.sourceSpan,
+      el.startSourceSpan,
+      el.endSourceSpan,
+    );
     return context.visitNodeFn(el, node);
   }
 
   visitAttribute(attribute: html.Attribute, context: I18nMessageVisitorContext): i18n.Node {
-    const node = attribute.valueTokens === undefined || attribute.valueTokens.length === 1 ?
-        new i18n.Text(attribute.value, attribute.valueSpan || attribute.sourceSpan) :
-        this._visitTextWithInterpolation(
-            attribute.valueTokens, attribute.valueSpan || attribute.sourceSpan, context,
-            attribute.i18n);
+    const node =
+      attribute.valueTokens === undefined || attribute.valueTokens.length === 1
+        ? new i18n.Text(attribute.value, attribute.valueSpan || attribute.sourceSpan)
+        : this._visitTextWithInterpolation(
+            attribute.valueTokens,
+            attribute.valueSpan || attribute.sourceSpan,
+            context,
+            attribute.i18n,
+          );
     return context.visitNodeFn(attribute, node);
   }
 
   visitText(text: html.Text, context: I18nMessageVisitorContext): i18n.Node {
-    const node = text.tokens.length === 1 ?
-        new i18n.Text(text.value, text.sourceSpan) :
-        this._visitTextWithInterpolation(text.tokens, text.sourceSpan, context, text.i18n);
+    const node =
+      text.tokens.length === 1
+        ? new i18n.Text(text.value, text.sourceSpan)
+        : this._visitTextWithInterpolation(text.tokens, text.sourceSpan, context, text.i18n);
     return context.visitNodeFn(text, node);
   }
 
-  visitComment(comment: html.Comment, context: I18nMessageVisitorContext): i18n.Node|null {
+  visitComment(comment: html.Comment, context: I18nMessageVisitorContext): i18n.Node | null {
     return null;
   }
 
@@ -133,7 +172,9 @@ class _I18nVisitor implements html.Visitor {
     const i18nIcu = new i18n.Icu(icu.switchValue, icu.type, i18nIcuCases, icu.sourceSpan);
     icu.cases.forEach((caze): void => {
       i18nIcuCases[caze.value] = new i18n.Container(
-          caze.expression.map((node) => node.visit(this, context)), caze.expSourceSpan);
+        caze.expression.map((node) => node.visit(this, context)),
+        caze.expSourceSpan,
+      );
     });
     context.icuDepth--;
 
@@ -171,9 +212,11 @@ class _I18nVisitor implements html.Visitor {
       return new i18n.Container(children, block.sourceSpan);
     }
 
-    const parameters = block.parameters.map(param => param.expression);
-    const startPhName =
-        context.placeholderRegistry.getStartBlockPlaceholderName(block.name, parameters);
+    const parameters = block.parameters.map((param) => param.expression);
+    const startPhName = context.placeholderRegistry.getStartBlockPlaceholderName(
+      block.name,
+      parameters,
+    );
     const closePhName = context.placeholderRegistry.getCloseBlockPlaceholderName(block.name);
 
     context.placeholderToContent[startPhName] = {
@@ -187,13 +230,24 @@ class _I18nVisitor implements html.Visitor {
     };
 
     const node = new i18n.BlockPlaceholder(
-        block.name, parameters, startPhName, closePhName, children, block.sourceSpan,
-        block.startSourceSpan, block.endSourceSpan);
+      block.name,
+      parameters,
+      startPhName,
+      closePhName,
+      children,
+      block.sourceSpan,
+      block.startSourceSpan,
+      block.endSourceSpan,
+    );
     return context.visitNodeFn(block, node);
   }
 
   visitBlockParameter(_parameter: html.BlockParameter, _context: I18nMessageVisitorContext) {
     throw new Error('Unreachable code');
+  }
+
+  visitLetDeclaration(decl: html.LetDeclaration, context: any) {
+    return null;
   }
 
   /**
@@ -205,8 +259,11 @@ class _I18nVisitor implements html.Visitor {
    * @param previousI18n Any i18n metadata associated with this `text` from a previous pass.
    */
   private _visitTextWithInterpolation(
-      tokens: (InterpolatedTextToken|InterpolatedAttributeToken)[], sourceSpan: ParseSourceSpan,
-      context: I18nMessageVisitorContext, previousI18n: i18n.I18nMeta|undefined): i18n.Node {
+    tokens: (InterpolatedTextToken | InterpolatedAttributeToken)[],
+    sourceSpan: ParseSourceSpan,
+    context: I18nMessageVisitorContext,
+    previousI18n: i18n.I18nMeta | undefined,
+  ): i18n.Node {
     // Return a sequence of `Text` and `Placeholder` nodes grouped in a `Container`.
     const nodes: i18n.Node[] = [];
     // We will only create a container if there are actually interpolations,
@@ -222,12 +279,21 @@ class _I18nVisitor implements html.Visitor {
           const phName = context.placeholderRegistry.getPlaceholderName(baseName, expression);
           context.placeholderToContent[phName] = {
             text: token.parts.join(''),
-            sourceSpan: token.sourceSpan
+            sourceSpan: token.sourceSpan,
           };
           nodes.push(new i18n.Placeholder(expression, phName, token.sourceSpan));
           break;
         default:
-          if (token.parts[0].length > 0) {
+          // Try to merge text tokens with previous tokens. We do this even for all tokens
+          // when `retainEmptyTokens == true` because whitespace tokens may have non-zero
+          // length, but will be trimmed by `WhitespaceVisitor` in one extraction pass and
+          // be considered "empty" there. Therefore a whitespace token with
+          // `retainEmptyTokens === true` should be treated like an empty token and either
+          // retained or merged into the previous node. Since extraction does two passes with
+          // different trimming behavior, the second pass needs to have identical node count
+          // to reuse source spans, so we need this check to get the same answer when both
+          // trimming and not trimming.
+          if (token.parts[0].length > 0 || this._retainEmptyTokens) {
             // This token is text or an encoded entity.
             // If it is following on from a previous text node then merge it into that node
             // Otherwise, if it is following an interpolation, then add a new node.
@@ -235,12 +301,25 @@ class _I18nVisitor implements html.Visitor {
             if (previous instanceof i18n.Text) {
               previous.value += token.parts[0];
               previous.sourceSpan = new ParseSourceSpan(
-                  previous.sourceSpan.start, token.sourceSpan.end, previous.sourceSpan.fullStart,
-                  previous.sourceSpan.details);
+                previous.sourceSpan.start,
+                token.sourceSpan.end,
+                previous.sourceSpan.fullStart,
+                previous.sourceSpan.details,
+              );
             } else {
               nodes.push(new i18n.Text(token.parts[0], token.sourceSpan));
             }
+          } else {
+            // Retain empty tokens to avoid breaking dropping entire nodes such that source
+            // spans should not be reusable across multiple parses of a template. We *should*
+            // do this all the time, however we need to maintain backwards compatibility
+            // with existing message IDs so we can't do it by default and should only enable
+            // this when removing significant whitespace.
+            if (this._retainEmptyTokens) {
+              nodes.push(new i18n.Text(token.parts[0], token.sourceSpan));
+            }
           }
+
           break;
       }
     }
@@ -264,7 +343,10 @@ class _I18nVisitor implements html.Visitor {
  * @param nodes The `Text` and `Placeholder` nodes to be processed.
  * @param previousI18n Any i18n metadata for these `nodes` stored from a previous pass.
  */
-function reusePreviousSourceSpans(nodes: i18n.Node[], previousI18n: i18n.I18nMeta|undefined): void {
+function reusePreviousSourceSpans(
+  nodes: i18n.Node[],
+  previousI18n: i18n.I18nMeta | undefined,
+): void {
   if (previousI18n instanceof i18n.Message) {
     // The `previousI18n` is an i18n `Message`, so we are processing an `Attribute` with i18n
     // metadata. The `Message` should consist only of a single `Container` that contains the
@@ -292,7 +374,8 @@ function assertSingleContainerMessage(message: i18n.Message): void {
   const nodes = message.nodes;
   if (nodes.length !== 1 || !(nodes[0] instanceof i18n.Container)) {
     throw new Error(
-        'Unexpected previous i18n message - expected it to consist of only a single `Container` node.');
+      'Unexpected previous i18n message - expected it to consist of only a single `Container` node.',
+    );
   }
 }
 
@@ -302,16 +385,27 @@ function assertSingleContainerMessage(message: i18n.Message): void {
  */
 function assertEquivalentNodes(previousNodes: i18n.Node[], nodes: i18n.Node[]): void {
   if (previousNodes.length !== nodes.length) {
-    throw new Error('The number of i18n message children changed between first and second pass.');
+    throw new Error(
+      `
+The number of i18n message children changed between first and second pass.
+
+First pass (${previousNodes.length} tokens):
+${previousNodes.map((node) => `"${node.sourceSpan.toString()}"`).join('\n')}
+
+Second pass (${nodes.length} tokens):
+${nodes.map((node) => `"${node.sourceSpan.toString()}"`).join('\n')}
+    `.trim(),
+    );
   }
   if (previousNodes.some((node, i) => nodes[i].constructor !== node.constructor)) {
     throw new Error(
-        'The types of the i18n message children changed between first and second pass.');
+      'The types of the i18n message children changed between first and second pass.',
+    );
   }
 }
 
 const _CUSTOM_PH_EXP =
-    /\/\/[\s\S]*i18n[\s\S]*\([\s\S]*ph[\s\S]*=[\s\S]*("|')([\s\S]*?)\1[\s\S]*\)/g;
+  /\/\/[\s\S]*i18n[\s\S]*\([\s\S]*ph[\s\S]*=[\s\S]*("|')([\s\S]*?)\1[\s\S]*\)/g;
 
 function extractPlaceholderName(input: string): string {
   return input.split(_CUSTOM_PH_EXP)[2];

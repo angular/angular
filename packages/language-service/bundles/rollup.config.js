@@ -3,9 +3,8 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
-
 
 const {nodeResolve} = require('@rollup/plugin-node-resolve');
 const commonJs = require('@rollup/plugin-commonjs');
@@ -44,19 +43,11 @@ module.exports = function(provided) {
 };
 `;
 
-const external = [
-  'os',
-  'fs',
-  'path',
-  'typescript',
-];
+const external = ['os', 'fs', 'path', 'typescript'];
 
 const config = {
   external,
-  plugins: [
-    nodeResolve({preferBuiltins: true}),
-    commonJs(),
-  ],
+  plugins: [nodeResolve({preferBuiltins: true}), commonJs()],
   output: {
     banner: amdFileHeader,
   },

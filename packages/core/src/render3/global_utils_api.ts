@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /**
@@ -16,4 +16,17 @@
  */
 
 export {applyChanges} from './util/change_detection_utils';
-export {ComponentDebugMetadata, DirectiveDebugMetadata, getComponent, getContext, getDirectiveMetadata, getDirectives, getHostElement, getInjector, getListeners, getOwningComponent, getRootComponents, Listener} from './util/discovery_utils';
+export {
+  ComponentDebugMetadata,
+  DirectiveDebugMetadata,
+  getComponent,
+  getContext,
+  getDirectiveMetadata,
+  getDirectives,
+  getHostElement,
+  getInjector,
+  getListeners,
+  getOwningComponent,
+  getRootComponents,
+  Listener,
+} from './util/discovery_utils';

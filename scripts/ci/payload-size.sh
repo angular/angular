@@ -44,8 +44,8 @@ getGzipSize() {
 # Calculate the size of target file uncompressed size, gzip7 size, gzip9 size
 # Write to global variable $payloadData, $filename
 calculateSize() {
-  label=$(echo "$filename" | sed "s/.*\///" | sed "s/\..*//")
-
+  # Remove .js and -T74CPV26.js from the filename
+  label=$(echo "$filename" | sed "s/\(-[A-Z0-9]\{8\}\)\?\.js//" | sed "s/.*\///")
   rawSize=$(statc $filename)
   gzip7Size=$(getGzipSize "$filename" 7)
   gzip9Size=$(getGzipSize "$filename" 9)

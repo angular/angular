@@ -3,7 +3,7 @@
   "command": "ng build [project]",
   "shortDescription": "Compiles an Angular application or library into an output directory named dist/ at the given output path.",
   "longDescriptionRelativePath": "@angular/cli/src/commands/build/long-description.md",
-  "longDescription": "The command can be used to build a project of type \"application\" or \"library\".\nWhen used to build a library, a different builder is invoked, and only the `ts-config`, `configuration`, and `watch` options are applied.\nAll other options apply only to building applications.\n\nThe application builder uses the [esbuild](https://esbuild.github.io/) build tool, with default configuration options specified in the workspace configuration file (`angular.json`) or with a named alternative configuration.\nA \"development\" configuration is created by default when you use the CLI to create the project, and you can use that configuration by specifying the `--configuration development`.\n\nThe configuration options generally correspond to the command options.\nYou can override individual configuration defaults by specifying the corresponding options on the command line.\nThe command can accept option names given in dash-case.\nNote that in the configuration file, you must specify names in camelCase.\n\nSome additional options can only be set through the configuration file,\neither by direct editing or with the `ng config` command.\nThese include `assets`, `styles`, and `scripts` objects that provide runtime-global resources to include in the project.\nResources in CSS, such as images and fonts, are automatically written and fingerprinted at the root of the output folder.\n\nFor further details, see [Workspace Configuration](reference/configs/workspace-config).\n",
+  "longDescription": "The command can be used to build a project of type \"application\" or \"library\".\nWhen used to build a library, a different builder is invoked, and only the `ts-config`, `configuration`, `poll` and `watch` options are applied.\nAll other options apply only to building applications.\n\nThe application builder uses the [esbuild](https://esbuild.github.io/) build tool, with default configuration options specified in the workspace configuration file (`angular.json`) or with a named alternative configuration.\nA \"development\" configuration is created by default when you use the CLI to create the project, and you can use that configuration by specifying the `--configuration development`.\n\nThe configuration options generally correspond to the command options.\nYou can override individual configuration defaults by specifying the corresponding options on the command line.\nThe command can accept option names given in dash-case.\nNote that in the configuration file, you must specify names in camelCase.\n\nSome additional options can only be set through the configuration file,\neither by direct editing or with the `ng config` command.\nThese include `assets`, `styles`, and `scripts` objects that provide runtime-global resources to include in the project.\nResources in CSS, such as images and fonts, are automatically written and fingerprinted at the root of the output folder.\n\nFor further details, see [Workspace Configuration](reference/configs/workspace-config).\n",
   "aliases": [
     "b"
   ],
@@ -60,6 +60,16 @@
         "use-credentials"
       ],
       "description": "Define the crossorigin attribute setting of elements that provide CORS support."
+    },
+    {
+      "name": "define",
+      "type": "array",
+      "description": "Defines global identifiers that will be replaced with a specified constant value when found in any JavaScript or TypeScript code including libraries. The value will be used directly. String values must be put in quotes. Identifiers within Angular metadata such as Component Decorators will not be replaced."
+    },
+    {
+      "name": "define",
+      "type": "string",
+      "description": "Defines global identifiers that will be replaced with a specified constant value when found in any JavaScript or TypeScript code including libraries. The value will be used directly. String values must be put in quotes. Identifiers within Angular metadata such as Component Decorators will not be replaced."
     },
     {
       "name": "delete-output-path",
@@ -142,7 +152,7 @@
       "name": "optimization",
       "type": "boolean",
       "default": true,
-      "description": "Enables optimization of the build output. Including minification of scripts and styles, tree-shaking, dead-code elimination, inlining of critical CSS and fonts inlining. For more information, see https://angular.io/guide/workspace-config#optimization-configuration."
+      "description": "Enables optimization of the build output. Including minification of scripts and styles, tree-shaking, dead-code elimination, inlining of critical CSS and fonts inlining. For more information, see https://angular.dev/reference/configs/workspace-config#optimization-configuration."
     },
     {
       "name": "output-hashing",
@@ -155,6 +165,15 @@
         "bundles"
       ],
       "description": "Define the output filename cache-busting hashing mode."
+    },
+    {
+      "name": "output-mode",
+      "type": "string",
+      "enum": [
+        "static",
+        "server"
+      ],
+      "description": "Defines the build output target. 'static': Generates a static site for deployment on any static hosting service. 'server': Produces an application designed for deployment on a server that supports server-side rendering (SSR)."
     },
     {
       "name": "output-path",
@@ -208,7 +227,7 @@
       "name": "source-map",
       "type": "boolean",
       "default": false,
-      "description": "Output source maps for scripts and styles. For more information, see https://angular.io/guide/workspace-config#source-map-configuration."
+      "description": "Output source maps for scripts and styles. For more information, see https://angular.dev/reference/configs/workspace-config#source-map-configuration."
     },
     {
       "name": "ssr",

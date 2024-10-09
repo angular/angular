@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {empty, Observable} from 'rxjs';
 
@@ -24,15 +24,16 @@ describe('Observable.empty', () => {
 
     subscriptionZone.run(() => {
       observable1.subscribe(
-          (result: any) => {
-            fail('should not call next');
-          },
-          () => {
-            fail('should not call error');
-          },
-          () => {
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-          });
+        (result: any) => {
+          fail('should not call next');
+        },
+        () => {
+          fail('should not call error');
+        },
+        () => {
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+        },
+      );
     });
   });
 });

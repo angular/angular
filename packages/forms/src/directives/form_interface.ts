@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {FormControl} from '../model/form_control';
@@ -11,8 +11,6 @@ import {FormGroup} from '../model/form_group';
 
 import {AbstractFormGroupDirective} from './abstract_form_group_directive';
 import {NgControl} from './ng_control';
-
-
 
 /**
  * @description

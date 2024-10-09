@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {PerfPhase, PerfRecorder} from './api';
 
@@ -22,6 +22,5 @@ class NoopPerfRecorder implements PerfRecorder {
 
   reset(): void {}
 }
-
 
 export const NOOP_PERF_RECORDER: PerfRecorder = new NoopPerfRecorder();

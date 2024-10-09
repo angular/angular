@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as ir from '../../ir';
@@ -55,7 +55,10 @@ function processPipeBindingsInView(unit: CompilationUnit): void {
 }
 
 function addPipeToCreationBlock(
-    unit: CompilationUnit, afterTargetXref: ir.XrefId, binding: ir.PipeBindingExpr): void {
+  unit: CompilationUnit,
+  afterTargetXref: ir.XrefId,
+  binding: ir.PipeBindingExpr,
+): void {
   // Find the appropriate point to insert the Pipe creation operation.
   // We're looking for `afterTargetXref` (and also want to insert after any other pipe operations
   // which might be beyond it).

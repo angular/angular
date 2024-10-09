@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 // Mapping between all HTML entity names and their unicode representation.
@@ -2135,9 +2135,8 @@ export const NAMED_ENTITIES: Record<string, string> = {
   'zopf': '\uD835\uDD6B',
   'zscr': '\uD835\uDCCF',
   'zwj': '\u200D',
-  'zwnj': '\u200C'
+  'zwnj': '\u200C',
 };
-
 
 // The &ngsp; pseudo-entity is denoting a space.
 // 0xE500 is a PUA (Private Use Areas) unicode character

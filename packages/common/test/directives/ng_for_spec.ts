@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {CommonModule, NgFor, NgForOf} from '@angular/common';
@@ -118,7 +118,7 @@ describe('ngFor', () => {
 
     getComponent().items = <any>'whaaa';
     expect(() => fixture.detectChanges()).toThrowError(
-      `NG02200: Cannot find a differ supporting object 'whaaa' of type 'string'. NgFor only supports binding to Iterables, such as Arrays. Find more at https://angular.io/errors/NG02200`,
+      `NG02200: Cannot find a differ supporting object 'whaaa' of type 'string'. NgFor only supports binding to Iterables, such as Arrays. Find more at https://angular.dev/errors/NG02200`,
     );
   }));
 
@@ -127,7 +127,7 @@ describe('ngFor', () => {
 
     getComponent().items = <any>{'stuff': 'whaaa'};
     expect(() => fixture.detectChanges()).toThrowError(
-      `NG02200: Cannot find a differ supporting object '\[object Object\]' of type 'object'. NgFor only supports binding to Iterables, such as Arrays. Did you mean to use the keyvalue pipe? Find more at https://angular.io/errors/NG02200`,
+      `NG02200: Cannot find a differ supporting object '\[object Object\]' of type 'object'. NgFor only supports binding to Iterables, such as Arrays. Did you mean to use the keyvalue pipe? Find more at https://angular.dev/errors/NG02200`,
     );
   }));
 

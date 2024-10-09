@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {SIGNAL_NODE, SignalNode, signalSetFn} from '@angular/core/primitives/signals';
@@ -19,7 +19,7 @@ export interface InputSignalNode<T, TransformT> extends SignalNode<T> {
    * User-configured transform that will run whenever a new value is applied
    * to the input signal node.
    */
-  transformFn: ((value: TransformT) => T)|undefined;
+  transformFn: ((value: TransformT) => T) | undefined;
 
   /**
    * Applies a new value to the input signal. Expects transforms to be run
@@ -42,6 +42,6 @@ export const INPUT_SIGNAL_NODE: InputSignalNode<unknown, unknown> = /* @__PURE__
 
     applyValueToInputSignal<T, TransformT>(node: InputSignalNode<T, TransformT>, value: T) {
       signalSetFn(node, value);
-    }
+    },
   };
 })();

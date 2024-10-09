@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -19,6 +19,8 @@ import {
   StaticProvider,
   Testability,
   TestabilityRegistry,
+  type ɵInputSignalNode as InputSignalNode,
+  ɵSIGNAL as SIGNAL,
 } from '@angular/core';
 
 import {
@@ -53,6 +55,7 @@ export class DowngradeComponentAdapter {
     private $parse: IParseService,
     private componentFactory: ComponentFactory<any>,
     private wrapCallback: <T>(cb: () => T) => () => T,
+    private readonly unsafelyOverwriteSignalInputs: boolean,
   ) {
     this.componentScope = scope.$new();
   }
@@ -131,7 +134,7 @@ export class DowngradeComponentAdapter {
       let expr: string | null = null;
 
       if (attrs.hasOwnProperty(inputBinding.attr)) {
-        const observeFn = ((prop) => {
+        const observeFn = ((prop, isSignal) => {
           let prevValue = INITIAL_VALUE;
           return (currValue: any) => {
             // Initially, both `$observe()` and `$watch()` will call this function.
@@ -140,11 +143,11 @@ export class DowngradeComponentAdapter {
                 prevValue = currValue;
               }
 
-              this.updateInput(componentRef, prop, prevValue, currValue);
+              this.updateInput(componentRef, prop, prevValue, currValue, isSignal);
               prevValue = currValue;
             }
           };
-        })(inputBinding.prop);
+        })(inputBinding.prop, input.isSignal);
         attrs.$observe(inputBinding.attr, observeFn);
 
         // Use `$watch()` (in addition to `$observe()`) in order to initialize the input in time
@@ -166,9 +169,9 @@ export class DowngradeComponentAdapter {
       }
       if (expr != null) {
         const watchFn = (
-          (prop) => (currValue: unknown, prevValue: unknown) =>
-            this.updateInput(componentRef, prop, prevValue, currValue)
-        )(inputBinding.prop);
+          (prop, isSignal) => (currValue: unknown, prevValue: unknown) =>
+            this.updateInput(componentRef, prop, prevValue, currValue, isSignal)
+        )(inputBinding.prop, input.isSignal);
         this.componentScope.$watch(expr, watchFn);
       }
     }
@@ -314,13 +317,19 @@ export class DowngradeComponentAdapter {
     prop: string,
     prevValue: any,
     currValue: any,
+    isSignal: boolean,
   ) {
     if (this.implementsOnChanges) {
       this.inputChanges[prop] = new SimpleChange(prevValue, currValue, prevValue === currValue);
     }
 
     this.inputChangeCount++;
-    componentRef.instance[prop] = currValue;
+    if (isSignal && !this.unsafelyOverwriteSignalInputs) {
+      const node = componentRef.instance[prop][SIGNAL] as InputSignalNode<unknown, unknown>;
+      node.applyValueToInputSignal(node, currValue);
+    } else {
+      componentRef.instance[prop] = currValue;
+    }
   }
 
   private groupProjectableNodes() {

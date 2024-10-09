@@ -1,5 +1,5 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test")
-load("@npm//@angular/build-tooling/bazel/api-gen:generate_api_docs.bzl", "generate_api_docs")
+load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", "generate_api_docs")
 load("//packages/common/locales:index.bzl", "generate_base_locale_file")
 load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_module", "ng_package", "tsec_test")
 
@@ -30,6 +30,7 @@ ng_module(
     ),
     deps = [
         "//packages:types",
+        "//packages/core/primitives/event-dispatch",
         "//packages/core/primitives/signals",
         "//packages/core/src/compiler",
         "//packages/core/src/di/interface",
@@ -64,10 +65,9 @@ ng_package(
     # Dependencies on the full npm_package cause long re-builds.
     visibility = [
         "//adev:__pkg__",
-        "//aio:__pkg__",
-        "//aio/content/examples:__subpackages__",
-        "//aio/tools/examples:__pkg__",
+        "//adev/shared-docs:__subpackages__",
         "//integration:__subpackages__",
+        "//modules/ssr-benchmarks:__subpackages__",
         "//packages/bazel/test/ng_package:__pkg__",
         "//packages/compiler-cli/src/ngtsc/metadata/test:__subpackages__",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/test:__subpackages__",
@@ -78,6 +78,7 @@ ng_package(
     ],
     deps = [
         ":core",
+        "//packages/core/primitives/event-dispatch",
         "//packages/core/primitives/signals",
         "//packages/core/rxjs-interop",
         "//packages/core/testing",
@@ -110,7 +111,7 @@ api_golden_test(
         "//packages/core/src/util",
     ],
     entry_point = "angular/packages/core/src/render3/global_utils_api.d.ts",
-    golden = "angular/goldens/public-api/core/global_utils.md",
+    golden = "angular/goldens/public-api/core/global_utils.api.md",
 )
 
 api_golden_test(
@@ -120,7 +121,7 @@ api_golden_test(
         "//packages/core",
     ],
     entry_point = "angular/packages/core/src/errors.d.ts",
-    golden = "angular/goldens/public-api/core/errors.md",
+    golden = "angular/goldens/public-api/core/errors.api.md",
 )
 
 filegroup(
@@ -140,11 +141,15 @@ generate_api_docs(
     ],
     entry_point = ":index.ts",
     module_name = "@angular/core",
+    private_modules = [
+        "core/primitives/signals",
+        "core/primitives/event-dispatch",
+    ],
 )
 
 genrule(
     name = "event_dispatch_contract_binary",
     srcs = ["//packages/core/primitives/event-dispatch:contract_bundle_min"],
     outs = ["event-dispatch-contract.min.js"],
-    cmd = "cat $< >> $@",
+    cmd = "cp $< $@",
 )

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {DehydratedContainerView} from '../../hydration/interfaces';
@@ -11,7 +11,6 @@ import {DehydratedContainerView} from '../../hydration/interfaces';
 import {TNode} from './node';
 import {RComment, RElement} from './renderer_dom';
 import {FLAGS, HOST, LView, NEXT, PARENT, T_HOST} from './view';
-
 
 /**
  * Special location which allows easy identification of type. If we have an array which was
@@ -57,7 +56,7 @@ export interface LContainer extends Array<any> {
    * The host could be an LView if this container is on a component node.
    * In that case, the component LView is its HOST.
    */
-  readonly[HOST]: RElement|RComment|LView;
+  readonly [HOST]: RElement | RComment | LView;
 
   /**
    * This is a type field which allows us to differentiate `LContainer` from `StylingContext` in an
@@ -78,14 +77,14 @@ export interface LContainer extends Array<any> {
    * This allows us to jump from a container to a sibling container or component
    * view with the same parent, so we can remove listeners efficiently.
    */
-  [NEXT]: LView|LContainer|null;
+  [NEXT]: LView | LContainer | null;
 
   /**
    * A collection of views created based on the underlying `<ng-template>` element but inserted into
    * a different `LContainer`. We need to track views created from a given declaration point since
    * queries collect matches from the embedded view declaration point and _not_ the insertion point.
    */
-  [MOVED_VIEWS]: LView[]|null;
+  [MOVED_VIEWS]: LView[] | null;
 
   /**
    * Pointer to the `TNode` which represents the host of the container.
@@ -103,7 +102,7 @@ export interface LContainer extends Array<any> {
    * NOTE: This is stored as `any[]` because render3 should really not be aware of `ViewRef` and
    * doing so creates circular dependency.
    */
-  [VIEW_REFS]: unknown[]|null;
+  [VIEW_REFS]: unknown[] | null;
 
   /**
    * Array of dehydrated views within this container.
@@ -115,7 +114,7 @@ export interface LContainer extends Array<any> {
    * "garbage-collected" later on, i.e. removed from the DOM once the hydration
    * logic finishes.
    */
-  [DEHYDRATED_VIEWS]: DehydratedContainerView[]|null;
+  [DEHYDRATED_VIEWS]: DehydratedContainerView[] | null;
 }
 
 /** Flags associated with an LContainer (saved in LContainer[FLAGS]) */

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as ir from '../../ir';
@@ -23,12 +23,15 @@ export function resolveDeferDepsFns(job: ComponentCompilationJob): void {
         if (op.ownResolverFn !== null) {
           if (op.handle.slot === null) {
             throw new Error(
-                'AssertionError: slot must be assigned before extracting defer deps functions');
+              'AssertionError: slot must be assigned before extracting defer deps functions',
+            );
           }
           const fullPathName = unit.fnName?.replace('_Template', '');
           op.resolverFn = job.pool.getSharedFunctionReference(
-              op.ownResolverFn, `${fullPathName}_Defer_${op.handle.slot}_DepsFn`,
-              /* Don't use unique names for TDB compatibility */ false);
+            op.ownResolverFn,
+            `${fullPathName}_Defer_${op.handle.slot}_DepsFn`,
+            /* Don't use unique names for TDB compatibility */ false,
+          );
         }
       }
     }

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Type} from '../interface/type';
@@ -23,9 +23,8 @@ export function getComponent(error: Error): Type<any> {
   return (error as any)[ERROR_COMPONENT];
 }
 
-
 class _NullComponentFactoryResolver implements ComponentFactoryResolver {
-  resolveComponentFactory<T>(component: {new(...args: any[]): T}): ComponentFactory<T> {
+  resolveComponentFactory<T>(component: {new (...args: any[]): T}): ComponentFactory<T> {
     throw noComponentFactoryError(component);
   }
 }
@@ -46,7 +45,7 @@ class _NullComponentFactoryResolver implements ComponentFactoryResolver {
  *     Component class can be used directly.
  */
 export abstract class ComponentFactoryResolver {
-  static NULL: ComponentFactoryResolver = (/* @__PURE__ */ new _NullComponentFactoryResolver());
+  static NULL: ComponentFactoryResolver = /* @__PURE__ */ new _NullComponentFactoryResolver();
   /**
    * Retrieves the factory object that creates a component of the given type.
    * @param component The component type.

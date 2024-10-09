@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ɵɵdefineInjectable as defineInjectable} from './di/interface/defs';
@@ -20,15 +20,19 @@ import {createEnvironmentInjector} from './render3/ng_module_ref';
  * of a certain type.
  */
 export class CachedInjectorService implements OnDestroy {
-  private cachedInjectors = new Map<unknown, EnvironmentInjector|null>();
+  private cachedInjectors = new Map<unknown, EnvironmentInjector | null>();
 
   getOrCreateInjector(
-      key: unknown, parentInjector: EnvironmentInjector, providers: Provider[],
-      debugName?: string) {
+    key: unknown,
+    parentInjector: EnvironmentInjector,
+    providers: Provider[],
+    debugName?: string,
+  ) {
     if (!this.cachedInjectors.has(key)) {
-      const injector = providers.length > 0 ?
-          createEnvironmentInjector(providers, parentInjector, debugName) :
-          null;
+      const injector =
+        providers.length > 0
+          ? createEnvironmentInjector(providers, parentInjector, debugName)
+          : null;
       this.cachedInjectors.set(key, injector);
     }
     return this.cachedInjectors.get(key)!;

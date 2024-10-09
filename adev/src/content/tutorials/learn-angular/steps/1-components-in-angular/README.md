@@ -6,7 +6,7 @@ Components are the foundational building blocks for any Angular application. Eac
 * HTML template
 * CSS styles
 
-In this activity you'll learn how to update the template and styles of a component.
+In this activity, you'll learn how to update the template and styles of a component.
 
 <hr />
 

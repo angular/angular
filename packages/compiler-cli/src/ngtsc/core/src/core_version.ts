@@ -3,13 +3,13 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ExternalReference} from '@angular/compiler';
 import ts from 'typescript';
 
-export function coreHasSymbol(program: ts.Program, symbol: ExternalReference): boolean|null {
+export function coreHasSymbol(program: ts.Program, symbol: ExternalReference): boolean | null {
   const checker = program.getTypeChecker();
   for (const sf of program.getSourceFiles().filter(isMaybeCore)) {
     const sym = checker.getSymbolAtLocation(sf);
@@ -27,6 +27,9 @@ export function coreHasSymbol(program: ts.Program, symbol: ExternalReference): b
 }
 
 export function isMaybeCore(sf: ts.SourceFile): boolean {
-  return sf.isDeclarationFile && sf.fileName.includes('@angular/core') &&
-      sf.fileName.endsWith('index.d.ts');
+  return (
+    sf.isDeclarationFile &&
+    sf.fileName.includes('@angular/core') &&
+    sf.fileName.endsWith('index.d.ts')
+  );
 }

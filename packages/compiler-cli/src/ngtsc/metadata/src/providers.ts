@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Reference} from '../../imports';
@@ -44,8 +44,9 @@ export class ExportedProviderStatusResolver {
    *     prove that it does not
    */
   mayExportProviders(
-      ref: Reference<ClassDeclaration>,
-      dependencyCallback?: (importRef: Reference<ClassDeclaration>) => void): boolean {
+    ref: Reference<ClassDeclaration>,
+    dependencyCallback?: (importRef: Reference<ClassDeclaration>) => void,
+  ): boolean {
     if (this.calculating.has(ref.node)) {
       // For cycles, we treat the cyclic edge as not having providers.
       return false;
@@ -68,8 +69,9 @@ export class ExportedProviderStatusResolver {
         }
 
         // If one of the imports contains providers, then so does this component.
-        return (dirMeta.imports ?? [])
-            .some(importRef => this.mayExportProviders(importRef, dependencyCallback));
+        return (dirMeta.imports ?? []).some((importRef) =>
+          this.mayExportProviders(importRef, dependencyCallback),
+        );
       }
 
       const pipeMeta = this.metaReader.getPipeMetadata(ref);
@@ -84,8 +86,9 @@ export class ExportedProviderStatusResolver {
         }
 
         // If one of the NgModule's imports may contain providers, then so does this NgModule.
-        return ngModuleMeta.imports.some(
-            importRef => this.mayExportProviders(importRef, dependencyCallback));
+        return ngModuleMeta.imports.some((importRef) =>
+          this.mayExportProviders(importRef, dependencyCallback),
+        );
       }
 
       return false;

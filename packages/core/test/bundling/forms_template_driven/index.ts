@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {Component, NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
@@ -36,7 +36,7 @@ import {BrowserModule, platformBrowser} from '@angular/platform-browser';
         <button (click)="addCity()">Add City</button>
       </div>
     </form>
-  `
+  `,
 })
 class TemplateFormsComponent {
   name = {first: 'Nancy', last: 'Drew', subscribed: true};
@@ -55,10 +55,9 @@ class TemplateFormsComponent {
   selector: 'app-root',
   template: `
     <app-template-forms></app-template-forms>
-  `
+  `,
 })
-class RootComponent {
-}
+class RootComponent {}
 
 @NgModule({
   declarations: [RootComponent, TemplateFormsComponent],

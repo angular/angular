@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {TI18n, TIcu} from '@angular/core/src/render3/interfaces/i18n';
@@ -77,8 +77,8 @@ const ShapeOfTI18n: ShapeOf<TI18n> = {
   create: true,
   update: true,
   ast: true,
+  parentTNodeIndex: true,
 };
-
 
 /**
  * Determines if `obj` matches the shape `TIcu`.
@@ -94,9 +94,8 @@ const ShapeOfTIcu: ShapeOf<TIcu> = {
   cases: true,
   create: true,
   remove: true,
-  update: true
+  update: true,
 };
-
 
 /**
  * Determines if `obj` matches the shape `TView`.
@@ -138,7 +137,6 @@ const ShapeOfTView: ShapeOf<TView> = {
   incompleteFirstPass: true,
   ssrId: true,
 };
-
 
 /**
  * Determines if `obj` matches the shape `TI18n`.

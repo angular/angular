@@ -57,7 +57,7 @@ ng build --configuration debug,production,customer-facing
 `@angular-devkit/build-angular:browser` supports file replacements, an option for substituting source files before executing a build.
 Using this in combination with `--configuration` provides a mechanism for configuring environment-specific data in your application.
 
-Start by [generating environments](cli/generate#environments-command) to create the `src/environments/` directory and configure the project to use file replacements.
+Start by [generating environments](cli/generate/environments) to create the `src/environments/` directory and configure the project to use file replacements.
 
 <docs-code language="shell">
 

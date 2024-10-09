@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {MessageId, ɵParsedTranslation} from '@angular/localize';
 
@@ -30,13 +30,13 @@ export interface CannotParseAnalysis {
 /**
  * Information about whether a `TranslationParser` can parse a given file.
  */
-export type ParseAnalysis<Hint> = CanParseAnalysis<Hint>|CannotParseAnalysis;
+export type ParseAnalysis<Hint> = CanParseAnalysis<Hint> | CannotParseAnalysis;
 
 /**
  * An object that holds translations that have been parsed from a translation file.
  */
 export interface ParsedTranslationBundle {
-  locale: string|undefined;
+  locale: string | undefined;
   translations: Record<MessageId, ɵParsedTranslation>;
   diagnostics: Diagnostics;
 }

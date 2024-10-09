@@ -3,11 +3,17 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 // Public API for compiler
-export {Compiler, COMPILER_OPTIONS, CompilerFactory, CompilerOptions, ModuleWithComponentFactories} from './linker/compiler';
+export {
+  Compiler,
+  COMPILER_OPTIONS,
+  CompilerFactory,
+  CompilerOptions,
+  ModuleWithComponentFactories,
+} from './linker/compiler';
 export {ComponentFactory, ComponentRef} from './linker/component_factory';
 export {ComponentFactoryResolver} from './linker/component_factory_resolver';
 export {DestroyRef} from './linker/destroy_ref';

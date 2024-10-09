@@ -3,17 +3,25 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
-import {LDeferBlockDetails, PREFETCH_TRIGGER_CLEANUP_FNS, TRIGGER_CLEANUP_FNS, TriggerType} from './interfaces';
+import {
+  LDeferBlockDetails,
+  PREFETCH_TRIGGER_CLEANUP_FNS,
+  TRIGGER_CLEANUP_FNS,
+  TriggerType,
+} from './interfaces';
 
 /**
  * Registers a cleanup function associated with a prefetching trigger
  * or a regular trigger of a defer block.
  */
 export function storeTriggerCleanupFn(
-    type: TriggerType, lDetails: LDeferBlockDetails, cleanupFn: VoidFunction) {
+  type: TriggerType,
+  lDetails: LDeferBlockDetails,
+  cleanupFn: VoidFunction,
+) {
   const key = type === TriggerType.Prefetch ? PREFETCH_TRIGGER_CLEANUP_FNS : TRIGGER_CLEANUP_FNS;
   if (lDetails[key] === null) {
     lDetails[key] = [];

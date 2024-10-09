@@ -3,13 +3,27 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {visitAll} from '@angular/compiler';
 
-import {ElementCollector, ElementToMigrate, endMarker, MigrateError, Result, startMarker} from './types';
-import {calculateNesting, getMainBlock, getOriginals, hasLineBreaks, parseTemplate, reduceNestingOffset} from './util';
+import {
+  ElementCollector,
+  ElementToMigrate,
+  endMarker,
+  MigrateError,
+  Result,
+  startMarker,
+} from './types';
+import {
+  calculateNesting,
+  getMainBlock,
+  getOriginals,
+  hasLineBreaks,
+  parseTemplate,
+  reduceNestingOffset,
+} from './util';
 
 export const boundcase = '[ngSwitchCase]';
 export const switchcase = '*ngSwitchCase';
@@ -17,20 +31,17 @@ export const nakedcase = 'ngSwitchCase';
 export const switchdefault = '*ngSwitchDefault';
 export const nakeddefault = 'ngSwitchDefault';
 
-export const cases = [
-  boundcase,
-  switchcase,
-  nakedcase,
-  switchdefault,
-  nakeddefault,
-];
+export const cases = [boundcase, switchcase, nakedcase, switchdefault, nakeddefault];
 
 /**
  * Replaces structural directive ngSwitch instances with new switch.
  * Returns null if the migration failed (e.g. there was a syntax error).
  */
-export function migrateCase(template: string):
-    {migrated: string, errors: MigrateError[], changed: boolean} {
+export function migrateCase(template: string): {
+  migrated: string;
+  errors: MigrateError[];
+  changed: boolean;
+} {
   let errors: MigrateError[] = [];
   let parsed = parseTemplate(template);
   if (parsed.tree === undefined) {
@@ -83,13 +94,14 @@ function migrateNgSwitchCase(etm: ElementToMigrate, tmpl: string, offset: number
   // includes the mandatory semicolon before as
   const lbString = etm.hasLineBreaks ? '\n' : '';
   const leadingSpace = etm.hasLineBreaks ? '' : ' ';
-  const condition = etm.attr.value;
+  // ngSwitchCases with no values results into `case ()` which isn't valid, based off empty
+  // value we add quotes instead of generating empty case
+  const condition = etm.attr.value.length === 0 ? `''` : etm.attr.value;
 
   const originals = getOriginals(etm, tmpl, offset);
 
   const {start, middle, end} = getMainBlock(etm, tmpl, offset);
-  const startBlock =
-      `${startMarker}${leadingSpace}@case (${condition}) {${leadingSpace}${lbString}${start}`;
+  const startBlock = `${startMarker}${leadingSpace}@case (${condition}) {${leadingSpace}${lbString}${start}`;
   const endBlock = `${end}${lbString}${leadingSpace}}${endMarker}`;
 
   const defaultBlock = startBlock + middle + endBlock;

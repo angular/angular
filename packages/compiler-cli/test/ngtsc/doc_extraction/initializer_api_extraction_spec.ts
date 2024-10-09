@@ -3,21 +3,28 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
-import {EntryType, FunctionEntry, InitializerApiFunctionEntry, ParameterEntry} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
+import {
+  EntryType,
+  FunctionSignatureMetadata,
+  InitializerApiFunctionEntry,
+  ParameterEntry,
+} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
 
 import {NgtscTestEnvironment} from '../env';
 
 const inputFixture = `
+  export interface InputSignal<T> {}
+
   export interface InputFunction {
     /** No explicit initial value */
-    <T>(): void;
+    <T>(): InputSignal<T|undefined>;
     /** With explicit initial value */
-    <T>(initialValue: T): void;
+    <T>(initialValue: T): InputSignal<T>;
 
     required: {
       /** Required, no options */
@@ -68,12 +75,13 @@ runInEachFileSystem(() => {
       env.tsconfig();
     });
 
-    function test(input: string): InitializerApiFunctionEntry|undefined {
+    function test(input: string): InitializerApiFunctionEntry | undefined {
       env.write('index.ts', input);
-      return env.driveDocsExtraction('index.ts')
-          .find(
-              (f): f is InitializerApiFunctionEntry =>
-                  f.entryType === EntryType.InitializerApiFunction);
+      return env
+        .driveDocsExtraction('index.ts')
+        .find(
+          (f): f is InitializerApiFunctionEntry => f.entryType === EntryType.InitializerApiFunction,
+        );
     }
 
     describe('interface-based', () => {
@@ -82,13 +90,22 @@ runInEachFileSystem(() => {
       });
 
       it('should extract container description', () => {
-        expect(test(inputFixture)?.description.replace(/\n/g, ' '))
-            .toBe('This describes the overall initializer API function.');
+        expect(test(inputFixture)?.description.replace(/\n/g, ' ')).toBe(
+          'This describes the overall initializer API function.',
+        );
+      });
+
+      it('should extract individual return types', () => {
+        expect(test(inputFixture)?.callFunction.signatures[0].returnType).toBe(
+          'InputSignal<T | undefined>',
+        );
+        expect(test(inputFixture)?.callFunction.signatures[1].returnType).toBe('InputSignal<T>');
       });
 
       it('should extract container tags', () => {
-        expect(test(inputFixture)?.jsdocTags).toEqual([jasmine.objectContaining(
-            {name: 'initializerApiFunction'})]);
+        expect(test(inputFixture)?.jsdocTags).toEqual([
+          jasmine.objectContaining({name: 'initializerApiFunction'}),
+        ]);
       });
 
       it('should extract top-level call signatures', () => {
@@ -96,41 +113,45 @@ runInEachFileSystem(() => {
           name: 'input',
           implementation: null,
           signatures: [
-            jasmine.objectContaining<FunctionEntry>({
+            jasmine.objectContaining<FunctionSignatureMetadata>({
               generics: [{name: 'T', constraint: undefined, default: undefined}],
-              returnType: 'void',
+              returnType: 'InputSignal<T | undefined>',
             }),
-            jasmine.objectContaining<FunctionEntry>({
+            jasmine.objectContaining<FunctionSignatureMetadata>({
               generics: [{name: 'T', constraint: undefined, default: undefined}],
               params: [jasmine.objectContaining<ParameterEntry>({name: 'initialValue', type: 'T'})],
-              returnType: 'void',
+              returnType: 'InputSignal<T>',
             }),
           ],
         });
       });
 
       it('should extract sub-property call signatures', () => {
-        expect(test(inputFixture)?.subFunctions).toEqual([{
-          name: 'required',
-          implementation: null,
-          signatures: [
-            jasmine.objectContaining<FunctionEntry>({
-              generics: [{name: 'T', constraint: undefined, default: undefined}],
-              returnType: 'void',
-            }),
-            jasmine.objectContaining<FunctionEntry>({
-              generics: [
-                {name: 'T', constraint: undefined, default: undefined},
-                {name: 'TransformT', constraint: undefined, default: undefined},
-              ],
-              params: [
-                jasmine.objectContaining<ParameterEntry>(
-                    {name: 'transformFn', type: '(v: TransformT) => T'}),
-              ],
-              returnType: 'void',
-            }),
-          ],
-        }]);
+        expect(test(inputFixture)?.subFunctions).toEqual([
+          {
+            name: 'required',
+            implementation: null,
+            signatures: [
+              jasmine.objectContaining<FunctionSignatureMetadata>({
+                generics: [{name: 'T', constraint: undefined, default: undefined}],
+                returnType: 'void',
+              }),
+              jasmine.objectContaining<FunctionSignatureMetadata>({
+                generics: [
+                  {name: 'T', constraint: undefined, default: undefined},
+                  {name: 'TransformT', constraint: undefined, default: undefined},
+                ],
+                params: [
+                  jasmine.objectContaining<ParameterEntry>({
+                    name: 'transformFn',
+                    type: '(v: TransformT) => T',
+                  }),
+                ],
+                returnType: 'void',
+              }),
+            ],
+          },
+        ]);
       });
     });
 
@@ -140,41 +161,49 @@ runInEachFileSystem(() => {
       });
 
       it('should extract container description', () => {
-        expect(test(contentChildrenFixture)?.description.replace(/\n/g, ' '))
-            .toBe('Overall description of "contentChildren" API.');
+        expect(test(contentChildrenFixture)?.description.replace(/\n/g, ' ')).toBe(
+          'Overall description of "contentChildren" API.',
+        );
       });
 
       it('should extract container tags', () => {
-        expect(test(contentChildrenFixture)?.jsdocTags).toEqual([jasmine.objectContaining(
-            {name: 'initializerApiFunction'})]);
+        expect(test(contentChildrenFixture)?.jsdocTags).toEqual([
+          jasmine.objectContaining({name: 'initializerApiFunction'}),
+        ]);
       });
 
       it('should extract top-level call signatures', () => {
         expect(test(contentChildrenFixture)?.callFunction).toEqual({
           name: 'contentChildren',
-          implementation: jasmine.objectContaining<FunctionEntry>({
+          implementation: jasmine.objectContaining<FunctionSignatureMetadata>({
             name: 'contentChildren',
             description: jasmine.stringContaining('Overall description of "contentChildren" API'),
           }),
           signatures: [
-            jasmine.objectContaining<FunctionEntry>({
+            jasmine.objectContaining<FunctionSignatureMetadata>({
               generics: [{name: 'LocatorT', constraint: undefined, default: undefined}],
               params: [
                 jasmine.objectContaining<ParameterEntry>({name: 'locator', type: 'LocatorT'}),
-                jasmine.objectContaining<ParameterEntry>(
-                    {name: 'opts', isOptional: true, type: 'Options<void> | undefined'}),
+                jasmine.objectContaining<ParameterEntry>({
+                  name: 'opts',
+                  isOptional: true,
+                  type: 'Options<void> | undefined',
+                }),
               ],
               returnType: 'Signal<LocatorT>',
             }),
-            jasmine.objectContaining<FunctionEntry>({
+            jasmine.objectContaining<FunctionSignatureMetadata>({
               generics: [
                 {name: 'LocatorT', constraint: undefined, default: undefined},
                 {name: 'ReadT', constraint: undefined, default: undefined},
               ],
               params: [
                 jasmine.objectContaining<ParameterEntry>({name: 'locator', type: 'LocatorT'}),
-                jasmine.objectContaining<ParameterEntry>(
-                    {name: 'opts', isOptional: false, type: 'Options<ReadT>'}),
+                jasmine.objectContaining<ParameterEntry>({
+                  name: 'opts',
+                  isOptional: false,
+                  type: 'Options<ReadT>',
+                }),
               ],
               returnType: 'Signal<ReadT>',
             }),

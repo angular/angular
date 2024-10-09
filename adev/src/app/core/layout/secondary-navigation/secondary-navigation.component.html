@@ -1,5 +1,5 @@
 <div [attr.id]="SECONDARY_NAV_ID" class="adev-secondary-nav-mask" [class.docs-nav-secondary--open]="isSecondaryNavVisible()" (docsClickOutside)="close()" [docsClickOutsideIgnore]="[PRIMARY_NAV_ID]">
-  <div class="docs-nav-secondary docs-scroll-track-transparent" [style.transform]="translateX()" [style.transition]="transition">
+  <div class="docs-nav-secondary docs-scroll-track-transparent" [style.transform]="translateX()" [style.transition]="transition()">
     <!-- Secondary Nav -->
     @if (navigationItems && navigationItems.length > 0) {
       <docs-navigation-list

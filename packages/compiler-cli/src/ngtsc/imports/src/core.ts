@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {relativePathBetween} from '../../util/src/path';
@@ -83,8 +83,9 @@ export class R3SymbolsImportRewriter implements ImportRewriter {
 
     const relativePathToR3Symbols = relativePathBetween(inContextOfFile, this.r3SymbolsPath);
     if (relativePathToR3Symbols === null) {
-      throw new Error(`Failed to rewrite import inside ${CORE_MODULE}: ${inContextOfFile} -> ${
-          this.r3SymbolsPath}`);
+      throw new Error(
+        `Failed to rewrite import inside ${CORE_MODULE}: ${inContextOfFile} -> ${this.r3SymbolsPath}`,
+      );
     }
 
     return relativePathToR3Symbols;

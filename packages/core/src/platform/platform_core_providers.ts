@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {StaticProvider} from '../di';
@@ -16,5 +16,5 @@ import {PlatformRef} from './platform_ref';
  *
  * @publicApi
  */
-export const platformCore: (extraProviders?: StaticProvider[]|undefined) => PlatformRef =
-    createPlatformFactory(null, 'core', []);
+export const platformCore: (extraProviders?: StaticProvider[] | undefined) => PlatformRef =
+  createPlatformFactory(null, 'core', []);

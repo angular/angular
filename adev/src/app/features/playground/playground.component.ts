@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule, NgIf, isPlatformBrowser} from '@angular/common';
+import {isPlatformBrowser, NgComponentOutlet} from '@angular/common';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -17,11 +17,9 @@ import {
   Type,
   inject,
 } from '@angular/core';
-import {DocViewer, IconComponent} from '@angular/docs';
-import {RouterLink} from '@angular/router';
+import {IconComponent} from '@angular/docs';
 
 import {PlaygroundTemplate} from '@angular/docs';
-import {ClickOutside, NavigationList} from '@angular/docs';
 import {injectAsync} from '../../core/services/inject-async';
 import {EmbeddedTutorialManager} from '../../editor/index';
 
@@ -31,18 +29,7 @@ import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
 @Component({
   selector: 'adev-playground',
   standalone: true,
-  imports: [
-    CommonModule,
-    DocViewer,
-    NavigationList,
-    ClickOutside,
-    NgIf,
-    RouterLink,
-    IconComponent,
-    CdkMenu,
-    CdkMenuItem,
-    CdkMenuTrigger,
-  ],
+  imports: [NgComponentOutlet, IconComponent, CdkMenu, CdkMenuItem, CdkMenuTrigger],
   templateUrl: './playground.component.html',
   styleUrls: [
     './playground.component.scss',

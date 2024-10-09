@@ -3,9 +3,8 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
-
 
 import {ProviderToken} from '../../di/provider_token';
 import {QueryFlags} from '../interfaces/query';
@@ -26,8 +25,12 @@ import {getCurrentQueryIndex, setCurrentQueryIndex} from '../state';
  * @codeGenApi
  */
 export function ɵɵcontentQuerySignal<T>(
-  directiveIndex: number, target: Signal<T>, predicate: ProviderToken<unknown>|string[],
-    flags: QueryFlags, read?: any): void {
+  directiveIndex: number,
+  target: Signal<T>,
+  predicate: ProviderToken<unknown> | string[],
+  flags: QueryFlags,
+  read?: any,
+): void {
   bindQueryToSignal(target, createContentQuery(directiveIndex, predicate, flags, read));
 }
 
@@ -43,8 +46,11 @@ export function ɵɵcontentQuerySignal<T>(
  * @codeGenApi
  */
 export function ɵɵviewQuerySignal(
-    target: Signal<unknown>, predicate: ProviderToken<unknown>|string[], flags: QueryFlags,
-    read?: ProviderToken<unknown>): void {
+  target: Signal<unknown>,
+  predicate: ProviderToken<unknown> | string[],
+  flags: QueryFlags,
+  read?: ProviderToken<unknown>,
+): void {
   bindQueryToSignal(target, createViewQuery(predicate, flags, read));
 }
 

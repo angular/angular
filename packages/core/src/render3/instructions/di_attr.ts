@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {injectAttributeImpl} from '../di';
 import {getCurrentTNode} from '../state';
@@ -13,6 +13,6 @@ import {getCurrentTNode} from '../state';
  *
  * @codeGenApi
  */
-export function ɵɵinjectAttribute(attrNameToInject: string): string|null {
+export function ɵɵinjectAttribute(attrNameToInject: string): string | null {
   return injectAttributeImpl(getCurrentTNode()!, attrNameToInject);
 }

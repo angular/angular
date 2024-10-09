@@ -1,0 +1,148 @@
+@mixin button() {
+  button {
+    font-family: var(--inter-font);
+    background: transparent;
+    -webkit-appearance: none;
+    border: 0;
+    font-weight: 600;
+
+    // Remove excess padding and border in Firefox 4+
+    &::-moz-focus-inner {
+      border: 0;
+      padding: 0;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  @property --angle {
+    syntax: '<angle>';
+    initial-value: 90deg;
+    inherits: false;
+  }
+
+  @keyframes spin-gradient {
+    0% {
+      --angle: 90deg;
+    }
+    100% {
+      --angle: 450deg;
+    }
+  }
+
+  .docs-primary-btn {
+    cursor: pointer;
+    border: none;
+    outline: none;
+    position: relative;
+    border-radius: 0.25rem;
+    padding: 0.75rem 1.5rem;
+    width: max-content;
+    color: transparent;
+
+    // border gradient / background
+    --angle: 90deg;
+    background: linear-gradient(
+      var(--angle),
+      var(--orange-red) 0%,
+      var(--vivid-pink) 50%,
+      var(--electric-violet) 100%
+    );
+
+    docs-icon {
+      z-index: var(--z-index-content);
+      position: relative;
+    }
+
+    // text & radial gradient
+    &::before {
+      content: attr(text);
+      position: absolute;
+      inset: 1px;
+      background: var(--page-bg-radial-gradient);
+      border-radius: 0.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.3s ease, background 0.3s ease;
+      color: var(--primary-contrast);
+    }
+
+    // solid color negative space - CSS transition supported
+    &::after {
+      content: attr(text);
+      position: absolute;
+      inset: 1px;
+      background: var(--page-background);
+      border-radius: 0.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.3s ease, background 0.3s ease;
+      color: var(--primary-contrast);
+    }
+
+    &:hover {
+      animation: spin-gradient 4s linear infinite forwards;
+      &::before {
+        background-color: var(--page-background);
+        background: var(--soft-pink-radial-gradient);
+        opacity: 0.9;
+      }
+      &::after {
+        opacity: 0;
+      }
+    }
+
+    &:active {
+      &::before {
+        opacity: 0.8;
+      }
+    }
+
+    &:disabled {
+      //gradient stroke
+      background: var(--quinary-contrast);
+      color: var(--quinary-contrast);
+
+      &::before {
+        background-color: var(--page-background);
+        background: var(--page-bg-radial-gradient);
+        opacity: 1;
+      }
+
+      docs-icon {
+        color: var(--quinary-contrast);
+      }
+    }
+
+    docs-icon {
+      z-index: var(--z-index-icon);
+      color: var(--primary-contrast);
+    }
+  }
+
+  .docs-secondary-btn {
+    border: 1px solid var(--senary-contrast);
+    background: var(--page-background);
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.25rem;
+    color: var(--primary-contrast);
+    transition: background 0.3s ease;
+
+    docs-icon {
+      color: var(--quaternary-contrast);
+      transition: color 0.3s ease;
+    }
+
+    &:hover {
+      background: var(--septenary-contrast);
+
+      docs-icon {
+        color: var(--primary-contrast);
+      }
+    }
+  }
+}

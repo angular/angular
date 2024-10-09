@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {_sanitizeUrl} from '../../src/sanitization/url_sanitizer';
@@ -14,7 +14,7 @@ describe('URL sanitizer', () => {
 
   beforeEach(() => {
     logMsgs = [];
-    originalLog = console.warn;  // Monkey patch DOM.log.
+    originalLog = console.warn; // Monkey patch DOM.log.
     console.warn = (msg: any) => logMsgs.push(msg);
   });
 
@@ -43,7 +43,7 @@ describe('URL sanitizer', () => {
       '#anchor',
       '/page1.md',
       'http://JavaScript/my.js',
-      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',  // Truncated.
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/', // Truncated.
       'data:video/webm;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',
       'data:audio/opus;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',
       'unknown-scheme:abc',

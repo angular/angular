@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {AST, TmplAstBoundAttribute, TmplAstNode} from '@angular/compiler';
@@ -23,26 +23,33 @@ class SuffixNotSupportedCheck extends TemplateCheckWithVisitor<ErrorCode.SUFFIX_
   override code = ErrorCode.SUFFIX_NOT_SUPPORTED as const;
 
   override visitNode(
-      ctx: TemplateContext<ErrorCode.SUFFIX_NOT_SUPPORTED>, component: ts.ClassDeclaration,
-      node: TmplAstNode|AST): NgTemplateDiagnostic<ErrorCode.SUFFIX_NOT_SUPPORTED>[] {
+    ctx: TemplateContext<ErrorCode.SUFFIX_NOT_SUPPORTED>,
+    component: ts.ClassDeclaration,
+    node: TmplAstNode | AST,
+  ): NgTemplateDiagnostic<ErrorCode.SUFFIX_NOT_SUPPORTED>[] {
     if (!(node instanceof TmplAstBoundAttribute)) return [];
 
-    if (!node.keySpan.toString().startsWith('attr.') ||
-        !STYLE_SUFFIXES.some(suffix => node.name.endsWith(`.${suffix}`))) {
+    if (
+      !node.keySpan.toString().startsWith('attr.') ||
+      !STYLE_SUFFIXES.some((suffix) => node.name.endsWith(`.${suffix}`))
+    ) {
       return [];
     }
 
     const diagnostic = ctx.makeTemplateDiagnostic(
-        node.keySpan,
-        `The ${
-            STYLE_SUFFIXES.map(suffix => `'.${suffix}'`)
-                .join(', ')} suffixes are only supported on style bindings.`);
+      node.keySpan,
+      `The ${STYLE_SUFFIXES.map((suffix) => `'.${suffix}'`).join(
+        ', ',
+      )} suffixes are only supported on style bindings.`,
+    );
     return [diagnostic];
   }
 }
 
 export const factory: TemplateCheckFactory<
-    ErrorCode.SUFFIX_NOT_SUPPORTED, ExtendedTemplateDiagnosticName.SUFFIX_NOT_SUPPORTED> = {
+  ErrorCode.SUFFIX_NOT_SUPPORTED,
+  ExtendedTemplateDiagnosticName.SUFFIX_NOT_SUPPORTED
+> = {
   code: ErrorCode.SUFFIX_NOT_SUPPORTED,
   name: ExtendedTemplateDiagnosticName.SUFFIX_NOT_SUPPORTED,
   create: () => new SuffixNotSupportedCheck(),

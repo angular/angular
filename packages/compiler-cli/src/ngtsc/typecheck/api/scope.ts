@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import ts from 'typescript';
@@ -46,12 +46,12 @@ export interface PotentialDirective {
   /**
    * The module which declares the directive.
    */
-  ngModule: ClassDeclaration|null;
+  ngModule: ClassDeclaration | null;
 
   /**
    * The selector for the directive or component.
    */
-  selector: string|null;
+  selector: string | null;
 
   /**
    * `true` if this directive is a component.

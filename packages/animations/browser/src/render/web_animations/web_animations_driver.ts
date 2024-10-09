@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {AnimationPlayer, ɵStyleDataMap} from '@angular/animations';
 
@@ -42,11 +42,6 @@ export class WebAnimationsDriver implements AnimationDriver {
       return validateWebAnimatableStyleProperty(cssProp);
     }
     return true;
-  }
-
-  matchesElement(_element: any, _selector: string): boolean {
-    // This method is deprecated and no longer in use so we return false.
-    return false;
   }
 
   containsElement(elm1: any, elm2: any): boolean {

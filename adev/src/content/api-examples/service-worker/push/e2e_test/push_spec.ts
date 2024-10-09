@@ -3,11 +3,11 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {browser, by, element} from 'protractor';
-import {verifyNoBrowserErrors} from '../../../test-utils';
+import {verifyNoBrowserErrors} from '../../../../../../../packages/examples/test-utils/index';
 
 describe('SW `SwPush` example', () => {
   const pageUrl = '/push';

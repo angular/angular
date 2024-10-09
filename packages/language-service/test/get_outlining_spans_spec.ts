@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
@@ -27,7 +27,7 @@ describe('get outlining spans', () => {
         \`,
       })
       export class AppCmp {
-      }`
+      }`,
     };
     const env = LanguageServiceTestEnv.setup();
     const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -36,8 +36,9 @@ describe('get outlining spans', () => {
     const appFile = project.openFile('app.ts');
     const result = appFile.getOutliningSpans();
     const {textSpan} = result[0];
-    expect(files['app.ts'].substring(textSpan.start, textSpan.start + textSpan.length))
-        .toEqual(' if body ');
+    expect(files['app.ts'].substring(textSpan.start, textSpan.start + textSpan.length)).toEqual(
+      ' if body ',
+    );
   });
 
   it('should get block outlining spans for an external template', () => {
@@ -50,7 +51,7 @@ describe('get outlining spans', () => {
         })
         export class AppCmp {
         }`,
-      'app.html': '@defer { lazy text }'
+      'app.html': '@defer { lazy text }',
     };
     const env = LanguageServiceTestEnv.setup();
     const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -59,8 +60,9 @@ describe('get outlining spans', () => {
     const appFile = project.openFile('app.html');
     const result = appFile.getOutliningSpans();
     const {textSpan} = result[0];
-    expect(files['app.html'].substring(textSpan.start, textSpan.start + textSpan.length))
-        .toEqual(' lazy text ');
+    expect(files['app.html'].substring(textSpan.start, textSpan.start + textSpan.length)).toEqual(
+      ' lazy text ',
+    );
   });
 
   it('should have outlining spans for all defer block parts', () => {
@@ -91,8 +93,9 @@ describe('get outlining spans', () => {
     const appFile = project.openFile('app.ts');
     const result = appFile.getOutliningSpans();
     expect(getTrimmedSpanText(result[0].textSpan, files['app.ts'])).toEqual('defer main block');
-    expect(getTrimmedSpanText(result[1].textSpan, files['app.ts']))
-        .toEqual('defer placeholder block');
+    expect(getTrimmedSpanText(result[1].textSpan, files['app.ts'])).toEqual(
+      'defer placeholder block',
+    );
     expect(getTrimmedSpanText(result[2].textSpan, files['app.ts'])).toEqual('defer loading block');
     expect(getTrimmedSpanText(result[3].textSpan, files['app.ts'])).toEqual('defer error block');
   });
@@ -104,11 +107,11 @@ describe('get outlining spans', () => {
 
         @Component({
           template: \`
-          @if (1) {
+          @if (val1) {
             if1
-          } @else if (2) {
+          } @else if (val2) {
             elseif2
-          } @else if (3) {
+          } @else if (val3) {
             elseif3
           } @else {
             else block
@@ -116,6 +119,9 @@ describe('get outlining spans', () => {
           \`
         })
         export class AppCmp {
+          val1: any;
+          val2: any;
+          val3: any;
         }`,
     };
     const env = LanguageServiceTestEnv.setup();
@@ -160,8 +166,9 @@ describe('get outlining spans', () => {
 
     const appFile = project.openFile('app.ts');
     const result = appFile.getOutliningSpans();
-    expect(getTrimmedSpanText(result[0].textSpan, files['app.ts']))
-        .toMatch(/case..'test'.*default.*\}/);
+    expect(getTrimmedSpanText(result[0].textSpan, files['app.ts'])).toMatch(
+      /case..'test'.*default.*\}/,
+    );
     expect(getTrimmedSpanText(result[1].textSpan, files['app.ts'])).toEqual('yes');
     expect(getTrimmedSpanText(result[2].textSpan, files['app.ts'])).toEqual('definitely not');
     expect(getTrimmedSpanText(result[3].textSpan, files['app.ts'])).toEqual('stop trying');
@@ -197,11 +204,10 @@ describe('get outlining spans', () => {
   });
 });
 
-
 function getTrimmedSpanText(span: ts.TextSpan, contents: string) {
   return trim(contents.substring(span.start, span.start + span.length));
 }
 
-function trim(text: string|null): string {
+function trim(text: string | null): string {
   return text ? text.replace(/[\s\n]+/gm, ' ').trim() : '';
 }

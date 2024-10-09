@@ -3,23 +3,32 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {assertInInjectionContext} from '../../di';
 
-import {createInputSignal, InputOptions, InputOptionsWithoutTransform, InputOptionsWithTransform, InputSignal, InputSignalWithTransform} from './input_signal';
+import {
+  createInputSignal,
+  InputOptions,
+  InputOptionsWithoutTransform,
+  InputOptionsWithTransform,
+  InputSignal,
+  InputSignalWithTransform,
+} from './input_signal';
 import {REQUIRED_UNSET_VALUE} from './input_signal_node';
 
 export function inputFunction<ReadT, WriteT>(
-    initialValue?: ReadT,
-    opts?: InputOptions<ReadT, WriteT>): InputSignalWithTransform<ReadT|undefined, WriteT> {
+  initialValue?: ReadT,
+  opts?: InputOptions<ReadT, WriteT>,
+): InputSignalWithTransform<ReadT | undefined, WriteT> {
   ngDevMode && assertInInjectionContext(input);
   return createInputSignal(initialValue, opts);
 }
 
-export function inputRequiredFunction<ReadT, WriteT = ReadT>(opts?: InputOptions<ReadT, WriteT>):
-    InputSignalWithTransform<ReadT, WriteT> {
+export function inputRequiredFunction<ReadT, WriteT = ReadT>(
+  opts?: InputOptions<ReadT, WriteT>,
+): InputSignalWithTransform<ReadT, WriteT> {
   ngDevMode && assertInInjectionContext(input);
   return createInputSignal(REQUIRED_UNSET_VALUE as never, opts);
 }
@@ -31,7 +40,7 @@ export function inputRequiredFunction<ReadT, WriteT = ReadT>(opts?: InputOptions
  * The function exposes an API for also declaring required inputs via the
  * `input.required` function.
  *
- * @developerPreview
+ * @publicAPI
  * @docsPrivate Ignored because `input` is the canonical API entry.
  */
 export interface InputFunction {
@@ -39,9 +48,11 @@ export interface InputFunction {
    * Initializes an input of type `T` with an initial value of `undefined`.
    * Angular will implicitly use `undefined` as initial value.
    */
-  <T>(): InputSignal<T|undefined>;
+  <T>(): InputSignal<T | undefined>;
   /** Declares an input of type `T` with an explicit initial value. */
   <T>(initialValue: T, opts?: InputOptionsWithoutTransform<T>): InputSignal<T>;
+  /** Declares an input of type `T|undefined` without an initial value, but with input options */
+  <T>(initialValue: undefined, opts: InputOptionsWithoutTransform<T>): InputSignal<T | undefined>;
   /**
    * Declares an input of type `T` with an initial value and a transform
    * function.
@@ -49,8 +60,20 @@ export interface InputFunction {
    * The input accepts values of type `TransformT` and the given
    * transform function will transform the value to type `T`.
    */
-  <T, TransformT>(initialValue: T, opts: InputOptionsWithTransform<T, TransformT>):
-      InputSignalWithTransform<T, TransformT>;
+  <T, TransformT>(
+    initialValue: T,
+    opts: InputOptionsWithTransform<T, TransformT>,
+  ): InputSignalWithTransform<T, TransformT>;
+  /**
+   * Declares an input of type `T|undefined` without an initial value and with a transform
+   * function.
+   *
+   * The input accepts values of type `TransformT` and the given
+   * transform function will transform the value to type `T|undefined`.
+   */ <T, TransformT>(
+    initialValue: undefined,
+    opts: InputOptionsWithTransform<T | undefined, TransformT>,
+  ): InputSignalWithTransform<T | undefined, TransformT>;
 
   /**
    * Initializes a required input.
@@ -58,7 +81,7 @@ export interface InputFunction {
    * Consumers of your directive/component need to bind to this
    * input. If unset, a compile time error will be reported.
    *
-   * @developerPreview
+   * @publicAPI
    */
   required: {
     /** Declares a required input of type `T`. */
@@ -69,8 +92,9 @@ export interface InputFunction {
      * The input accepts values of type `TransformT` and the given
      * transform function will transform the value to type `T`.
      */
-    <T, TransformT>(opts: InputOptionsWithTransform<T, TransformT>):
-        InputSignalWithTransform<T, TransformT>;
+    <T, TransformT>(
+      opts: InputOptionsWithTransform<T, TransformT>,
+    ): InputSignalWithTransform<T, TransformT>;
   };
 }
 
@@ -119,7 +143,7 @@ export interface InputFunction {
  * <span>{{firstName()}}</span>
  * ```
  *
- * @developerPreview
+ * @publicAPI
  * @initializerApiFunction
  */
 export const input: InputFunction = (() => {
@@ -127,5 +151,5 @@ export const input: InputFunction = (() => {
   // this assignment, unless this `input` constant export is accessed. It's a
   // self-contained side effect that is local to the user facing`input` export.
   (inputFunction as any).required = inputRequiredFunction;
-  return inputFunction as (typeof inputFunction&{required: typeof inputRequiredFunction});
+  return inputFunction as typeof inputFunction & {required: typeof inputRequiredFunction};
 })();

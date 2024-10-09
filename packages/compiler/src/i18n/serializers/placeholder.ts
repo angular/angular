@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 const TAG_TO_PLACEHOLDER_NAMES: {[k: string]: string} = {
@@ -119,11 +119,13 @@ export class PlaceholderRegistry {
     return placeholder;
   }
 
-
   // Generate a hash for a tag - does not take attribute order into account
   private _hashTag(tag: string, attrs: {[k: string]: string}, isVoid: boolean): string {
     const start = `<${tag}`;
-    const strAttrs = Object.keys(attrs).sort().map((name) => ` ${name}=${attrs[name]}`).join('');
+    const strAttrs = Object.keys(attrs)
+      .sort()
+      .map((name) => ` ${name}=${attrs[name]}`)
+      .join('');
     const end = isVoid ? '/>' : `></${tag}>`;
 
     return start + strAttrs + end;

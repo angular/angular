@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
 import {Terminal} from './terminal.component';
 import {TerminalHandler, TerminalType} from './terminal-handler.service';
 import {WINDOW} from '@angular/docs';
-import {FakeEventTarget} from '@angular/docs/testing';
+import {FakeEventTarget} from '@angular/docs';
 
 describe('Terminal', () => {
   let component: Terminal;
@@ -61,12 +61,12 @@ describe('Terminal', () => {
     );
   });
 
-  it('should call resizeToFitParent on window resize', fakeAsync(() => {
+  it('should call resizeToFitParent on window resize', async () => {
     fakeWindow.dispatchEvent(new Event('resize'));
 
     // debounce time
-    tick(50);
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     expect(terminalHandlerSpy.resizeToFitParent).toHaveBeenCalled();
-  }));
+  });
 });

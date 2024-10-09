@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {isPlatformServer} from '@angular/common';
@@ -181,14 +181,12 @@ function chainedInterceptorFn(
   interceptorFn: HttpInterceptorFn,
   injector: EnvironmentInjector,
 ): ChainedInterceptorFn<unknown> {
-  // clang-format off
   return (initialRequest, finalHandlerFn) =>
     runInInjectionContext(injector, () =>
       interceptorFn(initialRequest, (downstreamRequest) =>
         chainTailFn(downstreamRequest, finalHandlerFn),
       ),
     );
-  // clang-format on
 }
 
 /**
@@ -213,13 +211,6 @@ export const HTTP_INTERCEPTOR_FNS = new InjectionToken<readonly HttpInterceptorF
  */
 export const HTTP_ROOT_INTERCEPTOR_FNS = new InjectionToken<readonly HttpInterceptorFn[]>(
   ngDevMode ? 'HTTP_ROOT_INTERCEPTOR_FNS' : '',
-);
-
-/**
- * A provider to set a global primary http backend. If set, it will override the default one
- */
-export const PRIMARY_HTTP_BACKEND = new InjectionToken<HttpBackend>(
-  ngDevMode ? 'PRIMARY_HTTP_BACKEND' : '',
 );
 
 // TODO(atscott): We need a larger discussion about stability and what should contribute to stability.
@@ -279,12 +270,6 @@ export class HttpInterceptorHandler extends HttpHandler {
     private injector: EnvironmentInjector,
   ) {
     super();
-
-    // Check if there is a preferred HTTP backend configured and use it if that's the case.
-    // This is needed to enable `FetchBackend` globally for all HttpClient's when `withFetch`
-    // is used.
-    const primaryHttpBackend = inject(PRIMARY_HTTP_BACKEND, {optional: true});
-    this.backend = primaryHttpBackend ?? backend;
 
     // We strongly recommend using fetch backend for HTTP calls when SSR is used
     // for an application. The logic below checks if that's the case and produces

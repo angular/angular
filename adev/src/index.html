@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <!-- We set all theme classes to allow critters to inline the theme styles and prevent flickering -->
 <html lang="en" class="docs-dark-mode docs-light-mode">
   <head>
@@ -24,7 +24,22 @@
       } else {
         documentClassList.add(LIGHT_MODE_CLASS_NAME);
       }
+
+      if(location.search.includes('uwu')) {
+        documentClassList.add('uwu');
+      }
     </script>
+    <style>
+      .uwu-logo {
+        display: none;
+      }
+      html.uwu .angular-logo {
+        display: none;
+      }
+      html.uwu .uwu-logo {
+        display: block !important;
+      }
+    </style>
 
     <meta charset="utf-8" />
     <title>Angular</title>
@@ -37,11 +52,14 @@
 
     <!-- Favicons -->
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/assets/icons/favicon-48x48.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png" />
     <link rel="manifest" href="/assets/icons/site.webmanifest" />
     <link rel="mask-icon" href="/assets/icons/safari-pinned-tab.svg" color="#e90464" />
     <link rel="shortcut icon" href="/assets/icons/favicon.ico" />
+    <link rel="canonical" href="https://angular.dev">
+
     <meta name="apple-mobile-web-app-title" content="Angular" />
     <meta name="application-name" content="Angular" />
     <meta name="msapplication-TileColor" content="#e90464" />

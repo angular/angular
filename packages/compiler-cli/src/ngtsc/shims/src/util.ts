@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {absoluteFrom, AbsoluteFsPath} from '../../file_system';
@@ -18,7 +18,10 @@ export function makeShimFileName(fileName: AbsoluteFsPath, suffix: string): Abso
 }
 
 export function generatedModuleName(
-    originalModuleName: string, originalFileName: string, genSuffix: string): string {
+  originalModuleName: string,
+  originalFileName: string,
+  genSuffix: string,
+): string {
   let moduleName: string;
   if (originalFileName.endsWith('/index.ts')) {
     moduleName = originalModuleName + '/index' + genSuffix;

@@ -1,0 +1,27 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(
+    default_visibility = [
+        "//packages/core/schematics:__pkg__",
+        "//packages/core/schematics/migrations/google3:__pkg__",
+        "//packages/core/schematics/test:__pkg__",
+    ],
+)
+
+filegroup(
+    name = "static_files",
+    srcs = ["schema.json"],
+)
+
+ts_library(
+    name = "inject-migration",
+    srcs = glob(["**/*.ts"]),
+    tsconfig = "//packages/core/schematics:tsconfig.json",
+    deps = [
+        "//packages/core/schematics/utils",
+        "//packages/core/schematics/utils/tsurge/helpers/ast",
+        "@npm//@angular-devkit/schematics",
+        "@npm//@types/node",
+        "@npm//typescript",
+    ],
+)

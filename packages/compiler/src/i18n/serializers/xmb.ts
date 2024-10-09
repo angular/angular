@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {decimalDigest} from '../digest';
@@ -11,6 +11,15 @@ import * as i18n from '../i18n_ast';
 
 import {PlaceholderMapper, Serializer, SimplePlaceholderMapper} from './serializer';
 import * as xml from './xml_helper';
+
+/**
+ * Defines the `handler` value on the serialized XMB, indicating that Angular
+ * generated the bundle. This is useful for analytics in Translation Console.
+ *
+ * NOTE: Keep in sync with
+ * packages/localize/tools/src/extract/translation_files/xmb_translation_serializer.ts.
+ */
+const _XMB_HANDLER = 'angular';
 
 const _MESSAGES_TAG = 'messagebundle';
 const _MESSAGE_TAG = 'msg';
@@ -39,12 +48,17 @@ const _DOCTYPE = `<!ELEMENT messagebundle (msg)*>
 <!ELEMENT ex (#PCDATA)>`;
 
 export class Xmb extends Serializer {
-  override write(messages: i18n.Message[], locale: string|null): string {
+  constructor(private readonly preservePlaceholders: boolean = true) {
+    super();
+  }
+
+  override write(messages: i18n.Message[], locale: string | null): string {
     const exampleVisitor = new ExampleVisitor();
     const visitor = new _Visitor();
-    let rootNode = new xml.Tag(_MESSAGES_TAG);
+    const rootNode = new xml.Tag(_MESSAGES_TAG);
+    rootNode.attrs['handler'] = _XMB_HANDLER;
 
-    messages.forEach(message => {
+    messages.forEach((message) => {
       const attrs: {[k: string]: string} = {id: message.id};
 
       if (message.description) {
@@ -57,15 +71,21 @@ export class Xmb extends Serializer {
 
       let sourceTags: xml.Tag[] = [];
       message.sources.forEach((source: i18n.MessageSpan) => {
-        sourceTags.push(new xml.Tag(
-            _SOURCE_TAG, {},
-            [new xml.Text(`${source.filePath}:${source.startLine}${
-                source.endLine !== source.startLine ? ',' + source.endLine : ''}`)]));
+        sourceTags.push(
+          new xml.Tag(_SOURCE_TAG, {}, [
+            new xml.Text(
+              `${source.filePath}:${source.startLine}${
+                source.endLine !== source.startLine ? ',' + source.endLine : ''
+              }`,
+            ),
+          ]),
+        );
       });
 
       rootNode.children.push(
-          new xml.CR(2),
-          new xml.Tag(_MESSAGE_TAG, attrs, [...sourceTags, ...visitor.serialize(message.nodes)]));
+        new xml.CR(2),
+        new xml.Tag(_MESSAGE_TAG, attrs, [...sourceTags, ...visitor.serialize(message.nodes)]),
+      );
     });
 
     rootNode.children.push(new xml.CR());
@@ -80,15 +100,16 @@ export class Xmb extends Serializer {
     ]);
   }
 
-  override load(content: string, url: string):
-      {locale: string, i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}} {
+  override load(
+    content: string,
+    url: string,
+  ): {locale: string; i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}} {
     throw new Error('Unsupported');
   }
 
   override digest(message: i18n.Message): string {
-    return digest(message);
+    return digest(message, this.preservePlaceholders);
   }
-
 
   override createNameMapper(message: i18n.Message): PlaceholderMapper {
     return new SimplePlaceholderMapper(message, toPublicName);
@@ -122,8 +143,10 @@ class _Visitor implements i18n.Visitor {
     const startTagAsText = new xml.Text(`<${ph.tag}>`);
     const startEx = new xml.Tag(_EXAMPLE_TAG, {}, [startTagAsText]);
     // TC requires PH to have a non empty EX, and uses the text node to show the "original" value.
-    const startTagPh =
-        new xml.Tag(_PLACEHOLDER_TAG, {name: ph.startName}, [startEx, startTagAsText]);
+    const startTagPh = new xml.Tag(_PLACEHOLDER_TAG, {name: ph.startName}, [
+      startEx,
+      startTagAsText,
+    ]);
     if (ph.isVoid) {
       // void tags have no children nor closing tags
       return [startTagPh];
@@ -132,8 +155,10 @@ class _Visitor implements i18n.Visitor {
     const closeTagAsText = new xml.Text(`</${ph.tag}>`);
     const closeEx = new xml.Tag(_EXAMPLE_TAG, {}, [closeTagAsText]);
     // TC requires PH to have a non empty EX, and uses the text node to show the "original" value.
-    const closeTagPh =
-        new xml.Tag(_PLACEHOLDER_TAG, {name: ph.closeName}, [closeEx, closeTagAsText]);
+    const closeTagPh = new xml.Tag(_PLACEHOLDER_TAG, {name: ph.closeName}, [
+      closeEx,
+      closeTagAsText,
+    ]);
 
     return [startTagPh, ...this.serialize(ph.children), closeTagPh];
   }
@@ -144,7 +169,7 @@ class _Visitor implements i18n.Visitor {
     const exTag = new xml.Tag(_EXAMPLE_TAG, {}, [interpolationAsText]);
     return [
       // TC requires PH to have a non empty EX, and uses the text node to show the "original" value.
-      new xml.Tag(_PLACEHOLDER_TAG, {name: ph.name}, [exTag, interpolationAsText])
+      new xml.Tag(_PLACEHOLDER_TAG, {name: ph.name}, [exTag, interpolationAsText]),
     ];
   }
 
@@ -165,22 +190,24 @@ class _Visitor implements i18n.Visitor {
   visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): xml.Node[] {
     const icuExpression = ph.value.expression;
     const icuType = ph.value.type;
-    const icuCases = Object.keys(ph.value.cases).map((value: string) => value + ' {...}').join(' ');
+    const icuCases = Object.keys(ph.value.cases)
+      .map((value: string) => value + ' {...}')
+      .join(' ');
     const icuAsText = new xml.Text(`{${icuExpression}, ${icuType}, ${icuCases}}`);
     const exTag = new xml.Tag(_EXAMPLE_TAG, {}, [icuAsText]);
     return [
       // TC requires PH to have a non empty EX, and uses the text node to show the "original" value.
-      new xml.Tag(_PLACEHOLDER_TAG, {name: ph.name}, [exTag, icuAsText])
+      new xml.Tag(_PLACEHOLDER_TAG, {name: ph.name}, [exTag, icuAsText]),
     ];
   }
 
   serialize(nodes: i18n.Node[]): xml.Node[] {
-    return [].concat(...nodes.map(node => node.visit(this)));
+    return [].concat(...nodes.map((node) => node.visit(this)));
   }
 }
 
-export function digest(message: i18n.Message): string {
-  return decimalDigest(message);
+export function digest(message: i18n.Message, preservePlaceholders: boolean): string {
+  return decimalDigest(message, preservePlaceholders);
 }
 
 // TC requires at least one non-empty example on placeholders
@@ -197,7 +224,7 @@ class ExampleVisitor implements xml.IVisitor {
         tag.children = [new xml.Tag(_EXAMPLE_TAG, {}, [exText])];
       }
     } else if (tag.children) {
-      tag.children.forEach(node => node.visit(this));
+      tag.children.forEach((node) => node.visit(this));
     }
   }
 

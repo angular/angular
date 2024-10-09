@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {SemanticReference, SemanticSymbol} from './api';
 
@@ -48,8 +48,10 @@ export function referenceEquality<T>(a: T, b: T): boolean {
  * that is called for all entries in the array.
  */
 export function isArrayEqual<T>(
-    a: readonly T[]|null, b: readonly T[]|null,
-    equalityTester: (a: T, b: T) => boolean = referenceEquality): boolean {
+  a: readonly T[] | null,
+  b: readonly T[] | null,
+  equalityTester: (a: T, b: T) => boolean = referenceEquality,
+): boolean {
   if (a === null || b === null) {
     return a === b;
   }
@@ -66,8 +68,10 @@ export function isArrayEqual<T>(
  * Sets that only differ in ordering are considered equal.
  */
 export function isSetEqual<T>(
-    a: ReadonlySet<T>|null, b: ReadonlySet<T>|null,
-    equalityTester: (a: T, b: T) => boolean = referenceEquality): boolean {
+  a: ReadonlySet<T> | null,
+  b: ReadonlySet<T> | null,
+  equalityTester: (a: T, b: T) => boolean = referenceEquality,
+): boolean {
   if (a === null || b === null) {
     return a === b;
   }

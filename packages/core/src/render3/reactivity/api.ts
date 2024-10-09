@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {SIGNAL} from '@angular/core/primitives/signals';
@@ -16,7 +16,7 @@ import {SIGNAL} from '@angular/core/primitives/signals';
  *
  * Ordinary values can be turned into `Signal`s with the `signal` function.
  */
-export type Signal<T> = (() => T)&{
+export type Signal<T> = (() => T) & {
   [SIGNAL]: unknown;
 };
 

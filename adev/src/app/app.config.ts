@@ -12,8 +12,9 @@ import {
   ApplicationConfig,
   ENVIRONMENT_INITIALIZER,
   ErrorHandler,
+  VERSION,
   inject,
-  provideZoneChangeDetection,
+  provideExperimentalZonelessChangeDetection,
 } from '@angular/core';
 import {
   DOCS_CONTENT_LOADER,
@@ -31,6 +32,7 @@ import {
   TitleStrategy,
   createUrlTreeFromSnapshot,
   provideRouter,
+  withComponentInputBinding,
   withInMemoryScrolling,
   withViewTransitions,
 } from '@angular/router';
@@ -43,13 +45,14 @@ import {CustomErrorHandler} from './core/services/errors-handling/error-handler'
 import {ExampleContentLoader} from './core/services/example-content-loader.service';
 import {ReuseTutorialsRouteStrategy} from './features/tutorial/tutorials-route-reuse-strategy';
 import {routes} from './routes';
-import {ReferenceScrollHandler} from './features/references/services/reference-scroll-handler.service';
+import {CURRENT_MAJOR_VERSION} from './core/providers/current-version';
+import {AppScroller} from './app-scroller';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(
       routes,
-      withInMemoryScrolling({anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled'}),
+      withInMemoryScrolling(),
       withViewTransitions({
         onViewTransitionCreated: ({transition, to}) => {
           const router = inject(Router);
@@ -67,11 +70,22 @@ export const appConfig: ApplicationConfig = {
           }
         },
       }),
+      withComponentInputBinding(),
     ),
+    provideExperimentalZonelessChangeDetection(),
     provideClientHydration(),
     provideHttpClient(withFetch()),
     provideAnimationsAsync(),
+    {
+      provide: CURRENT_MAJOR_VERSION,
+      useValue: Number(VERSION.major),
+    },
     {provide: ENVIRONMENT, useValue: environment},
+    {
+      provide: ENVIRONMENT_INITIALIZER,
+      multi: true,
+      useValue: () => inject(AppScroller),
+    },
     {
       provide: ENVIRONMENT_INITIALIZER,
       multi: true,
@@ -91,7 +105,5 @@ export const appConfig: ApplicationConfig = {
       deps: [DOCUMENT],
     },
     {provide: TitleStrategy, useClass: ADevTitleStrategy},
-    provideZoneChangeDetection({eventCoalescing: true}),
-    ReferenceScrollHandler,
   ],
 };

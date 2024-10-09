@@ -13,6 +13,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/testing",
         "//packages/compiler-cli/src/ngtsc/typecheck/api",
         "//packages/language-service/src",
+        "//packages/language-service/src/utils",
         "//packages/language-service/testing",
         "@npm//typescript",
     ],

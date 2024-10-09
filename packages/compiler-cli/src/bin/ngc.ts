@@ -4,7 +4,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 // Must be imported first, because Angular decorators throw on load.
@@ -22,7 +22,7 @@ async function runNgcComamnd() {
   process.exitCode = main(args, undefined, undefined, undefined, undefined, undefined);
 }
 
-runNgcComamnd().catch(e => {
+runNgcComamnd().catch((e) => {
   console.error(e);
   process.exitCode = 1;
 });

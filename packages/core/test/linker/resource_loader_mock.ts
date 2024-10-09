@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ResourceLoader} from '@angular/compiler';
@@ -116,7 +116,7 @@ class _PendingRequest {
     });
   }
 
-  complete(response: string|null) {
+  complete(response: string | null) {
     if (response == null) {
       this.reject(`Failed to load ${this.url}`);
     } else {

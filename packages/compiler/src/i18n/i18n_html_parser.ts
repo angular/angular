@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {MissingTranslationStrategy} from '../core';
@@ -29,16 +29,30 @@ export class I18NHtmlParser implements HtmlParser {
   private _translationBundle: TranslationBundle;
 
   constructor(
-      private _htmlParser: HtmlParser, translations?: string, translationsFormat?: string,
-      missingTranslation: MissingTranslationStrategy = MissingTranslationStrategy.Warning,
-      console?: Console) {
+    private _htmlParser: HtmlParser,
+    translations?: string,
+    translationsFormat?: string,
+    missingTranslation: MissingTranslationStrategy = MissingTranslationStrategy.Warning,
+    console?: Console,
+  ) {
     if (translations) {
       const serializer = createSerializer(translationsFormat);
-      this._translationBundle =
-          TranslationBundle.load(translations, 'i18n', serializer, missingTranslation, console);
+      this._translationBundle = TranslationBundle.load(
+        translations,
+        'i18n',
+        serializer,
+        missingTranslation,
+        console,
+      );
     } else {
-      this._translationBundle =
-          new TranslationBundle({}, null, digest, undefined, missingTranslation, console);
+      this._translationBundle = new TranslationBundle(
+        {},
+        null,
+        digest,
+        undefined,
+        missingTranslation,
+        console,
+      );
     }
   }
 
@@ -51,7 +65,12 @@ export class I18NHtmlParser implements HtmlParser {
     }
 
     return mergeTranslations(
-        parseResult.rootNodes, this._translationBundle, interpolationConfig, [], {});
+      parseResult.rootNodes,
+      this._translationBundle,
+      interpolationConfig,
+      [],
+      {},
+    );
   }
 }
 
@@ -60,7 +79,7 @@ function createSerializer(format?: string): Serializer {
 
   switch (format) {
     case 'xmb':
-      return new Xmb();
+      return new Xmb(/* preservePlaceholders */ true);
     case 'xtb':
       return new Xtb();
     case 'xliff2':

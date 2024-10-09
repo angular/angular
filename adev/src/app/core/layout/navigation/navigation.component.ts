@@ -7,7 +7,7 @@
  */
 
 import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
-import {CommonModule, DOCUMENT, Location, isPlatformBrowser} from '@angular/common';
+import {DOCUMENT, Location, isPlatformBrowser} from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -19,7 +19,6 @@ import {
 import {takeUntilDestroyed, toObservable} from '@angular/core/rxjs-interop';
 import {
   ClickOutside,
-  NavigationList,
   NavigationState,
   WINDOW,
   IconComponent,
@@ -30,7 +29,7 @@ import {
 import {NavigationEnd, Router, RouterLink} from '@angular/router';
 import {filter, map, startWith} from 'rxjs/operators';
 import {DOCS_ROUTES, REFERENCE_ROUTES, TUTORIALS_ROUTES} from '../../../routes';
-import {GITHUB, MEDIUM, X, YOUTUBE} from '../../constants/links';
+import {GITHUB, MEDIUM, X, YOUTUBE, DISCORD} from '../../constants/links';
 import {PagePrefix} from '../../enums/pages';
 import {Theme, ThemeManager} from '../../services/theme-manager.service';
 import {VersionManager} from '../../services/version-manager.service';
@@ -43,16 +42,7 @@ type MenuType = 'social' | 'theme-picker' | 'version-picker';
 @Component({
   selector: 'div.adev-nav',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterLink,
-    NavigationList,
-    ClickOutside,
-    CdkMenu,
-    CdkMenuItem,
-    CdkMenuTrigger,
-    IconComponent,
-  ],
+  imports: [RouterLink, ClickOutside, CdkMenu, CdkMenuItem, CdkMenuTrigger, IconComponent],
   templateUrl: './navigation.component.html',
   styleUrls: ['./navigation.component.scss', './mini-menu.scss', './nav-item.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -79,9 +69,13 @@ export class Navigation implements OnInit {
   readonly X = X;
   readonly MEDIUM = MEDIUM;
   readonly YOUTUBE = YOUTUBE;
+  readonly DISCORD = DISCORD;
 
   readonly PRIMARY_NAV_ID = PRIMARY_NAV_ID;
   readonly SECONDARY_NAV_ID = SECONDARY_NAV_ID;
+
+  // We can't use the ActivatedRouter queryParams as we're outside the router outlet
+  readonly isUwu = 'location' in globalThis ? location.search.includes('uwu') : false;
 
   miniMenuPositions = [
     new ConnectionPositionPair(
@@ -102,6 +96,8 @@ export class Navigation implements OnInit {
   openedMenu: MenuType | null = null;
 
   currentDocsVersion = this.versionManager.currentDocsVersion;
+  currentDocsVersionMode = this.versionManager.currentDocsVersion()?.version;
+
   // Set the values of the search label and title only on the client, because the label is user-agent specific.
   searchLabel = this.isBrowser
     ? isApple
@@ -123,10 +119,6 @@ export class Navigation implements OnInit {
     this.listenToRouteChange();
     this.preventToScrollContentWhenSecondaryNavIsOpened();
     this.closeMobileNavOnPrimaryRouteChange();
-  }
-
-  redirectToDocsVersion(versionUrl: string): void {
-    this.window.location.href = versionUrl;
   }
 
   setTheme(theme: Theme): void {
@@ -197,7 +189,8 @@ export class Navigation implements OnInit {
       this.activeRouteItem.set(PagePrefix.DOCS);
     } else if (
       urlAfterRedirects.startsWith(PagePrefix.REFERENCE) ||
-      urlAfterRedirects.startsWith(PagePrefix.API)
+      urlAfterRedirects.startsWith(PagePrefix.API) ||
+      urlAfterRedirects.startsWith(PagePrefix.UPDATE)
     ) {
       this.activeRouteItem.set(PagePrefix.REFERENCE);
     } else if (urlAfterRedirects === PagePrefix.PLAYGROUND) {

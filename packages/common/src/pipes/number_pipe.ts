@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {DEFAULT_CURRENCY_CODE, Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
@@ -83,13 +83,6 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 export class DecimalPipe implements PipeTransform {
   constructor(@Inject(LOCALE_ID) private _locale: string) {}
 
-  transform(value: number | string, digitsInfo?: string, locale?: string): string | null;
-  transform(value: null | undefined, digitsInfo?: string, locale?: string): null;
-  transform(
-    value: number | string | null | undefined,
-    digitsInfo?: string,
-    locale?: string,
-  ): string | null;
   /**
    * @param value The value to be formatted.
    * @param digitsInfo Sets digit and decimal representation.
@@ -97,6 +90,13 @@ export class DecimalPipe implements PipeTransform {
    * @param locale Specifies what locale format rules to use.
    * [See more](#locale).
    */
+  transform(value: number | string, digitsInfo?: string, locale?: string): string | null;
+  transform(value: null | undefined, digitsInfo?: string, locale?: string): null;
+  transform(
+    value: number | string | null | undefined,
+    digitsInfo?: string,
+    locale?: string,
+  ): string | null;
   transform(
     value: number | string | null | undefined,
     digitsInfo?: string,

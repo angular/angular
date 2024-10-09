@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {escapeRegExp, partitionArray, splitAtColon, stringify, utf8Encode} from '../src/util';
@@ -72,7 +72,11 @@ describe('util', () => {
         ['\uDFFF', '\xED\xBF\xBF'],
       ];
       tests.forEach(([input, output]) => {
-        expect(utf8Encode(input).map(byte => String.fromCharCode(byte)).join('')).toEqual(output);
+        expect(
+          utf8Encode(input)
+            .map((byte) => String.fromCharCode(byte))
+            .join(''),
+        ).toEqual(output);
       });
     });
   });
@@ -94,7 +98,8 @@ describe('util', () => {
 
     it('should handle arrays of objects', () => {
       expect(partitionArray([{id: 1}, {id: 2}, {id: 3}], (el: any) => el.id < 2)).toEqual([
-        [{id: 1}], [{id: 2}, {id: 3}]
+        [{id: 1}],
+        [{id: 2}, {id: 3}],
       ]);
     });
   });

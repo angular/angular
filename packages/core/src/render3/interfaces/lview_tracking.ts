@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {assertNumber} from '../../util/assert';
@@ -28,7 +28,7 @@ export function registerLView(lView: LView): void {
 }
 
 /** Gets an LView by its unique ID. */
-export function getLViewById(id: number): LView|null {
+export function getLViewById(id: number): LView | null {
   ngDevMode && assertNumber(id, 'ID used for LView lookup must be a number');
   return TRACKED_LVIEWS.get(id) || null;
 }
@@ -37,4 +37,9 @@ export function getLViewById(id: number): LView|null {
 export function unregisterLView(lView: LView): void {
   ngDevMode && assertNumber(lView[ID], 'Cannot stop tracking an LView that does not have an ID');
   TRACKED_LVIEWS.delete(lView[ID]);
+}
+
+/** Gets the currently-tracked views. */
+export function getTrackedLViews(): ReadonlyMap<number, LView> {
+  return TRACKED_LVIEWS;
 }

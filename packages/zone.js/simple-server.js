@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 const http = require('http');
@@ -31,15 +31,15 @@ function requestHandler(req, res) {
       return;
     }
 
-    fs.readFile(file, function(err, contents) {
+    fs.readFile(file, function (err, contents) {
       if (!err) {
         res.end(contents);
       } else {
         writeNotFound(res);
         return;
-      };
+      }
     });
-  };
-};
+  }
+}
 
 server = http.createServer(requestHandler).listen(8080);
