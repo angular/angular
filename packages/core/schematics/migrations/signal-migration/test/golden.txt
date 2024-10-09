@@ -1276,6 +1276,42 @@ export class MyComp {
     }
   }
 }
+@@@@@@ ternary_narrowing.ts @@@@@@
+
+// tslint:disable
+
+import {Component, Input, input} from '@angular/core';
+
+@Component({
+  template: `
+    {{ narrowed ? narrowed.substring(0, 1) : 'Empty' }}
+    {{ justChecked() ? 'true' : 'false' }}
+
+    {{ other?.safeRead ? other.safeRead : 'Empty' }}
+    {{ other?.safeRead2 ? other?.safeRead2 : 'Empty' }}
+  `,
+})
+export class TernaryNarrowing {
+  // TODO: Skipped for migration because:
+  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
+  //  and migrating would break narrowing currently.
+  @Input() narrowed: string | undefined = undefined;
+  readonly justChecked = input(true);
+
+  other?: OtherComponent;
+}
+
+@Component({template: ''})
+export class OtherComponent {
+  // TODO: Skipped for migration because:
+  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
+  //  and migrating would break narrowing currently.
+  @Input() safeRead: string = '';
+  // TODO: Skipped for migration because:
+  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
+  //  and migrating would break narrowing currently.
+  @Input() safeRead2: string = '';
+}
 @@@@@@ transform_functions.ts @@@@@@
 
 // tslint:disable
