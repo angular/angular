@@ -197,10 +197,11 @@ as-split-area {
   height: 100%;
   overflow: hidden;
   
-  h2 {
+  h4 {
+    box-sizing: border-box;
     padding: 4px 16px;
     margin: 0;
-    height: 50px;
+    height: 35px;
     display: flex;
     align-items: center;
     border-bottom: 1px solid #777777;
@@ -210,7 +211,7 @@ as-split-area {
 .injector-graph {
   overflow: auto;
   background: #f3f3f3;
-  height: calc(100% - 50px);
+  height: calc(100% - 35px);
 }
 
 .hierarchy-ref {
