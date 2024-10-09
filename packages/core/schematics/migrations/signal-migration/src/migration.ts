@@ -196,8 +196,8 @@ export class SignalInputMigration extends TsurgeComplexMigration<
 
       const isConsideredSourceInput =
         input.seenAsSourceInput &&
-        input.memberIncompatibility !== InputIncompatibilityReason.OutsideOfMigrationScope &&
-        input.memberIncompatibility !== InputIncompatibilityReason.SkippedViaConfigFilter;
+        input.memberIncompatibility !== FieldIncompatibilityReason.OutsideOfMigrationScope &&
+        input.memberIncompatibility !== FieldIncompatibilityReason.SkippedViaConfigFilter;
 
       // We won't track incompatibilities to inputs that aren't considered source inputs.
       // Tracking their statistics wouldn't provide any value.
