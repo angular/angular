@@ -23,7 +23,7 @@ import {
   PathSegment,
   PathString,
 } from '@angular/compiler-cli/src/ngtsc/file_system';
-import * as path from 'node:path';
+import * as posixPath from 'node:path/posix';
 
 /**
  * Angular compiler file system implementation that leverages an
@@ -64,7 +64,7 @@ export class DevkitMigrationFilesystem implements FileSystem {
   }
 
   basename(filePath: string, extension?: string): PathSegment {
-    return path.basename(filePath, extension) as PathSegment;
+    return posixPath.basename(filePath, extension) as PathSegment;
   }
 
   normalize<T extends PathString>(path: T): T {
@@ -76,7 +76,7 @@ export class DevkitMigrationFilesystem implements FileSystem {
     // In dev-kit, the NodeJS working directory should never be
     // considered, so `/` is the last resort over `cwd`.
     return this.normalize(
-      path.resolve(normalize('/'), ...normalizedPaths),
+      posixPath.resolve(normalize('/'), ...normalizedPaths),
     ) as string as AbsoluteFsPath;
   }
 
