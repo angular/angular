@@ -9,7 +9,7 @@
 import ts from 'typescript';
 import {ClassFieldDescriptor, KnownFields} from '../passes/reference_resolution/known_fields';
 import {ProblematicFieldRegistry} from '../passes/problematic_patterns/problematic_field_registry';
-import {InputIncompatibilityReason} from '../input_detection/incompatibility';
+import {FieldIncompatibilityReason} from '../passes/problematic_patterns/incompatibility';
 
 /**
  * Detects `spyOn(dirInstance, 'myInput')` calls that likely modify
@@ -43,7 +43,7 @@ export class SpyOnFieldPattern<D extends ClassFieldDescriptor> {
       }
 
       this.fields.markFieldIncompatible(fieldTarget, {
-        reason: InputIncompatibilityReason.SpyOnThatOverwritesField,
+        reason: FieldIncompatibilityReason.SpyOnThatOverwritesField,
         context: node,
       });
     }

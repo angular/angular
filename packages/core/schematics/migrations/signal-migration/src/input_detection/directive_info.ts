@@ -9,7 +9,10 @@
 import ts from 'typescript';
 import {ExtractedInput} from './input_decorator';
 import {InputDescriptor} from '../utils/input_id';
-import {ClassIncompatibilityReason, InputMemberIncompatibility} from './incompatibility';
+import {
+  ClassIncompatibilityReason,
+  FieldIncompatibility,
+} from '../passes/problematic_patterns/incompatibility';
 import {ClassFieldUniqueKey} from '../passes/reference_resolution/known_fields';
 
 /**
@@ -26,7 +29,7 @@ export class DirectiveInfo {
   >();
 
   /** Map of input IDs and their incompatibilities. */
-  memberIncompatibility = new Map<ClassFieldUniqueKey, InputMemberIncompatibility>();
+  memberIncompatibility = new Map<ClassFieldUniqueKey, FieldIncompatibility>();
 
   /**
    * Whether the whole class is incompatible.
@@ -61,7 +64,7 @@ export class DirectiveInfo {
   /** Get incompatibility of the given member, if it's incompatible for migration. */
   getInputMemberIncompatibility(
     input: InputDescriptor,
-  ): ClassIncompatibilityReason | InputMemberIncompatibility | null {
+  ): ClassIncompatibilityReason | FieldIncompatibility | null {
     return this.memberIncompatibility.get(input.key) ?? this.incompatible ?? null;
   }
 }

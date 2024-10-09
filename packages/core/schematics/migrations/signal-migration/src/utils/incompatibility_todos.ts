@@ -9,16 +9,16 @@
 import {KnownInputInfo} from '../input_detection/known_inputs';
 import {ProgramInfo, Replacement} from '../../../../utils/tsurge';
 import {
-  InputIncompatibilityReason,
-  isInputMemberIncompatibility,
-} from '../input_detection/incompatibility';
-import {
   getMessageForClassIncompatibility,
-  getMessageForInputIncompatibility,
-} from '../input_detection/incompatibility_human';
+  getMessageForFieldIncompatibility,
+} from '../passes/problematic_patterns/incompatibility_human';
 import {insertPrecedingLine} from '../../../../utils/tsurge/helpers/ast/insert_preceding_line';
 import {InputNode} from '../input_detection/input_node';
 import {cutStringToLineLimit} from '../../../../utils/tsurge/helpers/string_manipulation/cut_string_line_length';
+import {
+  FieldIncompatibilityReason,
+  isFieldIncompatibility,
+} from '../passes/problematic_patterns/incompatibility';
 
 /**
  * Inserts a TODO for the incompatibility blocking the given node
@@ -37,16 +37,17 @@ export function insertTodoForIncompatibility(
   // If an input is skipped via config filter or outside migration scope, do not
   // insert TODOs, as this could results in lots of unnecessary comments.
   if (
-    isInputMemberIncompatibility(incompatibility) &&
-    (incompatibility.reason === InputIncompatibilityReason.SkippedViaConfigFilter ||
-      incompatibility.reason === InputIncompatibilityReason.OutsideOfMigrationScope)
+    isFieldIncompatibility(incompatibility) &&
+    (incompatibility.reason === FieldIncompatibilityReason.SkippedViaConfigFilter ||
+      incompatibility.reason === FieldIncompatibilityReason.OutsideOfMigrationScope)
   ) {
     return [];
   }
 
-  const message = isInputMemberIncompatibility(incompatibility)
-    ? getMessageForInputIncompatibility(incompatibility.reason).short
-    : getMessageForClassIncompatibility(incompatibility).short;
+  const message = isFieldIncompatibility(incompatibility)
+    ? getMessageForFieldIncompatibility(incompatibility.reason, {single: 'input', plural: 'inputs'})
+        .short
+    : getMessageForClassIncompatibility(incompatibility, {single: 'input', plural: 'inputs'}).short;
   const lines = cutStringToLineLimit(message, 70);
 
   return [

@@ -21,7 +21,7 @@ import {
   isTemplateReference,
   isTsReference,
 } from './passes/reference_resolution/reference_kinds';
-import {InputIncompatibilityReason} from './input_detection/incompatibility';
+import {FieldIncompatibilityReason} from './passes/problematic_patterns/incompatibility';
 
 /**
  * Executes the analysis phase of the migration.
@@ -108,14 +108,14 @@ export function executeAnalysisPhase(
   for (const reference of result.references) {
     if (isTsReference(reference) && reference.from.isWrite) {
       knownInputs.markFieldIncompatible(reference.target, {
-        reason: InputIncompatibilityReason.WriteAssignment,
+        reason: FieldIncompatibilityReason.WriteAssignment,
         context: reference.from.node,
       });
     }
     if (isTemplateReference(reference) || isHostBindingReference(reference)) {
       if (reference.from.isWrite) {
         knownInputs.markFieldIncompatible(reference.target, {
-          reason: InputIncompatibilityReason.WriteAssignment,
+          reason: FieldIncompatibilityReason.WriteAssignment,
           // No TS node context available for template or host bindings.
           context: null,
         });
@@ -127,7 +127,7 @@ export function executeAnalysisPhase(
     if (isTemplateReference(reference)) {
       if (reference.from.isLikelyPartOfNarrowing) {
         knownInputs.markFieldIncompatible(reference.target, {
-          reason: InputIncompatibilityReason.PotentiallyNarrowedInTemplateButNoSupportYet,
+          reason: FieldIncompatibilityReason.PotentiallyNarrowedInTemplateButNoSupportYet,
           context: null,
         });
       }

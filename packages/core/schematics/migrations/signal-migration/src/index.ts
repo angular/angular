@@ -6,10 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-export {
-  getMessageForClassIncompatibility,
-  getMessageForInputIncompatibility,
-} from './input_detection/incompatibility_human';
 export {type KnownInputInfo, KnownInputs} from './input_detection/known_inputs';
 export {
   type InputNameNode,
@@ -21,4 +17,12 @@ export {type InputDescriptor, getInputDescriptor, isInputDescriptor} from './uti
 export {SignalInputMigration} from './migration';
 export {type MigrationConfig} from './migration_config';
 export {nonIgnorableInputIncompatibilities} from './best_effort_mode';
-export {InputIncompatibilityReason} from './input_detection/incompatibility';
+export {
+  type FieldIncompatibility,
+  FieldIncompatibilityReason,
+  ClassIncompatibilityReason,
+} from './passes/problematic_patterns/incompatibility';
+export {
+  getMessageForClassIncompatibility,
+  getMessageForFieldIncompatibility,
+} from './passes/problematic_patterns/incompatibility_human';

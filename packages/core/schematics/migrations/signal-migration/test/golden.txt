@@ -1134,7 +1134,7 @@ import {Input} from '@angular/core';
 
 class MyComp {
   // TODO: Skipped for migration because:
-  //  A jasmine `spyOn` call spies on this input. This breaks with signal inputs.
+  //  A jasmine `spyOn` call spies on this field. This breaks with signals.
   @Input() myInput = () => {};
 }
 

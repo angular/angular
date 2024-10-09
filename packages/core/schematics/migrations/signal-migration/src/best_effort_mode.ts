@@ -6,19 +6,20 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {InputIncompatibilityReason} from './input_detection/incompatibility';
+import {FieldIncompatibilityReason} from './passes/problematic_patterns/incompatibility';
 import {KnownInputs} from './input_detection/known_inputs';
 
 /** Input reasons that cannot be ignored. */
-export const nonIgnorableInputIncompatibilities: InputIncompatibilityReason[] = [
+export const nonIgnorableInputIncompatibilities: FieldIncompatibilityReason[] = [
   // Outside of scope inputs should not be migrated. E.g. references to inputs in `node_modules/`.
-  InputIncompatibilityReason.OutsideOfMigrationScope,
+  FieldIncompatibilityReason.OutsideOfMigrationScope,
   // Explicitly filtered inputs cannot be skipped via best effort mode.
-  InputIncompatibilityReason.SkippedViaConfigFilter,
+  FieldIncompatibilityReason.SkippedViaConfigFilter,
   // There is no good output for accessor inputs.
-  InputIncompatibilityReason.Accessor,
+  FieldIncompatibilityReason.Accessor,
   // There is no good output for such inputs. We can't perform "conversion".
-  InputIncompatibilityReason.RequiredInputButNoGoodExplicitTypeExtractable,
+  FieldIncompatibilityReason.SignalInput__RequiredButNoGoodExplicitTypeExtractable,
+  FieldIncompatibilityReason.SignalInput__QuestionMarkButNoGoodExplicitTypeExtractable,
 ];
 
 /** Filters ignorable input incompatibilities when best effort mode is enabled. */

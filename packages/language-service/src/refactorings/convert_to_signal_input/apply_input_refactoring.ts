@@ -12,8 +12,8 @@ import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import ts from 'typescript';
 import {
   getMessageForClassIncompatibility,
-  getMessageForInputIncompatibility,
-  InputIncompatibilityReason,
+  getMessageForFieldIncompatibility,
+  FieldIncompatibilityReason,
   KnownInputInfo,
   MigrationConfig,
   nonIgnorableInputIncompatibilities,
@@ -72,7 +72,7 @@ export async function applySignalInputRefactoring(
   }
 
   const incompatibilityMessages = new Map<string, string>();
-  const incompatibilityReasons = new Set<InputIncompatibilityReason>();
+  const incompatibilityReasons = new Set<FieldIncompatibilityReason>();
 
   for (const incompatibleInput of targetInputs.filter((i) => i.isIncompatible())) {
     const {container, descriptor} = incompatibleInput;
@@ -80,14 +80,20 @@ export async function applySignalInputRefactoring(
     const classIncompatibility = container.incompatible;
 
     if (memberIncompatibility !== undefined) {
-      const {short, extra} = getMessageForInputIncompatibility(memberIncompatibility.reason);
+      const {short, extra} = getMessageForFieldIncompatibility(memberIncompatibility.reason, {
+        single: 'input',
+        plural: 'inputs',
+      });
       incompatibilityMessages.set(descriptor.node.name.text, `${short}\n${extra}`);
       incompatibilityReasons.add(memberIncompatibility.reason);
       continue;
     }
 
     if (classIncompatibility !== null) {
-      const {short, extra} = getMessageForClassIncompatibility(classIncompatibility);
+      const {short, extra} = getMessageForClassIncompatibility(classIncompatibility, {
+        single: 'input',
+        plural: 'inputs',
+      });
       incompatibilityMessages.set(descriptor.node.name.text, `${short}\n${extra}`);
       continue;
     }

@@ -7,9 +7,9 @@
  */
 
 import {
-  InputIncompatibilityReason,
-  pickInputIncompatibility,
-} from '../input_detection/incompatibility';
+  FieldIncompatibilityReason,
+  pickFieldIncompatibility,
+} from '../passes/problematic_patterns/incompatibility';
 import {GraphNode, topologicalSort} from '../utils/inheritance_sort';
 import {CompilationUnitData} from './unit_data';
 
@@ -58,7 +58,7 @@ export function mergeCompilationUnitData(
         } else {
           // Input might not be incompatible in one target, but others might invalidate it.
           // merge the incompatibility state.
-          existing.memberIncompatibility = pickInputIncompatibility(
+          existing.memberIncompatibility = pickFieldIncompatibility(
             {reason: info.memberIncompatibility, context: null},
             {reason: existing.memberIncompatibility, context: null},
           ).reason;
@@ -100,8 +100,8 @@ export function mergeCompilationUnitData(
       // If parent is incompatible and not migrated, then this input
       // cannot be migrated either. Try propagating parent incompatibility then.
       if (isNodeIncompatible(parent.data)) {
-        node.data.info.memberIncompatibility = pickInputIncompatibility(
-          {reason: InputIncompatibilityReason.ParentIsIncompatible, context: null},
+        node.data.info.memberIncompatibility = pickFieldIncompatibility(
+          {reason: FieldIncompatibilityReason.ParentIsIncompatible, context: null},
           existingMemberIncompatibility,
         ).reason;
         break;
@@ -118,8 +118,8 @@ export function mergeCompilationUnitData(
           ? {reason: info.memberIncompatibility, context: null}
           : null;
 
-      info.memberIncompatibility = pickInputIncompatibility(
-        {reason: InputIncompatibilityReason.OutsideOfMigrationScope, context: null},
+      info.memberIncompatibility = pickFieldIncompatibility(
+        {reason: FieldIncompatibilityReason.OutsideOfMigrationScope, context: null},
         existingMemberIncompatibility,
       ).reason;
     }

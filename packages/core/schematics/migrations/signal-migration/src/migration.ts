@@ -26,8 +26,8 @@ import {filterIncompatibilitiesForBestEffortMode} from './best_effort_mode';
 import assert from 'assert';
 import {
   ClassIncompatibilityReason,
-  InputIncompatibilityReason,
-} from './input_detection/incompatibility';
+  FieldIncompatibilityReason,
+} from './passes/problematic_patterns/incompatibility';
 import {isInputDescriptor} from './utils/input_id';
 import {MigrationConfig} from './migration_config';
 import {ClassFieldUniqueKey} from './passes/reference_resolution/known_fields';
@@ -212,7 +212,7 @@ export class SignalInputMigration extends TsurgeComplexMigration<
       }
 
       if (input.memberIncompatibility !== null) {
-        const reasonName = InputIncompatibilityReason[input.memberIncompatibility];
+        const reasonName = FieldIncompatibilityReason[input.memberIncompatibility];
         const key = `input-field-incompatibility-${reasonName}` as const;
         fieldIncompatibleCounts[key] ??= 0;
         fieldIncompatibleCounts[key]++;
@@ -258,7 +258,7 @@ function filterInputsViaConfig(
       skippedInputs.add(input.descriptor.key);
       knownInputs.markFieldIncompatible(input.descriptor, {
         context: null,
-        reason: InputIncompatibilityReason.SkippedViaConfigFilter,
+        reason: FieldIncompatibilityReason.SkippedViaConfigFilter,
       });
     }
   }

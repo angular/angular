@@ -13,11 +13,11 @@ import {InputNode} from './input_node';
 import {DirectiveInfo} from './directive_info';
 import {
   ClassIncompatibilityReason,
-  InputIncompatibilityReason,
-  InputMemberIncompatibility,
-  isInputMemberIncompatibility,
-  pickInputIncompatibility,
-} from './incompatibility';
+  FieldIncompatibility,
+  FieldIncompatibilityReason,
+  isFieldIncompatibility,
+  pickFieldIncompatibility,
+} from '../passes/problematic_patterns/incompatibility';
 import {ClassFieldUniqueKey, KnownFields} from '../passes/reference_resolution/known_fields';
 import {attemptRetrieveInputFromSymbol} from './nodes_to_input';
 import {ProgramInfo, projectFile, ProjectFile} from '../../../../utils/tsurge';
@@ -122,7 +122,7 @@ export class KnownInputs
   }
 
   /** Marks the given input as incompatible for migration. */
-  markFieldIncompatible(input: InputDescriptor, incompatibility: InputMemberIncompatibility) {
+  markFieldIncompatible(input: InputDescriptor, incompatibility: FieldIncompatibility) {
     if (!this.knownInputIds.has(input.key)) {
       throw new Error(`Input cannot be marked as incompatible because it's not registered.`);
     }
@@ -131,8 +131,8 @@ export class KnownInputs
     const existingIncompatibility = inputInfo.container.getInputMemberIncompatibility(input);
 
     // Ensure an existing more significant incompatibility is not overridden.
-    if (existingIncompatibility !== null && isInputMemberIncompatibility(existingIncompatibility)) {
-      incompatibility = pickInputIncompatibility(existingIncompatibility, incompatibility);
+    if (existingIncompatibility !== null && isFieldIncompatibility(existingIncompatibility)) {
+      incompatibility = pickFieldIncompatibility(existingIncompatibility, incompatibility);
     }
 
     this.knownInputIds
@@ -169,14 +169,14 @@ export class KnownInputs
   captureUnknownDerivedField(field: InputDescriptor): void {
     this.markFieldIncompatible(field, {
       context: null,
-      reason: InputIncompatibilityReason.OverriddenByDerivedClass,
+      reason: FieldIncompatibilityReason.OverriddenByDerivedClass,
     });
   }
 
   captureUnknownParentField(field: InputDescriptor): void {
     this.markFieldIncompatible(field, {
       context: null,
-      reason: InputIncompatibilityReason.TypeConflictWithBaseClass,
+      reason: FieldIncompatibilityReason.TypeConflictWithBaseClass,
     });
   }
 }
