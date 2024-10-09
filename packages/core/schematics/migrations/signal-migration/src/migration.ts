@@ -193,12 +193,24 @@ export class SignalInputMigration extends TsurgeComplexMigration<
 
     for (const [id, input] of Object.entries(globalMetadata.knownInputs)) {
       fullCompilationInputs++;
-      if (input.seenAsSourceInput) {
-        sourceInputs++;
+
+      const isConsideredSourceInput =
+        input.seenAsSourceInput &&
+        input.memberIncompatibility !== InputIncompatibilityReason.OutsideOfMigrationScope &&
+        input.memberIncompatibility !== InputIncompatibilityReason.SkippedViaConfigFilter;
+
+      // We won't track incompatibilities to inputs that aren't considered source inputs.
+      // Tracking their statistics wouldn't provide any value.
+      if (!isConsideredSourceInput) {
+        continue;
       }
+
+      sourceInputs++;
+
       if (input.memberIncompatibility !== null || input.owningClassIncompatibility !== null) {
         incompatibleInputs++;
       }
+
       if (input.memberIncompatibility !== null) {
         const reasonName = InputIncompatibilityReason[input.memberIncompatibility];
         const key = `input-field-incompatibility-${reasonName}` as const;
