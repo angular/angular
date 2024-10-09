@@ -27,7 +27,7 @@ const linksMap = new Map<string, string>([
   ['api/core/for', 'api/core/@for'],
   ['api/core/if', 'api/core/@if'],
   ['api/core/switch', 'api/core/@switch'],
-  ['api/core/switch', 'api/core/@defer'],
+  ['api/core/defer', 'api/core/@defer'],
   ['api/core/rxjs-interop', 'api#core-rxjs-interop'],
   ['api/core/testing', 'api#core-testing'],
   ['api/elements', 'api#elements'],
