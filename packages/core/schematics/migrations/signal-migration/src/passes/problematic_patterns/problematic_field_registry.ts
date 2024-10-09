@@ -8,10 +8,7 @@
 
 import ts from 'typescript';
 import {ClassFieldDescriptor} from '../reference_resolution/known_fields';
-import {
-  ClassIncompatibilityReason,
-  InputIncompatibilityReason,
-} from '../../input_detection/incompatibility';
+import {ClassIncompatibilityReason, FieldIncompatibility} from './incompatibility';
 
 /**
  * Interface describing a registry for identifying and checking
@@ -28,9 +25,6 @@ import {
  */
 export interface ProblematicFieldRegistry<D extends ClassFieldDescriptor> {
   isFieldIncompatible(descriptor: D): boolean;
-  markFieldIncompatible(
-    field: D,
-    info: {reason: InputIncompatibilityReason; context: ts.Node | null},
-  ): void;
+  markFieldIncompatible(field: D, info: FieldIncompatibility): void;
   markClassIncompatible(node: ts.ClassDeclaration, reason: ClassIncompatibilityReason): void;
 }

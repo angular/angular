@@ -8,8 +8,8 @@
 
 import {
   ClassIncompatibilityReason,
-  InputIncompatibilityReason,
-} from '../input_detection/incompatibility';
+  FieldIncompatibilityReason,
+} from '../passes/problematic_patterns/incompatibility';
 import {ClassFieldUniqueKey} from '../passes/reference_resolution/known_fields';
 
 /**
@@ -24,7 +24,7 @@ export interface CompilationUnitData {
     // Use `string` here so that it's a usable index key.
     [inputIdKey: string]: {
       owningClassIncompatibility: ClassIncompatibilityReason | null;
-      memberIncompatibility: InputIncompatibilityReason | null;
+      memberIncompatibility: FieldIncompatibilityReason | null;
       seenAsSourceInput: boolean;
       extendsFrom: ClassFieldUniqueKey | null;
     };
