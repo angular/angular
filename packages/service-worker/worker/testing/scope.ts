@@ -192,7 +192,11 @@ export class SwTestHarnessImpl
     this.skippedWaiting = true;
   }
 
-  handleFetch(req: Request, clientId = ''): [Promise<Response | undefined>, Promise<void>] {
+  handleFetch(
+    req: Request,
+    clientId = '',
+    resultingClientId?: string,
+  ): [Promise<Response | undefined>, Promise<void>] {
     if (!this.eventHandlers.has('fetch')) {
       throw new Error('No fetch handler registered');
     }
@@ -203,9 +207,12 @@ export class SwTestHarnessImpl
       this.clients.add(clientId, isNavigation ? req.url : this.scopeUrl);
     }
 
-    const event = isNavigation
-      ? new MockFetchEvent(req, '', clientId)
-      : new MockFetchEvent(req, clientId, '');
+    const event =
+      clientId && resultingClientId
+        ? new MockFetchEvent(req, clientId, resultingClientId)
+        : isNavigation
+          ? new MockFetchEvent(req, '', clientId)
+          : new MockFetchEvent(req, clientId, '');
     this.eventHandlers.get('fetch')!.call(this, event);
 
     return [event.response, event.ready];
