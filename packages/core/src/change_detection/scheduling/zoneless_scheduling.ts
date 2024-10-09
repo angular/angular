@@ -18,7 +18,7 @@ export const enum NotificationType {
  */
 export abstract class ChangeDetectionScheduler {
   abstract notify(source?: NotificationType): void;
-  abstract tick(shouldRefreshViews: boolean): void;
+  abstract runningTick: boolean;
 }
 
 /** Token used to indicate if zoneless was enabled via provideZonelessChangeDetection(). */

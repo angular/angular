@@ -8,7 +8,7 @@
 
 import {AsyncPipe} from '@angular/common';
 import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
-import {afterNextRender, afterRender, ApplicationRef, ChangeDetectorRef, Component, createComponent, destroyPlatform, ElementRef, EnvironmentInjector, ErrorHandler, inject, Input, NgZone, PLATFORM_ID, provideZoneChangeDetection, signal, TemplateRef, Type, ViewChild, ViewContainerRef, ɵprovideZonelessChangeDetection as provideZonelessChangeDetection} from '@angular/core';
+import {afterNextRender, afterRender, ApplicationRef, ChangeDetectorRef, Component, createComponent, destroyPlatform, ElementRef, EnvironmentInjector, ErrorHandler, inject, Input, NgZone, PLATFORM_ID, provideExperimentalZonelessChangeDetection as provideZonelessChangeDetection, provideZoneChangeDetection, signal, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {ComponentFixture, ComponentFixtureAutoDetect, TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
@@ -540,6 +540,32 @@ describe('Angular with zoneless enabled', () => {
     }).not.toThrow();
     await fixture.whenStable();
   });
+
+  it('should not run change detection twice if manual tick called when CD was scheduled',
+     async () => {
+       let changeDetectionRuns = 0;
+       TestBed.runInInjectionContext(() => {
+         afterRender(() => {
+           changeDetectionRuns++;
+         });
+       });
+       @Component({template: '', standalone: true})
+       class MyComponent {
+         cdr = inject(ChangeDetectorRef);
+       }
+       const fixture = TestBed.createComponent(MyComponent);
+       await fixture.whenStable();
+       expect(changeDetectionRuns).toEqual(1);
+
+       // notify the scheduler
+       fixture.componentInstance.cdr.markForCheck();
+       // call tick manually
+       TestBed.inject(ApplicationRef).tick();
+       await fixture.whenStable();
+       // ensure we only ran render hook 1 more time rather than once for tick and once for the
+       // scheduled run
+       expect(changeDetectionRuns).toEqual(2);
+     });
 });
 
 describe('Angular with scheduler and ZoneJS', () => {
@@ -548,7 +574,9 @@ describe('Angular with scheduler and ZoneJS', () => {
         {providers: [{provide: ComponentFixtureAutoDetect, useValue: true}]});
   });
 
-  it('current default behavior requires updates inside Angular zone', async () => {
+  it('requires updates inside Angular zone when using ngZoneOnly', async () => {
+    TestBed.configureTestingModule(
+        {providers: [provideZoneChangeDetection({ignoreChangesOutsideZone: true})]});
     @Component({template: '{{thing()}}', standalone: true})
     class App {
       thing = signal('initial');
@@ -567,8 +595,6 @@ describe('Angular with scheduler and ZoneJS', () => {
   });
 
   it('updating signal outside of zone still schedules update when in hybrid mode', async () => {
-    TestBed.configureTestingModule(
-        {providers: [provideZoneChangeDetection({ignoreChangesOutsideZone: false})]});
     @Component({template: '{{thing()}}', standalone: true})
     class App {
       thing = signal('initial');
@@ -584,5 +610,39 @@ describe('Angular with scheduler and ZoneJS', () => {
     expect(fixture.isStable()).toBe(false);
     await fixture.whenStable();
     expect(fixture.nativeElement.innerText).toContain('new');
+  });
+
+  it('should not run change detection twice if notified during AppRef.tick', async () => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideZoneChangeDetection({ignoreChangesOutsideZone: false}),
+        {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
+      ]
+    });
+
+    let changeDetectionRuns = 0;
+    TestBed.runInInjectionContext(() => {
+      afterRender(() => {
+        changeDetectionRuns++;
+      });
+    });
+    @Component({template: '', standalone: true})
+    class MyComponent {
+      cdr = inject(ChangeDetectorRef);
+      ngDoCheck() {
+        // notify scheduler every time this component is checked
+        this.cdr.markForCheck();
+      }
+    }
+    const fixture = TestBed.createComponent(MyComponent);
+    await fixture.whenStable();
+    expect(changeDetectionRuns).toEqual(1);
+
+    // call tick manually
+    TestBed.inject(ApplicationRef).tick();
+    await fixture.whenStable();
+    // ensure we only ran render hook 1 more time rather than once for tick and once for the
+    // scheduled run
+    expect(changeDetectionRuns).toEqual(2);
   });
 });

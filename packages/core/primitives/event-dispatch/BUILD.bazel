@@ -30,14 +30,16 @@ filegroup(
 )
 
 rollup_bundle(
-    name = "bundled_contract_binary_tmp",
+    name = "contract_bundle",
+    args = ["--no-sourcemap"],
     entry_point = ":contract_binary.ts",
     format = "esm",
     deps = [":event-dispatch"],
 )
 
 terser_minified(
-    name = "bundle",
-    src = ":bundled_contract_binary_tmp",
+    name = "contract_bundle_min",
+    src = ":contract_bundle",
     config_file = ":terser.config.json",
+    sourcemap = False,
 )

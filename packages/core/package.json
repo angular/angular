@@ -10,6 +10,9 @@
   "exports": {
     "./schematics/*": {
       "default": "./schematics/*.js"
+    },
+    "./event-dispatch-contract.min.js": {
+      "default": "./event-dispatch-contract.min.js"
     }
   },
   "dependencies": {

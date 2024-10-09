@@ -8,7 +8,7 @@
 
 import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
 import {ResourceLoader} from '@angular/compiler';
-import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ChangeDetectionStrategy, Compiler, CompilerFactory, Component, EnvironmentInjector, InjectionToken, LOCALE_ID, NgModule, NgZone, PlatformRef, RendererFactory2, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ChangeDetectionStrategy, Compiler, CompilerFactory, Component, EnvironmentInjector, InjectionToken, LOCALE_ID, NgModule, NgZone, PlatformRef, provideZoneChangeDetection, RendererFactory2, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {ErrorHandler} from '@angular/core/src/error_handler';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
 import {createEnvironmentInjector, getLocaleId} from '@angular/core/src/render3';
@@ -771,6 +771,7 @@ describe('AppRef', () => {
   beforeEach(() => {
     stableCalled = false;
     TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection({ignoreChangesOutsideZone: true})],
       declarations: [
         SyncComp, MicroTaskComp, MacroTaskComp, MicroMacroTaskComp, MacroMicroTaskComp, ClickComp
       ],

@@ -52,6 +52,7 @@ ng_package(
     package_name = "@angular/core",
     srcs = [
         "package.json",
+        ":event_dispatch_contract_binary",
     ],
     nested_packages = [
         "//packages/core/schematics:npm_package",
@@ -139,4 +140,11 @@ generate_api_docs(
     ],
     entry_point = ":index.ts",
     module_name = "@angular/core",
+)
+
+genrule(
+    name = "event_dispatch_contract_binary",
+    srcs = ["//packages/core/primitives/event-dispatch:contract_bundle_min"],
+    outs = ["event-dispatch-contract.min.js"],
+    cmd = "cat $< >> $@",
 )

@@ -166,7 +166,10 @@ const serviceWorkerModuleApi = 'ServiceWorkerModule';
             TestBed.configureTestingModule({
               providers: [
                 provideServiceWorker('sw.js'),
-                {provide: ApplicationRef, useValue: {isStable: isStableSub.asObservable()}},
+                {
+                  provide: ApplicationRef,
+                  useValue: {isStable: isStableSub.asObservable(), afterTick: new Subject()},
+                },
                 {provide: PLATFORM_ID, useValue: 'browser'},
                 {
                   provide: SwRegistrationOptions,
@@ -178,7 +181,10 @@ const serviceWorkerModuleApi = 'ServiceWorkerModule';
             TestBed.configureTestingModule({
               imports: [ServiceWorkerModule.register('sw.js')],
               providers: [
-                {provide: ApplicationRef, useValue: {isStable: isStableSub.asObservable()}},
+                {
+                  provide: ApplicationRef,
+                  useValue: {isStable: isStableSub.asObservable(), afterTick: new Subject()},
+                },
                 {provide: PLATFORM_ID, useValue: 'browser'},
                 {
                   provide: SwRegistrationOptions,

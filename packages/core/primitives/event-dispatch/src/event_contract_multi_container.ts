@@ -6,15 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventContractContainer, EventContractContainerManager,} from './event_contract_container';
-import {STOP_PROPAGATION} from './event_contract_defines';
+import {EventContractContainer, EventContractContainerManager} from './event_contract_container';
 
 /**
  * An `EventContractContainerManager` that supports multiple containers.
  */
 export class EventContractMultiContainer implements EventContractContainerManager {
-  static STOP_PROPAGATION = STOP_PROPAGATION;
-
   /** The list of containers. */
   private containers: EventContractContainer[] = [];
   /** The list of nested containers. */
@@ -26,9 +23,7 @@ export class EventContractMultiContainer implements EventContractContainerManage
    * @param stopPropagation Controls whether events can bubble between
    *    containers or not.
    */
-  constructor(
-      private readonly stopPropagation: boolean = EventContractMultiContainer.STOP_PROPAGATION,
-  ) {}
+  constructor(private readonly stopPropagation = false) {}
 
   /**
    * Installs the provided installer on the element owned by this container,
@@ -188,9 +183,7 @@ export class EventContractMultiContainer implements EventContractContainerManage
  * Checks whether the container is a child of any of the containers.
  */
 function isNested(
-    container: EventContractContainer,
-    containers: EventContractContainer[],
-    ): boolean {
+    container: EventContractContainer, containers: EventContractContainer[]): boolean {
   for (let i = 0; i < containers.length; ++i) {
     if (containsNode(containers[i].element, container.element)) {
       return true;

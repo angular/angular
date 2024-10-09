@@ -553,6 +553,12 @@ describe('R3 template transform', () => {
         '[1, 2, 3]',
         '{a: 1, b: 2, c: 3}',
         'v === 1',
+        'a || b',
+        'a && b',
+        'a ?? b',
+        '!a',
+        '!!a',
+        'a ? b : c',
       ];
 
       for (const expression of unsupportedExpressions) {
@@ -561,26 +567,6 @@ describe('R3 template transform', () => {
             .toThrowError(/Unsupported expression in a two-way binding/);
       }
     });
-
-    it('should allow some unassignable expressions in two-way bindings for backwards compatibility',
-       () => {
-         const expressions = [
-           'a || b',
-           'a && b',
-           'a ?? b',
-           '!a',
-           '!!a',
-           'a ? b : c',
-         ];
-
-         for (const expression of expressions) {
-           expectFromHtml(`<div [(prop)]="${expression}"></div>`).toEqual([
-             ['Element', 'div'],
-             ['BoundAttribute', BindingType.TwoWay, 'prop', expression],
-             ['BoundEvent', ParsedEventType.TwoWay, 'propChange', null, expression],
-           ]);
-         }
-       });
 
     it('should report an error for assignments into non-null asserted expressions', () => {
       // TODO(joost): this syntax is allowed in TypeScript. Consider changing the grammar to

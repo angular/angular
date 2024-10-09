@@ -6,4 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {AllowDetectChangesAndAcknowledgeItCanHideApplicationBugs as ɵAllowDetectChangesAndAcknowledgeItCanHideApplicationBugs} from './test_bed_common';
+/** Flag to enable/disable the zoneless scheduler as default provider with zone scheduling. */
+export const alwaysProvideZonelessScheduler = true;
