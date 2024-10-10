@@ -15,7 +15,7 @@ Before starting anything, make sure your workspace is up to date with latest cha
 git checkout main
 git pull upstream main
 nvm install
-yarn --frozen-lockfile
+yarn --immutable
 ```
 
 ## 2. Update extension version numbers

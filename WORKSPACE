@@ -6,7 +6,7 @@ workspace(
 )
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-load("//:yarn.bzl", "YARN_LABEL")
+load("//:yarn.bzl", "YARN_LABEL", "YARN_CLASSIC_LABEL")
 
 http_archive(
     name = "build_bazel_rules_nodejs",
@@ -72,7 +72,7 @@ yarn_install(
     # when the postinstall patches are modified.
     data = [
         YARN_LABEL,
-        "//:.yarnrc",
+        "//:.yarnrc.yml",
         "//:tools/npm-patches/@bazel+jasmine+5.8.1.patch",
         "//tools:postinstall-patches.js",
         "//tools/esm-interop:patches/npm/@angular+build-tooling+0.0.0-d30a56c19bafaac67cf44e605ed8c2c0e45b0a51.patch",
@@ -154,7 +154,7 @@ http_archive(
 load("@io_bazel_rules_sass//sass:sass_repositories.bzl", "sass_repositories")
 
 sass_repositories(
-    yarn_script = YARN_LABEL,
+    yarn_script = YARN_CLASSIC_LABEL,
 )
 
 # Register git toolchains
@@ -186,7 +186,7 @@ yarn_install(
     name = "npm_ts_versions",
     data = [
         YARN_LABEL,
-        "//:.yarnrc",
+        "//:.yarnrc.yml",
     ],
     exports_directories_only = False,
     package_json = "//packages/core/schematics/migrations/signal-migration/test/ts-versions:package.json",
