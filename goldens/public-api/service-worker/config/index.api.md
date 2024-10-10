@@ -26,6 +26,8 @@ export interface Config {
     // (undocumented)
     appData?: {};
     // (undocumented)
+    applicationMaxAge?: Duration;
+    // (undocumented)
     assetGroups?: AssetGroup[];
     // (undocumented)
     dataGroups?: DataGroup[];
