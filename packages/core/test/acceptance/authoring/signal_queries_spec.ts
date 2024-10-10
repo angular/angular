@@ -20,6 +20,7 @@ import {
   ViewChildren,
   viewChildren,
 } from '@angular/core';
+import {SIGNAL} from '@angular/core/primitives/signals';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
@@ -255,6 +256,43 @@ describe('queries as signals', () => {
       expect(fixture.componentInstance.result()).toBeUndefined();
       expect(fixture.componentInstance.results().length).toBe(0);
     });
+
+    it('should assign a debugName to the underlying signal node when a debugName is provided', () => {
+      @Component({
+        standalone: true,
+        template: `<div #el></div>`,
+      })
+      class AppComponent {
+        viewChildQuery = viewChild<ElementRef<HTMLDivElement>>('el', {debugName: 'viewChildQuery'});
+        viewChildrenQuery = viewChildren<ElementRef<HTMLDivElement>>('el', {
+          debugName: 'viewChildrenQuery',
+        });
+      }
+
+      const fixture = TestBed.createComponent(AppComponent);
+      const viewChildNode = fixture.componentInstance.viewChildQuery![SIGNAL] as {
+        debugName: string;
+      };
+      expect(viewChildNode.debugName).toBe('viewChildQuery');
+      const viewChildrenNode = fixture.componentInstance.viewChildrenQuery![SIGNAL] as {
+        debugName: string;
+      };
+      expect(viewChildrenNode.debugName).toBe('viewChildrenQuery');
+    });
+
+    it('should assign a debugName to the underlying signal node when a debugName is provided to a required viewChild query', () => {
+      @Component({
+        standalone: true,
+        template: `<div #el></div>`,
+      })
+      class AppComponent {
+        viewChildQuery = viewChild<ElementRef<HTMLDivElement>>('el', {debugName: 'viewChildQuery'});
+      }
+
+      const fixture = TestBed.createComponent(AppComponent);
+      const node = fixture.componentInstance.viewChildQuery![SIGNAL] as {debugName: string};
+      expect(node.debugName).toBe('viewChildQuery');
+    });
   });
 
   describe('content queries', () => {
@@ -421,6 +459,47 @@ describe('queries as signals', () => {
 
       expect(queryDir.result()).toBeUndefined();
       expect(queryDir.results().length).toBe(0);
+    });
+
+    it('should assign a debugName to the underlying signal node when a debugName is provided', () => {
+      @Component({
+        selector: 'query-cmp',
+        standalone: true,
+        template: ``,
+      })
+      class QueryComponent {
+        contentChildrenQuery = contentChildren('el', {debugName: 'contentChildrenQuery'});
+        contentChildQuery = contentChild('el', {debugName: 'contentChildQuery'});
+        contentChildRequiredQuery = contentChild.required('el', {
+          debugName: 'contentChildRequiredQuery',
+        });
+      }
+
+      @Component({
+        standalone: true,
+        imports: [QueryComponent],
+        template: `
+          <query-cmp>
+            <div #el></div>
+            <div #el></div>
+          </query-cmp>
+        `,
+      })
+      class AppComponent {}
+
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+      const queryComponent = fixture.debugElement.query(By.directive(QueryComponent))
+        .componentInstance as QueryComponent;
+      expect((queryComponent.contentChildrenQuery[SIGNAL] as {debugName: string}).debugName).toBe(
+        'contentChildrenQuery',
+      );
+      expect((queryComponent.contentChildQuery[SIGNAL] as {debugName: string}).debugName).toBe(
+        'contentChildQuery',
+      );
+      expect(
+        (queryComponent.contentChildRequiredQuery[SIGNAL] as {debugName: string}).debugName,
+      ).toBe('contentChildRequiredQuery');
     });
   });
 

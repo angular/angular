@@ -12,6 +12,7 @@ TEST_DEPS = [
     "//packages/core/rxjs-interop",
     "//packages/core/testing",
     "//packages/platform-browser",
+    "//packages/core/primitives/signals",
     "@npm//rxjs",
 ]
 

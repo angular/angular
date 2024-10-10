@@ -104,6 +104,11 @@ export interface CreateEffectOptions {
    * @deprecated no longer required, signal writes are allowed by default.
    */
   allowSignalWrites?: boolean;
+
+  /**
+   * A debug name for the effect. Used in Angular DevTools to identify the effect.
+   */
+  debugName?: string;
 }
 
 /**
@@ -195,6 +200,10 @@ export function effect(
   if (destroyRef !== null) {
     // If we need to register for cleanup, do that here.
     node.onDestroyFn = destroyRef.onDestroy(() => node.destroy());
+  }
+
+  if (ngDevMode) {
+    node.debugName = options?.debugName ?? '';
   }
 
   return new EffectRefImpl(node);
