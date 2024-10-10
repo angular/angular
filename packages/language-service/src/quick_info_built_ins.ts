@@ -159,13 +159,15 @@ const BUILT_IN_NAMES_TO_DOC_MAP: {
   },
   '@empty': {
     docString: `A block to display when the for loop variable is empty.`,
-    links: ['[Reference](https://angular.dev/guide/templates/control-flow#for-block---repeaters)'],
+    links: [
+      '[Reference](https://angular.dev/guide/templates/control-flow#providing-a-fallback-for-for-blocks-with-the-empty-block)',
+    ],
     displayInfoKind: DisplayInfoKind.BLOCK,
   },
   'track': {
     docString: `Keyword to control how the for loop compares items in the list to compute updates.`,
     links: [
-      '[Reference](https://angular.dev/guide/templates/control-flow#track-for-calculating-difference-of-two-collections)',
+      '[Reference](https://angular.dev/guide/templates/control-flow#why-is-track-in-for-blocks-important)',
     ],
     displayInfoKind: DisplayInfoKind.KEYWORD,
   },
