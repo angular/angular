@@ -10574,10 +10574,10 @@ runInEachFileSystem((os: string) => {
         // We need a regex match here, because the file path changes based on
         // the file system and the timestamp will be different for each test run.
         expect(jsContents).toMatch(
-          /import\.meta\.hot && import\.meta\.hot\.on\("angular:component-update", d => { if \(d\.id == ".*test\.ts%40Cmp"\) {/,
+          /import\.meta\.hot && import\.meta\.hot\.on\("angular:component-update", d => { if \(d\.id == "test\.ts%40Cmp"\) {/,
         );
         expect(jsContents).toMatch(
-          /import\("\/@ng\/component\?c=.*test\.ts%40Cmp&t=\d+"\).then\(m => i0\.ɵɵreplaceMetadata\(Cmp, m\.default\)\);/,
+          /import\("\/@ng\/component\?c=test\.ts%40Cmp&t=\d+"\).then\(m => i0\.ɵɵreplaceMetadata\(Cmp, m\.default\)\);/,
         );
       });
     });

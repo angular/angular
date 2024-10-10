@@ -1429,7 +1429,7 @@ export class NgCompiler {
         metaRegistry,
         metaReader,
         scopeReader,
-        depScopeReader,
+        this.adapter,
         ngModuleScopeRegistry,
         typeCheckScopeRegistry,
         resourceRegistry,

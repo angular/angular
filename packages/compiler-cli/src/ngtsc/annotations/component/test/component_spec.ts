@@ -120,7 +120,9 @@ function setup(
     metaRegistry,
     metaReader,
     scopeRegistry,
-    dtsResolver,
+    {
+      getCanonicalFileName: (fileName) => fileName,
+    },
     scopeRegistry,
     typeCheckScopeRegistry,
     resourceRegistry,
