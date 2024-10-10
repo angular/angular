@@ -1370,6 +1370,50 @@ describe('Image directive', () => {
         );
       });
     }
+
+    it('should remove placeholder blur when changing the image and the placeholder', () => {
+      @Component({
+        selector: 'test-cmp',
+        template: `<img [ngSrc]="ngSrc" width="400" height="300" [placeholder]="placeholder" />`,
+      })
+      class TestComponent {
+        ngSrc = `path/img.png`;
+        placeholder = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEU';
+      }
+      setupTestingModule({imageLoader, component: TestComponent});
+      const fixture = TestBed.createComponent(TestComponent);
+
+      fixture.detectChanges();
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      let styles = parseInlineStyles(img);
+      expect(styles.get('filter')).toBe(`blur(${PLACEHOLDER_BLUR_AMOUNT}px)`);
+      expect(styles.has('background-image')).toBe(true);
+
+      img.dispatchEvent(new Event('load'));
+      fixture.detectChanges();
+      styles = parseInlineStyles(img);
+      expect(styles.has('background-image')).toBe(false);
+      expect(styles.get('filter')).toBeUndefined();
+
+      fixture.componentInstance.placeholder = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEU_changed';
+      fixture.componentInstance.ngSrc = 'path/img2.png';
+
+      fixture.detectChanges();
+      styles = parseInlineStyles(img);
+      expect(styles.get('filter')).toBe(`blur(${PLACEHOLDER_BLUR_AMOUNT}px)`);
+
+      // We ensure the new placeholder is taken into account
+      expect(getBackgroundImageUrl(img)).toBe(
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEU_changed',
+      );
+
+      img.dispatchEvent(new Event('load'));
+      fixture.detectChanges();
+      styles = parseInlineStyles(img);
+      expect(styles.has('background-image')).toBe(false);
+      expect(styles.get('filter')).toBeUndefined();
+    });
   });
 
   describe('preconnect detector', () => {
@@ -2401,4 +2445,17 @@ function parseInlineStyles(img: HTMLImageElement): Map<string, string> {
     });
   }
   return styles;
+}
+
+function getBackgroundImageUrl(img: HTMLImageElement): string | undefined {
+  const style = img.getAttribute('style');
+
+  // Regular expression to match the background-image URL
+  const regex = /background-image\s*:\s*url\((.*?)\)/i;
+
+  // Find the match
+  const match = style?.match(regex);
+
+  // Extract the URL, removing any surrounding quotes
+  return match?.[1].replace(/['"]/g, '');
 }
