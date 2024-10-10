@@ -35,10 +35,10 @@ As an example, if we set the change detection strategy of `MainComponent` to `On
 
 ```mermaid
 graph TD;
-    app[AppComponent] --- header[HeaderComponent];
+    app{{AppComponent}} --- header{{HeaderComponent}};
     app --- main["MainComponent (OnPush)"];
-    header --- search[SearchComponent];
-    header --- button[ButtonComponent];
+    header --- search{{SearchComponent}};
+    header --- button{{ButtonComponent}};
     main --- login["LoginComponent (OnPush)"];
     main --- details[DetailsComponent];
     event>Event] --- search
@@ -47,10 +47,11 @@ style main fill:#E4BE74,color:#000
 style login fill:#E4BE74,color:#000
 style details fill:#E4BE74,color:#000
 
-style app fill:#C1D5B0,color:#000
-style header fill:#C1D5B0,color:#000
-style button fill:#C1D5B0,color:#000
-style search fill:#C1D5B0,color:#000
+style app fill:#339966,color:#000
+style event fill:#A081E0, color:#000
+style header fill:#339966,color:#000
+style button fill:#339966,color:#000
+style search fill:#339966,color:#000
 ```
 
 ## An event is handled by a component with OnPush
@@ -65,18 +66,18 @@ graph TD;
     app --- main["MainComponent (OnPush)"];
     header --- search[SearchComponent];
     header --- button[ButtonComponent];
-    main --- login["LoginComponent (OnPush)"];
+    main --- login{{"LoginComponent (OnPush)"}};
     main --- details[DetailsComponent];
     event>Event] --- main
 
 style login fill:#E4BE74,color:#000
-
-style app fill:#C1D5B0,color:#000
-style header fill:#C1D5B0,color:#000
-style button fill:#C1D5B0,color:#000
-style search fill:#C1D5B0,color:#000
-style main fill:#C1D5B0,color:#000
-style details fill:#C1D5B0,color:#000
+style event fill:#A081E0, color:#000
+style app fill:#339966,color:#000
+style header fill:#339966,color:#000
+style button fill:#339966,color:#000
+style search fill:#339966,color:#000
+style main fill:#339966,color:#000
+style details fill:#339966,color:#000
 ```
 
 ## An event is handled by a descendant of a component with OnPush
@@ -88,20 +89,21 @@ As an example, in the diagram below, Angular handles an event in `LoginComponent
 ```mermaid
 graph TD;
     app[AppComponent] --- header[HeaderComponent];
-    app --- main["MainComponent (OnPush)"];
+    app --- main{{"MainComponent (OnPush)"}};
     header --- search[SearchComponent];
     header --- button[ButtonComponent];
-    main --- login["LoginComponent (OnPush)"];
+    main --- login{{"LoginComponent (OnPush)"}};
     main --- details[DetailsComponent];
     event>Event] --- login
 
-style app fill:#C1D5B0,color:#000
-style header fill:#C1D5B0,color:#000
-style button fill:#C1D5B0,color:#000
-style search fill:#C1D5B0,color:#000
-style login fill:#C1D5B0,color:#000
-style main fill:#C1D5B0,color:#000
-style details fill:#C1D5B0,color:#000
+style app fill:#339966,color:#000
+style header fill:#339966,color:#000
+style button fill:#339966,color:#000
+style search fill:#339966,color:#000
+style login fill:#339966,color:#000
+style event fill:#A081E0, color:#000
+style main fill:#339966,color:#000
+style details fill:#339966,color:#000
 ```
 
 ## New inputs to component with OnPush
@@ -113,22 +115,23 @@ For example, in the diagram below, `AppComponent` passes a new input to `MainCom
 ```mermaid
 graph TD;
     app[AppComponent] --- header[HeaderComponent];
-    app --- main["MainComponent (OnPush)"];
+    app --- main{{"MainComponent (OnPush)"}};
     header --- search[SearchComponent];
     header --- button[ButtonComponent];
-    main --- login["LoginComponent (OnPush)"];
+    main --- login{{"LoginComponent (OnPush)"}};
     main --- details[DetailsComponent];
     event>Parent passes new input to MainComponent]
 
 style login fill:#E4BE74,color:#000
+style event fill:#A081E0, color:#000
 
 linkStyle 1 stroke:green
-style app fill:#C1D5B0,color:#000
-style header fill:#C1D5B0,color:#000
-style button fill:#C1D5B0,color:#000
-style search fill:#C1D5B0,color:#000
-style main fill:#C1D5B0,color:#000
-style details fill:#C1D5B0,color:#000
+style app fill:#339966,color:#000
+style header fill:#339966,color:#000
+style button fill:#339966,color:#000
+style search fill:#339966,color:#000
+style main fill:#339966,color:#000
+style details fill:#339966,color:#000
 ```
 
 ## Edge cases
