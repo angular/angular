@@ -21,20 +21,31 @@ import {
 } from '@angular/core';
 import ApiItemsSection from '../api-items-section/api-items-section.component';
 import {FormsModule} from '@angular/forms';
-import {SlideToggle, TextField} from '@angular/docs';
+import {IconComponent, TextField} from '@angular/docs';
+import {TitleCasePipe} from '@angular/common';
 import {Params, Router} from '@angular/router';
 import {ApiItemType} from '../interfaces/api-item-type';
 import {ApiReferenceManager} from './api-reference-manager.service';
 import ApiItemLabel from '../api-item-label/api-item-label.component';
 import {ApiLabel} from '../pipes/api-label.pipe';
 import {ApiItemsGroup} from '../interfaces/api-items-group';
+import {CdkMenuModule} from '@angular/cdk/menu';
 
 export const ALL_STATUSES_KEY = 'All';
 
 @Component({
   selector: 'adev-reference-list',
   standalone: true,
-  imports: [ApiItemsSection, ApiItemLabel, FormsModule, SlideToggle, TextField, ApiLabel],
+  imports: [
+    ApiItemsSection,
+    ApiItemLabel,
+    FormsModule,
+    TextField,
+    ApiLabel,
+    CdkMenuModule,
+    IconComponent,
+    TitleCasePipe,
+  ],
   templateUrl: './api-reference-list.component.html',
   styleUrls: ['./api-reference-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -46,6 +57,8 @@ export default class ApiReferenceList {
   private readonly injector = inject(Injector);
 
   private readonly allGroups = this.apiReferenceManager.apiGroups;
+
+  statuses = ['all', 'stable', 'deprecated', 'developer-preview', 'experimental'];
 
   constructor() {
     effect(() => {
@@ -66,9 +79,15 @@ export default class ApiReferenceList {
 
     effect(
       () => {
+        // prevents displaying a non-existent status on the dropdown button
+        let status = this.status();
+        if (status && !this.statuses.includes(status.toLowerCase())) {
+          this.status.set('all');
+        }
         const params: Params = {
           'query': this.query() ? this.query() : null,
           'type': this.type() ? this.type() : null,
+          'status': this.status() ? this.status() : null,
         };
 
         this.router.navigate([], {
@@ -85,9 +104,8 @@ export default class ApiReferenceList {
   }
 
   query = model<string | undefined>('');
-  includeDeprecated = signal(false);
-
   type = model<string | undefined>(ALL_STATUSES_KEY);
+  status = model<string | undefined>('all');
 
   featuredGroup = this.apiReferenceManager.featuredGroup;
   filteredGroups = computed((): ApiItemsGroup[] => {
@@ -103,10 +121,19 @@ export default class ApiReferenceList {
                   .toLocaleLowerCase()
                   .includes((this.query() as string).toLocaleLowerCase())
               : true) &&
-            (this.includeDeprecated() ? true : apiItem.isDeprecated === this.includeDeprecated()) &&
             (this.type() === undefined ||
               this.type() === ALL_STATUSES_KEY ||
-              apiItem.itemType === this.type())
+              apiItem.itemType === this.type()) &&
+            (this.status() === undefined ||
+              this.status()?.toLowerCase() === 'all' ||
+              (this.status()?.toLowerCase() === 'stable' &&
+                !apiItem.isDeveloperPreview &&
+                !apiItem.isDeprecated &&
+                !apiItem.isExperimental) ||
+              (this.status()?.toLowerCase() === 'deprecated' && apiItem.isDeprecated) ||
+              (this.status()?.toLowerCase() === 'developer-preview' &&
+                apiItem.isDeveloperPreview) ||
+              (this.status()?.toLowerCase() === 'experimental' && apiItem.isExperimental))
           );
         }),
       }))

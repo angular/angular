@@ -24,12 +24,25 @@
     <docs-text-field name="query" placeholder="Filter" [(ngModel)]="query" />
 
     <div class="adev-reference-list-form-part-two">
-      <docs-slide-toggle
-        buttonId="includeDeprecated"
-        label="Show @deprecated"
-        name="includeDeprecated"
-        [(ngModel)]="includeDeprecated"
-      />
+      <span class="adev-status-select">
+        Status:
+        <button [cdkMenuTriggerFor]="statusMenu">
+          <span>{{ status() ?? 'all'| titlecase }}</span>
+          <docs-icon>expand_more</docs-icon>
+        </button>
+
+        <ng-template #statusMenu>
+          <ul class="adev-status-dropdown" cdkMenu>
+            @for (stat of statuses; track $index) {
+              <li>
+                <button cdkMenuItem type="button" (click)="status.set(stat)">
+                  <span>{{ stat | titlecase }}</span>
+                </button>
+              </li>
+            }
+          </ul>
+        </ng-template>
+      </span>
     </div>
 
     @for (group of filteredGroups(); track group.id) {
