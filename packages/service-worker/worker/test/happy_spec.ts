@@ -2562,6 +2562,70 @@ import {envIsSupported} from '../testing/utils';
         return {server, scope, driver};
       }
     });
+
+    describe('applicationMaxAge', () => {
+      // When within the `applicationMaxAge`, the app should act like `performance` mode
+      // When outside of it, it should act like `freshness` mode, except it also uncaches asset
+      // requests
+      it("doesn't create navigate requests within the maxAge", async () => {
+        const {server, scope, driver} = createSwForMaxAge();
+
+        await makeRequest(scope, '/foo.txt');
+        await driver.initialized;
+        await server.clearRequests();
+
+        // Create multiple requests to prove no navigation OR asset requests were made.
+        // By default the navigation request is not sent, it's replaced
+        // with the index request - thus, the `this is foo` value.
+        expect(await makeNavigationRequest(scope, '/', '')).toBe('this is foo');
+        expect(await makeNavigationRequest(scope, '/foo', '')).toBe('this is foo');
+
+        expect(await makeRequest(scope, '/foo.txt')).toBe('this is foo');
+        expect(await makeRequest(scope, '/bar.txt')).toBe('this is bar');
+
+        server.assertNoOtherRequests();
+      });
+
+      it('creates navigate requests outside the maxAge', async () => {
+        const {server, scope, driver} = createSwForMaxAge();
+
+        await makeRequest(scope, '/foo.txt');
+        await driver.initialized;
+        await server.clearRequests();
+
+        await scope.advance(3000);
+
+        // Create multiple requests to prove the navigation and asset requests are all made
+        // When enabled, the navigation request is made each time and not replaced
+        // with the index request - thus, the `null` value.
+        expect(await makeNavigationRequest(scope, '/', '')).toBe(null);
+        expect(await makeNavigationRequest(scope, '/foo', '')).toBe(null);
+
+        expect(await makeRequest(scope, '/foo.txt')).toBe('this is foo');
+        expect(await makeRequest(scope, '/bar.txt')).toBe('this is bar');
+
+        server.assertSawRequestFor('/');
+        server.assertSawRequestFor('/foo');
+        server.assertSawRequestFor('/foo.txt');
+        server.assertSawRequestFor('/bar.txt');
+        server.assertNoOtherRequests();
+      });
+
+      function createSwForMaxAge() {
+        const scope = new SwTestHarnessBuilder().build();
+        // set the timestamp of the manifest using the server time so it's always "new" on test start
+        const maxAgeManifest: Manifest = {
+          ...manifest,
+          timestamp: scope.time,
+          applicationMaxAge: 2000,
+        };
+        const server = serverBuilderBase.withManifest(maxAgeManifest).build();
+        const driver = new Driver(scope, scope, new CacheDatabase(scope));
+        scope.updateServerState(server);
+
+        return {server, scope, driver};
+      }
+    });
   });
 })();
 

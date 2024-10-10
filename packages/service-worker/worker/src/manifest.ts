@@ -19,6 +19,7 @@ export interface Manifest {
   dataGroups?: DataGroupConfig[];
   navigationUrls: {positive: boolean; regex: string}[];
   navigationRequestStrategy: 'freshness' | 'performance';
+  applicationMaxAge?: number;
   hashTable: {[url: string]: string};
 }
 
