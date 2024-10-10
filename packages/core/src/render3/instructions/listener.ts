@@ -230,11 +230,25 @@ export function listenerInternal(
   }
 
   // subscribe to directive outputs
+  if (processOutputs) {
+    listenToOutput(tNode, lView, eventName, listenerFn, lCleanup, tCleanup);
+  }
+}
+
+export function listenToOutput(
+  tNode: TNode,
+  lView: LView,
+  eventName: string,
+  listenerFn: (e: unknown) => unknown,
+  lCleanup?: any[],
+  tCleanup?: false | any[],
+): VoidFunction | undefined {
   const outputs = tNode.outputs;
   let props: NodeOutputBindings[keyof NodeOutputBindings] | undefined;
-  if (processOutputs && outputs !== null && (props = outputs[eventName])) {
+  if (outputs !== null && (props = outputs[eventName])) {
     const propsLength = props.length;
     if (propsLength) {
+      const subscriptions: {unsubscribe: () => void}[] = [];
       for (let i = 0; i < propsLength; i += 2) {
         const index = props[i] as number;
         ngDevMode && assertIndexInRange(lView, index);
@@ -249,12 +263,19 @@ export function listenerInternal(
         }
 
         const subscription = (output as SubscribableOutput<unknown>).subscribe(listenerFn);
-        const idx = lCleanup.length;
-        lCleanup.push(listenerFn, subscription);
-        tCleanup && tCleanup.push(eventName, tNode.index, idx, -(idx + 1));
+        if (lCleanup) {
+          const idx = lCleanup.length;
+          lCleanup.push(listenerFn, subscription);
+          tCleanup && tCleanup.push(eventName, tNode.index, idx, -(idx + 1));
+        }
+        subscriptions.push(subscription);
       }
+      return () => {
+        subscriptions.forEach((s) => s.unsubscribe());
+      };
     }
   }
+  return undefined;
 }
 
 function executeListenerWithErrorHandling(
