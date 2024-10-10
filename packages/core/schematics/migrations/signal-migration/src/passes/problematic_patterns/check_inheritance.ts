@@ -13,7 +13,6 @@ import assert from 'assert';
 import ts from 'typescript';
 import {getMemberName} from '../../utils/class_member_names';
 import {InheritanceGraph} from '../../utils/inheritance_graph';
-import {topologicalSort} from '../../utils/inheritance_sort';
 import {ClassFieldDescriptor, KnownFields} from '../reference_resolution/known_fields';
 
 export interface InheritanceTracker<D extends ClassFieldDescriptor> {

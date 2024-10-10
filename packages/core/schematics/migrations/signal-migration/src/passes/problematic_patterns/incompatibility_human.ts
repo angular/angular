@@ -63,6 +63,11 @@ export function getMessageForFieldIncompatibility(
           'The migration needs to be able to resolve a type, so that it can include `undefined` in your type. ' +
           'Consider adding an explicit type to make the migration possible.',
       };
+    case FieldIncompatibilityReason.SignalQueries__QueryListProblematicFieldAccessed:
+      return {
+        short: `There are references to this query that cannot be migrated automatically.`,
+        extra: "For example, it's not possible to migrate `.changes` or `.dirty` trivially.",
+      };
     case FieldIncompatibilityReason.SkippedViaConfigFilter:
       return {
         short: `This ${fieldName.single} is not part of the current migration scope.`,

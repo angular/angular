@@ -21,7 +21,11 @@ import {
   TsurgeComplexMigration,
 } from '../../utils/tsurge';
 import {applyImportManagerChanges} from '../../utils/tsurge/helpers/apply_import_manager';
-import {ClassFieldDescriptor} from '../signal-migration/src';
+import {
+  ClassFieldDescriptor,
+  ClassIncompatibilityReason,
+  FieldIncompatibilityReason,
+} from '../signal-migration/src';
 import {checkInheritanceOfKnownFields} from '../signal-migration/src/passes/problematic_patterns/check_inheritance';
 import {checkIncompatiblePatterns} from '../signal-migration/src/passes/problematic_patterns/common_incompatible_patterns';
 import {migrateHostBindings} from '../signal-migration/src/passes/reference_migration/migrate_host_bindings';
@@ -50,13 +54,14 @@ import {replaceQueryListGetCall} from './fn_get_replacement';
 import {checkForIncompatibleQueryListAccesses} from './incompatible_query_list_fns';
 import {replaceQueryListFirstAndLastReferences} from './fn_first_last_replacement';
 import {MigrationConfig} from './migration_config';
+import {markFieldIncompatibleInMetadata} from './incompatibility';
 
 export interface CompilationUnitData {
   knownQueryFields: Record<ClassFieldUniqueKey, {fieldName: string; isMulti: boolean}>;
 
   // Potential queries problematic. We don't know what fields are queries during
   // analysis, so this is very eagerly tracking all potential problematic "class fields".
-  potentialProblematicQueries: Record<ClassFieldUniqueKey, true>;
+  potentialProblematicQueries: Record<ClassFieldUniqueKey, FieldIncompatibilityReason>;
 
   // Potential multi queries problematic. We don't know what fields are queries, or which
   // ones are "multi" queries during analysis, so this is very eagerly tracking all
@@ -70,7 +75,10 @@ export interface CompilationUnitData {
 
 export interface GlobalUnitData {
   knownQueryFields: Record<ClassFieldUniqueKey, {fieldName: string; isMulti: boolean}>;
-  problematicQueries: Record<ClassFieldUniqueKey, true>;
+  problematicQueries: Record<
+    ClassFieldUniqueKey,
+    {classReason: ClassIncompatibilityReason | null; fieldReason: FieldIncompatibilityReason | null}
+  >;
 
   // NOTE: Not serializable — ONLY works when we know it's not running in batch mode!
   reusableAnalysisReferences: Reference<ClassFieldDescriptor>[] | null;
@@ -194,15 +202,18 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
     // we saw in TS code, templates or host bindings.
     for (const ref of referenceResult.references) {
       if (isTsReference(ref) && ref.from.isWrite) {
-        res.potentialProblematicQueries[ref.target.key] = true;
+        res.potentialProblematicQueries[ref.target.key] =
+          FieldIncompatibilityReason.WriteAssignment;
       }
       if ((isTemplateReference(ref) || isHostBindingReference(ref)) && ref.from.isWrite) {
-        res.potentialProblematicQueries[ref.target.key] = true;
+        res.potentialProblematicQueries[ref.target.key] =
+          FieldIncompatibilityReason.WriteAssignment;
       }
       // TODO: Remove this when we support signal narrowing in templates.
       // https://github.com/angular/angular/pull/55456.
       if (isTemplateReference(ref) && ref.from.isLikelyPartOfNarrowing) {
-        res.potentialProblematicQueries[ref.target.key] = true;
+        res.potentialProblematicQueries[ref.target.key] =
+          FieldIncompatibilityReason.PotentiallyNarrowedInTemplateButNoSupportYet;
       }
 
       // Check for other incompatible query list accesses.
@@ -222,12 +233,13 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
       problematicQueries: {},
       reusableAnalysisReferences: null,
     };
+
     for (const unit of units) {
       for (const [id, value] of Object.entries(unit.knownQueryFields)) {
         merged.knownQueryFields[id as ClassFieldUniqueKey] = value;
       }
-      for (const id of Object.keys(unit.potentialProblematicQueries)) {
-        merged.problematicQueries[id as ClassFieldUniqueKey] = true;
+      for (const [id, reason] of Object.entries(unit.potentialProblematicQueries)) {
+        markFieldIncompatibleInMetadata(merged, id as ClassFieldUniqueKey, reason);
       }
       if (unit.reusableAnalysisReferences !== null) {
         assert(units.length === 1, 'Expected migration to not run in batch mode');
@@ -238,7 +250,11 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
     for (const unit of units) {
       for (const id of Object.keys(unit.potentialProblematicReferenceForMultiQueries)) {
         if (merged.knownQueryFields[id as ClassFieldUniqueKey]?.isMulti) {
-          merged.problematicQueries[id as ClassFieldUniqueKey] = true;
+          markFieldIncompatibleInMetadata(
+            merged,
+            id as ClassFieldUniqueKey,
+            FieldIncompatibilityReason.SignalQueries__QueryListProblematicFieldAccessed,
+          );
         }
       }
     }
