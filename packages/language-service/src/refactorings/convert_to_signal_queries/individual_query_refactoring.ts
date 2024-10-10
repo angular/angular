@@ -8,10 +8,6 @@
 
 import {CompilerOptions} from '@angular/compiler-cli';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import {
-  isInputContainerNode,
-  MigrationConfig,
-} from '@angular/core/schematics/migrations/signal-migration/src';
 import {ApplyRefactoringProgressFn, ApplyRefactoringResult} from '@angular/language-service/api';
 import ts from 'typescript';
 import {isTypeScriptFile} from '../../utils';
@@ -20,6 +16,7 @@ import type {ActiveRefactoring} from '../refactoring';
 import {applySignalQueriesRefactoring} from './apply_query_refactoring';
 import {isDecoratorQueryClassField} from './decorators';
 import {isDirectiveOrComponent} from '../../utils/decorators';
+import {MigrationConfig} from '../../../../core/schematics/migrations/signal-queries-migration';
 
 /**
  * Base language service refactoring action that can convert a
@@ -92,7 +89,7 @@ abstract class BaseConvertFieldToSignalQueryRefactoring implements ActiveRefacto
     }
 
     const containingClassElement = ts.findAncestor(node, ts.isClassElement);
-    if (containingClassElement === undefined || !isInputContainerNode(containingClassElement)) {
+    if (containingClassElement === undefined) {
       return {edits: [], errorMessage: 'Selected node does not belong to a query.'};
     }
 
