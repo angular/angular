@@ -205,7 +205,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   }
 
   private shouldScheduleTick(force: boolean): boolean {
-    if (this.disableScheduling && !force) {
+    if ((this.disableScheduling && !force) || this.appRef.destroyed) {
       return false;
     }
     // already scheduled or running
