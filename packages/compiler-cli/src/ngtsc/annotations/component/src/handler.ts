@@ -221,7 +221,7 @@ export class ComponentDecoratorHandler
     private metaRegistry: MetadataRegistry,
     private metaReader: MetadataReader,
     private scopeReader: ComponentScopeReader,
-    private dtsScopeReader: DtsModuleScopeResolver,
+    private compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
     private scopeRegistry: LocalModuleScopeRegistry,
     private typeCheckScopeRegistry: TypeCheckScopeRegistry,
     private resourceRegistry: ResourceRegistry,
@@ -872,11 +872,12 @@ export class ComponentDecoratorHandler
         classDebugInfo: extractClassDebugInfo(
           node,
           this.reflector,
+          this.compilerHost,
           this.rootDirs,
           /* forbidOrphanRenderering */ this.forbidOrphanRendering,
         ),
         hmrInitializerMeta: this.enableHmr
-          ? extractHmrInitializerMeta(node, this.reflector, this.rootDirs)
+          ? extractHmrInitializerMeta(node, this.reflector, this.compilerHost, this.rootDirs)
           : null,
         template,
         providersRequiringFactory,

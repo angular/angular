@@ -8,7 +8,8 @@
 
 import {R3HmrInitializerMetadata, WrappedNodeExpr} from '@angular/compiler';
 import {DeclarationNode, ReflectionHost} from '../../../reflection';
-import {relative} from 'path';
+import {getProjectRelativePath} from '../../common';
+import ts from 'typescript';
 
 /**
  * Extracts the metadata necessary to generate an HMR initializer.
@@ -16,21 +17,17 @@ import {relative} from 'path';
 export function extractHmrInitializerMeta(
   clazz: DeclarationNode,
   reflection: ReflectionHost,
+  compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
   rootDirs: readonly string[],
 ): R3HmrInitializerMetadata | null {
   if (!reflection.isClass(clazz)) {
     return null;
   }
 
-  // Attempt to generate a project-relative path before falling back to the full path.
-  let filePath = clazz.getSourceFile().fileName;
-  for (const rootDir of rootDirs) {
-    const relativePath = relative(rootDir, filePath);
-    if (!relativePath.startsWith('..')) {
-      filePath = relativePath;
-      break;
-    }
-  }
+  const sourceFile = clazz.getSourceFile();
+  const filePath =
+    getProjectRelativePath(sourceFile, rootDirs, compilerHost) ||
+    compilerHost.getCanonicalFileName(sourceFile.fileName);
 
   const meta: R3HmrInitializerMetadata = {
     type: new WrappedNodeExpr(clazz.name),
