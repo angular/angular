@@ -9,12 +9,15 @@
 import {
   Component,
   destroyPlatform,
+  Directive,
   DoBootstrap,
   EventEmitter,
+  inject,
   Injector,
   Input,
   NgModule,
   Output,
+  SimpleChanges,
 } from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -66,7 +69,12 @@ describe('createCustomElement', () => {
   });
 
   it('should use a default strategy for converting component inputs', () => {
-    expect(NgElementCtor.observedAttributes).toEqual(['foo-foo', 'barbar', 'foo-transformed']);
+    expect(NgElementCtor.observedAttributes).toEqual([
+      'foo-foo',
+      'barbar',
+      'foo-transformed',
+      'foo-from-host-directive',
+    ]);
   });
 
   it('should send input values from attributes when connected', () => {
@@ -287,6 +295,38 @@ describe('createCustomElement', () => {
     expect(strategy.inputs.get('fooTransformed')).toBe(false);
   });
 
+  it('should capture host directive inputs', () => {
+    // Create a regular element and set properties on it.
+    const {selector, ElementCtor} = createTestCustomElement(strategyFactory);
+    const element = document.createElement(selector);
+
+    customElements.define(selector, ElementCtor);
+    testContainer.appendChild(element);
+
+    element.setAttribute('foo-from-host-directive', 'fooFromHostDirective-value');
+    expect(strategy.inputs.get('fooFromHostDirective')).toBe('fooFromHostDirective-value');
+  });
+
+  it('should listen to host directive output events', () => {
+    // Create a regular element and set properties on it.
+    const {selector, ElementCtor} = {
+      selector: `test-element-${++selectorUid}`,
+      ElementCtor: createCustomElement<WithFooBar>(TestComponent, {injector}),
+    };
+    const element = document.createElement(selector);
+    let eventValue: any = null;
+    element.addEventListener(
+      'bazBazHostDirective',
+      (e: Event) => (eventValue = (e as CustomEvent).detail),
+    );
+    customElements.define(selector, ElementCtor);
+    testContainer.appendChild(element);
+
+    element.setAttribute('foo-from-host-directive', 'fooFromHostDirective-value');
+
+    expect(eventValue).toBe('fooFromHostDirective-value');
+  });
+
   // Helpers
   function createAndRegisterTestCustomElement(strategyFactory: NgElementStrategyFactory) {
     const {selector, ElementCtor} = createTestCustomElement(strategyFactory);
@@ -303,9 +343,30 @@ describe('createCustomElement', () => {
     };
   }
 
+  @Directive({
+    standalone: true,
+    selector: '[fakeHostDirective]',
+  })
+  class FakeHostDirective {
+    @Input() fooFromHostDirective: unknown;
+    @Output() bazBazHostDirective = new EventEmitter<unknown>();
+    ngOnChanges(simpleChanges: SimpleChanges) {
+      if (simpleChanges['fooFromHostDirective'].currentValue) {
+        this.bazBazHostDirective.emit(simpleChanges['fooFromHostDirective'].currentValue);
+      }
+    }
+  }
+
   @Component({
     selector: 'test-component',
     template: 'TestComponent|foo({{ fooFoo }})|bar({{ barBar }})',
+    hostDirectives: [
+      {
+        directive: FakeHostDirective,
+        inputs: ['fooFromHostDirective'],
+        outputs: ['bazBazHostDirective'],
+      },
+    ],
   })
   class TestComponent {
     @Input() fooFoo: string = 'foo';
