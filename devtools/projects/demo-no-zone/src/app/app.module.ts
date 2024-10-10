@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {NgModule} from '@angular/core';
+import {NgModule, provideManualChangeDetection} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {AppComponent} from './app.component';
@@ -14,7 +14,7 @@ import {AppComponent} from './app.component';
 @NgModule({
   declarations: [AppComponent],
   imports: [BrowserModule],
-  providers: [],
+  providers: [provideManualChangeDetection()],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

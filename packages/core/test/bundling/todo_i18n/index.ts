@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectorRef, Component, Injectable, NgModule, ViewEncapsulation} from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  Injectable,
+  NgModule,
+  ViewEncapsulation,
+  provideManualChangeDetection,
+} from '@angular/core';
 import {loadTranslations} from '@angular/localize';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
@@ -203,9 +210,10 @@ class ToDoAppComponent {
   declarations: [ToDoAppComponent],
   imports: [BrowserModule],
   bootstrap: [ToDoAppComponent],
+  providers: [provideManualChangeDetection()],
 })
 class ToDoAppModule {}
 
 loadTranslations(translations);
 
-(window as any).appReady = platformBrowser().bootstrapModule(ToDoAppModule, {ngZone: 'noop'});
+(window as any).appReady = platformBrowser().bootstrapModule(ToDoAppModule);

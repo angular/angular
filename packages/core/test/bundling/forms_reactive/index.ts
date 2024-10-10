@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {Component, NgModule} from '@angular/core';
+import {Component, NgModule, provideManualChangeDetection} from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -92,6 +92,7 @@ class RootComponent {}
 @NgModule({
   declarations: [RootComponent, ReactiveFormsComponent],
   imports: [BrowserModule, ReactiveFormsModule],
+  providers: [provideManualChangeDetection()],
 })
 class FormsExampleModule {
   ngDoBootstrap(app: any) {
@@ -100,7 +101,7 @@ class FormsExampleModule {
 }
 
 function bootstrapApp() {
-  return platformBrowser().bootstrapModule(FormsExampleModule, {ngZone: 'noop'});
+  return platformBrowser().bootstrapModule(FormsExampleModule);
 }
 
 (window as any).bootstrapApp = bootstrapApp;

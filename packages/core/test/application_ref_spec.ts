@@ -21,6 +21,7 @@ import {
   NgModule,
   NgZone,
   PlatformRef,
+  provideManualChangeDetection,
   provideZoneChangeDetection,
   RendererFactory2,
   TemplateRef,
@@ -547,7 +548,12 @@ describe('bootstrap', () => {
 
     it('should bootstrap with NoopNgZone', waitForAsync(async () => {
       defaultPlatform
-        .bootstrapModule(await createModule({bootstrap: [SomeComponent]}), {ngZone: 'noop'})
+        .bootstrapModule(
+          await createModule({
+            bootstrap: [SomeComponent],
+            providers: [provideManualChangeDetection()],
+          }),
+        )
         .then((module) => {
           const ngZone = module.injector.get(NgZone);
           expect(ngZone instanceof NoopNgZone).toBe(true);

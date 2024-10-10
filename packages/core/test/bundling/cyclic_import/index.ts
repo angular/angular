@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationRef, Component, NgModule} from '@angular/core';
+import {ApplicationRef, Component, NgModule, provideManualChangeDetection} from '@angular/core';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 import {TriggerComponent} from './trigger';
@@ -21,7 +21,8 @@ export class DepComponent {}
   declarations: [DepComponent, TriggerComponent],
   imports: [BrowserModule],
   bootstrap: [TriggerComponent],
+  providers: [provideManualChangeDetection()],
 })
 export class Module {}
 
-(window as any).appReady = platformBrowser().bootstrapModule(Module, {ngZone: 'noop'});
+(window as any).appReady = platformBrowser().bootstrapModule(Module);

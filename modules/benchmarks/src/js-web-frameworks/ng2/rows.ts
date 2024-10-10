@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationRef, Component, NgModule} from '@angular/core';
+import {ApplicationRef, Component, NgModule, provideManualChangeDetection} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 export interface RowData {
@@ -64,5 +64,6 @@ export class JsWebFrameworksComponent {
   imports: [BrowserModule],
   declarations: [JsWebFrameworksComponent],
   bootstrap: [JsWebFrameworksComponent],
+  providers: [provideManualChangeDetection()],
 })
 export class JsWebFrameworksModule {}

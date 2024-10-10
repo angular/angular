@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {animate, style, transition, trigger} from '@angular/animations';
-import {Component, NgModule, ɵNgModuleFactory as NgModuleFactory} from '@angular/core';
+import {
+  Component,
+  NgModule,
+  ɵNgModuleFactory as NgModuleFactory,
+  provideManualChangeDetection,
+} from '@angular/core';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
@@ -34,6 +39,7 @@ class RootComponent {}
 @NgModule({
   declarations: [RootComponent, AnimationsComponent],
   imports: [BrowserModule, BrowserAnimationsModule],
+  providers: [provideManualChangeDetection()],
 })
 class AnimationsExampleModule {
   ngDoBootstrap(app: any) {
@@ -41,6 +47,4 @@ class AnimationsExampleModule {
   }
 }
 
-(window as any).waitForApp = platformBrowser().bootstrapModule(AnimationsExampleModule, {
-  ngZone: 'noop',
-});
+(window as any).waitForApp = platformBrowser().bootstrapModule(AnimationsExampleModule);

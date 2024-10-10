@@ -15,6 +15,7 @@ import {
   HostBinding,
   HostListener,
   NgModule,
+  provideManualChangeDetection,
 } from '@angular/core';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
@@ -139,6 +140,7 @@ class AnimationWorldComponent {
 @NgModule({
   declarations: [AnimationWorldComponent, MakeColorGreyDirective, BoxWithOverriddenStylesComponent],
   imports: [BrowserModule],
+  providers: [provideManualChangeDetection()],
 })
 class AnimationWorldModule {
   ngDoBootstrap(app: ApplicationRef) {
@@ -146,4 +148,4 @@ class AnimationWorldModule {
   }
 }
 
-platformBrowser().bootstrapModule(AnimationWorldModule, {ngZone: 'noop'});
+platformBrowser().bootstrapModule(AnimationWorldModule);
