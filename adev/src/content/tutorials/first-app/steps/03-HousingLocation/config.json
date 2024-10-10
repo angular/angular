@@ -1,6 +1,6 @@
 {
   "title": "Create housing location component",
-  "type": "editor",
+  "type": "local",
   "answerSrc": "../04-interfaces/src",
   "openFiles": ["src/app/home/home.component.ts"]
 }
