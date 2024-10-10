@@ -12,6 +12,7 @@ import {
   DeferBlockDepsEmitMode,
   R3ClassDebugInfo,
   R3ClassMetadata,
+  R3HmrInitializerMetadata,
   R3ComponentMetadata,
   R3DeferPerBlockDependency,
   R3DeferPerComponentDependency,
@@ -56,6 +57,7 @@ export interface ComponentAnalysisData {
   template: ParsedTemplateWithSource;
   classMetadata: R3ClassMetadata | null;
   classDebugInfo: R3ClassDebugInfo | null;
+  hmrInitializerMeta: R3HmrInitializerMetadata | null;
 
   inputs: ClassPropertyMapping<InputMapping>;
   inputFieldNamesFromMetadataArray: Set<string>;
