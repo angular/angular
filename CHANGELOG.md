@@ -1,3 +1,30 @@
+<a name="18.2.8"></a>
+# 18.2.8 (2024-10-10)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [11692c8dab](https://github.com/angular/angular/commit/11692c8dab2a78dc8780ceed301242d51dee7c9c) | fix | add multiple :host and nested selectors support ([#57796](https://github.com/angular/angular/pull/57796)) |
+| [66dcc691f5](https://github.com/angular/angular/commit/66dcc691f55eafc9de9a233b9bab53284fc13e1b) | fix | allow combinators inside pseudo selectors ([#57796](https://github.com/angular/angular/pull/57796)) |
+| [48a1437e77](https://github.com/angular/angular/commit/48a1437e77be5c3b29b8bbcd1b5d7784fbb67e68) | fix | fix comment typo ([#57796](https://github.com/angular/angular/pull/57796)) |
+| [d325f9b55f](https://github.com/angular/angular/commit/d325f9b55f248e5bd059645be901f210018f8fa2) | fix | fix parsing of the :host-context with pseudo selectors ([#57796](https://github.com/angular/angular/pull/57796)) |
+| [aea747ab3b](https://github.com/angular/angular/commit/aea747ab3bcbca79dbbc7ddfc41e11b9e43952eb) | fix | preserve attributes attached to :host selector ([#57796](https://github.com/angular/angular/pull/57796)) |
+| [21be258be6](https://github.com/angular/angular/commit/21be258be687a300ca22daad823e0b931029db35) | fix | scope :host-context inside pseudo selectors, do not decrease specificity ([#57796](https://github.com/angular/angular/pull/57796)) |
+| [7a6fd427d5](https://github.com/angular/angular/commit/7a6fd427d5ad70ad4c50693f54a6e77bf51eea86) | fix | transform pseudo selectors correctly for the encapsulated view ([#57796](https://github.com/angular/angular/pull/57796)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f187c3abf8](https://github.com/angular/angular/commit/f187c3abf8b9547b2692995f344cd7dcb9f32ebc) | fix | defer symbols only used in types ([#58104](https://github.com/angular/angular/pull/58104)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [46bafb0b0a](https://github.com/angular/angular/commit/46bafb0b0a952d8e9c2a0099f0607354697bbeaa) | fix | clean up afterRender after it is executed ([#58119](https://github.com/angular/angular/pull/58119)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b40875a2cc](https://github.com/angular/angular/commit/b40875a2cc28a94015e6392044a03b30c2559999) | fix | destroy `PlatformRef` when error happens during the `bootstrap()` phase ([#58112](https://github.com/angular/angular/pull/58112)) ([#58135](https://github.com/angular/angular/pull/58135)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.0.0-next.8"></a>
 # 19.0.0-next.8 (2024-10-02)
 ### common
