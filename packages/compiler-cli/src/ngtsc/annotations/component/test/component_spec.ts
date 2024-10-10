@@ -120,7 +120,9 @@ function setup(
     metaRegistry,
     metaReader,
     scopeRegistry,
-    dtsResolver,
+    {
+      getCanonicalFileName: (fileName) => fileName,
+    },
     scopeRegistry,
     typeCheckScopeRegistry,
     resourceRegistry,
@@ -156,6 +158,7 @@ function setup(
     jitDeclarationRegistry,
     /* i18nPreserveSignificantWhitespace */ true,
     /* strictStandalone */ false,
+    /* enableHmr */ false,
   );
   return {reflectionHost, handler, resourceLoader, metaRegistry};
 }

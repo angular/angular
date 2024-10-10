@@ -10519,6 +10519,69 @@ runInEachFileSystem((os: string) => {
       });
     });
 
+    describe('HMR initializer', () => {
+      it('should not generate an HMR initializer by default', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({
+              selector: 'cmp',
+              template: 'hello',
+              standalone: true,
+            })
+            export class Cmp {}
+          `,
+        );
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).not.toContain('import.meta.hot');
+        expect(jsContents).not.toContain('replaceMetadata');
+      });
+
+      it('should generate an HMR initializer when enabled', () => {
+        env.write(
+          'tsconfig.json',
+          JSON.stringify({
+            extends: './tsconfig-base.json',
+            angularCompilerOptions: {
+              _enableHmr: true,
+            },
+          }),
+        );
+
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({
+              selector: 'cmp',
+              template: 'hello',
+              standalone: true,
+            })
+            export class Cmp {}
+          `,
+        );
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+
+        // We need a regex match here, because the file path changes based on
+        // the file system and the timestamp will be different for each test run.
+        expect(jsContents).toMatch(
+          /import\.meta\.hot && import\.meta\.hot\.on\("angular:component-update", d => { if \(d\.id == "test\.ts%40Cmp"\) {/,
+        );
+        expect(jsContents).toMatch(
+          /import\("\/@ng\/component\?c=test\.ts%40Cmp&t=\d+"\).then\(m => i0\.ɵɵreplaceMetadata\(Cmp, m\.default\)\);/,
+        );
+      });
+    });
+
     describe('tsickle compatibility', () => {
       it('should preserve fileoverview comments', () => {
         env.write(

@@ -113,6 +113,13 @@ export interface InternalOptions {
    * @internal
    */
   _angularCoreVersion?: string;
+
+  /**
+   * Whether to enable the necessary code generation for hot module reloading.
+   *
+   * @internal
+   */
+  _enableHmr?: boolean;
 }
 
 /**

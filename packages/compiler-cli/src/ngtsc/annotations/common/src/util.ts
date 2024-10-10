@@ -20,6 +20,7 @@ import {
   Statement,
   WrappedNodeExpr,
 } from '@angular/compiler';
+import {relative} from 'path';
 import ts from 'typescript';
 
 import {
@@ -413,6 +414,7 @@ export function compileResults(
   additionalFields: CompileResult[] | null,
   deferrableImports: Set<ts.ImportDeclaration> | null,
   debugInfo: Statement | null = null,
+  hmrInitializer: Statement | null = null,
 ): CompileResult[] {
   const statements = def.statements;
 
@@ -422,6 +424,10 @@ export function compileResults(
 
   if (debugInfo !== null) {
     statements.push(debugInfo);
+  }
+
+  if (hmrInitializer !== null) {
+    statements.push(hmrInitializer);
   }
 
   const results = [
@@ -503,4 +509,32 @@ export function isAbstractClassDeclaration(clazz: ClassDeclaration): boolean {
   return ts.canHaveModifiers(clazz) && clazz.modifiers !== undefined
     ? clazz.modifiers.some((mod) => mod.kind === ts.SyntaxKind.AbstractKeyword)
     : false;
+}
+
+/**
+ * Attempts to generate a project-relative path
+ * @param sourceFile
+ * @param rootDirs
+ * @param compilerHost
+ * @returns
+ */
+export function getProjectRelativePath(
+  sourceFile: ts.SourceFile,
+  rootDirs: readonly string[],
+  compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
+): string | null {
+  // Note: we need to pass both the file name and the root directories through getCanonicalFileName,
+  // because the root directories might've been passed through it already while the source files
+  // definitely have not. This can break the relative return value, because in some platforms
+  // getCanonicalFileName lowercases the path.
+  const filePath = compilerHost.getCanonicalFileName(sourceFile.fileName);
+
+  for (const rootDir of rootDirs) {
+    const rel = relative(compilerHost.getCanonicalFileName(rootDir), filePath);
+    if (!rel.startsWith('..')) {
+      return rel;
+    }
+  }
+
+  return null;
 }

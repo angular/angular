@@ -10,6 +10,7 @@ import {
   AnimationTriggerNames,
   BoundTarget,
   compileClassDebugInfo,
+  compileClassHmrInitializer,
   compileComponentClassMetadata,
   compileComponentDeclareClassMetadata,
   compileComponentFromMetadata,
@@ -179,6 +180,7 @@ import {
 } from './util';
 import {getTemplateDiagnostics} from '../../../typecheck';
 import {JitDeclarationRegistry} from '../../common/src/jit_declaration_registry';
+import {extractHmrInitializerMeta} from './hmr';
 
 const EMPTY_ARRAY: any[] = [];
 
@@ -219,7 +221,7 @@ export class ComponentDecoratorHandler
     private metaRegistry: MetadataRegistry,
     private metaReader: MetadataReader,
     private scopeReader: ComponentScopeReader,
-    private dtsScopeReader: DtsModuleScopeResolver,
+    private compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
     private scopeRegistry: LocalModuleScopeRegistry,
     private typeCheckScopeRegistry: TypeCheckScopeRegistry,
     private resourceRegistry: ResourceRegistry,
@@ -255,6 +257,7 @@ export class ComponentDecoratorHandler
     private readonly jitDeclarationRegistry: JitDeclarationRegistry,
     private readonly i18nPreserveSignificantWhitespace: boolean,
     private readonly strictStandalone: boolean,
+    private readonly enableHmr: boolean,
   ) {
     this.extractTemplateOptions = {
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
@@ -869,9 +872,13 @@ export class ComponentDecoratorHandler
         classDebugInfo: extractClassDebugInfo(
           node,
           this.reflector,
+          this.compilerHost,
           this.rootDirs,
           /* forbidOrphanRenderering */ this.forbidOrphanRendering,
         ),
+        hmrInitializerMeta: this.enableHmr
+          ? extractHmrInitializerMeta(node, this.reflector, this.compilerHost, this.rootDirs)
+          : null,
         template,
         providersRequiringFactory,
         viewProvidersRequiringFactory,
@@ -1613,6 +1620,10 @@ export class ComponentDecoratorHandler
       analysis.classDebugInfo !== null
         ? compileClassDebugInfo(analysis.classDebugInfo).toStmt()
         : null;
+    const hmrInitializer =
+      analysis.hmrInitializerMeta !== null
+        ? compileClassHmrInitializer(analysis.hmrInitializerMeta).toStmt()
+        : null;
     const deferrableImports = this.deferredSymbolTracker.getDeferrableImportDecls();
     return compileResults(
       fac,
@@ -1622,6 +1633,7 @@ export class ComponentDecoratorHandler
       inputTransformFields,
       deferrableImports,
       debugInfo,
+      hmrInitializer,
     );
   }
 
@@ -1695,6 +1707,10 @@ export class ComponentDecoratorHandler
       analysis.classDebugInfo !== null
         ? compileClassDebugInfo(analysis.classDebugInfo).toStmt()
         : null;
+    const hmrInitializer =
+      analysis.hmrInitializerMeta !== null
+        ? compileClassHmrInitializer(analysis.hmrInitializerMeta).toStmt()
+        : null;
     const deferrableImports = this.deferredSymbolTracker.getDeferrableImportDecls();
     return compileResults(
       fac,
@@ -1704,6 +1720,7 @@ export class ComponentDecoratorHandler
       inputTransformFields,
       deferrableImports,
       debugInfo,
+      hmrInitializer,
     );
   }
 

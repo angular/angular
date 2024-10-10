@@ -390,6 +390,7 @@ export class NgCompiler {
   private readonly enableBlockSyntax: boolean;
   private readonly enableLetSyntax: boolean;
   private readonly angularCoreVersion: string | null;
+  private readonly enableHmr: boolean;
 
   /**
    * `NgCompiler` can be reused for multiple compilations (for resource-only changes), and each
@@ -462,6 +463,7 @@ export class NgCompiler {
     this.enableBlockSyntax = options['_enableBlockSyntax'] ?? true;
     this.enableLetSyntax = options['_enableLetSyntax'] ?? true;
     this.angularCoreVersion = options['_angularCoreVersion'] ?? null;
+    this.enableHmr = !!options['_enableHmr'];
     this.constructionDiagnostics.push(
       ...this.adapter.constructionDiagnostics,
       ...verifyCompatibleTypeCheckOptions(this.options),
@@ -1427,7 +1429,7 @@ export class NgCompiler {
         metaRegistry,
         metaReader,
         scopeReader,
-        depScopeReader,
+        this.adapter,
         ngModuleScopeRegistry,
         typeCheckScopeRegistry,
         resourceRegistry,
@@ -1463,6 +1465,7 @@ export class NgCompiler {
         jitDeclarationRegistry,
         this.options.i18nPreserveWhitespaceForLegacyExtraction ?? true,
         !!this.options.strictStandalone,
+        this.enableHmr,
       ),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
