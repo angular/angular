@@ -92,6 +92,7 @@ export async function runOneBuild(
     'onlyExplicitDeferDependencyImports',
     'generateExtraImportsInLocalMode',
     '_enableLetSyntax',
+    '_enableHmr',
   ]);
 
   const userOverrides = Object.entries(userOptions)
