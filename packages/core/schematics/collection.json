@@ -35,6 +35,12 @@
       "factory": "./bundles/signal-queries-migration#migrate",
       "schema": "./ng-generate/signal-queries-migration/schema.json",
       "aliases": ["signal-queries", "signal-query", "signal-query-migration"]
+    },
+    "self-closing-tag-migration": {
+      "description": "Updates the component templates to use self-closing tags where possible",
+      "factory": "./bundles/self-closing-tag-migration#migrate",
+      "schema": "./ng-generate/self-closing-tag-migration/schema.json",
+      "aliases": ["self-closing-tag"]
     }
   }
 }
