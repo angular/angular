@@ -19,8 +19,44 @@ import {I18nMeta} from '../i18n/i18n_ast';
 import {ParseSourceSpan} from '../parse_util';
 
 export interface Node {
+  readonly kind: NodeKind;
   sourceSpan: ParseSourceSpan;
   visit<Result>(visitor: Visitor<Result>): Result;
+}
+
+export enum NodeKind {
+  BoundText = 'BoundText',
+  TextAttribute = 'TextAttribute',
+  BoundAttribute = 'BoundAttribute',
+  BoundEvent = 'BoundEvent',
+  Comment = 'Comment',
+  Element = 'Element',
+  BoundDeferredTrigger = 'BoundDeferredTrigger',
+  NeverDeferredTrigger = 'NeverDeferredTrigger',
+  IdleDeferredTrigger = 'IdleDeferredTrigger',
+  ImmediateDeferredTrigger = 'ImmediateDeferredTrigger',
+  HoverDeferredTrigger = 'HoverDeferredTrigger',
+  TimerDeferredTrigger = 'TimerDeferredTrigger',
+  InteractionDeferredTrigger = 'InteractionDeferredTrigger',
+  ViewportDeferredTrigger = 'ViewportDeferredTrigger',
+  DeferredBlockPlaceholder = 'DeferredBlockPlaceholder',
+  DeferredBlockLoading = 'DeferredBlockLoading',
+  DeferredBlockError = 'DeferredBlockError',
+  DeferredBlock = 'DeferredBlock',
+  SwitchBlock = 'SwitchBlock',
+  SwitchBlockCase = 'SwitchBlockCase',
+  ForLoopBlock = 'ForLoopBlock',
+  ForLoopBlockEmpty = 'ForLoopBlockEmpty',
+  IfBlock = 'IfBlock',
+  IfBlockBranch = 'IfBlockBranch',
+  UnknownBlock = 'UnknownBlock',
+  LetDeclaration = 'LetDeclaration',
+  Template = 'Template',
+  Text = 'Text',
+  Content = 'Content',
+  Variable = 'Variable',
+  Reference = 'Reference',
+  Icu = 'Icu',
 }
 
 /**
@@ -34,6 +70,9 @@ export class Comment implements Node {
     public value: string,
     public sourceSpan: ParseSourceSpan,
   ) {}
+
+  readonly kind = NodeKind.Comment;
+
   visit<Result>(_visitor: Visitor<Result>): Result {
     throw new Error('visit() not implemented for Comment');
   }
@@ -44,6 +83,9 @@ export class Text implements Node {
     public value: string,
     public sourceSpan: ParseSourceSpan,
   ) {}
+
+  readonly kind = NodeKind.Text;
+
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitText(this);
   }
@@ -55,6 +97,9 @@ export class BoundText implements Node {
     public sourceSpan: ParseSourceSpan,
     public i18n?: I18nMeta,
   ) {}
+
+  readonly kind = NodeKind.BoundText;
+
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitBoundText(this);
   }
@@ -75,6 +120,9 @@ export class TextAttribute implements Node {
     public valueSpan?: ParseSourceSpan,
     public i18n?: I18nMeta,
   ) {}
+
+  readonly kind = NodeKind.TextAttribute;
+
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitTextAttribute(this);
   }
@@ -92,6 +140,8 @@ export class BoundAttribute implements Node {
     public valueSpan: ParseSourceSpan | undefined,
     public i18n: I18nMeta | undefined,
   ) {}
+
+  readonly kind = NodeKind.BoundAttribute;
 
   static fromBoundElementProperty(prop: BoundElementProperty, i18n?: I18nMeta): BoundAttribute {
     if (prop.keySpan === undefined) {
@@ -128,6 +178,8 @@ export class BoundEvent implements Node {
     public handlerSpan: ParseSourceSpan,
     readonly keySpan: ParseSourceSpan,
   ) {}
+
+  readonly kind = NodeKind.BoundEvent;
 
   static fromParsedEvent(event: ParsedEvent) {
     const target: string | null =
@@ -169,6 +221,9 @@ export class Element implements Node {
     public endSourceSpan: ParseSourceSpan | null,
     public i18n?: I18nMeta,
   ) {}
+
+  readonly kind = NodeKind.Element;
+
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitElement(this);
   }
@@ -182,6 +237,8 @@ export abstract class DeferredTrigger implements Node {
     public whenOrOnSourceSpan: ParseSourceSpan | null,
     public hydrateSpan: ParseSourceSpan | null,
   ) {}
+
+  abstract readonly kind: NodeKind;
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitDeferredTrigger(this);
@@ -200,13 +257,21 @@ export class BoundDeferredTrigger extends DeferredTrigger {
     // nameSpan. Trigger names are the built in event triggers like hover, interaction, etc.
     super(/** nameSpan */ null, sourceSpan, prefetchSpan, whenSourceSpan, hydrateSpan);
   }
+
+  override readonly kind = NodeKind.BoundDeferredTrigger;
 }
 
-export class NeverDeferredTrigger extends DeferredTrigger {}
+export class NeverDeferredTrigger extends DeferredTrigger {
+  override readonly kind = NodeKind.NeverDeferredTrigger;
+}
 
-export class IdleDeferredTrigger extends DeferredTrigger {}
+export class IdleDeferredTrigger extends DeferredTrigger {
+  override readonly kind = NodeKind.IdleDeferredTrigger;
+}
 
-export class ImmediateDeferredTrigger extends DeferredTrigger {}
+export class ImmediateDeferredTrigger extends DeferredTrigger {
+  override readonly kind = NodeKind.ImmediateDeferredTrigger;
+}
 
 export class HoverDeferredTrigger extends DeferredTrigger {
   constructor(
@@ -219,6 +284,8 @@ export class HoverDeferredTrigger extends DeferredTrigger {
   ) {
     super(nameSpan, sourceSpan, prefetchSpan, onSourceSpan, hydrateSpan);
   }
+
+  override readonly kind = NodeKind.HoverDeferredTrigger;
 }
 
 export class TimerDeferredTrigger extends DeferredTrigger {
@@ -232,6 +299,8 @@ export class TimerDeferredTrigger extends DeferredTrigger {
   ) {
     super(nameSpan, sourceSpan, prefetchSpan, onSourceSpan, hydrateSpan);
   }
+
+  override readonly kind = NodeKind.TimerDeferredTrigger;
 }
 
 export class InteractionDeferredTrigger extends DeferredTrigger {
@@ -245,6 +314,8 @@ export class InteractionDeferredTrigger extends DeferredTrigger {
   ) {
     super(nameSpan, sourceSpan, prefetchSpan, onSourceSpan, hydrateSpan);
   }
+
+  override readonly kind = NodeKind.InteractionDeferredTrigger;
 }
 
 export class ViewportDeferredTrigger extends DeferredTrigger {
@@ -258,6 +329,8 @@ export class ViewportDeferredTrigger extends DeferredTrigger {
   ) {
     super(nameSpan, sourceSpan, prefetchSpan, onSourceSpan, hydrateSpan);
   }
+
+  override readonly kind = NodeKind.ViewportDeferredTrigger;
 }
 
 export class BlockNode {
@@ -267,6 +340,8 @@ export class BlockNode {
     public startSourceSpan: ParseSourceSpan,
     public endSourceSpan: ParseSourceSpan | null,
   ) {}
+
+  readonly kind: string = 'BlockNode';
 }
 
 export class DeferredBlockPlaceholder extends BlockNode implements Node {
@@ -285,6 +360,8 @@ export class DeferredBlockPlaceholder extends BlockNode implements Node {
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitDeferredBlockPlaceholder(this);
   }
+
+  override readonly kind = NodeKind.DeferredBlockPlaceholder;
 }
 
 export class DeferredBlockLoading extends BlockNode implements Node {
@@ -304,6 +381,8 @@ export class DeferredBlockLoading extends BlockNode implements Node {
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitDeferredBlockLoading(this);
   }
+
+  override readonly kind = NodeKind.DeferredBlockLoading;
 }
 
 export class DeferredBlockError extends BlockNode implements Node {
@@ -317,6 +396,8 @@ export class DeferredBlockError extends BlockNode implements Node {
   ) {
     super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
   }
+
+  override readonly kind = NodeKind.DeferredBlockError;
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitDeferredBlockError(this);
@@ -368,6 +449,8 @@ export class DeferredBlock extends BlockNode implements Node {
     this.definedHydrateTriggers = Object.keys(hydrateTriggers) as (keyof DeferredBlockTriggers)[];
   }
 
+  override readonly kind = NodeKind.DeferredBlock;
+
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitDeferredBlock(this);
   }
@@ -413,6 +496,8 @@ export class SwitchBlock extends BlockNode implements Node {
     super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
   }
 
+  override readonly kind = NodeKind.SwitchBlock;
+
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitSwitchBlock(this);
   }
@@ -430,6 +515,8 @@ export class SwitchBlockCase extends BlockNode implements Node {
   ) {
     super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
   }
+
+  override readonly kind = NodeKind.SwitchBlockCase;
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitSwitchBlockCase(this);
@@ -455,6 +542,8 @@ export class ForLoopBlock extends BlockNode implements Node {
     super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
   }
 
+  override readonly kind = NodeKind.ForLoopBlock;
+
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitForLoopBlock(this);
   }
@@ -472,6 +561,8 @@ export class ForLoopBlockEmpty extends BlockNode implements Node {
     super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
   }
 
+  override readonly kind = NodeKind.ForLoopBlockEmpty;
+
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitForLoopBlockEmpty(this);
   }
@@ -487,6 +578,8 @@ export class IfBlock extends BlockNode implements Node {
   ) {
     super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
   }
+
+  override readonly kind = NodeKind.IfBlock;
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitIfBlock(this);
@@ -507,6 +600,8 @@ export class IfBlockBranch extends BlockNode implements Node {
     super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
   }
 
+  override readonly kind = NodeKind.IfBlockBranch;
+
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitIfBlockBranch(this);
   }
@@ -518,6 +613,8 @@ export class UnknownBlock implements Node {
     public sourceSpan: ParseSourceSpan,
     public nameSpan: ParseSourceSpan,
   ) {}
+
+  readonly kind = NodeKind.UnknownBlock;
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitUnknownBlock(this);
@@ -532,6 +629,8 @@ export class LetDeclaration implements Node {
     public nameSpan: ParseSourceSpan,
     public valueSpan: ParseSourceSpan,
   ) {}
+
+  readonly kind = NodeKind.LetDeclaration;
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitLetDeclaration(this);
@@ -557,6 +656,9 @@ export class Template implements Node {
     public endSourceSpan: ParseSourceSpan | null,
     public i18n?: I18nMeta,
   ) {}
+
+  readonly kind = NodeKind.Template;
+
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitTemplate(this);
   }
@@ -572,6 +674,9 @@ export class Content implements Node {
     public sourceSpan: ParseSourceSpan,
     public i18n?: I18nMeta,
   ) {}
+
+  readonly kind = NodeKind.Content;
+
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitContent(this);
   }
@@ -585,6 +690,9 @@ export class Variable implements Node {
     readonly keySpan: ParseSourceSpan,
     public valueSpan?: ParseSourceSpan,
   ) {}
+
+  readonly kind = NodeKind.Variable;
+
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitVariable(this);
   }
@@ -598,6 +706,9 @@ export class Reference implements Node {
     readonly keySpan: ParseSourceSpan,
     public valueSpan?: ParseSourceSpan,
   ) {}
+
+  readonly kind = NodeKind.Reference;
+
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitReference(this);
   }
@@ -610,6 +721,9 @@ export class Icu implements Node {
     public sourceSpan: ParseSourceSpan,
     public i18n?: I18nMeta,
   ) {}
+
+  readonly kind = NodeKind.Icu;
+
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitIcu(this);
   }
