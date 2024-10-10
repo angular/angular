@@ -17,6 +17,16 @@ import {
 import {getClassFieldDescriptorForSymbol} from './field_tracking';
 import type {GlobalUnitData} from './migration';
 import {InheritanceTracker} from '../signal-migration/src/passes/problematic_patterns/check_inheritance';
+import {
+  FieldIncompatibility,
+  getMessageForClassIncompatibility,
+  getMessageForFieldIncompatibility,
+} from '../signal-migration/src';
+import {
+  ClassIncompatibilityReason,
+  FieldIncompatibilityReason,
+} from '../signal-migration/src/passes/problematic_patterns/incompatibility';
+import {markFieldIncompatibleInMetadata} from './incompatibility';
 
 export class KnownQueries
   implements
@@ -34,16 +44,17 @@ export class KnownQueries
   ) {}
 
   isFieldIncompatible(descriptor: ClassFieldDescriptor): boolean {
-    return this.globalMetadata.problematicQueries[descriptor.key] !== undefined;
+    return this.getIncompatibilityForField(descriptor) !== null;
   }
 
-  markFieldIncompatible(field: ClassFieldDescriptor): void {
-    this.globalMetadata.problematicQueries[field.key] = true;
+  markFieldIncompatible(field: ClassFieldDescriptor, incompatibility: FieldIncompatibility): void {
+    markFieldIncompatibleInMetadata(this.globalMetadata, field.key, incompatibility.reason);
   }
 
-  markClassIncompatible(node: ts.ClassDeclaration): void {
+  markClassIncompatible(node: ts.ClassDeclaration, reason: ClassIncompatibilityReason): void {
     this.classToQueryFields.get(node)?.forEach((f) => {
-      this.globalMetadata.problematicQueries[f.key] = true;
+      this.globalMetadata.problematicQueries[f.key] ??= {classReason: null, fieldReason: null};
+      this.globalMetadata.problematicQueries[f.key].classReason = reason;
     });
   }
 
@@ -84,16 +95,56 @@ export class KnownQueries
     parent: ClassFieldDescriptor,
   ): void {
     if (this.isFieldIncompatible(parent) || this.isFieldIncompatible(derived)) {
-      this.markFieldIncompatible(parent);
-      this.markFieldIncompatible(derived);
+      // TODO: What to do here??
     }
   }
 
   captureUnknownDerivedField(field: ClassFieldDescriptor): void {
-    this.markFieldIncompatible(field);
+    this.markFieldIncompatible(field, {
+      context: null,
+      reason: FieldIncompatibilityReason.OverriddenByDerivedClass,
+    });
   }
 
   captureUnknownParentField(field: ClassFieldDescriptor): void {
-    this.markFieldIncompatible(field);
+    this.markFieldIncompatible(field, {
+      context: null,
+      reason: FieldIncompatibilityReason.TypeConflictWithBaseClass,
+    });
+  }
+
+  getIncompatibilityForField(
+    descriptor: ClassFieldDescriptor,
+  ): FieldIncompatibility | ClassIncompatibilityReason | null {
+    const problematicInfo = this.globalMetadata.problematicQueries[descriptor.key];
+    if (problematicInfo === undefined) {
+      return null;
+    }
+    if (problematicInfo.fieldReason !== null) {
+      return {context: null, reason: problematicInfo.fieldReason};
+    }
+    if (problematicInfo.classReason !== null) {
+      return problematicInfo.classReason;
+    }
+    return null;
+  }
+
+  getIncompatibilityTextForField(
+    field: ClassFieldDescriptor,
+  ): {short: string; extra: string} | null {
+    const incompatibilityInfo = this.globalMetadata.problematicQueries[field.key];
+    if (incompatibilityInfo.fieldReason !== null) {
+      return getMessageForFieldIncompatibility(incompatibilityInfo.fieldReason, {
+        single: 'query',
+        plural: 'queries',
+      });
+    }
+    if (incompatibilityInfo.classReason !== null) {
+      return getMessageForClassIncompatibility(incompatibilityInfo.classReason, {
+        single: 'query',
+        plural: 'queries',
+      });
+    }
+    return null;
   }
 }

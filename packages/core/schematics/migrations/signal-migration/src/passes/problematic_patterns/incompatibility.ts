@@ -23,10 +23,11 @@ export enum FieldIncompatibilityReason {
   PotentiallyNarrowedInTemplateButNoSupportYet = 6,
   SignalInput__RequiredButNoGoodExplicitTypeExtractable = 7,
   SignalInput__QuestionMarkButNoGoodExplicitTypeExtractable = 8,
-  WriteAssignment = 9,
-  Accessor = 10,
-  OutsideOfMigrationScope = 11,
-  SkippedViaConfigFilter = 12,
+  SignalQueries__QueryListProblematicFieldAccessed = 9,
+  WriteAssignment = 10,
+  Accessor = 11,
+  OutsideOfMigrationScope = 12,
+  SkippedViaConfigFilter = 13,
 }
 
 /** Reasons why a whole class and its fields cannot be migrated. */
