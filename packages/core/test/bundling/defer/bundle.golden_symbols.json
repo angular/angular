@@ -1500,6 +1500,9 @@
     "name": "init_framework_injector_profiler"
   },
   {
+    "name": "init_get_closest_component_name"
+  },
+  {
     "name": "init_get_current_view"
   },
   {
