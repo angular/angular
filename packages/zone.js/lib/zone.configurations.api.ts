@@ -645,6 +645,59 @@ declare global {
      * the user with a string returned from the event handler.
      */
     __zone_symbol__enable_beforeunload?: boolean;
+
+    /**
+     * https://github.com/angular/angular/issues/41506
+     * https://github.com/angular/angular/issues/44446
+     *
+     * By default, `zone.js` maintains a microtask queue manually, which means the microtask
+     * queue is drained whenever `zone.js` decides to do so under certain circumstances.
+     * Typically, `zone.js` invokes a task (e.g., an event task) and, after invoking the task,
+     * checks whether the number of nested task frames is equal to 1 before calling the microtask
+     * queue draining.
+     * As thus, there are cases when the microtask queue may be drained synchronously after an
+     * event task is invoked (if it’s the very first task in the call stack).
+     * Tasks may actually schedule other tasks, thereby incrementing the stack frame.
+     * In that case, the microtask queue might be drained after the last task is invoked.
+     *
+     * Given that code:
+     * ```js
+     * Zone.current.fork({name: 'child'}).run(() => {
+     *   const div = document.createElement('div');
+     *   div.style.height = '200px';
+     *   div.style.width = '200px';
+     *   div.style.backgroundColor = 'red';
+     *   document.body.appendChild(div);
+     *
+     *   function listener() {
+     *     Promise.resolve().then(() => {
+     *       div.style.height = '400px';
+     *     });
+     *   }
+     *
+     *   div.addEventListener('fakeEvent', listener);
+     *   div.dispatchEvent(new Event('fakeEvent'));
+     *   console.log(div.getBoundingClientRect().height); // 400
+     * });
+     * ```
+     *
+     * We would assume that "200" would be logged. However, with `zone.js`, "400" will
+     * be logged first because it drains the microtask queue too early, as the `fakeEvent`
+     * event task is the very top task on the stack.
+     *
+     * https://promisesaplus.com/#the-then-method
+     * According to the spec: `onFulfilled` or `onRejected` must not be called until the
+     * execution context stack contains only platform code.
+     *
+     * You may consider enabling the flag below. This will ensure that microtask draining
+     * does not happen synchronously and always occurs within a browser microtask.
+     *
+     * This is critically important for our code and other third-party code, which is
+     * beyond our control, to work properly. If a microtask is scheduled within an event
+     * listener to be executed "later", it should indeed be executed later and not synchronously,
+     * as this would break the expected flow of code execution.
+     */
+    __zone_symbol__enable_native_microtask_draining?: boolean;
   }
 
   /**
