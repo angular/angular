@@ -145,3 +145,5 @@ export {
   enableProfiling as ɵenableProfiling,
   disableProfiling as ɵdisableProfiling,
 } from './profiler';
+
+export {getClosestComponentName as ɵgetClosestComponentName} from './internal/get_closest_component_name';
