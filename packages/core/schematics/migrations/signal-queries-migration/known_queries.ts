@@ -53,11 +53,8 @@ export class KnownQueries
 
   markClassIncompatible(node: ts.ClassDeclaration, reason: ClassIncompatibilityReason): void {
     this.classToQueryFields.get(node)?.forEach((f) => {
-      if (this.globalMetadata.problematicQueries[f.key] === undefined) {
-        this.globalMetadata.problematicQueries[f.key] = {classReason: reason, fieldReason: null};
-      } else {
-        this.globalMetadata.problematicQueries[f.key].classReason = reason;
-      }
+      this.globalMetadata.problematicQueries[f.key] ??= {classReason: null, fieldReason: null};
+      this.globalMetadata.problematicQueries[f.key].classReason = reason;
     });
   }
 
