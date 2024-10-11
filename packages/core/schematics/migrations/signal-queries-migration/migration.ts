@@ -58,6 +58,7 @@ import {
   filterBestEffortIncompatibilities,
   markFieldIncompatibleInMetadata,
 } from './incompatibility';
+import {insertTodoForIncompatibility} from '../signal-migration/src/passes/problematic_patterns/incompatibility_todos';
 
 export interface CompilationUnitData {
   knownQueryFields: Record<ClassFieldUniqueKey, {fieldName: string; isMulti: boolean}>;
@@ -391,13 +392,24 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
       const node = extractedQuery.node;
       const sf = node.getSourceFile();
       const descriptor = {key: extractedQuery.id, node: extractedQuery.node};
+      const incompatibility = knownQueries.getIncompatibilityForField(descriptor);
 
-      if (knownQueries.isFieldIncompatible(descriptor)) {
-        updateFileState(filesWithSourceQueries, sf, extractedQuery.kind);
+      updateFileState(filesWithSourceQueries, sf, extractedQuery.kind);
+
+      if (incompatibility !== null) {
+        // Add a TODO for the incompatible query, if desired.
+        if (this.config.insertTodosForSkippedFields) {
+          replacements.push(
+            ...insertTodoForIncompatibility(node, info, incompatibility, {
+              single: 'query',
+              plural: 'queries',
+            }),
+          );
+        }
+
         updateFileState(filesWithIncompleteMigration, sf, extractedQuery.kind);
         continue;
       }
-      updateFileState(filesWithSourceQueries, sf, extractedQuery.kind);
 
       replacements.push(
         ...computeReplacementsToMigrateQuery(

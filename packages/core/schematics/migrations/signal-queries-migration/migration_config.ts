@@ -17,6 +17,12 @@ export interface MigrationConfig {
   bestEffortMode?: boolean;
 
   /**
+   * Whether to insert TODOs for skipped fields, and reasons on why they
+   * were skipped.
+   */
+  insertTodosForSkippedFields?: boolean;
+
+  /**
    * Whether the given query should be migrated. With batch execution, this
    * callback fires for foreign queries from other compilation units too.
    *
