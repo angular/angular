@@ -21,6 +21,7 @@ import {Component} from '@angular/core';
       <pre>'{{ value | uppercase }}'</pre>
     </div>
   `,
+  standalone: false,
 })
 export class LowerUpperPipeComponent {
   value: string = '';

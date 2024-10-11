@@ -19,6 +19,7 @@ const PUBLIC_VAPID_KEY_OF_SERVER = '...';
 @Component({
   selector: 'example-app',
   template: 'SW enabled: {{ swPush.isEnabled }}',
+  standalone: false,
 })
 // #docregion inject-sw-push
 export class AppComponent {

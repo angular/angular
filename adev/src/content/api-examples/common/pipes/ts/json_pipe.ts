@@ -19,6 +19,7 @@ import {Component} from '@angular/core';
       <pre>{{ object | json }}</pre>
     </div>
   `,
+  standalone: false,
 })
 export class JsonPipeComponent {
   object: Object = {foo: 'bar', baz: 'qux', nested: {xyz: 3, numbers: [1, 2, 3, 4, 5]}};

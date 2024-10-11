@@ -19,6 +19,7 @@ import {PathLocationComponent} from './path_location_component';
     <hash-location></hash-location>
     <path-location></path-location>
   `,
+  standalone: false,
 })
 export class AppComponent {}
 
