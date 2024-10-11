@@ -122,6 +122,8 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
         };
         const containingFile = projectFile(descriptor.node.getSourceFile(), info);
 
+        // If we have a config filter function, use it here for later
+        // perf-boosted reference lookups. Useful in non-batch mode.
         if (
           this.config.shouldMigrateQuery === undefined ||
           this.config.shouldMigrateQuery(descriptor, containingFile)
@@ -136,6 +138,10 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
           fieldName: extractedQuery.queryInfo.propertyName,
           isMulti: extractedQuery.queryInfo.first === false,
         };
+
+        if (ts.isAccessor(extractedQuery.node)) {
+          res.potentialProblematicQueries[extractedQuery.id] = FieldIncompatibilityReason.Accessor;
+        }
       }
     };
 
@@ -303,10 +309,16 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
       }
 
       // Detect OTHER queries, inside `.d.ts`. Needed for reference resolution below.
-      if (ts.isPropertyDeclaration(node)) {
+      if (
+        ts.isPropertyDeclaration(node) ||
+        (ts.isAccessor(node) && ts.isClassDeclaration(node.parent))
+      ) {
         const classFieldID = getUniqueIDForClassProperty(node, info);
         if (classFieldID !== null && globalMetadata.knownQueryFields[classFieldID] !== undefined) {
-          knownQueries.registerQueryField(node, classFieldID);
+          knownQueries.registerQueryField(
+            node as typeof node & {parent: ts.ClassDeclaration},
+            classFieldID,
+          );
           return;
         }
       }

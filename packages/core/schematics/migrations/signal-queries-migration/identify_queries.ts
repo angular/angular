@@ -25,7 +25,7 @@ export interface ExtractedQuery {
   kind: 'viewChild' | 'viewChildren' | 'contentChild' | 'contentChildren';
   args: ts.Expression[];
   queryInfo: R3QueryMetadata;
-  node: ts.PropertyDeclaration;
+  node: (ts.PropertyDeclaration | ts.AccessorDeclaration) & {parent: ts.ClassDeclaration};
 }
 
 /**
@@ -39,7 +39,7 @@ export function extractSourceQueryDefinition(
   info: ProgramInfo,
 ): ExtractedQuery | null {
   if (
-    !ts.isPropertyDeclaration(node) ||
+    (!ts.isPropertyDeclaration(node) && !ts.isAccessor(node)) ||
     !ts.isClassDeclaration(node.parent) ||
     node.parent.name === undefined ||
     !ts.isIdentifier(node.name)
@@ -86,6 +86,6 @@ export function extractSourceQueryDefinition(
     kind,
     args: decorator.args ?? [],
     queryInfo,
-    node,
+    node: node as typeof node & {parent: ts.ClassDeclaration},
   };
 }

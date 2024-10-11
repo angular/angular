@@ -27,6 +27,7 @@ import {
   FieldIncompatibilityReason,
 } from '../signal-migration/src/passes/problematic_patterns/incompatibility';
 import {markFieldIncompatibleInMetadata} from './incompatibility';
+import {ExtractedQuery} from './identify_queries';
 
 export class KnownQueries
   implements
@@ -58,7 +59,7 @@ export class KnownQueries
     });
   }
 
-  registerQueryField(queryField: ts.PropertyDeclaration, id: ClassFieldUniqueKey) {
+  registerQueryField(queryField: ExtractedQuery['node'], id: ClassFieldUniqueKey) {
     if (!this.classToQueryFields.has(queryField.parent)) {
       this.classToQueryFields.set(queryField.parent, []);
     }
