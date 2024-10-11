@@ -22,6 +22,7 @@ import {FormsModule} from '@angular/forms';
     Number of ticks: {{ numberOfTicks }}
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 class AppComponent {
   numberOfTicks = 0;
@@ -49,6 +50,7 @@ class DataListProvider {
   template: `
     <li *ngFor="let d of dataProvider.data">Data {{ d }}</li>
   `,
+  standalone: false,
 })
 class GiantList {
   constructor(
@@ -68,6 +70,7 @@ class GiantList {
   template: `
     <giant-list></giant-list>
   `,
+  standalone: false,
 })
 class App {}
 // #enddocregion detach
@@ -82,7 +85,12 @@ class DataProvider {
   }
 }
 
-@Component({selector: 'live-data', inputs: ['live'], template: 'Data: {{dataProvider.data}}'})
+@Component({
+  selector: 'live-data',
+  inputs: ['live'],
+  template: 'Data: {{dataProvider.data}}',
+  standalone: false,
+})
 class LiveData {
   constructor(
     private ref: ChangeDetectorRef,
@@ -107,6 +115,7 @@ class LiveData {
     <input type="checkbox" [(ngModel)]="live" />
     <live-data [live]="live"></live-data>
   `,
+  standalone: false,
 })
 class App1 {
   live = true;

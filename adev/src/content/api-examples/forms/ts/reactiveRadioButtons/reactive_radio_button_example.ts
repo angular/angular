@@ -25,6 +25,7 @@ import {FormControl, FormGroup} from '@angular/forms';
     <p>Form value: {{ form.value | json }}</p>
     <!-- {food: 'lamb' } -->
   `,
+  standalone: false,
 })
 export class ReactiveRadioButtonComp {
   form = new FormGroup({

@@ -37,6 +37,7 @@ registerLocaleData(localeFr, 'fr');
       </p>
     </div>
   `,
+  standalone: false,
 })
 export class NumberPipeComponent {
   pi: number = 3.14159265359;
