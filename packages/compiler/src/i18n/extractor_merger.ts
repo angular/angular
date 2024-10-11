@@ -9,6 +9,7 @@
 import * as html from '../ml_parser/ast';
 import {DEFAULT_CONTAINER_BLOCKS, InterpolationConfig} from '../ml_parser/defaults';
 import {ParseTreeResult} from '../ml_parser/parser';
+import {TokenType} from '../ml_parser/tokens';
 
 import * as i18n from './i18n_ast';
 import {createI18nMessageFactory, I18nMessageFactory} from './i18n_parser';
@@ -380,7 +381,9 @@ class _Visitor implements html.Visitor {
   private _addMessage(ast: html.Node[], msgMeta?: string): i18n.Message | null {
     if (
       ast.length == 0 ||
-      (ast.length == 1 && ast[0] instanceof html.Attribute && !(<html.Attribute>ast[0]).value)
+      this._isEmptyAttributeValue(ast) ||
+      this._isPlaceholderOnlyAttributeValue(ast) ||
+      this._isPlaceholderOnlyMessage(ast)
     ) {
       // Do not create empty messages
       return null;
@@ -390,6 +393,48 @@ class _Visitor implements html.Visitor {
     const message = this._createI18nMessage(ast, meaning, description, id);
     this._messages.push(message);
     return message;
+  }
+
+  // Check for cases like `<div i18n-title title="">`.
+  private _isEmptyAttributeValue(ast: html.Node[]): boolean {
+    if (!isAttrNode(ast)) return false;
+    const node = ast[0];
+
+    return node.value.trim() === '';
+  }
+
+  // Check for cases like `<div i18n-title title="{{ name }}">`.
+  private _isPlaceholderOnlyAttributeValue(ast: html.Node[]): boolean {
+    if (!isAttrNode(ast)) return false;
+    const tokens = ast[0].valueTokens ?? [];
+
+    const interpolations = tokens.filter(
+      (token) => token.type === TokenType.ATTR_VALUE_INTERPOLATION,
+    );
+    const plainText = tokens
+      .filter((token) => token.type === TokenType.ATTR_VALUE_TEXT)
+      // `AttributeValueTextToken` always has exactly one part per its type.
+      .map((token) => token.parts[0].trim())
+      .join('');
+
+    // Check if there is a single interpolation and all text around it is empty.
+    return interpolations.length === 1 && plainText === '';
+  }
+
+  // Check for cases like `<div i18n>{{ name }}</div>`.
+  private _isPlaceholderOnlyMessage(ast: html.Node[]): boolean {
+    if (!isTextNode(ast)) return false;
+    const tokens = ast[0].tokens;
+
+    const interpolations = tokens.filter((token) => token.type === TokenType.INTERPOLATION);
+    const plainText = tokens
+      .filter((token) => token.type === TokenType.TEXT)
+      // `TextToken` always has exactly one part per its type.
+      .map((token) => token.parts[0].trim())
+      .join('');
+
+    // Check if there is a single interpolation and all text around it is empty.
+    return interpolations.length === 1 && plainText === '';
   }
 
   // Translates the given message given the `TranslationBundle`
@@ -592,4 +637,12 @@ function _parseMessageMeta(i18n?: string): {meaning: string; description: string
       : ['', meaningAndDesc];
 
   return {meaning, description, id: id.trim()};
+}
+
+function isTextNode(ast: html.Node[]): ast is [html.Text] {
+  return ast.length === 1 && ast[0] instanceof html.Text;
+}
+
+function isAttrNode(ast: html.Node[]): ast is [html.Attribute] {
+  return ast.length === 1 && ast[0] instanceof html.Attribute;
 }

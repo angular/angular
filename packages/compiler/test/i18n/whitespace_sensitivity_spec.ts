@@ -18,7 +18,7 @@ describe('i18nPreserveWhitespaceForLegacyExtraction', () => {
       const initial = extractMessages(
         `
 <div i18n>Hello, World!</div>
-<div i18n>{{ abc }}</div>
+<div i18n>Hello {{ abc }}</div>
 <div i18n>Start {{ abc }} End</div>
 <div i18n>{{ first }} middle {{ end }}</div>
 <div i18n><a href="/foo">First Second</a></div>
@@ -41,7 +41,7 @@ Test case is disabled by omitting the i18n attribute.
   Hello, World!
 </div>
 <div i18n>
-  {{ abc }}
+  Hello {{ abc }}
 </div>
 <div i18n>
   Start {{ abc }} End
@@ -111,7 +111,7 @@ Test case is disabled by omitting the i18n attribute.
   Hello, World!
 </div>
 <div i18n>
-  {{ abc }}
+  Hello {{ abc }}
 </div>
 <div i18n>
   Start {{ abc }} End
@@ -171,7 +171,7 @@ Test case is disabled by omitting the i18n attribute.
     Hello, World!
   </div>
   <div i18n>
-    {{ abc }}
+    Hello {{ abc }}
   </div>
   <div i18n>
     Start {{ abc }} End
@@ -237,7 +237,7 @@ Test case is disabled by omitting the i18n attribute.
   exceeds line length.
 </div>
 <div i18n>
-  {{ veryLongExpressionWhichMaybeExceedsLineLength | async }}
+  Hello {{ veryLongExpressionWhichMaybeExceedsLineLength | async }}
 </div>
 <div i18n>
   This is a long {{ abc }} which maybe
@@ -280,7 +280,7 @@ Test case is disabled by omitting the i18n attribute.
   maybe exceeds line length.
 </div>
 <div i18n>
-  {{
+  Hello {{
     veryLongExpressionWhichMaybeExceedsLineLength
     | async
   }}
@@ -346,7 +346,7 @@ Test case is disabled by omitting the i18n attribute.
       const initial = extractMessages(
         `
 <div i18n> Hello, World! </div>
-<div i18n> {{ abc }} </div>
+<div i18n> Hello {{ abc }} </div>
 <div i18n> Start {{ abc }} End </div>
 <div i18n> {{ first }} middle {{ end }} </div>
 <div i18n> <a href="/foo">Foo</a> </div>
@@ -357,7 +357,7 @@ Test case is disabled by omitting the i18n attribute.
 
 i18nPreserveWhitespaceForLegacyExtraction does not support trimming ICU case text.
 Test case is disabled by omitting the i18n attribute.
-<div>{
+<div>Hello {
   apples, plural,
   =1 { One apple. }
   =other { Many apples. }
@@ -369,7 +369,7 @@ Test case is disabled by omitting the i18n attribute.
       const trimmed = extractMessages(
         `
 <div i18n>Hello, World!</div>
-<div i18n>{{ abc }}</div>
+<div i18n>Hello {{ abc }}</div>
 <div i18n>Start {{ abc }} End</div>
 <div i18n>{{ first }} middle {{ end }}</div>
 <div i18n><a href="/foo">Foo</a></div>
@@ -380,7 +380,7 @@ Test case is disabled by omitting the i18n attribute.
 
 i18nPreserveWhitespaceForLegacyExtraction does not support trimming ICU case text.
 Test case is disabled by omitting the i18n attribute.
-<div>{
+<div>Hello {
   apples, plural,
   =1 {One apple.}
   =other {Many apples.}
