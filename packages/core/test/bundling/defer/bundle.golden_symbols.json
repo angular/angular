@@ -591,6 +591,12 @@
     "name": "_retrieveHydrationInfoImpl"
   },
   {
+    "name": "_setAttributeImpl"
+  },
+  {
+    "name": "_setAttributeWithHydrationSupport"
+  },
+  {
     "name": "_wasLastNodeCreated"
   },
   {
@@ -1156,6 +1162,9 @@
   },
   {
     "name": "init_attrs_utils"
+  },
+  {
+    "name": "init_attrs_utils_with_hydration_support"
   },
   {
     "name": "init_authoring"
@@ -1884,6 +1893,9 @@
     "name": "init_projection"
   },
   {
+    "name": "init_prop_utils_with_hydration_support"
+  },
+  {
     "name": "init_property"
   },
   {
@@ -1894,6 +1906,9 @@
   },
   {
     "name": "init_property_interpolation"
+  },
+  {
+    "name": "init_protected_attributes"
   },
   {
     "name": "init_provider"
