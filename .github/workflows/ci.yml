@@ -1,4 +1,4 @@
-name: CI
+name: CI (push)
 
 on:
   push:
@@ -152,10 +152,10 @@ jobs:
       - run: yarn --cwd packages/zone.js/test/typings install --frozen-lockfile --non-interactive
       - run: yarn --cwd packages/zone.js/test/typings test
 
-  bazel-saucelabs:
+  saucelabs:
     runs-on: ubuntu-latest-4core
     env:
-      JOBS: 2
+      SAUCE_TUNNEL_IDENTIFIER: angular-framework-${{ github.run_number }}
     steps:
       - name: Initialize environment
         uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@8d3cb7b9e1b3edd1dc168376689d27407d2dfa7a
@@ -163,20 +163,7 @@ jobs:
           cache-node-modules: true
       - name: Install node modules
         run: yarn install --frozen-lockfile
-      - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@8d3cb7b9e1b3edd1dc168376689d27407d2dfa7a
-      - name: Setup Bazel Remote Caching
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@8d3cb7b9e1b3edd1dc168376689d27407d2dfa7a
-      - name: Setup Saucelabs Variables
-        uses: angular/dev-infra/github-actions/saucelabs@8d3cb7b9e1b3edd1dc168376689d27407d2dfa7a
-      - name: Set up Sauce Tunnel Daemon
-        run: yarn bazel run //tools/saucelabs-daemon/background-service -- $JOBS &
-        env:
-          SAUCE_TUNNEL_IDENTIFIER: angular-framework-${{ github.run_number }}
-      - name: Run all saucelabs bazel tests
-        run: |
-          TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "fixme-saucelabs", ...)')
-          yarn bazel test --config=saucelabs --jobs=$JOBS ${TESTS}
+      - uses: ./.github/actions/saucelabs-legacy
 
   adev-deploy:
     needs: [adev]
