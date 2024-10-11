@@ -46,10 +46,13 @@ export function getClassFieldDescriptorForSymbol(
  * would then match identity.
  */
 export function getUniqueIDForClassProperty(
-  property: ts.PropertyDeclaration,
+  property: ts.ClassElement,
   info: ProgramInfo,
 ): ClassFieldUniqueKey | null {
   if (!ts.isClassDeclaration(property.parent) || property.parent.name === undefined) {
+    return null;
+  }
+  if (property.name === undefined) {
     return null;
   }
   const id = projectFile(property.getSourceFile(), info).id.replace(/\.d\.ts$/, '.ts');
