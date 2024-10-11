@@ -27,6 +27,19 @@ describe('TypeScriptAstFactory', () => {
 
       expect(generate(stmt)).toEqual(['/* comment 1 */', '//comment 2', 'x = 10;'].join('\n'));
     });
+
+    it('should add the comments to the given expression', () => {
+      const {
+        items: [expr],
+        generate,
+      } = setupExpressions('x + 10');
+      factory.attachComments(expr, [
+        leadingComment('comment 1', true),
+        leadingComment('comment 2', false),
+      ]);
+
+      expect(generate(expr)).toEqual(['/* comment 1 */', '//comment 2', 'x + 10'].join('\n'));
+    });
   });
 
   describe('createArrayLiteral()', () => {
@@ -63,11 +76,17 @@ describe('TypeScriptAstFactory', () => {
   });
 
   describe('createDynamicImport()', () => {
-    it('should create a dynamic import expression', () => {
+    it('should create a dynamic import expression from a string URL', () => {
       const {generate} = setupExpressions(``);
       const url = './some/path';
       const assignment = factory.createDynamicImport(url);
       expect(generate(assignment)).toEqual(`import("${url}")`);
+    });
+
+    it('should create a dynamic import expression from an expression URL', () => {
+      const {items, generate} = setupExpressions(`'/' + 'abc' + '/'`);
+      const assignment = factory.createDynamicImport(items[0]);
+      expect(generate(assignment)).toEqual(`import('/' + 'abc' + '/')`);
     });
   });
 

@@ -957,14 +957,15 @@ export class ConditionalExpr extends Expression {
 
 export class DynamicImportExpr extends Expression {
   constructor(
-    public url: string,
+    public url: string | Expression,
     sourceSpan?: ParseSourceSpan | null,
+    public urlComment?: string,
   ) {
     super(null, sourceSpan);
   }
 
   override isEquivalent(e: Expression): boolean {
-    return e instanceof DynamicImportExpr && this.url === e.url;
+    return e instanceof DynamicImportExpr && this.url === e.url && this.urlComment === e.urlComment;
   }
 
   override isConstant() {
@@ -976,7 +977,11 @@ export class DynamicImportExpr extends Expression {
   }
 
   override clone(): DynamicImportExpr {
-    return new DynamicImportExpr(this.url, this.sourceSpan);
+    return new DynamicImportExpr(
+      typeof this.url === 'string' ? this.url : this.url.clone(),
+      this.sourceSpan,
+      this.urlComment,
+    );
   }
 }
 

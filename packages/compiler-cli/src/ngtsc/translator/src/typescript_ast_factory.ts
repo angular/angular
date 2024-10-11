@@ -126,11 +126,11 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
 
   createExpressionStatement = ts.factory.createExpressionStatement;
 
-  createDynamicImport(url: string) {
+  createDynamicImport(url: string | ts.Expression) {
     return ts.factory.createCallExpression(
-      ts.factory.createToken(ts.SyntaxKind.ImportKeyword) as ts.Expression,
+      ts.factory.createToken(ts.SyntaxKind.ImportKeyword) as ts.ImportExpression,
       /* type */ undefined,
-      [ts.factory.createStringLiteral(url)],
+      [typeof url === 'string' ? ts.factory.createStringLiteral(url) : url],
     );
   }
 
@@ -352,7 +352,10 @@ export function createTemplateTail(cooked: string, raw: string): ts.TemplateTail
  * @param statement The statement that will have comments attached.
  * @param leadingComments The comments to attach to the statement.
  */
-export function attachComments(statement: ts.Statement, leadingComments: LeadingComment[]): void {
+export function attachComments(
+  statement: ts.Statement | ts.Expression,
+  leadingComments: LeadingComment[],
+): void {
   for (const comment of leadingComments) {
     const commentKind = comment.multiline
       ? ts.SyntaxKind.MultiLineCommentTrivia

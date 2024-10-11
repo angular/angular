@@ -27,7 +27,7 @@ export class BabelAstFactory implements AstFactory<t.Statement, t.Expression> {
     private sourceUrl: string,
   ) {}
 
-  attachComments(statement: t.Statement, leadingComments: LeadingComment[]): void {
+  attachComments(statement: t.Statement | t.Expression, leadingComments: LeadingComment[]): void {
     // We must process the comments in reverse because `t.addComment()` will add new ones in front.
     for (let i = leadingComments.length - 1; i >= 0; i--) {
       const comment = leadingComments[i];
@@ -119,8 +119,12 @@ export class BabelAstFactory implements AstFactory<t.Statement, t.Expression> {
 
   createIfStatement = t.ifStatement;
 
-  createDynamicImport(url: string): t.Expression {
-    return this.createCallExpression(t.import(), [t.stringLiteral(url)], false /* pure */);
+  createDynamicImport(url: string | t.Expression): t.Expression {
+    return this.createCallExpression(
+      t.import(),
+      [typeof url === 'string' ? t.stringLiteral(url) : url],
+      false /* pure */,
+    );
   }
 
   createLiteral(value: string | number | boolean | null | undefined): t.Expression {

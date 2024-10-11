@@ -20,7 +20,7 @@ export interface AstFactory<TStatement, TExpression> {
    * @param statement the statement where the comments are to be attached.
    * @param leadingComments the comments to attach.
    */
-  attachComments(statement: TStatement, leadingComments: LeadingComment[]): void;
+  attachComments(statement: TStatement | TExpression, leadingComments: LeadingComment[]): void;
 
   /**
    * Create a literal array expression (e.g. `[expr1, expr2]`).
@@ -136,7 +136,7 @@ export interface AstFactory<TStatement, TExpression> {
    *
    * @param url the URL that should by used in the dynamic import
    */
-  createDynamicImport(url: string): TExpression;
+  createDynamicImport(url: string | TExpression): TExpression;
 
   /**
    * Create an identifier.

@@ -356,7 +356,15 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
   }
 
   visitDynamicImportExpr(ast: o.DynamicImportExpr, context: any) {
-    return this.factory.createDynamicImport(ast.url);
+    const urlExpression =
+      typeof ast.url === 'string'
+        ? this.factory.createLiteral(ast.url)
+        : ast.url.visitExpression(this, context);
+    if (ast.urlComment) {
+      this.factory.attachComments(urlExpression, [o.leadingComment(ast.urlComment, true)]);
+    }
+
+    return this.factory.createDynamicImport(urlExpression);
   }
 
   visitNotExpr(ast: o.NotExpr, context: Context): TExpression {
