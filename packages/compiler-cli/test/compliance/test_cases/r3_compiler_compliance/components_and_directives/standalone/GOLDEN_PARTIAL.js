@@ -105,7 +105,10 @@ NotStandaloneDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version
 NotStandaloneDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: NotStandaloneDir, selector: "[not-standalone]", ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NotStandaloneDir, decorators: [{
             type: Directive,
-            args: [{ selector: '[not-standalone]' }]
+            args: [{
+                    selector: '[not-standalone]',
+                    standalone: false
+                }]
         }] });
 export class NotStandalonePipe {
     transform(value) { }
@@ -114,7 +117,10 @@ NotStandalonePipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", versio
 NotStandalonePipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NotStandalonePipe, name: "nspipe" });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NotStandalonePipe, decorators: [{
             type: Pipe,
-            args: [{ name: 'nspipe' }]
+            args: [{
+                    name: 'nspipe',
+                    standalone: false
+                }]
         }] });
 export class NotStandaloneStuffModule {
 }

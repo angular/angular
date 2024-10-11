@@ -43,7 +43,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <div class="a{{one}}b{{two}}c"></div>
     <div class="a{{one}}b"></div>
     <div class="{{one}}"></div>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 
@@ -110,7 +111,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <div style.color="a{{one}}b{{two}}c"></div>
     <div style.color="a{{one}}b"></div>
     <div style.color="{{one}}"></div>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 
@@ -152,7 +154,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     template: `
     <div style.width.px="a{{one}}b{{two}}c"></div>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 
@@ -195,7 +198,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <div style.background="url({{ myUrl1 }})"
          style.borderImage="url({{ myUrl2 }}) {{ myRepeat }} auto"
          style.boxShadow="{{ myBoxX }} {{ myBoxY }} {{ myBoxWidth }} black"></div>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 
@@ -234,7 +238,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     template: `
     <div style.width!important="a{{one}}b{{two}}c"></div>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 

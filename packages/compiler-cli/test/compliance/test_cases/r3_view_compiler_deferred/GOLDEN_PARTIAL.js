@@ -26,6 +26,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       <p>Content after defer block</p>
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -82,6 +83,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -121,6 +123,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       <img src="placeholder.gif">
     }
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -158,6 +161,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       <img src="loading.gif">
     }
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -471,6 +475,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         <button #button>Click me</button>
       }
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -530,6 +535,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         <button #button>Click me</button>
       }
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -742,6 +748,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       </div>
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -793,6 +800,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       </ng-template>
     </ng-template>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -844,6 +852,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       </div>
     }
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -885,6 +894,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       <button>Click me</button>
     }
   `,
+                    standalone: false
                 }]
         }] });
 
