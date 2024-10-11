@@ -262,16 +262,6 @@ function filterInputsViaConfig(
       });
     }
   }
-
-  result.references = result.references.filter((reference) => {
-    if (isInputDescriptor(reference.target)) {
-      // Only migrate the reference if the target is NOT skipped.
-      return !skippedInputs.has(reference.target.key);
-    }
-    // Class references may be migrated. This is up to the logic handling
-    // the class reference. E.g. it may not migrate if any member is incompatible.
-    return true;
-  });
 }
 
 function createMigrationHost(info: ProgramInfo, config: MigrationConfig): MigrationHost {
