@@ -444,9 +444,9 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
 
     // Fix problematic calls, like `QueryList#toArray`, or `QueryList#get`.
     for (const ref of referenceResult.references) {
-      removeQueryListToArrayCall(ref, info, globalMetadata, replacements);
-      replaceQueryListGetCall(ref, info, globalMetadata, replacements);
-      replaceQueryListFirstAndLastReferences(ref, info, globalMetadata, replacements);
+      removeQueryListToArrayCall(ref, info, globalMetadata, knownQueries, replacements);
+      replaceQueryListGetCall(ref, info, globalMetadata, knownQueries, replacements);
+      replaceQueryListFirstAndLastReferences(ref, info, globalMetadata, knownQueries, replacements);
     }
 
     // Remove imports if possible.

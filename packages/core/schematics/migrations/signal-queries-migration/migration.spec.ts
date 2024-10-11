@@ -771,6 +771,47 @@ describe('signal queries migration', () => {
     `);
   });
 
+  it('should not update `toArray` function calls if query is incompatible', async () => {
+    const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
+      {
+        name: absoluteFrom('/app.component.ts'),
+        isProgramRootFile: true,
+        contents: dedent`
+          import {ViewChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+          @Component({
+            template: ''
+          })
+          class MyComp {
+            @ViewChildren('label') labels = new QueryList<ElementRef>();
+
+            click() {
+              this.labels.destroy();
+              this.labels.toArray().some(bla);
+            }
+          }
+        `,
+      },
+    ]);
+
+    const actual = fs.readFile(absoluteFrom('/app.component.ts'));
+    expect(actual).toMatchWithDiff(`
+      import {ViewChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+      @Component({
+        template: ''
+      })
+      class MyComp {
+        @ViewChildren('label') labels = new QueryList<ElementRef>();
+
+        click() {
+          this.labels.destroy();
+          this.labels.toArray().some(bla);
+        }
+      }
+    `);
+  });
+
   it('should replace `get` function calls for multi queries', async () => {
     const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
       {
