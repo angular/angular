@@ -25,6 +25,7 @@ import {ZippyComponent} from './zippy.component';
   templateUrl: './demo-app.component.html',
   styleUrls: ['./demo-app.component.scss'],
   encapsulation: ViewEncapsulation.None,
+  standalone: false,
 })
 export class DemoAppComponent {
   @ViewChild(ZippyComponent) zippy!: ZippyComponent;
