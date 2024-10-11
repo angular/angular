@@ -19,9 +19,10 @@ export class DirectiveC {
 }
 
 @Component({
-  selector: 'my-component',
-  template: '',
-  hostDirectives: [DirectiveC],
+    selector: 'my-component',
+    template: '',
+    hostDirectives: [DirectiveC],
+    standalone: false
 })
 export class MyComponent {
 }

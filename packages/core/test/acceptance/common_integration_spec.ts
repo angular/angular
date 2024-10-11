@@ -12,13 +12,24 @@ import {By} from '@angular/platform-browser';
 
 describe('@angular/common integration', () => {
   describe('NgForOf', () => {
-    @Directive({selector: '[dir]'})
+    @Directive({
+      selector: '[dir]',
+      standalone: false,
+    })
     class MyDirective {}
 
-    @Component({selector: 'app-child', template: '<div dir>comp text</div>'})
+    @Component({
+      selector: 'app-child',
+      template: '<div dir>comp text</div>',
+      standalone: false,
+    })
     class ChildComponent {}
 
-    @Component({selector: 'app-root', template: ''})
+    @Component({
+      selector: 'app-root',
+      template: '',
+      standalone: false,
+    })
     class AppComponent {
       items: string[] = ['first', 'second'];
     }
@@ -133,6 +144,7 @@ describe('@angular/common integration', () => {
          <ul>
             <li *ngFor="let item of items">{{item}}</li>
          </ul>`,
+        standalone: false,
       })
       class ToggleComponent {
         private _data: number[] = [1, 2, 3];
@@ -186,6 +198,7 @@ describe('@angular/common integration', () => {
             <span *ngFor="let cell of row.data">{{cell}} - {{ row.value }} - {{ items.length }}</span>
           </li>
        </ul>`,
+        standalone: false,
       })
       class MultiLevelComponent {
         items: any[] = [
@@ -260,6 +273,7 @@ describe('@angular/common integration', () => {
             {{ row.value }} - {{ name }}
           </p>
         </div>`,
+        standalone: false,
       })
       class MultiLevelWithListenerComponent {
         items: any[] = [{data: ['1'], value: 'first'}];
@@ -299,6 +313,7 @@ describe('@angular/common integration', () => {
               <span *ngFor="let span of cell.data">{{ cell.value }} - {{ name }}</span>
            </div>
         </div>`,
+        standalone: false,
       })
       class SkippingContextComponent {
         name = 'app';
@@ -350,6 +365,7 @@ describe('@angular/common integration', () => {
                </span>
             </span>
          </div>`,
+        standalone: false,
       })
       class NineLevelsComponent {
         value = 'App';
@@ -486,6 +502,7 @@ describe('@angular/common integration', () => {
           <div *ngIf="showing">{{ valueOne }}</div>
           <div *ngIf="showing">{{ valueTwo }}</div>
         `,
+        standalone: false,
       })
       class SimpleConditionComponent {
         showing = true;
@@ -518,6 +535,7 @@ describe('@angular/common integration', () => {
             </div>
           </div>
         `,
+        standalone: false,
       })
       class NestedConditionsComponent {
         showing = true;
@@ -547,6 +565,7 @@ describe('@angular/common integration', () => {
         template: `<ng-template #tpl>from tpl</ng-template>
           <ng-template [ngTemplateOutlet]="showing ? tpl : null"></ng-template>
         `,
+        standalone: false,
       })
       class EmbeddedViewsComponent {
         showing = false;
@@ -573,6 +592,7 @@ describe('@angular/common integration', () => {
         template: `<ng-template #tpl>from tpl</ng-template>
           <ng-container [ngTemplateOutlet]="showing ? tpl : null"></ng-container>
         `,
+        standalone: false,
       })
       class NgContainerComponent {
         showing = false;

@@ -96,6 +96,7 @@ export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>(
     '(compositionend)': '$any(this)._compositionEnd($event.target.value)',
   },
   providers: [DEFAULT_VALUE_ACCESSOR],
+  standalone: false,
 })
 export class DefaultValueAccessor extends BaseControlValueAccessor implements ControlValueAccessor {
   /** Whether the user is creating a composition string (IME events). */

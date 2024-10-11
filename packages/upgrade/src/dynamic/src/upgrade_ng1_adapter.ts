@@ -76,6 +76,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
       selector: selector,
       inputs: this.inputsRename,
       outputs: this.outputsRename,
+      standalone: false,
     })
     class MyClass
       extends UpgradeNg1ComponentAdapter

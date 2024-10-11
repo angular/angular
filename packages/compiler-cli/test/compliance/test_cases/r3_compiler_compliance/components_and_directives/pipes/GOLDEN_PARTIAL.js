@@ -13,7 +13,10 @@ MyPipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-P
 MyPipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyPipe, name: "myPipe", pure: false });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyPipe, decorators: [{
             type: Pipe,
-            args: [{ name: 'myPipe', pure: false }]
+            args: [{
+                    name: 'myPipe', pure: false,
+                    standalone: false
+                }]
         }] });
 export class MyPurePipe {
     transform(value, ...args) {
@@ -27,6 +30,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     name: 'myPurePipe',
                     pure: true,
+                    standalone: false
                 }]
         }] });
 export class MyApp {
@@ -41,7 +45,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-app',
-                    template: '{{name | myPipe:size | myPurePipe:size }}<p>{{ name | myPipe:1:2:3:4:5 }} {{ name ? 1 : 2 | myPipe }}</p>'
+                    template: '{{name | myPipe:size | myPurePipe:size }}<p>{{ name | myPipe:1:2:3:4:5 }} {{ name ? 1 : 2 | myPipe }}</p>',
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -97,7 +102,10 @@ MyPipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-P
 MyPipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyPipe, name: "myPipe", pure: false });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyPipe, decorators: [{
             type: Pipe,
-            args: [{ name: 'myPipe', pure: false }]
+            args: [{
+                    name: 'myPipe', pure: false,
+                    standalone: false
+                }]
         }] });
 export class MyApp {
     constructor() {
@@ -110,7 +118,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-app',
-                    template: '0:{{name | myPipe}}1:{{name | myPipe:1}}2:{{name | myPipe:1:2}}3:{{name | myPipe:1:2:3}}4:{{name | myPipe:1:2:3:4}}'
+                    template: '0:{{name | myPipe}}1:{{name | myPipe:1}}2:{{name | myPipe:1:2}}3:{{name | myPipe:1:2:3}}4:{{name | myPipe:1:2:3:4}}',
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -160,7 +169,10 @@ MyPipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-P
 MyPipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyPipe, name: "myPipe" });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyPipe, decorators: [{
             type: Pipe,
-            args: [{ name: 'myPipe' }]
+            args: [{
+                    name: 'myPipe',
+                    standalone: false
+                }]
         }], ctorParameters: () => [{ type: i0.ChangeDetectorRef }] });
 export class MyOtherPipe {
     constructor(changeDetectorRef) { }
@@ -172,7 +184,10 @@ MyOtherPipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 MyOtherPipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyOtherPipe, name: "myOtherPipe" });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyOtherPipe, decorators: [{
             type: Pipe,
-            args: [{ name: 'myOtherPipe' }]
+            args: [{
+                    name: 'myOtherPipe',
+                    standalone: false
+                }]
         }], ctorParameters: () => [{ type: i0.ChangeDetectorRef, decorators: [{
                     type: Optional
                 }] }] });
@@ -185,7 +200,10 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: '{{name | myPipe }}<p>{{ name | myOtherPipe }}</p>', isInline: true, dependencies: [{ kind: "pipe", type: MyPipe, name: "myPipe" }, { kind: "pipe", type: MyOtherPipe, name: "myOtherPipe" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
-            args: [{ selector: 'my-app', template: '{{name | myPipe }}<p>{{ name | myOtherPipe }}</p>' }]
+            args: [{
+                    selector: 'my-app', template: '{{name | myPipe }}<p>{{ name | myOtherPipe }}</p>',
+                    standalone: false
+                }]
         }] });
 export class MyModule {
 }

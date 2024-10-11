@@ -658,7 +658,10 @@ describe('createUrlTreeFromSnapshot', async () => {
       }
     }
 
-    @Component({template: 'child works!'})
+    @Component({
+      template: 'child works!',
+      standalone: false,
+    })
     class ChildComponent {}
 
     @Component({

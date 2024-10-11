@@ -16,8 +16,8 @@ class CustomInjectable {
 }
 
 @Component({
-  selector: 'test-cmp',
-  templateUrl: 'test_cmp_template.html',
+    selector: 'test-cmp',
+    templateUrl: 'test_cmp_template.html',
 })
 export class ComponentWithExternalResource {
 }

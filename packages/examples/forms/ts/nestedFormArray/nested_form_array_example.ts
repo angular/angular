@@ -26,6 +26,7 @@ import {FormArray, FormControl, FormGroup} from '@angular/forms';
     <button (click)="addCity()">Add City</button>
     <button (click)="setPreset()">Set preset</button>
   `,
+  standalone: false,
 })
 export class NestedFormArray {
   form = new FormGroup({

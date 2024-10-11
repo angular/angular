@@ -79,6 +79,7 @@ describe('template-driven forms integration tests', () => {
       @Component({
         selector: 'app-root',
         template: `<input type="radio" value="one" [(ngModel)]="active"/>`,
+        standalone: false,
       })
       class AppComponent {
         active = 'one';
@@ -346,6 +347,7 @@ describe('template-driven forms integration tests', () => {
                 </div>
               </form>
             `,
+        standalone: false,
       })
       class App {
         private _counter = 0;
@@ -402,6 +404,7 @@ describe('template-driven forms integration tests', () => {
                 </ng-container>
               </form>
             `,
+        standalone: false,
       })
       class App {
         private _counter = 0;
@@ -2063,6 +2066,7 @@ describe('template-driven forms integration tests', () => {
             useExisting: forwardRef(() => MyCustomComponentDirective),
           },
         ],
+        standalone: false,
       })
       class MyCustomComponentDirective implements ControlValueAccessor {
         @Input() min!: number;
@@ -2079,6 +2083,7 @@ describe('template-driven forms integration tests', () => {
               <my-custom-component name="min" ngModel [min]="min"></my-custom-component>
               <my-custom-component name="max" ngModel [max]="max"></my-custom-component>
             `,
+        standalone: false,
       })
       class AppComponent {}
 
@@ -2098,7 +2103,10 @@ describe('template-driven forms integration tests', () => {
     }));
 
     it('should not include the min and max validators for inputs with type range', fakeAsync(() => {
-      @Component({template: '<input type="range" min="10" max="20">'})
+      @Component({
+        template: '<input type="range" min="10" max="20">',
+        standalone: false,
+      })
       class AppComponent {}
 
       const fixture = initTest(AppComponent);
@@ -2123,6 +2131,7 @@ describe('template-driven forms integration tests', () => {
         @Component({
           template:
             '<form><input name="amount" ngModel [minlength]="minlen" [maxlength]="maxlen"></form>',
+          standalone: false,
         })
         class MinLengthMaxLengthComponent {
           minlen: number | null = null;
@@ -2210,6 +2219,7 @@ describe('template-driven forms integration tests', () => {
         @Component({
           template:
             '<form><input type="number" name="minmaxinput" ngModel [min]="minlen" [max]="maxlen"></form>',
+          standalone: false,
         })
         class MinLengthMaxLengthComponent {
           minlen: number | null = null;
@@ -2514,6 +2524,7 @@ describe('template-driven forms integration tests', () => {
         providers: [
           {provide: NG_VALIDATORS, useExisting: forwardRef(() => NoOpValidator), multi: true},
         ],
+        standalone: false,
       })
       class NoOpValidator implements Validator {
         @Input() validatorInput = '';
@@ -2536,6 +2547,7 @@ describe('template-driven forms integration tests', () => {
             multi: true,
           },
         ],
+        standalone: false,
       })
       class NoOpAsyncValidator implements AsyncValidator {
         @Input() validatorInput = '';
@@ -2558,6 +2570,7 @@ describe('template-driven forms integration tests', () => {
                 </div>
               </form>
             `,
+        standalone: false,
       })
       class NgModelNoOpValidation {
         validatorInput = 'foo';
@@ -2710,6 +2723,7 @@ describe('template-driven forms integration tests', () => {
   template: `
     <input type="text" [(ngModel)]="name">
   `,
+  standalone: false,
 })
 class StandaloneNgModel {
   name!: string;
@@ -2722,6 +2736,7 @@ class StandaloneNgModel {
       <input name="name" [(ngModel)]="name" minlength="10" [ngModelOptions]="options">
     </form>
   `,
+  standalone: false,
 })
 class NgModelForm {
   name!: string | null;
@@ -2731,7 +2746,11 @@ class NgModelForm {
   onReset() {}
 }
 
-@Component({selector: 'ng-model-native-validate-form', template: `<form ngNativeValidate></form>`})
+@Component({
+  selector: 'ng-model-native-validate-form',
+  template: `<form ngNativeValidate></form>`,
+  standalone: false,
+})
 class NgModelNativeValidateForm {}
 
 @Component({
@@ -2745,6 +2764,7 @@ class NgModelNativeValidateForm {}
       <input name="email" [(ngModel)]="email" [ngModelOptions]="options">
     </form>
   `,
+  standalone: false,
 })
 class NgModelGroupForm {
   first!: string;
@@ -2764,6 +2784,7 @@ class NgModelGroupForm {
       </div>
     </form>
   `,
+  standalone: false,
 })
 class NgModelValidBinding {
   first!: string;
@@ -2779,6 +2800,7 @@ class NgModelValidBinding {
       <input name="email" [(ngModel)]="email" *ngIf="emailShowing">
     </form>
   `,
+  standalone: false,
 })
 class NgModelNgIfForm {
   first!: string;
@@ -2799,6 +2821,7 @@ class NgModelNgIfForm {
       </div>
     </form>
   `,
+  standalone: false,
 })
 class NgModelNestedForm {
   first!: string;
@@ -2812,6 +2835,7 @@ class NgModelNestedForm {
       <input name="name">
     </form>
   `,
+  standalone: false,
 })
 class NgNoFormComp {}
 
@@ -2822,6 +2846,7 @@ class NgNoFormComp {}
       <input [(ngModel)]="name">
     </form>
   `,
+  standalone: false,
 })
 class InvalidNgModelNoName {}
 
@@ -2833,6 +2858,7 @@ class InvalidNgModelNoName {}
       <input [(ngModel)]="two" [ngModelOptions]="options">
     </form>
   `,
+  standalone: false,
 })
 class NgModelOptionsStandalone {
   one!: string;
@@ -2851,6 +2877,7 @@ class NgModelOptionsStandalone {
       <input name="pattern" ngModel  [pattern]="pattern">
     </form>
   `,
+  standalone: false,
 })
 class NgModelValidationBindings {
   required!: boolean;
@@ -2866,6 +2893,7 @@ class NgModelValidationBindings {
       <input name="tovalidate" ngModel  [required]="required" [minlength]="minLen" [pattern]="pattern">
     </form>
   `,
+  standalone: false,
 })
 class NgModelMultipleValidators {
   required!: boolean;
@@ -2876,6 +2904,7 @@ class NgModelMultipleValidators {
 @Component({
   selector: 'ng-model-checkbox-validator',
   template: `<form><input type="checkbox" [(ngModel)]="accepted" [required]="required" name="checkbox"></form>`,
+  standalone: false,
 })
 class NgModelCheckboxRequiredValidator {
   accepted: boolean = false;
@@ -2885,6 +2914,7 @@ class NgModelCheckboxRequiredValidator {
 @Component({
   selector: 'ng-model-email',
   template: `<form><input type="email" ngModel [email]="validatorEnabled" name="email"></form>`,
+  standalone: false,
 })
 class NgModelEmailValidator {
   validatorEnabled: boolean = false;
@@ -2895,6 +2925,7 @@ class NgModelEmailValidator {
   providers: [
     {provide: NG_ASYNC_VALIDATORS, useExisting: forwardRef(() => NgAsyncValidator), multi: true},
   ],
+  standalone: false,
 })
 class NgAsyncValidator implements AsyncValidator {
   validate(c: AbstractControl) {
@@ -2905,6 +2936,7 @@ class NgAsyncValidator implements AsyncValidator {
 @Component({
   selector: 'ng-model-async-validation',
   template: `<input name="async" ngModel ng-async-validator>`,
+  standalone: false,
 })
 class NgModelAsyncValidation {}
 
@@ -2916,6 +2948,7 @@ class NgModelAsyncValidation {}
              [ngModelOptions]="options">
     </form>
   `,
+  standalone: false,
 })
 class NgModelChangesForm {
   name!: string;
@@ -2933,6 +2966,7 @@ class NgModelChangesForm {
     <input #ngModel="ngModel" ngModel [maxlength]="4"
            (ngModelChange)="onNgModelChange(ngModel)">
   `,
+  standalone: false,
 })
 class NgModelChangeState {
   onNgModelChange = () => {};
@@ -2941,6 +2975,7 @@ class NgModelChangeState {
 @Component({
   selector: 'ng-model-max',
   template: `<form><input name="max" type="number" ngModel [max]="max"></form>`,
+  standalone: false,
 })
 class NgModelMaxValidator {
   max!: number;
@@ -2949,6 +2984,7 @@ class NgModelMaxValidator {
 @Component({
   selector: 'ng-model-min',
   template: `<form><input name="min" type="number" ngModel [min]="min"></form>`,
+  standalone: false,
 })
 class NgModelMinValidator {
   min!: number;
@@ -2958,13 +2994,17 @@ class NgModelMinValidator {
   selector: 'ng-model-min-max',
   template: `
     <form><input name="min_max" type="number" ngModel [min]="min" [max]="max"></form>`,
+  standalone: false,
 })
 class NgModelMinMaxValidator {
   min!: number | string;
   max!: number | string;
 }
 
-@Directive({selector: '[myDir]'})
+@Directive({
+  selector: '[myDir]',
+  standalone: false,
+})
 class CustomDirective {
   @Input() min!: number;
   @Input() max!: number;
@@ -2978,6 +3018,7 @@ class CustomDirective {
       <input name="max" type="text" ngModel [max]="max" myDir>
     </form>
   `,
+  standalone: false,
 })
 class NgModelNoMinMaxValidator {
   min!: number;
@@ -2994,6 +3035,7 @@ class NgModelNoMinMaxValidator {
       </form>
     </dialog>
   `,
+  standalone: false,
 })
 class NativeDialogForm {
   @ViewChild('form') form!: ElementRef<HTMLFormElement>;

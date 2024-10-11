@@ -45,6 +45,7 @@ describe('render3 jit', () => {
     @Component({
       template: 'test',
       selector: 'test-cmp',
+      standalone: false,
     })
     class SomeCmp {}
     const SomeCmpAny = SomeCmp as any;
@@ -57,6 +58,7 @@ describe('render3 jit', () => {
     @Component({
       selector: 'inner-cmp',
       template: 'Inner!',
+      standalone: false,
     })
     class InnerCmp {}
 
@@ -85,6 +87,7 @@ describe('render3 jit', () => {
     @Component({
       selector: 'inner-cmp',
       template: 'Inner!',
+      standalone: false,
     })
     class InnerCmp {}
 
@@ -212,6 +215,7 @@ describe('render3 jit', () => {
     @Component({
       template: 'foo',
       selector: 'foo',
+      standalone: false,
     })
     class Cmp {}
 
@@ -238,6 +242,7 @@ describe('render3 jit', () => {
     @Component({
       template: 'foo',
       selector: 'foo',
+      standalone: false,
     })
     class Cmp {}
 
@@ -292,6 +297,7 @@ describe('render3 jit', () => {
     @Component({
       template: 'foo',
       selector: 'foo',
+      standalone: false,
     })
     class Cmp {}
     const cmpDef: ComponentDef<Cmp> = (Cmp as any).ɵcmp;
@@ -316,6 +322,7 @@ describe('render3 jit', () => {
         '[class.red]': 'isRed',
         '(click)': 'onClick()',
       },
+      standalone: false,
     })
     class Cmp {
       @HostBinding('class.green') green: boolean = false;
@@ -331,7 +338,11 @@ describe('render3 jit', () => {
   });
 
   it('should compile @Pipes without errors', () => {
-    @Pipe({name: 'test-pipe', pure: false})
+    @Pipe({
+      name: 'test-pipe',
+      pure: false,
+      standalone: false,
+    })
     class P {}
 
     const pipeDef = (P as any).ɵpipe as PipeDef<P>;
@@ -345,7 +356,10 @@ describe('render3 jit', () => {
   });
 
   it('should default @Pipe to pure: true', () => {
-    @Pipe({name: 'test-pipe'})
+    @Pipe({
+      name: 'test-pipe',
+      standalone: false,
+    })
     class P {}
 
     const pipeDef = (P as any).ɵpipe as PipeDef<P>;
@@ -356,6 +370,7 @@ describe('render3 jit', () => {
     @Component({
       selector: 'input-comp',
       template: 'test',
+      standalone: false,
     })
     class InputComp {
       @Input('publicName') privateName = 'name1';
@@ -369,6 +384,7 @@ describe('render3 jit', () => {
   it('should add @Input properties to a directive', () => {
     @Directive({
       selector: '[dir]',
+      standalone: false,
     })
     class InputDir {
       @Input('publicName') privateName = 'name1';
@@ -380,7 +396,10 @@ describe('render3 jit', () => {
   });
 
   it('should compile ContentChildren query with string predicate on a directive', () => {
-    @Directive({selector: '[test]'})
+    @Directive({
+      selector: '[test]',
+      standalone: false,
+    })
     class TestDirective {
       @ContentChildren('foo') foos: QueryList<ElementRef> | undefined;
     }
@@ -389,7 +408,10 @@ describe('render3 jit', () => {
   });
 
   it('should compile ContentChild query with string predicate on a directive', () => {
-    @Directive({selector: '[test]'})
+    @Directive({
+      selector: '[test]',
+      standalone: false,
+    })
     class TestDirective {
       @ContentChild('foo') foo: ElementRef | undefined;
     }
@@ -400,7 +422,10 @@ describe('render3 jit', () => {
   it('should compile ContentChildren query with type predicate on a directive', () => {
     class SomeDir {}
 
-    @Directive({selector: '[test]'})
+    @Directive({
+      selector: '[test]',
+      standalone: false,
+    })
     class TestDirective {
       @ContentChildren(SomeDir) dirs: QueryList<SomeDir> | undefined;
     }
@@ -411,7 +436,10 @@ describe('render3 jit', () => {
   it('should compile ContentChild query with type predicate on a directive', () => {
     class SomeDir {}
 
-    @Directive({selector: '[test]'})
+    @Directive({
+      selector: '[test]',
+      standalone: false,
+    })
     class TestDirective {
       @ContentChild(SomeDir) dir: SomeDir | undefined;
     }
@@ -420,7 +448,11 @@ describe('render3 jit', () => {
   });
 
   it('should compile ViewChild query on a component', () => {
-    @Component({selector: 'test', template: ''})
+    @Component({
+      selector: 'test',
+      template: '',
+      standalone: false,
+    })
     class TestComponent {
       @ViewChild('foo') foo: ElementRef | undefined;
     }
@@ -429,7 +461,11 @@ describe('render3 jit', () => {
   });
 
   it('should compile ViewChildren query on a component', () => {
-    @Component({selector: 'test', template: ''})
+    @Component({
+      selector: 'test',
+      template: '',
+      standalone: false,
+    })
     class TestComponent {
       @ViewChildren('foo') foos: QueryList<ElementRef> | undefined;
     }
@@ -467,7 +503,10 @@ describe('render3 jit', () => {
         constructor(first: Legit) {}
       }
 
-      @Directive({selector: 'test'})
+      @Directive({
+        selector: 'test',
+        standalone: false,
+      })
       class TestDir extends BaseDir {}
 
       const TestDirAny = TestDir as any;

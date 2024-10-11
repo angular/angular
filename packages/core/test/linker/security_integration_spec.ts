@@ -10,12 +10,19 @@ import {Component, Directive, HostBinding, Input, NO_ERRORS_SCHEMA} from '@angul
 import {ComponentFixture, getTestBed, TestBed} from '@angular/core/testing';
 import {DomSanitizer} from '@angular/platform-browser/src/security/dom_sanitization_service';
 
-@Component({selector: 'my-comp', template: ''})
+@Component({
+  selector: 'my-comp',
+  template: '',
+  standalone: false,
+})
 class SecuredComponent {
   ctxProp: any = 'some value';
 }
 
-@Directive({selector: '[onPrefixedProp]'})
+@Directive({
+  selector: '[onPrefixedProp]',
+  standalone: false,
+})
 class OnPrefixDir {
   @Input() onPrefixedProp: any;
   @Input() onclick: any;
@@ -156,7 +163,10 @@ describe('security integration tests', function () {
     });
 
     it('should escape unsafe properties if they are used in host bindings', () => {
-      @Directive({selector: '[dirHref]'})
+      @Directive({
+        selector: '[dirHref]',
+        standalone: false,
+      })
       class HrefDirective {
         @HostBinding('href') @Input() dirHref: string | undefined;
       }
@@ -170,7 +180,10 @@ describe('security integration tests', function () {
     });
 
     it('should escape unsafe attributes if they are used in host bindings', () => {
-      @Directive({selector: '[dirHref]'})
+      @Directive({
+        selector: '[dirHref]',
+        standalone: false,
+      })
       class HrefDirective {
         @HostBinding('attr.href') @Input() dirHref: string | undefined;
       }

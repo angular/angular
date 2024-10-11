@@ -1,18 +1,30 @@
 import {Component, Directive, NgModule} from '@angular/core';
 
-@Directive({selector: '[i18n]'})
+@Directive({
+    selector: '[i18n]',
+    standalone: false
+})
 export class I18nDirective {
 }
 
-@Directive({selector: '[i18n-foo]'})
+@Directive({
+    selector: '[i18n-foo]',
+    standalone: false
+})
 export class I18nFooDirective {
 }
 
-@Directive({selector: '[foo]'})
+@Directive({
+    selector: '[foo]',
+    standalone: false
+})
 export class FooDirective {
 }
 
-@Component({selector: 'my-component', template: '<div i18n-foo></div>'})
+@Component({
+    selector: 'my-component', template: '<div i18n-foo></div>',
+    standalone: false
+})
 export class MyComponent {
 }
 

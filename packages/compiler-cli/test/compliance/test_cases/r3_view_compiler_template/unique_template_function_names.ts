@@ -1,8 +1,8 @@
 import {Component, NgModule} from '@angular/core';
 
 @Component({
-  selector: 'a-component',
-  template: `
+    selector: 'a-component',
+    template: `
     <div *ngFor="let item of items">
       <p *ngIf="item < 10">less than 10</p>
       <p *ngIf="item < 10">less than 10</p>
@@ -11,6 +11,7 @@ import {Component, NgModule} from '@angular/core';
       <p *ngIf="item > 10">more than 10</p>
     </div>
   `,
+    standalone: false
 })
 export class AComponent {
   items = [4, 2];
@@ -21,8 +22,8 @@ export class AModule {
 }
 
 @Component({
-  selector: 'b-component',
-  template: `
+    selector: 'b-component',
+    template: `
     <div *ngFor="let item of items">
       <ng-container *ngFor="let subitem of item.subitems">
         <p *ngIf="subitem < 10">less than 10</p>
@@ -38,6 +39,7 @@ export class AModule {
       </ng-container>
     </div>
   `,
+    standalone: false
 })
 export class BComponent {
   items = [

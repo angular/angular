@@ -162,6 +162,7 @@ const resolvedPromise = (() => Promise.resolve())();
   selector: '[ngModel]:not([formControlName]):not([formControl])',
   providers: [formControlBinding],
   exportAs: 'ngModel',
+  standalone: false,
 })
 export class NgModel extends NgControl implements OnChanges, OnDestroy {
   public override readonly control: FormControl = new FormControl();

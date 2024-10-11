@@ -31,21 +31,30 @@ describe('providers', () => {
       @Directive({
         selector: '[super-dir]',
         providers: [{provide: SOME_DIRS, useClass: SuperDirective, multi: true}],
+        standalone: false,
       })
       class SuperDirective {}
 
       @Directive({
         selector: '[sub-dir]',
         providers: [{provide: SOME_DIRS, useClass: SubDirective, multi: true}],
+        standalone: false,
       })
       class SubDirective extends SuperDirective {}
 
-      @Directive({selector: '[other-dir]'})
+      @Directive({
+        selector: '[other-dir]',
+        standalone: false,
+      })
       class OtherDirective {
         constructor(@Inject(SOME_DIRS) public dirs: any) {}
       }
 
-      @Component({selector: 'app-comp', template: `<div other-dir sub-dir></div>`})
+      @Component({
+        selector: 'app-comp',
+        template: `<div other-dir sub-dir></div>`,
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({
@@ -75,7 +84,11 @@ describe('providers', () => {
       @Injectable()
       class SubInjectableWithDestroyHook extends SuperInjectableWithDestroyHook {}
 
-      @Component({template: '', providers: [SubInjectableWithDestroyHook]})
+      @Component({
+        template: '',
+        providers: [SubInjectableWithDestroyHook],
+        standalone: false,
+      })
       class App {
         constructor(foo: SubInjectableWithDestroyHook) {}
       }
@@ -98,7 +111,11 @@ describe('providers', () => {
         }
       }
 
-      @Component({template: '', providers: [InjectableWithDestroyHook]})
+      @Component({
+        template: '',
+        providers: [InjectableWithDestroyHook],
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({declarations: [App]});
@@ -119,7 +136,11 @@ describe('providers', () => {
         }
       }
 
-      @Component({selector: 'my-cmp', template: ''})
+      @Component({
+        selector: 'my-cmp',
+        template: '',
+        standalone: false,
+      })
       class MyComponent {
         constructor(foo: InjectableWithDestroyHook) {}
       }
@@ -130,6 +151,7 @@ describe('providers', () => {
           <my-cmp></my-cmp>
         `,
         providers: [InjectableWithDestroyHook],
+        standalone: false,
       })
       class App {}
 
@@ -154,6 +176,7 @@ describe('providers', () => {
       @Component({
         template: '',
         providers: [{provide: InjectableWithDestroyHook, useClass: InjectableWithDestroyHook}],
+        standalone: false,
       })
       class App {
         constructor(foo: InjectableWithDestroyHook) {}
@@ -189,6 +212,7 @@ describe('providers', () => {
         providers: [
           {provide: InjectableWithDestroyHookToken, useClass: InjectableWithDestroyHookValue},
         ],
+        standalone: false,
       })
       class App {
         constructor(foo: InjectableWithDestroyHookToken) {}
@@ -225,6 +249,7 @@ describe('providers', () => {
           InjectableWithDestroyHookExisting,
           {provide: InjectableWithDestroyHookToken, useExisting: InjectableWithDestroyHookExisting},
         ],
+        standalone: false,
       })
       class App {
         constructor(
@@ -257,21 +282,33 @@ describe('providers', () => {
         }
       }
 
-      @Directive({selector: '[dir-one]', providers: [DestroyService]})
+      @Directive({
+        selector: '[dir-one]',
+        providers: [DestroyService],
+        standalone: false,
+      })
       class DirOne {
         constructor(service: DestroyService) {
           childService = service;
         }
       }
 
-      @Directive({selector: '[dir-two]', providers: [DestroyService]})
+      @Directive({
+        selector: '[dir-two]',
+        providers: [DestroyService],
+        standalone: false,
+      })
       class DirTwo {
         constructor(service: DestroyService) {
           childService = service;
         }
       }
 
-      @Component({template: '<div dir-one dir-two></div>', providers: [DestroyService]})
+      @Component({
+        template: '<div dir-one dir-two></div>',
+        providers: [DestroyService],
+        standalone: false,
+      })
       class App {
         constructor(service: DestroyService) {
           parentService = service;
@@ -307,14 +344,22 @@ describe('providers', () => {
         }
       }
 
-      @Directive({selector: '[dir-one]', providers: [{provide: token, useClass: DestroyService}]})
+      @Directive({
+        selector: '[dir-one]',
+        providers: [{provide: token, useClass: DestroyService}],
+        standalone: false,
+      })
       class DirOne {
         constructor(@Inject(token) service: DestroyService) {
           childService = service;
         }
       }
 
-      @Directive({selector: '[dir-two]', providers: [{provide: token, useClass: DestroyService}]})
+      @Directive({
+        selector: '[dir-two]',
+        providers: [{provide: token, useClass: DestroyService}],
+        standalone: false,
+      })
       class DirTwo {
         constructor(@Inject(token) service: DestroyService) {
           childService = service;
@@ -324,6 +369,7 @@ describe('providers', () => {
       @Component({
         template: '<div dir-one dir-two></div>',
         providers: [{provide: token, useClass: DestroyService}],
+        standalone: false,
       })
       class App {
         constructor(@Inject(token) service: DestroyService) {
@@ -368,6 +414,7 @@ describe('providers', () => {
             {provide: SERVICES, useClass: DestroyService, multi: true},
             {provide: SERVICES, useClass: OtherDestroyService, multi: true},
           ],
+          standalone: false,
         })
         class App {
           constructor(@Inject(SERVICES) s: any) {}
@@ -416,6 +463,7 @@ describe('providers', () => {
             {provide: SERVICES, useClass: Service3, multi: true},
             {provide: SERVICES, useClass: Service4, multi: true},
           ],
+          standalone: false,
         })
         class App {
           constructor(@Inject(SERVICES) s: any) {}
@@ -453,6 +501,7 @@ describe('providers', () => {
             {provide: SERVICES, useFactory: () => new DestroyService(), multi: true},
             {provide: SERVICES, useFactory: () => new OtherDestroyService(), multi: true},
           ],
+          standalone: false,
         })
         class App {
           constructor(@Inject(SERVICES) s: any) {}
@@ -481,6 +530,7 @@ describe('providers', () => {
         selector: 'comp-with-provider',
         template: '',
         providers: [InjectableWithDestroyHookToken],
+        standalone: false,
       })
       class CompWithProvider {
         constructor(token: InjectableWithDestroyHookToken) {}
@@ -489,6 +539,7 @@ describe('providers', () => {
       @Component({
         selector: 'app',
         template: '<comp-with-provider *ngIf="condition"></comp-with-provider>',
+        standalone: false,
       })
       class App {
         condition = true;
@@ -514,18 +565,29 @@ describe('providers', () => {
       value = 'some value';
     }
 
-    @Component({selector: 'my-comp', template: ``})
+    @Component({
+      selector: 'my-comp',
+      template: ``,
+      standalone: false,
+    })
     class MyComp {
       constructor(public svc: MyService) {}
     }
 
-    @Directive({selector: '[some-dir]'})
+    @Directive({
+      selector: '[some-dir]',
+      standalone: false,
+    })
     class MyDir {
       constructor(public svc: MyService) {}
     }
 
     it('should support providing components in tests without @Injectable', () => {
-      @Component({selector: 'test-comp', template: '<my-comp></my-comp>'})
+      @Component({
+        selector: 'test-comp',
+        template: '<my-comp></my-comp>',
+        standalone: false,
+      })
       class TestComp {}
 
       TestBed.configureTestingModule({
@@ -540,7 +602,11 @@ describe('providers', () => {
     });
 
     it('should support providing directives in tests without @Injectable', () => {
-      @Component({selector: 'test-comp', template: '<div some-dir></div>'})
+      @Component({
+        selector: 'test-comp',
+        template: '<div some-dir></div>',
+        standalone: false,
+      })
       class TestComp {}
 
       TestBed.configureTestingModule({
@@ -584,7 +650,11 @@ describe('providers', () => {
         value = 'one';
       }
 
-      @Component({selector: 'app-comp', template: ``})
+      @Component({
+        selector: 'app-comp',
+        template: ``,
+        standalone: false,
+      })
       class AppComp {
         constructor(public myService: MyService) {}
       }
@@ -615,7 +685,11 @@ describe('providers', () => {
       @Injectable()
       class SomeProviderImpl extends SomeProvider {}
 
-      @Component({selector: 'my-app', template: ''})
+      @Component({
+        selector: 'my-app',
+        template: '',
+        standalone: false,
+      })
       class App {
         constructor(public foo: SomeProvider) {}
       }
@@ -637,7 +711,11 @@ describe('providers', () => {
       @Injectable()
       class SomeProviderImpl extends SomeProvider {}
 
-      @Component({selector: 'my-app', template: ''})
+      @Component({
+        selector: 'my-app',
+        template: '',
+        standalone: false,
+      })
       class App {
         constructor(public foo: SomeProvider) {}
       }
@@ -687,6 +765,7 @@ describe('providers', () => {
           {provide: String, useValue: 'bar'},
           {provide: Number, useValue: 2, multi: true},
         ],
+        standalone: false,
       })
       class Comp {
         constructor(
@@ -707,6 +786,7 @@ describe('providers', () => {
       @Component({
         selector: 'repeated',
         template: '[{{s}}-{{n}}]',
+        standalone: false,
       })
       class Repeated {
         constructor(
@@ -728,6 +808,7 @@ describe('providers', () => {
           {provide: String, useValue: 'foo'},
           {provide: Number, useValue: 2, multi: true},
         ],
+        standalone: false,
       })
       class ComponentWithProviders {
         items = [1, 2, 3];

@@ -67,7 +67,10 @@ describe('jit source mapping', () => {
 
       it('should use the right source url in html parse errors', async () => {
         const template = '<div>\n  </error>';
-        @Component({...templateDecorator(template)})
+        @Component({
+          ...templateDecorator(template),
+          standalone: false,
+        })
         class MyComp {}
 
         await expectAsync(resolveCompileAndCreateComponent(MyComp, template)).toBeRejectedWithError(
@@ -78,7 +81,10 @@ describe('jit source mapping', () => {
       it('should create a sourceMap for templates', async () => {
         const template = `Hello World!`;
 
-        @Component({...templateDecorator(template)})
+        @Component({
+          ...templateDecorator(template),
+          standalone: false,
+        })
         class MyComp {}
 
         await resolveCompileAndCreateComponent(MyComp, template);
@@ -91,10 +97,16 @@ describe('jit source mapping', () => {
       xit('should report source location for di errors', async () => {
         const template = `<div>\n    <div   someDir></div></div>`;
 
-        @Component({...templateDecorator(template)})
+        @Component({
+          ...templateDecorator(template),
+          standalone: false,
+        })
         class MyComp {}
 
-        @Directive({selector: '[someDir]'})
+        @Directive({
+          selector: '[someDir]',
+          standalone: false,
+        })
         class SomeDir {
           constructor() {
             throw new Error('Test');
@@ -119,10 +131,16 @@ describe('jit source mapping', () => {
       xit('should report di errors with multiple elements and directives', async () => {
         const template = `<div someDir></div>|<div someDir="throw"></div>`;
 
-        @Component({...templateDecorator(template)})
+        @Component({
+          ...templateDecorator(template),
+          standalone: false,
+        })
         class MyComp {}
 
-        @Directive({selector: '[someDir]'})
+        @Directive({
+          selector: '[someDir]',
+          standalone: false,
+        })
         class SomeDir {
           constructor(@Attribute('someDir') someDir: string) {
             if (someDir === 'throw') {
@@ -149,7 +167,10 @@ describe('jit source mapping', () => {
       it('should report source location for binding errors', async () => {
         const template = `<div>\n    <span   [title]="createError()"></span></div>`;
 
-        @Component({...templateDecorator(template)})
+        @Component({
+          ...templateDecorator(template),
+          standalone: false,
+        })
         class MyComp {
           createError() {
             throw new Error('Test');
@@ -175,7 +196,10 @@ describe('jit source mapping', () => {
       it('should report source location for event errors', async () => {
         const template = `<div>\n    <span   (click)="createError()"></span></div>`;
 
-        @Component({...templateDecorator(template)})
+        @Component({
+          ...templateDecorator(template),
+          standalone: false,
+        })
         class MyComp {
           createError() {
             throw new Error('Test');

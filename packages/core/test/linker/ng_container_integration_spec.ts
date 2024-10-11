@@ -77,12 +77,19 @@ describe('<ng-container>', function () {
   });
 });
 
-@Directive({selector: '[text]'})
+@Directive({
+  selector: '[text]',
+  standalone: false,
+})
 class TextDirective {
   @Input() public text: string | null = null;
 }
 
-@Component({selector: 'needs-content-children', template: ''})
+@Component({
+  selector: 'needs-content-children',
+  template: '',
+  standalone: false,
+})
 class NeedsContentChildren implements AfterContentInit {
   @ContentChildren(TextDirective) textDirChildren!: QueryList<TextDirective>;
   numberOfChildrenAfterContentInit: number | undefined;
@@ -92,7 +99,11 @@ class NeedsContentChildren implements AfterContentInit {
   }
 }
 
-@Component({selector: 'needs-view-children', template: '<div text></div>'})
+@Component({
+  selector: 'needs-view-children',
+  template: '<div text></div>',
+  standalone: false,
+})
 class NeedsViewChildren implements AfterViewInit {
   @ViewChildren(TextDirective) textDirChildren!: QueryList<TextDirective>;
   numberOfChildrenAfterViewInit: number | undefined;
@@ -102,10 +113,18 @@ class NeedsViewChildren implements AfterViewInit {
   }
 }
 
-@Component({selector: 'simple', template: 'SIMPLE(<ng-content></ng-content>)'})
+@Component({
+  selector: 'simple',
+  template: 'SIMPLE(<ng-content></ng-content>)',
+  standalone: false,
+})
 class Simple {}
 
-@Component({selector: 'my-comp', template: ''})
+@Component({
+  selector: 'my-comp',
+  template: '',
+  standalone: false,
+})
 class MyComp {
   ctxBoolProp: boolean = false;
 }

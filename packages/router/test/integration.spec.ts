@@ -574,7 +574,10 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       });
 
       describe('route activation', () => {
-        @Component({template: '<router-outlet></router-outlet>'})
+        @Component({
+          template: '<router-outlet></router-outlet>',
+          standalone: false,
+        })
         class Parent {
           constructor(route: ActivatedRoute) {
             route.params.subscribe((s: Params) => {
@@ -589,6 +592,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
          <router-outlet name="first" (deactivate)="logDeactivate('first')"></router-outlet>
          <router-outlet name="second" (deactivate)="logDeactivate('second')"></router-outlet>
          `,
+          standalone: false,
         })
         class NamedOutletHost {
           logDeactivate(route: string) {
@@ -596,7 +600,10 @@ for (const browserAPI of ['navigation', 'history'] as const) {
           }
         }
 
-        @Component({template: 'child1'})
+        @Component({
+          template: 'child1',
+          standalone: false,
+        })
         class Child1 {
           constructor() {
             log.push('child1 constructor');
@@ -606,7 +613,10 @@ for (const browserAPI of ['navigation', 'history'] as const) {
           }
         }
 
-        @Component({template: 'child2'})
+        @Component({
+          template: 'child2',
+          standalone: false,
+        })
         class Child2 {
           constructor() {
             log.push('child2 constructor');
@@ -616,7 +626,10 @@ for (const browserAPI of ['navigation', 'history'] as const) {
           }
         }
 
-        @Component({template: 'child3'})
+        @Component({
+          template: 'child3',
+          standalone: false,
+        })
         class Child3 {
           constructor() {
             log.push('child3 constructor');
@@ -809,10 +822,15 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         selector: 'root-cmp',
         template: `<router-outlet></router-outlet>`,
         changeDetection: ChangeDetectionStrategy.OnPush,
+        standalone: false,
       })
       class OnPushOutlet {}
 
-      @Component({selector: 'need-cd', template: `{{'it works!'}}`})
+      @Component({
+        selector: 'need-cd',
+        template: `{{'it works!'}}`,
+        standalone: false,
+      })
       class NeedCdCmp {}
 
       @NgModule({
@@ -897,6 +915,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       @Component({
         selector: 'someRoot',
         template: `[<div *ngIf="cond"><router-outlet></router-outlet></div>]`,
+        standalone: false,
       })
       class RootCmpWithLink {
         cond: boolean = true;
@@ -926,7 +945,10 @@ for (const browserAPI of ['navigation', 'history'] as const) {
     }));
 
     it('should update location when navigating', fakeAsync(() => {
-      @Component({template: `record`})
+      @Component({
+        template: `record`,
+        standalone: false,
+      })
       class RecordLocationCmp {
         private storedPath: string;
         constructor(loc: Location) {
@@ -2315,6 +2337,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       @Component({
         selector: 'container',
         template: `<router-outlet (activate)="recordActivate($event)" (deactivate)="recordDeactivate($event)"></router-outlet>`,
+        standalone: false,
       })
       class Container {
         activations: any[] = [];
@@ -2383,7 +2406,11 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         }
       }
 
-      @Component({selector: 'nested-cmp', template: 'nested-cmp'})
+      @Component({
+        selector: 'nested-cmp',
+        template: 'nested-cmp',
+        standalone: false,
+      })
       class NestedComponentWithData {
         data: any = [];
         constructor(private route: ActivatedRoute) {
@@ -2572,7 +2599,11 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         inject([Router], (router: Router) => {
           const fixture = createRoot(router, RootCmp);
 
-          @Component({selector: 'lazy-cmp', template: 'lazy-loaded-1'})
+          @Component({
+            selector: 'lazy-cmp',
+            template: 'lazy-loaded-1',
+            standalone: false,
+          })
           class LazyComponent1 {}
 
           @NgModule({
@@ -2615,7 +2646,11 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         inject([Router], (router: Router) => {
           const fixture = createRoot(router, RootCmp);
 
-          @Component({selector: 'lazy-cmp', template: 'lazy-loaded-1'})
+          @Component({
+            selector: 'lazy-cmp',
+            template: 'lazy-loaded-1',
+            standalone: false,
+          })
           class LazyComponent1 {}
 
           @NgModule({
@@ -3138,6 +3173,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         @Component({
           selector: 'someRoot',
           template: `<router-outlet></router-outlet><a routerLink="/home">Link</a>`,
+          standalone: false,
         })
         class RootCmpWithLink {}
 
@@ -3164,6 +3200,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
                 <a [routerLink]="undefined">Link</a>
                 <button [routerLink]="undefined">Button</button>
                 `,
+          standalone: false,
         })
         class CmpWithLink {}
 
@@ -3184,6 +3221,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         @Component({
           selector: 'someCmp',
           template: `<router-outlet></router-outlet><a [routerLink]="[null]">Link</a><button [routerLink]="[null]">Button</button>`,
+          standalone: false,
         })
         class CmpWithLink {}
 
@@ -3197,6 +3235,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         @Component({
           selector: 'someCmp',
           template: `<router-outlet></router-outlet><a [routerLink]="[undefined]">Link</a><button [routerLink]="[undefined]">Button</button>`,
+          standalone: false,
         })
         class CmpWithLink {}
 
@@ -3210,6 +3249,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         @Component({
           selector: 'someRoot',
           template: `<router-outlet></router-outlet><a routerLink="/home" queryParamsHandling="preserve" preserveFragment>Link</a>`,
+          standalone: false,
         })
         class RootCmpWithLink {}
         TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
@@ -3237,6 +3277,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         @Component({
           selector: 'someRoot',
           template: `<router-outlet></router-outlet><a routerLink="/home" [queryParams]="{q: 456}" queryParamsHandling="preserve">Link</a>`,
+          standalone: false,
         })
         class RootCmpWithLink {}
         TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
@@ -3256,6 +3297,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         @Component({
           selector: 'someRoot',
           template: `<router-outlet></router-outlet><a routerLink="/home" [queryParams]="{removeMe: null, q: 456}" queryParamsHandling="merge">Link</a>`,
+          standalone: false,
         })
         class RootCmpWithLink {}
         TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
@@ -3459,6 +3501,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         @Component({
           selector: 'someRoot',
           template: `<router-outlet></router-outlet><map><area routerLink="/home" /></map>`,
+          standalone: false,
         })
         class RootCmpWithArea {}
 
@@ -4708,7 +4751,11 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
         it('should use correct component to deactivate forChild route', fakeAsync(
           inject([Router], (router: Router) => {
-            @Component({selector: 'admin', template: ''})
+            @Component({
+              selector: 'admin',
+              template: '',
+              standalone: false,
+            })
             class AdminComponent {}
 
             @NgModule({
@@ -5032,10 +5079,18 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
         it('should find the guard provided in lazy loaded module', fakeAsync(
           inject([Router, Location], (router: Router, location: Location) => {
-            @Component({selector: 'admin', template: '<router-outlet></router-outlet>'})
+            @Component({
+              selector: 'admin',
+              template: '<router-outlet></router-outlet>',
+              standalone: false,
+            })
             class AdminComponent {}
 
-            @Component({selector: 'lazy', template: 'lazy-loaded'})
+            @Component({
+              selector: 'lazy',
+              template: 'lazy-loaded',
+              standalone: false,
+            })
             class LazyLoadedComponent {}
 
             @NgModule({
@@ -5107,7 +5162,11 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
         it('should not load children when CanLoad returns false', fakeAsync(
           inject([Router, Location], (router: Router, location: Location) => {
-            @Component({selector: 'lazy', template: 'lazy-loaded'})
+            @Component({
+              selector: 'lazy',
+              template: 'lazy-loaded',
+              standalone: false,
+            })
             class LazyLoadedComponent {}
 
             @NgModule({
@@ -5268,7 +5327,11 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         // navigateByUrl promise: https://github.com/angular/angular/issues/26284
         it('should resolve navigateByUrl promise after CanLoad executes', fakeAsync(
           inject([Router], (router: Router) => {
-            @Component({selector: 'lazy', template: 'lazy-loaded'})
+            @Component({
+              selector: 'lazy',
+              template: 'lazy-loaded',
+              standalone: false,
+            })
             class LazyLoadedComponent {}
 
             @NgModule({
@@ -5302,7 +5365,11 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
         it('should execute CanLoad only once', fakeAsync(
           inject([Router, Location], (router: Router, location: Location) => {
-            @Component({selector: 'lazy', template: 'lazy-loaded'})
+            @Component({
+              selector: 'lazy',
+              template: 'lazy-loaded',
+              standalone: false,
+            })
             class LazyLoadedComponent {}
 
             @NgModule({
@@ -5706,10 +5773,15 @@ for (const browserAPI of ['navigation', 'history'] as const) {
           @Component({
             selector: 'lazy',
             template: 'lazy-loaded-parent [<router-outlet></router-outlet>]',
+            standalone: false,
           })
           class ParentLazyLoadedComponent {}
 
-          @Component({selector: 'lazy', template: 'lazy-loaded-child'})
+          @Component({
+            selector: 'lazy',
+            template: 'lazy-loaded-child',
+            standalone: false,
+          })
           class ChildLazyLoadedComponent {}
           @Injectable()
           class LazyCanMatchFalse {
@@ -5717,7 +5789,10 @@ for (const browserAPI of ['navigation', 'history'] as const) {
               return false;
             }
           }
-          @Component({template: 'restricted'})
+          @Component({
+            template: 'restricted',
+            standalone: false,
+          })
           class Restricted {}
           @NgModule({
             declarations: [ParentLazyLoadedComponent, ChildLazyLoadedComponent, Restricted],
@@ -6143,6 +6218,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         @Component({
           template:
             '<router-outlet></router-outlet><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" ></a>',
+          standalone: false,
         })
         class RootCmpWithLink {}
 
@@ -6240,6 +6316,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
                <span *ngIf="rla.isActive"></span>
                <span [ngClass]="{'highlight': rla.isActive}"></span>
                <router-outlet></router-outlet>`,
+          standalone: false,
         })
         class ComponentWithRouterLink {}
 
@@ -6274,12 +6351,16 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       it('should not trigger change detection when active state has not changed', fakeAsync(() => {
         @Component({
           template: `<div id="link" routerLinkActive="active" [routerLink]="link"></div>`,
+          standalone: false,
         })
         class LinkComponent {
           link = 'notactive';
         }
 
-        @Component({template: ''})
+        @Component({
+          template: '',
+          standalone: false,
+        })
         class SimpleComponent {}
 
         TestBed.configureTestingModule({
@@ -6384,10 +6465,15 @@ for (const browserAPI of ['navigation', 'history'] as const) {
           @Component({
             selector: 'lazy',
             template: 'lazy-loaded-parent [<router-outlet></router-outlet>]',
+            standalone: false,
           })
           class ParentLazyLoadedComponent {}
 
-          @Component({selector: 'lazy', template: 'lazy-loaded-child'})
+          @Component({
+            selector: 'lazy',
+            template: 'lazy-loaded-child',
+            standalone: false,
+          })
           class ChildLazyLoadedComponent {}
 
           @NgModule({
@@ -6422,10 +6508,15 @@ for (const browserAPI of ['navigation', 'history'] as const) {
             selector: 'lazy',
             template: 'parent[<router-outlet></router-outlet>]',
             viewProviders: [{provide: 'shadow', useValue: 'from parent component'}],
+            standalone: false,
           })
           class Parent {}
 
-          @Component({selector: 'lazy', template: 'child'})
+          @Component({
+            selector: 'lazy',
+            template: 'child',
+            standalone: false,
+          })
           class Child {}
 
           @NgModule({
@@ -6500,10 +6591,15 @@ for (const browserAPI of ['navigation', 'history'] as const) {
           @Component({
             selector: 'lazy',
             template: 'lazy-loaded-parent [<router-outlet></router-outlet>]',
+            standalone: false,
           })
           class ParentLazyLoadedComponent {}
 
-          @Component({selector: 'lazy', template: 'lazy-loaded-child'})
+          @Component({
+            selector: 'lazy',
+            template: 'lazy-loaded-child',
+            standalone: false,
+          })
           class ChildLazyLoadedComponent {}
 
           @NgModule({
@@ -6548,7 +6644,11 @@ for (const browserAPI of ['navigation', 'history'] as const) {
             }
           }
 
-          @Component({selector: 'lazy', template: 'lazy'})
+          @Component({
+            selector: 'lazy',
+            template: 'lazy',
+            standalone: false,
+          })
           class LazyLoadedComponent {
             resolvedService: Service;
             constructor(
@@ -6592,10 +6692,15 @@ for (const browserAPI of ['navigation', 'history'] as const) {
           @Component({
             selector: 'lazy',
             template: 'lazy-loaded-parent [<router-outlet></router-outlet>]',
+            standalone: false,
           })
           class ParentLazyLoadedComponent {}
 
-          @Component({selector: 'lazy', template: 'lazy-loaded-child'})
+          @Component({
+            selector: 'lazy',
+            template: 'lazy-loaded-child',
+            standalone: false,
+          })
           class ChildLazyLoadedComponent {}
 
           @NgModule({
@@ -6634,7 +6739,11 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
       it('throws an error when forRoot() is used in a lazy context', fakeAsync(
         inject([Router, Location], (router: Router, location: Location) => {
-          @Component({selector: 'lazy', template: 'should not show'})
+          @Component({
+            selector: 'lazy',
+            template: 'should not show',
+            standalone: false,
+          })
           class LazyLoadedComponent {}
 
           @NgModule({
@@ -6656,7 +6765,11 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
       it('should combine routes from multiple modules into a single configuration', fakeAsync(
         inject([Router, Location], (router: Router, location: Location) => {
-          @Component({selector: 'lazy', template: 'lazy-loaded-2'})
+          @Component({
+            selector: 'lazy',
+            template: 'lazy-loaded-2',
+            standalone: false,
+          })
           class LazyComponent2 {}
 
           @NgModule({
@@ -6665,7 +6778,11 @@ for (const browserAPI of ['navigation', 'history'] as const) {
           })
           class SiblingOfLoadedModule {}
 
-          @Component({selector: 'lazy', template: 'lazy-loaded-1'})
+          @Component({
+            selector: 'lazy',
+            template: 'lazy-loaded-1',
+            standalone: false,
+          })
           class LazyComponent1 {}
 
           @NgModule({
@@ -6696,7 +6813,11 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
       it('should allow lazy loaded module in named outlet', fakeAsync(
         inject([Router], (router: Router) => {
-          @Component({selector: 'lazy', template: 'lazy-loaded'})
+          @Component({
+            selector: 'lazy',
+            template: 'lazy-loaded',
+            standalone: false,
+          })
           class LazyComponent {}
 
           @NgModule({
@@ -6819,18 +6940,21 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         @Component({
           selector: 'eager-parent',
           template: 'eager-parent <router-outlet></router-outlet>',
+          standalone: false,
         })
         class EagerParentComponent {}
 
         @Component({
           selector: 'lazy-parent',
           template: 'lazy-parent <router-outlet></router-outlet>',
+          standalone: false,
         })
         class LazyParentComponent {}
 
         @Component({
           selector: 'lazy-child',
           template: 'lazy-child',
+          standalone: false,
         })
         class LazyChildComponent {
           constructor(
@@ -6893,7 +7017,11 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
       it('works when given a callback', fakeAsync(
         inject([Router, Location], (router: Router, location: Location) => {
-          @Component({selector: 'lazy', template: 'lazy-loaded'})
+          @Component({
+            selector: 'lazy',
+            template: 'lazy-loaded',
+            standalone: false,
+          })
           class LazyLoadedComponent {}
 
           @NgModule({
@@ -6962,7 +7090,11 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
       it('should work with complex redirect rules', fakeAsync(
         inject([Router, Location], (router: Router, location: Location) => {
-          @Component({selector: 'lazy', template: 'lazy-loaded'})
+          @Component({
+            selector: 'lazy',
+            template: 'lazy-loaded',
+            standalone: false,
+          })
           class LazyLoadedComponent {}
 
           @NgModule({
@@ -6987,7 +7119,11 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
       it('should work with wildcard route', fakeAsync(
         inject([Router, Location], (router: Router, location: Location) => {
-          @Component({selector: 'lazy', template: 'lazy-loaded'})
+          @Component({
+            selector: 'lazy',
+            template: 'lazy-loaded',
+            standalone: false,
+          })
           class LazyLoadedComponent {}
 
           @NgModule({
@@ -7010,7 +7146,11 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
       describe('preloading', () => {
         let log: string[] = [];
-        @Component({selector: 'lazy', template: 'should not show'})
+        @Component({
+          selector: 'lazy',
+          template: 'should not show',
+          standalone: false,
+        })
         class LazyLoadedComponent {}
 
         @NgModule({
@@ -7307,7 +7447,10 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
       it('can use `relativeTo` `route.parent` in `routerLink` to close secondary outlet', fakeAsync(() => {
         // Given
-        @Component({template: '<router-outlet name="secondary"></router-outlet>'})
+        @Component({
+          template: '<router-outlet name="secondary"></router-outlet>',
+          standalone: false,
+        })
         class ChildRootCmp {}
 
         @Component({
@@ -7315,6 +7458,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
           template: `<a [relativeTo]="route.parent" [routerLink]="[{outlets: {'secondary': null}}]">link</a>
             <button [relativeTo]="route.parent" [routerLink]="[{outlets: {'secondary': null}}]">link</button>
             `,
+          standalone: false,
         })
         class RelativeLinkCmp {
           @ViewChildren(RouterLink) links!: QueryList<RouterLink>;
@@ -7352,7 +7496,11 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
       it('should ignore empty path for relative links', fakeAsync(
         inject([Router], (router: Router) => {
-          @Component({selector: 'link-cmp', template: `<a [routerLink]="['../simple']">link</a>`})
+          @Component({
+            selector: 'link-cmp',
+            template: `<a [routerLink]="['../simple']">link</a>`,
+            standalone: false,
+          })
           class RelativeLinkCmp {}
 
           @NgModule({
@@ -7448,6 +7596,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         @Component({
           selector: 'container',
           template: `<router-outlet (attach)="recordAttached($event)" (detach)="recordDetached($event)"></router-outlet>`,
+          standalone: false,
         })
         class Container {
           attachedComponents: unknown[] = [];
@@ -7575,6 +7724,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
           selector: 'root-cmp',
           template:
             '<div *ngIf="isToolpanelShowing"><router-outlet name="toolpanel"></router-outlet></div>',
+          standalone: false,
         })
         class RootCmpWithCondOutlet implements OnDestroy {
           private subscription: Subscription;
@@ -7596,10 +7746,18 @@ for (const browserAPI of ['navigation', 'history'] as const) {
           }
         }
 
-        @Component({selector: 'tool-1-cmp', template: 'Tool 1 showing'})
+        @Component({
+          selector: 'tool-1-cmp',
+          template: 'Tool 1 showing',
+          standalone: false,
+        })
         class Tool1Component {}
 
-        @Component({selector: 'tool-2-cmp', template: 'Tool 2 showing'})
+        @Component({
+          selector: 'tool-2-cmp',
+          template: 'Tool 2 showing',
+          standalone: false,
+        })
         class Tool2Component {}
 
         @NgModule({
@@ -7651,6 +7809,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         @Component({
           selector: 'root-cmp',
           template: '<div *ngIf="showRouterOutlet"><router-outlet></router-outlet></div>',
+          standalone: false,
         })
         class RootCmpWithCondOutlet {
           public showRouterOutlet: boolean = true;
@@ -7702,17 +7861,29 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       it('should allow to attach parent route with fresh child route', fakeAsync(() => {
         const CREATED_COMPS = new InjectionToken<string[]>('CREATED_COMPS');
 
-        @Component({selector: 'root', template: `<router-outlet></router-outlet>`})
+        @Component({
+          selector: 'root',
+          template: `<router-outlet></router-outlet>`,
+          standalone: false,
+        })
         class Root {}
 
-        @Component({selector: 'parent', template: `<router-outlet></router-outlet>`})
+        @Component({
+          selector: 'parent',
+          template: `<router-outlet></router-outlet>`,
+          standalone: false,
+        })
         class Parent {
           constructor(@Inject(CREATED_COMPS) createdComps: string[]) {
             createdComps.push('parent');
           }
         }
 
-        @Component({selector: 'child', template: `child`})
+        @Component({
+          selector: 'child',
+          template: `child`,
+          standalone: false,
+        })
         class Child {
           constructor(@Inject(CREATED_COMPS) createdComps: string[]) {
             createdComps.push('child');
@@ -7756,13 +7927,25 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       }));
 
       it('should not try to detach the outlet of a route that does not get to attach a component', fakeAsync(() => {
-        @Component({selector: 'root', template: `<router-outlet></router-outlet>`})
+        @Component({
+          selector: 'root',
+          template: `<router-outlet></router-outlet>`,
+          standalone: false,
+        })
         class Root {}
 
-        @Component({selector: 'component-a', template: 'Component A'})
+        @Component({
+          selector: 'component-a',
+          template: 'Component A',
+          standalone: false,
+        })
         class ComponentA {}
 
-        @Component({selector: 'component-b', template: 'Component B'})
+        @Component({
+          selector: 'component-b',
+          template: 'Component B',
+          standalone: false,
+        })
         class ComponentB {}
 
         @NgModule({
@@ -7820,15 +8003,21 @@ function onlyNavigationStartAndEnd(e: Event): e is NavigationStart | NavigationE
 @Component({
   selector: 'link-cmp',
   template: `<a routerLink="/team/33/simple" [target]="'_self'">link</a>`,
+  standalone: false,
 })
 class StringLinkCmp {}
 
-@Component({selector: 'link-cmp', template: `<button routerLink="/team/33/simple">link</button>`})
+@Component({
+  selector: 'link-cmp',
+  template: `<button routerLink="/team/33/simple">link</button>`,
+  standalone: false,
+})
 class StringLinkButtonCmp {}
 
 @Component({
   selector: 'link-cmp',
   template: `<router-outlet></router-outlet><a [routerLink]="['/team/33/simple']">link</a>`,
+  standalone: false,
 })
 class AbsoluteLinkCmp {}
 
@@ -7837,6 +8026,7 @@ class AbsoluteLinkCmp {}
   template: `<router-outlet></router-outlet><a routerLinkActive="active" (isActiveChange)="this.onRouterLinkActivated($event)" [routerLinkActiveOptions]="{exact: exact}" ariaCurrentWhenActive="page" [routerLink]="['./']">link</a>
  <button routerLinkActive="active" [routerLinkActiveOptions]="{exact: exact}" [routerLink]="['./']">button</button>
  `,
+  standalone: false,
 })
 class DummyLinkCmp {
   private exact: boolean;
@@ -7851,34 +8041,53 @@ class DummyLinkCmp {
   }
 }
 
-@Component({selector: 'link-cmp', template: `<a [routerLink]="['/simple']">link</a>`})
+@Component({
+  selector: 'link-cmp',
+  template: `<a [routerLink]="['/simple']">link</a>`,
+  standalone: false,
+})
 class AbsoluteSimpleLinkCmp {}
 
-@Component({selector: 'link-cmp', template: `<a [routerLink]="['../simple']">link</a>`})
+@Component({
+  selector: 'link-cmp',
+  template: `<a [routerLink]="['../simple']">link</a>`,
+  standalone: false,
+})
 class RelativeLinkCmp {}
 
 @Component({
   selector: 'link-cmp',
   template: `<a [routerLink]="['../simple']" [queryParams]="{q: '1'}" fragment="f">link</a>`,
+  standalone: false,
 })
 class LinkWithQueryParamsAndFragment {}
 
 @Component({
   selector: 'link-cmp',
   template: `<a id="link" [routerLink]="['../simple']" [state]="{foo: 'bar'}">link</a>`,
+  standalone: false,
 })
 class LinkWithState {}
 
 @Component({
   selector: 'div-link-cmp',
   template: `<div id="link" [routerLink]="['../simple']" [state]="{foo: 'bar'}">link</div>`,
+  standalone: false,
 })
 class DivLinkWithState {}
 
-@Component({selector: 'simple-cmp', template: `simple`})
+@Component({
+  selector: 'simple-cmp',
+  template: `simple`,
+  standalone: false,
+})
 class SimpleCmp {}
 
-@Component({selector: 'collect-params-cmp', template: `collect-params`})
+@Component({
+  selector: 'collect-params-cmp',
+  template: `collect-params`,
+  standalone: false,
+})
 class CollectParamsCmp {
   private params: Params[] = [];
   private urls: UrlSegment[][] = [];
@@ -7893,7 +8102,11 @@ class CollectParamsCmp {
   }
 }
 
-@Component({selector: 'blank-cmp', template: ``})
+@Component({
+  selector: 'blank-cmp',
+  template: ``,
+  standalone: false,
+})
 class BlankCmp {}
 
 @NgModule({imports: [RouterModule.forChild([{path: '', component: BlankCmp}])]})
@@ -7906,6 +8119,7 @@ class ModuleWithBlankCmpAsRoute {}
     `[ <router-outlet></router-outlet>, right: <router-outlet name="right"></router-outlet> ]` +
     `<a [routerLink]="routerLink" skipLocationChange></a>` +
     `<button [routerLink]="routerLink" skipLocationChange></button>`,
+  standalone: false,
 })
 class TeamCmp {
   id: Observable<string>;
@@ -7925,10 +8139,15 @@ class TeamCmp {
 @Component({
   selector: 'two-outlets-cmp',
   template: `[ <router-outlet></router-outlet>, aux: <router-outlet name="aux"></router-outlet> ]`,
+  standalone: false,
 })
 class TwoOutletsCmp {}
 
-@Component({selector: 'user-cmp', template: `user {{name | async}}`})
+@Component({
+  selector: 'user-cmp',
+  template: `user {{name | async}}`,
+  standalone: false,
+})
 class UserCmp {
   name: Observable<string>;
   recordedParams: Params[] = [];
@@ -7943,12 +8162,17 @@ class UserCmp {
   }
 }
 
-@Component({selector: 'wrapper', template: `<router-outlet></router-outlet>`})
+@Component({
+  selector: 'wrapper',
+  template: `<router-outlet></router-outlet>`,
+  standalone: false,
+})
 class WrapperCmp {}
 
 @Component({
   selector: 'query-cmp',
   template: `query: {{name | async}} fragment: {{fragment | async}}`,
+  standalone: false,
 })
 class QueryParamsAndFragmentCmp {
   name: Observable<string | null>;
@@ -7970,7 +8194,11 @@ class QueryParamsAndFragmentCmp {
   }
 }
 
-@Component({selector: 'empty-query-cmp', template: ``})
+@Component({
+  selector: 'empty-query-cmp',
+  template: ``,
+  standalone: false,
+})
 class EmptyQueryParamsCmp {
   recordedParams: Params[] = [];
 
@@ -7979,7 +8207,11 @@ class EmptyQueryParamsCmp {
   }
 }
 
-@Component({selector: 'route-cmp', template: `route`})
+@Component({
+  selector: 'route-cmp',
+  template: `route`,
+  standalone: false,
+})
 class RouteCmp {
   constructor(public route: ActivatedRoute) {}
 }
@@ -7987,6 +8219,7 @@ class RouteCmp {
 @Component({
   selector: 'link-cmp',
   template: `<div *ngIf="show"><a [routerLink]="['./simple']">link</a></div> <router-outlet></router-outlet>`,
+  standalone: false,
 })
 class RelativeLinkInIfCmp {
   show: boolean = false;
@@ -7995,6 +8228,7 @@ class RelativeLinkInIfCmp {
 @Component({
   selector: 'child',
   template: '<div *ngIf="alwaysTrue"><router-outlet></router-outlet></div>',
+  standalone: false,
 })
 class OutletInNgIf {
   alwaysTrue = true;
@@ -8006,6 +8240,7 @@ class OutletInNgIf {
               <div id="link-parent" routerLinkActive="active" [routerLinkActiveOptions]="{exact: exact}">
                 <div ngClass="{one: 'true'}"><a [routerLink]="['./']">link</a></div>
               </div>`,
+  standalone: false,
 })
 class DummyLinkWithParentCmp {
   protected exact: boolean;
@@ -8014,7 +8249,11 @@ class DummyLinkWithParentCmp {
   }
 }
 
-@Component({selector: 'cmp', template: ''})
+@Component({
+  selector: 'cmp',
+  template: '',
+  standalone: false,
+})
 class ComponentRecordingRoutePathAndUrl {
   public path: ActivatedRoute[];
   public url: string;
@@ -8025,10 +8264,18 @@ class ComponentRecordingRoutePathAndUrl {
   }
 }
 
-@Component({selector: 'root-cmp', template: `<router-outlet></router-outlet>`})
+@Component({
+  selector: 'root-cmp',
+  template: `<router-outlet></router-outlet>`,
+  standalone: false,
+})
 class RootCmp {}
 
-@Component({selector: 'root-cmp-on-init', template: `<router-outlet></router-outlet>`})
+@Component({
+  selector: 'root-cmp-on-init',
+  template: `<router-outlet></router-outlet>`,
+  standalone: false,
+})
 class RootCmpWithOnInit {
   constructor(private router: Router) {}
 
@@ -8040,19 +8287,32 @@ class RootCmpWithOnInit {
 @Component({
   selector: 'root-cmp',
   template: `primary [<router-outlet></router-outlet>] right [<router-outlet name="right"></router-outlet>]`,
+  standalone: false,
 })
 class RootCmpWithTwoOutlets {}
 
-@Component({selector: 'root-cmp', template: `main [<router-outlet name="main"></router-outlet>]`})
+@Component({
+  selector: 'root-cmp',
+  template: `main [<router-outlet name="main"></router-outlet>]`,
+  standalone: false,
+})
 class RootCmpWithNamedOutlet {}
 
-@Component({selector: 'throwing-cmp', template: ''})
+@Component({
+  selector: 'throwing-cmp',
+  template: '',
+  standalone: false,
+})
 class ThrowingCmp {
   constructor() {
     throw new Error('Throwing Cmp');
   }
 }
-@Component({selector: 'conditional-throwing-cmp', template: 'conditional throwing'})
+@Component({
+  selector: 'conditional-throwing-cmp',
+  template: 'conditional throwing',
+  standalone: false,
+})
 class ConditionalThrowingCmp {
   static throwError = true;
   constructor() {
@@ -8075,7 +8335,11 @@ function createRoot<T>(router: Router, type: Type<T>): ComponentFixture<T> {
   return f;
 }
 
-@Component({selector: 'lazy', template: 'lazy-loaded'})
+@Component({
+  selector: 'lazy',
+  template: 'lazy-loaded',
+  standalone: false,
+})
 class LazyComponent {}
 
 @NgModule({

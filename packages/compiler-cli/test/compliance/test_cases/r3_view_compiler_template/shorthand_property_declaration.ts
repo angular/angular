@@ -1,9 +1,10 @@
 import {Component, NgModule} from '@angular/core';
 
 @Component({
-  template: `
+    template: `
     <div (click)="_handleClick({a, b: 2, c})"></div>
-  `
+  `,
+    standalone: false
 })
 export class MyComponent {
   a = 1;

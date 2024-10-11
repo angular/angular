@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 
 @Component({
-  template: `
+    template: `
     <div>
       {{message}}
       <ng-template>
@@ -9,6 +9,7 @@ import {Component} from '@angular/core';
       </ng-template>
     </div>
   `,
+    standalone: false
 })
 export class MyApp {
   message = 'hello';

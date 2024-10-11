@@ -2,7 +2,10 @@
 
 import {Component, Input} from '@angular/core';
 
-@Component({template: ''})
+@Component({
+  template: '',
+  standalone: false,
+})
 class IndexAccessInput {
   @Input() items: string[] = [];
 

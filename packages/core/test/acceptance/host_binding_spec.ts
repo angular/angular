@@ -38,7 +38,10 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('host bindings', () => {
   it('should render host bindings on the root component', () => {
-    @Component({template: '...'})
+    @Component({
+      template: '...',
+      standalone: false,
+    })
     class MyApp {
       @HostBinding('style') myStylesExp = {};
       @HostBinding('class') myClassesExp = {};
@@ -68,10 +71,18 @@ describe('host bindings', () => {
 
   describe('defined in @Component', () => {
     it('should combine the inherited static classes of a parent and child component', () => {
-      @Component({template: '...', host: {'class': 'foo bar'}})
+      @Component({
+        template: '...',
+        host: {'class': 'foo bar'},
+        standalone: false,
+      })
       class ParentCmp {}
 
-      @Component({template: '...', host: {'class': 'foo baz'}})
+      @Component({
+        template: '...',
+        host: {'class': 'foo baz'},
+        standalone: false,
+      })
       class ChildCmp extends ParentCmp {}
 
       TestBed.configureTestingModule({declarations: [ChildCmp]});
@@ -85,7 +96,11 @@ describe('host bindings', () => {
     });
 
     it('should render host class and style on the root component', () => {
-      @Component({template: '...', host: {class: 'foo', style: 'color: red'}})
+      @Component({
+        template: '...',
+        host: {class: 'foo', style: 'color: red'},
+        standalone: false,
+      })
       class MyApp {}
 
       TestBed.configureTestingModule({declarations: [MyApp]});
@@ -118,6 +133,7 @@ describe('host bindings', () => {
       @Component({
         selector: 'child',
         template: `...`,
+        standalone: false,
       })
       class ChildCmp {}
 
@@ -133,6 +149,7 @@ describe('host bindings', () => {
         host: {
           '[style.color]': 'color',
         },
+        standalone: false,
       })
       class ParentCmp {
         private _prop = '';
@@ -165,6 +182,7 @@ describe('host bindings', () => {
 
       @Component({
         template: `<parent [prop]="prop" [prop2]="prop2"></parent>`,
+        standalone: false,
       })
       class App {
         prop = 'a';
@@ -185,6 +203,7 @@ describe('host bindings', () => {
     it('should work when directive contains synthetic props', () => {
       @Directive({
         selector: '[animationPropDir]',
+        standalone: false,
       })
       class AnimationPropDir {
         @HostBinding('@myAnimation') myAnimation: string = 'color';
@@ -194,6 +213,7 @@ describe('host bindings', () => {
         selector: 'my-comp',
         template: '<div animationPropDir>Some content</div>',
         animations: [trigger('myAnimation', [state('color', style({color: 'red'}))])],
+        standalone: false,
       })
       class Comp {}
 
@@ -210,6 +230,7 @@ describe('host bindings', () => {
     it('should work when directive contains synthetic props and directive is applied to a component', () => {
       @Directive({
         selector: '[animationPropDir]',
+        standalone: false,
       })
       class AnimationPropDir {
         @HostBinding('@myAnimation') myAnimation: string = 'color';
@@ -219,6 +240,7 @@ describe('host bindings', () => {
         selector: 'my-comp',
         template: 'Some content',
         animations: [trigger('myAnimation', [state('color', style({color: 'red'}))])],
+        standalone: false,
       })
       class Comp {}
 
@@ -226,6 +248,7 @@ describe('host bindings', () => {
         selector: 'app',
         template: '<my-comp animationPropDir></my-comp>',
         animations: [trigger('myAnimation', [state('color', style({color: 'green'}))])],
+        standalone: false,
       })
       class App {}
 
@@ -244,6 +267,7 @@ describe('host bindings', () => {
         selector: 'my-comp',
         template: '<div>Some content/div>',
         animations: [trigger('myAnimation', [state('color', style({color: 'red'}))])],
+        standalone: false,
       })
       class Comp {
         @HostBinding('@myAnimation') myAnimation: string = 'color';
@@ -263,6 +287,7 @@ describe('host bindings', () => {
         selector: 'my-comp',
         template: '<div>Some content/div>',
         animations: [trigger('myAnimation', [state('color', style({color: 'red'}))])],
+        standalone: false,
       })
       class Comp {
         @HostBinding('@myAnimation') myAnimation: string = 'color';
@@ -270,6 +295,7 @@ describe('host bindings', () => {
 
       @Component({
         template: '<my-comp></my-comp>',
+        standalone: false,
       })
       class App {}
 
@@ -286,6 +312,7 @@ describe('host bindings', () => {
     it('should work when component extends a directive that contains synthetic props', () => {
       @Directive({
         selector: 'animation-dir',
+        standalone: false,
       })
       class AnimationDir {
         @HostBinding('@myAnimation') myAnimation: string = 'color';
@@ -295,6 +322,7 @@ describe('host bindings', () => {
         selector: 'my-comp',
         template: '<div>Some content</div>',
         animations: [trigger('myAnimation', [state('color', style({color: 'red'}))])],
+        standalone: false,
       })
       class Comp extends AnimationDir {}
 
@@ -312,6 +340,7 @@ describe('host bindings', () => {
 
       @Directive({
         selector: '[animationPropDir]',
+        standalone: false,
       })
       class AnimationPropDir {
         @HostBinding('@myAnimation') myAnimation: string = 'a';
@@ -333,6 +362,7 @@ describe('host bindings', () => {
         animations: [
           trigger('myAnimation', [state('a', style({color: 'yellow'})), transition('* => a', [])]),
         ],
+        standalone: false,
       })
       class Comp {}
 
@@ -357,6 +387,7 @@ describe('host bindings', () => {
         animations: [
           trigger('myAnimation', [state('a', style({color: 'yellow'})), transition('* => a', [])]),
         ],
+        standalone: false,
       })
       class Comp {
         @HostBinding('@myAnimation') myAnimation: string = 'a';
@@ -392,6 +423,7 @@ describe('host bindings', () => {
         animations: [
           trigger('myAnimation', [state('a', style({color: 'yellow'})), transition('* => a', [])]),
         ],
+        standalone: false,
       })
       class Comp {
         @HostBinding('@myAnimation') myAnimation: string = 'a';
@@ -409,6 +441,7 @@ describe('host bindings', () => {
 
       @Component({
         template: '<my-comp></my-comp>',
+        standalone: false,
       })
       class App {}
 
@@ -429,6 +462,7 @@ describe('host bindings', () => {
 
       @Directive({
         selector: 'animation-dir',
+        standalone: false,
       })
       class AnimationDir {
         @HostBinding('@myAnimation') myAnimation: string = 'a';
@@ -450,6 +484,7 @@ describe('host bindings', () => {
         animations: [
           trigger('myAnimation', [state('a', style({color: 'yellow'})), transition('* => a', [])]),
         ],
+        standalone: false,
       })
       class Comp extends AnimationDir {}
 
@@ -471,17 +506,25 @@ describe('host bindings', () => {
         template: `
         <child-and-parent-cmp></child-and-parent-cmp>
       `,
+        standalone: false,
       })
       class MyApp {}
 
-      @Component({template: '...'})
+      @Component({
+        template: '...',
+        standalone: false,
+      })
       class ParentCmp {
         @HostBinding('style.width') width1 = '100px';
         @HostBinding('style.height') height1 = '100px';
         @HostBinding('style.opacity') opacity1 = '0.5';
       }
 
-      @Component({selector: 'child-and-parent-cmp', template: '...'})
+      @Component({
+        selector: 'child-and-parent-cmp',
+        template: '...',
+        standalone: false,
+      })
       class ChildCmp extends ParentCmp {
         @HostBinding('style.width') width2 = '200px';
         @HostBinding('style.height') height2 = '200px';
@@ -499,10 +542,16 @@ describe('host bindings', () => {
     });
 
     it('should prioritize styling present in the order of directive hostBinding evaluation, but consider sub-classed directive styling to be the most important', () => {
-      @Component({template: '<div child-dir sibling-dir></div>'})
+      @Component({
+        template: '<div child-dir sibling-dir></div>',
+        standalone: false,
+      })
       class MyApp {}
 
-      @Directive({selector: '[parent-dir]'})
+      @Directive({
+        selector: '[parent-dir]',
+        standalone: false,
+      })
       class ParentDir {
         @HostBinding('style.width')
         get width1() {
@@ -520,7 +569,10 @@ describe('host bindings', () => {
         }
       }
 
-      @Directive({selector: '[child-dir]'})
+      @Directive({
+        selector: '[child-dir]',
+        standalone: false,
+      })
       class ChildDir extends ParentDir {
         @HostBinding('style.width')
         get width2() {
@@ -533,7 +585,10 @@ describe('host bindings', () => {
         }
       }
 
-      @Directive({selector: '[sibling-dir]'})
+      @Directive({
+        selector: '[sibling-dir]',
+        standalone: false,
+      })
       class SiblingDir {
         @HostBinding('style.width')
         get width3() {
@@ -582,10 +637,14 @@ describe('host bindings', () => {
         template: `
         <ng-container [class.foo]="true" dir-that-adds-other-classes>...</ng-container>
       `,
+        standalone: false,
       })
       class MyApp {}
 
-      @Directive({selector: '[dir-that-adds-other-classes]'})
+      @Directive({
+        selector: '[dir-that-adds-other-classes]',
+        standalone: false,
+      })
       class DirThatAddsOtherClasses {
         @HostBinding('class.other-class') bool = true;
       }
@@ -598,18 +657,27 @@ describe('host bindings', () => {
     });
   });
 
-  @Directive({selector: '[hostBindingDir]'})
+  @Directive({
+    selector: '[hostBindingDir]',
+    standalone: false,
+  })
   class HostBindingDir {
     @HostBinding() id = 'foo';
   }
 
   it('should support host bindings in directives', () => {
-    @Directive({selector: '[dir]'})
+    @Directive({
+      selector: '[dir]',
+      standalone: false,
+    })
     class Dir {
       @HostBinding('className') klass = 'foo';
     }
 
-    @Component({template: '<span dir></span>'})
+    @Component({
+      template: '<span dir></span>',
+      standalone: false,
+    })
     class App {
       @ViewChild(Dir) directiveInstance!: Dir;
     }
@@ -628,7 +696,10 @@ describe('host bindings', () => {
   });
 
   it('should support host bindings on root component', () => {
-    @Component({template: ''})
+    @Component({
+      template: '',
+      standalone: false,
+    })
     class HostBindingComp {
       @HostBinding() title = 'my-title';
     }
@@ -657,7 +728,11 @@ describe('host bindings', () => {
       value = 'two';
     }
 
-    @Component({template: '', providers: [ServiceOne, ServiceTwo]})
+    @Component({
+      template: '',
+      providers: [ServiceOne, ServiceTwo],
+      standalone: false,
+    })
     class App {
       constructor(
         public serviceOne: ServiceOne,
@@ -682,10 +757,17 @@ describe('host bindings', () => {
   });
 
   it('should support host bindings on multiple nodes', () => {
-    @Directive({selector: '[someDir]'})
+    @Directive({
+      selector: '[someDir]',
+      standalone: false,
+    })
     class SomeDir {}
 
-    @Component({selector: 'host-title-comp', template: ''})
+    @Component({
+      selector: 'host-title-comp',
+      template: '',
+      standalone: false,
+    })
     class HostTitleComp {
       @HostBinding() title = 'my-title';
     }
@@ -696,6 +778,7 @@ describe('host bindings', () => {
           <div someDir></div>
           <host-title-comp></host-title-comp>
         `,
+      standalone: false,
     })
     class App {
       @ViewChild(HostBindingDir) hostBindingDir!: HostBindingDir;
@@ -717,7 +800,11 @@ describe('host bindings', () => {
   });
 
   it('should support consecutive components with host bindings', () => {
-    @Component({selector: 'host-binding-comp', template: ''})
+    @Component({
+      selector: 'host-binding-comp',
+      template: '',
+      standalone: false,
+    })
     class HostBindingComp {
       @HostBinding() id = 'blue';
     }
@@ -727,6 +814,7 @@ describe('host bindings', () => {
           <host-binding-comp></host-binding-comp>
           <host-binding-comp></host-binding-comp>
         `,
+      standalone: false,
     })
     class App {
       @ViewChildren(HostBindingComp) hostBindingComp!: QueryList<HostBindingComp>;
@@ -758,10 +846,16 @@ describe('host bindings', () => {
   });
 
   it('should support dirs with host bindings on the same node as dirs without host bindings', () => {
-    @Directive({selector: '[someDir]'})
+    @Directive({
+      selector: '[someDir]',
+      standalone: false,
+    })
     class SomeDir {}
 
-    @Component({template: '<div someDir hostBindingDir></div>'})
+    @Component({
+      template: '<div someDir hostBindingDir></div>',
+      standalone: false,
+    })
     class App {
       @ViewChild(HostBindingDir) hostBindingDir!: HostBindingDir;
     }
@@ -779,7 +873,11 @@ describe('host bindings', () => {
   });
 
   it('should support host bindings that rely on values from init hooks', () => {
-    @Component({template: '', selector: 'init-hook-comp'})
+    @Component({
+      template: '',
+      selector: 'init-hook-comp',
+      standalone: false,
+    })
     class InitHookComp implements OnInit, OnChanges, DoCheck {
       @Input() inputValue = '';
 
@@ -805,7 +903,10 @@ describe('host bindings', () => {
       }
     }
 
-    @Component({template: '<init-hook-comp [inputValue]="value"></init-hook-comp>'})
+    @Component({
+      template: '<init-hook-comp [inputValue]="value"></init-hook-comp>',
+      standalone: false,
+    })
     class App {
       value = 'input';
     }
@@ -823,14 +924,20 @@ describe('host bindings', () => {
   });
 
   it('should support host bindings with the same name as inputs', () => {
-    @Directive({selector: '[hostBindingDir]'})
+    @Directive({
+      selector: '[hostBindingDir]',
+      standalone: false,
+    })
     class HostBindingInputDir {
       @Input() disabled = false;
 
       @HostBinding('disabled') hostDisabled = false;
     }
 
-    @Component({template: '<input hostBindingDir [disabled]="isDisabled">'})
+    @Component({
+      template: '<input hostBindingDir [disabled]="isDisabled">',
+      standalone: false,
+    })
     class App {
       @ViewChild(HostBindingInputDir) hostBindingInputDir!: HostBindingInputDir;
       isDisabled = true;
@@ -857,7 +964,11 @@ describe('host bindings', () => {
   });
 
   it('should support host bindings on second template pass', () => {
-    @Component({selector: 'parent', template: '<div hostBindingDir></div>'})
+    @Component({
+      selector: 'parent',
+      template: '<div hostBindingDir></div>',
+      standalone: false,
+    })
     class Parent {}
 
     @Component({
@@ -865,6 +976,7 @@ describe('host bindings', () => {
           <parent></parent>
           <parent></parent>
         `,
+      standalone: false,
     })
     class App {}
 
@@ -884,6 +996,7 @@ describe('host bindings', () => {
             <p hostBindingDir></p>
           </div>
         `,
+      standalone: false,
     })
     class App {
       rows: number[] = [];
@@ -901,12 +1014,20 @@ describe('host bindings', () => {
   });
 
   it('should support component with host bindings and array literals', () => {
-    @Component({selector: 'host-binding-comp', template: ''})
+    @Component({
+      selector: 'host-binding-comp',
+      template: '',
+      standalone: false,
+    })
     class HostBindingComp {
       @HostBinding() id = 'my-id';
     }
 
-    @Component({selector: 'name-comp', template: ''})
+    @Component({
+      selector: 'name-comp',
+      template: '',
+      standalone: false,
+    })
     class NameComp {
       @Input() names!: string[];
     }
@@ -916,6 +1037,7 @@ describe('host bindings', () => {
           <name-comp [names]="['Nancy', name, 'Ned']"></name-comp>
           <host-binding-comp></host-binding-comp>
         `,
+      standalone: false,
     })
     class App {
       @ViewChild(NameComp) nameComp!: NameComp;
@@ -948,7 +1070,11 @@ describe('host bindings', () => {
   // example would be an animation host binding with a literal defining the animation config.
   // When animation support is added, we should add another test for that case.
   it('should support host bindings that contain array literals', () => {
-    @Component({selector: 'name-comp', template: ''})
+    @Component({
+      selector: 'name-comp',
+      template: '',
+      standalone: false,
+    })
     class NameComp {
       @Input() names!: string[];
     }
@@ -957,6 +1083,7 @@ describe('host bindings', () => {
       selector: 'host-binding-comp',
       host: {'[id]': `['red', id]`, '[dir]': `dir`, '[title]': `[title, otherTitle]`},
       template: '',
+      standalone: false,
     })
     class HostBindingComp {
       id = 'blue';
@@ -970,6 +1097,7 @@ describe('host bindings', () => {
           <name-comp [names]="[name, 'Nancy', otherName]"></name-comp>
           <host-binding-comp></host-binding-comp>
         `,
+      standalone: false,
     })
     class App {
       @ViewChild(HostBindingComp) hostBindingComp!: HostBindingComp;
@@ -1009,12 +1137,19 @@ describe('host bindings', () => {
   it('should support directives with and without allocHostVars on the same component', () => {
     let events: string[] = [];
 
-    @Directive({selector: '[hostDir]', host: {'[title]': `[title, 'other title']`}})
+    @Directive({
+      selector: '[hostDir]',
+      host: {'[title]': `[title, 'other title']`},
+      standalone: false,
+    })
     class HostBindingDir {
       title = 'my title';
     }
 
-    @Directive({selector: '[hostListenerDir]'})
+    @Directive({
+      selector: '[hostListenerDir]',
+      standalone: false,
+    })
     class HostListenerDir {
       @HostListener('click')
       onClick() {
@@ -1022,7 +1157,10 @@ describe('host bindings', () => {
       }
     }
 
-    @Component({template: '<button hostListenerDir hostDir>Click</button>'})
+    @Component({
+      template: '<button hostListenerDir hostDir>Click</button>',
+      standalone: false,
+    })
     class App {}
 
     TestBed.configureTestingModule({declarations: [App, HostBindingDir, HostListenerDir]});
@@ -1036,17 +1174,29 @@ describe('host bindings', () => {
   });
 
   it('should support host bindings with literals from multiple directives', () => {
-    @Component({selector: 'host-binding-comp', host: {'[id]': `['red', id]`}, template: ''})
+    @Component({
+      selector: 'host-binding-comp',
+      host: {'[id]': `['red', id]`},
+      template: '',
+      standalone: false,
+    })
     class HostBindingComp {
       id = 'blue';
     }
 
-    @Directive({selector: '[hostDir]', host: {'[title]': `[title, 'other title']`}})
+    @Directive({
+      selector: '[hostDir]',
+      host: {'[title]': `[title, 'other title']`},
+      standalone: false,
+    })
     class HostBindingDir {
       title = 'my title';
     }
 
-    @Component({template: '<host-binding-comp hostDir></host-binding-comp>'})
+    @Component({
+      template: '<host-binding-comp hostDir></host-binding-comp>',
+      standalone: false,
+    })
     class App {
       @ViewChild(HostBindingComp) hostBindingComp!: HostBindingComp;
       @ViewChild(HostBindingDir) hostBindingDir!: HostBindingDir;
@@ -1077,6 +1227,7 @@ describe('host bindings', () => {
         '[attr.id]': `condition ? ['red', id] : 'green'`,
         '[attr.title]': `otherCondition ? [title] : 'other title'`,
       },
+      standalone: false,
     })
     class HostBindingComp {
       condition = true;
@@ -1085,7 +1236,10 @@ describe('host bindings', () => {
       title = 'blue';
     }
 
-    @Component({template: `<host-binding-comp></host-binding-comp>{{ name }}`})
+    @Component({
+      template: `<host-binding-comp></host-binding-comp>{{ name }}`,
+      standalone: false,
+    })
     class App {
       @ViewChild(HostBindingComp) hostBindingComp!: HostBindingComp;
       name = '';
@@ -1116,12 +1270,23 @@ describe('host bindings', () => {
   });
 
   it('should merge attributes on host and template', () => {
-    @Directive({selector: '[dir1]', host: {id: 'dir1'}})
+    @Directive({
+      selector: '[dir1]',
+      host: {id: 'dir1'},
+      standalone: false,
+    })
     class MyDir1 {}
-    @Directive({selector: '[dir2]', host: {id: 'dir2'}})
+    @Directive({
+      selector: '[dir2]',
+      host: {id: 'dir2'},
+      standalone: false,
+    })
     class MyDir2 {}
 
-    @Component({template: `<div dir1 dir2 id="tmpl"></div>`})
+    @Component({
+      template: `<div dir1 dir2 id="tmpl"></div>`,
+      standalone: false,
+    })
     class MyComp {}
 
     TestBed.configureTestingModule({declarations: [MyComp, MyDir1, MyDir2]});
@@ -1132,12 +1297,20 @@ describe('host bindings', () => {
   });
 
   it('should work correctly with inherited directives with hostBindings', () => {
-    @Directive({selector: '[superDir]', host: {'[id]': 'id'}})
+    @Directive({
+      selector: '[superDir]',
+      host: {'[id]': 'id'},
+      standalone: false,
+    })
     class SuperDirective {
       id = 'my-id';
     }
 
-    @Directive({selector: '[subDir]', host: {'[title]': 'title'}})
+    @Directive({
+      selector: '[subDir]',
+      host: {'[title]': 'title'},
+      standalone: false,
+    })
     class SubDirective extends SuperDirective {
       title = 'my-title';
     }
@@ -1147,6 +1320,7 @@ describe('host bindings', () => {
         <div subDir></div>
         <div superDir></div>
       `,
+      standalone: false,
     })
     class App {
       @ViewChild(SubDirective) subDir!: SubDirective;
@@ -1184,10 +1358,17 @@ describe('host bindings', () => {
   });
 
   it('should support host attributes', () => {
-    @Directive({selector: '[hostAttributeDir]', host: {'role': 'listbox'}})
+    @Directive({
+      selector: '[hostAttributeDir]',
+      host: {'role': 'listbox'},
+      standalone: false,
+    })
     class HostAttributeDir {}
 
-    @Component({template: '<div hostAttributeDir></div>'})
+    @Component({
+      template: '<div hostAttributeDir></div>',
+      standalone: false,
+    })
     class App {}
 
     TestBed.configureTestingModule({declarations: [App, HostAttributeDir]});
@@ -1200,6 +1381,7 @@ describe('host bindings', () => {
       selector: 'host-binding-comp',
       template: '<ng-content></ng-content>',
       host: {'[id]': 'foos.length'},
+      standalone: false,
     })
     class HostBindingWithContentChildren {
       @ContentChildren('foo') foos!: QueryList<any>;
@@ -1212,6 +1394,7 @@ describe('host bindings', () => {
             <div #foo></div>
           </host-binding-comp>
         `,
+      standalone: false,
     })
     class App {}
 
@@ -1224,7 +1407,12 @@ describe('host bindings', () => {
   });
 
   it('should support host bindings dependent on content hooks', () => {
-    @Component({selector: 'host-binding-comp', template: '', host: {'[id]': 'myValue'}})
+    @Component({
+      selector: 'host-binding-comp',
+      template: '',
+      host: {'[id]': 'myValue'},
+      standalone: false,
+    })
     class HostBindingWithContentHooks implements AfterContentInit {
       myValue = 'initial';
 
@@ -1233,7 +1421,10 @@ describe('host bindings', () => {
       }
     }
 
-    @Component({template: '<host-binding-comp></host-binding-comp>'})
+    @Component({
+      template: '<host-binding-comp></host-binding-comp>',
+      standalone: false,
+    })
     class App {}
 
     TestBed.configureTestingModule({declarations: [App, HostBindingWithContentHooks]});
@@ -1250,12 +1441,16 @@ describe('host bindings', () => {
         selector: 'host-binding-to-styles',
         host: {'[style.width.px]': 'width'},
         template: '',
+        standalone: false,
       })
       class HostBindingToStyles {
         width = 2;
       }
 
-      @Component({template: '<host-binding-to-styles></host-binding-to-styles>'})
+      @Component({
+        template: '<host-binding-to-styles></host-binding-to-styles>',
+        standalone: false,
+      })
       class App {
         @ViewChild(HostBindingToStyles) hostBindingDir!: HostBindingToStyles;
       }
@@ -1275,17 +1470,27 @@ describe('host bindings', () => {
     });
 
     it('should bind to host styles on containers', () => {
-      @Directive({selector: '[hostStyles]', host: {'[style.width.px]': 'width'}})
+      @Directive({
+        selector: '[hostStyles]',
+        host: {'[style.width.px]': 'width'},
+        standalone: false,
+      })
       class HostBindingToStyles {
         width = 2;
       }
 
-      @Directive({selector: '[containerDir]'})
+      @Directive({
+        selector: '[containerDir]',
+        standalone: false,
+      })
       class ContainerDir {
         constructor(public vcr: ViewContainerRef) {}
       }
 
-      @Component({template: '<div hostStyles containerDir></div>'})
+      @Component({
+        template: '<div hostStyles containerDir></div>',
+        standalone: false,
+      })
       class App {
         @ViewChild(HostBindingToStyles) hostBindingDir!: HostBindingToStyles;
       }
@@ -1303,10 +1508,18 @@ describe('host bindings', () => {
     });
 
     it('should apply static host classes', () => {
-      @Component({selector: 'static-host-class', host: {'class': 'mat-toolbar'}, template: ''})
+      @Component({
+        selector: 'static-host-class',
+        host: {'class': 'mat-toolbar'},
+        template: '',
+        standalone: false,
+      })
       class StaticHostClass {}
 
-      @Component({template: '<static-host-class></static-host-class>'})
+      @Component({
+        template: '<static-host-class></static-host-class>',
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({declarations: [App, StaticHostClass]});
@@ -1337,12 +1550,16 @@ describe('host bindings', () => {
           host: {
             [`[${isAttribute ? 'attr.' : ''}${prop}]`]: 'value',
           },
+          standalone: false,
         })
         class UnsafeDir {
           value: any = value;
         }
 
-        @Component({template: `<${tag} unsafeUrlHostBindingDir></${tag}>`})
+        @Component({
+          template: `<${tag} unsafeUrlHostBindingDir></${tag}>`,
+          standalone: false,
+        })
         class App {
           @ViewChild(UnsafeDir) unsafeDir!: UnsafeDir;
         }
@@ -1412,12 +1629,20 @@ describe('host bindings', () => {
   });
 
   describe('host binding on containers', () => {
-    @Directive({selector: '[staticHostAtt]', host: {'static': 'attr'}})
+    @Directive({
+      selector: '[staticHostAtt]',
+      host: {'static': 'attr'},
+      standalone: false,
+    })
     class StaticHostAttr {
       constructor() {}
     }
 
-    @Directive({selector: '[dynamicHostAtt]', host: {'[attr.dynamic]': '"dynamic"'}})
+    @Directive({
+      selector: '[dynamicHostAtt]',
+      host: {'[attr.dynamic]': '"dynamic"'},
+      standalone: false,
+    })
     class DynamicHostAttr {
       constructor() {}
     }
@@ -1429,6 +1654,7 @@ describe('host bindings', () => {
           <ng-template #ref></ng-template>
           <ng-container [ngTemplateOutlet]="ref" staticHostAtt dynamicHostAtt></ng-container>
         `,
+        standalone: false,
       })
       class App {}
 
@@ -1445,6 +1671,7 @@ describe('host bindings', () => {
       @Component({
         selector: 'my-app',
         template: ` <ng-template staticHostAtt dynamicHostAtt></ng-template> `,
+        standalone: false,
       })
       class App {}
 
@@ -1466,13 +1693,17 @@ describe('host bindings', () => {
           '[class.a]': 'true',
           '[class.b]': 'false',
         },
+        standalone: false,
       })
       class MyDirective {
         @HostBinding('class.c') true: any;
         @HostBinding('class.d') false: any;
       }
 
-      @Component({template: '<span dir></span>'})
+      @Component({
+        template: '<span dir></span>',
+        standalone: false,
+      })
       class MyApp {
         @ViewChild(MyDirective) dir!: MyDirective;
       }
@@ -1491,14 +1722,20 @@ describe('host bindings', () => {
     });
 
     it('should handle host bindings with quoted names', () => {
-      @Directive({selector: '[dir]'})
+      @Directive({
+        selector: '[dir]',
+        standalone: false,
+      })
       class MyDirective {
         @HostBinding('class.a') 'is-a': any;
         @HostBinding('class.b') 'is-"b"': any = true;
         @HostBinding('class.c') '"is-c"': any;
       }
 
-      @Component({template: '<span dir></span>'})
+      @Component({
+        template: '<span dir></span>',
+        standalone: false,
+      })
       class MyApp {
         @ViewChild(MyDirective) dir!: MyDirective;
       }

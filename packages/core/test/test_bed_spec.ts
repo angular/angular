@@ -71,6 +71,7 @@ class SimpleService {
 @Component({
   selector: 'hello-world',
   template: '<greeting-cmp></greeting-cmp>',
+  standalone: false,
 })
 export class HelloWorld {}
 
@@ -78,6 +79,7 @@ export class HelloWorld {}
 @Component({
   selector: 'greeting-cmp',
   template: 'Hello {{ name }}',
+  standalone: false,
 })
 export class GreetingCmp {
   name: string;
@@ -97,6 +99,7 @@ export class GreetingCmp {
     SimpleService, //
     {provide: NAME, useValue: `from Component`},
   ],
+  standalone: false,
 })
 class CmpWithProviders {}
 
@@ -106,16 +109,32 @@ class CmpWithProviders {}
 })
 export class GreetingModule {}
 
-@Component({selector: 'simple-cmp', template: '<b>simple</b>'})
+@Component({
+  selector: 'simple-cmp',
+  template: '<b>simple</b>',
+  standalone: false,
+})
 export class SimpleCmp {}
 
-@Component({selector: 'with-refs-cmp', template: '<div #firstDiv></div>'})
+@Component({
+  selector: 'with-refs-cmp',
+  template: '<div #firstDiv></div>',
+  standalone: false,
+})
 export class WithRefsCmp {}
 
-@Component({selector: 'inherited-cmp', template: 'inherited'})
+@Component({
+  selector: 'inherited-cmp',
+  template: 'inherited',
+  standalone: false,
+})
 export class InheritedCmp extends SimpleCmp {}
 
-@Directive({selector: '[hostBindingDir]', host: {'[id]': 'id'}})
+@Directive({
+  selector: '[hostBindingDir]',
+  host: {'[id]': 'id'},
+  standalone: false,
+})
 export class HostBindingDir {
   id = 'one';
 }
@@ -127,6 +146,7 @@ export class HostBindingDir {
     <p title="( {{ label }} - {{ title }} )" [attr.aria-label]="label" id="[ {{ label }} ] [ {{ title }} ]">
     </p>
   `,
+  standalone: false,
 })
 export class ComponentWithPropBindings {
   title = 'some title';
@@ -138,10 +158,15 @@ export class ComponentWithPropBindings {
   template: `
     <simple-cmp></simple-cmp> - <inherited-cmp></inherited-cmp>
   `,
+  standalone: false,
 })
 export class SimpleApp {}
 
-@Component({selector: 'inline-template', template: '<p>Hello</p>'})
+@Component({
+  selector: 'inline-template',
+  template: '<p>Hello</p>',
+  standalone: false,
+})
 export class ComponentWithInlineTemplate {}
 
 @NgModule({
@@ -171,11 +196,13 @@ describe('TestBed', () => {
     @Component({
       selector: 'root',
       template: '<div dirA></div>',
+      standalone: false,
     })
     class Root {}
     @Directive({
       selector: '[dirA]',
       host: {'title': 'Test title'},
+      standalone: false,
     })
     class DirA {}
 
@@ -539,6 +566,7 @@ describe('TestBed with Standalone types', () => {
     @Component({
       selector: 'test-cmp',
       template: '...',
+      standalone: false,
     })
     class TestComponent {
       testField = 'default';
@@ -547,6 +575,7 @@ describe('TestBed with Standalone types', () => {
     @Component({
       selector: 'test-cmp',
       template: '...',
+      standalone: false,
     })
     class MockTestComponent {
       testField = 'overridden';
@@ -643,19 +672,25 @@ describe('TestBed', () => {
     @Component({
       selector: 'non-standalone-comp',
       template: '...',
+      standalone: false,
     })
     class NonStandaloneComponent {}
 
     @Directive({standalone: true})
     class StandaloneDirective {}
 
-    @Directive({})
+    @Directive({
+      standalone: false,
+    })
     class NonStandaloneDirective {}
 
     @Pipe({standalone: true, name: 'test'})
     class StandalonePipe {}
 
-    @Pipe({name: 'test'})
+    @Pipe({
+      name: 'test',
+      standalone: false,
+    })
     class NonStandalonePipe {}
 
     const getExpectedError = (typeName: string) =>
@@ -890,7 +925,10 @@ describe('TestBed', () => {
   it('should be able to create a fixture if a test module is reset mid-compilation', async () => {
     const token = new InjectionToken<number>('value');
 
-    @Component({template: 'hello {{_token}}'})
+    @Component({
+      template: 'hello {{_token}}',
+      standalone: false,
+    })
     class TestComponent {
       constructor(@Inject(token) public _token: number) {}
     }
@@ -918,6 +956,7 @@ describe('TestBed', () => {
     @Component({
       selector: 'test-cmp',
       template: '...',
+      standalone: false,
     })
     class TestComponent {
       testField = 'default';
@@ -932,6 +971,7 @@ describe('TestBed', () => {
     @Component({
       selector: 'app-root',
       template: `<test-cmp #testCmpCtrl></test-cmp>`,
+      standalone: false,
     })
     class AppComponent {
       @ViewChild('testCmpCtrl', {static: true}) testCmpCtrl!: TestComponent;
@@ -945,6 +985,7 @@ describe('TestBed', () => {
     @Component({
       selector: 'test-cmp',
       template: '...',
+      standalone: false,
     })
     class MockTestComponent {
       testField = 'overwritten';
@@ -975,12 +1016,14 @@ describe('TestBed', () => {
     @Component({
       selector: 'comp-a',
       template: 'comp-a content',
+      standalone: false,
     })
     class CompA {}
 
     @Component({
       selector: 'comp-a',
       template: 'comp-a mock content',
+      standalone: false,
     })
     class MockCompA {}
 
@@ -995,12 +1038,14 @@ describe('TestBed', () => {
     @Component({
       selector: 'comp-b',
       template: 'comp-b content',
+      standalone: false,
     })
     class CompB {}
 
     @Component({
       selector: 'comp-b',
       template: 'comp-b mock content',
+      standalone: false,
     })
     class MockCompB {}
 
@@ -1019,6 +1064,7 @@ describe('TestBed', () => {
         <comp-a></comp-a>
         <comp-b></comp-b>
       `,
+      standalone: false,
     })
     class App {}
 
@@ -1330,7 +1376,11 @@ describe('TestBed', () => {
     const MY_TOKEN = new InjectionToken('MyProvider');
     class MyProvider {}
 
-    @Component({selector: 'my-comp', template: ``})
+    @Component({
+      selector: 'my-comp',
+      template: ``,
+      standalone: false,
+    })
     class MyComp {
       constructor(@Inject(MY_TOKEN) public myProviders: MyProvider[]) {}
     }
@@ -1359,6 +1409,7 @@ describe('TestBed', () => {
     @Component({
       selector: 'comp-a',
       template: '...',
+      standalone: false,
     })
     class CompA {
       @Input() inputA: string = '';
@@ -1370,6 +1421,7 @@ describe('TestBed', () => {
     @Component({
       selector: 'comp-b',
       template: '...',
+      standalone: false,
     })
     class CompB {
       @Input() inputB: string = '';
@@ -1425,7 +1477,11 @@ describe('TestBed', () => {
   });
 
   it('should throw errors in CD', () => {
-    @Component({selector: 'my-comp', template: ''})
+    @Component({
+      selector: 'my-comp',
+      template: '',
+      standalone: false,
+    })
     class MyComp {
       name!: {hello: string};
 
@@ -1447,7 +1503,11 @@ describe('TestBed', () => {
   // tests to fail. This is an issue in both View Engine and Ivy, and may require a breaking
   // change to completely fix (since simple re-throwing breaks handlers in ngrx, etc).
   xit('should throw errors in listeners', () => {
-    @Component({selector: 'my-comp', template: '<button (click)="onClick()">Click me</button>'})
+    @Component({
+      selector: 'my-comp',
+      template: '<button (click)="onClick()">Click me</button>',
+      standalone: false,
+    })
     class MyComp {
       name!: {hello: string};
 
@@ -1485,12 +1545,14 @@ describe('TestBed', () => {
     @Component({
       selector: 'inner',
       template: 'Inner',
+      standalone: false,
     })
     class Inner {}
 
     @Component({
       selector: 'outer',
       template: '<inner></inner>',
+      standalone: false,
     })
     class Outer {}
 
@@ -1502,6 +1564,7 @@ describe('TestBed', () => {
     @Component({
       template: '<outer></outer>',
       selector: 'fixture',
+      standalone: false,
     })
     class Fixture {}
 
@@ -1520,6 +1583,7 @@ describe('TestBed', () => {
   describe('checking types before compiling them', () => {
     @Directive({
       selector: 'my-dir',
+      standalone: false,
     })
     class MyDir {}
 
@@ -1827,6 +1891,7 @@ describe('TestBed', () => {
       @Directive({
         selector: '[dir]',
         providers: [{provide: A, useValue: 'A'}],
+        standalone: false,
       })
       class SomeDir {
         constructor(
@@ -1877,8 +1942,8 @@ describe('TestBed', () => {
 
       @Component({
         template: '<comp></comp>',
-
         selector: 'fixture',
+        standalone: false,
       })
       class TestFixture {}
 
@@ -1904,19 +1969,30 @@ describe('TestBed', () => {
 
   describe('resetting ng defs', () => {
     it('should restore ng defs to their initial states', () => {
-      @Pipe({name: 'somePipe', pure: true})
+      @Pipe({
+        name: 'somePipe',
+        pure: true,
+        standalone: false,
+      })
       class SomePipe {
         transform(value: string): string {
           return `transformed ${value}`;
         }
       }
 
-      @Directive({selector: 'someDirective'})
+      @Directive({
+        selector: 'someDirective',
+        standalone: false,
+      })
       class SomeDirective {
         someProp = 'hello';
       }
 
-      @Component({selector: 'comp', template: 'someText'})
+      @Component({
+        selector: 'comp',
+        template: 'someText',
+        standalone: false,
+      })
       class SomeComponent {}
 
       @NgModule({declarations: [SomeComponent]})
@@ -1962,17 +2038,27 @@ describe('TestBed', () => {
     });
 
     it('should cleanup ng defs for classes with no ng annotations (in case of inheritance)', () => {
-      @Component({selector: 'someDirective', template: '...'})
+      @Component({
+        selector: 'someDirective',
+        template: '...',
+        standalone: false,
+      })
       class SomeComponent {}
 
       class ComponentWithNoAnnotations extends SomeComponent {}
 
-      @Directive({selector: 'some-directive'})
+      @Directive({
+        selector: 'some-directive',
+        standalone: false,
+      })
       class SomeDirective {}
 
       class DirectiveWithNoAnnotations extends SomeDirective {}
 
-      @Pipe({name: 'some-pipe'})
+      @Pipe({
+        name: 'some-pipe',
+        standalone: false,
+      })
       class SomePipe {}
 
       class PipeWithNoAnnotations extends SomePipe {}
@@ -2012,12 +2098,14 @@ describe('TestBed', () => {
       @Component({
         selector: 'child',
         template: 'Child comp',
+        standalone: false,
       })
       class ChildCmp {}
 
       @Component({
         selector: 'root',
         template: '<child></child>',
+        standalone: false,
       })
       class RootCmp {}
 
@@ -2096,7 +2184,10 @@ describe('TestBed', () => {
         id: string | undefined;
       }
 
-      @Component({providers: [SomeInjectable]})
+      @Component({
+        providers: [SomeInjectable],
+        standalone: false,
+      })
       class ComponentWithProvider {
         constructor(readonly injectable: SomeInjectable) {}
       }
@@ -2133,7 +2224,10 @@ describe('TestBed', () => {
       value?: string;
     }
 
-    @Component({template: '{{injectedString.value}}'})
+    @Component({
+      template: '{{injectedString.value}}',
+      standalone: false,
+    })
     class AppComponent {
       constructor(public injectedString: InjectedString) {}
     }
@@ -2302,7 +2396,10 @@ describe('TestBed module teardown', () => {
   });
 
   it('should re-throw errors that were thrown during fixture cleanup', () => {
-    @Component({template: ''})
+    @Component({
+      template: '',
+      standalone: false,
+    })
     class ThrowsOnDestroy {
       ngOnDestroy() {
         throw Error('oh no');
@@ -2323,7 +2420,10 @@ describe('TestBed module teardown', () => {
   });
 
   it('should not interrupt fixture destruction if an error is thrown', () => {
-    @Component({template: ''})
+    @Component({
+      template: '',
+      standalone: false,
+    })
     class ThrowsOnDestroy {
       ngOnDestroy() {
         throw Error('oh no');
@@ -2354,7 +2454,10 @@ describe('TestBed module teardown', () => {
       }
     }
 
-    @Component({template: ''})
+    @Component({
+      template: '',
+      standalone: false,
+    })
     class App {
       constructor(_service: ThrowsOnDestroy) {}
     }
@@ -2377,7 +2480,10 @@ describe('TestBed module teardown', () => {
       }
     }
 
-    @Component({template: ''})
+    @Component({
+      template: '',
+      standalone: false,
+    })
     class App {
       constructor(_service: ThrowsOnDestroy) {}
     }
@@ -2398,12 +2504,14 @@ describe('TestBed module teardown', () => {
     @Component({
       template: '<span>Hello</span>',
       styles: [`span {color: hotpink;}`],
+      standalone: false,
     })
     class StyledComp1 {}
 
     @Component({
       template: '<div>Hello</div>',
       styles: [`div {color: red;}`],
+      standalone: false,
     })
     class StyledComp2 {}
 

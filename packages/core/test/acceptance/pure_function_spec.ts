@@ -15,6 +15,7 @@ describe('components using pure function instructions internally', () => {
     @Component({
       selector: 'my-comp',
       template: ``,
+      standalone: false,
     })
     class MyComp {
       @Input() names: string[] = [];
@@ -25,6 +26,7 @@ describe('components using pure function instructions internally', () => {
         template: `
                 <my-comp [names]="['Nancy', customName, 'Bess']"></my-comp>
               `,
+        standalone: false,
       })
       class App {
         showing = true;
@@ -65,6 +67,7 @@ describe('components using pure function instructions internally', () => {
         template: `
                 <my-comp *ngIf="showing" [names]="['Nancy', customName, 'Bess']"></my-comp>
               `,
+        standalone: false,
       })
       class App {
         showing = true;
@@ -85,6 +88,7 @@ describe('components using pure function instructions internally', () => {
       @Component({
         selector: 'many-prop-comp',
         template: ``,
+        standalone: false,
       })
       class ManyPropComp {
         @Input() names1: string[] = [];
@@ -97,6 +101,7 @@ describe('components using pure function instructions internally', () => {
                 <many-prop-comp [names1]="['Nancy', customName]" [names2]="[customName2]">
                 </many-prop-comp>
               `,
+        standalone: false,
       })
       class App {
         showing = true;
@@ -127,6 +132,7 @@ describe('components using pure function instructions internally', () => {
         template: `
                 <my-comp [names]="someFn(['Nancy', customName])"></my-comp>
               `,
+        standalone: false,
       })
       class ParentComp {
         customName = 'Bess';
@@ -142,6 +148,7 @@ describe('components using pure function instructions internally', () => {
                 <parent-comp></parent-comp>
                 <parent-comp></parent-comp>
               `,
+        standalone: false,
       })
       class App {}
 
@@ -172,6 +179,7 @@ describe('components using pure function instructions internally', () => {
         template: `
                 <my-comp *ngIf="showing" [names]="['Nancy', customName, 'Bess', customName2]"></my-comp>
               `,
+        standalone: false,
       })
       class App {
         showing = true;
@@ -223,6 +231,7 @@ describe('components using pure function instructions internally', () => {
                 <my-comp [names]="['a', v2, v3, v4, v5, v6, v7, v8]"></my-comp>
                 <my-comp [names]="[v1, v2, v3, v4, v5, v6, v7, v8]"></my-comp>
               `,
+        standalone: false,
       })
       class App {
         v1 = 'a';
@@ -290,6 +299,7 @@ describe('components using pure function instructions internally', () => {
                 <my-comp [names]="['start', v0, v1, v2, v3, 'modified_' + v4, v5, v6, v7, v8, 'end']">
                 </my-comp>
               `,
+        standalone: false,
       })
       class App {
         v0 = 'a';
@@ -364,6 +374,7 @@ describe('components using pure function instructions internally', () => {
     @Component({
       selector: 'object-comp',
       template: ``,
+      standalone: false,
     })
     class ObjectComp {
       @Input() config: any = [];
@@ -372,6 +383,7 @@ describe('components using pure function instructions internally', () => {
     it('should support an object literal', () => {
       @Component({
         template: '<object-comp [config]="{duration: 500, animation: name}"></object-comp>',
+        standalone: false,
       })
       class App {
         name = 'slide';
@@ -407,6 +419,7 @@ describe('components using pure function instructions internally', () => {
         duration: duration }]}">
         </object-comp>
       `,
+        standalone: false,
       })
       class App {
         name = 'slide';
@@ -485,6 +498,7 @@ describe('components using pure function instructions internally', () => {
         <object-comp *ngFor="let config of configs" [config]="config">
         </object-comp>
       `,
+        standalone: false,
       })
       class App {
         configs = [
@@ -516,7 +530,10 @@ describe('components using pure function instructions internally', () => {
   });
 
   describe('identical literals', () => {
-    @Directive({selector: '[dir]'})
+    @Directive({
+      selector: '[dir]',
+      standalone: false,
+    })
     class Dir {
       @Input('dir') value: any;
     }
@@ -527,6 +544,7 @@ describe('components using pure function instructions internally', () => {
           <div [dir]="{}"></div>
           <div [dir]="{}"></div>
         `,
+        standalone: false,
       })
       class App {
         @ViewChildren(Dir) directives!: QueryList<Dir>;
@@ -546,6 +564,7 @@ describe('components using pure function instructions internally', () => {
           <div [dir]="[]"></div>
           <div [dir]="[]"></div>
         `,
+        standalone: false,
       })
       class App {
         @ViewChildren(Dir) directives!: QueryList<Dir>;
@@ -560,7 +579,10 @@ describe('components using pure function instructions internally', () => {
     });
 
     it('should not share object literals across component instances', () => {
-      @Component({template: `<div [dir]="{}"></div>`})
+      @Component({
+        template: `<div [dir]="{}"></div>`,
+        standalone: false,
+      })
       class App {
         @ViewChild(Dir) directive!: Dir;
       }
@@ -578,7 +600,10 @@ describe('components using pure function instructions internally', () => {
     });
 
     it('should not share array literals across component instances', () => {
-      @Component({template: `<div [dir]="[]"></div>`})
+      @Component({
+        template: `<div [dir]="[]"></div>`,
+        standalone: false,
+      })
       class App {
         @ViewChild(Dir) directive!: Dir;
       }
@@ -601,6 +626,7 @@ describe('components using pure function instructions internally', () => {
           <div [dir]="{foo: null}"></div>
           <div [dir]="{foo: {}}"></div>
         `,
+        standalone: false,
       })
       class App {
         @ViewChildren(Dir) directives!: QueryList<Dir>;
@@ -620,6 +646,7 @@ describe('components using pure function instructions internally', () => {
           <div [dir]="{foo: null}"></div>
           <div [dir]="{foo: []}"></div>
         `,
+        standalone: false,
       })
       class App {
         @ViewChildren(Dir) directives!: QueryList<Dir>;
@@ -639,6 +666,7 @@ describe('components using pure function instructions internally', () => {
           <div [dir]="{foo: null}"></div>
           <div [dir]="{foo: getFoo()}"></div>
         `,
+        standalone: false,
       })
       class App {
         @ViewChildren(Dir) directives!: QueryList<Dir>;

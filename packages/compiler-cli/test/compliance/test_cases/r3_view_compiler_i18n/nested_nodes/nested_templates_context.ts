@@ -1,8 +1,8 @@
 import {Component, NgModule} from '@angular/core';
 
 @Component({
-  selector: 'my-component',
-  template: `
+    selector: 'my-component',
+    template: `
   <div i18n>
     Some content
     <div *ngIf="visible">
@@ -25,6 +25,7 @@ import {Component, NgModule} from '@angular/core';
     </div>
   </div>
 `,
+    standalone: false
 })
 export class MyComponent {
 }

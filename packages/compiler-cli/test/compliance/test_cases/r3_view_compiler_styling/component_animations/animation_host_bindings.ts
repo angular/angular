@@ -1,8 +1,9 @@
 import {Component, Directive, NgModule} from '@angular/core';
 
 @Directive({
-  selector: '[my-anim-dir]',
-  host: {'[@myAnim]': 'myAnimState', '(@myAnim.start)': 'onStart()', '(@myAnim.done)': 'onDone()'}
+    selector: '[my-anim-dir]',
+    host: { '[@myAnim]': 'myAnimState', '(@myAnim.start)': 'onStart()', '(@myAnim.done)': 'onDone()' },
+    standalone: false
 })
 class MyAnimDir {
   onStart() {}
@@ -11,10 +12,11 @@ class MyAnimDir {
 }
 
 @Component({
-  selector: 'my-cmp',
-  template: `
+    selector: 'my-cmp',
+    template: `
     <div my-anim-dir></div>
-  `
+  `,
+    standalone: false
 })
 class MyComponent {
 }

@@ -209,6 +209,7 @@ describe('component input binding', () => {
   it('sets component inputs from matching query params', async () => {
     @Component({
       template: '',
+      standalone: false,
     })
     class MyComponent {
       @Input() language?: string;
@@ -237,6 +238,7 @@ describe('component input binding', () => {
   it('sets component inputs from resolved and static data', async () => {
     @Component({
       template: '',
+      standalone: false,
     })
     class MyComponent {
       @Input() resolveA?: string;
@@ -268,6 +270,7 @@ describe('component input binding', () => {
   it('sets component inputs from path params', async () => {
     @Component({
       template: '',
+      standalone: false,
     })
     class MyComponent {
       @Input() language?: string;
@@ -287,6 +290,7 @@ describe('component input binding', () => {
   it('when keys conflict, sets inputs based on priority: data > path params > query params', async () => {
     @Component({
       template: '',
+      standalone: false,
     })
     class MyComponent {
       @Input() result?: string;
@@ -332,6 +336,7 @@ describe('component input binding', () => {
     let resultLog: Array<string | undefined> = [];
     @Component({
       template: '',
+      standalone: false,
     })
     class MyComponent {
       @Input()

@@ -1,18 +1,19 @@
 import {Component, Directive, NgModule} from '@angular/core';
 
 @Directive({
-  selector: '[my-dir]',
-  host: {
-    '[title]': 'title',
-    '[class.foo]': 'foo',
-    '[@anim]': `{
+    selector: '[my-dir]',
+    host: {
+        '[title]': 'title',
+        '[class.foo]': 'foo',
+        '[@anim]': `{
       value: _animValue,
       params: {
         param1: _animParam1,
         param2: _animParam2
       }
     }`
-  }
+    },
+    standalone: false
 })
 export class MyDir {
   title = '';
@@ -23,10 +24,11 @@ export class MyDir {
 }
 
 @Component({
-  selector: 'my-app',
-  template: `
+    selector: 'my-app',
+    template: `
     <div my-dir></div>
-  `
+  `,
+    standalone: false
 })
 export class MyAppComp {
 }

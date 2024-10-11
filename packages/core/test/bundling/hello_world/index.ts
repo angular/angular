@@ -8,7 +8,11 @@
 import {Component, NgModule} from '@angular/core';
 import {platformBrowser} from '@angular/platform-browser';
 
-@Component({selector: 'hello-world', template: 'Hello World!'})
+@Component({
+  selector: 'hello-world',
+  template: 'Hello World!',
+  standalone: false,
+})
 export class HelloWorldComponent {}
 
 @NgModule({declarations: [HelloWorldComponent]})

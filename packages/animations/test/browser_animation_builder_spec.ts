@@ -41,6 +41,7 @@ describe('BrowserAnimationBuilder', () => {
     @Component({
       selector: 'ani-cmp',
       template: '...',
+      standalone: false,
     })
     class Cmp {
       constructor(public builder: AnimationBuilder) {}
@@ -59,6 +60,7 @@ describe('BrowserAnimationBuilder', () => {
     @Component({
       selector: 'ani-cmp',
       template: '...',
+      standalone: false,
     })
     class Cmp {
       @ViewChild('target') public target: any;
@@ -129,6 +131,7 @@ describe('BrowserAnimationBuilder', () => {
     @Component({
       selector: 'ani-cmp',
       template: '...',
+      standalone: false,
     })
     class Cmp {
       @ViewChild('target') public target: any;
@@ -191,6 +194,7 @@ describe('BrowserAnimationBuilder', () => {
     @Component({
       selector: 'ani-another-cmp',
       template: '...',
+      standalone: false,
     })
     class CmpAnother {
       @ViewChild('target') public target: any;
@@ -277,6 +281,7 @@ describe('BrowserAnimationBuilder', () => {
       @Component({
         selector: 'ani-cmp',
         template: '...',
+        standalone: false,
       })
       class Cmp {
         @ViewChild('target') public target: any;

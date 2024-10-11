@@ -86,6 +86,7 @@ describe('ShadowDOM Support', () => {
   selector: 'shadow-comp',
   template: 'Hello World',
   encapsulation: ViewEncapsulation.ShadowDom,
+  standalone: false,
 })
 class ShadowComponent {}
 
@@ -94,6 +95,7 @@ class ShadowComponent {}
   template: '<div class="red"></div>',
   encapsulation: ViewEncapsulation.ShadowDom,
   styles: [`:host { background: black; } .red { background: red; }`],
+  standalone: false,
 })
 class StyledShadowComponent {}
 
@@ -101,6 +103,7 @@ class StyledShadowComponent {}
   selector: 'shadow-slot-comp',
   template: '<slot></slot>',
   encapsulation: ViewEncapsulation.ShadowDom,
+  standalone: false,
 })
 class ShadowSlotComponent {}
 
@@ -109,6 +112,7 @@ class ShadowSlotComponent {}
   template:
     '<header><slot name="header"></slot></header><article><slot name="article"></slot></article>',
   encapsulation: ViewEncapsulation.ShadowDom,
+  standalone: false,
 })
 class ShadowSlotsComponent {}
 
