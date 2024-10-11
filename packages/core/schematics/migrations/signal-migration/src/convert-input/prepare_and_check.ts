@@ -64,8 +64,14 @@ export function prepareAndCheckForConversion(
     node.initializer === undefined ||
     (ts.isIdentifier(node.initializer) && node.initializer.text === 'undefined');
 
-  const loosePropertyInitializationWithStrictNullChecks =
-    options.strict !== true && options.strictPropertyInitialization !== true;
+  const strictNullChecksEnabled = options.strict === true || options.strictNullChecks === true;
+  const strictPropertyInitialization =
+    options.strict === true || options.strictPropertyInitialization === true;
+
+  // Shorthand should never be used, as would expand the type of `T` to be `T|undefined`.
+  // This wouldn't matter with strict null checks disabled, but it can break if this is
+  // a library that is later consumed with strict null checks enabled.
+  const avoidTypeExpansion = !strictNullChecksEnabled;
 
   // If an input can be required, due to the non-null assertion on the property,
   // make it required if there is no initializer.
@@ -83,7 +89,7 @@ export function prepareAndCheckForConversion(
     !metadata.required &&
     node.type !== undefined &&
     isUndefinedInitialValue &&
-    !loosePropertyInitializationWithStrictNullChecks
+    !avoidTypeExpansion
   ) {
     preferShorthandIfPossible = {originalType: node.type};
   }
@@ -127,9 +133,9 @@ export function prepareAndCheckForConversion(
   // is disabled, while strict null checks are enabled; then we know that `undefined`
   // cannot be used as initial value, nor do we want to expand the input's type magically.
   // Instead, we detect this case and migrate to `undefined!` which leaves the behavior unchanged.
-  // TODO: This would be a good spot for a clean-up TODO.
   if (
-    loosePropertyInitializationWithStrictNullChecks &&
+    strictNullChecksEnabled &&
+    !strictPropertyInitialization &&
     node.initializer === undefined &&
     node.type !== undefined &&
     node.questionToken === undefined &&
