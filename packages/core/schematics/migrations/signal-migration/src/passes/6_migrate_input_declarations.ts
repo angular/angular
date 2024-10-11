@@ -14,7 +14,7 @@ import {convertToSignalInput} from '../convert-input/convert_to_signal';
 import {KnownInputs} from '../input_detection/known_inputs';
 import {MigrationHost} from '../migration_host';
 import {MigrationResult} from '../result';
-import {insertTodoForIncompatibility} from '../utils/incompatibility_todos';
+import {insertTodoForIncompatibility} from './problematic_patterns/incompatibility_todos';
 
 /**
  * Phase that migrates `@Input()` declarations to signal inputs and
@@ -37,9 +37,16 @@ export function pass6__migrateInputDeclarations(
 
     // Do not migrate incompatible inputs.
     if (inputInfo.isIncompatible()) {
+      const incompatibilityReason = inputInfo.container.getInputMemberIncompatibility(input);
+
       // Add a TODO for the incompatible input, if desired.
-      if (host.config.insertTodosForSkippedFields) {
-        result.replacements.push(...insertTodoForIncompatibility(input.node, info, inputInfo));
+      if (incompatibilityReason !== null && host.config.insertTodosForSkippedFields) {
+        result.replacements.push(
+          ...insertTodoForIncompatibility(input.node, info, incompatibilityReason, {
+            single: 'input',
+            plural: 'inputs',
+          }),
+        );
       }
 
       filesWithIncompatibleInputs.add(sf);
