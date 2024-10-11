@@ -44,6 +44,7 @@ import {
 import {APP_ID} from '../application/application_tokens';
 import {performanceMarkFeature} from '../util/performance';
 import {triggerHydrationFromBlockName} from '../defer/triggering';
+import {isIncrementalHydrationEnabled} from './utils';
 
 /** Apps in which we've enabled event replay.
  *  This is to prevent initializing event replay more than once per app.
@@ -120,28 +121,40 @@ export function withEventReplay(): Provider[] {
           const injector = inject(Injector);
           const appRef = inject(ApplicationRef);
           return () => {
-            if (!shouldEnableEventReplay(injector)) {
-              return;
-            }
-
             // We have to check for the appRef here due to the possibility of multiple apps
             // being present on the same page. We only want to enable event replay for the
             // apps that actually want it.
-            if (!appsWithEventReplay.has(appRef)) {
-              appsWithEventReplay.add(appRef);
-              appRef.onDestroy(() => appsWithEventReplay.delete(appRef));
-
-              // Kick off event replay logic once hydration for the initial part
-              // of the application is completed. This timing is similar to the unclaimed
-              // dehydrated views cleanup timing.
-              whenStable(appRef).then(() => {
-                const eventContractDetails = injector.get(JSACTION_EVENT_CONTRACT);
-                initEventReplay(eventContractDetails, injector);
-                const jsActionMap = injector.get(JSACTION_BLOCK_ELEMENT_MAP);
-                jsActionMap.get(EAGER_CONTENT_LISTENERS_KEY)?.forEach(removeListeners);
-                jsActionMap.delete(EAGER_CONTENT_LISTENERS_KEY);
-              });
+            if (!shouldEnableEventReplay(injector) || appsWithEventReplay.has(appRef)) {
+              return;
             }
+
+            appsWithEventReplay.add(appRef);
+            appRef.onDestroy(() => appsWithEventReplay.delete(appRef));
+
+            // Kick off event replay logic once hydration for the initial part
+            // of the application is completed. This timing is similar to the unclaimed
+            // dehydrated views cleanup timing.
+            whenStable(appRef).then(() => {
+              const eventContractDetails = injector.get(JSACTION_EVENT_CONTRACT);
+              initEventReplay(eventContractDetails, injector);
+              const jsActionMap = injector.get(JSACTION_BLOCK_ELEMENT_MAP);
+              jsActionMap.get(EAGER_CONTENT_LISTENERS_KEY)?.forEach(removeListeners);
+              jsActionMap.delete(EAGER_CONTENT_LISTENERS_KEY);
+
+              const eventContract = eventContractDetails.instance!;
+              // This removes event listeners registered through the container manager,
+              // as listeners registered on `document.body` might never be removed if we
+              // don't clean up the contract.
+              if (isIncrementalHydrationEnabled(injector)) {
+                // When incremental hydration is enabled, we cannot clean up the event
+                // contract immediately because we're unaware if there are any deferred
+                // blocks to hydrate. We can only schedule a contract cleanup when the
+                // app is destroyed.
+                appRef.onDestroy(() => eventContract.cleanUp());
+              } else {
+                eventContract.cleanUp();
+              }
+            });
           };
         },
         multi: true,
