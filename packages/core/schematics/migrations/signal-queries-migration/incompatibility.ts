@@ -7,8 +7,12 @@
  */
 
 import {FieldIncompatibilityReason} from '../signal-migration/src';
-import {pickFieldIncompatibility} from '../signal-migration/src/passes/problematic_patterns/incompatibility';
+import {
+  nonIgnorableFieldIncompatibilities,
+  pickFieldIncompatibility,
+} from '../signal-migration/src/passes/problematic_patterns/incompatibility';
 import {ClassFieldUniqueKey} from '../signal-migration/src/passes/reference_resolution/known_fields';
+import type {KnownQueries} from './known_queries';
 import type {GlobalUnitData} from './migration';
 
 export function markFieldIncompatibleInMetadata(
@@ -29,5 +33,16 @@ export function markFieldIncompatibleInMetadata(
       {reason, context: null},
       {reason: existing.fieldReason, context: null},
     ).reason;
+  }
+}
+
+export function filterBestEffortIncompatibilities(knownQueries: KnownQueries) {
+  for (const query of Object.values(knownQueries.globalMetadata.problematicQueries)) {
+    if (
+      query.fieldReason !== null &&
+      !nonIgnorableFieldIncompatibilities.includes(query.fieldReason)
+    ) {
+      query.fieldReason = null;
+    }
   }
 }

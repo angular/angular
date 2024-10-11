@@ -7,7 +7,7 @@
  */
 
 import ts from 'typescript';
-import {ProgramInfo} from '../../utils/tsurge';
+import {ProgramInfo, projectFile} from '../../utils/tsurge';
 import {ProblematicFieldRegistry} from '../signal-migration/src/passes/problematic_patterns/problematic_field_registry';
 import {
   ClassFieldDescriptor,
@@ -28,6 +28,7 @@ import {
 } from '../signal-migration/src/passes/problematic_patterns/incompatibility';
 import {markFieldIncompatibleInMetadata} from './incompatibility';
 import {ExtractedQuery} from './identify_queries';
+import {MigrationConfig} from './migration_config';
 
 export class KnownQueries
   implements
@@ -41,7 +42,8 @@ export class KnownQueries
 
   constructor(
     private readonly info: ProgramInfo,
-    private globalMetadata: GlobalUnitData,
+    private readonly config: MigrationConfig,
+    public globalMetadata: GlobalUnitData,
   ) {}
 
   isFieldIncompatible(descriptor: ClassFieldDescriptor): boolean {
@@ -69,6 +71,19 @@ export class KnownQueries
       node: queryField,
     });
     this.knownQueryIDs.set(id, {key: id, node: queryField});
+
+    const descriptor: ClassFieldDescriptor = {key: id, node: queryField};
+    const file = projectFile(queryField.getSourceFile(), this.info);
+
+    if (
+      this.config.shouldMigrateQuery !== undefined &&
+      !this.config.shouldMigrateQuery(descriptor, file)
+    ) {
+      this.markFieldIncompatible(descriptor, {
+        context: null,
+        reason: FieldIncompatibilityReason.SkippedViaConfigFilter,
+      });
+    }
   }
 
   attemptRetrieveDescriptorFromSymbol(symbol: ts.Symbol): ClassFieldDescriptor | null {

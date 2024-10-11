@@ -1239,6 +1239,80 @@ describe('signal queries migration', () => {
       }
     `);
   });
+
+  describe('--best-effort-mode', () => {
+    it('should be possible to forcibly migrate even with a detected `.changes` access', async () => {
+      const {fs} = await runTsurgeMigration(new SignalQueriesMigration({bestEffortMode: true}), [
+        {
+          name: absoluteFrom('/app.component.ts'),
+          isProgramRootFile: true,
+          contents: dedent`
+            import {ViewChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+            @Component({
+              template: '',
+            })
+            class MyComp {
+              @ViewChildren('label') labels = new QueryList<ElementRef>();
+
+              click() {
+                this.labels.changes.subscribe();
+              }
+            }
+          `,
+        },
+      ]);
+
+      const actual = fs.readFile(absoluteFrom('/app.component.ts'));
+      expect(actual).toMatchWithDiff(`
+        import {ElementRef, Component, viewChildren} from '@angular/core';
+
+        @Component({
+          template: '',
+        })
+        class MyComp {
+          readonly labels = viewChildren<ElementRef>('label');
+
+          click() {
+            this.labels().changes.subscribe();
+          }
+        }
+      `);
+    });
+
+    it(`should not forcibly migrate if it's an accessor field`, async () => {
+      const {fs} = await runTsurgeMigration(new SignalQueriesMigration({bestEffortMode: true}), [
+        {
+          name: absoluteFrom('/app.component.ts'),
+          isProgramRootFile: true,
+          contents: dedent`
+            import {ViewChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+            @Component({
+              template: '',
+            })
+            class MyComp {
+              @ViewChildren('label')
+              set labels(list: QueryList<ElementRef>) {}
+            }
+          `,
+        },
+      ]);
+
+      const actual = fs.readFile(absoluteFrom('/app.component.ts'));
+      expect(actual).toMatchWithDiff(`
+        import {ViewChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+        @Component({
+          template: '',
+        })
+        class MyComp {
+          @ViewChildren('label')
+          set labels(list: QueryList<ElementRef>) {}
+        }
+      `);
+    });
+  });
 });
 
 function populateDeclarationTestCaseComponent(declaration: string): string {
