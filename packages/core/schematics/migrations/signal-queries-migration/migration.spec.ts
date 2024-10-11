@@ -1313,6 +1313,90 @@ describe('signal queries migration', () => {
       `);
     });
   });
+
+  describe('--insert-todos-for-skipped-fields', () => {
+    it('should add a TODO for queries accessing QueryList#changes', async () => {
+      const {fs} = await runTsurgeMigration(
+        new SignalQueriesMigration({insertTodosForSkippedFields: true}),
+        [
+          {
+            name: absoluteFrom('/app.component.ts'),
+            isProgramRootFile: true,
+            contents: dedent`
+              import {ViewChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+              @Component({
+                template: '',
+              })
+              class MyComp {
+                @ViewChildren('label') labels = new QueryList<ElementRef>();
+
+                click() {
+                  this.labels.changes.subscribe();
+                }
+              }
+          `,
+          },
+        ],
+      );
+
+      const actual = fs.readFile(absoluteFrom('/app.component.ts'));
+      expect(actual).toMatchWithDiff(`
+        import {ViewChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+        @Component({
+          template: '',
+        })
+        class MyComp {
+          // TODO: Skipped for migration because:
+          //  There are references to this query that cannot be migrated automatically.
+          @ViewChildren('label') labels = new QueryList<ElementRef>();
+
+          click() {
+            this.labels.changes.subscribe();
+          }
+        }
+      `);
+    });
+
+    it(`should add a TODO for incompatible accessor fields`, async () => {
+      const {fs} = await runTsurgeMigration(
+        new SignalQueriesMigration({insertTodosForSkippedFields: true}),
+        [
+          {
+            name: absoluteFrom('/app.component.ts'),
+            isProgramRootFile: true,
+            contents: dedent`
+              import {ViewChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+              @Component({
+                template: '',
+              })
+              class MyComp {
+                @ViewChildren('label')
+                set labels(list: QueryList<ElementRef>) {}
+              }
+          `,
+          },
+        ],
+      );
+
+      const actual = fs.readFile(absoluteFrom('/app.component.ts'));
+      expect(actual).toMatchWithDiff(`
+        import {ViewChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+        @Component({
+          template: '',
+        })
+        class MyComp {
+          // TODO: Skipped for migration because:
+          //  Accessor queries cannot be migrated as they are too complex.
+          @ViewChildren('label')
+          set labels(list: QueryList<ElementRef>) {}
+        }
+      `);
+    });
+  });
 });
 
 function populateDeclarationTestCaseComponent(declaration: string): string {
