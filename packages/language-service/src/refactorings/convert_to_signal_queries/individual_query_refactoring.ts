@@ -110,3 +110,9 @@ export class ConvertFieldToSignalQueryRefactoring extends BaseConvertFieldToSign
   static description = 'Convert this decorator query to a signal query (safe)';
   override config: MigrationConfig = {};
 }
+
+export class ConvertFieldToSignalQueryBestEffortRefactoring extends BaseConvertFieldToSignalQueryRefactoring {
+  static id = 'convert-field-to-signal-query-best-effort-mode';
+  static description = 'Convert this decorator query to a signal query (forcibly, ignoring errors)';
+  override config: MigrationConfig = {bestEffortMode: true};
+}
