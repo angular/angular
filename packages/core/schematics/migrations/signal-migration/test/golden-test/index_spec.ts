@@ -13,7 +13,6 @@ describe('bla', () => {
         <app-component #ref />
         {{ref.input.ok}}
         `,
-      standalone: false,
     })
     class TestCmp {}
     TestBed.configureTestingModule({

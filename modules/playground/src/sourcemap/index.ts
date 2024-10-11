@@ -13,6 +13,7 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 @Component({
   selector: 'error-app',
   template: ` <button class="errorButton" (click)="createError()">create error</button>`,
+  standalone: false,
 })
 export class ErrorComponent {
   createError(): void {

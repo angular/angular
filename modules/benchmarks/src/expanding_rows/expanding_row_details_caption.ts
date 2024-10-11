@@ -36,6 +36,7 @@ import {expanding_row_css} from './expanding_row_css';
     <ng-content></ng-content>
   </div>`,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class ExpandingRowDetailsCaption implements OnDestroy {
   /** The background color of this component. */

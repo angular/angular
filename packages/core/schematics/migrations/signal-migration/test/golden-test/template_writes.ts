@@ -11,7 +11,6 @@ import {Component, Input} from '@angular/core';
   host: {
     '(click)': 'inputC = true',
   },
-  standalone: false,
 })
 class TwoWayBinding {
   @Input() inputA = '';

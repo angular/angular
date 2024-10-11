@@ -6,7 +6,6 @@ import {Component, Input} from '@angular/core';
   template: `
     {{label}}
   `,
-  standalone: false,
 })
 class Group {
   @Input() label!: string;
@@ -20,7 +19,6 @@ class Group {
 
     {{group.label}}
   `,
-  standalone: false,
 })
 class Option {
   constructor(public group: Group) {}

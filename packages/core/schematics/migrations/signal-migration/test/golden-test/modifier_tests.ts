@@ -6,10 +6,7 @@ function CustomDecorator() {
   return (a: any, b: any) => {};
 }
 
-@Component({
-  template: '',
-  standalone: false,
-})
+@Component({template: ''})
 class ModifierScenarios {
   @Input() readonly alreadyReadonly = true;
   @Input() protected ImProtected = true;

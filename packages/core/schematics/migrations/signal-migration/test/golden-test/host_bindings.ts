@@ -10,7 +10,6 @@ import {Component, Input} from '@angular/core';
     '[receiverNarrowing]': 'receiverNarrowing ? receiverNarrowing.id',
     // normal narrowing is irrelevant as we don't type check host bindings.
   },
-  standalone: false,
 })
 class HostBindingTestCmp {
   @Input() id = 'works';
@@ -29,7 +28,6 @@ const SHARED = {
 @Component({
   template: '',
   host: SHARED,
-  standalone: false,
 })
 class HostBindingsShared {
   @Input() id = false;
@@ -38,7 +36,6 @@ class HostBindingsShared {
 @Component({
   template: '',
   host: SHARED,
-  standalone: false,
 })
 class HostBindingsShared2 {
   @Input() id = false;

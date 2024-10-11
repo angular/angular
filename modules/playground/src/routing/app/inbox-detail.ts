@@ -11,7 +11,11 @@ import {ActivatedRoute, RouterModule} from '@angular/router';
 
 import {DbService, InboxRecord} from './inbox-app';
 
-@Component({selector: 'inbox-detail', templateUrl: './inbox-detail.html'})
+@Component({
+  selector: 'inbox-detail',
+  templateUrl: './inbox-detail.html',
+  standalone: false,
+})
 export class InboxDetailCmp {
   record: InboxRecord = new InboxRecord();
   private ready: boolean = false;
