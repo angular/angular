@@ -36,6 +36,7 @@ describe('AppComponent', () => {
   @Component({
     selector: 'app-title-ce',
     template: '',
+    standalone: false,
   })
   class TestTitleComponent {
     @Input() appName = '';

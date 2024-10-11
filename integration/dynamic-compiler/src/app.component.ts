@@ -6,6 +6,7 @@ import {AfterViewInit, Compiler, Component, ViewChild, ViewContainerRef} from '@
     <h1>Hello world!</h1>
     <div #vc></div>
   `,
+  standalone: false,
 })
 export class AppComponent implements AfterViewInit {
   @ViewChild('vc', {read: ViewContainerRef}) container: ViewContainerRef;
