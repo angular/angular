@@ -18,6 +18,7 @@ import {R3QueryMetadata} from '../../../../compiler';
 import {ProgramInfo} from '../../utils/tsurge';
 import {ClassFieldUniqueKey} from '../signal-migration/src/passes/reference_resolution/known_fields';
 import {getUniqueIDForClassProperty} from './field_tracking';
+import {FatalDiagnosticError} from '@angular/compiler-cli/src/ngtsc/diagnostics';
 
 /** Type describing an extracted decorator query that can be migrated. */
 export interface ExtractedQuery {
@@ -72,14 +73,25 @@ export function extractSourceQueryDefinition(
     throw new Error('Unexpected query decorator detected.');
   }
 
-  const queryInfo = extractDecoratorQueryMetadata(
-    node,
-    decorator.name,
-    decorator.args ?? [],
-    node.name.text,
-    reflector,
-    evaluator,
-  );
+  let queryInfo: R3QueryMetadata | null = null;
+
+  try {
+    queryInfo = extractDecoratorQueryMetadata(
+      node,
+      decorator.name,
+      decorator.args ?? [],
+      node.name.text,
+      reflector,
+      evaluator,
+    );
+  } catch (e) {
+    if (!(e instanceof FatalDiagnosticError)) {
+      throw e;
+    }
+
+    console.error(`Skipping query: ${e.node.getSourceFile().fileName}: ${e.toString()}`);
+    return null;
+  }
 
   return {
     id,
