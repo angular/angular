@@ -10,11 +10,14 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  DestroyRef,
   EnvironmentInjector,
   inject,
   Input,
   OnInit,
 } from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {forkJoin} from 'rxjs';
 
 import {injectAsync} from '../../../core/services/inject-async';
 import {EmbeddedEditor, EmbeddedTutorialManager} from '../../../editor';
@@ -30,8 +33,9 @@ import {EmbeddedEditor, EmbeddedTutorialManager} from '../../../editor';
 })
 export class CodeEditorComponent implements OnInit {
   private readonly cdRef = inject(ChangeDetectorRef);
-  private readonly environmentInjector = inject(EnvironmentInjector);
   private readonly embeddedTutorialManager = inject(EmbeddedTutorialManager);
+  private readonly environmentInjector = inject(EnvironmentInjector);
+  private readonly destroyRef = inject(DestroyRef);
 
   @Input({required: true}) tutorialFiles!: string;
 
@@ -39,15 +43,20 @@ export class CodeEditorComponent implements OnInit {
     this.loadEmbeddedEditor();
   }
 
-  private async loadEmbeddedEditor() {
-    const nodeRuntimeSandbox = await injectAsync(this.environmentInjector, () =>
-      import('../../../editor/index').then((c) => c.NodeRuntimeSandbox),
-    );
-
-    await this.embeddedTutorialManager.fetchAndSetTutorialFiles(this.tutorialFiles);
-
-    this.cdRef.markForCheck();
-
-    await nodeRuntimeSandbox.init();
+  private loadEmbeddedEditor() {
+    // If using `async-await`, `this` will be captured until the function is executed
+    // and completed, which can lead to a memory leak if the user navigates away from
+    // this component to another page.
+    forkJoin([
+      injectAsync(this.environmentInjector, () =>
+        import('../../../editor/index').then((c) => c.NodeRuntimeSandbox),
+      ),
+      this.embeddedTutorialManager.fetchAndSetTutorialFiles(this.tutorialFiles),
+    ])
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(([nodeRuntimeSandbox]) => {
+        this.cdRef.markForCheck();
+        nodeRuntimeSandbox.init();
+      });
   }
 }
