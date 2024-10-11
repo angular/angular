@@ -28,6 +28,7 @@ let trustedGreyColor: SafeStyle;
       </tr>
     </tbody>
   </table>`,
+  standalone: false,
 })
 export class TableComponent {
   @Input() data: TableCell[][] = emptyTable;

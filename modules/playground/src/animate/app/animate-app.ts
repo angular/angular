@@ -45,12 +45,10 @@ import {Component} from '@angular/core';
         'active',
         style({'background-color': 'orange', 'color': 'white', 'font-size': '100px'}),
       ),
-
       transition('active <=> start', [
         animate(500, style({'transform': 'scale(2)'})),
         animate(500),
       ]),
-
       transition('* => *', [
         animate(1000, style({'opacity': 1, 'height': 300})),
         animate(1000, style({'background-color': 'blue'})),
@@ -66,6 +64,7 @@ import {Component} from '@angular/core';
       ]),
     ]),
   ],
+  standalone: false,
 })
 export class AnimateApp {
   public items: number[] = [];

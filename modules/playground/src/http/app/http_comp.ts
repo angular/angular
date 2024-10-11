@@ -17,6 +17,7 @@ import {Component} from '@angular/core';
       <li *ngFor="let person of people">hello, {{ person['name'] }}</li>
     </ul>
   `,
+  standalone: false,
 })
 export class HttpCmp {
   people: Object[];

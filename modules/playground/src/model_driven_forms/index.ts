@@ -51,6 +51,7 @@ function creditCardValidator(c: AbstractControl): {[key: string]: boolean} {
   selector: 'show-error',
   inputs: ['controlPath: control', 'errorTypes: errors'],
   template: ` <span *ngIf="errorMessage !== null">{{ errorMessage }}</span> `,
+  standalone: false,
 })
 export class ShowError {
   formDir: FormGroupDirective;
@@ -140,6 +141,7 @@ export class ShowError {
       <button type="submit" [disabled]="!f.form.valid">Submit</button>
     </form>
   `,
+  standalone: false,
 })
 export class ReactiveForms {
   form: UntypedFormGroup;

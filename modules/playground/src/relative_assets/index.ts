@@ -15,6 +15,7 @@ import {MyCmp} from './app/my_cmp';
 @Component({
   selector: 'relative-app',
   template: `component = <my-cmp></my-cmp>`,
+  standalone: false,
 })
 export class RelativeApp {}
 

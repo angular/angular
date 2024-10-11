@@ -10,7 +10,6 @@ import {Component, Input} from '@angular/core';
   host: {
     '[style]': '{myInput}',
   },
-  standalone: false,
 })
 export class TemplateObjectShorthand {
   @Input() myInput = true;

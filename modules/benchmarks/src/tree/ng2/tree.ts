@@ -20,6 +20,7 @@ let trustedGreyColor: SafeStyle;
   template: `<span [style.backgroundColor]="bgColor"> {{ data.value }} </span
     ><tree *ngIf="data.right != null" [data]="data.right"></tree
     ><tree *ngIf="data.left != null" [data]="data.left"></tree>`,
+  standalone: false,
 })
 export class TreeComponent {
   data: TreeNode = emptyTree;
