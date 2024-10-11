@@ -14,6 +14,7 @@ import {
   isTsReference,
   Reference,
 } from '../signal-migration/src/passes/reference_resolution/reference_kinds';
+import {KnownQueries} from './known_queries';
 import type {GlobalUnitData} from './migration';
 import {checkNonTsReferenceAccessesField, checkTsReferenceAccessesField} from './property_accesses';
 
@@ -26,12 +27,16 @@ export function replaceQueryListFirstAndLastReferences(
   ref: Reference<ClassFieldDescriptor>,
   info: ProgramInfo,
   globalMetadata: GlobalUnitData,
+  knownQueries: KnownQueries,
   replacements: Replacement[],
 ): void {
   if (!isHostBindingReference(ref) && !isTemplateReference(ref) && !isTsReference(ref)) {
     return;
   }
 
+  if (knownQueries.isFieldIncompatible(ref.target)) {
+    return;
+  }
   if (!globalMetadata.knownQueryFields[ref.target.key]?.isMulti) {
     return;
   }
