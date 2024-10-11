@@ -37,7 +37,6 @@ runs:
     - name: Wait and confirm Saucelabs tunnel has connected
       shell: bash
       run: ./tools/saucelabs/sauce-service.sh ready-wait
-      timeout-minutes: 3
     - name: Running tests on Saucelabs.
       shell: bash
       run: KARMA_WEB_TEST_MODE=SL_REQUIRED yarn karma start ./karma-js.conf.js --single-run
