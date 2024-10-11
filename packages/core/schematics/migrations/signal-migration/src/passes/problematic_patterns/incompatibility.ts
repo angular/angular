@@ -30,6 +30,19 @@ export enum FieldIncompatibilityReason {
   SkippedViaConfigFilter = 13,
 }
 
+/** Field reasons that cannot be ignored. */
+export const nonIgnorableFieldIncompatibilities: FieldIncompatibilityReason[] = [
+  // Outside of scope fields should not be migrated. E.g. references to inputs in `node_modules/`.
+  FieldIncompatibilityReason.OutsideOfMigrationScope,
+  // Explicitly filtered fields cannot be skipped via best effort mode.
+  FieldIncompatibilityReason.SkippedViaConfigFilter,
+  // There is no good output for accessor fields.
+  FieldIncompatibilityReason.Accessor,
+  // There is no good output for such inputs. We can't perform "conversion".
+  FieldIncompatibilityReason.SignalInput__RequiredButNoGoodExplicitTypeExtractable,
+  FieldIncompatibilityReason.SignalInput__QuestionMarkButNoGoodExplicitTypeExtractable,
+];
+
 /** Reasons why a whole class and its fields cannot be migrated. */
 export enum ClassIncompatibilityReason {
   ClassManuallyInstantiated,

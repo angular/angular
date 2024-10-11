@@ -16,7 +16,7 @@ import {
   FieldIncompatibilityReason,
   KnownInputInfo,
   MigrationConfig,
-  nonIgnorableInputIncompatibilities,
+  nonIgnorableFieldIncompatibilities,
   SignalInputMigration,
 } from '@angular/core/schematics/migrations/signal-migration/src';
 import {groupReplacementsByFile} from '@angular/core/schematics/utils/tsurge/helpers/group_replacements';
@@ -120,7 +120,7 @@ export async function applySignalInputRefactoring(
   // Only suggest the "force ignoring" option if there are actually
   // ignorable incompatibilities.
   const canBeForciblyIgnored = Array.from(incompatibilityReasons).some(
-    (r) => !nonIgnorableInputIncompatibilities.includes(r),
+    (r) => !nonIgnorableFieldIncompatibilities.includes(r),
   );
   if (!config.bestEffortMode && canBeForciblyIgnored) {
     message += `Use the "(forcibly, ignoring errors)" action to forcibly convert.\n`;
