@@ -19,6 +19,7 @@ export class MyServiceA {}
   templateUrl: './app-todo.component.html',
   styleUrls: ['./app-todo.component.scss'],
   viewProviders: [MyServiceA],
+  standalone: false,
 })
 export class AppTodoComponent {
   name!: string;
