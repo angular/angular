@@ -100,6 +100,10 @@ describe('Extractor', () => {
       expect(extract('<div i18n="m|d"></div>')).toEqual([]);
     });
 
+    it('should not create a message for placeholder-only elements', () => {
+      expect(extract('<div i18n="m|d">{{ foo }}</div>')).toEqual([]);
+    });
+
     it('should ignore implicit elements in translatable elements', () => {
       expect(extract('<div i18n="m|d"><p></p></div>', ['p'])).toEqual([
         [['<ph tag name="START_PARAGRAPH"></ph name="CLOSE_PARAGRAPH">'], 'm', 'd', ''],
@@ -405,6 +409,10 @@ describe('Extractor', () => {
 
     it('should not create a message for empty attributes', () => {
       expect(extract('<div i18n-title="m|d" title></div>')).toEqual([]);
+    });
+
+    it('should not create a message for placeholder-only attributes', () => {
+      expect(extract('<div i18n-title="m|d" title="{{ foo }}"></div>')).toEqual([]);
     });
   });
 
