@@ -19,7 +19,10 @@ import {
 import assert from 'assert';
 import {projectFile} from '../../../../core/schematics/utils/tsurge';
 import {FieldIncompatibilityReason} from '../../../../core/schematics/migrations/signal-migration/src';
-import {isFieldIncompatibility} from '../../../../core/schematics/migrations/signal-migration/src/passes/problematic_patterns/incompatibility';
+import {
+  isFieldIncompatibility,
+  nonIgnorableFieldIncompatibilities,
+} from '../../../../core/schematics/migrations/signal-migration/src/passes/problematic_patterns/incompatibility';
 
 export async function applySignalQueriesRefactoring(
   compiler: NgCompiler,
@@ -104,6 +107,15 @@ export async function applySignalQueriesRefactoring(
     const queryPlural = incompatibilityMessages.size === 1 ? 'query' : `queries`;
     message = `${incompatibilityMessages.size} ${queryPlural} could not be migrated.\n`;
     message += `For more details, click on the skipped inputs and try to migrate individually.\n`;
+  }
+
+  // Only suggest the "force ignoring" option if there are actually
+  // ignorable incompatibilities.
+  const canBeForciblyIgnored = Array.from(incompatibilityReasons).some(
+    (r) => !nonIgnorableFieldIncompatibilities.includes(r),
+  );
+  if (!config.bestEffortMode && canBeForciblyIgnored) {
+    message += `Use the "(forcibly, ignoring errors)" action to forcibly convert.\n`;
   }
 
   // In multi mode, partial migration is allowed.

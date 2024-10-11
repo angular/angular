@@ -35,8 +35,9 @@ describe('Signal queries refactoring action', () => {
       appFile.moveCursorToText('re¦f!: ElementRef');
       const refactorings = project.getRefactoringsAtPosition('app.ts', appFile.cursor);
 
-      expect(refactorings.length).toBe(1);
+      expect(refactorings.length).toBe(2);
       expect(refactorings[0].name).toBe('convert-field-to-signal-query-safe-mode');
+      expect(refactorings[1].name).toBe('convert-field-to-signal-query-best-effort-mode');
     });
 
     it('should not support refactoring a non-Angular property', () => {
@@ -96,8 +97,9 @@ describe('Signal queries refactoring action', () => {
       appFile.moveCursorToText('re¦f!: ElementRef');
 
       const refactorings = project.getRefactoringsAtPosition('app.ts', appFile.cursor);
-      expect(refactorings.length).toBe(1);
+      expect(refactorings.length).toBe(2);
       expect(refactorings[0].name).toBe('convert-field-to-signal-query-safe-mode');
+      expect(refactorings[1].name).toBe('convert-field-to-signal-query-best-effort-mode');
 
       const edits = await project.applyRefactoring(
         'app.ts',
@@ -143,8 +145,9 @@ describe('Signal queries refactoring action', () => {
       appFile.moveCursorToText('bl¦a: ElementRef');
 
       const refactorings = project.getRefactoringsAtPosition('app.ts', appFile.cursor);
-      expect(refactorings.length).toBe(1);
+      expect(refactorings.length).toBe(2);
       expect(refactorings[0].name).toBe('convert-field-to-signal-query-safe-mode');
+      expect(refactorings[1].name).toBe('convert-field-to-signal-query-best-effort-mode');
 
       const edits = await project.applyRefactoring(
         'app.ts',
@@ -154,6 +157,44 @@ describe('Signal queries refactoring action', () => {
       );
       expect(edits?.errorMessage).toContain(`Query field "bla" could not be migrated`);
       expect(edits?.errorMessage).toContain(`Your application code writes to the query.`);
+      expect(edits?.errorMessage).toContain(`to forcibly convert.`);
+      expect(edits?.edits).toEqual([]);
+    });
+
+    it('should show an error if query is incompatible, but cannot be ignored', async () => {
+      const files = {
+        'app.ts': `
+          import {Directive, ContentChild} from '@angular/core';
+
+          @Directive({})
+          export class AppComponent {
+            @ContentChild('ref')
+            set bla(value: ElementRef) {};
+          }
+     `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+      const appFile = project.openFile('app.ts');
+      appFile.moveCursorToText('set bl¦a(');
+
+      const refactorings = project.getRefactoringsAtPosition('app.ts', appFile.cursor);
+      expect(refactorings.length).toBe(2);
+      expect(refactorings[0].name).toBe('convert-field-to-signal-query-safe-mode');
+      expect(refactorings[1].name).toBe('convert-field-to-signal-query-best-effort-mode');
+
+      const edits = await project.applyRefactoring(
+        'app.ts',
+        appFile.cursor,
+        refactorings[0].name,
+        () => {},
+      );
+      expect(edits?.errorMessage).toContain(`Query field "bla" could not be migrated`);
+      expect(edits?.errorMessage).toContain(
+        `Accessor queries cannot be migrated as they are too complex.`,
+      );
+      // This is not forcibly ignorable, so the error should not suggest this option.
+      expect(edits?.errorMessage).not.toContain(`to forcibly convert.`);
       expect(edits?.edits).toEqual([]);
     });
 
@@ -179,5 +220,53 @@ describe('Signal queries refactoring action', () => {
       const refactorings = project.getRefactoringsAtPosition('app.ts', appFile.cursor);
       expect(refactorings.length).toBe(0);
     });
+  });
+
+  it('should compute best effort edits for incompatible field', async () => {
+    const files = {
+      'app.ts': `
+        import {ViewChild, Component} from '@angular/core';
+
+        @Component({template: ''})
+        export class AppComponent {
+          @ViewChild('ref') ref?: ElementRef;
+
+          click() {
+            this.ref = undefined;
+          }
+        }
+   `,
+    };
+
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+    const appFile = project.openFile('app.ts');
+    appFile.moveCursorToText('re¦f?: ElementRef');
+
+    const refactorings = project.getRefactoringsAtPosition('app.ts', appFile.cursor);
+    expect(refactorings.length).toBe(2);
+    expect(refactorings[0].name).toBe('convert-field-to-signal-query-safe-mode');
+    expect(refactorings[1].name).toBe('convert-field-to-signal-query-best-effort-mode');
+
+    const edits = await project.applyRefactoring(
+      'app.ts',
+      appFile.cursor,
+      refactorings[1].name,
+      () => {},
+    );
+    expect(edits?.errorMessage).toBeUndefined();
+    expect(edits?.edits).toEqual([
+      {
+        fileName: '/test/app.ts',
+        textChanges: [
+          // Query declaration.
+          {
+            newText: `readonly ref = viewChild<ElementRef>('ref');`,
+            span: {start: 143, length: `@ViewChild('ref') ref!: ElementRef;`.length},
+          },
+          // Import (since there is just a single query).
+          {newText: '{Component, viewChild}', span: {start: 16, length: 22}},
+        ],
+      },
+    ]);
   });
 });
