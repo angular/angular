@@ -1281,6 +1281,28 @@ describe('signal queries migration', () => {
     `);
   });
 
+  it('should not break at runtime if there is an invalid query', async () => {
+    await expectAsync(
+      runTsurgeMigration(new SignalQueriesMigration(), [
+        {
+          name: absoluteFrom('/app.component.ts'),
+          isProgramRootFile: true,
+          contents: dedent`
+          import {ContentChild, QueryList, ElementRef, Component} from '@angular/core';
+
+          @Component({
+            template: '',
+          })
+          class MyComp {
+            // missing predicate/selector.
+            @ContentChild() labels = new QueryList<ElementRef>();
+          }
+        `,
+        },
+      ]),
+    ).not.toBeRejected();
+  });
+
   describe('--best-effort-mode', () => {
     it('should be possible to forcibly migrate even with a detected `.changes` access', async () => {
       const {fs} = await runTsurgeMigration(new SignalQueriesMigration({bestEffortMode: true}), [

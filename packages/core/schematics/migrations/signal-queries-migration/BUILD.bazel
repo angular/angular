@@ -16,6 +16,7 @@ ts_library(
         "//packages/compiler-cli/private",
         "//packages/compiler-cli/src/ngtsc/annotations",
         "//packages/compiler-cli/src/ngtsc/annotations/directive",
+        "//packages/compiler-cli/src/ngtsc/diagnostics",
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/reflection",
         "//packages/core/schematics/migrations/signal-migration/src",
