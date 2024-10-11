@@ -9,7 +9,10 @@ MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: '<input #user>Hello {{user.value}}!', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
-            args: [{ selector: 'my-component', template: '<input #user>Hello {{user.value}}!' }]
+            args: [{
+                    selector: 'my-component', template: '<input #user>Hello {{user.value}}!',
+                    standalone: false
+                }]
         }] });
 export class MyModule {
 }
@@ -47,7 +50,10 @@ IfDirective.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 IfDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: IfDirective, selector: "[if]", ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: IfDirective, decorators: [{
             type: Directive,
-            args: [{ selector: '[if]' }]
+            args: [{
+                    selector: '[if]',
+                    standalone: false
+                }]
         }], ctorParameters: () => [{ type: i0.TemplateRef }] });
 export class MyComponent {
 }
@@ -75,7 +81,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       <span #bar></span>
     </div>
     <div #baz></div>
-    `
+    `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -133,7 +140,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         <span *ngIf="showing">
           {{ foo }} - {{ item }}
         </span>
-    </div>`
+    </div>`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -196,7 +204,10 @@ LifecycleComp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "
 LifecycleComp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: LifecycleComp, selector: "lifecycle-comp", inputs: { nameMin: ["name", "nameMin"] }, usesOnChanges: true, ngImport: i0, template: '', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: LifecycleComp, decorators: [{
             type: Component,
-            args: [{ selector: 'lifecycle-comp', template: '' }]
+            args: [{
+                    selector: 'lifecycle-comp', template: '',
+                    standalone: false
+                }]
         }], propDecorators: { nameMin: [{
                 type: Input,
                 args: ['name']
@@ -219,7 +230,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <lifecycle-comp [name]="name1"></lifecycle-comp>
     <lifecycle-comp [name]="name2"></lifecycle-comp>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class LifecycleModule {

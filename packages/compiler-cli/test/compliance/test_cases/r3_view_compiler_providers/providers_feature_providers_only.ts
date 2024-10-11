@@ -11,9 +11,10 @@ class GreeterEN implements Greeter {
 }
 
 @Component({
-  selector: 'my-component',
-  template: '<div></div>',
-  providers: [GreeterEN, {provide: Greeter, useClass: GreeterEN}]
+    selector: 'my-component',
+    template: '<div></div>',
+    providers: [GreeterEN, { provide: Greeter, useClass: GreeterEN }],
+    standalone: false
 })
 export class MyComponent {
 }

@@ -348,7 +348,11 @@ describe('integration tests', function () {
     });
 
     it('should display correct error message for uninitialized @Output', () => {
-      @Component({selector: 'my-uninitialized-output', template: '<p>It works!</p>'})
+      @Component({
+        selector: 'my-uninitialized-output',
+        template: '<p>It works!</p>',
+        standalone: false,
+      })
       class UninitializedOutputComp {
         @Output() customEvent!: EventEmitter<any>;
       }
@@ -864,7 +868,11 @@ describe('integration tests', function () {
     });
 
     it('should support updating host element via hostAttributes on root elements', () => {
-      @Component({host: {'role': 'button'}, template: ''})
+      @Component({
+        host: {'role': 'button'},
+        template: '',
+        standalone: false,
+      })
       class ComponentUpdatingHostAttributes {}
 
       TestBed.configureTestingModule({declarations: [ComponentUpdatingHostAttributes]});
@@ -903,7 +911,11 @@ describe('integration tests', function () {
     });
 
     it('should not use template variables for expressions in hostProperties', () => {
-      @Directive({selector: '[host-properties]', host: {'[id]': 'id', '[title]': 'unknownProp'}})
+      @Directive({
+        selector: '[host-properties]',
+        host: {'[id]': 'id', '[title]': 'unknownProp'},
+        standalone: false,
+      })
       class DirectiveWithHostProps {
         id = 'one';
         unknownProp = 'unknownProp';
@@ -924,7 +936,11 @@ describe('integration tests', function () {
     });
 
     it('should not allow pipes in hostProperties', () => {
-      @Directive({selector: '[host-properties]', host: {'[id]': 'id | uppercase'}})
+      @Directive({
+        selector: '[host-properties]',
+        host: {'[id]': 'id | uppercase'},
+        standalone: false,
+      })
       class DirectiveWithHostProps {}
 
       TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithHostProps]});
@@ -936,7 +952,11 @@ describe('integration tests', function () {
     });
 
     it('should not use template variables for expressions in hostListeners', () => {
-      @Directive({selector: '[host-listener]', host: {'(click)': 'doIt(id, unknownProp)'}})
+      @Directive({
+        selector: '[host-listener]',
+        host: {'(click)': 'doIt(id, unknownProp)'},
+        standalone: false,
+      })
       class DirectiveWithHostListener {
         id = 'one';
         receivedArgs: any[] = [];
@@ -961,7 +981,11 @@ describe('integration tests', function () {
     });
 
     it('should not allow pipes in hostListeners', () => {
-      @Directive({selector: '[host-listener]', host: {'(click)': 'doIt() | somePipe'}})
+      @Directive({
+        selector: '[host-listener]',
+        host: {'(click)': 'doIt() | somePipe'},
+        standalone: false,
+      })
       class DirectiveWithHostListener {}
 
       TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithHostListener]});
@@ -1075,7 +1099,10 @@ describe('integration tests', function () {
         }));
 
         it('should create a component that has been freshly compiled', () => {
-          @Component({template: ''})
+          @Component({
+            template: '',
+            standalone: false,
+          })
           class RootComp {
             constructor(public vc: ViewContainerRef) {}
           }
@@ -1086,7 +1113,10 @@ describe('integration tests', function () {
           })
           class RootModule {}
 
-          @Component({template: ''})
+          @Component({
+            template: '',
+            standalone: false,
+          })
           class MyComp {
             constructor(@Inject('someToken') public someToken: string) {}
           }
@@ -1113,12 +1143,18 @@ describe('integration tests', function () {
         });
 
         it('should create a component with the passed NgModuleRef', () => {
-          @Component({template: ''})
+          @Component({
+            template: '',
+            standalone: false,
+          })
           class RootComp {
             constructor(public vc: ViewContainerRef) {}
           }
 
-          @Component({template: ''})
+          @Component({
+            template: '',
+            standalone: false,
+          })
           class MyComp {
             constructor(@Inject('someToken') public someToken: string) {}
           }
@@ -1150,7 +1186,10 @@ describe('integration tests', function () {
         });
 
         it('should create a component with the NgModuleRef of the ComponentFactoryResolver', () => {
-          @Component({template: ''})
+          @Component({
+            template: '',
+            standalone: false,
+          })
           class RootComp {
             constructor(public vc: ViewContainerRef) {}
           }
@@ -1161,7 +1200,10 @@ describe('integration tests', function () {
           })
           class RootModule {}
 
-          @Component({template: ''})
+          @Component({
+            template: '',
+            standalone: false,
+          })
           class MyComp {
             constructor(@Inject('someToken') public someToken: string) {}
           }
@@ -1398,10 +1440,16 @@ describe('integration tests', function () {
     });
 
     it('should throw when using directives without selector in NgModule declarations', () => {
-      @Directive({})
+      @Directive({
+        standalone: false,
+      })
       class SomeDirective {}
 
-      @Component({selector: 'comp', template: ''})
+      @Component({
+        selector: 'comp',
+        template: '',
+        standalone: false,
+      })
       class SomeComponent {}
 
       TestBed.configureTestingModule({declarations: [MyComp, SomeDirective, SomeComponent]});
@@ -1411,7 +1459,9 @@ describe('integration tests', function () {
     });
 
     it('should not throw when using directives without selector as base class not in declarations', () => {
-      @Directive({})
+      @Directive({
+        standalone: false,
+      })
       abstract class Base {
         constructor(readonly injector: Injector) {}
       }
@@ -1419,16 +1469,31 @@ describe('integration tests', function () {
       @Directive()
       abstract class EmptyDir {}
 
-      @Directive({inputs: ['a', 'b']})
+      @Directive({
+        inputs: ['a', 'b'],
+        standalone: false,
+      })
       class TestDirWithInputs {}
 
-      @Component({selector: 'comp', template: ''})
+      @Component({
+        selector: 'comp',
+        template: '',
+        standalone: false,
+      })
       class SomeComponent extends Base {}
 
-      @Component({selector: 'comp2', template: ''})
+      @Component({
+        selector: 'comp2',
+        template: '',
+        standalone: false,
+      })
       class SomeComponent2 extends EmptyDir {}
 
-      @Component({selector: 'comp3', template: ''})
+      @Component({
+        selector: 'comp3',
+        template: '',
+        standalone: false,
+      })
       class SomeComponent3 extends TestDirWithInputs {}
 
       TestBed.configureTestingModule({
@@ -1438,10 +1503,17 @@ describe('integration tests', function () {
     });
 
     it('should throw when using directives with empty string selector', () => {
-      @Directive({selector: ''})
+      @Directive({
+        selector: '',
+        standalone: false,
+      })
       class SomeDirective {}
 
-      @Component({selector: 'comp', template: ''})
+      @Component({
+        selector: 'comp',
+        template: '',
+        standalone: false,
+      })
       class SomeComponent {}
 
       TestBed.configureTestingModule({declarations: [MyComp, SomeDirective, SomeComponent]});
@@ -1451,7 +1523,10 @@ describe('integration tests', function () {
     });
 
     it('should use a default element name for components without selectors', () => {
-      @Component({template: '----'})
+      @Component({
+        template: '----',
+        standalone: false,
+      })
       class NoSelectorComponent {}
 
       expect(reflectComponentType(NoSelectorComponent)?.selector).toBe('ng-component');
@@ -1520,13 +1595,21 @@ describe('integration tests', function () {
   });
 
   describe('moving embedded views of projectable nodes in a dynamic component', () => {
-    @Component({selector: 'menu-item', template: ''})
+    @Component({
+      selector: 'menu-item',
+      template: '',
+      standalone: false,
+    })
     class DynamicMenuItem {
       @ViewChild('templateRef', {static: true}) templateRef!: TemplateRef<any>;
       itemContent: string | undefined;
     }
 
-    @Component({selector: 'test', template: `<ng-container #menuItemsContainer></ng-container>`})
+    @Component({
+      selector: 'test',
+      template: `<ng-container #menuItemsContainer></ng-container>`,
+      standalone: false,
+    })
     class TestCmp {
       constructor(public cfr: ComponentFactoryResolver) {}
       @ViewChild('menuItemsContainer', {static: true, read: ViewContainerRef})
@@ -1999,6 +2082,7 @@ describe('integration tests', function () {
       @Component({
         selector: 'comp',
         template: '<span>foo</span>  <span>bar</span>',
+        standalone: false,
       })
       class MyCmp {}
 
@@ -2013,6 +2097,7 @@ describe('integration tests', function () {
         selector: 'comp',
         template: '<span>foo</span>  <span>bar</span>',
         preserveWhitespaces: true,
+        standalone: false,
       })
       class MyCmp {}
 
@@ -2027,6 +2112,7 @@ describe('integration tests', function () {
         selector: 'comp',
         template: '<span>foo</span>  <span>bar</span>',
         preserveWhitespaces: false,
+        standalone: false,
       })
       class MyCmp {}
 
@@ -2039,7 +2125,10 @@ describe('integration tests', function () {
 
   describe('orphan components', () => {
     it('should display correct error message for orphan component if forbidOrphanRendering option is set', () => {
-      @Component({template: '...'})
+      @Component({
+        template: '...',
+        standalone: false,
+      })
       class MainComp {}
       ɵsetClassDebugInfo(MainComp, {
         className: 'MainComp',
@@ -2055,7 +2144,10 @@ describe('integration tests', function () {
     });
 
     it('should not throw error for orphan component if forbidOrphanRendering option is not set', () => {
-      @Component({template: '...'})
+      @Component({
+        template: '...',
+        standalone: false,
+      })
       class MainComp {}
       ɵsetClassDebugInfo(MainComp, {
         className: 'MainComp',
@@ -2138,7 +2230,11 @@ describe('integration tests', function () {
   }
 });
 
-@Component({selector: 'cmp-with-default-interpolation', template: `{{text}}`})
+@Component({
+  selector: 'cmp-with-default-interpolation',
+  template: `{{text}}`,
+  standalone: false,
+})
 class ComponentWithDefaultInterpolation {
   text = 'Default Interpolation';
 }
@@ -2147,6 +2243,7 @@ class ComponentWithDefaultInterpolation {
   selector: 'cmp-with-custom-interpolation-a',
   template: `<div>{%text%}</div>`,
   interpolation: ['{%', '%}'],
+  standalone: false,
 })
 class ComponentWithCustomInterpolationA {
   text = 'Custom Interpolation A';
@@ -2156,6 +2253,7 @@ class ComponentWithCustomInterpolationA {
   selector: 'cmp-with-custom-interpolation-b',
   template: `<div>{**text%}</div> (<cmp-with-default-interpolation></cmp-with-default-interpolation>)`,
   interpolation: ['{**', '%}'],
+  standalone: false,
 })
 class ComponentWithCustomInterpolationB {
   text = 'Custom Interpolation B';
@@ -2169,7 +2267,11 @@ class MyService {
   }
 }
 
-@Component({selector: 'simple-imp-cmp', template: ''})
+@Component({
+  selector: 'simple-imp-cmp',
+  template: '',
+  standalone: false,
+})
 class SimpleImperativeViewComponent {
   done: any;
 
@@ -2179,7 +2281,10 @@ class SimpleImperativeViewComponent {
   }
 }
 
-@Directive({selector: 'dynamic-vp'})
+@Directive({
+  selector: 'dynamic-vp',
+  standalone: false,
+})
 class DynamicViewport {
   private injector: Injector;
   constructor(private vc: ViewContainerRef) {
@@ -2208,7 +2313,12 @@ class DynamicViewport {
   }
 }
 
-@Directive({selector: '[my-dir]', inputs: ['dirProp: elprop'], exportAs: 'mydir'})
+@Directive({
+  selector: '[my-dir]',
+  inputs: ['dirProp: elprop'],
+  exportAs: 'mydir',
+  standalone: false,
+})
 class MyDir {
   dirProp: string;
   constructor() {
@@ -2216,7 +2326,12 @@ class MyDir {
   }
 }
 
-@Directive({selector: '[my-dir2]', inputs: ['dirProp2: elprop'], exportAs: 'mydir2'})
+@Directive({
+  selector: '[my-dir2]',
+  inputs: ['dirProp2: elprop'],
+  exportAs: 'mydir2',
+  standalone: false,
+})
 class MyDir2 {
   dirProp2: string;
   constructor() {
@@ -2224,17 +2339,30 @@ class MyDir2 {
   }
 }
 
-@Directive({selector: '[title]', inputs: ['title']})
+@Directive({
+  selector: '[title]',
+  inputs: ['title'],
+  standalone: false,
+})
 class DirectiveWithTitle {
   title: string | undefined;
 }
 
-@Directive({selector: '[title]', inputs: ['title'], host: {'[title]': 'title'}})
+@Directive({
+  selector: '[title]',
+  inputs: ['title'],
+  host: {'[title]': 'title'},
+  standalone: false,
+})
 class DirectiveWithTitleAndHostProperty {
   title: string | undefined;
 }
 
-@Component({selector: 'event-cmp', template: '<div (click)="noop()"></div>'})
+@Component({
+  selector: 'event-cmp',
+  template: '<div (click)="noop()"></div>',
+  standalone: false,
+})
 class EventCmp {
   noop() {}
 }
@@ -2246,6 +2374,7 @@ class EventCmp {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template:
     '{{field}}<div (click)="noop()"></div><div *ngIf="true" (click)="noop()"></div><event-cmp></event-cmp>',
+  standalone: false,
 })
 class PushCmp {
   numberOfChecks: number;
@@ -2268,6 +2397,7 @@ class PushCmp {
   inputs: ['prop'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '{{field}}',
+  standalone: false,
 })
 class PushCmpWithRef {
   numberOfChecks: number;
@@ -2294,6 +2424,7 @@ class PushCmpWithRef {
   host: {'(click)': 'ctxCallback($event)'},
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '',
+  standalone: false,
 })
 class PushCmpWithHostEvent {
   ctxCallback: Function = (_: any) => {};
@@ -2303,6 +2434,7 @@ class PushCmpWithHostEvent {
   selector: 'push-cmp-with-async',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '{{field | async}}',
+  standalone: false,
 })
 class PushCmpWithAsyncPipe {
   numberOfChecks: number = 0;
@@ -2321,7 +2453,11 @@ class PushCmpWithAsyncPipe {
   }
 }
 
-@Component({selector: 'my-comp', template: ''})
+@Component({
+  selector: 'my-comp',
+  template: '',
+  standalone: false,
+})
 class MyComp {
   ctxProp: string;
   ctxNumProp: number;
@@ -2350,6 +2486,7 @@ class MyComp {
   inputs: ['dirProp'],
   viewProviders: [MyService],
   template: '{{ctxProp}}',
+  standalone: false,
 })
 class ChildComp {
   ctxProp: string;
@@ -2360,12 +2497,20 @@ class ChildComp {
   }
 }
 
-@Component({selector: 'child-cmp-no-template', template: ''})
+@Component({
+  selector: 'child-cmp-no-template',
+  template: '',
+  standalone: false,
+})
 class ChildCompNoTemplate {
   ctxProp: string = 'hello';
 }
 
-@Component({selector: 'child-cmp-svc', template: '{{ctxProp}}'})
+@Component({
+  selector: 'child-cmp-svc',
+  template: '{{ctxProp}}',
+  standalone: false,
+})
 class ChildCompUsingService {
   ctxProp: string;
   constructor(service: MyService) {
@@ -2373,7 +2518,10 @@ class ChildCompUsingService {
   }
 }
 
-@Directive({selector: 'some-directive'})
+@Directive({
+  selector: 'some-directive',
+  standalone: false,
+})
 class SomeDirective {}
 
 class SomeDirectiveMissingAnnotation {}
@@ -2381,6 +2529,7 @@ class SomeDirectiveMissingAnnotation {}
 @Component({
   selector: 'cmp-with-host',
   template: '<p>Component with an injected host</p>',
+  standalone: false,
 })
 class CompWithHost {
   myHost: SomeDirective;
@@ -2389,7 +2538,11 @@ class CompWithHost {
   }
 }
 
-@Component({selector: '[child-cmp2]', viewProviders: [MyService]})
+@Component({
+  selector: '[child-cmp2]',
+  viewProviders: [MyService],
+  standalone: false,
+})
 class ChildComp2 {
   ctxProp: string;
   dirProp: string | null;
@@ -2403,7 +2556,10 @@ class SomeViewportContext {
   constructor(public someTmpl: string) {}
 }
 
-@Directive({selector: '[some-viewport]'})
+@Directive({
+  selector: '[some-viewport]',
+  standalone: false,
+})
 class SomeViewport {
   constructor(
     public container: ViewContainerRef,
@@ -2414,7 +2570,10 @@ class SomeViewport {
   }
 }
 
-@Directive({selector: '[pollutedContext]'})
+@Directive({
+  selector: '[pollutedContext]',
+  standalone: false,
+})
 class PollutedContext {
   constructor(
     private tplRef: TemplateRef<any>,
@@ -2425,7 +2584,10 @@ class PollutedContext {
   }
 }
 
-@Directive({selector: '[noContext]'})
+@Directive({
+  selector: '[noContext]',
+  standalone: false,
+})
 class NoContext {
   constructor(
     private tplRef: TemplateRef<any>,
@@ -2435,7 +2597,10 @@ class NoContext {
   }
 }
 
-@Pipe({name: 'double'})
+@Pipe({
+  name: 'double',
+  standalone: false,
+})
 class DoublePipe implements PipeTransform, OnDestroy {
   ngOnDestroy() {}
   transform(value: any) {
@@ -2443,7 +2608,11 @@ class DoublePipe implements PipeTransform, OnDestroy {
   }
 }
 
-@Directive({selector: '[emitter]', outputs: ['event']})
+@Directive({
+  selector: '[emitter]',
+  outputs: ['event'],
+  standalone: false,
+})
 class DirectiveEmittingEvent {
   msg: string;
   event: EventEmitter<any>;
@@ -2458,10 +2627,18 @@ class DirectiveEmittingEvent {
   }
 }
 
-@Directive({selector: '[update-host-attributes]', host: {'role': 'button'}})
+@Directive({
+  selector: '[update-host-attributes]',
+  host: {'role': 'button'},
+  standalone: false,
+})
 class DirectiveUpdatingHostAttributes {}
 
-@Directive({selector: '[update-host-properties]', host: {'[id]': 'id'}})
+@Directive({
+  selector: '[update-host-properties]',
+  host: {'[id]': 'id'},
+  standalone: false,
+})
 class DirectiveUpdatingHostProperties {
   id: string;
 
@@ -2470,7 +2647,11 @@ class DirectiveUpdatingHostProperties {
   }
 }
 
-@Directive({selector: '[listener]', host: {'(event)': 'onEvent($event)'}})
+@Directive({
+  selector: '[listener]',
+  host: {'(event)': 'onEvent($event)'},
+  standalone: false,
+})
 class DirectiveListeningEvent {
   msg: string;
 
@@ -2491,6 +2672,7 @@ class DirectiveListeningEvent {
     '(document:domEvent)': 'onDocumentEvent($event.type)',
     '(body:domEvent)': 'onBodyEvent($event.type)',
   },
+  standalone: false,
 })
 class DirectiveListeningDomEvent {
   eventTypes: string[] = [];
@@ -2509,7 +2691,11 @@ class DirectiveListeningDomEvent {
 }
 
 let globalCounter = 0;
-@Directive({selector: '[listenerother]', host: {'(window:domEvent)': 'onEvent($event.type)'}})
+@Directive({
+  selector: '[listenerother]',
+  host: {'(window:domEvent)': 'onEvent($event.type)'},
+  standalone: false,
+})
 class DirectiveListeningDomEventOther {
   eventType: string;
   constructor() {
@@ -2521,32 +2707,50 @@ class DirectiveListeningDomEventOther {
   }
 }
 
-@Directive({selector: '[listenerprevent]', host: {'(click)': 'onEvent($event)'}})
+@Directive({
+  selector: '[listenerprevent]',
+  host: {'(click)': 'onEvent($event)'},
+  standalone: false,
+})
 class DirectiveListeningDomEventPrevent {
   onEvent(event: any) {
     return false;
   }
 }
 
-@Directive({selector: '[listenernoprevent]', host: {'(click)': 'onEvent($event)'}})
+@Directive({
+  selector: '[listenernoprevent]',
+  host: {'(click)': 'onEvent($event)'},
+  standalone: false,
+})
 class DirectiveListeningDomEventNoPrevent {
   onEvent(event: any) {
     return true;
   }
 }
 
-@Directive({selector: '[id]', inputs: ['id']})
+@Directive({
+  selector: '[id]',
+  inputs: ['id'],
+  standalone: false,
+})
 class IdDir {
   id: string | undefined;
 }
 
-@Directive({selector: '[customEvent]'})
+@Directive({
+  selector: '[customEvent]',
+  standalone: false,
+})
 class EventDir {
   @Output() customEvent = new EventEmitter();
   doSomething() {}
 }
 
-@Directive({selector: '[static]'})
+@Directive({
+  selector: '[static]',
+  standalone: false,
+})
 class NeedsAttribute {
   typeAttribute: string;
   staticAttribute: string;
@@ -2568,10 +2772,14 @@ class PublicApi {}
 @Directive({
   selector: '[public-api]',
   providers: [{provide: PublicApi, useExisting: PrivateImpl, deps: []}],
+  standalone: false,
 })
 class PrivateImpl extends PublicApi {}
 
-@Directive({selector: '[needs-public-api]'})
+@Directive({
+  selector: '[needs-public-api]',
+  standalone: false,
+})
 class NeedsPublicApi {
   constructor(@Host() api: PublicApi) {
     expect(api instanceof PrivateImpl).toBe(true);
@@ -2582,7 +2790,10 @@ class ToolbarContext {
   constructor(public toolbarProp: string) {}
 }
 
-@Directive({selector: '[toolbarpart]'})
+@Directive({
+  selector: '[toolbarpart]',
+  standalone: false,
+})
 class ToolbarPart {
   templateRef: TemplateRef<ToolbarContext>;
   constructor(templateRef: TemplateRef<ToolbarContext>) {
@@ -2590,7 +2801,11 @@ class ToolbarPart {
   }
 }
 
-@Directive({selector: '[toolbarVc]', inputs: ['toolbarVc']})
+@Directive({
+  selector: '[toolbarVc]',
+  inputs: ['toolbarVc'],
+  standalone: false,
+})
 class ToolbarViewContainer {
   constructor(public vc: ViewContainerRef) {}
 
@@ -2602,6 +2817,7 @@ class ToolbarViewContainer {
 @Component({
   selector: 'toolbar',
   template: 'TOOLBAR(<div *ngFor="let  part of query" [toolbarVc]="part"></div>)',
+  standalone: false,
 })
 class ToolbarComponent {
   @ContentChildren(ToolbarPart) query!: QueryList<ToolbarPart>;
@@ -2610,7 +2826,12 @@ class ToolbarComponent {
   constructor() {}
 }
 
-@Directive({selector: '[two-way]', inputs: ['control'], outputs: ['controlChange']})
+@Directive({
+  selector: '[two-way]',
+  inputs: ['control'],
+  outputs: ['controlChange'],
+  standalone: false,
+})
 class DirectiveWithTwoWayBinding {
   controlChange = new EventEmitter();
   control: any = null;
@@ -2634,18 +2855,24 @@ function createInjectableWithLogging(inj: Injector) {
     {provide: InjectableService, useFactory: createInjectableWithLogging, deps: [Injector]},
   ],
   template: '',
+  standalone: false,
 })
 class ComponentProvidingLoggingInjectable {
   created: boolean = false;
 }
 
-@Directive({selector: 'directive-providing-injectable', providers: [[InjectableService]]})
+@Directive({
+  selector: 'directive-providing-injectable',
+  providers: [[InjectableService]],
+  standalone: false,
+})
 class DirectiveProvidingInjectable {}
 
 @Component({
   selector: 'directive-providing-injectable',
   viewProviders: [[InjectableService]],
   template: '',
+  standalone: false,
 })
 class DirectiveProvidingInjectableInView {}
 
@@ -2654,10 +2881,15 @@ class DirectiveProvidingInjectableInView {}
   providers: [{provide: InjectableService, useValue: 'host'}],
   viewProviders: [{provide: InjectableService, useValue: 'view'}],
   template: '',
+  standalone: false,
 })
 class DirectiveProvidingInjectableInHostAndView {}
 
-@Component({selector: 'directive-consuming-injectable', template: ''})
+@Component({
+  selector: 'directive-consuming-injectable',
+  template: '',
+  standalone: false,
+})
 class DirectiveConsumingInjectable {
   injectable: any;
 
@@ -2666,12 +2898,19 @@ class DirectiveConsumingInjectable {
   }
 }
 
-@Component({selector: 'directive-containing-directive-consuming-an-injectable'})
+@Component({
+  selector: 'directive-containing-directive-consuming-an-injectable',
+  standalone: false,
+})
 class DirectiveContainingDirectiveConsumingAnInjectable {
   directive: any;
 }
 
-@Component({selector: 'directive-consuming-injectable-unbounded', template: ''})
+@Component({
+  selector: 'directive-consuming-injectable-unbounded',
+  template: '',
+  standalone: false,
+})
 class DirectiveConsumingInjectableUnbounded {
   injectable: any;
 
@@ -2697,6 +2936,7 @@ class EventBus {
 @Directive({
   selector: 'grand-parent-providing-event-bus',
   providers: [{provide: EventBus, useValue: new EventBus(null!, 'grandparent')}],
+  standalone: false,
 })
 class GrandParentProvidingEventBus {
   bus: EventBus;
@@ -2714,6 +2954,7 @@ function createParentBus(peb: EventBus) {
   selector: 'parent-providing-event-bus',
   providers: [{provide: EventBus, useFactory: createParentBus, deps: [[EventBus, new SkipSelf()]]}],
   template: `<child-consuming-event-bus></child-consuming-event-bus>`,
+  standalone: false,
 })
 class ParentProvidingEventBus {
   bus: EventBus;
@@ -2725,7 +2966,10 @@ class ParentProvidingEventBus {
   }
 }
 
-@Directive({selector: 'child-consuming-event-bus'})
+@Directive({
+  selector: 'child-consuming-event-bus',
+  standalone: false,
+})
 class ChildConsumingEventBus {
   bus: EventBus;
 
@@ -2734,7 +2978,11 @@ class ChildConsumingEventBus {
   }
 }
 
-@Directive({selector: '[someImpvp]', inputs: ['someImpvp']})
+@Directive({
+  selector: '[someImpvp]',
+  inputs: ['someImpvp'],
+  standalone: false,
+})
 class SomeImperativeViewport {
   view: EmbeddedViewRef<Object> | null;
   anchor: any;
@@ -2763,30 +3011,50 @@ class SomeImperativeViewport {
   }
 }
 
-@Directive({selector: '[export-dir]', exportAs: 'dir'})
+@Directive({
+  selector: '[export-dir]',
+  exportAs: 'dir',
+  standalone: false,
+})
 class ExportDir {}
 
-@Directive({selector: '[multiple-export-as]', exportAs: 'dirX, dirY'})
+@Directive({
+  selector: '[multiple-export-as]',
+  exportAs: 'dirX, dirY',
+  standalone: false,
+})
 export class DirectiveWithMultipleExportAsNames {}
 
-@Component({selector: 'comp'})
+@Component({
+  selector: 'comp',
+  standalone: false,
+})
 class ComponentWithoutView {}
 
-@Directive({selector: '[no-duplicate]'})
+@Directive({
+  selector: '[no-duplicate]',
+  standalone: false,
+})
 class DuplicateDir {
   constructor(elRef: ElementRef) {
     elRef.nativeElement.textContent += 'noduplicate';
   }
 }
 
-@Directive({selector: '[no-duplicate]'})
+@Directive({
+  selector: '[no-duplicate]',
+  standalone: false,
+})
 class OtherDuplicateDir {
   constructor(elRef: ElementRef) {
     elRef.nativeElement.textContent += 'othernoduplicate';
   }
 }
 
-@Directive({selector: 'directive-throwing-error'})
+@Directive({
+  selector: 'directive-throwing-error',
+  standalone: false,
+})
 class DirectiveThrowingAnError {
   constructor() {
     throw new Error('BOOM');
@@ -2796,12 +3064,16 @@ class DirectiveThrowingAnError {
 @Component({
   selector: 'component-with-template',
   template: `No View Decorator: <div *ngFor="let item of items">{{item}}</div>`,
+  standalone: false,
 })
 class ComponentWithTemplate {
   items = [1, 2, 3];
 }
 
-@Directive({selector: 'with-prop-decorators'})
+@Directive({
+  selector: 'with-prop-decorators',
+  standalone: false,
+})
 class DirectiveWithPropDecorators {
   target: any;
 
@@ -2819,7 +3091,10 @@ class DirectiveWithPropDecorators {
   }
 }
 
-@Component({selector: 'some-cmp'})
+@Component({
+  selector: 'some-cmp',
+  standalone: false,
+})
 class SomeCmp {
   value: any;
 }
@@ -2827,6 +3102,7 @@ class SomeCmp {
 @Component({
   selector: 'parent-cmp',
   template: `<cmp [test$]="name"></cmp>`,
+  standalone: false,
 })
 export class ParentCmp {
   name: string = 'hello';
@@ -2835,6 +3111,7 @@ export class ParentCmp {
 @Component({
   selector: 'cmp',
   template: '',
+  standalone: false,
 })
 class SomeCmpWithInput {
   @Input() test$: any;

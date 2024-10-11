@@ -306,6 +306,7 @@ describe('createCustomElement', () => {
   @Component({
     selector: 'test-component',
     template: 'TestComponent|foo({{ fooFoo }})|bar({{ barBar }})',
+    standalone: false,
   })
   class TestComponent {
     @Input() fooFoo: string = 'foo';

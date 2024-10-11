@@ -28,7 +28,11 @@ import {
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-@Component({selector: 'simple-comp', template: `<span>Original {{simpleBinding}}</span>`})
+@Component({
+  selector: 'simple-comp',
+  template: `<span>Original {{simpleBinding}}</span>`,
+  standalone: false,
+})
 @Injectable()
 class SimpleComp {
   simpleBinding: string;
@@ -54,13 +58,18 @@ class SecondDeferredComp {}
 @Component({
   selector: 'my-if-comp',
   template: `MyIf(<span *ngIf="showMore">More</span>)`,
+  standalone: false,
 })
 @Injectable()
 class MyIfComp {
   showMore: boolean = false;
 }
 
-@Component({selector: 'autodetect-comp', template: `<span (click)='click()'>{{text}}</span>`})
+@Component({
+  selector: 'autodetect-comp',
+  template: `<span (click)='click()'>{{text}}</span>`,
+  standalone: false,
+})
 class AutoDetectComp {
   text: string = '1';
 
@@ -69,7 +78,11 @@ class AutoDetectComp {
   }
 }
 
-@Component({selector: 'async-comp', template: `<span (click)='click()'>{{text}}</span>`})
+@Component({
+  selector: 'async-comp',
+  template: `<span (click)='click()'>{{text}}</span>`,
+  standalone: false,
+})
 class AsyncComp {
   text: string = '1';
 
@@ -80,7 +93,11 @@ class AsyncComp {
   }
 }
 
-@Component({selector: 'async-child-comp', template: '<span>{{localText}}</span>'})
+@Component({
+  selector: 'async-child-comp',
+  template: '<span>{{localText}}</span>',
+  standalone: false,
+})
 class AsyncChildComp {
   localText: string = '';
 
@@ -95,6 +112,7 @@ class AsyncChildComp {
 @Component({
   selector: 'async-change-comp',
   template: `<async-child-comp (click)='click()' [text]="text"></async-child-comp>`,
+  standalone: false,
 })
 class AsyncChangeComp {
   text: string = '1';
@@ -104,7 +122,11 @@ class AsyncChangeComp {
   }
 }
 
-@Component({selector: 'async-timeout-comp', template: `<span (click)='click()'>{{text}}</span>`})
+@Component({
+  selector: 'async-timeout-comp',
+  template: `<span (click)='click()'>{{text}}</span>`,
+  standalone: false,
+})
 class AsyncTimeoutComp {
   text: string = '1';
 
@@ -118,6 +140,7 @@ class AsyncTimeoutComp {
 @Component({
   selector: 'nested-async-timeout-comp',
   template: `<span (click)='click()'>{{text}}</span>`,
+  standalone: false,
 })
 class NestedAsyncTimeoutComp {
   text: string = '1';
@@ -464,7 +487,10 @@ describe('ComponentFixture', () => {
 
   it('reports errors from autoDetect change detection to error handler', () => {
     let throwError = false;
-    @Component({template: ''})
+    @Component({
+      template: '',
+      standalone: false,
+    })
     class TestComponent {
       ngDoCheck() {
         if (throwError) {
@@ -484,7 +510,10 @@ describe('ComponentFixture', () => {
 
   it('reports errors from checkNoChanges in autoDetect to error handler', () => {
     let throwError = false;
-    @Component({template: '{{thing}}'})
+    @Component({
+      template: '{{thing}}',
+      standalone: false,
+    })
     class TestComponent {
       thing = 'initial';
       ngAfterViewChecked() {

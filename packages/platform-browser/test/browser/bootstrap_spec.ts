@@ -52,10 +52,18 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {bootstrapApplication} from '../../src/browser';
 
-@Component({selector: 'non-existent', template: ''})
+@Component({
+  selector: 'non-existent',
+  template: '',
+  standalone: false,
+})
 class NonExistentComp {}
 
-@Component({selector: 'hello-app', template: '{{greeting}} world!'})
+@Component({
+  selector: 'hello-app',
+  template: '{{greeting}} world!',
+  standalone: false,
+})
 class HelloRootCmp {
   greeting: string;
   constructor() {
@@ -63,7 +71,11 @@ class HelloRootCmp {
   }
 }
 
-@Component({selector: 'hello-app-2', template: '{{greeting}} world, again!'})
+@Component({
+  selector: 'hello-app-2',
+  template: '{{greeting}} world, again!',
+  standalone: false,
+})
 class HelloRootCmp2 {
   greeting: string;
   constructor() {
@@ -71,7 +83,11 @@ class HelloRootCmp2 {
   }
 }
 
-@Component({selector: 'hello-app', template: ''})
+@Component({
+  selector: 'hello-app',
+  template: '',
+  standalone: false,
+})
 class HelloRootCmp3 {
   appBinding: string;
 
@@ -80,7 +96,11 @@ class HelloRootCmp3 {
   }
 }
 
-@Component({selector: 'hello-app', template: ''})
+@Component({
+  selector: 'hello-app',
+  template: '',
+  standalone: false,
+})
 class HelloRootCmp4 {
   appRef: ApplicationRef;
 
@@ -89,10 +109,17 @@ class HelloRootCmp4 {
   }
 }
 
-@Directive({selector: 'hello-app'})
+@Directive({
+  selector: 'hello-app',
+  standalone: false,
+})
 class HelloRootDirectiveIsNotCmp {}
 
-@Component({selector: 'hello-app', template: ''})
+@Component({
+  selector: 'hello-app',
+  template: '',
+  standalone: false,
+})
 class HelloOnDestroyTickCmp implements OnDestroy {
   appRef: ApplicationRef;
   constructor(@Inject(ApplicationRef) appRef: ApplicationRef) {
@@ -104,7 +131,11 @@ class HelloOnDestroyTickCmp implements OnDestroy {
   }
 }
 
-@Component({selector: 'hello-app', template: '<some-el [someProp]="true">hello world!</some-el>'})
+@Component({
+  selector: 'hello-app',
+  template: '<some-el [someProp]="true">hello world!</some-el>',
+  standalone: false,
+})
 class HelloCmpUsingCustomElement {}
 
 class MockConsole {
@@ -211,6 +242,7 @@ describe('bootstrap factory method', () => {
     @Component({
       selector: 'hello-app-2',
       template: 'Hello from {{ name }}!',
+      standalone: false,
     })
     class NonStandaloneComp {
       name = 'NonStandaloneComp';
@@ -495,6 +527,7 @@ describe('bootstrap factory method', () => {
     @Component({
       selector: 'hello-app',
       template: '...',
+      standalone: false,
     })
     class NonStandaloneComponent {
       constructor() {
@@ -535,7 +568,11 @@ describe('bootstrap factory method', () => {
 
     class IDontExist {}
 
-    @Component({selector: 'cmp', template: 'Cmp'})
+    @Component({
+      selector: 'cmp',
+      template: 'Cmp',
+      standalone: false,
+    })
     class CustomCmp {
       constructor(iDontExist: IDontExist) {}
     }
@@ -543,6 +580,7 @@ describe('bootstrap factory method', () => {
     @Component({
       selector: 'hello-app',
       template: '<cmp></cmp>',
+      standalone: false,
     })
     class RootCmp {}
 
@@ -751,6 +789,7 @@ describe('bootstrap factory method', () => {
     @Component({
       selector: 'hello-app',
       template: '<div id="button-a" (click)="onClick()">{{title}}</div>',
+      standalone: false,
     })
     class CompA {
       title: string = '';
@@ -766,6 +805,7 @@ describe('bootstrap factory method', () => {
     @Component({
       selector: 'hello-app-2',
       template: '<div id="button-b" (click)="onClick()">{{title}}</div>',
+      standalone: false,
     })
     class CompB {
       title: string = '';

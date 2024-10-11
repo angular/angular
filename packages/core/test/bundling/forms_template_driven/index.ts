@@ -37,6 +37,7 @@ import {BrowserModule, platformBrowser} from '@angular/platform-browser';
       </div>
     </form>
   `,
+  standalone: false,
 })
 class TemplateFormsComponent {
   name = {first: 'Nancy', last: 'Drew', subscribed: true};
@@ -56,6 +57,7 @@ class TemplateFormsComponent {
   template: `
     <app-template-forms></app-template-forms>
   `,
+  standalone: false,
 })
 class RootComponent {}
 

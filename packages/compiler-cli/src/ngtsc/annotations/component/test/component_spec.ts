@@ -1056,6 +1056,7 @@ runInEachFileSystem(() => {
               selector: 'main',
               template: '<span>Hi!</span>',
               imports: [SomeModule],
+              standalone: false,
             }) class TestCmp {}
         `,
             },
@@ -1145,6 +1146,7 @@ runInEachFileSystem(() => {
 
             @Component({
               selector: 'main',
+              standalone: false,
               template: '<span>Hi!</span>',
               schemas: [CUSTOM_ELEMENTS_SCHEMA],
             }) class TestCmp {}

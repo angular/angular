@@ -24,6 +24,7 @@ import {Component, Input} from '@angular/core';
       {{notTheInput}}
     }
   `,
+  standalone: false,
 })
 export class MyComp {
   @Input() first = true;

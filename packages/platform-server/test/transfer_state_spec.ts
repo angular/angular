@@ -17,7 +17,11 @@ describe('transfer_state', () => {
   it('adds transfer script tag when using renderModule', async () => {
     const STATE_KEY = makeStateKey<number>('test');
 
-    @Component({selector: 'app', template: 'Works!'})
+    @Component({
+      selector: 'app',
+      template: 'Works!',
+      standalone: false,
+    })
     class TransferComponent {
       constructor(private transferStore: TransferState) {
         this.transferStore.set(STATE_KEY, 10);
@@ -38,7 +42,11 @@ describe('transfer_state', () => {
   it('cannot break out of <script> tag in serialized output', async () => {
     const STATE_KEY = makeStateKey<string>('testString');
 
-    @Component({selector: 'esc-app', template: 'Works!'})
+    @Component({
+      selector: 'esc-app',
+      template: 'Works!',
+      standalone: false,
+    })
     class EscapedComponent {
       constructor(private transferStore: TransferState) {
         this.transferStore.set(STATE_KEY, '</script><script>alert(\'Hello&\' + "World");');
@@ -65,7 +73,11 @@ describe('transfer_state', () => {
   it('adds transfer script tag when setting state during onSerialize', async () => {
     const STATE_KEY = makeStateKey<number>('test');
 
-    @Component({selector: 'app', template: 'Works!'})
+    @Component({
+      selector: 'app',
+      template: 'Works!',
+      standalone: false,
+    })
     class TransferComponent {
       constructor(private transferStore: TransferState) {
         this.transferStore.onSerialize(STATE_KEY, () => 10);

@@ -20,7 +20,9 @@ import {controlPath} from './shared';
  *
  * @publicApi
  */
-@Directive()
+@Directive({
+  standalone: false,
+})
 export class AbstractFormGroupDirective extends ControlContainer implements OnInit, OnDestroy {
   /**
    * @description

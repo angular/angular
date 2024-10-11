@@ -9,10 +9,16 @@
 // #docregion HowTo
 import {AfterContentInit, ContentChild, Directive} from '@angular/core';
 
-@Directive({selector: 'child-directive'})
+@Directive({
+  selector: 'child-directive',
+  standalone: false,
+})
 class ChildDirective {}
 
-@Directive({selector: 'someDir'})
+@Directive({
+  selector: 'someDir',
+  standalone: false,
+})
 class SomeDir implements AfterContentInit {
   @ContentChild(ChildDirective) contentChild!: ChildDirective;
 

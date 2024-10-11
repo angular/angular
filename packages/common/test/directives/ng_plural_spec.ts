@@ -180,7 +180,11 @@ class TestLocalization extends NgLocalization {
   }
 }
 
-@Component({selector: 'test-cmp', template: ''})
+@Component({
+  selector: 'test-cmp',
+  template: '',
+  standalone: false,
+})
 class TestComponent {
   switchValue: number | null = null;
 }

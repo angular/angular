@@ -113,7 +113,10 @@ describe('standalone in Router API', () => {
         value = 'my service';
       }
 
-      @Component({template: `{{service.value}}`})
+      @Component({
+        template: `{{service.value}}`,
+        standalone: false,
+      })
       class MyComponent {
         constructor(readonly service: Service) {}
       }
@@ -142,7 +145,10 @@ describe('standalone in Router API', () => {
       @NgModule({providers: [Service]})
       class LazyModule {}
 
-      @Component({template: `{{service.value}}`})
+      @Component({
+        template: `{{service.value}}`,
+        standalone: false,
+      })
       class MyComponent {
         constructor(readonly service: Service) {}
       }
@@ -168,7 +174,10 @@ describe('standalone in Router API', () => {
         value = 'my service';
       }
 
-      @Component({template: `{{service.value}}`})
+      @Component({
+        template: `{{service.value}}`,
+        standalone: false,
+      })
       class MyComponent {
         constructor(readonly service: Service) {}
       }
@@ -215,16 +224,25 @@ describe('standalone in Router API', () => {
         override name = 'service3';
       }
 
-      @Component({template: `parent<router-outlet></router-outlet>`})
+      @Component({
+        template: `parent<router-outlet></router-outlet>`,
+        standalone: false,
+      })
       class ParentCmp {
         constructor(readonly service: ServiceBase) {}
       }
-      @Component({template: `child`})
+      @Component({
+        template: `child`,
+        standalone: false,
+      })
       class ChildCmp {
         constructor(readonly service: ServiceBase) {}
       }
 
-      @Component({template: `child2`})
+      @Component({
+        template: `child2`,
+        standalone: false,
+      })
       class ChildCmp2 {
         constructor(readonly service: ServiceBase) {}
       }

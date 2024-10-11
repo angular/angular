@@ -32,7 +32,10 @@ describe('comment node text escaping', () => {
     it(
       'should not be possible to do XSS through comment reflect data when writing: ' + xssValue,
       () => {
-        @Component({template: `<div><span *ngIf="xssValue"></span><div>`})
+        @Component({
+          template: `<div><span *ngIf="xssValue"></span><div>`,
+          standalone: false,
+        })
         class XSSComp {
           // ngIf serializes the `xssValue` into a comment for debugging purposes.
           xssValue: string = xssValue + '<script>"evil"</script>';

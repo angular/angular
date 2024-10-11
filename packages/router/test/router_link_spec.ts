@@ -17,7 +17,10 @@ describe('RouterLink', () => {
   });
 
   it('does not modify tabindex if already set on non-anchor element', async () => {
-    @Component({template: `<div [routerLink]="link" tabindex="1"></div>`})
+    @Component({
+      template: `<div [routerLink]="link" tabindex="1"></div>`,
+      standalone: false,
+    })
     class LinkComponent {
       link: string | null | undefined = '/';
     }
@@ -44,6 +47,7 @@ describe('RouterLink', () => {
           [skipLocationChange]="skipLocationChange()"
           [replaceUrl]="replaceUrl()"></div>
       `,
+      standalone: false,
     })
     class LinkComponent {
       link = signal<string | null | undefined>('/');
@@ -124,6 +128,7 @@ describe('RouterLink', () => {
             [skipLocationChange]="skipLocationChange()"
             [replaceUrl]="replaceUrl()"></a>
         `,
+        standalone: false,
       })
       class LinkComponent {
         link = signal<string | null | undefined>('/');
@@ -184,7 +189,10 @@ describe('RouterLink', () => {
     });
 
     it('should handle routerLink in svg templates', async () => {
-      @Component({template: `<svg><a routerLink="test"></a></svg>`})
+      @Component({
+        template: `<svg><a routerLink="test"></a></svg>`,
+        standalone: false,
+      })
       class LinkComponent {}
 
       TestBed.configureTestingModule({

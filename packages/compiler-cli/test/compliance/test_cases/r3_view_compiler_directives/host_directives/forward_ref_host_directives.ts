@@ -1,9 +1,10 @@
 import {Component, Directive, forwardRef, Input} from '@angular/core';
 
 @Component({
-  selector: 'my-component',
-  template: '',
-  hostDirectives: [forwardRef(() => DirectiveB)],
+    selector: 'my-component',
+    template: '',
+    hostDirectives: [forwardRef(() => DirectiveB)],
+    standalone: false
 })
 export class MyComponent {
 }

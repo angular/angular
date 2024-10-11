@@ -2,7 +2,9 @@
 
 import {Component, Input} from '@angular/core';
 
-@Component({})
+@Component({
+  standalone: false,
+})
 export class ManualInstantiation {
   @Input() bla: string = '';
 }

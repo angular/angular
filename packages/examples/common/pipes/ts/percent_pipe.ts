@@ -27,6 +27,7 @@ registerLocaleData(localeFr);
     <!--output '0 134,950 %'-->
     <p>B: {{ b | percent: '4.3-5' : 'fr' }}</p>
   </div>`,
+  standalone: false,
 })
 export class PercentPipeComponent {
   a: number = 0.259;

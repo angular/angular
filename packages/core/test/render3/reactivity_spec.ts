@@ -851,6 +851,7 @@ describe('reactivity', () => {
     describe('should disallow creating an effect context', () => {
       it('inside template effect', () => {
         @Component({
+          standalone: false,
           template: '{{someFn()}}',
         })
         class Cmp {
@@ -875,6 +876,7 @@ describe('reactivity', () => {
 
       it('inside an effect', () => {
         @Component({
+          standalone: false,
           template: '',
         })
         class Cmp {

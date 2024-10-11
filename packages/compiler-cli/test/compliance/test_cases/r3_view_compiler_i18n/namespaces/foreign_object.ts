@@ -1,8 +1,8 @@
 import {Component, NgModule} from '@angular/core';
 
 @Component({
-  selector: 'my-component',
-  template: `
+    selector: 'my-component',
+    template: `
   <svg xmlns="http://www.w3.org/2000/svg">
     <foreignObject i18n>
       <xhtml:div xmlns="http://www.w3.org/1999/xhtml">
@@ -11,6 +11,7 @@ import {Component, NgModule} from '@angular/core';
     </foreignObject>
   </svg>
 `,
+    standalone: false
 })
 export class MyComponent {
 }

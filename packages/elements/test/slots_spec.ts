@@ -108,6 +108,7 @@ describe('slots', () => {
   selector: 'default-slot-el',
   template: '<div class="slotparent"><slot></slot></div>',
   encapsulation: ViewEncapsulation.ShadowDom,
+  standalone: false,
 })
 class DefaultSlotComponent {
   constructor() {}
@@ -117,6 +118,7 @@ class DefaultSlotComponent {
   selector: 'named-slot-el',
   template: '<div class="slotparent"><slot name="header"></slot></div>',
   encapsulation: ViewEncapsulation.ShadowDom,
+  standalone: false,
 })
 class NamedSlotComponent {
   constructor() {}
@@ -126,6 +128,7 @@ class NamedSlotComponent {
   selector: 'named-slots-el',
   template: '<div class="slotparent"><slot name="header"></slot><slot name="body"></slot></div>',
   encapsulation: ViewEncapsulation.ShadowDom,
+  standalone: false,
 })
 class NamedSlotsComponent {
   constructor() {}
@@ -135,6 +138,7 @@ class NamedSlotsComponent {
   selector: 'slot-events-el',
   template: '<slot (slotchange)="onSlotChange($event)"></slot>',
   encapsulation: ViewEncapsulation.ShadowDom,
+  standalone: false,
 })
 class SlotEventsComponent {
   @Input() slotEvents: Event[] = [];

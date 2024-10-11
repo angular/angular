@@ -11,7 +11,10 @@ import {TestBed} from '@angular/core/testing';
 
 describe('TemplateRef', () => {
   describe('rootNodes', () => {
-    @Component({template: `<ng-template #templateRef></ng-template>`})
+    @Component({
+      template: `<ng-template #templateRef></ng-template>`,
+      standalone: false,
+    })
     class App {
       @ViewChild('templateRef', {static: true}) templateRef!: TemplateRef<any>;
       minutes = 0;
@@ -53,6 +56,7 @@ describe('TemplateRef', () => {
               </ng-template>
             `,
         exportAs: 'menuContent',
+        standalone: false,
       })
       class MenuContent {
         @ViewChild(TemplateRef, {static: true}) template!: TemplateRef<any>;
@@ -66,6 +70,7 @@ describe('TemplateRef', () => {
                 <ng-template [ngIf]="true"><button>Item three</button></ng-template>
               </menu-content>
             `,
+        standalone: false,
       })
       class App {
         @ViewChild(MenuContent) content!: MenuContent;
@@ -177,12 +182,20 @@ describe('TemplateRef', () => {
     });
 
     describe('projectable nodes provided to a dynamically created component', () => {
-      @Component({selector: 'dynamic', template: ''})
+      @Component({
+        selector: 'dynamic',
+        template: '',
+        standalone: false,
+      })
       class DynamicCmp {
         @ViewChild('templateRef', {static: true}) templateRef!: TemplateRef<any>;
       }
 
-      @Component({selector: 'test', template: ''})
+      @Component({
+        selector: 'test',
+        template: '',
+        standalone: false,
+      })
       class TestCmp {
         constructor(public vcr: ViewContainerRef) {}
       }
@@ -251,6 +264,7 @@ describe('TemplateRef', () => {
       <ng-template #templateRef let-name="name">{{name}}</ng-template>
       <ng-container #containerRef></ng-container>
     `,
+      standalone: false,
     })
     class App {
       @ViewChild('templateRef') templateRef!: TemplateRef<any>;
@@ -300,6 +314,7 @@ describe('TemplateRef', () => {
           </ng-template>
           <ng-container #containerRef></ng-container>
         `,
+        standalone: false,
       })
       class ListenerTest {
         @ViewChild('templateRef') templateRef!: TemplateRef<any>;

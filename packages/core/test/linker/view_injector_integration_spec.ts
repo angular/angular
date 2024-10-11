@@ -37,23 +37,39 @@ import {
 import {ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-@Directive({selector: '[simpleDirective]'})
+@Directive({
+  selector: '[simpleDirective]',
+  standalone: false,
+})
 class SimpleDirective {
   @Input('simpleDirective') value: any = null;
 }
 
-@Component({selector: '[simpleComponent]', template: ''})
+@Component({
+  selector: '[simpleComponent]',
+  template: '',
+  standalone: false,
+})
 class SimpleComponent {}
 
-@Directive({selector: '[someOtherDirective]'})
+@Directive({
+  selector: '[someOtherDirective]',
+  standalone: false,
+})
 class SomeOtherDirective {}
 
-@Directive({selector: '[cycleDirective]'})
+@Directive({
+  selector: '[cycleDirective]',
+  standalone: false,
+})
 class CycleDirective {
   constructor(self: CycleDirective) {}
 }
 
-@Directive({selector: '[needsDirectiveFromSelf]'})
+@Directive({
+  selector: '[needsDirectiveFromSelf]',
+  standalone: false,
+})
 class NeedsDirectiveFromSelf {
   dependency: SimpleDirective;
   constructor(@Self() dependency: SimpleDirective) {
@@ -61,7 +77,10 @@ class NeedsDirectiveFromSelf {
   }
 }
 
-@Directive({selector: '[optionallyNeedsDirective]'})
+@Directive({
+  selector: '[optionallyNeedsDirective]',
+  standalone: false,
+})
 class OptionallyNeedsDirective {
   dependency: SimpleDirective;
   constructor(@Self() @Optional() dependency: SimpleDirective) {
@@ -69,7 +88,10 @@ class OptionallyNeedsDirective {
   }
 }
 
-@Directive({selector: '[needsComponentFromHost]'})
+@Directive({
+  selector: '[needsComponentFromHost]',
+  standalone: false,
+})
 class NeedsComponentFromHost {
   dependency: SimpleComponent;
   constructor(@Host() dependency: SimpleComponent) {
@@ -77,7 +99,10 @@ class NeedsComponentFromHost {
   }
 }
 
-@Directive({selector: '[needsDirectiveFromHost]'})
+@Directive({
+  selector: '[needsDirectiveFromHost]',
+  standalone: false,
+})
 class NeedsDirectiveFromHost {
   dependency: SimpleDirective;
   constructor(@Host() dependency: SimpleDirective) {
@@ -85,7 +110,10 @@ class NeedsDirectiveFromHost {
   }
 }
 
-@Directive({selector: '[needsDirective]'})
+@Directive({
+  selector: '[needsDirective]',
+  standalone: false,
+})
 class NeedsDirective {
   dependency: SimpleDirective;
   constructor(dependency: SimpleDirective) {
@@ -93,7 +121,10 @@ class NeedsDirective {
   }
 }
 
-@Directive({selector: '[needsService]'})
+@Directive({
+  selector: '[needsService]',
+  standalone: false,
+})
 class NeedsService {
   service: any;
   constructor(@Inject('service') service: any) {
@@ -101,7 +132,10 @@ class NeedsService {
   }
 }
 
-@Directive({selector: '[needsAppService]'})
+@Directive({
+  selector: '[needsAppService]',
+  standalone: false,
+})
 class NeedsAppService {
   service: any;
   constructor(@Inject('appService') service: any) {
@@ -109,7 +143,11 @@ class NeedsAppService {
   }
 }
 
-@Component({selector: '[needsHostAppService]', template: ''})
+@Component({
+  selector: '[needsHostAppService]',
+  template: '',
+  standalone: false,
+})
 class NeedsHostAppService {
   service: any;
   constructor(@Host() @Inject('appService') service: any) {
@@ -117,7 +155,11 @@ class NeedsHostAppService {
   }
 }
 
-@Component({selector: '[needsServiceComponent]', template: ''})
+@Component({
+  selector: '[needsServiceComponent]',
+  template: '',
+  standalone: false,
+})
 class NeedsServiceComponent {
   service: any;
   constructor(@Inject('service') service: any) {
@@ -125,7 +167,10 @@ class NeedsServiceComponent {
   }
 }
 
-@Directive({selector: '[needsServiceFromHost]'})
+@Directive({
+  selector: '[needsServiceFromHost]',
+  standalone: false,
+})
 class NeedsServiceFromHost {
   service: any;
   constructor(@Host() @Inject('service') service: any) {
@@ -133,7 +178,10 @@ class NeedsServiceFromHost {
   }
 }
 
-@Directive({selector: '[needsAttribute]'})
+@Directive({
+  selector: '[needsAttribute]',
+  standalone: false,
+})
 class NeedsAttribute {
   typeAttribute: any;
   titleAttribute: any;
@@ -149,32 +197,50 @@ class NeedsAttribute {
   }
 }
 
-@Directive({selector: '[needsAttributeNoType]'})
+@Directive({
+  selector: '[needsAttributeNoType]',
+  standalone: false,
+})
 class NeedsAttributeNoType {
   constructor(@Attribute('foo') public fooAttribute: any) {}
 }
 
-@Directive({selector: '[needsElementRef]'})
+@Directive({
+  selector: '[needsElementRef]',
+  standalone: false,
+})
 class NeedsElementRef {
   constructor(public elementRef: ElementRef) {}
 }
 
-@Directive({selector: '[needsViewContainerRef]'})
+@Directive({
+  selector: '[needsViewContainerRef]',
+  standalone: false,
+})
 class NeedsViewContainerRef {
   constructor(public viewContainer: ViewContainerRef) {}
 }
 
-@Directive({selector: '[needsTemplateRef]'})
+@Directive({
+  selector: '[needsTemplateRef]',
+  standalone: false,
+})
 class NeedsTemplateRef {
   constructor(public templateRef: TemplateRef<Object>) {}
 }
 
-@Directive({selector: '[optionallyNeedsTemplateRef]'})
+@Directive({
+  selector: '[optionallyNeedsTemplateRef]',
+  standalone: false,
+})
 class OptionallyNeedsTemplateRef {
   constructor(@Optional() public templateRef: TemplateRef<Object>) {}
 }
 
-@Directive({selector: '[directiveNeedsChangeDetectorRef]'})
+@Directive({
+  selector: '[directiveNeedsChangeDetectorRef]',
+  standalone: false,
+})
 class DirectiveNeedsChangeDetectorRef {
   constructor(public changeDetectorRef: ChangeDetectorRef) {}
 }
@@ -183,13 +249,18 @@ class DirectiveNeedsChangeDetectorRef {
   selector: '[componentNeedsChangeDetectorRef]',
   template: '{{counter}}',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 class PushComponentNeedsChangeDetectorRef {
   counter: number = 0;
   constructor(public changeDetectorRef: ChangeDetectorRef) {}
 }
 
-@Pipe({name: 'purePipe', pure: true})
+@Pipe({
+  name: 'purePipe',
+  pure: true,
+  standalone: false,
+})
 class PurePipe implements PipeTransform {
   constructor() {}
   transform(value: any): any {
@@ -197,7 +268,11 @@ class PurePipe implements PipeTransform {
   }
 }
 
-@Pipe({name: 'impurePipe', pure: false})
+@Pipe({
+  name: 'impurePipe',
+  pure: false,
+  standalone: false,
+})
 class ImpurePipe implements PipeTransform {
   constructor() {}
   transform(value: any): any {
@@ -205,7 +280,10 @@ class ImpurePipe implements PipeTransform {
   }
 }
 
-@Pipe({name: 'pipeNeedsChangeDetectorRef'})
+@Pipe({
+  name: 'pipeNeedsChangeDetectorRef',
+  standalone: false,
+})
 class PipeNeedsChangeDetectorRef {
   constructor(public changeDetectorRef: ChangeDetectorRef) {}
   transform(value: any): any {
@@ -213,7 +291,10 @@ class PipeNeedsChangeDetectorRef {
   }
 }
 
-@Pipe({name: 'pipeNeedsService'})
+@Pipe({
+  name: 'pipeNeedsService',
+  standalone: false,
+})
 export class PipeNeedsService implements PipeTransform {
   service: any;
   constructor(@Inject('service') service: any) {
@@ -224,21 +305,31 @@ export class PipeNeedsService implements PipeTransform {
   }
 }
 
-@Pipe({name: 'duplicatePipe'})
+@Pipe({
+  name: 'duplicatePipe',
+  standalone: false,
+})
 export class DuplicatePipe1 implements PipeTransform {
   transform(value: any): any {
     return this;
   }
 }
 
-@Pipe({name: 'duplicatePipe'})
+@Pipe({
+  name: 'duplicatePipe',
+  standalone: false,
+})
 export class DuplicatePipe2 implements PipeTransform {
   transform(value: any): any {
     return this;
   }
 }
 
-@Component({selector: 'root', template: ''})
+@Component({
+  selector: 'root',
+  template: '',
+  standalone: false,
+})
 class TestComp {}
 
 function createComponentFixture<T>(
@@ -432,6 +523,7 @@ describe('View injector', () => {
               deps: [Injector],
             },
           ],
+          standalone: false,
         })
         class MyComp {
           // Component is eager, which makes all of its deps eager
@@ -455,6 +547,7 @@ describe('View injector', () => {
             },
             {provide: 'lazy', useFactory: () => 'lazyValue'},
           ],
+          standalone: false,
         })
         class MyComp {
           // Component is eager, which makes all of its deps eager
@@ -480,6 +573,7 @@ describe('View injector', () => {
               deps: [Injector],
             },
           ],
+          standalone: false,
         })
         class MyComp {
           // Component is eager, which makes all of its deps eager
@@ -503,6 +597,7 @@ describe('View injector', () => {
             },
             {provide: 'eager2', useFactory: () => 'v2'},
           ],
+          standalone: false,
         })
         class MyComp {
           // Component is eager, which makes all of its deps eager
@@ -517,7 +612,11 @@ describe('View injector', () => {
     });
 
     it('should allow injecting lazy providers via Injector.get from an eager provider that is declared earlier', () => {
-      @Component({providers: [{provide: 'a', useFactory: () => 'aValue'}], template: ''})
+      @Component({
+        providers: [{provide: 'a', useFactory: () => 'aValue'}],
+        template: '',
+        standalone: false,
+      })
       class SomeComponent {
         public a: string;
         constructor(injector: Injector) {
@@ -544,7 +643,11 @@ describe('View injector', () => {
         }
       }
 
-      @Component({providers: [SomeInjectable], template: ''})
+      @Component({
+        providers: [SomeInjectable],
+        template: '',
+        standalone: false,
+      })
       class SomeComp {}
 
       TestBed.configureTestingModule({declarations: [SomeComp]});
@@ -766,7 +869,10 @@ describe('View injector', () => {
     });
 
     it('should allow to use the NgModule injector from a root ViewContainerRef.parentInjector', () => {
-      @Component({template: ''})
+      @Component({
+        template: '',
+        standalone: false,
+      })
       class MyComp {
         constructor(public vc: ViewContainerRef) {}
       }
@@ -916,7 +1022,10 @@ describe('View injector', () => {
     });
 
     it('should inject ViewContainerRef', () => {
-      @Component({template: ''})
+      @Component({
+        template: '',
+        standalone: false,
+      })
       class TestComp {
         constructor(public vcr: ViewContainerRef) {}
       }
@@ -1010,10 +1119,18 @@ describe('View injector', () => {
   });
 
   describe('view destruction', () => {
-    @Component({selector: 'some-component', template: ''})
+    @Component({
+      selector: 'some-component',
+      template: '',
+      standalone: false,
+    })
     class SomeComponent {}
 
-    @Component({selector: 'listener-and-on-destroy', template: ''})
+    @Component({
+      selector: 'listener-and-on-destroy',
+      template: '',
+      standalone: false,
+    })
     class ComponentThatLoadsAnotherComponentThenMovesIt {
       constructor(private viewContainerRef: ViewContainerRef) {}
 

@@ -9,13 +9,14 @@ export class HostDir {
 }
 
 @Component({
-  selector: 'my-component',
-  template: '',
-  hostDirectives: [{
-    directive: HostDir,
-    inputs: ['value', 'color: colorAlias'],
-    outputs: ['opened', 'closed: closedAlias'],
-  }],
+    selector: 'my-component',
+    template: '',
+    hostDirectives: [{
+            directive: HostDir,
+            inputs: ['value', 'color: colorAlias'],
+            outputs: ['opened', 'closed: closedAlias'],
+        }],
+    standalone: false
 })
 export class MyComponent {
 }

@@ -38,7 +38,11 @@ describe('standalone injector', () => {
       constructor(readonly service: Service) {}
     }
 
-    @Component({selector: 'app', template: `<ng-template #insert></ng-template>`})
+    @Component({
+      selector: 'app',
+      template: `<ng-template #insert></ng-template>`,
+      standalone: false,
+    })
     class AppComponent {
       @ViewChild('insert', {static: true, read: ViewContainerRef}) vcRef!: ViewContainerRef;
 
@@ -85,7 +89,9 @@ describe('standalone injector', () => {
       constructor(readonly service: Service) {}
     }
 
-    @Component({})
+    @Component({
+      standalone: false,
+    })
     class AppComponent {}
 
     const fixture = TestBed.createComponent(AppComponent);

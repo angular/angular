@@ -40,7 +40,10 @@ import {
 } from '../src/utils/config';
 
 describe('RouterPreloader', () => {
-  @Component({template: ''})
+  @Component({
+    template: '',
+    standalone: false,
+  })
   class LazyLoadedCmp {}
 
   describe('should properly handle', () => {

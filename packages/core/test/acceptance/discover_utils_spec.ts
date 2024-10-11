@@ -70,6 +70,7 @@ describe('discovery utils', () => {
     selector: 'child',
     template: '<p></p>',
     providers: [{provide: String, useValue: 'Child'}],
+    standalone: false,
   })
   class Child {
     constructor() {
@@ -77,7 +78,11 @@ describe('discovery utils', () => {
     }
   }
 
-  @Directive({selector: '[dirA]', exportAs: 'dirA'})
+  @Directive({
+    selector: '[dirA]',
+    exportAs: 'dirA',
+    standalone: false,
+  })
   class DirectiveA {
     @Input('a') b = 2;
     @Output('c') d = new EventEmitter();
@@ -97,6 +102,7 @@ describe('discovery utils', () => {
       <ng-container><p></p></ng-container>
       <b *ngIf="visible">Bold</b>
     `,
+    standalone: false,
   })
   class MyApp {
     text: string = 'INIT';
@@ -397,10 +403,18 @@ describe('discovery utils', () => {
 describe('discovery utils deprecated', () => {
   describe('getRootComponents()', () => {
     it('should return a list of the root components of the application from an element', () => {
-      @Component({selector: 'inner-comp', template: '<div></div>'})
+      @Component({
+        selector: 'inner-comp',
+        template: '<div></div>',
+        standalone: false,
+      })
       class InnerComp {}
 
-      @Component({selector: 'comp', template: '<inner-comp></inner-comp>'})
+      @Component({
+        selector: 'comp',
+        template: '<inner-comp></inner-comp>',
+        standalone: false,
+      })
       class Comp {}
 
       TestBed.configureTestingModule({declarations: [Comp, InnerComp]});
@@ -420,13 +434,22 @@ describe('discovery utils deprecated', () => {
 
   describe('getDirectives()', () => {
     it('should return a list of the directives that are on the given element', () => {
-      @Directive({selector: '[my-dir-1]'})
+      @Directive({
+        selector: '[my-dir-1]',
+        standalone: false,
+      })
       class MyDir1 {}
 
-      @Directive({selector: '[my-dir-2]'})
+      @Directive({
+        selector: '[my-dir-2]',
+        standalone: false,
+      })
       class MyDir2 {}
 
-      @Directive({selector: '[my-dir-3]'})
+      @Directive({
+        selector: '[my-dir-3]',
+        standalone: false,
+      })
       class MyDir3 {}
 
       @Component({
@@ -435,6 +458,7 @@ describe('discovery utils deprecated', () => {
           <div my-dir-1 my-dir-2></div>
           <div my-dir-3></div>
         `,
+        standalone: false,
       })
       class Comp {
         @ViewChild(MyDir1) myDir1Instance!: MyDir1;
@@ -472,7 +496,10 @@ describe('discovery utils deprecated', () => {
 
   describe('getInjector', () => {
     it('should return an injector that can return directive instances', () => {
-      @Component({template: ''})
+      @Component({
+        template: '',
+        standalone: false,
+      })
       class Comp {}
 
       TestBed.configureTestingModule({declarations: [Comp]});
@@ -482,7 +509,10 @@ describe('discovery utils deprecated', () => {
     });
 
     it('should return an injector that falls-back to a module injector', () => {
-      @Component({template: ''})
+      @Component({
+        template: '',
+        standalone: false,
+      })
       class Comp {}
 
       class TestToken {}
@@ -500,10 +530,17 @@ describe('discovery utils deprecated', () => {
 
   describe('getLocalRefs', () => {
     it('should return a map of local refs for an element', () => {
-      @Directive({selector: '[myDir]', exportAs: 'myDir'})
+      @Directive({
+        selector: '[myDir]',
+        exportAs: 'myDir',
+        standalone: false,
+      })
       class MyDir {}
 
-      @Component({template: '<div myDir #elRef #dirRef="myDir"></div>'})
+      @Component({
+        template: '<div myDir #elRef #dirRef="myDir"></div>',
+        standalone: false,
+      })
       class Comp {}
 
       TestBed.configureTestingModule({declarations: [Comp, MyDir]});
@@ -518,7 +555,10 @@ describe('discovery utils deprecated', () => {
     });
 
     it('should return a map of local refs for an element with styling context', () => {
-      @Component({template: '<div #elRef class="fooClass" [style.color]="color"></div>'})
+      @Component({
+        template: '<div #elRef class="fooClass" [style.color]="color"></div>',
+        standalone: false,
+      })
       class Comp {
         color = 'red';
       }

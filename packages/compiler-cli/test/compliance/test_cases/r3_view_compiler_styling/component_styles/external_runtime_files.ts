@@ -4,7 +4,8 @@ import {Component, NgModule, ViewEncapsulation} from '@angular/core';
   selector: 'my-component',
   encapsulation: ViewEncapsulation.Emulated,
   styleUrls: ['./style-A.css', './style-B.css'],
-  template: '...'
+  template: '...',
+  standalone: false,
 })
 export class MyComponent {
 }

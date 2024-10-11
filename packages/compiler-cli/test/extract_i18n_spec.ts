@@ -254,6 +254,7 @@ describe('extract_i18n command line', () => {
     @Component({
       selector: 'basic',
       templateUrl: './basic.html',
+      standalone: false,
     })
     export class BasicCmp1 {}`,
     );
@@ -267,11 +268,13 @@ describe('extract_i18n command line', () => {
       selector: 'basic2',
       template: \`<div title="translate me" i18n-title="meaning|desc"></div>
       <p id="welcomeMessage">${welcomeMessage}</p>\`,
+      standalone: false,
     })
     export class BasicCmp2 {}
     @Component({
       selector: 'basic4',
       template: \`<p id="welcomeMessage">${welcomeMessage}</p>\`,
+      standalone: false,
     })
     export class BasicCmp4 {}`,
     );
@@ -284,6 +287,7 @@ describe('extract_i18n command line', () => {
     @Component({
       selector: 'basic3',
       templateUrl: './basic.html',
+      standalone: false,
     })
     export class BasicCmp3 {}`,
     );
@@ -303,6 +307,7 @@ describe('extract_i18n command line', () => {
     @Component({
       selector: 'placeholders',
       templateUrl: './placeholders.html',
+      standalone: false,
     })
     export class PlaceholderCmp { name = 'whatever'; }`,
     );
@@ -325,6 +330,7 @@ describe('extract_i18n command line', () => {
     @Component({
       selector: 'icu',
       templateUrl: './icu.html',
+      standalone: false,
     })
     export class IcuCmp { count = 3; }`,
     );

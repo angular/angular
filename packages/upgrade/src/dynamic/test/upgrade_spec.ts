@@ -50,6 +50,7 @@ withEachNg1Version(() => {
         @Component({
           selector: 'ng2',
           template: `{{ 'NG2' }}(<ng-content></ng-content>)`,
+          standalone: false,
         })
         class Ng2 {}
 
@@ -74,6 +75,7 @@ withEachNg1Version(() => {
           selector: 'ng2',
           template: `{{ 'ng2(' }}<ng1>{{ 'transclude' }}</ng1
             >{{ ')' }}`,
+          standalone: false,
         })
         class Ng2 {}
 
@@ -102,7 +104,11 @@ withEachNg1Version(() => {
         spyOn(platformRef, 'bootstrapModuleFactory').and.callThrough();
 
         const ng1Module = angular.module_('ng1', []);
-        @Component({selector: 'ng2', template: `{{ 'NG2' }}(<ng-content></ng-content>)`})
+        @Component({
+          selector: 'ng2',
+          template: `{{ 'NG2' }}(<ng-content></ng-content>)`,
+          standalone: false,
+        })
         class Ng2 {}
 
         const element = html("<div>{{ 'ng1[' }}<ng2>~{{ 'ng-content' }}~</ng2>{{ ']' }}</div>");
@@ -135,7 +141,11 @@ withEachNg1Version(() => {
         const adapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
         const ng1Module = angular.module_('ng1', []);
 
-        @Component({selector: 'ng2', template: '<span>NG2</span>'})
+        @Component({
+          selector: 'ng2',
+          template: '<span>NG2</span>',
+          standalone: false,
+        })
         class Ng2Component {}
 
         @NgModule({
@@ -198,6 +208,7 @@ withEachNg1Version(() => {
         @Component({
           selector: 'ng2',
           template: `<BAD TEMPLATE div></div>`,
+          standalone: false,
         })
         class ng2Component {}
 
@@ -245,7 +256,11 @@ withEachNg1Version(() => {
 
     describe('change-detection', () => {
       it('should not break if a $digest is already in progress', waitForAsync(() => {
-        @Component({selector: 'my-app', template: ''})
+        @Component({
+          selector: 'my-app',
+          template: '',
+          standalone: false,
+        })
         class AppComponent {}
 
         @NgModule({declarations: [AppComponent], imports: [BrowserModule]})
@@ -300,6 +315,7 @@ withEachNg1Version(() => {
         @Component({
           selector: 'ng2',
           template: `{{ l('2A') }}<ng1a></ng1a>{{ l('2B') }}<ng1b></ng1b>{{ l('2C') }}`,
+          standalone: false,
         })
         class Ng2 {
           l: any;
@@ -333,7 +349,11 @@ withEachNg1Version(() => {
         let appComponent: AppComponent;
         let upgradeRef: UpgradeAdapterRef;
 
-        @Component({selector: 'my-app', template: '<my-child [value]="value"></my-child>'})
+        @Component({
+          selector: 'my-app',
+          template: '<my-child [value]="value"></my-child>',
+          standalone: false,
+        })
         class AppComponent {
           value?: number;
           constructor() {
@@ -344,6 +364,7 @@ withEachNg1Version(() => {
         @Component({
           selector: 'my-child',
           template: '<div>{{valueFromPromise}}',
+          standalone: false,
         })
         class ChildComponent {
           valueFromPromise?: number;
@@ -416,7 +437,11 @@ withEachNg1Version(() => {
 
     describe('downgrade ng2 component', () => {
       it('should allow non-element selectors for downgraded components', waitForAsync(() => {
-        @Component({selector: '[itWorks]', template: 'It works'})
+        @Component({
+          selector: '[itWorks]',
+          template: 'It works',
+          standalone: false,
+        })
         class WorksComponent {}
 
         @NgModule({declarations: [WorksComponent], imports: [BrowserModule]})
@@ -461,6 +486,7 @@ withEachNg1Version(() => {
             'literal: {{literal}}; interpolate: {{interpolate}}; ' +
             'oneWayA: {{oneWayA}}; oneWayB: {{oneWayB}}; ' +
             'twoWayA: {{twoWayA}}; twoWayB: {{twoWayB}}; ({{ngOnChangesCount}})',
+          standalone: false,
         })
         class Ng2 {
           ngOnChangesCount = 0;
@@ -567,7 +593,11 @@ withEachNg1Version(() => {
           $rootScope['listener'] = listenerSpy;
         });
 
-        @Component({selector: 'ng2', template: `model: {{ model }};`})
+        @Component({
+          selector: 'ng2',
+          template: `model: {{ model }};`,
+          standalone: false,
+        })
         class Ng2Component implements OnChanges {
           ngOnChangesCount = 0;
           @Input() model = '?';
@@ -615,6 +645,7 @@ withEachNg1Version(() => {
           selector: 'ng2',
           template: ` ngOnChangesCount: {{ ngOnChangesCount }} | firstChangesCount:
             {{ firstChangesCount }} | initialValue: {{ initialValue }}`,
+          standalone: false,
         })
         class Ng2Component implements OnChanges {
           ngOnChangesCount = 0;
@@ -672,7 +703,11 @@ withEachNg1Version(() => {
         });
 
         let ng2Instance: Ng2;
-        @Component({selector: 'ng2', template: '{{_value}}'})
+        @Component({
+          selector: 'ng2',
+          template: '{{_value}}',
+          standalone: false,
+        })
         class Ng2 {
           private _value: any = '';
           private _onChangeCallback: (_: any) => void = () => {};
@@ -741,7 +776,11 @@ withEachNg1Version(() => {
           template: '<div ng-if="!destroyIt"><ng2></ng2></div>',
         }));
 
-        @Component({selector: 'ng2', template: '<ul><li>test1</li><li>test2</li></ul>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ul><li>test1</li><li>test2</li></ul>',
+          standalone: false,
+        })
         class Ng2 {
           ngOnDestroy() {
             ng2ComponentDestroyed = true;
@@ -795,12 +834,20 @@ withEachNg1Version(() => {
         const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
         let destroyed = false;
 
-        @Component({selector: 'ng2-outer', template: '<div *ngIf="!destroyIt"><ng1></ng1></div>'})
+        @Component({
+          selector: 'ng2-outer',
+          template: '<div *ngIf="!destroyIt"><ng1></ng1></div>',
+          standalone: false,
+        })
         class Ng2OuterComponent {
           @Input() destroyIt = false;
         }
 
-        @Component({selector: 'ng2-inner', template: 'test'})
+        @Component({
+          selector: 'ng2-inner',
+          template: 'test',
+          standalone: false,
+        })
         class Ng2InnerComponent implements OnDestroy {
           ngOnDestroy() {
             destroyed = true;
@@ -850,7 +897,11 @@ withEachNg1Version(() => {
           },
         ]);
 
-        @Component({selector: 'ng2', template: 'test'})
+        @Component({
+          selector: 'ng2',
+          template: 'test',
+          standalone: false,
+        })
         class Ng2 {}
 
         @NgModule({
@@ -875,6 +926,7 @@ withEachNg1Version(() => {
           template:
             '2a(<ng-content select=".ng1a"></ng-content>)' +
             '2b(<ng-content select=".ng1b"></ng-content>)',
+          standalone: false,
         })
         class Ng2 {}
 
@@ -896,7 +948,11 @@ withEachNg1Version(() => {
       }));
 
       it('should correctly project structural directives', waitForAsync(() => {
-        @Component({selector: 'ng2', template: 'ng2-{{ itemId }}(<ng-content></ng-content>)'})
+        @Component({
+          selector: 'ng2',
+          template: 'ng2-{{ itemId }}(<ng-content></ng-content>)',
+          standalone: false,
+        })
         class Ng2Component {
           @Input() itemId: string = '';
         }
@@ -932,10 +988,18 @@ withEachNg1Version(() => {
         const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => MyNg2Module));
         const ng1Module = angular.module_('myExample', []);
 
-        @Component({selector: '[works]', template: 'works!'})
+        @Component({
+          selector: '[works]',
+          template: 'works!',
+          standalone: false,
+        })
         class WorksComponent {}
 
-        @Component({selector: 'root-component', template: 'It <div works></div>'})
+        @Component({
+          selector: 'root-component',
+          template: 'It <div works></div>',
+          standalone: false,
+        })
         class RootComponent {}
 
         @NgModule({imports: [BrowserModule], declarations: [RootComponent, WorksComponent]})
@@ -969,6 +1033,7 @@ withEachNg1Version(() => {
             <ng1 inputAttrA="{{ dataA }}" inputB="{{ dataB }}"></ng1>
             | Outside: {{ dataA }}, {{ dataB }}
           `,
+          standalone: false,
         })
         class Ng2Component {
           dataA = 'foo';
@@ -1034,6 +1099,7 @@ withEachNg1Version(() => {
             <ng1 [inputAttrA]="dataA" [inputB]="dataB"></ng1>
             | Outside: {{ dataA.value }}, {{ dataB.value }}
           `,
+          standalone: false,
         })
         class Ng2Component {
           dataA = {value: 'foo'};
@@ -1099,6 +1165,7 @@ withEachNg1Version(() => {
             <ng1 [(inputAttrA)]="dataA" [(inputB)]="dataB"></ng1>
             | Outside: {{ dataA.value }}, {{ dataB.value }}
           `,
+          standalone: false,
         })
         class Ng2Component {
           dataA = {value: 'foo'};
@@ -1163,6 +1230,7 @@ withEachNg1Version(() => {
             <ng1 (outputAttrA)="dataA = $event" (outputB)="dataB = $event"></ng1>
             | Outside: {{ dataA }}, {{ dataB }}
           `,
+          standalone: false,
         })
         class Ng2Component {
           dataA = 'foo';
@@ -1230,6 +1298,7 @@ withEachNg1Version(() => {
             '(event)="event=$event"></ng1>' +
             '<ng1 fullName="{{\'TEST\'}}" dataA="First" dataB="Last" modelC="City"></ng1>' +
             '{{event}}-{{last}}, {{first}}, {{city}}',
+          standalone: false,
         })
         class Ng2 {
           first = 'Victor';
@@ -1276,6 +1345,7 @@ withEachNg1Version(() => {
             '<ng1 dataA="First" modelB="Last"></ng1>' +
             '<ng1></ng1>' +
             '<ng1></ng1>',
+          standalone: false,
         })
         class Ng2 {
           first = 'Victor';
@@ -1321,6 +1391,7 @@ withEachNg1Version(() => {
         @Component({
           selector: 'ng2',
           template: '{{someText}} - Length: {{dataList.length}} | <ng1 [(data)]="dataList"></ng1>',
+          standalone: false,
         })
         class Ng2 {
           dataList = [1, 2, 3];
@@ -1366,6 +1437,7 @@ withEachNg1Version(() => {
         @Component({
           selector: 'ng2',
           template: '{{someText}} - Length: {{dataList.length}} | <ng1 [(data)]="dataList"></ng1>',
+          standalone: false,
         })
         class Ng2 {
           dataList = [1, 2, 3];
@@ -1406,7 +1478,11 @@ withEachNg1Version(() => {
           return {templateUrl: 'url.html'};
         };
         ng1Module.directive('ng1', ng1);
-        @Component({selector: 'ng2', template: '<ng1></ng1>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1></ng1>',
+          standalone: false,
+        })
         class Ng2 {}
 
         @NgModule({
@@ -1441,7 +1517,11 @@ withEachNg1Version(() => {
           };
         };
         ng1Module.directive('ng1', ng1);
-        @Component({selector: 'ng2', template: '<ng1></ng1>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1></ng1>',
+          standalone: false,
+        })
         class Ng2 {}
 
         @NgModule({
@@ -1467,7 +1547,11 @@ withEachNg1Version(() => {
         };
         ng1Module.directive('ng1', ng1);
 
-        @Component({selector: 'ng2', template: '<ng1></ng1>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1></ng1>',
+          standalone: false,
+        })
         class Ng2 {}
 
         @NgModule({
@@ -1497,7 +1581,11 @@ withEachNg1Version(() => {
         };
         ng1Module.directive('ng1', ng1);
 
-        @Component({selector: 'ng2', template: '<ng1></ng1>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1></ng1>',
+          standalone: false,
+        })
         class Ng2 {}
 
         @NgModule({
@@ -1524,7 +1612,11 @@ withEachNg1Version(() => {
         };
         ng1Module.directive('ng1', ng1);
 
-        @Component({selector: 'ng2', template: '<ng1></ng1>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1></ng1>',
+          standalone: false,
+        })
         class Ng2 {}
 
         @NgModule({
@@ -1572,7 +1664,11 @@ withEachNg1Version(() => {
         };
         ng1Module.directive('ng1', ng1);
 
-        @Component({selector: 'ng2', template: '<ng1></ng1>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1></ng1>',
+          standalone: false,
+        })
         class Ng2 {}
 
         @NgModule({
@@ -1604,7 +1700,11 @@ withEachNg1Version(() => {
         };
         ng1Module.directive('ng1', ng1);
 
-        @Component({selector: 'ng2', template: '<ng1 title="WORKS"></ng1>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1 title="WORKS"></ng1>',
+          standalone: false,
+        })
         class Ng2 {}
 
         @NgModule({
@@ -1636,7 +1736,11 @@ withEachNg1Version(() => {
         };
         ng1Module.directive('ng1', ng1);
 
-        @Component({selector: 'ng2', template: '<ng1 title="WORKS"></ng1>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1 title="WORKS"></ng1>',
+          standalone: false,
+        })
         class Ng2 {}
 
         @NgModule({
@@ -1677,7 +1781,11 @@ withEachNg1Version(() => {
         };
         ng1Module.directive('ng1', ng1);
 
-        @Component({selector: 'ng2', template: '<ng1></ng1>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1></ng1>',
+          standalone: false,
+        })
         class Ng2 {}
 
         @NgModule({
@@ -1727,7 +1835,11 @@ withEachNg1Version(() => {
         ng1Module.directive('parent', parent);
         ng1Module.directive('ng1', ng1);
 
-        @Component({selector: 'ng2', template: '<ng1></ng1>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1></ng1>',
+          standalone: false,
+        })
         class Ng2 {}
 
         @NgModule({
@@ -1750,7 +1862,11 @@ withEachNg1Version(() => {
           const $onInitSpyA = jasmine.createSpy('$onInitA');
           const $onInitSpyB = jasmine.createSpy('$onInitB');
 
-          @Component({selector: 'ng2', template: '<ng1-a></ng1-a> | <ng1-b></ng1-b>'})
+          @Component({
+            selector: 'ng2',
+            template: '<ng1-a></ng1-a> | <ng1-b></ng1-b>',
+            standalone: false,
+          })
           class Ng2Component {}
 
           angular
@@ -1800,7 +1916,11 @@ withEachNg1Version(() => {
           const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
           const $onInitSpy = jasmine.createSpy('$onInit');
 
-          @Component({selector: 'ng2', template: '<ng1-a></ng1-a> | <ng1-b></ng1-b>'})
+          @Component({
+            selector: 'ng2',
+            template: '<ng1-a></ng1-a> | <ng1-b></ng1-b>',
+            standalone: false,
+          })
           class Ng2Component {}
 
           angular
@@ -1848,7 +1968,11 @@ withEachNg1Version(() => {
           const $doCheckSpyB = jasmine.createSpy('$doCheckB');
           let changeDetector: ChangeDetectorRef;
 
-          @Component({selector: 'ng2', template: '<ng1-a></ng1-a> | <ng1-b></ng1-b>'})
+          @Component({
+            selector: 'ng2',
+            template: '<ng1-a></ng1-a> | <ng1-b></ng1-b>',
+            standalone: false,
+          })
           class Ng2Component {
             constructor(cd: ChangeDetectorRef) {
               changeDetector = cd;
@@ -1911,7 +2035,11 @@ withEachNg1Version(() => {
           const $doCheckSpyB = jasmine.createSpy('$doCheckB');
           let changeDetector: ChangeDetectorRef;
 
-          @Component({selector: 'ng2', template: '<ng1-a></ng1-a> | <ng1-b></ng1-b>'})
+          @Component({
+            selector: 'ng2',
+            template: '<ng1-a></ng1-a> | <ng1-b></ng1-b>',
+            standalone: false,
+          })
           class Ng2Component {
             constructor(cd: ChangeDetectorRef) {
               changeDetector = cd;
@@ -1968,7 +2096,11 @@ withEachNg1Version(() => {
           const $postLinkSpyA = jasmine.createSpy('$postLinkA');
           const $postLinkSpyB = jasmine.createSpy('$postLinkB');
 
-          @Component({selector: 'ng2', template: '<ng1-a></ng1-a> | <ng1-b></ng1-b>'})
+          @Component({
+            selector: 'ng2',
+            template: '<ng1-a></ng1-a> | <ng1-b></ng1-b>',
+            standalone: false,
+          })
           class Ng2Component {}
 
           angular
@@ -2018,7 +2150,11 @@ withEachNg1Version(() => {
           const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
           const $postLinkSpy = jasmine.createSpy('$postLink');
 
-          @Component({selector: 'ng2', template: '<ng1-a></ng1-a> | <ng1-b></ng1-b>'})
+          @Component({
+            selector: 'ng2',
+            template: '<ng1-a></ng1-a> | <ng1-b></ng1-b>',
+            standalone: false,
+          })
           class Ng2Component {}
 
           angular
@@ -2070,6 +2206,7 @@ withEachNg1Version(() => {
           @Component({
             selector: 'ng2',
             template: '<ng1-a [valA]="val"></ng1-a> | <ng1-b [valB]="val"></ng1-b>',
+            standalone: false,
           })
           class Ng2Component {
             constructor() {
@@ -2165,6 +2302,7 @@ withEachNg1Version(() => {
           @Component({
             selector: 'ng2',
             template: ` <div *ngIf="!ng2Destroy"><ng1-a></ng1-a> | <ng1-b></ng1-b></div> `,
+            standalone: false,
           })
           class Ng2Component {
             ng2Destroy: boolean = false;
@@ -2259,6 +2397,7 @@ withEachNg1Version(() => {
           @Component({
             selector: 'ng2',
             template: ` <div *ngIf="!ng2Destroy"><ng1-a></ng1-a> | <ng1-b></ng1-b></div> `,
+            standalone: false,
           })
           class Ng2Component {
             ng2Destroy: boolean = false;
@@ -2337,7 +2476,11 @@ withEachNg1Version(() => {
           const scopeDestroyListener = jasmine.createSpy('scopeDestroyListener');
           let ng2ComponentInstance: Ng2Component;
 
-          @Component({selector: 'ng2', template: '<div *ngIf="!ng2Destroy"><ng1></ng1></div>'})
+          @Component({
+            selector: 'ng2',
+            template: '<div *ngIf="!ng2Destroy"><ng1></ng1></div>',
+            standalone: false,
+          })
           class Ng2Component {
             ng2Destroy: boolean = false;
             constructor() {
@@ -2385,7 +2528,11 @@ withEachNg1Version(() => {
           const descendantDestroyListener = jasmine.createSpy('descendantDestroyListener');
           let ng2ComponentInstance: Ng2Component;
 
-          @Component({selector: 'ng2', template: '<div *ngIf="!ng2Destroy"><ng1></ng1></div>'})
+          @Component({
+            selector: 'ng2',
+            template: '<div *ngIf="!ng2Destroy"><ng1></ng1></div>',
+            standalone: false,
+          })
           class Ng2Component {
             ng2Destroy: boolean = false;
             constructor() {
@@ -2455,7 +2602,11 @@ withEachNg1Version(() => {
           };
 
           // Define `Ng2Component`
-          @Component({selector: 'ng2A', template: '<ng2B *ngIf="!destroyIt"></ng2B>'})
+          @Component({
+            selector: 'ng2A',
+            template: '<ng2B *ngIf="!destroyIt"></ng2B>',
+            standalone: false,
+          })
           class Ng2ComponentA {
             destroyIt = false;
 
@@ -2464,7 +2615,11 @@ withEachNg1Version(() => {
             }
           }
 
-          @Component({selector: 'ng2B', template: '<ng1></ng1>'})
+          @Component({
+            selector: 'ng2B',
+            template: '<ng1></ng1>',
+            standalone: false,
+          })
           class Ng2ComponentB {}
 
           // Define `ng1Module`
@@ -2523,7 +2678,11 @@ withEachNg1Version(() => {
           };
 
           // Define `Ng2Component`
-          @Component({selector: 'ng2A', template: '<ng2B *ngIf="!destroyIt"></ng2B>'})
+          @Component({
+            selector: 'ng2A',
+            template: '<ng2B *ngIf="!destroyIt"></ng2B>',
+            standalone: false,
+          })
           class Ng2ComponentA {
             destroyIt = false;
 
@@ -2532,7 +2691,11 @@ withEachNg1Version(() => {
             }
           }
 
-          @Component({selector: 'ng2B', template: '<ng1></ng1>'})
+          @Component({
+            selector: 'ng2B',
+            template: '<ng1></ng1>',
+            standalone: false,
+          })
           class Ng2ComponentB {}
 
           // Define `ng1Module`
@@ -2589,7 +2752,11 @@ withEachNg1Version(() => {
           };
 
           // Define `Ng2Component`
-          @Component({selector: 'ng2', template: '<ng1></ng1>'})
+          @Component({
+            selector: 'ng2',
+            template: '<ng1></ng1>',
+            standalone: false,
+          })
           class Ng2Component {}
 
           // Define `ng1Module`
@@ -2626,7 +2793,11 @@ withEachNg1Version(() => {
           const ng1DirectiveB: angular.IDirective = {link: () => log.push('ng1B-post')};
 
           // Define `Ng2Component`
-          @Component({selector: 'ng2', template: '<ng1-a></ng1-a>'})
+          @Component({
+            selector: 'ng2',
+            template: '<ng1-a></ng1-a>',
+            standalone: false,
+          })
           class Ng2Component {}
 
           // Define `ng1Module`
@@ -2665,7 +2836,11 @@ withEachNg1Version(() => {
           const ng1DirectiveB: angular.IDirective = {link: () => log.push('ng1B-post')};
 
           // Define `Ng2Component`
-          @Component({selector: 'ng2', template: '<ng1-a></ng1-a>'})
+          @Component({
+            selector: 'ng2',
+            template: '<ng1-a></ng1-a>',
+            standalone: false,
+          })
           class Ng2Component {}
 
           // Define `ng1Module`
@@ -2704,7 +2879,11 @@ withEachNg1Version(() => {
           const ng1DirectiveB: angular.IDirective = {link: () => log.push('ng1B-post')};
 
           // Define `Ng2Component`
-          @Component({selector: 'ng2', template: '<ng1-a></ng1-a>'})
+          @Component({
+            selector: 'ng2',
+            template: '<ng1-a></ng1-a>',
+            standalone: false,
+          })
           class Ng2Component {}
 
           // Define `ng1Module`
@@ -2746,7 +2925,11 @@ withEachNg1Version(() => {
           };
 
           // Define `Ng2Component`
-          @Component({selector: 'ng2', template: '<ng1></ng1>'})
+          @Component({
+            selector: 'ng2',
+            template: '<ng1></ng1>',
+            standalone: false,
+          })
           class Ng2Component {}
 
           // Define `ng1Module`
@@ -2787,6 +2970,7 @@ withEachNg1Version(() => {
           @Component({
             selector: 'ng2A',
             template: 'ng2A(<ng1>{{ value }} | <ng2B *ngIf="showB"></ng2B></ng1>)',
+            standalone: false,
           })
           class Ng2ComponentA {
             value = 'foo';
@@ -2796,7 +2980,11 @@ withEachNg1Version(() => {
             }
           }
 
-          @Component({selector: 'ng2B', template: 'ng2B({{ value }})'})
+          @Component({
+            selector: 'ng2B',
+            template: 'ng2B({{ value }})',
+            standalone: false,
+          })
           class Ng2ComponentB {
             value = 'bar';
             constructor() {
@@ -2867,6 +3055,7 @@ withEachNg1Version(() => {
 
               <ng1></ng1>
               )`,
+            standalone: false,
           })
           class Ng2Component {
             value = 'from-ng2';
@@ -2928,6 +3117,7 @@ withEachNg1Version(() => {
                 <content-y>{{ y }}2</content-y>
               </ng1>
               )`,
+            standalone: false,
           })
           class Ng2Component {
             x = 'foo';
@@ -3009,6 +3199,7 @@ withEachNg1Version(() => {
                 >{{ y }}</ng1
               >
               )`,
+            standalone: false,
           })
           class Ng2Component {
             x = 'foo';
@@ -3085,6 +3276,7 @@ withEachNg1Version(() => {
                 ><content-y>{{ y }}</content-y></ng1
               >
               )`,
+            standalone: false,
           })
           class Ng2Component {
             x = 'ng2X';
@@ -3141,7 +3333,11 @@ withEachNg1Version(() => {
           };
 
           // Define `Ng2Component`
-          @Component({selector: 'ng2', template: '<ng1></ng1>'})
+          @Component({
+            selector: 'ng2',
+            template: '<ng1></ng1>',
+            standalone: false,
+          })
           class Ng2Component {}
 
           // Define `ng1Module`
@@ -3192,6 +3388,7 @@ withEachNg1Version(() => {
                 <div *ngIf="show">{{ y }}2</div>
               </ng1>
               )`,
+            standalone: false,
           })
           class Ng2Component {
             x = 'foo';
@@ -3248,7 +3445,11 @@ withEachNg1Version(() => {
         };
         ng1Module.component('ng1', ng1);
 
-        @Component({selector: 'ng2', template: '<ng1 [personProfile]="goku"></ng1>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1 [personProfile]="goku"></ng1>',
+          standalone: false,
+        })
         class Ng2 {
           goku = {firstName: 'GOKU', lastName: 'SAN'};
         }
@@ -3277,11 +3478,19 @@ withEachNg1Version(() => {
         };
         ng1Module.component('ng1', ng1);
 
-        @Component({selector: 'ng2a', template: 'ng2a(<ng1></ng1>)'})
+        @Component({
+          selector: 'ng2a',
+          template: 'ng2a(<ng1></ng1>)',
+          standalone: false,
+        })
         class Ng2a {}
         ng1Module.directive('ng2a', adapter.downgradeNg2Component(Ng2a));
 
-        @Component({selector: 'ng2b', template: 'ng2b'})
+        @Component({
+          selector: 'ng2b',
+          template: 'ng2b',
+          standalone: false,
+        })
         class Ng2b {}
         ng1Module.directive('ng2b', adapter.downgradeNg2Component(Ng2b));
 
@@ -3338,9 +3547,17 @@ withEachNg1Version(() => {
       it('should respect hierarchical dependency injection for ng2', waitForAsync(() => {
         const ng1Module = angular.module_('ng1', []);
 
-        @Component({selector: 'ng2-parent', template: `ng2-parent(<ng-content></ng-content>)`})
+        @Component({
+          selector: 'ng2-parent',
+          template: `ng2-parent(<ng-content></ng-content>)`,
+          standalone: false,
+        })
         class Ng2Parent {}
-        @Component({selector: 'ng2-child', template: `ng2-child`})
+        @Component({
+          selector: 'ng2-child',
+          template: `ng2-child`,
+          standalone: false,
+        })
         class Ng2Child {
           constructor(parent: Ng2Parent) {}
         }
@@ -3454,6 +3671,7 @@ withEachNg1Version(() => {
           selector: 'ng2',
           inputs: ['name'],
           template: 'ng2[<ng1 [title]="name">transclude</ng1>](<ng-content></ng-content>)',
+          standalone: false,
         })
         class Ng2 {}
 
@@ -3487,6 +3705,7 @@ withEachNg1Version(() => {
         @Component({
           selector: 'ng2',
           template: 'Hello World',
+          standalone: false,
         })
         class Ng2 {}
 

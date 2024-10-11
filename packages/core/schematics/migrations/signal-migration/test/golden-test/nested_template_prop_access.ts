@@ -12,6 +12,7 @@ interface Config {
       Test
     </span>
   `,
+  standalone: false,
 })
 export class NestedTemplatePropAccess {
   @Input() config: Config = {};

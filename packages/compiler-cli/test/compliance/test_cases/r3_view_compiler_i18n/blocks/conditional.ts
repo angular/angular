@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 
 @Component({
-  template: `
+    template: `
     <div i18n>
       Content:
       @if (count === 0) {
@@ -16,7 +16,8 @@ import {Component} from '@angular/core';
         before<span>seven</span>after
       }
     </div>
-  `
+  `,
+    standalone: false
 })
 export class MyApp {
   count = 0;

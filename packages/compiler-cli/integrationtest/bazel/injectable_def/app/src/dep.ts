@@ -16,6 +16,7 @@ export class NormalService {}
 @Component({
   selector: 'dep-app',
   template: '{{found}}',
+  standalone: false,
 })
 export class AppComponent {
   found: boolean;

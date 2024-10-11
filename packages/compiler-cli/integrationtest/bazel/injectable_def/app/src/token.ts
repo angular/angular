@@ -33,6 +33,7 @@ export const TOKEN = new InjectionToken('test', {
 @Component({
   selector: 'token-app',
   template: '{{data}}',
+  standalone: false,
 })
 export class AppComponent {
   data: string;

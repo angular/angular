@@ -190,7 +190,10 @@ describe('title strategy', () => {
   });
 });
 
-@Component({template: ''})
+@Component({
+  template: '',
+  standalone: false,
+})
 export class BlankCmp {}
 
 @Component({
@@ -198,6 +201,7 @@ export class BlankCmp {}
 <router-outlet></router-outlet>
 <router-outlet name="aux"></router-outlet>
 `,
+  standalone: false,
 })
 export class RootCmp {}
 

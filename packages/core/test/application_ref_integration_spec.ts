@@ -25,6 +25,7 @@ describe('ApplicationRef bootstrap', () => {
   @Component({
     selector: 'hello-world',
     template: '<div>Hello {{ name }}</div>',
+    standalone: false,
   })
   class HelloWorldComponent implements OnInit, DoCheck {
     log: string[] = [];

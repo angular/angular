@@ -9,9 +9,10 @@ export class DirectiveB {
 }
 
 @Component({
-  selector: 'my-component',
-  template: '',
-  hostDirectives: [DirectiveA, DirectiveB],
+    selector: 'my-component',
+    template: '',
+    hostDirectives: [DirectiveA, DirectiveB],
+    standalone: false
 })
 export class MyComponent {
 }

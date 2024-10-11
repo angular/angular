@@ -1,13 +1,17 @@
 import {Component, NgModule, Pipe, PipeTransform} from '@angular/core';
 
 @Component({
-  selector: 'test-cmp',
-  template: '<div>{{200.3 | percent : 2 }}</div>',
+    selector: 'test-cmp',
+    template: '<div>{{200.3 | percent : 2 }}</div>',
+    standalone: false
 })
 export class TestCmp {
 }
 
-@Pipe({name: 'percent'})
+@Pipe({
+    name: 'percent',
+    standalone: false
+})
 export class PercentPipe implements PipeTransform {
   transform() {}
 }

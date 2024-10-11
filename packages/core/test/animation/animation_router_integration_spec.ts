@@ -60,6 +60,7 @@ import {ActivatedRoute, Router, RouterModule, RouterOutlet} from '@angular/route
             <router-outlet #r="outlet"></router-outlet>
           </div>
         `,
+        standalone: false,
       })
       class ContainerCmp {
         constructor(public router: Router) {}
@@ -79,6 +80,7 @@ import {ActivatedRoute, Router, RouterModule, RouterOutlet} from '@angular/route
             transition(':leave', [style({width: '200px'}), animate(1000, style({width: '0px'}))]),
           ]),
         ],
+        standalone: false,
       })
       class Page1Cmp {
         @HostBinding('@page1Animation') public doAnimate = true;
@@ -92,6 +94,7 @@ import {ActivatedRoute, Router, RouterModule, RouterOutlet} from '@angular/route
             transition(':enter', [style({opacity: 0}), animate(1000, style({opacity: 1}))]),
           ]),
         ],
+        standalone: false,
       })
       class Page2Cmp {
         @HostBinding('@page2Animation') public doAnimate = true;
@@ -175,6 +178,7 @@ import {ActivatedRoute, Router, RouterModule, RouterOutlet} from '@angular/route
             <router-outlet #r="outlet"></router-outlet>
           </div>
         `,
+        standalone: false,
       })
       class ContainerCmp {
         constructor(public router: Router) {}
@@ -186,7 +190,12 @@ import {ActivatedRoute, Router, RouterModule, RouterOutlet} from '@angular/route
         }
       }
 
-      @Component({selector: 'page1', template: `page1`, animations: []})
+      @Component({
+        selector: 'page1',
+        template: `page1`,
+        animations: [],
+        standalone: false,
+      })
       class Page1Cmp {}
 
       @Component({
@@ -207,6 +216,7 @@ import {ActivatedRoute, Router, RouterModule, RouterOutlet} from '@angular/route
             transition(':enter', [style({opacity: 0}), animate(1000, style({opacity: 1}))]),
           ]),
         ],
+        standalone: false,
       })
       class Page2Cmp {
         @HostBinding('@page2Animation') public doAnimate = true;
@@ -290,6 +300,7 @@ import {ActivatedRoute, Router, RouterModule, RouterOutlet} from '@angular/route
             <router-outlet #r="outlet"></router-outlet>
           </div>
         `,
+        standalone: false,
       })
       class ContainerCmp {
         constructor(public router: Router) {}
@@ -319,6 +330,7 @@ import {ActivatedRoute, Router, RouterModule, RouterOutlet} from '@angular/route
             transition(':leave', [style({opacity: 1}), animate(1000, style({opacity: 0}))]),
           ]),
         ],
+        standalone: false,
       })
       class Page1Cmp {
         @HostBinding('@page1Animation') public doAnimate = true;
@@ -326,7 +338,12 @@ import {ActivatedRoute, Router, RouterModule, RouterOutlet} from '@angular/route
         public exp = true;
       }
 
-      @Component({selector: 'page2', template: `page2`, animations: []})
+      @Component({
+        selector: 'page2',
+        template: `page2`,
+        animations: [],
+        standalone: false,
+      })
       class Page2Cmp {}
 
       TestBed.configureTestingModule({
@@ -417,6 +434,7 @@ import {ActivatedRoute, Router, RouterModule, RouterOutlet} from '@angular/route
             </section>
           </div>
         `,
+        standalone: false,
       })
       class ContainerCmp {
         loading = false;
@@ -428,10 +446,18 @@ import {ActivatedRoute, Router, RouterModule, RouterOutlet} from '@angular/route
         }
       }
 
-      @Component({selector: 'page1', template: `page1`})
+      @Component({
+        selector: 'page1',
+        template: `page1`,
+        standalone: false,
+      })
       class Page1Cmp {}
 
-      @Component({selector: 'page2', template: `page2`})
+      @Component({
+        selector: 'page2',
+        template: `page2`,
+        standalone: false,
+      })
       class Page2Cmp {}
 
       TestBed.configureTestingModule({
@@ -479,7 +505,11 @@ import {ActivatedRoute, Router, RouterModule, RouterOutlet} from '@angular/route
     }));
 
     it('should allow a recursive set of :leave animations to occur for nested routes', fakeAsync(() => {
-      @Component({selector: 'ani-cmp', template: '<router-outlet name="recur"></router-outlet>'})
+      @Component({
+        selector: 'ani-cmp',
+        template: '<router-outlet name="recur"></router-outlet>',
+        standalone: false,
+      })
       class ContainerCmp {
         constructor(private _router: Router) {}
         log: string[] = [];
@@ -506,6 +536,7 @@ import {ActivatedRoute, Router, RouterModule, RouterOutlet} from '@angular/route
             ]),
           ]),
         ],
+        standalone: false,
       })
       class RecurPageCmp {
         @HostBinding('@pageAnimations') public animatePage = true;

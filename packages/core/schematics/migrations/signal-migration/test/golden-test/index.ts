@@ -13,6 +13,7 @@ interface Audi extends Car {
 @Component({
   selector: 'app-component',
   templateUrl: './template.html',
+  standalone: false,
 })
 export class AppComponent {
   @Input() input: string | null = null;

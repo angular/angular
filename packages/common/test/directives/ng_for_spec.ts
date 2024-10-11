@@ -430,7 +430,11 @@ class Foo {
   }
 }
 
-@Component({selector: 'test-cmp', template: ''})
+@Component({
+  selector: 'test-cmp',
+  template: '',
+  standalone: false,
+})
 class TestComponent {
   value: any;
   items: any[] = [1, 2];
