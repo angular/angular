@@ -32,7 +32,6 @@ export function extractHmrInitializerMeta(
   const meta: R3HmrInitializerMetadata = {
     type: new WrappedNodeExpr(clazz.name),
     className: clazz.name.text,
-    timestamp: Date.now() + '',
     filePath,
   };
 

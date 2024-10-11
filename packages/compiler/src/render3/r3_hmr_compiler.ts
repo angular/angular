@@ -20,19 +20,12 @@ export interface R3HmrInitializerMetadata {
 
   /** File path of the component class. */
   filePath: string;
-
-  /**
-   * Timestamp when the compilation took place.
-   * Necessary to invalidate the browser cache.
-   */
-  timestamp: string;
 }
 
 /** Compiles the HMR initializer expression. */
 export function compileClassHmrInitializer(meta: R3HmrInitializerMetadata): o.Expression {
   const id = encodeURIComponent(`${meta.filePath}@${meta.className}`);
-  const timestamp = encodeURIComponent(meta.timestamp);
-  const url = `/@ng/component?c=${id}&t=${timestamp}`;
+  const urlPartial = `/@ng/component?c=${id}&t=`;
   const moduleName = 'm';
   const dataName = 'd';
 
@@ -44,8 +37,18 @@ export function compileClassHmrInitializer(meta: R3HmrInitializerMetadata): o.Ex
   // (m) => ɵɵreplaceMetadata(...)
   const replaceCallback = o.arrowFn([new o.FnParam(moduleName)], replaceMetadata);
 
-  // import(url).then(() => replaceMetadata(...));
-  const dynamicImport = new o.DynamicImportExpr(url).prop('then').callFn([replaceCallback]);
+  // '<urlPartial>' + encodeURIComponent(d.timestamp)
+  const urlValue = o
+    .literal(urlPartial)
+    .plus(o.variable('encodeURIComponent').callFn([o.variable(dataName).prop('timestamp')]));
+
+  // import(/* @vite-ignore */ url).then(() => replaceMetadata(...));
+  // The vite-ignore special comment is required to avoid Vite from generating a superfluous
+  // warning for each usage within the development code. If Vite provides a method to
+  // programmatically avoid this warning in the future, this added comment can be removed here.
+  const dynamicImport = new o.DynamicImportExpr(urlValue, null, '@vite-ignore')
+    .prop('then')
+    .callFn([replaceCallback]);
 
   // (d) => { if (d.id === <id>) { replaceMetadata(...) } }
   const listenerCallback = o.arrowFn(

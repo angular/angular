@@ -10798,8 +10798,9 @@ runInEachFileSystem((os: string) => {
           /import\.meta\.hot && import\.meta\.hot\.on\("angular:component-update", d => { if \(d\.id == "test\.ts%40Cmp"\) {/,
         );
         expect(jsContents).toMatch(
-          /import\("\/@ng\/component\?c=test\.ts%40Cmp&t=\d+"\).then\(m => i0\.ɵɵreplaceMetadata\(Cmp, m\.default\)\);/,
+          /import\(\s*\/\* @vite-ignore \*\/\s+"\/@ng\/component\?c=test\.ts%40Cmp&t=" \+ encodeURIComponent\(d.timestamp\)/,
         );
+        expect(jsContents).toMatch(/\).then\(m => i0\.ɵɵreplaceMetadata\(Cmp, m\.default\)\);/);
       });
     });
 
