@@ -54,7 +54,10 @@ import {replaceQueryListGetCall} from './fn_get_replacement';
 import {checkForIncompatibleQueryListAccesses} from './incompatible_query_list_fns';
 import {replaceQueryListFirstAndLastReferences} from './fn_first_last_replacement';
 import {MigrationConfig} from './migration_config';
-import {markFieldIncompatibleInMetadata} from './incompatibility';
+import {
+  filterBestEffortIncompatibilities,
+  markFieldIncompatibleInMetadata,
+} from './incompatibility';
 
 export interface CompilationUnitData {
   knownQueryFields: Record<ClassFieldUniqueKey, {fieldName: string; isMulti: boolean}>;
@@ -285,18 +288,9 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
     const filesWithIncompleteMigration = new Map<ts.SourceFile, Set<QueryFunctionName>>();
     const filesWithQueryListOutsideOfDeclarations = new WeakSet<ts.SourceFile>();
 
-    const knownQueries = new KnownQueries(info, globalMetadata);
+    const knownQueries = new KnownQueries(info, this.config, globalMetadata);
     const referenceResult: ReferenceResult<ClassFieldDescriptor> = {references: []};
     const sourceQueries: ExtractedQuery[] = [];
-
-    const isMigratedQuery = (descriptor: ClassFieldDescriptor) =>
-      globalMetadata.knownQueryFields[descriptor.key] !== undefined &&
-      globalMetadata.problematicQueries[descriptor.key] === undefined &&
-      (this.config.shouldMigrateQuery === undefined ||
-        this.config.shouldMigrateQuery(
-          descriptor,
-          projectFile(descriptor.node.getSourceFile(), info),
-        ));
 
     // Detect all queries in this unit.
     const queryWholeProgramVisitor = (node: ts.Node) => {
@@ -388,13 +382,17 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
 
     this.config.reportProgressFn?.(80, 'Migrating queries..');
 
+    if (this.config.bestEffortMode) {
+      filterBestEffortIncompatibilities(knownQueries);
+    }
+
     // Migrate declarations.
     for (const extractedQuery of sourceQueries) {
       const node = extractedQuery.node;
       const sf = node.getSourceFile();
       const descriptor = {key: extractedQuery.id, node: extractedQuery.node};
 
-      if (!isMigratedQuery(descriptor)) {
+      if (knownQueries.isFieldIncompatible(descriptor)) {
         updateFileState(filesWithSourceQueries, sf, extractedQuery.kind);
         updateFileState(filesWithIncompleteMigration, sf, extractedQuery.kind);
         continue;
@@ -416,9 +414,11 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
     const referenceMigrationHost: ReferenceMigrationHost<ClassFieldDescriptor> = {
       printer,
       replacements,
-      shouldMigrateReferencesToField: (field) => isMigratedQuery(field),
+      shouldMigrateReferencesToField: (field) => !knownQueries.isFieldIncompatible(field),
       shouldMigrateReferencesToClass: (clazz) =>
-        !!knownQueries.getQueryFieldsOfClass(clazz)?.some((q) => isMigratedQuery(q)),
+        !!knownQueries
+          .getQueryFieldsOfClass(clazz)
+          ?.some((q) => !knownQueries.isFieldIncompatible(q)),
     };
     migrateTypeScriptReferences(referenceMigrationHost, referenceResult.references, checker, info);
     migrateTemplateReferences(referenceMigrationHost, referenceResult.references);
