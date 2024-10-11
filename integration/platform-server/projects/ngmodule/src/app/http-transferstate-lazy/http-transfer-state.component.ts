@@ -15,6 +15,7 @@ import {Component, OnInit} from '@angular/core';
     <div class="one">{{ responseOne }}</div>
     <div class="two">{{ responseTwo }}</div>
   `,
+  standalone: false,
 })
 export class TransferStateComponent implements OnInit {
   responseOne: string = '';
