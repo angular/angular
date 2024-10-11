@@ -53,6 +53,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -114,6 +115,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -196,6 +198,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -318,6 +321,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       {{message}}
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -362,6 +366,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -411,6 +416,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -469,6 +475,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -544,6 +551,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -661,6 +669,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -715,6 +724,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     }
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -769,6 +779,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     }
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -814,6 +825,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -865,6 +877,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -912,6 +925,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -959,6 +973,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -1016,6 +1031,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -1074,6 +1090,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -1129,6 +1146,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -1198,6 +1216,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -1255,6 +1274,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -1304,6 +1324,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -1339,6 +1360,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `@for (item of items; track item) {
     {{$odd + ''}}
   }`,
+                    standalone: false
                 }]
         }] });
 
@@ -1386,6 +1408,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     }
     <ng-template/>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -1432,6 +1455,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 
     {{$index}} {{$count}} {{$first}} {{$last}}
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -1480,6 +1504,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       @for (item of items; track trackFn($index, item)) {}
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -1531,6 +1556,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       </ng-template>
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -1578,6 +1604,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       @for (item of items; track trackFn($index)) {}
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -1628,6 +1655,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       {{otherItem.name}}
     }
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -1683,6 +1711,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       {{otherItem.name}}
     }
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -1730,6 +1759,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       {{item.name}}
     }
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -2255,6 +2285,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     }
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -2317,6 +2348,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     }
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -2368,6 +2400,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     }
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -2411,6 +2444,7 @@ it('case 1', () => {
         Second
       }
     `,
+                        standalone: false
                     }]
             }] });
 });
@@ -2435,6 +2469,7 @@ it('case 2', () => {
         Second
       }
     `,
+                        standalone: false
                     }]
             }] });
 });

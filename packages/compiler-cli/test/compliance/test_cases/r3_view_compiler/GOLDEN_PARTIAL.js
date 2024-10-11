@@ -12,7 +12,10 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: '<todo [data]="list"></todo>', isInline: true, dependencies: [{ kind: "component", type: i0.forwardRef(() => TodoComponent), selector: "todo", inputs: ["data"] }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
-            args: [{ selector: 'my-app', template: '<todo [data]="list"></todo>' }]
+            args: [{
+                    selector: 'my-app', template: '<todo [data]="list"></todo>',
+                    standalone: false
+                }]
         }] });
 export class TodoComponent {
     constructor() {
@@ -25,7 +28,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'todo',
-                    template: '<ul class="list" [title]="myTitle"><li *ngFor="let item of data">{{data}}</li></ul>'
+                    template: '<ul class="list" [title]="myTitle"><li *ngFor="let item of data">{{data}}</li></ul>',
+                    standalone: false
                 }]
         }], propDecorators: { data: [{
                 type: Input
@@ -83,7 +87,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     {{ 1 + 2 }}
 	{{ (1 % 2) + 3 / 4 * 5 }}
 	{{ +1 }}
-`
+`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {

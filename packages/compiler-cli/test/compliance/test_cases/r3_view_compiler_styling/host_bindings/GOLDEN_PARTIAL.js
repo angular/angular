@@ -18,7 +18,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     selector: 'my-component',
                     template: '',
-                    host: { 'style': 'width:200px; height:500px', 'class': 'foo baz' }
+                    host: { 'style': 'width:200px; height:500px', 'class': 'foo baz' },
+                    standalone: false
                 }]
         }], propDecorators: { myStyle: [{
                 type: HostBinding,
@@ -87,7 +88,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     selector: 'my-component',
                     template: '',
-                    host: { '[style.height.pt]': 'myHeightProp', '[class.bar]': 'myBarClass' }
+                    host: { '[style.height.pt]': 'myHeightProp', '[class.bar]': 'myBarClass' },
+                    standalone: false
                 }]
         }], propDecorators: { myStyle: [{
                 type: HostBinding,
@@ -163,7 +165,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <div [style.height!important]="myHeightExp"
          [class.bar!important]="myBarClassExp"></div>
   `,
-                    host: { '[style!important]': 'myStyleExp', '[class!important]': 'myClassExp' }
+                    host: { '[style!important]': 'myStyleExp', '[class!important]': 'myClassExp' },
+                    standalone: false
                 }]
         }], propDecorators: { myFooClassExp: [{
                 type: HostBinding,
@@ -247,6 +250,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <div class="A{{p1}}B{{p2}}C{{p3}}D{{p4}}E{{p5}}F{{p6}}G{{p7}}H{{p8}}I"></div>
     <div class="A{{p1}}B{{p2}}C{{p3}}D{{p4}}E{{p5}}F{{p6}}G{{p7}}H{{p8}}I{{p9}}J"></div>
   `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -327,6 +331,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <div style="p1:{{p1}};p2:{{p2}};p3:{{p3}};p4:{{p4}};p5:{{p5}};p6:{{p6}};p7:{{p7}};p8:{{p8}};"></div>
     <div style="p1:{{p1}};p2:{{p2}};p3:{{p3}};p4:{{p4}};p5:{{p5}};p6:{{p6}};p7:{{p7}};p8:{{p8}};p9:{{p9}};"></div>
   `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -376,7 +381,10 @@ ClassDirective.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: 
 ClassDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: ClassDirective, selector: "[myClassDir]", host: { properties: { "class": "this.myClassMap" } }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ClassDirective, decorators: [{
             type: Directive,
-            args: [{ selector: '[myClassDir]' }]
+            args: [{
+                    selector: '[myClassDir]',
+                    standalone: false
+                }]
         }], propDecorators: { myClassMap: [{
                 type: HostBinding,
                 args: ['class']
@@ -391,7 +399,10 @@ WidthDirective.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: 
 WidthDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: WidthDirective, selector: "[myWidthDir]", host: { properties: { "style.width": "this.myWidth", "class.foo": "this.myFooClass" } }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: WidthDirective, decorators: [{
             type: Directive,
-            args: [{ selector: '[myWidthDir]' }]
+            args: [{
+                    selector: '[myWidthDir]',
+                    standalone: false
+                }]
         }], propDecorators: { myWidth: [{
                 type: HostBinding,
                 args: ['style.width']
@@ -409,7 +420,10 @@ HeightDirective.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version:
 HeightDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HeightDirective, selector: "[myHeightDir]", host: { properties: { "style.height": "this.myHeight", "class.bar": "this.myBarClass" } }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HeightDirective, decorators: [{
             type: Directive,
-            args: [{ selector: '[myHeightDir]' }]
+            args: [{
+                    selector: '[myHeightDir]',
+                    standalone: false
+                }]
         }], propDecorators: { myHeight: [{
                 type: HostBinding,
                 args: ['style.height']
@@ -426,6 +440,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     selector: 'my-component',
                     template: '<div myWidthDir myHeightDir myClassDir></div>',
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -488,7 +503,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                         '[style.--camelCase]': 'value',
                         '[style.--kebab-case]': 'value',
                         'style': '--camelCase: foo; --kebab-case: foo',
-                    }
+                    },
+                    standalone: false
                 }]
         }] });
 

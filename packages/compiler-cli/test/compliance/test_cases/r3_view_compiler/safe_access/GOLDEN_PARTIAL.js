@@ -31,7 +31,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       You are an Elf: {{ speciesMap?.[keys?.[0] ?? 'key'] }}
       You are an Orc: {{ speciesMap?.['key'] }}
     </span>
-`
+`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -88,7 +89,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
   <span>Safe Keyed: {{ p?.['a']?.['b']?.['c']?.['d'] }}</span>
   <span>Mixed Property: {{ p?.a?.b.c.d?.e?.f?.g.h }}</span>
   <span>Mixed Property and Keyed: {{ p.a['b'].c.d?.['e']?.['f']?.g['h']['i']?.j.k }}</span>
-`
+`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -147,7 +149,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
   <span>Safe and Unsafe Property with Calls: {{ p?.a()?.b().c().d()?.e()?.f?.g.h?.i()?.j()?.k().l }}</span>
   <span>Nested Safe with Calls: {{ f1()?.[f2()?.a]?.b }}</span>
   <span>Deep Nested Safe with Calls: {{ f1()?.[f2()?.f3()?.[f4()?.f5()]]?.f6() }}</span>
-`
+`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -205,7 +208,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <span [title]="person?.getName(false)?.toLowerCase()"></span>
     <span [title]="person?.getName(config.get('title')?.enabled)"></span>
     <span [title]="person?.getName(config.get('title')?.enabled ?? true)"></span>
-`
+`,
+                    standalone: false
                 }]
         }] });
 
@@ -251,7 +255,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       Hello, {{ person.getName?.() }}!
       You are a Balrog: {{ person.getSpecies?.()?.()?.()?.()?.() || 'unknown' }}
     </span>
-`
+`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -311,7 +316,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     {{ val?.[0].foo!.bar }}
     {{ foo(val)?.foo!.bar }}
     {{ $any(val)?.foo!.bar }}
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {

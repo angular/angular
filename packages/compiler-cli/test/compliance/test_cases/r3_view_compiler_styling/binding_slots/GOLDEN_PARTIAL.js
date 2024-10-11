@@ -19,7 +19,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     selector: 'my-component',
                     template: '',
-                    host: { 'style': 'width:200px; height:500px', 'class': 'foo baz', 'title': 'foo title' }
+                    host: { 'style': 'width:200px; height:500px', 'class': 'foo baz', 'title': 'foo title' },
+                    standalone: false
                 }]
         }], propDecorators: { myStyle: [{
                 type: HostBinding,
@@ -87,7 +88,10 @@ WidthDirective.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: 
 WidthDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: WidthDirective, selector: "[myWidthDir]", host: { properties: { "style.width": "this.myWidth", "class.foo": "this.myFooClass", "id": "this.id", "title": "this.title" } }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: WidthDirective, decorators: [{
             type: Directive,
-            args: [{ selector: '[myWidthDir]' }]
+            args: [{
+                    selector: '[myWidthDir]',
+                    standalone: false
+                }]
         }], propDecorators: { myWidth: [{
                 type: HostBinding,
                 args: ['style.width']
@@ -145,7 +149,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         param2: _animParam2
       }
     }`
-                    }
+                    },
+                    standalone: false
                 }]
         }] });
 export class MyAppComp {
@@ -160,7 +165,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-app',
                     template: `
     <div my-dir></div>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {

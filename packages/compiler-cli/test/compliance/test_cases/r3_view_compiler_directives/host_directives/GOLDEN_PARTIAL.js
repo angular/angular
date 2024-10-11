@@ -29,6 +29,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-component',
                     template: '',
                     hostDirectives: [DirectiveA, DirectiveB],
+                    standalone: false
                 }]
         }] });
 
@@ -94,6 +95,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-component',
                     template: '',
                     hostDirectives: [DirectiveC],
+                    standalone: false
                 }]
         }] });
 
@@ -133,6 +135,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-component',
                     template: '',
                     hostDirectives: [forwardRef(() => DirectiveB)],
+                    standalone: false
                 }]
         }] });
 export class DirectiveB {
@@ -214,6 +217,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                             inputs: ['value', 'color: colorAlias'],
                             outputs: ['opened', 'closed: closedAlias'],
                         }],
+                    standalone: false
                 }]
         }] });
 
@@ -278,6 +282,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                             inputs: ['valueAlias', 'colorAlias: customColorAlias'],
                             outputs: ['openedAlias', 'closedAlias: customClosedAlias'],
                         }],
+                    standalone: false
                 }]
         }] });
 

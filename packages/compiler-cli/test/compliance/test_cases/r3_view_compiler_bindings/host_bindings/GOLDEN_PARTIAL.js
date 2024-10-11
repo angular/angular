@@ -12,7 +12,10 @@ HostBindingDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: 
 HostBindingDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingDir, selector: "[hostBindingDir]", host: { properties: { "id": "this.dirId" } }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, decorators: [{
             type: Directive,
-            args: [{ selector: '[hostBindingDir]' }]
+            args: [{
+                    selector: '[hostBindingDir]',
+                    standalone: false
+                }]
         }], propDecorators: { dirId: [{
                 type: HostBinding,
                 args: ['id']
@@ -53,7 +56,10 @@ HostBindingDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: 
 HostBindingDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingDir, selector: "[hostBindingDir]", host: { properties: { "id": "getData()?.id" } }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, decorators: [{
             type: Directive,
-            args: [{ selector: '[hostBindingDir]', host: { '[id]': 'getData()?.id' } }]
+            args: [{
+                    selector: '[hostBindingDir]', host: { '[id]': 'getData()?.id' },
+                    standalone: false
+                }]
         }] });
 export class MyModule {
 }
@@ -164,7 +170,10 @@ HostBindingComp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version:
 HostBindingComp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingComp, selector: "host-binding-comp", host: { properties: { "id": "[\"red\", id]" } }, ngImport: i0, template: '', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingComp, decorators: [{
             type: Component,
-            args: [{ selector: 'host-binding-comp', host: { '[id]': '["red", id]' }, template: '' }]
+            args: [{
+                    selector: 'host-binding-comp', host: { '[id]': '["red", id]' }, template: '',
+                    standalone: false
+                }]
         }] });
 export class MyModule {
 }
@@ -205,7 +214,10 @@ HostAttributeDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version
 HostAttributeDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostAttributeDir, selector: "[hostAttributeDir]", host: { properties: { "attr.required": "required" } }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostAttributeDir, decorators: [{
             type: Directive,
-            args: [{ selector: '[hostAttributeDir]', host: { '[attr.required]': 'required' } }]
+            args: [{
+                    selector: '[hostAttributeDir]', host: { '[attr.required]': 'required' },
+                    standalone: false
+                }]
         }] });
 export class MyModule {
 }
@@ -243,7 +255,10 @@ HostAttributeDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version
 HostAttributeDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostAttributeDir, selector: "[hostAttributeDir]", host: { attributes: { "aria-label": "label" } }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostAttributeDir, decorators: [{
             type: Directive,
-            args: [{ selector: '[hostAttributeDir]', host: { 'aria-label': 'label' } }]
+            args: [{
+                    selector: '[hostAttributeDir]', host: { 'aria-label': 'label' },
+                    standalone: false
+                }]
         }] });
 export class MyModule {
 }
@@ -283,7 +298,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     selector: 'my-host-attribute-component',
                     template: '...',
-                    host: { 'title': 'hello there from component', 'style': 'opacity:1' }
+                    host: { 'title': 'hello there from component', 'style': 'opacity:1' },
+                    standalone: false
                 }]
         }] });
 export class HostAttributeDir {
@@ -300,7 +316,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                         'class': 'one two',
                         '[class.three]': 'true',
                         'title': 'hello there from directive',
-                    }
+                    },
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -346,7 +363,10 @@ MyDirective.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 MyDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyDirective, selector: "[my-dir]", host: { properties: { "title": "myTitle", "tabindex": "1", "id": "myId" } }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyDirective, decorators: [{
             type: Directive,
-            args: [{ selector: '[my-dir]', host: { '[title]': 'myTitle', '[tabindex]': '1', '[id]': 'myId' } }]
+            args: [{
+                    selector: '[my-dir]', host: { '[title]': 'myTitle', '[tabindex]': '1', '[id]': 'myId' },
+                    standalone: false
+                }]
         }] });
 
 /****************************************************************************************************
@@ -375,7 +395,10 @@ MyDirective.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 MyDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyDirective, selector: "[my-dir]", host: { properties: { "tabindex": "1", "title": "this.myTitle", "id": "this.myId" } }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyDirective, decorators: [{
             type: Directive,
-            args: [{ selector: '[my-dir]', host: { '[tabindex]': '1' } }]
+            args: [{
+                    selector: '[my-dir]', host: { '[tabindex]': '1' },
+                    standalone: false
+                }]
         }], propDecorators: { myTitle: [{
                 type: HostBinding,
                 args: ['title']
@@ -408,7 +431,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Directive,
             args: [{
                     selector: '[my-dir]',
-                    host: { '[title]': '"my title"', '[attr.tabindex]': '1', '[id]': '"my-id"' }
+                    host: { '[title]': '"my title"', '[attr.tabindex]': '1', '[id]': '"my-id"' },
+                    standalone: false
                 }]
         }] });
 
@@ -438,7 +462,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Directive,
             args: [{
                     selector: '[my-dir]',
-                    host: { '[@expand]': 'expandedState', '[@fadeOut]': 'true', '[@shrink]': 'isSmall' }
+                    host: { '[@expand]': 'expandedState', '[@fadeOut]': 'true', '[@shrink]': 'isSmall' },
+                    standalone: false
                 }]
         }] });
 
@@ -470,7 +495,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Directive,
             args: [{
                     selector: '[my-dir]',
-                    host: { '[attr.title]': 'myTitle', '[attr.tabindex]': '1', '[attr.id]': 'myId' }
+                    host: { '[attr.title]': 'myTitle', '[attr.tabindex]': '1', '[attr.id]': 'myId' },
+                    standalone: false
                 }]
         }] });
 
@@ -500,7 +526,10 @@ MyDirective.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 MyDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyDirective, selector: "[my-dir]", host: { properties: { "attr.tabindex": "1", "attr.title": "this.myTitle", "attr.id": "this.myId" } }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyDirective, decorators: [{
             type: Directive,
-            args: [{ selector: '[my-dir]', host: { '[attr.tabindex]': '1' } }]
+            args: [{
+                    selector: '[my-dir]', host: { '[attr.tabindex]': '1' },
+                    standalone: false
+                }]
         }], propDecorators: { myTitle: [{
                 type: HostBinding,
                 args: ['attr.title']
@@ -533,7 +562,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Directive,
             args: [{
                     selector: '[my-dir]',
-                    host: { '[attr.title]': '"my title"', '[tabindex]': '1', '[attr.id]': '"my-id"' }
+                    host: { '[attr.title]': '"my title"', '[tabindex]': '1', '[attr.id]': '"my-id"' },
+                    standalone: false
                 }]
         }] });
 
@@ -566,7 +596,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     host: {
                         '(mousedown)': 'mousedown()',
                         '(mouseup)': 'mouseup()',
-                    }
+                    },
+                    standalone: false
                 }]
         }], propDecorators: { click: [{
                 type: HostListener,
@@ -603,7 +634,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: '',
                     host: {
                         '(@animation.done)': 'done()',
-                    }
+                    },
+                    standalone: false
                 }]
         }], propDecorators: { start: [{
                 type: HostListener,
@@ -642,7 +674,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                         '(mousedown)': 'mousedown()',
                         '(@animation.done)': 'done()',
                         '(mouseup)': 'mouseup()',
-                    }
+                    },
+                    standalone: false
                 }]
         }], propDecorators: { start: [{
                 type: HostListener,
@@ -679,7 +712,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     host: {
                         '[style.color]': '$any("red")',
                     },
-                    template: ``
+                    template: ``,
+                    standalone: false
                 }]
         }] });
 
@@ -708,7 +742,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     host: {
                         '[class.a]': 'true',
                         '[class.b]': 'false',
-                    }
+                    },
+                    standalone: false
                 }]
         }], propDecorators: { true: [{
                 type: HostBinding,
@@ -758,7 +793,10 @@ HostBindingDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: 
 HostBindingDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingDir, selector: "[hostBindingDir]", host: { properties: { "class.a": "this['is-a']", "class.b": "this['is-\"b\"']", "class.c": "this['\"is-c\"']" } }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, decorators: [{
             type: Directive,
-            args: [{ selector: '[hostBindingDir]' }]
+            args: [{
+                    selector: '[hostBindingDir]',
+                    standalone: false
+                }]
         }], propDecorators: { 'is-a': [{
                 type: HostBinding,
                 args: ['class.a']
