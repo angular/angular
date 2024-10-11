@@ -344,6 +344,28 @@ export interface Directive {
   standalone?: boolean;
 
   /**
+   * This property, `autoUniqueId`, is an optional boolean that determines
+   * whether the directive should automatically generate a unique identifier
+   * for its instances.
+   *
+   * If set to `true`, the directive will create and assign a unique ID to
+   * each instance upon initialization, ensuring that elements rendered by
+   * the directive can be uniquely identified in the DOM. This is especially
+   * useful in scenarios where multiple instances of the directive are used
+   * within the same component or view, preventing ID conflicts.
+   *
+   * When `autoUniqueId` is `false` (or not provided), it implies that
+   * the user of the directive must manually handle the unique ID assignment,
+   * providing more control but requiring additional setup from the developer.
+   *
+   * Automatically generating unique IDs can enhance the accessibility of
+   * components, as screen readers and other assistive technologies can
+   * refer to elements by their unique identifiers, improving the user
+   * experience for those relying on such tools.
+   */
+  autoUniqueId?: boolean;
+
+  /**
    * // TODO(signals): Remove internal and add public documentation
    *
    * @internal

@@ -42,6 +42,10 @@ import {
   transitiveScopesFor,
 } from './module';
 import {isComponent, verifyStandaloneImport} from './util';
+import {
+  generateUniqueId,
+  generateUniqueIdTemplate,
+} from '@angular/core/src/render3/util/id_generator_utils';
 
 /**
  * Keep track of the compilation depth to avoid reentrancy issues during JIT compilation. This
@@ -217,6 +221,15 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
     // Make the property configurable in dev mode to allow overriding in tests
     configurable: !!ngDevMode,
   });
+
+  const autoUniqueId = metadata.autoUniqueId || false;
+
+  if (autoUniqueId && !!metadata.template) {
+    const prefix = `${type.name}`;
+    const instanceId = generateUniqueId(prefix);
+
+    metadata.template = generateUniqueIdTemplate(metadata.template!, instanceId);
+  }
 }
 
 /**

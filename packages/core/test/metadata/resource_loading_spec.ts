@@ -199,4 +199,29 @@ Did you run and wait for 'resolveComponentResources()'?`.trim(),
       expect(metadata.template).toBe('response for test://content');
     });
   });
+  describe('When compiling a component with autoUniqueId', () => {
+    function fetch(url: string): Promise<Response> {
+      return Promise.resolve({
+        text() {
+          return 'response for ' + url;
+        },
+      } as any as Response);
+    }
+    const MyComponent: ComponentType<any> = class MyComponent {} as any;
+    const metadata: Component = {
+      template: '<div id="my-element"></div>',
+      autoUniqueId: true,
+    };
+
+    beforeEach(() => {
+      compileComponent(MyComponent, metadata);
+    });
+
+    it('should prefix IDs when autoUniqueId is true', async () => {
+      await resolveComponentResources(fetch);
+
+      expect(MyComponent.ɵcmp).toBeDefined();
+      expect(metadata.template).toBe('<div id="MyComponent-0-my-element"></div>');
+    });
+  });
 });
