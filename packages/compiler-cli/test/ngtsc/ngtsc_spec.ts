@@ -394,7 +394,7 @@ runInEachFileSystem((os: string) => {
 
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain(
-        'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, never, never, {}, {}, never, never, false, never>',
+        'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, never, never, {}, {}, never, never, true, never>',
       );
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<TestDir, never>');
     });
@@ -1401,11 +1401,11 @@ runInEachFileSystem((os: string) => {
 
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain(
-        'i0.ɵɵdefineDirective({ type: TestBase, inputs: { input: "input" } });',
+        'i0.ɵɵdefineDirective({ type: TestBase, inputs: { input: "input" }, standalone: true });',
       );
 
       const dtsContents = env.getContents('test.d.ts');
-      const expectedDirectiveDeclaration = `static ɵdir: i0.ɵɵDirectiveDeclaration<TestBase, never, never, { "input": { "alias": "input"; "required": false; }; }, {}, never, never, false, never>;`;
+      const expectedDirectiveDeclaration = `static ɵdir: i0.ɵɵDirectiveDeclaration<TestBase, never, never, { "input": { "alias": "input"; "required": false; }; }, {}, never, never, true, never>;`;
       expect(dtsContents).toContain(expectedDirectiveDeclaration);
     });
 
