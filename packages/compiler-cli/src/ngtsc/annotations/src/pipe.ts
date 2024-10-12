@@ -49,6 +49,7 @@ import {
   unwrapExpression,
   wrapTypeReference,
 } from '../common';
+import {NG_STANDALONE_DEFAULT_VALUE} from '../common/src/standalone-default-value';
 
 export interface PipeHandlerData {
   meta: R3PipeMetadata;
@@ -176,7 +177,7 @@ export class PipeDecoratorHandler
       pure = pureValue;
     }
 
-    let isStandalone = false;
+    let isStandalone = NG_STANDALONE_DEFAULT_VALUE;
     if (pipe.has('standalone')) {
       const expr = pipe.get('standalone')!;
       const resolved = this.evaluator.evaluate(expr);
