@@ -90,6 +90,7 @@ export class I18nMetaVisitor implements html.Visitor {
       this.interpolationConfig,
       this.containerBlocks,
       this.retainEmptyTokens,
+      /* preserveExpressionWhitespace */ this.preserveSignificantWhitespace,
     );
     const message = createI18nMessage(nodes, meaning, description, customId, visitNodeFn);
     this._setMessageId(message, meta);

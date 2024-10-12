@@ -352,7 +352,8 @@ class _Visitor implements html.Visitor {
       // When dropping significant whitespace we need to retain whitespace tokens or
       // else we won't be able to reuse source spans because empty tokens would be
       // removed and cause a mismatch.
-      !this._preserveSignificantWhitespace /* retainEmptyTokens */,
+      /* retainEmptyTokens */ !this._preserveSignificantWhitespace,
+      /* preserveExpressionWhitespace */ this._preserveSignificantWhitespace,
     );
   }
 

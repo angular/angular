@@ -16,6 +16,7 @@ describe('Message', () => {
     DEFAULT_INTERPOLATION_CONFIG,
     DEFAULT_CONTAINER_BLOCKS,
     /* retainEmptyTokens */ false,
+    /* preserveExpressionWhitespace */ true,
   );
   describe('messageText()', () => {
     it('should serialize simple text', () => {
