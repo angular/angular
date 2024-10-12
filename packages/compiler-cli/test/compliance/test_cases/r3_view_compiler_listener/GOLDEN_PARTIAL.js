@@ -444,7 +444,7 @@ export class MyComponent {
     }
 }
 MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Directive });
-MyComponent.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, host: { listeners: { "click": "click($event.target)" } }, ngImport: i0 });
+MyComponent.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: true, host: { listeners: { "click": "click($event.target)" } }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Directive
         }], propDecorators: { click: [{
@@ -459,7 +459,7 @@ import * as i0 from "@angular/core";
 export declare class MyComponent {
     click(target: any): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MyComponent, never, never, {}, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MyComponent, never, never, {}, {}, never, never, true, never>;
 }
 
 /****************************************************************************************************

@@ -159,7 +159,7 @@ import * as i0 from "@angular/core";
 export class AbstractDirective {
 }
 AbstractDirective.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AbstractDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
-AbstractDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: AbstractDirective, ngImport: i0 });
+AbstractDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: AbstractDirective, isStandalone: true, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AbstractDirective, decorators: [{
             type: Directive
         }] });
@@ -170,7 +170,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class AbstractDirective {
     static ɵfac: i0.ɵɵFactoryDeclaration<AbstractDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<AbstractDirective, never, never, {}, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<AbstractDirective, never, never, {}, {}, never, never, true, never>;
 }
 
 /****************************************************************************************************
@@ -456,7 +456,7 @@ var Comp = /** @class */ (function () {
     function Comp() {
     }
     Comp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Comp, deps: [], target: i0.ɵɵFactoryTarget.Component });
-    Comp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Comp, selector: "ng-component", providers: [{ provide: token, useExisting: Comp }], ngImport: i0, template: '', isInline: true });
+    Comp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Comp, isStandalone: true, selector: "ng-component", providers: [{ provide: token, useExisting: Comp }], ngImport: i0, template: '', isInline: true });
     Comp = __decorate([
         Custom()
     ], Comp);
@@ -478,7 +478,7 @@ import * as i0 from "@angular/core";
 export declare function Custom(): (target: any) => void;
 export declare class Comp {
     static ɵfac: i0.ɵɵFactoryDeclaration<Comp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<Comp, "ng-component", never, {}, {}, never, never, false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<Comp, "ng-component", never, {}, {}, never, never, true, never>;
 }
 
 /****************************************************************************************************
@@ -665,7 +665,7 @@ import * as i0 from "@angular/core";
 export class Main {
 }
 Main.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Main, deps: [], target: i0.ɵɵFactoryTarget.Component });
-Main.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Main, selector: "ng-component", ngImport: i0, template: 'Hello Angular!', isInline: true });
+Main.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Main, isStandalone: true, selector: "ng-component", ngImport: i0, template: 'Hello Angular!', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Main, decorators: [{
             type: Component,
             args: [{
@@ -690,7 +690,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class Main {
     static ɵfac: i0.ɵɵFactoryDeclaration<Main, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<Main, "ng-component", never, {}, {}, never, never, false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<Main, "ng-component", never, {}, {}, never, never, true, never>;
 }
 export declare class MainStandalone {
     static ɵfac: i0.ɵɵFactoryDeclaration<MainStandalone, never>;
