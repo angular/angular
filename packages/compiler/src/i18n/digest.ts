@@ -32,15 +32,15 @@ export function computeDigest(message: i18n.Message): string {
 /**
  * Return the message id or compute it using the XLIFF2/XMB/$localize digest.
  */
-export function decimalDigest(message: i18n.Message, preservePlaceholders: boolean): string {
-  return message.id || computeDecimalDigest(message, preservePlaceholders);
+export function decimalDigest(message: i18n.Message): string {
+  return message.id || computeDecimalDigest(message);
 }
 
 /**
  * Compute the message id using the XLIFF2/XMB/$localize digest.
  */
-export function computeDecimalDigest(message: i18n.Message, preservePlaceholders: boolean): string {
-  const visitor = new _SerializerIgnoreExpVisitor(preservePlaceholders);
+export function computeDecimalDigest(message: i18n.Message): string {
+  const visitor = new _SerializerIgnoreIcuExpVisitor();
   const parts = message.nodes.map((a) => a.visit(visitor, null));
   return computeMsgId(parts.join(''), message.meaning);
 }
@@ -100,22 +100,11 @@ export function serializeNodes(nodes: i18n.Node[]): string[] {
 /**
  * Serialize the i18n ast to something xml-like in order to generate an UID.
  *
- * Ignore the expressions so that message IDs stays identical if only the expression changes.
+ * Ignore the ICU expressions so that message IDs stays identical if only the expression changes.
  *
  * @internal
  */
-class _SerializerIgnoreExpVisitor extends _SerializerVisitor {
-  constructor(private readonly preservePlaceholders: boolean) {
-    super();
-  }
-
-  override visitPlaceholder(ph: i18n.Placeholder, context: any): string {
-    // Do not take the expression into account when `preservePlaceholders` is disabled.
-    return this.preservePlaceholders
-      ? super.visitPlaceholder(ph, context)
-      : `<ph name="${ph.name}"/>`;
-  }
-
+class _SerializerIgnoreIcuExpVisitor extends _SerializerVisitor {
   override visitIcu(icu: i18n.Icu): string {
     let strCases = Object.keys(icu.cases).map((k: string) => `${k} {${icu.cases[k].visit(this)}}`);
     // Do not take the expression into account

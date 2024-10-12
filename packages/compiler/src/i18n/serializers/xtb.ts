@@ -57,7 +57,7 @@ export class Xtb extends Serializer {
   }
 
   override digest(message: i18n.Message): string {
-    return digest(message, /* preservePlaceholders */ true);
+    return digest(message);
   }
 
   override createNameMapper(message: i18n.Message): PlaceholderMapper {

@@ -461,7 +461,7 @@ function extractMessages(source: string, preserveWhitespace: boolean): Assertabl
 
   const messages = bundle.getMessages();
 
-  const xmbSerializer = new Xmb(/* preservePlaceholders */ preserveWhitespace);
+  const xmbSerializer = new Xmb();
   return messages.map((message) => ({
     id: xmbSerializer.digest(message),
     text: message.nodes.map((node) => node.visit(debugSerializer)).join(''),
