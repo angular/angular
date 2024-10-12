@@ -1107,6 +1107,9 @@
     "name": "init_api4"
   },
   {
+    "name": "init_api5"
+  },
+  {
     "name": "init_api_flags"
   },
   {
@@ -1957,6 +1960,12 @@
   },
   {
     "name": "init_reportUnhandledError"
+  },
+  {
+    "name": "init_resource"
+  },
+  {
+    "name": "init_resource2"
   },
   {
     "name": "init_resource_loading"
