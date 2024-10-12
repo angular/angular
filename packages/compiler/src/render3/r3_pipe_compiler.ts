@@ -60,6 +60,7 @@ export function compilePipeFromMetadata(metadata: R3PipeMetadata): R3CompiledExp
   // e.g. `pure: true`
   definitionMapValues.push({key: 'pure', value: o.literal(metadata.pure), quoted: false});
 
+  // TODO: standalone as default value (invert the condition)
   if (metadata.isStandalone) {
     definitionMapValues.push({key: 'standalone', value: o.literal(true), quoted: false});
   }
