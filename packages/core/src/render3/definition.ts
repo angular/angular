@@ -636,6 +636,7 @@ export function getPipeDef<T>(type: any): PipeDef<T> | null {
  */
 export function isStandalone(type: Type<unknown>): boolean {
   const def = getComponentDef(type) || getDirectiveDef(type) || getPipeDef(type);
+  // TODO: standalone as default value (invert the condition)
   return def !== null ? def.standalone : false;
 }
 
@@ -664,6 +665,7 @@ function getNgDirectiveDef<T>(directiveDefinition: DirectiveDefinition<T>): Dire
     inputTransforms: null,
     inputConfig: directiveDefinition.inputs || EMPTY_OBJ,
     exportAs: directiveDefinition.exportAs || null,
+    // TODO: standalone as default value (invert the condition)
     standalone: directiveDefinition.standalone === true,
     signals: directiveDefinition.signals === true,
     selectors: directiveDefinition.selectors || EMPTY_ARRAY,

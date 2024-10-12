@@ -54,6 +54,7 @@ export function createDirectiveDefinitionMap(
   // e.g. `type: MyDirective`
   definitionMap.set('type', meta.type.value);
 
+  // TODO: standalone as default value (invert the condition)
   if (meta.isStandalone) {
     definitionMap.set('isStandalone', o.literal(meta.isStandalone));
   }
