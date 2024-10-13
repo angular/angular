@@ -87,6 +87,10 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
     this.recordAst(ast);
     super.visitPrefixNot(ast, null);
   }
+  override visitPrefixTypeof(ast: e.PrefixTypeof) {
+    this.recordAst(ast);
+    super.visitPrefixTypeof(ast, null);
+  }
   override visitPropertyRead(ast: e.PropertyRead) {
     this.recordAst(ast);
     super.visitPropertyRead(ast, null);

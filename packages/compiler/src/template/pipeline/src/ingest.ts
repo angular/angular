@@ -1150,6 +1150,8 @@ function convertAst(
       convertAst(ast.expression, job, baseSourceSpan),
       convertSourceSpan(ast.span, baseSourceSpan),
     );
+  } else if (ast instanceof e.PrefixTypeof) {
+    return o.typeofExpr(convertAst(ast.expression, job, baseSourceSpan));
   } else {
     throw new Error(
       `Unhandled expression type "${ast.constructor.name}" in file "${baseSourceSpan?.start.file.url}"`,

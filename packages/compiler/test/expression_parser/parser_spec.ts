@@ -98,6 +98,10 @@ describe('parser', () => {
       checkAction('null ?? undefined ?? 0');
     });
 
+    it('should parse typeof expression', () => {
+      checkAction(`typeof {} === "object"`);
+    });
+
     it('should parse grouped expressions', () => {
       checkAction('(1 + 2) * 3', '1 + 2 * 3');
     });

@@ -192,6 +192,11 @@ class Unparser implements AstVisitor {
     this._visit(ast.expression);
   }
 
+  visitPrefixTypeof(ast: PrefixNot, context: any) {
+    this._expression += 'typeof ';
+    this._visit(ast.expression);
+  }
+
   visitNonNullAssert(ast: NonNullAssert, context: any) {
     this._visit(ast.expression);
     this._expression += '!';
