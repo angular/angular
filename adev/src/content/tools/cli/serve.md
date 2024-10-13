@@ -74,7 +74,7 @@ For example, to divert all calls for `http://localhost:4200/api` to a server run
 1. To run the development server with this proxy configuration, call `ng serve`.
 
 Edit the proxy configuration file to add configuration options; following are some examples.
-For a description of all options, see [webpack DevServer documentation](https://webpack.js.org/configuration/dev-server/#devserverproxy).
+For a detailed description of all options, refer to the [webpack DevServer documentation](https://webpack.js.org/configuration/dev-server/#devserverproxy) when using `@angular-devkit/build-angular:browser`, or the [Vite DevServer documentation](https://vite.dev/config/server-options#server-proxy) when using `@angular-devkit/build-angular:browser-esbuild` or `@angular-devkit/build-angular:application`.
 
 NOTE: If you edit the proxy configuration file, you must relaunch the `ng serve` process to make your changes effective.
 
