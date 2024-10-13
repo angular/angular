@@ -277,6 +277,30 @@ describe('control flow - if', () => {
     expect(fixture.nativeElement.textContent).toBe('Something');
   });
 
+  it('should support a condition with the a typeof expression', () => {
+    @Component({
+      standalone: true,
+      template: `
+          @if (typeof value === 'string') {
+            {{value.length}}
+          } @else {
+            {{value}}
+          }
+        `,
+    })
+    class TestComponent {
+      value: string | number = 'string';
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent.trim()).toBe('6');
+
+    fixture.componentInstance.value = 42;
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent.trim()).toBe('42');
+  });
+
   describe('content projection', () => {
     it('should project an @if with a single root node into the root node slot', () => {
       @Component({

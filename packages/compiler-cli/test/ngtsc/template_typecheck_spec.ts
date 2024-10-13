@@ -700,6 +700,47 @@ runInEachFileSystem(() => {
       expect(diags[0].messageText).toContain(`Property 'input' does not exist on type 'TestCmp'.`);
     });
 
+    it('should error on non valid typeof expressions', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+
+        @Component({
+          standalone: true,
+          template: \` {{typeof {} === 'foobar'}} \`,
+        })
+        class TestCmp {
+        }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toContain(`This comparison appears to be unintentional`);
+    });
+
+    it('should error on misused logical not in typeof expressions', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+
+        @Component({
+          standalone: true,
+          // should be !(typeof {} === 'object')
+          template: \` {{!typeof {} === 'object'}} \`,
+        })
+        class TestCmp {
+        }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toContain(`This comparison appears to be unintentional`);
+    });
+
     describe('strictInputTypes', () => {
       beforeEach(() => {
         env.write(
