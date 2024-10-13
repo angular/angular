@@ -101,14 +101,12 @@ import { Component, ViewChild, afterNextRender } from '@angular/core';
   selector: 'my-cmp',
   template: `<span #content>{{ ... }}</span>`,
 })
-export class MyComponent {
-  @ViewChild('content') contentRef: ElementRef;
+export class MyComponent implements AfterViewInit {
+  @ViewChild('content') contentRef!: ElementRef;
 
-  constructor() {
-    afterNextRender(() => {
-      // Safe to check `scrollHeight` because this will only run in the browser, not the server.
-      console.log('content height: ' + this.contentRef.nativeElement.scrollHeight);
-    });
+  ngAfterViewInit() {
+    // Safe to check `scrollHeight` because this will only run in the browser, not the server.
+    console.log('content height: ' + this.contentRef.nativeElement.scrollHeight);
   }
 }
 
