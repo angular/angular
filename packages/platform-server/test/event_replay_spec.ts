@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT} from '@angular/common';
 import {
   Component,
   destroyPlatform,
@@ -15,7 +14,6 @@ import {
   PLATFORM_ID,
   Type,
 } from '@angular/core';
-import {TestBed} from '@angular/core/testing';
 import {
   withEventReplay,
   bootstrapApplication,
@@ -34,7 +32,6 @@ import {
   resetTViewsFor,
 } from './dom_utils';
 import {getDocument} from '@angular/core/src/render3/interfaces/document';
-import {serializeDocument} from '../src/domino_adapter';
 
 /**
  * Represents the <script> tag added by the build process to inject

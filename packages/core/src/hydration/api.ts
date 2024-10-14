@@ -29,6 +29,7 @@ import {isPlatformBrowser} from '../render3/util/misc_utils';
 import {TransferState} from '../transfer_state';
 import {performanceMarkFeature} from '../util/performance';
 import {NgZone} from '../zone';
+import {appendDeferBlocksToJSActionMap, withEventReplay} from './event_replay';
 
 import {cleanupDehydratedViews} from './cleanup';
 import {
@@ -37,12 +38,17 @@ import {
   setIsI18nHydrationSupportEnabled,
 } from './i18n';
 import {
+  EVENT_REPLAY_ENABLED_DEFAULT,
+  IS_EVENT_REPLAY_ENABLED,
   IS_HYDRATION_DOM_REUSE_ENABLED,
   IS_I18N_HYDRATION_ENABLED,
+  IS_INCREMENTAL_HYDRATION_ENABLED,
   PRESERVE_HOST_CONTENT,
 } from './tokens';
 import {enableRetrieveHydrationInfoImpl, NGH_DATA_KEY, SSR_CONTENT_INTEGRITY_MARKER} from './utils';
 import {enableFindMatchingDehydratedViewImpl} from './views';
+import {bootstrapIncrementalHydration, enableRetrieveDeferBlockDataImpl} from './incremental';
+import {enableHydrateFromBlockNameImpl} from './blocks';
 
 /**
  * Indicates whether the hydration-related code was added,
@@ -59,6 +65,12 @@ let isHydrationSupportEnabled = false;
  * whether i18n blocks are serialized or hydrated.
  */
 let isI18nHydrationRuntimeSupportEnabled = false;
+
+/**
+ * Indicates whether the incremental hydration code was added,
+ * prevents adding it multiple times.
+ */
+let isIncrementalHydrationRuntimeSupportEnabled = false;
 
 /**
  * Defines a period of time that Angular waits for the `ApplicationRef.isStable` to emit `true`.
@@ -102,6 +114,19 @@ function enableI18nHydrationRuntimeSupport() {
     enableLocateOrCreateI18nNodeImpl();
     enablePrepareI18nBlockForHydrationImpl();
     enableClaimDehydratedIcuCaseImpl();
+  }
+}
+
+/**
+ * Brings the necessary incremental hydration code in tree-shakable manner.
+ * Similar to `enableHydrationRuntimeSupport`, the code is only
+ * present when `enableIncrementalHydrationRuntimeSupport` is invoked.
+ */
+function enableIncrementalHydrationRuntimeSupport() {
+  if (!isIncrementalHydrationRuntimeSupportEnabled) {
+    isIncrementalHydrationRuntimeSupportEnabled = true;
+    enableRetrieveDeferBlockDataImpl();
+    enableHydrateFromBlockNameImpl();
   }
 }
 
@@ -276,6 +301,41 @@ export function withI18nSupport(): Provider[] {
           setIsI18nHydrationSupportEnabled(true);
           performanceMarkFeature('NgI18nHydration');
         }
+      },
+      multi: true,
+    },
+  ];
+}
+
+/**
+ * Returns a set of providers required to setup support for i18n hydration.
+ * Requires hydration to be enabled separately.
+ */
+export function withIncrementalHydration(): Provider[] {
+  return [
+    withEventReplay(),
+    {
+      provide: IS_INCREMENTAL_HYDRATION_ENABLED,
+      useValue: true,
+    },
+    {
+      provide: ENVIRONMENT_INITIALIZER,
+      useValue: () => {
+        enableIncrementalHydrationRuntimeSupport();
+      },
+      multi: true,
+    },
+    {
+      provide: APP_BOOTSTRAP_LISTENER,
+      useFactory: () => {
+        if (isPlatformBrowser()) {
+          const injector = inject(Injector);
+          return () => {
+            bootstrapIncrementalHydration(getDocument(), injector);
+            appendDeferBlocksToJSActionMap(getDocument(), injector);
+          };
+        }
+        return () => {}; // noop for the server code
       },
       multi: true,
     },
