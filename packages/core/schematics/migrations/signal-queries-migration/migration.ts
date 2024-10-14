@@ -543,8 +543,51 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
   }
 
   override async stats(globalMetadata: GlobalUnitData): Promise<MigrationStats> {
-    // TODO: Add statistics.
-    return {counters: {}};
+    let queriesCount = 0;
+    let multiQueries = 0;
+    let incompatibleQueries = 0;
+
+    const fieldIncompatibleCounts: Partial<Record<`incompat-field-${string}`, number>> = {};
+    const classIncompatibleCounts: Partial<Record<`incompat-class-${string}`, number>> = {};
+
+    for (const query of Object.values(globalMetadata.knownQueryFields)) {
+      queriesCount++;
+      if (query.isMulti) {
+        multiQueries++;
+      }
+    }
+
+    for (const [id, info] of Object.entries(globalMetadata.problematicQueries)) {
+      if (globalMetadata.knownQueryFields[id as ClassFieldUniqueKey] === undefined) {
+        continue;
+      }
+
+      incompatibleQueries++;
+
+      if (info.classReason !== null) {
+        const reasonName = ClassIncompatibilityReason[info.classReason];
+        const key = `incompat-class-${reasonName}` as const;
+        classIncompatibleCounts[key] ??= 0;
+        classIncompatibleCounts[key]++;
+      }
+
+      if (info.fieldReason !== null) {
+        const reasonName = FieldIncompatibilityReason[info.fieldReason];
+        const key = `incompat-field-${reasonName}` as const;
+        fieldIncompatibleCounts[key] ??= 0;
+        fieldIncompatibleCounts[key]++;
+      }
+    }
+
+    return {
+      counters: {
+        queriesCount,
+        multiQueries,
+        incompatibleQueries,
+        ...fieldIncompatibleCounts,
+        ...classIncompatibleCounts,
+      },
+    };
   }
 }
 

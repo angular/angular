@@ -1499,6 +1499,46 @@ describe('signal queries migration', () => {
       `);
     });
   });
+
+  it(`should be able to compute statistics`, async () => {
+    const {getStatistics} = await runTsurgeMigration(
+      new SignalQueriesMigration({insertTodosForSkippedFields: true}),
+      [
+        {
+          name: absoluteFrom('/app.component.ts'),
+          isProgramRootFile: true,
+          contents: dedent`
+            import {ViewChild, ViewChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+            @Component({
+              template: '',
+            })
+            class MyComp {
+              @ViewChildren('label')
+              set labels(list: QueryList<ElementRef>) {}
+
+              @ViewChildren('refs') bla!: QueryList<ElementRef>;
+              @ViewChild('refs') blaWrittenTo?: ElementRef;
+
+              click() {
+                this.blaWrittenTo = undefined;
+              }
+            }
+        `,
+        },
+      ],
+    );
+
+    expect(await getStatistics()).toEqual({
+      counters: {
+        queriesCount: 3,
+        multiQueries: 2,
+        incompatibleQueries: 2,
+        'incompat-field-Accessor': 1,
+        'incompat-field-WriteAssignment': 1,
+      },
+    });
+  });
 });
 
 function populateDeclarationTestCaseComponent(declaration: string): string {
