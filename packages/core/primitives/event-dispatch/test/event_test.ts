@@ -71,39 +71,107 @@ describe('event test.ts', () => {
   });
 
   it('add event listener w3 c', () => {
+    const addEventListenerSpy = spyOn(divInternal, 'addEventListener').and.callThrough();
     const eventInfo = jsactionEvent.addEventListener(divInternal, 'click', () => {});
+    expect(addEventListenerSpy).toHaveBeenCalledWith('click', jasmine.any(Function), {
+      capture: false,
+    });
     expect(eventInfo.eventType).toBe('click');
     expect(eventInfo.capture).toBe(false);
   });
 
   it('add event listener focus w3 c', () => {
+    const addEventListenerSpy = spyOn(divInternal, 'addEventListener').and.callThrough();
     const eventInfo = jsactionEvent.addEventListener(divInternal, 'focus', () => {});
+    expect(addEventListenerSpy).toHaveBeenCalledWith('focus', jasmine.any(Function), {
+      capture: true,
+    });
     expect(eventInfo.eventType).toBe('focus');
     expect(eventInfo.capture).toBe(true);
   });
 
   it('add event listener blur w3 c', () => {
+    const addEventListenerSpy = spyOn(divInternal, 'addEventListener').and.callThrough();
     const eventInfo = jsactionEvent.addEventListener(divInternal, 'blur', () => {});
+    expect(addEventListenerSpy).toHaveBeenCalledWith('blur', jasmine.any(Function), {
+      capture: true,
+    });
     expect(eventInfo.eventType).toBe('blur');
     expect(eventInfo.capture).toBe(true);
   });
 
   it('add event listener error w3 c', () => {
+    const addEventListenerSpy = spyOn(divInternal, 'addEventListener').and.callThrough();
     const eventInfo = jsactionEvent.addEventListener(divInternal, 'error', () => {});
+    expect(addEventListenerSpy).toHaveBeenCalledWith('error', jasmine.any(Function), {
+      capture: true,
+    });
     expect(eventInfo.eventType).toBe('error');
     expect(eventInfo.capture).toBe(true);
   });
 
   it('add event listener load w3 c', () => {
+    const addEventListenerSpy = spyOn(divInternal, 'addEventListener').and.callThrough();
     const eventInfo = jsactionEvent.addEventListener(divInternal, 'load', () => {});
+    expect(addEventListenerSpy).toHaveBeenCalledWith('load', jasmine.any(Function), {
+      capture: true,
+    }); 
     expect(eventInfo.eventType).toBe('load');
     expect(eventInfo.capture).toBe(true);
   });
 
   it('add event listener toggle w3 c', () => {
+    const addEventListenerSpy = spyOn(divInternal, 'addEventListener').and.callThrough();
     const eventInfo = jsactionEvent.addEventListener(divInternal, 'toggle', () => {});
+    expect(addEventListenerSpy).toHaveBeenCalledWith('toggle', jasmine.any(Function), {
+      capture: true,
+    }); 
     expect(eventInfo.eventType).toBe('toggle');
     expect(eventInfo.capture).toBe(true);
+  });
+
+  it('add event listener touchstart w3 c', () => {
+    const addEventListenerSpy = spyOn(divInternal, 'addEventListener').and.callThrough();
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'touchstart', () => {});
+    expect(addEventListenerSpy).toHaveBeenCalledWith('touchstart', jasmine.any(Function), {
+      capture: false,
+      passive: false,
+    });
+    expect(eventInfo.eventType).toBe('touchstart');
+    expect(eventInfo.capture).toBe(false);
+  });
+
+  it('add event listener touchmove w3 c', () => {
+    const addEventListenerSpy = spyOn(divInternal, 'addEventListener').and.callThrough();
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'touchmove', () => {});
+    expect(addEventListenerSpy).toHaveBeenCalledWith('touchmove', jasmine.any(Function), {
+      capture: false,
+      passive: false,
+    });
+    expect(eventInfo.eventType).toBe('touchmove');
+    expect(eventInfo.capture).toBe(false);
+  });
+
+  it('add event listener wheel w3 c', () => {
+    const addEventListenerSpy = spyOn(divInternal, 'addEventListener').and.callThrough();
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'wheel', () => {});
+    expect(addEventListenerSpy).toHaveBeenCalledWith('wheel', jasmine.any(Function), {
+      capture: false,
+      passive: false,
+    });
+    expect(eventInfo.eventType).toBe('wheel');
+    expect(eventInfo.capture).toBe(false);
+  });
+
+  it('add event listener mousewheel w3 c', () => {
+    const addEventListenerSpy = spyOn(divInternal, 'addEventListener').and.callThrough();
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'mousewheel', () => {});
+    expect(addEventListenerSpy).toHaveBeenCalledWith('mousewheel', jasmine.any(Function), {
+      capture: false,
+      passive: false,
+    });
+    expect(eventInfo.eventType).toBe('mousewheel');
+    expect(eventInfo.capture).toBe(false);
   });
 
   it('is modified click event mac meta key', () => {

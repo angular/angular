@@ -378,3 +378,23 @@ const EARLY_EVENT_TYPES = BUBBLE_EVENT_TYPES.concat(CAPTURE_EVENT_TYPES);
  * Whether or not an event type is registered in the early contract.
  */
 export const isEarlyEventType = (eventType: string) => EARLY_EVENT_TYPES.indexOf(eventType) >= 0;
+
+/**
+ * Array of event types that are commonly set as passive for performance optimization.
+ * These events are often used with passive event listeners to improve scrolling performance,
+ * especially on mobile devices.
+ */
+export const PASSIVE_EVENT_TYPES = [
+  EventType.TOUCHSTART,
+  EventType.TOUCHMOVE,
+  'wheel',
+  'mousewheel',
+];
+
+/**
+ * Whether or not an event type should be set as passive for performance optimization.
+ * @param eventType
+ * @returns bool
+ */
+export const isPassiveEventType = (eventType: string) =>
+  PASSIVE_EVENT_TYPES.indexOf(eventType) >= 0;

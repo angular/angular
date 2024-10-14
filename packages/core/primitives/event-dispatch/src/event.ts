@@ -7,7 +7,7 @@
  */
 
 import {EventHandlerInfo} from './event_handler';
-import {isCaptureEventType, EventType} from './event_type';
+import {isCaptureEventType, isPassiveEventType, EventType} from './event_type';
 import {KeyCode} from './key_code';
 
 /**
@@ -64,7 +64,17 @@ export function addEventListener(
   if (isCaptureEventType(eventType)) {
     capture = true;
   }
-  element.addEventListener(eventType, handler, capture);
+
+  const options: AddEventListenerOptions = {capture};
+
+  // For passive events, set passive option to `false` to:
+  // 1. Allow preventDefault() to be called.
+  // 2. Prevent browser violation warnings about passive event listeners.
+  if (isPassiveEventType(eventType)) {
+    options.passive = false;
+  }
+
+  element.addEventListener(eventType, handler, options);
 
   return {eventType, handler, capture};
 }
@@ -79,7 +89,9 @@ export function addEventListener(
  */
 export function removeEventListener(element: Element, info: EventHandlerInfo) {
   if (element.removeEventListener) {
-    element.removeEventListener(info.eventType, info.handler as EventListener, info.capture);
+    element.removeEventListener(info.eventType, info.handler as EventListener, {
+      capture: info.capture,
+    });
     // `detachEvent` is an old DOM API.
     // tslint:disable-next-line:no-any
   } else if ((element as any).detachEvent) {
