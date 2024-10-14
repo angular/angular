@@ -75,24 +75,28 @@ export type ɵElement<T, N extends null> =
   // through the distributive conditional type. This is the officially recommended solution:
   // https://www.typescriptlang.org/docs/handbook/2/conditional-types.html#distributive-conditional-types
   //
+  // Note: Because `FormRecord` implementation extends `FormGroup`, it must be checked BEFORE `FormGroup`
+  // in the following clauses (otherwise it may incorrectly be inferred to `FormGroup`).
+  //
+  //
   // Identify FormControl container types.
   [T] extends [FormControl<infer U>]
     ? FormControl<U>
     : // Or FormControl containers that are optional in their parent group.
       [T] extends [FormControl<infer U> | undefined]
       ? FormControl<U>
-      : // FormGroup containers.
-        [T] extends [FormGroup<infer U>]
-        ? FormGroup<U>
-        : // Optional FormGroup containers.
-          [T] extends [FormGroup<infer U> | undefined]
-          ? FormGroup<U>
-          : // FormRecord containers.
-            [T] extends [FormRecord<infer U>]
-            ? FormRecord<U>
-            : // Optional FormRecord containers.
-              [T] extends [FormRecord<infer U> | undefined]
-              ? FormRecord<U>
+      : // FormRecord containers.
+        [T] extends [FormRecord<infer U>]
+        ? FormRecord<U>
+        : // Optional FormRecord containers.
+          [T] extends [FormRecord<infer U> | undefined]
+          ? FormRecord<U>
+          : // FormGroup containers.
+            [T] extends [FormGroup<infer U>]
+            ? FormGroup<U>
+            : // Optional FormGroup containers.
+              [T] extends [FormGroup<infer U> | undefined]
+              ? FormGroup<U>
               : // FormArray containers.
                 [T] extends [FormArray<infer U>]
                 ? FormArray<U>
