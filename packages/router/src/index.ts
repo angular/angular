@@ -145,3 +145,4 @@ export {
 export {VERSION} from './version';
 
 export * from './private_export';
+import './router_devtools';
