@@ -37,6 +37,13 @@ export function getMessageForFieldIncompatibility(
         short: `This ${fieldName.single} is inherited from a superclass, but the parent cannot be migrated.`,
         extra: 'Migrating this field would cause your build to fail.',
       };
+    case FieldIncompatibilityReason.DerivedIsIncompatible:
+      return {
+        short: `This ${fieldName.single} cannot be migrated because the field is overridden by a subclass.`,
+        extra:
+          'The field in the subclass is incompatible for migration, so migrating this field would ' +
+          'break your build.',
+      };
     case FieldIncompatibilityReason.PotentiallyNarrowedInTemplateButNoSupportYet:
       return {
         short:

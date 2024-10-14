@@ -26,7 +26,6 @@ import {
   ClassIncompatibilityReason,
   FieldIncompatibilityReason,
 } from '../signal-migration/src';
-import {checkInheritanceOfKnownFields} from '../signal-migration/src/passes/problematic_patterns/check_inheritance';
 import {checkIncompatiblePatterns} from '../signal-migration/src/passes/problematic_patterns/common_incompatible_patterns';
 import {migrateHostBindings} from '../signal-migration/src/passes/reference_migration/migrate_host_bindings';
 import {migrateTemplateReferences} from '../signal-migration/src/passes/reference_migration/migrate_template_references';
@@ -34,7 +33,10 @@ import {migrateTypeScriptReferences} from '../signal-migration/src/passes/refere
 import {migrateTypeScriptTypeReferences} from '../signal-migration/src/passes/reference_migration/migrate_ts_type_references';
 import {ReferenceMigrationHost} from '../signal-migration/src/passes/reference_migration/reference_migration_host';
 import {createFindAllSourceFileReferencesVisitor} from '../signal-migration/src/passes/reference_resolution';
-import {ClassFieldUniqueKey} from '../signal-migration/src/passes/reference_resolution/known_fields';
+import {
+  ClassFieldUniqueKey,
+  KnownFields,
+} from '../signal-migration/src/passes/reference_resolution/known_fields';
 import {
   isHostBindingReference,
   isTemplateReference,
@@ -59,13 +61,14 @@ import {
   markFieldIncompatibleInMetadata,
 } from './incompatibility';
 import {insertTodoForIncompatibility} from '../signal-migration/src/passes/problematic_patterns/incompatibility_todos';
+import {checkInheritanceOfKnownFields} from '../signal-migration/src/passes/problematic_patterns/check_inheritance';
 
 export interface CompilationUnitData {
   knownQueryFields: Record<ClassFieldUniqueKey, {fieldName: string; isMulti: boolean}>;
 
   // Potential queries problematic. We don't know what fields are queries during
   // analysis, so this is very eagerly tracking all potential problematic "class fields".
-  potentialProblematicQueries: Record<ClassFieldUniqueKey, FieldIncompatibilityReason>;
+  potentialProblematicQueries: GlobalUnitData['problematicQueries'];
 
   // Potential multi queries problematic. We don't know what fields are queries, or which
   // ones are "multi" queries during analysis, so this is very eagerly tracking all
@@ -114,7 +117,7 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
     };
     const groupedAstVisitor = new GroupedTsAstVisitor(sourceFiles);
     const referenceResult: ReferenceResult<ClassFieldDescriptor> = {references: []};
-    const classesWithFilteredQueries = new WeakSet<ts.ClassLikeDeclaration>();
+    const classesWithFilteredQueries = new Set<ts.ClassDeclaration>();
     const filteredQueriesForCompilationUnit = new Map<ClassFieldUniqueKey, {fieldName: string}>();
 
     const findQueryDefinitionsVisitor = (node: ts.Node) => {
@@ -144,21 +147,48 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
         };
 
         if (ts.isAccessor(extractedQuery.node)) {
-          res.potentialProblematicQueries[extractedQuery.id] = FieldIncompatibilityReason.Accessor;
+          markFieldIncompatibleInMetadata(
+            res.potentialProblematicQueries,
+            extractedQuery.id,
+            FieldIncompatibilityReason.Accessor,
+          );
         }
       }
     };
 
+    this.config.reportProgressFn?.(20, 'Scanning for queries..');
     groupedAstVisitor.register(findQueryDefinitionsVisitor);
-    if (this.config.assumeNonBatch) {
-      // In non-batch, we need to find queries before, so we can perform
-      // improved reference resolution.
-      this.config.reportProgressFn?.(20, 'Scanning for queries..');
-      groupedAstVisitor.execute();
-      this.config.reportProgressFn?.(30, 'Scanning for references..');
-    } else {
-      this.config.reportProgressFn?.(20, 'Scanning for queries and references..');
-    }
+    groupedAstVisitor.execute();
+
+    const allFieldsOrKnownQueries: KnownFields<ClassFieldDescriptor> = {
+      // Note: We don't support cross-target migration of `Partial<T>` usages.
+      // This is an acceptable limitation for performance reasons.
+      shouldTrackClassReference: (node) => classesWithFilteredQueries.has(node),
+      attemptRetrieveDescriptorFromSymbol: (s) => {
+        const descriptor = getClassFieldDescriptorForSymbol(s, info);
+
+        // If we are executing in upgraded analysis phase mode, we know all
+        // of the queries since there aren't any other compilation units.
+        // Ignore references to non-query class fields.
+        if (
+          this.config.assumeNonBatch &&
+          descriptor !== null &&
+          !filteredQueriesForCompilationUnit.has(descriptor.key)
+        ) {
+          return null;
+        }
+
+        // TODO: Also consider skipping if we know this cannot be a query.
+        // e.g. missing class decorators or some other checks.
+
+        // In batch mode, we eagerly, rather expensively, track all references.
+        // We don't know yet if something refers to a different query or not, so we
+        // eagerly detect such and later filter those problematic references that
+        // turned out to refer to queries (once we have the global metadata).
+
+        return descriptor;
+      },
+    };
 
     groupedAstVisitor.register(
       createFindAllSourceFileReferencesVisitor(
@@ -168,35 +198,7 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
         info.ngCompiler['resourceManager'],
         evaluator,
         templateTypeChecker,
-        {
-          // Note: We don't support cross-target migration of `Partial<T>` usages.
-          // This is an acceptable limitation for performance reasons.
-          shouldTrackClassReference: (node) => classesWithFilteredQueries.has(node),
-          attemptRetrieveDescriptorFromSymbol: (s) => {
-            const descriptor = getClassFieldDescriptorForSymbol(s, info);
-
-            // If we are executing in upgraded analysis phase mode, we know all
-            // of the queries since there aren't any other compilation units.
-            // Ignore references to non-query class fields.
-            if (
-              this.config.assumeNonBatch &&
-              descriptor !== null &&
-              !filteredQueriesForCompilationUnit.has(descriptor.key)
-            ) {
-              return null;
-            }
-
-            // TODO: Also consider skipping if we know this cannot be a query.
-            // e.g. missing class decorators or some other checks.
-
-            // In batch mode, we eagerly, rather expensively, track all references.
-            // We don't know yet if something refers to a different query or not, so we
-            // eagerly detect such and later filter those problematic references that
-            // turned out to refer to queries (once we have the global metadata).
-
-            return descriptor;
-          },
-        },
+        allFieldsOrKnownQueries,
         // In non-batch mode, we know what inputs exist and can optimize the reference
         // resolution significantly (for e.g. VSCode integration)— as we know what
         // field names may be used to reference potential queries.
@@ -206,24 +208,64 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
         referenceResult,
       ).visitor,
     );
+
+    const inheritanceGraph = new InheritanceGraph(checker).expensivePopulate(info.sourceFiles);
+    checkIncompatiblePatterns(
+      inheritanceGraph,
+      checker,
+      groupedAstVisitor,
+      {
+        ...allFieldsOrKnownQueries,
+        isFieldIncompatible: (f) =>
+          res.potentialProblematicQueries[f.key]?.fieldReason !== null ||
+          res.potentialProblematicQueries[f.key]?.classReason !== null,
+        markClassIncompatible: (clazz, reason) => {
+          for (const field of clazz.members) {
+            const key = getUniqueIDForClassProperty(field, info);
+            if (key !== null) {
+              res.potentialProblematicQueries[key] ??= {classReason: null, fieldReason: null};
+              res.potentialProblematicQueries[key].classReason = reason;
+            }
+          }
+        },
+        markFieldIncompatible: (f, incompatibility) =>
+          markFieldIncompatibleInMetadata(
+            res.potentialProblematicQueries,
+            f.key,
+            incompatibility.reason,
+          ),
+      },
+      () => Array.from(classesWithFilteredQueries),
+    );
+
+    this.config.reportProgressFn?.(60, 'Scanning for references and problematic patterns..');
     groupedAstVisitor.execute();
 
     // Determine incompatible queries based on problematic references
     // we saw in TS code, templates or host bindings.
     for (const ref of referenceResult.references) {
       if (isTsReference(ref) && ref.from.isWrite) {
-        res.potentialProblematicQueries[ref.target.key] =
-          FieldIncompatibilityReason.WriteAssignment;
+        markFieldIncompatibleInMetadata(
+          res.potentialProblematicQueries,
+          ref.target.key,
+          FieldIncompatibilityReason.WriteAssignment,
+        );
       }
       if ((isTemplateReference(ref) || isHostBindingReference(ref)) && ref.from.isWrite) {
-        res.potentialProblematicQueries[ref.target.key] =
-          FieldIncompatibilityReason.WriteAssignment;
+        markFieldIncompatibleInMetadata(
+          res.potentialProblematicQueries,
+          ref.target.key,
+          FieldIncompatibilityReason.WriteAssignment,
+        );
       }
       // TODO: Remove this when we support signal narrowing in templates.
       // https://github.com/angular/angular/pull/55456.
       if (isTemplateReference(ref) && ref.from.isLikelyPartOfNarrowing) {
-        res.potentialProblematicQueries[ref.target.key] =
-          FieldIncompatibilityReason.PotentiallyNarrowedInTemplateButNoSupportYet;
+        markFieldIncompatibleInMetadata(
+          res.potentialProblematicQueries,
+          ref.target.key,
+          FieldIncompatibilityReason.PotentiallyNarrowedInTemplateButNoSupportYet,
+        );
       }
 
       // Check for other incompatible query list accesses.
@@ -248,8 +290,21 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
       for (const [id, value] of Object.entries(unit.knownQueryFields)) {
         merged.knownQueryFields[id as ClassFieldUniqueKey] = value;
       }
-      for (const [id, reason] of Object.entries(unit.potentialProblematicQueries)) {
-        markFieldIncompatibleInMetadata(merged, id as ClassFieldUniqueKey, reason);
+      for (const [id, info] of Object.entries(unit.potentialProblematicQueries)) {
+        if (info.fieldReason !== null) {
+          markFieldIncompatibleInMetadata(
+            merged.problematicQueries,
+            id as ClassFieldUniqueKey,
+            info.fieldReason,
+          );
+        }
+        if (info.classReason !== null) {
+          merged.problematicQueries[id as ClassFieldUniqueKey] ??= {
+            classReason: null,
+            fieldReason: null,
+          };
+          merged.problematicQueries[id as ClassFieldUniqueKey].classReason = info.classReason;
+        }
       }
       if (unit.reusableAnalysisReferences !== null) {
         assert(units.length === 1, 'Expected migration to not run in batch mode');
@@ -261,7 +316,7 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
       for (const id of Object.keys(unit.potentialProblematicReferenceForMultiQueries)) {
         if (merged.knownQueryFields[id as ClassFieldUniqueKey]?.isMulti) {
           markFieldIncompatibleInMetadata(
-            merged,
+            merged.problematicQueries,
             id as ClassFieldUniqueKey,
             FieldIncompatibilityReason.SignalQueries__QueryListProblematicFieldAccessed,
           );
@@ -366,26 +421,24 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
       );
     }
 
-    const inheritanceGraph = new InheritanceGraph(checker).expensivePopulate(info.sourceFiles);
-    checkIncompatiblePatterns(inheritanceGraph, checker, groupedAstVisitor, knownQueries, () =>
-      knownQueries.getAllClassesWithQueries(),
-    );
-
-    this.config.reportProgressFn?.(60, 'Checking for problematic patterns..');
-    groupedAstVisitor.execute();
-
     // Check inheritance.
-    this.config.reportProgressFn?.(70, 'Checking for inheritance patterns..');
+    // NOTE: Inheritance is only checked in the migrate stage as we cannot reliably
+    // check during analyze— where we don't know what fields from foreign `.d.ts`
+    // files refer to queries or not.
+    const inheritanceGraph = new InheritanceGraph(checker).expensivePopulate(info.sourceFiles);
     checkInheritanceOfKnownFields(inheritanceGraph, metaReader, knownQueries, {
       getFieldsForClass: (n) => knownQueries.getQueryFieldsOfClass(n) ?? [],
       isClassWithKnownFields: (clazz) => knownQueries.getQueryFieldsOfClass(clazz) !== undefined,
     });
 
-    this.config.reportProgressFn?.(80, 'Migrating queries..');
+    this.config.reportProgressFn?.(70, 'Checking inheritance..');
+    groupedAstVisitor.execute();
 
     if (this.config.bestEffortMode) {
       filterBestEffortIncompatibilities(knownQueries);
     }
+
+    this.config.reportProgressFn?.(80, 'Migrating queries..');
 
     // Migrate declarations.
     for (const extractedQuery of sourceQueries) {
