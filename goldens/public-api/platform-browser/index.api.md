@@ -153,6 +153,8 @@ export enum HydrationFeatureKind {
     // (undocumented)
     I18nSupport = 2,
     // (undocumented)
+    IncrementalHydration = 4,
+    // (undocumented)
     NoHttpTransferCache = 0
 }
 

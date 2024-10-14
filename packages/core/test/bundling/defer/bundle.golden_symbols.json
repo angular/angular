@@ -117,7 +117,16 @@
     "name": "DEFER_BLOCK_CONFIG"
   },
   {
+    "name": "DEFER_BLOCK_ID"
+  },
+  {
     "name": "DEFER_BLOCK_STATE"
+  },
+  {
+    "name": "DEFER_BLOCK_STATE2"
+  },
+  {
+    "name": "DEHYDRATED_VIEWS"
   },
   {
     "name": "DI_DECORATOR_FLAG"
@@ -136,6 +145,9 @@
   },
   {
     "name": "DeferBlockInternalState"
+  },
+  {
+    "name": "DeferBlockRegistry"
   },
   {
     "name": "DeferBlockState"
@@ -213,6 +225,9 @@
     "name": "GenericBrowserDomAdapter"
   },
   {
+    "name": "HYDRATE_TRIGGER_CLEANUP_FNS"
+  },
+  {
     "name": "INJECTOR"
   },
   {
@@ -226,6 +241,9 @@
   },
   {
     "name": "INTERNAL_BROWSER_PLATFORM_PROVIDERS"
+  },
+  {
+    "name": "IS_INCREMENTAL_HYDRATION_ENABLED"
   },
   {
     "name": "InjectFlags"
@@ -444,6 +462,9 @@
     "name": "SOURCE"
   },
   {
+    "name": "SSR_STATE"
+  },
+  {
     "name": "SVG_NAMESPACE"
   },
   {
@@ -490,6 +511,9 @@
   },
   {
     "name": "TYPE"
+  },
+  {
+    "name": "UNIQUE_SSR_ID"
   },
   {
     "name": "USE_VALUE"
@@ -553,9 +577,6 @@
   },
   {
     "name": "_currentInjector"
-  },
-  {
-    "name": "_findMatchingDehydratedViewImpl"
   },
   {
     "name": "_getInsertInFrontOfRNodeWithI18n"
@@ -879,6 +900,9 @@
     "name": "getBindingsEnabled"
   },
   {
+    "name": "getCleanupFnKeyByType"
+  },
+  {
     "name": "getClosureSafeProperty"
   },
   {
@@ -1165,6 +1189,9 @@
   },
   {
     "name": "init_bindings"
+  },
+  {
+    "name": "init_blocks"
   },
   {
     "name": "init_bootstrap"
@@ -1590,6 +1617,9 @@
     "name": "init_image_performance_warning"
   },
   {
+    "name": "init_incremental"
+  },
+  {
     "name": "init_inert_body"
   },
   {
@@ -1950,6 +1980,9 @@
     "name": "init_reflection_capabilities"
   },
   {
+    "name": "init_registry"
+  },
+  {
     "name": "init_render"
   },
   {
@@ -2254,6 +2287,9 @@
   },
   {
     "name": "isFunction"
+  },
+  {
+    "name": "isIncrementalHydrationEnabled"
   },
   {
     "name": "isInlineTemplate"
