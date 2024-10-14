@@ -49,3 +49,22 @@ export const IS_EVENT_REPLAY_ENABLED = new InjectionToken<boolean>(
 );
 
 export const EVENT_REPLAY_ENABLED_DEFAULT = false;
+
+/**
+ * Internal token that indicates whether incremental hydration support
+ * is enabled.
+ */
+export const IS_INCREMENTAL_HYDRATION_ENABLED = new InjectionToken<boolean>(
+  typeof ngDevMode === 'undefined' || !!ngDevMode ? 'IS_INCREMENTAL_HYDRATION_ENABLED' : '',
+);
+
+/**
+ * A map of DOM elements with `jsaction` attributes grouped by action names.
+ */
+export const BLOCK_ELEMENT_MAP = new InjectionToken<Map<string, Set<Element>>>(
+  ngDevMode ? 'BLOCK_ELEMENT_MAP' : '',
+  {
+    providedIn: 'root',
+    factory: () => new Map<string, Set<Element>>(),
+  },
+);

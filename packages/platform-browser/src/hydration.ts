@@ -35,6 +35,7 @@ export enum HydrationFeatureKind {
   HttpTransferCacheOptions,
   I18nSupport,
   EventReplay,
+  IncrementalHydration,
 }
 
 /**
