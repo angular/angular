@@ -123,11 +123,12 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
     const findQueryDefinitionsVisitor = (node: ts.Node) => {
       const extractedQuery = extractSourceQueryDefinition(node, reflector, evaluator, info);
       if (extractedQuery !== null) {
+        const queryNode = extractedQuery.node;
         const descriptor = {
           key: extractedQuery.id,
-          node: extractedQuery.node,
+          node: queryNode,
         };
-        const containingFile = projectFile(descriptor.node.getSourceFile(), info);
+        const containingFile = projectFile(queryNode.getSourceFile(), info);
 
         // If we have a config filter function, use it here for later
         // perf-boosted reference lookups. Useful in non-batch mode.
@@ -135,7 +136,7 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
           this.config.shouldMigrateQuery === undefined ||
           this.config.shouldMigrateQuery(descriptor, containingFile)
         ) {
-          classesWithFilteredQueries.add(extractedQuery.node.parent);
+          classesWithFilteredQueries.add(queryNode.parent);
           filteredQueriesForCompilationUnit.set(extractedQuery.id, {
             fieldName: extractedQuery.queryInfo.propertyName,
           });
@@ -146,11 +147,28 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
           isMulti: extractedQuery.queryInfo.first === false,
         };
 
-        if (ts.isAccessor(extractedQuery.node)) {
+        if (ts.isAccessor(queryNode)) {
           markFieldIncompatibleInMetadata(
             res.potentialProblematicQueries,
             extractedQuery.id,
             FieldIncompatibilityReason.Accessor,
+          );
+        }
+
+        // Detect queries with union types that are uncommon to be
+        // automatically migrate-able. E.g. `refs: ElementRef|null`,
+        // or `ElementRef|SomeOtherType`.
+        if (
+          queryNode.type !== undefined &&
+          ts.isUnionTypeNode(queryNode.type) &&
+          // Either too large union, or doesn't match `T|undefined`.
+          (queryNode.type.types.length > 2 ||
+            !queryNode.type.types.some((t) => t.kind === ts.SyntaxKind.UndefinedKeyword))
+        ) {
+          markFieldIncompatibleInMetadata(
+            res.potentialProblematicQueries,
+            extractedQuery.id,
+            FieldIncompatibilityReason.SignalQueries__IncompatibleMultiUnionType,
           );
         }
       }

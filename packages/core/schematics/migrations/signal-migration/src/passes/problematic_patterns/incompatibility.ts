@@ -25,10 +25,11 @@ export enum FieldIncompatibilityReason {
   SignalInput__RequiredButNoGoodExplicitTypeExtractable = 8,
   SignalInput__QuestionMarkButNoGoodExplicitTypeExtractable = 9,
   SignalQueries__QueryListProblematicFieldAccessed = 10,
-  WriteAssignment = 11,
-  Accessor = 12,
-  OutsideOfMigrationScope = 13,
-  SkippedViaConfigFilter = 14,
+  SignalQueries__IncompatibleMultiUnionType = 11,
+  WriteAssignment = 12,
+  Accessor = 13,
+  OutsideOfMigrationScope = 14,
+  SkippedViaConfigFilter = 15,
 }
 
 /** Field reasons that cannot be ignored. */

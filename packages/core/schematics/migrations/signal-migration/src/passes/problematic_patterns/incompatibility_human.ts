@@ -75,6 +75,11 @@ export function getMessageForFieldIncompatibility(
         short: `There are references to this query that cannot be migrated automatically.`,
         extra: "For example, it's not possible to migrate `.changes` or `.dirty` trivially.",
       };
+    case FieldIncompatibilityReason.SignalQueries__IncompatibleMultiUnionType:
+      return {
+        short: `Query type is too complex to automatically migrate.`,
+        extra: "The new query API doesn't allow us to migrate safely without breaking your app.",
+      };
     case FieldIncompatibilityReason.SkippedViaConfigFilter:
       return {
         short: `This ${fieldName.single} is not part of the current migration scope.`,
