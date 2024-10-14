@@ -111,7 +111,7 @@ export function hydrate(
   return bootstrapApplication(component, {providers});
 }
 
-export function render(doc: Document, html: string) {
+export function insertDomInDocument(doc: Document, html: string) {
   // Get HTML contents of the `<app>`, create a DOM element and append it into the body.
   const container = convertHtmlToDom(html, doc);
 
@@ -126,6 +126,24 @@ export function render(doc: Document, html: string) {
 }
 
 /**
+ * This prepares the environment before hydration begins.
+ *
+ * @param doc the document object
+ * @param html the server side rendered DOM string to be hydrated
+ * @returns a promise with the application ref
+ */
+export function prepareEnvironment(doc: Document, html: string) {
+  insertDomInDocument(doc, html);
+  globalThis.document = doc;
+  const scripts = doc.getElementsByTagName('script');
+  for (const script of Array.from(scripts)) {
+    if (script?.textContent?.startsWith('window.__jsaction_bootstrap')) {
+      eval(script.textContent);
+    }
+  }
+}
+
+/**
  * This bootstraps an application with existing html and enables hydration support
  * causing hydration to be invoked.
  *
@@ -134,7 +152,7 @@ export function render(doc: Document, html: string) {
  * @param envProviders the environment providers
  * @returns a promise with the application ref
  */
-export async function renderAndHydrate(
+export async function prepareEnvironmentAndHydrate(
   doc: Document,
   html: string,
   component: Type<unknown>,
@@ -143,7 +161,7 @@ export async function renderAndHydrate(
     hydrationFeatures?: HydrationFeature<HydrationFeatureKind>[];
   },
 ): Promise<ApplicationRef> {
-  render(doc, html);
+  prepareEnvironment(doc, html);
   return hydrate(doc, component, options);
 }
 
