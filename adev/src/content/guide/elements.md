@@ -157,3 +157,10 @@ document.createElement('my-dialog')         //--> NgElement & WithProperties<{co
 document.querySelector('my-other-element')  //--> NgElement & WithProperties<{foo: 'bar'}>      (custom element)
 
 </docs-code>
+
+## Limitations
+
+Care should be taken when destroying and then re-attaching custom elements created with `@angular/elements` due to issues with the [disconnect()](https://github.com/angular/angular/issues/38778) callback. Cases where you may run into this issue are:
+
+- Rendering a component in an `ng-if` or `ng-repeat` in `AngularJs`
+- Manually detaching and re-attaching an element to the DOM
