@@ -22,7 +22,7 @@ import {
   LiteralPrimitive,
   ParseSpan,
   PrefixNot,
-  PrefixTypeof,
+  TypeofExpression,
   PropertyRead,
   PropertyWrite,
   RecursiveAstVisitor,
@@ -113,8 +113,8 @@ class ASTValidator extends RecursiveAstVisitor {
     this.validate(ast, () => super.visitPrefixNot(ast, context));
   }
 
-  override visitPrefixTypeof(ast: PrefixTypeof, context: any): any {
-    this.validate(ast, () => super.visitPrefixTypeof(ast, context));
+  override visitTypeofExpresion(ast: TypeofExpression, context: any): any {
+    this.validate(ast, () => super.visitTypeofExpresion(ast, context));
   }
 
   override visitPropertyRead(ast: PropertyRead, context: any): any {

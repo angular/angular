@@ -100,6 +100,7 @@ describe('parser', () => {
 
     it('should parse typeof expression', () => {
       checkAction(`typeof {} === "object"`);
+      checkAction('(!(typeof {} === "number"))', '!typeof {} === "number"');
     });
 
     it('should parse grouped expressions', () => {

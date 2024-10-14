@@ -373,7 +373,7 @@ export class PrefixNot extends AST {
   }
 }
 
-export class PrefixTypeof extends AST {
+export class TypeofExpression extends AST {
   constructor(
     span: ParseSpan,
     sourceSpan: AbsoluteSourceSpan,
@@ -382,7 +382,7 @@ export class PrefixTypeof extends AST {
     super(span, sourceSpan);
   }
   override visit(visitor: AstVisitor, context: any = null): any {
-    return visitor.visitPrefixTypeof(this, context);
+    return visitor.visitTypeofExpresion(this, context);
   }
 }
 
@@ -547,7 +547,7 @@ export interface AstVisitor {
   visitLiteralPrimitive(ast: LiteralPrimitive, context: any): any;
   visitPipe(ast: BindingPipe, context: any): any;
   visitPrefixNot(ast: PrefixNot, context: any): any;
-  visitPrefixTypeof(ast: PrefixTypeof, context: any): any;
+  visitTypeofExpresion(ast: TypeofExpression, context: any): any;
   visitNonNullAssert(ast: NonNullAssert, context: any): any;
   visitPropertyRead(ast: PropertyRead, context: any): any;
   visitPropertyWrite(ast: PropertyWrite, context: any): any;
@@ -615,7 +615,7 @@ export class RecursiveAstVisitor implements AstVisitor {
   visitPrefixNot(ast: PrefixNot, context: any): any {
     this.visit(ast.expression, context);
   }
-  visitPrefixTypeof(ast: PrefixTypeof, context: any) {
+  visitTypeofExpresion(ast: TypeofExpression, context: any) {
     this.visit(ast.expression, context);
   }
   visitNonNullAssert(ast: NonNullAssert, context: any): any {
@@ -732,8 +732,8 @@ export class AstTransformer implements AstVisitor {
     return new PrefixNot(ast.span, ast.sourceSpan, ast.expression.visit(this));
   }
 
-  visitPrefixTypeof(ast: PrefixNot, context: any): AST {
-    return new PrefixTypeof(ast.span, ast.sourceSpan, ast.expression.visit(this));
+  visitTypeofExpresion(ast: PrefixNot, context: any): AST {
+    return new TypeofExpression(ast.span, ast.sourceSpan, ast.expression.visit(this));
   }
 
   visitNonNullAssert(ast: NonNullAssert, context: any): AST {
@@ -912,10 +912,10 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
     return ast;
   }
 
-  visitPrefixTypeof(ast: PrefixTypeof, context: any): AST {
+  visitTypeofExpresion(ast: TypeofExpression, context: any): AST {
     const expression = ast.expression.visit(this);
     if (expression !== ast.expression) {
-      return new PrefixTypeof(ast.span, ast.sourceSpan, expression);
+      return new TypeofExpression(ast.span, ast.sourceSpan, expression);
     }
     return ast;
   }

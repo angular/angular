@@ -112,7 +112,7 @@ export class Token {
   }
 
   isKeywordTypeof(): boolean {
-    return this.type == TokenType.Keyword && this.strValue == 'typeof';
+    return this.type === TokenType.Keyword && this.strValue === 'typeof';
   }
 
   isError(): boolean {

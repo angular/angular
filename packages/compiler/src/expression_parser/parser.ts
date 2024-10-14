@@ -37,7 +37,7 @@ import {
   ParserError,
   ParseSpan,
   PrefixNot,
-  PrefixTypeof,
+  TypeofExpression,
   PropertyRead,
   PropertyWrite,
   RecursiveAstVisitor,
@@ -965,7 +965,7 @@ class _ParseAST {
       this.advance();
       const start = this.inputIndex;
       let result = this.parsePrefix();
-      return new PrefixTypeof(this.span(start), this.sourceSpan(start), result);
+      return new TypeofExpression(this.span(start), this.sourceSpan(start), result);
     }
     return this.parseCallChain();
   }

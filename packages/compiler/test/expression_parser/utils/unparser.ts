@@ -24,6 +24,7 @@ import {
   LiteralPrimitive,
   NonNullAssert,
   PrefixNot,
+  TypeofExpression,
   PropertyRead,
   PropertyWrite,
   RecursiveAstVisitor,
@@ -192,7 +193,7 @@ class Unparser implements AstVisitor {
     this._visit(ast.expression);
   }
 
-  visitPrefixTypeof(ast: PrefixNot, context: any) {
+  visitTypeofExpresion(ast: TypeofExpression, context: any) {
     this._expression += 'typeof ';
     this._visit(ast.expression);
   }
