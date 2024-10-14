@@ -542,7 +542,7 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
     return {replacements, knownQueries};
   }
 
-  override async stats(globalMetadata: GlobalUnitData): Promise<MigrationStats> {
+  override async stats(globalMetadata: GlobalUnitData) {
     let queriesCount = 0;
     let multiQueries = 0;
     let incompatibleQueries = 0;

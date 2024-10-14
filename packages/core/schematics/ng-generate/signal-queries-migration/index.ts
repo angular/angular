@@ -21,6 +21,8 @@ import {
 interface Options {
   path: string;
   analysisDir: string;
+  bestEffortMode?: boolean;
+  insertTodos?: boolean;
 }
 
 export function migrate(options: Options): Rule {
@@ -29,7 +31,7 @@ export function migrate(options: Options): Rule {
 
     if (!buildPaths.length && !testPaths.length) {
       throw new SchematicsException(
-        'Could not find any tsconfig file. Cannot run signal input migration.',
+        'Could not find any tsconfig file. Cannot run signal queries migration.',
       );
     }
 
@@ -37,6 +39,8 @@ export function migrate(options: Options): Rule {
     setFileSystem(fs);
 
     const migration = new SignalQueriesMigration({
+      bestEffortMode: options.bestEffortMode,
+      insertTodosForSkippedFields: options.insertTodos,
       shouldMigrateQuery: (_query, file) => {
         return (
           file.rootRelativePath.startsWith(fs.normalize(options.path)) &&
@@ -104,5 +108,26 @@ export function migrate(options: Options): Rule {
 
     context.logger.info('');
     context.logger.info(`Successfully migrated to signal queries 🎉`);
+
+    const {
+      counters: {queriesCount, incompatibleQueries, multiQueries},
+    } = await migration.stats(merged);
+    const migratedQueries = queriesCount - incompatibleQueries;
+
+    context.logger.info('');
+    context.logger.info(`Successfully migrated to signal queries 🎉`);
+    context.logger.info(`  -> Migrated ${migratedQueries}/${queriesCount} queries.`);
+
+    if (incompatibleQueries > 0 && !options.insertTodos) {
+      context.logger.warn(`To see why ${incompatibleQueries} queries couldn't be migrated`);
+      context.logger.warn(`consider re-running with "--insert-todos" or "--best-effort-mode".`);
+    }
+
+    if (options.bestEffortMode) {
+      context.logger.warn(
+        `You ran with best effort mode. Manually verify all code ` +
+          `works as intended, and fix where necessary.`,
+      );
+    }
   };
 }
