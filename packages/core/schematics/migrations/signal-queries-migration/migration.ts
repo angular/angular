@@ -196,9 +196,6 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
           return null;
         }
 
-        // TODO: Also consider skipping if we know this cannot be a query.
-        // e.g. missing class decorators or some other checks.
-
         // In batch mode, we eagerly, rather expensively, track all references.
         // We don't know yet if something refers to a different query or not, so we
         // eagerly detect such and later filter those problematic references that
