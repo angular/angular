@@ -526,17 +526,18 @@ export function ɵɵdeferHydrateOnViewport(): void {}
  * Schedules triggering of a defer block for `on idle` and `on timer` conditions.
  */
 function scheduleDelayedTrigger(
-  scheduleFn: (callback: VoidFunction, lView: LView) => VoidFunction,
+  scheduleFn: (callback: VoidFunction, injector: Injector) => VoidFunction,
 ) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
+  const injector = lView[INJECTOR]!;
 
   renderPlaceholder(lView, tNode);
 
   // Only trigger the scheduled trigger on the browser
   // since we don't want to delay the server response.
-  if (isPlatformBrowser(lView[INJECTOR]!)) {
-    const cleanupFn = scheduleFn(() => triggerDeferBlock(lView, tNode), lView);
+  if (isPlatformBrowser(injector)) {
+    const cleanupFn = scheduleFn(() => triggerDeferBlock(lView, tNode), injector);
     const lDetails = getLDeferBlockDetails(lView, tNode);
     storeTriggerCleanupFn(TriggerType.Regular, lDetails, cleanupFn);
   }
@@ -548,13 +549,14 @@ function scheduleDelayedTrigger(
  * @param scheduleFn A function that does the scheduling.
  */
 function scheduleDelayedPrefetching(
-  scheduleFn: (callback: VoidFunction, lView: LView) => VoidFunction,
+  scheduleFn: (callback: VoidFunction, injector: Injector) => VoidFunction,
 ) {
   const lView = getLView();
+  const injector = lView[INJECTOR]!;
 
   // Only trigger the scheduled trigger on the browser
   // since we don't want to delay the server response.
-  if (isPlatformBrowser(lView[INJECTOR]!)) {
+  if (isPlatformBrowser(injector)) {
     const tNode = getCurrentTNode()!;
     const tView = lView[TVIEW];
     const tDetails = getTDeferBlockDetails(tView, tNode);
@@ -562,7 +564,7 @@ function scheduleDelayedPrefetching(
     if (tDetails.loadingState === DeferDependenciesLoadingState.NOT_STARTED) {
       const lDetails = getLDeferBlockDetails(lView, tNode);
       const prefetch = () => triggerPrefetching(tDetails, lView, tNode);
-      const cleanupFn = scheduleFn(prefetch, lView);
+      const cleanupFn = scheduleFn(prefetch, injector);
       storeTriggerCleanupFn(TriggerType.Prefetch, lDetails, cleanupFn);
     }
   }
@@ -835,7 +837,7 @@ function scheduleDeferBlockUpdate(
       renderDeferBlockState(nextState, tNode, lContainer);
     }
   };
-  return scheduleTimerTrigger(timeout, callback, hostLView);
+  return scheduleTimerTrigger(timeout, callback, hostLView[INJECTOR]!);
 }
 
 /**

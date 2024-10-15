@@ -29,10 +29,12 @@ import {EventPhase} from '@angular/core/primitives/event-dispatch';
 import {
   getAppContents,
   hydrate,
-  renderAndHydrate,
-  render as renderHtml,
+  prepareEnvironment,
+  prepareEnvironmentAndHydrate,
   resetTViewsFor,
 } from './dom_utils';
+import {getDocument} from '@angular/core/src/render3/interfaces/document';
+import {serializeDocument} from '../src/domino_adapter';
 
 /**
  * Represents the <script> tag added by the build process to inject
@@ -70,7 +72,6 @@ function withStrictErrorHandler() {
 }
 
 describe('event replay', () => {
-  let doc: Document;
   const originalDocument = globalThis.document;
   const originalWindow = globalThis.window;
 
@@ -81,7 +82,6 @@ describe('event replay', () => {
 
   beforeEach(() => {
     if (getPlatform()) destroyPlatform();
-    doc = TestBed.inject(DOCUMENT);
   });
 
   afterAll(() => {
@@ -91,7 +91,6 @@ describe('event replay', () => {
   });
 
   afterEach(() => {
-    doc.body.outerHTML = '<body></body>';
     window._ejsas = {};
   });
 
@@ -125,17 +124,6 @@ describe('event replay', () => {
     });
   }
 
-  function render(doc: Document, html: string) {
-    renderHtml(doc, html);
-    globalThis.document = doc;
-    const scripts = doc.getElementsByTagName('script');
-    for (const script of Array.from(scripts)) {
-      if (script?.textContent?.startsWith('window.__jsaction_bootstrap')) {
-        eval(script.textContent);
-      }
-    }
-  }
-
   it('should work for elements with local refs', async () => {
     const onClickSpy = jasmine.createSpy();
 
@@ -151,7 +139,9 @@ describe('event replay', () => {
     }
     const html = await ssr(AppComponent);
     const ssrContents = getAppContents(html);
-    render(doc, ssrContents);
+    const doc = getDocument();
+
+    prepareEnvironment(doc, ssrContents);
     resetTViewsFor(AppComponent);
     const btn = doc.getElementById('btn')!;
     btn.click();
@@ -171,7 +161,7 @@ describe('event replay', () => {
       template: `
         <div class="card">
           <button id="inner-button" (click)="onClick()"></button>
-          <ng-content></ng-content> 
+          <ng-content></ng-content>
         </div>
       `,
     })
@@ -196,13 +186,16 @@ describe('event replay', () => {
     }
     const html = await ssr(AppComponent);
     const ssrContents = getAppContents(html);
-    render(doc, ssrContents);
+    const doc = getDocument();
+
+    prepareEnvironment(doc, ssrContents);
     resetTViewsFor(AppComponent);
     const outer = doc.getElementById('outer-button')!;
     const inner = doc.getElementById('inner-button')!;
     outer.click();
     inner.click();
     const appRef = await hydrate(doc, AppComponent, {
+      envProviders: [{provide: PLATFORM_ID, useValue: 'browser'}],
       hydrationFeatures: [withEventReplay()],
     });
     expect(outerOnClickSpy).toHaveBeenCalledBefore(innerOnClickSpy);
@@ -225,7 +218,8 @@ describe('event replay', () => {
     const docContents = `<html><head></head><body>${EVENT_DISPATCH_SCRIPT}<app></app></body></html>`;
     const html = await ssr(SimpleComponent, {doc: docContents});
     const ssrContents = getAppContents(html);
-    render(doc, ssrContents);
+    const doc = getDocument();
+    prepareEnvironment(doc, ssrContents);
     const el = doc.getElementById('1')!;
     expect(el.hasAttribute('jsaction')).toBeTrue();
     expect((el.firstChild as Element).hasAttribute('jsaction')).toBeTrue();
@@ -276,11 +270,14 @@ describe('event replay', () => {
       const docContents = `<html><head></head><body>${EVENT_DISPATCH_SCRIPT}<app></app></body></html>`;
       const html = await ssr(SimpleComponent, {doc: docContents});
       const ssrContents = getAppContents(html);
-      render(doc, ssrContents);
+      const doc = getDocument();
+
+      prepareEnvironment(doc, ssrContents);
       resetTViewsFor(SimpleComponent);
       const bottomEl = doc.getElementById('bottom')!;
       bottomEl.click();
       const appRef = await hydrate(doc, SimpleComponent, {
+        envProviders: [{provide: PLATFORM_ID, useValue: 'browser'}],
         hydrationFeatures: [withEventReplay()],
       });
       expect(onClickSpy).toHaveBeenCalledTimes(2);
@@ -308,7 +305,8 @@ describe('event replay', () => {
       const docContents = `<html><head></head><body>${EVENT_DISPATCH_SCRIPT}<app></app></body></html>`;
       const html = await ssr(SimpleComponent, {doc: docContents});
       const ssrContents = getAppContents(html);
-      render(doc, ssrContents);
+      const doc = getDocument();
+      prepareEnvironment(doc, ssrContents);
       resetTViewsFor(SimpleComponent);
       const bottomEl = doc.getElementById('bottom')!;
       bottomEl.click();
@@ -344,11 +342,13 @@ describe('event replay', () => {
       const docContents = `<html><head></head><body>${EVENT_DISPATCH_SCRIPT}<app></app></body></html>`;
       const html = await ssr(SimpleComponent, {doc: docContents});
       const ssrContents = getAppContents(html);
-      render(doc, ssrContents);
+      const doc = getDocument();
+      prepareEnvironment(doc, ssrContents);
       resetTViewsFor(SimpleComponent);
       const bottomEl = doc.getElementById('bottom')!;
       bottomEl.click();
       await hydrate(doc, SimpleComponent, {
+        envProviders: [{provide: PLATFORM_ID, useValue: 'browser'}],
         hydrationFeatures: [withEventReplay()],
       });
       const replayedEvent = currentEvent;
@@ -396,7 +396,8 @@ describe('event replay', () => {
       expect(hasEventDispatchScript(ssrContents)).toBeFalse();
 
       resetTViewsFor(SimpleComponent);
-      await renderAndHydrate(doc, ssrContents, SimpleComponent, {
+      const doc = getDocument();
+      await prepareEnvironmentAndHydrate(doc, ssrContents, SimpleComponent, {
         envProviders: [
           {provide: PLATFORM_ID, useValue: 'browser'},
           // This ensures that there are no errors while bootstrapping an application

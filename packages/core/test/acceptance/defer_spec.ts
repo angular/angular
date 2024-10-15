@@ -3027,8 +3027,9 @@ describe('@defer', () => {
       fixture.detectChanges();
       flush();
 
-      expect(spy).toHaveBeenCalledTimes(2);
+      expect(spy).toHaveBeenCalledTimes(3);
       expect(spy).toHaveBeenCalledWith('mouseenter', jasmine.any(Function), jasmine.any(Object));
+      expect(spy).toHaveBeenCalledWith('mouseover', jasmine.any(Function), jasmine.any(Object));
       expect(spy).toHaveBeenCalledWith('focusin', jasmine.any(Function), jasmine.any(Object));
     }));
 
@@ -3062,8 +3063,9 @@ describe('@defer', () => {
       fixture.componentInstance.renderBlock = false;
       fixture.detectChanges();
 
-      expect(spy).toHaveBeenCalledTimes(2);
+      expect(spy).toHaveBeenCalledTimes(3);
       expect(spy).toHaveBeenCalledWith('mouseenter', jasmine.any(Function), jasmine.any(Object));
+      expect(spy).toHaveBeenCalledWith('mouseover', jasmine.any(Function), jasmine.any(Object));
       expect(spy).toHaveBeenCalledWith('focusin', jasmine.any(Function), jasmine.any(Object));
     }));
 
@@ -3098,8 +3100,9 @@ describe('@defer', () => {
       fixture.componentInstance.renderBlock = false;
       fixture.detectChanges();
 
-      expect(spy).toHaveBeenCalledTimes(2);
+      expect(spy).toHaveBeenCalledTimes(3);
       expect(spy).toHaveBeenCalledWith('mouseenter', jasmine.any(Function), jasmine.any(Object));
+      expect(spy).toHaveBeenCalledWith('mouseover', jasmine.any(Function), jasmine.any(Object));
       expect(spy).toHaveBeenCalledWith('focusin', jasmine.any(Function), jasmine.any(Object));
     }));
 
@@ -4021,9 +4024,14 @@ describe('@defer', () => {
       fixture.detectChanges();
 
       // Verify that trigger element is cleaned up.
-      expect(triggerSpy).toHaveBeenCalledTimes(2);
+      expect(triggerSpy).toHaveBeenCalledTimes(3);
       expect(triggerSpy).toHaveBeenCalledWith(
         'mouseenter',
+        jasmine.any(Function),
+        jasmine.any(Object),
+      );
+      expect(triggerSpy).toHaveBeenCalledWith(
+        'mouseover',
         jasmine.any(Function),
         jasmine.any(Object),
       );
@@ -4034,9 +4042,14 @@ describe('@defer', () => {
       );
 
       // Verify that prefetch trigger element is cleaned up.
-      expect(prefetchSpy).toHaveBeenCalledTimes(2);
+      expect(prefetchSpy).toHaveBeenCalledTimes(3);
       expect(prefetchSpy).toHaveBeenCalledWith(
         'mouseenter',
+        jasmine.any(Function),
+        jasmine.any(Object),
+      );
+      expect(prefetchSpy).toHaveBeenCalledWith(
+        'mouseover',
         jasmine.any(Function),
         jasmine.any(Object),
       );
