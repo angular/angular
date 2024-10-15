@@ -27,6 +27,7 @@ import {
 } from './jsonp';
 import {HttpXhrBackend} from './xhr';
 import {XSRF_COOKIE_NAME, XSRF_ENABLED, XSRF_HEADER_NAME, xsrfInterceptorFn} from './xsrf';
+import {NG_DEFAULT_HTTP_BACKEND} from './backend-default-value';
 
 /**
  * Identifies a particular kind of `HttpFeature`.
@@ -292,6 +293,7 @@ export function withRequestsMadeViaParent(): HttpFeature<HttpFeatureKind.Request
  * @see [Advanced fetch Options](guide/http/making-requests#advanced-fetch-options)
  *
  * @publicApi
+ * @deprecated `withFetch` is not required anymore. `FetchBackend` is the default `HttpBackend`.
  */
 export function withFetch(): HttpFeature<HttpFeatureKind.Fetch> {
   return makeHttpFeature(HttpFeatureKind.Fetch, [
