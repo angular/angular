@@ -101,6 +101,11 @@ describe('reactivity', () => {
     });
 
     it('should propagate errors to the ErrorHandler', () => {
+      TestBed.configureTestingModule({
+        providers: [{provide: ErrorHandler, useFactory: () => new FakeErrorHandler()}],
+        rethrowApplicationErrors: false,
+      });
+
       let run = false;
 
       let lastError: any = null;
@@ -109,24 +114,26 @@ describe('reactivity', () => {
           lastError = error;
         }
       }
-
-      const injector = createEnvironmentInjector(
-        [{provide: ErrorHandler, useFactory: () => new FakeErrorHandler()}],
-        TestBed.inject(EnvironmentInjector),
-      );
+      const appRef = TestBed.inject(ApplicationRef);
       effect(
         () => {
           run = true;
           throw new Error('fail!');
         },
-        {injector},
+        {injector: appRef.injector},
       );
-      expect(() => TestBed.flushEffects()).not.toThrow();
+      appRef.tick();
       expect(run).toBeTrue();
       expect(lastError.message).toBe('fail!');
     });
 
-    it('should be usable inside an ErrorHandler', async () => {
+    // Disabled while we consider whether this actually makes sense.
+    // This test _used_ to show that `effect()` was usable inside component error handlers, partly
+    // because effect errors used to report to component error handlers. Now, effect errors are
+    // always reported to the top-level error handler, which has never been able to use `effect()`
+    // as `effect()` depends transitively on `ApplicationRef` which depends circularly on
+    // `ErrorHandler`.
+    xit('should be usable inside an ErrorHandler', async () => {
       const shouldError = signal(false);
       let lastError: any = null;
 
@@ -145,24 +152,16 @@ describe('reactivity', () => {
         }
       }
 
-      @Component({
-        standalone: true,
-        template: '',
+      TestBed.configureTestingModule({
         providers: [{provide: ErrorHandler, useClass: FakeErrorHandler}],
-      })
-      class App {
-        errorHandler = inject(ErrorHandler);
-      }
+        rethrowApplicationErrors: false,
+      });
 
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-
-      expect(fixture.componentInstance.errorHandler).toBeInstanceOf(FakeErrorHandler);
-      expect(lastError).toBe(null);
+      const appRef = TestBed.inject(ApplicationRef);
+      expect(() => appRef.tick()).not.toThrow();
 
       shouldError.set(true);
-      fixture.detectChanges();
-
+      expect(() => appRef.tick()).not.toThrow();
       expect(lastError?.message).toBe('fail!');
     });
 
