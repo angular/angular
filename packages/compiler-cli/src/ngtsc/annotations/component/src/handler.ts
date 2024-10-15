@@ -10,7 +10,7 @@ import {
   AnimationTriggerNames,
   BoundTarget,
   compileClassDebugInfo,
-  compileClassHmrInitializer,
+  compileHmrInitializer,
   compileComponentClassMetadata,
   compileComponentDeclareClassMetadata,
   compileComponentFromMetadata,
@@ -180,7 +180,7 @@ import {
 } from './util';
 import {getTemplateDiagnostics} from '../../../typecheck';
 import {JitDeclarationRegistry} from '../../common/src/jit_declaration_registry';
-import {extractHmrInitializerMeta} from './hmr';
+import {extractHmrMetatadata, getHmrUpdateDeclaration} from '../../../hmr';
 
 const EMPTY_ARRAY: any[] = [];
 
@@ -267,6 +267,11 @@ export class ComponentDecoratorHandler
       enableLetSyntax: this.enableLetSyntax,
       preserveSignificantWhitespace: this.i18nPreserveSignificantWhitespace,
     };
+
+    // Dependencies can't be deferred during HMR, because the HMR update module can't have
+    // dynamic imports and its dependencies need to be passed in directly. If dependencies
+    // are deferred, their imports will be deleted so we won't may lose the reference to them.
+    this.canDeferDeps = !enableHmr;
   }
 
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
@@ -279,6 +284,9 @@ export class ComponentDecoratorHandler
    */
   private preanalyzeTemplateCache = new Map<DeclarationNode, ParsedTemplateWithSource>();
   private preanalyzeStylesCache = new Map<DeclarationNode, string[] | null>();
+
+  /** Whether generated code for a component can defer its dependencies. */
+  private readonly canDeferDeps: boolean;
 
   private extractTemplateOptions: {
     enableI18nLegacyMessageIdFormat: boolean;
@@ -876,9 +884,6 @@ export class ComponentDecoratorHandler
           this.rootDirs,
           /* forbidOrphanRenderering */ this.forbidOrphanRendering,
         ),
-        hmrInitializerMeta: this.enableHmr
-          ? extractHmrInitializerMeta(node, this.reflector, this.compilerHost, this.rootDirs)
-          : null,
         template,
         providersRequiringFactory,
         viewProvidersRequiringFactory,
@@ -1600,7 +1605,9 @@ export class ComponentDecoratorHandler
       return [];
     }
 
-    const perComponentDeferredDeps = this.resolveAllDeferredDependencies(resolution);
+    const perComponentDeferredDeps = this.canDeferDeps
+      ? this.resolveAllDeferredDependencies(resolution)
+      : null;
     const meta: R3ComponentMetadata<R3TemplateDependency> = {
       ...analysis.meta,
       ...resolution,
@@ -1608,7 +1615,9 @@ export class ComponentDecoratorHandler
     };
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
 
-    removeDeferrableTypesFromComponentDecorator(analysis, perComponentDeferredDeps);
+    if (perComponentDeferredDeps !== null) {
+      removeDeferrableTypesFromComponentDecorator(analysis, perComponentDeferredDeps);
+    }
 
     const def = compileComponentFromMetadata(meta, pool, makeBindingParser());
     const inputTransformFields = compileInputTransformFields(analysis.inputs);
@@ -1620,11 +1629,22 @@ export class ComponentDecoratorHandler
       analysis.classDebugInfo !== null
         ? compileClassDebugInfo(analysis.classDebugInfo).toStmt()
         : null;
-    const hmrInitializer =
-      analysis.hmrInitializerMeta !== null
-        ? compileClassHmrInitializer(analysis.hmrInitializerMeta).toStmt()
-        : null;
-    const deferrableImports = this.deferredSymbolTracker.getDeferrableImportDecls();
+    const hmrMeta = this.enableHmr
+      ? extractHmrMetatadata(
+          node,
+          this.reflector,
+          this.compilerHost,
+          this.rootDirs,
+          def,
+          fac,
+          classMetadata,
+          debugInfo,
+        )
+      : null;
+    const hmrInitializer = hmrMeta ? compileHmrInitializer(hmrMeta).toStmt() : null;
+    const deferrableImports = this.canDeferDeps
+      ? this.deferredSymbolTracker.getDeferrableImportDecls()
+      : null;
     return compileResults(
       fac,
       def,
@@ -1655,7 +1675,9 @@ export class ComponentDecoratorHandler
           : null,
     };
 
-    const perComponentDeferredDeps = this.resolveAllDeferredDependencies(resolution);
+    const perComponentDeferredDeps = this.canDeferDeps
+      ? this.resolveAllDeferredDependencies(resolution)
+      : null;
     const meta: R3ComponentMetadata<R3TemplateDependencyMetadata> = {
       ...analysis.meta,
       ...resolution,
@@ -1671,8 +1693,32 @@ export class ComponentDecoratorHandler
             perComponentDeferredDeps,
           ).toStmt()
         : null;
-    const deferrableImports = this.deferredSymbolTracker.getDeferrableImportDecls();
-    return compileResults(fac, def, classMetadata, 'ɵcmp', inputTransformFields, deferrableImports);
+    const hmrMeta = this.enableHmr
+      ? extractHmrMetatadata(
+          node,
+          this.reflector,
+          this.compilerHost,
+          this.rootDirs,
+          def,
+          fac,
+          classMetadata,
+          null,
+        )
+      : null;
+    const hmrInitializer = hmrMeta ? compileHmrInitializer(hmrMeta).toStmt() : null;
+    const deferrableImports = this.canDeferDeps
+      ? this.deferredSymbolTracker.getDeferrableImportDecls()
+      : null;
+    return compileResults(
+      fac,
+      def,
+      classMetadata,
+      'ɵcmp',
+      inputTransformFields,
+      deferrableImports,
+      null,
+      hmrInitializer,
+    );
   }
 
   compileLocal(
@@ -1684,7 +1730,7 @@ export class ComponentDecoratorHandler
     // In the local compilation mode we can only rely on the information available
     // within the `@Component.deferredImports` array, because in this mode compiler
     // doesn't have information on which dependencies belong to which defer blocks.
-    const deferrableTypes = analysis.explicitlyDeferredTypes;
+    const deferrableTypes = this.canDeferDeps ? analysis.explicitlyDeferredTypes : null;
 
     const meta = {
       ...analysis.meta,
@@ -1692,8 +1738,8 @@ export class ComponentDecoratorHandler
       defer: this.compileDeferBlocks(resolution),
     } as R3ComponentMetadata<R3TemplateDependency>;
 
-    if (analysis.explicitlyDeferredTypes !== null) {
-      removeDeferrableTypesFromComponentDecorator(analysis, analysis.explicitlyDeferredTypes);
+    if (deferrableTypes !== null) {
+      removeDeferrableTypesFromComponentDecorator(analysis, deferrableTypes);
     }
 
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
@@ -1707,11 +1753,22 @@ export class ComponentDecoratorHandler
       analysis.classDebugInfo !== null
         ? compileClassDebugInfo(analysis.classDebugInfo).toStmt()
         : null;
-    const hmrInitializer =
-      analysis.hmrInitializerMeta !== null
-        ? compileClassHmrInitializer(analysis.hmrInitializerMeta).toStmt()
-        : null;
-    const deferrableImports = this.deferredSymbolTracker.getDeferrableImportDecls();
+    const hmrMeta = this.enableHmr
+      ? extractHmrMetatadata(
+          node,
+          this.reflector,
+          this.compilerHost,
+          this.rootDirs,
+          def,
+          fac,
+          classMetadata,
+          debugInfo,
+        )
+      : null;
+    const hmrInitializer = hmrMeta ? compileHmrInitializer(hmrMeta).toStmt() : null;
+    const deferrableImports = this.canDeferDeps
+      ? this.deferredSymbolTracker.getDeferrableImportDecls()
+      : null;
     return compileResults(
       fac,
       def,
@@ -1722,6 +1779,50 @@ export class ComponentDecoratorHandler
       debugInfo,
       hmrInitializer,
     );
+  }
+
+  compileHmrUpdateDeclaration(
+    node: ClassDeclaration,
+    analysis: Readonly<ComponentAnalysisData>,
+    resolution: Readonly<ComponentResolutionData>,
+  ): ts.FunctionDeclaration | null {
+    if (analysis.template.errors !== null && analysis.template.errors.length > 0) {
+      return null;
+    }
+
+    // Create a brand-new constant pool since there shouldn't be any constant sharing.
+    const pool = new ConstantPool();
+    const meta: R3ComponentMetadata<R3TemplateDependency> = {
+      ...analysis.meta,
+      ...resolution,
+      defer: this.compileDeferBlocks(resolution),
+    };
+    const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
+    const def = compileComponentFromMetadata(meta, pool, makeBindingParser());
+    const classMetadata =
+      analysis.classMetadata !== null
+        ? compileComponentClassMetadata(analysis.classMetadata, null).toStmt()
+        : null;
+    const debugInfo =
+      analysis.classDebugInfo !== null
+        ? compileClassDebugInfo(analysis.classDebugInfo).toStmt()
+        : null;
+    const hmrMeta = this.enableHmr
+      ? extractHmrMetatadata(
+          node,
+          this.reflector,
+          this.compilerHost,
+          this.rootDirs,
+          def,
+          fac,
+          classMetadata,
+          debugInfo,
+        )
+      : null;
+    const res = compileResults(fac, def, classMetadata, 'ɵcmp', null, null, debugInfo, null);
+    return hmrMeta === null || res.length === 0
+      ? null
+      : getHmrUpdateDeclaration(res, pool.statements, hmrMeta, node.getSourceFile());
   }
 
   /**
