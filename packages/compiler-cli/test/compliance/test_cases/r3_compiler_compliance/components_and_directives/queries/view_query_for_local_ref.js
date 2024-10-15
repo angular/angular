@@ -5,7 +5,7 @@ ViewQueryComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   // ...
   viewQuery: function ViewQueryComponent_Query(rf, ctx) {
     if (rf & 1) {
-      $r3$.ɵɵviewQuery($e0_attrs$, 5);
+      $r3$.ɵɵviewQuery($e0_attrs$, 13);
       $r3$.ɵɵviewQuery($e1_attrs$, 5);
     }
     if (rf & 2) {
