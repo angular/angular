@@ -315,6 +315,28 @@ describe('directive declaration jit compilation', () => {
       ],
     });
   });
+
+  it('should declare a 0.0.0 directive as standalone', () => {
+    const def = ɵɵngDeclareDirective({
+      version: '0.0.0-PLACEHOLDER',
+      type: TestClass,
+    }) as DirectiveDef<TestClass>;
+
+    expectDirectiveDef(def, {
+      standalone: true,
+    });
+  });
+
+  it('should declare a v19+ directive as standalone', () => {
+    const def = ɵɵngDeclareDirective({
+      version: '19.0.0',
+      type: TestClass,
+    }) as DirectiveDef<TestClass>;
+
+    expectDirectiveDef(def, {
+      standalone: true,
+    });
+  });
 });
 
 type DirectiveDefExpectations = jasmine.Expected<
@@ -333,6 +355,7 @@ type DirectiveDefExpectations = jasmine.Expected<
     | 'exportAs'
     | 'providersResolver'
     | 'hostDirectives'
+    | 'standalone'
   >
 >;
 
@@ -359,6 +382,7 @@ function expectDirectiveDef(
     exportAs: null,
     providersResolver: null,
     hostDirectives: null,
+    standalone: false,
     ...expected,
   };
 
@@ -378,6 +402,7 @@ function expectDirectiveDef(
     .withContext('providersResolver')
     .toEqual(expectation.providersResolver);
   expect(actual.hostDirectives).withContext('hostDirectives').toEqual(expectation.hostDirectives);
+  expect(actual.standalone).withContext('standalone').toEqual(expectation.standalone);
 }
 
 class TestClass {}

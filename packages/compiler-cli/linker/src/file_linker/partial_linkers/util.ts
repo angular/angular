@@ -115,7 +115,7 @@ export function extractForwardRef<TExpression>(
   );
 }
 
-const STANDALONE_IS_DEFAULT_RANGE = new semver.Range('>= 19.0.0', {
+const STANDALONE_IS_DEFAULT_RANGE = new semver.Range(`>= 19.0.0 || ${PLACEHOLDER_VERSION}`, {
   includePrerelease: true,
 });
 

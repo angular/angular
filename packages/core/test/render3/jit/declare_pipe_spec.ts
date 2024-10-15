@@ -20,6 +20,7 @@ describe('Pipe declaration jit compilation', () => {
     expect(def.type).toBe(TestClass);
     expect(def.name).toEqual('foo');
     expect(def.pure).toEqual(true);
+    expect(def.standalone).toEqual(false);
   });
 
   it('should compile an impure Pipe declaration', () => {
@@ -33,6 +34,30 @@ describe('Pipe declaration jit compilation', () => {
     expect(def.type).toBe(TestClass);
     expect(def.name).toEqual('foo');
     expect(def.pure).toEqual(false);
+  });
+
+  it('should compile 0.0.0 pipe as standalone', () => {
+    const def = ɵɵngDeclarePipe({
+      type: TestClass,
+      name: 'foo',
+      version: '0.0.0-PLACEHOLDER',
+    }) as PipeDef<TestClass>;
+
+    expect(def.type).toBe(TestClass);
+    expect(def.name).toEqual('foo');
+    expect(def.standalone).toEqual(true);
+  });
+
+  it('should compile v19+ pipe as standalone', () => {
+    const def = ɵɵngDeclarePipe({
+      type: TestClass,
+      name: 'foo',
+      version: '19.0.0',
+    }) as PipeDef<TestClass>;
+
+    expect(def.type).toBe(TestClass);
+    expect(def.name).toEqual('foo');
+    expect(def.standalone).toEqual(true);
   });
 });
 
