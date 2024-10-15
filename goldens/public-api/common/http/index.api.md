@@ -3331,7 +3331,7 @@ export class JsonpInterceptor {
 // @public
 export function provideHttpClient(...features: HttpFeature<HttpFeatureKind>[]): EnvironmentProviders;
 
-// @public
+// @public @deprecated
 export function withFetch(): HttpFeature<HttpFeatureKind.Fetch>;
 
 // @public
