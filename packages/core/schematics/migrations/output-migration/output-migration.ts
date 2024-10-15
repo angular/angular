@@ -7,6 +7,7 @@
  */
 
 import ts from 'typescript';
+import assert from 'assert';
 import {
   confirmAsSerializable,
   MigrationStats,
@@ -21,8 +22,8 @@ import {
 
 import {DtsMetadataReader} from '../../../../compiler-cli/src/ngtsc/metadata';
 import {TypeScriptReflectionHost} from '../../../../compiler-cli/src/ngtsc/reflection';
+import {PartialEvaluator} from '@angular/compiler-cli/private/migrations';
 import {
-  OutputID,
   getUniqueIdForProperty,
   isTargetOutputDeclaration,
   extractSourceOutputDefinition,
@@ -30,6 +31,8 @@ import {
   isPotentialNextCallUsage,
   isPotentialPipeCallUsage,
   isTestRunnerImport,
+  getTargetPropertyDeclaration,
+  checkNonTsReferenceCallsField,
 } from './output_helpers';
 import {
   calculateImportReplacements,
@@ -37,7 +40,18 @@ import {
   calculateNextFnReplacement,
   calculateCompleteCallReplacement,
   calculatePipeCallReplacement,
+  calculateNextFnReplacementInTemplate,
+  calculateNextFnReplacementInHostBinding,
 } from './output-replacements';
+
+import {createFindAllSourceFileReferencesVisitor} from '../signal-migration/src/passes/reference_resolution';
+import {
+  ClassFieldDescriptor,
+  ClassFieldUniqueKey,
+  KnownFields,
+} from '../signal-migration/src/passes/reference_resolution/known_fields';
+import {ReferenceResult} from '../signal-migration/src/passes/reference_resolution/reference_result';
+import {ReferenceKind} from '../signal-migration/src/passes/reference_resolution/reference_kinds';
 
 interface OutputMigrationData {
   file: ProjectFile;
@@ -45,8 +59,8 @@ interface OutputMigrationData {
 }
 
 interface CompilationUnitData {
-  outputFields: Record<OutputID, OutputMigrationData>;
-  problematicUsages: Record<OutputID, true>;
+  outputFields: Record<ClassFieldUniqueKey, OutputMigrationData>;
+  problematicUsages: Record<ClassFieldUniqueKey, true>;
   importReplacements: Record<ProjectFileID, {add: Replacement[]; addAndRemove: Replacement[]}>;
 }
 
@@ -56,14 +70,38 @@ export class OutputMigration extends TsurgeFunnelMigration<
 > {
   override async analyze(info: ProgramInfo): Promise<Serializable<CompilationUnitData>> {
     const {sourceFiles, program} = info;
-    const outputFieldReplacements: Record<OutputID, OutputMigrationData> = {};
-    const problematicUsages: Record<OutputID, true> = {};
+    const outputFieldReplacements: Record<ClassFieldUniqueKey, OutputMigrationData> = {};
+    const problematicUsages: Record<ClassFieldUniqueKey, true> = {};
 
     const filesWithOutputDeclarations = new Set<ts.SourceFile>();
 
     const checker = program.getTypeChecker();
     const reflector = new TypeScriptReflectionHost(checker);
     const dtsReader = new DtsMetadataReader(checker, reflector);
+    const evaluator = new PartialEvaluator(reflector, checker, null);
+    const ngCompiler = info.ngCompiler;
+    assert(ngCompiler !== null, 'Requires ngCompiler to run the migration');
+    const resourceLoader = ngCompiler['resourceManager'];
+    // Pre-Analyze the program and get access to the template type checker.
+    const {templateTypeChecker} = ngCompiler['ensureAnalyzed']();
+    const knownFields: KnownFields<ClassFieldDescriptor> = {
+      // Note: We don't support cross-target migration of `Partial<T>` usages.
+      // This is an acceptable limitation for performance reasons.
+      shouldTrackClassReference: (node) => false,
+      attemptRetrieveDescriptorFromSymbol: (s) => {
+        const propDeclaration = getTargetPropertyDeclaration(s);
+        if (propDeclaration !== null) {
+          const classFieldID = getUniqueIdForProperty(info, propDeclaration);
+          if (classFieldID !== null) {
+            return {
+              node: propDeclaration,
+              key: classFieldID,
+            };
+          }
+        }
+        return null;
+      },
+    };
 
     let isTestFile = false;
 
@@ -166,6 +204,54 @@ export class OutputMigration extends TsurgeFunnelMigration<
       ts.forEachChild(sf, outputMigrationVisitor);
     }
 
+    // take care of the references in templates and host bindings
+    const referenceResult: ReferenceResult<ClassFieldDescriptor> = {references: []};
+    const {visitor: templateHostRefVisitor} = createFindAllSourceFileReferencesVisitor(
+      info,
+      checker,
+      reflector,
+      resourceLoader,
+      evaluator,
+      templateTypeChecker,
+      knownFields,
+      null, // TODO: capture known output names as an optimization
+      referenceResult,
+    );
+
+    // calculate template / host binding replacements
+    for (const sf of sourceFiles) {
+      ts.forEachChild(sf, templateHostRefVisitor);
+    }
+
+    for (const ref of referenceResult.references) {
+      // detect .next usages that should be migrated to .emit in template and host binding expressions
+      if (ref.kind === ReferenceKind.InTemplate) {
+        const callExpr = checkNonTsReferenceCallsField(ref, 'next');
+        if (callExpr !== null) {
+          addOutputReplacement(
+            outputFieldReplacements,
+            ref.target.key,
+            ref.from.templateFile,
+            calculateNextFnReplacementInTemplate(ref.from.templateFile, callExpr.nameSpan),
+          );
+        }
+      } else if (ref.kind === ReferenceKind.InHostBinding) {
+        const callExpr = checkNonTsReferenceCallsField(ref, 'next');
+        if (callExpr !== null) {
+          addOutputReplacement(
+            outputFieldReplacements,
+            ref.target.key,
+            ref.from.file,
+            calculateNextFnReplacementInHostBinding(
+              ref.from.file,
+              ref.from.hostPropertyNode.getStart() + 1,
+              callExpr.nameSpan,
+            ),
+          );
+        }
+      }
+    }
+
     // calculate import replacements but do so only for files that have output declarations
     const importReplacements = calculateImportReplacements(info, filesWithOutputDeclarations);
 
@@ -177,16 +263,16 @@ export class OutputMigration extends TsurgeFunnelMigration<
   }
 
   override async merge(units: CompilationUnitData[]): Promise<Serializable<CompilationUnitData>> {
-    const outputFields: Record<OutputID, OutputMigrationData> = {};
+    const outputFields: Record<ClassFieldUniqueKey, OutputMigrationData> = {};
     const importReplacements: Record<
       ProjectFileID,
       {add: Replacement[]; addAndRemove: Replacement[]}
     > = {};
-    const problematicUsages: Record<OutputID, true> = {};
+    const problematicUsages: Record<ClassFieldUniqueKey, true> = {};
 
     for (const unit of units) {
       for (const declIdStr of Object.keys(unit.outputFields)) {
-        const declId = declIdStr as OutputID;
+        const declId = declIdStr as ClassFieldUniqueKey;
         // THINK: detect clash? Should we have an utility to merge data based on unique IDs?
         outputFields[declId] = unit.outputFields[declId];
       }
@@ -197,7 +283,7 @@ export class OutputMigration extends TsurgeFunnelMigration<
       }
 
       for (const declIdStr of Object.keys(unit.problematicUsages)) {
-        const declId = declIdStr as OutputID;
+        const declId = declIdStr as ClassFieldUniqueKey;
         problematicUsages[declId] = unit.problematicUsages[declId];
       }
     }
@@ -220,7 +306,7 @@ export class OutputMigration extends TsurgeFunnelMigration<
 
     const replacements: Replacement[] = [];
     for (const declIdStr of Object.keys(globalData.outputFields)) {
-      const declId = declIdStr as OutputID;
+      const declId = declIdStr as ClassFieldUniqueKey;
       const outputField = globalData.outputFields[declId];
 
       if (!globalData.problematicUsages[declId]) {
@@ -248,8 +334,8 @@ export class OutputMigration extends TsurgeFunnelMigration<
 }
 
 function addOutputReplacement(
-  outputFieldReplacements: Record<OutputID, OutputMigrationData>,
-  outputId: OutputID,
+  outputFieldReplacements: Record<ClassFieldUniqueKey, OutputMigrationData>,
+  outputId: ClassFieldUniqueKey,
   file: ProjectFile,
   ...replacements: Replacement[]
 ): void {
