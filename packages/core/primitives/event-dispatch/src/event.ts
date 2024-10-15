@@ -38,7 +38,8 @@ export function getBrowserEventType(eventType: string) {
  * @param element The element.
  * @param eventType The event type.
  * @param handler The handler function to install.
- * @param passive A boolean value that, if `true`, indicates that the function specified by `handler` will never call `preventDefault()`.
+ * @param passive A boolean value that, if `true`, indicates that the function
+ *     specified by `handler` will never call `preventDefault()`.
  * @return Information needed to uninstall the event handler eventually.
  */
 export function addEventListener(
@@ -87,11 +88,9 @@ export function addEventListener(
 export function removeEventListener(element: Element, info: EventHandlerInfo) {
   if (element.removeEventListener) {
     if (typeof info.passive === 'boolean') {
-      element.removeEventListener(
-        info.eventType,
-        info.handler as EventListener,
-        {capture: info.capture, passive: info.passive} as unknown as EventListenerOptions,
-      );
+      element.removeEventListener(info.eventType, info.handler as EventListener, {
+        capture: info.capture,
+      });
     } else {
       element.removeEventListener(info.eventType, info.handler as EventListener, info.capture);
     }

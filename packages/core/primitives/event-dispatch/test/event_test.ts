@@ -181,8 +181,7 @@ describe('event test.ts', () => {
     jsactionEvent.removeEventListener(divInternal, eventInfo);
     expect(removeEventListenerSpy).toHaveBeenCalledOnceWith('touchstart', handler, {
       capture: false,
-      passive: false,
-    } as unknown as EventListenerOptions);
+    });
   });
 
   it('remove event listener touchstart w3 c with passive:true', () => {
@@ -192,8 +191,7 @@ describe('event test.ts', () => {
     jsactionEvent.removeEventListener(divInternal, eventInfo);
     expect(removeEventListenerSpy).toHaveBeenCalledOnceWith('touchstart', handler, {
       capture: false,
-      passive: true,
-    } as unknown as EventListenerOptions);
+    });
   });
 
   it('is modified click event mac meta key', () => {
