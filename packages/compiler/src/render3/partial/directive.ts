@@ -54,7 +54,7 @@ export function createDirectiveDefinitionMap(
   // e.g. `type: MyDirective`
   definitionMap.set('type', meta.type.value);
 
-  if (meta.isStandalone) {
+  if (meta.isStandalone !== undefined) {
     definitionMap.set('isStandalone', o.literal(meta.isStandalone));
   }
   if (meta.isSignal) {

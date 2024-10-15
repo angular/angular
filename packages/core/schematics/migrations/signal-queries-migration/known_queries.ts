@@ -51,7 +51,11 @@ export class KnownQueries
   }
 
   markFieldIncompatible(field: ClassFieldDescriptor, incompatibility: FieldIncompatibility): void {
-    markFieldIncompatibleInMetadata(this.globalMetadata, field.key, incompatibility.reason);
+    markFieldIncompatibleInMetadata(
+      this.globalMetadata.problematicQueries,
+      field.key,
+      incompatibility.reason,
+    );
   }
 
   markClassIncompatible(node: ts.ClassDeclaration, reason: ClassIncompatibilityReason): void {
@@ -110,8 +114,27 @@ export class KnownQueries
     derived: ClassFieldDescriptor,
     parent: ClassFieldDescriptor,
   ): void {
-    if (this.isFieldIncompatible(parent) || this.isFieldIncompatible(derived)) {
-      // TODO: What to do here??
+    // Note: The edge problematic pattern recognition is not as good as the one
+    // we have in the signal input migration. That is because we couldn't trivially
+    // build up an inheritance graph during analyze phase where we DON'T know what
+    // fields refer to queries. Usually we'd use the graph to smartly propagate
+    // incompatibilities using topological sort. This doesn't work here and is
+    // unnecessarily complex, so we try our best at detecting direct edge
+    // incompatibilities (which are quite order dependent).
+
+    if (this.isFieldIncompatible(parent) && !this.isFieldIncompatible(derived)) {
+      this.markFieldIncompatible(derived, {
+        context: null,
+        reason: FieldIncompatibilityReason.ParentIsIncompatible,
+      });
+      return;
+    }
+
+    if (this.isFieldIncompatible(derived) && !this.isFieldIncompatible(parent)) {
+      this.markFieldIncompatible(parent, {
+        context: null,
+        reason: FieldIncompatibilityReason.DerivedIsIncompatible,
+      });
     }
   }
 

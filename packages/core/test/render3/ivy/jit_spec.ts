@@ -65,6 +65,7 @@ describe('render3 jit', () => {
     class OuterCmp {
       static ɵcmp = ngDeclareComponent({
         template: '<inner-cmp></inner-cmp>',
+        version: '18.0.0',
         type: OuterCmp,
         components: [
           {
@@ -95,6 +96,7 @@ describe('render3 jit', () => {
       static ɵcmp = ngDeclareComponent({
         template: '<inner-cmp></inner-cmp>',
         type: OuterCmp,
+        version: '18.0.0',
         dependencies: [
           {
             kind: 'component',

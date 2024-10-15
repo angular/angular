@@ -40,7 +40,7 @@ listed in:
 
 ### Convert declarations to standalone
 In this mode, the migration will find all of the components, directives and pipes, and convert them
-to standalone by setting `standalone: true` and adding any dependencies to the `imports` array.
+to standalone by removing `standalone: false` and adding any dependencies to the `imports` array.
 
 **Note:** NgModules which bootstrap a component are explicitly ignored in this step, because they
 are likely to be root modules and they would have to be bootstrapped using `bootstrapApplication`
@@ -62,6 +62,7 @@ export class AppModule {}
 @Component({
   selector: 'my-comp',
   template: '<div my-dir *ngIf="showGreeting">{{ "Hello" | myPipe }}</div>',
+  standalone: false,
 })
 export class MyComp {
   public showGreeting = true;
@@ -70,13 +71,13 @@ export class MyComp {
 
 ```typescript
 // my-dir.ts
-@Directive({selector: '[my-dir]'})
+@Directive({selector: '[my-dir]', standalone: false})
 export class MyDir {}
 ```
 
 ```typescript
 // my-pipe.ts
-@Pipe({name: 'myPipe', pure: true})
+@Pipe({name: 'myPipe', pure: true, standalone: false})
 export class MyPipe {}
 ```
 
@@ -94,7 +95,6 @@ export class AppModule {}
 @Component({
   selector: 'my-comp',
   template: '<div my-dir *ngIf="showGreeting">{{ "Hello" | myPipe }}</div>',
-  standalone: true,
   imports: [NgIf, MyDir, MyPipe]
 })
 export class MyComp {
@@ -104,13 +104,13 @@ export class MyComp {
 
 ```typescript
 // my-dir.ts
-@Directive({selector: '[my-dir]', standalone: true})
+@Directive({selector: '[my-dir]'})
 export class MyDir {}
 ```
 
 ```typescript
 // my-pipe.ts
-@Pipe({name: 'myPipe', pure: true, standalone: true})
+@Pipe({name: 'myPipe', pure: true})
 export class MyPipe {}
 ```
 
@@ -244,7 +244,7 @@ export class AppModule {}
 
 ```typescript
 // ./app/app.component.ts
-@Component({selector: 'app', template: 'hello'})
+@Component({selector: 'app', template: 'hello', standalone: false})
 export class AppComponent {}
 ```
 
@@ -279,7 +279,7 @@ export class ExportedConfigClass {}
 
 ```typescript
 // ./app/app.component.ts
-@Component({selector: 'app', template: 'hello', standalone: true})
+@Component({selector: 'app', template: 'hello'})
 export class AppComponent {}
 ```
 

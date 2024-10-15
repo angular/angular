@@ -139,6 +139,8 @@ export class DtsMetadataReader implements MetadataReader {
     const ngContentSelectors =
       def.type.typeArguments.length > 6 ? readStringArrayType(def.type.typeArguments[6]) : null;
 
+    // Note: the default value is still `false` here, because only legacy .d.ts files written before
+    // we had so many arguments use this default.
     const isStandalone =
       def.type.typeArguments.length > 7 && (readBooleanType(def.type.typeArguments[7]) ?? false);
 

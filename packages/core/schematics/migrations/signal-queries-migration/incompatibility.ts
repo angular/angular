@@ -16,13 +16,13 @@ import type {KnownQueries} from './known_queries';
 import type {GlobalUnitData} from './migration';
 
 export function markFieldIncompatibleInMetadata(
-  data: GlobalUnitData,
+  data: GlobalUnitData['problematicQueries'],
   id: ClassFieldUniqueKey,
   reason: FieldIncompatibilityReason,
 ) {
-  const existing = data.problematicQueries[id as ClassFieldUniqueKey];
+  const existing = data[id as ClassFieldUniqueKey];
   if (existing === undefined) {
-    data.problematicQueries[id as ClassFieldUniqueKey] = {
+    data[id as ClassFieldUniqueKey] = {
       fieldReason: reason,
       classReason: null,
     };

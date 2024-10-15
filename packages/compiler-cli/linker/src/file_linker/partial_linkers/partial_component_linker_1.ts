@@ -217,7 +217,7 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression>
     }
 
     return {
-      ...toR3DirectiveMeta(metaObj, this.code, this.sourceUrl),
+      ...toR3DirectiveMeta(metaObj, this.code, this.sourceUrl, version),
       viewProviders: metaObj.has('viewProviders') ? metaObj.getOpaque('viewProviders') : null,
       template: {
         nodes: template.nodes,

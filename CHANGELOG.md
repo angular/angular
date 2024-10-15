@@ -6,7 +6,7 @@
 ### core
 - The deprecated `factories` property in `KeyValueDiffers` has been removed.
 ### localize
-- The `name` option in the `ng add `@localize`` schematic has been removed in favor of the `project` option.
+- The `name` option in the `ng add @localize` schematic has been removed in favor of the `project` option.
 ### platform-browser
 - The deprecated `BrowserModule.withServerTransition` method has been removed. Please use the `APP_ID` DI token to set the application id instead.
 ### compiler

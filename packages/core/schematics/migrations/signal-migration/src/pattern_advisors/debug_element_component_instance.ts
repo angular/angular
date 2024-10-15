@@ -33,7 +33,7 @@ export class DebugElementComponentInstance {
     if (!ts.isIdentifier(node.name) || node.name.text !== 'componentInstance') {
       return null;
     }
-    // Check for `<>.query(..).componentInstance`.
+    // Check for `<>.query(..).<>`.
     if (
       !ts.isCallExpression(node.expression) ||
       !ts.isPropertyAccessExpression(node.expression.expression) ||
@@ -50,16 +50,23 @@ export class DebugElementComponentInstance {
 
     const queryArg = queryCall.arguments[0];
 
-    // Only detect simple references to directives in `query(...)`.
+    let typeExpr: ts.Node;
+
     if (
-      !ts.isCallExpression(queryArg) ||
-      queryArg.arguments.length !== 1 ||
-      !ts.isIdentifier(queryArg.arguments[0])
+      ts.isCallExpression(queryArg) &&
+      queryArg.arguments.length === 1 &&
+      ts.isIdentifier(queryArg.arguments[0])
     ) {
+      // Detect references, like: `query(By.directive(T))`.
+      typeExpr = queryArg.arguments[0];
+    } else if (ts.isIdentifier(queryArg)) {
+      // Detect references, like: `harness.query(T)`.
+      typeExpr = queryArg;
+    } else {
       return null;
     }
 
-    const symbol = this.checker.getSymbolAtLocation(queryArg.arguments[0]);
+    const symbol = this.checker.getSymbolAtLocation(typeExpr);
     if (
       symbol?.valueDeclaration === undefined ||
       !ts.isClassDeclaration(symbol?.valueDeclaration)

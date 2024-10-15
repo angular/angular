@@ -37,6 +37,13 @@ export function getMessageForFieldIncompatibility(
         short: `This ${fieldName.single} is inherited from a superclass, but the parent cannot be migrated.`,
         extra: 'Migrating this field would cause your build to fail.',
       };
+    case FieldIncompatibilityReason.DerivedIsIncompatible:
+      return {
+        short: `This ${fieldName.single} cannot be migrated because the field is overridden by a subclass.`,
+        extra:
+          'The field in the subclass is incompatible for migration, so migrating this field would ' +
+          'break your build.',
+      };
     case FieldIncompatibilityReason.PotentiallyNarrowedInTemplateButNoSupportYet:
       return {
         short:
@@ -67,6 +74,11 @@ export function getMessageForFieldIncompatibility(
       return {
         short: `There are references to this query that cannot be migrated automatically.`,
         extra: "For example, it's not possible to migrate `.changes` or `.dirty` trivially.",
+      };
+    case FieldIncompatibilityReason.SignalQueries__IncompatibleMultiUnionType:
+      return {
+        short: `Query type is too complex to automatically migrate.`,
+        extra: "The new query API doesn't allow us to migrate safely without breaking your app.",
       };
     case FieldIncompatibilityReason.SkippedViaConfigFilter:
       return {

@@ -15,7 +15,7 @@
   "lockFileMaintenance": {"enabled": true},
   "labels": ["target: patch", "area: build & ci", "action: merge"],
   "postUpgradeTasks": {
-    "commands": ["yarn install", "yarn update-generated-files"],
+    "commands": ["yarn install", "yarn ng-dev misc update-generated-files"],
     "executionMode": "update"
   },
   "ignoreDeps": [

@@ -166,3 +166,19 @@ export function partitionArray<T, F = T>(
   }
   return [truthy, falsy];
 }
+
+const V1_TO_18 = /^([1-9]|1[0-8])\./;
+
+export function getJitStandaloneDefaultForVersion(version: string): boolean {
+  if (version.startsWith('0.')) {
+    // 0.0.0 is always "latest", default is true.
+    return true;
+  }
+  if (V1_TO_18.test(version)) {
+    // Angular v2 - v18 default is false.
+    return false;
+  }
+
+  // All other Angular versions (v19+) default to true.
+  return true;
+}
