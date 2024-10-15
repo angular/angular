@@ -1676,7 +1676,9 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
     if (Array.isArray(ast.body)) {
       this.visitAllStatements(ast.body, context);
     } else {
-      this.visitExpression(ast.body, context);
+      // Note: `body.visitExpression`, rather than `this.visitExpressiont(body)`,
+      // because the latter won't recurse into the sub-expressions.
+      ast.body.visitExpression(this, context);
     }
 
     return this.visitExpression(ast, context);
