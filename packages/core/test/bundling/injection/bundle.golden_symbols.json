@@ -21,9 +21,6 @@
     "name": "ConsumerObserver"
   },
   {
-    "name": "DestroyRef"
-  },
-  {
     "name": "EMPTY_ARRAY"
   },
   {
@@ -94,9 +91,6 @@
   },
   {
     "name": "NgZone"
-  },
-  {
-    "name": "NodeInjectorDestroyRef"
   },
   {
     "name": "NullInjector"
@@ -262,9 +256,6 @@
   },
   {
     "name": "injectArgs"
-  },
-  {
-    "name": "injectDestroyRef"
   },
   {
     "name": "injectInjectorOnly"

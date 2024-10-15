@@ -180,9 +180,6 @@
     "name": "DefaultValueAccessor"
   },
   {
-    "name": "DestroyRef"
-  },
-  {
     "name": "DomAdapter"
   },
   {
@@ -430,9 +427,6 @@
   },
   {
     "name": "NodeInjector"
-  },
-  {
-    "name": "NodeInjectorDestroyRef"
   },
   {
     "name": "NodeInjectorFactory"
@@ -1305,9 +1299,6 @@
     "name": "injectChangeDetectorRef"
   },
   {
-    "name": "injectDestroyRef"
-  },
-  {
     "name": "injectElementRef"
   },
   {
@@ -1849,9 +1840,6 @@
   },
   {
     "name": "stashEventListener"
-  },
-  {
-    "name": "storeLViewOnDestroy"
   },
   {
     "name": "stringify"

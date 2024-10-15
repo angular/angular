@@ -123,9 +123,6 @@
     "name": "DefaultIterableDifferFactory"
   },
   {
-    "name": "DestroyRef"
-  },
-  {
     "name": "DomAdapter"
   },
   {
@@ -334,9 +331,6 @@
   },
   {
     "name": "NodeInjector"
-  },
-  {
-    "name": "NodeInjectorDestroyRef"
   },
   {
     "name": "NodeInjectorFactory"
@@ -1110,9 +1104,6 @@
     "name": "injectArgs"
   },
   {
-    "name": "injectDestroyRef"
-  },
-  {
     "name": "injectElementRef"
   },
   {
@@ -1492,9 +1483,6 @@
   },
   {
     "name": "stashEventListener"
-  },
-  {
-    "name": "storeLViewOnDestroy"
   },
   {
     "name": "stringify"
