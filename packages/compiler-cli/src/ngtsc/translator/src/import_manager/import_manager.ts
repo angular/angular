@@ -226,7 +226,15 @@ export class ImportManager
     // If a namespace import is requested, or the symbol should be forcibly
     // imported through namespace imports:
     if (request.exportSymbolName === null || forceGenerateNamespacesForNewImports) {
-      const namespaceImportName = `${this.config.namespaceImportPrefix}${this.nextUniqueIndex++}`;
+      let namespaceImportName = `${this.config.namespaceImportPrefix}${this.nextUniqueIndex++}`;
+
+      if (this.config.rewriter) {
+        namespaceImportName = this.config.rewriter.rewriteNamespaceImportIdentifier(
+          namespaceImportName,
+          request.exportModuleSpecifier,
+        );
+      }
+
       const namespaceImport = ts.factory.createNamespaceImport(
         this.config.generateUniqueIdentifier(sourceFile, namespaceImportName) ??
           ts.factory.createIdentifier(namespaceImportName),
