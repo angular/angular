@@ -16,14 +16,20 @@ import {DtsMetadataReader} from '../../../../compiler-cli/src/ngtsc/metadata';
 import {Reference} from '../../../../compiler-cli/src/ngtsc/imports';
 import {getAngularDecorators} from '../../../../compiler-cli/src/ngtsc/annotations';
 
-import {ProgramInfo, projectFile, UniqueID} from '../../utils/tsurge';
-
-/** Branded type for unique IDs of Angular `@Output`s. */
-export type OutputID = UniqueID<'output-node'>;
+import {ProgramInfo, projectFile} from '../../utils/tsurge';
+import {
+  ClassFieldDescriptor,
+  ClassFieldUniqueKey,
+} from '../signal-migration/src/passes/reference_resolution/known_fields';
+import {
+  HostBindingReference,
+  TemplateReference,
+} from '../signal-migration/src/passes/reference_resolution/reference_kinds';
+import {AST, PropertyRead} from '@angular/compiler';
 
 /** Type describing an extracted output query that can be migrated. */
 export interface ExtractedOutput {
-  id: OutputID;
+  id: ClassFieldUniqueKey;
   aliasParam?: ts.Expression;
 }
 
@@ -149,10 +155,13 @@ function getOutputDecorator(
 
 // THINK: this utility + type is not specific to @Output, really, maybe move it to tsurge?
 /** Computes an unique ID for a given Angular `@Output` property. */
-export function getUniqueIdForProperty(info: ProgramInfo, prop: ts.PropertyDeclaration): OutputID {
+export function getUniqueIdForProperty(
+  info: ProgramInfo,
+  prop: ts.PropertyDeclaration,
+): ClassFieldUniqueKey {
   const {id} = projectFile(prop.getSourceFile(), info);
   id.replace(/\.d\.ts$/, '.ts');
-  return `${id}@@${prop.parent.name ?? 'unknown-class'}@@${prop.name.getText()}` as OutputID;
+  return `${id}@@${prop.parent.name ?? 'unknown-class'}@@${prop.name.getText()}` as ClassFieldUniqueKey;
 }
 
 export function isTestRunnerImport(node: ts.Node) {
@@ -161,4 +170,54 @@ export function isTestRunnerImport(node: ts.Node) {
     return moduleSpecifier.includes('jasmine') || moduleSpecifier.includes('catalyst');
   }
   return false;
+}
+
+// TODO: code duplication with signals migration - sort it out
+
+/**
+ * Gets whether the given read is used to access
+ * the specified field.
+ *
+ * E.g. whether `<my-read>.toArray` is detected.
+ */
+export function checkNonTsReferenceAccessesField(
+  ref: HostBindingReference<ClassFieldDescriptor> | TemplateReference<ClassFieldDescriptor>,
+  fieldName: string,
+): PropertyRead | null {
+  const readFromPath = ref.from.readAstPath.at(-1) as PropertyRead | AST | undefined;
+  const parentRead = ref.from.readAstPath.at(-2) as PropertyRead | AST | undefined;
+
+  if (ref.from.read !== readFromPath) {
+    return null;
+  }
+  if (!(parentRead instanceof PropertyRead) || parentRead.name !== fieldName) {
+    return null;
+  }
+
+  return parentRead;
+}
+
+/**
+ * Gets whether the given reference is accessed to call the
+ * specified function on it.
+ *
+ * E.g. whether `<my-read>.toArray()` is detected.
+ */
+export function checkNonTsReferenceCallsField(
+  ref: TemplateReference<ClassFieldDescriptor> | HostBindingReference<ClassFieldDescriptor>,
+  fieldName: string,
+): PropertyRead | null {
+  const propertyAccess = checkNonTsReferenceAccessesField(ref, fieldName);
+  if (propertyAccess === null) {
+    return null;
+  }
+  const accessIdx = ref.from.readAstPath.indexOf(propertyAccess);
+  if (accessIdx === -1) {
+    return null;
+  }
+  const potentialRead = ref.from.readAstPath[accessIdx];
+  if (potentialRead === undefined) {
+    return null;
+  }
+  return potentialRead as PropertyRead;
 }

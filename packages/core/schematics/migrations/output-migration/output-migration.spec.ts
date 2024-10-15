@@ -241,6 +241,146 @@ describe('outputs', () => {
           `,
         );
       });
+
+      it('should migrate .next usage inside inlined template expressions', async () => {
+        await verify({
+          before: `
+            import {Component, Output, EventEmitter} from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              template: '<button (click)="someChange.next()">click me</button>'
+            })
+            export class TestCmpWithTemplate {
+              @Output() someChange = new EventEmitter();
+            }
+          `,
+          after: `
+            import {Component, output} from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              template: '<button (click)="someChange.emit()">click me</button>'
+            })
+            export class TestCmpWithTemplate {
+              readonly someChange = output();
+            }
+          `,
+        });
+      });
+
+      it('should migrate .next usage inside external template expressions', async () => {
+        const {fs} = await runTsurgeMigration(new OutputMigration(), [
+          {
+            name: absoluteFrom('/app.component.ts'),
+            isProgramRootFile: true,
+            contents: `
+              import {Component, Output, EventEmitter} from '@angular/core';
+
+              @Component({
+                selector: 'test-cmp',
+                templateUrl: '/app.component.html'
+              })
+              export class TestCmpWithTemplate {
+                @Output() someChange = new EventEmitter();
+              }
+            `,
+          },
+          {
+            name: absoluteFrom('/app.component.html'),
+            contents: `<button (click)="someChange.next()">click me</button>`,
+          },
+        ]);
+
+        const cmpActual = fs.readFile(absoluteFrom('/app.component.ts'));
+        const htmlActual = fs.readFile(absoluteFrom('/app.component.html'));
+
+        const cmpExpected = `
+              import {Component, output} from '@angular/core';
+
+              @Component({
+                selector: 'test-cmp',
+                templateUrl: '/app.component.html'
+              })
+              export class TestCmpWithTemplate {
+                readonly someChange = output();
+              }
+            `;
+        const htmlExpected = `<button (click)="someChange.emit()">click me</button>`;
+
+        expect(cmpActual).withContext(diffText(cmpExpected, cmpActual)).toEqual(cmpExpected);
+        expect(htmlActual).withContext(diffText(htmlExpected, htmlActual)).toEqual(htmlExpected);
+      });
+
+      it('should migrate .next usage inside host listeners', async () => {
+        await verify({
+          before: `
+            import {Component, Output, EventEmitter} from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              host: {
+                '(click)': 'someChange.next()'
+              },
+              template: ''
+            })
+            export class TestCmpWithTemplate {
+              @Output() someChange = new EventEmitter();
+            }
+          `,
+          after: `
+            import {Component, output} from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              host: {
+                '(click)': 'someChange.emit()'
+              },
+              template: ''
+            })
+            export class TestCmpWithTemplate {
+              readonly someChange = output();
+            }
+          `,
+        });
+      });
+
+      it('should migrate .next usage in @HostListener', async () => {
+        await verify({
+          before: `
+            import {Component, Output, EventEmitter, HostListener} from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              template: '<button (click)="triggerSomeChange()">click me</button>'
+            })
+            export class TestCmpWithTemplate {
+              @Output() someChange = new EventEmitter();
+
+              @HostListener('click')
+              triggerSomeChange() {
+                this.someChange.next();
+              }
+            }
+            `,
+          after: `
+            import {Component, HostListener, output} from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              template: '<button (click)="triggerSomeChange()">click me</button>'
+            })
+            export class TestCmpWithTemplate {
+              readonly someChange = output();
+
+              @HostListener('click')
+              triggerSomeChange() {
+                this.someChange.emit();
+              }
+            }
+            `,
+        });
+      });
     });
 
     describe('.complete migration', () => {

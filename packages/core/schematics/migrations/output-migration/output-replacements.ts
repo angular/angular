@@ -9,8 +9,16 @@
 import ts from 'typescript';
 
 import {ImportManager} from '../../../../compiler-cli/private/migrations';
-import {ProgramInfo, projectFile, ProjectFileID, Replacement, TextUpdate} from '../../utils/tsurge';
+import {
+  ProgramInfo,
+  ProjectFile,
+  projectFile,
+  ProjectFileID,
+  Replacement,
+  TextUpdate,
+} from '../../utils/tsurge';
 import {applyImportManagerChanges} from '../../utils/tsurge/helpers/apply_import_manager';
+import {AbsoluteSourceSpan} from '@angular/compiler';
 
 const printer = ts.createPrinter();
 
@@ -47,7 +55,7 @@ export function calculateDeclarationReplacement(
     outputCall,
   );
 
-  return prepareTextReplacement(
+  return prepareTextReplacementForNode(
     info,
     node,
     printer.printNode(ts.EmitHint.Unspecified, updatedOutputDeclaration, sf),
@@ -88,14 +96,29 @@ export function calculateImportReplacements(info: ProgramInfo, sourceFiles: Set<
 }
 
 export function calculateNextFnReplacement(info: ProgramInfo, node: ts.MemberName): Replacement {
-  return prepareTextReplacement(info, node, 'emit');
+  return prepareTextReplacementForNode(info, node, 'emit');
+}
+
+export function calculateNextFnReplacementInTemplate(
+  file: ProjectFile,
+  span: AbsoluteSourceSpan,
+): Replacement {
+  return prepareTextReplacement(file, 'emit', span.start, span.end);
+}
+
+export function calculateNextFnReplacementInHostBinding(
+  file: ProjectFile,
+  offset: number,
+  span: AbsoluteSourceSpan,
+): Replacement {
+  return prepareTextReplacement(file, 'emit', offset + span.start, offset + span.end);
 }
 
 export function calculateCompleteCallReplacement(
   info: ProgramInfo,
   node: ts.ExpressionStatement,
 ): Replacement {
-  return prepareTextReplacement(info, node, '', node.getFullStart());
+  return prepareTextReplacementForNode(info, node, '', node.getFullStart());
 }
 
 export function calculatePipeCallReplacement(
@@ -127,7 +150,7 @@ export function calculatePipeCallReplacement(
     );
 
     const replacements = [
-      prepareTextReplacement(
+      prepareTextReplacementForNode(
         info,
         node,
         printer.printNode(ts.EmitHint.Unspecified, pipeCallExp, sf),
@@ -145,7 +168,7 @@ export function calculatePipeCallReplacement(
   }
 }
 
-function prepareTextReplacement(
+function prepareTextReplacementForNode(
   info: ProgramInfo,
   node: ts.Node,
   replacement: string,
@@ -157,6 +180,22 @@ function prepareTextReplacement(
     new TextUpdate({
       position: start ?? node.getStart(),
       end: node.getEnd(),
+      toInsert: replacement,
+    }),
+  );
+}
+
+function prepareTextReplacement(
+  file: ProjectFile,
+  replacement: string,
+  start: number,
+  end: number,
+): Replacement {
+  return new Replacement(
+    file,
+    new TextUpdate({
+      position: start,
+      end: end,
       toInsert: replacement,
     }),
   );
