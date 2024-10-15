@@ -48,6 +48,7 @@ rollup_bundle(
         "//packages/core/schematics/migrations/explicit-standalone-flag:index.ts": "explicit-standalone-flag",
         "//packages/core/schematics/migrations/pending-tasks:index.ts": "pending-tasks",
         "//packages/core/schematics/migrations/provide-initializer:index.ts": "provide-initializer",
+        "//packages/core/schematics/migrations/http-xhr-backend:index.ts": "http-xhr-backend",
     },
     format = "cjs",
     link_workspace_root = True,
@@ -58,6 +59,7 @@ rollup_bundle(
     ],
     deps = [
         "//packages/core/schematics/migrations/explicit-standalone-flag",
+        "//packages/core/schematics/migrations/http-xhr-backend",
         "//packages/core/schematics/migrations/pending-tasks",
         "//packages/core/schematics/migrations/provide-initializer",
         "//packages/core/schematics/ng-generate/cleanup-unused-imports",

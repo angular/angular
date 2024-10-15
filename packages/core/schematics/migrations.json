@@ -15,6 +15,11 @@
       "description": "Replaces `APP_INITIALIZER`, `ENVIRONMENT_INITIALIZER` & `PLATFORM_INITIALIZER` respectively with `provideAppInitializer`, `provideEnvironmentInitializer` & `providePlatformInitializer`.",
       "factory": "./bundles/provide-initializer#migrate",
       "optional": true
+    }, 
+    "http-xhr-backend": {
+      "version": "19.0.0",
+      "description": "Updates provideHttpClient to add withXhr when the XhrBackend was used",
+      "factory": "./bundles/http-xhr-backend#migrate"
     }
   }
 }
