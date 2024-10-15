@@ -36,6 +36,7 @@ import {setIsRefreshingViews} from '../state';
 import {EffectScheduler, SchedulableEffect} from './root_effect_scheduler';
 import {USE_MICROTASK_EFFECT_BY_DEFAULT} from './patch';
 import {microtaskEffect} from './microtask_effect';
+import {untracked} from './untracked';
 
 let useMicrotaskEffectsByDefault = USE_MICROTASK_EFFECT_BY_DEFAULT;
 
@@ -274,9 +275,11 @@ export const BASE_EFFECT_NODE: Omit<EffectNode, 'fn' | 'destroy' | 'injector'> =
     },
 
     maybeCleanup(this: EffectNode): void {
-      while (this.cleanupFns?.length) {
-        this.cleanupFns.pop()!();
-      }
+      untracked(() => {
+        while (this.cleanupFns?.length) {
+          this.cleanupFns.pop()!();
+        }
+      });
     },
   }))();
 
