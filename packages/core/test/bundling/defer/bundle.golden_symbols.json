@@ -378,6 +378,9 @@
     "name": "NullInjector"
   },
   {
+    "name": "ON_COMPLETE_FNS"
+  },
+  {
     "name": "ObjectUnsubscribedError"
   },
   {
