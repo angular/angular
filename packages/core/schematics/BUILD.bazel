@@ -121,6 +121,10 @@ bundle_entrypoints = [
         "router-testing-module-migration",
         "packages/core/schematics/ng-generate/router-testing-module-migration/index.js",
     ],
+    [
+        "http-xhr-backend",
+        "packages/core/schematics/migrations/http-xhr-backend/index.js",
+    ],
 ]
 
 rollup.rollup(
@@ -133,6 +137,7 @@ rollup.rollup(
         "//:node_modules/semver",
         "//packages/core/schematics:tsconfig_build",
         "//packages/core/schematics/migrations/change-detection-eager",
+        "//packages/core/schematics/migrations/http-xhr-backend",
         "//packages/core/schematics/ng-generate/cleanup-unused-imports",
         "//packages/core/schematics/ng-generate/common-to-standalone-migration",
         "//packages/core/schematics/ng-generate/control-flow-migration",

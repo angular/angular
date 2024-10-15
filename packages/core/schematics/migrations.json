@@ -4,6 +4,11 @@
       "version": "22.0.0",
       "description": "Adds `ChangeDetectionStrategy.Eager` to all components.",
       "factory": "./bundles/change-detection-eager.cjs#migrate"
+    },
+    "http-xhr-backend": {
+      "version": "22.0.0",
+      "description": "Adds 'withXhr' to 'provideHttpClient' function calls when the 'HttpXhrBackend' is used. For more information see: https://angular.dev/api/common/http/withXhr",
+      "factory": "./bundles/http-xhr-backend.cjs#migrate"
     }
   }
 }
