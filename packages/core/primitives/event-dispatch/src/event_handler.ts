@@ -18,5 +18,5 @@ export interface EventHandlerInfo {
 
   capture: boolean;
 
-  options?: AddEventListenerOptions;
+  passive?: boolean;
 }

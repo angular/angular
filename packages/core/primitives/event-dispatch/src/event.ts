@@ -38,14 +38,14 @@ export function getBrowserEventType(eventType: string) {
  * @param element The element.
  * @param eventType The event type.
  * @param handler The handler function to install.
- * @param eventOptions An object that specifies characteristics about the event listener.
+ * @param passive A boolean value that, if `true`, indicates that the function specified by `handler` will never call `preventDefault()`.
  * @return Information needed to uninstall the event handler eventually.
  */
 export function addEventListener(
   element: Element,
   eventType: string,
   handler: (event: Event) => void,
-  options?: AddEventListenerOptions,
+  passive?: boolean,
 ): EventHandlerInfo {
   // All event handlers are registered in the bubbling
   // phase.
@@ -67,20 +67,13 @@ export function addEventListener(
     capture = true;
   }
 
-  if (options) {
-    // If options is passed in, use it to add the event listener. In the meantime,
-    // if capture is not specified in options, use our capture value.
-    if (typeof options.capture === 'boolean') {
-      capture = options.capture;
-    } else {
-      options.capture = capture;
-    }
-    element.addEventListener(eventType, handler, options);
+  if (typeof passive === 'boolean') {
+    element.addEventListener(eventType, handler, {capture, passive});
   } else {
     element.addEventListener(eventType, handler, capture);
   }
 
-  return {eventType, handler, capture, options};
+  return {eventType, handler, capture, passive};
 }
 
 /**
@@ -93,11 +86,15 @@ export function addEventListener(
  */
 export function removeEventListener(element: Element, info: EventHandlerInfo) {
   if (element.removeEventListener) {
-    element.removeEventListener(
-      info.eventType,
-      info.handler as EventListener,
-      info.options ?? info.capture,
-    );
+    if (typeof info.passive === 'boolean') {
+      element.removeEventListener(
+        info.eventType,
+        info.handler as EventListener,
+        {capture: info.capture, passive: info.passive} as unknown as EventListenerOptions,
+      );
+    } else {
+      element.removeEventListener(info.eventType, info.handler as EventListener, info.capture);
+    }
     // `detachEvent` is an old DOM API.
     // tslint:disable-next-line:no-any
   } else if ((element as any).detachEvent) {
