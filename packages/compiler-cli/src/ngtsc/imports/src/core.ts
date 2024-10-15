@@ -22,6 +22,11 @@ export interface ImportRewriter {
    * Optionally rewrite the given module specifier in the context of a given file.
    */
   rewriteSpecifier(specifier: string, inContextOfFile: string): string;
+
+  /**
+   * Optionally rewrite the identifier of a namespace import.
+   */
+  rewriteNamespaceImportIdentifier(specifier: string, moduleName: string): string;
 }
 
 /**
@@ -33,6 +38,10 @@ export class NoopImportRewriter implements ImportRewriter {
   }
 
   rewriteSpecifier(specifier: string, inContextOfFile: string): string {
+    return specifier;
+  }
+
+  rewriteNamespaceImportIdentifier(specifier: string): string {
     return specifier;
   }
 }
@@ -89,6 +98,10 @@ export class R3SymbolsImportRewriter implements ImportRewriter {
     }
 
     return relativePathToR3Symbols;
+  }
+
+  rewriteNamespaceImportIdentifier(specifier: string): string {
+    return specifier;
   }
 }
 
