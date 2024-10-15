@@ -15,9 +15,8 @@ import {
 } from '@angular/core';
 
 import {HttpBackend, HttpHandler, HttpInterceptorHandler} from './backend';
-import {NG_DEFAULT_HTTP_BACKEND} from './backend-default-value';
 import {HttpClient} from './client';
-import {FETCH_BACKEND, FetchBackend} from './fetch';
+import {FetchBackend} from './fetch';
 import {HTTP_INTERCEPTOR_FNS, HttpInterceptorFn, legacyInterceptorFnFactory} from './interceptor';
 import {
   jsonpCallbackContext,
@@ -27,7 +26,6 @@ import {
 } from './jsonp';
 import {HttpXhrBackend} from './xhr';
 import {XSRF_COOKIE_NAME, XSRF_ENABLED, XSRF_HEADER_NAME, xsrfInterceptorFn} from './xsrf';
-import {NG_DEFAULT_HTTP_BACKEND} from './backend-default-value';
 
 /**
  * Identifies a particular kind of `HttpFeature`.
@@ -113,13 +111,13 @@ export function provideHttpClient(
 
   const providers: Provider[] = [
     HttpClient,
-    NG_DEFAULT_HTTP_BACKEND,
+    FetchBackend,
     HttpInterceptorHandler,
     {provide: HttpHandler, useExisting: HttpInterceptorHandler},
     {
       provide: HttpBackend,
       useFactory: () => {
-        return inject(FETCH_BACKEND, {optional: true}) ?? inject(NG_DEFAULT_HTTP_BACKEND);
+        return inject(FetchBackend);
       },
     },
     {
@@ -298,7 +296,6 @@ export function withRequestsMadeViaParent(): HttpFeature<HttpFeatureKind.Request
 export function withFetch(): HttpFeature<HttpFeatureKind.Fetch> {
   return makeHttpFeature(HttpFeatureKind.Fetch, [
     FetchBackend,
-    {provide: FETCH_BACKEND, useExisting: FetchBackend},
     {provide: HttpBackend, useExisting: FetchBackend},
   ]);
 }
