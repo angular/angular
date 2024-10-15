@@ -167,15 +167,14 @@ export function partitionArray<T, F = T>(
   return [truthy, falsy];
 }
 
-const SINGLE_DIGIT_VERSIONS = /^\d\./;
-const V11_V18 = /1[12345678]\./;
+const V1_TO_18 = /^([1-9]|1[0-8])\./;
 
 export function getJitStandaloneDefaultForVersion(version: string): boolean {
   if (version.startsWith('0.')) {
     // 0.0.0 is always "latest", default is true.
     return true;
   }
-  if (SINGLE_DIGIT_VERSIONS.test(version) || V11_V18.test(version)) {
+  if (V1_TO_18.test(version)) {
     // Angular v2 - v18 default is false.
     return false;
   }
