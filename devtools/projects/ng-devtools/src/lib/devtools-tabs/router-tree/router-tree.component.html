@@ -1,8 +1,16 @@
 <div class="router-tree-wrapper">
-  <div class="no-routes" [hidden]="routes()?.length !== 0">
-    <h1>There are no routes to display.</h1>
+  <div>
+    <input
+      matInput
+      (input)="searchRoutes($event)"
+      placeholder="Search routes"
+      class="filter-input"
+    />
+    <mat-checkbox (change)="togglePathSettings()">Show Full Path </mat-checkbox>
   </div>
-  <svg #svgContainer class="svg-container" [hidden]="routes()?.length === 0">
-    <g #mainGroup></g>
-  </svg>
+  <section #routerTree class="router-tree router-graph router-tree-container">
+    <svg #routerTreeSvgContainer>
+      <g #routerTreeMainGroup></g>
+    </svg>
+  </section>
 </div>

@@ -30,6 +30,10 @@ import {AppTodoComponent} from './app-todo.component';
             loadChildren: () => import('./about/about.routes').then((m) => m.ABOUT_ROUTES),
           },
           {
+            path: 'routes',
+            loadChildren: () => import('./routes/routes.module').then((m) => m.RoutesModule),
+          },
+          {
             path: '**',
             redirectTo: 'app',
           },

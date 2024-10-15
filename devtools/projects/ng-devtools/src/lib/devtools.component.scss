@@ -151,6 +151,11 @@
         font-weight: 300;
       }
 
+      .node-search {
+        border-width: 4px !important;
+        border-style: groove !important;
+      }
+
       .node-environment {
         border: 1px solid #ff7a7e;
         background: #f9c2c5;
@@ -166,6 +171,15 @@
 
         &:hover {
           background: #8838f7;
+        }
+      }
+
+      .node-lazy {
+        border-color: oklch(0.65 0.25 266/1);
+        background: #8bc1ff;
+
+        &:hover {
+          background: #8bc1ff;
         }
       }
 
