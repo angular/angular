@@ -7,6 +7,7 @@
  */
 import {dirname, relative, resolve, toRelativeImport} from '../../file_system';
 import {stripExtension} from '../../file_system/src/util';
+import ts from 'typescript';
 
 export function relativePathBetween(from: string, to: string): string | null {
   const relativePath = stripExtension(relative(dirname(resolve(from)), resolve(to)));
@@ -16,4 +17,32 @@ export function relativePathBetween(from: string, to: string): string | null {
 export function normalizeSeparators(path: string): string {
   // TODO: normalize path only for OS that need it.
   return path.replace(/\\/g, '/');
+}
+
+/**
+ * Attempts to generate a project-relative path
+ * @param sourceFile
+ * @param rootDirs
+ * @param compilerHost
+ * @returns
+ */
+export function getProjectRelativePath(
+  sourceFile: ts.SourceFile,
+  rootDirs: readonly string[],
+  compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
+): string | null {
+  // Note: we need to pass both the file name and the root directories through getCanonicalFileName,
+  // because the root directories might've been passed through it already while the source files
+  // definitely have not. This can break the relative return value, because in some platforms
+  // getCanonicalFileName lowercases the path.
+  const filePath = compilerHost.getCanonicalFileName(sourceFile.fileName);
+
+  for (const rootDir of rootDirs) {
+    const rel = relative(compilerHost.getCanonicalFileName(rootDir), filePath);
+    if (!rel.startsWith('..')) {
+      return rel;
+    }
+  }
+
+  return null;
 }
