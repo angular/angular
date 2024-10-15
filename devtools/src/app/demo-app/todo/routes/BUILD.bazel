@@ -1,0 +1,15 @@
+load("//devtools/tools:ng_module.bzl", "ng_module")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "routes",
+    srcs = [
+        "routes.component.ts",
+        "routes.module.ts",
+    ],
+    deps = [
+        "//packages/core",
+        "//packages/router",
+    ],
+)
