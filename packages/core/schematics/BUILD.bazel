@@ -137,6 +137,10 @@ bundle_entrypoints = [
         "router-testing-module-migration",
         "packages/core/schematics/migrations/router-testing-module-migration/index.js",
     ],
+    [
+        "http-xhr-backend",
+        "packages/core/schematics/migrations/http-xhr-backend/index.js",
+    ],
 ]
 
 rollup.rollup(
@@ -153,6 +157,7 @@ rollup.rollup(
         "//packages/core/schematics/migrations/bootstrap-options-migration",
         "//packages/core/schematics/migrations/common-to-standalone-migration",
         "//packages/core/schematics/migrations/control-flow-migration",
+        "//packages/core/schematics/migrations/http-xhr-backend",
         "//packages/core/schematics/migrations/ngclass-to-class-migration",
         "//packages/core/schematics/migrations/ngstyle-to-style-migration",
         "//packages/core/schematics/migrations/router-current-navigation",
