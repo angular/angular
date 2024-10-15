@@ -6,6 +6,7 @@ import {Component, NgModule} from '@angular/core';
 	{{ (1 % 2) + 3 / 4 * 5 }}
 	{{ +1 }}
   {{ typeof {} === 'object' }}
+  {{ !(typeof {} === 'object') }}
 `,
     standalone: false
 })

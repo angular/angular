@@ -732,7 +732,7 @@ export class AstTransformer implements AstVisitor {
     return new PrefixNot(ast.span, ast.sourceSpan, ast.expression.visit(this));
   }
 
-  visitTypeofExpresion(ast: PrefixNot, context: any): AST {
+  visitTypeofExpresion(ast: TypeofExpression, context: any): AST {
     return new TypeofExpression(ast.span, ast.sourceSpan, ast.expression.visit(this));
   }
 
