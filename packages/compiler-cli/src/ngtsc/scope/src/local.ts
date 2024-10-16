@@ -175,9 +175,12 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
    * defined, or the string `'error'` if the scope contained errors.
    */
   getScopeOfModule(clazz: ClassDeclaration): LocalModuleScope | null {
-    return this.moduleToRef.has(clazz)
-      ? this.getScopeOfModuleReference(this.moduleToRef.get(clazz)!)
-      : null;
+    if (this.moduleToRef.has(clazz)) {
+      const ref = this.moduleToRef.get(clazz)!;
+      return this.getScopeOfModuleReference(ref, ref);
+    }
+
+    return null;
   }
 
   /**
@@ -243,7 +246,10 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
   /**
    * Implementation of `getScopeOfModule` which accepts a reference to a class.
    */
-  private getScopeOfModuleReference(ref: Reference<ClassDeclaration>): LocalModuleScope | null {
+  private getScopeOfModuleReference(
+    ref: Reference<ClassDeclaration>,
+    lookupRoot: Reference<ClassDeclaration>,
+  ): LocalModuleScope | null {
     if (this.cache.has(ref.node)) {
       return this.cache.get(ref.node)!;
     }
@@ -299,7 +305,19 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
 
     // 1) process imports.
     for (const decl of ngModule.imports) {
-      const importScope = this.getExportedScope(decl, diagnostics, ref.node, 'import');
+      if (decl.node === lookupRoot.node) {
+        diagnostics.push(
+          makeDiagnostic(
+            ErrorCode.NGMODULE_INVALID_IMPORT,
+            getDiagnosticNode(decl, ngModule.rawImports),
+            'NgModule cannot import itself',
+          ),
+        );
+        isPoisoned = true;
+        continue;
+      }
+
+      const importScope = this.getExportedScope(decl, lookupRoot, diagnostics, ref.node, 'import');
       if (importScope !== null) {
         if (importScope === 'invalid' || importScope.exported.isPoisoned) {
           // An import was an NgModule but contained errors of its own. Record this as an error too,
@@ -425,8 +443,20 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
     // export maps. Directives/pipes are different - they might be exports of declared types or
     // imported types.
     for (const decl of ngModule.exports) {
+      if (decl.node === lookupRoot.node) {
+        diagnostics.push(
+          makeDiagnostic(
+            ErrorCode.NGMODULE_INVALID_EXPORT,
+            getDiagnosticNode(decl, ngModule.rawExports),
+            'NgModule cannot export itself',
+          ),
+        );
+        isPoisoned = true;
+        continue;
+      }
+
       // Attempt to resolve decl as an NgModule.
-      const exportScope = this.getExportedScope(decl, diagnostics, ref.node, 'export');
+      const exportScope = this.getExportedScope(decl, lookupRoot, diagnostics, ref.node, 'export');
       if (exportScope === 'invalid' || (exportScope !== null && exportScope.exported.isPoisoned)) {
         // An export was an NgModule but contained errors of its own. Record this as an error too,
         // because this scope is always going to be incorrect if one of its exports could not be
@@ -541,6 +571,7 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
    */
   private getExportedScope(
     ref: Reference<ClassDeclaration>,
+    lookupRoot: Reference<ClassDeclaration>,
     diagnostics: ts.Diagnostic[],
     ownerForErrors: DeclarationNode,
     type: 'import' | 'export',
@@ -566,7 +597,7 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
       return this.dependencyScopeReader.resolve(ref);
     } else {
       // The NgModule is declared locally in the current program. Resolve it from the registry.
-      return this.getScopeOfModuleReference(ref);
+      return this.getScopeOfModuleReference(ref, lookupRoot);
     }
   }
 
