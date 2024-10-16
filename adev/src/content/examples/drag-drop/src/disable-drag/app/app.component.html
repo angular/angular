@@ -1,0 +1,8 @@
+<div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+  @for (item of items; track item) {
+    <div
+      class="example-box"
+      cdkDrag
+      [cdkDragDisabled]="item.disabled">{{item.value}}</div>
+  }
+</div>
