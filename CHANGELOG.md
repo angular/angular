@@ -1,3 +1,29 @@
+<a name="19.0.0-next.10"></a>
+# 19.0.0-next.10 (2024-10-16)
+## Breaking Changes
+### core
+- Angular directives, components and pipes are now standalone by default. Specify `standalone: false` for declarations that are currently declared in `@NgModule`s. `ng update` for v19 will take care of this automatically.
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0c9d721ac1](https://github.com/angular/angular/commit/0c9d721ac157662b2602cf0278ba4b79325f6882) | feat | add support for the `typeof` keyword in template expressions. ([#58183](https://github.com/angular/angular/pull/58183)) |
+| [a3cb530d84](https://github.com/angular/angular/commit/a3cb530d846bf4d15802b9f42b6dee5c9a3a08ee) | fix | handle typeof expressions in serializer ([#58217](https://github.com/angular/angular/pull/58217)) |
+| [ba4340875a](https://github.com/angular/angular/commit/ba4340875ac8e338ff1390fc7897eecc704ef7c5) | fix | ignore placeholder-only i18n messages ([#58154](https://github.com/angular/angular/pull/58154)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [231e6ff6ca](https://github.com/angular/angular/commit/231e6ff6ca0dae0289a03615bcaed29455c2d4b8) | feat | generate the HMR replacement module ([#58205](https://github.com/angular/angular/pull/58205)) |
+| [fb44323c51](https://github.com/angular/angular/commit/fb44323c51da5a86853aafd8a70ce0c25d6c0d7f) | fix | incorrectly generating relative file paths on case-insensitive platforms ([#58150](https://github.com/angular/angular/pull/58150)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6b8c494d05](https://github.com/angular/angular/commit/6b8c494d05e545830fffb9626153480af6339ddc) | feat | flipping the default value for `standalone` to `true` ([#58169](https://github.com/angular/angular/pull/58169)) |
+| [3f1e7ab6ae](https://github.com/angular/angular/commit/3f1e7ab6ae984149004c449c04301b434ea64d2a) | feat | promote `outputFromObservable` & `outputToObservable` to stable. ([#58214](https://github.com/angular/angular/pull/58214)) |
+| [97c44a1d6c](https://github.com/angular/angular/commit/97c44a1d6c41be250d585fba5af2bc2af4d98ae2) | feat | Promote `takeUntilDestroyed` to stable. ([#58200](https://github.com/angular/angular/pull/58200)) |
+| [819ff034ce](https://github.com/angular/angular/commit/819ff034ce7cf014cedef60510b83af9340efa71) | feat | treat directives, pipes, components as  by default ([#58229](https://github.com/angular/angular/pull/58229)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.0.0-next.9"></a>
 # 19.0.0-next.9 (2024-10-10)
 ## Breaking Changes
@@ -161,31 +187,31 @@
 ## Breaking Changes
 ### core
 - Changes to effect timing which generally has two implications:
-  
+
   * effects which are triggered outside of change detection run as part of
     the change detection process instead of as a microtask. Depending on the
     specifics of application/test setup, this can result in them executing
     earlier or later (or requiring additional test steps to trigger; see below
     examples).
-  
+
   * effects which are triggered during change detection (e.g. by input
     signals) run _earlier_, before the component's template.
-  
+
   We've seen a few common failure cases:
-  
+
   * Tests which used to rely on the `Promise` timing of effects now need to
     `await whenStable()` or call `.detectChanges()` in order for effects to
     run.
-  
+
   * Tests which use faked clocks may need to fast-forward/flush the clock to
     cause effects to run.
-  
+
   * `effect()`s triggered during CD could rely on the application being fully
     rendered (for example, they could easily read computed styles, etc). With
     the change, they run before the component's updates and can get incorrect
     answers. The recent `afterRenderEffect()` API is a natural replacement for
     this style of effect.
-  
+
   * `effect()`s which synchronize with the forms system are particularly
     timing-sensitive and might need to adjust their initialization timing.
 - `ExperimentalPendingTasks` has been renamed to
@@ -337,18 +363,18 @@
 ## Breaking Changes
 ### core
 - Render default fallback with empty `projectableNodes`.
-  
+
   When passing an empty array to `projectableNodes` in the `createComponent` API, the default fallback content of the `ng-content` will be rendered if present. To prevent rendering the default content, pass `document.createTextNode('')` as a `projectableNode`.
-  
+
   For example:
-  
+
   ```ts
   // The first ng-content will render the default fallback content if present
   createComponent(MyComponent. { projectableNodes: [[], [secondNode]] });
-  
+
   // To prevent projecting the default fallback content:
   createComponent(MyComponent. { projectableNodes: [[document.createTextNode('')], [secondNode]] });
-  
+
   ```
 - The timers that are used for zone coalescing and hybrid
   mode scheduling (which schedules an application state synchronization
@@ -468,13 +494,13 @@
   resolved by ensuring the test environment is set up correctly to
   complete change detection successfully. There are two alternatives to
   catch the errors:
-  
+
   * Instead of waiting for automatic change detection to happen, trigger
     it synchronously and expect the error. For example, a jasmine test
     could write `expect(() => TestBed.inject(ApplicationRef).tick()).toThrow()`
   * `TestBed` will reject any outstanding `ComponentFixture.whenStable` promises. A jasmine test,
   for example, could write `expectAsync(fixture.whenStable()).toBeRejected()`.
-  
+
   As a last resort, you can configure errors to _not_ be rethrown by
   setting `rethrowApplicationErrors` to `false` in `TestBed.configureTestingModule`.
 ### router
@@ -885,19 +911,19 @@
   Also, make sure your tests wait for the stability promise. We found many
   examples of tests that did not, meaning the expectations did not execute
   within the test body.
-  
+
   In addition, `ComponentFixture.isStable` would synchronously switch to
   true in some scenarios but will now always be asynchronous.
 - Angular will ensure change detection runs, even when the state update originates from
   outside the zone, tests may observe additional rounds of change
   detection compared to the previous behavior.
-  
+
   This change will be more likely to impact existing unit tests.
   This should usually be seen as more correct and the test should be updated,
   but in cases where it is too much effort to debug, the test can revert to the old behavior by adding
   `provideZoneChangeDetection({schedulingMode: NgZoneSchedulingMode.NgZoneOnly})`
   to the `TestBed` providers.
-  
+
   Similarly, applications which may want to update state outside the zone
   and _not_ trigger change detection can add
   `provideZoneChangeDetection({schedulingMode: NgZoneSchedulingMode.NgZoneOnly})`
@@ -944,7 +970,7 @@
   removed. This information is tracked with zones.
 ### http
 - By default we now prevent caching of HTTP requests that require authorization . To opt-out from this behaviour use the `includeRequestsWithAuthHeaders` option in `withHttpTransferCache`.
-  
+
   Example:
   ```ts
   withHttpTransferCache({
@@ -960,7 +986,7 @@
 - deprecated `ServerTransferStateModule` has been removed. `TransferState` can be use without providing this module.
 - deprecated `useAbsoluteUrl` and `baseUrl` been removed from `PlatformConfig`. Provide and absolute `url` instead.
 - Legacy handling or Node.js URL parsing has been removed from `ServerPlatformLocation`.
-  
+
   The main differences are;
     - `pathname` is always suffixed with a `/`.
     - `port` is empty when `http:` protocol and port in url is `80`
@@ -999,7 +1025,7 @@
   delimiters instead.
 ### http
 - `HttpClientModule`, `HttpClientXsrfModule` and `HttpClientJsonpModule`
-  
+
   As mentionned, those modules can be replaced by provider function only.
 ### animations
 | Commit | Type | Description |
@@ -1446,7 +1472,7 @@
 
 <a name="17.1.2"></a>
 # 17.1.2 (2024-01-31)
-### 
+###
 | Commit | Type | Description |
 | -- | -- | -- |
 | [ccddacf11d](https://github.com/angular/angular/commit/ccddacf11deaebeda12e1bdb6e93ec401397d352) | fix | cta clickability issue in adev homepage. ([#52905](https://github.com/angular/angular/pull/52905)) |
@@ -1808,9 +1834,9 @@ Live long and prosper 🖖🏻
 [Blog post "Angular v17 is now available"](http://goo.gle/angular-v17).
 
 ## Breaking Changes
-### 
+###
 - Node.js v16 support has been removed and the minimum support version has been bumped to 18.13.0.
-  
+
   Node.js v16 is planned to be End-of-Life on 2023-09-11. Angular will stop supporting Node.js v16 in Angular v17. For Node.js release schedule details, please see: https://github.com/nodejs/release#release-schedule
 ### common
 - the NgSwitch directive now defaults to the === equality operator,
@@ -1824,15 +1850,15 @@ Live long and prosper 🖖🏻
 - The  `mutate` method was removed from the `WritableSignal` interface and completely
   dropped from the public API surface. As an alternative, please use the `update` method and
   make immutable changes to the object.
-  
+
   Example before:
-  
+
   ```typescript
   items.mutate(itemsArray => itemsArray.push(newItem));
   ```
-  
+
   Example after:
-  
+
   ```typescript
   items.update(itemsArray => [itemsArray, …newItem]);
   ```
@@ -1848,7 +1874,7 @@ Live long and prosper 🖖🏻
   `detectChanges` on that component's `ChangeDetectorRef`.
 ### platform-browser
 - `REMOVE_STYLES_ON_COMPONENT_DESTROY` default value is now `true`. This causes CSS of components to be removed from the DOM when destroyed. You retain the previous behaviour by providing the `REMOVE_STYLES_ON_COMPONENT_DESTROY` injection token.
-  
+
   ```ts
   import {REMOVE_STYLES_ON_COMPONENT_DESTROY} from '@angular/platform-browser';
   ...
@@ -1871,13 +1897,13 @@ Live long and prosper 🖖🏻
   This should instead be configured through the provideRouter or RouterModule.forRoot APIs.
 - The following Router properties have been removed from
   the public API:
-  
+
   - canceledNavigationResolution
   - paramsInheritanceStrategy
   - titleStrategy
   - urlUpdateStrategy
   - malformedUriErrorHandler
-  
+
   These should instead be configured through the `provideRouter` or
   `RouterModule.forRoot` APIs.
 - The `setupTestingRouter` function has been removed. Use
@@ -1888,7 +1914,7 @@ Live long and prosper 🖖🏻
   handled in the `UrlSerializer.parse` method.
 ### zone.js
 - Deep and legacy `dist/` imports like `zone.js/bundles/zone-testing.js` and `zone.js/dist/zone` are no longer allowed. `zone-testing-bundle` and `zone-testing-node-bundle` are also no longer part of the package.
-  
+
   The proper way to import `zone.js` and `zone.js/testing` is:
   ```js
   import 'zone.js';
@@ -1899,7 +1925,7 @@ Live long and prosper 🖖🏻
 - The `AnimationDriver.NOOP` symbol is deprecated, use `NoopAnimationDriver` instead.
 ### core
 - `ChangeDetectorRef.checkNoChanges` is deprecated.
-  
+
   Test code should use `ComponentFixture` instead of `ChangeDetectorRef`.
   Application code should not call `ChangeDetectorRef.checkNoChanges` directly.
 - Swapping out the context object for `EmbeddedViewRef`
@@ -1908,12 +1934,12 @@ Live long and prosper 🖖🏻
   simple assignments in most cases, or `Object.assign` , or alternatively
   still replace the full object by using a `Proxy` (see `NgTemplateOutlet`
   as an example).
-  
+
   Also adds a warning if the deprecated
 - NgProbeToken
-  
+
   The `NgProbeToken` is not used internally since the transition from View Engine to Ivy. The token has no utility and can be removed from applications and libraries.
-### 
+###
 | Commit | Type | Description |
 | -- | -- | -- |
 | [59aa0634f4](https://github.com/angular/angular/commit/59aa0634f4d4694203f2a69c40017fe5a3962514) | build | remove support for Node.js v16 ([#51755](https://github.com/angular/angular/pull/51755)) |
@@ -2527,7 +2553,7 @@ Live long and prosper 🖖🏻
 [Blog post "Angular v16 is now available"](https://goo.gle/angular-v16).
 
 ## Breaking Changes
-### 
+###
 - Angular Compatibility Compiler (ngcc) has been removed and as a result Angular View Engine libraries will no longer work
 - Deprecated `EventManager` method `addGlobalEventListener` has been removed as it is not used by Ivy.
 ### bazel
@@ -2550,14 +2576,14 @@ Live long and prosper 🖖🏻
   The ideal fix would be to update the code to instead be compatible with
   `MockPlatformLocation` instead.
 -  If the 'ngTemplateOutletContext' is different from the context, it will result in a compile-time error.
-  
+
   Before the change, the following template was compiling:
-  
+
   ```typescript
   interface MyContext {
     $implicit: string;
   }
-  
+
   @Component({
     standalone: true,
     imports: [NgTemplateOutlet],
@@ -2575,7 +2601,7 @@ Live long and prosper 🖖🏻
   }
   ```
   However, it does not compile now because the 'xxx' property does not exist in 'MyContext', resulting in the error: 'Type '{ $implicit: string; xxx: string; }' is not assignable to type 'MyContext'.'
-  
+
   The solution is either:
   - add the 'xxx' property to 'MyContext' with the correct type or
   - add '$any(...)' inside the template to make the error disappear. However, adding '$any(...)' does not correct the error but only preserves the previous behavior of the code.
@@ -2594,7 +2620,7 @@ Live long and prosper 🖖🏻
   value differs from the previous call to `setInput`.
 - `RendererType2.styles` no longer accepts a nested arrays.
 - The `APP_ID` token value is no longer randomly generated. If you are bootstrapping multiple application on the same page you will need to set to provide the `APP_ID` yourself.
-  
+
   ```ts
   bootstrapApplication(ComponentA, {
     providers: [
@@ -2605,21 +2631,21 @@ Live long and prosper 🖖🏻
   ```
 - The `ReflectiveInjector` and related symbols were removed. Please update the code to avoid references to the `ReflectiveInjector` symbol. Use `Injector.create` as a replacement to create an injector instead.
 - Node.js v14 support has been removed
-  
+
   Node.js v14 is planned to be End-of-Life on 2023-04-30. Angular will stop supporting Node.js v14 in Angular v16. Angular v16 will continue to officially support Node.js versions v16 and v18.
 ### platform-browser
 - The deprecated `BrowserTransferStateModule` was removed, since it's no longer needed. The `TransferState` class can be injected without providing the module. The `BrowserTransferStateModule` was empty starting from v14 and you can just remove the reference to that module from your applications.
 ### platform-server
 - Users that are using SSR with JIT mode will now need to add  `import to @angular/compiler` before bootstrapping the application.
-  
+
   **NOTE:** this does not effect users using the Angular CLI.
 - `renderApplication` method no longer accepts a root component as first argument. Instead, provide a bootstrapping function that returns a `Promise<ApplicationRef>`.
-  
+
   Before
   ```ts
   const output: string = await renderApplication(RootComponent, options);
   ```
-  
+
   Now
   ```ts
   const bootstrap = () => bootstrapApplication(RootComponent, appConfig);
@@ -2654,14 +2680,14 @@ Live long and prosper 🖖🏻
 ## Deprecations
 ### core
 -  `makeStateKey`, `StateKey` and  `TransferState` exports have been moved from `@angular/platform-browser` to `@angular/core`. Please update the imports.
-  
+
   ```diff
   - import {makeStateKey, StateKey, TransferState} from '@angular/platform-browser';
   + import {makeStateKey, StateKey, TransferState} from '@angular/core';
   ```
 - `EnvironmentInjector.runInContext` is now deprecated, with
   `runInInjectionContext` functioning as a direct replacement:
-  
+
   ```typescript
   // Previous method version (deprecated):
   envInjector.runInContext(fn);
@@ -2674,7 +2700,7 @@ Live long and prosper 🖖🏻
 ### platform-browser
 - `BrowserModule.withServerTransition` has been deprecated. `APP_ID` should be used instead to set the application ID.
   NB: Unless, you render multiple Angular applications on the same page, setting an application ID is not necessary.
-  
+
   Before:
   ```ts
   imports: [
@@ -2682,7 +2708,7 @@ Live long and prosper 🖖🏻
     ...
   ]
   ```
-  
+
   After:
   ```ts
   imports: [
@@ -2694,7 +2720,7 @@ Live long and prosper 🖖🏻
 - `ApplicationConfig` has moved, please import `ApplicationConfig` from `@angular/core` instead.
 ### platform-server
 - `PlatformConfig.baseUrl` and `PlatformConfig.useAbsoluteUrl` platform-server config options  are deprecated as these were not used.
-### 
+###
 | Commit | Type | Description |
 | -- | -- | -- |
 | [48aa96ea13](https://github.com/angular/angular/commit/48aa96ea13ebfadf2f6b13516c7702dae740a7be) | refactor | remove Angular Compatibility Compiler (ngcc) ([#49101](https://github.com/angular/angular/pull/49101)) |
@@ -3003,11 +3029,11 @@ Alan Agius, Andrew Kushnir, Aristeidis Bampakos, Craig Spence, Doug Parker, Ivá
 <a name="15.2.0"></a>
 # 15.2.0 (2023-02-22)
 ## Deprecations
-### 
+###
 - Class and `InjectionToken` guards and resolvers are
   deprecated. Instead, write guards as plain JavaScript functions and
   inject dependencies with `inject` from `@angular/core`.
-### 
+###
 | Commit | Type | Description |
 | -- | -- | -- |
 | [926c35f4ac](https://github.com/angular/angular/commit/926c35f4ac70f5e4d142e545d6d056dd67aac97b) | docs | Deprecate class and InjectionToken and resolvers ([#47924](https://github.com/angular/angular/pull/47924)) |
@@ -3172,21 +3198,21 @@ Alan Agius, Alex Rickabaugh, Andrew Scott, Aristeidis Bampakos, Bob Watson, Jens
 - CanLoad guards in the Router are deprecated. Use CanMatch
   instead.
 - router writable properties
-  
+
   The following strategies are meant to be configured by registering the
   application strategy in DI via the `providers` in the root `NgModule` or
   `bootstrapApplication`:
   * `routeReuseStrategy`
   * `titleStrategy`
   * `urlHandlingStrategy`
-  
+
   The following options are meant to be configured using the options
   available in `RouterModule.forRoot` or `provideRouter`.
   * `onSameUrlNavigation`
   * `paramsInheritanceStrategy`
   * `urlUpdateStrategy`
   * `canceledNavigationResolution`
-  
+
   The following options are available in `RouterModule.forRoot` but not
   available in `provideRouter`:
   * `malformedUriErrorHandler` - This was found to not be used anywhere
@@ -3381,23 +3407,23 @@ Andrew Kushnir
 - Keyframes names are now prefixed with the component's "scope name".
   For example, the following keyframes rule in a component definition,
   whose "scope name" is host-my-cmp:
-  
+
      @keyframes foo { ... }
-  
+
   will become:
-  
+
      @keyframes host-my-cmp_foo { ... }
-  
+
   Any TypeScript/JavaScript code which relied on the names of keyframes rules
   will no longer match.
-  
+
   The recommended solutions in this case are to either:
   - change the component's view encapsulation to the `None` or `ShadowDom`
   - define keyframes rules in global stylesheets (e.g styles.css)
   - define keyframes rules programmatically in code.
 ### compiler-cli
 - Invalid constructors for DI may now report compilation errors
-  
+
   When a class inherits its constructor from a base class, the compiler may now
   report an error when that constructor cannot be used for DI purposes. This may
   either be because the base class is missing an Angular decorator such as
@@ -3406,7 +3432,7 @@ Andrew Kushnir
   These situations used to behave unexpectedly at runtime, where the class may be
   constructed without any of its constructor parameters, so this is now reported
   as an error during compilation.
-  
+
   Any new errors that may be reported because of this change can be resolved either
   by decorating the base class from which the constructor is inherited, or by adding
   an explicit constructor to the class for which the error is reported.
@@ -3440,16 +3466,16 @@ Andrew Kushnir
 ### core
 - - The ability to pass an `NgModule` to the `providedIn` option for
   `@Injectable` and `InjectionToken` is now deprecated.
-  
+
   `providedIn: NgModule` was intended to be a tree-shakable alternative to
   NgModule providers. It does not have wide usage, and in most cases is used
   incorrectly, in circumstances where `providedIn: 'root'` should be
   preferred. If providers should truly be scoped to a specific NgModule, use
   `NgModule.providers` instead.
-  
+
   - The ability to set `providedIn: 'any'` for an `@Injectable` or
   `InjectionToken` is now deprecated.
-  
+
   `providedIn: 'any'` is an option with confusing semantics and is almost
   never used apart from a handful of esoteric cases internal to the framework.
 - The bit field signature of `Injector.get()` has been deprecated, in favor of the new options object.
@@ -4052,16 +4078,16 @@ Adrien Crivelli, Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Dyla
 - Keyframes names are now prefixed with the component's "scope name".
   For example, the following keyframes rule in a component definition,
   whose "scope name" is host-my-cmp:
-  
+
      @keyframes foo { ... }
-  
+
   will become:
-  
+
      @keyframes host-my-cmp_foo { ... }
-  
+
   Any TypeScript/JavaScript code which relied on the names of keyframes rules
   will no longer match.
-  
+
   The recommended solutions in this case are to either:
   - change the component's view encapsulation to the `None` or `ShadowDom`
   - define keyframes rules in global stylesheets (e.g styles.css)
@@ -4071,23 +4097,23 @@ Adrien Crivelli, Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Dyla
 - Support for Node.js v12 has been removed as it will become EOL on 2022-04-30. Please use Node.js v14.15 or later.
 - TypeScript versions older than 4.6 are no longer supported.
 - Forms [email] input coercion
-  
+
   Forms [email] input value will be considered as true if it is defined with any value rather
   than false and 'false'.
 - Since Ivy, TestBed doesn't use AOT summaries. The `aotSummaries` fields in TestBed APIs were present, but unused. The fields were deprecated in previous major version and in v14 those fields are removed. The `aotSummaries` fields were completely unused, so you can just drop them from the TestBed APIs usage.
 ### forms
 - Forms classes accept a generic.
-  
+
   Forms model classes now accept a generic type parameter. Untyped versions of these classes are available to opt-out of the new, stricter behavior.
 - objects with a length key set to zero will no longer validate as empty.
-  
+
   This is technically a breaking change, since objects with a key `length` and value `0` will no longer validate as empty. This is a very minor change, and any reliance on this behavior is probably a bug anyway.
 ### http
 - Queries including + will now actually query for + instead of space.
   Most workarounds involving custom codecs will be unaffected.
   Possible server-side workarounds will need to be undone.
 - JSONP will throw an error when headers are set on a reques
-  
+
   JSONP does not support headers being set on requests. Before when
   a request was sent to a JSONP backend that had headers set the headers
   were ignored. The JSONP backend will now throw an error if it
@@ -4098,7 +4124,7 @@ Adrien Crivelli, Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Dyla
 - This change may cause a breaking change in unit tests that are implicitly depending on a specific
   number and sequence of change detections in order for their assertions to pass.
 - This may break invalid calls to `TransferState` methods.
-  
+
   This tightens parameter types of `TransferState` usage, and is a minor breaking change which may reveal existing problematic calls.
 ### router
 - The type of `Route.pathMatch` is now stricter. Places that use
@@ -4120,7 +4146,7 @@ Adrien Crivelli, Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Dyla
     actually gets set to something completely different. It's set to the
     current internal `UrlTree` of the Router at the time navigation
     occurs.
-  
+
   With this change, there is no exact replacement for the old value of
   `initialUrl` because it was never intended to be exposed.
   `Router.url` is likely the best replacement for this.
@@ -4144,7 +4170,7 @@ Adrien Crivelli, Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Dyla
   returned by other guards: only the first value is used.
 ### zone.js
 - in TaskTrackingZoneSpec track a periodic task until it is cancelled
-  
+
   The breaking change is scoped only to the plugin
   `zone.js/plugins/task-tracking`. If you used `TaskTrackingZoneSpec` and
   checked the pending macroTasks e.g. using `(this.ngZone as any)._inner
@@ -4153,7 +4179,7 @@ Adrien Crivelli, Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Dyla
   previously the `setInterval` macrotask was no longer tracked after its
   callback was executed for the first time. Now it's tracked until
   the task is explicitly cancelled, e.g  with `clearInterval(id)`.
-  
+
 ## Deprecations
 ### common
 - The `ngModuleFactory` input of the `NgComponentOutlet` directive is deprecated in favor of a newly added `ngModule` input. The `ngModule` input accepts references to the NgModule class directly, without the need to resolve module factory first.
