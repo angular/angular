@@ -622,6 +622,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
           {label: 'Zoneless', path: 'guide/experimental/zoneless', contentPath: 'guide/zoneless'},
         ],
       },
+      {
+        label: 'Drag and drop',
+        path: 'guide/drag-drop',
+        contentPath: 'guide/drag-drop',
+      },
     ],
   },
   {
