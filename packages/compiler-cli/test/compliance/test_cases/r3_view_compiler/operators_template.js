@@ -10,7 +10,7 @@ template: function MyApp_Template(rf, $ctx$) {
 		typeof i0.ɵɵpureFunction0(9, _c0) === "object", " ", 
 		!(typeof i0.ɵɵpureFunction0(10, _c0) === "object"), " ", 
 		typeof (ctx.foo == null ? null : ctx.foo.bar) === "string", " ", 
-		i0.ɵɵpipeBind1(1, 7, typeof (ctx.foo == null ? null : ctx.foo.bar)), "\n"
+		i0.ɵɵpipeBind1(1, 7, typeof (ctx.foo == null ? null : ctx.foo.bar)), " "
 	  );	
 	}
   }
