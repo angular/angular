@@ -116,8 +116,7 @@ describe('explicit-standalone-flag migration', () => {
     expect(content).toContain('standalone: false');
   });
 
-  // TODO: Change this test once we enable removing standalone:true
-  it('should not remove standalone:true', async () => {
+  it('should remove standalone:true', async () => {
     writeFile(
       '/index.ts',
       `
@@ -135,8 +134,7 @@ describe('explicit-standalone-flag migration', () => {
 
     const content = tree.readContent('/index.ts').replace(/\s+/g, ' ');
 
-    // TODO: alter this expectation once we enable removing standalone:true
-    expect(content).toContain('standalone: true');
+    expect(content).not.toContain('standalone: true');
   });
 
   it('should not update a directive with standalone:false', async () => {
