@@ -13,7 +13,7 @@
   g {
     rect {
       stroke: black !important; // border around the rectangles, same for dark/light theme
-      filter: drop-shadow(5px 5px 0px var(--vivid-pink));
+      filter: drop-shadow(5px 5px 0px var(--primary-contrast));
     }
   }
   .messageText,
@@ -61,5 +61,31 @@
   .nodeLabel {
     fill: var(--primary-contrast) !important;
     color: var(--primary-contrast) !important;
+  }
+
+  .eventNode {
+    polygon {
+      fill: var(--hot-pink) !important;
+      filter: none;
+      stroke: var(--hot-pink) !important;
+    }
+
+    .nodeLabel p {
+      color: var(--page-background) !important;
+      font-weight: 800 !important;
+    }
+  }
+
+  .checkedNode {
+    rect {
+      color: white !important;
+      filter: drop-shadow(5px 5px 0px var(--hot-pink));
+      stroke: var(--hot-pink) !important;
+    }
+
+    .nodeLabel p {
+      color: var(--hot-pink) !important;
+      font-weight: 800 !important;
+    }
   }
 }
