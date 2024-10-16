@@ -1113,6 +1113,21 @@ export class KeyValueDiffers {
     static ɵprov: unknown;
 }
 
+// @public (undocumented)
+export function linkedSignal<D>(computation: () => D, options?: {
+    equal?: ValueEqualityFn<NoInfer<D>>;
+}): WritableSignal<D>;
+
+// @public (undocumented)
+export function linkedSignal<S, D>(options: {
+    source: () => S;
+    computation: (source: NoInfer<S>, previous?: {
+        source: NoInfer<S>;
+        value: NoInfer<D>;
+    }) => D;
+    equal?: ValueEqualityFn<NoInfer<D>>;
+}): WritableSignal<D>;
+
 // @public
 export const LOCALE_ID: InjectionToken<string>;
 
