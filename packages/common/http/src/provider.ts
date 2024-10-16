@@ -103,6 +103,7 @@ function makeHttpFeature<KindT extends HttpFeatureKind>(
  * @see {@link withNoXsrfProtection}
  * @see {@link withJsonpSupport}
  * @see {@link withRequestsMadeViaParent}
+ * @see {@link withXhr}
  */
 export function provideHttpClient(
   ...features: HttpFeature<HttpFeatureKind>[]
@@ -302,7 +303,7 @@ export function withRequestsMadeViaParent(): HttpFeature<HttpFeatureKind.Request
  * Note: The Fetch API doesn't support progress report on uploads.
  *
  * @publicApi
- * @deprecated `withFetch` is not required anymore. `FetchBackend` is the default HttpBackend.
+ * @deprecated `withFetch` is not required anymore. `FetchBackend` is the default `HttpBackend`.
  */
 export function withFetch(): HttpFeature<HttpFeatureKind.Fetch> {
   return makeHttpFeature(HttpFeatureKind.Fetch, [
