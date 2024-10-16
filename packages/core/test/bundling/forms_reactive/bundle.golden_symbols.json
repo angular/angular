@@ -1686,6 +1686,9 @@
     "name": "producerAddLiveConsumer"
   },
   {
+    "name": "producerMarkClean"
+  },
+  {
     "name": "producerNotifyConsumers"
   },
   {

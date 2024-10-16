@@ -55,6 +55,9 @@ export function producerAccessed(node: ReactiveNode): void;
 // @public
 export function producerIncrementEpoch(): void;
 
+// @public (undocumented)
+export function producerMarkClean(node: ReactiveNode): void;
+
 // @public
 export function producerNotifyConsumers(node: ReactiveNode): void;
 
