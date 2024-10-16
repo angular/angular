@@ -220,6 +220,7 @@
   "_testabilityGetter",
   "_wasLastNodeCreated",
   "activeConsumer",
+  "addAfterRenderSequencesForView",
   "addClass",
   "addPropertyBinding",
   "addToEndOfViewTree",
