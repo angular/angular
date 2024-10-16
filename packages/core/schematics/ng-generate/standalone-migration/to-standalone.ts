@@ -125,7 +125,7 @@ export function convertNgModuleDeclarationToStandalone(
   const directiveMeta = typeChecker.getDirectiveMetadata(decl);
 
   if (directiveMeta && directiveMeta.decorator && !directiveMeta.isStandalone) {
-    let decorator = removeStandaloneFalseFromDecorator(directiveMeta.decorator);
+    let decorator = markDecoratorAsStandalone(directiveMeta.decorator);
 
     if (directiveMeta.isComponent) {
       const importsToAdd = getComponentImportExpressions(
@@ -157,10 +157,7 @@ export function convertNgModuleDeclarationToStandalone(
     const pipeMeta = typeChecker.getPipeMetadata(decl);
 
     if (pipeMeta && pipeMeta.decorator && !pipeMeta.isStandalone) {
-      tracker.replaceNode(
-        pipeMeta.decorator,
-        removeStandaloneFalseFromDecorator(pipeMeta.decorator),
-      );
+      tracker.replaceNode(pipeMeta.decorator, markDecoratorAsStandalone(pipeMeta.decorator));
     }
   }
 }
@@ -429,30 +426,33 @@ function moveDeclarationsToImports(
   );
 }
 
-/** Adds `standalone: true` to a decorator node. */
-function removeStandaloneFalseFromDecorator(node: ts.Decorator): ts.Decorator {
-  // Invalid decorator.
-  if (!ts.isCallExpression(node.expression) || node.expression.arguments.length !== 1) {
+/** Sets a decorator node to be standalone. */
+function markDecoratorAsStandalone(node: ts.Decorator): ts.Decorator {
+  const metadata = extractMetadataLiteral(node);
+
+  if (metadata === null || !ts.isCallExpression(node.expression)) {
     return node;
   }
 
-  if (!ts.isObjectLiteralExpression(node.expression.arguments[0])) {
-    // Unsupported case (e.g. `@Component(SOME_CONST)`). Return the original node.
+  const standaloneProp = metadata.properties.find((prop) => {
+    return isNamedPropertyAssignment(prop) && prop.name.text === 'standalone';
+  }) as ts.PropertyAssignment | undefined;
+
+  // In v19 standalone is the default so don't do anything if there's no `standalone`
+  // property or it's initialized to anything other than `false`.
+  if (!standaloneProp || standaloneProp.initializer.kind !== ts.SyntaxKind.FalseKeyword) {
     return node;
   }
 
-  const hasTrailingComma = node.expression.arguments[0].properties.hasTrailingComma;
-
-  const properties = node.expression.arguments[0].properties;
-  const literalProperties = properties.filter((element) => !isStandaloneProperty(element));
+  const newProperties = metadata.properties.filter((element) => element !== standaloneProp);
 
   // Use `createDecorator` instead of `updateDecorator`, because
   // the latter ends up duplicating the node's leading comment.
   return ts.factory.createDecorator(
     ts.factory.createCallExpression(node.expression.expression, node.expression.typeArguments, [
       ts.factory.createObjectLiteralExpression(
-        ts.factory.createNodeArray(literalProperties, hasTrailingComma),
-        literalProperties.length > 1,
+        ts.factory.createNodeArray(newProperties, metadata.properties.hasTrailingComma),
+        newProperties.length > 1,
       ),
     ]),
   );
@@ -512,11 +512,6 @@ function setPropertyOnAngularDecorator(
   );
 }
 
-function isStandaloneProperty(prop: ts.Node): prop is ts.PropertyAssignment {
-  return (
-    ts.isPropertyAssignment(prop) && ts.isIdentifier(prop.name) && prop.name.text === 'standalone'
-  );
-}
 /** Checks if a node is a `PropertyAssignment` with a name. */
 function isNamedPropertyAssignment(
   node: ts.Node,
@@ -774,13 +769,13 @@ export function migrateTestDeclarations(
     const closestClass = closestNode(decorator.node, ts.isClassDeclaration);
 
     if (decorator.name === 'Pipe' || decorator.name === 'Directive') {
-      tracker.replaceNode(decorator.node, removeStandaloneFalseFromDecorator(decorator.node));
+      tracker.replaceNode(decorator.node, markDecoratorAsStandalone(decorator.node));
 
       if (closestClass) {
         allDeclarations.add(closestClass);
       }
     } else if (decorator.name === 'Component') {
-      const newDecorator = removeStandaloneFalseFromDecorator(decorator.node);
+      const newDecorator = markDecoratorAsStandalone(decorator.node);
       const importsToAdd = componentImports.get(decorator.node);
 
       if (closestClass) {
