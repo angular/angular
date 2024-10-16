@@ -171,6 +171,7 @@
   "_retrieveHydrationInfoImpl",
   "_wasLastNodeCreated",
   "activeConsumer",
+  "addAfterRenderSequencesForView",
   "addPropertyBinding",
   "allocExpando",
   "allocLFrame",

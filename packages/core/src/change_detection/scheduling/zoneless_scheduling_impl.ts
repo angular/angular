@@ -25,10 +25,10 @@ import {NgZone, NgZonePrivate, NoopNgZone, angularZoneInstanceIdProperty} from '
 import {
   ChangeDetectionScheduler,
   NotificationSource,
-  ZONELESS_ENABLED,
   PROVIDED_ZONELESS,
-  ZONELESS_SCHEDULER_DISABLED,
   SCHEDULE_IN_ROOT_ZONE,
+  ZONELESS_ENABLED,
+  ZONELESS_SCHEDULER_DISABLED,
 } from './zoneless_scheduling';
 import {TracingService} from '../../application/tracing';
 
@@ -138,13 +138,6 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
       case NotificationSource.Listener:
       case NotificationSource.SetInput: {
         this.appRef.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeCheck;
-        break;
-      }
-      case NotificationSource.DeferredRenderHook: {
-        // Render hooks are "deferred" when they're triggered from other render hooks. Using the
-        // deferred dirty flags ensures that adding new hooks doesn't automatically trigger a loop
-        // inside tick().
-        this.appRef.deferredDirtyFlags |= ApplicationRefDirtyFlags.AfterRender;
         break;
       }
       case NotificationSource.CustomElement: {

@@ -279,6 +279,7 @@
   "_stripIndexHtml",
   "_wasLastNodeCreated",
   "activeConsumer",
+  "addAfterRenderSequencesForView",
   "addEmptyPathsToChildrenIfNeeded",
   "addPropertyBinding",
   "addToArray",
