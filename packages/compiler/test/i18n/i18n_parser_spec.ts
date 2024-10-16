@@ -348,7 +348,7 @@ describe('I18nParser', () => {
     });
 
     it('should preserve whitespace when preserving significant whitespace', () => {
-      const html = '<div i18n="m|d">{{   foo   }}</div>';
+      const html = '<div i18n="m|d">hello {{   foo   }}</div>';
       expect(
         _humanizeMessages(
           html,
@@ -356,11 +356,11 @@ describe('I18nParser', () => {
           /* implicitAttrs */ undefined,
           /* preserveSignificantWhitespace */ true,
         ),
-      ).toEqual([[['[<ph name="INTERPOLATION">   foo   </ph>]'], 'm', 'd', '']]);
+      ).toEqual([[['[hello , <ph name="INTERPOLATION">   foo   </ph>]'], 'm', 'd', '']]);
     });
 
     it('should normalize whitespace when not preserving significant whitespace', () => {
-      const html = '<div i18n="m|d">{{   foo   }}</div>';
+      const html = '<div i18n="m|d">hello {{   foo   }}</div>';
       expect(
         _humanizeMessages(
           html,
@@ -368,7 +368,7 @@ describe('I18nParser', () => {
           /* implicitAttrs */ undefined,
           /* preserveSignificantWhitespace */ false,
         ),
-      ).toEqual([[['[, <ph name="INTERPOLATION">foo</ph>, ]'], 'm', 'd', '']]);
+      ).toEqual([[['[hello , <ph name="INTERPOLATION">foo</ph>, ]'], 'm', 'd', '']]);
     });
   });
 });
