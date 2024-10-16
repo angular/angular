@@ -44,10 +44,17 @@ export function migrateFile(sourceFile: ts.SourceFile, rewriteFn: RewriteFn) {
         arg.expression.text === WITH_FETCH
       );
     });
+    const hasWithXhr = node.arguments.some((arg) => {
+      return (
+        ts.isCallExpression(arg) &&
+        ts.isIdentifier(arg.expression) &&
+        arg.expression.text === WITH_XHR
+      );
+    });
 
     const provideHttpClientIdentifier = ts.factory.createIdentifier('provideHttpClient');
 
-    if (!hasWithFetch) {
+    if (!hasWithFetch && !hasWithXhr) {
       const newProvideHttpClient = ts.factory.createCallExpression(
         provideHttpClientIdentifier,
         undefined,
@@ -64,7 +71,7 @@ export function migrateFile(sourceFile: ts.SourceFile, rewriteFn: RewriteFn) {
         ts.factory.createImportSpecifier(false, undefined, ts.factory.createIdentifier(WITH_XHR)),
       ]);
       changeTracker.replaceNode(httpImports, newImports);
-    } else {
+    } else if (hasWithFetch) {
       const argsWithoutFetch = node.arguments.filter((arg) => {
         return (
           ts.isCallExpression(arg) &&

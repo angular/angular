@@ -62,12 +62,12 @@ describe('http fetch backend migration', () => {
     writeFile(
       '/index.ts',
       `
-          import {AppConfig} from '@angular/core';
-          import {provideHttpClient} from '@angular/common/http';
-
-          const config: AppConfig = [
-            provideHttpClient(),
-          ]
+        import {AppConfig} from '@angular/core';
+        import {provideHttpClient} from '@angular/common/http';
+        
+        const config: AppConfig = [
+          provideHttpClient(),
+        ]
           `,
     );
 
@@ -81,12 +81,12 @@ describe('http fetch backend migration', () => {
     writeFile(
       '/index.ts',
       `
-          import {AppConfig} from '@angular/core';
-          import {provideHttpClient, withInterceptorsFromDi, withXsrfConfiguration} from '@angular/common/http';
+        import {AppConfig} from '@angular/core';
+        import {provideHttpClient, withInterceptorsFromDi, withXsrfConfiguration} from '@angular/common/http';
 
-          const config: AppConfig = [
-            provideHttpClient(withInterceptorsFromDi(), withXsrfConfiguration({})),
-          ]
+        const config: AppConfig = [
+          provideHttpClient(withInterceptorsFromDi(), withXsrfConfiguration({})),
+        ]
           `,
     );
 
@@ -103,12 +103,12 @@ describe('http fetch backend migration', () => {
     writeFile(
       '/index.ts',
       `
-          import {AppConfig} from '@angular/core';
-          import {provideHttpClient, withFetch, withInterceptorsFromDi, withXsrfConfiguration} from '@angular/common/http';
+        import {AppConfig} from '@angular/core';
+        import {provideHttpClient, withFetch, withInterceptorsFromDi, withXsrfConfiguration} from '@angular/common/http';
 
-          const config: AppConfig = [
-            provideHttpClient(withFetch(), withInterceptorsFromDi(), withXsrfConfiguration({})),
-          ]
+        const config: AppConfig = [
+          provideHttpClient(withFetch(), withInterceptorsFromDi(), withXsrfConfiguration({})),
+        ]
           `,
     );
 
@@ -117,6 +117,28 @@ describe('http fetch backend migration', () => {
     const content = tree.readContent('/index.ts').replace(/\s+/g, ' ');
     expect(content).toContain(
       'provideHttpClient(withInterceptorsFromDi(), withXsrfConfiguration({}))',
+    );
+    expect(content).not.toContain('withFetch');
+  });
+
+  it('should not update provideHttpClient if withXhr is already present', async () => {
+    writeFile(
+      '/index.ts',
+      `
+        import {AppConfig} from '@angular/core';
+        import {provideHttpClient, withXhr, withInterceptorsFromDi, withXsrfConfiguration} from '@angular/common/http';
+
+        const config: AppConfig = [
+          provideHttpClient(withXhr(), withInterceptorsFromDi(), withXsrfConfiguration({})),
+        ]
+          `,
+    );
+
+    await runMigration();
+
+    const content = tree.readContent('/index.ts').replace(/\s+/g, ' ');
+    expect(content).toContain(
+      'provideHttpClient(withXhr(), withInterceptorsFromDi(), withXsrfConfiguration({})),',
     );
     expect(content).not.toContain('withFetch');
   });
