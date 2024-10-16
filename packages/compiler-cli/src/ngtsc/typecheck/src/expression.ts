@@ -25,7 +25,6 @@ import {
   LiteralPrimitive,
   NonNullAssert,
   PrefixNot,
-  TypeofExpression,
   PropertyRead,
   PropertyWrite,
   SafeCall,
@@ -272,13 +271,6 @@ class AstTranslator implements AstVisitor {
   visitPrefixNot(ast: PrefixNot): ts.Expression {
     const expression = wrapForDiagnostics(this.translate(ast.expression));
     const node = ts.factory.createLogicalNot(expression);
-    addParseSpanInfo(node, ast.sourceSpan);
-    return node;
-  }
-
-  visitTypeofExpresion(ast: TypeofExpression): ts.Expression {
-    const expression = wrapForDiagnostics(this.translate(ast.expression));
-    const node = ts.factory.createTypeOfExpression(expression);
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
   }
@@ -547,9 +539,6 @@ class VeSafeLhsInferenceBugDetector implements AstVisitor {
     return true;
   }
   visitPrefixNot(ast: PrefixNot): boolean {
-    return ast.expression.visit(this);
-  }
-  visitTypeofExpresion(ast: PrefixNot): boolean {
     return ast.expression.visit(this);
   }
   visitNonNullAssert(ast: PrefixNot): boolean {

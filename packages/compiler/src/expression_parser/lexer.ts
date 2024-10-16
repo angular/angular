@@ -19,19 +19,7 @@ export enum TokenType {
   Error,
 }
 
-const KEYWORDS = [
-  'var',
-  'let',
-  'as',
-  'null',
-  'undefined',
-  'true',
-  'false',
-  'if',
-  'else',
-  'this',
-  'typeof',
-];
+const KEYWORDS = ['var', 'let', 'as', 'null', 'undefined', 'true', 'false', 'if', 'else', 'this'];
 
 export class Lexer {
   tokenize(text: string): Token[] {
@@ -109,10 +97,6 @@ export class Token {
 
   isKeywordThis(): boolean {
     return this.type == TokenType.Keyword && this.strValue == 'this';
-  }
-
-  isKeywordTypeof(): boolean {
-    return this.type === TokenType.Keyword && this.strValue === 'typeof';
   }
 
   isError(): boolean {
@@ -450,6 +434,18 @@ function isIdentifierStart(code: number): boolean {
     code == chars.$_ ||
     code == chars.$$
   );
+}
+
+export function isIdentifier(input: string): boolean {
+  if (input.length == 0) return false;
+  const scanner = new _Scanner(input);
+  if (!isIdentifierStart(scanner.peek)) return false;
+  scanner.advance();
+  while (scanner.peek !== chars.$EOF) {
+    if (!isIdentifierPart(scanner.peek)) return false;
+    scanner.advance();
+  }
+  return true;
 }
 
 function isIdentifierPart(code: number): boolean {
