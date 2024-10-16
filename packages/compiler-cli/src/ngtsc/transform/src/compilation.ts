@@ -724,6 +724,34 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     return res.length > 0 ? res : null;
   }
 
+  compileHmrUpdateCallback(clazz: DeclarationNode): ts.FunctionDeclaration | null {
+    const original = ts.getOriginalNode(clazz) as typeof clazz;
+
+    if (
+      !this.reflector.isClass(clazz) ||
+      !this.reflector.isClass(original) ||
+      !this.classes.has(original)
+    ) {
+      return null;
+    }
+
+    const record = this.classes.get(original)!;
+
+    for (const trait of record.traits) {
+      // Cannot compile a trait that is not resolved, or had any errors in its declaration.
+      if (
+        trait.state === TraitState.Resolved &&
+        trait.handler.compileHmrUpdateDeclaration !== undefined &&
+        !containsErrors(trait.analysisDiagnostics) &&
+        !containsErrors(trait.resolveDiagnostics)
+      ) {
+        return trait.handler.compileHmrUpdateDeclaration(clazz, trait.analysis, trait.resolution!);
+      }
+    }
+
+    return null;
+  }
+
   decoratorsFor(node: ts.Declaration): ts.Decorator[] {
     const original = ts.getOriginalNode(node) as typeof node;
     if (!this.reflector.isClass(original) || !this.classes.has(original)) {

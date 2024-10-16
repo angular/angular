@@ -80,7 +80,7 @@ class OutputFromObservableRef<T> implements OutputRef<T> {
  * }
  * ```
  *
- * @developerPreview
+ * @publicApi
  */
 export function outputFromObservable<T>(
   observable: Observable<T>,

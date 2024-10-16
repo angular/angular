@@ -1660,7 +1660,7 @@ runInEachFileSystem((os: string) => {
       export class MyPipe {}
 
       @Component({
-        selector: 'test', 
+        selector: 'test',
         template: '',
         standalone: false
       })
@@ -1858,7 +1858,7 @@ runInEachFileSystem((os: string) => {
         `
       import {Component} from '@angular/core';
       @Component({
-        selector: 'foo', 
+        selector: 'foo',
         template: '',
         standalone: false,
       })
@@ -1938,7 +1938,7 @@ runInEachFileSystem((os: string) => {
       export class FooModule {}
 
       @Component({
-        selector: 'foo', 
+        selector: 'foo',
         template: 'foo',
         standalone: false,
       })
@@ -1964,7 +1964,7 @@ runInEachFileSystem((os: string) => {
       export class FooModule {}
 
       @Directive({
-        selector: 'foo', 
+        selector: 'foo',
         standalone: false,
       })
       export class Foo {}
@@ -2221,7 +2221,7 @@ runInEachFileSystem((os: string) => {
         }
 
         @Component({
-          selector: 'test-cmp', 
+          selector: 'test-cmp',
           template: '{{value | test}}',
           standalone: false,
         })
@@ -3194,7 +3194,7 @@ runInEachFileSystem((os: string) => {
         import {Component, Directive, Injectable, NgModule, Pipe} from '@angular/core';
 
         @Component({
-          selector: 'test', 
+          selector: 'test',
           template: 'test',
           standalone: false,
         })
@@ -3258,7 +3258,7 @@ runInEachFileSystem((os: string) => {
         import {Component, Directive} from '@angular/core';
 
         @Component({
-          selector: 'test', 
+          selector: 'test',
           template: 'test',
           standalone: false,
         })
@@ -6857,7 +6857,7 @@ runInEachFileSystem((os: string) => {
       import {Component, Directive, NgModule} from '@angular/core';
 
       @Component({
-        selector: 'my-cmp', 
+        selector: 'my-cmp',
         template: \`${template}\`,
         standalone: false,
       })
@@ -10737,70 +10737,6 @@ runInEachFileSystem((os: string) => {
         const jsContents = env.getContents('test.js');
 
         expect(jsContents).not.toMatch('forbidOrphanRendering:');
-      });
-    });
-
-    describe('HMR initializer', () => {
-      it('should not generate an HMR initializer by default', () => {
-        env.write(
-          'test.ts',
-          `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'cmp',
-              template: 'hello',
-              standalone: true,
-            })
-            export class Cmp {}
-          `,
-        );
-
-        env.driveMain();
-
-        const jsContents = env.getContents('test.js');
-        expect(jsContents).not.toContain('import.meta.hot');
-        expect(jsContents).not.toContain('replaceMetadata');
-      });
-
-      it('should generate an HMR initializer when enabled', () => {
-        env.write(
-          'tsconfig.json',
-          JSON.stringify({
-            extends: './tsconfig-base.json',
-            angularCompilerOptions: {
-              _enableHmr: true,
-            },
-          }),
-        );
-
-        env.write(
-          'test.ts',
-          `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'cmp',
-              template: 'hello',
-              standalone: true,
-            })
-            export class Cmp {}
-          `,
-        );
-
-        env.driveMain();
-
-        const jsContents = env.getContents('test.js');
-
-        // We need a regex match here, because the file path changes based on
-        // the file system and the timestamp will be different for each test run.
-        expect(jsContents).toMatch(
-          /import\.meta\.hot && import\.meta\.hot\.on\("angular:component-update", d => { if \(d\.id == "test\.ts%40Cmp"\) {/,
-        );
-        expect(jsContents).toMatch(
-          /import\(\s*\/\* @vite-ignore \*\/\s+"\/@ng\/component\?c=test\.ts%40Cmp&t=" \+ encodeURIComponent\(d.timestamp\)/,
-        );
-        expect(jsContents).toMatch(/\).then\(m => i0\.ɵɵreplaceMetadata\(Cmp, m\.default\)\);/);
       });
     });
 

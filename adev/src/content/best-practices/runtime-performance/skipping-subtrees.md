@@ -31,7 +31,7 @@ This section examines several common change detection scenarios to illustrate An
 
 If Angular handles an event within a component without `OnPush` strategy, the framework executes change detection on the entire component tree. Angular will skip descendant component subtrees with roots using `OnPush`, which have not received new inputs.
 
-As an example, if we set the change detection strategy of `MainComponent` to `OnPush` and the user interacts with a component outside the subtree with root `MainComponent`, Angular will check all the green components from the diagram below (`AppComponent`, `HeaderComponent`, `SearchComponent`, `ButtonComponent`) unless `MainComponent` receives new inputs:
+As an example, if we set the change detection strategy of `MainComponent` to `OnPush` and the user interacts with a component outside the subtree with root `MainComponent`, Angular will check all the pink components from the diagram below (`AppComponent`, `HeaderComponent`, `SearchComponent`, `ButtonComponent`) unless `MainComponent` receives new inputs:
 
 ```mermaid
 graph TD;
@@ -43,14 +43,11 @@ graph TD;
     main --- details[DetailsComponent];
     event>Event] --- search
 
-style main fill:#E4BE74,color:#000
-style login fill:#E4BE74,color:#000
-style details fill:#E4BE74,color:#000
-
-style app fill:#C1D5B0,color:#000
-style header fill:#C1D5B0,color:#000
-style button fill:#C1D5B0,color:#000
-style search fill:#C1D5B0,color:#000
+class app checkedNode
+class header checkedNode
+class button checkedNode
+class search checkedNode
+class event eventNode
 ```
 
 ## An event is handled by a component with OnPush
@@ -69,14 +66,13 @@ graph TD;
     main --- details[DetailsComponent];
     event>Event] --- main
 
-style login fill:#E4BE74,color:#000
-
-style app fill:#C1D5B0,color:#000
-style header fill:#C1D5B0,color:#000
-style button fill:#C1D5B0,color:#000
-style search fill:#C1D5B0,color:#000
-style main fill:#C1D5B0,color:#000
-style details fill:#C1D5B0,color:#000
+class app checkedNode
+class header checkedNode
+class button checkedNode
+class search checkedNode
+class main checkedNode
+class details checkedNode
+class event eventNode
 ```
 
 ## An event is handled by a descendant of a component with OnPush
@@ -95,13 +91,14 @@ graph TD;
     main --- details[DetailsComponent];
     event>Event] --- login
 
-style app fill:#C1D5B0,color:#000
-style header fill:#C1D5B0,color:#000
-style button fill:#C1D5B0,color:#000
-style search fill:#C1D5B0,color:#000
-style login fill:#C1D5B0,color:#000
-style main fill:#C1D5B0,color:#000
-style details fill:#C1D5B0,color:#000
+class app checkedNode
+class header checkedNode
+class button checkedNode
+class search checkedNode
+class login checkedNode
+class main checkedNode
+class details checkedNode
+class event eventNode
 ```
 
 ## New inputs to component with OnPush
@@ -120,15 +117,13 @@ graph TD;
     main --- details[DetailsComponent];
     event>Parent passes new input to MainComponent]
 
-style login fill:#E4BE74,color:#000
-
-linkStyle 1 stroke:green
-style app fill:#C1D5B0,color:#000
-style header fill:#C1D5B0,color:#000
-style button fill:#C1D5B0,color:#000
-style search fill:#C1D5B0,color:#000
-style main fill:#C1D5B0,color:#000
-style details fill:#C1D5B0,color:#000
+class app checkedNode
+class header checkedNode
+class button checkedNode
+class search checkedNode
+class main checkedNode
+class details checkedNode
+class event eventNode
 ```
 
 ## Edge cases

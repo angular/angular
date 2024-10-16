@@ -61,6 +61,14 @@ describe('type check blocks', () => {
     );
   });
 
+  it('should handle typeof expressions', () => {
+    expect(tcb('{{typeof a}}')).toContain('typeof (((this).a))');
+    expect(tcb('{{!(typeof a)}}')).toContain('!(typeof (((this).a)))');
+    expect(tcb('{{!(typeof a === "object")}}')).toContain(
+      '!((typeof (((this).a))) === ("object"))',
+    );
+  });
+
   it('should handle attribute values for directive inputs', () => {
     const TEMPLATE = `<div dir inputA="value"></div>`;
     const DIRECTIVES: TestDeclaration[] = [

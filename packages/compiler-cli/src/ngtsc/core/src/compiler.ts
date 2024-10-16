@@ -940,6 +940,34 @@ export class NgCompiler {
     compilation.traitCompiler.xi18n(ctx);
   }
 
+  /**
+   * Emits the JavaScript module that can be used to replace the metadata of a class during HMR.
+   * @param node Class for which to generate the update module.
+   */
+  emitHmrUpdateModule(node: DeclarationNode): string | null {
+    const {traitCompiler, reflector} = this.ensureAnalyzed();
+
+    if (!reflector.isClass(node)) {
+      return null;
+    }
+
+    const callback = traitCompiler.compileHmrUpdateCallback(node);
+
+    if (callback === null) {
+      return null;
+    }
+
+    const sourceFile = node.getSourceFile();
+    const printer = ts.createPrinter();
+    const nodeText = printer.printNode(ts.EmitHint.Unspecified, callback, sourceFile);
+
+    return ts.transpileModule(nodeText, {
+      compilerOptions: this.options,
+      fileName: sourceFile.fileName,
+      reportDiagnostics: false,
+    }).outputText;
+  }
+
   private ensureAnalyzed(this: NgCompiler): LazyCompilationState {
     if (this.compilation === null) {
       this.analyzeSync();

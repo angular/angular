@@ -1,16 +1,24 @@
-import {Component, NgModule} from '@angular/core';
+import {Component, Pipe} from '@angular/core';
 
-@Component({
-    template: `
-    {{ 1 + 2 }}
-	{{ (1 % 2) + 3 / 4 * 5 }}
-	{{ +1 }}
-`,
-    standalone: false
-})
-export class MyApp {
+@Pipe({name: 'identity'})
+export class IdentityPipe {
+  transform(value: any) {
+    return value;
+  }
 }
 
-@NgModule({declarations: [MyApp]})
-export class MyModule {
+@Component({
+  template: `
+    {{ 1 + 2 }}
+    {{ (1 % 2) + 3 / 4 * 5 }}
+    {{ +1 }}
+    {{ typeof {} === 'object' }}
+    {{ !(typeof {} === 'object') }}
+    {{ typeof foo?.bar === 'string' }}
+    {{ typeof foo?.bar | identity }}
+  `,
+  imports: [IdentityPipe],
+})
+export class MyApp {
+  foo: {bar?: string} = {bar: 'baz'};
 }

@@ -341,6 +341,25 @@ export class NgtscTestEnvironment {
     expect(errorSpy).not.toHaveBeenCalled();
     expect(exitCode).toEqual(0);
   }
+
+  driveHmr(fileName: string, className: string): string | null {
+    const {rootNames, options} = readNgcCommandLineAndConfiguration(this.commandLineArgs);
+    const host = createCompilerHost({options});
+    const program = createProgram({rootNames, host, options});
+    const sourceFile = program.getTsProgram().getSourceFile(fileName);
+
+    if (sourceFile == null) {
+      throw new Error(`Cannot find file at "${fileName}"`);
+    }
+
+    for (const node of sourceFile.statements) {
+      if (ts.isClassDeclaration(node) && node.name != null && node.name.text === className) {
+        return (program as NgtscProgram).compiler.emitHmrUpdateModule(node);
+      }
+    }
+
+    throw new Error(`Cannot find class with name "${className}" in "${fileName}"`);
+  }
 }
 
 class AugmentedCompilerHost extends NgtscTestCompilerHost {

@@ -50,6 +50,12 @@
       "description": "Run through and reports activity without writing out results."
     },
     {
+      "name": "experimental-zoneless",
+      "type": "boolean",
+      "default": false,
+      "description": "Create an application that does not utilize zone.js."
+    },
+    {
       "name": "force",
       "type": "boolean",
       "default": false,

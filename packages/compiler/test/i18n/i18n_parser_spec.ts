@@ -227,6 +227,34 @@ describe('I18nParser', () => {
         [['{count, plural, =0 {[{sex, select, male {[m]}}]}}'], '', '', ''],
       ]);
     });
+
+    it('should preserve whitespace when preserving significant whitespace', () => {
+      const html = '<div i18n="m|d">{count, plural, =0 {{{   foo   }}}}</div>';
+      expect(
+        _humanizeMessages(
+          html,
+          /* implicitTags */ undefined,
+          /* implicitAttrs */ undefined,
+          /* preserveSignificantWhitespace */ true,
+        ),
+      ).toEqual([
+        [['{count, plural, =0 {[[<ph name="INTERPOLATION">   foo   </ph>]]}}'], 'm', 'd', ''],
+      ]);
+    });
+
+    it('should normalize whitespace when not preserving significant whitespace', () => {
+      const html = '<div i18n="m|d">{count, plural, =0 {{{   foo   }}}}</div>';
+      expect(
+        _humanizeMessages(
+          html,
+          /* implicitTags */ undefined,
+          /* implicitAttrs */ undefined,
+          /* preserveSignificantWhitespace */ false,
+        ),
+      ).toEqual([
+        [['{count, plural, =0 {[[, <ph name="INTERPOLATION">foo</ph>, ]]}}'], 'm', 'd', ''],
+      ]);
+    });
   });
 
   describe('implicit elements', () => {
@@ -318,6 +346,30 @@ describe('I18nParser', () => {
         '',
       ]);
     });
+
+    it('should preserve whitespace when preserving significant whitespace', () => {
+      const html = '<div i18n="m|d">hello {{   foo   }}</div>';
+      expect(
+        _humanizeMessages(
+          html,
+          /* implicitTags */ undefined,
+          /* implicitAttrs */ undefined,
+          /* preserveSignificantWhitespace */ true,
+        ),
+      ).toEqual([[['[hello , <ph name="INTERPOLATION">   foo   </ph>]'], 'm', 'd', '']]);
+    });
+
+    it('should normalize whitespace when not preserving significant whitespace', () => {
+      const html = '<div i18n="m|d">hello {{   foo   }}</div>';
+      expect(
+        _humanizeMessages(
+          html,
+          /* implicitTags */ undefined,
+          /* implicitAttrs */ undefined,
+          /* preserveSignificantWhitespace */ false,
+        ),
+      ).toEqual([[['[hello , <ph name="INTERPOLATION">foo</ph>, ]'], 'm', 'd', '']]);
+    });
   });
 });
 
@@ -325,24 +377,24 @@ export function _humanizeMessages(
   html: string,
   implicitTags: string[] = [],
   implicitAttrs: {[k: string]: string[]} = {},
+  preserveSignificantWhitespace = true,
 ): [string[], string, string, string][] {
-  return _extractMessages(html, implicitTags, implicitAttrs).map((message) => [
-    serializeNodes(message.nodes),
-    message.meaning,
-    message.description,
-    message.id,
-  ]) as [string[], string, string, string][];
+  return _extractMessages(html, implicitTags, implicitAttrs, preserveSignificantWhitespace).map(
+    (message) => [serializeNodes(message.nodes), message.meaning, message.description, message.id],
+  ) as [string[], string, string, string][];
 }
 
 function _humanizePlaceholders(
   html: string,
   implicitTags: string[] = [],
   implicitAttrs: {[k: string]: string[]} = {},
+  preserveSignificantWhitespace = true,
 ): string[] {
-  return _extractMessages(html, implicitTags, implicitAttrs).map((msg) =>
-    Object.keys(msg.placeholders)
-      .map((name) => `${name}=${msg.placeholders[name].text}`)
-      .join(', '),
+  return _extractMessages(html, implicitTags, implicitAttrs, preserveSignificantWhitespace).map(
+    (msg) =>
+      Object.keys(msg.placeholders)
+        .map((name) => `${name}=${msg.placeholders[name].text}`)
+        .join(', '),
   );
 }
 
@@ -350,11 +402,13 @@ function _humanizePlaceholdersToMessage(
   html: string,
   implicitTags: string[] = [],
   implicitAttrs: {[k: string]: string[]} = {},
+  preserveSignificantWhitespace = true,
 ): string[] {
-  return _extractMessages(html, implicitTags, implicitAttrs).map((msg) =>
-    Object.keys(msg.placeholderToMessage)
-      .map((k) => `${k}=${digest(msg.placeholderToMessage[k])}`)
-      .join(', '),
+  return _extractMessages(html, implicitTags, implicitAttrs, preserveSignificantWhitespace).map(
+    (msg) =>
+      Object.keys(msg.placeholderToMessage)
+        .map((k) => `${k}=${digest(msg.placeholderToMessage[k])}`)
+        .join(', '),
   );
 }
 
@@ -362,6 +416,7 @@ export function _extractMessages(
   html: string,
   implicitTags: string[] = [],
   implicitAttrs: {[k: string]: string[]} = {},
+  preserveSignificantWhitespace = true,
 ): Message[] {
   const htmlParser = new HtmlParser();
   const parseResult = htmlParser.parse(html, 'extractor spec', {tokenizeExpansionForms: true});
@@ -374,6 +429,6 @@ export function _extractMessages(
     DEFAULT_INTERPOLATION_CONFIG,
     implicitTags,
     implicitAttrs,
-    /* preserveSignificantWhitespace */ true,
+    preserveSignificantWhitespace,
   ).messages;
 }

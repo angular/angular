@@ -90,6 +90,7 @@ export class I18nMetaVisitor implements html.Visitor {
       this.interpolationConfig,
       this.containerBlocks,
       this.retainEmptyTokens,
+      /* preserveExpressionWhitespace */ this.preserveSignificantWhitespace,
     );
     const message = createI18nMessage(nodes, meaning, description, customId, visitNodeFn);
     this._setMessageId(message, meta);
@@ -255,9 +256,7 @@ export class I18nMetaVisitor implements html.Visitor {
    */
   private _setMessageId(message: i18n.Message, meta: string | i18n.I18nMeta): void {
     if (!message.id) {
-      message.id =
-        (meta instanceof i18n.Message && meta.id) ||
-        decimalDigest(message, /* preservePlaceholders */ this.preserveSignificantWhitespace);
+      message.id = (meta instanceof i18n.Message && meta.id) || decimalDigest(message);
     }
   }
 
@@ -269,13 +268,7 @@ export class I18nMetaVisitor implements html.Visitor {
    */
   private _setLegacyIds(message: i18n.Message, meta: string | i18n.I18nMeta): void {
     if (this.enableI18nLegacyMessageIdFormat) {
-      message.legacyIds = [
-        computeDigest(message),
-        computeDecimalDigest(
-          message,
-          /* preservePlaceholders */ this.preserveSignificantWhitespace,
-        ),
-      ];
+      message.legacyIds = [computeDigest(message), computeDecimalDigest(message)];
     } else if (typeof meta !== 'string') {
       // This occurs if we are doing the 2nd pass after whitespace removal (see `parseTemplate()` in
       // `packages/compiler/src/render3/view/template.ts`).

@@ -10,7 +10,7 @@ import {literal, R3ClassDebugInfo, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {DeclarationNode, ReflectionHost} from '../../../reflection';
-import {getProjectRelativePath} from './util';
+import {getProjectRelativePath} from '../../../util/src/path';
 
 export function extractClassDebugInfo(
   clazz: DeclarationNode,

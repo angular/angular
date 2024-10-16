@@ -373,6 +373,19 @@ export class PrefixNot extends AST {
   }
 }
 
+export class TypeofExpression extends AST {
+  constructor(
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    public expression: AST,
+  ) {
+    super(span, sourceSpan);
+  }
+  override visit(visitor: AstVisitor, context: any = null): any {
+    return visitor.visitTypeofExpresion(this, context);
+  }
+}
+
 export class NonNullAssert extends AST {
   constructor(
     span: ParseSpan,
@@ -534,6 +547,7 @@ export interface AstVisitor {
   visitLiteralPrimitive(ast: LiteralPrimitive, context: any): any;
   visitPipe(ast: BindingPipe, context: any): any;
   visitPrefixNot(ast: PrefixNot, context: any): any;
+  visitTypeofExpresion(ast: TypeofExpression, context: any): any;
   visitNonNullAssert(ast: NonNullAssert, context: any): any;
   visitPropertyRead(ast: PropertyRead, context: any): any;
   visitPropertyWrite(ast: PropertyWrite, context: any): any;
@@ -599,6 +613,9 @@ export class RecursiveAstVisitor implements AstVisitor {
   }
   visitLiteralPrimitive(ast: LiteralPrimitive, context: any): any {}
   visitPrefixNot(ast: PrefixNot, context: any): any {
+    this.visit(ast.expression, context);
+  }
+  visitTypeofExpresion(ast: TypeofExpression, context: any) {
     this.visit(ast.expression, context);
   }
   visitNonNullAssert(ast: NonNullAssert, context: any): any {
@@ -713,6 +730,10 @@ export class AstTransformer implements AstVisitor {
 
   visitPrefixNot(ast: PrefixNot, context: any): AST {
     return new PrefixNot(ast.span, ast.sourceSpan, ast.expression.visit(this));
+  }
+
+  visitTypeofExpresion(ast: TypeofExpression, context: any): AST {
+    return new TypeofExpression(ast.span, ast.sourceSpan, ast.expression.visit(this));
   }
 
   visitNonNullAssert(ast: NonNullAssert, context: any): AST {
@@ -887,6 +908,14 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
     const expression = ast.expression.visit(this);
     if (expression !== ast.expression) {
       return new PrefixNot(ast.span, ast.sourceSpan, expression);
+    }
+    return ast;
+  }
+
+  visitTypeofExpresion(ast: TypeofExpression, context: any): AST {
+    const expression = ast.expression.visit(this);
+    if (expression !== ast.expression) {
+      return new TypeofExpression(ast.span, ast.sourceSpan, expression);
     }
     return ast;
   }

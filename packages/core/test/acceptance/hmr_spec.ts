@@ -1963,7 +1963,7 @@ describe('hot module replacement', () => {
       // `setClassDebugInfo`.
       (type as any)[ɵNG_COMP_DEF] = null;
       compileComponent(type, metadata);
-    });
+    }, []);
   }
 
   function expectHTML(element: HTMLElement, expectation: string) {

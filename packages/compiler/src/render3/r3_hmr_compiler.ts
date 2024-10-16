@@ -10,8 +10,8 @@ import * as o from '../output/output_ast';
 import {Identifiers as R3} from './r3_identifiers';
 import {devOnlyGuardedExpression} from './util';
 
-/** Metadata necessary to compile the HMR initializer call. */
-export interface R3HmrInitializerMetadata {
+/** Metadata necessary to compile HMR-related code call. */
+export interface R3HmrMetadata {
   /** Component class for which HMR is being enabled. */
   type: o.Expression;
 
@@ -20,19 +20,33 @@ export interface R3HmrInitializerMetadata {
 
   /** File path of the component class. */
   filePath: string;
+
+  /** Name under which `@angular/core` should be referred to in the compiled HMR code. */
+  coreName: string;
+
+  /**
+   * HMR update functions cannot contain imports so any locals the generated code depends on
+   * (e.g. references to imports within the same file or imported symbols) have to be passed in
+   * as function parameters. This array contains the names of those local symbols.
+   */
+  locals: string[];
 }
 
-/** Compiles the HMR initializer expression. */
-export function compileClassHmrInitializer(meta: R3HmrInitializerMetadata): o.Expression {
+/**
+ * Compiles the expression that initializes HMR for a class.
+ * @param meta HMR metadata extracted from the class.
+ */
+export function compileHmrInitializer(meta: R3HmrMetadata): o.Expression {
   const id = encodeURIComponent(`${meta.filePath}@${meta.className}`);
   const urlPartial = `/@ng/component?c=${id}&t=`;
   const moduleName = 'm';
   const dataName = 'd';
+  const locals = meta.locals.map((localName) => o.variable(localName));
 
-  // ɵɵreplaceMetadata(Comp, m.default);
+  // ɵɵreplaceMetadata(Comp, m.default, [...]);
   const replaceMetadata = o
     .importExpr(R3.replaceMetadata)
-    .callFn([meta.type, o.variable(moduleName).prop('default')]);
+    .callFn([meta.type, o.variable(moduleName).prop('default'), o.literalArr(locals)]);
 
   // (m) => ɵɵreplaceMetadata(...)
   const replaceCallback = o.arrowFn([new o.FnParam(moduleName)], replaceMetadata);
@@ -67,4 +81,41 @@ export function compileClassHmrInitializer(meta: R3HmrInitializerMetadata): o.Ex
 
   // import.meta.hot && import.meta.hot.on(...)
   return o.arrowFn([], [devOnlyGuardedExpression(hotRead.and(hotListener)).toStmt()]).callFn([]);
+}
+
+/**
+ * Compiles the HMR update callback for a class.
+ * @param definitions Compiled definitions for the class (e.g. `defineComponent` calls).
+ * @param constantStatements Supporting constants statements that were generated alongside
+ *  the definition.
+ * @param meta HMR metadata extracted from the class.
+ */
+export function compileHmrUpdateCallback(
+  definitions: {name: string; initializer: o.Expression | null; statements: o.Statement[]}[],
+  constantStatements: o.Statement[],
+  meta: R3HmrMetadata,
+): o.DeclareFunctionStmt {
+  // The class name should always be first and core should be second.
+  const params = [meta.className, meta.coreName, ...meta.locals].map(
+    (name) => new o.FnParam(name, o.DYNAMIC_TYPE),
+  );
+  const body: o.Statement[] = [...constantStatements];
+
+  for (const field of definitions) {
+    if (field.initializer !== null) {
+      body.push(o.variable(meta.className).prop(field.name).set(field.initializer).toStmt());
+
+      for (const stmt of field.statements) {
+        body.push(stmt);
+      }
+    }
+  }
+
+  return new o.DeclareFunctionStmt(
+    `${meta.className}_UpdateMetadata`,
+    params,
+    body,
+    null,
+    o.StmtModifier.Final,
+  );
 }

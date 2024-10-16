@@ -15,7 +15,7 @@ import {Observable} from 'rxjs';
  *
  * You can subscribe to the output via `Observable.subscribe` then.
  *
- * @developerPreview
+ * @publicApi
  */
 export function outputToObservable<T>(ref: OutputRef<T>): Observable<T> {
   const destroyRef = ɵgetOutputDestroyRef(ref);

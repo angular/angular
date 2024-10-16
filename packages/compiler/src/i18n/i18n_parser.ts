@@ -8,10 +8,17 @@
 
 import {Lexer as ExpressionLexer} from '../expression_parser/lexer';
 import {Parser as ExpressionParser} from '../expression_parser/parser';
+import {serialize as serializeExpression} from '../expression_parser/serializer';
 import * as html from '../ml_parser/ast';
 import {InterpolationConfig} from '../ml_parser/defaults';
 import {getHtmlTagDefinition} from '../ml_parser/html_tags';
-import {InterpolatedAttributeToken, InterpolatedTextToken, TokenType} from '../ml_parser/tokens';
+import {
+  AttributeValueInterpolationToken,
+  InterpolatedAttributeToken,
+  InterpolatedTextToken,
+  InterpolationToken,
+  TokenType,
+} from '../ml_parser/tokens';
 import {ParseSourceSpan} from '../parse_util';
 
 import * as i18n from './i18n_ast';
@@ -38,12 +45,14 @@ export function createI18nMessageFactory(
   interpolationConfig: InterpolationConfig,
   containerBlocks: Set<string>,
   retainEmptyTokens: boolean,
+  preserveExpressionWhitespace: boolean,
 ): I18nMessageFactory {
   const visitor = new _I18nVisitor(
     _expParser,
     interpolationConfig,
     containerBlocks,
     retainEmptyTokens,
+    preserveExpressionWhitespace,
   );
   return (nodes, meaning, description, customId, visitNodeFn) =>
     visitor.toI18nMessage(nodes, meaning, description, customId, visitNodeFn);
@@ -68,6 +77,7 @@ class _I18nVisitor implements html.Visitor {
     private _interpolationConfig: InterpolationConfig,
     private _containerBlocks: Set<string>,
     private readonly _retainEmptyTokens: boolean,
+    private readonly _preserveExpressionWhitespace: boolean,
   ) {}
 
   public toI18nMessage(
@@ -274,14 +284,24 @@ class _I18nVisitor implements html.Visitor {
         case TokenType.INTERPOLATION:
         case TokenType.ATTR_VALUE_INTERPOLATION:
           hasInterpolation = true;
-          const expression = token.parts[1];
+          const [startMarker, expression, endMarker] = token.parts;
           const baseName = extractPlaceholderName(expression) || 'INTERPOLATION';
           const phName = context.placeholderRegistry.getPlaceholderName(baseName, expression);
-          context.placeholderToContent[phName] = {
-            text: token.parts.join(''),
-            sourceSpan: token.sourceSpan,
-          };
-          nodes.push(new i18n.Placeholder(expression, phName, token.sourceSpan));
+
+          if (this._preserveExpressionWhitespace) {
+            context.placeholderToContent[phName] = {
+              text: token.parts.join(''),
+              sourceSpan: token.sourceSpan,
+            };
+            nodes.push(new i18n.Placeholder(expression, phName, token.sourceSpan));
+          } else {
+            const normalized = this.normalizeExpression(token);
+            context.placeholderToContent[phName] = {
+              text: `${startMarker}${normalized}${endMarker}`,
+              sourceSpan: token.sourceSpan,
+            };
+            nodes.push(new i18n.Placeholder(normalized, phName, token.sourceSpan));
+          }
           break;
         default:
           // Try to merge text tokens with previous tokens. We do this even for all tokens
@@ -331,6 +351,19 @@ class _I18nVisitor implements html.Visitor {
     } else {
       return nodes[0];
     }
+  }
+
+  // Normalize expression whitespace by parsing and re-serializing it. This makes
+  // message IDs more durable to insignificant whitespace changes.
+  normalizeExpression(token: InterpolationToken | AttributeValueInterpolationToken): string {
+    const expression = token.parts[1];
+    const expr = this._expressionParser.parseBinding(
+      expression,
+      /* location */ token.sourceSpan.start.toString(),
+      /* absoluteOffset */ token.sourceSpan.start.offset,
+      this._interpolationConfig,
+    );
+    return serializeExpression(expr);
   }
 }
 
