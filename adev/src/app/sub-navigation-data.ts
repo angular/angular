@@ -604,6 +604,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
           },
         ],
       },
+      {
+        label: 'Drag and drop',
+        path: 'guide/drag-drop',
+        contentPath: 'guide/drag-drop',
+      },
     ],
   },
   {
