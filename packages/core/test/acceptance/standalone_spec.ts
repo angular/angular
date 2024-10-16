@@ -62,14 +62,33 @@ describe('standalone components, directives, and pipes', () => {
 
   it('should render a standalone component with a standalone dependency', () => {
     @Component({
-      standalone: true,
       selector: 'inner-cmp',
       template: 'Look at me, no NgModule!',
     })
     class InnerCmp {}
 
     @Component({
+      template: '<inner-cmp></inner-cmp>',
+      imports: [InnerCmp],
+    })
+    class StandaloneCmp {}
+
+    const fixture = TestBed.createComponent(StandaloneCmp);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerHTML).toEqual(
+      '<inner-cmp>Look at me, no NgModule!</inner-cmp>',
+    );
+  });
+
+  it('should render a standalone component (with standalone: true) with a standalone dependency', () => {
+    @Component({
+      selector: 'inner-cmp',
+      template: 'Look at me, no NgModule!',
       standalone: true,
+    })
+    class InnerCmp {}
+
+    @Component({
       template: '<inner-cmp></inner-cmp>',
       imports: [InnerCmp],
     })
