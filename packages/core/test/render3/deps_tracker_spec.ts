@@ -215,7 +215,7 @@ describe('runtime dependency tracker', () => {
         @Directive({standalone: true})
         class Directive1 {}
 
-        @Pipe({name: 'pipe1', standalone: true})
+        @Pipe({name: 'pipe1'})
         class Pipe1 {}
 
         @Component({standalone: true})
@@ -733,7 +733,7 @@ describe('runtime dependency tracker', () => {
       @Directive({standalone: true})
       class Directive1 {}
 
-      @Pipe({name: 'pipe1', standalone: true})
+      @Pipe({name: 'pipe1'})
       class Pipe1 {}
 
       class MainComponent {}
@@ -758,7 +758,7 @@ describe('runtime dependency tracker', () => {
       @Directive({standalone: true})
       class Directive1 {}
 
-      @Pipe({name: 'pipe1', standalone: true})
+      @Pipe({name: 'pipe1'})
       class Pipe1 {}
 
       class MainComponent {}
@@ -879,7 +879,7 @@ describe('runtime dependency tracker', () => {
       @Directive({standalone: true})
       class Directive1 {}
 
-      @Pipe({name: 'pipe1', standalone: true})
+      @Pipe({name: 'pipe1'})
       class Pipe1 {}
 
       @Component({
@@ -930,7 +930,7 @@ describe('runtime dependency tracker', () => {
       @Directive({standalone: true})
       class Directive1 {}
 
-      @Pipe({name: 'pipe1', standalone: true})
+      @Pipe({name: 'pipe1'})
       class Pipe1 {}
 
       @Component({
@@ -981,7 +981,7 @@ describe('runtime dependency tracker', () => {
       @Directive({standalone: true})
       class Directive1 {}
 
-      @Pipe({name: 'pipe1', standalone: true})
+      @Pipe({name: 'pipe1'})
       class Pipe1 {}
 
       class MainComponent {}
@@ -1014,7 +1014,7 @@ describe('runtime dependency tracker', () => {
       @Directive({standalone: true})
       class Directive1 {}
 
-      @Pipe({name: 'pipe1', standalone: true})
+      @Pipe({name: 'pipe1'})
       class Pipe1 {}
 
       @Component({
@@ -1172,7 +1172,7 @@ describe('runtime dependency tracker', () => {
         @Directive({standalone: true})
         class Directive1 {}
 
-        @Pipe({name: 'pipe1', standalone: true})
+        @Pipe({name: 'pipe1'})
         class Pipe1 {}
 
         @Component({standalone: true})
@@ -1196,7 +1196,7 @@ describe('runtime dependency tracker', () => {
         @Directive({standalone: true})
         class Directive1 {}
 
-        @Pipe({name: 'pipe1', standalone: true})
+        @Pipe({name: 'pipe1'})
         class Pipe1 {}
 
         @Component({standalone: true})

@@ -1193,7 +1193,7 @@ describe('hot module replacement', () => {
         }
       }
 
-      @Directive({selector: '[dir-a]', standalone: true})
+      @Directive({selector: '[dir-a]'})
       class DirA implements OnDestroy {
         constructor() {
           initLog.push('DirA init');
@@ -1204,7 +1204,7 @@ describe('hot module replacement', () => {
         }
       }
 
-      @Directive({selector: '[dir-b]', standalone: true})
+      @Directive({selector: '[dir-b]'})
       class DirB implements OnDestroy {
         constructor() {
           initLog.push('DirB init');
@@ -1240,7 +1240,7 @@ describe('hot module replacement', () => {
       const initLog: string[] = [];
       let destroyCount = 0;
 
-      @Directive({selector: '[dir-a]', standalone: true})
+      @Directive({selector: '[dir-a]'})
       class DirA implements OnDestroy {
         constructor() {
           initLog.push('DirA init');
@@ -1251,7 +1251,7 @@ describe('hot module replacement', () => {
         }
       }
 
-      @Directive({selector: '[dir-b]', standalone: true})
+      @Directive({selector: '[dir-b]'})
       class DirB implements OnDestroy {
         constructor() {
           initLog.push('DirB init');
@@ -1306,14 +1306,14 @@ describe('hot module replacement', () => {
       let instance!: ChildCmp;
       const injectedInstances: [unknown, ChildCmp][] = [];
 
-      @Directive({selector: '[dir-a]', standalone: true})
+      @Directive({selector: '[dir-a]'})
       class DirA {
         constructor() {
           injectedInstances.push([this, inject(ChildCmp)]);
         }
       }
 
-      @Directive({selector: '[dir-b]', standalone: true})
+      @Directive({selector: '[dir-b]'})
       class DirB {
         constructor() {
           injectedInstances.push([this, inject(ChildCmp)]);
@@ -1360,14 +1360,14 @@ describe('hot module replacement', () => {
       const token = new InjectionToken<string>('TEST_TOKEN');
       const injectedValues: [unknown, string][] = [];
 
-      @Directive({selector: '[dir-a]', standalone: true})
+      @Directive({selector: '[dir-a]'})
       class DirA {
         constructor() {
           injectedValues.push([this, inject(token)]);
         }
       }
 
-      @Directive({selector: '[dir-b]', standalone: true})
+      @Directive({selector: '[dir-b]'})
       class DirB {
         constructor() {
           injectedValues.push([this, inject(token)]);
@@ -1410,14 +1410,14 @@ describe('hot module replacement', () => {
       const token = new InjectionToken<string>('TEST_TOKEN');
       const injectedValues: [unknown, string][] = [];
 
-      @Directive({selector: '[dir-a]', standalone: true})
+      @Directive({selector: '[dir-a]'})
       class DirA {
         constructor() {
           injectedValues.push([this, inject(token)]);
         }
       }
 
-      @Directive({selector: '[dir-b]', standalone: true})
+      @Directive({selector: '[dir-b]'})
       class DirB {
         constructor() {
           injectedValues.push([this, inject(token)]);

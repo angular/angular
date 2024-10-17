@@ -457,12 +457,12 @@ describe('injectors', () => {
 
 describe('router outlet data', () => {
   it('is injectable even when not set', async () => {
-    @Component({template: '', standalone: true})
+    @Component({template: ''})
     class MyComponent {
       data = inject(ROUTER_OUTLET_DATA);
     }
 
-    @Component({template: '<router-outlet />', standalone: true, imports: [RouterOutlet]})
+    @Component({template: '<router-outlet />', imports: [RouterOutlet]})
     class App {}
 
     TestBed.configureTestingModule({
@@ -479,7 +479,7 @@ describe('router outlet data', () => {
   });
 
   it('can set and update value', async () => {
-    @Component({template: '', standalone: true})
+    @Component({template: ''})
     class MyComponent {
       data = inject(ROUTER_OUTLET_DATA);
     }

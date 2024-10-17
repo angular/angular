@@ -1682,7 +1682,7 @@ describe('projection', () => {
         value = 0;
       }
 
-      @Component({standalone: true, imports: [Projection], template: `<projection/>`})
+      @Component({imports: [Projection], template: `<projection/>`})
       class App {
         @ViewChild(Projection) projection!: Projection;
       }
@@ -1715,7 +1715,7 @@ describe('projection', () => {
         }
       }
 
-      @Component({standalone: true, imports: [Projection], template: `<projection/>`})
+      @Component({imports: [Projection], template: `<projection/>`})
       class App {}
 
       const fixture = TestBed.createComponent(App);

@@ -214,7 +214,6 @@ export interface ImagePlaceholderConfig {
  *
  * // ... or a standalone Component
  * @Component({
- *   standalone: true
  *   imports: [NgOptimizedImage],
  * })
  * class MyStandaloneComponent {}

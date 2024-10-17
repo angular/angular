@@ -900,12 +900,12 @@ describe('after render hooks', () => {
         const appRef = TestBed.inject(ApplicationRef);
 
         const counter = signal(0);
-        @Component({standalone: true, template: '{{counter()}}'})
+        @Component({template: '{{counter()}}'})
         class Reader {
           counter = counter;
         }
 
-        @Component({standalone: true, template: ''})
+        @Component({template: ''})
         class Writer {
           ngAfterViewInit(): void {
             counter.set(1);

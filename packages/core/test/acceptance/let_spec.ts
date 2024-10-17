@@ -180,7 +180,7 @@ describe('@let declarations', () => {
   });
 
   it('should be able to use pipes injecting ChangeDetectorRef in a let declaration', () => {
-    @Pipe({name: 'double', standalone: true})
+    @Pipe({name: 'double'})
     class DoublePipe implements PipeTransform {
       changeDetectorRef = inject(ChangeDetectorRef);
 
