@@ -15,7 +15,6 @@ let trustedEmptyColor: SafeStyle;
 let trustedGreyColor: SafeStyle;
 
 @Component({
-  standalone: true,
   selector: 'app',
   template: `
     <table>
