@@ -107,6 +107,9 @@ export function withEventReplay(): Provider[] {
               // After hydration, we shouldn't need to do anymore work related to
               // event replay anymore.
               setStashFn(() => {});
+              // Once the hydration is done, we should also remove the event listeners
+              // that are set up by the container manager.
+              eventContractDetails.instance!.cleanUp();
             });
           };
         }
