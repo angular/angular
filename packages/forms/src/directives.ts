@@ -112,3 +112,11 @@ export const REACTIVE_DRIVEN_DIRECTIVES: Type<any>[] = [
 export class ɵInternalFormsSharedModule {}
 
 export {ɵInternalFormsSharedModule as InternalFormsSharedModule};
+
+/**
+ * @publicApi
+ *
+ * @description
+ * This type is typically used to represent a parent Directive
+ */
+export type FormContainerDirective = NgForm | FormGroupDirective;
