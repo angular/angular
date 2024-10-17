@@ -245,7 +245,6 @@ runInEachFileSystem(() => {
         }
 
         @Component({
-          standalone: true,
           template: \`<div dir [(value)]="value"></div>\`,
           imports: [TestDir],
         })
@@ -269,14 +268,12 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[directiveName]',
-            standalone: true,
           })
           export class TestDir {
             data = input(1);
           }
 
           @Component({
-            standalone: true,
             template: \`<div directiveName [data]="false"></div>\`,
             imports: [TestDir],
           })
@@ -300,7 +297,6 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[directiveName]',
-            standalone: true,
           })
           export class TestDir {
             data = input.required({
@@ -309,7 +305,6 @@ runInEachFileSystem(() => {
           }
 
           @Component({
-            standalone: true,
             template: \`<div directiveName [data]="false"></div>\`,
             imports: [TestDir],
           })
@@ -333,14 +328,12 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[directiveName]',
-            standalone: true,
           })
           export class TestDir {
             data = input.required<boolean>();
           }
 
           @Component({
-            standalone: true,
             template: \`<div directiveName></div>\`,
             imports: [TestDir],
           })
@@ -366,7 +359,6 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[directiveName]',
-            standalone: true,
           })
           export class TestDir {
             #data = input.required<boolean>();
@@ -393,7 +385,6 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[directiveName]',
-            standalone: true,
           })
           export class TestDir {
             private data = input.required<boolean>();
@@ -420,7 +411,6 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[directiveName]',
-            standalone: true,
           })
           export class TestDir {
             protected data = input.required<boolean>();

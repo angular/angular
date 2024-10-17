@@ -36,7 +36,6 @@ runInEachFileSystem(() => {
         `
         import {Directive} from '@angular/core';
         @Directive({
-          standalone: true,
           selector: 'user-profile',
           exportAs: 'userProfile',
         })
@@ -61,7 +60,6 @@ runInEachFileSystem(() => {
         `
         import {Component} from '@angular/core';
         @Component({
-          standalone: true,
           selector: 'user-profile',
           exportAs: 'userProfile',
           template: '',
@@ -146,7 +144,6 @@ runInEachFileSystem(() => {
         `
         import {Directive, EventEmitter, Input, Output} from '@angular/core';
         @Directive({
-          standalone: true,
           selector: 'user-profile',
           exportAs: 'userProfile',
         })
@@ -203,7 +200,6 @@ runInEachFileSystem(() => {
         `
         import {Component, EventEmitter, Input, Output} from '@angular/core';
         @Component({
-          standalone: true,
           selector: 'user-profile',
           exportAs: 'userProfile',
           template: '',
@@ -251,7 +247,6 @@ runInEachFileSystem(() => {
         `
         import {Component, EventEmitter, Input, Output} from '@angular/core';
         @Component({
-          standalone: true,
           selector: 'user-profile',
           exportAs: 'userProfile',
           template: '',
