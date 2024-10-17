@@ -29,7 +29,6 @@ describe('greet component', () => {
 });
 
 @Component({
-  standalone: true,
   template: `
     <greet [firstName]="firstName" (clickFromInside)="clickCount = clickCount + 1"
            (clickFromInside2)="clickCount2 = clickCount2 + 1"/>
