@@ -213,17 +213,17 @@ runInEachFileSystem(() => {
       const jsContents = env.getContents('test.js');
       const dtsContents = env.getContents('test.d.ts');
 
-      expect(jsContents).toContain('ɵɵdefineDirective({ type: DirectiveA, standalone: true });');
+      expect(jsContents).toContain('ɵɵdefineDirective({ type: DirectiveA });');
       expect(jsContents).toContain(
-        'ɵɵdefineDirective({ type: DirectiveB, standalone: true, ' +
+        'ɵɵdefineDirective({ type: DirectiveB, ' +
           'features: [i0.ɵɵHostDirectivesFeature([DirectiveA])] });',
       );
       expect(jsContents).toContain(
-        'ɵɵdefineDirective({ type: DirectiveC, standalone: true, ' +
+        'ɵɵdefineDirective({ type: DirectiveC, ' +
           'features: [i0.ɵɵHostDirectivesFeature([DirectiveB])] });',
       );
       expect(jsContents).toContain(
-        'ɵɵdefineComponent({ type: MyComp, selectors: [["my-comp"]],' +
+        'ɵɵdefineComponent({ type: MyComp, selectors: [["my-comp"]], standalone: false,' +
           ' features: [i0.ɵɵHostDirectivesFeature([DirectiveC])]',
       );
 
@@ -269,7 +269,7 @@ runInEachFileSystem(() => {
         export class DirectiveB {
         }
 
-        @Directive({standalone: true})
+        @Directive({})
         export class DirectiveA {
           @Input() value: any;
         }
@@ -288,8 +288,7 @@ runInEachFileSystem(() => {
         'features: [i0.ɵɵHostDirectivesFeature(function () { return [{ directive: DirectiveA, inputs: ["value", "value"] }]; })]',
       );
       expect(jsContents).toContain(
-        'ɵɵdefineDirective({ type: DirectiveA, ' +
-          'inputs: { value: "value" }, standalone: true });',
+        'ɵɵdefineDirective({ type: DirectiveA, ' + 'inputs: { value: "value" } });',
       );
 
       expect(dtsContents).toContain(

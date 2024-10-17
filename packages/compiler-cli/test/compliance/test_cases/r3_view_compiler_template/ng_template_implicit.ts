@@ -2,7 +2,6 @@ import {Component} from '@angular/core';
 
 @Component({
   selector: 'my-component',
-  standalone: true,
   template: '<ng-template let-a [ngIf]="true">{{a}}</ng-template>',
 })
 export class MyComponent {

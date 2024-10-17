@@ -6,6 +6,7 @@ const $e0_ff_2$ = ($v1$, $v2$) => ({animation: $v1$, actions: $v2$});
 MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: MyApp,
   selectors: [["my-app"]],
+  standalone: false,
   decls: 1,
   vars: 10,
   consts: [[__AttributeMarker.Bindings__, "config"]],

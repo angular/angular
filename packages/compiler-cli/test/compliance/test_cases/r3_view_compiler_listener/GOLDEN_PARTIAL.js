@@ -878,7 +878,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    standalone: true,
                     host: { '(click)': '$event.preventDefault(); $event.target.blur()' },
                     template: `
     <div (click)="$event.preventDefault(); $event.target.blur()"></div>
@@ -906,7 +905,7 @@ Dir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLAC
 Dir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Dir, isStandalone: true, selector: "[dir]", inputs: { a: "a", c: "c" }, outputs: { aChange: "aChange", b: "b", cChange: "cChange", d: "d" }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Dir, decorators: [{
             type: Directive,
-            args: [{ standalone: true, selector: '[dir]' }]
+            args: [{ selector: '[dir]' }]
         }], propDecorators: { a: [{
                 type: Input
             }], aChange: [{
@@ -933,7 +932,6 @@ App.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PL
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: App, decorators: [{
             type: Component,
             args: [{
-                    standalone: true,
                     imports: [Dir],
                     template: `
     <div dir [(a)]="value" (b)="noop()" [(c)]="value" (d)="noop()"></div>
@@ -978,7 +976,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Directive,
             args: [{
                     selector: '[ngModel]',
-                    standalone: true,
                 }]
         }] });
 export class TestCmp {
@@ -1000,7 +997,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       <input [(ngModel)]="name" />
     }
   `,
-                    standalone: true,
                     imports: [NgModelDirective],
                 }]
         }] });

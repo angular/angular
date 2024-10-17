@@ -403,7 +403,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    standalone: true,
                     template: `
     <div aria-label="hello" aria-label="hi"></div>
     <div style="width: 0" style="height: 0">

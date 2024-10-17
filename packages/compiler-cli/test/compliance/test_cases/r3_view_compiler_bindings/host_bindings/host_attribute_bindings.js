@@ -7,5 +7,6 @@ HostAttributeDir.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
     if (rf & 2) {
       $r3$.ɵɵattribute("required", ctx.required);
     }
-  }
+  },
+  standalone: false
 });

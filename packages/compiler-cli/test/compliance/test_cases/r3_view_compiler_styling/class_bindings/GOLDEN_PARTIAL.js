@@ -210,7 +210,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    standalone: true,
                     template: `
 		<div *ngIf="true" [class.bar]="field"></div>
 	`
@@ -251,7 +250,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    standalone: true,
                     template: `
   <div attr class="attr"></div>
   <div ngProjectAs="selector" class="selector"></div>

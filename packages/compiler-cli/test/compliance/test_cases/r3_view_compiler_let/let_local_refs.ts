@@ -8,6 +8,5 @@ import {Component} from '@angular/core';
     @let fullName = name.value + ' ' + lastName.value;
     Hello, {{fullName}}
   `,
-  standalone: true,
 })
 export class MyApp {}

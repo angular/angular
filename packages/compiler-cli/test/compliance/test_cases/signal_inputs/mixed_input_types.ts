@@ -5,7 +5,6 @@ function convertToBoolean(value: string|boolean) {
 }
 
 @Directive({
-  standalone: true,
 })
 export class TestDir {
   counter = input(0);

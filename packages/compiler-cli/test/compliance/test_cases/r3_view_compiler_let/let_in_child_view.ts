@@ -12,6 +12,5 @@ import {Component} from '@angular/core';
 
     @let one = 1;
   `,
-  standalone: true,
 })
 export class MyApp {}
