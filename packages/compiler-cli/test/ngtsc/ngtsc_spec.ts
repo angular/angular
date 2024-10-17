@@ -7123,7 +7123,7 @@ runInEachFileSystem((os: string) => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe('NgModule cannot import itself');
+        expect(diags[0].messageText).toBe('NgModule "import" field contains a cycle');
       });
 
       it('should report if an NgModule exports itself', () => {
@@ -7139,7 +7139,7 @@ runInEachFileSystem((os: string) => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe('NgModule cannot export itself');
+        expect(diags[0].messageText).toBe('NgModule "export" field contains a cycle');
       });
 
       it('should report if an NgModule imports itself transitively', () => {
@@ -7181,7 +7181,7 @@ runInEachFileSystem((os: string) => {
         expect(diags[0].messageText).toBe(
           'This import contains errors, which may affect components that depend on this NgModule.',
         );
-        expect(diags[1].messageText).toBe('NgModule cannot import itself');
+        expect(diags[1].messageText).toBe('NgModule "import" field contains a cycle');
         expect(diags[2].messageText).toBe(
           'This import contains errors, which may affect components that depend on this NgModule.',
         );
@@ -7206,7 +7206,35 @@ runInEachFileSystem((os: string) => {
         expect(diags[0].messageText).toBe(
           'This import contains errors, which may affect components that depend on this NgModule.',
         );
-        expect(diags[1].messageText).toBe('NgModule cannot import itself');
+        expect(diags[1].messageText).toBe('NgModule "import" field contains a cycle');
+      });
+
+      it('should report if an NgModule imports itself via a forwardRef', () => {
+        env.write(
+          'test.ts',
+          `
+          import {NgModule, forwardRef} from '@angular/core';
+
+          @NgModule({imports: [forwardRef(() => ModB)]})
+          class ModA {}
+
+          @NgModule({imports: [forwardRef(() => ModC)]})
+          class ModB {}
+
+          @NgModule({imports: [ModB]})
+          class ModC {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(3);
+        expect(diags[0].messageText).toBe(
+          'This import contains errors, which may affect components that depend on this NgModule.',
+        );
+        expect(diags[1].messageText).toBe(
+          'This import contains errors, which may affect components that depend on this NgModule.',
+        );
+        expect(diags[2].messageText).toBe('NgModule "import" field contains a cycle');
       });
     });
 
