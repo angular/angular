@@ -6,6 +6,7 @@ const $_c1$ = ["[title]"];
 MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: MyApp,
   selectors: [["my-app"]],
+  standalone: false,
   decls: 2,
   vars: 0,
   consts: [["ngProjectAs", "[title],[header]", 5, ["", "title", ""]]],

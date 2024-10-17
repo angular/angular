@@ -1,7 +1,6 @@
 import {Directive} from '@angular/core';
 
 @Directive({
-  standalone: true,
   selector: '[hostBindingDir]',
   host: {
     '[innerHtml]': 'evil',
@@ -16,7 +15,6 @@ export class HostBindingDir {
 }
 
 @Directive({
-  standalone: true,
   selector: 'a',
   host: {
     '[innerHtml]': 'evil',

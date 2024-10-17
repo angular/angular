@@ -3,6 +3,7 @@ const $e0_ff$ = ($v0$, $v1$, $v2$, $v3$, $v4$, $v5$, $v6$, $v7$, $v8$) => ["star
 MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: MyApp,
   selectors: [["my-app"]],
+  standalone: false,
   decls: 1,
   vars: 11,
   consts: [[__AttributeMarker.Bindings__, "names"]],

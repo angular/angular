@@ -1,18 +1,16 @@
 import {Component, Directive} from '@angular/core';
 
-@Directive({standalone: true})
+@Directive({})
 export class DirectiveA {
 }
 
 @Directive({
-  standalone: true,
   hostDirectives: [DirectiveA],
 })
 export class DirectiveB {
 }
 
 @Directive({
-  standalone: true,
   hostDirectives: [DirectiveB],
 })
 export class DirectiveC {

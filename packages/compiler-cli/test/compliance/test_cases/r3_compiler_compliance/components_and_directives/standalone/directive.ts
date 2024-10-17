@@ -1,7 +1,5 @@
 import {Directive} from '@angular/core';
 
-@Directive({
-  standalone: true,
-})
+@Directive({})
 export class StandaloneDir {
 }

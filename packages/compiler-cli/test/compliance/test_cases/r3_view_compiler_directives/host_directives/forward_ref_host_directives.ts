@@ -10,13 +10,12 @@ export class MyComponent {
 }
 
 @Directive({
-  standalone: true,
   hostDirectives: [{directive: forwardRef(() => DirectiveA), inputs: ['value']}],
 })
 export class DirectiveB {
 }
 
-@Directive({standalone: true})
+@Directive({})
 export class DirectiveA {
   @Input() value: any;
 }

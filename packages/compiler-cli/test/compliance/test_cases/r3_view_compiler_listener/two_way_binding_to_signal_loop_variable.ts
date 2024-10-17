@@ -2,7 +2,6 @@ import {Component, Directive, model, signal} from '@angular/core';
 
 @Directive({
   selector: '[ngModel]',
-  standalone: true,
 })
 export class NgModelDirective {
   ngModel = model.required<string>();
@@ -14,7 +13,6 @@ export class NgModelDirective {
       <input [(ngModel)]="name" />
     }
   `,
-  standalone: true,
   imports: [NgModelDirective],
 })
 export class TestCmp {

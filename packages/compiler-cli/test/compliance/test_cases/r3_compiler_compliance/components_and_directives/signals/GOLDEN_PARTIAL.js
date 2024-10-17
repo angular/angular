@@ -12,7 +12,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     // @ts-ignore
                     signals: true,
-                    standalone: true,
                     selector: 'other-cmp',
                     template: '',
                 }]
@@ -26,7 +25,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     // @ts-ignore
                     signals: true,
-                    standalone: true,
                     template: '<other-cmp></other-cmp>',
                     imports: [OtherCmp],
                 }]

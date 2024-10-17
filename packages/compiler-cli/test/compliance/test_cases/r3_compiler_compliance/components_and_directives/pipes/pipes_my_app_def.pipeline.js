@@ -3,6 +3,7 @@ const $c0$ = $a0$ => [$a0$, 1, 2, 3, 4, 5];
 MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: MyApp,
   selectors: [["my-app"]],
+  standalone: false,
   decls: 7,
   vars: 20,
   template:  function MyApp_Template(rf, ctx) {

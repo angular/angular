@@ -3,6 +3,7 @@ MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   selectors: [
     ["my-component"]
   ],
+  standalone: false,
   features: [$r3$.ɵɵHostDirectivesFeature([DirectiveA, DirectiveB])],
   decls: 0,
   vars: 0,

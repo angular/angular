@@ -2,7 +2,6 @@ import {Component, Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
   name: 'double',
-  standalone: true,
 })
 export class DoublePipe implements PipeTransform {
   transform(value: number) {
@@ -16,7 +15,6 @@ export class DoublePipe implements PipeTransform {
     @let result = one | double;
     The result is {{result}}
   `,
-  standalone: true,
   imports: [DoublePipe],
 })
 export class MyApp {
