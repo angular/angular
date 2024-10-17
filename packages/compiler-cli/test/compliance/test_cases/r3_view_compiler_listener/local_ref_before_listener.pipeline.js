@@ -2,6 +2,7 @@
 MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: MyComponent,
   selectors: [["my-component"]],
+  standalone: false,
   decls: 4,
   vars: 0,
   consts: [["user", ""], [__AttributeMarker.Bindings__, "click"]],

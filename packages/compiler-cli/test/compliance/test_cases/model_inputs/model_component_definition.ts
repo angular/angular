@@ -1,7 +1,6 @@
 import {Component, model} from '@angular/core';
 
 @Component({
-  standalone: true,
   template: 'Works',
 })
 export class TestComp {

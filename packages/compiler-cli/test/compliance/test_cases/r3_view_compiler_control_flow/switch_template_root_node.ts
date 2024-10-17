@@ -1,6 +1,6 @@
 import {Component, Directive, Input} from '@angular/core';
 
-@Directive({standalone: true, selector: '[binding]'})
+@Directive({selector: '[binding]'})
 export class Binding {
   @Input() binding = 0;
 }
@@ -19,7 +19,6 @@ export class Binding {
       }
     }
   `,
-  standalone: true,
   imports: [Binding],
 })
 export class MyApp {

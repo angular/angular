@@ -2,6 +2,7 @@
 MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
     type: MyComponent,
     selectors:[["my-component"]],
+    standalone: false,
     decls: 1,
     vars: 7,
     consts: [[__AttributeMarker.Styles__, "opacity", "1"]],

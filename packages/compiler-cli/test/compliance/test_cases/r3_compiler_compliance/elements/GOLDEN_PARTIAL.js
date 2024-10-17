@@ -764,7 +764,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    standalone: true,
                     template: `
     <svg:use [attr.xlink:href]="value"/>
     <svg:use id="foo" xlink:href="/foo" name="foo"/>

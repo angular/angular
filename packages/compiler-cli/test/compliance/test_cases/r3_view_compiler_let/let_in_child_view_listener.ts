@@ -19,7 +19,6 @@ import {Component} from '@angular/core';
       }
     </ng-template>
   `,
-  standalone: true,
 })
 export class MyApp {
   value = 1;

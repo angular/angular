@@ -20,7 +20,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     @let result = value * 2;
     The result is {{result}}
   `,
-                    standalone: true,
                 }]
         }] });
 
@@ -60,7 +59,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     @let result = two + 1;
     The result is {{result}}
   `,
-                    standalone: true,
                 }]
         }] });
 
@@ -90,7 +88,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Pipe,
             args: [{
                     name: 'double',
-                    standalone: true,
                 }]
         }] });
 export class MyApp {
@@ -112,7 +109,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     @let result = one | double;
     The result is {{result}}
   `,
-                    standalone: true,
                     imports: [DoublePipe],
                 }]
         }] });
@@ -162,7 +158,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 
     <button (click)="callback(one, two)"></button>
   `,
-                    standalone: true,
                 }]
         }] });
 
@@ -210,7 +205,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 
     @let one = 1;
   `,
-                    standalone: true,
                 }]
         }] });
 
@@ -244,7 +238,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     {{value}}
     <ng-template>{{value}}</ng-template>
   `,
-                    standalone: true,
                 }]
         }] });
 
@@ -310,7 +303,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </ng-template>
   `,
-                    standalone: true,
                 }]
         }] });
 
@@ -350,7 +342,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     @let fullName = name.value + ' ' + lastName.value;
     Hello, {{fullName}}
   `,
-                    standalone: true,
                 }]
         }] });
 
@@ -384,7 +375,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     {{message}}
     <input #name>
   `,
-                    standalone: true,
                 }]
         }] });
 
@@ -433,7 +423,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     }
   `,
-                    standalone: true,
                 }]
         }] });
 
@@ -475,7 +464,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       @let result = value * 2;
     </ng-template>
   `,
-                    standalone: true,
                 }]
         }] });
 
@@ -513,7 +501,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     @let result = value * 2;
     {{value}}
   `,
-                    standalone: true,
                 }]
         }] });
 
@@ -557,7 +544,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     @let four = three + 1;
     {{value}}
   `,
-                    standalone: true,
                 }]
         }] });
 
@@ -601,7 +587,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     @let four = three + 1;
     {{two}}
   `,
-                    standalone: true,
                 }]
         }] });
 
@@ -650,7 +635,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     {{value}}
     <button (click)="callback(three)"></button>
   `,
-                    standalone: true,
                 }]
         }] });
 
@@ -701,7 +685,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       {{three}}
     }
   `,
-                    standalone: true,
                 }]
         }] });
 
@@ -742,7 +725,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       The value comes from {{value}}
     }
   `,
-                    standalone: true,
                 }]
         }] });
 

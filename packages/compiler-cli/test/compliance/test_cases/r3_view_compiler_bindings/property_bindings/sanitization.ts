@@ -2,7 +2,6 @@ import {Component} from '@angular/core';
 
 @Component({
   selector: 'my-component',
-  standalone: true,
   template: `
     <div [innerHtml]="evil"></div>
     <link [href]="evil" />
