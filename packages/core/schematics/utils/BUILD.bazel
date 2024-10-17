@@ -8,8 +8,8 @@ ts_library(
     deps = [
         "//packages/compiler",
         "//packages/compiler-cli/private",
-        "@npm//@angular-devkit/core",
         "@npm//@angular-devkit/schematics",
+        "@npm//@schematics/angular",
         "@npm//@types/node",
         "@npm//typescript",
     ],
