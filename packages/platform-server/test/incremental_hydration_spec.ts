@@ -19,10 +19,10 @@ import {
 } from '@angular/core';
 
 import {getAppContents, prepareEnvironmentAndHydrate, resetTViewsFor} from './dom_utils';
-import {getComponentRef, ssr, timeout, withIncrementalHydration} from './hydration_utils';
+import {getComponentRef, ssr, timeout} from './hydration_utils';
 import {getDocument} from '@angular/core/src/render3/interfaces/document';
 import {isPlatformServer} from '@angular/common';
-import {withEventReplay} from '@angular/platform-browser';
+import {withEventReplay, withIncrementalHydration} from '@angular/platform-browser';
 
 describe('platform-server partial hydration integration', () => {
   const originalWindow = globalThis.window;
