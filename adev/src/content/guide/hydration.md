@@ -94,7 +94,7 @@ It is best to refactor your component to avoid this sort of DOM manipulation. Tr
 
 ### Valid HTML structure
 
-There are a few cases where if you have a component template that does not have valid HTML structure, this could result in a DOM mismatch error during hydration.
+There are a few cases where if you have a component template that does not have valid HTML structure, this could result in a DOM mismatch error during hydration. This mismatch happens because when parsing invalid HTML, browsers will recover from invalid DOM by changing it to something that is valid. For example, browsers will add end tags when non-nestable elements are found. This introduces changes between an SSR generated HTML and the final DOM representation..
 
 As an example, here are some of the most common cases of this issue.
 
@@ -103,7 +103,7 @@ As an example, here are some of the most common cases of this issue.
 * `<a>` inside an `<h1>`
 * `<a>` inside another `<a>`
 
-If you are uncertain about whether your HTML is valid, you can use a [syntax validator](https://validator.w3.org/) to check it.
+If you are uncertain about whether your HTML is valid, you can use a [syntax validator](https://validator.w3.org/) to check it. Additionally, at build time HTML validation tools like the [html-validate](https://www.npmjs.com/package/html-validate) NPM package with the element-permitted-parent rule enabled can help to automate the validation process. Note that using content projection can circumvent template level HTML validation.
 
 ### Preserve Whitespaces Configuration
 
