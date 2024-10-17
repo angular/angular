@@ -22,14 +22,15 @@ export enum FieldIncompatibilityReason {
   DerivedIsIncompatible = 5,
   SpyOnThatOverwritesField = 6,
   PotentiallyNarrowedInTemplateButNoSupportYet = 7,
-  SignalInput__RequiredButNoGoodExplicitTypeExtractable = 8,
-  SignalInput__QuestionMarkButNoGoodExplicitTypeExtractable = 9,
-  SignalQueries__QueryListProblematicFieldAccessed = 10,
-  SignalQueries__IncompatibleMultiUnionType = 11,
-  WriteAssignment = 12,
-  Accessor = 13,
-  OutsideOfMigrationScope = 14,
-  SkippedViaConfigFilter = 15,
+  SignalIncompatibleWithHostBinding = 8,
+  SignalInput__RequiredButNoGoodExplicitTypeExtractable = 9,
+  SignalInput__QuestionMarkButNoGoodExplicitTypeExtractable = 10,
+  SignalQueries__QueryListProblematicFieldAccessed = 11,
+  SignalQueries__IncompatibleMultiUnionType = 12,
+  WriteAssignment = 13,
+  Accessor = 14,
+  OutsideOfMigrationScope = 15,
+  SkippedViaConfigFilter = 16,
 }
 
 /** Field reasons that cannot be ignored. */
