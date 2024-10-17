@@ -90,8 +90,7 @@ export function migrateFile(sourceFile: ts.SourceFile, rewriteFn: RewriteFn) {
 
         newProperties = [...properties, standaloneFalseProperty];
       } else if (standaloneProp.value === ts.SyntaxKind.TrueKeyword) {
-        // TODO: uncomment once we want to enable removing `standalone: true`
-        // newProperties = properties.filter((p) => p !== standaloneProp.property);
+        newProperties = properties.filter((p) => p !== standaloneProp.property);
       }
 
       if (newProperties) {
