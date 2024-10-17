@@ -1539,6 +1539,42 @@ describe('signal queries migration', () => {
       },
     });
   });
+
+  it(`should skip queries that are annotated with @HostBinding`, async () => {
+    const {fs} = await runTsurgeMigration(
+      new SignalQueriesMigration({insertTodosForSkippedFields: true}),
+      [
+        {
+          name: absoluteFrom('/app.component.ts'),
+          isProgramRootFile: true,
+          contents: dedent`
+            import {ViewChild, HostBinding, Component, ElementRef} from '@angular/core';
+
+            @Component({template: ''})
+            class MyComp {
+              @HostBinding('[attr.ref-name]')
+              @ViewChild('ref', {read: RefNameStringToken})
+              ref!: string;
+            }
+        `,
+        },
+      ],
+    );
+
+    expect(fs.readFile(absoluteFrom('/app.component.ts'))).toMatchWithDiff(`
+      import {ViewChild, HostBinding, Component, ElementRef} from '@angular/core';
+
+      @Component({template: ''})
+      class MyComp {
+        // TODO: Skipped for migration because:
+        //  This query is used in combination with \`@HostBinding\` and migrating would
+        //  break.
+        @HostBinding('[attr.ref-name]')
+        @ViewChild('ref', {read: RefNameStringToken})
+        ref!: string;
+      }
+    `);
+  });
 });
 
 function populateDeclarationTestCaseComponent(declaration: string): string {

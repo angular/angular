@@ -280,16 +280,14 @@ export function producerUpdateValueVersion(node: ReactiveNode): void {
   if (!node.producerMustRecompute(node) && !consumerPollProducersForChange(node)) {
     // None of our producers report a change since the last time they were read, so no
     // recomputation of our value is necessary, and we can consider ourselves clean.
-    node.dirty = false;
-    node.lastCleanEpoch = epoch;
+    producerMarkClean(node);
     return;
   }
 
   node.producerRecomputeValue(node);
 
   // After recomputing the value, we're no longer dirty.
-  node.dirty = false;
-  node.lastCleanEpoch = epoch;
+  producerMarkClean(node);
 }
 
 /**
@@ -326,6 +324,11 @@ export function consumerMarkDirty(node: ReactiveNode): void {
   node.dirty = true;
   producerNotifyConsumers(node);
   node.consumerMarkedDirty?.(node);
+}
+
+export function producerMarkClean(node: ReactiveNode): void {
+  node.dirty = false;
+  node.lastCleanEpoch = epoch;
 }
 
 /**

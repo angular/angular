@@ -35,6 +35,7 @@ import {InputNode, isInputContainerNode} from '../input_detection/input_node';
 export interface ExtractedInput extends InputMapping {
   inSourceFile: boolean;
   inputDecorator: Decorator | null;
+  fieldDecorators: Decorator[];
 }
 
 /** Attempts to extract metadata of a potential TypeScript `@Input()` declaration. */
@@ -89,6 +90,8 @@ function extractDtsInput(node: ts.Node, metadataReader: DtsMetadataReader): Extr
         ...inputMapping,
         inputDecorator: null,
         inSourceFile: false,
+        // Inputs from `.d.ts` cannot have any field decorators applied.
+        fieldDecorators: [],
       };
 }
 
@@ -153,6 +156,7 @@ function extractSourceCodeInput(
     inSourceFile: true,
     transform: transformResult,
     inputDecorator,
+    fieldDecorators: decorators,
   };
 }
 

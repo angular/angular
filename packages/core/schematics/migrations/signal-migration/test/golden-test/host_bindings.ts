@@ -1,6 +1,6 @@
 // tslint:disable
 
-import {Component, Input} from '@angular/core';
+import {Component, Input, HostBinding} from '@angular/core';
 
 @Component({
   template: '',
@@ -18,6 +18,10 @@ class HostBindingTestCmp {
   nested = this;
 
   declare receiverNarrowing: this | undefined;
+
+  @HostBinding('[attr.bla]')
+  @Input()
+  myInput = 'initial';
 }
 
 const SHARED = {

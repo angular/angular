@@ -121,6 +121,9 @@ class EventEmitter_ extends Subject<any> implements OutputRef<any> {
     // Attempt to retrieve a `DestroyRef` and `PendingTasks` optionally.
     // For backwards compatibility reasons, this cannot be required.
     if (isInInjectionContext()) {
+      // `DestroyRef` is optional because it is not available in all contexts.
+      // But it is useful to properly complete the `EventEmitter` if used with `outputToObservable`
+      // when the component/directive is destroyed. (See `outputToObservable` for more details.)
       this.destroyRef = inject(DestroyRef, {optional: true}) ?? undefined;
       this.pendingTasks = inject(PendingTasksInternal, {optional: true}) ?? undefined;
     }

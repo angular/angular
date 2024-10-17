@@ -24,6 +24,7 @@ export {
   isReactive,
   producerAccessed,
   producerIncrementEpoch,
+  producerMarkClean,
   producerNotifyConsumers,
   producerUpdateValueVersion,
   producerUpdatesAllowed,

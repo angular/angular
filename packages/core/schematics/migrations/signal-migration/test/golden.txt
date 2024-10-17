@@ -396,7 +396,7 @@ export class WithGetters {
 
 // tslint:disable
 
-import {Component, input} from '@angular/core';
+import {Component, Input, HostBinding, input} from '@angular/core';
 
 @Component({
   template: '',
@@ -414,6 +414,13 @@ class HostBindingTestCmp {
   nested = this;
 
   declare receiverNarrowing: this | undefined;
+
+  // TODO: Skipped for migration because:
+  //  This input is used in combination with `@HostBinding` and migrating would
+  //  break.
+  @HostBinding('[attr.bla]')
+  @Input()
+  myInput = 'initial';
 }
 
 const SHARED = {
