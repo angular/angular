@@ -249,6 +249,9 @@ export function withHttpTransferCacheOptions(options: HttpTransferCacheOptions):
 export function withI18nSupport(): HydrationFeature<HydrationFeatureKind.I18nSupport>;
 
 // @public
+export function withIncrementalHydration(): HydrationFeature<HydrationFeatureKind.IncrementalHydration>;
+
+// @public
 export function withNoHttpTransferCache(): HydrationFeature<HydrationFeatureKind.NoHttpTransferCache>;
 
 // (No @packageDocumentation comment for this package)
