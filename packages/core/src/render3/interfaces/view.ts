@@ -423,7 +423,7 @@ export const enum LViewFlags {
   IsRoot = 1 << 9,
 
   /**
-   * Whether this moved LView was needs to be refreshed. Similar to the Dirty flag, but used for
+   * Whether this moved LView needs to be refreshed. Similar to the Dirty flag, but used for
    * transplanted and signal views where the parent/ancestor views are not marked dirty as well.
    * i.e. "Refresh just this view". Used in conjunction with the HAS_CHILD_VIEWS_TO_REFRESH
    * flag.
