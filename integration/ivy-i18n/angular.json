@@ -129,7 +129,7 @@
           }
         },
         "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
+          "builder": "@angular-devkit/build-angular:private-protractor",
           "options": {
             "protractorConfig": "e2e/en/protractor.conf.js",
             "devServerTarget": "cli-hello-world-ivy-i18n:serve",

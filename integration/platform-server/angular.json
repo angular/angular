@@ -72,7 +72,7 @@
           "defaultConfiguration": "development"
         },
         "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
+          "builder": "@angular-devkit/build-angular:private-protractor",
           "options": {
             "port": 0,
             "protractorConfig": "e2e/protractor.conf.js",
@@ -168,7 +168,7 @@
           "defaultConfiguration": "development"
         },
         "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
+          "builder": "@angular-devkit/build-angular:private-protractor",
           "options": {
             "port": 0,
             "protractorConfig": "e2e/protractor.conf.js",
