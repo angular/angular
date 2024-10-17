@@ -74,8 +74,14 @@ export interface AnimationPlayer {
    */
   reset(): void;
   /**
-   * Sets the position of the animation.
-   * @param position A 0-based offset into the duration, in milliseconds.
+   * Sets the position within the animation's duration.
+   * 
+   * @param {number} position - The position within the duration. 
+   * This can either be:
+   * - A 0-based offset in milliseconds, representing a specific time point within the animation.
+   * - A fractional value between 0 and 1, representing the progress through the animation (where 0 is the start and 1 is the end).
+   * 
+   * The interpretation of this value depends on the context in which it's used.
    */
   setPosition(position: number): void;
   /**
