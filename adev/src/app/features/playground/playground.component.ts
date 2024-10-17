@@ -10,21 +10,21 @@ import {isPlatformBrowser, NgComponentOutlet} from '@angular/common';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
-  EnvironmentInjector,
+  DestroyRef,
   PLATFORM_ID,
-  Type,
   inject,
 } from '@angular/core';
-import {IconComponent} from '@angular/docs';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
+import {IconComponent, PlaygroundTemplate} from '@angular/docs';
+import {from} from 'rxjs';
 
-import {PlaygroundTemplate} from '@angular/docs';
-import {injectAsync} from '../../core/services/inject-async';
-import {EmbeddedTutorialManager} from '../../editor/index';
+import {EmbeddedEditor} from '../../editor/embedded-editor.component';
+import {NodeRuntimeSandbox} from '../../editor/node-runtime-sandbox.service';
+import {EmbeddedTutorialManager} from '../../editor/embedded-tutorial-manager.service';
 
 import PLAYGROUND_ROUTE_DATA_JSON from '../../../../src/assets/tutorials/playground/routes.json';
-import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
 
 @Component({
   selector: 'adev-playground',
@@ -39,35 +39,30 @@ import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class PlaygroundComponent implements AfterViewInit {
-  private readonly changeDetectorRef = inject(ChangeDetectorRef);
   private readonly embeddedTutorialManager = inject(EmbeddedTutorialManager);
-  private readonly environmentInjector = inject(EnvironmentInjector);
-  private readonly platformId = inject(PLATFORM_ID);
+  private readonly nodeRuntimeSandbox = inject(NodeRuntimeSandbox);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   readonly templates = PLAYGROUND_ROUTE_DATA_JSON.templates;
   readonly defaultTemplate = PLAYGROUND_ROUTE_DATA_JSON.defaultTemplate;
   readonly starterTemplate = PLAYGROUND_ROUTE_DATA_JSON.starterTemplate;
 
-  protected embeddedEditorComponent?: Type<unknown>;
+  // We don't render the `embedded-editor` on the server.
+  protected embeddedEditorComponent = this.isBrowser ? EmbeddedEditor : null;
   protected selectedTemplate: PlaygroundTemplate = this.defaultTemplate;
 
-  async ngAfterViewInit(): Promise<void> {
-    if (isPlatformBrowser(this.platformId)) {
-      const [embeddedEditorComponent, nodeRuntimeSandbox] = await Promise.all([
-        import('../../editor/index').then((c) => c.EmbeddedEditor),
-        injectAsync(this.environmentInjector, () =>
-          import('../../editor/index').then((c) => c.NodeRuntimeSandbox),
-        ),
-      ]);
-
-      this.embeddedEditorComponent = embeddedEditorComponent;
-
-      this.changeDetectorRef.markForCheck();
-
-      await this.loadTemplate(this.defaultTemplate.path);
-
-      await nodeRuntimeSandbox.init();
+  ngAfterViewInit(): void {
+    if (!this.isBrowser) {
+      return;
     }
+
+    // If using `async-await`, `this` will be captured until the function is executed
+    // and completed, which can lead to a memory leak if the user navigates away from
+    // the playground component to another page.
+    from(this.loadTemplate(this.defaultTemplate.path))
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.nodeRuntimeSandbox.init());
   }
 
   async newProject() {
