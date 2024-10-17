@@ -91,7 +91,7 @@
 }
 
 .adev-reference-list-empty {
-  text-align: center;
+  flex-basis: 100%;
   p {
     font-size: 1rem;
   }
@@ -107,4 +107,69 @@
 
 .docs-api-item-label-full {
   white-space: nowrap;
+}
+
+.adev-status-dropdown {
+  border: 1px solid var(--senary-contrast);
+  border-radius: 0.25rem;
+  padding: 0;
+  transform: translateY(-0.7rem);
+  max-height: 200px;
+  overflow-y: auto;
+  background: var(--page-background);
+
+  li {
+    list-style: none;
+    width: 198px;
+    box-sizing: border-box;
+
+    button {
+      background: var(--page-background);
+      width: 100%;
+      text-align: left;
+      padding-block: 0.5rem;
+      color: var(--quaternary-contrast);
+      transition:
+        color 0.3s ease,
+        background 0.3s ease;
+      font-weight: 400;
+
+      &:hover {
+        background: var(--senary-contrast);
+        color: var(--primary-contrast);
+      }
+    }
+  }
+}
+
+.adev-status-select {
+  font-size: 1rem;
+  color: var(--quaternary-contrast);
+  button {
+    border: 1px solid var(--senary-contrast);
+    border-radius: 0.25rem;
+    width: 200px;
+    height: 100%;
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-block: 0.5rem;
+    font-size: 1rem;
+    font-weight: 400;
+    transition: border 0.3s ease;
+    &:focus-visible {
+      outline: 1px solid var(--french-violet);
+    }
+    span {
+      color: var(--tertiary-contrast);
+      transition: color 0.3s ease;
+      margin-inline-start: 0.1rem;
+    }
+
+    docs-icon {
+      font-size: 1.3rem;
+      color: var(--quaternary-contrast);
+      transition: color 0.3s ease;
+    }
+  }
 }

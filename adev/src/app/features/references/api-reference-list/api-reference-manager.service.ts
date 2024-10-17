@@ -65,6 +65,8 @@ export class ApiReferenceManager {
               itemType: api.type,
               title: api.name,
               isDeprecated: !!api.isDeprecated,
+              isDeveloperPreview: !!api.isDeveloperPreview,
+              isExperimental: !!api.isExperimental,
               isFeatured,
               url,
             };
