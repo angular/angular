@@ -559,11 +559,11 @@ export function isStandaloneDecorator(decorator: ts.Decorator): boolean | null {
       continue;
     }
     // TODO(dylhunn): What if this is a dynamically evaluated expression?
-    if (property.name.getText() === 'standalone' && property.initializer.getText() === 'true') {
-      return true;
+    if (property.name.getText() === 'standalone' && property.initializer.getText() === 'false') {
+      return false;
     }
   }
-  return false;
+  return true;
 }
 
 /**
