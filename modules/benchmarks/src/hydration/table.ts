@@ -15,7 +15,6 @@ let trustedEmptyColor: SafeStyle;
 let trustedGreyColor: SafeStyle;
 
 @Component({
-  standalone: true,
   selector: 'app',
   template: ``,
 })
@@ -27,7 +26,6 @@ export class AppComponent {
 }
 
 @Component({
-  standalone: true,
   selector: 'table-cmp',
   template: `
     <table>
