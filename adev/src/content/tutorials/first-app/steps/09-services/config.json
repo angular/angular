@@ -1,6 +1,6 @@
 {
   "title": "Angular services",
-  "type": "editor",
+  "type": "local",
   "answerSrc": "../10-routing/src",
   "openFiles": ["src/app/home/home.component.ts"]
 }
