@@ -31,9 +31,15 @@ import {isNamedClassDeclaration} from './util';
  */
 
 export class TypeScriptReflectionHost implements ReflectionHost {
+  /**
+   * @param skipPrivateValueDeclarationTypes Avoids using a value declaration that is considered private (using a ɵ-prefix),
+   * instead using the first available declaration. This is needed for the {@link FormControl} API of
+   * which the type declaration documents the type and the value declaration corresponds with an implementation detail.
+   */
   constructor(
     protected checker: ts.TypeChecker,
     private readonly isLocalCompilation = false,
+    private readonly skipPrivateValueDeclarationTypes: boolean = false,
   ) {}
 
   getDecoratorsOfDeclaration(declaration: DeclarationNode): Decorator[] | null {
@@ -398,9 +404,16 @@ export class TypeScriptReflectionHost implements ReflectionHost {
       symbol = this.checker.getAliasedSymbol(symbol);
     }
 
-    // Look at the resolved Symbol's declarations and pick one of them to return. Value declarations
-    // are given precedence over type declarations.
-    if (symbol.valueDeclaration !== undefined) {
+    const symbolType = symbol.valueDeclaration
+      ? this.checker.getTypeOfSymbolAtLocation(symbol, symbol.valueDeclaration)
+      : undefined;
+
+    // Look at the resolved Symbol's declarations and pick one of them to return.
+    // Value declarations are given precedence over type declarations if not specified otherwise
+    if (
+      symbol.valueDeclaration !== undefined &&
+      (!this.skipPrivateValueDeclarationTypes || symbolType?.symbol?.name.startsWith('ɵ') !== true)
+    ) {
       return {
         node: symbol.valueDeclaration,
         viaModule: this._viaModule(symbol.valueDeclaration, originalId, importInfo),
