@@ -802,7 +802,7 @@ describe('getInjectorProviders', () => {
   it('should be able to determine providers in a lazy route that has providers', fakeAsync(() => {
     class MyService {}
 
-    @Component({selector: 'my-comp-b', template: 'hello world', standalone: true})
+    @Component({selector: 'my-comp-b', template: 'hello world'})
     class MyStandaloneComponentB {
       injector = inject(Injector);
     }
@@ -863,7 +863,7 @@ describe('getInjectorProviders', () => {
   it('should be able to get injector providers for element injectors created by components rendering in an ngFor', () => {
     class MyService {}
 
-    @Component({selector: 'item-cmp', template: 'item', standalone: true, providers: [MyService]})
+    @Component({selector: 'item-cmp', template: 'item', providers: [MyService]})
     class ItemComponent {
       injector = inject(Injector);
     }
@@ -902,7 +902,7 @@ describe('getInjectorProviders', () => {
   it('should be able to get injector providers for element injectors created by components rendering in a @for', () => {
     class MyService {}
 
-    @Component({selector: 'item-cmp', template: 'item', standalone: true, providers: [MyService]})
+    @Component({selector: 'item-cmp', template: 'item', providers: [MyService]})
     class ItemComponent {
       injector = inject(Injector);
     }
@@ -1168,7 +1168,7 @@ describe('getDependenciesFromInjectable', () => {
     @NgModule({imports: [ModuleB, ModuleC]})
     class ModuleD {}
 
-    @Component({selector: 'my-comp', template: 'hello world', imports: [ModuleD], standalone: true})
+    @Component({selector: 'my-comp', template: 'hello world', imports: [ModuleD]})
     class MyStandaloneComponent {
       myService = inject(MyService);
     }

@@ -129,7 +129,7 @@ describe('CSP integration', () => {
   it(
     'should prefer nonce provided through DI over one provided in the DOM',
     withBody('<app ngCspNonce="dom-nonce"></app>', async () => {
-      @Component({selector: 'uses-styles', template: '', styles: [testStyles], standalone: true})
+      @Component({selector: 'uses-styles', template: '', styles: [testStyles]})
       class UsesStyles {}
 
       @Component({

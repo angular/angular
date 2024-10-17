@@ -4934,10 +4934,10 @@ describe('platform-server full application hydration integration', () => {
         })
         class ProjectorCmp {}
 
-        @Component({selector: 'foo', standalone: true, template: ''})
+        @Component({selector: 'foo', template: ''})
         class FooCmp {}
 
-        @Component({selector: 'bar', standalone: true, template: ''})
+        @Component({selector: 'bar', template: ''})
         class BarCmp {}
 
         @Component({
@@ -4979,10 +4979,10 @@ describe('platform-server full application hydration integration', () => {
         })
         class ProjectorCmp {}
 
-        @Component({selector: 'foo', standalone: true, template: ''})
+        @Component({selector: 'foo', template: ''})
         class FooCmp {}
 
-        @Component({selector: 'bar', standalone: true, template: ''})
+        @Component({selector: 'bar', template: ''})
         class BarCmp {}
 
         @Component({

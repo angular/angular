@@ -354,7 +354,7 @@ describe('pipe', () => {
     }
 
     // The generated code corresponds to the following decorator:
-    // @Pipe({name: 'sayHello', pure: true, standalone: true})
+    // @Pipe({name: 'sayHello', pure: true})
     class SayHelloPipe extends ParentPipe implements PipeTransform {
       transform() {
         return this.sayHelloService.getHello();

@@ -237,7 +237,7 @@ describe('signal inputs', () => {
   });
 
   it('should support two-way binding to signal input and @Output decorated member', () => {
-    @Directive({selector: '[dir]', standalone: true})
+    @Directive({selector: '[dir]'})
     class Dir {
       value = input(0);
       @Output() valueChange = new EventEmitter<number>();
