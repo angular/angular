@@ -36,6 +36,10 @@ export class PendingTasksInternal implements OnDestroy {
     return taskId;
   }
 
+  has(taskId: number): boolean {
+    return this.pendingTasks.has(taskId);
+  }
+
   remove(taskId: number): void {
     this.pendingTasks.delete(taskId);
     if (this.pendingTasks.size === 0 && this._hasPendingTasks) {
@@ -90,6 +94,10 @@ export class PendingTasks {
   add(): () => void {
     const taskId = this.internalPendingTasks.add();
     return () => {
+      if (!this.internalPendingTasks.has(taskId)) {
+        // This pending task has already been cleared.
+        return;
+      }
       // Notifying the scheduler will hold application stability open until the next tick.
       this.scheduler.notify(NotificationSource.PendingTaskRemoved);
       this.internalPendingTasks.remove(taskId);
