@@ -546,7 +546,6 @@ describe('getSemanticDiagnostics', () => {
       @Component({
         templateUrl: './test.ng.html',
         imports: [PostModule],
-        standalone: true,
       })
       export class Main { }
        `,

@@ -305,7 +305,6 @@ describe('bootstrap', () => {
         'should throw when standalone component is used in @NgModule.bootstrap',
         withBody('<my-app></my-app>', async () => {
           @Component({
-            standalone: true,
             selector: 'standalone-comp',
             template: '...',
           })
@@ -384,7 +383,6 @@ describe('bootstrap', () => {
         'should throw when standalone component wrapped in `forwardRef` is used in @NgModule.bootstrap',
         withBody('<my-app></my-app>', async () => {
           @Component({
-            standalone: true,
             selector: 'standalone-comp',
             template: '...',
           })

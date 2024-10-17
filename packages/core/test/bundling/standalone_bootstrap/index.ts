@@ -10,7 +10,6 @@ import {Component} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';
 
 @Component({
-  standalone: true,
   selector: 'hello-world',
   template: 'Hello World!',
 })

@@ -5151,7 +5151,6 @@ describe('control flow migration', () => {
         @Component({
           selector: 'declare-comp',
           templateUrl: './comp.html',
-          standalone: true,
           imports: [NgIf],
         })
         class DeclareComp {

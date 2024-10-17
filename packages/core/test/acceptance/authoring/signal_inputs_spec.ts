@@ -36,7 +36,6 @@ describe('signal inputs', () => {
   it('should be possible to bind to an input', () => {
     @Component({
       selector: 'input-comp',
-      standalone: true,
       template: 'input:{{input()}}',
     })
     class InputComp {
@@ -44,7 +43,6 @@ describe('signal inputs', () => {
     }
 
     @Component({
-      standalone: true,
       template: `<input-comp [input]="value" />`,
       imports: [InputComp],
     })
@@ -66,7 +64,6 @@ describe('signal inputs', () => {
   it('should be possible to use an input in a computed expression', () => {
     @Component({
       selector: 'input-comp',
-      standalone: true,
       template: 'changed:{{changed()}}',
     })
     class InputComp {
@@ -75,7 +72,6 @@ describe('signal inputs', () => {
     }
 
     @Component({
-      standalone: true,
       template: `<input-comp [input]="value" />`,
       imports: [InputComp],
     })
@@ -99,7 +95,6 @@ describe('signal inputs', () => {
 
     @Component({
       selector: 'input-comp',
-      standalone: true,
       template: '',
     })
     class InputComp {
@@ -113,7 +108,6 @@ describe('signal inputs', () => {
     }
 
     @Component({
-      standalone: true,
       template: `<input-comp [input]="value" />`,
       imports: [InputComp],
     })
@@ -137,7 +131,6 @@ describe('signal inputs', () => {
   it('should support transforms', () => {
     @Component({
       selector: 'input-comp',
-      standalone: true,
       template: 'input:{{input()}}',
     })
     class InputComp {
@@ -145,7 +138,6 @@ describe('signal inputs', () => {
     }
 
     @Component({
-      standalone: true,
       template: `<input-comp [input]="value" />`,
       imports: [InputComp],
     })
@@ -165,7 +157,6 @@ describe('signal inputs', () => {
     let transformRunCount = 0;
     @Component({
       selector: 'input-comp',
-      standalone: true,
       template: '',
     })
     class InputComp {
@@ -175,7 +166,6 @@ describe('signal inputs', () => {
     }
 
     @Component({
-      standalone: true,
       template: `<input-comp [input]="value" />`,
       imports: [InputComp],
     })
@@ -193,7 +183,6 @@ describe('signal inputs', () => {
   it('should throw error if a required input is accessed too early', () => {
     @Component({
       selector: 'input-comp',
-      standalone: true,
       template: 'input:{{input()}}',
     })
     class InputComp {
@@ -205,7 +194,6 @@ describe('signal inputs', () => {
     }
 
     @Component({
-      standalone: true,
       template: `<input-comp [input]="value" />`,
       imports: [InputComp],
     })
@@ -226,13 +214,11 @@ describe('signal inputs', () => {
 
     @Component({
       selector: 'input-comp',
-      standalone: true,
       template: 'input:{{input()}}',
     })
     class InputComp extends BaseDir {}
 
     @Component({
-      standalone: true,
       template: `<input-comp [input]="value" />`,
       imports: [InputComp],
     })
@@ -260,7 +246,6 @@ describe('signal inputs', () => {
 
     @Component({
       template: '<div [(value)]="value" dir></div>',
-      standalone: true,
       imports: [Dir],
     })
     class App {

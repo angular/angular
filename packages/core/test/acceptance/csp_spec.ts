@@ -45,14 +45,12 @@ describe('CSP integration', () => {
         selector: 'uses-styles',
         template: '',
         styles: [testStyles],
-        standalone: true,
         encapsulation: ViewEncapsulation.Emulated,
       })
       class UsesStyles {}
 
       @Component({
         selector: 'app',
-        standalone: true,
         template: '<uses-styles></uses-styles>',
         imports: [UsesStyles],
       })
@@ -73,14 +71,12 @@ describe('CSP integration', () => {
         selector: 'uses-styles',
         template: '',
         styles: [testStyles],
-        standalone: true,
         encapsulation: ViewEncapsulation.None,
       })
       class UsesStyles {}
 
       @Component({
         selector: 'app',
-        standalone: true,
         template: '<uses-styles></uses-styles>',
         imports: [UsesStyles],
       })
@@ -107,7 +103,6 @@ describe('CSP integration', () => {
         selector: 'uses-styles',
         template: '',
         styles: [testStyles],
-        standalone: true,
         encapsulation: ViewEncapsulation.ShadowDom,
       })
       class UsesStyles {
@@ -118,7 +113,6 @@ describe('CSP integration', () => {
 
       @Component({
         selector: 'app',
-        standalone: true,
         template: '<uses-styles></uses-styles>',
         imports: [UsesStyles],
       })
@@ -140,7 +134,6 @@ describe('CSP integration', () => {
 
       @Component({
         selector: 'app',
-        standalone: true,
         template: '<uses-styles></uses-styles>',
         imports: [UsesStyles],
       })

@@ -37,7 +37,6 @@ describe('hot module replacement', () => {
     let instance!: ChildCmp;
     const initialMetadata: Component = {
       selector: 'child-cmp',
-      standalone: true,
       template: 'Hello <strong>{{state}}</strong>',
     };
 
@@ -51,7 +50,6 @@ describe('hot module replacement', () => {
     }
 
     @Component({
-      standalone: true,
       imports: [ChildCmp],
       template: '<child-cmp/>',
     })
@@ -104,7 +102,6 @@ describe('hot module replacement', () => {
   it('should recreate multiple usages of a complex component', () => {
     const initialMetadata: Component = {
       selector: 'child-cmp',
-      standalone: true,
       template: '<span>ChildCmp (orig)</span><h1>{{ text }}</h1>',
     };
 
@@ -114,7 +111,6 @@ describe('hot module replacement', () => {
     }
 
     @Component({
-      standalone: true,
       imports: [ChildCmp],
       template: `
         <i>Unrelated node #1</i>
@@ -197,7 +193,6 @@ describe('hot module replacement', () => {
   it('should not recreate sub-classes of a component being replaced', () => {
     const initialMetadata: Component = {
       selector: 'child-cmp',
-      standalone: true,
       template: 'Base class',
     };
 
@@ -206,13 +201,11 @@ describe('hot module replacement', () => {
 
     @Component({
       selector: 'child-sub-cmp',
-      standalone: true,
       template: 'Sub class',
     })
     class ChildSubCmp extends ChildCmp {}
 
     @Component({
-      standalone: true,
       imports: [ChildCmp, ChildSubCmp],
       template: `<child-cmp/>|<child-sub-cmp/>`,
     })
@@ -247,7 +240,6 @@ describe('hot module replacement', () => {
   it('should continue binding inputs to a component that is replaced', () => {
     const initialMetadata: Component = {
       selector: 'child-cmp',
-      standalone: true,
       template: '<span>{{staticValue}}</span><strong>{{dynamicValue}}</strong>',
     };
 
@@ -258,7 +250,6 @@ describe('hot module replacement', () => {
     }
 
     @Component({
-      standalone: true,
       imports: [ChildCmp],
       template: `<child-cmp staticValue="1" [dynamicValue]="dynamicValue"/>`,
     })
@@ -331,7 +322,6 @@ describe('hot module replacement', () => {
   it('should recreate a component used inside @for', () => {
     const initialMetadata: Component = {
       selector: 'child-cmp',
-      standalone: true,
       template: 'Hello <strong>{{value}}</strong>',
     };
 
@@ -341,7 +331,6 @@ describe('hot module replacement', () => {
     }
 
     @Component({
-      standalone: true,
       imports: [ChildCmp],
       template: `
         @for (current of items; track current.id) {
@@ -417,7 +406,6 @@ describe('hot module replacement', () => {
     it('should update ViewChildren query results', async () => {
       @Component({
         selector: 'child-cmp',
-        standalone: true,
         template: '<span>ChildCmp {{ text }}</span>',
       })
       class ChildCmp {
@@ -426,7 +414,6 @@ describe('hot module replacement', () => {
 
       let instance!: ParentCmp;
       const initialMetadata: Component = {
-        standalone: true,
         selector: 'parent-cmp',
         imports: [ChildCmp],
         template: `
@@ -445,7 +432,6 @@ describe('hot module replacement', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [ParentCmp],
         template: `<parent-cmp/>`,
       })
@@ -475,7 +461,6 @@ describe('hot module replacement', () => {
     it('should update ViewChild when the string points to a different element', async () => {
       let instance!: ParentCmp;
       const initialMetadata: Component = {
-        standalone: true,
         selector: 'parent-cmp',
         template: `
           <div>
@@ -496,7 +481,6 @@ describe('hot module replacement', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [ParentCmp],
         template: `<parent-cmp/>`,
       })
@@ -529,14 +513,12 @@ describe('hot module replacement', () => {
       const token = new InjectionToken<DirA | DirB>('token');
 
       @Directive({
-        standalone: true,
         selector: '[dir-a]',
         providers: [{provide: token, useExisting: DirA}],
       })
       class DirA {}
 
       @Directive({
-        standalone: true,
         selector: '[dir-b]',
         providers: [{provide: token, useExisting: DirB}],
       })
@@ -544,7 +526,6 @@ describe('hot module replacement', () => {
 
       let instance!: ParentCmp;
       const initialMetadata: Component = {
-        standalone: true,
         selector: 'parent-cmp',
         imports: [DirA, DirB],
         template: `<div #ref dir-a></div>`,
@@ -560,7 +541,6 @@ describe('hot module replacement', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [ParentCmp],
         template: `<parent-cmp/>`,
       })
@@ -587,7 +567,6 @@ describe('hot module replacement', () => {
       const token = new InjectionToken<Dir>('token');
 
       @Directive({
-        standalone: true,
         selector: '[dir]',
         providers: [{provide: token, useExisting: Dir}],
       })
@@ -595,7 +574,6 @@ describe('hot module replacement', () => {
 
       let instance!: ParentCmp;
       const initialMetadata: Component = {
-        standalone: true,
         selector: 'parent-cmp',
         imports: [Dir],
         template: `<div #ref dir></div>`,
@@ -611,7 +589,6 @@ describe('hot module replacement', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [ParentCmp],
         template: `<parent-cmp/>`,
       })
@@ -634,7 +611,6 @@ describe('hot module replacement', () => {
   describe('content projection', () => {
     it('should work with content projection', () => {
       const initialMetadata: Component = {
-        standalone: true,
         selector: 'parent-cmp',
         template: `<ng-content/>`,
       };
@@ -643,7 +619,6 @@ describe('hot module replacement', () => {
       class ParentCmp {}
 
       @Component({
-        standalone: true,
         imports: [ParentCmp],
         template: `
           <parent-cmp>
@@ -700,7 +675,6 @@ describe('hot module replacement', () => {
     it('should handle elements moving around into different slots', () => {
       // Start off with a single catch-all slot.
       const initialMetadata: Component = {
-        standalone: true,
         selector: 'parent-cmp',
         template: `<ng-content/>`,
       };
@@ -709,7 +683,6 @@ describe('hot module replacement', () => {
       class ParentCmp {}
 
       @Component({
-        standalone: true,
         imports: [ParentCmp],
         template: `
           <parent-cmp>
@@ -786,7 +759,6 @@ describe('hot module replacement', () => {
 
     it('should handle default content for ng-content', () => {
       const initialMetadata: Component = {
-        standalone: true,
         selector: 'parent-cmp',
         template: `
           <ng-content select="will-not-match">
@@ -799,7 +771,6 @@ describe('hot module replacement', () => {
       class ParentCmp {}
 
       @Component({
-        standalone: true,
         imports: [ParentCmp],
         template: `
           <parent-cmp>
@@ -845,7 +816,6 @@ describe('hot module replacement', () => {
     it('should only invoke the init/destroy hooks inside the content when replacing the template', () => {
       @Component({
         template: '',
-        standalone: true,
         selector: 'child-cmp',
       })
       class ChildCmp implements OnInit, OnDestroy {
@@ -861,7 +831,6 @@ describe('hot module replacement', () => {
       }
 
       const initialMetadata: Component = {
-        standalone: true,
         template: `
           <child-cmp text="A"/>
           <child-cmp text="B"/>
@@ -891,7 +860,6 @@ describe('hot module replacement', () => {
           <parent-cmp text="A"/>
           <parent-cmp text="B"/>
         `,
-        standalone: true,
         imports: [ParentCmp],
       })
       class RootCmp {}
@@ -951,7 +919,6 @@ describe('hot module replacement', () => {
     it('should invoke checked hooks both on the host and the content being replaced', () => {
       @Component({
         template: '',
-        standalone: true,
         selector: 'child-cmp',
       })
       class ChildCmp implements DoCheck {
@@ -963,7 +930,6 @@ describe('hot module replacement', () => {
       }
 
       const initialMetadata: Component = {
-        standalone: true,
         template: `<child-cmp text="A"/>`,
         imports: [ChildCmp],
         selector: 'parent-cmp',
@@ -979,7 +945,6 @@ describe('hot module replacement', () => {
 
       @Component({
         template: `<parent-cmp/>`,
-        standalone: true,
         imports: [ParentCmp],
       })
       class RootCmp {}
@@ -1039,7 +1004,6 @@ describe('hot module replacement', () => {
       const values: string[] = [];
       const initialMetadata: Component = {
         selector: 'child-cmp',
-        standalone: true,
         template: '',
       };
 
@@ -1056,7 +1020,6 @@ describe('hot module replacement', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [ChildCmp],
         template: `<child-cmp [value]="value"/>`,
       })
@@ -1113,7 +1076,6 @@ describe('hot module replacement', () => {
       let count = 0;
       const initialMetadata: Component = {
         selector: 'child-cmp',
-        standalone: true,
         template: '<button (click)="clicked()"></button>',
       };
 
@@ -1127,7 +1089,6 @@ describe('hot module replacement', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [ChildCmp],
         template: `<child-cmp (changed)="onChange()"/>`,
       })
@@ -1165,7 +1126,6 @@ describe('hot module replacement', () => {
       let count = 0;
       const initialMetadata: Component = {
         selector: 'child-cmp',
-        standalone: true,
         template: '<button (click)="clicked()"></button>',
       };
 
@@ -1179,7 +1139,6 @@ describe('hot module replacement', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [ChildCmp],
         template: `<child-cmp (changed)="onChange()"/>`,
       })
@@ -1220,7 +1179,6 @@ describe('hot module replacement', () => {
       let destroyCount = 0;
       const initialMetadata: Component = {
         selector: 'child-cmp',
-        standalone: true,
         template: '',
       };
 
@@ -1258,7 +1216,6 @@ describe('hot module replacement', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [ChildCmp, DirA, DirB],
         template: `<child-cmp dir-a dir-b/>`,
       })
@@ -1307,7 +1264,6 @@ describe('hot module replacement', () => {
 
       const initialMetadata: Component = {
         selector: 'child-cmp',
-        standalone: true,
         template: '',
         hostDirectives: [DirA, DirB],
       };
@@ -1324,7 +1280,6 @@ describe('hot module replacement', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [ChildCmp],
         template: '<child-cmp/>',
       })
@@ -1367,7 +1322,6 @@ describe('hot module replacement', () => {
 
       const initialMetadata: Component = {
         selector: 'child-cmp',
-        standalone: true,
         template: '<div dir-a></div>',
         imports: [DirA, DirB],
       };
@@ -1380,7 +1334,6 @@ describe('hot module replacement', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [ChildCmp],
         template: '<child-cmp/>',
       })
@@ -1423,7 +1376,6 @@ describe('hot module replacement', () => {
 
       const initialMetadata: Component = {
         selector: 'child-cmp',
-        standalone: true,
         template: '<div dir-a></div>',
         imports: [DirA, DirB],
         providers: [{provide: token, useValue: 'provided value'}],
@@ -1433,7 +1385,6 @@ describe('hot module replacement', () => {
       class ChildCmp {}
 
       @Component({
-        standalone: true,
         imports: [ChildCmp],
         template: '<child-cmp/>',
       })
@@ -1475,7 +1426,6 @@ describe('hot module replacement', () => {
 
       const initialMetadata: Component = {
         selector: 'child-cmp',
-        standalone: true,
         template: '<div dir-a></div>',
         imports: [DirA, DirB],
         viewProviders: [{provide: token, useValue: 'provided value'}],
@@ -1485,7 +1435,6 @@ describe('hot module replacement', () => {
       class ChildCmp {}
 
       @Component({
-        standalone: true,
         imports: [ChildCmp],
         template: '<child-cmp/>',
       })
@@ -1512,7 +1461,6 @@ describe('hot module replacement', () => {
     it('should maintain attribute host bindings on a replaced component', () => {
       const initialMetadata: Component = {
         selector: 'child-cmp',
-        standalone: true,
         template: 'Hello',
         host: {
           '[attr.bar]': 'state',
@@ -1525,7 +1473,6 @@ describe('hot module replacement', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [ChildCmp],
         template: `<child-cmp [state]="state" [attr.foo]="'The state is ' + state"/>`,
       })
@@ -1566,7 +1513,6 @@ describe('hot module replacement', () => {
     it('should maintain class host bindings on a replaced component', () => {
       const initialMetadata: Component = {
         selector: 'child-cmp',
-        standalone: true,
         template: 'Hello',
         host: {
           '[class.bar]': 'state',
@@ -1579,7 +1525,6 @@ describe('hot module replacement', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [ChildCmp],
         template: `<child-cmp class="static" [state]="state" [class.foo]="state"/>`,
       })
@@ -1607,7 +1552,6 @@ describe('hot module replacement', () => {
     it('should maintain style host bindings on a replaced component', () => {
       const initialMetadata: Component = {
         selector: 'child-cmp',
-        standalone: true,
         template: 'Hello',
         host: {
           '[style.height]': 'state ? "5px" : "20px"',
@@ -1620,7 +1564,6 @@ describe('hot module replacement', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [ChildCmp],
         template: `<child-cmp style="opacity: 0.5;" [state]="state" [style.width]="state ? '3px' : '12px'"/>`,
       })
@@ -1671,7 +1614,6 @@ describe('hot module replacement', () => {
 
       const initialMetadata: Component = {
         selector: 'child-cmp',
-        standalone: true,
         template: '<span i18n>hello</span>',
       };
 
@@ -1679,7 +1621,6 @@ describe('hot module replacement', () => {
       class ChildCmp {}
 
       @Component({
-        standalone: true,
         imports: [ChildCmp],
         template: '<child-cmp/>',
       })
@@ -1699,7 +1640,6 @@ describe('hot module replacement', () => {
 
       const initialMetadata: Component = {
         selector: 'child-cmp',
-        standalone: true,
         template: '<ng-content/>',
       };
 
@@ -1707,7 +1647,6 @@ describe('hot module replacement', () => {
       class ChildCmp {}
 
       @Component({
-        standalone: true,
         imports: [ChildCmp],
         template: `<child-cmp i18n>hello</child-cmp>`,
       })
@@ -1742,7 +1681,6 @@ describe('hot module replacement', () => {
       let instance!: ChildCmp;
       const initialMetadata: Component = {
         selector: 'child-cmp',
-        standalone: true,
         template: '<span i18n>Hello {{name}}!</span>',
       };
 
@@ -1756,7 +1694,6 @@ describe('hot module replacement', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [ChildCmp],
         template: '<child-cmp/>',
       })
@@ -1795,7 +1732,6 @@ describe('hot module replacement', () => {
 
       const initialMetadata: Component = {
         selector: 'child-cmp',
-        standalone: true,
         template: '<ng-content/>',
       };
 
@@ -1803,7 +1739,6 @@ describe('hot module replacement', () => {
       class ChildCmp {}
 
       @Component({
-        standalone: true,
         imports: [ChildCmp],
         template: '<child-cmp i18n>Hello {{name}}!</child-cmp>',
       })
@@ -1848,7 +1783,6 @@ describe('hot module replacement', () => {
       let instance!: ChildCmp;
       const initialMetadata: Component = {
         selector: 'child-cmp',
-        standalone: true,
         template: '<span i18n>{count, select, 10 {ten} 20 {twenty} other {other}}</span>',
       };
 
@@ -1862,7 +1796,6 @@ describe('hot module replacement', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [ChildCmp],
         template: '<child-cmp/>',
       })
@@ -1903,7 +1836,6 @@ describe('hot module replacement', () => {
 
       const initialMetadata: Component = {
         selector: 'child-cmp',
-        standalone: true,
         template: '<ng-content/>',
       };
 
@@ -1911,7 +1843,6 @@ describe('hot module replacement', () => {
       class ChildCmp {}
 
       @Component({
-        standalone: true,
         imports: [ChildCmp],
         template: '<child-cmp i18n>{count, select, 10 {ten} 20 {twenty} other {other}}</child-cmp>',
       })

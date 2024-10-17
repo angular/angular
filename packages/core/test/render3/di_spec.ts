@@ -43,7 +43,6 @@ describe('di', () => {
               <div tryInjectFromSelf></div>
             </div>
           `,
-          standalone: true,
           imports: [DirNotOnSelf, DirTryInjectFromSelf],
         })
         class App {}

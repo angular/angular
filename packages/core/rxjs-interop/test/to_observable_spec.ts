@@ -25,7 +25,6 @@ describe('toObservable()', () => {
 
   @Component({
     template: '',
-    standalone: true,
   })
   class Cmp {}
 

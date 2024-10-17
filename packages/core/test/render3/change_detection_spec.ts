@@ -18,7 +18,6 @@ describe('change detection', () => {
       const log: string[] = [];
       @Component({
         selector: 'my-comp',
-        standalone: true,
         template: '{{ value }}',
       })
       class MyComponent {

@@ -66,7 +66,6 @@ describe('type definitions', () => {
 
           @Component({
             templateUrl: 'app.html',
-            standalone: true,
             imports: [MyDir],
           })
           export class AppCmp {}
@@ -102,7 +101,6 @@ describe('type definitions', () => {
 
           @Component({
             templateUrl: 'app.html',
-            standalone: true,
             imports: [MyDir],
           })
           export class AppCmp {
@@ -141,7 +139,6 @@ describe('type definitions', () => {
 
           @Component({
             templateUrl: 'app.html',
-            standalone: true,
             imports: [MyDir],
           })
           export class AppCmp {
@@ -177,7 +174,6 @@ describe('type definitions', () => {
 
         @Component({
           templateUrl: 'app.html',
-          standalone: true,
           imports: [MyDir],
         })
         export class AppCmp {

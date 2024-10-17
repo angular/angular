@@ -238,7 +238,6 @@ describe('after render hooks', () => {
         let log: string[] = [];
 
         @Component({
-          standalone: true,
           template: ``,
         })
         class MyComp {
@@ -1362,7 +1361,6 @@ describe('after render hooks', () => {
 
       @Component({
         selector: 'test-component',
-        standalone: true,
         template: ` {{counter()}} `,
       })
       class TestCmp {
@@ -1391,7 +1389,6 @@ describe('after render hooks', () => {
     it('allows updating state and calling markForCheck in afterRender', async () => {
       @Component({
         selector: 'test-component',
-        standalone: true,
         template: ` {{counter}} `,
       })
       class TestCmp {
@@ -1423,7 +1420,6 @@ describe('after render hooks', () => {
       const counter = signal(0);
       @Component({
         selector: 'test-component',
-        standalone: true,
         template: `{{counter()}}`,
       })
       class TestCmp {
@@ -1465,7 +1461,6 @@ describe('after render hooks', () => {
 
       @Component({
         selector: 'test-component',
-        standalone: true,
         template: ` {{counter()}} `,
       })
       class TestCmp {

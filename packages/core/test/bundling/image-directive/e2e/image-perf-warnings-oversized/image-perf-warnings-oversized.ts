@@ -10,7 +10,6 @@ import {Component} from '@angular/core';
 
 @Component({
   selector: 'image-perf-warnings-oversized',
-  standalone: true,
   template: `
       <!-- Image is rendered too small  -->
       <div style="width: 200px; height: 200px">

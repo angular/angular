@@ -27,7 +27,6 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  */
 @Pipe({
   name: 'lowercase',
-  standalone: true,
 })
 export class LowerCasePipe implements PipeTransform {
   /**
@@ -76,7 +75,6 @@ const unicodeWordMatch =
  */
 @Pipe({
   name: 'titlecase',
-  standalone: true,
 })
 export class TitleCasePipe implements PipeTransform {
   /**
@@ -108,7 +106,6 @@ export class TitleCasePipe implements PipeTransform {
  */
 @Pipe({
   name: 'uppercase',
-  standalone: true,
 })
 export class UpperCasePipe implements PipeTransform {
   /**
