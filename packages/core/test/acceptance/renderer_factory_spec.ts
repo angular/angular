@@ -134,7 +134,6 @@ describe('renderer factory lifecycle', () => {
 
   it('should pass in the component styles directly into the underlying renderer', () => {
     @Component({
-      standalone: true,
       styles: ['.some-css-class { color: red; }'],
       template: '...',
       encapsulation: ViewEncapsulation.ShadowDom,
@@ -153,7 +152,6 @@ describe('renderer factory lifecycle', () => {
       const animB = {name: 'b'};
 
       @Component({
-        standalone: true,
         template: '',
         animations: [animA, animB],
       })
@@ -170,7 +168,6 @@ describe('renderer factory lifecycle', () => {
 
     it('should include animations in the renderType data array even if the array is empty', () => {
       @Component({
-        standalone: true,
         template: '...',
         animations: [],
       })
@@ -184,7 +181,6 @@ describe('renderer factory lifecycle', () => {
 
     it('should allow [@trigger] bindings to be picked up by the underlying renderer', () => {
       @Component({
-        standalone: true,
         template: '<div @fooAnimation></div>',
         animations: [],
       })
@@ -216,7 +212,6 @@ describe('renderer factory lifecycle', () => {
   it('should not invoke renderer destroy method for embedded views', () => {
     @Component({
       selector: 'comp',
-      standalone: true,
       imports: [CommonModule],
       template: `
         <div>Root view</div>

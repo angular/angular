@@ -61,7 +61,6 @@ export interface DirectiveDecorator {
    *
    * ```ts
    * @Directive({
-   *   standalone: true,
    *   selector: 'my-directive',
    * })
    * class MyDirective {}

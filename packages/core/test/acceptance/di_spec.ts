@@ -309,7 +309,6 @@ describe('importProvidersFrom', () => {
     class ModuleA {}
 
     @Component({
-      standalone: true,
       template: '',
       imports: [ModuleA],
     })
@@ -3909,7 +3908,6 @@ describe('di', () => {
       const TOKEN = new InjectionToken<string>('TOKEN');
 
       @Component({
-        standalone: true,
         selector: 'test-cmp',
         template: '{{value}}',
         providers: [{provide: TOKEN, useValue: 'injected value'}],
@@ -3938,7 +3936,6 @@ describe('di', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'test-cmp',
         template: '{{service.value}}',
         providers: [Service, {provide: TOKEN, useValue: 'injected value'}],
@@ -3956,7 +3953,6 @@ describe('di', () => {
       const TOKEN = new InjectionToken<string>('TOKEN');
 
       @Component({
-        standalone: true,
         selector: 'test-cmp',
         template: '{{value}}',
       })
@@ -4033,7 +4029,6 @@ describe('di', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'test-cmp',
         template: '{{service.value}}',
         providers: [{provide: TOKEN, useValue: 'injected value'}],
@@ -4059,7 +4054,6 @@ describe('di', () => {
         const TOKEN = new InjectionToken<string>('TOKEN');
 
         @Component({
-          standalone: true,
           template: '',
         })
         class TestCmp {
@@ -4075,7 +4069,6 @@ describe('di', () => {
           factory: () => 'from root',
         });
         @Component({
-          standalone: true,
           template: '',
           providers: [{provide: TOKEN, useValue: 'from component'}],
         })
@@ -4093,7 +4086,6 @@ describe('di', () => {
         });
 
         @Component({
-          standalone: true,
           template: '',
         })
         class TestCmp {
@@ -4107,7 +4099,6 @@ describe('di', () => {
         const TOKEN = new InjectionToken<string>('TOKEN');
 
         @Component({
-          standalone: true,
           selector: 'child',
           template: '{{value}}',
         })
@@ -4116,7 +4107,6 @@ describe('di', () => {
         }
 
         @Component({
-          standalone: true,
           imports: [ChildCmp],
           template: '<child></child>',
           providers: [{provide: TOKEN, useValue: 'from parent'}],
@@ -4136,7 +4126,6 @@ describe('di', () => {
         });
 
         @Component({
-          standalone: true,
           template: '',
         })
         class TestCmp {
@@ -4156,7 +4145,6 @@ describe('di', () => {
         const TOKEN = new InjectionToken<string>('TOKEN');
 
         @Component({
-          standalone: true,
           template: '',
         })
         class TestCmp {
@@ -4177,7 +4165,6 @@ describe('di', () => {
         const TOKEN = new InjectionToken<string>('TOKEN');
 
         @Component({
-          standalone: true,
           template: '',
         })
         class TestCmp {
@@ -4212,7 +4199,6 @@ describe('di', () => {
           factory: () => 'from root',
         });
         @Component({
-          standalone: true,
           template: '',
           providers: [{provide: TOKEN, useValue: 'from component'}],
         })
@@ -4242,7 +4228,6 @@ describe('di', () => {
         });
 
         @Component({
-          standalone: true,
           template: '',
         })
         class TestCmp {
@@ -4267,7 +4252,6 @@ describe('di', () => {
         const TOKEN = new InjectionToken<string>('TOKEN');
 
         @Component({
-          standalone: true,
           selector: 'child',
           template: '{{ a }}|{{ b }}',
         })
@@ -4278,7 +4262,6 @@ describe('di', () => {
         }
 
         @Component({
-          standalone: true,
           imports: [ChildCmp],
           template: '<child></child>',
           providers: [{provide: TOKEN, useValue: 'from parent'}],
@@ -4349,7 +4332,6 @@ describe('di', () => {
       });
 
       @Component({
-        standalone: true,
         template: '',
         providers: [{provide: TOKEN, useValue: 'from component'}],
       })
@@ -4374,7 +4356,6 @@ describe('di', () => {
 
     it('should support node injectors', () => {
       @Component({
-        standalone: true,
         template: '',
       })
       class TestCmp {
@@ -4896,7 +4877,6 @@ describe('di', () => {
       }
 
       @Component({
-        standalone: true,
         template: '<div dir some-attr="foo" other="ignore"></div>',
         imports: [Dir],
       })
@@ -4916,7 +4896,6 @@ describe('di', () => {
       }
 
       @Component({
-        standalone: true,
         template: '<ng-template dir some-attr="foo" other="ignore"></ng-template>',
         imports: [Dir],
       })
@@ -4936,7 +4915,6 @@ describe('di', () => {
       }
 
       @Component({
-        standalone: true,
         template: '<ng-container dir some-attr="foo" other="ignore"></ng-container>',
         imports: [Dir],
       })
@@ -4958,7 +4936,6 @@ describe('di', () => {
       }
 
       @Component({
-        standalone: true,
         template: `
           <div
             dir
@@ -4990,7 +4967,6 @@ describe('di', () => {
       }
 
       @Component({
-        standalone: true,
         template: '<div dir other="ignore"></div>',
         imports: [Dir],
       })
@@ -5010,7 +4986,6 @@ describe('di', () => {
       }
 
       @Component({
-        standalone: true,
         template: '<div dir other="ignore"></div>',
         imports: [Dir],
       })
@@ -5032,7 +5007,6 @@ describe('di', () => {
       }
 
       @Component({
-        standalone: true,
         template: `
           <div dir some-attr="foo" svg:exists="testExistValue" other="otherValue"></div>
         `,
@@ -5064,7 +5038,6 @@ describe('di', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [Dir],
         template: `
           <div
@@ -5098,7 +5071,6 @@ describe('di', () => {
       }
 
       @Component({
-        standalone: true,
         template: '<div dir title="foo {{value}}" other="ignore"></div>',
         imports: [Dir],
       })
@@ -5123,7 +5095,6 @@ describe('di', () => {
       }
 
       @Component({
-        standalone: true,
         template: '<div dir some-attr="foo" other="ignore"></div>',
         imports: [Dir],
       })
@@ -5145,7 +5116,6 @@ describe('di', () => {
       }
 
       @Component({
-        standalone: true,
         template: '<div dir other="ignore"></div>',
         imports: [Dir],
       })
@@ -5167,7 +5137,6 @@ describe('di', () => {
       }
 
       @Component({
-        standalone: true,
         template: '<div dir other="ignore"></div>',
         imports: [Dir],
       })
@@ -5189,7 +5158,6 @@ describe('di', () => {
       }
 
       @Component({
-        standalone: true,
         template: `
           <div dir #v1></div>
           <span dir #v2></span>
@@ -5223,7 +5191,6 @@ describe('di', () => {
       }
 
       @Component({
-        standalone: true,
         template: '<ng-container dir></ng-container>',
         imports: [Dir],
       })
@@ -5232,7 +5199,6 @@ describe('di', () => {
       }
 
       @Component({
-        standalone: true,
         template: '<ng-template dir></ng-template>',
         imports: [Dir],
       })
@@ -5256,7 +5222,6 @@ describe('di', () => {
       }
 
       @Component({
-        standalone: true,
         template: '<ng-container dir></ng-container>',
         imports: [Dir],
       })

@@ -19,7 +19,6 @@ export class NotStandaloneComponent {}
 
 @Component({
   template: '<router-outlet></router-outlet>',
-  standalone: true,
   imports: [RouterModule],
 })
 export class RootCmp {}

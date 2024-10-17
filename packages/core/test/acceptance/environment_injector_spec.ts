@@ -233,7 +233,6 @@ describe('environment injector', () => {
       });
 
       @Component({
-        standalone: true,
         template: '',
         providers: [{provide: TOKEN, useValue: 'from component'}],
       })

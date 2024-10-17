@@ -467,7 +467,6 @@ describe('binding to CSS class list', () => {
         selector: 'test-component',
         imports: [NgClass],
         template: `<div class="{{ 'option-' + level }}" [ngClass]="'option-' + level"></div>`,
-        standalone: true,
       })
       class TestComponent {
         level = 1;
@@ -488,7 +487,6 @@ describe('binding to CSS class list', () => {
         selector: 'test-component',
         imports: [NgClass],
         template: `<div trailing-space [ngClass]="{foo: applyClasses}"></div>`,
-        standalone: true,
       })
       class TestComponent {
         applyClasses = true;

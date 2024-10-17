@@ -237,21 +237,18 @@ describe('TestBed with Standalone types', () => {
   it('should override dependencies of standalone components', () => {
     @Component({
       selector: 'dep',
-      standalone: true,
       template: 'main dep',
     })
     class MainDep {}
 
     @Component({
       selector: 'dep',
-      standalone: true,
       template: 'mock dep',
     })
     class MockDep {}
 
     @Component({
       selector: 'app-root',
-      standalone: true,
       imports: [MainDep],
       template: '<dep />',
     })
@@ -284,7 +281,6 @@ describe('TestBed with Standalone types', () => {
     const A = new InjectionToken('A');
 
     @Component({
-      standalone: true,
       template: '{{ a }}',
       providers: [{provide: A, useValue: 'A'}],
     })
@@ -316,7 +312,6 @@ describe('TestBed with Standalone types', () => {
 
     @Component({
       selector: 'dep',
-      standalone: true,
       template: '{{ service.id }}',
       providers: [Service],
     })
@@ -325,7 +320,6 @@ describe('TestBed with Standalone types', () => {
     }
 
     @Component({
-      standalone: true,
       template: '<dep />',
       imports: [Dep],
     })
@@ -361,7 +355,6 @@ describe('TestBed with Standalone types', () => {
     class ComponentDependenciesModule {}
 
     @Component({
-      standalone: true,
       template: '{{ a }}',
       imports: [ComponentDependenciesModule],
     })
@@ -388,7 +381,6 @@ describe('TestBed with Standalone types', () => {
     class ComponentDependenciesModule {}
 
     @Component({
-      standalone: true,
       template: '{{ a }}',
       imports: [ComponentDependenciesModule],
     })
@@ -410,7 +402,6 @@ describe('TestBed with Standalone types', () => {
 
   it('should allow overriding a template of a standalone component', () => {
     @Component({
-      standalone: true,
       template: 'Original',
     })
     class MyStandaloneComp {}
@@ -428,7 +419,6 @@ describe('TestBed with Standalone types', () => {
   it('should allow overriding the set of directives and pipes used in a standalone component', () => {
     @Directive({
       selector: '[dir]',
-      standalone: true,
       host: {'[id]': 'id'},
     })
     class MyStandaloneDirectiveA {
@@ -437,7 +427,6 @@ describe('TestBed with Standalone types', () => {
 
     @Directive({
       selector: '[dir]',
-      standalone: true,
       host: {'[id]': 'id'},
     })
     class MyStandaloneDirectiveB {
@@ -458,7 +447,6 @@ describe('TestBed with Standalone types', () => {
     }
 
     @Component({
-      standalone: true,
       template: '<div dir>{{ name | pipe }}</div>',
       imports: [MyStandalonePipeA, MyStandaloneDirectiveA],
     })
@@ -483,7 +471,6 @@ describe('TestBed with Standalone types', () => {
   it('should reflect overrides on imported standalone directive', () => {
     @Directive({
       selector: '[dir]',
-      standalone: true,
       host: {'[id]': 'id'},
     })
     class DepStandaloneDirective {
@@ -492,7 +479,6 @@ describe('TestBed with Standalone types', () => {
 
     @Component({
       selector: 'standalone-cmp',
-      standalone: true,
       template: 'Original MyStandaloneComponent',
     })
     class DepStandaloneComponent {
@@ -500,7 +486,6 @@ describe('TestBed with Standalone types', () => {
     }
 
     @Component({
-      standalone: true,
       template: '<standalone-cmp dir>Hello world!</standalone-cmp>',
       imports: [DepStandaloneDirective, DepStandaloneComponent],
     })
@@ -526,7 +511,6 @@ describe('TestBed with Standalone types', () => {
     const TOKEN_A = new InjectionToken('TOKEN_A');
     @Pipe({
       name: 'testPipe',
-      standalone: true,
     })
     class TestPipe {
       constructor(@Inject(TOKEN_A) private token: string) {}
@@ -544,7 +528,6 @@ describe('TestBed with Standalone types', () => {
 
     @Component({
       selector: 'test-component',
-      standalone: true,
       imports: [TestNgModule],
       template: `{{ 'original value' | testPipe }}`,
     })
@@ -588,7 +571,6 @@ describe('TestBed with Standalone types', () => {
     class TestModule {}
 
     @Component({
-      standalone: true,
       selector: 'app-root',
       template: `<test-cmp #testCmpCtrl></test-cmp>`,
       imports: [TestModule],
@@ -663,7 +645,6 @@ describe('TestBed', () => {
 
   it('should not allow overrides of the `standalone` field', () => {
     @Component({
-      standalone: true,
       selector: 'standalone-comp',
       template: '...',
     })
@@ -1613,7 +1594,6 @@ describe('TestBed', () => {
      * Function returns a class that represents AOT-compiled version of the following Component:
      *
      * @Component({
-     *  standalone: true,
      *  imports: [...],
      *  selector: '...',
      *  template: '...',
@@ -1631,7 +1611,6 @@ describe('TestBed', () => {
       class ComponentClass {
         static ɵfac = () => new ComponentClass();
         static ɵcmp = defineComponent({
-          standalone: true,
           type: ComponentClass,
           selectors: [[selector]],
           decls: 2,
@@ -1665,7 +1644,6 @@ describe('TestBed', () => {
                 args: [
                   {
                     selector,
-                    standalone: true,
                     imports: [...dependencies, ...deferrableSymbols],
                     template: `<div>root cmp!</div>`,
                   },
@@ -1682,7 +1660,6 @@ describe('TestBed', () => {
 
     it('should handle async metadata on root and nested components', async () => {
       @Component({
-        standalone: true,
         selector: 'cmp-a',
         template: 'CmpA!',
       })
@@ -1728,7 +1705,6 @@ describe('TestBed', () => {
       class ThisModuleProvidesService {}
 
       @Component({
-        standalone: true,
         selector: 'child',
         imports: [ThisModuleProvidesService],
         template: '<h1>{{value}}</h1>',
@@ -1739,7 +1715,6 @@ describe('TestBed', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'parent',
         imports: [ChildCmp],
         template: `
@@ -1769,7 +1744,6 @@ describe('TestBed', () => {
                 args: [
                   {
                     selector: 'parent',
-                    standalone: true,
                     imports: [...deferrableSymbols],
                     template: `<div>root cmp!</div>`,
                   },

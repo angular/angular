@@ -1045,7 +1045,6 @@ describe('providers', () => {
     let hostComponent: HostComponent | null = null;
 
     @Component({
-      standalone: true,
       template: `{{s}}`,
       selector: 'embedded-cmp',
     })
@@ -1054,7 +1053,6 @@ describe('providers', () => {
     }
 
     @Component({
-      standalone: true,
       selector: 'host-cmp',
       template: `foo`,
       providers: [{provide: String, useValue: 'From host component'}],
@@ -1066,7 +1064,6 @@ describe('providers', () => {
     }
 
     @Component({
-      standalone: true,
       imports: [HostComponent],
       template: `<host-cmp></host-cmp>`,
       providers: [{provide: String, useValue: 'From app component'}],
@@ -1197,7 +1194,6 @@ describe('providers', () => {
     }
 
     @Component({
-      standalone: true,
       selector: 'my-cmp',
       template: `<p></p>`,
       providers: [{provide: String, useValue: 'From my component'}],
@@ -1206,7 +1202,6 @@ describe('providers', () => {
     class MyComponent {}
 
     @Component({
-      standalone: true,
       imports: [MyComponent],
       template: `<my-cmp></my-cmp>`,
       providers: [

@@ -77,7 +77,6 @@ export {ApplicationConfig};
  *
  * ```typescript
  * @Component({
- *   standalone: true,
  *   template: 'Hello world!'
  * })
  * class RootComponent {}

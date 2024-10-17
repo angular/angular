@@ -31,7 +31,6 @@ import {TestBed} from '@angular/core/testing';
 describe('standalone components, directives, and pipes', () => {
   it('should render a standalone component', () => {
     @Component({
-      standalone: true,
       template: 'Look at me, no NgModule!',
     })
     class StandaloneCmp {}
@@ -44,7 +43,6 @@ describe('standalone components, directives, and pipes', () => {
   it('should render a recursive standalone component', () => {
     @Component({
       selector: 'tree',
-      standalone: true,
       template: `({{level}})<ng-template [ngIf]="level > 0"><tree [level]="level - 1"></tree></ng-template>`,
       imports: [CommonModule],
     })
@@ -116,7 +114,6 @@ describe('standalone components, directives, and pipes', () => {
     class Module {}
 
     @Component({
-      standalone: true,
       template: '<inner-cmp></inner-cmp>',
       imports: [Module],
     })
@@ -132,7 +129,6 @@ describe('standalone components, directives, and pipes', () => {
   it('should allow exporting standalone components, directives, and pipes from NgModule', () => {
     @Component({
       selector: 'standalone-cmp',
-      standalone: true,
       template: `standalone`,
     })
     class StandaloneCmp {}
@@ -142,7 +138,6 @@ describe('standalone components, directives, and pipes', () => {
       host: {
         '[attr.id]': '"standalone"',
       },
-      standalone: true,
     })
     class StandaloneDir {}
 
@@ -182,7 +177,6 @@ describe('standalone components, directives, and pipes', () => {
 
   it('should render a standalone component with dependencies and ambient providers', () => {
     @Component({
-      standalone: true,
       template: 'Inner',
       selector: 'inner-cmp',
     })
@@ -196,7 +190,6 @@ describe('standalone components, directives, and pipes', () => {
     class ModuleWithAProvider {}
 
     @Component({
-      standalone: true,
       template: 'Outer<inner-cmp></inner-cmp>{{service.value}}',
       imports: [InnerCmp, ModuleWithAProvider],
     })
@@ -218,7 +211,6 @@ describe('standalone components, directives, and pipes', () => {
     class ModuleWithAProvider {}
 
     @Component({
-      standalone: true,
       template: 'Inner({{service.value}})',
       selector: 'inner-cmp',
       imports: [ModuleWithAProvider],
@@ -228,7 +220,6 @@ describe('standalone components, directives, and pipes', () => {
     }
 
     @Component({
-      standalone: true,
       template: 'Outer<inner-cmp></inner-cmp>{{service.value}}',
       imports: [InnerCmp],
     })
@@ -263,7 +254,6 @@ describe('standalone components, directives, and pipes', () => {
     @Component({
       selector: 'duplicate-selector',
       template: `ComponentA: {{ service ? 'service found' : 'service not found' }}`,
-      standalone: true,
       imports: [MyModuleA],
     })
     class ComponentA {
@@ -273,7 +263,6 @@ describe('standalone components, directives, and pipes', () => {
     @Component({
       selector: 'duplicate-selector',
       template: `ComponentB: {{ service ? 'service found' : 'service not found' }}`,
-      standalone: true,
       imports: [MyModuleB],
     })
     class ComponentB {
@@ -286,7 +275,6 @@ describe('standalone components, directives, and pipes', () => {
         <ng-container [ngComponentOutlet]="ComponentA" />
         <ng-container [ngComponentOutlet]="ComponentB" />
       `,
-      standalone: true,
       imports: [NgComponentOutlet],
     })
     class AppCmp {
@@ -311,7 +299,6 @@ describe('standalone components, directives, and pipes', () => {
     class Module {}
 
     @Component({
-      standalone: true,
       template: 'Inner({{service.value}})',
       selector: 'inner-cmp',
       imports: [Module],
@@ -321,7 +308,6 @@ describe('standalone components, directives, and pipes', () => {
     }
 
     @Component({
-      standalone: true,
       template: '<ng-template #insert></ng-template>',
       imports: [InnerCmp],
     })
@@ -359,7 +345,6 @@ describe('standalone components, directives, and pipes', () => {
     class Module {}
 
     @Component({
-      standalone: true,
       template: 'Inner({{service.value}})',
       selector: 'inner-cmp',
       imports: [Module],
@@ -369,7 +354,6 @@ describe('standalone components, directives, and pipes', () => {
     }
 
     @Component({
-      standalone: true,
       template: '<ng-template #insert></ng-template>',
       imports: [InnerCmp],
     })
@@ -416,7 +400,6 @@ describe('standalone components, directives, and pipes', () => {
     class Module {}
 
     @Component({
-      standalone: true,
       template: 'Inner({{service.value}})',
       selector: 'inner-cmp',
       imports: [Module],
@@ -426,7 +409,6 @@ describe('standalone components, directives, and pipes', () => {
     }
 
     @Component({
-      standalone: true,
       template: '<ng-template #insert></ng-template>',
       imports: [InnerCmp],
     })
@@ -456,7 +438,6 @@ describe('standalone components, directives, and pipes', () => {
   it('should render a recursive cycle of standalone components', () => {
     @Component({
       selector: 'cmp-a',
-      standalone: true,
       template: '<ng-template [ngIf]="false"><cmp-c></cmp-c></ng-template>A',
       imports: [forwardRef(() => StandaloneCmpC)],
     })
@@ -464,7 +445,6 @@ describe('standalone components, directives, and pipes', () => {
 
     @Component({
       selector: 'cmp-b',
-      standalone: true,
       template: '(<cmp-a></cmp-a>)B',
       imports: [StandaloneCmpA],
     })
@@ -472,7 +452,6 @@ describe('standalone components, directives, and pipes', () => {
 
     @Component({
       selector: 'cmp-c',
-      standalone: true,
       template: '(<cmp-b></cmp-b>)C',
       imports: [StandaloneCmpB],
     })
@@ -495,7 +474,6 @@ describe('standalone components, directives, and pipes', () => {
     class ExportingModule {}
     @Component({
       selector: 'standalone',
-      standalone: true,
       imports: [ExportingModule],
       template: `({{service.value}})`,
     })
@@ -521,7 +499,6 @@ describe('standalone components, directives, and pipes', () => {
 
     @Component({
       selector: 'standalone',
-      standalone: true,
       template: `<div red>{{'' | blue}}</div>`,
       imports: [[RedIdDirective, [BluePipe]]],
     })
@@ -547,7 +524,6 @@ describe('standalone components, directives, and pipes', () => {
 
     @Component({
       selector: 'standalone',
-      standalone: true,
       template: `<div red>{{'' | blue}}</div>`,
       imports: [DirAndPipe],
     })
@@ -580,7 +556,6 @@ describe('standalone components, directives, and pipes', () => {
 
     @Component({
       selector: 'standalone',
-      standalone: true,
       template: `<test-red><test-blue>orange</test-blue></test-red>`,
       imports: [RedComponent, RedComponent, BlueAModule, BlueBModule],
     })
@@ -596,7 +571,6 @@ describe('standalone components, directives, and pipes', () => {
   it('should error when forwardRef does not resolve to a truthy value', () => {
     @Component({
       selector: 'test',
-      standalone: true,
       imports: [forwardRef(() => null)],
       template: '',
     })
@@ -618,7 +592,6 @@ describe('standalone components, directives, and pipes', () => {
 
     @Component({
       selector: 'standalone',
-      standalone: true,
       template: '',
       imports: [NonStandaloneCmp],
     })
@@ -640,7 +613,6 @@ describe('standalone components, directives, and pipes', () => {
 
     @Component({
       selector: 'standalone',
-      standalone: true,
       template: '',
       imports: [NonStandaloneDirective],
     })
@@ -662,7 +634,6 @@ describe('standalone components, directives, and pipes', () => {
 
     @Component({
       selector: 'standalone',
-      standalone: true,
       template: '',
       imports: [NonStandalonePipe],
     })
@@ -680,7 +651,6 @@ describe('standalone components, directives, and pipes', () => {
 
     @Component({
       selector: 'standalone',
-      standalone: true,
       template: '',
       imports: [SthElse],
     })
@@ -705,7 +675,6 @@ describe('standalone components, directives, and pipes', () => {
     }
 
     @Component({
-      standalone: true,
       template: '',
       // we need to import a module with a provider in a nested array since module with providers
       // are disallowed on the type level
@@ -723,7 +692,6 @@ describe('standalone components, directives, and pipes', () => {
   it('should support forwardRef imports', () => {
     @Component({
       selector: 'test',
-      standalone: true,
       imports: [forwardRef(() => StandaloneComponent)],
       template: `(<other-standalone></other-standalone>)`,
     })
@@ -740,7 +708,6 @@ describe('standalone components, directives, and pipes', () => {
   describe('schemas', () => {
     it('should allow schemas in standalone component', () => {
       @Component({
-        standalone: true,
         template: '<maybe-custom-elm></maybe-custom-elm>',
         schemas: [NO_ERRORS_SCHEMA],
       })
@@ -778,7 +745,6 @@ describe('standalone components, directives, and pipes', () => {
     it('should warn the user when an unknown element is present', () => {
       const spy = spyOn(console, 'error');
       @Component({
-        standalone: true,
         template: '<unknown-tag></unknown-tag>',
       })
       class AppCmp {}
@@ -792,7 +758,6 @@ describe('standalone components, directives, and pipes', () => {
     it('should warn the user when multiple unknown elements are present', () => {
       const spy = spyOn(console, 'error');
       @Component({
-        standalone: true,
         template: '<unknown-tag-A></unknown-tag-A><unknown-tag-B></unknown-tag-B>',
       })
       class AppCmp {}
@@ -809,7 +774,6 @@ describe('standalone components, directives, and pipes', () => {
     it('should not warn the user when an unknown element is present inside an ng-template', () => {
       const spy = spyOn(console, 'error');
       @Component({
-        standalone: true,
         template: '<ng-template><unknown-tag></unknown-tag><ng-template>',
       })
       class AppCmp {}
@@ -822,7 +786,6 @@ describe('standalone components, directives, and pipes', () => {
     it('should warn the user when an unknown element is present in an instantiated embedded view', () => {
       const spy = spyOn(console, 'error');
       @Component({
-        standalone: true,
         template: '<ng-template [ngIf]="true"><unknown-tag></unknown-tag><ng-template>',
         imports: [CommonModule],
       })
@@ -891,13 +854,11 @@ describe('standalone components, directives, and pipes', () => {
       @Component({
         selector: 'inner',
         template: 'inner',
-        standalone: true,
       })
       class InnerCmp {}
 
       @Component({
         selector: 'standalone',
-        standalone: true,
         template: 'standalone: {{in}}; (<inner></inner>)',
         imports: [InnerCmp],
       })
@@ -986,7 +947,6 @@ describe('standalone components, directives, and pipes', () => {
     it('should render a recursive cycle of standalone components', () => {
       @Component({
         selector: 'cmp-a',
-        standalone: true,
         template: '<ng-template [ngIf]="false"><cmp-c></cmp-c></ng-template>A',
         imports: [forwardRef(() => StandaloneCmpC)],
       })
@@ -994,7 +954,6 @@ describe('standalone components, directives, and pipes', () => {
 
       @Component({
         selector: 'cmp-b',
-        standalone: true,
         template: '(<cmp-a></cmp-a>)B',
         imports: [StandaloneCmpA],
       })
@@ -1002,7 +961,6 @@ describe('standalone components, directives, and pipes', () => {
 
       @Component({
         selector: 'cmp-c',
-        standalone: true,
         template: '(<cmp-b></cmp-b>)C',
         imports: [StandaloneCmpB],
       })

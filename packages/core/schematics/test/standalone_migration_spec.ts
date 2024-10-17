@@ -2881,7 +2881,6 @@ describe('standalone migration', () => {
       @Component({
         selector: 'my-comp',
         template: '<my-button>Hello</my-button>',
-        standalone: true,
         imports: [MyButton]
       })
       export class MyComp {}
@@ -2952,7 +2951,6 @@ describe('standalone migration', () => {
       @Component({
         selector: 'my-comp',
         template: '<my-button>Hello</my-button>',
-        standalone: true,
         imports: [MyButton]
       })
       export class MyComp {}
@@ -3232,7 +3230,6 @@ describe('standalone migration', () => {
         selector: 'my-comp',
         template: '<my-button my-dir unrelated>Hello</my-button>',
         imports: [ButtonModule, Unrelated],
-        standalone: true,
       })
       export class MyComp {}
     `,
@@ -3251,7 +3248,6 @@ describe('standalone migration', () => {
         selector: 'my-comp',
         template: '<my-button my-dir unrelated>Hello</my-button>',
         imports: [MyButton, MyDir, Unrelated],
-        standalone: true,
       })
       export class MyComp {}
     `),

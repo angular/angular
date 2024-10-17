@@ -103,7 +103,6 @@ import {EmbeddedViewRef, ViewRef} from './view_ref';
  *
  * ```typescript
  * @Component({
- *   standalone: true,
  *   selector: 'dynamic',
  *   template: `<span>This is a content of a dynamic component.</span>`,
  * })
@@ -112,7 +111,6 @@ import {EmbeddedViewRef, ViewRef} from './view_ref';
  * }
  *
  * @Component({
- *   standalone: true,
  *   selector: 'app',
  *   template: `<main>Hi! This is the main content.</main>`,
  * })

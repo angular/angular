@@ -47,7 +47,6 @@ describe('microtask effects', () => {
       const log: string[] = [];
       @Component({
         selector: 'test-cmp',
-        standalone: true,
         template: '',
       })
       class Cmp {
@@ -74,7 +73,6 @@ describe('microtask effects', () => {
     const someSignal = signal('initial');
 
     @Component({
-      standalone: true,
       template: '',
     })
     class App {
@@ -149,7 +147,6 @@ describe('microtask effects', () => {
     }
 
     @Component({
-      standalone: true,
       template: '',
       providers: [{provide: ErrorHandler, useClass: FakeErrorHandler}],
     })
@@ -175,7 +172,6 @@ describe('microtask effects', () => {
 
     @Component({
       selector: 'test-cmp',
-      standalone: true,
       template: '',
     })
     class Cmp {
@@ -211,7 +207,6 @@ describe('microtask effects', () => {
 
     @Component({
       selector: 'test-cmp',
-      standalone: true,
       template: '',
     })
     class Cmp implements AfterViewInit {
@@ -238,7 +233,6 @@ describe('microtask effects', () => {
     withBody('<test-cmp></test-cmp>', async () => {
       @Component({
         selector: 'test-cmp',
-        standalone: true,
         template: '',
       })
       class Cmp {
@@ -268,7 +262,6 @@ describe('microtask effects', () => {
   it('should allow writing to signals in ngOnChanges', () => {
     @Component({
       selector: 'with-input',
-      standalone: true,
       template: '{{inSignal()}}',
     })
     class WithInput implements OnChanges {
@@ -284,7 +277,6 @@ describe('microtask effects', () => {
 
     @Component({
       selector: 'test-cmp',
-      standalone: true,
       imports: [WithInput],
       template: `<with-input [in]="'A'" />|<with-input [in]="'B'" />`,
     })
@@ -298,7 +290,6 @@ describe('microtask effects', () => {
   it('should allow writing to signals in a constructor', () => {
     @Component({
       selector: 'with-constructor',
-      standalone: true,
       template: '{{state()}}',
     })
     class WithConstructor {
@@ -311,7 +302,6 @@ describe('microtask effects', () => {
 
     @Component({
       selector: 'test-cmp',
-      standalone: true,
       imports: [WithConstructor],
       template: `<with-constructor />`,
     })
@@ -325,7 +315,6 @@ describe('microtask effects', () => {
   it('should allow writing to signals in input setters', () => {
     @Component({
       selector: 'with-input-setter',
-      standalone: true,
       template: '{{state()}}',
     })
     class WithInputSetter {
@@ -339,7 +328,6 @@ describe('microtask effects', () => {
 
     @Component({
       selector: 'test-cmp',
-      standalone: true,
       imports: [WithInputSetter],
       template: `
           <with-input-setter [testInput]="'binding'" />|<with-input-setter testInput="static" />
@@ -355,7 +343,6 @@ describe('microtask effects', () => {
   it('should allow writing to signals in query result setters', () => {
     @Component({
       selector: 'with-query',
-      standalone: true,
       template: '{{items().length}}',
     })
     class WithQuery {
@@ -369,7 +356,6 @@ describe('microtask effects', () => {
 
     @Component({
       selector: 'test-cmp',
-      standalone: true,
       imports: [WithQuery],
       template: `<with-query><div #item></div></with-query>`,
     })
@@ -385,7 +371,6 @@ describe('microtask effects', () => {
 
     @Component({
       selector: 'with-query-setter',
-      standalone: true,
       template: '<div #el></div>',
     })
     class WithQuerySetter {
@@ -401,7 +386,6 @@ describe('microtask effects', () => {
 
     @Component({
       selector: 'test-cmp',
-      standalone: true,
       template: ``,
     })
     class Cmp {
@@ -434,7 +418,6 @@ describe('microtask effects', () => {
   it('should allow toObservable subscription in template (with async pipe)', () => {
     @Component({
       selector: 'test-cmp',
-      standalone: true,
       imports: [AsyncPipe],
       template: '{{counter$ | async}}',
     })
@@ -453,7 +436,6 @@ describe('microtask effects', () => {
     it('when created during bootstrapping', () => {
       let log: string[] = [];
       @Component({
-        standalone: true,
         selector: 'test-cmp',
         template: '',
       })
@@ -478,7 +460,6 @@ describe('microtask effects', () => {
       let log: string[] = [];
 
       @Component({
-        standalone: true,
         selector: 'test-cmp',
         template: '',
       })
@@ -494,7 +475,6 @@ describe('microtask effects', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'driver-cmp',
         imports: [TestCmp],
         template: `
@@ -520,7 +500,6 @@ describe('microtask effects', () => {
     it('when created dynamically', () => {
       let log: string[] = [];
       @Component({
-        standalone: true,
         selector: 'test-cmp',
         template: '',
       })
@@ -536,7 +515,6 @@ describe('microtask effects', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'driver-cmp',
         template: '',
       })
@@ -570,7 +548,6 @@ describe('microtask effects', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'test-cmp',
         template: '',
         providers: [EffectService],
@@ -593,7 +570,6 @@ describe('microtask effects', () => {
     it('if multiple effects are created', () => {
       let log: string[] = [];
       @Component({
-        standalone: true,
         selector: 'test-cmp',
         template: '',
       })
@@ -685,7 +661,6 @@ describe('microtask effects in TestBed', () => {
     const log: string[] = [];
     @Component({
       selector: 'test-cmp',
-      standalone: true,
       template: '',
     })
     class Cmp {
@@ -721,7 +696,6 @@ describe('microtask effects in TestBed', () => {
     const log: string[] = [];
     @Component({
       selector: 'test-cmp',
-      standalone: true,
       template: '',
     })
     class Cmp {
@@ -765,7 +739,6 @@ describe('microtask effects in TestBed', () => {
     let observed = '';
     @Component({
       selector: 'test-cmp',
-      standalone: true,
       template: '',
     })
     class Cmp {

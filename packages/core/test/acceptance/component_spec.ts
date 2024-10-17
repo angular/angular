@@ -491,7 +491,6 @@ describe('component', () => {
       @Component({
         selector: 'comp',
         template: '<comp *ngIf="recurse"/>hello',
-        standalone: true,
         imports: [Comp, NgIf],
       })
       class Comp {
@@ -500,7 +499,6 @@ describe('component', () => {
 
       @Component({
         template: '<comp [recurse]="true"/>',
-        standalone: true,
         imports: [Comp],
       })
       class App {}
@@ -521,7 +519,6 @@ describe('component', () => {
       @Component({
         selector: 'comp',
         template: '<comp *ngIf="recurse"/>hello',
-        standalone: true,
         imports: [forwardRef(() => Comp), NgIf],
       })
       class Comp {
@@ -530,7 +527,6 @@ describe('component', () => {
 
       @Component({
         template: '<comp [recurse]="true"/>',
-        standalone: true,
         imports: [Comp],
       })
       class App {}
@@ -805,7 +801,6 @@ describe('component', () => {
   describe('createComponent', () => {
     it('should create an instance of a standalone component', () => {
       @Component({
-        standalone: true,
         template: 'Hello {{ name }}!',
       })
       class StandaloneComponent {
@@ -858,7 +853,6 @@ describe('component', () => {
 
     it('should render projected content', () => {
       @Component({
-        standalone: true,
         template: `
           <ng-content></ng-content>|
           <ng-content></ng-content>|
@@ -890,7 +884,6 @@ describe('component', () => {
     it('should be able to inject tokens from EnvironmentInjector', () => {
       const A = new InjectionToken('A');
       @Component({
-        standalone: true,
         template: 'Token: {{ a }}',
       })
       class StandaloneComponent {
@@ -912,7 +905,6 @@ describe('component', () => {
       const A = new InjectionToken('A');
       const B = new InjectionToken('B');
       @Component({
-        standalone: true,
         template: '{{ a }} and {{ b }}',
       })
       class ChildStandaloneComponent {
@@ -921,7 +913,6 @@ describe('component', () => {
       }
 
       @Component({
-        standalone: true,
         template: 'Tokens: <div #target></div>',
         providers: [{provide: A, useValue: 'ElementInjector(A)'}],
       })
@@ -961,7 +952,6 @@ describe('component', () => {
       const selector = 'standalone-comp';
       @Component({
         selector,
-        standalone: true,
         template: 'Hello {{ name }}!',
       })
       class StandaloneComponent {
@@ -988,7 +978,6 @@ describe('component', () => {
       () => {
         @Component({
           selector: '.some-class',
-          standalone: true,
           template: 'Hello {{ name }}!',
         })
         class StandaloneComponent {
@@ -1048,7 +1037,6 @@ describe('component', () => {
 
       @Component({
         selector: 'standalone-component',
-        standalone: true,
         template: `
           <ng-content></ng-content>
           <ng-content select="content-selector-a"></ng-content>

@@ -126,7 +126,6 @@ describe('event replay', () => {
 
     @Component({
       selector: 'app',
-      standalone: true,
       template: `
         <button id="btn" (click)="onClick()" #localRef></button>
       `,
@@ -154,7 +153,6 @@ describe('event replay', () => {
     const innerOnClickSpy = jasmine.createSpy();
     @Component({
       selector: 'app-card',
-      standalone: true,
       template: `
         <div class="card">
           <button id="inner-button" (click)="onClick()"></button>
@@ -169,7 +167,6 @@ describe('event replay', () => {
     @Component({
       selector: 'app',
       imports: [CardComponent],
-      standalone: true,
       template: `
         <app-card>
           <h2>Card Title</h2>
@@ -200,7 +197,6 @@ describe('event replay', () => {
 
   it('should remove jsaction attributes, but continue listening to events.', async () => {
     @Component({
-      standalone: true,
       selector: 'app',
       template: `
             <div (click)="onClick()" id="1">
@@ -230,7 +226,6 @@ describe('event replay', () => {
 
   it(`should add 'nonce' attribute to event record script when 'ngCspNonce' is provided`, async () => {
     @Component({
-      standalone: true,
       selector: 'app',
       template: `
             <div (click)="onClick()">
@@ -253,7 +248,6 @@ describe('event replay', () => {
     it('should propagate events', async () => {
       const onClickSpy = jasmine.createSpy();
       @Component({
-        standalone: true,
         selector: 'app',
         template: `
             <div id="top" (click)="onClick()">
@@ -285,7 +279,6 @@ describe('event replay', () => {
 
     it('should not propagate events if stopPropagation is called', async () => {
       @Component({
-        standalone: true,
         selector: 'app',
         template: `
             <div id="top" (click)="onClick($event)">
@@ -321,7 +314,6 @@ describe('event replay', () => {
       let latestTarget: EventTarget | null = null;
       let latestCurrentTarget: EventTarget | null = null;
       @Component({
-        standalone: true,
         selector: 'app',
         template: `
             <div id="top" (click)="onClick($event)">
@@ -362,7 +354,6 @@ describe('event replay', () => {
   describe('event dispatch script', () => {
     it('should not be present on a page when hydration is disabled', async () => {
       @Component({
-        standalone: true,
         selector: 'app',
         template: '<input (click)="onClick()" />',
       })
@@ -380,7 +371,6 @@ describe('event replay', () => {
 
     it('should not be present on a page if there are no events to replay', async () => {
       @Component({
-        standalone: true,
         selector: 'app',
         template: 'Some text',
       })
@@ -407,7 +397,6 @@ describe('event replay', () => {
 
     it('should not replay mouse events', async () => {
       @Component({
-        standalone: true,
         selector: 'app',
         template: '<div (mouseenter)="doThing()"><div>',
       })
@@ -424,7 +413,6 @@ describe('event replay', () => {
 
     it('should not be present on a page where event replay is not enabled', async () => {
       @Component({
-        standalone: true,
         selector: 'app',
         template: '<input (click)="onClick()" />',
       })
@@ -444,7 +432,6 @@ describe('event replay', () => {
 
     it('should be retained if there are events to replay', async () => {
       @Component({
-        standalone: true,
         selector: 'app',
         template: '<input (click)="onClick()" />',
       })

@@ -794,14 +794,12 @@ describe('inheritance', () => {
         }
 
         @Directive({
-          standalone: true,
           selector: 'dir',
           inputs: ['someInput'],
         })
         class ActualDir extends Base {}
 
         @Component({
-          standalone: true,
           imports: [ActualDir],
           template: `<dir someInput="newValue">`,
         })
@@ -825,13 +823,11 @@ describe('inheritance', () => {
         }
 
         @Directive({
-          standalone: true,
           selector: 'dir',
         })
         class ActualDir extends Base {}
 
         @Component({
-          standalone: true,
           imports: [ActualDir],
           template: `<dir publicName="newValue">`,
         })

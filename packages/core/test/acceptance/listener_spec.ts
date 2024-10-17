@@ -226,13 +226,11 @@ describe('event listeners', () => {
     it('should support local refs in listeners', () => {
       @Component({
         selector: 'my-comp',
-        standalone: true,
         template: ``,
       })
       class MyComp {}
 
       @Component({
-        standalone: true,
         imports: [MyComp],
         template: `
           <my-comp #comp></my-comp>
@@ -768,7 +766,6 @@ describe('event listeners', () => {
 
       @Directive({
         selector: '[hostListenerDir]',
-        standalone: true,
       })
       class HostListenerDir {
         @HostListener('click')
@@ -778,7 +775,6 @@ describe('event listeners', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [HostListenerDir],
         template: `<button hostListenerDir>Click</button>`,
       })
@@ -801,7 +797,6 @@ describe('event listeners', () => {
 
       @Directive({
         selector: '[hostListenerDir]',
-        standalone: true,
       })
       class HostListenerDir {
         @HostListener('document:click')
@@ -811,7 +806,6 @@ describe('event listeners', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [HostListenerDir],
         template: `<button hostListenerDir>Click</button>`,
       })

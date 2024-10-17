@@ -85,7 +85,6 @@ describe('JsonPipe', () => {
       selector: 'test-component',
       imports: [JsonPipe],
       template: '{{ value | json }}',
-      standalone: true,
     })
     class TestComponent {
       value = {'a': 1};

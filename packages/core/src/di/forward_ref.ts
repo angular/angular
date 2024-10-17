@@ -41,7 +41,6 @@ const __forward_ref__ = getClosureSafeProperty({__forward_ref__: getClosureSafeP
  * ### Circular standalone reference import example
  * ```ts
  * @Component({
- *   standalone: true,
  *   imports: [ChildComponent],
  *   selector: 'app-parent',
  *   template: `<app-child [hideParent]="hideParent"></app-child>`,
@@ -52,7 +51,6 @@ const __forward_ref__ = getClosureSafeProperty({__forward_ref__: getClosureSafeP
  *
  *
  * @Component({
- *   standalone: true,
  *   imports: [CommonModule, forwardRef(() => ParentComponent)],
  *   selector: 'app-child',
  *   template: `<app-parent *ngIf="!hideParent"></app-parent>`,

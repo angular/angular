@@ -199,7 +199,6 @@ describe('Angular with zoneless enabled', () => {
     it('when creating a view', async () => {
       @Component({
         template: '<ng-template #ref>{{"binding"}}</ng-template>',
-        standalone: true,
       })
       class TestComponent {
         @ViewChild(TemplateRef) template!: TemplateRef<unknown>;
@@ -221,14 +220,12 @@ describe('Angular with zoneless enabled', () => {
     it('when inserting a view', async () => {
       @Component({
         template: '{{"binding"}}',
-        standalone: true,
       })
       class DynamicCmp {
         elementRef = inject(ElementRef);
       }
       @Component({
         template: '<ng-template #ref></ng-template>',
-        standalone: true,
       })
       class TestComponent {
         @ViewChild('ref', {read: ViewContainerRef}) viewContainer!: ViewContainerRef;
@@ -248,14 +245,12 @@ describe('Angular with zoneless enabled', () => {
     it('when destroying a view (with animations)', async () => {
       @Component({
         template: '{{"binding"}}',
-        standalone: true,
       })
       class DynamicCmp {
         elementRef = inject(ElementRef);
       }
       @Component({
         template: '<ng-template #ref></ng-template>',
-        standalone: true,
       })
       class TestComponent {
         @ViewChild('ref', {read: ViewContainerRef}) viewContainer!: ViewContainerRef;
@@ -296,7 +291,6 @@ describe('Angular with zoneless enabled', () => {
         let renderHookCalls = 0;
         @Component({
           template: '{{"binding"}}',
-          standalone: true,
         })
         class DynamicCmp {
           elementRef = inject(ElementRef);
@@ -304,7 +298,6 @@ describe('Angular with zoneless enabled', () => {
         @Component({
           selector: 'app',
           template: '<ng-template #ref></ng-template>',
-          standalone: true,
         })
         class App {
           @ViewChild('ref', {read: ViewContainerRef}) viewContainer!: ViewContainerRef;
@@ -354,7 +347,6 @@ describe('Angular with zoneless enabled', () => {
       @Component({
         selector: 'dynamic-cmp',
         template: '{{"binding"}}',
-        standalone: true,
       })
       class DynamicCmp {
         elementRef = inject(ElementRef);
@@ -426,7 +418,6 @@ describe('Angular with zoneless enabled', () => {
       let checks = 0;
       @Component({
         template: '',
-        standalone: true,
       })
       class Dummy {
         ngDoCheck() {
@@ -498,7 +489,6 @@ describe('Angular with zoneless enabled', () => {
   it('change detects embedded view when attached to a host on ApplicationRef and declaration is marked for check', async () => {
     @Component({
       template: '<ng-template #template><div>{{thing}}</div></ng-template>',
-      standalone: true,
     })
     class DynamicCmp {
       @ViewChild('template') templateRef!: TemplateRef<{}>;
@@ -506,7 +496,6 @@ describe('Angular with zoneless enabled', () => {
     }
     @Component({
       template: '',
-      standalone: true,
     })
     class Host {
       readonly vcr = inject(ViewContainerRef);
@@ -531,7 +520,6 @@ describe('Angular with zoneless enabled', () => {
   it('change detects embedded view when attached directly to ApplicationRef and declaration is marked for check', async () => {
     @Component({
       template: '<ng-template #template><div>{{thing}}</div></ng-template>',
-      standalone: true,
     })
     class DynamicCmp {
       @ViewChild('template') templateRef!: TemplateRef<{}>;
@@ -610,7 +598,6 @@ describe('Angular with zoneless enabled', () => {
     }
     @Component({
       template: '{{thing}}',
-      standalone: true,
     })
     class App {
       thing = 'initial';
@@ -635,7 +622,6 @@ describe('Angular with zoneless enabled', () => {
     };
     @Component({
       template: '',
-      standalone: true,
     })
     class App {
       cdr = inject(ChangeDetectorRef);
@@ -743,7 +729,6 @@ describe('Angular with scheduler and ZoneJS', () => {
     }
     let called = false;
     @Component({
-      standalone: true,
       imports: [ComponentWithOutput],
       template: '<component-with-output (out)="onOut()" />',
     })

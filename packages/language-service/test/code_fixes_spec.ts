@@ -340,7 +340,6 @@ describe('code fixes', () => {
          @Component({
            selector: 'bar',
            template: '<div>bar</div>',
-           standalone: true,
          })
          export class BarComponent {}
          `,
@@ -589,7 +588,6 @@ describe('code fixes', () => {
 
          @Component({
           selector: 'used-cmp',
-          standalone: true,
           template: '',
          })
          export class UsedComponent {}
@@ -604,7 +602,6 @@ describe('code fixes', () => {
               </div>
             </section>
            \`,
-           standalone: true,
            imports: [UnusedDirective, UsedDirective, UnusedPipe, UsedComponent],
          })
          export class AppComponent {}
@@ -640,7 +637,6 @@ describe('code fixes', () => {
 
          @Component({
            template: '',
-           standalone: true,
            imports: [UnusedDirective, UnusedPipe],
          })
          export class AppComponent {}

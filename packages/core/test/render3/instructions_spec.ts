@@ -158,7 +158,6 @@ describe('instructions', () => {
     it('should instantiate nodes at high indices', () => {
       @Component({
         selector: 'comp',
-        standalone: true,
         template: '{{ name }}',
       })
       class Comp {
@@ -323,7 +322,6 @@ describe('instructions', () => {
     it('should create tView only once for each nested level', () => {
       @Component({
         selector: 'nested-loops',
-        standalone: true,
         template: `
           <ul *ngFor="let row of rows">
             <li *ngFor="let col of row.cols">{{col}}</li>

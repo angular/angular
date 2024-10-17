@@ -115,7 +115,6 @@ describe('change detection', () => {
       @Component({
         selector: 'onpush',
         template: '',
-        standalone: true,
         changeDetection: ChangeDetectionStrategy.OnPush,
       })
       class OnPushComponent {
@@ -235,7 +234,6 @@ describe('change detection', () => {
         selector: `test-cmpt`,
         template: `{{counter}}|<ng-template #vc></ng-template>`,
         changeDetection: ChangeDetectionStrategy.OnPush,
-        standalone: true,
       })
       class TestCmpt {
         counter = 0;
@@ -249,7 +247,6 @@ describe('change detection', () => {
       @Component({
         selector: 'dynamic-cmpt',
         template: `dynamic|{{binding}}`,
-        standalone: true,
         changeDetection: ChangeDetectionStrategy.OnPush,
       })
       class DynamicCmpt {
@@ -1410,7 +1407,6 @@ describe('change detection', () => {
 
         @Component({
           changeDetection: ChangeDetectionStrategy.OnPush,
-          standalone: true,
           template: '{{state}}{{resolveReadPromise()}}',
         })
         class MyApp {

@@ -337,7 +337,6 @@ describe('NgTemplateOutlet', () => {
         <ng-template #tpl>Hello World</ng-template>
         <ng-container *ngTemplateOutlet="tpl"></ng-container>
       `,
-      standalone: true,
     })
     class TestComponent {}
 
@@ -354,7 +353,6 @@ describe('NgTemplateOutlet', () => {
         <ng-template #tpl let-name>Name:{{ name }}</ng-template>
         <ng-template [ngTemplateOutlet]="tpl" [ngTemplateOutletContext]="ctx"></ng-template>
       `,
-      standalone: true,
     })
     class TestComponent {
       ctx: {$implicit: string} | undefined = undefined;

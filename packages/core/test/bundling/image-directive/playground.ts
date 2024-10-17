@@ -44,7 +44,6 @@ import {Component} from '@angular/core';
       <img ngSrc="hermes2.jpeg" ngSrcset="100w, 200w, 1000w, 2000w" width="1791" height="1008">
     </main>
   `,
-  standalone: true,
   imports: [NgOptimizedImage],
   providers: [provideImgixLoader('https://aurora-project.imgix.net')],
 })

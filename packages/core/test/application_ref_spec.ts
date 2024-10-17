@@ -744,7 +744,6 @@ describe('bootstrap', () => {
       @Component({
         template: '',
         host: {'[class]': 'clazz'},
-        standalone: true,
         changeDetection: ChangeDetectionStrategy.OnPush,
       })
       class HostBindingComp {

@@ -43,14 +43,12 @@ class SimpleComp {
 
 @Component({
   selector: 'deferred-comp',
-  standalone: true,
   template: `<div>Deferred Component</div>`,
 })
 class DeferredComp {}
 
 @Component({
   selector: 'second-deferred-comp',
-  standalone: true,
   template: `<div>More Deferred Component</div>`,
 })
 class SecondDeferredComp {}
@@ -363,7 +361,6 @@ describe('ComponentFixture', () => {
   it('throws errors that happen during detectChanges', () => {
     @Component({
       template: '',
-      standalone: true,
     })
     class App {
       ngOnInit() {
@@ -378,7 +375,6 @@ describe('ComponentFixture', () => {
   describe('errors during ApplicationRef.tick', () => {
     @Component({
       template: '',
-      standalone: true,
     })
     class ThrowingThing {
       ngOnInit() {
@@ -387,7 +383,6 @@ describe('ComponentFixture', () => {
     }
     @Component({
       template: '',
-      standalone: true,
     })
     class Blank {}
 
@@ -417,7 +412,6 @@ describe('ComponentFixture', () => {
     it('should return all defer blocks in the component', async () => {
       @Component({
         selector: 'defer-comp',
-        standalone: true,
         imports: [DeferredComp, SecondDeferredComp],
         template: `<div>
             @defer (on immediate) {
@@ -472,7 +466,6 @@ describe('ComponentFixture', () => {
     it('throws errors that happen during detectChanges', () => {
       @Component({
         template: '',
-        standalone: true,
       })
       class App {
         ngOnInit() {
@@ -566,7 +559,6 @@ describe('ComponentFixture with zoneless', () => {
   it('throws errors that happen during detectChanges', () => {
     @Component({
       template: '',
-      standalone: true,
     })
     class App {
       ngOnInit() {
@@ -581,7 +573,6 @@ describe('ComponentFixture with zoneless', () => {
   it('rejects whenStable promise when errors happen during detectChanges', async () => {
     @Component({
       template: '',
-      standalone: true,
     })
     class App {
       ngOnInit() {
@@ -596,7 +587,6 @@ describe('ComponentFixture with zoneless', () => {
   it('can disable checkNoChanges', () => {
     @Component({
       template: '{{thing}}',
-      standalone: true,
     })
     class App {
       thing = 1;
@@ -614,7 +604,6 @@ describe('ComponentFixture with zoneless', () => {
   it('runs change detection when autoDetect is false', () => {
     @Component({
       template: '{{thing()}}',
-      standalone: true,
     })
     class App {
       thing = signal(1);
