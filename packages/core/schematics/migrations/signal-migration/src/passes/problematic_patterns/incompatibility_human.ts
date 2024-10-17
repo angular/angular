@@ -44,6 +44,15 @@ export function getMessageForFieldIncompatibility(
           'The field in the subclass is incompatible for migration, so migrating this field would ' +
           'break your build.',
       };
+    case FieldIncompatibilityReason.SignalIncompatibleWithHostBinding:
+      return {
+        short:
+          `This ${fieldName.single} is used in combination with \`@HostBinding\` and ` +
+          `migrating would break.`,
+        extra:
+          `\`@HostBinding\` does not invoke the signal automatically and your code would. ` +
+          `break after migration. Use \`host\` of \`@Directive\`/\`@Component\`for host bindings.`,
+      };
     case FieldIncompatibilityReason.PotentiallyNarrowedInTemplateButNoSupportYet:
       return {
         short:

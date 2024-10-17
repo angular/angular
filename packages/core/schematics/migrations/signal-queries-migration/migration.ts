@@ -7,7 +7,7 @@
  */
 
 import {ImportManager, PartialEvaluator} from '@angular/compiler-cli/private/migrations';
-import {QueryFunctionName} from '@angular/compiler-cli/src/ngtsc/annotations';
+import {getAngularDecorators, QueryFunctionName} from '@angular/compiler-cli/src/ngtsc/annotations';
 import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import assert from 'assert';
 import ts from 'typescript';
@@ -169,6 +169,21 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
             res.potentialProblematicQueries,
             extractedQuery.id,
             FieldIncompatibilityReason.SignalQueries__IncompatibleMultiUnionType,
+          );
+        }
+
+        // Migrating fields with `@HostBinding` is incompatible as
+        // the host binding decorator does not invoke the signal.
+        const hostBindingDecorators = getAngularDecorators(
+          extractedQuery.fieldDecorators,
+          ['HostBinding'],
+          /* isCore */ false,
+        );
+        if (hostBindingDecorators.length > 0) {
+          markFieldIncompatibleInMetadata(
+            res.potentialProblematicQueries,
+            extractedQuery.id,
+            FieldIncompatibilityReason.SignalIncompatibleWithHostBinding,
           );
         }
       }

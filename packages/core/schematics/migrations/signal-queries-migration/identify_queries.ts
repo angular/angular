@@ -12,7 +12,7 @@ import {
   queryDecoratorNames,
 } from '@angular/compiler-cli/src/ngtsc/annotations';
 import {extractDecoratorQueryMetadata} from '@angular/compiler-cli/src/ngtsc/annotations/directive';
-import {ReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
+import {Decorator, ReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import ts from 'typescript';
 import {R3QueryMetadata} from '../../../../compiler';
 import {ProgramInfo} from '../../utils/tsurge';
@@ -27,6 +27,7 @@ export interface ExtractedQuery {
   args: ts.Expression[];
   queryInfo: R3QueryMetadata;
   node: (ts.PropertyDeclaration | ts.AccessorDeclaration) & {parent: ts.ClassDeclaration};
+  fieldDecorators: Decorator[];
 }
 
 /**
@@ -99,5 +100,6 @@ export function extractSourceQueryDefinition(
     args: decorator.args ?? [],
     queryInfo,
     node: node as typeof node & {parent: ts.ClassDeclaration},
+    fieldDecorators: decorators,
   };
 }

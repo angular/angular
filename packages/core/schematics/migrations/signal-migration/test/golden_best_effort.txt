@@ -372,7 +372,7 @@ export class WithGetters {
 
 // tslint:disable
 
-import {Component, input} from '@angular/core';
+import {Component, HostBinding, input} from '@angular/core';
 
 @Component({
   template: '',
@@ -390,6 +390,9 @@ class HostBindingTestCmp {
   nested = this;
 
   declare receiverNarrowing: this | undefined;
+
+  @HostBinding('[attr.bla]')
+readonly myInput = input('initial');
 }
 
 const SHARED = {
