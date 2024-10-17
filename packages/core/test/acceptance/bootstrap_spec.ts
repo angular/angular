@@ -61,10 +61,10 @@ describe('bootstrap', () => {
   it(
     'should allow injecting VCRef into the root (bootstrapped) component',
     withBody('before|<test-cmp></test-cmp>|after', async () => {
-      @Component({selector: 'dynamic-cmp', standalone: true, template: 'dynamic'})
+      @Component({selector: 'dynamic-cmp', template: 'dynamic'})
       class DynamicCmp {}
 
-      @Component({selector: 'test-cmp', standalone: true, template: '(test)'})
+      @Component({selector: 'test-cmp', template: '(test)'})
       class TestCmp {
         constructor(public vcRef: ViewContainerRef) {}
       }

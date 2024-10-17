@@ -4871,7 +4871,7 @@ describe('di', () => {
 
   describe('HostAttributeToken', () => {
     it('should inject an attribute on an element node', () => {
-      @Directive({selector: '[dir]', standalone: true})
+      @Directive({selector: '[dir]'})
       class Dir {
         value = inject(new HostAttributeToken('some-attr'));
       }
@@ -4890,7 +4890,7 @@ describe('di', () => {
     });
 
     it('should inject an attribute on <ng-template>', () => {
-      @Directive({selector: '[dir]', standalone: true})
+      @Directive({selector: '[dir]'})
       class Dir {
         value = inject(new HostAttributeToken('some-attr'));
       }
@@ -4909,7 +4909,7 @@ describe('di', () => {
     });
 
     it('should inject an attribute on <ng-container>', () => {
-      @Directive({selector: '[dir]', standalone: true})
+      @Directive({selector: '[dir]'})
       class Dir {
         value = inject(new HostAttributeToken('some-attr'));
       }
@@ -4928,7 +4928,7 @@ describe('di', () => {
     });
 
     it('should be able to inject different kinds of attributes', () => {
-      @Directive({selector: '[dir]', standalone: true})
+      @Directive({selector: '[dir]'})
       class Dir {
         className = inject(new HostAttributeToken('class'));
         inlineStyles = inject(new HostAttributeToken('style'));
@@ -4961,7 +4961,7 @@ describe('di', () => {
     });
 
     it('should throw a DI error when injecting a non-existent attribute', () => {
-      @Directive({selector: '[dir]', standalone: true})
+      @Directive({selector: '[dir]'})
       class Dir {
         value = inject(new HostAttributeToken('some-attr'));
       }
@@ -4980,7 +4980,7 @@ describe('di', () => {
     });
 
     it('should not throw a DI error when injecting a non-existent attribute with optional: true', () => {
-      @Directive({selector: '[dir]', standalone: true})
+      @Directive({selector: '[dir]'})
       class Dir {
         value = inject(new HostAttributeToken('some-attr'), {optional: true});
       }
@@ -4999,7 +4999,7 @@ describe('di', () => {
     });
 
     it('should not inject attributes with namespace', () => {
-      @Directive({selector: '[dir]', standalone: true})
+      @Directive({selector: '[dir]'})
       class Dir {
         value = inject(new HostAttributeToken('some-attr'), {optional: true});
         namespaceExists = inject(new HostAttributeToken('svg:exist'), {optional: true});
@@ -5026,7 +5026,7 @@ describe('di', () => {
     });
 
     it('should not inject attributes representing bindings and outputs', () => {
-      @Directive({selector: '[dir]', standalone: true})
+      @Directive({selector: '[dir]'})
       class Dir {
         @Input() binding!: string;
         @Output() output = new EventEmitter();
@@ -5065,7 +5065,7 @@ describe('di', () => {
     });
 
     it('should not inject data-bound attributes', () => {
-      @Directive({selector: '[dir]', standalone: true})
+      @Directive({selector: '[dir]'})
       class Dir {
         value = inject(new HostAttributeToken('title'), {optional: true});
       }
@@ -5089,7 +5089,7 @@ describe('di', () => {
     it('should inject an attribute using @Inject', () => {
       const TOKEN = new HostAttributeToken('some-attr');
 
-      @Directive({selector: '[dir]', standalone: true})
+      @Directive({selector: '[dir]'})
       class Dir {
         constructor(@Inject(TOKEN) readonly value: string) {}
       }
@@ -5110,7 +5110,7 @@ describe('di', () => {
     it('should throw when injecting a non-existent attribute using @Inject', () => {
       const TOKEN = new HostAttributeToken('some-attr');
 
-      @Directive({selector: '[dir]', standalone: true})
+      @Directive({selector: '[dir]'})
       class Dir {
         constructor(@Inject(TOKEN) readonly value: string) {}
       }
@@ -5131,7 +5131,7 @@ describe('di', () => {
     it('should not throw when injecting a non-existent attribute using @Inject @Optional', () => {
       const TOKEN = new HostAttributeToken('some-attr');
 
-      @Directive({selector: '[dir]', standalone: true})
+      @Directive({selector: '[dir]'})
       class Dir {
         constructor(@Inject(TOKEN) @Optional() readonly value: string | null) {}
       }
@@ -5152,7 +5152,7 @@ describe('di', () => {
 
   describe('HOST_TAG_NAME', () => {
     it('should inject the tag name on an element node', () => {
-      @Directive({selector: '[dir]', standalone: true})
+      @Directive({selector: '[dir]'})
       class Dir {
         value = inject(HOST_TAG_NAME);
       }
@@ -5185,7 +5185,7 @@ describe('di', () => {
     });
 
     it('should throw a DI error when injecting into non-DOM nodes', () => {
-      @Directive({selector: '[dir]', standalone: true})
+      @Directive({selector: '[dir]'})
       class Dir {
         value = inject(HOST_TAG_NAME);
       }
@@ -5216,7 +5216,7 @@ describe('di', () => {
     });
 
     it('should not throw a DI error when injecting into non-DOM nodes with optional: true', () => {
-      @Directive({selector: '[dir]', standalone: true})
+      @Directive({selector: '[dir]'})
       class Dir {
         value = inject(HOST_TAG_NAME, {optional: true});
       }

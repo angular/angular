@@ -704,7 +704,7 @@ describe('createUrlTreeFromSnapshot', async () => {
     })
     class GuardedComponent {}
 
-    @Component({template: 'sibling', standalone: true})
+    @Component({template: 'sibling'})
     class SiblingComponent {}
 
     @Component({

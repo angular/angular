@@ -278,7 +278,7 @@ describe('@defer', () => {
   });
 
   it('should be able to use pipes injecting ChangeDetectorRef in defer blocks', async () => {
-    @Pipe({name: 'test', standalone: true})
+    @Pipe({name: 'test'})
     class TestPipe implements PipeTransform {
       changeDetectorRef = inject(ChangeDetectorRef);
 
@@ -2301,7 +2301,7 @@ describe('@defer', () => {
     }));
 
     it('should resolve a trigger on a component outside the defer block', fakeAsync(() => {
-      @Component({selector: 'some-comp', template: '<button></button>', standalone: true})
+      @Component({selector: 'some-comp', template: '<button></button>'})
       class SomeComp {}
 
       @Component({
@@ -2395,7 +2395,7 @@ describe('@defer', () => {
     }));
 
     it('should resolve a trigger that is on a component in a parent embedded view', fakeAsync(() => {
-      @Component({selector: 'some-comp', template: '<button></button>', standalone: true})
+      @Component({selector: 'some-comp', template: '<button></button>'})
       class SomeComp {}
 
       @Component({
@@ -2453,7 +2453,7 @@ describe('@defer', () => {
     }));
 
     it('should resolve a trigger that is a component inside the placeholder', fakeAsync(() => {
-      @Component({selector: 'some-comp', template: '<button></button>', standalone: true})
+      @Component({selector: 'some-comp', template: '<button></button>'})
       class SomeComp {}
 
       @Component({

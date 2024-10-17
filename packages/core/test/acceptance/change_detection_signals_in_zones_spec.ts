@@ -126,7 +126,7 @@ describe('CheckAlways components', () => {
       }
     }
 
-    @Component({template: '<a-comp />-<b-comp />', standalone: true, imports: [A, B]})
+    @Component({template: '<a-comp />-<b-comp />', imports: [A, B]})
     class App {}
 
     const fixture = TestBed.createComponent(App);
@@ -159,7 +159,7 @@ describe('CheckAlways components', () => {
         }
       }
     }
-    @Component({template: '{{val()}}<child />', standalone: true, imports: [Child]})
+    @Component({template: '{{val()}}<child />', imports: [Child]})
     class App {
       val = val;
     }

@@ -22,7 +22,7 @@ import {
 import {TestBed} from '@angular/core/testing';
 
 // Basic shared pipe used during testing.
-@Pipe({name: 'multiply', pure: true, standalone: true})
+@Pipe({name: 'multiply', pure: true})
 class MultiplyPipe implements PipeTransform {
   transform(value: number, amount: number) {
     return value * amount;
@@ -31,7 +31,7 @@ class MultiplyPipe implements PipeTransform {
 
 describe('control flow - if', () => {
   it('should add and remove views based on conditions change', () => {
-    @Component({standalone: true, template: '@if (show) {Something} @else {Nothing}'})
+    @Component({template: '@if (show) {Something} @else {Nothing}'})
     class TestComponent {
       show = true;
     }
@@ -247,7 +247,7 @@ describe('control flow - if', () => {
   });
 
   it('should be able to use pipes injecting ChangeDetectorRef in if blocks', () => {
-    @Pipe({name: 'test', standalone: true})
+    @Pipe({name: 'test'})
     class TestPipe implements PipeTransform {
       changeDetectorRef = inject(ChangeDetectorRef);
 
@@ -319,7 +319,7 @@ describe('control flow - if', () => {
     it('should project an @if with a single root node with a data binding', () => {
       let directiveCount = 0;
 
-      @Directive({standalone: true, selector: '[foo]'})
+      @Directive({selector: '[foo]'})
       class Foo {
         @Input('foo') value: any;
 

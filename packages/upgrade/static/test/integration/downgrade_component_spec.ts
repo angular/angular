@@ -1069,7 +1069,7 @@ withEachNg1Version(() => {
     afterEach(() => destroyPlatform());
 
     it('should downgrade a standalone component using NgModule APIs', waitForAsync(() => {
-      @Component({selector: 'ng2', standalone: true, template: 'Hi from Angular!'})
+      @Component({selector: 'ng2', template: 'Hi from Angular!'})
       class Ng2Component {}
 
       const ng1Module = angular

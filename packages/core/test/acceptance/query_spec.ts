@@ -908,7 +908,7 @@ describe('query logic', () => {
     });
 
     it('should report results to appropriate queries where deep content queries are nested', () => {
-      @Directive({selector: '[content-query]', standalone: true, exportAs: 'query'})
+      @Directive({selector: '[content-query]', exportAs: 'query'})
       class ContentQueryDirective {
         @ContentChildren('foo, bar, baz', {descendants: true}) qlist!: QueryList<ElementRef>;
       }
@@ -941,7 +941,7 @@ describe('query logic', () => {
     });
 
     it('should support nested shallow content queries', () => {
-      @Directive({selector: '[content-query]', standalone: true, exportAs: 'query'})
+      @Directive({selector: '[content-query]', exportAs: 'query'})
       class ContentQueryDirective {
         @ContentChildren('foo') qlist!: QueryList<ElementRef>;
       }
@@ -972,12 +972,12 @@ describe('query logic', () => {
     });
 
     it('should respect shallow flag on content queries when mixing deep and shallow queries', () => {
-      @Directive({selector: '[shallow-content-query]', standalone: true, exportAs: 'shallow-query'})
+      @Directive({selector: '[shallow-content-query]', exportAs: 'shallow-query'})
       class ShallowContentQueryDirective {
         @ContentChildren('foo') qlist!: QueryList<ElementRef>;
       }
 
-      @Directive({selector: '[deep-content-query]', standalone: true, exportAs: 'deep-query'})
+      @Directive({selector: '[deep-content-query]', exportAs: 'deep-query'})
       class DeepContentQueryDirective {
         @ContentChildren('foo', {descendants: true}) qlist!: QueryList<ElementRef>;
       }
@@ -1009,7 +1009,7 @@ describe('query logic', () => {
     });
 
     it('should support shallow ContentChild queries', () => {
-      @Directive({selector: '[query-dir]', standalone: true})
+      @Directive({selector: '[query-dir]'})
       class ContentQueryDirective {
         @ContentChild('foo', {descendants: false}) shallow: ElementRef | undefined;
         // ContentChild queries have {descendants: true} option by default
@@ -1074,7 +1074,7 @@ describe('query logic', () => {
   });
 
   describe('query order', () => {
-    @Directive({selector: '[text]', standalone: true})
+    @Directive({selector: '[text]'})
     class TextDirective {
       @Input() text: string | undefined;
     }
@@ -1464,10 +1464,10 @@ describe('query logic', () => {
   });
 
   describe('read option', () => {
-    @Directive({selector: '[child]', standalone: true})
+    @Directive({selector: '[child]'})
     class Child {}
 
-    @Directive({selector: '[otherChild]', standalone: true})
+    @Directive({selector: '[otherChild]'})
     class OtherChild {}
 
     it('should query using type predicate and read ElementRef', () => {
@@ -1700,7 +1700,7 @@ describe('query logic', () => {
     });
 
     it('should read component instance if element queried for is a component host', () => {
-      @Component({selector: 'child-cmp', standalone: true, template: ''})
+      @Component({selector: 'child-cmp', template: ''})
       class ChildCmp {}
 
       @Component({
@@ -1744,7 +1744,7 @@ describe('query logic', () => {
     });
 
     it('should read directive instance if element queried for has an exported directive with a matching name', () => {
-      @Directive({selector: '[child]', exportAs: 'child', standalone: true})
+      @Directive({selector: '[child]', exportAs: 'child'})
       class ChildDirective {}
 
       @Component({
@@ -1764,10 +1764,10 @@ describe('query logic', () => {
     });
 
     it('should read all matching directive instances from a given element', () => {
-      @Directive({selector: '[child1]', exportAs: 'child1', standalone: true})
+      @Directive({selector: '[child1]', exportAs: 'child1'})
       class Child1Dir {}
 
-      @Directive({selector: '[child2]', exportAs: 'child2', standalone: true})
+      @Directive({selector: '[child2]', exportAs: 'child2'})
       class Child2Dir {}
 
       @Component({
@@ -1788,7 +1788,7 @@ describe('query logic', () => {
     });
 
     it('should read multiple locals exporting the same directive from a given element', () => {
-      @Directive({selector: '[child]', exportAs: 'child', standalone: true})
+      @Directive({selector: '[child]', exportAs: 'child'})
       class ChildDir {}
 
       @Component({
@@ -1839,7 +1839,7 @@ describe('query logic', () => {
     });
 
     it('should match on exported directive name and read a requested token', () => {
-      @Directive({selector: '[child]', exportAs: 'child', standalone: true})
+      @Directive({selector: '[child]', exportAs: 'child'})
       class ChildDir {}
 
       @Component({
@@ -1859,7 +1859,7 @@ describe('query logic', () => {
     });
 
     it('should support reading a mix of ElementRef and directive instances', () => {
-      @Directive({selector: '[child]', exportAs: 'child', standalone: true})
+      @Directive({selector: '[child]', exportAs: 'child'})
       class ChildDir {}
 
       @Component({
@@ -1880,7 +1880,7 @@ describe('query logic', () => {
     });
 
     it('should not add results to selector-based query if a requested token cant be read', () => {
-      @Directive({selector: '[child]', standalone: true})
+      @Directive({selector: '[child]'})
       class ChildDir {}
 
       @Component({
@@ -1899,10 +1899,10 @@ describe('query logic', () => {
     });
 
     it('should not add results to directive-based query if only read token matches', () => {
-      @Directive({selector: '[child]', standalone: true})
+      @Directive({selector: '[child]'})
       class ChildDir {}
 
-      @Directive({selector: '[otherChild]', standalone: true})
+      @Directive({selector: '[otherChild]'})
       class OtherChildDir {}
 
       @Component({

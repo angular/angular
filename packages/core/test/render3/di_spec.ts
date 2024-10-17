@@ -29,10 +29,10 @@ describe('di', () => {
   describe('directive injection', () => {
     describe('flags', () => {
       it('should check only the current node with @Self even with false positive', () => {
-        @Directive({selector: '[notOnSelf]', standalone: true})
+        @Directive({selector: '[notOnSelf]'})
         class DirNotOnSelf {}
 
-        @Directive({selector: '[tryInjectFromSelf]', standalone: true})
+        @Directive({selector: '[tryInjectFromSelf]'})
         class DirTryInjectFromSelf {
           constructor(@Self() private dir: DirNotOnSelf) {}
         }

@@ -379,7 +379,7 @@ describe('queries as signals', () => {
     });
 
     it('should not return partial results during the first-time view rendering', () => {
-      @Directive({selector: '[marker]', standalone: true})
+      @Directive({selector: '[marker]'})
       class MarkerForResults {}
 
       @Directive({
@@ -389,7 +389,7 @@ describe('queries as signals', () => {
         results = contentChildren(MarkerForResults);
       }
 
-      @Directive({selector: '[inspect]', standalone: true})
+      @Directive({selector: '[inspect]'})
       class InspectsQueryResults {
         constructor(declaration: DeclareQuery) {
           // we should _not_ get partial query results while the view is still creating

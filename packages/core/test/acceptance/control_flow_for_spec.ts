@@ -129,7 +129,7 @@ describe('control flow - for', () => {
   });
 
   it('should be able to use pipes injecting ChangeDetectorRef in for loop blocks', () => {
-    @Pipe({name: 'test', standalone: true})
+    @Pipe({name: 'test'})
     class TestPipe implements PipeTransform {
       changeDetectorRef = inject(ChangeDetectorRef);
 
@@ -730,7 +730,7 @@ describe('control flow - for', () => {
     it('should project an @for with a single root node with a data binding', () => {
       let directiveCount = 0;
 
-      @Directive({standalone: true, selector: '[foo]'})
+      @Directive({selector: '[foo]'})
       class Foo {
         @Input('foo') value: any;
 

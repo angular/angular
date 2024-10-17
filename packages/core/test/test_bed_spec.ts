@@ -433,13 +433,13 @@ describe('TestBed with Standalone types', () => {
       id = 'B';
     }
 
-    @Pipe({name: 'pipe', standalone: true})
+    @Pipe({name: 'pipe'})
     class MyStandalonePipeA {
       transform(value: string): string {
         return `transformed ${value} (A)`;
       }
     }
-    @Pipe({name: 'pipe', standalone: true})
+    @Pipe({name: 'pipe'})
     class MyStandalonePipeB {
       transform(value: string): string {
         return `transformed ${value} (B)`;
@@ -657,7 +657,7 @@ describe('TestBed', () => {
     })
     class NonStandaloneComponent {}
 
-    @Directive({standalone: true})
+    @Directive({})
     class StandaloneDirective {}
 
     @Directive({
@@ -665,7 +665,7 @@ describe('TestBed', () => {
     })
     class NonStandaloneDirective {}
 
-    @Pipe({standalone: true, name: 'test'})
+    @Pipe({name: 'test'})
     class StandalonePipe {}
 
     @Pipe({
@@ -1611,6 +1611,7 @@ describe('TestBed', () => {
       class ComponentClass {
         static ɵfac = () => new ComponentClass();
         static ɵcmp = defineComponent({
+          standalone: true,
           type: ComponentClass,
           selectors: [[selector]],
           decls: 2,

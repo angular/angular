@@ -24,7 +24,7 @@ import {TestBed} from '@angular/core/testing';
 
 describe('model inputs', () => {
   it('should support two-way binding to a signal', () => {
-    @Directive({selector: '[dir]', standalone: true})
+    @Directive({selector: '[dir]'})
     class Dir {
       value = model(0);
     }
@@ -59,7 +59,7 @@ describe('model inputs', () => {
   });
 
   it('should support two-way binding to a non-signal value', () => {
-    @Directive({selector: '[dir]', standalone: true})
+    @Directive({selector: '[dir]'})
     class Dir {
       value = model(0);
     }
@@ -94,7 +94,7 @@ describe('model inputs', () => {
   });
 
   it('should support two-way binding a signal to a non-model input/output pair', () => {
-    @Directive({selector: '[dir]', standalone: true})
+    @Directive({selector: '[dir]'})
     class Dir {
       @Input() value = 0;
       @Output() valueChange = new EventEmitter<number>();
@@ -132,7 +132,7 @@ describe('model inputs', () => {
   });
 
   it('should support a one-way property binding to a model', () => {
-    @Directive({selector: '[dir]', standalone: true})
+    @Directive({selector: '[dir]'})
     class Dir {
       value = model(0);
     }
@@ -170,7 +170,7 @@ describe('model inputs', () => {
   it('should emit to the change output when the model changes', () => {
     const emittedValues: number[] = [];
 
-    @Directive({selector: '[dir]', standalone: true})
+    @Directive({selector: '[dir]'})
     class Dir {
       value = model(0);
     }
@@ -210,7 +210,7 @@ describe('model inputs', () => {
   it('should not emit to the change event when then property binding changes', () => {
     const emittedValues: number[] = [];
 
-    @Directive({selector: '[dir]', standalone: true})
+    @Directive({selector: '[dir]'})
     class Dir {
       value = model(0);
     }
@@ -241,7 +241,7 @@ describe('model inputs', () => {
   it('should support binding to the model input and output separately', () => {
     const emittedValues: number[] = [];
 
-    @Directive({selector: '[dir]', standalone: true})
+    @Directive({selector: '[dir]'})
     class Dir {
       value = model(0);
     }
@@ -281,7 +281,7 @@ describe('model inputs', () => {
   });
 
   it('should support two-way binding to a model with an alias', () => {
-    @Directive({selector: '[dir]', standalone: true})
+    @Directive({selector: '[dir]'})
     class Dir {
       value = model(0, {alias: 'alias'});
     }
@@ -319,7 +319,7 @@ describe('model inputs', () => {
   it('should support binding to an aliased model input and output separately', () => {
     const emittedValues: number[] = [];
 
-    @Directive({selector: '[dir]', standalone: true})
+    @Directive({selector: '[dir]'})
     class Dir {
       value = model(0, {alias: 'alias'});
     }
@@ -359,7 +359,7 @@ describe('model inputs', () => {
   });
 
   it('should throw if a required model input is accessed too early', () => {
-    @Directive({selector: '[dir]', standalone: true})
+    @Directive({selector: '[dir]'})
     class Dir {
       value = model.required<number>();
 
@@ -382,7 +382,7 @@ describe('model inputs', () => {
   });
 
   it('should throw if a required model input is updated too early', () => {
-    @Directive({selector: '[dir]', standalone: true})
+    @Directive({selector: '[dir]'})
     class Dir {
       value = model.required<number>();
 
@@ -407,7 +407,7 @@ describe('model inputs', () => {
   it('should stop emitting to the output on destroy', () => {
     let emittedEvents = 0;
 
-    @Directive({selector: '[dir]', standalone: true})
+    @Directive({selector: '[dir]'})
     class Dir {
       value = model(0);
     }
@@ -445,7 +445,7 @@ describe('model inputs', () => {
       value = model(0);
     }
 
-    @Directive({selector: '[dir]', standalone: true})
+    @Directive({selector: '[dir]'})
     class Dir extends BaseDir {}
 
     @Component({
@@ -517,7 +517,7 @@ describe('model inputs', () => {
   it('should support ngOnChanges for two-way model bindings', () => {
     const changes: SimpleChange[] = [];
 
-    @Directive({selector: '[dir]', standalone: true})
+    @Directive({selector: '[dir]'})
     class Dir implements OnChanges {
       value = model(0);
 
@@ -566,7 +566,7 @@ describe('model inputs', () => {
   });
 
   it('should not throw for mixed model and output subscriptions', () => {
-    @Directive({selector: '[dir]', standalone: true})
+    @Directive({selector: '[dir]'})
     class Dir {
       model = model(0);
       @Output() output = new EventEmitter();
@@ -590,7 +590,7 @@ describe('model inputs', () => {
   });
 
   it('should support two-way binding to a signal @for loop variable', () => {
-    @Directive({selector: '[dir]', standalone: true})
+    @Directive({selector: '[dir]'})
     class Dir {
       value = model(0);
     }

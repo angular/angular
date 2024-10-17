@@ -838,7 +838,7 @@ describe('completions', () => {
         '',
         {},
         `
-        @Component({selector: 'other-cmp', template: 'unimportant', standalone: true})
+        @Component({selector: 'other-cmp', template: 'unimportant'})
         export class OtherCmp {}
       `,
       );

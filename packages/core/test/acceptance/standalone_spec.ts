@@ -50,7 +50,7 @@ describe('standalone components, directives, and pipes', () => {
       @Input() level = 0;
     }
 
-    @Component({standalone: true, template: '<tree [level]="3"></tree>', imports: [TreeCmp]})
+    @Component({template: '<tree [level]="3"></tree>', imports: [TreeCmp]})
     class StandaloneCmp {}
 
     const fixture = TestBed.createComponent(StandaloneCmp);
@@ -82,6 +82,7 @@ describe('standalone components, directives, and pipes', () => {
     @Component({
       selector: 'inner-cmp',
       template: 'Look at me, no NgModule!',
+      /** Don't remove that standalone property */
       standalone: true,
     })
     class InnerCmp {}
@@ -141,7 +142,7 @@ describe('standalone components, directives, and pipes', () => {
     })
     class StandaloneDir {}
 
-    @Pipe({name: 'standalonePipe', standalone: true})
+    @Pipe({name: 'standalonePipe'})
     class StandalonePipe implements PipeTransform {
       transform(value: any) {
         return `|${value}`;
@@ -487,10 +488,10 @@ describe('standalone components, directives, and pipes', () => {
   });
 
   it('should support nested arrays in @Component.imports', () => {
-    @Directive({selector: '[red]', standalone: true, host: {'[attr.red]': 'true'}})
+    @Directive({selector: '[red]', host: {'[attr.red]': 'true'}})
     class RedIdDirective {}
 
-    @Pipe({name: 'blue', pure: true, standalone: true})
+    @Pipe({name: 'blue', pure: true})
     class BluePipe implements PipeTransform {
       transform() {
         return 'blue';
@@ -510,10 +511,10 @@ describe('standalone components, directives, and pipes', () => {
   });
 
   it('should support readonly arrays in @Component.imports', () => {
-    @Directive({selector: '[red]', standalone: true, host: {'[attr.red]': 'true'}})
+    @Directive({selector: '[red]', host: {'[attr.red]': 'true'}})
     class RedIdDirective {}
 
-    @Pipe({name: 'blue', pure: true, standalone: true})
+    @Pipe({name: 'blue', pure: true})
     class BluePipe implements PipeTransform {
       transform() {
         return 'blue';
@@ -535,7 +536,7 @@ describe('standalone components, directives, and pipes', () => {
   });
 
   it('should deduplicate declarations', () => {
-    @Component({selector: 'test-red', standalone: true, template: 'red(<ng-content></ng-content>)'})
+    @Component({selector: 'test-red', template: 'red(<ng-content></ng-content>)'})
     class RedComponent {}
 
     @Component({
@@ -697,7 +698,7 @@ describe('standalone components, directives, and pipes', () => {
     })
     class TestComponent {}
 
-    @Component({selector: 'other-standalone', standalone: true, template: `standalone component`})
+    @Component({selector: 'other-standalone', template: `standalone component`})
     class StandaloneComponent {}
 
     const fixture = TestBed.createComponent(TestComponent);
@@ -822,7 +823,7 @@ describe('standalone components, directives, and pipes', () => {
         @Input() in: string | undefined;
       }
 
-      @Component({selector: 'standalone', template: 'standalone: {{in}}', standalone: true})
+      @Component({selector: 'standalone', template: 'standalone: {{in}}'})
       class StandaloneCmp extends RegularCmp {}
 
       const fixture = TestBed.createComponent(StandaloneCmp);
@@ -832,7 +833,7 @@ describe('standalone components, directives, and pipes', () => {
     });
 
     it('should allow extending a regular component and turn it into a standalone one', () => {
-      @Component({selector: 'standalone', template: 'standalone: {{in}}', standalone: true})
+      @Component({selector: 'standalone', template: 'standalone: {{in}}'})
       class StandaloneCmp {
         @Input() in: string | undefined;
       }
@@ -904,7 +905,7 @@ describe('standalone components, directives, and pipes', () => {
     });
 
     it('should return `true` if directive is standalone', () => {
-      @Directive({selector: '[standaloneDir]', standalone: true})
+      @Directive({selector: '[standaloneDir]'})
       class StandAloneDirective {}
 
       expect(isStandalone(StandAloneDirective)).toBeTrue();
@@ -918,7 +919,7 @@ describe('standalone components, directives, and pipes', () => {
     });
 
     it('should return `true` if pipe is standalone', () => {
-      @Pipe({name: 'standalonePipe', standalone: true})
+      @Pipe({name: 'standalonePipe'})
       class StandAlonePipe {}
 
       expect(isStandalone(StandAlonePipe)).toBeTrue();

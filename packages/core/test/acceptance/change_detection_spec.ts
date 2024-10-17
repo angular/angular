@@ -125,7 +125,7 @@ describe('change detection', () => {
         }
       }
 
-      @Component({template: '<ng-template #template></ng-template>', standalone: true})
+      @Component({template: '<ng-template #template></ng-template>'})
       class Container {
         @ViewChild('template', {read: ViewContainerRef, static: true}) vcr!: ViewContainerRef;
       }

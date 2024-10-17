@@ -10,7 +10,7 @@ import {ChangeDetectorRef, Component, inject, Pipe, PipeTransform} from '@angula
 import {TestBed} from '@angular/core/testing';
 
 // Basic shared pipe used during testing.
-@Pipe({name: 'multiply', pure: true, standalone: true})
+@Pipe({name: 'multiply', pure: true})
 class MultiplyPipe implements PipeTransform {
   transform(value: number, amount: number) {
     return value * amount;
@@ -105,7 +105,7 @@ describe('control flow - switch', () => {
   });
 
   it('should be able to use pipes injecting ChangeDetectorRef in switch blocks', () => {
-    @Pipe({name: 'test', standalone: true})
+    @Pipe({name: 'test'})
     class TestPipe implements PipeTransform {
       changeDetectorRef = inject(ChangeDetectorRef);
 

@@ -864,7 +864,7 @@ describe('directives', () => {
     });
 
     it('should transform aliased inputs coming from host directives', () => {
-      @Directive({standalone: true})
+      @Directive({})
       class HostDir {
         @Input({transform: (value: string) => (value ? 1 : 0)}) value = -1;
       }
