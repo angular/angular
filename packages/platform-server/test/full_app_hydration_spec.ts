@@ -83,6 +83,8 @@ import {
   withDebugConsole,
   withNoopErrorHandler,
   verifyEmptyConsole,
+  DebugConsole,
+  clearConsole,
 } from './hydration_utils';
 
 import {CLIENT_RENDER_MODE_FLAG} from '@angular/core/src/hydration/api';
@@ -111,7 +113,10 @@ describe('platform-server full application hydration integration', () => {
       doc = TestBed.inject(DOCUMENT);
     });
 
-    afterEach(() => clearDocument(doc));
+    afterEach(() => {
+      clearDocument(doc);
+      clearConsole(TestBed.inject(ApplicationRef));
+    });
 
     describe('annotations', () => {
       it('should add hydration annotations to component host nodes during ssr', async () => {
