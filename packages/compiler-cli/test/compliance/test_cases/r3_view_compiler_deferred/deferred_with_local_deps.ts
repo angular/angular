@@ -1,14 +1,14 @@
 import {Component, Directive} from '@angular/core';
 
-@Directive({selector: 'eager-dep', standalone: true})
+@Directive({selector: 'eager-dep'})
 export class EagerDep {
 }
 
-@Directive({selector: 'lazy-dep', standalone: true})
+@Directive({selector: 'lazy-dep'})
 export class LazyDep {
 }
 
-@Directive({selector: 'loading-dep', standalone: true})
+@Directive({selector: 'loading-dep'})
 export class LoadingDep {
 }
 
@@ -23,7 +23,6 @@ export class LoadingDep {
       }
     </div>
   `,
-  standalone: true,
   imports: [EagerDep, LazyDep, LoadingDep],
 })
 export class MyApp {

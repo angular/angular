@@ -959,7 +959,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    standalone: true,
                     template: '<ng-template l="l1" [p]="p1" [attr.a]="a1" [class.c]="c1"></ng-template>',
                 }]
         }] });
@@ -1105,7 +1104,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    standalone: true,
                     template: `
   <ng-template *ngIf="true">Content</ng-template>
 `,
@@ -1135,7 +1133,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     selector: 'other-component',
                     template: '',
-                    standalone: true,
                 }]
         }] });
 export class MyComponent {
@@ -1155,7 +1152,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     selector: 'my-component',
                     imports: [OtherComponent],
-                    standalone: true,
                     template: `
   <div i18n>
     <img *ngIf="flag" />
@@ -1295,7 +1291,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    standalone: true,
                     template: '<ng-template let-a [ngIf]="true">{{a}}</ng-template>',
                 }]
         }] });

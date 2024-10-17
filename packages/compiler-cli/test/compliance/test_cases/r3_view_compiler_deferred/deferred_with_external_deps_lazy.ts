@@ -1,5 +1,5 @@
 import {Directive} from '@angular/core';
 
-@Directive({selector: 'lazy-dep', standalone: true})
+@Directive({selector: 'lazy-dep',})
 export class LazyDep {
 }

@@ -2,6 +2,7 @@
 MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: MyApp,
   selectors: [["my-app"]],
+  standalone: false,
   decls: 6,
   vars: 27,
   template:  function MyApp_Template(rf, ctx) {

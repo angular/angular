@@ -10,7 +10,6 @@ OtherCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: OtherCmp, decorators: [{
             type: Component,
             args: [{
-                    standalone: true,
                     selector: 'other-cmp',
                     template: '',
                 }]
@@ -22,7 +21,6 @@ StandaloneCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version:
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: StandaloneCmp, decorators: [{
             type: Component,
             args: [{
-                    standalone: true,
                     template: '<other-cmp></other-cmp>',
                     imports: [OtherCmp],
                 }]
@@ -52,9 +50,7 @@ StandaloneDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "
 StandaloneDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: StandaloneDir, isStandalone: true, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: StandaloneDir, decorators: [{
             type: Directive,
-            args: [{
-                    standalone: true,
-                }]
+            args: [{}]
         }] });
 
 /****************************************************************************************************
@@ -79,7 +75,6 @@ StandalonePipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: StandalonePipe, decorators: [{
             type: Pipe,
             args: [{
-                    standalone: true,
                     name: 'stpipe',
                 }]
         }] });
@@ -141,7 +136,6 @@ IndirectDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: IndirectDir, decorators: [{
             type: Directive,
             args: [{
-                    standalone: true,
                     selector: '[indirect]',
                 }]
         }] });
@@ -153,7 +147,6 @@ IndirectPipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: IndirectPipe, decorators: [{
             type: Pipe,
             args: [{
-                    standalone: true,
                     name: 'indirectpipe',
                 }]
         }] });
@@ -176,7 +169,6 @@ DirectDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DirectDir, decorators: [{
             type: Directive,
             args: [{
-                    standalone: true,
                     selector: '[direct]',
                 }]
         }] });
@@ -188,7 +180,6 @@ DirectPipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DirectPipe, decorators: [{
             type: Pipe,
             args: [{
-                    standalone: true,
                     name: 'directpipe',
                 }]
         }] });
@@ -206,7 +197,6 @@ TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, decorators: [{
             type: Component,
             args: [{
-                    standalone: true,
                     selector: 'test-cmp',
                     template: `
     <p>Reference some non-standalone things:<span not-standalone>{{data | nspipe}}</span></p>
@@ -276,7 +266,6 @@ RecursiveComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", ver
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: RecursiveComponent, decorators: [{
             type: Component,
             args: [{
-                    standalone: true,
                     selector: 'recursive-cmp',
                     // Simple recursion. Note: no `imports`.
                     template: '<recursive-cmp></recursive-cmp>',
@@ -304,7 +293,6 @@ StandaloneCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version:
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: StandaloneCmp, decorators: [{
             type: Component,
             args: [{
-                    standalone: true,
                     selector: 'standalone-cmp',
                     template: '',
                 }]
@@ -315,7 +303,7 @@ StandaloneDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "
 StandaloneDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: StandaloneDir, isStandalone: true, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: StandaloneDir, decorators: [{
             type: Directive,
-            args: [{ standalone: true }]
+            args: [{}]
         }] });
 export class Module {
 }
@@ -360,7 +348,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test',
-                    standalone: true,
                     imports: [forwardRef(() => StandaloneComponent)],
                     template: '<other-standalone></other-standalone>',
                 }]
@@ -373,7 +360,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'other-standalone',
-                    standalone: true,
                     template: '',
                 }]
         }] });

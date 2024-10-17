@@ -7,5 +7,6 @@ HostBindingDir.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
       if (rf & 2) {
         $r3$.ɵɵclassProp("a", ctx["is-a"])("b", ctx["is-\"b\""])("c", ctx["\"is-c\""]);
       }
-    }
+    },
+  standalone: false
   });

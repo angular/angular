@@ -690,7 +690,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-cmp',
-                    standalone: true,
                     template: `
     <button
       *ngIf="true"
@@ -736,7 +735,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    standalone: true,
                     template: `
     <div [innerHtml]="evil"></div>
     <link [href]="evil" />
@@ -770,7 +768,7 @@ Dir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLAC
 Dir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Dir, isStandalone: true, selector: "[dir]", inputs: { a: "a", b: "b", c: "c", d: "d" }, outputs: { aChange: "aChange", cChange: "cChange" }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Dir, decorators: [{
             type: Directive,
-            args: [{ standalone: true, selector: '[dir]' }]
+            args: [{ selector: '[dir]' }]
         }], propDecorators: { a: [{
                 type: Input
             }], aChange: [{
@@ -796,7 +794,6 @@ App.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PL
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: App, decorators: [{
             type: Component,
             args: [{
-                    standalone: true,
                     imports: [Dir],
                     template: `
     <div dir [(a)]="value" [b]="value" [(c)]="value" [d]="value"></div>

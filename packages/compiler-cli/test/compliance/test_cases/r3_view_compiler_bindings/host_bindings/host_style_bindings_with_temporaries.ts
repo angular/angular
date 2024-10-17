@@ -1,7 +1,6 @@
 import {Directive} from '@angular/core';
 
 @Directive({
-  standalone: true,
   selector: '[hostBindingDir]',
   host: {
     '[style.fontSize]': 'value ?? "15px"',

@@ -1,7 +1,6 @@
 SignalCmp.ɵcmp = /*@__PURE__*/ i0.ɵɵdefineComponent({
   type: SignalCmp,
   selectors: [["ng-component"]],
-  standalone: true,
   signals: true,
   features: [i0.ɵɵStandaloneFeature],
   decls: 1,
