@@ -44,6 +44,7 @@ export {
   withHttpTransferCacheOptions,
   withI18nSupport,
   withNoHttpTransferCache,
+  withIncrementalHydration,
 } from './hydration';
 
 export * from './private_export';
