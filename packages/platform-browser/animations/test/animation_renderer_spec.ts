@@ -468,7 +468,7 @@ import {el} from '../../testing/src/browser_util';
           constructor(rendererFactory: RendererFactory2) {}
         }
 
-        @Component({selector: 'app-root', template: 'app-root content', standalone: true})
+        @Component({selector: 'app-root', template: 'app-root content'})
         class AppComponent {}
 
         const appRef = await bootstrapApplication(AppComponent, {
@@ -500,7 +500,7 @@ import {el} from '../../testing/src/browser_util';
     it(
       'should clear bootstrapped component contents when async animations are used',
       withBody('<div>before</div><app-root></app-root><div>after</div>', async () => {
-        @Component({selector: 'app-root', template: 'app-root content', standalone: true})
+        @Component({selector: 'app-root', template: 'app-root content'})
         class AppComponent {}
 
         const appRef = await bootstrapApplication(AppComponent, {

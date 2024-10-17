@@ -284,7 +284,6 @@ describe('insert/remove', () => {
 
   it('should be available as a standalone directive', () => {
     @Component({
-      standalone: true,
       template: 'Hello World',
     })
     class HelloWorldComp {}
@@ -293,7 +292,6 @@ describe('insert/remove', () => {
       selector: 'test-component',
       imports: [NgComponentOutlet],
       template: ` <ng-container *ngComponentOutlet="component"></ng-container> `,
-      standalone: true,
     })
     class TestComponent {
       component = HelloWorldComp;
@@ -475,7 +473,6 @@ export class TestModule3 {}
 
 @Component({
   selector: 'cmp-with-inputs',
-  standalone: true,
   template: `foo: {{ foo }}, bar: {{ bar }}, baz: {{ baz }}`,
 })
 class ComponentWithInputs {
@@ -486,7 +483,6 @@ class ComponentWithInputs {
 
 @Component({
   selector: 'another-cmp-with-inputs',
-  standalone: true,
   template: `[ANOTHER] foo: {{ foo }}, bar: {{ bar }}, baz: {{ baz }}`,
 })
 class AnotherComponentWithInputs {
@@ -497,7 +493,6 @@ class AnotherComponentWithInputs {
 
 @Component({
   selector: 'test-cmp',
-  standalone: true,
   imports: [NgComponentOutlet],
   template: `<ng-template *ngComponentOutlet="currentComponent; inputs: inputs"></ng-template>`,
 })

@@ -121,7 +121,6 @@ describe('SlicePipe', () => {
       selector: 'test-component',
       imports: [SlicePipe],
       template: '{{ title | slice:0:5 }}',
-      standalone: true,
     })
     class TestComponent {
       title = 'Hello World!';

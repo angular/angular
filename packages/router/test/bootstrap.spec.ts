@@ -150,7 +150,6 @@ describe('bootstrap', () => {
   it('should finish navigation when initial navigation is enabledBlocking and component renavigates on render', async () => {
     @Component({
       template: '',
-      standalone: true,
     })
     class Renavigate {
       constructor(router: Router) {
@@ -159,7 +158,6 @@ describe('bootstrap', () => {
     }
     @Component({
       template: '',
-      standalone: true,
     })
     class BlankCmp {}
 

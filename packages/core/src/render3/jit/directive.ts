@@ -163,7 +163,7 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
             meta,
           ) as ComponentDef<unknown>;
 
-          if (metadata.standalone) {
+          if (meta.isStandalone) {
             // Patch the component definition for standalone components with `directiveDefs` and
             // `pipeDefs` functions which lazily compute the directives/pipes available in the
             // standalone component. Also set `dependencies` to the lazily resolved list of imports.
@@ -197,7 +197,7 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
         }
 
         if (metadata.schemas) {
-          if (metadata.standalone) {
+          if (meta.isStandalone) {
             ngComponentDef.schemas = metadata.schemas;
           } else {
             throw new Error(
@@ -206,7 +206,7 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
               )} but is only valid on a component that is standalone.`,
             );
           }
-        } else if (metadata.standalone) {
+        } else if (meta.isStandalone) {
           ngComponentDef.schemas = [];
         }
       }
