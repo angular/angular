@@ -41,7 +41,6 @@ runInEachFileSystem(() => {
 		 import {Component} from '@angular/core';
 
 		 @Component({
-			 standalone: true,
 			 selector: 'test-cmp',
 			 template: '<div></div>',
 		 })
@@ -148,7 +147,6 @@ runInEachFileSystem(() => {
 			  @Component({
 				  selector: 'app-cmp',
 				  template: '<div></div>',
-				  standalone: true,
 			  })
 			  export class AppCmp {}
 			`,
@@ -201,7 +199,6 @@ runInEachFileSystem(() => {
 		   import {Component} from '@angular/core';
 
 		   @Component({
-			   standalone: true,
 			   selector: 'one-cmp',
 			   template: '<div></div>',
 		   })
@@ -215,7 +212,6 @@ runInEachFileSystem(() => {
 		   import {Component} from '@angular/core';
 
 		   @Component({
-			   standalone: true,
 			   selector: 'two-cmp',
 			   template: '<div></div>',
 		   })
@@ -239,7 +235,6 @@ runInEachFileSystem(() => {
 
 			 @Pipe({
 				name: 'foo-pipe',
-				standalone: true,
 			  })
 			  export class OnePipe {
 			  }
@@ -252,7 +247,6 @@ runInEachFileSystem(() => {
 			 import {Component} from '@angular/core';
 
 			 @Component({
-				 standalone: true,
 				 selector: 'two-cmp',
 				 template: '<div></div>',
 			 })
@@ -275,7 +269,6 @@ runInEachFileSystem(() => {
 			 import {Component} from '@angular/core';
 
 			 @Component({
-				 standalone: true,
 				 selector: 'one-cmp',
 				 template: '<div></div>',
 			 })
@@ -289,7 +282,6 @@ runInEachFileSystem(() => {
 			 import {Component} from '@angular/core';
 
 			 @Component({
-				 standalone: true,
 				 selector: 'two-cmp',
 				 template: '<div></div>',
 			 })
@@ -323,7 +315,6 @@ runInEachFileSystem(() => {
 			 import {Component} from '@angular/core';
 
 			 @Component({
-				 standalone: true,
 				 selector: 'one-cmp',
 				 template: '<div></div>',
 			 })
@@ -394,14 +385,12 @@ runInEachFileSystem(() => {
 					import {Component} from '@angular/core';
 
 					@Component({
-						standalone: true,
 						selector: 'one-cmp',
 						template: '<div></div>',
 					})
 					export class OneCmp {}
 
 					@Component({
-						standalone: true,
 						selector: 'two-cmp',
 						template: '<div></div>',
 					})

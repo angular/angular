@@ -30,7 +30,6 @@ runInEachFileSystem(() => {
         `
         import {Pipe} from '@angular/core';
         @Pipe({
-          standalone: true,
           name: 'shorten',
         })
         export class ShortenPipe {

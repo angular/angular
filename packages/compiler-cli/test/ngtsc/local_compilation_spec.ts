@@ -140,7 +140,7 @@ runInEachFileSystem(() => {
           `
         import {NgModule, Component} from '@angular/core';
 
-        @Component({template:'', standalone: true})
+        @Component({template:''})
         export class Comp3 {
         }
 
@@ -154,7 +154,7 @@ runInEachFileSystem(() => {
           `
         import {Component} from '@angular/core';
 
-        @Component({template:'', standalone: true})
+        @Component({template:''})
         export class Comp2 {
         }
         `,
@@ -787,7 +787,6 @@ runInEachFileSystem(() => {
           import {SomeThing2} from 'some-where2';
 
           @Component({
-            standalone: true,
             imports: [SomeThing, forwardRef(()=>SomeThing2)],
             selector: 'test-main',
             template: '<span>Hello world!</span>',
@@ -816,7 +815,6 @@ runInEachFileSystem(() => {
           const NG_IMPORTS = [SomeThing, forwardRef(()=>SomeThing2)];
 
           @Component({
-            standalone: true,
             imports: NG_IMPORTS,
             selector: 'test-main',
             template: '<span>Hello world!</span>',
@@ -841,7 +839,6 @@ runInEachFileSystem(() => {
       import {Component} from '@angular/core';
 
       @Component({
-        standalone: true,
         imports: [],
         selector: 'test-main',
         template: '<span>Hello world!</span>',
@@ -866,7 +863,6 @@ runInEachFileSystem(() => {
           import {Component} from '@angular/core';
 
           @Component({
-            standalone: true,
             selector: 'test-main',
             template: '<span>Hello world!</span>',
           })
@@ -1072,7 +1068,6 @@ runInEachFileSystem(() => {
           import * as SomeWhere4 from './some-where4'
 
           @Component({
-            standalone: true,
             selector: 'test-main',
             template: '<span>Hello world</span>',
           })
@@ -1148,9 +1143,7 @@ runInEachFileSystem(() => {
           import * as SomeWhere3 from './some-where3'
           import * as SomeWhere4 from './some-where4'
 
-          @Directive({
-            standalone: true,
-          })
+          @Directive({})
           export class MainDirective {
             constructor(
               private someService1: SomeService1,
@@ -1224,7 +1217,6 @@ runInEachFileSystem(() => {
 
           @Pipe({
             name: 'pipe',
-            standalone: true,
           })
           export class MainPipe {
             constructor(
@@ -1863,7 +1855,7 @@ runInEachFileSystem(() => {
           import {ExternalDirective} from 'some_where';
           import * as n from 'some_where2';
 
-          @Directive({standalone: true})
+          @Directive({})
           export class LocalDirective {
           }
 
@@ -1922,9 +1914,7 @@ runInEachFileSystem(() => {
           `
           import {Directive, Component} from '@angular/core';
 
-          @Directive({
-            standalone: true
-          })
+          @Directive({})
           export class LocalDirective {
           }
 
@@ -1960,14 +1950,12 @@ runInEachFileSystem(() => {
           import {ExternalDirective} from 'some_where';
 
           @Directive({
-            standalone: true,
             hostDirectives: [ExternalDirective],
           })
           export class LocalDirective {
           }
 
           @Directive({
-            standalone: true,
             hostDirectives: [LocalDirective],
           })
           export class LocalDirective2 {
@@ -2004,13 +1992,12 @@ runInEachFileSystem(() => {
           }
 
           @Directive({
-            standalone: true,
             hostDirectives: [{directive: forwardRef(() => DirectiveA), inputs: ['value']}],
           })
           export class DirectiveB {
           }
 
-          @Directive({standalone: true})
+          @Directive({})
           export class DirectiveA {
             @Input() value: any;
           }
@@ -2186,7 +2173,6 @@ runInEachFileSystem(() => {
           `
           import {Component} from '@angular/core';
           @Component({
-            standalone: true,
             selector: 'deferred-cmp-a',
             template: 'DeferredCmpA contents',
           })
@@ -2200,7 +2186,6 @@ runInEachFileSystem(() => {
           `
           import {Component} from '@angular/core';
           @Component({
-            standalone: true,
             selector: 'deferred-cmp-b',
             template: 'DeferredCmpB contents',
           })
@@ -2216,7 +2201,6 @@ runInEachFileSystem(() => {
           import {DeferredCmpA} from './deferred-a';
           import {DeferredCmpB} from './deferred-b';
           @Component({
-            standalone: true,
             deferredImports: [DeferredCmpA, DeferredCmpB],
             template: \`
               @defer {
@@ -2267,7 +2251,6 @@ runInEachFileSystem(() => {
           `
           import {Component} from '@angular/core';
           @Component({
-            standalone: true,
             selector: 'deferred-cmp-a',
             template: 'DeferredCmpA contents',
           })
@@ -2282,7 +2265,6 @@ runInEachFileSystem(() => {
           import {Component} from '@angular/core';
           import {DeferredCmpA} from './deferred-a';
           @Component({
-            standalone: true,
             imports: [DeferredCmpA],
             template: \`
               @defer {
@@ -2320,7 +2302,6 @@ runInEachFileSystem(() => {
           `
               import {Component} from '@angular/core';
               @Component({
-                standalone: true,
                 selector: 'eager-cmp-a',
                 template: 'EagerCmpA contents',
               })
@@ -2334,7 +2315,6 @@ runInEachFileSystem(() => {
           `
               import {Component} from '@angular/core';
               @Component({
-                standalone: true,
                 selector: 'deferred-cmp-a',
                 template: 'DeferredCmpA contents',
               })
@@ -2348,7 +2328,6 @@ runInEachFileSystem(() => {
           `
               import {Component} from '@angular/core';
               @Component({
-                standalone: true,
                 selector: 'deferred-cmp-b',
                 template: 'DeferredCmpB contents',
               })
@@ -2365,7 +2344,6 @@ runInEachFileSystem(() => {
               import {DeferredCmpB} from './deferred-b';
               import {EagerCmpA} from './eager-a';
               @Component({
-                standalone: true,
                 imports: [EagerCmpA],
                 deferredImports: [DeferredCmpA, DeferredCmpB],
                 template: \`
@@ -2427,7 +2405,6 @@ runInEachFileSystem(() => {
               import {Component} from '@angular/core';
 
               @Component({
-                standalone: true,
                 selector: 'deferred-cmp-a',
                 template: 'DeferredCmpA contents',
               })
@@ -2435,7 +2412,6 @@ runInEachFileSystem(() => {
               }
 
               @Component({
-                standalone: true,
                 selector: 'deferred-cmp-b',
                 template: 'DeferredCmpB contents',
               })
@@ -2455,7 +2431,6 @@ runInEachFileSystem(() => {
               import {DeferredCmpA, DeferredCmpB} from './deferred-deps';
 
               @Component({
-                standalone: true,
                 deferredImports: [DeferredCmpA],
                 template: \`
                   @defer {
@@ -2466,7 +2441,6 @@ runInEachFileSystem(() => {
               export class AppCmpA {}
 
               @Component({
-                standalone: true,
                 deferredImports: [DeferredCmpB],
                 template: \`
                   @defer {
@@ -2521,7 +2495,6 @@ runInEachFileSystem(() => {
               import {Component} from '@angular/core';
 
               @Component({
-                standalone: true,
                 selector: 'deferred-cmp-a',
                 template: 'DeferredCmpA contents',
               })
@@ -2529,7 +2502,6 @@ runInEachFileSystem(() => {
               }
 
               @Component({
-                standalone: true,
                 selector: 'deferred-cmp-b',
                 template: 'DeferredCmpB contents',
               })
@@ -2553,7 +2525,6 @@ runInEachFileSystem(() => {
               import {DeferredCmpA, DeferredCmpB, utilityFn} from './deferred-deps';
 
               @Component({
-                standalone: true,
                 deferredImports: [DeferredCmpA],
                 template: \`
                   @defer {
@@ -2568,7 +2539,6 @@ runInEachFileSystem(() => {
               }
 
               @Component({
-                standalone: true,
                 deferredImports: [DeferredCmpB],
                 template: \`
                   @defer {
@@ -2579,7 +2549,6 @@ runInEachFileSystem(() => {
               export class AppCmpB {}
 
               @Component({
-                standalone: true,
                 template: 'Component without any dependencies'
               })
               export class ComponentWithoutDeps {}

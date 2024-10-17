@@ -41,7 +41,6 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'cmp',
             template: 'hello',
-            standalone: true,
           })
           export class Cmp {}
         `,
@@ -71,7 +70,6 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dep]',
-            standalone: true,
           })
           export class Dep {}
         `,
@@ -85,7 +83,6 @@ runInEachFileSystem(() => {
 
           @Component({
             selector: 'cmp',
-            standalone: true,
             template: '<div dep><div>',
             imports: [Dep],
           })
@@ -132,7 +129,6 @@ runInEachFileSystem(() => {
 
           @Component({
             selector: 'cmp',
-            standalone: true,
             template: '@if (true) {hello}',
           })
           export class Cmp {}
@@ -157,7 +153,6 @@ runInEachFileSystem(() => {
 
           @Component({
             selector: 'cmp',
-            standalone: true,
             template: '<ng-content select="header"/><ng-content/>',
           })
           export class Cmp {}
@@ -184,7 +179,6 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dep]',
-            standalone: true,
           })
           export class Dep {}
         `,
@@ -198,7 +192,6 @@ runInEachFileSystem(() => {
 
           @Component({
             selector: 'cmp',
-            standalone: true,
             template: '@defer (on timer(1000)) {<div dep></div>}',
             imports: [Dep],
           })
@@ -234,7 +227,6 @@ runInEachFileSystem(() => {
 
           @Component({
             selector: 'cmp',
-            standalone: true,
             template: '{{#invalid}}',
           })
           export class Cmp {}
@@ -254,7 +246,6 @@ runInEachFileSystem(() => {
 
           @Component({
             selector: '[dir]',
-            standalone: true
           })
           export class Dir {}
         `,

@@ -249,14 +249,12 @@ runInEachFileSystem(() => {
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class TestDir {
           value = model(1);
         }
 
         @Component({
-          standalone: true,
           template: \`<div dir [(value)]="value()"></div>\`,
           imports: [TestDir],
         })
@@ -280,14 +278,12 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
-            standalone: true,
           })
           export class TestDir {
             value = model(1);
           }
 
           @Component({
-            standalone: true,
             template: \`<div dir [(value)]="value"></div>\`,
             imports: [TestDir],
           })
@@ -310,14 +306,12 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
-            standalone: true,
           })
           export class TestDir {
             value = model(1);
           }
 
           @Component({
-            standalone: true,
             template: \`<div dir [(value)]="value"></div>\`,
             imports: [TestDir],
           })
@@ -340,7 +334,6 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
-            standalone: true,
           })
           export class TestDir {
             @Input() value = 0;
@@ -348,7 +341,6 @@ runInEachFileSystem(() => {
           }
 
           @Component({
-            standalone: true,
             template: \`<div dir [(value)]="value"></div>\`,
             imports: [TestDir],
           })
@@ -371,14 +363,12 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
-            standalone: true,
           })
           export class TestDir {
             value = model(1);
           }
 
           @Component({
-            standalone: true,
             template: \`<div dir [(value)]="value"></div>\`,
             imports: [TestDir],
           })
@@ -403,14 +393,12 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
-            standalone: true,
           })
           export class TestDir {
             value = model(1);
           }
 
           @Component({
-            standalone: true,
             template: \`<div dir [(value)]="value"></div>\`,
             imports: [TestDir],
           })
@@ -432,14 +420,12 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
-            standalone: true,
           })
           export class TestDir {
             value = model(1);
           }
 
           @Component({
-            standalone: true,
             template: \`<div dir (valueChange)="acceptsString($event)"></div>\`,
             imports: [TestDir],
           })
@@ -464,14 +450,12 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
-            standalone: true,
           })
           export class TestDir {
             value = model.required<number>();
           }
 
           @Component({
-            standalone: true,
             template: \`<div dir></div>\`,
             imports: [TestDir],
           })
@@ -495,14 +479,12 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
-            standalone: true,
           })
           export class TestDir<T extends {id: string}> {
             value = model.required<T>();
           }
 
           @Component({
-            standalone: true,
             template: \`<div dir [(value)]="value"></div>\`,
             imports: [TestDir],
           })
@@ -529,14 +511,12 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
-            standalone: true,
           })
           export class TestDir<T extends {id: string}> {
             value = model.required<T>();
           }
 
           @Component({
-            standalone: true,
             template: \`<div dir [(value)]="value"></div>\`,
             imports: [TestDir],
           })
@@ -563,14 +543,12 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
-            standalone: true,
           })
           export class TestDir {
             value = model(0);
           }
 
           @Component({
-            standalone: true,
             template: \`<div dir [value]="value"></div>\`,
             imports: [TestDir],
           })
@@ -596,14 +574,12 @@ runInEachFileSystem(() => {
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class TestDir<T> {
           value = model.required<T>();
         }
 
         @Component({
-          standalone: true,
           template: \`<div dir [(value)]="value"></div>\`,
           imports: [TestDir],
         })
@@ -627,7 +603,6 @@ runInEachFileSystem(() => {
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class TestDir {
           @Input() value = 0;
@@ -635,7 +610,6 @@ runInEachFileSystem(() => {
         }
 
         @Component({
-          standalone: true,
           template: \`<div dir [(value)]="value"></div>\`,
           imports: [TestDir],
         })
@@ -662,7 +636,6 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
-            standalone: true,
           })
           export class TestDir {
             @Input() value = 0;
@@ -670,7 +643,6 @@ runInEachFileSystem(() => {
           }
 
           @Component({
-            standalone: true,
             template: \`<div dir [(value)]="value"></div>\`,
             imports: [TestDir],
           })
@@ -694,7 +666,6 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[directiveName]',
-            standalone: true,
           })
           export class TestDir {
             #data = model.required<boolean>();
@@ -721,7 +692,6 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[directiveName]',
-            standalone: true,
           })
           export class TestDir {
             private data = model.required<boolean>();
@@ -748,7 +718,6 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[directiveName]',
-            standalone: true,
           })
           export class TestDir {
             protected data = model.required<boolean>();

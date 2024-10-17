@@ -592,7 +592,6 @@ runInEachFileSystem(() => {
         import {DepModule} from './provider-dep';
 
         @Component({
-          standalone: true,
           template: '',
           imports: [DepModule],
         })
