@@ -1347,9 +1347,7 @@ describe('runtime dependency tracker', () => {
     });
 
     it('should return false for standalone component', () => {
-      @Component({
-        standalone: true,
-      })
+      @Component({})
       class MainComponent {}
 
       expect(depsTracker.isOrphanComponent(MainComponent as ComponentType<any>)).toBeFalse();

@@ -331,7 +331,6 @@ describe('styling', () => {
     it('should allow null in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', null, 'c']" [class.extra]="true"></div>`,
-        standalone: true,
       })
       class Cmp {}
 
@@ -344,7 +343,6 @@ describe('styling', () => {
     it('should allow undefined in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', undefined, 'c']" [class.extra]="true"></div>`,
-        standalone: true,
       })
       class Cmp {}
 
@@ -357,7 +355,6 @@ describe('styling', () => {
     it('should allow zero in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', 0, 'c']" [class.extra]="true"></div>`,
-        standalone: true,
       })
       class Cmp {}
 
@@ -370,7 +367,6 @@ describe('styling', () => {
     it('should allow false in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', false, 'c']" [class.extra]="true"></div>`,
-        standalone: true,
       })
       class Cmp {}
 
@@ -383,7 +379,6 @@ describe('styling', () => {
     it('should ignore an empty string in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', '', 'c']" [class.extra]="true"></div>`,
-        standalone: true,
       })
       class Cmp {}
 
@@ -396,7 +391,6 @@ describe('styling', () => {
     it('should ignore a string containing spaces in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', 'hello there', 'c']" [class.extra]="true"></div>`,
-        standalone: true,
       })
       class Cmp {}
 
@@ -409,7 +403,6 @@ describe('styling', () => {
     it('should ignore a string containing spaces in a class object literal binding', () => {
       @Component({
         template: `<div [class]="{a: true, 'hello there': true, c: true}" [class.extra]="true"></div>`,
-        standalone: true,
       })
       class Cmp {}
 
@@ -422,7 +415,6 @@ describe('styling', () => {
     it('should ignore an object literal in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', {foo: true}, 'c']" [class.extra]="true"></div>`,
-        standalone: true,
       })
       class Cmp {}
 
@@ -435,7 +427,6 @@ describe('styling', () => {
     it('should handle a string array in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', ['foo', 'bar'], 'c']" [class.extra]="true"></div>`,
-        standalone: true,
       })
       class Cmp {}
 

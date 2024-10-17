@@ -209,7 +209,6 @@ describe('RouterLink', () => {
 
   it('can use a UrlTree as the input', async () => {
     @Component({
-      standalone: true,
       template: '<a [routerLink]="urlTree">link</a>',
       imports: [RouterLink],
     })
@@ -225,7 +224,6 @@ describe('RouterLink', () => {
 
   it('cannnot use a UrlTree with queryParams', () => {
     @Component({
-      standalone: true,
       template: '<a [routerLink]="urlTree" [queryParams]="{}">link</a>',
       imports: [RouterLink],
     })

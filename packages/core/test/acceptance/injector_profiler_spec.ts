@@ -385,7 +385,6 @@ describe('getInjectorMetadata', () => {
     @Component({
       selector: 'lazy-comp',
       template: `lazy component`,
-      standalone: true,
       imports: [ModuleB],
     })
     class LazyComponent {
@@ -398,7 +397,6 @@ describe('getInjectorMetadata', () => {
     }
 
     @Component({
-      standalone: true,
       imports: [RouterOutlet, ModuleA],
       template: `<router-outlet/>`,
     })
@@ -667,7 +665,6 @@ describe('getInjectorProviders', () => {
       selector: 'my-comp-c',
       template: 'hello world',
       imports: [ModuleE, ModuleC],
-      standalone: true,
     })
     class MyStandaloneComponentC {}
 
@@ -675,7 +672,6 @@ describe('getInjectorProviders', () => {
       selector: 'my-comp-b',
       template: 'hello world',
       imports: [ModuleD, ModuleF],
-      standalone: true,
     })
     class MyStandaloneComponentB {}
 
@@ -686,7 +682,6 @@ describe('getInjectorProviders', () => {
          <my-comp-c/>
         `,
       imports: [ModuleD, MyStandaloneComponentB, MyStandaloneComponentC],
-      standalone: true,
     })
     class MyStandaloneComponent {}
 
@@ -743,7 +738,6 @@ describe('getInjectorProviders', () => {
       selector: 'my-comp-b',
       template: 'hello world',
       imports: [ModuleA],
-      standalone: true,
     })
     class MyStandaloneComponentB {
       injector = inject(Injector);
@@ -753,7 +747,6 @@ describe('getInjectorProviders', () => {
       selector: 'my-comp',
       template: `<router-outlet/>`,
       imports: [MyStandaloneComponentB, RouterOutlet],
-      standalone: true,
     })
     class MyStandaloneComponent {
       injector = inject(Injector);
@@ -818,7 +811,6 @@ describe('getInjectorProviders', () => {
       selector: 'my-comp',
       template: `<router-outlet/>`,
       imports: [MyStandaloneComponentB, RouterOutlet],
-      standalone: true,
     })
     class MyStandaloneComponent {
       injector = inject(Injector);
@@ -882,7 +874,6 @@ describe('getInjectorProviders', () => {
         <item-cmp *ngFor="let item of items"></item-cmp>
        `,
       imports: [ItemComponent, NgForOf],
-      standalone: true,
     })
     class MyStandaloneComponent {
       injector = inject(Injector);
@@ -924,7 +915,6 @@ describe('getInjectorProviders', () => {
         }
        `,
       imports: [ItemComponent],
-      standalone: true,
     })
     class MyStandaloneComponent {
       injector = inject(Injector);
@@ -978,7 +968,6 @@ describe('getDependenciesFromInjectable', () => {
 
     @Directive({
       selector: '[my-directive]',
-      standalone: true,
     })
     class MyStandaloneDirective {
       serviceFromHost = inject(MyServiceH, {host: true, optional: true});
@@ -993,7 +982,6 @@ describe('getDependenciesFromInjectable', () => {
       selector: 'my-comp-c',
       template: 'hello world',
       imports: [],
-      standalone: true,
     })
     class MyStandaloneComponentC {}
 
@@ -1001,7 +989,6 @@ describe('getDependenciesFromInjectable', () => {
       selector: 'my-comp-b',
       template: '<my-comp-c my-directive/>',
       imports: [MyStandaloneComponentC, MyStandaloneDirective],
-      standalone: true,
     })
     class MyStandaloneComponentB {
       myService = inject(MyService, {optional: true});
@@ -1019,7 +1006,6 @@ describe('getDependenciesFromInjectable', () => {
       template: `<router-outlet/>`,
       imports: [RouterOutlet, ModuleA],
       providers: [MyServiceG, {provide: MyServiceH, useValue: 'MyStandaloneComponent'}],
-      standalone: true,
     })
     class MyStandaloneComponent {
       injector = inject(Injector);
@@ -1262,7 +1248,6 @@ describe('getInjectorResolutionPath', () => {
     @Component({
       selector: 'lazy-comp',
       template: `lazy component`,
-      standalone: true,
       imports: [ModuleB],
     })
     class LazyComponent {
@@ -1272,7 +1257,6 @@ describe('getInjectorResolutionPath', () => {
     }
 
     @Component({
-      standalone: true,
       imports: [RouterOutlet, ModuleA],
       template: `<router-outlet/>`,
     })

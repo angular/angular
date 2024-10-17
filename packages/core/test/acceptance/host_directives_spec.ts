@@ -37,7 +37,6 @@ describe('host directives', () => {
     const logs: string[] = [];
 
     @Directive({
-      standalone: true,
       host: {'host-dir-attr': '', 'class': 'host-dir', 'style': 'height: 50px'},
     })
     class HostDir {
@@ -127,7 +126,6 @@ describe('host directives', () => {
         'id': 'leaf-id',
       },
       providers: [{provide: token, useValue: 'leaf value'}],
-      standalone: true,
     })
     class Chain1_3 {
       constructor(@Inject(token) tokenValue: string) {
@@ -137,7 +135,6 @@ describe('host directives', () => {
     }
 
     @Directive({
-      standalone: true,
       hostDirectives: [Chain1_3],
     })
     class Chain1_2 {
@@ -147,7 +144,6 @@ describe('host directives', () => {
     }
 
     @Directive({
-      standalone: true,
       hostDirectives: [Chain1_2],
     })
     class Chain1 {
@@ -157,7 +153,6 @@ describe('host directives', () => {
     }
 
     @Directive({
-      standalone: true,
       host: {
         'class': 'middle',
         'id': 'middle-id',
@@ -171,7 +166,6 @@ describe('host directives', () => {
     }
 
     @Directive({
-      standalone: true,
       hostDirectives: [Chain2_2],
     })
     class Chain2 {
@@ -700,7 +694,6 @@ describe('host directives', () => {
       }
 
       @Directive({
-        standalone: true,
         host: {'other-host-dir-attr': 'true', '(click)': 'handleClick()'},
       })
       class OtherHostDir {
@@ -938,7 +931,6 @@ describe('host directives', () => {
       }
 
       @Directive({
-        standalone: true,
         hostDirectives: [SecondHostDir],
         providers: [{provide: token, useValue: 'FirstDir'}],
       })
@@ -991,7 +983,6 @@ describe('host directives', () => {
       class SecondHostDir {}
 
       @Directive({
-        standalone: true,
         hostDirectives: [SecondHostDir],
         providers: [{provide: firstToken, useValue: 'FirstDir'}],
       })
@@ -1531,7 +1522,6 @@ describe('host directives', () => {
 
     it('should emit to outputs from different host directives that have been aliased to the same name', () => {
       @Directive({
-        standalone: true,
         host: {'(click)': 'firstHasBeenClicked.emit("FirstHostDir")'},
       })
       class FirstHostDir {
@@ -1539,7 +1529,6 @@ describe('host directives', () => {
       }
 
       @Directive({
-        standalone: true,
         host: {'(click)': 'secondHasBeenClicked.emit("SecondHostDir")'},
       })
       class SecondHostDir {
@@ -2187,13 +2176,11 @@ describe('host directives', () => {
 
       @Directive({
         selector: '[dir]',
-        standalone: true,
         hostDirectives: [{directive: HostDir, inputs: ['colorAlias: buttonColor']}],
       })
       class Dir {}
 
       @Component({
-        standalone: true,
         imports: [Dir, HostDir],
         // Note that `[dir]` doesn't match on the `button` on purpose.
         // The wrong behavior would be if the `buttonColor` binding worked on `host-dir`.
@@ -2722,7 +2709,6 @@ describe('host directives', () => {
       const logs: string[] = [];
 
       @Directive({
-        standalone: true,
         host: {'host-dir-attr': '', 'class': 'host-dir', 'style': 'height: 50px'},
       })
       class HostDir {
@@ -2824,7 +2810,6 @@ describe('host directives', () => {
     describe('host bindings', () => {
       it('should support host attribute bindings coming from the host directives', () => {
         @Directive({
-          standalone: true,
           host: {
             '[attr.host-dir-only]': 'value',
             '[attr.shadowed-attr]': 'value',
@@ -2835,7 +2820,6 @@ describe('host directives', () => {
         }
 
         @Directive({
-          standalone: true,
           host: {
             '[attr.other-host-dir-only]': 'value',
             '[attr.shadowed-attr]': 'value',
@@ -3002,7 +2986,6 @@ describe('host directives', () => {
         }
 
         @Directive({
-          standalone: true,
           hostDirectives: [SecondHostDir],
           providers: [{provide: token, useValue: 'FirstDir'}],
         })
@@ -3047,7 +3030,6 @@ describe('host directives', () => {
         class SecondHostDir {}
 
         @Directive({
-          standalone: true,
           hostDirectives: [SecondHostDir],
           providers: [{provide: firstToken, useValue: 'FirstDir'}],
         })
@@ -3366,7 +3348,6 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [HostDir],
-        standalone: true,
       })
       class Dir {}
 
@@ -3385,14 +3366,12 @@ describe('host directives', () => {
       @Component({
         selector: 'comp',
         hostDirectives: [HostDir],
-        standalone: true,
         template: '',
       })
       class Comp {}
 
       const baseAppMetadata = {
         template: '<comp dir></comp>',
-        standalone: true,
       };
 
       const expectedError =
@@ -3749,14 +3728,12 @@ describe('host directives', () => {
       @Directive({
         outputs: ['opened: triggerOpened'],
         selector: '[trigger]',
-        standalone: true,
       })
       class Trigger {
         opened = new EventEmitter();
       }
 
       @Directive({
-        standalone: true,
         selector: '[host]',
         hostDirectives: [{directive: Trigger, outputs: ['triggerOpened']}],
       })
@@ -3780,12 +3757,10 @@ describe('host directives', () => {
       @Directive({
         outputs: ['opened: triggerOpened'],
         selector: '[trigger]',
-        standalone: true,
       })
       class Trigger extends Base {}
 
       @Directive({
-        standalone: true,
         selector: '[host]',
         hostDirectives: [{directive: Trigger, outputs: ['triggerOpened: hostOpened']}],
       })

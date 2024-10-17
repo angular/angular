@@ -1077,7 +1077,6 @@ describe('completions', () => {
           const {templateFile} = setup(`<input dir my>`, '', {
             'Dir': `
               @Directive({
-                standalone: true,
                 inputs: ['myInput']
               })
               export class HostDir {
@@ -1111,7 +1110,6 @@ describe('completions', () => {
           const {templateFile} = setup(`<input dir my>`, '', {
             'Dir': `
               @Directive({
-                standalone: true,
                 inputs: ['myInput']
               })
               export class HostDir {
@@ -1141,7 +1139,6 @@ describe('completions', () => {
           const {templateFile} = setup(`<input dir ali>`, '', {
             'Dir': `
               @Directive({
-                standalone: true,
                 inputs: ['myInput']
               })
               export class HostDir {
@@ -1175,7 +1172,6 @@ describe('completions', () => {
           const {templateFile} = setup(`<input dir ali>`, '', {
             'Dir': `
                   @Directive({
-                    standalone: true,
                     inputs: ['myInput: myPublicInput']
                   })
                   export class HostDir {
@@ -1545,7 +1541,6 @@ describe('completions', () => {
         const {templateFile} = setup(`<input dir (my)>`, '', {
           'Dir': `
             @Directive({
-              standalone: true,
               outputs: ['myOutput']
             })
             export class HostDir {
@@ -1579,7 +1574,6 @@ describe('completions', () => {
         const {templateFile} = setup(`<input dir (my)>`, '', {
           'Dir': `
             @Directive({
-              standalone: true,
               outputs: ['myOutput']
             })
             export class HostDir {
@@ -1608,7 +1602,6 @@ describe('completions', () => {
         const {templateFile} = setup(`<input dir (ali)>`, '', {
           'Dir': `
             @Directive({
-              standalone: true,
               outputs: ['myOutput: myPublicOutput']
             })
             export class HostDir {

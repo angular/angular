@@ -43,7 +43,6 @@ describe('I18nSelectPipe', () => {
         selector: 'test-component',
         imports: [I18nSelectPipe],
         template: '{{ value | i18nSelect:mapping }}',
-        standalone: true,
       })
       class TestComponent {
         value = 'other';

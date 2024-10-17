@@ -370,7 +370,6 @@ describe('pipe', () => {
     }
 
     @Component({
-      standalone: true,
       selector: 'app',
       template: '{{ value | sayHello }}',
       imports: [SayHelloPipe],

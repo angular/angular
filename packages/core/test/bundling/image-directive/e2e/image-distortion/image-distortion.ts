@@ -11,7 +11,6 @@ import {Component} from '@angular/core';
 
 @Component({
   selector: 'image-distortion-passing',
-  standalone: true,
   imports: [NgOptimizedImage],
   template: `
      <!-- All the images in this template should not throw -->
@@ -66,7 +65,6 @@ import {Component} from '@angular/core';
 export class ImageDistortionPassingComponent {}
 @Component({
   selector: 'image-distortion-failing',
-  standalone: true,
   imports: [NgOptimizedImage],
   template: `
      <!-- With the exception of the priority image, all the images in this template should throw -->

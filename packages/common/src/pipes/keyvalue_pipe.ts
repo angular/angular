@@ -54,7 +54,6 @@ export interface KeyValue<K, V> {
 @Pipe({
   name: 'keyvalue',
   pure: false,
-  standalone: true,
 })
 export class KeyValuePipe implements PipeTransform {
   constructor(private readonly differs: KeyValueDiffers) {}

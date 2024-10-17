@@ -29,7 +29,6 @@ import {assertComponentDef} from './errors';
  *
  * ```typescript
  * @Component({
- *   standalone: true,
  *   template: `Hello {{ name }}!`
  * })
  * class HelloComponent {
@@ -37,7 +36,6 @@ import {assertComponentDef} from './errors';
  * }
  *
  * @Component({
- *   standalone: true,
  *   template: `<div id="hello-component-host"></div>`
  * })
  * class RootComponent {}
@@ -149,7 +147,6 @@ export interface ComponentMirror<C> {
  *
  * ```typescript
  * @Component({
- *   standalone: true,
  *   selector: 'foo-component',
  *   template: `
  *     <ng-content></ng-content>

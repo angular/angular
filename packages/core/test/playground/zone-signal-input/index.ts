@@ -11,7 +11,6 @@ import {bootstrapApplication} from '@angular/platform-browser';
 
 @Component({
   selector: 'greet',
-  standalone: true,
   template: `
     {{ counter() }} -- {{label()}}
 
@@ -45,7 +44,6 @@ export class Greet<T> {
 }
 
 @Component({
-  standalone: true,
   selector: 'my-app',
   template: `
     Hello <greet [counter]="3" [bla4Public]="10" #ok

@@ -30,7 +30,6 @@ describe('model inputs', () => {
 
     @Component({
       template: '<div [(value)]="value" dir></div>',
-      standalone: true,
       imports: [Dir],
     })
     class App {
@@ -66,7 +65,6 @@ describe('model inputs', () => {
 
     @Component({
       template: '<div [(value)]="value" dir></div>',
-      standalone: true,
       imports: [Dir],
     })
     class App {
@@ -103,7 +101,6 @@ describe('model inputs', () => {
 
     @Component({
       template: '<div [(value)]="value" dir></div>',
-      standalone: true,
       imports: [Dir],
     })
     class App {
@@ -141,7 +138,6 @@ describe('model inputs', () => {
 
     @Component({
       template: '<div [value]="value" dir></div>',
-      standalone: true,
       imports: [Dir],
     })
     class App {
@@ -180,7 +176,6 @@ describe('model inputs', () => {
 
     @Component({
       template: '<div (valueChange)="changed($event)" dir></div>',
-      standalone: true,
       imports: [Dir],
     })
     class App {
@@ -221,7 +216,6 @@ describe('model inputs', () => {
 
     @Component({
       template: '<div [value]="value()" (valueChange)="changed($event)" dir></div>',
-      standalone: true,
       imports: [Dir],
     })
     class App {
@@ -253,7 +247,6 @@ describe('model inputs', () => {
 
     @Component({
       template: '<div [value]="value()" (valueChange)="changed($event)" dir></div>',
-      standalone: true,
       imports: [Dir],
     })
     class App {
@@ -294,7 +287,6 @@ describe('model inputs', () => {
 
     @Component({
       template: '<div [(alias)]="value" dir></div>',
-      standalone: true,
       imports: [Dir],
     })
     class App {
@@ -333,7 +325,6 @@ describe('model inputs', () => {
 
     @Component({
       template: '<div [alias]="value()" (aliasChange)="changed($event)" dir></div>',
-      standalone: true,
       imports: [Dir],
     })
     class App {
@@ -378,7 +369,6 @@ describe('model inputs', () => {
 
     @Component({
       template: '<div [(value)]="value" dir></div>',
-      standalone: true,
       imports: [Dir],
     })
     class App {
@@ -402,7 +392,6 @@ describe('model inputs', () => {
 
     @Component({
       template: '<div [(value)]="value" dir></div>',
-      standalone: true,
       imports: [Dir],
     })
     class App {
@@ -424,7 +413,6 @@ describe('model inputs', () => {
 
     @Component({
       template: '<div (valueChange)="changed()" dir></div>',
-      standalone: true,
       imports: [Dir],
     })
     class App {
@@ -461,7 +449,6 @@ describe('model inputs', () => {
 
     @Component({
       template: '<div [(value)]="value" dir></div>',
-      standalone: true,
       imports: [Dir],
     })
     class App {
@@ -493,7 +480,6 @@ describe('model inputs', () => {
   it('should reflect changes to a two-way-bound signal in the DOM', () => {
     @Directive({
       selector: '[dir]',
-      standalone: true,
       host: {
         '(click)': 'increment()',
       },
@@ -508,7 +494,6 @@ describe('model inputs', () => {
 
     @Component({
       template: '<button [(value)]="value" dir></button> Current value: {{value()}}',
-      standalone: true,
       imports: [Dir],
     })
     class App {
@@ -544,7 +529,6 @@ describe('model inputs', () => {
 
     @Component({
       template: '<div [(value)]="value" dir></div>',
-      standalone: true,
       imports: [Dir],
     })
     class App {
@@ -593,7 +577,6 @@ describe('model inputs', () => {
       template: `
         <div dir (model)="noop()" (output)="noop()" (model2)="noop()" (output2)="noop()"></div>
       `,
-      standalone: true,
       imports: [Dir],
     })
     class App {
@@ -617,7 +600,6 @@ describe('model inputs', () => {
           <div [(value)]="value" dir></div>
         }
       `,
-      standalone: true,
       imports: [Dir],
     })
     class App {
