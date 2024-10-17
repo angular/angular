@@ -3,6 +3,7 @@ const $c1$ = [[["span", "title", "tofirst"]], [["span", "title", "tosecond"]]];
 ComplexComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: ComplexComponent,
   selectors: [["complex"]],
+  standalone: false,
   ngContentSelectors: $c2$,
   decls: 4,
   vars: 0,

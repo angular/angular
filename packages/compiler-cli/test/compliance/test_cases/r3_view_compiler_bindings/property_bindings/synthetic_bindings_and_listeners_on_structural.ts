@@ -2,7 +2,6 @@ import {Component} from '@angular/core';
 
 @Component({
   selector: 'my-cmp',
-  standalone: true,
   template: `
     <button
       *ngIf="true"

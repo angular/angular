@@ -679,7 +679,6 @@ MainStandalone.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MainStandalone, decorators: [{
             type: Component,
             args: [{
-                    standalone: true,
                     template: 'Hello Angular!',
                 }]
         }] });
