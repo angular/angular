@@ -93,8 +93,8 @@ function baseDirectiveFields(
     definitionMap.set('exportAs', o.literalArr(meta.exportAs.map((e) => o.literal(e))));
   }
 
-  if (meta.isStandalone) {
-    definitionMap.set('standalone', o.literal(true));
+  if (meta.isStandalone === false) {
+    definitionMap.set('standalone', o.literal(false));
   }
   if (meta.isSignal) {
     definitionMap.set('signals', o.literal(true));
