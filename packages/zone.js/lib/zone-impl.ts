@@ -1445,7 +1445,12 @@ export function initZone(): ZoneType {
         task.runCount++;
         return task.zone.runTask(task, target, args);
       } finally {
-        if (_numberOfNestedTaskFrames == 1) {
+        // After the task has been invoked, we check whether scheduled draining is enabled.
+        // If it is enabled, we do not drain the microtask queue synchronously; instead,
+        // we schedule a microtask to drain it later, as soon as possible.
+        if (global[enableNativeMicrotaskDraining]) {
+          scheduleDrainMicroTaskQueue();
+        } else if (_numberOfNestedTaskFrames === 1) {
           drainMicroTaskQueue();
         }
         _numberOfNestedTaskFrames--;
@@ -1511,8 +1516,14 @@ export function initZone(): ZoneType {
   const symbolSetTimeout = __symbol__('setTimeout');
   const symbolPromise = __symbol__('Promise');
   const symbolThen = __symbol__('then');
+  // To prevent any breaking changes resulting from this change, given that
+  // it was already causing a significant number of failures in g3, we have hidden
+  // that behavior behind a global configuration flag. Consumers can enable this
+  // flag explicitly if they want the microtask queue to be drained as defined
+  // in the specification.
+  const enableNativeMicrotaskDraining = __symbol__('enable_native_microtask_draining');
   let _microTaskQueue: Task[] = [];
-  let _isDrainingMicrotaskQueue: boolean = false;
+  let _isDrainingMicrotaskQueue = false;
   let nativeMicroTaskQueuePromise: any;
 
   function nativeScheduleMicroTask(func: Function) {
@@ -1525,7 +1536,7 @@ export function initZone(): ZoneType {
       let nativeThen = nativeMicroTaskQueuePromise[symbolThen];
       if (!nativeThen) {
         // native Promise is not patchable, we need to use `then` directly
-        // issue 1078
+        // https://github.com/angular/zone.js/issues/1078
         nativeThen = nativeMicroTaskQueuePromise['then'];
       }
       nativeThen.call(nativeMicroTaskQueuePromise, func);
@@ -1535,13 +1546,38 @@ export function initZone(): ZoneType {
   }
 
   function scheduleMicroTask(task?: MicroTask) {
-    // if we are not running in any task, and there has not been anything scheduled
-    // we must bootstrap the initial task creation by manually scheduling the drain
-    if (_numberOfNestedTaskFrames === 0 && _microTaskQueue.length === 0) {
-      // We are not running in Task, so we need to kickstart the microtask queue.
+    // Check if native microtask draining is enabled and we are not
+    // currently draining the microtask queue.
+    if (global[enableNativeMicrotaskDraining]) {
+      // Note that we need this `if` nesting because, if microtask draining is
+      // enabled, we should only check the `_isDrainingMicrotaskQueue` variable.
+      // Otherwise, if it's not enabled, we should check the number of nested task frames.
+      if (!_isDrainingMicrotaskQueue) {
+        // If we are not in a task, kickstart the microtask queue
+        // by scheduling a drain.
+        nativeScheduleMicroTask(drainMicroTaskQueue);
+      }
+    } else if (
+      // Check if we are not in any task frame and the
+      // microtask queue is empty.
+      // This means we need to initialize the task creation process by
+      // scheduling a drain.
+      _numberOfNestedTaskFrames === 0 &&
+      _microTaskQueue.length === 0
+    ) {
       nativeScheduleMicroTask(drainMicroTaskQueue);
     }
+
     task && _microTaskQueue.push(task);
+  }
+
+  function scheduleDrainMicroTaskQueue(): void {
+    // Check if we are currently not draining the microtask queue with native
+    // `Promise.then` and if there are pending microtasks in the queue.
+    // This function will only be executed when native microtask draining is enabled.
+    if (!_isDrainingMicrotaskQueue && _microTaskQueue.length) {
+      nativeScheduleMicroTask(drainMicroTaskQueue);
+    }
   }
 
   function drainMicroTaskQueue() {
@@ -1559,8 +1595,16 @@ export function initZone(): ZoneType {
           }
         }
       }
-      _api.microtaskDrainDone();
-      _isDrainingMicrotaskQueue = false;
+
+      // Since we're avoiding a situation where a breaking change could occur,
+      // we preserve the old order when native draining is not enabled.
+      if (global[enableNativeMicrotaskDraining]) {
+        _isDrainingMicrotaskQueue = false;
+        _api.microtaskDrainDone();
+      } else {
+        _api.microtaskDrainDone();
+        _isDrainingMicrotaskQueue = false;
+      }
     }
   }
 
