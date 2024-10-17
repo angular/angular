@@ -58,6 +58,7 @@ describe('Generator', () => {
         'http://example.com/included',
         '!http://example.com/excluded',
       ],
+      applicationMaxAge: '1d',
     });
 
     expect(config).toEqual({
@@ -115,6 +116,7 @@ describe('Generator', () => {
         {positive: false, regex: '^http:\\/\\/example\\.com\\/excluded$'},
       ],
       navigationRequestStrategy: 'performance',
+      applicationMaxAge: 86400000,
       hashTable: {
         '/test/foo/test.html': '18f6f8eb7b1c23d2bb61bff028b83d867a9e4643',
         '/test/index.html': 'a54d88e06612d820bc3be72877c74f257b561b19',
@@ -208,6 +210,7 @@ describe('Generator', () => {
         {positive: false, regex: '^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$'},
       ],
       navigationRequestStrategy: 'performance',
+      applicationMaxAge: undefined,
     });
   });
 
@@ -234,6 +237,7 @@ describe('Generator', () => {
         {positive: false, regex: '^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$'},
       ],
       navigationRequestStrategy: 'performance',
+      applicationMaxAge: undefined,
       hashTable: {},
     });
   });
@@ -425,6 +429,7 @@ describe('Generator', () => {
         {positive: false, regex: '^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$'},
       ],
       navigationRequestStrategy: 'performance',
+      applicationMaxAge: undefined,
       hashTable: {},
     });
   });
@@ -498,6 +503,7 @@ describe('Generator', () => {
         {positive: false, regex: '^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$'},
       ],
       navigationRequestStrategy: 'performance',
+      applicationMaxAge: undefined,
       hashTable: {
         '/index.html': 'a54d88e06612d820bc3be72877c74f257b561b19',
         '/main.js': '41347a66676cdc0516934c76d9d13010df420f2c',
