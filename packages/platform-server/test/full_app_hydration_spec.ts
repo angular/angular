@@ -3017,6 +3017,7 @@ describe('platform-server full application hydration integration', () => {
         }
 
         const html = await ssr(SimpleComponent);
+
         const ssrContents = getAppContents(html);
         expect(ssrContents).toContain('<app ngh');
 
