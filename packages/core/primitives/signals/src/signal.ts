@@ -63,11 +63,6 @@ export function setPostSignalSetFn(fn: (() => void) | null): (() => void) | null
   return prev;
 }
 
-export function signalGetFn<T>(this: SignalNode<T>): T {
-  producerAccessed(this);
-  return this.value;
-}
-
 export function signalSetFn<T>(node: SignalNode<T>, newValue: T) {
   if (!producerUpdatesAllowed()) {
     throwInvalidWriteToSignalError();
