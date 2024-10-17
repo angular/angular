@@ -7109,6 +7109,133 @@ runInEachFileSystem((os: string) => {
           'Is it missing an @NgModule annotation?',
         );
       });
+
+      it('should report if an NgModule imports itself', () => {
+        env.write(
+          'test.ts',
+          `
+          import {NgModule} from '@angular/core';
+
+          @NgModule({imports: [MyModule]})
+          export class MyModule {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe('NgModule "import" field contains a cycle');
+      });
+
+      it('should report if an NgModule exports itself', () => {
+        env.write(
+          'test.ts',
+          `
+          import {NgModule} from '@angular/core';
+
+          @NgModule({exports: [MyModule]})
+          export class MyModule {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe('NgModule "export" field contains a cycle');
+      });
+
+      it('should report if an NgModule imports itself transitively', () => {
+        env.write(
+          'dep-2.ts',
+          `
+          import {NgModule} from '@angular/core';
+          import {MyModule} from './test';
+
+          @NgModule({imports: [MyModule]})
+          export class DepModule2 {}
+        `,
+        );
+
+        env.write(
+          'dep.ts',
+          `
+          import {NgModule} from '@angular/core';
+          import {DepModule2} from './dep-2';
+
+          @NgModule({imports: [DepModule2]})
+          export class DepModule {}
+        `,
+        );
+
+        env.write(
+          'test.ts',
+          `
+          import {NgModule} from '@angular/core';
+          import {DepModule} from './dep';
+
+          @NgModule({imports: [DepModule]})
+          export class MyModule {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(3);
+        expect(diags[0].messageText).toBe(
+          'This import contains errors, which may affect components that depend on this NgModule.',
+        );
+        expect(diags[1].messageText).toBe('NgModule "import" field contains a cycle');
+        expect(diags[2].messageText).toBe(
+          'This import contains errors, which may affect components that depend on this NgModule.',
+        );
+      });
+
+      it('should report if an NgModule imports itself via a forwardRef', () => {
+        env.write(
+          'test.ts',
+          `
+          import {NgModule, forwardRef} from '@angular/core';
+
+          @NgModule({imports: [forwardRef(() => MyModule)]})
+          export class DepModule {}
+
+          @NgModule({imports: [DepModule]})
+          export class MyModule {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(2);
+        expect(diags[0].messageText).toBe(
+          'This import contains errors, which may affect components that depend on this NgModule.',
+        );
+        expect(diags[1].messageText).toBe('NgModule "import" field contains a cycle');
+      });
+
+      it('should report if an NgModule imports itself via a forwardRef', () => {
+        env.write(
+          'test.ts',
+          `
+          import {NgModule, forwardRef} from '@angular/core';
+
+          @NgModule({imports: [forwardRef(() => ModB)]})
+          class ModA {}
+
+          @NgModule({imports: [forwardRef(() => ModC)]})
+          class ModB {}
+
+          @NgModule({imports: [ModB]})
+          class ModC {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(3);
+        expect(diags[0].messageText).toBe(
+          'This import contains errors, which may affect components that depend on this NgModule.',
+        );
+        expect(diags[1].messageText).toBe(
+          'This import contains errors, which may affect components that depend on this NgModule.',
+        );
+        expect(diags[2].messageText).toBe('NgModule "import" field contains a cycle');
+      });
     });
 
     describe('when processing external directives', () => {
