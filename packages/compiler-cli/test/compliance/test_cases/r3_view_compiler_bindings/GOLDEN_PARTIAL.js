@@ -11,7 +11,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'some-elem',
-                    standalone: true,
                     template: ``,
                     inputs: ['attr1', 'prop1', 'attrInterp1', 'propInterp1'],
                 }]
@@ -37,7 +36,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-cmp',
-                    standalone: true,
                     imports: [SomeCmp],
                     host: {
                         'literal1': 'foo',

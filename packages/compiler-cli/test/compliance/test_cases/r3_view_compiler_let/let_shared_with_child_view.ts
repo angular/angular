@@ -6,6 +6,5 @@ import {Component} from '@angular/core';
     {{value}}
     <ng-template>{{value}}</ng-template>
   `,
-  standalone: true,
 })
 export class MyApp {}

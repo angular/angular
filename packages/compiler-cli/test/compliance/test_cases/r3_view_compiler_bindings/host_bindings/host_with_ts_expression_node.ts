@@ -9,7 +9,6 @@ export const BAR_CONST = getBar();
 
 @Component({
   selector: 'my-cmp',
-  standalone: true,
   host: {
     'foo': BAR_CONST,
   },

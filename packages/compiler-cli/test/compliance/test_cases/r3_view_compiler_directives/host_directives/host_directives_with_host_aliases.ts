@@ -1,6 +1,6 @@
 import {Component, Directive, EventEmitter, Input, Output} from '@angular/core';
 
-@Directive({standalone: true})
+@Directive({})
 export class HostDir {
   @Input('valueAlias') value: number;
   @Input('colorAlias') color: string;

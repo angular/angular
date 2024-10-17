@@ -9,7 +9,6 @@ import {Component} from '@angular/core';
     @let four = three + 1;
     {{two}}
   `,
-  standalone: true,
 })
 export class MyApp {
   value = 0;

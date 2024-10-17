@@ -2,7 +2,6 @@ import {Component} from '@angular/core';
 
 @Component({
   selector: 'some-elem',
-  standalone: true,
   template: ``,
   inputs: ['attr1', 'prop1', 'attrInterp1', 'propInterp1'],
 })
@@ -11,7 +10,6 @@ export class SomeCmp {
 
 @Component({
   selector: 'my-cmp',
-  standalone: true,
   imports: [SomeCmp],
   host: {
     'literal1': 'foo',

@@ -34,6 +34,7 @@ function MyComponent_div_3_span_2_Template(rf, ctx) {
   MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
 	type: MyComponent,
 	selectors: [["my-component"]],
+	standalone: false,
 	decls: 6,
 	vars: 1,
 	consts: [["foo", ""], ["baz", ""], ["bar", ""], [__AttributeMarker.Template__, "if"]],

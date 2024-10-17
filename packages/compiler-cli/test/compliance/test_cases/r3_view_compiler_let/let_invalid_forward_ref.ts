@@ -7,7 +7,6 @@ import {Component} from '@angular/core';
       @let result = value * 2;
     </ng-template>
   `,
-  standalone: true,
 })
 export class MyApp {
   value = 1;

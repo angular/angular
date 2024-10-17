@@ -103,7 +103,6 @@ HostBindingDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, decorators: [{
             type: Directive,
             args: [{
-                    standalone: true,
                     selector: '[hostBindingDir]',
                     host: {
                         '[class.a]': 'value ?? "class-a"',
@@ -137,7 +136,6 @@ HostBindingDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, decorators: [{
             type: Directive,
             args: [{
-                    standalone: true,
                     selector: '[hostBindingDir]',
                     host: {
                         '[style.fontSize]': 'value ?? "15px"',
@@ -849,7 +847,6 @@ HostBindingDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, decorators: [{
             type: Directive,
             args: [{
-                    standalone: true,
                     selector: '[hostBindingDir]',
                     host: {
                         '[innerHtml]': 'evil',
@@ -870,7 +867,6 @@ HostBindingDir2.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", versio
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir2, decorators: [{
             type: Directive,
             args: [{
-                    standalone: true,
                     selector: 'a',
                     host: {
                         '[innerHtml]': 'evil',
@@ -909,7 +905,6 @@ HostBindingDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, decorators: [{
             type: Directive,
             args: [{
-                    standalone: true,
                     selector: '[hostBindingDir]',
                     host: { 'src': 'trusted', 'srcdoc': 'trusted' },
                 }]
@@ -921,7 +916,6 @@ HostBindingDir2.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", versio
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir2, decorators: [{
             type: Directive,
             args: [{
-                    standalone: true,
                     selector: 'img',
                     host: { 'src': 'trusted', 'srcdoc': 'trusted' },
                 }]
@@ -956,7 +950,6 @@ HostBindingDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, decorators: [{
             type: Directive,
             args: [{
-                    standalone: true,
                     selector: '[hostBindingDir]',
                     host: { '[style.background-image]': 'imgUrl', '[style]': 'styles' },
                 }]
@@ -989,7 +982,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-cmp',
-                    standalone: true,
                     host: {
                         '(document:dragover)': 'foo($event)',
                     },
@@ -1026,7 +1018,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-cmp',
-                    standalone: true,
                     host: {
                         'foo': BAR_CONST,
                     },
@@ -1058,7 +1049,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-comp',
-                    standalone: true,
                     template: '',
                     host: {
                         ['class.is-compact']: 'false',
@@ -1075,7 +1065,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-comp-2',
-                    standalone: true,
                     template: '',
                     host: {
                         '[class.is-compact]': 'false',

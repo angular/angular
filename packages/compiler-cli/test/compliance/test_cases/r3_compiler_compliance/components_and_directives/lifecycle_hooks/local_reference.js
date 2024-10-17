@@ -2,6 +2,7 @@
 MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: MyComponent,
   selectors: [["my-component"]],
+  standalone: false,
   decls: 3,
   vars: 1,
   consts: [["user", ""]],

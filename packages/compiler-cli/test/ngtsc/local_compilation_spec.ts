@@ -1979,11 +1979,11 @@ runInEachFileSystem(() => {
         const jsContents = env.getContents('test.js');
 
         expect(jsContents).toContain(
-          'ɵɵdefineDirective({ type: LocalDirective, standalone: true, ' +
+          'ɵɵdefineDirective({ type: LocalDirective, ' +
             'features: [i0.ɵɵHostDirectivesFeature([ExternalDirective])] });',
         );
         expect(jsContents).toContain(
-          'ɵɵdefineDirective({ type: LocalDirective2, standalone: true, ' +
+          'ɵɵdefineDirective({ type: LocalDirective2, ' +
             'features: [i0.ɵɵHostDirectivesFeature([LocalDirective])] });',
         );
       });

@@ -12,7 +12,6 @@ import {Component} from '@angular/core';
       {{three}}
     }
   `,
-  standalone: true,
 })
 export class MyApp {
   value = 0;

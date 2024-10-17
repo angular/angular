@@ -3,6 +3,7 @@ MyApp.ɵcmp = /*@__PURE__*/ i0.ɵɵdefineComponent({
   selectors: [
       ["my-app"]
   ],
+  standalone: false,
   decls: 1,
   vars: 1,
   consts: [

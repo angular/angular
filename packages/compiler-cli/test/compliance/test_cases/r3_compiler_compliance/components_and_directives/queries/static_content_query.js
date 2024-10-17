@@ -13,6 +13,7 @@ ContentQueryComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
       $r3$.ɵɵqueryRefresh($tmp$ = $r3$.ɵɵloadQuery()) && (ctx.foo = $tmp$.first);
     }
   },
+  standalone: false,
   ngContentSelectors: $_c1$,
   decls: 2,
   vars: 0,
