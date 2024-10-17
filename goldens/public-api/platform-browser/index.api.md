@@ -153,6 +153,8 @@ export enum HydrationFeatureKind {
     // (undocumented)
     I18nSupport = 2,
     // (undocumented)
+    IncrementalHydration = 4,
+    // (undocumented)
     NoHttpTransferCache = 0
 }
 
@@ -245,6 +247,9 @@ export function withHttpTransferCacheOptions(options: HttpTransferCacheOptions):
 
 // @public
 export function withI18nSupport(): HydrationFeature<HydrationFeatureKind.I18nSupport>;
+
+// @public
+export function withIncrementalHydration(): HydrationFeature<HydrationFeatureKind.IncrementalHydration>;
 
 // @public
 export function withNoHttpTransferCache(): HydrationFeature<HydrationFeatureKind.NoHttpTransferCache>;
