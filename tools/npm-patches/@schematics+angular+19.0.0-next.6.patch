@@ -1,0 +1,13 @@
+diff --git a/node_modules/@schematics/angular/collection.json b/node_modules/@schematics/angular/collection.json
+index f4def2d..344c962 100755
+--- a/node_modules/@schematics/angular/collection.json
++++ b/node_modules/@schematics/angular/collection.json
+@@ -23,7 +23,7 @@
+       "schema": "./application/schema.json",
+       "description": "Create an Angular application."
+     },
+-    "e2e": {
++    "private-e2e": {
+       "factory": "./e2e",
+       "schema": "./e2e/schema.json",
+       "description": "Create an Angular e2e application.",
