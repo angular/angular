@@ -21,6 +21,9 @@ export function outputFromObservable<T>(observable: Observable<T>, opts?: Output
 export function outputToObservable<T>(ref: OutputRef<T>): Observable<T>;
 
 // @public
+export function pendingUntilEvent<T>(injector?: Injector): MonoTypeOperatorFunction<T>;
+
+// @public
 export function takeUntilDestroyed<T>(destroyRef?: DestroyRef): MonoTypeOperatorFunction<T>;
 
 // @public
