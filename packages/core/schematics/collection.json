@@ -35,6 +35,11 @@
       "factory": "./bundles/signal-queries-migration#migrate",
       "schema": "./ng-generate/signal-queries-migration/schema.json",
       "aliases": ["signal-queries", "signal-query", "signal-query-migration"]
+    },
+    "signals": {
+      "description": "Combines all signals-related migrations into a single migration",
+      "factory": "./bundles/signals#migrate",
+      "schema": "./ng-generate/signals/schema.json"
     }
   }
 }
