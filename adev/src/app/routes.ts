@@ -12,6 +12,7 @@ import {Route} from '@angular/router';
 import {DefaultPage, PagePrefix} from './core/enums/pages';
 import {SUB_NAVIGATION_DATA} from './sub-navigation-data';
 import {mapApiManifestToRoutes} from './features/references/helpers/manifest.helper';
+import MainComponent from './main.component';
 
 // Docs navigation data contains routes which navigates to /tutorials pages, in
 // that case we should load Tutorial component
@@ -176,6 +177,7 @@ const REDIRECT_ROUTES: Route[] = [
 export const routes: Route[] = [
   {
     path: '',
+    component: MainComponent,
     children: [
       {
         path: '',
