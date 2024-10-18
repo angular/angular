@@ -1371,6 +1371,9 @@
     "name": "refreshView"
   },
   {
+    "name": "registerAfterRendersInView"
+  },
+  {
     "name": "registerPostOrderHooks"
   },
   {
