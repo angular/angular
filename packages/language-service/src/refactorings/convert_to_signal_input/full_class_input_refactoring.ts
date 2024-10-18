@@ -106,11 +106,12 @@ abstract class BaseConvertFullClassToSignalInputsRefactoring implements ActiveRe
 
 export class ConvertFullClassToSignalInputsRefactoring extends BaseConvertFullClassToSignalInputsRefactoring {
   static id = 'convert-full-class-to-signal-inputs-safe-mode';
-  static description = "Convert all class @Input's to signal inputs (safe)";
+  static description = "Full class: Convert all @Input's to signal inputs (safe)";
   override config: MigrationConfig = {};
 }
 export class ConvertFullClassToSignalInputsBestEffortRefactoring extends BaseConvertFullClassToSignalInputsRefactoring {
   static id = 'convert-full-class-to-signal-inputs-best-effort-mode';
-  static description = "Convert all class @Input's to signal inputs (forcibly, ignoring errors)";
+  static description =
+    "Full class: Convert all @Input's to signal inputs (forcibly, ignoring errors)";
   override config: MigrationConfig = {bestEffortMode: true};
 }
