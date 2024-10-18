@@ -1,6 +1,7 @@
 EmptyOutletComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: EmptyOutletComponent,
   selectors: [["ng-component"]],
+  standalone: false,
   decls: 1,
   vars: 0,
   template: function EmptyOutletComponent_Template(rf, ctx) {

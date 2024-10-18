@@ -34,6 +34,7 @@ function MyComponent_li_1_Template(rf, ctx) {
 MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: MyComponent,
   selectors: [["my-component"]],
+  standalone: false,
   decls: 2,
   vars: 1,
   consts: [[__AttributeMarker.Template__, "for", "forOf"]],

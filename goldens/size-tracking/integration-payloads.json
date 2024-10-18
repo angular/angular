@@ -13,9 +13,9 @@
   },
   "cli-hello-world-lazy": {
     "uncompressed": {
-      "main": 108611,
-      "polyfills": 34169,
-      "lazy.routes": 388
+      "main": 107189,
+      "polyfills": 34544,
+      "lazy.routes": 368
     }
   },
   "forms": {
@@ -48,8 +48,8 @@
   "defer": {
     "uncompressed": {
       "main": 11497,
-      "polyfills": 33807,
-      "defer.component": 371
+      "polyfills": 34544,
+      "defer.component": 351
     }
   },
   "platform-server-hydration/browser": {

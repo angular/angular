@@ -1,6 +1,7 @@
 SimpleLayout.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: SimpleLayout,
   selectors: [["simple-layout"]],
+  standalone: false,
   decls: 2,
   vars: 2,
   consts: [[__AttributeMarker.Bindings__, "name"]],

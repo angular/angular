@@ -3,14 +3,12 @@ import {Component} from '@angular/core';
 
 @Component({
   selector: 'my-lazy-cmp',
-  standalone: true,
   template: 'Hi!',
 })
 class MyLazyCmp {
 }
 
 @Component({
-  standalone: true,
   selector: 'app',
   imports: [MyLazyCmp],
   template: `

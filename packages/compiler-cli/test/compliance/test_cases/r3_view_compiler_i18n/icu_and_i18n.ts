@@ -2,7 +2,6 @@ import {Component} from '@angular/core';
 
 @Component({
   selector: 'my-component',
-  standalone: true,
   template: `
     <div i18n>
       <div *ngFor="let diskView of disks">
