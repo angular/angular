@@ -1115,6 +1115,9 @@ export interface CanMatch {
  *
  * {@example router/route_functional_guards.ts region="CanMatchFn"}
  *
+ * @param route The route configuration.
+ * @param segments The URL segments that have not been consumed by previous parent route evaluations.
+ *
  * @publicApi
  * @see {@link Route}
  */
