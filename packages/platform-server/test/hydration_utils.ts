@@ -13,6 +13,7 @@ import {
   Injectable,
   Provider,
   Type,
+  ɵwithIncrementalHydration,
 } from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {
@@ -275,4 +276,25 @@ export function verifyEmptyConsole(appRef: ApplicationRef) {
 export function clearConsole(appRef: ApplicationRef) {
   const console = appRef.injector.get(Console) as DebugConsole;
   console.logs = [];
+}
+
+// The following 2 functions are temporary for landing incremental hydration code
+// before the feature commit that adds the public api. These will be removed
+// in favor of the real API.
+
+// TODO(incremental-hydration): remove this once the public api lands
+/**
+ * Helper function to create an object that represents a Hydration feature.
+ */
+function hydrationFeature<FeatureKind extends HydrationFeatureKind>(
+  ɵkind: FeatureKind,
+  ɵproviders: Provider[] = [],
+  ɵoptions: unknown = {},
+): HydrationFeature<FeatureKind> {
+  return {ɵkind, ɵproviders};
+}
+
+// TODO(incremental-hydration): remove this once the public api lands
+export function withIncrementalHydration(): HydrationFeature<HydrationFeatureKind.IncrementalHydration> {
+  return hydrationFeature(HydrationFeatureKind.IncrementalHydration, ɵwithIncrementalHydration());
 }
