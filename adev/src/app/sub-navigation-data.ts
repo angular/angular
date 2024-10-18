@@ -1444,6 +1444,11 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         path: 'reference/migrations/route-lazy-loading',
         contentPath: 'reference/migrations/route-lazy-loading',
       },
+      {
+        label: 'Signal inputs',
+        path: 'reference/migrations/signal-inputs',
+        contentPath: 'reference/migrations/signal-inputs',
+      },
     ],
   },
   {
