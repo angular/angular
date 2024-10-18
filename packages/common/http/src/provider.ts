@@ -38,6 +38,7 @@ import {
   XSRF_HEADER_NAME,
   xsrfInterceptorFn,
 } from './xsrf';
+import {NG_DEFAULT_HTTP_BACKEND} from './backend-default-value';
 
 /**
  * Identifies a particular kind of `HttpFeature`.
@@ -52,6 +53,7 @@ export enum HttpFeatureKind {
   JsonpSupport,
   RequestsMadeViaParent,
   Fetch,
+  Xhr,
 }
 
 /**
@@ -101,7 +103,7 @@ function makeHttpFeature<KindT extends HttpFeatureKind>(
  * @see {@link withNoXsrfProtection}
  * @see {@link withJsonpSupport}
  * @see {@link withRequestsMadeViaParent}
- * @see {@link withFetch}
+ * @see {@link withXhr}
  */
 export function provideHttpClient(
   ...features: HttpFeature<HttpFeatureKind>[]
@@ -122,13 +124,13 @@ export function provideHttpClient(
 
   const providers: Provider[] = [
     HttpClient,
-    HttpXhrBackend,
+    NG_DEFAULT_HTTP_BACKEND,
     HttpInterceptorHandler,
     {provide: HttpHandler, useExisting: HttpInterceptorHandler},
     {
       provide: HttpBackend,
       useFactory: () => {
-        return inject(FetchBackend, {optional: true}) ?? inject(HttpXhrBackend);
+        return inject(FetchBackend, {optional: true}) ?? inject(NG_DEFAULT_HTTP_BACKEND);
       },
     },
     {
@@ -301,10 +303,26 @@ export function withRequestsMadeViaParent(): HttpFeature<HttpFeatureKind.Request
  * Note: The Fetch API doesn't support progress report on uploads.
  *
  * @publicApi
+ * @deprecated `withFetch` is not required anymore. `FetchBackend` is the default `HttpBackend`.
  */
 export function withFetch(): HttpFeature<HttpFeatureKind.Fetch> {
   return makeHttpFeature(HttpFeatureKind.Fetch, [
     FetchBackend,
     {provide: HttpBackend, useExisting: FetchBackend},
+  ]);
+}
+
+/**
+ * Configures the current `HttpClient` instance to make requests using the Xhr API.
+ *
+ * Use this feature if you want to report progress on uploads as Xhr API supports it.
+ *
+ * @see {@link provideHttpClient}
+ * @publicApi
+ */
+export function withXhr(): HttpFeature<HttpFeatureKind.Xhr> {
+  return makeHttpFeature(HttpFeatureKind.Xhr, [
+    HttpXhrBackend,
+    {provide: HttpBackend, useExisting: HttpXhrBackend},
   ]);
 }
