@@ -18,11 +18,10 @@ import {
   inject,
 } from '@angular/core';
 
-import {fromEvent} from 'rxjs/internal/observable/fromEvent';
 import {debounceTime} from 'rxjs/operators';
 import {TerminalHandler, TerminalType} from './terminal-handler.service';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {WINDOW} from '@angular/docs';
+import {Subject} from 'rxjs';
 
 @Component({
   selector: 'docs-tutorial-terminal',
@@ -41,16 +40,27 @@ export class Terminal implements AfterViewInit {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly terminalHandler = inject(TerminalHandler);
-  private readonly window = inject(WINDOW);
+
+  private readonly resize$ = new Subject<void>();
 
   ngAfterViewInit() {
     this.terminalHandler.registerTerminal(this.type, this.terminalElementRef.nativeElement);
 
-    fromEvent(this.window, 'resize')
-      .pipe(debounceTime(50), takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.handleResize();
-      });
+    this.setResizeObserver();
+
+    this.resize$.pipe(debounceTime(50), takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.handleResize();
+    });
+  }
+
+  private setResizeObserver(): void {
+    const resizeObserver = new ResizeObserver((_) => {
+      this.resize$.next();
+    });
+
+    resizeObserver.observe(this.terminalElementRef.nativeElement);
+
+    this.destroyRef.onDestroy(() => resizeObserver.disconnect());
   }
 
   private handleResize(): void {
