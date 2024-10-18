@@ -2397,4 +2397,121 @@ export const RECOMMENDATIONS: Step[] = [
     action:
       'You may experience tests failures if you have tests that rely on change detection execution order when using `ComponentFixture.autoDetect` because it now executes change detection for fixtures within `ApplicationRef.tick`. For example, this will cause test fixture to refresh before any dialogs that it creates whereas this may have been the other way around in the past.',
   },
+
+  {
+    action:
+      'Angular directives, components and pipes are now standalone by default. Specify "standalone: false" for declarations that are currently declared in an NgModule. The Angular CLI will automatically update your code to reflect that.',
+    level: ApplicationComplexity.Basic,
+    necessaryAsOf: 1900,
+    possibleIn: 1900,
+    step: '19.0.0-standalone-declarations',
+  },
+  {
+    action:
+      'Remove `this.` prefix when accessing template reference variables. For example, refactor `<div #foo></div>{{ this.foo }}` to `<div #foo></div>{{ foo }}`',
+    level: ApplicationComplexity.Medium,
+    necessaryAsOf: 1900,
+    possibleIn: 1900,
+    step: '19.0.0-remove-this',
+  },
+  {
+    action:
+      'Replace usages of `BrowserModule.withServerTransition()` with injection of the `APP_ID` token to set the application `id` instead.',
+    level: ApplicationComplexity.Basic,
+    necessaryAsOf: 1900,
+    possibleIn: 1900,
+    step: '19.0.0-remove-browser-module-with-server-transition',
+  },
+  {
+    action: 'The `factories` property in `KeyValueDiffers` has been removed.',
+    level: ApplicationComplexity.Advanced,
+    necessaryAsOf: 1900,
+    possibleIn: 1900,
+    step: '19.0.0-remove-key-value-differs-factories',
+  },
+  {
+    action:
+      'In angular.json, replace the "name" option with "project" for the `@angular/localize` builder.',
+    level: ApplicationComplexity.Medium,
+    necessaryAsOf: 1900,
+    possibleIn: 1900,
+    step: '19.0.0_localize_builder_project_option',
+  },
+  {
+    action: 'Rename `ExperimentalPendingTasks` to `PendingTasks`.',
+    level: ApplicationComplexity.Advanced,
+    necessaryAsOf: 1900,
+    possibleIn: 1900,
+    step: '19.0.0_rename_experimental_pending_tasks',
+  },
+  {
+    action:
+      "Update tests that relied on the `Promise` timing of effects to use `await whenStable()` or call `.detectChanges()` to trigger effects. For effects triggered during change detection, ensure they don't depend on the application being fully rendered or consider using `afterRenderEffect()`. Tests using faked clocks may need to fast-forward/flush the clock.",
+    level: ApplicationComplexity.Medium,
+    necessaryAsOf: 1900,
+    possibleIn: 1900,
+    step: '19.0.0.1',
+  },
+  {
+    action: 'Upgrade to TypeScript version 5.5 or later.',
+    level: ApplicationComplexity.Basic,
+    necessaryAsOf: 1900,
+    possibleIn: 1900,
+    step: '19.0.0.2',
+  },
+  {
+    action:
+      'Update tests using `fakeAsync` that rely on specific timing of zone coalescing and scheduling when a change happens outside the Angular zone (hybrid mode scheduling) as these timers are now affected by `tick` and `flush`.',
+    level: ApplicationComplexity.Advanced,
+    necessaryAsOf: 1900,
+    possibleIn: 1900,
+    step: '19.0.0-timers-in-zone',
+  },
+  {
+    action:
+      "When using `createComponent` API and not passing content for the first `ng-content`, provide `document.createTextNode('')` as a `projectableNode` to prevent rendering the default fallback content.",
+    level: ApplicationComplexity.Medium,
+    necessaryAsOf: 1900,
+    possibleIn: 1900,
+    step: '19.0.0-render-default-fallback',
+  },
+  {
+    action:
+      'Update tests that rely on specific timing or ordering of change detection around custom elements, as the timing may have changed due to the switch to the hybrid scheduler.',
+    level: ApplicationComplexity.Advanced,
+    necessaryAsOf: 1900,
+    possibleIn: 1900,
+    step: '19.0.0-hybrid-scheduler-timing',
+  },
+  {
+    action:
+      'Migrate from using `Router.errorHandler` to `withNavigationErrorHandler` from `provideRouter` or `errorHandler` from `RouterModule.forRoot`.',
+    level: ApplicationComplexity.Basic,
+    necessaryAsOf: 1900,
+    possibleIn: 1900,
+    step: '19.0.0-router-error-handler',
+  },
+  {
+    action:
+      'Update tests to handle errors thrown during `ApplicationRef.tick` by either triggering change detection synchronously or rejecting outstanding `ComponentFixture.whenStable` promises.',
+    level: ApplicationComplexity.Advanced,
+    necessaryAsOf: 1900,
+    possibleIn: 1900,
+    step: '19.0.0-testbed-error-handling',
+  },
+  {
+    action: 'Update usages of `Resolve` interface to include `RedirectCommand` in its return type.',
+    level: ApplicationComplexity.Medium,
+    necessaryAsOf: 1900,
+    possibleIn: 1900,
+    step: '19.0.0-update-resolve-interface-return-type',
+  },
+  {
+    action:
+      '`fakeAsync` will flush pending timers by default. For tests that require the previous behavior, explicitly pass `{flush: false}` in the options parameter.',
+    level: ApplicationComplexity.Advanced,
+    necessaryAsOf: 1900,
+    possibleIn: 1900,
+    step: '19.0.0-update-fakeasync-to-flush-pending-timers',
+  },
 ];
