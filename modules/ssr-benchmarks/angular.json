@@ -29,7 +29,8 @@
             "server": "src/main.server.ts",
             "prerender": false,
             "ssr": {
-              "entry": "run-benchmark.ts"
+              "entry": "run-benchmark.ts",
+              "experimentalPlatform": "neutral"
             }
           },
           "configurations": {
