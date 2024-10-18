@@ -12,16 +12,18 @@ import {
   CdkVirtualForOf,
 } from '@angular/cdk/scrolling';
 import {
+  afterRenderEffect,
   Component,
-  DestroyRef,
+  computed,
+  effect,
   ElementRef,
-  EventEmitter,
-  Input,
-  Output,
-  ViewChild,
+  inject,
+  input,
+  output,
+  signal,
+  viewChild,
 } from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {Observable, Subscription} from 'rxjs';
+import {toSignal} from '@angular/core/rxjs-interop';
 
 import {TabUpdate} from '../../tab-update/index';
 
@@ -29,7 +31,7 @@ import {GraphNode} from './record-formatter/record-formatter';
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
 import {MatCard} from '@angular/material/card';
-import {AsyncPipe, NgStyle} from '@angular/common';
+import {NgStyle} from '@angular/common';
 
 const ITEM_WIDTH = 30;
 
@@ -46,67 +48,54 @@ const ITEM_WIDTH = 30;
     CdkFixedSizeVirtualScroll,
     CdkVirtualForOf,
     NgStyle,
-    AsyncPipe,
   ],
 })
 export class FrameSelectorComponent {
-  @ViewChild('barContainer') barContainer!: ElementRef;
-  @Input()
-  set graphData$(graphData: Observable<GraphNode[]>) {
-    this._graphData$ = graphData;
-    this._graphDataSubscription?.unsubscribe();
-    this._graphDataSubscription = this._graphData$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((items) =>
-        setTimeout(() => {
-          this.frameCount = items.length;
-          this.viewport.scrollToIndex(items.length);
-        }),
-      );
-  }
+  readonly barContainer = viewChild.required<ElementRef>('barContainer');
+  readonly graphData = input<GraphNode[]>([]);
 
-  get graphData$(): Observable<GraphNode[]> {
-    return this._graphData$;
-  }
+  readonly selectFrames = output<{indexes: number[]}>();
 
-  @Output() selectFrames = new EventEmitter<{indexes: number[]}>();
+  readonly viewport = viewChild.required<CdkVirtualScrollViewport>(CdkVirtualScrollViewport);
 
-  @ViewChild(CdkVirtualScrollViewport) viewport!: CdkVirtualScrollViewport;
+  readonly startFrameIndex = signal(-1);
+  readonly endFrameIndex = signal(-1);
+  readonly selectedFrameIndexes = signal(new Set<number>());
+  readonly frameCount = computed(() => this.graphData().length);
+  readonly disableNextFrameButton = computed(
+    () => this.endFrameIndex() >= this.frameCount() - 1 || this.selectedFrameIndexes().size > 1,
+  );
+  readonly disablePreviousFrameButton = computed(
+    () => this.startFrameIndex() <= 0 || this.selectedFrameIndexes().size > 1,
+  );
+  readonly selectionLabel = computed(() => {
+    if (this.startFrameIndex() === this.endFrameIndex()) {
+      return `${this.startFrameIndex() + 1}`;
+    }
 
-  startFrameIndex = -1;
-  endFrameIndex = -1;
-  selectedFrameIndexes = new Set<number>();
-  frameCount!: number;
+    return this._smartJoinIndexLabels([...this.selectedFrameIndexes()]);
+  });
 
   private _viewportScrollState = {scrollLeft: 0, xCoordinate: 0, isDragScrolling: false};
 
-  get itemWidth(): number {
-    return ITEM_WIDTH;
-  }
+  readonly itemWidth = ITEM_WIDTH;
 
-  private _graphData$!: Observable<GraphNode[]>;
-  private _graphDataSubscription?: Subscription;
+  private _tabUpdate = inject(TabUpdate);
 
-  constructor(
-    private _tabUpdate: TabUpdate,
-    private destroyRef: DestroyRef,
-  ) {
-    this._tabUpdate.tabUpdate$.pipe(takeUntilDestroyed()).subscribe(() => {
-      if (this.viewport) {
-        setTimeout(() => {
-          this.viewport.scrollToIndex(0);
-          this.viewport.checkViewportSize();
-        });
-      }
+  constructor() {
+    afterRenderEffect(() => {
+      // Listen for tab updates to reset the scroll position to the top
+      // This ensures the viewport is properly updated when switching tabs
+      this._tabUpdate.tabUpdate();
+
+      const viewport = this.viewport();
+      viewport.scrollToIndex(0);
+      viewport.checkViewportSize();
     });
-  }
-
-  get selectionLabel(): string {
-    if (this.startFrameIndex === this.endFrameIndex) {
-      return `${this.startFrameIndex + 1}`;
-    }
-
-    return this._smartJoinIndexLabels([...this.selectedFrameIndexes]);
+    afterRenderEffect(() => {
+      const items = this.graphData();
+      this.viewport().scrollToIndex(items.length);
+    });
   }
 
   private _smartJoinIndexLabels(indexArray: number[]): string {
@@ -142,51 +131,52 @@ export class FrameSelectorComponent {
   }
 
   move(value: number): void {
-    const newVal = this.startFrameIndex + value;
-    this.selectedFrameIndexes = new Set([newVal]);
-    if (newVal > -1 && newVal < this.frameCount) {
-      this._selectFrames({indexes: this.selectedFrameIndexes});
+    const newVal = this.startFrameIndex() + value;
+    this.selectedFrameIndexes.set(new Set([newVal]));
+    if (newVal > -1 && newVal < this.frameCount()) {
+      this._selectFrames({indexes: this.selectedFrameIndexes()});
     }
   }
 
   private _selectFrames({indexes}: {indexes: Set<number>}): void {
     const sortedIndexes = [...indexes].sort((a, b) => a - b);
-    this.startFrameIndex = sortedIndexes[0];
-    this.endFrameIndex = sortedIndexes[sortedIndexes.length - 1];
-    this._ensureVisible(this.startFrameIndex);
+    this.startFrameIndex.set(sortedIndexes[0]);
+    this.endFrameIndex.set(sortedIndexes[sortedIndexes.length - 1]);
+    this._ensureVisible(this.startFrameIndex());
     this.selectFrames.emit({indexes: sortedIndexes});
   }
 
   handleFrameSelection(idx: number, event: MouseEvent): void {
     const {shiftKey, ctrlKey, metaKey} = event;
-
+    let frames = this.selectedFrameIndexes();
     if (shiftKey) {
-      const [start, end] = [Math.min(this.startFrameIndex, idx), Math.max(this.endFrameIndex, idx)];
-      this.selectedFrameIndexes = new Set(
-        Array.from(Array(end - start + 1), (_, index) => index + start),
-      );
+      const [start, end] = [
+        Math.min(this.startFrameIndex(), idx),
+        Math.max(this.endFrameIndex(), idx),
+      ];
+      frames = new Set(Array.from(Array(end - start + 1), (_, index) => index + start));
     } else if (ctrlKey || metaKey) {
-      if (this.selectedFrameIndexes.has(idx)) {
-        if (this.selectedFrameIndexes.size === 1) {
+      if (frames.has(idx)) {
+        if (frames.size === 1) {
           return; // prevent deselection when only one frame is selected
         }
 
-        this.selectedFrameIndexes.delete(idx);
+        frames.delete(idx);
       } else {
-        this.selectedFrameIndexes.add(idx);
+        frames.add(idx);
       }
     } else {
-      this.selectedFrameIndexes = new Set([idx]);
+      frames = new Set([idx]);
     }
-
-    this._selectFrames({indexes: this.selectedFrameIndexes});
+    this.selectedFrameIndexes.set(new Set(frames));
+    this._selectFrames({indexes: this.selectedFrameIndexes()});
   }
 
   private _ensureVisible(index: number): void {
-    if (!this.viewport) {
+    if (!this.viewport()) {
       return;
     }
-    const scrollParent = this.viewport.elementRef.nativeElement;
+    const scrollParent = this.viewport().elementRef.nativeElement;
     // The left most point we see an element
     const left = scrollParent.scrollLeft;
     // That's the right most point we currently see an element.
@@ -206,7 +196,7 @@ export class FrameSelectorComponent {
   startDragScroll(event: MouseEvent): void {
     this._viewportScrollState = {
       xCoordinate: event.clientX,
-      scrollLeft: this.viewport.elementRef.nativeElement.scrollLeft,
+      scrollLeft: this.viewport().elementRef.nativeElement.scrollLeft,
       isDragScrolling: true,
     };
   }
@@ -218,7 +208,7 @@ export class FrameSelectorComponent {
 
     const dragScrollSpeed = 2;
     const dx = event.clientX - this._viewportScrollState.xCoordinate;
-    this.viewport.elementRef.nativeElement.scrollLeft =
+    this.viewport().elementRef.nativeElement.scrollLeft =
       this._viewportScrollState.scrollLeft - dx * dragScrollSpeed;
   }
 }
