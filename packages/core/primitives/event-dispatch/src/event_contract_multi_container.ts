@@ -30,9 +30,13 @@ export class EventContractMultiContainer implements EventContractContainerManage
    * and maintains a reference to resulting handler in order to remove it
    * later if desired.
    */
-  addEventListener(eventType: string, getHandler: (element: Element) => (event: Event) => void) {
+  addEventListener(
+    eventType: string,
+    getHandler: (element: Element) => (event: Event) => void,
+    passive?: boolean,
+  ) {
     const eventHandlerInstaller = (container: EventContractContainer) => {
-      container.addEventListener(eventType, getHandler);
+      container.addEventListener(eventType, getHandler, passive);
     };
     for (let i = 0; i < this.containers.length; i++) {
       eventHandlerInstaller(this.containers[i]);
