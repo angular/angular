@@ -3,9 +3,6 @@
 The Angular team provides an automated migration for converting decorator
 queries to signal queries. E.g. `@ViewChild` will be converted to `viewChild()`.
 
-Aside from the query declarations, the migration will also take care of all
-references to updated queries.
-
 ## How to run this migration?
 
 The migration can be run using the following command:
@@ -68,6 +65,25 @@ The migration supports a few options to fine-tune the migration for your specifi
 
 By default, the migration will update your whole Angular CLI workspace.
 You can limit the migration to a specific sub-directory using this option.
+
+### `--best-effort-mode`
+
+By default, the migration skips queries that cannot be safely migrated.
+The migration tries to refactor code as safely as possible.
+
+When the `--best-effort-mode` flag is enabled, the migration eagerly
+tries to migrate as much as possible, even if it could break your build.
+
+## `--insert-todos`
+
+When enabled, the migration will add TODOs to queries that couldn't be migrated.
+The TODOs will include reasoning on why queries were skipped. E.g.
+
+```ts
+// TODO: Skipped for migration because:
+//  Your application code writes to the query. This prevents migration.
+@ViewChild('ref') ref?: ElementRef;
+```
 
 ### `--analysis-dir`
 
