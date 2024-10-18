@@ -13,8 +13,4 @@ import {init} from './init';
 import {JsWebFrameworksModule} from './rows';
 
 enableProdMode();
-platformBrowser()
-  .bootstrapModule(JsWebFrameworksModule, {
-    ngZone: 'noop',
-  })
-  .then(init);
+platformBrowser().bootstrapModule(JsWebFrameworksModule).then(init);

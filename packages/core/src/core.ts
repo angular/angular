@@ -42,6 +42,7 @@ export {
   provideZoneChangeDetection,
   NgZoneOptions,
 } from './change_detection/scheduling/ng_zone_scheduling';
+export {provideManualChangeDetection} from './change_detection/scheduling/disabled_scheduling';
 export {provideExperimentalZonelessChangeDetection} from './change_detection/scheduling/zoneless_scheduling_impl';
 export {PendingTasks} from './pending_tasks';
 export {provideExperimentalCheckNoChangesForDebug} from './change_detection/scheduling/exhaustive_check_no_changes';

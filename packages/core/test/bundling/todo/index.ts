@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, Injectable, NgModule} from '@angular/core';
+import {Component, Injectable, NgModule, provideManualChangeDetection} from '@angular/core';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 class Todo {
@@ -189,7 +189,11 @@ class ToDoAppComponent {
   }
 }
 
-@NgModule({declarations: [ToDoAppComponent], imports: [CommonModule, BrowserModule]})
+@NgModule({
+  declarations: [ToDoAppComponent],
+  imports: [CommonModule, BrowserModule],
+  providers: [provideManualChangeDetection()],
+})
 class ToDoAppModule {
   ngDoBootstrap(app: any) {
     app.bootstrap(ToDoAppComponent);
@@ -197,7 +201,7 @@ class ToDoAppModule {
 }
 
 function bootstrapApp() {
-  return platformBrowser().bootstrapModule(ToDoAppModule, {ngZone: 'noop'});
+  return platformBrowser().bootstrapModule(ToDoAppModule);
 }
 
 (window as any).bootstrapApp = bootstrapApp;
