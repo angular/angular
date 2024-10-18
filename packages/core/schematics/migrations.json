@@ -9,6 +9,11 @@
       "version": "19.0.0",
       "description": "Updates ExperimentalPendingTasks to PendingTasks",
       "factory": "./bundles/pending-tasks#migrate"
+    },
+    "http-xhr-backend": {
+      "version": "19.0.0",
+      "description": "Adds 'withXhr' to 'provideHttpClient' function calls when the 'HttpXhrBackend' is used. For more information see: https://angular.dev/api/common/http/withXhr",
+      "factory": "./bundles/http-xhr-backend#migrate"
     }
   }
 }
