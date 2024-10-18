@@ -1117,7 +1117,7 @@ export interface CanMatch {
  *
  * @param route The route configuration.
  * @param segments The URL segments that have not been consumed by previous parent route evaluations.
- * 
+ *
  * @publicApi
  * @see {@link Route}
  */
