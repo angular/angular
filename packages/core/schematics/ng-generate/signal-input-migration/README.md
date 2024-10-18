@@ -3,9 +3,6 @@
 The Angular team provides an automated migration for converting `@Input`
 declarations to signal inputs.
 
-Aside from the `@Input()` declarations, the migration will also take care of all
-references to updated inputs.
-
 ## How to run this migration?
 
 The migration can be run using the following command:
@@ -49,7 +46,7 @@ import {Component, input} from '@angular/core';
   template: `Name: {{name() ?? ''}}`
 })
 export class MyComponent {
-  name = input<string>();
+  readonly name = input<string>();
 
   someMethod(): number {
     const name = this.name();
@@ -72,8 +69,22 @@ You can limit the migration to a specific sub-directory using this option.
 
 ### `--best-effort-mode`
 
-Whenever the migration detects that it **cannot** safely migrated an input, it will
-be skipped by default. You can change this by using this command line option.
+By default, the migration skips inputs that cannot be safely migrated.
+The migration tries to refactor code as safely as possible.
+
+When the `--best-effort-mode` flag is enabled, the migration eagerly
+tries to migrate as much as possible, even if it could break your build.
+
+## `--insert-todos`
+
+When enabled, the migration will add TODOs to inputs that couldn't be migrated.
+The TODOs will include reasoning on why inputs were skipped. E.g.
+
+```ts
+// TODO: Skipped for migration because:
+//  Your application code writes to the input. This prevents migration.
+@Input() myInput = false;
+```
 
 ### `--analysis-dir`
 
