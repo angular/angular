@@ -164,7 +164,7 @@ class WritableResourceImpl<T, R> extends BaseWritableResource<T> {
     const previousStatus = untracked(this.status);
 
     // Cancel any previous loading attempts.
-    this.abortInProgessLoad();
+    this.abortInProgressLoad();
 
     const request = this.request();
     if (request.request === undefined) {
@@ -221,7 +221,7 @@ class WritableResourceImpl<T, R> extends BaseWritableResource<T> {
     }
   }
 
-  private abortInProgessLoad(): void {
+  private abortInProgressLoad(): void {
     this.pendingController?.abort();
     this.pendingController = undefined;
 
@@ -231,7 +231,7 @@ class WritableResourceImpl<T, R> extends BaseWritableResource<T> {
   }
 
   protected override onLocalValue(): void {
-    this.abortInProgessLoad();
+    this.abortInProgressLoad();
   }
 }
 

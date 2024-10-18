@@ -10,12 +10,16 @@ import {Injector, resource, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 abstract class MockBackend<T, R> {
-  protected pending = new Map<T, {resolve: (r: R) => void; reject: (reason: any) => void}>();
+  protected pending = new Map<
+    T,
+    {resolve: (r: R) => void; reject: (reason: any) => void; promise: Promise<R>}
+  >();
 
   fetch(request: T): Promise<R> {
     const p = new Promise<R>((resolve, reject) => {
-      this.pending.set(request, {resolve, reject});
+      this.pending.set(request, {resolve, reject, promise: undefined!});
     });
+    this.pending.get(request)!.promise = p;
     return p;
   }
 
@@ -34,11 +38,14 @@ abstract class MockBackend<T, R> {
   }
 
   async flush() {
+    const allPending = Array.from(this.pending.values()).map((pending) => pending.promise);
+
     for (const [req, {resolve}] of this.pending) {
       resolve(this.prepareResponse(req));
     }
+    this.pending.clear();
 
-    return Promise.resolve();
+    return Promise.all(allPending);
   }
 
   protected abstract prepareResponse(request: T): R;
@@ -47,6 +54,13 @@ abstract class MockBackend<T, R> {
 class MockEchoBackend<T> extends MockBackend<T, T> {
   override prepareResponse(request: T) {
     return request;
+  }
+}
+
+class MockResponseCountingBackend extends MockBackend<number, string> {
+  counter = 0;
+  override prepareResponse(request: number) {
+    return request + ':' + this.counter++;
   }
 }
 
@@ -62,6 +76,8 @@ describe('resource', () => {
 
     // a freshly created resource is in the idle state
     expect(echoResource.status()).toBe('idle');
+    expect(echoResource.isLoading()).toBeFalse();
+    expect(echoResource.hasValue()).toBeFalse();
     expect(echoResource.value()).toBeUndefined();
     expect(echoResource.error()).toBe(undefined);
 
@@ -69,11 +85,15 @@ describe('resource', () => {
     // THINK: testing patterns around a resource?
     TestBed.flushEffects();
     expect(echoResource.status()).toBe('loading');
+    expect(echoResource.isLoading()).toBeTrue();
+    expect(echoResource.hasValue()).toBeFalse();
     expect(echoResource.value()).toBeUndefined();
     expect(echoResource.error()).toBe(undefined);
 
     await backend.flush();
     expect(echoResource.status()).toBe('resolved');
+    expect(echoResource.isLoading()).toBeFalse();
+    expect(echoResource.hasValue()).toBeTrue();
     expect(echoResource.value()).toEqual({counter: 0});
     expect(echoResource.error()).toBe(undefined);
 
@@ -81,6 +101,8 @@ describe('resource', () => {
     TestBed.flushEffects();
     await backend.flush();
     expect(echoResource.status()).toBe('resolved');
+    expect(echoResource.isLoading()).toBeFalse();
+    expect(echoResource.hasValue()).toBeTrue();
     expect(echoResource.value()).toEqual({counter: 1});
     expect(echoResource.error()).toBe(undefined);
   });
@@ -98,8 +120,27 @@ describe('resource', () => {
     await backend.reject(requestParam, 'Something went wrong....');
 
     expect(echoResource.status()).toBe('error');
+    expect(echoResource.isLoading()).toBeFalse();
     expect(echoResource.value()).toEqual(undefined);
     expect(echoResource.error()).toBe('Something went wrong....');
+  });
+
+  it('should _not_ load if the request resolves to undefined', () => {
+    const counter = signal(0);
+    const backend = new MockEchoBackend();
+    const echoResource = resource({
+      request: () => (counter() > 5 ? {counter: counter()} : undefined),
+      loader: (params) => backend.fetch(params.request),
+      injector: TestBed.inject(Injector),
+    });
+
+    TestBed.flushEffects();
+    expect(echoResource.status()).toBe('idle');
+    expect(echoResource.isLoading()).toBeFalse();
+
+    counter.set(10);
+    TestBed.flushEffects();
+    expect(echoResource.isLoading()).toBeTrue();
   });
 
   it('should cancel pending requests before starting a new one', async () => {
@@ -122,6 +163,7 @@ describe('resource', () => {
 
     // start a request without resolving the previous one
     TestBed.flushEffects();
+    await Promise.resolve();
 
     // start a new request and resolve all
     counter.update((c) => c + 1);
@@ -132,6 +174,32 @@ describe('resource', () => {
     expect(echoResource.error()).toBe(undefined);
 
     expect(aborted).toEqual([{counter: 0}]);
+  });
+
+  it('should not respond to reactive state changes in a loader', async () => {
+    const unrelated = signal('a');
+    const backend = new MockResponseCountingBackend();
+    const res = resource<string, number>({
+      request: () => 0,
+      loader: (params) => {
+        // read reactive state and assure it is _not_ tracked
+        unrelated();
+        return backend.fetch(params.request);
+      },
+      injector: TestBed.inject(Injector),
+    });
+
+    TestBed.flushEffects();
+    await backend.flush();
+    expect(res.value()).toBe('0:0');
+
+    unrelated.set('b');
+    TestBed.flushEffects();
+    // there is no chang in the status
+    expect(res.status()).toBe('resolved');
+    await backend.flush();
+    // there is no chang in the value
+    expect(res.value()).toBe('0:0');
   });
 
   it('should allow setting local state', async () => {
@@ -147,11 +215,14 @@ describe('resource', () => {
     await backend.flush();
 
     expect(echoResource.status()).toBe('resolved');
+    expect(echoResource.isLoading()).toBeFalse();
     expect(echoResource.value()).toEqual({counter: 0});
     expect(echoResource.error()).toBe(undefined);
 
     echoResource.value.set({counter: 100});
     expect(echoResource.status()).toBe('local');
+    expect(echoResource.isLoading()).toBeFalse();
+    expect(echoResource.hasValue()).toBeTrue();
     expect(echoResource.value()).toEqual({counter: 100});
     expect(echoResource.error()).toBe(undefined);
 
@@ -161,16 +232,15 @@ describe('resource', () => {
     expect(echoResource.status()).toBe('resolved');
     expect(echoResource.value()).toEqual({counter: 1});
     expect(echoResource.error()).toBe(undefined);
+
+    // state setter is also exposed on the resource directly
+    echoResource.set({counter: 200});
+    expect(echoResource.status()).toBe('local');
+    expect(echoResource.hasValue()).toBeTrue();
+    expect(echoResource.value()).toEqual({counter: 200});
   });
 
   it('should allow re-fetching data', async () => {
-    class MockResponseCountingBackend extends MockBackend<number, string> {
-      counter = 0;
-      override prepareResponse(request: number) {
-        return request + ':' + this.counter++;
-      }
-    }
-
     const backend = new MockResponseCountingBackend();
     const res = resource<string, number>({
       request: () => 0,
@@ -188,8 +258,17 @@ describe('resource', () => {
     TestBed.flushEffects();
     await backend.flush();
     expect(res.status()).toBe('resolved');
+    expect(res.isLoading()).toBeFalse();
     expect(res.value()).toBe('0:1');
     expect(res.error()).toBe(undefined);
+
+    // calling refresh multiple times should _not_ result in multiple requests
+    res.refresh();
+    TestBed.flushEffects();
+    res.refresh();
+    TestBed.flushEffects();
+    await backend.flush();
+    expect(res.value()).toBe('0:2');
   });
 
   it('should respect provided equality function for the results signal', async () => {
@@ -208,5 +287,33 @@ describe('resource', () => {
     expect(res.status()).toBe('local');
     expect(res.value()).toBe(5); // equality blocked writes
     expect(res.error()).toBe(undefined);
+  });
+
+  it('should convert writable resource to its read-only version', () => {
+    const res = resource<number>({
+      loader: () => Promise.resolve(0),
+      equal: (a, b) => true,
+      injector: TestBed.inject(Injector),
+    });
+
+    const readonlyRes = res.asReadonly();
+
+    // @ts-expect-error
+    readonlyRes.asReadonly;
+
+    // @ts-expect-error
+    readonlyRes.value.set;
+  });
+
+  it('should have a meaningful toString implementation for exposed signals', () => {
+    const res = resource<number>({
+      loader: () => Promise.resolve(0),
+      equal: (a, b) => true,
+      injector: TestBed.inject(Injector),
+    });
+
+    expect(res.value.toString()).toBe('[Signal: undefined]');
+    expect(res.error.toString()).toBe('[Signal: undefined]');
+    expect(res.status.toString()).toBe('[Signal: idle]');
   });
 });

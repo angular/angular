@@ -70,6 +70,7 @@ export interface Resource<T> {
 export interface WritableResource<T> extends Resource<T> {
   readonly value: WritableSignal<T | undefined>;
   hasValue(): this is WritableResource<T> & {value: WritableSignal<T>};
+  set(value: T | undefined): void;
   asReadonly(): Resource<T>;
 }
 
