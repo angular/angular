@@ -37,6 +37,7 @@ ts_library(
         "//packages/compiler-cli",
         "//packages/compiler-cli/src/ngtsc/file_system/testing",
         "//packages/core/schematics/utils/tsurge",
+        "@npm//typescript",
     ],
 )
 

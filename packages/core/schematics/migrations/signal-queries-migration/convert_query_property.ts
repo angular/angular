@@ -42,6 +42,8 @@ export function computeReplacementsToMigrateQuery(
   importManager: ImportManager,
   info: ProgramInfo,
   printer: ts.Printer,
+  options: ts.CompilerOptions,
+  checker: ts.TypeChecker,
 ): Replacement[] {
   const sf = node.getSourceFile();
   let newQueryFn = importManager.addImport({
@@ -87,40 +89,67 @@ export function computeReplacementsToMigrateQuery(
     args.push(ts.factory.createObjectLiteralExpression(optionProperties));
   }
 
-  // TODO: Can we consult, based on references and non-null assertions?
-  const isIndicatedAsRequired = node.exclamationToken !== undefined;
+  const strictNullChecksEnabled = options.strict === true || options.strictNullChecks === true;
+  const strictPropertyInitialization =
+    options.strict === true || options.strictPropertyInitialization === true;
+  let isRequired = node.exclamationToken !== undefined;
 
-  // If the query is required already via some indicators, and this is a "single"
-  // query, use the available `.required` method.
-  if (isIndicatedAsRequired && metadata.queryInfo.first) {
+  // If we come across an application with strict null checks enabled, but strict
+  // property initialization is disabled, there are two options:
+  //   - Either the query is already typed to include `undefined` explicitly,
+  //     in which case an option query makes sense.
+  //   - OR, the query is not typed to include `undefined`. In which case, the query
+  //     should be marked as required to not break the app. The user-code throughout
+  //     the application (given strict null checks) already assumes non-nullable!
+  if (
+    strictNullChecksEnabled &&
+    !strictPropertyInitialization &&
+    node.initializer === undefined &&
+    node.questionToken === undefined &&
+    type !== undefined &&
+    !checker.isTypeAssignableTo(checker.getUndefinedType(), checker.getTypeFromTypeNode(type))
+  ) {
+    isRequired = true;
+  }
+
+  if (isRequired && metadata.queryInfo.first) {
+    // If the query is required already via some indicators, and this is a "single"
+    // query, use the available `.required` method.
     newQueryFn = ts.factory.createPropertyAccessExpression(newQueryFn, 'required');
   }
 
   // If this query is still nullable (i.e. not required), attempt to remove
   // explicit `undefined` types if possible.
-  if (!isIndicatedAsRequired && type !== undefined && ts.isUnionTypeNode(type)) {
+  if (!isRequired && type !== undefined && ts.isUnionTypeNode(type)) {
     type = removeFromUnionIfPossible(type, (v) => v.kind !== ts.SyntaxKind.UndefinedKeyword);
   }
 
-  const locatorType = Array.isArray(metadata.queryInfo.predicate)
+  let locatorType = Array.isArray(metadata.queryInfo.predicate)
     ? null
     : metadata.queryInfo.predicate.expression;
-  const readType = metadata.queryInfo.read ?? locatorType;
+  let resolvedReadType = metadata.queryInfo.read ?? locatorType;
 
-  // If the type and the read type are matching, we can rely on the TS generic
-  // signature rather than repeating e.g. `viewChild<Button>(Button)`.
+  // If the original property type and the read type are matching, we can rely
+  // on the TS inference, instead of repeating types, like in `viewChild<Button>(Button)`.
   if (
     type !== undefined &&
-    readType instanceof WrappedNodeExpr &&
-    ts.isIdentifier(readType.node) &&
+    resolvedReadType instanceof WrappedNodeExpr &&
+    ts.isIdentifier(resolvedReadType.node) &&
     ts.isTypeReferenceNode(type) &&
     ts.isIdentifier(type.typeName) &&
-    type.typeName.text === readType.node.text
+    type.typeName.text === resolvedReadType.node.text
   ) {
-    type = undefined;
+    locatorType = null;
   }
 
-  const call = ts.factory.createCallExpression(newQueryFn, type ? [type] : undefined, args);
+  const call = ts.factory.createCallExpression(
+    newQueryFn,
+    // If there is no resolved `ReadT` (e.g. string predicate), we use the
+    // original type explicitly as generic. Otherwise, query API is smart
+    // enough to always infer.
+    resolvedReadType === null && type !== undefined ? [type] : undefined,
+    args,
+  );
   const updated = ts.factory.createPropertyDeclaration(
     [ts.factory.createModifier(ts.SyntaxKind.ReadonlyKeyword)],
     node.name,

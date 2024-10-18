@@ -501,6 +501,8 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
           importManager,
           info,
           printer,
+          info.userOptions,
+          checker,
         ),
       );
     }
