@@ -7,6 +7,7 @@
  */
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {global} from '../util/global';
+import {useIntlImpelmentation} from './implementation';
 
 import localeEn from './locale_en';
 
@@ -14,6 +15,8 @@ import localeEn from './locale_en';
  * This const is used to store the locale data registered with `registerLocaleData`
  */
 let LOCALE_DATA: {[localeId: string]: any} = {};
+
+const PLURALS_DATA: {[localeId: string]: Intl.PluralRules} = {};
 
 /**
  * Register locale data to be used internally by Angular. See the
@@ -83,6 +86,8 @@ export function getLocaleCurrencyCode(locale: string): string | null {
   return data[LocaleDataIndex.CurrencyCode] || null;
 }
 
+const pluralMapping = ['zero', 'one', 'two', 'few', 'many'];
+
 /**
  * Retrieves the plural function used by ICU expressions to determine the plural case to use
  * for a given locale.
@@ -91,16 +96,27 @@ export function getLocaleCurrencyCode(locale: string): string | null {
  * @see {@link NgPlural}
  * @see [Internationalization (i18n) Guide](guide/i18n)
  */
-export function getLocalePluralCase(locale: string): (value: number) => number {
-  const data = findLocaleData(locale);
-  return data[LocaleDataIndex.PluralCase];
+export function getLocalePluralCase(locale: string): (value: number) => string {
+  if (useIntlImpelmentation) {
+    if (!PLURALS_DATA[locale] && Intl.PluralRules.supportedLocalesOf(locale).length > 0) {
+      PLURALS_DATA[locale] = new Intl.PluralRules(locale);
+    }
+
+    // If the locale is not supported by the Intl.PluralRules, we use the default "other" case.
+    // We do this because browsers aren't consistent on the fallback behavior for unsupported locales.
+    return (value: number) => PLURALS_DATA[locale]?.select(value) ?? 'other';
+  } else {
+    const data = findLocaleData(locale);
+    const pluralFn: (value: number) => number = data[LocaleDataIndex.PluralCase];
+    return (value: number) => pluralMapping[pluralFn(value)] ?? 'other';
+  }
 }
 
 /**
  * Helper function to get the given `normalizedLocale` from `LOCALE_DATA`
  * or from the global `ng.common.locale`.
  */
-export function getLocaleData(normalizedLocale: string): any {
+function getLocaleData(normalizedLocale: string): any {
   if (!(normalizedLocale in LOCALE_DATA)) {
     LOCALE_DATA[normalizedLocale] =
       global.ng &&
