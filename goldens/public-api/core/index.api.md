@@ -1531,6 +1531,52 @@ export interface RendererType2 {
 export function resolveForwardRef<T>(type: T): T;
 
 // @public
+export interface Resource<T> {
+    // (undocumented)
+    readonly error: Signal<unknown>;
+    hasValue(): this is Resource<T> & {
+        value: Signal<T>;
+    };
+    isLoading(): boolean;
+    refresh(): boolean;
+    // (undocumented)
+    readonly status: Signal<ResourceStatus>;
+    readonly value: Signal<T | undefined>;
+}
+
+// @public
+export function resource<T>(options: ResourceOptions<T, unknown>): WritableResource<T>;
+
+// @public
+export function resource<T, R>(options: ResourceOptions<T, R>): WritableResource<T>;
+
+// @public
+export type ResourceLoader<T, R> = (param: ResourceLoaderParams<R>) => Promise<T>;
+
+// @public
+export interface ResourceLoaderParams<R> {
+    // (undocumented)
+    abortSignal: AbortSignal;
+    // (undocumented)
+    previous: {
+        status: ResourceStatus;
+    };
+    // (undocumented)
+    request: Exclude<NoInfer<R>, undefined>;
+}
+
+// @public
+export interface ResourceOptions<T, R> {
+    equal?: ValueEqualityFn<T>;
+    injector?: Injector;
+    loader: ResourceLoader<T, R>;
+    request?: () => R;
+}
+
+// @public
+export type ResourceStatus = 'idle' | 'error' | 'loading' | 'refreshing' | 'resolved' | 'local';
+
+// @public
 export function runInInjectionContext<ReturnT>(injector: Injector, fn: () => ReturnT): ReturnT;
 
 // @public
@@ -1860,6 +1906,18 @@ export abstract class ViewRef extends ChangeDetectorRef {
     abstract destroy(): void;
     abstract get destroyed(): boolean;
     abstract onDestroy(callback: Function): void;
+}
+
+// @public
+export interface WritableResource<T> extends Resource<T> {
+    // (undocumented)
+    asReadonly(): Resource<T>;
+    // (undocumented)
+    hasValue(): this is WritableResource<T> & {
+        value: WritableSignal<T>;
+    };
+    // (undocumented)
+    readonly value: WritableSignal<T | undefined>;
 }
 
 // @public
