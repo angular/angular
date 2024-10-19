@@ -4,6 +4,7 @@
 
 ```ts
 
+import { BehaviorSubject } from 'rxjs';
 import { EnvironmentProviders as EnvironmentProviders_2 } from '@angular/core';
 import { Observable } from 'rxjs';
 import { SIGNAL } from '@angular/core/primitives/signals';
@@ -1664,7 +1665,7 @@ export abstract class TemplateRef<C> {
 
 // @public
 export class Testability implements PublicTestability {
-    constructor(_ngZone: NgZone, registry: TestabilityRegistry, testabilityGetter: GetTestability);
+    constructor(_ngZone: NgZone, registry: TestabilityRegistry, testabilityGetter: GetTestability, pendingTasks: ɵPendingTasks);
     findProviders(using: any, provider: string, exactMatch: boolean): any[];
     isStable(): boolean;
     whenStable(doneCb: Function, timeout?: number, updateCb?: Function): void;

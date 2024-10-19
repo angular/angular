@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Inject, Injectable, InjectionToken} from '../di';
+import {Inject, Injectable, InjectionToken, inject} from '../di';
+import {PendingTasks} from '../pending_tasks';
 import {NgZone} from '../zone/ng_zone';
 
 /**
@@ -86,6 +87,7 @@ export class Testability implements PublicTestability {
 
   private taskTrackingZone: {macroTasks: Task[]} | null = null;
 
+  private readonly pendingTasks = inject(PendingTasks);
   constructor(
     private _ngZone: NgZone,
     private registry: TestabilityRegistry,
@@ -112,6 +114,18 @@ export class Testability implements PublicTestability {
     });
 
     this._ngZone.runOutsideAngular(() => {
+      this.pendingTasks.hasPendingTasks.subscribe(() => {
+        // Only run callbacks when stable. This avoids overlapping with
+        // any zone stability callbacks because _isZoneStable is set
+        // in a microtask and avoids any subscription race conditions
+        // when the pending task is removed from zone becoming stable.
+        if (this.isStable()) {
+          this._ngZone.runOutsideAngular(() => {
+            this._runCallbacksIfReady();
+          });
+        }
+      });
+
       this._ngZone.onStable.subscribe({
         next: () => {
           NgZone.assertNotInAngularZone();
@@ -128,7 +142,11 @@ export class Testability implements PublicTestability {
    * Whether an associated application is stable
    */
   isStable(): boolean {
-    return this._isZoneStable && !this._ngZone.hasPendingMacrotasks;
+    return (
+      this._isZoneStable &&
+      !this._ngZone.hasPendingMacrotasks &&
+      !this.pendingTasks.hasPendingTasks.value
+    );
   }
 
   private _runCallbacksIfReady(): void {
