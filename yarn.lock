@@ -403,9 +403,9 @@
     tslib "^2.3.0"
 
 "@angular/core@^19.0.0-next":
-  version "19.0.0-next.10"
-  resolved "https://registry.yarnpkg.com/@angular/core/-/core-19.0.0-next.10.tgz#e61e28d12741bd81fb75ccd1efd1b3840f38b341"
-  integrity sha512-//emUO2j82yEXszfn4ml6w8zaDQkd5vHbejmyPAiL5maTDkRNlsUP4Q5DEloxLBzMksnhJkBLz1Q1f4pxXWnIA==
+  version "19.0.0-next.11"
+  resolved "https://registry.yarnpkg.com/@angular/core/-/core-19.0.0-next.11.tgz#acd3171e0f4e5639637cdc82e2256b4a32b63ea8"
+  integrity sha512-szUSipRfptrUAz/boXBFbjQNebt17t6ewVADxVQN2M8ioyNxgH7oHObELDF9bHZwVOjUPESj0b2hte7pf3pGrQ==
   dependencies:
     tslib "^2.3.0"
 
