@@ -7,7 +7,6 @@
  */
 
 import {ErrorHandler} from '../src/error_handler';
-import {wrappedError} from '../src/util/errors';
 
 class MockConsole {
   res: any[][] = [];
@@ -38,21 +37,5 @@ describe('ErrorHandler', () => {
     expect(errorToString(false)).toBe('ERROR#false');
     expect(errorToString(null)).toBe('ERROR#null');
     expect(errorToString(undefined)).toBe('ERROR#undefined');
-  });
-
-  describe('original exception', () => {
-    it('should print original exception message if available (original is Error)', () => {
-      const realOriginal = new Error('inner');
-      const original = wrappedError('wrapped', realOriginal);
-      const e = errorToString(wrappedError('wrappedwrapped', original));
-      expect(e).toContain('inner');
-    });
-
-    it('should print original exception message if available (original is not Error)', () => {
-      const realOriginal = new Error('custom');
-      const original = wrappedError('wrapped', realOriginal);
-      const e = errorToString(wrappedError('wrappedwrapped', original));
-      expect(e).toContain('custom');
-    });
   });
 });
