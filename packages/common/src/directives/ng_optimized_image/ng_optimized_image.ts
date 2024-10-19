@@ -299,6 +299,9 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   // a LCP image observer - should be injected only in the dev mode
   private lcpObserver = ngDevMode ? this.injector.get(LCPImageObserver) : null;
 
+  // to setup the placeholder cleanup only once.
+  private placeholderCleanupIsSet = false;
+
   /**
    * Calculate the rewritten `src` once and store it.
    * This is needed to avoid repetitive calculations and make sure the directive cleanup in the
@@ -544,6 +547,10 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       }
     }
 
+    if (changes['placeholder'] && !changes['placeholder'].isFirstChange()) {
+      this.removePlaceholderOnLoad(this.imgElement);
+    }
+
     if (ngDevMode && changes['placeholder']?.currentValue && !this.isServer) {
       assertPlaceholderDimensions(this, this.imgElement);
     }
@@ -698,12 +705,18 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   }
 
   private removePlaceholderOnLoad(img: HTMLImageElement): void {
+    if (this.placeholderCleanupIsSet) {
+      return;
+    }
+    this.placeholderCleanupIsSet = true;
+
     const callback = () => {
       const changeDetectorRef = this.injector.get(ChangeDetectorRef);
       removeLoadListenerFn();
       removeErrorListenerFn();
       this.placeholder = false;
       changeDetectorRef.markForCheck();
+      this.placeholderCleanupIsSet = false;
     };
 
     const removeLoadListenerFn = this.renderer.listen(img, 'load', callback);
