@@ -234,9 +234,6 @@
     "name": "getNullInjector"
   },
   {
-    "name": "getOriginalError"
-  },
-  {
     "name": "getOwnDefinition"
   },
   {

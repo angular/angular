@@ -177,9 +177,6 @@
     "name": "ENVIRONMENT_INITIALIZER"
   },
   {
-    "name": "ERROR_ORIGINAL_ERROR"
-  },
-  {
     "name": "EVENT_MANAGER_PLUGINS"
   },
   {
@@ -978,9 +975,6 @@
     "name": "getOrCreateTNode"
   },
   {
-    "name": "getOriginalError"
-  },
-  {
     "name": "getOwnDefinition"
   },
   {
@@ -1441,9 +1435,6 @@
   },
   {
     "name": "init_errors3"
-  },
-  {
-    "name": "init_errors4"
   },
   {
     "name": "init_errors_di"
