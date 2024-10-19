@@ -238,7 +238,18 @@ export class FormBuilder {
       newOptions.validators = (options as any).validator;
       newOptions.asyncValidators = (options as any).asyncValidator;
     }
-    return new FormGroup(reducedControls, newOptions);
+    const formGroup = new FormGroup(reducedControls, newOptions);
+    if (options !== null && 'disable' in options) {
+      // Throw an error if the `disable` option is not a boolean value.
+      if (typeof options['disable'] !== 'boolean') {
+        throw new Error(`Expected 'disable' to be a boolean value.`);
+      }
+      // Disable the form group if the `disable` option is set to true.
+      if (options['disable']) {
+        formGroup.disable();
+      }
+    }
+    return formGroup;
   }
 
   /**
