@@ -28,6 +28,7 @@ export interface Config {
   dataGroups?: DataGroup[];
   navigationUrls?: string[];
   navigationRequestStrategy?: 'freshness' | 'performance';
+  applicationMaxAge?: Duration;
 }
 
 /**

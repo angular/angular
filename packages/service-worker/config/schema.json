@@ -177,6 +177,10 @@
       ],
       "default": "performance",
       "description": "The Angular service worker can use two request strategies for navigation requests. 'performance', the default, skips navigation requests. The other strategy, 'freshness', forces all navigation requests through the network."
+    },
+    "applicationMaxAge": {
+      "type": "string",
+      "description": "Indicates how long the entire application is allowed to remain in the cache before being considered invalid and bypassed. 'maxAge' is a duration string, using the following unit suffixes: d= days, h= hours, m= minutes, s= seconds, u= milliseconds. For example, the string '3d12h' will cache content for up to three and a half days."
     }
   },
   "required": [
