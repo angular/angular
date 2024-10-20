@@ -73,8 +73,22 @@ export abstract class TsurgeBaseMigration<UnitAnalysisMetadata, CombinedGlobalMe
   /** Analyzes the given TypeScript project and returns serializable compilation unit data. */
   abstract analyze(info: ProgramInfo): Promise<Serializable<UnitAnalysisMetadata>>;
 
-  /** Merges all compilation unit data from previous analysis phases into a global result. */
-  abstract merge(units: UnitAnalysisMetadata[]): Promise<Serializable<CombinedGlobalMetadata>>;
+  /**
+   * Combines two unit analyses into a single analysis metadata.
+   * This is necessary to allow for parallel merging of metadata.
+   */
+  abstract combine(
+    unitA: UnitAnalysisMetadata,
+    unitB: UnitAnalysisMetadata,
+  ): Promise<Serializable<UnitAnalysisMetadata>>;
+
+  /**
+   * Converts combined compilation into global metadata result that
+   * is then available for migrate and stats stages.
+   */
+  abstract globalMeta(
+    combinedData: UnitAnalysisMetadata,
+  ): Promise<Serializable<CombinedGlobalMetadata>>;
 
   /** Extract statistics based on the global metadata. */
   abstract stats(globalMetadata: CombinedGlobalMetadata): Promise<MigrationStats>;
