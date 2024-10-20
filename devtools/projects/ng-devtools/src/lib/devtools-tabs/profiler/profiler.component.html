@@ -30,13 +30,15 @@
         <mat-icon> not_interested </mat-icon>
       </button>
     }
-    <p class="instructions" [class.hidden]="state !== 'idle'">
-      <span> Click the record button to start a new recording, or upload a json file containing profiler data. </span>
-      <br />
-      <span>
-        <input type="file" (change)="importProfilerResults($event)" placeholder="Upload file" accept=".json" />
-      </span>
-    </p>
+    <div class="instructions" [class.hidden]="state !== 'idle'" style="width: 100%;">
+      <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;"> 
+        <span> Click the record button to start a new recording, or upload a json file containing profiler data. </span>
+        <button mat-icon-button color="primary" type="button" title="Upload report data" (click)="profileUpload.click()">
+          <mat-icon> upload </mat-icon>
+        </button>
+        <input #profileUpload style="display: none;" type="file" (change)="importProfilerResults($event)" placeholder="Upload file" accept=".json" />
+      </div>  
+    </div>
     <p class="instructions" [class.hidden]="state !== 'recording'">
       Interact to preview change detection. Clicking stop ends this Profiler recording.
     </p>
