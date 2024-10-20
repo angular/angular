@@ -10,14 +10,15 @@ import {Serializable} from '../helpers/serializable';
 import {TsurgeMigration} from '../migration';
 
 /**
- * Executes the merge phase for the given migration against
- * the given set of analysis unit data.
+ * Executes the combine phase for the given migration against
+ * two unit analyses.
  *
- * @returns the serializable migration global data.
+ * @returns the serializable combined unit data.
  */
-export async function executeMergePhase<UnitData, GlobalData>(
+export async function executeCombinePhase<UnitData, GlobalData>(
   migration: TsurgeMigration<UnitData, GlobalData>,
-  units: UnitData[],
-): Promise<Serializable<GlobalData>> {
-  return await migration.merge(units);
+  unitA: UnitData,
+  unitB: UnitData,
+): Promise<Serializable<UnitData>> {
+  return await migration.combine(unitA, unitB);
 }
