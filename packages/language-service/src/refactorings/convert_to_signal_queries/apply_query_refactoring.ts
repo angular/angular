@@ -55,8 +55,8 @@ export async function applySignalQueriesRefactoring(
   });
 
   const unitData = await migration.analyze(programInfo);
-  const merged = await migration.merge([unitData]);
-  const {replacements, knownQueries} = await migration.migrate(merged, programInfo);
+  const globalMeta = await migration.globalMeta(unitData);
+  const {replacements, knownQueries} = await migration.migrate(globalMeta, programInfo);
 
   const targetQueries = Array.from(knownQueries.knownQueryIDs.values()).filter((descriptor) =>
     shouldMigrateQuery(descriptor, projectFile(descriptor.node.getSourceFile(), programInfo)),
