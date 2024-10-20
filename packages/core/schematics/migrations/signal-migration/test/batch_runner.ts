@@ -53,18 +53,24 @@ async function main() {
       // write individual result.
       await fs.promises.writeFile(extractResultFile, extractResult);
     });
-  } else if (mode === 'merge') {
+  } else if (mode === 'combine-all') {
     const metadataFiles = files.map((f) => path.resolve(path.join(sourceDir, `${f}.extract.json`)));
-    const mergeResult = await promiseExec(`migration merge ${metadataFiles.join(' ')}`);
+    const mergeResult = await promiseExec(`migration combine-all ${metadataFiles.join(' ')}`);
 
     // write merge result.
-    await fs.promises.writeFile(path.join(sourceDir, 'merged.json'), mergeResult);
+    await fs.promises.writeFile(path.join(sourceDir, 'combined.json'), mergeResult);
+  } else if (mode === 'global-meta') {
+    const combinedUnitFile = path.join(sourceDir, 'combined.json');
+    const globalMeta = await promiseExec(`migration global-meta ${combinedUnitFile}`);
+
+    // write global meta result.
+    await fs.promises.writeFile(path.join(sourceDir, 'global_meta.json'), globalMeta);
   } else if (mode === 'migrate') {
     schedule(files, maxParallel, async (fileName) => {
       const filePath = path.join(sourceDir, fileName);
       // tsconfig should exist from analyze phase.
       const tmpTsconfigName = path.join(sourceDir, `${fileName}.tsconfig.json`);
-      const mergeMetadataFile = path.join(sourceDir, 'merged.json');
+      const mergeMetadataFile = path.join(sourceDir, 'global_meta.json');
 
       // migrate in parallel.
       await promiseExec(
