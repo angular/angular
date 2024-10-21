@@ -5,9 +5,14 @@ function insertDebugNameIntoExistingConfigObject(
   debugName: string,
   configPosition: number,
 ): ts.CallExpression {
-  const nodeArgs = [...callExpression.arguments];
+  const nodeArgs = Array.from(callExpression.arguments);
+  const existingArgument = nodeArgs[configPosition];
+  if (!ts.isObjectLiteralExpression(existingArgument)) {
+    // We shouldn't hit this case since this function is only called after this check is already done,
+    // but in case this function is reused somewhere else, we rerun the check inside this function.
+    return callExpression;
+  }
 
-  const existingArgument = nodeArgs[configPosition] as ts.ObjectLiteralExpression;
   const properties = Array.from(existingArgument.properties);
 
   const debugNameExists = properties.some(
