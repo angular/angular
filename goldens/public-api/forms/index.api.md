@@ -21,7 +21,7 @@ import { SimpleChanges } from '@angular/core';
 import { Version } from '@angular/core';
 
 // @public
-export abstract class AbstractControl<TValue = any, TRawValue extends TValue = TValue> {
+export abstract class AbstractControl<TValue = any, TRawValue extends TValue = TValue, TValueWithOptionalControlStates = any> {
     constructor(validators: ValidatorFn | ValidatorFn[] | null, asyncValidators: AsyncValidatorFn | AsyncValidatorFn[] | null);
     addAsyncValidators(validators: AsyncValidatorFn | AsyncValidatorFn[]): void;
     addValidators(validators: ValidatorFn | ValidatorFn[]): void;
@@ -79,7 +79,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     get pristine(): boolean;
     removeAsyncValidators(validators: AsyncValidatorFn | AsyncValidatorFn[]): void;
     removeValidators(validators: ValidatorFn | ValidatorFn[]): void;
-    abstract reset(value?: TValue, options?: Object): void;
+    abstract reset(value?: TValueWithOptionalControlStates, options?: Object): void;
     get root(): AbstractControl;
     setAsyncValidators(validators: AsyncValidatorFn | AsyncValidatorFn[] | null): void;
     setErrors(errors: ValidationErrors | null, opts?: {
@@ -421,7 +421,7 @@ export type FormControlStatus = 'VALID' | 'INVALID' | 'PENDING' | 'DISABLED';
 // @public
 export class FormGroup<TControl extends {
     [K in keyof TControl]: AbstractControl<any>;
-} = any> extends AbstractControl<ɵTypedOrUntyped<TControl, ɵFormGroupValue<TControl>, any>, ɵTypedOrUntyped<TControl, ɵFormGroupRawValue<TControl>, any>> {
+} = any> extends AbstractControl<ɵTypedOrUntyped<TControl, ɵFormGroupValue<TControl>, any>, ɵTypedOrUntyped<TControl, ɵFormGroupRawValue<TControl>, any>, ɵTypedOrUntyped<TControl, ɵFormGroupArgumentValue<TControl>, any>> {
     constructor(controls: TControl, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
     addControl(this: FormGroup<{
         [key: string]: AbstractControl<any>;
@@ -461,7 +461,7 @@ export class FormGroup<TControl extends {
     removeControl<S extends string>(name: ɵOptionalKeys<TControl> & S, options?: {
         emitEvent?: boolean;
     }): void;
-    reset(value?: ɵTypedOrUntyped<TControl, ɵFormGroupValue<TControl>, any>, options?: {
+    reset(value?: ɵTypedOrUntyped<TControl, ɵFormGroupArgumentValue<TControl>, any>, options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
     }): void;
@@ -549,7 +549,7 @@ export interface FormRecord<TControl> {
         emitEvent?: boolean;
     }): void;
     reset(value?: {
-        [key: string]: ɵValue<TControl>;
+        [key: string]: ɵValue<TControl> | FormControlState<ɵValue<TControl>>;
     }, options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
