@@ -7,6 +7,11 @@ function insertDebugNameIntoExistingConfigObject(
 ): ts.CallExpression {
   const nodeArgs = Array.from(callExpression.arguments);
   const existingArgument = nodeArgs[configPosition];
+
+  if (ts.isIdentifier(existingArgument)) {
+    return callExpression;
+  }
+
   if (!ts.isObjectLiteralExpression(existingArgument)) {
     // We shouldn't hit this case since this function is only called after this check is already done,
     // but in case this function is reused somewhere else, we rerun the check inside this function.
@@ -169,9 +174,11 @@ function isPropertyAssignmentCase(node: ts.Node): node is ts.ExpressionStatement
   if (binaryExpression.operatorToken.kind !== ts.SyntaxKind.EqualsToken) {
     return false;
   }
+
   if (!ts.isCallExpression(binaryExpression.right)) {
     return false;
   }
+
   if (!ts.isPropertyAccessExpression(binaryExpression.left)) {
     return false;
   }
