@@ -8,7 +8,7 @@
 
 import {DtsMetadataReader} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {confirmAsSerializable} from '../helpers/serializable';
+import {confirmAsSerializable, Serializable} from '../helpers/serializable';
 import {TsurgeComplexMigration} from '../migration';
 import {ProgramInfo} from '../program_info';
 import {Replacement, TextUpdate} from '../replacement';
@@ -52,26 +52,37 @@ export class OutputMigration extends TsurgeComplexMigration<AnalysisUnit, Global
     return confirmAsSerializable(discoveredOutputs);
   }
 
-  override async merge(data: AnalysisUnit[]) {
-    const merged: GlobalMetadata = {};
+  override async combine(unitA: AnalysisUnit, unitB: AnalysisUnit) {
+    const merged: AnalysisUnit = {};
 
-    // Merge information from all compilation units. Mark
+    // Merge information from two compilation units. Mark
     // outputs that cannot be migrated due to seen problematic usages.
-    for (const unit of data) {
+    for (const unit of [unitA, unitB]) {
       for (const [idStr, info] of Object.entries(unit)) {
         const id = idStr as OutputID;
         const existing = merged[id];
 
         if (existing === undefined) {
-          merged[id] = {canBeMigrated: info.seenProblematicUsage === false};
-        } else if (existing.canBeMigrated && info.seenProblematicUsage) {
-          merged[id].canBeMigrated = false;
+          merged[id] = {seenProblematicUsage: info.seenProblematicUsage};
+        } else if (!existing.seenProblematicUsage && info.seenProblematicUsage) {
+          merged[id].seenProblematicUsage = true;
         }
       }
     }
 
-    // merge units into global metadata.
     return confirmAsSerializable(merged);
+  }
+
+  override async globalMeta(combinedData: AnalysisUnit) {
+    const globalMeta: GlobalMetadata = {};
+
+    for (const [idStr, info] of Object.entries(combinedData)) {
+      globalMeta[idStr as OutputID] = {
+        canBeMigrated: info.seenProblematicUsage === false,
+      };
+    }
+
+    return confirmAsSerializable(globalMeta);
   }
 
   override async migrate(globalAnalysisData: GlobalMetadata, info: ProgramInfo) {

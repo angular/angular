@@ -9,11 +9,12 @@
 import fs from 'fs';
 import path from 'path';
 import {executeAnalyzePhase} from '../../../../utils/tsurge/executors/analyze_exec';
-import {executeMergePhase} from '../../../../utils/tsurge/executors/merge_exec';
 import {executeMigratePhase} from '../../../../utils/tsurge/executors/migrate_exec';
 import {SignalInputMigration} from '../migration';
 import {writeMigrationReplacements} from '../write_replacements';
 import {CompilationUnitData} from './unit_data';
+import {executeGlobalMetaPhase} from '../../../../utils/tsurge/executors/global_meta_exec';
+import {synchronouslyCombineUnitData} from '../../../../utils/tsurge/helpers/combine_units';
 
 main().catch((e) => {
   console.error(e);
@@ -27,19 +28,16 @@ async function main() {
   if (mode === 'extract') {
     const analyzeResult = await executeAnalyzePhase(migration, path.resolve(args[0]));
     process.stdout.write(JSON.stringify(analyzeResult));
-  } else if (mode === 'merge') {
-    const mergedResult = await executeMergePhase(
-      migration,
-      await Promise.all(
-        args.map((p) =>
-          fs.promises
-            .readFile(path.resolve(p), 'utf8')
-            .then((data) => JSON.parse(data) as CompilationUnitData),
-        ),
-      ),
-    );
+  } else if (mode === 'combine-all') {
+    const unitPromises = args.map((f) => readUnitMeta(path.resolve(f)));
+    const units = await Promise.all(unitPromises);
+    const mergedResult = await synchronouslyCombineUnitData(migration, units);
 
     process.stdout.write(JSON.stringify(mergedResult));
+  } else if (mode === 'global-meta') {
+    const metaResult = await executeGlobalMetaPhase(migration, await readUnitMeta(args[0]));
+
+    process.stdout.write(JSON.stringify(metaResult));
   } else if (mode === 'migrate') {
     const {replacements, projectRoot} = await executeMigratePhase(
       migration,
@@ -49,4 +47,10 @@ async function main() {
 
     writeMigrationReplacements(replacements, projectRoot);
   }
+}
+
+async function readUnitMeta(filePath: string): Promise<CompilationUnitData> {
+  return fs.promises
+    .readFile(filePath, 'utf8')
+    .then((data) => JSON.parse(data) as CompilationUnitData);
 }
