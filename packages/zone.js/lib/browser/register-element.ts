@@ -8,7 +8,7 @@
 
 export function registerElementPatch(_global: any, api: _ZonePrivate) {
   const {isBrowser, isMix} = api.getGlobalObjects()!;
-  if ((!isBrowser && !isMix) || !('registerElement' in (<any>_global).document)) {
+  if ((!isBrowser && !isMix) || !('registerElement' in (<any>_global).Document.prototype)) {
     return;
   }
 
@@ -19,5 +19,5 @@ export function registerElementPatch(_global: any, api: _ZonePrivate) {
     'attributeChangedCallback',
   ];
 
-  api.patchCallbacks(api, document, 'Document', 'registerElement', callbacks);
+  api.patchCallbacks(api, Document.prototype, 'Document', 'registerElement', callbacks);
 }
