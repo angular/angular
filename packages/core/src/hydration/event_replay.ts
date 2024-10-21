@@ -40,7 +40,7 @@ import {
 import {APP_ID} from '../application/application_tokens';
 import {performanceMarkFeature} from '../util/performance';
 import {hydrateFromBlockName, findFirstKnownParentDeferBlock} from './blocks';
-import {DeferBlock, HydrateTriggerDetails, DeferBlockTrigger} from '../defer/interfaces';
+import {DeferBlock, DeferBlockTrigger, HydrateTriggerDetails} from '../defer/interfaces';
 import {triggerAndWaitForCompletion} from '../defer/instructions';
 import {cleanupDehydratedViews, cleanupLContainer} from './cleanup';
 import {hoverEventNames, interactionEventNames} from '../defer/dom_triggers';
@@ -292,7 +292,7 @@ function replayQueuedBlockEvents(hydratedBlocks: Set<string>, injector: Injector
 }
 
 export function convertHydrateTriggersToJsAction(
-  triggers: Set<DeferBlockTrigger | HydrateTriggerDetails> | null,
+  triggers: Map<DeferBlockTrigger, HydrateTriggerDetails | null> | null,
 ): string[] {
   let actionList: string[] = [];
   if (triggers !== null) {

@@ -83,7 +83,6 @@ import {
   STATE_IS_FROZEN_UNTIL,
   TDeferBlockDetails,
   TriggerType,
-  HydrateTriggerDetails,
   DeferBlock,
   UNIQUE_SSR_ID,
 } from './interfaces';
@@ -170,12 +169,9 @@ function shouldTriggerDeferBlock(
   return isPlatformBrowser(injector) || tDeferBlockDetails.hydrateTriggers !== null;
 }
 
-function getHydrateTriggers(
-  tView: TView,
-  tNode: TNode,
-): Set<DeferBlockTrigger | HydrateTriggerDetails> {
+function getHydrateTriggers(tView: TView, tNode: TNode): Map<DeferBlockTrigger, number | null> {
   const tDetails = getTDeferBlockDetails(tView, tNode);
-  return (tDetails.hydrateTriggers ??= new Set());
+  return (tDetails.hydrateTriggers ??= new Map());
 }
 
 function getPrefetchTriggers(tDetails: TDeferBlockDetails): Set<DeferBlockTrigger> {
@@ -403,7 +399,7 @@ export function ɵɵdeferHydrateWhen(rawValue: unknown) {
   const tNode = getSelectedTNode();
   const tView = getTView();
   const hydrateTriggers = getHydrateTriggers(tView, tNode);
-  hydrateTriggers.add(DeferBlockTrigger.When);
+  hydrateTriggers.set(DeferBlockTrigger.When, null);
 
   if (bindingUpdated(lView, bindingIndex, rawValue)) {
     const injector = lView[INJECTOR]!;
@@ -439,7 +435,7 @@ export function ɵɵdeferHydrateNever() {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
   const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
-  hydrateTriggers.add(DeferBlockTrigger.Never);
+  hydrateTriggers.set(DeferBlockTrigger.Never, null);
 
   if (shouldTriggerWhenOnServer(lView[INJECTOR]!)) {
     // We are on the server and SSR for defer blocks is enabled.
@@ -471,7 +467,7 @@ export function ɵɵdeferHydrateOnIdle() {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
   const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
-  hydrateTriggers.add(DeferBlockTrigger.Idle);
+  hydrateTriggers.set(DeferBlockTrigger.Idle, null);
 
   if (shouldTriggerWhenOnServer(lView[INJECTOR]!)) {
     // We are on the server and SSR for defer blocks is enabled.
@@ -531,7 +527,7 @@ export function ɵɵdeferHydrateOnImmediate() {
   const injector = lView[INJECTOR]!;
   const lDetails = getLDeferBlockDetails(lView, tNode);
   const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
-  hydrateTriggers.add(DeferBlockTrigger.Immediate);
+  hydrateTriggers.set(DeferBlockTrigger.Immediate, null);
 
   if (shouldTriggerWhenOnServer(injector)) {
     triggerDeferBlock(lView, tNode);
@@ -571,7 +567,7 @@ export function ɵɵdeferHydrateOnTimer(delay: number) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
   const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
-  hydrateTriggers.add({trigger: DeferBlockTrigger.Timer, delay});
+  hydrateTriggers.set(DeferBlockTrigger.Timer, delay);
 
   if (shouldTriggerWhenOnServer(lView[INJECTOR]!)) {
     // We are on the server and SSR for defer blocks is enabled.
@@ -641,7 +637,7 @@ export function ɵɵdeferHydrateOnHover() {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
   const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
-  hydrateTriggers.add(DeferBlockTrigger.Hover);
+  hydrateTriggers.set(DeferBlockTrigger.Hover, null);
 
   if (shouldTriggerWhenOnServer(lView[INJECTOR]!)) {
     // We are on the server and SSR for defer blocks is enabled.
@@ -709,7 +705,7 @@ export function ɵɵdeferHydrateOnInteraction() {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
   const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
-  hydrateTriggers.add(DeferBlockTrigger.Interaction);
+  hydrateTriggers.set(DeferBlockTrigger.Interaction, null);
 
   if (shouldTriggerWhenOnServer(lView[INJECTOR]!)) {
     // We are on the server and SSR for defer blocks is enabled.
@@ -777,7 +773,7 @@ export function ɵɵdeferHydrateOnViewport() {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
   const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
-  hydrateTriggers.add(DeferBlockTrigger.Viewport);
+  hydrateTriggers.set(DeferBlockTrigger.Viewport, null);
   const injector = lView[INJECTOR]!;
 
   if (shouldTriggerWhenOnServer(injector)) {
