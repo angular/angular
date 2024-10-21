@@ -8,7 +8,7 @@
 
 import {TransferState} from '../transfer_state';
 import {onIdle} from '../defer/idle_scheduler';
-import {HydrateTriggerDetails, DeferBlockTrigger} from '../defer/interfaces';
+import {DeferBlockTrigger} from '../defer/interfaces';
 import {DeferBlockRegistry} from '../defer/registry';
 import {onTimer} from '../defer/timer_scheduler';
 import {Injector} from '../di';
@@ -16,9 +16,9 @@ import {assertDefined} from '../util/assert';
 import {incrementallyHydrateFromBlockName} from './blocks';
 import {
   DEFER_HYDRATE_TRIGGERS,
-  DEFER_PREFETCH_TRIGGERS,
   NUM_ROOT_NODES,
   SerializedDeferBlock,
+  SerializedTriggerDetails,
 } from './interfaces';
 import {NGH_DEFER_BLOCKS_KEY} from './utils';
 import {onViewport} from '../defer/dom_triggers';
@@ -33,7 +33,6 @@ export function bootstrapIncrementalHydration(doc: Document, injector: Injector)
 interface BlockSummary {
   data: SerializedDeferBlock;
   hydrate: {idle: boolean; immediate: boolean; viewport: boolean; timer: boolean};
-  prefetch: {idle: boolean; immediate: boolean; viewport: boolean; timer: boolean};
 }
 
 interface ElementTrigger {
@@ -42,7 +41,7 @@ interface ElementTrigger {
   delay?: number;
 }
 
-function isTimerTrigger(triggerInfo: DeferBlockTrigger | HydrateTriggerDetails): boolean {
+function isTimerTrigger(triggerInfo: DeferBlockTrigger | SerializedTriggerDetails): boolean {
   return typeof triggerInfo === 'object' && triggerInfo.trigger === DeferBlockTrigger.Timer;
 }
 
@@ -54,10 +53,6 @@ function hasHydrateTrigger(blockData: SerializedDeferBlock, trigger: DeferBlockT
   return blockData[DEFER_HYDRATE_TRIGGERS]?.includes(trigger) ?? false;
 }
 
-function hasPrefetchTrigger(blockData: SerializedDeferBlock, trigger: DeferBlockTrigger): boolean {
-  return blockData[DEFER_PREFETCH_TRIGGERS]?.includes(trigger) ?? false;
-}
-
 function createBlockSummary(blockInfo: SerializedDeferBlock): BlockSummary {
   return {
     data: blockInfo,
@@ -66,12 +61,6 @@ function createBlockSummary(blockInfo: SerializedDeferBlock): BlockSummary {
       immediate: hasHydrateTrigger(blockInfo, DeferBlockTrigger.Immediate),
       timer: hasHydrateTimerTrigger(blockInfo),
       viewport: hasHydrateTrigger(blockInfo, DeferBlockTrigger.Viewport),
-    },
-    prefetch: {
-      idle: hasPrefetchTrigger(blockInfo, DeferBlockTrigger.Idle),
-      immediate: hasPrefetchTrigger(blockInfo, DeferBlockTrigger.Immediate),
-      timer: hasPrefetchTrigger(blockInfo, DeferBlockTrigger.Timer),
-      viewport: hasPrefetchTrigger(blockInfo, DeferBlockTrigger.Viewport),
     },
   };
 }
@@ -106,7 +95,7 @@ function gatherDeferBlocksCommentNodes(doc: Document, node?: HTMLElement): Map<s
 function getTimerDelay(summary: BlockSummary): number {
   const hydrateTrigger = summary.data[DEFER_HYDRATE_TRIGGERS]!.find((t) =>
     isTimerTrigger(t),
-  ) as HydrateTriggerDetails;
+  ) as SerializedTriggerDetails;
   return hydrateTrigger.delay!;
 }
 

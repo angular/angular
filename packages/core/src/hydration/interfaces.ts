@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {HydrateTriggerDetails, DeferBlockTrigger} from '../defer/interfaces';
+import type {DeferBlockTrigger} from '../defer/interfaces';
 import type {I18nICUNode} from '../render3/interfaces/i18n';
 import {RNode} from '../render3/interfaces/renderer_dom';
 
@@ -177,13 +177,12 @@ export interface SerializedDeferBlock {
    * The list of triggers that exist for incremental hydration, based on the
    * `Trigger` enum.
    */
-  [DEFER_HYDRATE_TRIGGERS]: (DeferBlockTrigger | HydrateTriggerDetails)[] | null;
+  [DEFER_HYDRATE_TRIGGERS]: (DeferBlockTrigger | SerializedTriggerDetails)[] | null;
+}
 
-  /**
-   * The list of triggers that exist for prefetching, based on the
-   * `Trigger` enum.
-   */
-  [DEFER_PREFETCH_TRIGGERS]: DeferBlockTrigger[] | null;
+export interface SerializedTriggerDetails {
+  trigger: DeferBlockTrigger;
+  delay?: number;
 }
 
 /**

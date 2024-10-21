@@ -10,8 +10,8 @@ import {ApplicationRef} from '../application/application_ref';
 import {APP_ID} from '../application/application_tokens';
 import {
   DEFER_BLOCK_STATE as CURRENT_DEFER_BLOCK_STATE,
-  TDeferBlockDetails,
-  UNIQUE_SSR_ID,
+  DeferBlockTrigger,
+  HydrateTriggerDetails,
 } from '../defer/interfaces';
 import {getLDeferBlockDetails, getTDeferBlockDetails} from '../defer/utils';
 import {isDetachedByI18n} from '../i18n/utils';
@@ -59,7 +59,6 @@ import {
   DEFER_BLOCK_STATE,
   DEFER_HYDRATE_TRIGGERS,
   DEFER_PARENT_BLOCK_ID,
-  DEFER_PREFETCH_TRIGGERS,
   DISCONNECTED_NODES,
   ELEMENT_CONTAINERS,
   I18N_DATA,
@@ -68,6 +67,7 @@ import {
   NUM_ROOT_NODES,
   SerializedContainerView,
   SerializedDeferBlock,
+  SerializedTriggerDetails,
   SerializedView,
   TEMPLATE_ID,
   TEMPLATES,
@@ -424,10 +424,7 @@ function serializeLContainer(
             [DEFER_PARENT_BLOCK_ID]: parentDeferBlockId,
             [NUM_ROOT_NODES]: rootNodes.length,
             [DEFER_BLOCK_STATE]: lDetails[CURRENT_DEFER_BLOCK_STATE],
-            [DEFER_HYDRATE_TRIGGERS]:
-              tDetails.hydrateTriggers !== null ? [...tDetails.hydrateTriggers] : null,
-            [DEFER_PREFETCH_TRIGGERS]:
-              tDetails.prefetchTriggers !== null ? [...tDetails.prefetchTriggers] : null,
+            [DEFER_HYDRATE_TRIGGERS]: serializeHydrateTriggers(tDetails.hydrateTriggers),
           };
 
           context.deferBlocks.set(deferBlockId, deferBlockInfo);
@@ -478,6 +475,31 @@ function serializeLContainer(
     }
   }
   return views;
+}
+
+function serializeHydrateTriggers(
+  triggerMap: Map<DeferBlockTrigger, HydrateTriggerDetails | null> | null,
+): (DeferBlockTrigger | SerializedTriggerDetails)[] | null {
+  if (triggerMap === null) {
+    return null;
+  }
+  const serializableDeferBlockTrigger = new Set<DeferBlockTrigger>([
+    DeferBlockTrigger.Idle,
+    DeferBlockTrigger.Immediate,
+    DeferBlockTrigger.Viewport,
+    DeferBlockTrigger.Timer,
+  ]);
+  let triggers = [];
+  for (let [trigger, details] of triggerMap) {
+    if (serializableDeferBlockTrigger.has(trigger)) {
+      if (details === null) {
+        triggers.push(trigger);
+      } else {
+        triggers.push({trigger, details});
+      }
+    }
+  }
+  return triggers;
 }
 
 /**

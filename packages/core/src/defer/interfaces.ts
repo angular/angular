@@ -140,7 +140,7 @@ export interface TDeferBlockDetails {
   /**
    * List of hydrate triggers for a given block
    */
-  hydrateTriggers: Set<DeferBlockTrigger | HydrateTriggerDetails> | null;
+  hydrateTriggers: Map<DeferBlockTrigger, HydrateTriggerDetails | null> | null;
 
   /**
    * List of prefetch triggers for a given block
@@ -181,14 +181,13 @@ export const enum DeferBlockTrigger {
   Never,
 }
 
-/**
- * Describes hydration specific details for triggers that are necessary
- * for invoking incremental hydration with the proper timing.
- */
-export interface HydrateTriggerDetails {
-  trigger: DeferBlockTrigger;
-  delay?: number;
+/** * Describes specified delay (in ms) in the `hydrate on timer()` trigger. */
+export interface HydrateTimerTriggerDetails {
+  delay: number;
 }
+
+/** * Describes all possible hydration trigger details specified in a template. */
+export type HydrateTriggerDetails = HydrateTimerTriggerDetails;
 
 /**
  * Describes the initial state of this defer block instance.
