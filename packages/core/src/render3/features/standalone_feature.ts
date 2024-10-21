@@ -19,7 +19,7 @@ import {createEnvironmentInjector} from '../ng_module_ref';
  * created on demand in case of dynamic component instantiation and contain ambient providers
  * collected from the imports graph rooted at a given standalone component.
  */
-class StandaloneService implements OnDestroy {
+export class StandaloneService implements OnDestroy {
   cachedInjectors = new Map<ComponentDef<unknown>, EnvironmentInjector | null>();
 
   constructor(private _injector: EnvironmentInjector) {}
@@ -63,21 +63,4 @@ class StandaloneService implements OnDestroy {
     providedIn: 'environment',
     factory: () => new StandaloneService(inject(EnvironmentInjector)),
   });
-}
-
-/**
- * A feature that acts as a setup code for the {@link StandaloneService}.
- *
- * The most important responsibility of this feature is to expose the "getStandaloneInjector"
- * function (an entry points to a standalone injector creation) on a component definition object. We
- * go through the features infrastructure to make sure that the standalone injector creation logic
- * is tree-shakable and not included in applications that don't use standalone components.
- *
- * @codeGenApi
- */
-export function ɵɵStandaloneFeature(definition: ComponentDef<unknown>) {
-  performanceMarkFeature('NgStandalone');
-  definition.getStandaloneInjector = (parentInjector: EnvironmentInjector) => {
-    return parentInjector.get(StandaloneService).getOrCreateStandaloneInjector(definition);
-  };
 }

@@ -539,8 +539,6 @@ export class Identifiers {
     moduleName: CORE,
   };
 
-  static StandaloneFeature: o.ExternalReference = {name: 'ɵɵStandaloneFeature', moduleName: CORE};
-
   static ProvidersFeature: o.ExternalReference = {name: 'ɵɵProvidersFeature', moduleName: CORE};
 
   static HostDirectivesFeature: o.ExternalReference = {
