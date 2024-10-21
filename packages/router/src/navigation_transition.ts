@@ -892,19 +892,10 @@ export class NavigationTransitions {
                   throw e;
                 }
               } catch (ee) {
-                // TODO(atscott): consider flipping the default behavior of
-                // resolveNavigationPromiseOnError to be `resolve(false)` when
-                // undefined. This is the most sane thing to do given that
-                // applications very rarely handle the promise rejection and, as a
-                // result, would get "unhandled promise rejection" console logs.
-                // The vast majority of applications would not be affected by this
-                // change so omitting a migration seems reasonable. Instead,
-                // applications that rely on rejection can specifically opt-in to the
-                // old behavior.
-                if (this.options.resolveNavigationPromiseOnError) {
-                  overallTransitionState.resolve(false);
-                } else {
+                if (this.options.resolveNavigationPromiseOnError === false) {
                   overallTransitionState.reject(ee);
+                } else {
+                  overallTransitionState.resolve(false);
                 }
               }
             }
