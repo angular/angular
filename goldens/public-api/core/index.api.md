@@ -1546,6 +1546,59 @@ export interface RendererType2 {
 export function resolveForwardRef<T>(type: T): T;
 
 // @public
+export interface Resource<T> {
+    readonly error: Signal<unknown>;
+    hasValue(): this is Resource<T> & {
+        value: Signal<T>;
+    };
+    readonly isLoading: Signal<boolean>;
+    reload(): boolean;
+    readonly status: Signal<ResourceStatus>;
+    readonly value: Signal<T | undefined>;
+}
+
+// @public
+export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T>;
+
+// @public
+export type ResourceLoader<T, R> = (param: ResourceLoaderParams<R>) => PromiseLike<T>;
+
+// @public
+export interface ResourceLoaderParams<R> {
+    // (undocumented)
+    abortSignal: AbortSignal;
+    // (undocumented)
+    previous: {
+        status: ResourceStatus;
+    };
+    // (undocumented)
+    request: Exclude<NoInfer<R>, undefined>;
+}
+
+// @public
+export interface ResourceOptions<T, R> {
+    equal?: ValueEqualityFn<T>;
+    injector?: Injector;
+    loader: ResourceLoader<T, R>;
+    request?: () => R;
+}
+
+// @public
+export interface ResourceRef<T> extends WritableResource<T> {
+    destroy(): void;
+}
+
+// @public
+export enum ResourceStatus {
+    Error = 1,
+    Idle = 0,
+    Loading = 2,
+    Local = 5,
+    Reloading = 3,
+    Resolved = 4
+}
+
+// @public
 export function runInInjectionContext<ReturnT>(injector: Injector, fn: () => ReturnT): ReturnT;
 
 // @public
@@ -1875,6 +1928,20 @@ export abstract class ViewRef extends ChangeDetectorRef {
     abstract destroy(): void;
     abstract get destroyed(): boolean;
     abstract onDestroy(callback: Function): void;
+}
+
+// @public
+export interface WritableResource<T> extends Resource<T> {
+    // (undocumented)
+    asReadonly(): Resource<T>;
+    // (undocumented)
+    hasValue(): this is WritableResource<T> & {
+        value: WritableSignal<T>;
+    };
+    set(value: T | undefined): void;
+    update(updater: (value: T | undefined) => T | undefined): void;
+    // (undocumented)
+    readonly value: WritableSignal<T | undefined>;
 }
 
 // @public
