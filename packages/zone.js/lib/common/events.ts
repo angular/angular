@@ -69,29 +69,15 @@ interface InternalEventTask extends EventTask {
   // its invocation if dispatched later.
   isRemoved?: boolean;
   allRemoved?: boolean;
-}
-
-// Note that passive event listeners are now supported by most modern browsers,
-// including Chrome, Firefox, Safari, and Edge. There's a pending change that
-// would remove support for legacy browsers by zone.js. Removing `passiveSupported`
-// from the codebase will reduce the final code size for existing apps that still use zone.js.
-let passiveSupported = false;
-
-if (typeof window !== 'undefined') {
-  try {
-    const options = Object.defineProperty({}, 'passive', {
-      get: function () {
-        passiveSupported = true;
-      },
-    });
-    // Note: We pass the `options` object as the event handler too. This is not compatible with the
-    // signature of `addEventListener` or `removeEventListener` but enables us to remove the handler
-    // without an actual handler.
-    window.addEventListener('test', options as any, options);
-    window.removeEventListener('test', options as any, options);
-  } catch (err) {
-    passiveSupported = false;
-  }
+  // `originalDelegate` is the actual event listener object passed when
+  // calling `addEventListener()`, i.e., `{ handleEvent: event => ... }`.
+  // This object is used to compare event listeners when `addEventListener`
+  // is called again with the same event listener object reference.
+  // For example:
+  // const eventListenerObject = { handleEvent: console.log };
+  // document.addEventListener('click', eventListenerObject);
+  // document.addEventListener('click', eventListenerObject);
+  originalDelegate?: EventListenerObject;
 }
 
 // an identifier to tell ZoneTask do not create a new invoke closure
@@ -136,8 +122,6 @@ export interface PatchEventTargetOptions {
   rt?: boolean;
   // event compare handler
   diff?: (task: any, delegate: any) => boolean;
-  // support passive or not
-  supportPassive?: boolean;
   // get string from eventName (in nodejs, eventName maybe Symbol)
   eventNameToString?: (eventName: any) => string;
   // transfer eventName
@@ -322,13 +306,7 @@ export function patchEventTarget(
      * to handle all possible input from the user.
      */
     function buildEventListenerOptions(options: any, passive: boolean) {
-      if (!passiveSupported && typeof options === 'object' && options) {
-        // doesn't support passive but user want to pass an object as options.
-        // this will not work on some old browser, so we just pass a boolean
-        // as useCapture parameter
-        return !!options.capture;
-      }
-      if (!passiveSupported || !passive) {
+      if (!passive) {
         return options;
       }
       if (typeof options === 'boolean') {
@@ -443,8 +421,7 @@ export function patchEventTarget(
       );
     };
 
-    const compare =
-      patchOptions && patchOptions.diff ? patchOptions.diff : compareTaskCallbackVsDelegate;
+    const compare = patchOptions?.diff || compareTaskCallbackVsDelegate;
 
     const unpatchedEvents: string[] = (Zone as any)[zoneSymbol('UNPATCHED_EVENTS')];
     const passiveEvents: string[] = _global[zoneSymbol('PASSIVE_EVENTS')];
@@ -487,7 +464,7 @@ export function patchEventTarget(
         if (patchOptions && patchOptions.transferEventName) {
           eventName = patchOptions.transferEventName(eventName);
         }
-        let delegate = arguments[1];
+        let delegate: EventListenerOrEventListenerObject = arguments[1];
         if (!delegate) {
           return nativeListener.apply(this, arguments);
         }
@@ -496,23 +473,24 @@ export function patchEventTarget(
           return nativeListener.apply(this, arguments);
         }
 
-        // don't create the bind delegate function for handleEvent
-        // case here to improve addEventListener performance
-        // we will create the bind delegate when invoke
-        let isHandleEvent = false;
+        // To improve `addEventListener` performance, we will create the callback
+        // for the task later when the task is invoked.
+        let isEventListenerObject = false;
         if (typeof delegate !== 'function') {
+          // This checks whether the provided listener argument is an object with
+          // a `handleEvent` method (since we can call `addEventListener` with a
+          // function `event => ...` or with an object `{ handleEvent: event => ... }`).
           if (!delegate.handleEvent) {
             return nativeListener.apply(this, arguments);
           }
-          isHandleEvent = true;
+          isEventListenerObject = true;
         }
 
         if (validateHandler && !validateHandler(nativeListener, delegate, target, arguments)) {
           return;
         }
 
-        const passive =
-          passiveSupported && !!passiveEvents && passiveEvents.indexOf(eventName) !== -1;
+        const passive = !!passiveEvents && passiveEvents.indexOf(eventName) !== -1;
         const options = copyEventListenerOptions(buildEventListenerOptions(arguments[2], passive));
         const signal: AbortSignal | undefined = options?.signal;
         if (signal?.aborted) {
@@ -610,7 +588,7 @@ export function patchEventTarget(
         // `taskData.options` to pass it to the native `addEventListener`.
         const task: InternalEventTask = zone.scheduleEventTask(
           source,
-          delegate,
+          <Function>delegate,
           data,
           customScheduleFn,
           customCancelFn,
@@ -645,17 +623,18 @@ export function patchEventTarget(
         if (once) {
           taskData.options.once = true;
         }
-        if (!(!passiveSupported && typeof task.options === 'boolean')) {
-          // if not support passive, and we pass an option object
-          // to addEventListener, we should save the options to task
+        if (typeof task.options !== 'boolean') {
+          // We should save the options on the task (if it's an object) because
+          // we'll be using `task.options` later when removing the event listener
+          // and passing it back to `removeEventListener`.
           task.options = options;
         }
         task.target = target;
         task.capture = capture;
         task.eventName = eventName;
-        if (isHandleEvent) {
+        if (isEventListenerObject) {
           // save original delegate for compare to check duplicate
-          (task as any).originalDelegate = delegate;
+          task.originalDelegate = <EventListenerObject>delegate;
         }
         if (!prepend) {
           existingTasks.push(task);
