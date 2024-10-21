@@ -154,7 +154,7 @@ export class DocsExtractor {
   private getExportedDeclarations(sourceFile: ts.SourceFile): DeclarationWithExportName[] {
     // Use the reflection host to get all the exported declarations from this
     // source file entry point.
-    const reflector = new TypeScriptReflectionHost(this.typeChecker);
+    const reflector = new TypeScriptReflectionHost(this.typeChecker, false, true);
     const exportedDeclarationMap = reflector.getExportsOfModule(sourceFile);
 
     // Augment each declaration with the exported name in the public API.
