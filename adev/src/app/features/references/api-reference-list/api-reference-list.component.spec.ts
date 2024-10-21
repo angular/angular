@@ -24,24 +24,52 @@ describe('ApiReferenceList', () => {
     'url': 'api/animations/fakeItem1',
     'itemType': ApiItemType.FUNCTION,
     'isDeprecated': false,
+    'isDeveloperPreview': false,
+    'isExperimental': false,
   };
   let fakeItem2 = {
     'title': 'fakeItem2',
     'url': 'api/animations/fakeItem2',
     'itemType': ApiItemType.CLASS,
     'isDeprecated': false,
+    'isDeveloperPreview': false,
+    'isExperimental': false,
   };
   let fakeDeprecatedFeaturedItem = {
     'title': 'fakeItemDeprecated',
     'url': 'api/animations/fakeItemDeprecated',
     'itemType': ApiItemType.INTERFACE,
     'isDeprecated': true,
+    'isDeveloperPreview': false,
+    'isExperimental': false,
+  };
+  let fakeDeveloperPreviewItem = {
+    'title': 'fakeItemDeveloperPreview',
+    'url': 'api/animations/fakeItemDeveloperPreview',
+    'itemType': ApiItemType.INTERFACE,
+    'isDeprecated': false,
+    'isDeveloperPreview': true,
+    'isExperimental': false,
+  };
+  let fakeExperimentalItem = {
+    'title': 'fakeItemExperimental',
+    'url': 'api/animations/fakeItemExperimental',
+    'itemType': ApiItemType.INTERFACE,
+    'isDeprecated': false,
+    'isDeveloperPreview': false,
+    'isExperimental': true,
   };
   const fakeApiReferenceManager = {
     apiGroups: signal([
       {
         title: 'Fake Group',
-        items: [fakeItem1, fakeItem2, fakeDeprecatedFeaturedItem],
+        items: [
+          fakeItem1,
+          fakeItem2,
+          fakeDeprecatedFeaturedItem,
+          fakeDeveloperPreviewItem,
+          fakeExperimentalItem,
+        ],
         isFeatured: false,
       },
     ]),
@@ -67,24 +95,6 @@ describe('ApiReferenceList', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should display both Deprecated and Non-deprecated APIs when includeDeprecated toggle is set to true', () => {
-    component.includeDeprecated.set(true);
-    fixture.detectChanges();
-
-    expect(component.filteredGroups()![0].items).toEqual([
-      fakeItem1,
-      fakeItem2,
-      fakeDeprecatedFeaturedItem,
-    ]);
-  });
-
-  it('should display both Non-deprecated APIs when includeDeprecated toggle is set to false', () => {
-    component.includeDeprecated.set(false);
-    fixture.detectChanges();
-
-    expect(component.filteredGroups()![0].items).toEqual([fakeItem1, fakeItem2]);
   });
 
   it('should display only items which contains provided query when query is not empty', () => {
@@ -123,25 +133,64 @@ describe('ApiReferenceList', () => {
     const location = TestBed.inject(Location);
     component.query.set('item1');
     await fixture.whenStable();
-    expect(location.path()).toBe(`?query=item1&type=All`);
+    expect(location.path()).toBe(`?query=item1&type=All&status=all`);
   });
 
-  it('should keep the values of existing queryParams and set new queryParam equal to the type', async () => {
+  it('should keep the values of existing queryParams and set new queryParam equal to given value', async () => {
     const location = TestBed.inject(Location);
 
     component.query.set('item1');
     await fixture.whenStable();
-    expect(location.path()).toBe(`?query=item1&type=All`);
+    expect(location.path()).toBe(`?query=item1&type=All&status=all`);
 
     component.filterByItemType(ApiItemType.BLOCK);
     await fixture.whenStable();
-    expect(location.path()).toBe(`?query=item1&type=${ApiItemType.BLOCK}`);
+    expect(location.path()).toBe(`?query=item1&type=${ApiItemType.BLOCK}&status=all`);
+
+    component.status.set('experimental');
+    await fixture.whenStable();
+    expect(location.path()).toBe(`?query=item1&type=${ApiItemType.BLOCK}&status=experimental`);
   });
 
-  it('should display all items when query and type are undefined', async () => {
+  it('should display all items when query and type and status are undefined', async () => {
     component.query.set(undefined);
     component.type.set(undefined);
+    component.status.set(undefined);
     await fixture.whenStable();
+    expect(component.filteredGroups()![0].items).toEqual([
+      fakeItem1,
+      fakeItem2,
+      fakeDeprecatedFeaturedItem,
+      fakeDeveloperPreviewItem,
+      fakeExperimentalItem,
+    ]);
+  });
+
+  it('should not display deprecated and developer-preview and experimental items when status is set to stable', () => {
+    component.status.set('stable');
+    fixture.detectChanges();
+
     expect(component.filteredGroups()![0].items).toEqual([fakeItem1, fakeItem2]);
+  });
+
+  it('should only display deprecated items when status is set to deprecated', () => {
+    component.status.set('deprecated');
+    fixture.detectChanges();
+
+    expect(component.filteredGroups()![0].items).toEqual([fakeDeprecatedFeaturedItem]);
+  });
+
+  it('should only display developer-preview items when status is set to developer-preview', () => {
+    component.status.set('developer-preview');
+    fixture.detectChanges();
+
+    expect(component.filteredGroups()![0].items).toEqual([fakeDeveloperPreviewItem]);
+  });
+
+  it('should only display experimental items when status is set to experimental', () => {
+    component.status.set('experimental');
+    fixture.detectChanges();
+
+    expect(component.filteredGroups()![0].items).toEqual([fakeExperimentalItem]);
   });
 });
