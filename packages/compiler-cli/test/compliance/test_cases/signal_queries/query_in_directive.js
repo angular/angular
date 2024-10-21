@@ -29,6 +29,6 @@ TestDir.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
         } if (rf & 2) {
             i0.ɵɵqueryAdvance(5);
         }
-    },
+    }
     …
   });

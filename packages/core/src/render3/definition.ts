@@ -38,6 +38,7 @@ import {InputFlags} from './interfaces/input_flags';
 import type {TAttributes, TConstantsOrFactory} from './interfaces/node';
 import {CssSelectorList} from './interfaces/projection';
 import {stringifyCSSSelectorList} from './node_selector_matcher';
+import {NG_STANDALONE_DEFAULT_VALUE} from './standalone-default-value';
 
 /**
  * Map of inputs for a given directive/component.
@@ -603,7 +604,7 @@ export function ɵɵdefinePipe<T>(pipeDef: {
     name: pipeDef.name,
     factory: null,
     pure: pipeDef.pure !== false,
-    standalone: pipeDef.standalone === true,
+    standalone: pipeDef.standalone ?? NG_STANDALONE_DEFAULT_VALUE,
     onDestroy: pipeDef.type.prototype.ngOnDestroy || null,
   };
 }
@@ -636,7 +637,6 @@ export function getPipeDef<T>(type: any): PipeDef<T> | null {
  */
 export function isStandalone(type: Type<unknown>): boolean {
   const def = getComponentDef(type) || getDirectiveDef(type) || getPipeDef(type);
-  // TODO: standalone as default value (invert the condition)
   return def !== null ? def.standalone : false;
 }
 
@@ -665,8 +665,7 @@ function getNgDirectiveDef<T>(directiveDefinition: DirectiveDefinition<T>): Dire
     inputTransforms: null,
     inputConfig: directiveDefinition.inputs || EMPTY_OBJ,
     exportAs: directiveDefinition.exportAs || null,
-    // TODO: standalone as default value (invert the condition)
-    standalone: directiveDefinition.standalone === true,
+    standalone: directiveDefinition.standalone ?? NG_STANDALONE_DEFAULT_VALUE,
     signals: directiveDefinition.signals === true,
     selectors: directiveDefinition.selectors || EMPTY_ARRAY,
     viewQuery: directiveDefinition.viewQuery || null,

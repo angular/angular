@@ -25,7 +25,6 @@ function TestCmp_Template(rf, ctx) { if (rf & 1) {
       type: Component,
       args: [{
         selector: 'test-cmp',
-        standalone: true,
         imports: [CmpA, LocalDep],
         template: …
       }]

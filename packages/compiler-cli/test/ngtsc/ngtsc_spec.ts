@@ -1401,7 +1401,7 @@ runInEachFileSystem((os: string) => {
 
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain(
-        'i0.ɵɵdefineDirective({ type: TestBase, inputs: { input: "input" }, standalone: true });',
+        'i0.ɵɵdefineDirective({ type: TestBase, inputs: { input: "input" } });',
       );
 
       const dtsContents = env.getContents('test.d.ts');
@@ -2112,7 +2112,7 @@ runInEachFileSystem((os: string) => {
       const dtsContents = env.getContents('test.d.ts');
 
       expect(jsContents).toContain(
-        'TestPipe.ɵpipe = /*@__PURE__*/ i0.ɵɵdefinePipe({ name: "test-pipe", type: TestPipe, pure: false })',
+        'TestPipe.ɵpipe = /*@__PURE__*/ i0.ɵɵdefinePipe({ name: "test-pipe", type: TestPipe, pure: false, standalone: false })',
       );
       expect(jsContents).toContain(
         'TestPipe.ɵfac = function TestPipe_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || TestPipe)(); }',
@@ -2143,7 +2143,7 @@ runInEachFileSystem((os: string) => {
       const dtsContents = env.getContents('test.d.ts');
 
       expect(jsContents).toContain(
-        'TestPipe.ɵpipe = /*@__PURE__*/ i0.ɵɵdefinePipe({ name: "test-pipe", type: TestPipe, pure: true })',
+        'TestPipe.ɵpipe = /*@__PURE__*/ i0.ɵɵdefinePipe({ name: "test-pipe", type: TestPipe, pure: true, standalone: false })',
       );
       expect(jsContents).toContain(
         'TestPipe.ɵfac = function TestPipe_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || TestPipe)(); }',
@@ -5851,6 +5851,7 @@ runInEachFileSystem((os: string) => {
         MyComp.ɵcmp = /*@__PURE__*/ i0.ɵɵdefineComponent({
           type: MyComp,
           selectors: [["comp"]],
+          standalone: false,
           decls: 1,
           vars: 0,
           template: function MyComp_Template(rf, ctx) {

@@ -13,6 +13,6 @@ TestDir.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
     decoratorOutput: "decoratorOutput",
     decoratorOutputWithAlias: "aliasDecoratorOutputWithAlias",
     decoratorInputTwoWayChange: "decoratorInputTwoWayChange"
-  },
+  }
   …
 });

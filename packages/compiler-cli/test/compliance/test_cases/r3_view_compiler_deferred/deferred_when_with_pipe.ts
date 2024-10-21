@@ -1,6 +1,6 @@
 import {Component, Pipe} from '@angular/core';
 
-@Pipe({standalone: true, name: 'testPipe'})
+@Pipe({name: 'testPipe'})
 export class TestPipe {
   transform() {
     return true;
@@ -14,7 +14,6 @@ export class TestPipe {
       Hello
     }
   `,
-  standalone: true,
   imports: [TestPipe],
 })
 export class MyApp {

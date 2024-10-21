@@ -5,7 +5,6 @@ export class SomeToken {}
 const nonAnalyzableRefersToString = 'a, b, c';
 
 @Directive({
-  standalone: true,
 })
 export class TestDir {
   query1 = viewChild('locatorA');

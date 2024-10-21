@@ -9,6 +9,5 @@ import {Component} from '@angular/core';
       The value comes from {{value}}
     }
   `,
-  standalone: true,
 })
 export class MyApp {}
