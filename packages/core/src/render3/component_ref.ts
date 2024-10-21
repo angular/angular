@@ -89,6 +89,7 @@ import {getComponentLViewByIndex, getNativeByTNode, getTNode} from './util/view_
 import {ViewRef} from './view_ref';
 import {ChainedInjector} from './chained_injector';
 import {unregisterLView} from './interfaces/lview_tracking';
+import {StandaloneService} from './features/standalone_feature';
 
 export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
   /**
@@ -239,10 +240,11 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
           ? environmentInjector
           : environmentInjector?.injector;
 
-      if (realEnvironmentInjector && this.componentDef.getStandaloneInjector !== null) {
+      if (realEnvironmentInjector && this.componentDef.standalone) {
         realEnvironmentInjector =
-          this.componentDef.getStandaloneInjector(realEnvironmentInjector) ||
-          realEnvironmentInjector;
+          realEnvironmentInjector
+            .get(StandaloneService)
+            .getOrCreateStandaloneInjector(this.componentDef) || realEnvironmentInjector;
       }
 
       const rootViewInjector = realEnvironmentInjector

@@ -4,7 +4,6 @@ TestComponent.ɵcmp = /*@__PURE__*/ i0.ɵɵdefineComponent({
     ["test"]
   ],
   standalone: true,
-  features: [i0.ɵɵStandaloneFeature],
   decls: 1,
   vars: 0,
   template: function TestComponent_Template(rf, ctx) {
