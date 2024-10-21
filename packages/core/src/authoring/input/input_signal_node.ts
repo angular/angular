@@ -30,6 +30,11 @@ export interface InputSignalNode<T, TransformT> extends SignalNode<T> {
    * purposes we assume it's a valid `T` value. Type-checking will enforce that.
    */
   applyValueToInputSignal<T, TransformT>(node: InputSignalNode<T, TransformT>, value: T): void;
+
+  /**
+   * A debug name for the input signal. Used in Angular DevTools to identify the signal.
+   */
+  debugName?: string;
 }
 
 // Note: Using an IIFE here to ensure that the spread assignment is not considered
