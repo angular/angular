@@ -1008,9 +1008,6 @@
     "name": "getOrCreateViewRefs"
   },
   {
-    "name": "getOriginalError"
-  },
-  {
     "name": "getOwnDefinition"
   },
   {

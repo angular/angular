@@ -7,7 +7,6 @@
  */
 
 import {inject, InjectionToken} from './di';
-import {getOriginalError} from './util/errors';
 import {NgZone} from './zone';
 
 /**
@@ -42,22 +41,7 @@ export class ErrorHandler {
   _console: Console = console;
 
   handleError(error: any): void {
-    const originalError = this._findOriginalError(error);
-
     this._console.error('ERROR', error);
-    if (originalError) {
-      this._console.error('ORIGINAL ERROR', originalError);
-    }
-  }
-
-  /** @internal */
-  _findOriginalError(error: any): Error | null {
-    let e = error && getOriginalError(error);
-    while (e && getOriginalError(e)) {
-      e = getOriginalError(e);
-    }
-
-    return e || null;
   }
 }
 

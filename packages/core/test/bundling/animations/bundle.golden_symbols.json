@@ -1092,9 +1092,6 @@
     "name": "getOrSetDefaultValue"
   },
   {
-    "name": "getOriginalError"
-  },
-  {
     "name": "getOwnDefinition"
   },
   {
