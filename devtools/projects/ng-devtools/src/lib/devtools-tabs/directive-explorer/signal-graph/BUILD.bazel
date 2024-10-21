@@ -1,0 +1,19 @@
+load("//devtools/tools:ng_module.bzl", "ng_module")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "signal-graph",
+    srcs = glob(
+        include = [
+            "*.ts",
+        ],
+    ),
+    deps = [
+        "//devtools/projects/ng-devtools/src/lib:theme",
+        "//devtools/projects/protocol",
+        "//packages/core",
+        "@npm//@types",
+        "@npm//d3",
+    ],
+)
