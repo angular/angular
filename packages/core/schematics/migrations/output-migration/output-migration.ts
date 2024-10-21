@@ -7,6 +7,7 @@
  */
 
 import ts from 'typescript';
+import assert from 'assert';
 import {
   confirmAsSerializable,
   MigrationStats,
@@ -79,18 +80,14 @@ export class OutputMigration extends TsurgeFunnelMigration<
     const dtsReader = new DtsMetadataReader(checker, reflector);
     const evaluator = new PartialEvaluator(reflector, checker, null);
     const ngCompiler = info.ngCompiler;
-
-    // TODO: use an assert instead?
-    if (ngCompiler === null) {
-      throw new Error('Requires ngCompiler to run the migration');
-    }
+    assert(ngCompiler !== null, 'Requires ngCompiler to run the migration');
     const resourceLoader = ngCompiler['resourceManager'];
     // Pre-Analyze the program and get access to the template type checker.
     const {templateTypeChecker} = ngCompiler['ensureAnalyzed']();
     const knownFields: KnownFields<ClassFieldDescriptor> = {
       // Note: We don't support cross-target migration of `Partial<T>` usages.
       // This is an acceptable limitation for performance reasons.
-      shouldTrackClassReference: (node) => true,
+      shouldTrackClassReference: (node) => false,
       attemptRetrieveDescriptorFromSymbol: (s) => {
         const propDeclaration = getTargetPropertyDeclaration(s);
         if (propDeclaration !== null) {
