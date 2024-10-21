@@ -68,11 +68,8 @@ export function addEventListener(
     capture = true;
   }
 
-  if (typeof passive === 'boolean') {
-    element.addEventListener(eventType, handler, {capture, passive});
-  } else {
-    element.addEventListener(eventType, handler, capture);
-  }
+  const options = typeof passive === 'boolean' ? {capture, passive} : capture;
+  element.addEventListener(eventType, handler, options);
 
   return {eventType, handler, capture, passive};
 }
