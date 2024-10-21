@@ -8,6 +8,10 @@ function insertDebugNameIntoExistingConfigObject(
   const nodeArgs = Array.from(callExpression.arguments);
   const existingArgument = nodeArgs[configPosition];
 
+  // Do nothing if an identifier is used as the config object
+  // Ex -
+  // const defaultObject = { equals: () => false };
+  // signal(123, defaultObject)
   if (ts.isIdentifier(existingArgument)) {
     return callExpression;
   }
@@ -72,17 +76,7 @@ function insertDebugNameIntoCallExpression(
   const configPosition = getConfigArgPosition(callExpression.expression);
 
   if (callExpression.arguments[configPosition] !== undefined) {
-    // Do nothing if an identifier is used as the config object
-    // Ex -
-    // const defaultObject = { equals: () => false };
-    // signal(123, defaultObject)
-    if (ts.isIdentifier(callExpression.arguments[configPosition])) {
-      return callExpression;
-    }
-
-    if (ts.isObjectLiteralExpression(callExpression.arguments[configPosition])) {
-      return insertDebugNameIntoExistingConfigObject(callExpression, debugName, configPosition);
-    }
+    return insertDebugNameIntoExistingConfigObject(callExpression, debugName, configPosition);
   }
 
   const conditionalExpression = ts.factory.createParenthesizedExpression(
