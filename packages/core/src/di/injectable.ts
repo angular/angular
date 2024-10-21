@@ -58,6 +58,34 @@ export interface InjectableDecorator {
    *
    * <code-example path="core/di/ts/metadata_spec.ts" region="Injectable"></code-example>
    *
+   * Note: Besides specifying the `providedIn` property, you can set other provider configurations
+   * here, defined by the [InjectableProvider](api/core/InjectableProvider) type. So you can
+   * configure the DI system to use a different class or any other value to associate with this
+   * service.
+   *
+   * As seen in the example below, we can make use of this feature by using the FakeLoginService
+   * in place of the genuine LoginService while we are not in the production environment.
+   *
+   * <code-example language="typescript">
+   * @Injectable()
+   * class FakeLoginService {}
+   *
+   * @Injectable({
+   *   providedIn: 'root',
+   *   useFactory: () => {
+   *     return environment.production ? new LoginService() : new FakeLoginService();
+   *   },
+   * })
+   * class LoginService {
+   *   constructor() {}
+   * }
+   * 
+   * @Component({})
+   * class HomeComponent {
+   *   constructor(public service: LoginService) {}
+   * }
+   * </code-example>
+   *
    */
   (): TypeDecorator;
   (
