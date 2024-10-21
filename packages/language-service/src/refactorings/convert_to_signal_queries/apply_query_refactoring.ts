@@ -106,7 +106,7 @@ export async function applySignalQueriesRefactoring(
   } else if (incompatibilityMessages.size > 0) {
     const queryPlural = incompatibilityMessages.size === 1 ? 'query' : `queries`;
     message = `${incompatibilityMessages.size} ${queryPlural} could not be migrated.\n`;
-    message += `For more details, click on the skipped inputs and try to migrate individually.\n`;
+    message += `For more details, click on the skipped queries and try to migrate individually.\n`;
   }
 
   // Only suggest the "force ignoring" option if there are actually

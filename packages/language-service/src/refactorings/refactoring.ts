@@ -22,6 +22,10 @@ import {
   ConvertFieldToSignalQueryBestEffortRefactoring,
   ConvertFieldToSignalQueryRefactoring,
 } from './convert_to_signal_queries/individual_query_refactoring';
+import {
+  ConvertFullClassToSignalQueriesBestEffortRefactoring,
+  ConvertFullClassToSignalQueriesRefactoring,
+} from './convert_to_signal_queries/full_class_query_refactoring';
 
 /**
  * Interface exposing static metadata for a {@link Refactoring},
@@ -80,4 +84,6 @@ export const allRefactorings: Refactoring[] = [
   // Queries migration
   ConvertFieldToSignalQueryRefactoring,
   ConvertFieldToSignalQueryBestEffortRefactoring,
+  ConvertFullClassToSignalQueriesRefactoring,
+  ConvertFullClassToSignalQueriesBestEffortRefactoring,
 ];

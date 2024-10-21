@@ -214,7 +214,7 @@ For details of those options and their possible values, see the [Angular CLI Ref
 
 | Options properties         | Details                                                                                                                                                                                                                                                                |
 |:---                        |:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `assets`                   | An object containing paths to static assets to serve with the application. The default paths point to the project's icon file and its `assets` directory. See more in the [Assets configuration](#assets-configuration) section.                                       |
+| `assets`                   | An object containing paths to static assets to serve with the application. The default paths point to the project's `public` directory. See more in the [Assets configuration](#assets-configuration) section.                                       |
 | `styles`                   | An array of CSS files to add to the global context of the project. Angular CLI supports CSS imports and all major CSS preprocessors. See more in the [Styles and scripts configuration](#styles-and-scripts-configuration) section.                                    |
 | `stylePreprocessorOptions` | An object containing option-value pairs to pass to style preprocessors. See more in the [Styles and scripts configuration](#styles-and-scripts-configuration) section.                                                                                                 |
 | `scripts`                  | An object containing JavaScript files to add to the application. The scripts are loaded exactly as if you had added them in a `<script>` tag inside `index.html`. See more in the [Styles and scripts configuration](#styles-and-scripts-configuration) section.       |
@@ -232,7 +232,7 @@ The following sections provide more details of how these complex values are used
 ### Assets configuration
 
 Each `build` target configuration can include an `assets` array that lists files or folders you want to copy as-is when building your project.
-By default, the `src/assets/` directory and `src/favicon.ico` are copied over.
+By default, the contents of the `public/` directory are copied over.
 
 To exclude an asset, you can remove it from the assets configuration.
 

@@ -268,3 +268,11 @@ export function verifyEmptyConsole(appRef: ApplicationRef) {
   );
   expect(logs).toEqual([]);
 }
+
+/**
+ * Clears the Debug console
+ */
+export function clearConsole(appRef: ApplicationRef) {
+  const console = appRef.injector.get(Console) as DebugConsole;
+  console.logs = [];
+}

@@ -14,17 +14,17 @@ import ts from 'typescript';
 import {isTypeScriptFile} from '../../utils';
 import {findTightestNode, getParentClassDeclaration} from '../../utils/ts_utils';
 import type {ActiveRefactoring} from '../refactoring';
-import {applySignalInputRefactoring} from './apply_input_refactoring';
-import {isDecoratorInputClassField, isDirectiveOrComponentWithInputs} from './decorators';
+import {isDecoratorQueryClassField, isDirectiveOrComponentWithQueries} from './decorators';
+import {applySignalQueriesRefactoring} from './apply_query_refactoring';
 
 /**
- * Base language service refactoring action that can convert `@Input()`
- * declarations of a full class to signal inputs.
+ * Base language service refactoring action that can convert decorator
+ * queries of a full class to signal queries.
  *
- * The user can click on an class with `@Input`s and ask for all the input to be migrated.
- * All references, imports and the declaration are updated automatically.
+ * The user can click on an class with decorator queries and ask for all the queries
+ * to be migrated. All references, imports and the declaration are updated automatically.
  */
-abstract class BaseConvertFullClassToSignalInputsRefactoring implements ActiveRefactoring {
+abstract class BaseConvertFullClassToSignalQueriesRefactoring implements ActiveRefactoring {
   abstract config: MigrationConfig;
 
   constructor(private project: ts.server.Project) {}
@@ -54,7 +54,7 @@ abstract class BaseConvertFullClassToSignalInputsRefactoring implements ActiveRe
       return false;
     }
     const {reflector} = compiler['ensureAnalyzed']();
-    if (!isDirectiveOrComponentWithInputs(classDecl, reflector)) {
+    if (!isDirectiveOrComponentWithQueries(classDecl, reflector)) {
       return false;
     }
 
@@ -66,7 +66,7 @@ abstract class BaseConvertFullClassToSignalInputsRefactoring implements ActiveRe
     if (ts.isBlock(parentClassElement)) {
       return false;
     }
-    return isDecoratorInputClassField(parentClassElement, reflector);
+    return isDecoratorQueryClassField(parentClassElement, reflector);
   }
 
   async computeEditsForFix(
@@ -92,26 +92,26 @@ abstract class BaseConvertFullClassToSignalInputsRefactoring implements ActiveRe
       return {edits: [], errorMessage: 'Could not find a class for the refactoring.'};
     }
 
-    return await applySignalInputRefactoring(
+    return await applySignalQueriesRefactoring(
       compiler,
       compilerOptions,
       this.config,
       this.project,
       reportProgress,
-      (input) => input.descriptor.node.parent === containingClass,
+      (queryID) => queryID.node.parent === containingClass,
       /** allowPartialMigration */ true,
     );
   }
 }
 
-export class ConvertFullClassToSignalInputsRefactoring extends BaseConvertFullClassToSignalInputsRefactoring {
-  static id = 'convert-full-class-to-signal-inputs-safe-mode';
-  static description = "Full class: Convert all @Input's to signal inputs (safe)";
+export class ConvertFullClassToSignalQueriesRefactoring extends BaseConvertFullClassToSignalQueriesRefactoring {
+  static id = 'convert-full-class-to-signal-queries-safe-mode';
+  static description = 'Full class: Convert all decorator queries to signal queries (safe)';
   override config: MigrationConfig = {};
 }
-export class ConvertFullClassToSignalInputsBestEffortRefactoring extends BaseConvertFullClassToSignalInputsRefactoring {
-  static id = 'convert-full-class-to-signal-inputs-best-effort-mode';
+export class ConvertFullClassToSignalQueriesBestEffortRefactoring extends BaseConvertFullClassToSignalQueriesRefactoring {
+  static id = 'convert-full-class-to-signal-queries-best-effort-mode';
   static description =
-    "Full class: Convert all @Input's to signal inputs (forcibly, ignoring errors)";
+    'Full class: Convert all decorator queries to signal queries (forcibly, ignoring errors)';
   override config: MigrationConfig = {bestEffortMode: true};
 }

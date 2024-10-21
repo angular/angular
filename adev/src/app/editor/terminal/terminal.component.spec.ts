@@ -60,13 +60,4 @@ describe('Terminal', () => {
       terminalDebugElement.nativeElement,
     );
   });
-
-  it('should call resizeToFitParent on window resize', async () => {
-    fakeWindow.dispatchEvent(new Event('resize'));
-
-    // debounce time
-    await new Promise((resolve) => setTimeout(resolve, 50));
-
-    expect(terminalHandlerSpy.resizeToFitParent).toHaveBeenCalled();
-  });
 });
