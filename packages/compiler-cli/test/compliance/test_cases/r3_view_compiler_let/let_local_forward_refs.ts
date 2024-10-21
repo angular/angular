@@ -6,6 +6,5 @@ import {Component} from '@angular/core';
     {{message}}
     <input #name>
   `,
-  standalone: true,
 })
 export class MyApp {}

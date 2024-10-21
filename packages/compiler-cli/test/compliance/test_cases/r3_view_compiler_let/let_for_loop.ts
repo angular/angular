@@ -12,7 +12,6 @@ import {Component} from '@angular/core';
       }
     }
   `,
-  standalone: true,
 })
 export class MyApp {
   items: {children: any[]}[] = [];

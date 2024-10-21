@@ -1,7 +1,6 @@
 import {ContentChild, contentChild, Directive, ViewChild, viewChild} from '@angular/core';
 
 @Directive({
-  standalone: true,
 })
 export class TestDir {
   @ViewChild('locator1') decoratorViewChild: unknown;

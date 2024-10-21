@@ -365,7 +365,6 @@ describe('pipe', () => {
         name: 'sayHello',
         type: SayHelloPipe,
         pure: true,
-        standalone: true,
       });
     }
 

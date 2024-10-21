@@ -185,7 +185,7 @@ EagerDep.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0
 EagerDep.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: EagerDep, isStandalone: true, selector: "eager-dep", ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: EagerDep, decorators: [{
             type: Directive,
-            args: [{ selector: 'eager-dep', standalone: true }]
+            args: [{ selector: 'eager-dep' }]
         }] });
 export class LazyDep {
 }
@@ -193,7 +193,7 @@ LazyDep.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-
 LazyDep.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: LazyDep, isStandalone: true, selector: "lazy-dep", ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: LazyDep, decorators: [{
             type: Directive,
-            args: [{ selector: 'lazy-dep', standalone: true }]
+            args: [{ selector: 'lazy-dep' }]
         }] });
 export class LoadingDep {
 }
@@ -201,7 +201,7 @@ LoadingDep.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0
 LoadingDep.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: LoadingDep, isStandalone: true, selector: "loading-dep", ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: LoadingDep, decorators: [{
             type: Directive,
-            args: [{ selector: 'loading-dep', standalone: true }]
+            args: [{ selector: 'loading-dep' }]
         }] });
 export class MyApp {
 }
@@ -229,7 +229,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
-                    standalone: true,
                     imports: [EagerDep, LazyDep, LoadingDep],
                 }]
         }] });
@@ -268,7 +267,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Directive,
             args: [{
                     selector: 'lazy-dep',
-                    standalone: true,
                 }]
         }] });
 export class MyApp {
@@ -297,7 +295,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
-                    standalone: true,
                     imports: [LazyDep],
                 }]
         }] });
@@ -326,7 +323,7 @@ EagerDep.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0
 EagerDep.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: EagerDep, isStandalone: true, selector: "eager-dep", ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: EagerDep, decorators: [{
             type: Directive,
-            args: [{ selector: 'eager-dep', standalone: true }]
+            args: [{ selector: 'eager-dep' }]
         }] });
 
 /****************************************************************************************************
@@ -349,7 +346,7 @@ LazyDep.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-
 LazyDep.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: LazyDep, isStandalone: true, selector: "lazy-dep", ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: LazyDep, decorators: [{
             type: Directive,
-            args: [{ selector: 'lazy-dep', standalone: true }]
+            args: [{ selector: 'lazy-dep', }]
         }] });
 
 /****************************************************************************************************
@@ -372,7 +369,7 @@ LoadingDep.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0
 LoadingDep.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: LoadingDep, isStandalone: true, selector: "loading-dep", ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: LoadingDep, decorators: [{
             type: Directive,
-            args: [{ selector: 'loading-dep', standalone: true }]
+            args: [{ selector: 'loading-dep' }]
         }] });
 
 /****************************************************************************************************
@@ -417,7 +414,6 @@ i0.ɵɵngDeclareClassMetadataAsync({ minVersion: "18.0.0", version: "0.0.0-PLACE
       }
     </div>
   `,
-                        standalone: true,
                         imports: [EagerDep, LazyDep, LoadingDep],
                     }]
             }], ctorParameters: null, propDecorators: null }) });
@@ -661,7 +657,7 @@ TestPipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0
 TestPipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestPipe, isStandalone: true, name: "testPipe" });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestPipe, decorators: [{
             type: Pipe,
-            args: [{ standalone: true, name: 'testPipe' }]
+            args: [{ name: 'testPipe' }]
         }] });
 export class MyApp {
     constructor() {
@@ -688,7 +684,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       Hello
     }
   `,
-                    standalone: true,
                     imports: [TestPipe],
                 }]
         }] });
@@ -919,7 +914,7 @@ CmpA.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLA
 CmpA.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: CmpA, isStandalone: true, selector: "cmp-a", ngImport: i0, template: 'CmpA!', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: CmpA, decorators: [{
             type: Component,
-            args: [{ standalone: true, selector: 'cmp-a', template: 'CmpA!' }]
+            args: [{ selector: 'cmp-a', template: 'CmpA!' }]
         }] });
 
 /****************************************************************************************************
@@ -944,7 +939,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'local-dep',
-                    standalone: true,
                     template: 'Local dependency',
                 }]
         }] });
@@ -961,7 +955,6 @@ i0.ɵɵngDeclareClassMetadataAsync({ minVersion: "18.0.0", version: "0.0.0-PLACE
                 type: Component,
                 args: [{
                         selector: 'test-cmp',
-                        standalone: true,
                         imports: [CmpA, LocalDep],
                         template: `
 	@defer {
@@ -997,7 +990,7 @@ CmpA.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-P
 export default CmpA;
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: CmpA, decorators: [{
             type: Component,
-            args: [{ standalone: true, selector: 'cmp-a', template: 'CmpA!' }]
+            args: [{ selector: 'cmp-a', template: 'CmpA!' }]
         }] });
 
 /****************************************************************************************************
@@ -1022,7 +1015,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'local-dep',
-                    standalone: true,
                     template: 'Local dependency',
                 }]
         }] });
@@ -1039,7 +1031,6 @@ i0.ɵɵngDeclareClassMetadataAsync({ minVersion: "18.0.0", version: "0.0.0-PLACE
                 type: Component,
                 args: [{
                         selector: 'test-cmp',
-                        standalone: true,
                         imports: [CmpA, LocalDep],
                         template: `
 	@defer {
@@ -1076,7 +1067,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-lazy-cmp',
-                    standalone: true,
                     template: 'Hi!',
                 }]
         }] });
@@ -1109,7 +1099,6 @@ SimpleComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", versio
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SimpleComponent, decorators: [{
             type: Component,
             args: [{
-                    standalone: true,
                     selector: 'app',
                     imports: [MyLazyCmp],
                     template: `

@@ -922,6 +922,13 @@ describe('standalone components, directives, and pipes', () => {
 
   describe('isStandalone()', () => {
     it('should return `true` if component is standalone', () => {
+      @Component({selector: 'standalone-cmp'})
+      class StandaloneCmp {}
+
+      expect(isStandalone(StandaloneCmp)).toBeTrue();
+    });
+
+    it('should return `true` if component is standalone (with `standalone:true`)', () => {
       @Component({selector: 'standalone-cmp', standalone: true})
       class StandaloneCmp {}
 
