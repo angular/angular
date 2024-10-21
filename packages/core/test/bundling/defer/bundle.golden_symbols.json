@@ -705,9 +705,6 @@
     "name": "configureViewWithDirective"
   },
   {
-    "name": "consumerAfterComputation"
-  },
-  {
     "name": "consumerBeforeComputation"
   },
   {
@@ -775,9 +772,6 @@
   },
   {
     "name": "deepForEachProvider"
-  },
-  {
-    "name": "defaultEquals"
   },
   {
     "name": "defaultErrorHandler"

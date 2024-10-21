@@ -67,7 +67,7 @@ interface AfterRenderPhaseEffectNode extends SignalNode<unknown> {
   phaseFn(previousValue?: unknown): unknown;
 }
 
-const AFTER_RENDER_PHASE_EFFECT_NODE = {
+const AFTER_RENDER_PHASE_EFFECT_NODE = /* @__PURE__ */ (() => ({
   ...SIGNAL_NODE,
   consumerIsAlwaysLive: true,
   consumerAllowSignalWrites: true,
@@ -140,7 +140,7 @@ const AFTER_RENDER_PHASE_EFFECT_NODE = {
 
     return this.signal;
   },
-};
+}))();
 
 /**
  * An `AfterRenderSequence` that manages an `afterRenderEffect`'s phase effects.
