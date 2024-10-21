@@ -49,6 +49,11 @@ const DEFAULT_APP_ID = 'ng';
 
 /**
  * A function that is executed when a platform is initialized.
+ *
+ * @deprecated from v18.1.0, use providePlatformInitializer instead
+ *
+ * @see {@link providePlatformInitializer}
+ *
  * @publicApi
  */
 export const PLATFORM_INITIALIZER = new InjectionToken<ReadonlyArray<() => void>>(
