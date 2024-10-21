@@ -1,0 +1,13 @@
+diff --git a/node_modules/@angular-devkit/build-angular/builders.json b/node_modules/@angular-devkit/build-angular/builders.json
+index 5f76fa2..fde4c1b 100755
+--- a/node_modules/@angular-devkit/build-angular/builders.json
++++ b/node_modules/@angular-devkit/build-angular/builders.json
+@@ -42,7 +42,7 @@
+       "schema": "./src/builders/web-test-runner/schema.json",
+       "description": "Run unit tests with Web Test Runner."
+     },
+-    "protractor": {
++    "private-protractor": {
+       "implementation": "./src/builders/protractor",
+       "schema": "./src/builders/protractor/schema.json",
+       "description": "Run protractor over a dev server."
