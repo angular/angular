@@ -244,6 +244,52 @@ describe('EventContract', () => {
     expect(registeredEventTypes).toEqual(['webkitanimationend']);
   });
 
+  it('adds event listener without passive option', () => {
+    const container = getRequiredElementById('container');
+    const addEventListenerSpy = spyOn(container, 'addEventListener');
+
+    const eventContractContainerManager = new EventContractMultiContainer();
+    const eventContract = createEventContract({eventContractContainerManager, eventTypes: []});
+    eventContract.addEvent('touchstart');
+    eventContractContainerManager.addContainer(container);
+
+    expect(addEventListenerSpy).toHaveBeenCalledOnceWith(
+      'touchstart',
+      jasmine.any(Function),
+      false,
+    );
+  });
+
+  it('adds event listener for passive:false event', () => {
+    const container = getRequiredElementById('container');
+    const addEventListenerSpy = spyOn(container, 'addEventListener');
+
+    const eventContractContainerManager = new EventContractMultiContainer();
+    const eventContract = createEventContract({eventContractContainerManager, eventTypes: []});
+    eventContract.addEvent('touchstart', '', false);
+    eventContractContainerManager.addContainer(container);
+
+    expect(addEventListenerSpy).toHaveBeenCalledOnceWith('touchstart', jasmine.any(Function), {
+      capture: false,
+      passive: false,
+    });
+  });
+
+  it('adds event listener for passive:true event', () => {
+    const container = getRequiredElementById('container');
+    const addEventListenerSpy = spyOn(container, 'addEventListener');
+
+    const eventContractContainerManager = new EventContractMultiContainer();
+    const eventContract = createEventContract({eventContractContainerManager, eventTypes: []});
+    eventContract.addEvent('touchstart', '', true);
+    eventContractContainerManager.addContainer(container);
+
+    expect(addEventListenerSpy).toHaveBeenCalledOnceWith('touchstart', jasmine.any(Function), {
+      capture: false,
+      passive: true,
+    });
+  });
+
   it('queues events until dispatcher is registered', () => {
     const container = getRequiredElementById('click-container');
     const targetElement = getRequiredElementById('click-target-element');
