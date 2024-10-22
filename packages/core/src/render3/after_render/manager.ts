@@ -33,12 +33,13 @@ export class AfterRenderManager {
 }
 
 export class AfterRenderImpl {
-  static readonly PHASES = [
-    AfterRenderPhase.EarlyRead,
-    AfterRenderPhase.Write,
-    AfterRenderPhase.MixedReadWrite,
-    AfterRenderPhase.Read,
-  ] as const;
+  static readonly PHASES = /* @__PURE__ **/ (() =>
+    [
+      AfterRenderPhase.EarlyRead,
+      AfterRenderPhase.Write,
+      AfterRenderPhase.MixedReadWrite,
+      AfterRenderPhase.Read,
+    ] as const)();
 
   private readonly ngZone = inject(NgZone);
   private readonly scheduler = inject(ChangeDetectionScheduler);
