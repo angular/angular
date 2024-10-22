@@ -9,7 +9,7 @@
 import {ɵpublishExternalGlobalUtil} from '@angular/core';
 import {Route} from './models';
 
-function getLoadedRoutes(route: Route): Route[] | undefined {
+export function getLoadedRoutes(route: Route): Route[] | undefined {
   return route._loadedRoutes;
 }
 
