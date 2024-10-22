@@ -4050,8 +4050,10 @@ describe('styling', () => {
         standalone: false,
       })
       class HostBindingTestComponent {
-        style: SafeStyle = this.sanitizer.bypassSecurityTrustStyle('color: white; display: block;');
-        constructor(private sanitizer: DomSanitizer) {}
+        style: SafeStyle;
+        constructor(private sanitizer: DomSanitizer) {
+          this.style = this.sanitizer.bypassSecurityTrustStyle('color: white; display: block;');
+        }
       }
       TestBed.configureTestingModule({declarations: [HostBindingTestComponent]});
       const fixture = TestBed.createComponent(HostBindingTestComponent);

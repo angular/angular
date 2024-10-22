@@ -2707,11 +2707,17 @@ describe('di', () => {
             standalone: false,
           })
           class MyComp {
-            tokenViaInjector = this.injector.get(NON_EXISTING_PROVIDER, null, InjectFlags.Optional);
+            tokenViaInjector;
             constructor(
               public injector: Injector,
               @Inject(NON_EXISTING_PROVIDER) @Optional() public tokenViaConstructor: string,
-            ) {}
+            ) {
+              this.tokenViaInjector = this.injector.get(
+                NON_EXISTING_PROVIDER,
+                null,
+                InjectFlags.Optional,
+              );
+            }
           }
           TestBed.configureTestingModule({declarations: [MyComp]});
           const fixture = TestBed.createComponent(MyComp);
@@ -2748,11 +2754,13 @@ describe('di', () => {
             standalone: false,
           })
           class ChildComponent {
-            tokenViaInjector = this.injector.get(TOKEN, null, InjectFlags.SkipSelf);
+            tokenViaInjector;
             constructor(
               public injector: Injector,
               @Inject(TOKEN) @SkipSelf() public tokenViaConstructor: string,
-            ) {}
+            ) {
+              this.tokenViaInjector = this.injector.get(TOKEN, null, InjectFlags.SkipSelf);
+            }
           }
 
           TestBed.configureTestingModule({
@@ -2774,11 +2782,13 @@ describe('di', () => {
             standalone: false,
           })
           class DirectiveString {
-            tokenViaInjector = this.injector.get(TOKEN, null, InjectFlags.Host);
+            tokenViaInjector;
             constructor(
               public injector: Injector,
               @Inject(TOKEN) @Host() public tokenViaConstructor: string,
-            ) {}
+            ) {
+              this.tokenViaInjector = this.injector.get(TOKEN, null, InjectFlags.Host);
+            }
           }
 
           @Component({
@@ -2809,21 +2819,24 @@ describe('di', () => {
             standalone: false,
           })
           class DirectiveB {
-            public tokenSelfViaInjector = this.injector.get(
-              DirectiveA,
-              null,
-              InjectFlags.Self | InjectFlags.Optional,
-            );
-            public tokenHostViaInjector = this.injector.get(
-              DirectiveA,
-              null,
-              InjectFlags.Host | InjectFlags.Optional,
-            );
+            tokenSelfViaInjector;
+            tokenHostViaInjector;
             constructor(
               public injector: Injector,
               @Inject(DirectiveA) @Self() @Optional() public tokenSelfViaConstructor: DirectiveA,
               @Inject(DirectiveA) @Host() @Optional() public tokenHostViaConstructor: DirectiveA,
-            ) {}
+            ) {
+              this.tokenSelfViaInjector = this.injector.get(
+                DirectiveA,
+                null,
+                InjectFlags.Self | InjectFlags.Optional,
+              );
+              this.tokenHostViaInjector = this.injector.get(
+                DirectiveA,
+                null,
+                InjectFlags.Host | InjectFlags.Optional,
+              );
+            }
           }
 
           @Component({
@@ -2888,8 +2901,10 @@ describe('di', () => {
 
       @Injectable({providedIn: forwardRef(() => Module)})
       class Provider {
-        constructor(private _dep: ProviderDep) {}
-        value = this._dep.getNumber() + 2;
+        constructor(private _dep: ProviderDep) {
+          this.value = this._dep.getNumber() + 2;
+        }
+        value;
       }
 
       @Component({

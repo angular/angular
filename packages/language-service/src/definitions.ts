@@ -26,6 +26,7 @@ import {
   SymbolKind,
   TcbLocation,
   TemplateSymbol,
+  TemplateTypeChecker,
 } from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 
@@ -55,12 +56,14 @@ interface HasTcbLocation {
 }
 
 export class DefinitionBuilder {
-  private readonly ttc = this.compiler.getTemplateTypeChecker();
+  private readonly ttc: TemplateTypeChecker;
 
   constructor(
     private readonly tsLS: ts.LanguageService,
     private readonly compiler: NgCompiler,
-  ) {}
+  ) {
+    this.ttc = this.compiler.getTemplateTypeChecker();
+  }
 
   getDefinitionAndBoundSpan(
     fileName: string,

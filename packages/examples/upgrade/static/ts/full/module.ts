@@ -103,7 +103,7 @@ export class Ng1HeroComponentWrapper extends UpgradeComponent {
   // The names of the input and output properties here must match the names of the
   // `<` and `&` bindings in the AngularJS component that is being wrapped
   @Input() hero!: Hero;
-  @Output() onRemove!: EventEmitter<void>;
+  @Output() onRemove: EventEmitter<void> = new EventEmitter();
 
   constructor(elementRef: ElementRef, injector: Injector) {
     // We must pass the name of the directive as used by AngularJS to the super
