@@ -28,7 +28,7 @@ export interface EarlyJsactionDataContainer {
 // @public
 export class EventContract implements UnrenamedEventContract {
     constructor(containerManager: EventContractContainerManager);
-    addEvent(eventType: string, prefixedEventType?: string): void;
+    addEvent(eventType: string, prefixedEventType?: string, passive?: boolean): void;
     cleanUp(): void;
     ecrd(dispatcher: Dispatcher, restriction: Restriction): void;
     handler(eventType: string): EventHandler | undefined;
@@ -42,7 +42,7 @@ export class EventContract implements UnrenamedEventContract {
 // @public
 export class EventContractContainer implements EventContractContainerManager {
     constructor(element: Element);
-    addEventListener(eventType: string, getHandler: (element: Element) => (event: Event) => void): void;
+    addEventListener(eventType: string, getHandler: (element: Element) => (event: Event) => void, passive?: boolean): void;
     cleanUp(): void;
     // (undocumented)
     readonly element: Element;
