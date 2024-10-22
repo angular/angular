@@ -10,8 +10,8 @@ import {isForwardRef, resolveForwardRef} from '../../di/forward_ref';
 import {ModuleWithProviders} from '../../di/interface/provider';
 import {Type} from '../../interface/type';
 import {NgModuleDef} from '../../metadata/ng_module_def';
-import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef} from '../definition';
-import {ComponentType, DirectiveType, PipeType} from '../interfaces/definition';
+import {getComponentDef, getDirectiveDef, getPipeDef, getNgModuleDef} from '../def_getters';
+import type {ComponentType, DirectiveType, PipeType} from '../interfaces/definition';
 import {stringifyForError} from '../util/stringify_utils';
 
 export function isModuleWithProviders(value: any): value is ModuleWithProviders<{}> {

@@ -24,7 +24,7 @@ import {assertTNode, assertTNodeForLView} from '../assert';
 import {ChainedInjector} from '../chained_injector';
 import {getFrameworkDIDebugData} from '../debug/framework_injector_profiler';
 import {InjectedService, ProviderRecord} from '../debug/injector_profiler';
-import {getComponentDef} from '../definition';
+import {getComponentDef} from '../def_getters';
 import {
   getNodeInjectorLView,
   getNodeInjectorTNode,

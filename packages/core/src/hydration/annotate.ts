@@ -19,7 +19,7 @@ import {ViewEncapsulation} from '../metadata';
 import {Renderer2} from '../render';
 import {assertTNode} from '../render3/assert';
 import {collectNativeNodes, collectNativeNodesInLContainer} from '../render3/collect_native_nodes';
-import {getComponentDef} from '../render3/definition';
+import {getComponentDef} from '../render3/def_getters';
 import {CONTAINER_HEADER_OFFSET, LContainer} from '../render3/interfaces/container';
 import {isLetDeclaration, isTNodeShape, TNode, TNodeType} from '../render3/interfaces/node';
 import {RComment, RElement} from '../render3/interfaces/renderer_dom';

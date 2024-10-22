@@ -165,6 +165,9 @@
     "name": "EnvironmentInjector"
   },
   {
+    "name": "EnvironmentNgModuleRefAdapter"
+  },
+  {
     "name": "ErrorHandler"
   },
   {
@@ -403,6 +406,9 @@
   },
   {
     "name": "SimpleChange"
+  },
+  {
+    "name": "StandaloneService"
   },
   {
     "name": "Subject"
@@ -1066,6 +1072,9 @@
   },
   {
     "name": "markViewForRefresh"
+  },
+  {
+    "name": "markedFeatures"
   },
   {
     "name": "maybeWrapInNotSelector"

@@ -9,13 +9,8 @@
 import {Type} from '../interface/type';
 import {assertDefined} from '../util/assert';
 import {assertLView} from './assert';
-import {
-  getComponentDef,
-  ɵɵdefineComponent,
-  ɵɵdefineDirective,
-  ɵɵdefineNgModule,
-  ɵɵdefinePipe,
-} from './definition';
+import {ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdefineNgModule, ɵɵdefinePipe} from './definition';
+import {getComponentDef} from './def_getters';
 import {assertComponentDef} from './errors';
 import {refreshView} from './instructions/change_detection';
 import {renderView} from './instructions/render';
@@ -83,7 +78,6 @@ import {ɵɵProvidersFeature} from './features/providers_feature';
 import {ɵɵCopyDefinitionFeature} from './features/copy_definition_feature';
 import {ɵɵInheritDefinitionFeature} from './features/inherit_definition_feature';
 import {ɵɵInputTransformsFeature} from './features/input_transforms_feature';
-import {ɵɵStandaloneFeature} from './features/standalone_feature';
 import {ɵɵExternalStylesFeature} from './features/external_styles_feature';
 import {ɵɵresolveBody, ɵɵresolveDocument, ɵɵresolveWindow} from './util/misc_utils';
 import {ɵsetClassDebugInfo} from './debug/set_debug_info';
@@ -325,7 +319,6 @@ function getHmrEnv(): Record<string, unknown> {
     'ɵɵCopyDefinitionFeature': ɵɵCopyDefinitionFeature,
     'ɵɵInheritDefinitionFeature': ɵɵInheritDefinitionFeature,
     'ɵɵInputTransformsFeature': ɵɵInputTransformsFeature,
-    'ɵɵStandaloneFeature': ɵɵStandaloneFeature,
     'ɵɵExternalStylesFeature': ɵɵExternalStylesFeature,
     'ɵɵnextContext': r3.ɵɵnextContext,
     'ɵɵnamespaceHTML': r3.ɵɵnamespaceHTML,

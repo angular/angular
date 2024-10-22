@@ -23,14 +23,14 @@ import {NgModuleDef, NgModuleTransitiveScopes, NgModuleType} from '../../metadat
 import {deepForEach, flatten} from '../../util/array_utils';
 import {assertDefined} from '../../util/assert';
 import {EMPTY_ARRAY} from '../../util/empty';
+import {GENERATED_COMP_IDS} from '../definition';
 import {
-  GENERATED_COMP_IDS,
   getComponentDef,
   getDirectiveDef,
   getNgModuleDef,
   getPipeDef,
   isStandalone,
-} from '../definition';
+} from '../def_getters';
 import {depsTracker, USE_RUNTIME_DEPS_TRACKER_FOR_JIT} from '../deps_tracker/deps_tracker';
 import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF, NG_MOD_DEF, NG_PIPE_DEF} from '../fields';
 import {ComponentDef} from '../interfaces/definition';

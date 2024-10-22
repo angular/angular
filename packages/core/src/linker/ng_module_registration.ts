@@ -8,7 +8,6 @@
 
 import {Type} from '../interface/type';
 import {NgModuleType} from '../metadata/ng_module_def';
-import {getNgModuleDef} from '../render3/definition';
 import {stringify} from '../util/stringify';
 
 /**

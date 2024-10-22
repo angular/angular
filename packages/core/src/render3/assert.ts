@@ -9,7 +9,7 @@
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {assertDefined, assertEqual, assertNumber, throwError} from '../util/assert';
 
-import {getComponentDef, getNgModuleDef} from './definition';
+import {getComponentDef, getNgModuleDef} from './def_getters';
 import {LContainer} from './interfaces/container';
 import {DirectiveDef} from './interfaces/definition';
 import {TIcu} from './interfaces/i18n';

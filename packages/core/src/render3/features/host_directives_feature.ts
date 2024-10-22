@@ -10,7 +10,7 @@ import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {Type} from '../../interface/type';
 import {assertEqual} from '../../util/assert';
 import {EMPTY_OBJ} from '../../util/empty';
-import {getComponentDef, getDirectiveDef} from '../definition';
+import {getComponentDef, getDirectiveDef} from '../def_getters';
 import {
   DirectiveDef,
   DirectiveDefFeature,

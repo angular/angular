@@ -1341,6 +1341,9 @@
     "name": "init_decorators"
   },
   {
+    "name": "init_def_getters"
+  },
+  {
     "name": "init_default_iterable_differ"
   },
   {
@@ -2040,7 +2043,7 @@
     "name": "init_standalone_default_value"
   },
   {
-    "name": "init_standalone_feature"
+    "name": "init_standalone_service"
   },
   {
     "name": "init_state"
@@ -2626,9 +2629,6 @@
   },
   {
     "name": "ɵɵNgOnChangesFeature"
-  },
-  {
-    "name": "ɵɵStandaloneFeature"
   },
   {
     "name": "ɵɵdefer"
