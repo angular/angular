@@ -29,6 +29,7 @@ import {
   getInjectorProviders,
   getInjectorResolutionPath,
 } from './injector_discovery_utils';
+import {getSignalGraph} from './signal_debug';
 
 /**
  * This file introduces series of globally accessible debug tools
@@ -65,6 +66,7 @@ const globalUtilsFunctions = {
   'ɵgetInjectorResolutionPath': getInjectorResolutionPath,
   'ɵgetInjectorMetadata': getInjectorMetadata,
   'ɵsetProfiler': setProfiler,
+  'ɵgetSignalGraph': getSignalGraph,
 
   'getDirectiveMetadata': getDirectiveMetadata,
   'getComponent': getComponent,
