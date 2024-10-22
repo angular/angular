@@ -231,7 +231,7 @@ export interface RootEffectNode extends EffectNode {
  * Not public API, which guarantees `EffectScheduler` only ever comes from the application root
  * injector.
  */
-export const APP_EFFECT_SCHEDULER = new InjectionToken('', {
+export const APP_EFFECT_SCHEDULER = /* @__PURE__ */ new InjectionToken('', {
   providedIn: 'root',
   factory: () => inject(EffectScheduler),
 });

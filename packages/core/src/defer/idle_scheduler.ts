@@ -122,7 +122,7 @@ export class IdleScheduler {
   }
 
   /** @nocollapse */
-  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
+  static ɵprov = /** @pureOrBreakMyCode */ /* @__PURE__ */ ɵɵdefineInjectable({
     token: IdleScheduler,
     providedIn: 'root',
     factory: () => new IdleScheduler(),

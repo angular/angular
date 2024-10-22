@@ -217,7 +217,7 @@ export class TimerScheduler {
   }
 
   /** @nocollapse */
-  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
+  static ɵprov = /** @pureOrBreakMyCode */ /* @__PURE__ */ ɵɵdefineInjectable({
     token: TimerScheduler,
     providedIn: 'root',
     factory: () => new TimerScheduler(),

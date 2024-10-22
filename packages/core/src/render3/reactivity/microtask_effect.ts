@@ -49,7 +49,7 @@ export class MicrotaskEffectScheduler extends ZoneAwareEffectScheduler {
   }
 
   /** @nocollapse */
-  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
+  static ɵprov = /** @pureOrBreakMyCode */ /* @__PURE__ */ ɵɵdefineInjectable({
     token: MicrotaskEffectScheduler,
     providedIn: 'root',
     factory: () => new MicrotaskEffectScheduler(),
