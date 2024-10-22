@@ -2,7 +2,9 @@
   "name": "generate",
   "command": "ng generate <schematic>",
   "shortDescription": "Generates and/or modifies files based on a schematic.",
-  "aliases": ["g"],
+  "aliases": [
+    "g"
+  ],
   "deprecated": false,
   "options": [
     {
@@ -14,7 +16,9 @@
     {
       "name": "dry-run",
       "type": "boolean",
-      "aliases": ["d"],
+      "aliases": [
+        "d"
+      ],
       "default": false,
       "description": "Run through and reports activity without writing out results."
     },
@@ -63,15 +67,25 @@
       "shortDescription": "Generates a new basic application definition in the \"projects\" subfolder of the workspace.",
       "options": [
         {
+          "name": "experimental-zoneless",
+          "type": "boolean",
+          "default": false,
+          "description": "Create an application that does not utilize zone.js."
+        },
+        {
           "name": "inline-style",
           "type": "boolean",
-          "aliases": ["s"],
+          "aliases": [
+            "s"
+          ],
           "description": "Include styles inline in the root component.ts file. Only CSS styles can be included inline. Default is false, meaning that an external styles file is created and referenced in the root component.ts file."
         },
         {
           "name": "inline-template",
           "type": "boolean",
-          "aliases": ["t"],
+          "aliases": [
+            "t"
+          ],
           "description": "Include template inline in the root component.ts file. Default is false, meaning that an external template file is created and referenced in the root component.ts file. "
         },
         {
@@ -89,7 +103,9 @@
         {
           "name": "prefix",
           "type": "string",
-          "aliases": ["p"],
+          "aliases": [
+            "p"
+          ],
           "default": "app",
           "description": "A prefix to apply to generated selectors."
         },
@@ -119,7 +135,9 @@
         {
           "name": "skip-tests",
           "type": "boolean",
-          "aliases": ["S"],
+          "aliases": [
+            "S"
+          ],
           "default": false,
           "description": "Do not create \"spec.ts\" test files for the application."
         },
@@ -145,17 +163,28 @@
           "name": "style",
           "type": "string",
           "default": "css",
-          "enum": ["css", "scss", "sass", "less"],
+          "enum": [
+            "css",
+            "scss",
+            "sass",
+            "less"
+          ],
           "description": "The file extension or preprocessor to use for style files."
         },
         {
           "name": "view-encapsulation",
           "type": "string",
-          "enum": ["Emulated", "None", "ShadowDom"],
+          "enum": [
+            "Emulated",
+            "None",
+            "ShadowDom"
+          ],
           "description": "The view encapsulation strategy to use in the new application."
         }
       ],
-      "aliases": ["app"],
+      "aliases": [
+        "app"
+      ],
       "deprecated": false
     },
     {
@@ -186,7 +215,9 @@
           "description": "Adds a developer-defined type to the filename, in the format \"name.type.ts\"."
         }
       ],
-      "aliases": ["cl"],
+      "aliases": [
+        "cl"
+      ],
       "deprecated": false
     },
     {
@@ -197,15 +228,22 @@
         {
           "name": "change-detection",
           "type": "string",
-          "aliases": ["c"],
+          "aliases": [
+            "c"
+          ],
           "default": "Default",
-          "enum": ["Default", "OnPush"],
+          "enum": [
+            "Default",
+            "OnPush"
+          ],
           "description": "The change detection strategy to use in the new component."
         },
         {
           "name": "display-block",
           "type": "boolean",
-          "aliases": ["b"],
+          "aliases": [
+            "b"
+          ],
           "default": false,
           "description": "Specifies if the style will contain `:host { display: block; }`."
         },
@@ -216,6 +254,12 @@
           "description": "The declaring NgModule exports this component."
         },
         {
+          "name": "export-default",
+          "type": "boolean",
+          "default": false,
+          "description": "Use default export for the component instead of a named export."
+        },
+        {
           "name": "flat",
           "type": "boolean",
           "default": false,
@@ -224,21 +268,27 @@
         {
           "name": "inline-style",
           "type": "boolean",
-          "aliases": ["s"],
+          "aliases": [
+            "s"
+          ],
           "default": false,
           "description": "Include styles inline in the component.ts file. Only CSS styles can be included inline. By default, an external styles file is created and referenced in the component.ts file."
         },
         {
           "name": "inline-template",
           "type": "boolean",
-          "aliases": ["t"],
+          "aliases": [
+            "t"
+          ],
           "default": false,
           "description": "Include template inline in the component.ts file. By default, an external template file is created and referenced in the component.ts file."
         },
         {
           "name": "module",
           "type": "string",
-          "aliases": ["m"],
+          "aliases": [
+            "m"
+          ],
           "description": "The declaring NgModule."
         },
         {
@@ -250,7 +300,9 @@
         {
           "name": "prefix",
           "type": "string",
-          "aliases": ["p"],
+          "aliases": [
+            "p"
+          ],
           "description": "The prefix to apply to the generated component selector."
         },
         {
@@ -291,7 +343,13 @@
           "name": "style",
           "type": "string",
           "default": "css",
-          "enum": ["css", "scss", "sass", "less", "none"],
+          "enum": [
+            "css",
+            "scss",
+            "sass",
+            "less",
+            "none"
+          ],
           "description": "The file extension or preprocessor to use for style files, or 'none' to skip generating the style file."
         },
         {
@@ -303,12 +361,20 @@
         {
           "name": "view-encapsulation",
           "type": "string",
-          "aliases": ["v"],
-          "enum": ["Emulated", "None", "ShadowDom"],
+          "aliases": [
+            "v"
+          ],
+          "enum": [
+            "Emulated",
+            "None",
+            "ShadowDom"
+          ],
           "description": "The view encapsulation strategy to use in the new component."
         }
       ],
-      "aliases": ["c"],
+      "aliases": [
+        "c"
+      ],
       "deprecated": false
     },
     {
@@ -324,7 +390,10 @@
         {
           "name": "type",
           "type": "string",
-          "enum": ["karma", "browserslist"],
+          "enum": [
+            "karma",
+            "browserslist"
+          ],
           "description": "Specifies which type of configuration file to create.",
           "positional": 0
         }
@@ -352,7 +421,9 @@
         {
           "name": "module",
           "type": "string",
-          "aliases": ["m"],
+          "aliases": [
+            "m"
+          ],
           "description": "The declaring NgModule."
         },
         {
@@ -364,7 +435,9 @@
         {
           "name": "prefix",
           "type": "string",
-          "aliases": ["p"],
+          "aliases": [
+            "p"
+          ],
           "description": "A prefix to apply to generated selectors."
         },
         {
@@ -396,7 +469,9 @@
           "description": "Whether the generated directive is standalone."
         }
       ],
-      "aliases": ["d"],
+      "aliases": [
+        "d"
+      ],
       "deprecated": false
     },
     {
@@ -421,7 +496,9 @@
           "description": "Adds a developer-defined type to the filename, in the format \"name.type.ts\"."
         }
       ],
-      "aliases": ["e"],
+      "aliases": [
+        "e"
+      ],
       "deprecated": false
     },
     {
@@ -458,7 +535,9 @@
         {
           "name": "implements",
           "type": "array",
-          "aliases": ["guardType"],
+          "aliases": [
+            "guardType"
+          ],
           "description": "Specifies which type of guard to create."
         },
         {
@@ -479,7 +558,9 @@
           "description": "Do not create \"spec.ts\" test files for the new guard."
         }
       ],
-      "aliases": ["g"],
+      "aliases": [
+        "g"
+      ],
       "deprecated": false
     },
     {
@@ -548,7 +629,9 @@
           "positional": 1
         }
       ],
-      "aliases": ["i"],
+      "aliases": [
+        "i"
+      ],
       "deprecated": false
     },
     {
@@ -571,7 +654,9 @@
         {
           "name": "prefix",
           "type": "string",
-          "aliases": ["p"],
+          "aliases": [
+            "p"
+          ],
           "default": "lib",
           "description": "A prefix to apply to generated selectors."
         },
@@ -605,7 +690,9 @@
           "description": "Creates a library based upon the standalone API, without NgModules."
         }
       ],
-      "aliases": ["lib"],
+      "aliases": [
+        "lib"
+      ],
       "deprecated": false
     },
     {
@@ -622,7 +709,9 @@
         {
           "name": "module",
           "type": "string",
-          "aliases": ["m"],
+          "aliases": [
+            "m"
+          ],
           "description": "The declaring NgModule."
         },
         {
@@ -651,11 +740,16 @@
           "name": "routing-scope",
           "type": "string",
           "default": "Child",
-          "enum": ["Child", "Root"],
+          "enum": [
+            "Child",
+            "Root"
+          ],
           "description": "The scope for the new routing module."
         }
       ],
-      "aliases": ["m"],
+      "aliases": [
+        "m"
+      ],
       "deprecated": false
     },
     {
@@ -678,7 +772,9 @@
         {
           "name": "module",
           "type": "string",
-          "aliases": ["m"],
+          "aliases": [
+            "m"
+          ],
           "description": "The declaring NgModule."
         },
         {
@@ -711,7 +807,9 @@
           "description": "Whether the generated pipe is standalone."
         }
       ],
-      "aliases": ["p"],
+      "aliases": [
+        "p"
+      ],
       "deprecated": false
     },
     {
@@ -749,7 +847,9 @@
           "description": "Do not create \"spec.ts\" test files for the new resolver."
         }
       ],
-      "aliases": ["r"],
+      "aliases": [
+        "r"
+      ],
       "deprecated": false
     },
     {
@@ -781,7 +881,9 @@
           "description": "Do not create \"spec.ts\" test files for the new service."
         }
       ],
-      "aliases": ["s"],
+      "aliases": [
+        "s"
+      ],
       "deprecated": false
     },
     {
@@ -828,7 +930,7 @@
         }
       ],
       "aliases": [],
-      "deprecated": true
+      "deprecated": false
     }
   ]
 }
