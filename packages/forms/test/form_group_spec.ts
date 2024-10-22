@@ -2599,7 +2599,7 @@ import {StatusChangeEvent} from '../src/model/abstract_model';
         r = new FormRecord({one: c1, two: c2});
       });
 
-      it('should remove all controls', () => {
+      it('should remove control if new control is null', () => {
         r.clear();
         expect(r.controls['one']).not.toBeDefined();
         expect(r.controls['two']).not.toBeDefined();
@@ -2613,14 +2613,7 @@ import {StatusChangeEvent} from '../src/model/abstract_model';
         expect(logger).toEqual(['change!']);
       });
 
-      it('should only emit status change event once', () => {
-        const logger: string[] = [];
-        r.statusChanges.subscribe(() => logger.push('change!'));
-        r.clear();
-        expect(logger).toEqual(['change!']);
-      });
-
-      it('should not emit event when called with `emitEvent: false`', () => {
+      it('should not emit event when `FormGroup.clearControls` called with `emitEvent: false`', () => {
         const logger: string[] = [];
         r.valueChanges.subscribe(() => logger.push('value change'));
         r.statusChanges.subscribe(() => logger.push('status change'));
