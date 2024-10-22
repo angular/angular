@@ -38,12 +38,15 @@ export function getBrowserEventType(eventType: string) {
  * @param element The element.
  * @param eventType The event type.
  * @param handler The handler function to install.
+ * @param passive A boolean value that, if `true`, indicates that the function
+ *     specified by `handler` will never call `preventDefault()`.
  * @return Information needed to uninstall the event handler eventually.
  */
 export function addEventListener(
   element: Element,
   eventType: string,
   handler: (event: Event) => void,
+  passive?: boolean,
 ): EventHandlerInfo {
   // All event handlers are registered in the bubbling
   // phase.
@@ -64,9 +67,11 @@ export function addEventListener(
   if (isCaptureEventType(eventType)) {
     capture = true;
   }
-  element.addEventListener(eventType, handler, capture);
 
-  return {eventType, handler, capture};
+  const options = typeof passive === 'boolean' ? {capture, passive} : capture;
+  element.addEventListener(eventType, handler, options);
+
+  return {eventType, handler, capture, passive};
 }
 
 /**
@@ -79,7 +84,11 @@ export function addEventListener(
  */
 export function removeEventListener(element: Element, info: EventHandlerInfo) {
   if (element.removeEventListener) {
-    element.removeEventListener(info.eventType, info.handler as EventListener, info.capture);
+    // It's worth noting that some browser releases have been inconsistent on this, and unless
+    // you have specific reasons otherwise, it's probably wise to use the same values used for
+    // the call to addEventListener() when calling removeEventListener().
+    const options = typeof info.passive === 'boolean' ? {capture: info.capture} : info.capture;
+    element.removeEventListener(info.eventType, info.handler as EventListener, options);
     // `detachEvent` is an old DOM API.
     // tslint:disable-next-line:no-any
   } else if ((element as any).detachEvent) {
