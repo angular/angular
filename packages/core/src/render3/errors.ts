@@ -9,7 +9,7 @@
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
 
-import {getComponentDef} from './definition';
+import {getComponentDef} from './def_getters';
 import {getDeclarationComponentDef} from './instructions/element_validation';
 import {TNode} from './interfaces/node';
 import {LView, TVIEW} from './interfaces/view';

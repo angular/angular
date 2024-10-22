@@ -8,7 +8,7 @@
 
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
-import {getComponentDef} from '../render3/definition';
+import {getComponentDef} from '../render3/def_getters';
 import {getFactoryDef} from '../render3/definition_factory';
 import {throwCyclicDependencyError, throwInvalidProviderError} from '../render3/errors_di';
 import {stringifyForError} from '../render3/util/stringify_utils';

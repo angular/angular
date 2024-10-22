@@ -12,7 +12,7 @@ import {Type} from '../interface/type';
 import {ComponentRef} from '../linker/component_factory';
 
 import {ComponentFactory} from './component_ref';
-import {getComponentDef} from './definition';
+import {getComponentDef} from './def_getters';
 import {assertComponentDef} from './errors';
 
 /**

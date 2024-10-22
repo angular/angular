@@ -20,7 +20,7 @@ import {findMatchingDehydratedView, locateDehydratedViewsInContainer} from '../h
 import {isType, Type} from '../interface/type';
 import {assertNodeInjector} from '../render3/assert';
 import {ComponentFactory as R3ComponentFactory} from '../render3/component_ref';
-import {getComponentDef} from '../render3/definition';
+import {getComponentDef} from '../render3/def_getters';
 import {getParentInjectorLocation, NodeInjector} from '../render3/di';
 import {addToEndOfViewTree, createLContainer} from '../render3/instructions/shared';
 import {

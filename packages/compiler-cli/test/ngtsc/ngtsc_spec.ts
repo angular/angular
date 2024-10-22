@@ -10470,9 +10470,7 @@ runInEachFileSystem((os: string) => {
         const dtsContents = env.getContents('test.d.ts');
 
         expect(jsContents).toContain('inputs: { value: [2, "value", "value", toNumber] }');
-        expect(jsContents).toContain(
-          'features: [i0.ɵɵInputTransformsFeature, i0.ɵɵStandaloneFeature]',
-        );
+        expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
         expect(dtsContents).toContain('static ngAcceptInputType_value: boolean | string;');
       });
 

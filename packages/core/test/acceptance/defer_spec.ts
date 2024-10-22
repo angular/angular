@@ -35,7 +35,7 @@ import {
   ElementRef,
   ViewChild,
 } from '@angular/core';
-import {getComponentDef} from '@angular/core/src/render3/definition';
+import {getComponentDef} from '@angular/core/src/render3/def_getters';
 import {
   ComponentFixture,
   DeferBlockBehavior,

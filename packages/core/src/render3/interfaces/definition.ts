@@ -393,8 +393,7 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
   tView: TView | null;
 
   /**
-   * A function added by the {@link ɵɵStandaloneFeature} and used by the framework to create
-   * standalone injectors.
+   * A function used by the framework to create standalone injectors.
    */
   getStandaloneInjector:
     | ((parentInjector: EnvironmentInjector) => EnvironmentInjector | null)

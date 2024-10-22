@@ -21,7 +21,7 @@ import {assertDefined} from '../util/assert';
 import {stringify} from '../util/stringify';
 
 import {ComponentFactoryResolver} from './component_ref';
-import {getNgModuleDef} from './definition';
+import {getNgModuleDef} from './def_getters';
 import {maybeUnwrapFn} from './util/misc_utils';
 
 /**

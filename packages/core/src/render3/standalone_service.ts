@@ -5,21 +5,20 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {ɵɵinject as inject} from '../../di/injector_compatibility';
-import {ɵɵdefineInjectable as defineInjectable} from '../../di/interface/defs';
-import {internalImportProvidersFrom} from '../../di/provider_collection';
-import {EnvironmentInjector} from '../../di/r3_injector';
-import {OnDestroy} from '../../interface/lifecycle_hooks';
-import {performanceMarkFeature} from '../../util/performance';
-import {ComponentDef} from '../interfaces/definition';
-import {createEnvironmentInjector} from '../ng_module_ref';
+import {ɵɵinject as inject} from '../di/injector_compatibility';
+import {ɵɵdefineInjectable as defineInjectable} from '../di/interface/defs';
+import {internalImportProvidersFrom} from '../di/provider_collection';
+import {EnvironmentInjector} from '../di/r3_injector';
+import {OnDestroy} from '../interface/lifecycle_hooks';
+import {ComponentDef} from './interfaces/definition';
+import {createEnvironmentInjector} from './ng_module_ref';
 
 /**
  * A service used by the framework to create instances of standalone injectors. Those injectors are
  * created on demand in case of dynamic component instantiation and contain ambient providers
  * collected from the imports graph rooted at a given standalone component.
  */
-class StandaloneService implements OnDestroy {
+export class StandaloneService implements OnDestroy {
   cachedInjectors = new Map<ComponentDef<unknown>, EnvironmentInjector | null>();
 
   constructor(private _injector: EnvironmentInjector) {}
@@ -63,21 +62,4 @@ class StandaloneService implements OnDestroy {
     providedIn: 'environment',
     factory: () => new StandaloneService(inject(EnvironmentInjector)),
   });
-}
-
-/**
- * A feature that acts as a setup code for the {@link StandaloneService}.
- *
- * The most important responsibility of this feature is to expose the "getStandaloneInjector"
- * function (an entry points to a standalone injector creation) on a component definition object. We
- * go through the features infrastructure to make sure that the standalone injector creation logic
- * is tree-shakable and not included in applications that don't use standalone components.
- *
- * @codeGenApi
- */
-export function ɵɵStandaloneFeature(definition: ComponentDef<unknown>) {
-  performanceMarkFeature('NgStandalone');
-  definition.getStandaloneInjector = (parentInjector: EnvironmentInjector) => {
-    return parentInjector.get(StandaloneService).getOrCreateStandaloneInjector(definition);
-  };
 }
