@@ -71,19 +71,20 @@ export function getAreaMinSize(a: IArea): null | number {
     return null;
   }
 
-  if (a.component.lockSize === true) {
+  if (a.component.lockSize()) {
     return a.size;
   }
 
-  if (a.component.minSize === null) {
+  const minSize = a.component.minSize();
+  if (minSize === null) {
     return null;
   }
 
-  if (a.component.minSize > a.size) {
+  if (minSize > a.size) {
     return a.size;
   }
 
-  return a.component.minSize;
+  return minSize;
 }
 
 export function getAreaMaxSize(a: IArea): null | number {
@@ -91,19 +92,20 @@ export function getAreaMaxSize(a: IArea): null | number {
     return null;
   }
 
-  if (a.component.lockSize === true) {
+  if (a.component.lockSize()) {
     return a.size;
   }
 
-  if (a.component.maxSize === null) {
+  const maxSize = a.component.maxSize();
+  if (maxSize === null) {
     return null;
   }
 
-  if (a.component.maxSize < a.size) {
+  if (maxSize < a.size) {
     return a.size;
   }
 
-  return a.component.maxSize;
+  return maxSize;
 }
 
 export function getGutterSideAbsorptionCapacity(
