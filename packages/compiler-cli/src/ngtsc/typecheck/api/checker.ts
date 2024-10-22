@@ -215,6 +215,14 @@ export interface TemplateTypeChecker {
   getPipeMetadata(pipe: ts.ClassDeclaration): PipeMeta | null;
 
   /**
+   * Gets the directives that apply to the given template node in a component's template.
+   */
+  getDirectivesOfNode(
+    component: ts.ClassDeclaration,
+    node: TmplAstElement | TmplAstTemplate,
+  ): TypeCheckableDirectiveMeta[] | null;
+
+  /**
    * Gets the directives that have been used in a component's template.
    */
   getUsedDirectives(component: ts.ClassDeclaration): TypeCheckableDirectiveMeta[] | null;
