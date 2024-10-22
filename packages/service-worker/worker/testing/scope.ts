@@ -27,11 +27,14 @@ import {normalizeUrl, parseUrl} from './utils';
 const EMPTY_SERVER_STATE = new MockServerStateBuilder().build();
 
 export class SwTestHarnessBuilder {
-  private origin = parseUrl(this.scopeUrl).origin;
+  private origin: string;
   private server = EMPTY_SERVER_STATE;
-  private caches = new MockCacheStorage(this.origin);
+  private caches: MockCacheStorage;
 
-  constructor(private scopeUrl = 'http://localhost/') {}
+  constructor(private scopeUrl = 'http://localhost/') {
+    this.origin = parseUrl(this.scopeUrl).origin;
+    this.caches = new MockCacheStorage(this.origin);
+  }
 
   withCacheState(cache: string): SwTestHarnessBuilder {
     this.caches = new MockCacheStorage(this.origin, cache);

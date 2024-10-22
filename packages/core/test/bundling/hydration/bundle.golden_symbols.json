@@ -15,9 +15,6 @@
     "name": "AfterRenderManager"
   },
   {
-    "name": "AfterRenderPhase"
-  },
-  {
     "name": "AnonymousSubject"
   },
   {
@@ -525,12 +522,6 @@
     "name": "ZoneStablePendingTask"
   },
   {
-    "name": "_AfterRenderImpl"
-  },
-  {
-    "name": "_ComponentFactoryResolver"
-  },
-  {
     "name": "_DOM"
   },
   {
@@ -546,7 +537,13 @@
     "name": "__await"
   },
   {
+    "name": "__defProp"
+  },
+  {
     "name": "__forward_ref__"
+  },
+  {
+    "name": "__publicField"
   },
   {
     "name": "_applyRootElementTransformImpl"

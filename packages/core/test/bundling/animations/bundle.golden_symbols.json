@@ -21,9 +21,6 @@
     "name": "AfterRenderManager"
   },
   {
-    "name": "AfterRenderPhase"
-  },
-  {
     "name": "AnimationAstBuilderContext"
   },
   {
@@ -627,16 +624,7 @@
     "name": "ZoneStablePendingTask"
   },
   {
-    "name": "_AfterRenderImpl"
-  },
-  {
-    "name": "_AnimationDriver"
-  },
-  {
     "name": "_CACHED_BODY"
-  },
-  {
-    "name": "_ComponentFactoryResolver"
   },
   {
     "name": "_DOM"
@@ -651,10 +639,13 @@
     "name": "_NullComponentFactoryResolver"
   },
   {
-    "name": "_SpecialCasedStyles"
+    "name": "__defProp"
   },
   {
     "name": "__forward_ref__"
+  },
+  {
+    "name": "__publicField"
   },
   {
     "name": "_applyRootElementTransformImpl"

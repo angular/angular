@@ -9,6 +9,9 @@
     "name": "APP_INITIALIZER"
   },
   {
+    "name": "AfterRenderImpl"
+  },
+  {
     "name": "AfterRenderManager"
   },
   {
@@ -543,9 +546,6 @@
     "name": "_AfterRenderImpl"
   },
   {
-    "name": "_ComponentFactoryResolver"
-  },
-  {
     "name": "_DOM"
   },
   {
@@ -565,6 +565,9 @@
   },
   {
     "name": "__getOwnPropNames"
+  },
+  {
+    "name": "__publicField"
   },
   {
     "name": "_applyRootElementTransformImpl"
