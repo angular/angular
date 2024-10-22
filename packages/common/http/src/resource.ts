@@ -358,6 +358,11 @@ class HttpResourceImpl<T>
             }
 
             send({error});
+            // The observable terminates immediately when `error` is called,
+            // and no further emissions or completion notifications occur.
+            // Thus, we have to remove the `abort` listener in both
+            // the `error` and `complete` notifications.
+            abortSignal.removeEventListener('abort', onAbort);
           },
           complete: () => {
             if (resolve) {
