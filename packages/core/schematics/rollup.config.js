@@ -7,7 +7,6 @@
  */
 const {nodeResolve} = require('@rollup/plugin-node-resolve');
 const commonjs = require('@rollup/plugin-commonjs');
-const MagicString = require('magic-string');
 
 /** Removed license banners from input files. */
 const stripBannerPlugin = {
@@ -19,15 +18,19 @@ const stripBannerPlugin = {
     }
 
     const [bannerContent] = banner;
-    const magicString = new MagicString(code);
     const pos = code.indexOf(bannerContent);
-    magicString.remove(pos, pos + bannerContent.length).trimStart();
+    if (pos !== -1) {
+      const result = code.slice(0, pos) + code.slice(pos + bannerContent.length);
+
+      return {
+        code: result.trimStart(),
+        map: null,
+      };
+    }
 
     return {
-      code: magicString.toString(),
-      map: magicString.generateMap({
-        hires: true,
-      }),
+      code: code,
+      map: null,
     };
   },
 };
