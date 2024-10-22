@@ -111,16 +111,17 @@ export class MockExtendableMessageEvent
 }
 
 export class MockNotificationEvent extends MockExtendableEvent implements NotificationEvent {
-  readonly notification = {
-    ...this._notification,
-    close: () => undefined,
-  } as Notification;
+  readonly notification: Notification;
 
   constructor(
     private _notification: Partial<Notification>,
     readonly action = '',
   ) {
     super('notification');
+    this.notification = {
+      ...this._notification,
+      close: () => undefined,
+    } as Notification;
   }
 }
 

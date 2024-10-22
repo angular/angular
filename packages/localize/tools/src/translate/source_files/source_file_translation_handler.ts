@@ -27,14 +27,17 @@ import {makeLocalePlugin} from './locale_plugin';
  * message.
  */
 export class SourceFileTranslationHandler implements TranslationHandler {
-  private sourceLocaleOptions: TranslatePluginOptions = {
-    ...this.translationOptions,
-    missingTranslation: 'ignore',
-  };
+  private sourceLocaleOptions: TranslatePluginOptions;
+
   constructor(
     private fs: FileSystem,
     private translationOptions: TranslatePluginOptions = {},
-  ) {}
+  ) {
+    this.sourceLocaleOptions = {
+      ...this.translationOptions,
+      missingTranslation: 'ignore',
+    };
+  }
 
   canTranslate(relativeFilePath: PathSegment | AbsoluteFsPath, _contents: Uint8Array): boolean {
     return this.fs.extname(relativeFilePath) === '.js';

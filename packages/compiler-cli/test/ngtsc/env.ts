@@ -48,13 +48,15 @@ export class NgtscTestEnvironment {
   private multiCompileHostExt: MultiCompileHostExt | null = null;
   private oldProgram: Program | null = null;
   private changedResources: Set<string> | null = null;
-  private commandLineArgs = ['-p', this.basePath];
+  private commandLineArgs: string[];
 
   private constructor(
     private fs: FileSystem,
     readonly outDir: AbsoluteFsPath,
     readonly basePath: AbsoluteFsPath,
-  ) {}
+  ) {
+    this.commandLineArgs = ['-p', this.basePath];
+  }
 
   /**
    * Set up a new testing environment.

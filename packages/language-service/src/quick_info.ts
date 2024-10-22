@@ -47,8 +47,8 @@ import {
 } from './utils';
 
 export class QuickInfoBuilder {
-  private readonly typeChecker = this.compiler.getCurrentProgram().getTypeChecker();
-  private readonly parent = this.positionDetails.parent;
+  private readonly typeChecker: ts.TypeChecker;
+  private readonly parent: TmplAstNode | AST | null;
 
   constructor(
     private readonly tsLS: ts.LanguageService,
@@ -56,7 +56,10 @@ export class QuickInfoBuilder {
     private readonly component: ts.ClassDeclaration,
     private node: TmplAstNode | AST,
     private readonly positionDetails: TemplateTarget,
-  ) {}
+  ) {
+    this.typeChecker = this.compiler.getCurrentProgram().getTypeChecker();
+    this.parent = this.positionDetails.parent;
+  }
 
   get(): ts.QuickInfo | undefined {
     if (this.node instanceof TmplAstDeferredTrigger || this.node instanceof TmplAstBlockNode) {

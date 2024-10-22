@@ -12,9 +12,6 @@
     "name": "AfterRenderManager"
   },
   {
-    "name": "AfterRenderPhase"
-  },
-  {
     "name": "AnonymousSubject"
   },
   {
@@ -369,9 +366,6 @@
     "name": "NgModuleRef"
   },
   {
-    "name": "NgOnChangesFeatureImpl"
-  },
-  {
     "name": "NgZone"
   },
   {
@@ -543,12 +537,6 @@
     "name": "ZoneStablePendingTask"
   },
   {
-    "name": "_AfterRenderImpl"
-  },
-  {
-    "name": "_ComponentFactoryResolver"
-  },
-  {
     "name": "_DOM"
   },
   {
@@ -568,6 +556,9 @@
   },
   {
     "name": "__getOwnPropNames"
+  },
+  {
+    "name": "__publicField"
   },
   {
     "name": "_applyRootElementTransformImpl"
@@ -2629,9 +2620,6 @@
   },
   {
     "name": "writeToDirectiveInput"
-  },
-  {
-    "name": "ɵɵNgOnChangesFeature"
   },
   {
     "name": "ɵɵStandaloneFeature"

@@ -11,7 +11,6 @@ import {
   ASTWithSource,
   BindingPipe,
   BindingType,
-  Call,
   EmptyExpr,
   ImplicitReceiver,
   LiteralPrimitive,
@@ -41,6 +40,7 @@ import {
   PotentialDirective,
   SymbolKind,
   TemplateDeclarationSymbol,
+  TemplateTypeChecker,
 } from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 
@@ -123,12 +123,12 @@ function buildBlockSnippet(insertSnippet: boolean, blockName: string, withParens
  * @param N type of the template node in question, narrowed accordingly.
  */
 export class CompletionBuilder<N extends TmplAstNode | AST> {
-  private readonly typeChecker = this.compiler.getCurrentProgram().getTypeChecker();
-  private readonly templateTypeChecker = this.compiler.getTemplateTypeChecker();
-  private readonly nodeParent = this.targetDetails.parent;
-  private readonly nodeContext = nodeContextFromTarget(this.targetDetails.context);
-  private readonly template = this.targetDetails.template;
-  private readonly position = this.targetDetails.position;
+  private readonly typeChecker: ts.TypeChecker;
+  private readonly templateTypeChecker: TemplateTypeChecker;
+  private readonly nodeParent: TmplAstNode | AST | null;
+  private readonly nodeContext: CompletionNodeContext;
+  private readonly template: TmplAstTemplate | null;
+  private readonly position: number;
 
   constructor(
     private readonly tsLS: ts.LanguageService,
@@ -136,7 +136,14 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     private readonly component: ts.ClassDeclaration,
     private readonly node: N,
     private readonly targetDetails: TemplateTarget,
-  ) {}
+  ) {
+    this.typeChecker = this.compiler.getCurrentProgram().getTypeChecker();
+    this.templateTypeChecker = this.compiler.getTemplateTypeChecker();
+    this.nodeParent = this.targetDetails.parent;
+    this.nodeContext = nodeContextFromTarget(this.targetDetails.context);
+    this.template = this.targetDetails.template;
+    this.position = this.targetDetails.position;
+  }
 
   /**
    * Analogue for `ts.LanguageService.getCompletionsAtPosition`.
