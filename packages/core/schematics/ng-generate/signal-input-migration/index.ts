@@ -15,7 +15,6 @@ import {groupReplacementsByFile} from '../../utils/tsurge/helpers/group_replacem
 import {setFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {CompilationUnitData} from '../../migrations/signal-migration/src/batch/unit_data';
 import {ProjectRootRelativePath, TextUpdate} from '../../utils/tsurge';
-import {synchronouslyCombineUnitData} from '../../utils/tsurge/helpers/combine_units';
 
 interface Options {
   path: string;
@@ -78,19 +77,13 @@ export function migrate(options: Options): Rule {
     context.logger.info(`Processing analysis data between targets..`);
     context.logger.info(``);
 
-    const combined = await synchronouslyCombineUnitData(migration, unitResults);
-    if (combined === null) {
-      context.logger.error('Migration failed unexpectedly with no analysis data');
-      return;
-    }
-
-    const globalMeta = await migration.globalMeta(combined);
+    const merged = await migration.merge(unitResults);
     const replacementsPerFile: Map<ProjectRootRelativePath, TextUpdate[]> = new Map();
 
     for (const {info, tsconfigPath} of programInfos) {
       context.logger.info(`Migrating: ${tsconfigPath}..`);
 
-      const {replacements} = await migration.migrate(globalMeta, info);
+      const {replacements} = await migration.migrate(merged, info);
       const changesPerFile = groupReplacementsByFile(replacements);
 
       for (const [file, changes] of changesPerFile) {
@@ -111,7 +104,7 @@ export function migrate(options: Options): Rule {
       tree.commitUpdate(recorder);
     }
 
-    const {counters} = await migration.stats(globalMeta);
+    const {counters} = await migration.stats(merged);
     const migratedInputs = counters.sourceInputs - counters.incompatibleInputs;
 
     context.logger.info('');

@@ -17,7 +17,6 @@ import {
   CompilationUnitData,
   SignalQueriesMigration,
 } from '../../migrations/signal-queries-migration/migration';
-import {synchronouslyCombineUnitData} from '../../utils/tsurge/helpers/combine_units';
 
 interface Options {
   path: string;
@@ -80,19 +79,13 @@ export function migrate(options: Options): Rule {
     context.logger.info(`Processing analysis data between targets..`);
     context.logger.info(``);
 
-    const combined = await synchronouslyCombineUnitData(migration, unitResults);
-    if (combined === null) {
-      context.logger.error('Migration failed unexpectedly with no analysis data');
-      return;
-    }
-
-    const globalMeta = await migration.globalMeta(combined);
+    const merged = await migration.merge(unitResults);
     const replacementsPerFile: Map<ProjectRootRelativePath, TextUpdate[]> = new Map();
 
     for (const {info, tsconfigPath} of programInfos) {
       context.logger.info(`Migrating: ${tsconfigPath}..`);
 
-      const {replacements} = await migration.migrate(globalMeta, info);
+      const {replacements} = await migration.migrate(merged, info);
       const changesPerFile = groupReplacementsByFile(replacements);
 
       for (const [file, changes] of changesPerFile) {
@@ -118,7 +111,7 @@ export function migrate(options: Options): Rule {
 
     const {
       counters: {queriesCount, incompatibleQueries, multiQueries},
-    } = await migration.stats(globalMeta);
+    } = await migration.stats(merged);
     const migratedQueries = queriesCount - incompatibleQueries;
 
     context.logger.info('');
