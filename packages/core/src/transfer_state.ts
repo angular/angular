@@ -74,7 +74,7 @@ function initTransferState(): TransferState {
  */
 export class TransferState {
   /** @nocollapse */
-  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
+  static ɵprov = /** @pureOrBreakMyCode */ /* @__PURE__ */ ɵɵdefineInjectable({
     token: TransferState,
     providedIn: 'root',
     factory: initTransferState,

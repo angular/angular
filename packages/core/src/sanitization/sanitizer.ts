@@ -17,7 +17,7 @@ import {SecurityContext} from './security';
 export abstract class Sanitizer {
   abstract sanitize(context: SecurityContext, value: {} | string | null): string | null;
   /** @nocollapse */
-  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
+  static ɵprov = /** @pureOrBreakMyCode */ /* @__PURE__ */ ɵɵdefineInjectable({
     token: Sanitizer,
     providedIn: 'root',
     factory: () => null,

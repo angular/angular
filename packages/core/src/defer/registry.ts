@@ -49,7 +49,7 @@ export class DeferBlockRegistry {
   hydrating = new Set();
 
   /** @nocollapse */
-  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
+  static ɵprov = /** @pureOrBreakMyCode */ /* @__PURE__ */ ɵɵdefineInjectable({
     token: DeferBlockRegistry,
     providedIn: 'root',
     factory: () => new DeferBlockRegistry(),

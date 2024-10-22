@@ -55,7 +55,7 @@ export class PendingTasksInternal implements OnDestroy {
   }
 
   /** @nocollapse */
-  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
+  static ɵprov = /** @pureOrBreakMyCode */ /* @__PURE__ */ ɵɵdefineInjectable({
     token: PendingTasksInternal,
     providedIn: 'root',
     factory: () => new PendingTasksInternal(),
@@ -134,7 +134,7 @@ export class PendingTasks {
   }
 
   /** @nocollapse */
-  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
+  static ɵprov = /** @pureOrBreakMyCode */ /* @__PURE__ */ ɵɵdefineInjectable({
     token: PendingTasks,
     providedIn: 'root',
     factory: () => new PendingTasks(),

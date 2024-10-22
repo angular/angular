@@ -37,7 +37,7 @@ export abstract class EffectScheduler {
   abstract flush(): void;
 
   /** @nocollapse */
-  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
+  static ɵprov = /** @pureOrBreakMyCode */ /* @__PURE__ */ ɵɵdefineInjectable({
     token: EffectScheduler,
     providedIn: 'root',
     factory: () => new ZoneAwareEffectScheduler(),
