@@ -2034,6 +2034,9 @@
     "name": "init_signal2"
   },
   {
+    "name": "init_signal_debug"
+  },
+  {
     "name": "init_signals"
   },
   {
