@@ -17,4 +17,6 @@ export interface EventHandlerInfo {
   handler: (event: Event) => void;
 
   capture: boolean;
+
+  passive?: boolean;
 }

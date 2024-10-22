@@ -70,40 +70,128 @@ describe('event test.ts', () => {
     divInternal = document.createElement('div');
   });
 
-  it('add event listener w3 c', () => {
-    const eventInfo = jsactionEvent.addEventListener(divInternal, 'click', () => {});
+  it('add event listener click w3 c', () => {
+    const addEventListenerSpy = spyOn(divInternal, 'addEventListener').and.callThrough();
+    const handler = () => {};
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'click', handler);
+    expect(addEventListenerSpy).toHaveBeenCalledOnceWith('click', handler, false);
     expect(eventInfo.eventType).toBe('click');
     expect(eventInfo.capture).toBe(false);
+    expect(eventInfo.passive).toBeUndefined();
   });
 
   it('add event listener focus w3 c', () => {
-    const eventInfo = jsactionEvent.addEventListener(divInternal, 'focus', () => {});
+    const addEventListenerSpy = spyOn(divInternal, 'addEventListener').and.callThrough();
+    const handler = () => {};
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'focus', handler);
+    expect(addEventListenerSpy).toHaveBeenCalledOnceWith('focus', handler, true);
     expect(eventInfo.eventType).toBe('focus');
     expect(eventInfo.capture).toBe(true);
+    expect(eventInfo.passive).toBeUndefined();
   });
 
   it('add event listener blur w3 c', () => {
-    const eventInfo = jsactionEvent.addEventListener(divInternal, 'blur', () => {});
+    const addEventListenerSpy = spyOn(divInternal, 'addEventListener').and.callThrough();
+    const handler = () => {};
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'blur', handler);
+    expect(addEventListenerSpy).toHaveBeenCalledOnceWith('blur', handler, true);
     expect(eventInfo.eventType).toBe('blur');
     expect(eventInfo.capture).toBe(true);
+    expect(eventInfo.passive).toBeUndefined();
   });
 
   it('add event listener error w3 c', () => {
-    const eventInfo = jsactionEvent.addEventListener(divInternal, 'error', () => {});
+    const addEventListenerSpy = spyOn(divInternal, 'addEventListener').and.callThrough();
+    const handler = () => {};
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'error', handler);
+    expect(addEventListenerSpy).toHaveBeenCalledOnceWith('error', handler, true);
     expect(eventInfo.eventType).toBe('error');
     expect(eventInfo.capture).toBe(true);
+    expect(eventInfo.passive).toBeUndefined();
   });
 
   it('add event listener load w3 c', () => {
-    const eventInfo = jsactionEvent.addEventListener(divInternal, 'load', () => {});
+    const addEventListenerSpy = spyOn(divInternal, 'addEventListener').and.callThrough();
+    const handler = () => {};
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'load', handler);
+    expect(addEventListenerSpy).toHaveBeenCalledOnceWith('load', handler, true);
     expect(eventInfo.eventType).toBe('load');
     expect(eventInfo.capture).toBe(true);
+    expect(eventInfo.passive).toBeUndefined();
   });
 
   it('add event listener toggle w3 c', () => {
-    const eventInfo = jsactionEvent.addEventListener(divInternal, 'toggle', () => {});
+    const addEventListenerSpy = spyOn(divInternal, 'addEventListener').and.callThrough();
+    const handler = () => {};
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'toggle', handler);
+    expect(addEventListenerSpy).toHaveBeenCalledOnceWith('toggle', handler, true);
     expect(eventInfo.eventType).toBe('toggle');
     expect(eventInfo.capture).toBe(true);
+    expect(eventInfo.passive).toBeUndefined();
+  });
+
+  it('add event listener touchstart w3 c', () => {
+    const addEventListenerSpy = spyOn(divInternal, 'addEventListener').and.callThrough();
+    const handler = () => {};
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'touchstart', handler);
+    expect(addEventListenerSpy).toHaveBeenCalledOnceWith('touchstart', handler, false);
+    expect(eventInfo.eventType).toBe('touchstart');
+    expect(eventInfo.capture).toBe(false);
+    expect(eventInfo.passive).toBeUndefined();
+  });
+
+  it('add event listener touchstart w3 c with passive:false', () => {
+    const addEventListenerSpy = spyOn(divInternal, 'addEventListener').and.callThrough();
+    const handler = () => {};
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'touchstart', handler, false);
+    expect(addEventListenerSpy).toHaveBeenCalledOnceWith('touchstart', handler, {
+      capture: false,
+      passive: false,
+    });
+    expect(eventInfo.eventType).toBe('touchstart');
+    expect(eventInfo.capture).toBe(false);
+    expect(eventInfo.passive).toBe(false);
+  });
+
+  it('add event listener touchstart w3 c with passive:true', () => {
+    const addEventListenerSpy = spyOn(divInternal, 'addEventListener').and.callThrough();
+    const handler = () => {};
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'touchstart', handler, true);
+    expect(addEventListenerSpy).toHaveBeenCalledOnceWith('touchstart', handler, {
+      capture: false,
+      passive: true,
+    });
+    expect(eventInfo.eventType).toBe('touchstart');
+    expect(eventInfo.capture).toBe(false);
+    expect(eventInfo.passive).toBe(true);
+  });
+
+  it('remove event listener touchstart w3 c', () => {
+    const removeEventListenerSpy = spyOn(divInternal, 'removeEventListener').and.callThrough();
+    const handler = () => {};
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'touchstart', handler);
+    jsactionEvent.removeEventListener(divInternal, eventInfo);
+    expect(removeEventListenerSpy).toHaveBeenCalledOnceWith('touchstart', handler, false);
+  });
+
+  it('remove event listener touchstart w3 c with passive:false', () => {
+    const removeEventListenerSpy = spyOn(divInternal, 'removeEventListener').and.callThrough();
+    const handler = () => {};
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'touchstart', handler, false);
+    jsactionEvent.removeEventListener(divInternal, eventInfo);
+    expect(removeEventListenerSpy).toHaveBeenCalledOnceWith('touchstart', handler, {
+      capture: false,
+    });
+  });
+
+  it('remove event listener touchstart w3 c with passive:true', () => {
+    const removeEventListenerSpy = spyOn(divInternal, 'removeEventListener').and.callThrough();
+    const handler = () => {};
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'touchstart', handler, true);
+    jsactionEvent.removeEventListener(divInternal, eventInfo);
+    expect(removeEventListenerSpy).toHaveBeenCalledOnceWith('touchstart', handler, {
+      capture: false,
+    });
   });
 
   it('is modified click event mac meta key', () => {

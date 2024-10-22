@@ -166,6 +166,14 @@ This code should be compiled/bundled/minified separately from the main
 application bundle. Code size is critical here since this code will be inlined
 at the top of the page and will block rendering content.
 
+For scroll-blocking events like `touchstart`, `touchmove`, `wheel` and `mousewheel`,
+you can optimize scrolling performance by passing the `passive` option to the
+`addEvent` function. This allows the browser to continue scrolling smoothly even
+while the event listener is processing. For example:
+```javascript
+eventContract.addEvent(eventType, prefixedEventType, /* passive= */ true);
+```
+
 ### 2. Embed the `EventContract`
 
 In your server rendered application, embed the contract bundle at the top of
