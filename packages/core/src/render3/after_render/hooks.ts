@@ -15,7 +15,7 @@ import {assertNotInReactiveContext} from '../reactivity/asserts';
 import {isPlatformBrowser} from '../util/misc_utils';
 import {AfterRenderPhase, AfterRenderRef} from './api';
 import {
-  AfterRenderHooks,
+  type CleanupRegisterFn,
   AfterRenderImpl,
   AfterRenderManager,
   AfterRenderSequence,
@@ -147,10 +147,10 @@ export interface AfterRenderOptions {
  */
 export function afterRender<E = never, W = never, M = never>(
   spec: {
-    earlyRead?: () => E;
-    write?: (...args: ɵFirstAvailable<[E]>) => W;
-    mixedReadWrite?: (...args: ɵFirstAvailable<[W, E]>) => M;
-    read?: (...args: ɵFirstAvailable<[M, W, E]>) => void;
+    earlyRead?: (onCleanup: CleanupRegisterFn) => E;
+    write?: (...args: [...ɵFirstAvailable<[E]>, CleanupRegisterFn]) => W;
+    mixedReadWrite?: (...args: [...ɵFirstAvailable<[W, E]>, CleanupRegisterFn]) => M;
+    read?: (...args: [...ɵFirstAvailable<[M, W, E]>, CleanupRegisterFn]) => void;
   },
   options?: Omit<AfterRenderOptions, 'phase'>,
 ): AfterRenderRef;
@@ -207,16 +207,19 @@ export function afterRender<E = never, W = never, M = never>(
  *
  * @developerPreview
  */
-export function afterRender(callback: VoidFunction, options?: AfterRenderOptions): AfterRenderRef;
+export function afterRender(
+  callback: (onCleanup: CleanupRegisterFn) => void,
+  options?: AfterRenderOptions,
+): AfterRenderRef;
 
 export function afterRender(
   callbackOrSpec:
-    | VoidFunction
+    | ((onCleanup: CleanupRegisterFn) => void)
     | {
-        earlyRead?: () => unknown;
-        write?: (r?: unknown) => unknown;
-        mixedReadWrite?: (r?: unknown) => unknown;
-        read?: (r?: unknown) => void;
+        earlyRead?: (onCleanup: CleanupRegisterFn) => unknown;
+        write?: (r: unknown | undefined, onCleanup: CleanupRegisterFn) => unknown;
+        mixedReadWrite?: (r: unknown | undefined, onCleanup: CleanupRegisterFn) => unknown;
+        read?: (r: unknown | undefined, onCleanup: CleanupRegisterFn) => void;
       },
   options?: AfterRenderOptions,
 ): AfterRenderRef {
@@ -320,10 +323,10 @@ export function afterRender(
  */
 export function afterNextRender<E = never, W = never, M = never>(
   spec: {
-    earlyRead?: () => E;
-    write?: (...args: ɵFirstAvailable<[E]>) => W;
-    mixedReadWrite?: (...args: ɵFirstAvailable<[W, E]>) => M;
-    read?: (...args: ɵFirstAvailable<[M, W, E]>) => void;
+    earlyRead?: (onCleanup: CleanupRegisterFn) => E;
+    write?: (...args: [...ɵFirstAvailable<[E]>, CleanupRegisterFn]) => W;
+    mixedReadWrite?: (...args: [...ɵFirstAvailable<[W, E]>, CleanupRegisterFn]) => M;
+    read?: (...args: [...ɵFirstAvailable<[M, W, E]>, CleanupRegisterFn]) => void;
   },
   options?: Omit<AfterRenderOptions, 'phase'>,
 ): AfterRenderRef;
@@ -382,18 +385,18 @@ export function afterNextRender<E = never, W = never, M = never>(
  * @developerPreview
  */
 export function afterNextRender(
-  callback: VoidFunction,
+  callback: (onCleanup: CleanupRegisterFn) => void,
   options?: AfterRenderOptions,
 ): AfterRenderRef;
 
 export function afterNextRender(
   callbackOrSpec:
-    | VoidFunction
+    | ((onCleanup: CleanupRegisterFn) => void)
     | {
-        earlyRead?: () => unknown;
-        write?: (r?: unknown) => unknown;
-        mixedReadWrite?: (r?: unknown) => unknown;
-        read?: (r?: unknown) => void;
+        earlyRead?: (onCleanup: CleanupRegisterFn) => unknown;
+        write?: (r: unknown | undefined, onCleanup: CleanupRegisterFn) => unknown;
+        mixedReadWrite?: (r: unknown | undefined, onCleanup: CleanupRegisterFn) => unknown;
+        read?: (r: unknown | undefined, onCleanup: CleanupRegisterFn) => void;
       },
   options?: AfterRenderOptions,
 ): AfterRenderRef {
@@ -409,28 +412,45 @@ export function afterNextRender(
   return afterRenderImpl(callbackOrSpec, injector, options, /* once */ true);
 }
 
-function getHooks(
-  callbackOrSpec:
-    | VoidFunction
-    | {
-        earlyRead?: () => unknown;
-        write?: (r?: unknown) => unknown;
-        mixedReadWrite?: (r?: unknown) => unknown;
-        read?: (r?: unknown) => void;
-      },
-  phase: AfterRenderPhase,
-): AfterRenderHooks {
-  if (callbackOrSpec instanceof Function) {
-    const hooks: AfterRenderHooks = [undefined, undefined, undefined, undefined];
-    hooks[phase] = callbackOrSpec;
-    return hooks;
-  } else {
-    return [
-      callbackOrSpec.earlyRead,
-      callbackOrSpec.write,
-      callbackOrSpec.mixedReadWrite,
-      callbackOrSpec.read,
-    ];
+type AfterRenderPhaseHook = (
+  ...args:
+    | [onCleanup: CleanupRegisterFn]
+    | [previousPhaseValue: unknown, onCleanup: CleanupRegisterFn]
+) => unknown;
+
+type AfterRenderPhaseHooks = [
+  /*      EarlyRead */ AfterRenderPhaseHook | undefined,
+  /*          Write */ AfterRenderPhaseHook | undefined,
+  /* MixedReadWrite */ AfterRenderPhaseHook | undefined,
+  /*           Read */ AfterRenderPhaseHook | undefined,
+];
+
+class AfterNextRenderSequence extends AfterRenderSequence {
+  constructor(
+    impl: AfterRenderImpl,
+    hooks: AfterRenderPhaseHooks,
+    once: boolean,
+    destroyRef: DestroyRef | null,
+  ) {
+    // Note that we also initialize the underlying `AfterRenderSequence` hooks to `undefined` and
+    // populate them as we create reactive nodes below.
+    super(impl, [undefined, undefined, undefined, undefined], once, destroyRef);
+
+    for (const phase of AfterRenderImpl.PHASES) {
+      const hook = hooks[phase];
+      if (hook === undefined) {
+        continue;
+      }
+      this.hooks[phase] = (value) => {
+        this.runCleanup(phase);
+        const args: unknown[] = [];
+        if (value !== undefined) {
+          args.push(value);
+        }
+        args.push(this.getRegisterCleanupFn(phase));
+        hook.apply(null, args as any);
+      };
+    }
   }
 }
 
@@ -439,12 +459,12 @@ function getHooks(
  */
 function afterRenderImpl(
   callbackOrSpec:
-    | VoidFunction
+    | ((onCleanup: CleanupRegisterFn) => void)
     | {
-        earlyRead?: () => unknown;
-        write?: (r?: unknown) => unknown;
-        mixedReadWrite?: (r?: unknown) => unknown;
-        read?: (r?: unknown) => void;
+        earlyRead?: (onCleanup: CleanupRegisterFn) => unknown;
+        write?: (r: unknown | undefined, onCleanup: CleanupRegisterFn) => unknown;
+        mixedReadWrite?: (r: unknown | undefined, onCleanup: CleanupRegisterFn) => unknown;
+        read?: (r: unknown | undefined, onCleanup: CleanupRegisterFn) => void;
       },
   injector: Injector,
   options: AfterRenderOptions | undefined,
@@ -455,14 +475,20 @@ function afterRenderImpl(
   // tree-shaken if `afterRender` and `afterNextRender` aren't used.
   manager.impl ??= injector.get(AfterRenderImpl);
 
-  const hooks = options?.phase ?? AfterRenderPhase.MixedReadWrite;
   const destroyRef = options?.manualCleanup !== true ? injector.get(DestroyRef) : null;
-  const sequence = new AfterRenderSequence(
-    manager.impl,
-    getHooks(callbackOrSpec, hooks),
-    once,
-    destroyRef,
-  );
+
+  let spec = callbackOrSpec;
+  if (typeof spec === 'function') {
+    spec = {mixedReadWrite: callbackOrSpec as any};
+  }
+
+  const hooks = [
+    spec.earlyRead,
+    spec.write,
+    spec.mixedReadWrite,
+    spec.read,
+  ] as AfterRenderPhaseHooks;
+  const sequence = new AfterNextRenderSequence(manager.impl, hooks, once, destroyRef);
   manager.impl.register(sequence);
   return sequence;
 }

@@ -17,6 +17,10 @@ import {
 } from '../../change_detection/scheduling/zoneless_scheduling';
 import {type DestroyRef} from '../../linker/destroy_ref';
 
+export type CleanupRegisterFn = (cleanupFn: () => void) => void;
+
+const EMPTY_CLEANUP_SET = new Set<() => void>();
+
 export class AfterRenderManager {
   impl: AfterRenderImpl | null = null;
 
@@ -82,9 +86,10 @@ export class AfterRenderImpl {
       sequence.afterRun();
       if (sequence.once) {
         this.sequences.delete(sequence);
-        // Destroy the sequence so its on destroy callbacks can be cleaned up
-        // immediately, instead of waiting until the injector is destroyed.
-        sequence.destroy();
+        // Unregister the sequence to remove it from the active set.
+        // Note: We still have to wait for the injector to be destroyed
+        // to run the final cleanup, but this removes it from future executions.
+        sequence.unregister();
       }
     }
 
@@ -153,6 +158,9 @@ export class AfterRenderSequence implements AfterRenderRef {
   pipelinedValue: unknown = undefined;
 
   private unregisterOnDestroy: (() => void) | undefined;
+  /** Whether the sequence has been unregistered. */
+  private isUnregistered = false;
+  private phaseCleanups: (Set<VoidFunction> | null)[] = [];
 
   constructor(
     readonly impl: AfterRenderImpl,
@@ -163,13 +171,40 @@ export class AfterRenderSequence implements AfterRenderRef {
     this.unregisterOnDestroy = destroyRef?.onDestroy(() => this.destroy());
   }
 
+  getRegisterCleanupFn(phase: AfterRenderPhase) {
+    return (cleanupFn: () => void) => {
+      (this.phaseCleanups[phase] ??= new Set()).add(cleanupFn);
+    };
+  }
+
   afterRun(): void {
     this.erroredOrDestroyed = false;
     this.pipelinedValue = undefined;
   }
 
-  destroy(): void {
+  runCleanup(phase: AfterRenderPhase) {
+    try {
+      for (const fn of this.phaseCleanups[phase] || EMPTY_CLEANUP_SET) {
+        fn();
+      }
+    } finally {
+      // Even if a cleanup function errors, ensure it's cleared.
+      this.phaseCleanups[phase]?.clear();
+    }
+  }
+
+  unregister(): void {
+    this.isUnregistered = true;
     this.impl.unregister(this);
+  }
+
+  destroy(): void {
+    if (!this.isUnregistered) this.unregister();
     this.unregisterOnDestroy?.();
+
+    // Clean up any remaining cleanup functions.
+    for (const phase of AfterRenderImpl.PHASES) {
+      this.runCleanup(phase);
+    }
   }
 }

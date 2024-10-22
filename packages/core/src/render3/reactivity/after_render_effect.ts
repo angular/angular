@@ -34,7 +34,6 @@ import {assertInInjectionContext} from '../../di/contextual';
 import {isPlatformBrowser} from '../util/misc_utils';
 
 const NOT_SET = Symbol('NOT_SET');
-const EMPTY_CLEANUP_SET = new Set<() => void>();
 
 /** Callback type for an `afterRenderEffect` phase effect */
 type AfterRenderPhaseEffectHook = (
@@ -59,10 +58,6 @@ interface AfterRenderPhaseEffectNode extends SignalNode<unknown> {
   userFn: AfterRenderPhaseEffectHook;
   /** Signal function that retrieves the value of this node, used as the value for the next phase */
   signal: Signal<unknown>;
-  /** Registered cleanup functions, or `null` if none have ever been registered */
-  cleanup: Set<() => void> | null;
-  /** Pre-bound helper function passed to the user's callback which writes to `this.cleanup` */
-  registerCleanupFn: EffectCleanupRegisterFn;
   /** Entrypoint to running this effect that's given to the `afterRender` machinery */
   phaseFn(previousValue?: unknown): unknown;
 }
@@ -107,14 +102,7 @@ const AFTER_RENDER_PHASE_EFFECT_NODE = /* @__PURE__ */ (() => ({
     }
 
     // Run any needed cleanup functions.
-    try {
-      for (const cleanupFn of this.cleanup ?? EMPTY_CLEANUP_SET) {
-        cleanupFn();
-      }
-    } finally {
-      // Even if a cleanup function errors, ensure it's cleared.
-      this.cleanup?.clear();
-    }
+    this.sequence.runCleanup(this.phase);
 
     // Prepare to call the user's effect callback. If there was a previous phase, then it gave us
     // its value as a `Signal`, otherwise `previousValue` will be `undefined`.
@@ -122,7 +110,7 @@ const AFTER_RENDER_PHASE_EFFECT_NODE = /* @__PURE__ */ (() => ({
     if (previousValue !== undefined) {
       args.push(previousValue);
     }
-    args.push(this.registerCleanupFn);
+    args.push(this.sequence.getRegisterCleanupFn(this.phase));
 
     // Call the user's callback in our reactive context.
     const prevConsumer = consumerBeforeComputation(this);
@@ -193,8 +181,6 @@ class AfterRenderEffectSequence extends AfterRenderSequence {
         return node.value;
       }) as Signal<unknown>;
       node.signal[SIGNAL] = node;
-      node.registerCleanupFn = (fn: EffectCleanupFn) =>
-        (node.cleanup ??= new Set<() => void>()).add(fn);
 
       this.nodes[phase] = node;
 
@@ -211,13 +197,6 @@ class AfterRenderEffectSequence extends AfterRenderSequence {
 
   override destroy(): void {
     super.destroy();
-
-    // Run the cleanup functions for each node.
-    for (const node of this.nodes) {
-      for (const fn of node?.cleanup ?? EMPTY_CLEANUP_SET) {
-        fn();
-      }
-    }
   }
 }
 

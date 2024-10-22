@@ -823,6 +823,84 @@ describe('after render hooks', () => {
         appRef.tick();
         expect(count).toBe(3);
       });
+
+      it('should run cleanup functions before re-running phase effects', () => {
+        const log: string[] = [];
+        const appRef = TestBed.inject(ApplicationRef);
+        const counter = signal(0);
+
+        afterRender(
+          {
+            earlyRead: (onCleanup) => {
+              onCleanup(() => log.push('cleanup earlyRead'));
+              log.push(`earlyRead: ${counter()}`);
+              // Calculate isEven:
+              return counter() % 2 === 0;
+            },
+            write: (isEven, onCleanup) => {
+              onCleanup(() => log.push('cleanup write'));
+              log.push(`write: ${isEven}`);
+            },
+          },
+          {injector: appRef.injector},
+        );
+
+        // Initial run should run both effects with no cleanup
+        appRef.tick();
+        expect(log).toEqual(['earlyRead: 0', 'write: true']);
+        log.length = 0;
+
+        // A counter of 1 will clean up and rerun both effects.
+        counter.set(1);
+        appRef.tick();
+        expect(log).toEqual(['cleanup earlyRead', 'earlyRead: 1', 'cleanup write', 'write: false']);
+        log.length = 0;
+
+        // A counter of 3 will clean up and rerun the earlyRead phase only.
+        counter.set(3);
+        appRef.tick();
+        expect(log).toEqual(['cleanup earlyRead', 'earlyRead: 3']);
+        log.length = 0;
+
+        // A counter of 4 will then clean up and rerun both effects.
+        counter.set(4);
+        appRef.tick();
+        expect(log).toEqual(['cleanup earlyRead', 'earlyRead: 4', 'cleanup write', 'write: true']);
+      });
+
+      it('should run cleanup functions when destroyed', () => {
+        const log: string[] = [];
+        const appRef = TestBed.inject(ApplicationRef);
+
+        const ref = afterRender(
+          {
+            earlyRead: (onCleanup) => {
+              onCleanup(() => log.push('cleanup earlyRead'));
+            },
+            write: (_, onCleanup) => {
+              onCleanup(() => log.push('cleanup write'));
+            },
+            mixedReadWrite: (_, onCleanup) => {
+              onCleanup(() => log.push('cleanup mixedReadWrite'));
+            },
+            read: (_, onCleanup) => {
+              onCleanup(() => log.push('cleanup read'));
+            },
+          },
+          {injector: appRef.injector},
+        );
+
+        appRef.tick();
+        expect(log.length).toBe(0);
+
+        ref.destroy();
+        expect(log).toEqual([
+          'cleanup earlyRead',
+          'cleanup write',
+          'cleanup mixedReadWrite',
+          'cleanup read',
+        ]);
+      });
     });
 
     describe('afterNextRender', () => {
