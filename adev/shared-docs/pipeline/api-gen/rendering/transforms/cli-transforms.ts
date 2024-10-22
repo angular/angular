@@ -62,7 +62,7 @@ function getArgumentsLabel(command: CliCommand): string {
   if (args.length === 0) {
     return '';
   }
-  return command.command.replace(`ng ${command.name} `, '');
+  return command.command.replace(`${command.name} `, '');
 }
 
 function getArgs(command: CliCommand): CliOption[] {
