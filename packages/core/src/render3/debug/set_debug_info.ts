@@ -7,7 +7,7 @@
  */
 
 import {Type} from '../../interface/type';
-import {getComponentDef} from '../definition';
+import {getComponentDef} from '../def_getters';
 import {ClassDebugInfo} from '../interfaces/definition';
 
 /**

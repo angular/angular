@@ -11,13 +11,13 @@ import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {Type} from '../../interface/type';
 import {NgModuleType} from '../../metadata/ng_module_def';
 import {flatten} from '../../util/array_utils';
-import {getComponentDef, getNgModuleDef, isStandalone} from '../definition';
-import {
+import type {
   ComponentType,
   NgModuleScopeInfoFromDecorator,
   RawScopeInfoFromDecorator,
 } from '../interfaces/definition';
 import {isComponent, isDirective, isNgModule, isPipe, verifyStandaloneImport} from '../jit/util';
+import {getComponentDef, getNgModuleDef, isStandalone} from '../def_getters';
 import {maybeUnwrapFn} from '../util/misc_utils';
 
 import {

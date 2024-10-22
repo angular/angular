@@ -17,7 +17,7 @@ import {
   getLContext,
   readPatchedLView,
 } from '../context_discovery';
-import {getComponentDef, getDirectiveDef} from '../definition';
+import {getComponentDef, getDirectiveDef} from '../def_getters';
 import {NodeInjector} from '../di';
 import {DirectiveDef} from '../interfaces/definition';
 import {TElementNode, TNode, TNodeProviderIndexes} from '../interfaces/node';

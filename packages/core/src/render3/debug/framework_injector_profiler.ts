@@ -11,7 +11,7 @@ import {EnvironmentInjector} from '../../di/r3_injector';
 import {Type} from '../../interface/type';
 import {assertDefined, throwError} from '../../util/assert';
 import {assertTNode, assertTNodeForLView} from '../assert';
-import {getComponentDef} from '../definition';
+import {getComponentDef} from '../def_getters';
 import {getNodeInjectorLView, getNodeInjectorTNode, NodeInjector} from '../di';
 import {TNode} from '../interfaces/node';
 import {LView} from '../interfaces/view';

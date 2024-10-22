@@ -23,7 +23,7 @@ import {PendingTasksInternal} from '../pending_tasks';
 import {assertLContainer, assertTNodeForLView} from '../render3/assert';
 import {bindingUpdated} from '../render3/bindings';
 import {ChainedInjector} from '../render3/chained_injector';
-import {getComponentDef, getDirectiveDef, getPipeDef} from '../render3/definition';
+import {getComponentDef, getDirectiveDef, getPipeDef} from '../render3/def_getters';
 import {getTemplateLocationDetails} from '../render3/instructions/element_validation';
 import {markViewDirty} from '../render3/instructions/mark_view_dirty';
 import {handleError} from '../render3/instructions/shared';

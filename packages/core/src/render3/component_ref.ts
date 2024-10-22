@@ -32,7 +32,7 @@ import {assertDefined, assertGreaterThan, assertIndexInRange} from '../util/asse
 
 import {assertComponentType, assertNoDuplicateDirectives} from './assert';
 import {attachPatchData} from './context_discovery';
-import {getComponentDef} from './definition';
+import {getComponentDef} from './def_getters';
 import {depsTracker} from './deps_tracker/deps_tracker';
 import {getNodeInjectable, NodeInjector} from './di';
 import {registerPostOrderHooks} from './hooks';

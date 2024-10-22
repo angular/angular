@@ -225,6 +225,9 @@
     "name": "EnvironmentInjector"
   },
   {
+    "name": "EnvironmentNgModuleRefAdapter"
+  },
+  {
     "name": "ErrorHandler"
   },
   {
@@ -568,6 +571,9 @@
   },
   {
     "name": "SkipSelf"
+  },
+  {
+    "name": "StandaloneService"
   },
   {
     "name": "StatusChangeEvent"

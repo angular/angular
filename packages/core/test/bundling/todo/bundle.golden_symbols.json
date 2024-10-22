@@ -168,6 +168,9 @@
     "name": "EnvironmentInjector"
   },
   {
+    "name": "EnvironmentNgModuleRefAdapter"
+  },
+  {
     "name": "ErrorHandler"
   },
   {
@@ -436,6 +439,9 @@
   },
   {
     "name": "SkipSelf"
+  },
+  {
+    "name": "StandaloneService"
   },
   {
     "name": "Subject"
@@ -1276,6 +1282,9 @@
   },
   {
     "name": "markViewForRefresh"
+  },
+  {
+    "name": "markedFeatures"
   },
   {
     "name": "maybeWrapInNotSelector"
