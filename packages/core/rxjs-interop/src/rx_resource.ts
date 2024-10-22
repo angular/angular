@@ -68,7 +68,14 @@ export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T |
 
       sub = opts.loader(params).subscribe({
         next: (value) => send({value}),
-        error: (error) => send({error}),
+        error: (error) => {
+          send({error});
+          // The observable terminates immediately when `error` is called,
+          // and no further emissions or completion notifications occur.
+          // Thus, we have to remove the `abort` listener in both
+          // the `error` and `complete` notifications.
+          params.abortSignal.removeEventListener('abort', onAbort);
+        },
         complete: () => {
           if (resolve) {
             send({error: new Error('Resource completed before producing a value')});
