@@ -53,12 +53,27 @@ import {
 import {ReferenceResult} from '../signal-migration/src/passes/reference_resolution/reference_result';
 import {ReferenceKind} from '../signal-migration/src/passes/reference_resolution/reference_kinds';
 
-interface OutputMigrationData {
+export interface MigrationConfig {
+  /**
+   * Whether the given output definition should be migrated.
+   *
+   * Treating an output as non-migrated means that no references to it are
+   * migrated, nor the actual declaration (if it's part of the sources).
+   *
+   * If no function is specified here, the migration will migrate all
+   * output and references it discovers in compilation units. This is the
+   * running assumption for batch mode and LSC mode where the migration
+   * assumes all seen output are migrated.
+   */
+  shouldMigrate?: (definition: ClassFieldDescriptor, containingFile: ProjectFile) => boolean;
+}
+
+export interface OutputMigrationData {
   file: ProjectFile;
   replacements: Replacement[];
 }
 
-interface CompilationUnitData {
+export interface CompilationUnitData {
   outputFields: Record<ClassFieldUniqueKey, OutputMigrationData>;
   problematicUsages: Record<ClassFieldUniqueKey, true>;
   importReplacements: Record<ProjectFileID, {add: Replacement[]; addAndRemove: Replacement[]}>;
@@ -68,6 +83,10 @@ export class OutputMigration extends TsurgeFunnelMigration<
   CompilationUnitData,
   CompilationUnitData
 > {
+  constructor(private readonly config: MigrationConfig = {}) {
+    super();
+  }
+
   override async analyze(info: ProgramInfo): Promise<Serializable<CompilationUnitData>> {
     const {sourceFiles, program} = info;
     const outputFieldReplacements: Record<ClassFieldUniqueKey, OutputMigrationData> = {};
@@ -111,14 +130,24 @@ export class OutputMigration extends TsurgeFunnelMigration<
         const outputDef = extractSourceOutputDefinition(node, reflector, info);
         if (outputDef !== null) {
           const outputFile = projectFile(node.getSourceFile(), info);
-
-          filesWithOutputDeclarations.add(node.getSourceFile());
-          addOutputReplacement(
-            outputFieldReplacements,
-            outputDef.id,
-            outputFile,
-            calculateDeclarationReplacement(info, node, outputDef.aliasParam),
-          );
+          if (
+            this.config.shouldMigrate === undefined ||
+            this.config.shouldMigrate(
+              {
+                key: outputDef.id,
+                node: node,
+              },
+              outputFile,
+            )
+          ) {
+            filesWithOutputDeclarations.add(node.getSourceFile());
+            addOutputReplacement(
+              outputFieldReplacements,
+              outputDef.id,
+              outputFile,
+              calculateDeclarationReplacement(info, node, outputDef.aliasParam),
+            );
+          }
         }
       }
 
