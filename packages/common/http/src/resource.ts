@@ -364,6 +364,7 @@ class HttpResourceImpl<T>
             }
 
             send({error});
+            abortSignal.removeEventListener('abort', onAbort);
           },
           complete: () => {
             if (resolve) {
