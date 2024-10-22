@@ -9,12 +9,12 @@
 import fs from 'fs';
 import path from 'path';
 import {executeAnalyzePhase} from '../../../../utils/tsurge/executors/analyze_exec';
+import {executeCombinePhase} from '../../../../utils/tsurge/executors/combine_exec';
 import {executeMigratePhase} from '../../../../utils/tsurge/executors/migrate_exec';
 import {SignalInputMigration} from '../migration';
 import {writeMigrationReplacements} from '../write_replacements';
 import {CompilationUnitData} from './unit_data';
 import {executeGlobalMetaPhase} from '../../../../utils/tsurge/executors/global_meta_exec';
-import {synchronouslyCombineUnitData} from '../../../../utils/tsurge/helpers/combine_units';
 
 main().catch((e) => {
   console.error(e);
@@ -28,16 +28,16 @@ async function main() {
   if (mode === 'extract') {
     const analyzeResult = await executeAnalyzePhase(migration, path.resolve(args[0]));
     process.stdout.write(JSON.stringify(analyzeResult));
-  } else if (mode === 'combine-all') {
-    const unitPromises = args.map((f) => readUnitMeta(path.resolve(f)));
-    const units = await Promise.all(unitPromises);
-    const mergedResult = await synchronouslyCombineUnitData(migration, units);
+  } else if (mode === 'combine') {
+    const unitAPromise = readUnitMeta(path.resolve(args[0]));
+    const unitBPromise = readUnitMeta(path.resolve(args[1]));
+
+    const [unitA, unitB] = await Promise.all([unitAPromise, unitBPromise]);
+    const mergedResult = await executeCombinePhase(migration, unitA, unitB);
 
     process.stdout.write(JSON.stringify(mergedResult));
-  } else if (mode === 'global-meta') {
-    const metaResult = await executeGlobalMetaPhase(migration, await readUnitMeta(args[0]));
-
-    process.stdout.write(JSON.stringify(metaResult));
+  } else if (mode === 'globalMeta') {
+    await executeGlobalMetaPhase(migration, await readUnitMeta(args[0]));
   } else if (mode === 'migrate') {
     const {replacements, projectRoot} = await executeMigratePhase(
       migration,
