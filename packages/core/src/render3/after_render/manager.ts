@@ -25,7 +25,7 @@ export class AfterRenderManager {
   }
 
   /** @nocollapse */
-  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
+  static ɵprov = /** @pureOrBreakMyCode */ /* @__PURE__ */ ɵɵdefineInjectable({
     token: AfterRenderManager,
     providedIn: 'root',
     factory: () => new AfterRenderManager(),
@@ -124,7 +124,7 @@ export class AfterRenderImpl {
   }
 
   /** @nocollapse */
-  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
+  static ɵprov = /** @pureOrBreakMyCode */ /* @__PURE__ */ ɵɵdefineInjectable({
     token: AfterRenderImpl,
     providedIn: 'root',
     factory: () => new AfterRenderImpl(),
