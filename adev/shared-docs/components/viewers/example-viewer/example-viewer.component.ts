@@ -8,17 +8,17 @@
 
 import {
   ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  Input,
-  Type,
-  computed,
-  inject,
   ChangeDetectorRef,
-  ViewChild,
-  signal,
+  Component,
+  computed,
+  DestroyRef,
   ElementRef,
   forwardRef,
+  inject,
+  Input,
+  signal,
+  Type,
+  ViewChild,
 } from '@angular/core';
 import {CommonModule, DOCUMENT} from '@angular/common';
 import {MatTabGroup, MatTabsModule} from '@angular/material/tabs';
@@ -75,6 +75,7 @@ export class ExampleViewer {
   CodeExampleViewMode = CodeExampleViewMode;
   exampleComponent?: Type<unknown>;
 
+  expandable = signal<boolean>(false);
   expanded = signal<boolean>(false);
   exampleMetadata = signal<ExampleMetadata | null>(null);
   snippetCode = signal<Snippet | undefined>(undefined);
@@ -89,9 +90,6 @@ export class ExampleViewer {
     this.exampleMetadata()?.files.length === 1
       ? CodeExampleViewMode.SNIPPET
       : CodeExampleViewMode.MULTI_FILE,
-  );
-  expandable = computed(() =>
-    this.exampleMetadata()?.files.some((file) => !!file.visibleLinesRange),
   );
 
   async renderExample(): Promise<void> {
@@ -116,6 +114,11 @@ export class ExampleViewer {
     this.matTabGroup?.realignInkBar();
 
     this.listenToMatTabIndexChange();
+
+    const lines = this.getHiddenCodeLines();
+    const lineNumbers = this.getHiddenCodeLineNumbers();
+
+    this.expandable.set(lines.length > 0 || lineNumbers.length > 0);
   }
 
   toggleExampleVisibility(): void {
@@ -158,21 +161,9 @@ export class ExampleViewer {
   }
 
   private handleExpandedStateForCodeBlock(): void {
-    const lines = <HTMLDivElement[]>(
-      Array.from(
-        this.elementRef.nativeElement.querySelectorAll(
-          `.${CODE_LINE_CLASS_NAME}.${HIDDEN_CLASS_NAME}`,
-        ),
-      )
-    );
+    const lines = this.getHiddenCodeLines();
 
-    const lineNumbers = <HTMLSpanElement[]>(
-      Array.from(
-        this.elementRef.nativeElement.querySelectorAll(
-          `.${CODE_LINE_NUMBER_CLASS_NAME}.${HIDDEN_CLASS_NAME}`,
-        ),
-      )
-    );
+    const lineNumbers = this.getHiddenCodeLineNumbers();
 
     const gapLines = <HTMLDivElement[]>(
       Array.from(
@@ -239,5 +230,25 @@ export class ExampleViewer {
       separator.classList.add(GAP_CODE_LINE_CLASS_NAME);
       element.parentNode?.insertBefore(separator, element);
     }
+  }
+
+  private getHiddenCodeLines(): HTMLDivElement[] {
+    return <HTMLDivElement[]>(
+      Array.from(
+        this.elementRef.nativeElement.querySelectorAll(
+          `.${CODE_LINE_CLASS_NAME}.${HIDDEN_CLASS_NAME}`,
+        ),
+      )
+    );
+  }
+
+  private getHiddenCodeLineNumbers(): HTMLSpanElement[] {
+    return <HTMLSpanElement[]>(
+      Array.from(
+        this.elementRef.nativeElement.querySelectorAll(
+          `.${CODE_LINE_NUMBER_CLASS_NAME}.${HIDDEN_CLASS_NAME}`,
+        ),
+      )
+    );
   }
 }
