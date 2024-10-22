@@ -291,10 +291,7 @@ export class OutputMigration extends TsurgeFunnelMigration<
     });
   }
 
-  override async combine(
-    unitA: CompilationUnitData,
-    unitB: CompilationUnitData,
-  ): Promise<Serializable<CompilationUnitData>> {
+  override async merge(units: CompilationUnitData[]): Promise<Serializable<CompilationUnitData>> {
     const outputFields: Record<ClassFieldUniqueKey, OutputMigrationData> = {};
     const importReplacements: Record<
       ProjectFileID,
@@ -302,7 +299,7 @@ export class OutputMigration extends TsurgeFunnelMigration<
     > = {};
     const problematicUsages: Record<ClassFieldUniqueKey, true> = {};
 
-    for (const unit of [unitA, unitB]) {
+    for (const unit of units) {
       for (const declIdStr of Object.keys(unit.outputFields)) {
         const declId = declIdStr as ClassFieldUniqueKey;
         // THINK: detect clash? Should we have an utility to merge data based on unique IDs?
@@ -325,13 +322,6 @@ export class OutputMigration extends TsurgeFunnelMigration<
       importReplacements,
       problematicUsages,
     });
-  }
-
-  override async globalMeta(
-    combinedData: CompilationUnitData,
-  ): Promise<Serializable<CompilationUnitData>> {
-    // Noop here as we don't have any form of special global metadata.
-    return confirmAsSerializable(combinedData);
   }
 
   override async stats(globalMetadata: CompilationUnitData): Promise<MigrationStats> {

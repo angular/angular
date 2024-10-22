@@ -16,19 +16,30 @@ import {CompilationUnitData} from './unit_data';
 type InputData = {key: string; info: CompilationUnitData['knownInputs'][string]};
 
 /** Merges a list of compilation units into a combined unit. */
-export function combineCompilationUnitData(
-  unitA: CompilationUnitData,
-  unitB: CompilationUnitData,
+export function mergeCompilationUnitData(
+  metadataFiles: CompilationUnitData[],
 ): CompilationUnitData {
   const result: CompilationUnitData = {
     knownInputs: {},
   };
 
-  for (const file of [unitA, unitB]) {
+  const idToGraphNode = new Map<string, GraphNode<InputData>>();
+  const inheritanceGraph: GraphNode<InputData>[] = [];
+  const isNodeIncompatible = (node: InputData) =>
+    node.info.memberIncompatibility !== null || node.info.owningClassIncompatibility !== null;
+
+  for (const file of metadataFiles) {
     for (const [key, info] of Object.entries(file.knownInputs)) {
       const existing = result.knownInputs[key];
       if (existing === undefined) {
         result.knownInputs[key] = info;
+        const node: GraphNode<InputData> = {
+          incoming: new Set(),
+          outgoing: new Set(),
+          data: {info, key},
+        };
+        inheritanceGraph.push(node);
+        idToGraphNode.set(key, node);
         continue;
       }
 
@@ -66,37 +77,7 @@ export function combineCompilationUnitData(
     }
   }
 
-  return result;
-}
-
-export function convertToGlobalMeta(combinedData: CompilationUnitData): CompilationUnitData {
-  const globalMeta: CompilationUnitData = {
-    knownInputs: {},
-  };
-
-  const idToGraphNode = new Map<string, GraphNode<InputData>>();
-  const inheritanceGraph: GraphNode<InputData>[] = [];
-  const isNodeIncompatible = (node: InputData) =>
-    node.info.memberIncompatibility !== null || node.info.owningClassIncompatibility !== null;
-
-  for (const [key, info] of Object.entries(combinedData.knownInputs)) {
-    const existing = globalMeta.knownInputs[key];
-    if (existing !== undefined) {
-      continue;
-    }
-
-    const node: GraphNode<InputData> = {
-      incoming: new Set(),
-      outgoing: new Set(),
-      data: {info, key},
-    };
-    inheritanceGraph.push(node);
-    idToGraphNode.set(key, node);
-
-    globalMeta.knownInputs[key] = info;
-  }
-
-  for (const [key, info] of Object.entries(globalMeta.knownInputs)) {
+  for (const [key, info] of Object.entries(result.knownInputs)) {
     if (info.extendsFrom !== null) {
       const from = idToGraphNode.get(key)!;
       const target = idToGraphNode.get(info.extendsFrom)!;
@@ -128,7 +109,7 @@ export function convertToGlobalMeta(combinedData: CompilationUnitData): Compilat
     }
   }
 
-  for (const info of Object.values(combinedData.knownInputs)) {
+  for (const info of Object.values(result.knownInputs)) {
     // We never saw a source file for this input, globally. Try marking it as incompatible,
     // so that all references and inheritance checks can propagate accordingly.
     if (!info.seenAsSourceInput) {
@@ -144,5 +125,5 @@ export function convertToGlobalMeta(combinedData: CompilationUnitData): Compilat
     }
   }
 
-  return globalMeta;
+  return result;
 }
