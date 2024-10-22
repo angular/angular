@@ -62,11 +62,11 @@ export async function runTsurgeMigration<UnitData, GlobalData>(
   const info = migration.prepareProgram(baseInfo);
 
   const unitData = await migration.analyze(info);
-  const globalMeta = await migration.globalMeta(unitData);
+  const merged = await migration.merge([unitData]);
   const {replacements} =
     migration instanceof TsurgeFunnelMigration
-      ? await migration.migrate(globalMeta)
-      : await migration.migrate(globalMeta, info);
+      ? await migration.migrate(merged)
+      : await migration.migrate(merged, info);
 
   const updates = groupReplacementsByFile(replacements);
   for (const [rootRelativePath, changes] of updates.entries()) {
@@ -76,6 +76,6 @@ export async function runTsurgeMigration<UnitData, GlobalData>(
 
   return {
     fs: mockFs,
-    getStatistics: () => migration.stats(globalMeta),
+    getStatistics: () => migration.stats(merged),
   };
 }
