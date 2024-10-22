@@ -64,6 +64,5 @@ rollup_bundle(
         "//packages/core/schematics/ng-generate/standalone-migration",
         "@npm//@rollup/plugin-commonjs",
         "@npm//@rollup/plugin-node-resolve",
-        "@npm//magic-string",
     ],
 )
