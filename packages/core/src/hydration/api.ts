@@ -38,8 +38,6 @@ import {
   setIsI18nHydrationSupportEnabled,
 } from './i18n';
 import {
-  EVENT_REPLAY_ENABLED_DEFAULT,
-  IS_EVENT_REPLAY_ENABLED,
   IS_HYDRATION_DOM_REUSE_ENABLED,
   IS_I18N_HYDRATION_ENABLED,
   IS_INCREMENTAL_HYDRATION_ENABLED,
@@ -308,8 +306,10 @@ export function withI18nSupport(): Provider[] {
 }
 
 /**
- * Returns a set of providers required to setup support for i18n hydration.
+ * Returns a set of providers required to setup support for incremental hydration.
  * Requires hydration to be enabled separately.
+ *
+ * @developerPreview
  */
 export function withIncrementalHydration(): Provider[] {
   return [
