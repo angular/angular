@@ -36,6 +36,12 @@
       "schema": "./ng-generate/signal-queries-migration/schema.json",
       "aliases": ["signal-queries", "signal-query", "signal-query-migration"]
     },
+    "output-migration": {
+      "description": "Updates @output declarations to the functional equivalent, while also migrating all relevant references.",
+      "factory": "./bundles/output-migration#migrate",
+      "schema": "./ng-generate/output-migration/schema.json",
+      "aliases": ["outputs"]
+    },
     "signals": {
       "description": "Combines all signals-related migrations into a single migration",
       "factory": "./bundles/signals#migrate",
