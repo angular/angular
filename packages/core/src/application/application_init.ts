@@ -15,7 +15,6 @@ import {
   InjectionToken,
   Injector,
   makeEnvironmentProviders,
-  Provider,
   runInInjectionContext,
 } from '../di';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
@@ -36,7 +35,7 @@ import {isPromise, isSubscribable} from '../util/lang';
  *
  * Note that the provided initializer is run in the injection context.
  *
- * @deprecated from v18.1.0, use provideAppInitializer instead
+ * @deprecated from v19.0.0, use provideAppInitializer instead
  *
  * @see {@link ApplicationInitStatus}
  * @see {@link provideAppInitializer}
