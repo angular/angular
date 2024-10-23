@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, Input} from '@angular/core';
+import {Component, input} from '@angular/core';
 
 @Component({
   selector: 'app-zippy',
   templateUrl: './zippy.component.html',
   styleUrls: ['./zippy.component.scss'],
-  standalone: false,
+  standalone: true,
 })
 export class ZippyComponent {
-  @Input() title!: string;
+  readonly title = input<string>('title');
   visible = false;
 }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
 
 import {Todo} from './todo';
 import {TooltipDirective} from './tooltip.directive';
@@ -20,21 +20,21 @@ import {TooltipDirective} from './tooltip.directive';
   imports: [TooltipDirective],
 })
 export class TodoComponent {
-  @Input() todo!: Todo;
-  @Output() update = new EventEmitter();
-  @Output() delete = new EventEmitter();
+  readonly todo = input.required<Todo>();
+  readonly update = output<Todo>();
+  readonly delete = output<Todo>();
 
   editMode = false;
 
   toggle(): void {
-    this.todo.completed = !this.todo.completed;
-    this.update.emit(this.todo);
+    this.todo().completed = !this.todo().completed;
+    this.update.emit(this.todo());
   }
 
   completeEdit(label: string): void {
-    this.todo.label = label;
+    this.todo().label = label;
     this.editMode = false;
-    this.update.emit(this.todo);
+    this.update.emit(this.todo());
   }
 
   enableEditMode(): void {

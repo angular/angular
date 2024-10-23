@@ -6,23 +6,19 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {NgModule, NgZone} from '@angular/core';
-import {MatSelect} from '@angular/material/select';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {ApplicationEnvironment, ApplicationOperations, DevToolsComponent} from 'ng-devtools';
+import {ApplicationConfig, inject, NgZone} from '@angular/core';
+import {provideAnimations} from '@angular/platform-browser/animations';
+import {ApplicationEnvironment, ApplicationOperations} from 'ng-devtools';
 
-import {AppComponent} from './app.component';
 import {ChromeApplicationEnvironment} from './chrome-application-environment';
 import {ChromeApplicationOperations} from './chrome-application-operations';
 import {ZoneAwareChromeMessageBus} from './zone-aware-chrome-message-bus';
 import {Events, MessageBus, PriorityAwareMessageBus} from 'protocol';
-import {FrameManager} from '../../../../projects/ng-devtools/src/lib/frame_manager';
+import {FrameManager} from '../../../ng-devtools/src/lib/frame_manager';
 
-@NgModule({
-  declarations: [AppComponent],
-  imports: [BrowserAnimationsModule, DevToolsComponent, MatSelect],
-  bootstrap: [AppComponent],
+export const appConfig: ApplicationConfig = {
   providers: [
+    provideAnimations(),
     {provide: FrameManager, useFactory: () => FrameManager.initialize()},
     {
       provide: ApplicationOperations,
@@ -34,15 +30,14 @@ import {FrameManager} from '../../../../projects/ng-devtools/src/lib/frame_manag
     },
     {
       provide: MessageBus,
-      useFactory(ngZone: NgZone): MessageBus<Events> {
+      useFactory(): MessageBus<Events> {
+        const ngZone = inject(NgZone);
         const port = chrome.runtime.connect({
           name: '' + chrome.devtools.inspectedWindow.tabId,
         });
 
         return new PriorityAwareMessageBus(new ZoneAwareChromeMessageBus(port, ngZone));
       },
-      deps: [NgZone],
     },
   ],
-})
-export class AppModule {}
+};
