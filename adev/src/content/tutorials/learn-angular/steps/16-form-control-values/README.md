@@ -1,6 +1,6 @@
 # Getting form control value
 
-Now that your forms are setup with Angular, the next step is to access the values from the form controls.
+Now that your forms are set up with Angular, the next step is to access the values from the form controls.
 
 In this activity, you'll learn how to get the value from your form input.
 
