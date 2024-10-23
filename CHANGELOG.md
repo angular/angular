@@ -1,3 +1,12 @@
+<a name="18.2.9"></a>
+# 18.2.9 (2024-10-23)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b0ab653965](https://github.com/angular/angular/commit/b0ab653965cf88fcfde23fc6a6cc78ce3121a30f) | fix | report when NgModule imports or exports itself ([#58231](https://github.com/angular/angular/pull/58231)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.2.8"></a>
 # 18.2.8 (2024-10-10)
 ### compiler
