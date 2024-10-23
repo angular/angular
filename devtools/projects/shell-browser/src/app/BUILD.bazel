@@ -1,8 +1,8 @@
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
 load("//devtools/tools:ng_module.bzl", "ng_module")
 load("//devtools/tools:typescript.bzl", "ts_library", "ts_test_library")
 load("//tools:defaults.bzl", "esbuild")
-load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -15,7 +15,7 @@ ng_module(
     name = "app",
     srcs = [
         "app.component.ts",
-        "app.module.ts",
+        "app.config.ts",
     ],
     angular_assets = [
         "app.component.html",

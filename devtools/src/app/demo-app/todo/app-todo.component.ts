@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, Injectable} from '@angular/core';
+import {Component, inject, Injectable} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 
 import {DialogComponent} from './dialog.component';
@@ -25,7 +25,7 @@ export class AppTodoComponent {
   name!: string;
   animal!: string;
 
-  constructor(public dialog: MatDialog) {}
+  readonly dialog = inject(MatDialog);
 
   openDialog(): void {
     const dialogRef = this.dialog.open(DialogComponent, {
