@@ -1,3 +1,54 @@
+<a name="19.0.0-next.11"></a>
+# 19.0.0-next.11 (2024-10-23)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [24c6373820](https://github.com/angular/angular/commit/24c6373820231faf9d012a2e4d7ea945d3e8513b) | feat | add optional rounded transform support in cloudinary image loader ([#55364](https://github.com/angular/angular/pull/55364)) |
+| [13c13067bc](https://github.com/angular/angular/commit/13c13067bc3ed50cb80b0a86e62655448adb3051) | feat | disable keyvalue sorting using null compareFn ([#57487](https://github.com/angular/angular/pull/57487)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d0c74f3891](https://github.com/angular/angular/commit/d0c74f3891eed2feae913256ab15ac1e7435c379) | fix | report when NgModule imports or exports itself ([#58231](https://github.com/angular/angular/pull/58231)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [69fc5ae922](https://github.com/angular/angular/commit/69fc5ae9229b872a9ad70eb920087af2a378fead) | feat | Add incremental hydration public api ([#58249](https://github.com/angular/angular/pull/58249)) |
+| [8ebbae88ca](https://github.com/angular/angular/commit/8ebbae88ca48b8aa78cd85deedbed19d44b8227e) | feat | Add rxjs operator prevent app stability until an event ([#56533](https://github.com/angular/angular/pull/56533)) |
+| [19edf2c057](https://github.com/angular/angular/commit/19edf2c057f7587bc16812685d31a556521ad414) | feat | add syntactic sugar for initializers ([#53152](https://github.com/angular/angular/pull/53152)) |
+| [ab25a192ba](https://github.com/angular/angular/commit/ab25a192ba664863ad68d224b9b2df78da22769a) | feat | allow running output migration on a subset of paths ([#58299](https://github.com/angular/angular/pull/58299)) |
+| [18d8d44b1f](https://github.com/angular/angular/commit/18d8d44b1f3d56a4eda68f2cafded7529e08d0f1) | feat | experimental `resource()` API for async dependencies ([#58255](https://github.com/angular/angular/pull/58255)) |
+| [9762b24b5e](https://github.com/angular/angular/commit/9762b24b5e8d7ab3ed2321959492a77b01d8ae57) | feat | experimental impl of `rxResource()` ([#58255](https://github.com/angular/angular/pull/58255)) |
+| [ec386e7f12](https://github.com/angular/angular/commit/ec386e7f1216e0047392e75ab686b310b073eb42) | feat | introduce debugName optional arg to framework signal functions ([#57073](https://github.com/angular/angular/pull/57073)) |
+| [8311f00faa](https://github.com/angular/angular/commit/8311f00faaf282d1a5b1ddca29247a2fba94a692) | feat | introduce the reactive linkedSignal ([#58189](https://github.com/angular/angular/pull/58189)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3e7d724037](https://github.com/angular/angular/commit/3e7d724037cca4d256b1442eda20d6c6ad91d279) | feat | add ability to clear a FormRecord ([#50750](https://github.com/angular/angular/pull/50750)) |
+| [18b6f3339f](https://github.com/angular/angular/commit/18b6f3339f46b37ee67fce2fa8a900cc73b2f23c) | fix | fix FormRecord type inference ([#50750](https://github.com/angular/angular/pull/50750)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4b9accdf16](https://github.com/angular/angular/commit/4b9accdf166f3990b3706de83ada15937fe786e2) | feat | promote `withRequestsMadeViaParent` to stable. ([#58221](https://github.com/angular/angular/pull/58221)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6342befff8](https://github.com/angular/angular/commit/6342befff8ee491f37e8912cccb0099bbbf01042) | feat | support migrating full classes to signal queries ([#58263](https://github.com/angular/angular/pull/58263)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dff4de0f75](https://github.com/angular/angular/commit/dff4de0f75741bc629462bb8da833b876c754453) | feat | add a combined migration for all signals APIs ([#58259](https://github.com/angular/angular/pull/58259)) |
+| [bb286f65e7](https://github.com/angular/angular/commit/bb286f65e7a38c21ae61807b9a7811908a9030ed) | feat | capture output migration stats ([#58321](https://github.com/angular/angular/pull/58321)) |
+| [2bfc64daf1](https://github.com/angular/angular/commit/2bfc64daf1cad9be8099759e8de7a361555ad5d1) | feat | expose output as function migration ([#58299](https://github.com/angular/angular/pull/58299)) |
+| [cf70d626cd](https://github.com/angular/angular/commit/cf70d626cdedfd978d058b973420d8f31980555d) | feat | print output migration stats in ng generate ([#58321](https://github.com/angular/angular/pull/58321)) |
+| [42607bf0f2](https://github.com/angular/angular/commit/42607bf0f28a2421a0d41809485c09dca26ea599) | fix | add outputs migration to combined shorthand ([#58318](https://github.com/angular/angular/pull/58318)) |
+| [00e2001351](https://github.com/angular/angular/commit/00e20013512f75327e5644ad5ac7829fc0e866d4) | fix | migrate more .next output usages ([#58282](https://github.com/angular/angular/pull/58282)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8ddce80a0b](https://github.com/angular/angular/commit/8ddce80a0bab4ebbd0f7db1c85ee27e4f0249db9) | feat | allow specifying maxAge for entire application ([#49601](https://github.com/angular/angular/pull/49601)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.2.9"></a>
 # 18.2.9 (2024-10-23)
 ### compiler-cli
