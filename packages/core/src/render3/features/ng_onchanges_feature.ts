@@ -36,19 +36,15 @@ import {DirectiveDef, DirectiveDefFeature} from '../interfaces/definition';
  *
  * @codeGenApi
  */
-export const ɵɵNgOnChangesFeature = /* @__PURE__ */ (() => {
-  function ngOnChangesFeature<T>(definition: DirectiveDef<T>): void {
-    if (definition.type.prototype.ngOnChanges) {
-      definition.setInput = ngOnChangesSetInput;
-    }
-  }
+export const ɵɵNgOnChangesFeature: () => DirectiveDefFeature = /* @__PURE__ */ (() => {
+  const ɵɵNgOnChangesFeatureImpl = () => NgOnChangesFeatureImpl;
 
   // This option ensures that the ngOnChanges lifecycle hook will be inherited
   // from superclasses (in InheritDefinitionFeature).
   /** @nocollapse */
-  (ngOnChangesFeature as DirectiveDefFeature).ngInherit = true;
+  ɵɵNgOnChangesFeatureImpl.ngInherit = true;
 
-  return ngOnChangesFeature;
+  return ɵɵNgOnChangesFeatureImpl;
 })();
 
 export function NgOnChangesFeatureImpl<T>(definition: DirectiveDef<T>) {
