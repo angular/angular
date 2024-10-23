@@ -198,6 +198,7 @@ const QueryFlagsMap: Record<string, QueryFlags> = {
   descendants: QueryFlags.descendants,
   isStatic: QueryFlags.isStatic,
   emitDistinctChangesOnly: QueryFlags.emitDistinctChangesOnly,
+  first: QueryFlags.first,
 };
 
 function getQueryFlag(member: string): number {

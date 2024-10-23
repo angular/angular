@@ -179,10 +179,10 @@ describe('component declaration jit compilation', () => {
         /contentQuery[^(]*\(dirIndex,_c0,4\)/,
         '(ctx.byRef = _t)',
 
-        // "byToken" should use `staticContentQuery` with `3`
-        // (`QueryFlags.descendants|QueryFlags.isStatic`) for query flag and `ElementRef` as
-        // read token, and bind to the first result in the query result.
-        /contentQuery[^(]*\(dirIndex,[^,]*String[^,]*,3,[^)]*ElementRef[^)]*\)/,
+        // "byToken" should use `staticContentQuery` with `11`
+        // (`QueryFlags.descendants|QueryFlags.isStatic|QueryFlags.first`) for query flag and
+        // `ElementRef` as read token, and bind to the first result in the query result.
+        /contentQuery[^(]*\(dirIndex,[^,]*String[^,]*,11,[^)]*ElementRef[^)]*\)/,
         '(ctx.byToken = _t.first)',
       ]),
     });
@@ -217,10 +217,10 @@ describe('component declaration jit compilation', () => {
         /viewQuery[^(]*\(_c0,4\)/,
         '(ctx.byRef = _t)',
 
-        // "byToken" should use `viewQuery` with `3`
-        // (`QueryFlags.descendants|QueryFlags.isStatic`) for query flag and `ElementRef` as
-        // read token, and bind to the first result in the query result.
-        /viewQuery[^(]*\([^,]*String[^,]*,3,[^)]*ElementRef[^)]*\)/,
+        // "byToken" should use `viewQuery` with `11`
+        // (`QueryFlags.descendants|QueryFlags.isStatic|QueryFlags.first`) for query flag and
+        // `ElementRef` as read token, and bind to the first result in the query result.
+        /viewQuery[^(]*\([^,]*String[^,]*,11,[^)]*ElementRef[^)]*\)/,
         '(ctx.byToken = _t.first)',
       ]),
     });
