@@ -60,7 +60,7 @@ describe('combined signals migration', () => {
     writeFile(
       '/index.ts',
       `
-      import {ContentChild, Input, ElementRef, Component} from '@angular/core';
+      import {ContentChild, Input, ElementRef, Output, Component, EventEmitter} from '@angular/core';
 
       @Component({
         template: 'The value is {{value}}',
@@ -68,14 +68,15 @@ describe('combined signals migration', () => {
       export class SomeComponent {
         @ContentChild('ref') ref!: ElementRef;
         @Input('alias') value: string = 'initial';
+        @Output() clicked = new EventEmitter<void>();
       }`,
     );
 
-    await runMigration(['inputs', 'queries']);
+    await runMigration(['inputs', 'queries', 'outputs']);
 
     expect(stripWhitespace(tree.readContent('/index.ts'))).toBe(
       stripWhitespace(`
-      import {ElementRef, Component, input, contentChild} from '@angular/core';
+      import {ElementRef, Component, input, output, contentChild} from '@angular/core';
 
       @Component({
         template: 'The value is {{value()}}',
@@ -83,6 +84,7 @@ describe('combined signals migration', () => {
       export class SomeComponent {
         readonly ref = contentChild.required<ElementRef>('ref');
         readonly value = input<string>('initial', { alias: "alias" });
+        readonly clicked = output<void>();
       }
     `),
     );
