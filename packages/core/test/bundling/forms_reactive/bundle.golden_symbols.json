@@ -432,6 +432,9 @@
     "name": "NgModuleRef2"
   },
   {
+    "name": "NgOnChangesFeatureImpl"
+  },
+  {
     "name": "NgZone"
   },
   {
