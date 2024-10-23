@@ -324,12 +324,17 @@ export class OutputMigration extends TsurgeFunnelMigration<
         importReplacements[fileID] = unit.importReplacements[fileID];
       }
 
+      problematicDeclarationCount += unit.problematicDeclarationCount;
+    }
+
+    for (const unit of units) {
       for (const declIdStr of Object.keys(unit.problematicUsages)) {
         const declId = declIdStr as ClassFieldUniqueKey;
-        problematicUsages[declId] = unit.problematicUsages[declId];
+        // it might happen that a problematic usage is detected but we didn't see the declaration - skipping those
+        if (outputFields[declId] !== undefined) {
+          problematicUsages[declId] = unit.problematicUsages[declId];
+        }
       }
-
-      problematicDeclarationCount += unit.problematicDeclarationCount;
     }
 
     return confirmAsSerializable({
