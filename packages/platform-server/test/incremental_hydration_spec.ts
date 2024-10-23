@@ -1339,6 +1339,58 @@ describe('platform-server partial hydration integration', () => {
 
       expect(appHostNode.outerHTML).not.toContain('Outer block placeholder');
     }, 100_000);
+
+    it('should not annotate jsaction events for events inside a hydrate never block', async () => {
+      @Component({
+        standalone: true,
+        selector: 'app',
+        template: `
+          <main (click)="fnA()">
+            @defer (on timer(1s); hydrate never) {
+              <article>
+                defer block rendered!
+                <span id="test" (click)="fnB()">{{value()}}</span>
+                @defer(on immediate; hydrate on idle) {
+                  <p id="test2" (click)="fnB()">shouldn't be annotated</p>
+                } @placeholder {
+                  <p>blah de blah</p>
+                }
+              </article>
+            } @placeholder {
+              <span>Outer block placeholder</span>
+            }
+            @defer (on timer(1s); hydrate on viewport) {
+              <div>
+                viewport section
+                <p (click)="fnA()">has a binding</p>
+            </div>
+            } @placeholder {
+              <span>another placeholder</span>
+            }
+          </main>
+        `,
+      })
+      class SimpleComponent {
+        value = signal('start');
+        fnA() {}
+        fnB() {
+          this.value.set('end');
+        }
+      }
+
+      const appId = 'custom-app-id';
+      const providers = [{provide: APP_ID, useValue: appId}];
+      const hydrationFeatures = [withIncrementalHydration()];
+
+      const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+      const ssrContents = getAppContents(html);
+
+      expect(ssrContents).not.toContain('<span id="test" jsaction="click:;');
+      expect(ssrContents).toContain('<span id="test">start</span>');
+      expect(ssrContents).toContain('<p jsaction="click:;" ngb="d1">has a binding</p>');
+      expect(ssrContents).not.toContain('<p id="test2" jsaction="click:;');
+      expect(ssrContents).toContain('<p id="test2">shouldn\'t be annotated</p>');
+    }, 100_000);
   });
 
   describe('cleanup', () => {
