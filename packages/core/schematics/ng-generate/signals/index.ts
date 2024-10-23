@@ -9,9 +9,11 @@
 import {chain, Rule, SchematicsException} from '@angular-devkit/schematics';
 import {migrate as toSignalQueries} from '../signal-queries-migration';
 import {migrate as toSignalInputs} from '../signal-input-migration';
+import {migrate as toInitializerOutputs} from '../output-migration';
 
 const enum SupportedMigrations {
   inputs = 'inputs',
+  outputs = 'outputs',
   queries = 'queries',
 }
 
@@ -33,6 +35,10 @@ export function migrate(options: Options): Rule {
     switch (migration) {
       case SupportedMigrations.inputs:
         rules.push(toSignalInputs(options));
+        break;
+
+      case SupportedMigrations.outputs:
+        rules.push(toInitializerOutputs(options));
         break;
 
       case SupportedMigrations.queries:
