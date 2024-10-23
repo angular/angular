@@ -37,7 +37,7 @@ To use two-way binding with native form controls, you need to:
 1. Use the `ngModel` directive with the two-way binding syntax (e.g., `[(ngModel)]`)
 1. Assign it the state that you want it to update (e.g., `firstName`)
 
-Once that is setup, Angular will ensure that any updates in the text input will reflect correctly inside of the component state!
+Once that is set up, Angular will ensure that any updates in the text input will reflect correctly inside of the component state!
 
 Learn more about [`NgModel`](guide/directives#displaying-and-updating-properties-with-ngmodel) in the official docs.
 

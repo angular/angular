@@ -13,7 +13,7 @@ If you just want to play around with Angular in your browser without setting up 
   </docs-card>
 </docs-card-container>
 
-## Setup a new project locally
+## Set up a new project locally
 
 If you're starting a new project, you'll most likely want to create a local project so that you can use tooling such as Git.
 
