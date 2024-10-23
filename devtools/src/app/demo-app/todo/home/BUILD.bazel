@@ -1,5 +1,5 @@
-load("//devtools/tools:ng_module.bzl", "ng_module")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//devtools/tools:ng_module.bzl", "ng_module")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -11,7 +11,7 @@ sass_binary(
 ng_module(
     name = "home",
     srcs = [
-        "home.module.ts",
+        "home.routes.ts",
         "sample.pipe.ts",
         "todo.component.ts",
         "todo.ts",

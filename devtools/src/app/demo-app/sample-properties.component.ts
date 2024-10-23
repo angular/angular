@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, ElementRef, inject, signal, ViewChild} from '@angular/core';
+import {Component, computed, ElementRef, inject, signal, viewChild} from '@angular/core';
 import {SIGNAL} from '@angular/core/primitives/signals';
 
 import {SampleService} from './sample.service';
@@ -15,10 +15,10 @@ import {SampleService} from './sample.service';
   selector: 'app-sample-properties',
   template: '',
   styles: [''],
-  standalone: false,
+  standalone: true,
 })
 export class SamplePropertiesComponent {
-  @ViewChild('elementReference') elementRef!: ElementRef;
+  readonly elementRef = viewChild<ElementRef>('elementReference');
 
   exampleService = inject(SampleService);
 
