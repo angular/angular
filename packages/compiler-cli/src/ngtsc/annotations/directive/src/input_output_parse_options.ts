@@ -14,10 +14,9 @@ import {reflectObjectLiteral} from '../../../reflection';
 /**
  * Parses and validates input and output initializer function options.
  *
- * Tries to detect the signal debugName case and returns the alias if it is found.
- * Else assumes that the options are a static object literal and parses the `alias` option and returns it.
- * The other options for signal inputs are runtime constructs that aren't relevant at compile time.
- *
+ * This currently only parses the `alias` option and returns it. The other
+ * options for signal inputs are runtime constructs that aren't relevant at
+ * compile time.
  */
 export function parseAndValidateInputAndOutputOptions(optionsNode: ts.Expression): {
   alias: string | undefined;

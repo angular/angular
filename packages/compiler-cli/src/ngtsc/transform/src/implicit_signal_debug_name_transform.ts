@@ -1,11 +1,28 @@
 import ts from 'typescript';
 
-function insertDebugNameIntoExistingConfigObject(
+function insertDebugNameIntoCallExpression(
   callExpression: ts.CallExpression,
   debugName: string,
-  configPosition: number,
 ): ts.CallExpression {
-  const nodeArgs = Array.from(callExpression.arguments);
+  let updatedCallExpression = callExpression;
+  const configPosition = getConfigArgPosition(callExpression.expression);
+
+  if (callExpression.arguments[configPosition] === undefined) {
+    // create empty config object
+    const emptyObject = ts.factory.createObjectLiteralExpression([]);
+    // attach empty config object to call expression at the correct position
+    const nodeArgs = Array.from(callExpression.arguments);
+    nodeArgs[configPosition] = emptyObject;
+
+    updatedCallExpression = ts.factory.updateCallExpression(
+      callExpression,
+      callExpression.expression,
+      callExpression.typeArguments,
+      nodeArgs,
+    );
+  }
+
+  const nodeArgs = Array.from(updatedCallExpression.arguments);
   const existingArgument = nodeArgs[configPosition];
 
   // Do nothing if an identifier is used as the config object
@@ -17,11 +34,10 @@ function insertDebugNameIntoExistingConfigObject(
   }
 
   if (!ts.isObjectLiteralExpression(existingArgument)) {
-    // We shouldn't hit this case since this function is only called after this check is already done,
-    // but in case this function is reused somewhere else, we rerun the check inside this function.
     return callExpression;
   }
 
+  // insert debugName into the existing config object
   const properties = Array.from(existingArgument.properties);
 
   const debugNameExists = properties.some(
@@ -39,19 +55,25 @@ function insertDebugNameIntoExistingConfigObject(
     ts.factory.createPropertyAssignment('debugName', ts.factory.createStringLiteral(debugName)),
   );
 
+  const devModeCase = ts.factory.createArrayLiteralExpression([
+    ts.factory.createObjectLiteralExpression(properties),
+  ]);
+
+  let nonDevModeCase = ts.factory.createArrayLiteralExpression([ts.factory.createObjectLiteralExpression(existingArgument.properties)]);
+  // if the existing config object is empty, we remove it to save bytes
+  if (existingArgument.properties.length === 0) {
+    nonDevModeCase = ts.factory.createArrayLiteralExpression([]);
+  }
+
   // Create conditional to tree shake `debugName` on `ngDevMode`.
   // `(ngDevMode ? [{ debugName: 'myDebugName', foo: 'bar' }] : [{foo: 'bar'}])`
   const conditionalExpression = ts.factory.createParenthesizedExpression(
     ts.factory.createConditionalExpression(
       ts.factory.createIdentifier('ngDevMode'),
-      undefined,
-      ts.factory.createArrayLiteralExpression([
-        ts.factory.createObjectLiteralExpression(properties),
-      ]),
-      undefined,
-      ts.factory.createArrayLiteralExpression([
-        ts.factory.createObjectLiteralExpression(existingArgument.properties),
-      ]),
+      /* question token */ undefined,
+      devModeCase,
+      /* colon token */ undefined,
+      nonDevModeCase,
     ),
   );
 
@@ -66,50 +88,6 @@ function insertDebugNameIntoExistingConfigObject(
     callExpression.expression,
     callExpression.typeArguments,
     ts.factory.createNodeArray(nodeArgs),
-  );
-}
-
-function insertDebugNameIntoCallExpression(
-  callExpression: ts.CallExpression,
-  debugName: string,
-): ts.CallExpression {
-  const configPosition = getConfigArgPosition(callExpression.expression);
-
-  if (callExpression.arguments[configPosition] !== undefined) {
-    return insertDebugNameIntoExistingConfigObject(callExpression, debugName, configPosition);
-  }
-
-  const conditionalExpression = ts.factory.createParenthesizedExpression(
-    ts.factory.createConditionalExpression(
-      ts.factory.createIdentifier('ngDevMode'),
-      undefined,
-      ts.factory.createArrayLiteralExpression([
-        ts.factory.createObjectLiteralExpression([
-          ts.factory.createPropertyAssignment(
-            'debugName',
-            ts.factory.createStringLiteral(debugName),
-          ),
-        ]),
-      ]),
-      undefined,
-      ts.factory.createArrayLiteralExpression(),
-    ),
-  );
-
-  const spreadElement = ts.factory.createSpreadElement(conditionalExpression);
-
-  const newArgs = [...callExpression.arguments];
-  if (newArgs.length > configPosition) {
-    newArgs[configPosition] = spreadElement;
-  } else {
-    newArgs.push(spreadElement);
-  }
-
-  return ts.factory.updateCallExpression(
-    callExpression,
-    callExpression.expression,
-    callExpression.typeArguments,
-    ts.factory.createNodeArray(newArgs),
   );
 }
 

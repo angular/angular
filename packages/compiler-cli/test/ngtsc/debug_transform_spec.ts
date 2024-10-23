@@ -121,7 +121,8 @@ runInEachFileSystem(() => {
             'test.ts',
             `
               import {signal} from '@angular/core';
-              const testSignal = signal('Hello World', { equal: () => true });
+              declare function equal(): boolean;
+              const testSignal = signal('Hello World', { equal });
             `,
           );
           env.driveMain();
