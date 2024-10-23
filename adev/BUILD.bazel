@@ -115,38 +115,45 @@ copy_to_bin(
 )
 
 bool_flag(
-    name = "prerender_adev",
+    name = "full_build_adev",
     build_setting_default = False,
 )
 
 config_setting(
-    name = "no_prerender",
+    name = "prod_build",
     flag_values = {
-        ":prerender_adev": "false",
+        ":full_build_adev": "true",
     },
 )
 
 config_setting(
-    name = "prerender",
+    name = "dev_build",
     flag_values = {
-        ":prerender_adev": "true",
+        ":full_build_adev": "false",
     },
 )
 
 config_based_architect_env = select({
-    ":no_prerender": {
-        "NG_BUILD_OPTIMIZE_CHUNKS": "1",
+    ":dev_build": {
         "NG_BUILD_PARTIAL_SSR": "1",
     },
-    ":prerender": {
+    ":prod_build": {
         "NG_BUILD_OPTIMIZE_CHUNKS": "1",
     },
 })
 
+config_based_architect_flags = select({
+    ":dev_build": [
+        "angular-dev:build:development",
+    ],
+    ":prod_build": [
+        "angular-dev:build:production",
+    ],
+})
+
 architect(
     name = "build",
-    args = [
-        "angular-dev:build",
+    args = config_based_architect_flags + [
         "--output-path=build",
     ],
     chdir = "$(RULEDIR)",

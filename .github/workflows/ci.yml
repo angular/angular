@@ -181,7 +181,7 @@ jobs:
       - name: Install node modules
         run: yarn install --frozen-lockfile
       - name: Build adev to ensure it continues to work
-        run: yarn bazel build //adev:build --prerender_adev --config=release
+        run: yarn bazel build //adev:build --full_build_adev --config=release
       - name: Deploy to firebase
         uses: ./.github/actions/deploy-docs-site
         with:
