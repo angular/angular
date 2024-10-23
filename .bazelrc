@@ -158,8 +158,8 @@ test:saucelabs --flaky_test_attempts=1
 
 # --ng_perf will ask the Ivy compiler to produce performance results for each build.
 build --flag_alias=ng_perf=//packages/compiler-cli:ng_perf
-# --prerender_adev will run adev build/serve in a full mode, performing prerendering
-build --flag_alias=prerender_adev=//adev:prerender_adev
+# --full_build_adev will run adev build/serve in a full mode, performing prerendering and DCE.
+build --flag_alias=full_build_adev=//adev:full_build_adev
 
 ####################################################
 # User bazel configuration
