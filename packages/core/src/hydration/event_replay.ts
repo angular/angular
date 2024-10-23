@@ -44,6 +44,7 @@ import {DeferBlock, DeferBlockTrigger, HydrateTriggerDetails} from '../defer/int
 import {triggerAndWaitForCompletion} from '../defer/instructions';
 import {cleanupDehydratedViews, cleanupLContainer} from './cleanup';
 import {hoverEventNames, interactionEventNames} from '../defer/dom_triggers';
+import {isIncrementalHydrationEnabled} from './utils';
 
 /** Apps in which we've enabled event replay.
  *  This is to prevent initializing event replay more than once per app.
@@ -114,23 +115,35 @@ export function withEventReplay(): Provider[] {
           const injector = inject(Injector);
           const appRef = inject(ApplicationRef);
           return () => {
-            if (!shouldEnableEventReplay(injector)) {
+            if (!shouldEnableEventReplay(injector) || appsWithEventReplay.has(appRef)) {
               return;
             }
 
-            if (!appsWithEventReplay.has(appRef)) {
-              appsWithEventReplay.add(appRef);
-              appRef.onDestroy(() => appsWithEventReplay.delete(appRef));
+            appsWithEventReplay.add(appRef);
+            appRef.onDestroy(() => appsWithEventReplay.delete(appRef));
 
-              // Kick off event replay logic once hydration for the initial part
-              // of the application is completed. This timing is similar to the unclaimed
-              // dehydrated views cleanup timing.
-              whenStable(appRef).then(() => {
-                const eventContractDetails = injector.get(JSACTION_EVENT_CONTRACT);
-                initEventReplay(eventContractDetails, injector);
-                removeListenersFromBlocks([''], injector);
-              });
-            }
+            // Kick off event replay logic once hydration for the initial part
+            // of the application is completed. This timing is similar to the unclaimed
+            // dehydrated views cleanup timing.
+            whenStable(appRef).then(() => {
+              const eventContractDetails = injector.get(JSACTION_EVENT_CONTRACT);
+              initEventReplay(eventContractDetails, injector);
+              removeListenersFromBlocks([''], injector);
+
+              const eventContract = eventContractDetails.instance!;
+              // This removes event listeners registered through the container manager,
+              // as listeners registered on `document.body` might never be removed if we
+              // don't clean up the contract.
+              if (isIncrementalHydrationEnabled(injector)) {
+                // We still need the contracts for all event listeners that have a
+                // defer block ID. Therefore, it's not entirely safe to clean up the
+                // contract immediately. Instead, we schedule a contract cleanup when
+                // the app is destroyed.
+                appRef.onDestroy(() => eventContract.cleanUp());
+              } else {
+                eventContract.cleanUp();
+              }
+            });
           };
         }
         return () => {}; // noop for the server code
