@@ -16,7 +16,7 @@ import {
   ɵisPromise,
   ɵisSubscribable,
 } from '@angular/core';
-import {Observable, Subscribable, Unsubscribable} from 'rxjs';
+import {from, Observable, Subscribable, Unsubscribable} from 'rxjs';
 
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
@@ -54,13 +54,36 @@ class SubscribableStrategy implements SubscriptionStrategy {
 }
 
 class PromiseStrategy implements SubscriptionStrategy {
-  createSubscription(async: Promise<any>, updateLatestValue: (v: any) => any): Promise<any> {
-    return async.then(updateLatestValue, (e) => {
-      throw e;
-    });
+  createSubscription(async: Promise<any>, updateLatestValue: (v: any) => any): Unsubscribable {
+    // See the comment in `SubscribableStrategy` above on the use of `untracked`.
+    return untracked(() =>
+      // According to the promise specification, promises are not cancellable by default.
+      // Once a promise is created, it will either resolve or reject, and it doesn't
+      // provide a built-in mechanism to cancel it.
+      // There may be situations where a promise is provided, and it either resolves after
+      // the pipe has been destroyed or never resolves at all. If the promise never
+      // resolves — potentially due to factors beyond our control, such as third-party
+      // libraries — this can lead to a memory leak.
+      // When we use `async.then(updateLatestValue)`, the engine captures a reference to the
+      // `updateLatestValue` function. This allows the promise to invoke that function when it
+      // resolves. When we use `from(async)`, we're essentially inverting the dependency.
+      // In this case, `updateLatestValue` is passed as a callback to be invoked whenever
+      // the observable emits a value.
+      // The internal `from` mechanism checks whether `subscriber.closed` is falsy
+      // before calling `subscriber.next()` when the promise resolves. Therefore, if
+      // the promise resolves after the strategy has been disposed of, nothing will happen.
+      from(async).subscribe({
+        next: updateLatestValue,
+        error: (e: any) => {
+          throw e;
+        },
+      }),
+    );
   }
 
-  dispose(subscription: Promise<any>): void {}
+  dispose(subscription: Unsubscribable): void {
+    untracked(() => subscription.unsubscribe());
+  }
 }
 
 const _promiseStrategy = new PromiseStrategy();
