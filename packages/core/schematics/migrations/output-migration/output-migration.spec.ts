@@ -535,6 +535,50 @@ describe('outputs', () => {
       });
     });
   });
+
+  describe('statistics', () => {
+    it('should capture migration statistics with problematic usage detected', async () => {
+      const runResults = await runTsurgeMigration(new OutputMigration(), [
+        {
+          name: absoluteFrom('/app.component.ts'),
+          isProgramRootFile: true,
+          contents: populateDeclarationTestCase(`
+            @Output() protected ok1 = new EventEmitter();
+            @Output() protected ok2 = new EventEmitter();
+            @Output() protected ko1 = new EventEmitter();
+            @Output() protected ko2 = new Subject();
+
+            doSth() {
+              this.ko1.pipe();
+            }
+        `),
+        },
+      ]);
+
+      const stats = await runResults.getStatistics();
+      expect(stats.counters['detectedOutputs']).toBe(4);
+      expect(stats.counters['problematicOutputs']).toBe(2);
+      expect(stats.counters['successRate']).toBe(0.5);
+    });
+
+    it('should capture migration statistics without problematic usages', async () => {
+      const runResults = await runTsurgeMigration(new OutputMigration(), [
+        {
+          name: absoluteFrom('/app.component.ts'),
+          isProgramRootFile: true,
+          contents: populateDeclarationTestCase(`
+            @Output() protected ok = new EventEmitter();
+            @Output() protected ko = new EventEmitter();
+        `),
+        },
+      ]);
+
+      const stats = await runResults.getStatistics();
+      expect(stats.counters['detectedOutputs']).toBe(2);
+      expect(stats.counters['problematicOutputs']).toBe(0);
+      expect(stats.counters['successRate']).toBe(1);
+    });
+  });
 });
 
 async function verifyDeclaration(testCase: {before: string; after: string}) {
