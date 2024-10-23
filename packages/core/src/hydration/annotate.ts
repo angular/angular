@@ -135,19 +135,6 @@ function getSsrId(tView: TView): string {
 }
 
 /**
- * Global counter that is used to generate a unique id for Defer Blocks
- * during the serialization process.
- */
-let deferBlockSsrId = 0;
-
-/**
- * Generates a unique id for a Defer Block.
- */
-function getDeferBlockId(): string {
-  return `d${deferBlockSsrId++}`;
-}
-
-/**
  * Describes a context available during the serialization
  * process. The context is used to share and collect information
  * during the serialization.
@@ -407,6 +394,8 @@ function serializeLContainer(
         [NUM_ROOT_NODES]: numRootNodes,
       };
 
+      let isHydrateNeverBlock = false;
+
       // If this is a defer block, serialize extra info.
       if (isDeferBlock(lView[TVIEW], tNode)) {
         const lDetails = getLDeferBlockDetails(lView, tNode);
@@ -414,10 +403,13 @@ function serializeLContainer(
         if (context.isIncrementalHydrationEnabled) {
           const deferBlockId = `d${context.deferBlocks.size}`;
 
+          const tDetails = getTDeferBlockDetails(lView[TVIEW], tNode);
+          if (tDetails.hydrateTriggers?.has(DeferBlockTrigger.Never)) {
+            isHydrateNeverBlock = true;
+          }
+
           let rootNodes: any[] = [];
           collectNativeNodesInLContainer(lContainer, rootNodes);
-
-          const tDetails = getTDeferBlockDetails(lView[TVIEW], tNode);
 
           // Add defer block into info context.deferBlocks
           const deferBlockInfo: SerializedDeferBlock = {
@@ -440,7 +432,10 @@ function serializeLContainer(
           for (let et of actionList) {
             context.eventTypesToReplay.regular.add(et);
           }
-          annotateDeferBlockRootNodesWithJsAction(actionList, rootNodes, deferBlockId);
+
+          if (!isHydrateNeverBlock) {
+            annotateDeferBlockRootNodesWithJsAction(actionList, rootNodes, deferBlockId);
+          }
 
           // Use current block id as parent for nested routes.
           parentDeferBlockId = deferBlockId;
@@ -453,11 +448,13 @@ function serializeLContainer(
         serializedView[DEFER_BLOCK_STATE] = lDetails[CURRENT_DEFER_BLOCK_STATE];
       }
 
-      // TODO(incremental-hydration): avoid copying of an object here
-      serializedView = {
-        ...serializedView,
-        ...serializeLView(lContainer[i] as LView, parentDeferBlockId, context, injector),
-      };
+      if (!isHydrateNeverBlock) {
+        // TODO(incremental-hydration): avoid copying of an object here
+        serializedView = {
+          ...serializedView,
+          ...serializeLView(lContainer[i] as LView, parentDeferBlockId, context, injector),
+        };
+      }
     }
 
     // Check if the previous view has the same shape (for example, it was
@@ -610,19 +607,6 @@ function serializeLView(
       continue;
     }
 
-    // Attach `jsaction` attribute to elements that have registered listeners,
-    // thus potentially having a need to do an event replay.
-    if (nativeElementsToEventTypes && tNode.type & TNodeType.Element) {
-      const nativeElement = unwrapRNode(lView[i]) as Element;
-      if (nativeElementsToEventTypes.has(nativeElement)) {
-        setJSActionAttributes(
-          nativeElement,
-          nativeElementsToEventTypes.get(nativeElement)!,
-          parentDeferBlockId,
-        );
-      }
-    }
-
     if (Array.isArray(tNode.projection)) {
       for (const projectionHeadTNode of tNode.projection) {
         // We may have `null`s in slots with no projected content.
@@ -663,7 +647,6 @@ function serializeLView(
     }
 
     conditionallyAnnotateNodePath(ngh, tNode, lView, i18nChildren);
-
     if (isLContainer(lView[i])) {
       // Serialize information about a template.
       const embeddedTView = tNode.tView;
@@ -742,6 +725,19 @@ function serializeLView(
       } else if (tNode.type & TNodeType.Text) {
         const rNode = unwrapRNode(lView[i]);
         processTextNodeBeforeSerialization(context, rNode);
+      }
+    }
+
+    // Attach `jsaction` attribute to elements that have registered listeners,
+    // thus potentially having a need to do an event replay.
+    if (nativeElementsToEventTypes && tNode.type & TNodeType.Element) {
+      const nativeElement = unwrapRNode(lView[i]) as Element;
+      if (nativeElementsToEventTypes.has(nativeElement)) {
+        setJSActionAttributes(
+          nativeElement,
+          nativeElementsToEventTypes.get(nativeElement)!,
+          parentDeferBlockId,
+        );
       }
     }
   }
