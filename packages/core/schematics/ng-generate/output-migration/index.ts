@@ -102,7 +102,16 @@ export function migrate(options: Options): Rule {
       tree.commitUpdate(recorder);
     }
 
+    const {
+      counters: {detectedOutputs, problematicOutputs, successRate},
+    } = await migration.stats(merged);
+    const migratedOutputs = detectedOutputs - problematicOutputs;
+    const successRatePercent = (successRate * 100).toFixed(2);
+
     context.logger.info('');
     context.logger.info(`Successfully migrated to outputs as functions 🎉`);
+    context.logger.info(
+      `  -> Migrated ${migratedOutputs} out of ${detectedOutputs} detected outputs (${successRatePercent} %).`,
+    );
   };
 }
