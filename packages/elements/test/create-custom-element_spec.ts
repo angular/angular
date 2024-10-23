@@ -29,7 +29,7 @@ import {
 
 interface WithFooBar {
   fooFoo: string;
-  barBar: string;
+  barbar: string;
   fooTransformed: unknown;
   fooSignal: string | null;
 }
@@ -85,7 +85,7 @@ describe('createCustomElement', () => {
     expect(strategy.connectedElement).toBe(element);
 
     expect(strategy.getInputValue('fooFoo')).toBe('value-foo-foo');
-    expect(strategy.getInputValue('barBar')).toBe('value-barbar');
+    expect(strategy.getInputValue('barbar')).toBe('value-barbar');
     expect(strategy.getInputValue('fooTransformed')).toBe(true);
     expect(strategy.getInputValue('fooSignal')).toBe('value-signal');
   });
@@ -108,7 +108,7 @@ describe('createCustomElement', () => {
 
     expect(strategy.connectedElement).toBe(element);
     expect(strategy.getInputValue('fooFoo')).toBe('value-foo-foo');
-    expect(strategy.getInputValue('barBar')).toBe('value-barbar');
+    expect(strategy.getInputValue('barbar')).toBe('value-barbar');
     expect(strategy.getInputValue('fooTransformed')).toBe(true);
     expect(strategy.getInputValue('fooSignal')).toBe('value-signal');
   });
@@ -182,12 +182,12 @@ describe('createCustomElement', () => {
   it('should properly set getters/setters on the element', () => {
     const element = new NgElementCtor(injector);
     element.fooFoo = 'foo-foo-value';
-    element.barBar = 'barBar-value';
+    element.barbar = 'barbar-value';
     element.fooTransformed = 'truthy';
     element.fooSignal = 'value-signal';
 
     expect(strategy.inputs.get('fooFoo')).toBe('foo-foo-value');
-    expect(strategy.inputs.get('barBar')).toBe('barBar-value');
+    expect(strategy.inputs.get('barbar')).toBe('barbar-value');
     expect(strategy.inputs.get('fooTransformed')).toBe(true);
     expect(strategy.inputs.get('fooSignal')).toBe('value-signal');
   });
@@ -201,12 +201,12 @@ describe('createCustomElement', () => {
     strategyFactory.create = TestStrategyFactory.prototype.create;
 
     element.fooFoo = 'foo-foo-value';
-    element.barBar = 'barBar-value';
+    element.barbar = 'barbar-value';
     element.fooTransformed = 'truthy';
     element.fooSignal = 'value-signal';
 
     expect(strategy.inputs.get('fooFoo')).toBe('foo-foo-value');
-    expect(strategy.inputs.get('barBar')).toBe('barBar-value');
+    expect(strategy.inputs.get('barbar')).toBe('barbar-value');
     expect(strategy.inputs.get('fooTransformed')).toBe(true);
     expect(strategy.inputs.get('fooSignal')).toBe('value-signal');
   });
@@ -216,12 +216,12 @@ describe('createCustomElement', () => {
     const {selector, ElementCtor} = createTestCustomElement(strategyFactory);
     const element = Object.assign(document.createElement(selector), {
       fooFoo: 'foo-prop-value',
-      barBar: 'bar-prop-value',
+      barbar: 'bar-prop-value',
       fooTransformed: 'truthy' as unknown,
       fooSignal: 'value-signal',
     });
     expect(element.fooFoo).toBe('foo-prop-value');
-    expect(element.barBar).toBe('bar-prop-value');
+    expect(element.barbar).toBe('bar-prop-value');
     expect(element.fooTransformed).toBe('truthy');
     expect(element.fooSignal).toBe('value-signal');
 
@@ -229,12 +229,12 @@ describe('createCustomElement', () => {
     customElements.define(selector, ElementCtor);
     testContainer.appendChild(element);
     expect(element.fooFoo).toBe('foo-prop-value');
-    expect(element.barBar).toBe('bar-prop-value');
+    expect(element.barbar).toBe('bar-prop-value');
     expect(element.fooTransformed).toBe(true);
     expect(element.fooSignal).toBe('value-signal');
 
     expect(strategy.inputs.get('fooFoo')).toBe('foo-prop-value');
-    expect(strategy.inputs.get('barBar')).toBe('bar-prop-value');
+    expect(strategy.inputs.get('barbar')).toBe('bar-prop-value');
     expect(strategy.inputs.get('fooTransformed')).toBe(true);
     expect(strategy.inputs.get('fooSignal')).toBe('value-signal');
   });
@@ -244,12 +244,12 @@ describe('createCustomElement', () => {
     const {selector, ElementCtor} = createTestCustomElement(strategyFactory);
     const element = Object.assign(document.createElement(selector), {
       fooFoo: 'foo-prop-value',
-      barBar: 'bar-prop-value',
+      barbar: 'bar-prop-value',
       fooTransformed: 'truthy' as unknown,
       fooSignal: 'value-signal',
     });
     expect(element.fooFoo).toBe('foo-prop-value');
-    expect(element.barBar).toBe('bar-prop-value');
+    expect(element.barbar).toBe('bar-prop-value');
     expect(element.fooTransformed).toBe('truthy');
     expect(element.fooSignal).toBe('value-signal');
 
@@ -257,23 +257,23 @@ describe('createCustomElement', () => {
     // property.
     customElements.define(selector, ElementCtor);
     customElements.upgrade(element);
-    element.barBar = 'bar-prop-value-2';
+    element.barbar = 'bar-prop-value-2';
     element.fooTransformed = '';
     element.fooSignal = 'value-signal-changed';
     expect(element.fooFoo).toBe('foo-prop-value');
-    expect(element.barBar).toBe('bar-prop-value-2');
+    expect(element.barbar).toBe('bar-prop-value-2');
     expect(element.fooTransformed).toBe('');
     expect(element.fooSignal).toBe('value-signal-changed');
 
     // Insert the element into the DOM.
     testContainer.appendChild(element);
     expect(element.fooFoo).toBe('foo-prop-value');
-    expect(element.barBar).toBe('bar-prop-value-2');
+    expect(element.barbar).toBe('bar-prop-value-2');
     expect(element.fooTransformed).toBe(false);
     expect(element.fooSignal).toBe('value-signal-changed');
 
     expect(strategy.inputs.get('fooFoo')).toBe('foo-prop-value');
-    expect(strategy.inputs.get('barBar')).toBe('bar-prop-value-2');
+    expect(strategy.inputs.get('barbar')).toBe('bar-prop-value-2');
     expect(strategy.inputs.get('fooTransformed')).toBe(false);
     expect(strategy.inputs.get('fooSignal')).toBe('value-signal-changed');
   });
@@ -283,12 +283,12 @@ describe('createCustomElement', () => {
     const {selector, ElementCtor} = createTestCustomElement(strategyFactory);
     const element = Object.assign(document.createElement(selector), {
       fooFoo: 'foo-prop-value',
-      barBar: 'bar-prop-value',
+      barbar: 'bar-prop-value',
       fooTransformed: 'truthy' as unknown,
       fooSignal: 'value-signal',
     });
     expect(element.fooFoo).toBe('foo-prop-value');
-    expect(element.barBar).toBe('bar-prop-value');
+    expect(element.barbar).toBe('bar-prop-value');
     expect(element.fooTransformed).toBe('truthy');
     expect(element.fooSignal).toBe('value-signal');
 
@@ -299,19 +299,19 @@ describe('createCustomElement', () => {
     element.setAttribute('barbar', 'bar-attr-value');
     element.setAttribute('foo-transformed', '');
     expect(element.fooFoo).toBe('foo-prop-value');
-    expect(element.barBar).toBe('bar-attr-value');
+    expect(element.barbar).toBe('bar-attr-value');
     expect(element.fooTransformed).toBe(false);
     expect(element.fooSignal).toBe('value-signal');
 
     // Insert the element into the DOM.
     testContainer.appendChild(element);
     expect(element.fooFoo).toBe('foo-prop-value');
-    expect(element.barBar).toBe('bar-attr-value');
+    expect(element.barbar).toBe('bar-attr-value');
     expect(element.fooTransformed).toBe(false);
     expect(element.fooSignal).toBe('value-signal');
 
     expect(strategy.inputs.get('fooFoo')).toBe('foo-prop-value');
-    expect(strategy.inputs.get('barBar')).toBe('bar-attr-value');
+    expect(strategy.inputs.get('barbar')).toBe('bar-attr-value');
     expect(strategy.inputs.get('fooTransformed')).toBe(false);
     expect(strategy.inputs.get('fooSignal')).toBe('value-signal');
   });
@@ -334,12 +334,12 @@ describe('createCustomElement', () => {
 
   @Component({
     selector: 'test-component',
-    template: 'TestComponent|foo({{ fooFoo }})|bar({{ barBar }})',
+    template: 'TestComponent|foo({{ fooFoo }})|bar({{ barbar }})',
     standalone: false,
   })
   class TestComponent {
     @Input() fooFoo: string = 'foo';
-    @Input('barbar') barBar!: string;
+    @Input('barbar') barbar!: string;
     @Input({transform: (value: unknown) => !!value}) fooTransformed!: boolean;
 
     // This needs to apply the decorator and pass `isSignal`, because
