@@ -118,7 +118,7 @@ Content queries accept the following options:
 
 ### Required child queries
 
-If a child query (`viewChild` or `contentChild`) does not find a result, its value is `undefined`. This may occur if the target element is hidden by a control flow statement like`@if` or `@for`.
+If a child query (`viewChild` or `contentChild`) does not find a result, its value is `undefined`. This may occur if the target element is hidden by a control flow statement like `@if` or `@for`.
 
 Because of this, the child queries return a signal that potentially have the `undefined` value. Most of the time, and especially for the view child queries, developers author their code such that:
 * there is at least one matching result;
@@ -157,7 +157,7 @@ Note: to avoid returning incomplete query results while a template is rendered, 
 
 ## Query declarations functions and the associated rules
 
-The `viewChild`, `contentChild`, `viewChildren` and `contentChildren` functions are special function recognized by the Angular compiler. You can use those functions to declare queries by initializing a component or a directive property. You can never call these functions outside of component and directive property initializers.
+The `viewChild`, `contentChild`, `viewChildren` and `contentChildren` functions are special functions recognized by the Angular compiler. You can use those functions to declare queries by initializing a component or a directive property. You can never call these functions outside of component and directive property initializers.
 
 ```angular-ts
 @Component({
@@ -186,4 +186,4 @@ Signal queries are an alternative approach to the queries declared using the `@C
 * **More accurate type inference.** TypeScript can infer more accurate types when you use a type predicate or when you specify an explicit `read` option.
 * **Lazier updates.** - Angular updates signal-based query results lazily; the framework does no work unless your code explicitly reads the query results.
 
-The underlying query mechanism doesn't change much - conceptually Angular still creates singular "child" or plural "children" queries that target elements in a template (view) or content. The difference is in type of results and the exact timing of the results availability. The authoring format for declaring signal-based queries changed as well: the `viewChild`, `viewChildren`, `contentChild` and `contentChildren` functions used as initializer of class members are automatically recognized by Angular. 
+The underlying query mechanism doesn't change much - conceptually Angular still creates singular "child" or plural "children" queries that target elements in a template (view) or content. The difference is in the type of results and the exact timing of the results availability. The authoring format for declaring signal-based queries changed as well: the `viewChild`, `viewChildren`, `contentChild` and `contentChildren` functions used as initializer of class members are automatically recognized by Angular. 
