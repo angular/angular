@@ -208,6 +208,46 @@ describe('output() function', () => {
     expect(dir.effectCount).toEqual(1);
   });
 
+  it('should ensure type safety for listenToOutput', () => {
+    @Component({template: ``, standalone: true})
+    class MyComponent {
+      outputRefString = output<{foo: string}>();
+    }
+
+    const fixture = TestBed.createComponent(MyComponent);
+
+    let foo: {foo: string};
+    fixture.componentRef.listenToOutput('outputRefString', (event) => {
+      foo = event;
+    });
+
+    // Testing an non matching type throws
+    let bar: {bar: string};
+    fixture.componentRef.listenToOutput('outputRefString', (event) => {
+      /* @ts-expect-error */
+      bar = event;
+    });
+  });
+
+  it('should emit on listenToOutput', () => {
+    @Component({template: ``, standalone: true})
+    class MyComponent {
+      outputRefString = output<string>();
+    }
+
+    const fixture = TestBed.createComponent(MyComponent);
+    const logs: string[] = [];
+
+    fixture.componentRef.listenToOutput('outputRefString', (event) => {
+      logs.push(event);
+    });
+
+    fixture.componentInstance.outputRefString.emit('emitted');
+
+    expect(logs.length).toBe(1);
+    expect(logs[0]).toEqual('emitted');
+  });
+
   describe('outputFromObservable()', () => {
     it('should support using a `Subject` as source', () => {
       @Directive({
