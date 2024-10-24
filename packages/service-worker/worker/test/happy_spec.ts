@@ -472,6 +472,24 @@ import {envIsSupported} from '../testing/utils';
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo v2');
     });
 
+    it('returns old content for worker initialized from old version', async () => {
+      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+      expect(await makeRequest(scope, '/baz.txt')).toEqual('this is baz');
+      await driver.initialized;
+
+      const client = scope.clients.getMock('default')!;
+      expect(client.messages).toEqual([]);
+
+      scope.updateServerState(serverUpdate);
+      expect(await driver.checkForUpdate()).toEqual(true);
+
+      // Worker request came from default client, old version should be served
+      expect(await makeWorkerRequest(scope, '/foo.txt')).toEqual('this is foo');
+      // Worker has been initialized from default client, further requests from worker should be served from old version
+      expect(await makeRequest(scope, '/foo.txt', 'worker')).toEqual('this is foo');
+      expect(await makeRequest(scope, '/baz.txt', 'worker')).toEqual('this is baz');
+    });
+
     it('handles empty client ID', async () => {
       // Initialize the SW.
       expect(await makeNavigationRequest(scope, '/foo/file1', '')).toEqual('this is foo');
@@ -2649,6 +2667,26 @@ async function makeRequest(
   init?: Object,
 ): Promise<string | null> {
   const [resPromise, done] = scope.handleFetch(new MockRequest(url, init), clientId);
+  await done;
+  const res = await resPromise;
+  if (res !== undefined && res.ok) {
+    return res.text();
+  }
+  return null;
+}
+
+async function makeWorkerRequest(
+  scope: SwTestHarness,
+  url: string,
+  clientId = 'default',
+  resultingClientId = 'worker',
+  init?: Object,
+): Promise<string | null> {
+  const [resPromise, done] = scope.handleFetch(
+    new MockRequest(url, {...init, destination: 'worker'}),
+    clientId,
+    resultingClientId,
+  );
   await done;
   const res = await resPromise;
   if (res !== undefined && res.ok) {
