@@ -14,7 +14,7 @@ import {
   ResourceRef,
 } from '@angular/core';
 import {firstValueFrom, Observable, Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import {finalize, takeUntil} from 'rxjs/operators';
 
 /**
  * Like `ResourceOptions` but uses an RxJS-based `loader`.
@@ -37,8 +37,14 @@ export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T> 
     ...opts,
     loader: (params) => {
       const cancelled = new Subject<void>();
-      params.abortSignal.addEventListener('abort', () => cancelled.next());
-      return firstValueFrom(opts.loader(params).pipe(takeUntil(cancelled)));
+      const onAbort = () => cancelled.next();
+      params.abortSignal.addEventListener('abort', onAbort);
+      return firstValueFrom(
+        opts.loader(params).pipe(
+          takeUntil(cancelled),
+          finalize(() => params.abortSignal.removeEventListener('abort', onAbort)),
+        ),
+      );
     },
   });
 }
