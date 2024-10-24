@@ -377,6 +377,7 @@ describe('value accessors', () => {
         comp.cities = [{'name': 'SF'}, {'name': 'NYC'}];
         comp.selectedCity = null;
         fixture.detectChanges();
+        tick();
 
         const select = fixture.debugElement.query(By.css('select'));
 

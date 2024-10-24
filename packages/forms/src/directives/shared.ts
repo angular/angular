@@ -249,8 +249,13 @@ export function cleanUpValidators(
 
 function setUpViewChangePipeline(control: FormControl, dir: NgControl): void {
   dir.valueAccessor!.registerOnChange((newValue: any) => {
-    control._pendingValue = newValue;
-    control._pendingChange = true;
+    // If the input sends an identical value, we'll skip it
+    // thus preventing duplicate value change events.
+    if (newValue !== control.value) {
+      control._pendingValue = newValue;
+      control._pendingChange = true;
+    }
+
     control._pendingDirty = true;
 
     if (control.updateOn === 'change') updateControl(control, dir);
