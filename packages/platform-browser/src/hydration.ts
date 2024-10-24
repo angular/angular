@@ -126,8 +126,8 @@ export function withEventReplay(): HydrationFeature<HydrationFeatureKind.EventRe
  *
  * @usageNotes
  *
- * Basic example of how you can enable event replay in your application when
- * `bootstrapApplication` function is used:
+ * Basic example of how you can enable incremental hydration in your application when
+ * the `bootstrapApplication` function is used:
  * ```
  * bootstrapApplication(AppComponent, {
  *   providers: [provideClientHydration(withIncrementalHydration())]
