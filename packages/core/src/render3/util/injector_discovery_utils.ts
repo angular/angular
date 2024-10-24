@@ -36,12 +36,7 @@ import {TContainerNode, TElementContainerNode, TElementNode, TNode} from '../int
 import {RElement} from '../interfaces/renderer_dom';
 import {INJECTOR, LView, TVIEW} from '../interfaces/view';
 
-import {
-  getParentInjectorIndex,
-  getParentInjectorView,
-  hasParentInjector,
-  isRouterOutletInjector,
-} from './injector_utils';
+import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from './injector_utils';
 import {getNativeByTNode} from './view_utils';
 
 /**
@@ -601,16 +596,7 @@ function getInjectorResolutionPathHelper(
  */
 function getInjectorParent(injector: Injector): Injector | null {
   if (injector instanceof R3Injector) {
-    const parent = injector.parent;
-    if (isRouterOutletInjector(parent)) {
-      // This is a special case for a `ChainedInjector` instance, which represents
-      // a combination of a Router's `OutletInjector` and an EnvironmentInjector,
-      // which represents a `@defer` block. Since the `OutletInjector` doesn't store
-      // any tokens itself, we point to the parent injector instead. See the
-      // `OutletInjector.__ngOutletInjector` field for additional information.
-      return (parent as ChainedInjector).parentInjector;
-    }
-    return parent;
+    return injector.parent;
   }
 
   let tNode: TElementNode | TContainerNode | TElementContainerNode | null;
