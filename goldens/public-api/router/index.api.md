@@ -542,7 +542,6 @@ export class OutletContext {
     children: ChildrenOutletContexts;
     // (undocumented)
     get injector(): EnvironmentInjector;
-    set injector(_: EnvironmentInjector);
     // (undocumented)
     outlet: RouterOutletContract | null;
     // (undocumented)
