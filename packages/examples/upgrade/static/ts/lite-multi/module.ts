@@ -113,8 +113,10 @@ const appModule = angular
     controller: [
       'ng2AService',
       class Ng1AController {
-        value = this.ng2AService.getValue();
-        constructor(private ng2AService: Ng2AService) {}
+        value: string;
+        constructor(private ng2AService: Ng2AService) {
+          this.value = this.ng2AService.getValue();
+        }
       },
     ],
   })

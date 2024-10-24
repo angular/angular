@@ -103,10 +103,19 @@ export function highlightHydrationElement(el: Node, status: HydrationStatus) {
 }
 
 export function unHighlight(): void {
-  if (selectedElementOverlay) {
-    document.body.removeChild(selectedElementOverlay);
-    selectedElementOverlay = null;
+  if (!selectedElementOverlay) {
+    return;
   }
+
+  for (const node of document.body.childNodes) {
+    if (node === selectedElementOverlay) {
+      document.body.removeChild(selectedElementOverlay);
+
+      break;
+    }
+  }
+
+  selectedElementOverlay = null;
 }
 
 export function removeHydrationHighlights(): void {

@@ -51,7 +51,7 @@ export class CachedInjectorService implements OnDestroy {
   }
 
   /** @nocollapse */
-  static ɵprov = /** @pureOrBreakMyCode */ defineInjectable({
+  static ɵprov = /** @pureOrBreakMyCode */ /* @__PURE__ */ defineInjectable({
     token: CachedInjectorService,
     providedIn: 'environment',
     factory: () => new CachedInjectorService(),
