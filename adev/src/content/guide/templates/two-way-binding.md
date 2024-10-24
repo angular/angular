@@ -70,7 +70,7 @@ export class AppComponent {
 
 ```angular-ts
 // './counter/counter.component.ts';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, output } from '@angular/core';
 
 @Component({
   selector: 'app-counter',
@@ -83,7 +83,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class CounterComponent {
   @Input() count: number;
-  @Output() countChange = new EventEmitter<number>();
+  countChange = output<number>();
 
   updateCount(amount: number): void {
     this.count += amount;
@@ -99,19 +99,19 @@ If we break down the example above to its core , each two-way binding for compon
 The child component must contain:
 
 1. An `@Input()` property
-1. A corresponding `@Output()` event emitter that has the exact same name as the input property plus "Change" at the end. The emitter must also emit the same type as the input property.
+1. A corresponding `output()` event emitter that has the exact same name as the input property plus "Change" at the end. The emitter must also emit the same type as the input property.
 1. A method that emits to the event emitter with the updated value of the `@Input()`.
 
 Here is a simplified example:
 
 ```angular-ts
 // './counter/counter.component.ts';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, output } from '@angular/core';
 
 @Component({ // Omitted for brevity })
 export class CounterComponent {
   @Input() count: number;
-  @Output() countChange = new EventEmitter<number>();
+  countChange = output<number>();
 
   updateCount(amount: number): void {
     this.count += amount;
