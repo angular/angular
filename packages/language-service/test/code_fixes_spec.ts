@@ -246,7 +246,6 @@ describe('code fixes', () => {
          @Component({
            selector: 'foo',
            template: '<bar></bar>',
-           standalone: true
          })
          export class FooComponent {}
          `,
@@ -255,7 +254,6 @@ describe('code fixes', () => {
          @Component({
            selector: 'bar',
            template: '<div>bar</div>',
-           standalone: true
          })
          export class BarComponent {}
          `,
@@ -283,7 +281,6 @@ describe('code fixes', () => {
          @Component({
            selector: 'foo',
            template: '<bar></bar>',
-           standalone: true
          })
          export class FooComponent {}
          `,
@@ -340,7 +337,6 @@ describe('code fixes', () => {
          @Component({
            selector: 'bar',
            template: '<div>bar</div>',
-           standalone: true,
          })
          export class BarComponent {}
          `,
@@ -368,7 +364,6 @@ describe('code fixes', () => {
         @Component({
           selector: 'foo',
           template: '{{"hello"|bar}}',
-          standalone: true
         })
         export class FooComponent {}
         `,
@@ -376,7 +371,6 @@ describe('code fixes', () => {
         import {Pipe} from '@angular/core';
         @Pipe({
           name: 'bar',
-          standalone: true
         })
         export class BarPipe implements PipeTransform {
           transform(value: unknown, ...args: unknown[]): unknown {
@@ -409,7 +403,6 @@ describe('code fixes', () => {
          @Component({
            selector: 'foo',
            template: '<bar></bar>',
-           standalone: true
          })
          export class FooComponent {}
          `,
@@ -461,7 +454,6 @@ describe('code fixes', () => {
          @Component({
            selector: 'foo',
            template: '<bar></bar>',
-           standalone: true
          })
          export class FooComponent {}
          `,
@@ -470,7 +462,6 @@ describe('code fixes', () => {
          @Component({
            selector: 'bar',
            template: '<div>bar</div>',
-           standalone: true
          })
          class BarComponent {}
          export default BarComponent;
@@ -500,7 +491,6 @@ describe('code fixes', () => {
          @Component({
            selector: 'foo',
            template: '<bar></bar>',
-           standalone: true
          })
          export class FooComponent {}
          `,
@@ -509,7 +499,6 @@ describe('code fixes', () => {
          @Component({
            selector: 'bar',
            template: '<div>bar</div>',
-           standalone: true
          })
          class BarComponent {}
          export default BarComponent;
@@ -540,7 +529,6 @@ describe('code fixes', () => {
          @Component({
            selector: 'foo',
            template: '<bar></bar>',
-           standalone: true
          })
          export class FooComponent {}
          `,
@@ -549,7 +537,6 @@ describe('code fixes', () => {
          @Component({
            selector: 'bar',
            template: '<div>bar</div>',
-           standalone: true
          })
          class BarComponent {}
          export default BarComponent;
@@ -578,18 +565,17 @@ describe('code fixes', () => {
         'app.ts': `
          import {Component, Directive, Pipe} from '@angular/core';
 
-         @Directive({selector: '[used]', standalone: true})
+         @Directive({selector: '[used]'})
          export class UsedDirective {}
 
-         @Directive({selector: '[unused]', standalone: true})
+         @Directive({selector: '[unused]'})
          export class UnusedDirective {}
 
-         @Pipe({name: 'unused', standalone: true})
+         @Pipe({name: 'unused'})
          export class UnusedPipe {}
 
          @Component({
           selector: 'used-cmp',
-          standalone: true,
           template: '',
          })
          export class UsedComponent {}
@@ -604,7 +590,6 @@ describe('code fixes', () => {
               </div>
             </section>
            \`,
-           standalone: true,
            imports: [UnusedDirective, UsedDirective, UnusedPipe, UsedComponent],
          })
          export class AppComponent {}
@@ -632,15 +617,14 @@ describe('code fixes', () => {
         'app.ts': `
          import {Component, Directive, Pipe} from '@angular/core';
 
-         @Directive({selector: '[unused]', standalone: true})
+         @Directive({selector: '[unused]'})
          export class UnusedDirective {}
 
-         @Pipe({name: 'unused', standalone: true})
+         @Pipe({name: 'unused'})
          export class UnusedPipe {}
 
          @Component({
            template: '',
-           standalone: true,
            imports: [UnusedDirective, UnusedPipe],
          })
          export class AppComponent {}

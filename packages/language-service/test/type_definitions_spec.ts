@@ -58,7 +58,6 @@ describe('type definitions', () => {
 
           @Directive({
             selector: 'my-dir',
-            standalone: true
           })
           export class MyDir {
             firstName = input<string>();
@@ -66,7 +65,6 @@ describe('type definitions', () => {
 
           @Component({
             templateUrl: 'app.html',
-            standalone: true,
             imports: [MyDir],
           })
           export class AppCmp {}
@@ -94,7 +92,6 @@ describe('type definitions', () => {
 
           @Directive({
             selector: 'my-dir',
-            standalone: true
           })
           export class MyDir {
             nameChanges = output<string>();
@@ -102,7 +99,6 @@ describe('type definitions', () => {
 
           @Component({
             templateUrl: 'app.html',
-            standalone: true,
             imports: [MyDir],
           })
           export class AppCmp {
@@ -133,7 +129,6 @@ describe('type definitions', () => {
 
           @Directive({
             selector: 'my-dir',
-            standalone: true
           })
           export class MyDir {
             nameChanges = outputFromObservable(new EventEmitter<number>());
@@ -141,7 +136,6 @@ describe('type definitions', () => {
 
           @Component({
             templateUrl: 'app.html',
-            standalone: true,
             imports: [MyDir],
           })
           export class AppCmp {
@@ -169,7 +163,6 @@ describe('type definitions', () => {
 
         @Directive({
           selector: 'my-dir',
-          standalone: true
         })
         export class MyDir {
           twoWayValue = model<string>();
@@ -177,7 +170,6 @@ describe('type definitions', () => {
 
         @Component({
           templateUrl: 'app.html',
-          standalone: true,
           imports: [MyDir],
         })
         export class AppCmp {

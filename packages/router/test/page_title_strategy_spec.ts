@@ -123,7 +123,7 @@ describe('title strategy', () => {
     });
 
     it('pushes updates through the title observable', async () => {
-      @Component({template: '', standalone: true})
+      @Component({template: ''})
       class HomeCmp {
         private readonly title$ = inject(ActivatedRoute).title.pipe(takeUntilDestroyed());
         title?: string;

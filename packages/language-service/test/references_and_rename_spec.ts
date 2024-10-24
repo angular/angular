@@ -1831,7 +1831,6 @@ describe('find references and rename locations', () => {
 
         @Component({
           template: '@if (x; as aliasX) { {{aliasX}} {{aliasX + "second"}} }',
-          standalone: true
         })
         export class AppCmp {
           x?: string;

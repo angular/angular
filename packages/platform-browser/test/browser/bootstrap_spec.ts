@@ -224,7 +224,6 @@ describe('bootstrap factory method', () => {
     const NAME = new InjectionToken<string>('name');
 
     @Component({
-      standalone: true,
       selector: 'hello-app',
       template: 'Hello from {{ name }}!',
     })
@@ -233,7 +232,6 @@ describe('bootstrap factory method', () => {
     }
 
     @Component({
-      standalone: true,
       selector: 'hello-app-2',
       template: 'Hello from {{ name }}!',
     })
@@ -242,7 +240,6 @@ describe('bootstrap factory method', () => {
     }
 
     @Component({
-      standalone: true,
       selector: 'hello-app',
       template: 'Hello from {{ name }}!',
     })
@@ -376,7 +373,6 @@ describe('bootstrap factory method', () => {
 
     it('should throw when trying to bootstrap a standalone directive', async () => {
       @Directive({
-        standalone: true,
         selector: '[dir]',
       })
       class StandaloneDirective {}
@@ -415,7 +411,6 @@ describe('bootstrap factory method', () => {
       let state: TransferState | undefined;
       @Component({
         selector: 'hello-app',
-        standalone: true,
         template: '...',
       })
       class StandaloneComponent {
@@ -446,7 +441,6 @@ describe('bootstrap factory method', () => {
 
     describe('with animations', () => {
       @Component({
-        standalone: true,
         selector: 'hello-app',
         template:
           '<div @myAnimation (@myAnimation.start)="onStart($event)">Hello from AnimationCmp!</div>',
@@ -509,7 +503,6 @@ describe('bootstrap factory method', () => {
         template: '',
         selector: 'hello-app',
         imports: [SomeModule],
-        standalone: true,
       })
       class AnimationCmp {}
 

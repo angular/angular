@@ -33,7 +33,6 @@ import {Component} from '@angular/core';
         font-size: 20px;
       }`,
   ],
-  standalone: true,
 })
 export class OpenCloseComponent {
   isOpen = true;

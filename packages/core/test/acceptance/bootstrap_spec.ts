@@ -61,10 +61,10 @@ describe('bootstrap', () => {
   it(
     'should allow injecting VCRef into the root (bootstrapped) component',
     withBody('before|<test-cmp></test-cmp>|after', async () => {
-      @Component({selector: 'dynamic-cmp', standalone: true, template: 'dynamic'})
+      @Component({selector: 'dynamic-cmp', template: 'dynamic'})
       class DynamicCmp {}
 
-      @Component({selector: 'test-cmp', standalone: true, template: '(test)'})
+      @Component({selector: 'test-cmp', template: '(test)'})
       class TestCmp {
         constructor(public vcRef: ViewContainerRef) {}
       }
@@ -305,7 +305,6 @@ describe('bootstrap', () => {
         'should throw when standalone component is used in @NgModule.bootstrap',
         withBody('<my-app></my-app>', async () => {
           @Component({
-            standalone: true,
             selector: 'standalone-comp',
             template: '...',
           })
@@ -384,7 +383,6 @@ describe('bootstrap', () => {
         'should throw when standalone component wrapped in `forwardRef` is used in @NgModule.bootstrap',
         withBody('<my-app></my-app>', async () => {
           @Component({
-            standalone: true,
             selector: 'standalone-comp',
             template: '...',
           })

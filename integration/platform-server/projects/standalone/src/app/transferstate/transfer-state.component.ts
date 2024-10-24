@@ -14,7 +14,6 @@ const COUNTER_KEY = makeStateKey<number>('counter');
 
 @Component({
   selector: 'transfer-state',
-  standalone: true,
   template: ` <div>{{ counter }}</div> `,
   providers: [HttpClient],
 })

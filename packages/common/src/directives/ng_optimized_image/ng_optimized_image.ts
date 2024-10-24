@@ -214,7 +214,6 @@ export interface ImagePlaceholderConfig {
  *
  * // ... or a standalone Component
  * @Component({
- *   standalone: true
  *   imports: [NgOptimizedImage],
  * })
  * class MyStandaloneComponent {}
@@ -273,7 +272,6 @@ export interface ImagePlaceholderConfig {
  * @publicApi
  */
 @Directive({
-  standalone: true,
   selector: 'img[ngSrc]',
   host: {
     '[style.position]': 'fill ? "absolute" : null',
