@@ -13,8 +13,8 @@ import {
   ResourceLoaderParams,
   ResourceRef,
 } from '@angular/core';
-import {firstValueFrom, Observable, Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import {Observable, Subject} from 'rxjs';
+import {take, takeUntil} from 'rxjs/operators';
 
 /**
  * Like `ResourceOptions` but uses an RxJS-based `loader`.
@@ -38,7 +38,19 @@ export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T> 
     loader: (params) => {
       const cancelled = new Subject<void>();
       params.abortSignal.addEventListener('abort', () => cancelled.next());
-      return firstValueFrom(opts.loader(params).pipe(takeUntil(cancelled)));
+
+      // Note: this is identical to `firstValueFrom` which we can't use,
+      // because at the time of writing, `core` still supports rxjs 6.x.
+      return new Promise<T>((resolve, reject) => {
+        opts
+          .loader(params)
+          .pipe(take(1), takeUntil(cancelled))
+          .subscribe({
+            next: resolve,
+            error: reject,
+            complete: () => reject(new Error('Resource completed before producing a value')),
+          });
+      });
     },
   });
 }
