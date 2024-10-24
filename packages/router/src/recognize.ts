@@ -76,7 +76,7 @@ export function recognize(
 const MAX_ALLOWED_REDIRECTS = 31;
 
 export class Recognizer {
-  private applyRedirects = new ApplyRedirects(this.urlSerializer, this.urlTree);
+  private applyRedirects: ApplyRedirects;
   private absoluteRedirectCount = 0;
   allowRedirects = true;
 
@@ -88,7 +88,9 @@ export class Recognizer {
     private urlTree: UrlTree,
     private paramsInheritanceStrategy: ParamsInheritanceStrategy,
     private readonly urlSerializer: UrlSerializer,
-  ) {}
+  ) {
+    this.applyRedirects = new ApplyRedirects(this.urlSerializer, this.urlTree);
+  }
 
   private noMatchError(e: NoMatch): RuntimeError<RuntimeErrorCode.NO_MATCH> {
     return new RuntimeError(
