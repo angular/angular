@@ -6,16 +6,18 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AfterRenderPhase, AfterRenderRef} from './api';
-import {NgZone} from '../../zone';
-import {inject} from '../../di/injector_compatibility';
-import {ɵɵdefineInjectable} from '../../di/interface/defs';
-import {ErrorHandler} from '../../error_handler';
 import {
   ChangeDetectionScheduler,
   NotificationSource,
 } from '../../change_detection/scheduling/zoneless_scheduling';
+import {inject} from '../../di/injector_compatibility';
+import {ɵɵdefineInjectable} from '../../di/interface/defs';
+import {ErrorHandler} from '../../error_handler';
 import {type DestroyRef} from '../../linker/destroy_ref';
+import {NgZone} from '../../zone';
+import {AFTER_RENDER_SEQUENCES_TO_REGISTER, FLAGS, LView, LViewFlags} from '../interfaces/view';
+import {markAncestorsForTraversal} from '../util/view_utils';
+import {AfterRenderPhase, AfterRenderRef} from './api';
 
 export class AfterRenderManager {
   impl: AfterRenderImpl | null = null;
@@ -97,6 +99,45 @@ export class AfterRenderImpl {
     this.deferredRegistrations.clear();
   }
 
+  queueRegistration(sequence: AfterRenderSequence): void {
+    const {view} = sequence;
+    // For sequences that are not associated with a view, we can register them directly. However,
+    // for sequences associated with a view, we want to ensure that their view has been rendered at
+    // least once before registering them. We accomplish this by addig the sequence to a separate
+    // queue on the view and triggering a traversal. When the view is traversed, it will regster the
+    // sequence.
+    //
+    // However, there is an edge case to consider here. We could have a nested `afterNextRender`.
+    //
+    // ```
+    // afterNextRender(() => {
+    //    ...
+    //    afterNextRender(() => { ... });
+    // });
+    // ```
+    //
+    // In this case, the inner `afterNextRender` should be registered directly. Because this method
+    // is called during the execution of the outer `afterNextRender`, we know that the view has been
+    // rendered. We make a slightly more general assumption here, that if we're already executing,
+    // we can just directly register.
+    //
+    // TODO: Note that the assumption above is not 100% correct. We could have a situation where
+    // Component A calls `afterNextRender`, and inside the `afterNextRender` creates Component B
+    // under a detached parent. If Component B then also calls `afterNextRender`, we will see that
+    // it was queued for registration during execution and directly register it, even though
+    // Component B has not been rendered yet.
+    if (view !== undefined && !this.executing) {
+      // Delay adding it to the manager, add it to the view instead.
+      (view[AFTER_RENDER_SEQUENCES_TO_REGISTER] ??= []).push(sequence);
+
+      // Mark the view for traversal to ensure we eventually schedule the afterNextRender.
+      markAncestorsForTraversal(view);
+      view[FLAGS] |= LViewFlags.HasChildViewsToRefresh;
+    } else {
+      this.register(sequence);
+    }
+  }
+
   register(sequence: AfterRenderSequence): void {
     if (!this.executing) {
       this.sequences.add(sequence);
@@ -157,6 +198,7 @@ export class AfterRenderSequence implements AfterRenderRef {
   constructor(
     readonly impl: AfterRenderImpl,
     readonly hooks: AfterRenderHooks,
+    readonly view: LView | undefined,
     public once: boolean,
     destroyRef: DestroyRef | null,
   ) {
@@ -171,5 +213,9 @@ export class AfterRenderSequence implements AfterRenderRef {
   destroy(): void {
     this.impl.unregister(this);
     this.unregisterOnDestroy?.();
+    const scheduled = this.view?.[AFTER_RENDER_SEQUENCES_TO_REGISTER];
+    if (scheduled) {
+      this.view[AFTER_RENDER_SEQUENCES_TO_REGISTER] = scheduled.filter((s) => s !== this);
+    }
   }
 }

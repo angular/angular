@@ -8,6 +8,7 @@
 
 import {PLATFORM_BROWSER_ID, PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
 import {
+  AfterRenderPhase,
   AfterRenderRef,
   ApplicationRef,
   ChangeDetectorRef,
@@ -25,15 +26,14 @@ import {
   effect,
   inject,
   signal,
-  AfterRenderPhase,
 } from '@angular/core';
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {TestBed} from '@angular/core/testing';
 
+import {setUseMicrotaskEffectsByDefault} from '@angular/core/src/render3/reactivity/effect';
 import {firstValueFrom} from 'rxjs';
 import {filter} from 'rxjs/operators';
 import {EnvironmentInjector, Injectable} from '../../src/di';
-import {setUseMicrotaskEffectsByDefault} from '@angular/core/src/render3/reactivity/effect';
 
 function createAndAttachComponent<T>(component: Type<T>) {
   const componentRef = createComponent(component, {
@@ -163,28 +163,28 @@ describe('after render hooks', () => {
         const viewContainerRef = compInstance.viewContainerRef;
         const dynamicCompRef = viewContainerRef.createComponent(DynamicComp);
         expect(dynamicCompRef.instance.afterRenderCount).toBe(0);
-        expect(compInstance.afterRenderCount).toBe(1);
+        expect(compInstance.afterRenderCount).toBe(0);
 
         // Running change detection at the dynamicCompRef level
         dynamicCompRef.changeDetectorRef.detectChanges();
         expect(dynamicCompRef.instance.afterRenderCount).toBe(0);
-        expect(compInstance.afterRenderCount).toBe(1);
+        expect(compInstance.afterRenderCount).toBe(0);
 
         // Running change detection at the compInstance level
         compInstance.changeDetectorRef.detectChanges();
         expect(dynamicCompRef.instance.afterRenderCount).toBe(0);
-        expect(compInstance.afterRenderCount).toBe(1);
+        expect(compInstance.afterRenderCount).toBe(0);
 
         // Running change detection at the Application level
         fixture.detectChanges();
         expect(dynamicCompRef.instance.afterRenderCount).toBe(1);
-        expect(compInstance.afterRenderCount).toBe(2);
+        expect(compInstance.afterRenderCount).toBe(1);
 
         // Running change detection after removing view.
         viewContainerRef.remove();
         fixture.detectChanges();
         expect(dynamicCompRef.instance.afterRenderCount).toBe(1);
-        expect(compInstance.afterRenderCount).toBe(3);
+        expect(compInstance.afterRenderCount).toBe(2);
       });
 
       it('should run all hooks after outer change detection', () => {
@@ -231,7 +231,7 @@ describe('after render hooks', () => {
         expect(log).toEqual([]);
 
         TestBed.inject(ApplicationRef).tick();
-        expect(log).toEqual(['pre-cd', 'post-cd', 'parent-comp', 'child-comp']);
+        expect(log).toEqual(['pre-cd', 'post-cd', 'child-comp', 'parent-comp']);
       });
 
       it('should run hooks once after tick even if there are multiple root views', () => {
@@ -973,7 +973,7 @@ describe('after render hooks', () => {
         expect(log).toEqual([]);
 
         TestBed.inject(ApplicationRef).tick();
-        expect(log).toEqual(['pre-cd', 'post-cd', 'parent-comp', 'child-comp']);
+        expect(log).toEqual(['pre-cd', 'post-cd', 'child-comp', 'parent-comp']);
       });
 
       it('should unsubscribe when calling destroy', () => {
