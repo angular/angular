@@ -32,7 +32,7 @@ const HYDRATE_WHEN_PATTERN = /^hydrate\s+when\s/;
 const HYDRATE_ON_PATTERN = /^hydrate\s+on\s/;
 
 /** Pattern to identify a `hydrate never` trigger. */
-const HYDRATE_NEVER_PATTERN = /^hydrate\s+never\s*/;
+const HYDRATE_NEVER_PATTERN = /^hydrate\s+never(\s*)$/;
 
 /** Pattern to identify a `minimum` parameter in a block. */
 const MINIMUM_PARAMETER_PATTERN = /^minimum\s/;
