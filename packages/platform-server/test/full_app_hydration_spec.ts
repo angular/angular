@@ -42,6 +42,9 @@ import {
   provideExperimentalZonelessChangeDetection,
   Provider,
   QueryList,
+  Renderer2,
+  RendererFactory2,
+  RendererType2,
   TemplateRef,
   ViewChild,
   ViewContainerRef,
@@ -51,7 +54,12 @@ import {
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {TestBed} from '@angular/core/testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
-import {HydrationFeature, withI18nSupport} from '@angular/platform-browser';
+import {
+  DomSanitizer,
+  HydrationFeature,
+  withI18nSupport,
+  ɵDomRendererFactory2 as DomRendererFactory2,
+} from '@angular/platform-browser';
 import {provideRouter, RouterOutlet, Routes} from '@angular/router';
 
 import {
@@ -8000,6 +8008,245 @@ describe('platform-server full application hydration integration', () => {
 
         expect(clientRootNode.innerHTML).not.toContain('Server view');
         expect(clientRootNode.innerHTML).toContain('Client view');
+      });
+    });
+
+    // https://github.com/angular/angular/issues/52477
+    describe('Hydration protected elements and attributes', () => {
+      class MockRendererFactory implements RendererFactory2 {
+        setAttributeSpies = <jasmine.Spy[]>[];
+        setPropertySpies = <jasmine.Spy[]>[];
+
+        private delegate = inject(DomRendererFactory2);
+
+        createRenderer(hostElement: any, type: RendererType2 | null): Renderer2 {
+          const renderer = this.delegate.createRenderer(hostElement, type);
+          // This approach is simpler than creating a `MockRenderer` and implementing all
+          // the methods of the `Renderer2` interface. We only need to spy on the `setAttribute`
+          // function of the renderer instance, and we do not need to concern ourselves with
+          // which renderer constructor is used.
+          const setAttributeSpy = spyOn(renderer, 'setAttribute').and.callThrough();
+          const setPropertySpy = spyOn(renderer, 'setProperty').and.callThrough();
+          this.setAttributeSpies.push(setAttributeSpy);
+          this.setPropertySpies.push(setPropertySpy);
+          return renderer;
+        }
+      }
+
+      describe('static case', () => {
+        const cases = [
+          ['iframe', '<iframe src="https://www.youtube-nocookie.com/embed/id"></iframe>'],
+          ['object', '<object data="/assets/file.pdf"></object>'],
+          ['embed', '<embed src="/assets/video.mp4" />'],
+        ];
+
+        cases.forEach(([tagName, template]) => {
+          it(`should not call "setAttribute" on the ${tagName} element if it has attribute set`, async () => {
+            @Component({
+              selector: 'app',
+              standalone: true,
+              template,
+            })
+            class SimpleComponent {}
+
+            const html = await ssr(SimpleComponent);
+
+            resetTViewsFor(SimpleComponent);
+
+            const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+              envProviders: [
+                MockRendererFactory,
+                {provide: RendererFactory2, useExisting: MockRendererFactory},
+              ],
+            });
+            appRef.tick();
+
+            const {setAttributeSpies} = appRef.injector.get(MockRendererFactory);
+
+            // Note that for the current test case, there are only 2 `setAttribute` spies
+            // because 2 renderers have been created. The first one is the none-encapsulation
+            // renderer for the root element, and the second one is the default encapsulation
+            // renderer for the hydration-protected element.
+            expect(setAttributeSpies.length).toEqual(2);
+
+            // Assert that the spy for the first none-encapsulation renderer's `setAttribute`
+            // is only called once, with the `ng-version` attribute being set on the root element.
+            expect(setAttributeSpies[0]).toHaveBeenCalledTimes(1);
+            expect(setAttributeSpies[0]).toHaveBeenCalledWith(
+              jasmine.any(HTMLElement),
+              'ng-version',
+              jasmine.any(String),
+              undefined,
+            );
+
+            // Assert that the spy for the hydration-protected element renderer has not been called
+            // at all.
+            expect(setAttributeSpies[1]).not.toHaveBeenCalled();
+          });
+        });
+      });
+
+      describe('[attr] binding case', () => {
+        const cases = [
+          [
+            'iframe',
+            '<iframe [attr.src]="value"></iframe>',
+            'https://www.youtube-nocookie.com/embed/id',
+          ],
+          [
+            'object',
+            '<object [attr.data]="value"></object>',
+            'https://remote-resource.com/assets/file.pdf',
+          ],
+          ['embed', '<embed [attr.src]="value" />', 'https://remote-resource.com/assets/video.mp4'],
+        ];
+
+        cases.forEach(([tagName, template, url]) => {
+          it(`should not call "setAttribute" on the ${tagName} element if it has attribute set`, async () => {
+            @Component({
+              selector: 'app',
+              standalone: true,
+              template,
+            })
+            class SimpleComponent {
+              private sanitizer = inject(DomSanitizer);
+
+              value = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+
+              updateValue(): void {
+                this.value = this.sanitizer.bypassSecurityTrustResourceUrl(
+                  'https://NEW-remote-resource.com',
+                );
+              }
+            }
+
+            const html = await ssr(SimpleComponent);
+
+            resetTViewsFor(SimpleComponent);
+
+            const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+              envProviders: [
+                MockRendererFactory,
+                {provide: RendererFactory2, useExisting: MockRendererFactory},
+              ],
+            });
+            const compRef = getComponentRef<SimpleComponent>(appRef);
+            appRef.tick();
+
+            const {setAttributeSpies} = appRef.injector.get(MockRendererFactory);
+
+            // Note that for the current test case, there are only 2 `setAttribute` spies
+            // because 2 renderers have been created. The first one is the none-encapsulation
+            // renderer for the root element, and the second one is the default encapsulation
+            // renderer for the hydration-protected element.
+            expect(setAttributeSpies.length).toEqual(2);
+
+            // Assert that the spy for the first none-encapsulation renderer's `setAttribute`
+            // is only called once, with the `ng-version` attribute being set on the root element.
+            expect(setAttributeSpies[0]).toHaveBeenCalledTimes(1);
+            expect(setAttributeSpies[0]).toHaveBeenCalledWith(
+              jasmine.any(HTMLElement),
+              'ng-version',
+              jasmine.any(String),
+              undefined,
+            );
+
+            // Assert that the spy for the hydration-protected element renderer has not been called
+            // at all.
+            expect(setAttributeSpies[1]).not.toHaveBeenCalled();
+
+            // Now, let's change the value and make sure that the `setAttribute` is invoked
+            // as needed (i.e., that the protection logic doesn't prevent subsequent value updates).
+            compRef.instance.updateValue();
+            compRef.changeDetectorRef.detectChanges();
+
+            expect(setAttributeSpies[1]).toHaveBeenCalledTimes(1);
+            expect(setAttributeSpies[1]).toHaveBeenCalledWith(
+              jasmine.any(HTMLElement),
+              jasmine.any(String),
+              'https://NEW-remote-resource.com',
+              undefined,
+            );
+          });
+        });
+      });
+
+      describe('[property] binding case', () => {
+        const cases = [
+          [
+            'iframe',
+            '<iframe [src]="value"></iframe>',
+            'https://www.youtube-nocookie.com/embed/id',
+          ],
+          [
+            'object',
+            '<object [data]="value"></object>',
+            'https://remote-resource.com/assets/file.pdf',
+          ],
+          ['embed', '<embed [src]="value" />', 'https://remote-resource.com/assets/video.mp4'],
+        ];
+
+        cases.forEach(([tagName, template, url]) => {
+          it(`should not call "setProperty" on the ${tagName} element if it has attribute set`, async () => {
+            @Component({
+              selector: 'app',
+              standalone: true,
+              template,
+            })
+            class SimpleComponent {
+              private sanitizer = inject(DomSanitizer);
+
+              value = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+
+              updateValue(): void {
+                this.value = this.sanitizer.bypassSecurityTrustResourceUrl(
+                  'https://NEW-remote-resource.com',
+                );
+              }
+            }
+
+            const html = await ssr(SimpleComponent);
+
+            resetTViewsFor(SimpleComponent);
+
+            const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+              envProviders: [
+                MockRendererFactory,
+                {provide: RendererFactory2, useExisting: MockRendererFactory},
+              ],
+            });
+            const compRef = getComponentRef<SimpleComponent>(appRef);
+            appRef.tick();
+
+            const {setPropertySpies} = appRef.injector.get(MockRendererFactory);
+
+            // Note that for the current test case, there are only 2 `setProperty` spies
+            // because 2 renderers have been created. The first one is the none-encapsulation
+            // renderer for the root element, and the second one is the default encapsulation
+            // renderer for the hydration-protected element.
+            expect(setPropertySpies.length).toEqual(2);
+
+            // Assert that the spy for the first none-encapsulation renderer's `setProperty`
+            // is not called at all.
+            expect(setPropertySpies[0]).not.toHaveBeenCalledTimes(1);
+
+            // Assert that the spy for the hydration-protected element renderer has not been called
+            // at all.
+            expect(setPropertySpies[1]).not.toHaveBeenCalled();
+
+            // Now, let's change the value and make sure that the `setProperty` is invoked
+            // as needed (i.e., that the protection logic doesn't prevent subsequent value updates).
+            compRef.instance.updateValue();
+            compRef.changeDetectorRef.detectChanges();
+
+            expect(setPropertySpies[1]).toHaveBeenCalledTimes(1);
+            expect(setPropertySpies[1]).toHaveBeenCalledWith(
+              jasmine.any(HTMLElement),
+              jasmine.any(String),
+              'https://NEW-remote-resource.com',
+            );
+          });
+        });
       });
     });
   });
