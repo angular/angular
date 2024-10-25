@@ -62,6 +62,9 @@ export async function hydrateFromBlockName(
   deferBlock: DeferBlock | null;
   hydratedBlocks: Set<string>;
 }> {
+  if (blockName == null) {
+    return {deferBlock: null, hydratedBlocks};
+  }
   const deferBlockRegistry = injector.get(DeferBlockRegistry);
 
   // Make sure we don't hydrate/trigger the same thing multiple times
@@ -116,4 +119,5 @@ export async function incrementallyHydrateFromBlockName(
     // the hydration process has finished, which could result in problems
     await whenStable(injector.get(ApplicationRef));
   }
+  return Promise.resolve();
 }

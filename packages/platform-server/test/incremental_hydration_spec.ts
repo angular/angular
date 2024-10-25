@@ -18,11 +18,17 @@ import {
   ɵwhenStable as whenStable,
 } from '@angular/core';
 
-import {getAppContents, prepareEnvironmentAndHydrate, resetTViewsFor} from './dom_utils';
+import {getAppContents, hydrate, prepareEnvironmentAndHydrate, resetTViewsFor} from './dom_utils';
 import {getComponentRef, ssr, timeout} from './hydration_utils';
 import {getDocument} from '@angular/core/src/render3/interfaces/document';
 import {isPlatformServer} from '@angular/common';
-import {withEventReplay, withIncrementalHydration} from '@angular/platform-browser';
+import {
+  provideClientHydration,
+  withEventReplay,
+  withIncrementalHydration,
+} from '@angular/platform-browser';
+import {TestBed} from '@angular/core/testing';
+import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
 
 describe('platform-server partial hydration integration', () => {
   const originalWindow = globalThis.window;
@@ -1391,6 +1397,47 @@ describe('platform-server partial hydration integration', () => {
       expect(ssrContents).not.toContain('<p id="test2" jsaction="click:;');
       expect(ssrContents).toContain('<p id="test2">shouldn\'t be annotated</p>');
     }, 100_000);
+  });
+
+  describe('client side navigation', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
+          provideClientHydration(withIncrementalHydration()),
+        ],
+      });
+    });
+
+    it('should not try to hydrate in CSR only cases', async () => {
+      @Component({
+        standalone: true,
+        selector: 'app',
+        template: `
+          <main (click)="fnA()">
+            @defer (hydrate when true) {
+              <article>
+                defer block rendered!
+                <span id="test" (click)="fnB()">{{value()}}</span>
+              </article>
+            } @placeholder {
+              <span>Outer block placeholder</span>
+            }
+          </main>
+        `,
+      })
+      class SimpleComponent {
+        value = signal('start');
+        fnA() {}
+        fnB() {
+          this.value.set('end');
+        }
+      }
+      const fixture = TestBed.createComponent(SimpleComponent);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML).toContain('Outer block placeholder');
+    });
   });
 
   describe('cleanup', () => {
