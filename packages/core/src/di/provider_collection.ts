@@ -66,7 +66,7 @@ export function makeEnvironmentProviders(
  * ```
  * createEnvironmentInjector(
  *   [
- *     provideEnvironmentInjector(() => {
+ *     provideEnvironmentInitializer(() => {
  *       console.log('environment initialized');
  *     }),
  *   ],
