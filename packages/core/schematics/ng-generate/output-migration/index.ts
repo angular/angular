@@ -17,6 +17,7 @@ import {
   OutputMigration,
 } from '../../migrations/output-migration/output-migration';
 import {ProjectRootRelativePath, TextUpdate} from '../../utils/tsurge';
+import {synchronouslyCombineUnitData} from '../../utils/tsurge/helpers/combine_units';
 
 interface Options {
   path: string;
@@ -75,13 +76,19 @@ export function migrate(options: Options): Rule {
     context.logger.info(`Processing analysis data between targets..`);
     context.logger.info(``);
 
-    const merged = await migration.merge(unitResults);
+    const combined = await synchronouslyCombineUnitData(migration, unitResults);
+    if (combined === null) {
+      context.logger.error('Migration failed unexpectedly with no analysis data');
+      return;
+    }
+
+    const globalMeta = await migration.globalMeta(combined);
     const replacementsPerFile: Map<ProjectRootRelativePath, TextUpdate[]> = new Map();
 
     for (const {info, tsconfigPath} of programInfos) {
       context.logger.info(`Migrating: ${tsconfigPath}..`);
 
-      const {replacements} = await migration.migrate(merged);
+      const {replacements} = await migration.migrate(globalMeta);
       const changesPerFile = groupReplacementsByFile(replacements);
 
       for (const [file, changes] of changesPerFile) {
@@ -104,7 +111,7 @@ export function migrate(options: Options): Rule {
 
     const {
       counters: {detectedOutputs, problematicOutputs, successRate},
-    } = await migration.stats(merged);
+    } = await migration.stats(globalMeta);
     const migratedOutputs = detectedOutputs - problematicOutputs;
     const successRatePercent = (successRate * 100).toFixed(2);
 

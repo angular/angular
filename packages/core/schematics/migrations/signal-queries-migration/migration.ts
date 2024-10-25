@@ -309,44 +309,54 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
     return confirmAsSerializable(res);
   }
 
-  override async merge(units: CompilationUnitData[]): Promise<Serializable<GlobalUnitData>> {
-    const merged: GlobalUnitData = {
+  override async combine(
+    unitA: CompilationUnitData,
+    unitB: CompilationUnitData,
+  ): Promise<Serializable<CompilationUnitData>> {
+    const combined: CompilationUnitData = {
       knownQueryFields: {},
-      problematicQueries: {},
+      potentialProblematicQueries: {},
+      potentialProblematicReferenceForMultiQueries: {},
       reusableAnalysisReferences: null,
     };
 
-    for (const unit of units) {
+    for (const unit of [unitA, unitB]) {
       for (const [id, value] of Object.entries(unit.knownQueryFields)) {
-        merged.knownQueryFields[id as ClassFieldUniqueKey] = value;
+        combined.knownQueryFields[id as ClassFieldUniqueKey] = value;
       }
+
       for (const [id, info] of Object.entries(unit.potentialProblematicQueries)) {
         if (info.fieldReason !== null) {
           markFieldIncompatibleInMetadata(
-            merged.problematicQueries,
+            combined.potentialProblematicQueries,
             id as ClassFieldUniqueKey,
             info.fieldReason,
           );
         }
         if (info.classReason !== null) {
-          merged.problematicQueries[id as ClassFieldUniqueKey] ??= {
+          combined.potentialProblematicQueries[id as ClassFieldUniqueKey] ??= {
             classReason: null,
             fieldReason: null,
           };
-          merged.problematicQueries[id as ClassFieldUniqueKey].classReason = info.classReason;
+          combined.potentialProblematicQueries[id as ClassFieldUniqueKey].classReason =
+            info.classReason;
         }
       }
+
+      for (const id of Object.keys(unit.potentialProblematicReferenceForMultiQueries)) {
+        combined.potentialProblematicReferenceForMultiQueries[id as ClassFieldUniqueKey] = true;
+      }
+
       if (unit.reusableAnalysisReferences !== null) {
-        assert(units.length === 1, 'Expected migration to not run in batch mode');
-        merged.reusableAnalysisReferences = unit.reusableAnalysisReferences;
+        combined.reusableAnalysisReferences = unit.reusableAnalysisReferences;
       }
     }
 
-    for (const unit of units) {
+    for (const unit of [unitA, unitB]) {
       for (const id of Object.keys(unit.potentialProblematicReferenceForMultiQueries)) {
-        if (merged.knownQueryFields[id as ClassFieldUniqueKey]?.isMulti) {
+        if (combined.knownQueryFields[id as ClassFieldUniqueKey]?.isMulti) {
           markFieldIncompatibleInMetadata(
-            merged.problematicQueries,
+            combined.potentialProblematicQueries,
             id as ClassFieldUniqueKey,
             FieldIncompatibilityReason.SignalQueries__QueryListProblematicFieldAccessed,
           );
@@ -354,7 +364,29 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
       }
     }
 
-    return confirmAsSerializable(merged);
+    return confirmAsSerializable(combined);
+  }
+
+  override async globalMeta(
+    combinedData: CompilationUnitData,
+  ): Promise<Serializable<GlobalUnitData>> {
+    const globalUnitData: GlobalUnitData = {
+      knownQueryFields: combinedData.knownQueryFields,
+      problematicQueries: combinedData.potentialProblematicQueries,
+      reusableAnalysisReferences: combinedData.reusableAnalysisReferences,
+    };
+
+    for (const id of Object.keys(combinedData.potentialProblematicReferenceForMultiQueries)) {
+      if (combinedData.knownQueryFields[id as ClassFieldUniqueKey]?.isMulti) {
+        markFieldIncompatibleInMetadata(
+          globalUnitData.problematicQueries,
+          id as ClassFieldUniqueKey,
+          FieldIncompatibilityReason.SignalQueries__QueryListProblematicFieldAccessed,
+        );
+      }
+    }
+
+    return confirmAsSerializable(globalUnitData);
   }
 
   override async migrate(globalMetadata: GlobalUnitData, info: ProgramInfo) {

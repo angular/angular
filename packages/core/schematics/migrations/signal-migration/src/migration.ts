@@ -18,7 +18,7 @@ import {MigrationHost} from './migration_host';
 import {executeAnalysisPhase} from './phase_analysis';
 import {pass4__checkInheritanceOfInputs} from './passes/4_check_inheritance';
 import {getCompilationUnitMetadata} from './batch/extract';
-import {mergeCompilationUnitData} from './batch/merge_unit_data';
+import {convertToGlobalMeta, combineCompilationUnitData} from './batch/merge_unit_data';
 import {Replacement} from '../../../utils/tsurge/replacement';
 import {populateKnownInputsFromGlobalData} from './batch/populate_global_data';
 import {executeMigrationPhase} from './phase_migrate';
@@ -28,10 +28,8 @@ import {
   ClassIncompatibilityReason,
   FieldIncompatibilityReason,
 } from './passes/problematic_patterns/incompatibility';
-import {isInputDescriptor} from './utils/input_id';
 import {MigrationConfig} from './migration_config';
 import {ClassFieldUniqueKey} from './passes/reference_resolution/known_fields';
-import {MigrationStats} from '../../../utils/tsurge';
 import {createNgtscProgram} from '../../../utils/tsurge/helpers/ngtsc_program';
 
 /**
@@ -124,8 +122,8 @@ export class SignalInputMigration extends TsurgeComplexMigration<
 
     // Non-batch mode!
     if (this.config.upgradeAnalysisPhaseToAvoidBatch) {
-      const merged = await this.merge([unitData]);
-      const {replacements} = await this.migrate(merged, info, {
+      const globalMeta = await this.globalMeta(unitData);
+      const {replacements} = await this.migrate(globalMeta, info, {
         knownInputs,
         result,
         host,
@@ -143,8 +141,17 @@ export class SignalInputMigration extends TsurgeComplexMigration<
     return confirmAsSerializable(unitData);
   }
 
-  override async merge(units: CompilationUnitData[]): Promise<Serializable<CompilationUnitData>> {
-    return confirmAsSerializable(mergeCompilationUnitData(units));
+  override async combine(
+    unitA: CompilationUnitData,
+    unitB: CompilationUnitData,
+  ): Promise<Serializable<CompilationUnitData>> {
+    return confirmAsSerializable(combineCompilationUnitData(unitA, unitB));
+  }
+
+  override async globalMeta(
+    combinedData: CompilationUnitData,
+  ): Promise<Serializable<CompilationUnitData>> {
+    return confirmAsSerializable(convertToGlobalMeta(combinedData));
   }
 
   override async migrate(
