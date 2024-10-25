@@ -10,14 +10,15 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  EnvironmentInjector,
+  DestroyRef,
   inject,
   Input,
   OnInit,
 } from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {from} from 'rxjs';
 
-import {injectAsync} from '../../../core/services/inject-async';
-import {EmbeddedEditor, EmbeddedTutorialManager} from '../../../editor';
+import {EmbeddedEditor, EmbeddedTutorialManager, NodeRuntimeSandbox} from '../../../editor';
 
 @Component({
   selector: 'adev-code-editor',
@@ -30,8 +31,9 @@ import {EmbeddedEditor, EmbeddedTutorialManager} from '../../../editor';
 })
 export class CodeEditorComponent implements OnInit {
   private readonly cdRef = inject(ChangeDetectorRef);
-  private readonly environmentInjector = inject(EnvironmentInjector);
   private readonly embeddedTutorialManager = inject(EmbeddedTutorialManager);
+  private readonly nodeRuntimeSandbox = inject(NodeRuntimeSandbox);
+  private readonly destroyRef = inject(DestroyRef);
 
   @Input({required: true}) tutorialFiles!: string;
 
@@ -39,15 +41,15 @@ export class CodeEditorComponent implements OnInit {
     this.loadEmbeddedEditor();
   }
 
-  private async loadEmbeddedEditor() {
-    const nodeRuntimeSandbox = await injectAsync(this.environmentInjector, () =>
-      import('../../../editor/index').then((c) => c.NodeRuntimeSandbox),
-    );
-
-    await this.embeddedTutorialManager.fetchAndSetTutorialFiles(this.tutorialFiles);
-
-    this.cdRef.markForCheck();
-
-    await nodeRuntimeSandbox.init();
+  private loadEmbeddedEditor() {
+    // If using `async-await`, `this` will be captured until the function is executed
+    // and completed, which can lead to a memory leak if the user navigates away from
+    // this component to another page.
+    from(this.embeddedTutorialManager.fetchAndSetTutorialFiles(this.tutorialFiles))
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.cdRef.markForCheck();
+        this.nodeRuntimeSandbox.init();
+      });
   }
 }
