@@ -6,34 +6,29 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {NgModule} from '@angular/core';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {RouterModule} from '@angular/router';
+import {ApplicationConfig} from '@angular/core';
+import {provideAnimations} from '@angular/platform-browser/animations';
+import {provideRouter} from '@angular/router';
 import {ApplicationEnvironment, ApplicationOperations} from 'ng-devtools';
 
 import {DemoApplicationEnvironment} from '../demo-application-environment';
 import {DemoApplicationOperations} from '../demo-application-operations';
 
-import {AppComponent} from './app.component';
-
-@NgModule({
-  declarations: [AppComponent],
-  imports: [
-    BrowserAnimationsModule,
-    RouterModule.forRoot([
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideAnimations(),
+    provideRouter([
       {
         path: '',
         loadChildren: () =>
-          import('./devtools-app/devtools-app.module').then((m) => m.DevToolsModule),
+          import('./devtools-app/devtools-app.routes').then((m) => m.DEVTOOL_ROUTES),
         pathMatch: 'full',
       },
       {
         path: 'demo-app',
-        loadChildren: () => import('./demo-app/demo-app.module').then((m) => m.DemoAppModule),
+        loadChildren: () => import('./demo-app/demo-app.routes').then((m) => m.DEMO_ROUTES),
       },
     ]),
-  ],
-  providers: [
     {
       provide: ApplicationOperations,
       useClass: DemoApplicationOperations,
@@ -43,6 +38,4 @@ import {AppComponent} from './app.component';
       useClass: DemoApplicationEnvironment,
     },
   ],
-  bootstrap: [AppComponent],
-})
-export class AppModule {}
+};

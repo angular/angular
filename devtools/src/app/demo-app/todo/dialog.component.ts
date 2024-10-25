@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, Inject} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {
   MAT_DIALOG_DATA,
   MatDialogRef,
@@ -39,10 +39,8 @@ export interface DialogData {
   ],
 })
 export class DialogComponent {
-  constructor(
-    public dialogRef: MatDialogRef<DialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: DialogData,
-  ) {}
+  public dialogRef = inject<MatDialogRef<DialogComponent>>(MatDialogRef);
+  public data = inject<DialogData>(MAT_DIALOG_DATA);
 
   onNoClick(): void {
     this.dialogRef.close();

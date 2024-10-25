@@ -6,7 +6,7 @@ ng_module(
     name = "about",
     srcs = [
         "about.component.ts",
-        "about.module.ts",
+        "about.routes.ts",
     ],
     deps = [
         "//packages/core",

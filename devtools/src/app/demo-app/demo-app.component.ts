@@ -9,33 +9,38 @@
 import {
   Component,
   computed,
+  CUSTOM_ELEMENTS_SCHEMA,
   ElementRef,
-  EventEmitter,
-  Input,
-  Output,
+  input,
+  output,
   signal,
-  ViewChild,
+  viewChild,
   ViewEncapsulation,
 } from '@angular/core';
 
 import {ZippyComponent} from './zippy.component';
+import {HeavyComponent} from './heavy.component';
+import {SamplePropertiesComponent} from './sample-properties.component';
+import {RouterOutlet} from '@angular/router';
 
 @Component({
   selector: 'app-demo-component',
   templateUrl: './demo-app.component.html',
   styleUrls: ['./demo-app.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  standalone: false,
+  standalone: true,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  imports: [HeavyComponent, SamplePropertiesComponent, RouterOutlet],
 })
 export class DemoAppComponent {
-  @ViewChild(ZippyComponent) zippy!: ZippyComponent;
-  @ViewChild('elementReference') elementRef!: ElementRef;
+  readonly zippy = viewChild(ZippyComponent);
+  readonly elementRef = viewChild<ElementRef>('elementReference');
 
-  @Input('input_one') inputOne = 'input one';
-  @Input() inputTwo = 'input two';
+  readonly inputOne = input('input one', {alias: 'input_one'});
+  readonly inputTwo = input('input two');
 
-  @Output() outputOne = new EventEmitter();
-  @Output('output_two') outputTwo = new EventEmitter();
+  readonly outputOne = output();
+  readonly outputTwo = output({alias: 'output_two'});
 
   primitiveSignal = signal(123);
   primitiveComputed = computed(() => this.primitiveSignal() ** 2);
@@ -46,7 +51,7 @@ export class DemoAppComponent {
   });
 
   getTitle(): '► Click to expand' | '▼ Click to collapse' {
-    if (!this.zippy || !this.zippy.visible) {
+    if (!this.zippy() || !this.zippy()?.visible) {
       return '► Click to expand';
     }
     return '▼ Click to collapse';
