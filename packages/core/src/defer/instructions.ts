@@ -122,11 +122,19 @@ export const DEFER_BLOCK_CONFIG = new InjectionToken<DeferBlockConfig>(
 );
 
 /**
- * Determines whether defer blocks should be fully rendered through on the server side
- * for incremental hydration.
+ * Determines whether "hydrate" triggers should be activated. Triggers are activated in the following cases:
+ *  - on the server, when incremental hydration is enabled, to trigger the block and render the main content
+ *  - on the client for blocks that were server-side rendered, to start hydration process
  */
-function shouldTriggerWhenOnServer(injector: Injector) {
-  return !isPlatformBrowser(injector) && isIncrementalHydrationEnabled(injector);
+function shouldActivateHydrateTrigger(lView: LView, tNode: TNode): boolean {
+  const lDetails = getLDeferBlockDetails(lView, tNode);
+  const injector = lView[INJECTOR]!;
+  // TODO(incremental-hydration): ideally, this check should only happen once and then stored on
+  // LDeferBlockDetails as a flag. This would make subsequent lookups very cheap.
+  return (
+    isIncrementalHydrationEnabled(injector) &&
+    (!isPlatformBrowser(injector) || lDetails[SSR_UNIQUE_ID] !== null)
+  );
 }
 
 // TODO(incremental-hydration): Optimize this further by moving the calculation to earlier
@@ -347,9 +355,6 @@ export function ɵɵdeferWhen(rawValue: unknown) {
           renderedState === DeferBlockState.Placeholder) &&
         shouldTriggerWhenOnClient(lView[INJECTOR]!, lDetails, tDetails)
       ) {
-        // The `when` condition has changed to `true`, trigger defer block loading
-        // if the block is either in initial (nothing is rendered) or a placeholder
-        // state.
         triggerDeferBlock(lView, tNode);
       }
     } finally {
@@ -392,18 +397,22 @@ export function ɵɵdeferPrefetchWhen(rawValue: unknown) {
  */
 export function ɵɵdeferHydrateWhen(rawValue: unknown) {
   const lView = getLView();
+  const tNode = getSelectedTNode();
+
+  if (!shouldActivateHydrateTrigger(lView, tNode)) {
+    return;
+  }
 
   // TODO(incremental-hydration): audit all defer instructions to reduce unnecessary work by
   // moving function calls inside their relevant control flow blocks
   const bindingIndex = nextBindingIndex();
-  const tNode = getSelectedTNode();
   const tView = getTView();
   const hydrateTriggers = getHydrateTriggers(tView, tNode);
   hydrateTriggers.set(DeferBlockTrigger.When, null);
 
   if (bindingUpdated(lView, bindingIndex, rawValue)) {
     const injector = lView[INJECTOR]!;
-    if (shouldTriggerWhenOnServer(injector)) {
+    if (!isPlatformBrowser(injector)) {
       // We are on the server and SSR for defer blocks is enabled.
       triggerDeferBlock(lView, tNode);
     } else {
@@ -434,12 +443,14 @@ export function ɵɵdeferHydrateWhen(rawValue: unknown) {
 export function ɵɵdeferHydrateNever() {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
-  const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
-  hydrateTriggers.set(DeferBlockTrigger.Never, null);
+  if (shouldActivateHydrateTrigger(lView, tNode)) {
+    const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
+    hydrateTriggers.set(DeferBlockTrigger.Never, null);
 
-  if (shouldTriggerWhenOnServer(lView[INJECTOR]!)) {
-    // We are on the server and SSR for defer blocks is enabled.
-    triggerDeferBlock(lView, tNode);
+    if (!isPlatformBrowser(lView[INJECTOR]!)) {
+      // We are on the server and SSR for defer blocks is enabled.
+      triggerDeferBlock(lView, tNode);
+    }
   }
 }
 
@@ -466,14 +477,16 @@ export function ɵɵdeferPrefetchOnIdle() {
 export function ɵɵdeferHydrateOnIdle() {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
-  const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
-  hydrateTriggers.set(DeferBlockTrigger.Idle, null);
+  if (shouldActivateHydrateTrigger(lView, tNode)) {
+    const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
+    hydrateTriggers.set(DeferBlockTrigger.Idle, null);
 
-  if (shouldTriggerWhenOnServer(lView[INJECTOR]!)) {
-    // We are on the server and SSR for defer blocks is enabled.
-    triggerDeferBlock(lView, tNode);
-  } else {
-    scheduleDelayedHydrating(onIdle, lView, tNode);
+    if (!isPlatformBrowser(lView[INJECTOR]!)) {
+      // We are on the server and SSR for defer blocks is enabled.
+      triggerDeferBlock(lView, tNode);
+    } else {
+      scheduleDelayedHydrating(onIdle, lView, tNode);
+    }
   }
 }
 
@@ -524,22 +537,26 @@ export function ɵɵdeferPrefetchOnImmediate() {
 export function ɵɵdeferHydrateOnImmediate() {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
-  const injector = lView[INJECTOR]!;
-  const lDetails = getLDeferBlockDetails(lView, tNode);
-  const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
-  hydrateTriggers.set(DeferBlockTrigger.Immediate, null);
+  if (shouldActivateHydrateTrigger(lView, tNode)) {
+    const injector = lView[INJECTOR]!;
+    const lDetails = getLDeferBlockDetails(lView, tNode);
+    const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
+    hydrateTriggers.set(DeferBlockTrigger.Immediate, null);
 
-  if (shouldTriggerWhenOnServer(injector)) {
-    triggerDeferBlock(lView, tNode);
-  } else {
-    incrementallyHydrateFromBlockName(
-      injector,
-      lDetails[SSR_UNIQUE_ID]!,
-      (deferBlock: DeferBlock) => triggerAndWaitForCompletion(deferBlock),
-    );
+    if (!isPlatformBrowser(injector)) {
+      triggerDeferBlock(lView, tNode);
+    } else {
+      // TODO(incremental-hydration): see if we can resolve the circular dep issue
+      // that required passing cleanup fns via the 3rd param here. Ideally we could
+      // move the `triggerAndWaitForCompletion` call to a better location.
+      incrementallyHydrateFromBlockName(
+        injector,
+        lDetails[SSR_UNIQUE_ID]!,
+        (deferBlock: DeferBlock) => triggerAndWaitForCompletion(deferBlock),
+      );
+    }
   }
 }
-
 /**
  * Creates runtime data structures for the `on timer` deferred trigger.
  * @param delay Amount of time to wait before loading the content.
@@ -566,14 +583,16 @@ export function ɵɵdeferPrefetchOnTimer(delay: number) {
 export function ɵɵdeferHydrateOnTimer(delay: number) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
-  const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
-  hydrateTriggers.set(DeferBlockTrigger.Timer, delay);
+  if (shouldActivateHydrateTrigger(lView, tNode)) {
+    const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
+    hydrateTriggers.set(DeferBlockTrigger.Timer, delay);
 
-  if (shouldTriggerWhenOnServer(lView[INJECTOR]!)) {
-    // We are on the server and SSR for defer blocks is enabled.
-    triggerDeferBlock(lView, tNode);
-  } else {
-    scheduleDelayedHydrating(onTimer(delay), lView, tNode);
+    if (!isPlatformBrowser(lView[INJECTOR]!)) {
+      // We are on the server and SSR for defer blocks is enabled.
+      triggerDeferBlock(lView, tNode);
+    } else {
+      scheduleDelayedHydrating(onTimer(delay), lView, tNode);
+    }
   }
 }
 
@@ -636,12 +655,14 @@ export function ɵɵdeferPrefetchOnHover(triggerIndex: number, walkUpTimes?: num
 export function ɵɵdeferHydrateOnHover() {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
-  const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
-  hydrateTriggers.set(DeferBlockTrigger.Hover, null);
+  if (shouldActivateHydrateTrigger(lView, tNode)) {
+    const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
+    hydrateTriggers.set(DeferBlockTrigger.Hover, null);
 
-  if (shouldTriggerWhenOnServer(lView[INJECTOR]!)) {
-    // We are on the server and SSR for defer blocks is enabled.
-    triggerDeferBlock(lView, tNode);
+    if (!isPlatformBrowser(lView[INJECTOR]!)) {
+      // We are on the server and SSR for defer blocks is enabled.
+      triggerDeferBlock(lView, tNode);
+    }
   }
   // The actual triggering of hydration on hover is handled by JSAction in
   // event_replay.ts.
@@ -706,12 +727,14 @@ export function ɵɵdeferPrefetchOnInteraction(triggerIndex: number, walkUpTimes
 export function ɵɵdeferHydrateOnInteraction() {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
-  const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
-  hydrateTriggers.set(DeferBlockTrigger.Interaction, null);
+  if (shouldActivateHydrateTrigger(lView, tNode)) {
+    const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
+    hydrateTriggers.set(DeferBlockTrigger.Interaction, null);
 
-  if (shouldTriggerWhenOnServer(lView[INJECTOR]!)) {
-    // We are on the server and SSR for defer blocks is enabled.
-    triggerDeferBlock(lView, tNode);
+    if (!isPlatformBrowser(lView[INJECTOR]!)) {
+      // We are on the server and SSR for defer blocks is enabled.
+      triggerDeferBlock(lView, tNode);
+    }
   }
   // The actual triggering of hydration on interaction is handled by JSAction in
   // event_replay.ts.
@@ -776,13 +799,15 @@ export function ɵɵdeferPrefetchOnViewport(triggerIndex: number, walkUpTimes?: 
 export function ɵɵdeferHydrateOnViewport() {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
-  const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
-  hydrateTriggers.set(DeferBlockTrigger.Viewport, null);
-  const injector = lView[INJECTOR]!;
+  if (shouldActivateHydrateTrigger(lView, tNode)) {
+    const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
+    hydrateTriggers.set(DeferBlockTrigger.Viewport, null);
+    const injector = lView[INJECTOR]!;
 
-  if (shouldTriggerWhenOnServer(injector)) {
-    // We are on the server and SSR for defer blocks is enabled.
-    triggerDeferBlock(lView, tNode);
+    if (!isPlatformBrowser(injector)) {
+      // We are on the server and SSR for defer blocks is enabled.
+      triggerDeferBlock(lView, tNode);
+    }
   }
   // The actual triggering of hydration on viewport happens in incremental.ts,
   // since these instructions won't exist for dehydrated content.
