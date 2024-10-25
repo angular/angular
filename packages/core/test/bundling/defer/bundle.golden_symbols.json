@@ -9,13 +9,7 @@
     "name": "APP_INITIALIZER"
   },
   {
-    "name": "AfterRenderImpl"
-  },
-  {
     "name": "AfterRenderManager"
-  },
-  {
-    "name": "AfterRenderPhase"
   },
   {
     "name": "AnonymousSubject"
@@ -369,9 +363,6 @@
     "name": "NgModuleRef"
   },
   {
-    "name": "NgOnChangesFeatureImpl"
-  },
-  {
     "name": "NgZone"
   },
   {
@@ -541,9 +532,6 @@
   },
   {
     "name": "ZoneStablePendingTask"
-  },
-  {
-    "name": "_AfterRenderImpl"
   },
   {
     "name": "_DOM"
@@ -2629,9 +2617,6 @@
   },
   {
     "name": "writeToDirectiveInput"
-  },
-  {
-    "name": "ɵɵNgOnChangesFeature"
   },
   {
     "name": "ɵɵdefer"
