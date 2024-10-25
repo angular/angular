@@ -1,126 +1,69 @@
 // tslint:disable
 
-import {Directive, ElementRef, Input, NgZone, OnDestroy, OnInit, Renderer2} from '@angular/core';
+import {
+  booleanAttribute,
+  Directive,
+  effect,
+  ElementRef,
+  inject,
+  input,
+  NgZone,
+  OnDestroy,
+  Renderer2,
+} from '@angular/core';
 
 import {SplitComponent} from '../component/split.component';
 
-import {getInputBoolean, getInputPositiveNumber} from './utils';
+import {getInputPositiveNumber} from './utils';
 
 @Directive({
   selector: 'as-split-area, [as-split-area]',
   exportAs: 'asSplitArea',
   standalone: true,
+  host: {
+    class: 'as-split-area',
+    '[class.as-hidden]': '!visible()',
+  },
 })
-export class SplitAreaDirective implements OnInit, OnDestroy {
-  private _order: number | null = null;
-
-  @Input()
-  set order(v: number | null) {
-    this._order = getInputPositiveNumber(v, null);
-
-    this.split.updateArea(this, true, false);
-  }
-
-  get order(): number | null {
-    return this._order;
-  }
-
-  ////
-
-  private _size: number | null = null;
-
-  @Input()
-  set size(v: number | null) {
-    this._size = getInputPositiveNumber(v, null);
-
-    this.split.updateArea(this, false, true);
-  }
-
-  get size(): number | null {
-    return this._size;
-  }
-
-  ////
-
-  private _minSize: number | null = null;
-
-  @Input()
-  set minSize(v: number | null) {
-    this._minSize = getInputPositiveNumber(v, null);
-
-    this.split.updateArea(this, false, true);
-  }
-
-  get minSize(): number | null {
-    return this._minSize;
-  }
-
-  ////
-
-  private _maxSize: number | null = null;
-
-  @Input()
-  set maxSize(v: number | null) {
-    this._maxSize = getInputPositiveNumber(v, null);
-
-    this.split.updateArea(this, false, true);
-  }
-
-  get maxSize(): number | null {
-    return this._maxSize;
-  }
-
-  ////
-
-  private _lockSize: boolean = false;
-
-  @Input()
-  set lockSize(v: boolean) {
-    this._lockSize = getInputBoolean(v);
-
-    this.split.updateArea(this, false, true);
-  }
-
-  get lockSize(): boolean {
-    return this._lockSize;
-  }
-
-  ////
-
-  private _visible: boolean = true;
-
-  @Input()
-  set visible(v: boolean) {
-    this._visible = getInputBoolean(v);
-
-    if (this._visible) {
-      this.split.showArea(this);
-      this.renderer.removeClass(this.elRef.nativeElement, 'as-hidden');
-    } else {
-      this.split.hideArea(this);
-      this.renderer.addClass(this.elRef.nativeElement, 'as-hidden');
-    }
-  }
-
-  get visible(): boolean {
-    return this._visible;
-  }
-
+export class SplitAreaDirective implements OnDestroy {
+  readonly order = input(null, {transform: (v) => getInputPositiveNumber(v, null)});
+  readonly size = input(null, {transform: (v) => getInputPositiveNumber(v, null)});
+  readonly minSize = input(null, {transform: (v) => getInputPositiveNumber(v, null)});
+  readonly maxSize = input(null, {transform: (v) => getInputPositiveNumber(v, null)});
+  readonly lockSize = input(false, {transform: booleanAttribute});
+  readonly visible = input(true, {transform: booleanAttribute});
   ////
 
   private transitionListener!: Function;
   private readonly lockListeners: Array<Function> = [];
 
-  constructor(
-    private ngZone: NgZone,
-    public elRef: ElementRef,
-    private renderer: Renderer2,
-    private split: SplitComponent,
-  ) {
-    this.renderer.addClass(this.elRef.nativeElement, 'as-split-area');
-  }
+  private ngZone = inject(NgZone);
+  public elRef = inject(ElementRef);
+  private renderer = inject(Renderer2);
+  private split = inject(SplitComponent);
 
-  public ngOnInit(): void {
+  constructor() {
+    effect(() => {
+      const _ = this.order();
+      this.split.updateArea(this, true, false);
+    });
+
+    effect(() => {
+      const _ = this.lockSize();
+      const _1 = this.maxSize();
+      const _2 = this.minSize();
+      const _3 = this.size();
+      this.split.updateArea(this, false, true);
+    });
+
+    effect(() => {
+      if (this.visible()) {
+        this.split.showArea(this);
+      } else {
+        this.split.hideArea(this);
+      }
+    });
+
     this.split.addArea(this);
 
     this.ngZone.runOutsideAngular(() => {
@@ -182,9 +125,7 @@ export class SplitAreaDirective implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this.unlockEvents();
 
-    if (this.transitionListener) {
-      this.transitionListener();
-    }
+    this.transitionListener();
 
     this.split.removeArea(this);
   }
