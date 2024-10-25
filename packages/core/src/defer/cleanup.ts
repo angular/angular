@@ -13,7 +13,7 @@ import {
   PREFETCH_TRIGGER_CLEANUP_FNS,
   TRIGGER_CLEANUP_FNS,
   TriggerType,
-  UNIQUE_SSR_ID,
+  SSR_UNIQUE_ID,
 } from './interfaces';
 import {DeferBlockRegistry} from './registry';
 
@@ -57,7 +57,7 @@ export function invokeAllTriggerCleanupFns(
   // TODO(incremental-hydration): cleanup functions are invoked in multiple places
   // should we centralize where cleanup functions are invoked to this registry?
   if (registry !== null) {
-    registry.invokeCleanupFns(lDetails[UNIQUE_SSR_ID]!);
+    registry.invokeCleanupFns(lDetails[SSR_UNIQUE_ID]!);
   }
 
   invokeTriggerCleanupFns(TriggerType.Prefetch, lDetails);

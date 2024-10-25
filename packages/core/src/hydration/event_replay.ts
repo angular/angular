@@ -32,14 +32,14 @@ import {BLOCK_ELEMENT_MAP, EVENT_REPLAY_ENABLED_DEFAULT, IS_EVENT_REPLAY_ENABLED
 import {
   sharedStashFunction,
   sharedMapFunction,
-  BLOCKNAME_ATTRIBUTE,
+  DEFER_BLOCK_SSR_ID_ATTRIBUTE,
   EventContractDetails,
   JSACTION_EVENT_CONTRACT,
   removeListenersFromBlocks,
 } from '../event_delegation_utils';
 import {APP_ID} from '../application/application_tokens';
 import {performanceMarkFeature} from '../util/performance';
-import {hydrateFromBlockName, findFirstKnownParentDeferBlock} from './blocks';
+import {hydrateFromBlockName, findFirstHydratedParentDeferBlock} from './blocks';
 import {DeferBlock, DeferBlockTrigger, HydrateTriggerDetails} from '../defer/interfaces';
 import {triggerAndWaitForCompletion} from '../defer/instructions';
 import {cleanupDehydratedViews, cleanupLContainer} from './cleanup';
@@ -226,7 +226,8 @@ export function invokeRegisteredReplayListeners(
   event: Event,
   currentTarget: Element | null,
 ) {
-  const blockName = (currentTarget && currentTarget.getAttribute(BLOCKNAME_ATTRIBUTE)) ?? '';
+  const blockName =
+    (currentTarget && currentTarget.getAttribute(DEFER_BLOCK_SSR_ID_ATTRIBUTE)) ?? '';
   if (/d\d+/.test(blockName)) {
     hydrateAndInvokeBlockListeners(blockName, injector, event, currentTarget!);
   } else if (event.eventPhase === EventPhase.REPLAY) {
@@ -259,7 +260,7 @@ async function triggerBlockHydration(
   onTriggerFn: (deferBlock: any) => void,
 ) {
   // grab the list of dehydrated blocks and queue them up
-  const {dehydratedBlocks} = findFirstKnownParentDeferBlock(blockName, injector);
+  const {dehydratedBlocks} = findFirstHydratedParentDeferBlock(blockName, injector);
   for (let block of dehydratedBlocks) {
     hydratingBlocks.add(block);
   }
@@ -279,7 +280,7 @@ function replayQueuedBlockEvents(hydratedBlocks: Set<string>, injector: Injector
   // empty it
   blockEventQueue = [];
   for (let {event, currentTarget} of queue) {
-    const blockName = currentTarget.getAttribute(BLOCKNAME_ATTRIBUTE)!;
+    const blockName = currentTarget.getAttribute(DEFER_BLOCK_SSR_ID_ATTRIBUTE)!;
     if (hydratedBlocks.has(blockName)) {
       invokeListeners(event, currentTarget);
     } else {

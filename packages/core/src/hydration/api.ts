@@ -308,6 +308,7 @@ export function withI18nSupport(): Provider[] {
 /**
  * Returns a set of providers required to setup support for incremental hydration.
  * Requires hydration to be enabled separately.
+ * Enabling incremental hydration also enables event replay for the entire app.
  *
  * @developerPreview
  */
@@ -330,9 +331,10 @@ export function withIncrementalHydration(): Provider[] {
       useFactory: () => {
         if (isPlatformBrowser()) {
           const injector = inject(Injector);
+          const doc = getDocument();
           return () => {
-            bootstrapIncrementalHydration(getDocument(), injector);
-            appendDeferBlocksToJSActionMap(getDocument(), injector);
+            bootstrapIncrementalHydration(doc, injector);
+            appendDeferBlocksToJSActionMap(doc, injector);
           };
         }
         return () => {}; // noop for the server code

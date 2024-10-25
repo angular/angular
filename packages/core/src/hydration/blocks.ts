@@ -24,7 +24,7 @@ import {whenStable, ApplicationRef} from '../application/application_ref';
  * If there are any dehydrated `@defer` blocks found along the way,
  * they are also stored and returned from the function (as a list of ids).
  */
-export function findFirstKnownParentDeferBlock(deferBlockId: string, injector: Injector) {
+export function findFirstHydratedParentDeferBlock(deferBlockId: string, injector: Injector) {
   const deferBlockRegistry = injector.get(DeferBlockRegistry);
   const transferState = injector.get(TransferState);
   const deferBlockParents = transferState.get(NGH_DEFER_BLOCKS_KEY, {});
@@ -69,7 +69,7 @@ async function hydrateFromBlockNameImpl(
   // Make sure we don't hydrate/trigger the same thing multiple times
   if (deferBlockRegistry.hydrating.has(blockName)) return {deferBlock: null, hydratedBlocks};
 
-  const {blockId, deferBlock, dehydratedBlocks} = findFirstKnownParentDeferBlock(
+  const {blockId, deferBlock, dehydratedBlocks} = findFirstHydratedParentDeferBlock(
     blockName,
     injector,
   );
