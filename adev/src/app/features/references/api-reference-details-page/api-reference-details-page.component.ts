@@ -7,21 +7,15 @@
  */
 
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
-  DestroyRef,
-  Injector,
-  OnInit,
-  ViewChild,
   afterNextRender,
   inject,
-  signal,
+  input,
+  computed,
 } from '@angular/core';
 import {DOCUMENT} from '@angular/common';
-import {MatTabGroup, MatTabsModule} from '@angular/material/tabs';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {distinctUntilChanged, map} from 'rxjs/operators';
+import {MatTabsModule} from '@angular/material/tabs';
 import {DocContent, DocViewer} from '@angular/docs';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ApiItemType} from './../interfaces/api-item-type';
@@ -30,7 +24,6 @@ import {
   API_REFERENCE_DETAILS_PAGE_HEADER_CLASS_NAME,
   API_REFERENCE_DETAILS_PAGE_MEMBERS_CLASS_NAME,
   API_REFERENCE_TAB_ATTRIBUTE,
-  API_REFERENCE_TAB_QUERY_PARAM,
   API_REFERENCE_TAB_API_LABEL,
   API_TAB_CLASS_NAME,
   API_REFERENCE_TAB_BODY_CLASS_NAME,
@@ -47,116 +40,96 @@ import {AppScroller} from '../../../app-scroller';
   providers: [ReferenceScrollHandler],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class ApiReferenceDetailsPage implements OnInit, AfterViewInit {
-  @ViewChild(MatTabGroup, {static: true}) matTabGroup!: MatTabGroup;
-
+export default class ApiReferenceDetailsPage {
   private readonly activatedRoute = inject(ActivatedRoute);
-  private readonly destroyRef = inject(DestroyRef);
   private readonly document = inject(DOCUMENT);
   private readonly router = inject(Router);
   private readonly scrollHandler = inject(ReferenceScrollHandler);
   private readonly appScroller = inject(AppScroller);
-  private readonly injector = inject(Injector);
 
+  docContent = input<DocContent | undefined>();
+  tab = input<string | undefined>();
+
+  // aliases
   ApiItemType = ApiItemType;
-
-  canDisplayCards = signal<boolean>(false);
-  tabs = signal<{url: string; title: string; content: string}[]>([]);
-  headerInnerHtml = signal<string | undefined>(undefined);
-  membersInnerHtml = signal<string | undefined>(undefined);
   membersMarginTopInPx = this.scrollHandler.membersMarginTopInPx;
-  selectedTabIndex = signal(0);
+
+  // computed state
+  parsedDocContent = computed(() => {
+    // TODO: pull this logic outside of a computed where it can be tested etc.
+    const docContent = this.docContent();
+
+    if (docContent === undefined) {
+      return {
+        header: undefined,
+        members: undefined,
+        tabs: [],
+      };
+    }
+
+    const element = this.document.createElement('div');
+    element.innerHTML = docContent.contents;
+
+    // Get the innerHTML of the header element from received document.
+    const header = element.querySelector(API_REFERENCE_DETAILS_PAGE_HEADER_CLASS_NAME);
+    // Get the innerHTML of the card elements from received document.
+    const members = element.querySelector(API_REFERENCE_DETAILS_PAGE_MEMBERS_CLASS_NAME);
+
+    // Get the tab elements from received document.
+    // We're expecting that tab element will contain `tab` attribute.
+    const tabs = Array.from(element.querySelectorAll(`[${API_REFERENCE_TAB_ATTRIBUTE}]`)).map(
+      (tab) => ({
+        url: tab.getAttribute(API_REFERENCE_TAB_URL_ATTRIBUTE)!,
+        title: tab.getAttribute(API_REFERENCE_TAB_ATTRIBUTE)!,
+        content: tab.innerHTML,
+      }),
+    );
+
+    element.remove();
+
+    return {
+      header: header?.innerHTML,
+      members: members?.innerHTML,
+      tabs,
+    };
+  });
+
+  tabs = () => this.parsedDocContent().tabs;
+
+  selectedTabIndex = computed(() => {
+    const existingTabIdx = this.tabs().findIndex((tab) => tab.url === this.tab());
+    return Math.max(existingTabIdx, 0);
+  });
+
+  isApiTabActive = computed(() => {
+    const activeTabTitle = this.tabs()[this.selectedTabIndex()]?.title;
+    return activeTabTitle === API_REFERENCE_TAB_API_LABEL || activeTabTitle === 'CLI';
+  });
 
   constructor() {
     this.appScroller.disableScrolling = true;
-  }
-
-  ngOnInit(): void {
-    this.setPageContent();
+    afterNextRender({
+      write: () => {
+        if (this.isApiTabActive()) {
+          this.scrollHandler.updateMembersMarginTop(API_REFERENCE_TAB_BODY_CLASS_NAME);
+        }
+      },
+    });
   }
 
   ngOnDestroy() {
     this.appScroller.disableScrolling = false;
   }
 
-  ngAfterViewInit(): void {
-    this.setActiveTab();
-    this.listenToTabChange();
-  }
-
   membersCardsLoaded(): void {
     this.scrollHandler.setupListeners(API_TAB_CLASS_NAME);
   }
 
-  // Fetch the content for API Reference page based on the active route.
-  private setPageContent(): void {
-    this.activatedRoute.data
-      .pipe(
-        map((data) => data['docContent']),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe((doc: DocContent | undefined) => {
-        this.setContentForPageSections(doc);
-        afterNextRender(() => this.setActiveTab(), {injector: this.injector});
-      });
-  }
-
-  private listenToTabChange(): void {
-    this.matTabGroup.selectedIndexChange
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((index) => {
-        this.router.navigate([], {
-          relativeTo: this.activatedRoute,
-          queryParams: {tab: this.tabs()[index].url},
-          queryParamsHandling: 'merge',
-        });
-      });
-  }
-
-  private setContentForPageSections(doc: DocContent | undefined): void {
-    const element = this.document.createElement('div');
-    element.innerHTML = doc?.contents!;
-
-    // Get the innerHTML of the header element from received document.
-    const header = element.querySelector(API_REFERENCE_DETAILS_PAGE_HEADER_CLASS_NAME);
-    if (header) {
-      this.headerInnerHtml.set(header.innerHTML);
-    }
-
-    // Get the innerHTML of the card elements from received document.
-    const members = element.querySelector(API_REFERENCE_DETAILS_PAGE_MEMBERS_CLASS_NAME);
-    if (members) {
-      this.membersInnerHtml.set(members.innerHTML);
-    }
-
-    // Get the tab elements from received document.
-    // We're expecting that tab element will contain `tab` attribute.
-    const tabs = Array.from(element.querySelectorAll(`[${API_REFERENCE_TAB_ATTRIBUTE}]`));
-    this.tabs.set(
-      tabs.map((tab) => ({
-        url: tab.getAttribute(API_REFERENCE_TAB_URL_ATTRIBUTE)!,
-        title: tab.getAttribute(API_REFERENCE_TAB_ATTRIBUTE)!,
-        content: tab.innerHTML,
-      })),
-    );
-
-    element.remove();
-  }
-
-  private setActiveTab(): void {
-    this.activatedRoute.queryParamMap
-      .pipe(distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
-      .subscribe((paramsMap) => {
-        const selectedTabUrl = paramsMap.get(API_REFERENCE_TAB_QUERY_PARAM);
-        const tabIndexToSelect = this.tabs().findIndex((tab) => tab.url === selectedTabUrl);
-        this.selectedTabIndex.set(tabIndexToSelect < 0 ? 0 : tabIndexToSelect);
-
-        this.scrollHandler.updateMembersMarginTop(API_REFERENCE_TAB_BODY_CLASS_NAME);
-
-        const isApiTabActive =
-          this.tabs()[this.selectedTabIndex()]?.title === API_REFERENCE_TAB_API_LABEL ||
-          this.tabs()[this.selectedTabIndex()]?.title === 'CLI';
-        this.canDisplayCards.set(isApiTabActive);
-      });
+  tabChange(tabIndex: number) {
+    this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      queryParams: {tab: this.tabs()[tabIndex].url},
+      queryParamsHandling: 'merge',
+    });
   }
 }

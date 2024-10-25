@@ -66,7 +66,7 @@ describe('ApiItemsSection', () => {
   });
 
   it('should render star icon for featured group', () => {
-    component.group = fakeFeaturedGroup;
+    fixture.componentRef.setInput('group', fakeFeaturedGroup);
     fixture.detectChanges();
 
     const starIcon = fixture.debugElement.query(By.css('.adev-api-items-section-header docs-icon'));
@@ -75,7 +75,7 @@ describe('ApiItemsSection', () => {
   });
 
   it('should not render star icon for standard group', () => {
-    component.group = fakeGroup;
+    fixture.componentRef.setInput('group', fakeGroup);
     fixture.detectChanges();
 
     const starIcon = fixture.debugElement.query(By.css('.adev-api-items-section-header docs-icon'));
@@ -84,7 +84,7 @@ describe('ApiItemsSection', () => {
   });
 
   it('should render list of all APIs of provided group', () => {
-    component.group = fakeFeaturedGroup;
+    fixture.componentRef.setInput('group', fakeFeaturedGroup);
     fixture.detectChanges();
 
     const apis = fixture.debugElement.queryAll(By.css('.adev-api-items-section-grid li'));
@@ -93,7 +93,7 @@ describe('ApiItemsSection', () => {
   });
 
   it('should display deprecated icon for deprecated API', () => {
-    component.group = fakeFeaturedGroup;
+    fixture.componentRef.setInput('group', fakeFeaturedGroup);
     fixture.detectChanges();
 
     const deprecatedApiIcons = fixture.debugElement.queryAll(
@@ -107,7 +107,7 @@ describe('ApiItemsSection', () => {
   });
 
   it('should display star icon for featured API', () => {
-    component.group = fakeFeaturedGroup;
+    fixture.componentRef.setInput('group', fakeFeaturedGroup);
     fixture.detectChanges();
 
     const featuredApiIcons = fixture.debugElement.queryAll(

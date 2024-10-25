@@ -10,14 +10,13 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
-  Injector,
-  afterNextRender,
   computed,
   effect,
   inject,
   model,
   signal,
   viewChild,
+  afterRenderEffect,
 } from '@angular/core';
 import ApiItemsSection from '../api-items-section/api-items-section.component';
 import {FormsModule} from '@angular/forms';
@@ -40,69 +39,63 @@ export const ALL_STATUSES_KEY = 'All';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ApiReferenceList {
+  // services
   private readonly apiReferenceManager = inject(ApiReferenceManager);
   private readonly router = inject(Router);
-  filterInput = viewChild.required(TextField, {read: ElementRef});
-  private readonly injector = inject(Injector);
 
-  private readonly allGroups = this.apiReferenceManager.apiGroups;
-
-  constructor() {
-    effect(() => {
-      const filterInput = this.filterInput();
-      afterNextRender(
-        {
-          write: () => {
-            // Lord forgive me for I have sinned
-            // Use the CVA to focus when https://github.com/angular/angular/issues/31133 is implemented
-            if (matchMedia('(hover: hover) and (pointer:fine)').matches) {
-              filterInput.nativeElement.querySelector('input').focus();
-            }
-          },
-        },
-        {injector: this.injector},
-      );
-    });
-
-    effect(
-      () => {
-        const params: Params = {
-          'query': this.query() ? this.query() : null,
-          'type': this.type() ? this.type() : null,
-        };
-
-        this.router.navigate([], {
-          queryParams: params,
-          replaceUrl: true,
-          preserveFragment: true,
-          info: {
-            disableScrolling: true,
-          },
-        });
-      },
-      {allowSignalWrites: true},
-    );
-  }
-
+  // inputs
   query = model<string | undefined>('');
-  includeDeprecated = signal(false);
-
   type = model<string | undefined>(ALL_STATUSES_KEY);
 
-  featuredGroup = this.apiReferenceManager.featuredGroup;
+  // const state
+  itemTypes = Object.values(ApiItemType);
+
+  // state
+  featuredGroup = this.apiReferenceManager.featuredGroup; // THINK: this is a shortcut - why would people write this?
+  includeDeprecated = signal(false);
+
+  // queries
+  filterInput = viewChild.required(TextField, {read: ElementRef});
+
+  constructor() {
+    afterRenderEffect({
+      write: () => {
+        // Lord forgive me for I have sinned
+        // Use the CVA to focus when https://github.com/angular/angular/issues/31133 is implemented
+        if (matchMedia('(hover: hover) and (pointer:fine)').matches) {
+          this.filterInput().nativeElement.querySelector('input').focus();
+        }
+      },
+    });
+
+    effect(() => {
+      const params: Params = {
+        'query': this.query() ?? null,
+        'type': this.type() ?? null,
+      };
+
+      this.router.navigate([], {
+        queryParams: params,
+        replaceUrl: true,
+        preserveFragment: true,
+        info: {
+          disableScrolling: true,
+        },
+      });
+    });
+  }
+
   filteredGroups = computed((): ApiItemsGroup[] => {
-    return this.allGroups()
+    const query = this.query()?.toLocaleLowerCase();
+    return this.apiReferenceManager
+      .apiGroups()
       .map((group) => ({
         title: group.title,
         isFeatured: group.isFeatured,
         id: group.id,
         items: group.items.filter((apiItem) => {
           return (
-            (this.query() !== undefined
-              ? apiItem.title
-                  .toLocaleLowerCase()
-                  .includes((this.query() as string).toLocaleLowerCase())
-              : true) &&
+            (query !== undefined ? apiItem.title.toLocaleLowerCase().includes(query) : true) &&
             (this.includeDeprecated() ? true : apiItem.isDeprecated === this.includeDeprecated()) &&
             (this.type() === undefined ||
               this.type() === ALL_STATUSES_KEY ||
@@ -112,7 +105,6 @@ export default class ApiReferenceList {
       }))
       .filter((group) => group.items.length > 0);
   });
-  itemTypes = Object.values(ApiItemType);
 
   filterByItemType(itemType: ApiItemType): void {
     this.type.update((currentType) => (currentType === itemType ? ALL_STATUSES_KEY : itemType));
