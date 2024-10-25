@@ -84,15 +84,12 @@ export class TimelineVisualizerComponent {
   readonly parentHierarchy = computed(() => this.selectedNode()?.parentHierarchy ?? []);
 
   constructor() {
-    effect(
-      () => {
-        const nodeWithMode = untracked(this.selectedNodeWithVizMode);
-        if (nodeWithMode?.visualizationMode !== this.visualizationMode()) {
-          this.selectedNodeWithVizMode.set(null);
-        }
-      },
-      {allowSignalWrites: true},
-    );
+    effect(() => {
+      const nodeWithMode = untracked(this.selectedNodeWithVizMode);
+      if (nodeWithMode?.visualizationMode !== this.visualizationMode()) {
+        this.selectedNodeWithVizMode.set(null);
+      }
+    });
   }
 
   handleNodeSelect(selected: SelectedEntry): void {
