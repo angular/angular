@@ -27,7 +27,6 @@ import {assertInInjectionContext} from '../../di/contextual';
 import {DestroyRef, NodeInjectorDestroyRef} from '../../linker/destroy_ref';
 import {ViewContext} from '../view_context';
 import {noop} from '../../util/noop';
-import {ErrorHandler} from '../../error_handler';
 import {
   ChangeDetectionScheduler,
   NotificationSource,
@@ -38,6 +37,7 @@ import {USE_MICROTASK_EFFECT_BY_DEFAULT} from './patch';
 import {microtaskEffect} from './microtask_effect';
 
 let useMicrotaskEffectsByDefault = USE_MICROTASK_EFFECT_BY_DEFAULT;
+import {emitEffectCreatedEvent, setInjectorProfilerContext} from '../debug/injector_profiler';
 
 /**
  * Toggle the flag on whether to use microtask effects (for testing).
@@ -60,7 +60,7 @@ export interface EffectRef {
   destroy(): void;
 }
 
-class EffectRefImpl implements EffectRef {
+export class EffectRefImpl implements EffectRef {
   [SIGNAL]: EffectNode;
 
   constructor(node: EffectNode) {
@@ -199,11 +199,19 @@ export function effect(
     node.onDestroyFn = destroyRef.onDestroy(() => node.destroy());
   }
 
+  const effectRef = new EffectRefImpl(node);
+
   if (ngDevMode) {
     node.debugName = options?.debugName ?? '';
+    const prevInjectorProfilerContext = setInjectorProfilerContext({injector, token: null});
+    try {
+      emitEffectCreatedEvent(effectRef);
+    } finally {
+      setInjectorProfilerContext(prevInjectorProfilerContext);
+    }
   }
 
-  return new EffectRefImpl(node);
+  return effectRef;
 }
 
 export interface EffectNode extends ReactiveNode, SchedulableEffect {
