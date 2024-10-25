@@ -1419,6 +1419,32 @@ describe('R3 template transform', () => {
         );
       });
 
+      it('should report `hydrate never` used with additonal characters', () => {
+        expect(() => parse('@defer (hydrate never, and thank you) {hello}')).toThrowError(
+          /Unrecognized trigger/,
+        );
+      });
+
+      it('should not report an error when `hydrate never` is used with additonal blocks', () => {
+        expect(() => parse('@defer (hydrate never; on idle;) {hello}')).not.toThrowError(
+          /Unrecognized trigger/,
+        );
+      });
+
+      it('should not report an error when `hydrate never` is used with spaces', () => {
+        expect(() => parse('@defer(hydrate never ; on idle ;) {hello}')).not.toThrowError(
+          /Unrecognized trigger/,
+        );
+      });
+
+      it('should not report an error when `hydrate never` is used after another block', () => {
+        expect(() =>
+          parse(`@defer(
+        on idle;
+        hydrate never) {hello}`),
+        ).not.toThrowError(/Unrecognized trigger/);
+      });
+
       it('should report when `hydrate never` is used together with another `hydrate` trigger', () => {
         // Extra trigger after `hydrate never`.
         expect(() =>
