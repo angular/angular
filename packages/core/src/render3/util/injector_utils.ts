@@ -62,14 +62,3 @@ export function getParentInjectorView(location: RelativeInjectorLocation, startV
   }
   return parentView;
 }
-
-/**
- * Detects whether an injector is an instance of a `ChainedInjector`,
- * created based on the `OutletInjector`.
- */
-export function isRouterOutletInjector(currentInjector: Injector): boolean {
-  return (
-    currentInjector instanceof ChainedInjector &&
-    typeof (currentInjector.injector as any).__ngOutletInjector === 'function'
-  );
-}
