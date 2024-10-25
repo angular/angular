@@ -210,8 +210,8 @@ export const STATE_IS_FROZEN_UNTIL = 2;
 export const LOADING_AFTER_CLEANUP_FN = 3;
 export const TRIGGER_CLEANUP_FNS = 4;
 export const PREFETCH_TRIGGER_CLEANUP_FNS = 5;
-export const UNIQUE_SSR_ID = 6;
-export const SSR_STATE = 7;
+export const SSR_UNIQUE_ID = 6;
+export const SSR_BLOCK_STATE = 7;
 export const ON_COMPLETE_FNS = 8;
 export const HYDRATE_TRIGGER_CLEANUP_FNS = 9;
 
@@ -259,12 +259,12 @@ export interface LDeferBlockDetails extends Array<unknown> {
   /**
    * Unique id of this defer block assigned during SSR.
    */
-  [UNIQUE_SSR_ID]: string | null;
+  [SSR_UNIQUE_ID]: string | null;
 
   /**
    * Defer block state after SSR.
    */
-  [SSR_STATE]: number | null;
+  [SSR_BLOCK_STATE]: number | null;
 
   /**
    * A set of callbacks to be invoked once the main content is rendered.
