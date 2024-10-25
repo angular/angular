@@ -79,12 +79,12 @@ import {
   LOADING_AFTER_CLEANUP_FN,
   NEXT_DEFER_BLOCK_STATE,
   ON_COMPLETE_FNS,
-  SSR_STATE,
+  SSR_BLOCK_STATE,
   STATE_IS_FROZEN_UNTIL,
   TDeferBlockDetails,
   TriggerType,
   DeferBlock,
-  UNIQUE_SSR_ID,
+  SSR_UNIQUE_ID,
 } from './interfaces';
 import {onTimer, scheduleTimerTrigger} from './timer_scheduler';
 import {
@@ -144,7 +144,8 @@ function shouldTriggerWhenOnClient(
   if (!isPlatformBrowser(injector)) {
     return false;
   }
-  const isServerRendered = lDetails[SSR_STATE] && lDetails[SSR_STATE] === DeferBlockState.Complete;
+  const isServerRendered =
+    lDetails[SSR_BLOCK_STATE] && lDetails[SSR_BLOCK_STATE] === DeferBlockState.Complete;
   const hasHydrateTriggers = tDetails.hydrateTriggers && tDetails.hydrateTriggers.size > 0;
   if (hasHydrateTriggers && isServerRendered && isIncrementalHydrationEnabled(injector)) {
     return false;
@@ -280,13 +281,12 @@ export function ɵɵdefer(
   // In client-only mode, this function is a noop.
   populateDehydratedViewsInLContainer(lContainer, tNode, lView);
 
-  let ssrState = null;
-  let uniqueId: string | null = null;
+  let ssrBlockState = null;
+  let ssrUniqueId: string | null = null;
   if (lContainer[DEHYDRATED_VIEWS]?.length > 0) {
-    // TODO(incremental-hydration): this is a hack, we should serialize defer
     const info = lContainer[DEHYDRATED_VIEWS][0].data;
-    uniqueId = info[DEFER_BLOCK_ID] ?? null;
-    ssrState = info[SERIALIZED_DEFER_BLOCK_STATE];
+    ssrUniqueId = info[DEFER_BLOCK_ID] ?? null;
+    ssrBlockState = info[SERIALIZED_DEFER_BLOCK_STATE];
   }
 
   // Init instance-specific defer details and store it.
@@ -297,21 +297,21 @@ export function ɵɵdefer(
     null, // LOADING_AFTER_CLEANUP_FN
     null, // TRIGGER_CLEANUP_FNS
     null, // PREFETCH_TRIGGER_CLEANUP_FNS
-    uniqueId, // UNIQUE_ID
-    ssrState, // SSR_STATE
+    ssrUniqueId, // SSR_UNIQUE_ID
+    ssrBlockState, // SSR_BLOCK_STATE
     null, // ON_COMPLETE_FNS
     null, // HYDRATE_TRIGGER_CLEANUP_FNS
   ];
   setLDeferBlockDetails(lView, adjustedIndex, lDetails);
 
   let registry: DeferBlockRegistry | null = null;
-  if (uniqueId !== null) {
+  if (ssrUniqueId !== null) {
     // TODO(incremental-hydration): explore how we can make
     // `DeferBlockRegistry` tree-shakable for client-only cases.
     registry = injector.get(DeferBlockRegistry);
 
     // Also store this defer block in the registry.
-    registry.add(uniqueId, {lView, tNode, lContainer});
+    registry.add(ssrUniqueId, {lView, tNode, lContainer});
   }
 
   const cleanupTriggersFn = () => invokeAllTriggerCleanupFns(lDetails, registry);
@@ -415,7 +415,7 @@ export function ɵɵdeferHydrateWhen(rawValue: unknown) {
           // state.
           incrementallyHydrateFromBlockName(
             injector,
-            getLDeferBlockDetails(lView, tNode)[UNIQUE_SSR_ID]!,
+            getLDeferBlockDetails(lView, tNode)[SSR_UNIQUE_ID]!,
             (deferBlock: DeferBlock) => triggerAndWaitForCompletion(deferBlock),
           );
         }
@@ -534,7 +534,7 @@ export function ɵɵdeferHydrateOnImmediate() {
   } else {
     incrementallyHydrateFromBlockName(
       injector,
-      lDetails[UNIQUE_SSR_ID]!,
+      lDetails[SSR_UNIQUE_ID]!,
       (deferBlock: DeferBlock) => triggerAndWaitForCompletion(deferBlock),
     );
   }
@@ -643,6 +643,8 @@ export function ɵɵdeferHydrateOnHover() {
     // We are on the server and SSR for defer blocks is enabled.
     triggerDeferBlock(lView, tNode);
   }
+  // The actual triggering of hydration on hover is handled by JSAction in
+  // event_replay.ts.
 }
 
 /**
@@ -711,6 +713,8 @@ export function ɵɵdeferHydrateOnInteraction() {
     // We are on the server and SSR for defer blocks is enabled.
     triggerDeferBlock(lView, tNode);
   }
+  // The actual triggering of hydration on interaction is handled by JSAction in
+  // event_replay.ts.
 }
 
 /**
@@ -780,6 +784,8 @@ export function ɵɵdeferHydrateOnViewport() {
     // We are on the server and SSR for defer blocks is enabled.
     triggerDeferBlock(lView, tNode);
   }
+  // The actual triggering of hydration on viewport happens in incremental.ts,
+  // since these instructions won't exist for dehydrated content.
 }
 
 /********** Helper functions **********/
@@ -853,7 +859,7 @@ export function scheduleDelayedHydrating(
       () =>
         incrementallyHydrateFromBlockName(
           injector,
-          lDetails[UNIQUE_SSR_ID]!,
+          lDetails[SSR_UNIQUE_ID]!,
           (deferBlock: DeferBlock) => triggerAndWaitForCompletion(deferBlock),
         ),
       injector,
@@ -896,7 +902,7 @@ export function renderDeferBlockState(
 
   const currentState = lDetails[DEFER_BLOCK_STATE];
 
-  const ssrState = lDetails[SSR_STATE];
+  const ssrState = lDetails[SSR_BLOCK_STATE];
   if (ssrState !== null && newState < ssrState) {
     return; // trying to render a previous state, exit
   }

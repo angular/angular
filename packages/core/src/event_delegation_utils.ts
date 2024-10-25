@@ -11,14 +11,9 @@ import {EventContract} from '@angular/core/primitives/event-dispatch';
 import {Attribute} from '@angular/core/primitives/event-dispatch';
 import {InjectionToken, Injector} from './di';
 import {RElement} from './render3/interfaces/renderer_dom';
-import {
-  BLOCK_ELEMENT_MAP,
-  EVENT_REPLAY_ENABLED_DEFAULT,
-  IS_EVENT_REPLAY_ENABLED,
-} from './hydration/tokens';
-import {OnDestroy} from './interface/lifecycle_hooks';
+import {BLOCK_ELEMENT_MAP} from './hydration/tokens';
 
-export const BLOCKNAME_ATTRIBUTE = 'ngb';
+export const DEFER_BLOCK_SSR_ID_ATTRIBUTE = 'ngb';
 
 declare global {
   interface Element {
@@ -41,7 +36,9 @@ export function setJSActionAttributes(
   eventTypes: string[],
   parentDeferBlockId: string | null = null,
 ) {
-  if (!eventTypes.length || nativeElement.nodeType !== Node.ELEMENT_NODE) {
+  // jsaction attributes specifically should be applied to elements and not comment nodes.
+  // Comment nodes also have no setAttribute function. So this avoids errors.
+  if (eventTypes.length === 0 || nativeElement.nodeType !== Node.ELEMENT_NODE) {
     return;
   }
   const existingAttr = nativeElement.getAttribute(Attribute.JSACTION);
@@ -57,7 +54,7 @@ export function setJSActionAttributes(
 
   const blockName = parentDeferBlockId ?? '';
   if (blockName !== '' && parts.length > 0) {
-    nativeElement.setAttribute(BLOCKNAME_ATTRIBUTE, blockName);
+    nativeElement.setAttribute(DEFER_BLOCK_SSR_ID_ATTRIBUTE, blockName);
   }
 }
 
@@ -71,7 +68,7 @@ export const sharedStashFunction = (rEl: RElement, eventType: string, listenerFn
 };
 
 export const sharedMapFunction = (rEl: RElement, jsActionMap: Map<string, Set<Element>>) => {
-  let blockName = rEl.getAttribute(BLOCKNAME_ATTRIBUTE) ?? '';
+  let blockName = rEl.getAttribute(DEFER_BLOCK_SSR_ID_ATTRIBUTE) ?? '';
   const el = rEl as unknown as Element;
   const blockSet = jsActionMap.get(blockName) ?? new Set<Element>();
   if (!blockSet.has(el)) {
@@ -94,7 +91,7 @@ export function removeListenersFromBlocks(blockNames: string[], injector: Inject
 
 export const removeListeners = (el: Element) => {
   el.removeAttribute(Attribute.JSACTION);
-  el.removeAttribute(BLOCKNAME_ATTRIBUTE);
+  el.removeAttribute(DEFER_BLOCK_SSR_ID_ATTRIBUTE);
   el.__jsaction_fns = undefined;
 };
 

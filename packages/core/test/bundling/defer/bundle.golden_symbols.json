@@ -459,7 +459,10 @@
     "name": "SOURCE"
   },
   {
-    "name": "SSR_STATE"
+    "name": "SSR_BLOCK_STATE"
+  },
+  {
+    "name": "SSR_UNIQUE_ID"
   },
   {
     "name": "SVG_NAMESPACE"
@@ -508,9 +511,6 @@
   },
   {
     "name": "TYPE"
-  },
-  {
-    "name": "UNIQUE_SSR_ID"
   },
   {
     "name": "USE_VALUE"
