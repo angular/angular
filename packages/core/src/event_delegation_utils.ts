@@ -78,15 +78,17 @@ export const sharedMapFunction = (rEl: RElement, jsActionMap: Map<string, Set<El
 };
 
 export function removeListenersFromBlocks(blockNames: string[], injector: Injector) {
-  let blockList: Element[] = [];
-  const jsActionMap = injector.get(BLOCK_ELEMENT_MAP);
-  for (let blockName of blockNames) {
-    if (jsActionMap.has(blockName)) {
-      blockList = [...blockList, ...jsActionMap.get(blockName)!];
+  if (blockNames.length > 0) {
+    let blockList: Element[] = [];
+    const jsActionMap = injector.get(BLOCK_ELEMENT_MAP);
+    for (let blockName of blockNames) {
+      if (jsActionMap.has(blockName)) {
+        blockList = [...blockList, ...jsActionMap.get(blockName)!];
+      }
     }
+    const replayList = new Set(blockList);
+    replayList.forEach(removeListeners);
   }
-  const replayList = new Set(blockList);
-  replayList.forEach(removeListeners);
 }
 
 export const removeListeners = (el: Element) => {
