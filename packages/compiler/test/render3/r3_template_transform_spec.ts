@@ -1420,7 +1420,7 @@ describe('R3 template transform', () => {
       });
 
       it('should report `hydrate never` used with additonal characters', () => {
-        expect(() => parse('@defer (hydrate nevermind) {hello}')).toThrowError(
+        expect(() => parse('@defer (hydrate never, and thank you) {hello}')).toThrowError(
           /Unrecognized trigger/,
         );
       });
