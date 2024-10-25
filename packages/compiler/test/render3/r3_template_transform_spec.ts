@@ -1419,6 +1419,12 @@ describe('R3 template transform', () => {
         );
       });
 
+      it('should report `hydrate never` used with additonal characters', () => {
+        expect(() => parse('@defer (hydrate nevermind) {hello}')).toThrowError(
+          /Unrecognized trigger/,
+        );
+      });
+
       it('should report when `hydrate never` is used together with another `hydrate` trigger', () => {
         // Extra trigger after `hydrate never`.
         expect(() =>
