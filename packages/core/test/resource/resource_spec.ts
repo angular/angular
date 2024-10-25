@@ -7,6 +7,7 @@
  */
 
 import {
+  ApplicationRef,
   createEnvironmentInjector,
   EnvironmentInjector,
   Injector,
@@ -81,22 +82,14 @@ describe('resource', () => {
       injector: TestBed.inject(Injector),
     });
 
-    // a freshly created resource is in the idle state
-    expect(echoResource.status()).toBe(ResourceStatus.Idle);
-    expect(echoResource.isLoading()).toBeFalse();
-    expect(echoResource.hasValue()).toBeFalse();
-    expect(echoResource.value()).toBeUndefined();
-    expect(echoResource.error()).toBe(undefined);
-
-    // flush effect to kick off a request
-    // THINK: testing patterns around a resource?
-    TestBed.flushEffects();
+    // a freshly created resource is in the loading state
     expect(echoResource.status()).toBe(ResourceStatus.Loading);
     expect(echoResource.isLoading()).toBeTrue();
     expect(echoResource.hasValue()).toBeFalse();
     expect(echoResource.value()).toBeUndefined();
     expect(echoResource.error()).toBe(undefined);
 
+    TestBed.flushEffects();
     await backend.flush();
     expect(echoResource.status()).toBe(ResourceStatus.Resolved);
     expect(echoResource.isLoading()).toBeFalse();
@@ -375,5 +368,117 @@ describe('resource', () => {
 
     // @ts-expect-error
     readonlyRes.value.set;
+  });
+
+  it('should synchronously change states', async () => {
+    const request = signal<number | undefined>(undefined);
+    const backend = new MockEchoBackend();
+    const echoResource = resource({
+      request,
+      loader: (params) => backend.fetch(params.request),
+      injector: TestBed.inject(Injector),
+    });
+
+    // Idle to start.
+    expect(echoResource.status()).toBe(ResourceStatus.Idle);
+
+    // Switch to loading state should be synchronous.
+    request.set(1);
+    expect(echoResource.status()).toBe(ResourceStatus.Loading);
+
+    // And back to idle.
+    request.set(undefined);
+    expect(echoResource.status()).toBe(ResourceStatus.Idle);
+
+    // Allow the load to proceed.
+    request.set(2);
+    TestBed.flushEffects();
+    await backend.flush();
+
+    expect(echoResource.status()).toBe(ResourceStatus.Resolved);
+
+    // Reload state should be synchronous.
+    echoResource.reload();
+    expect(echoResource.status()).toBe(ResourceStatus.Reloading);
+
+    // Back to idle.
+    request.set(undefined);
+    expect(echoResource.status()).toBe(ResourceStatus.Idle);
+  });
+
+  it('set() should abort a pending load', async () => {
+    const request = signal<number | undefined>(1);
+    const backend = new MockEchoBackend();
+    const echoResource = resource({
+      request,
+      loader: (params) => backend.fetch(params.request),
+      injector: TestBed.inject(Injector),
+    });
+    const appRef = TestBed.inject(ApplicationRef);
+
+    // Fully resolve the resource to start.
+    TestBed.flushEffects();
+    await backend.flush();
+    expect(echoResource.status()).toBe(ResourceStatus.Resolved);
+
+    // Trigger loading state.
+    request.set(2);
+    expect(echoResource.status()).toBe(ResourceStatus.Loading);
+
+    // Set the resource to a new value.
+    echoResource.set(3);
+
+    // Now run the effect, which should be a no-op as the resource was set to a local value.
+    TestBed.flushEffects();
+
+    // We should still be in local state.
+    expect(echoResource.status()).toBe(ResourceStatus.Local);
+    expect(echoResource.value()).toBe(3);
+
+    // Flush the resource
+    await backend.flush();
+    await appRef.whenStable();
+
+    // We should still be in local state.
+    expect(echoResource.status()).toBe(ResourceStatus.Local);
+    expect(echoResource.value()).toBe(3);
+  });
+
+  it('set() should abort a pending reload', async () => {
+    const request = signal<number | undefined>(1);
+    const backend = new MockEchoBackend();
+    const echoResource = resource({
+      request,
+      loader: (params) => backend.fetch(params.request),
+      injector: TestBed.inject(Injector),
+    });
+    const appRef = TestBed.inject(ApplicationRef);
+
+    // Fully resolve the resource to start.
+    TestBed.flushEffects();
+    await backend.flush();
+    expect(echoResource.status()).toBe(ResourceStatus.Resolved);
+
+    // Trigger reloading state.
+    echoResource.reload();
+    expect(echoResource.status()).toBe(ResourceStatus.Reloading);
+
+    // Set the resource to a new value.
+    echoResource.set(3);
+
+    // Now run the effect, which should be a no-op as the resource was set to a local value.
+    TestBed.flushEffects();
+
+    // We should still be in local state.
+    expect(echoResource.status()).toBe(ResourceStatus.Local);
+    expect(echoResource.value()).toBe(3);
+
+    // Flush the resource
+    await backend.flush();
+    await appRef.whenStable();
+
+    // We should still be in local state.
+    expect(echoResource.status()).toBe(ResourceStatus.Local);
+    expect(echoResource.value()).toBe(3);
   });
 });
