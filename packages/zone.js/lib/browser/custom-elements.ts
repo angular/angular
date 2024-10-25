@@ -8,7 +8,11 @@
 
 export function patchCustomElements(_global: any, api: _ZonePrivate) {
   const {isBrowser, isMix} = api.getGlobalObjects()!;
-  if ((!isBrowser && !isMix) || !_global['customElements'] || !('customElements' in _global)) {
+  if (
+    (!isBrowser && !isMix) ||
+    !_global['CustomElementRegistry'] ||
+    !('CustomElementRegistry' in _global)
+  ) {
     return;
   }
 
@@ -24,5 +28,11 @@ export function patchCustomElements(_global: any, api: _ZonePrivate) {
     'formStateRestoreCallback',
   ];
 
-  api.patchCallbacks(api, _global.customElements, 'customElements', 'define', callbacks);
+  api.patchCallbacks(
+    api,
+    _global.CustomElementRegistry.prototype,
+    'CustomElementRegistry',
+    'define',
+    callbacks,
+  );
 }
