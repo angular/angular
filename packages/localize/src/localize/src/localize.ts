@@ -141,7 +141,6 @@ export interface TranslateFn {
  * @param expressions a collection of the values of each placeholder in the template string.
  * @returns the translated string, with the `messageParts` and `expressions` interleaved together.
  *
- * @globalApi
  * @publicApi
  */
 export const $localize: LocalizeFn = function (
