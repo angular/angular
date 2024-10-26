@@ -22,7 +22,6 @@ import {getRootComponents} from './discovery_utils';
  * @param component Component to {@link ChangeDetectorRef#markForCheck mark for check}.
  *
  * @publicApi
- * @globalApi ng
  */
 export function applyChanges(component: {}): void {
   ngDevMode && assertDefined(component, 'component');
