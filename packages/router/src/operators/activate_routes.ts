@@ -25,7 +25,7 @@ export const activateRoutes = (
   forwardEvent: (evt: Event) => void,
   inputBindingEnabled: boolean,
 ): MonoTypeOperatorFunction<NavigationTransition> =>
-  map((t) => {
+  map((t: any) => {
     new ActivateRoutes(
       routeReuseStrategy,
       t.targetRouterState!,
