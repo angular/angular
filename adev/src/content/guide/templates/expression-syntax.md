@@ -19,10 +19,10 @@ Angular supports a subset of [literal values](https://developer.mozilla.org/en-U
 
 ### Unsupported literals
 
-| Literal type    | Example value       |
-| --------------- | ------------------- |
-| Template string | `\`Hello ${name}\`` |
-| RegExp          | `/\d+/`             |
+| Literal type    | Example value         |
+| --------------- | --------------------- |
+| Template string | `` `Hello ${name}` `` |
+| RegExp          | `/\d+/`               |
 
 ## Globals
 
