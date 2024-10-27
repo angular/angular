@@ -78,7 +78,11 @@
         (toggleInspector)="toggleInspector()"
       />
       <ng-profiler [class.hidden]="activeTab() !== 'Profiler'" />
-      <ng-router-tree [routes]="routes()" [class.hidden]="activeTab() !== 'Router Tree'" />
+      <ng-router-tree
+        [snapToRoot]="snapToRoot()"
+        [routes]="routes()"
+        [class.hidden]="activeTab() !== 'Router Tree'"
+      />
       <ng-injector-tree [class.hidden]="activeTab() !== 'Injector Tree'" />
     </div>
   }
@@ -111,10 +115,7 @@
       </mat-slide-toggle>
     </label>
     <label mat-menu-item disableRipple>
-      <mat-slide-toggle
-        [checked]="routerGraphEnabled()"
-        (change)="toggleRouterGraph($event.checked)"
-      >
+      <mat-slide-toggle [checked]="routerGraphEnabled()" (change)="setRouterGraph($event.checked)">
         Enable Router Graph</mat-slide-toggle
       >
     </label>

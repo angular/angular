@@ -208,8 +208,8 @@ export interface Route {
   specificity?: string | null;
   handler?: string;
   pathMatch?: 'prefix' | 'full';
-  canActivateGuards?: string;
-  providers?: string;
+  canActivateGuards?: string[] | null;
+  providers?: string[] | null;
   title?: string;
   children?: Array<Route>;
   data?: any;
