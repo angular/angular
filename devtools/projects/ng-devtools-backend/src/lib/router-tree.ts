@@ -30,13 +30,13 @@ export function parseRoutes(router: Router): Route {
   return root;
 }
 
-function getGuardNames(child: AngularRoute) {
+function getGuardNames(child: AngularRoute): string[] | null {
   const guards = child?.canActivate || [];
   const names = guards.map((g: any) => g.name);
   return names || null;
 }
 
-function getProviderName(child: any) {
+function getProviderName(child: any): string[] | null {
   const providers = child?.providers || [];
   const names = providers.map((p: any) => p.name);
   return names || null;
@@ -49,21 +49,15 @@ function assignChildrenToParent(
 ): Route[] {
   return children.map((child: AngularRoute) => {
     const childName = childRouteName(child);
-    const loadedRoutes =
-      (window as any).ng &&
-      (window as any).ng.ɵgetLoadedRoutes &&
-      (window as any).ng.ɵgetLoadedRoutes(child as any);
+    const loadedRoutes = (window as any).ng?.ɵgetLoadedRoutes?.(child as any);
     const childDescendents: [AngularRoute] = loadedRoutes || child.children;
 
-    // only found in aux routes, otherwise property will be undefined
-    const isAuxRoute = !!child.outlet;
-
     const pathFragment = child.outlet ? `(${child.outlet}:${child.path})` : child.path;
-    const routePath = `${parentPath ? parentPath : ''}/${pathFragment}`.split('//').join('/');
+    const routePath = `${parentPath ?? ''}/${pathFragment}`.split('//').join('/');
 
     // only found in aux routes, otherwise property will be undefined
-    const isAux = !!child.outlet;
-    const isLazy = !!(child.loadChildren || child.loadComponent);
+    const isAux = Boolean(child.outlet);
+    const isLazy = Boolean(child.loadChildren || child.loadComponent);
     const isActive = routePath === currentUrl;
 
     const routeConfig: Route = {

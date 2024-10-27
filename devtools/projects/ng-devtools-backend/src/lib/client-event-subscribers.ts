@@ -221,7 +221,8 @@ const getRoutes = (messageBus: MessageBus<Events>) => {
   );
   const rootInjector = (forest[0].resolutionPath ?? []).find((i) => i.name === 'Root');
   if (rootInjector) {
-    getRouterConfigFromRoot(messageBus, rootInjector);
+    const route = getRouterConfigFromRoot(rootInjector);
+    messageBus.emit('updateRouterTree', [[route]]);
   }
 };
 
@@ -232,7 +233,7 @@ const getSerializedProviderRecords = (injector: SerializedInjector) => {
 
   const providerRecords = getInjectorProviders(idToInjector.get(injector.id)!);
   const allProviderRecords: SerializedProviderRecord[] = [];
-  const tokenToRecords: Map<any, SerializedProviderRecord[]> = new Map();
+  const tokenToRecords: Map<unknown, SerializedProviderRecord[]> = new Map();
 
   for (const [index, providerRecord] of providerRecords.entries()) {
     const record = serializeProviderRecord(providerRecord, index, injector.type === 'environment');
@@ -289,15 +290,14 @@ const getProviderValue = (
   }
 };
 
-const getRouterConfigFromRoot = (messageBus: MessageBus<Events>, injector: SerializedInjector) => {
+const getRouterConfigFromRoot = (injector: SerializedInjector): Route => {
   const serializedProviderRecords = getSerializedProviderRecords(injector) ?? [];
   const routerInstance = serializedProviderRecords.filter(
     (provider) => provider.token === 'Router', // get the instance of router using token
   );
   const routerProvider = getProviderValue(injector, routerInstance[0]);
 
-  const routes: Route[] = [parseRoutes(routerProvider)];
-  messageBus.emit('updateRouterTree', [routes]);
+  return parseRoutes(routerProvider);
 };
 
 const checkForAngular = (messageBus: MessageBus<Events>): void => {

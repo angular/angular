@@ -4,12 +4,6 @@
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
- * 
- *
- - legend
-- path highlight
-- search
-- more details
  */
 
 import * as d3 from 'd3';
@@ -18,38 +12,6 @@ import {Route} from 'protocol';
 let arrowDefId = 0;
 
 export type RouterTreeD3Node = d3.HierarchyPointNode<Route>;
-type ClickHandler<U> = (pointerEvent: PointerEvent, node: U) => void;
-export abstract class GraphRenderer<T, U> {
-  abstract render(graph: T, filterRegex: RegExp, showFullPath: boolean): void;
-  abstract getNodeById(id: string): U | null;
-  abstract snapToNode(node: U): void;
-  abstract snapToRoot(): void;
-  abstract zoomScale(scale: number): void;
-  abstract root: U | null;
-  abstract get graphElement(): HTMLElement;
-
-  protected nodeClickListeners: Array<ClickHandler<U>> = [];
-  protected nodeMouseoverListeners: Array<ClickHandler<U>> = [];
-  protected nodeMouseoutListeners: Array<ClickHandler<U>> = [];
-
-  cleanup(): void {
-    this.nodeClickListeners = [];
-    this.nodeMouseoverListeners = [];
-    this.nodeMouseoutListeners = [];
-  }
-
-  onNodeClick(cb: (pointerEvent: PointerEvent, node: U) => void): void {
-    this.nodeClickListeners.push(cb);
-  }
-
-  onNodeMouseover(cb: (pointerEvent: PointerEvent, node: U) => void): void {
-    this.nodeMouseoverListeners.push(cb);
-  }
-
-  onNodeMouseout(cb: (pointerEvent: PointerEvent, node: U) => void): void {
-    this.nodeMouseoutListeners.push(cb);
-  }
-}
 
 interface RouterTreeVisualizerConfig {
   orientation: 'horizontal' | 'vertical';
@@ -58,8 +20,11 @@ interface RouterTreeVisualizerConfig {
   nodeLabelSize: [width: number, height: number];
 }
 
-export class RouterTreeVisualizer extends GraphRenderer<Route, RouterTreeD3Node> {
+export class RouterTreeVisualizer {
   private readonly config: RouterTreeVisualizerConfig;
+  private d3 = d3;
+  private root: RouterTreeD3Node | null = null;
+  private zoomController: d3.ZoomBehavior<HTMLElement, unknown> | null = null;
 
   constructor(
     private _containerElement: HTMLElement,
@@ -71,8 +36,6 @@ export class RouterTreeVisualizer extends GraphRenderer<Route, RouterTreeD3Node>
       nodeLabelSize = [300, 60],
     }: Partial<RouterTreeVisualizerConfig> = {},
   ) {
-    super();
-
     this.config = {
       orientation,
       nodeSize,
@@ -81,12 +44,7 @@ export class RouterTreeVisualizer extends GraphRenderer<Route, RouterTreeD3Node>
     };
   }
 
-  private d3 = d3;
-
-  override root: RouterTreeD3Node | null = null;
-  zoomController: d3.ZoomBehavior<HTMLElement, unknown> | null = null;
-
-  override zoomScale(scale: number) {
+  private zoomScale(scale: number) {
     if (this.zoomController) {
       this.zoomController.scaleTo(
         this.d3.select<HTMLElement, unknown>(this._containerElement),
@@ -95,24 +53,24 @@ export class RouterTreeVisualizer extends GraphRenderer<Route, RouterTreeD3Node>
     }
   }
 
-  override snapToRoot(scale = 1): void {
+  snapToRoot(scale = 1): void {
     if (this.root) {
       this.snapToNode(this.root, scale);
     }
   }
 
-  override snapToNode(node: RouterTreeD3Node, scale = 1): void {
+  private snapToNode(node: RouterTreeD3Node, scale = 1): void {
     const svg = this.d3.select(this._containerElement);
     const halfHeight = this._containerElement.clientHeight / 2;
     const t = d3.zoomIdentity.translate(250, halfHeight - node.x).scale(scale);
     svg.transition().duration(500).call(this.zoomController!.transform, t);
   }
 
-  override get graphElement(): HTMLElement {
+  get graphElement(): HTMLElement {
     return this._graphElement;
   }
 
-  override getNodeById(id: string): RouterTreeD3Node | null {
+  private getNodeById(id: string): RouterTreeD3Node | null {
     const selection = this.d3
       .select<HTMLElement, RouterTreeD3Node>(this._containerElement)
       .select(`.node[data-id="${id}"]`);
@@ -122,12 +80,11 @@ export class RouterTreeVisualizer extends GraphRenderer<Route, RouterTreeD3Node>
     return selection.datum();
   }
 
-  override cleanup(): void {
-    super.cleanup();
+  cleanup(): void {
     this.d3.select(this._graphElement).selectAll('*').remove();
   }
 
-  override render(route: Route, filterRegex: RegExp, showFullPath: boolean): void {
+  render(route: Route, filterRegex: RegExp, showFullPath: boolean): void {
     // cleanup old graph
     this.cleanup();
 
@@ -233,20 +190,10 @@ export class RouterTreeVisualizer extends GraphRenderer<Route, RouterTreeD3Node>
       .attr('d', (node: RouterTreeD3Node) => {
         const parent = node.parent!;
         if (this.config.orientation === 'horizontal') {
-          return `
-                    M${node.y},${node.x}
-                    C${(node.y + parent.y) / 2},
-                      ${node.x} ${(node.y + parent.y) / 2},
-                      ${parent.x} ${parent.y},
-                      ${parent.x}`;
+          return `M${node.y},${node.x},C${(node.y + parent.y) / 2}, ${node.x} ${(node.y + parent.y) / 2},${parent.x} ${parent.y},${parent.x}`;
         }
 
-        return `
-              M${node.x},${node.y}
-              C${(node.x + parent.x) / 2},
-                ${node.y} ${(node.x + parent.x) / 2},
-                ${parent.y} ${parent.x},
-                ${parent.y}`;
+        return `M${node.x},${node.y},C${(node.x + parent.x) / 2}, ${node.y} ${(node.x + parent.x) / 2},${parent.y} ${parent.x},${parent.y}`;
       });
 
     // Declare the nodes
@@ -258,21 +205,10 @@ export class RouterTreeVisualizer extends GraphRenderer<Route, RouterTreeD3Node>
       .attr('class', (node: RouterTreeD3Node) => {
         return `node`;
       })
-      .on('click', (pointerEvent: PointerEvent, node: RouterTreeD3Node) => {
-        this.nodeClickListeners.forEach((listener) => listener(pointerEvent, node));
-      })
-      .on('mouseover', (pointerEvent: PointerEvent, node: RouterTreeD3Node) => {
-        this.nodeMouseoverListeners.forEach((listener) => listener(pointerEvent, node));
-      })
-      .on('mouseout', (pointerEvent: PointerEvent, node: RouterTreeD3Node) => {
-        this.nodeMouseoutListeners.forEach((listener) => listener(pointerEvent, node));
-      })
-
       .attr('transform', (node: RouterTreeD3Node) => {
         if (this.config.orientation === 'horizontal') {
           return `translate(${node.y},${node.x})`;
         }
-
         return `translate(${node.x},${node.y})`;
       });
 
@@ -293,22 +229,23 @@ export class RouterTreeVisualizer extends GraphRenderer<Route, RouterTreeD3Node>
           (showFullPath
             ? node.data.path
             : node.data.path.replace(node.parent?.data.path || '', '')) || '';
-        const isMatched =
-          filterRegex.test(label.toLowerCase()) || filterRegex.test(label.toLowerCase());
+        const isMatched = filterRegex.test(label.toLowerCase());
 
-        let nodeClass = 'node-container node-environment';
+        const nodeClasses = ['node-container'];
         if (node.data.isActive) {
-          nodeClass = 'node-container node-element';
+          nodeClasses.push('node-element');
         } else if (node.data.isLazy) {
-          nodeClass = 'node-container node-lazy';
+          nodeClasses.push('node-lazy');
+        } else {
+          nodeClasses.push('node-environment');
         }
 
         if (isMatched) {
-          nodeClass = `${nodeClass} node-search`;
+          nodeClasses.push('node-search');
         }
-        return nodeClass;
+        return nodeClasses.join(' ');
       })
-      .html((node: RouterTreeD3Node) => {
+      .text((node: RouterTreeD3Node) => {
         const label =
           (showFullPath
             ? node.data.path
@@ -317,14 +254,7 @@ export class RouterTreeVisualizer extends GraphRenderer<Route, RouterTreeD3Node>
         const labelText =
           label.length > lengthLimit ? label.slice(0, lengthLimit - '...'.length) + '...' : label;
 
-        const isMatched =
-          filterRegex.test(label.toLowerCase()) || filterRegex.test(label.toLowerCase());
-
-        let htmlContent = labelText;
-        if (isMatched) {
-          htmlContent = '<u><b>' + labelText + '</b></u>';
-        }
-        return htmlContent;
+        return labelText;
       });
 
     svg.attr('height', '100%').attr('width', '100%');

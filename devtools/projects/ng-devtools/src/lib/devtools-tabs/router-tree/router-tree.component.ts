@@ -7,20 +7,13 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {
-  AfterViewInit,
-  Component,
-  effect,
-  ElementRef,
-  Input,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import {afterNextRender, Component, effect, ElementRef, input, viewChild} from '@angular/core';
 import {MatInputModule} from '@angular/material/input';
-import {Events, MessageBus, Route} from 'protocol';
+import {Route} from 'protocol';
 import {RouterTreeVisualizer} from './router-tree-visualizer';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 
+const DEFAULT_FILTER = /.^/;
 @Component({
   selector: 'ng-router-tree',
   templateUrl: './router-tree.component.html',
@@ -28,65 +21,61 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
   imports: [CommonModule, MatInputModule, MatCheckboxModule],
   standalone: true,
 })
-export class RouterTreeComponent implements AfterViewInit {
-  @ViewChild('routerTreeSvgContainer', {static: false})
-  private routerTreeSvgContainerRef!: ElementRef;
-  @ViewChild('routerTreeMainGroup', {static: false}) private routerTreeMainGroupRef!: ElementRef;
-
-  @Input()
-  set routes(routes: Route[]) {
-    this._routes = routes;
-    this.renderGraph();
-  }
-
-  private _routes: Route[] = [];
-  private filterRegex = new RegExp('.^');
+export class RouterTreeComponent {
+  private routerTreeSvgContainerRef = viewChild<ElementRef>('routerTreeSvgContainer');
+  private routerTreeMainGroupRef = viewChild<ElementRef>('routerTreeMainGroup');
+  private filterRegex = new RegExp(DEFAULT_FILTER);
   private routerTreeVisualizer!: RouterTreeVisualizer;
   private showFullPath = false;
 
+  routes = input<Route[]>([]);
+  snapToRoot = input(false);
+
   constructor() {
     effect(() => {
-      // this.render();
+      this.renderGraph(this.routes());
     });
-  }
 
-  ngAfterViewInit(): void {
-    this.setUpRouterVisualizer();
-    // this._messageBus.emit('getRoutes');
+    effect(() => {
+      if (this.snapToRoot()) {
+        this.routerTreeVisualizer.snapToRoot(0.6);
+      }
+    });
+
+    afterNextRender(() => {
+      this.setUpRouterVisualizer();
+    });
   }
 
   togglePathSettings(): void {
     this.showFullPath = !this.showFullPath;
-    this.renderGraph(false);
+    this.renderGraph(this.routes());
   }
 
   setUpRouterVisualizer(): void {
     if (
-      !this.routerTreeSvgContainerRef?.nativeElement ||
-      !this.routerTreeMainGroupRef?.nativeElement
+      !this.routerTreeSvgContainerRef()?.nativeElement ||
+      !this.routerTreeMainGroupRef()?.nativeElement
     ) {
       return;
     }
 
     this.routerTreeVisualizer?.cleanup?.();
     this.routerTreeVisualizer = new RouterTreeVisualizer(
-      this.routerTreeSvgContainerRef.nativeElement,
-      this.routerTreeMainGroupRef.nativeElement,
+      this.routerTreeSvgContainerRef()?.nativeElement,
+      this.routerTreeMainGroupRef()?.nativeElement,
       {nodeSeparation: () => 1},
     );
   }
 
   searchRoutes($event: InputEvent) {
     this.filterRegex = new RegExp(
-      ($event?.target as HTMLInputElement)?.value?.toLowerCase() || '.^',
+      ($event?.target as HTMLInputElement)?.value?.toLowerCase() || DEFAULT_FILTER,
     );
-    this.renderGraph(false);
+    this.renderGraph(this.routes());
   }
 
-  renderGraph(snapToRoot: boolean = true): void {
-    this.routerTreeVisualizer?.render(this._routes[0] as any, this.filterRegex, this.showFullPath);
-    if (snapToRoot) {
-      setTimeout(() => this.routerTreeVisualizer.snapToRoot(0.6), 250);
-    }
+  renderGraph(routes: Route[]): void {
+    this.routerTreeVisualizer?.render(routes[0], this.filterRegex, this.showFullPath);
   }
 }

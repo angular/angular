@@ -10,22 +10,12 @@
   border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 3px;
   padding-left: 5px;
-  margin-top: 0px;
-  margin-bottom: 0px;
-  margin-left: 10px;
+  margin: 0 5px 0 10px;
   width: 300px;
   font-size: 11px;
-  font-family: inherit;
-  font-weight: inherit;
   height: 28px;
   outline: none;
   color: rgba(0, 0, 0, 0.87);
-}
-
-.no-routes {
-  padding-top: 1rem;
-  text-align: center;
-  color: #b0b0b0;
 }
 
 .router-tree-container {
@@ -34,125 +24,4 @@
 
 .svg-container {
   max-height: inherit;
-}
-
-::ng-deep {
-  .tooltip {
-    position: absolute;
-    background: #ebf1fb;
-    border: 1px;
-    border-radius: 2px;
-    pointer-events: none;
-    font-family: Roboto, 'Helvetica Neue', sans-serif;
-    font-size: 0.8rem;
-    line-height: 1.25rem;
-  }
-}
-
-.selected-route {
-  background-color: #ebf1fb;
-}
-
-.active-route {
-  background-color: #cfe8fc;
-}
-
-:host {
-  ::ng-deep {
-    .mat-button-toggle-button {
-      height: 30px;
-      width: 30px;
-    }
-
-    .mat-button-toggle-label-content {
-      height: 30px;
-      width: 30px;
-      line-height: 30px !important;
-      padding: 0px !important;
-    }
-
-    .text-link {
-      text-decoration: underline;
-      color: #4da1ff;
-    }
-
-    .node {
-      cursor: pointer;
-    }
-
-    .node-search {
-      font-weight: 600;
-    }
-
-    .node-active {
-      font-weight: 600;
-      text-decoration: underline;
-    }
-
-    .node-route {
-      stroke: #ff7a7e;
-      fill: #f9c2c5;
-      stroke-width: 1px;
-    }
-
-    & .node-route:hover,
-    & .node-route.selected {
-      fill: #ff7a7e;
-    }
-
-    & .node-aux-route {
-      stroke: #4da1ff;
-      fill: oklch(0.65 0.25 266/1);
-      stroke-width: 1px;
-    }
-
-    & .node-aux-route:hover,
-    & .node-aux-route.selected {
-      fill: oklch(0.65 0.25 266/1);
-    }
-
-    & .node-lazy-route {
-      stroke: #28ab2c;
-      fill: #a7d5a9;
-      stroke-width: 1px;
-    }
-
-    & .node-lazy-route:hover,
-    & .node-lazy-route.selected {
-      fill: #28ab2c;
-    }
-
-    & text {
-      fill: #000000;
-      font-weight: 300;
-    }
-  }
-}
-
-:host-context(.dark-theme) {
-  ::ng-deep {
-    .node-route {
-      stroke: #54c9bd;
-      fill: #202124;
-    }
-
-    & .node-route:hover,
-    & .node-route.selected {
-      fill: #54c9bd;
-    }
-
-    & .node-aux-route {
-      stroke: #2828ab;
-      fill: #ebf2fc;
-    }
-
-    & .node-aux-route:hover,
-    & .node-aux-route.selected {
-      fill: #2828ab;
-    }
-
-    & text {
-      fill: #bcc5ce;
-    }
-  }
 }

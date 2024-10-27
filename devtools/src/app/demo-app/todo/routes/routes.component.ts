@@ -11,6 +11,7 @@ import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-routes-home',
+  standalone: false,
   template: `
     <h1>home works!</h1>
     <div style="display:flex; flex-direction: column;">
@@ -86,32 +87,20 @@ export class RoutesStandaloneComponent {}
 
 @Injectable()
 export class Service1 {
-  value = 'Service One';
-  constructor() {
-    this.value = this.value + ' Id: ' + Math.floor(Math.random() * 500);
-  }
+  value = `Service One Id: ${Math.floor(Math.random() * 500)}`;
 }
 
 @Injectable()
 export class Service2 {
-  value = 'Service Two';
-  constructor() {
-    this.value = this.value + ' Id: ' + Math.floor(Math.random() * 500);
-  }
+  value = `Service Two Id: ${Math.floor(Math.random() * 500)}`;
 }
 
 @Injectable()
 export class Service3 {
-  value = 'Service Three';
-  constructor() {
-    this.value = this.value + ' Id: ' + Math.floor(Math.random() * 500);
-  }
+  value = `Service Three Id: ${Math.floor(Math.random() * 500)}`;
 }
 
 @Injectable()
 export class Service4 {
-  value = 'Service Four';
-  constructor() {
-    this.value = this.value + ' Id: ' + Math.floor(Math.random() * 500);
-  }
+  value = `Service Four Id: ${Math.floor(Math.random() * 500)}`;
 }
