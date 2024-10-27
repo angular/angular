@@ -61,6 +61,8 @@ export class DevToolsTabsComponent {
   readonly routes = signal<Route[]>([]);
   readonly frameManager = inject(FrameManager);
 
+  readonly snapToRoot = signal(false);
+
   readonly tabs = computed<Tabs[]>(() => {
     const alwaysShown: Tabs[] = ['Components', 'Profiler', 'Injector Tree'];
     return this.routerGraphEnabled() && this.routes().length > 0
@@ -108,6 +110,7 @@ export class DevToolsTabsComponent {
     this.tabUpdate.notify(tab);
     if (tab === 'Router Tree') {
       this._messageBus.emit('getRoutes');
+      this.snapToRoot.set(true);
     }
   }
 
@@ -136,7 +139,7 @@ export class DevToolsTabsComponent {
       : this._messageBus.emit('disableTimingAPI');
   }
 
-  toggleRouterGraph(enabled: boolean): void {
+  protected setRouterGraph(enabled: boolean): void {
     this.routerGraphEnabled.set(enabled);
     if (!enabled) {
       this.activeTab.set('Components');
