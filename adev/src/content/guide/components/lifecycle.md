@@ -175,8 +175,8 @@ During initialization, the first `ngDoCheck` runs after `ngOnInit`.
 
 ### ngAfterContentInit
 
-The `ngAfterContentInit` method runs once after all the children nested inside the component (
-its _content_) have been initialized.
+The `ngAfterContentInit` method runs once after all the children nested inside the component (its
+_content_) have been initialized.
 
 You can use this lifecycle hook to read the results of
 [content queries](guide/components/queries#content-queries). While you can access the initialized
