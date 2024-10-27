@@ -60,6 +60,7 @@ import {
   trySerializeI18nBlock,
 } from './i18n';
 import {
+  ATTRIBUTES,
   CONTAINERS,
   DEFER_BLOCK_ID,
   DEFER_BLOCK_STATE,
@@ -75,6 +76,7 @@ import {
   SerializedDeferBlock,
   SerializedTriggerDetails,
   SerializedView,
+  STATIC_ATTRIBUTE_MARKER,
   TEMPLATE_ID,
   TEMPLATES,
 } from './interfaces';
@@ -91,6 +93,8 @@ import {
   TextNodeMarker,
 } from './utils';
 import {Injector} from '../di';
+import {getHydrationProtectedAttribute} from '../render3/util/hydration_protection';
+import {unwrapSafeValue} from '../sanitization/bypass';
 
 /**
  * A collection that tracks all serialized views (`ngh` DOM annotations)
@@ -718,6 +722,8 @@ function serializeLView(
       } else if (tNode.type & TNodeType.Text) {
         const rNode = unwrapRNode(lView[i]);
         processTextNodeBeforeSerialization(context, rNode);
+      } else if (tNode.type & TNodeType.Element) {
+        annotateSerializedAttributes(ngh, lView, tNode);
       }
     }
 
@@ -904,5 +910,104 @@ function annotateDeferBlockRootNodesWithJsAction(
     for (let rNode of elementNodes) {
       setJSActionAttributes(rNode, actionList, parentDeferBlockId);
     }
+  }
+}
+
+/**
+ * Description...
+ */
+function annotateSerializedAttributes(ngh: SerializedView, lView: LView, tNode: TNode): void {
+  const {mergedAttrs, propertyBindings} = tNode;
+  // This function is called only for element nodes; thus,
+  // we are sure that `tNode.value` is a tag name.
+  const hydrationProtectedAttribute = getHydrationProtectedAttribute(tNode.value);
+
+  // We skip annotation if the element we’re currently processing is not a
+  // hydration-protected element or if that element has no attributes set.
+  if (!hydrationProtectedAttribute || mergedAttrs === null) {
+    return;
+  }
+
+  // If we encounter a hydration-protected element, such as `<iframe />`...
+
+  let bindingsStartIndex = -1;
+
+  // Given `mergedAttrs` is one of the following lists:
+  // ['height', '100', 'width', '100', 'src', 'https://resource.com']
+  // ['height', '100', 'width', '100', 3, 'src']
+  // The first list contains the static `src` attribute.
+  // The second list contains the binding `src` attribute.
+
+  for (let index = 0; index < mergedAttrs.length; index++) {
+    // question(Andrew): I'm not sure whether I have to go over each
+    // item in the `mergedAttrs` list, because when looking at the code,
+    // sometimes I encounter `index += 2`.
+
+    // We don’t know whether it’s an attribute name or a value yet.
+    const attributeNameOrValue = mergedAttrs[index];
+
+    // This is a marker, which means that the static attributes section is over.
+    if (typeof attributeNameOrValue === 'number') {
+      // Given the list above, where number 3 is a special marker,
+      // the next item is `src`. If we encounter an item of type number,
+      // then the current index is 4, which means `bindingsStartIndex` is 5
+      // because the index of `src` is 5 in the list above.
+      bindingsStartIndex = index + 1;
+      break;
+    }
+
+    // If we're not encountering the hydration-protected attribute in the list,
+    // skip to the next iteration.
+    if (attributeNameOrValue !== hydrationProtectedAttribute) {
+      continue;
+    }
+
+    const serializedAttributes = (ngh[ATTRIBUTES] ??= {});
+    // We store the node index in the attributes object and create a
+    // tuple of `[-1, hydration-protected attribute name index]`.
+    // For the following list:
+    // ['height', '100', 'width', '100', 'src', 'https://resource.com']
+    // We're going to create the following object:
+    // {
+    //   [tNode.index]: [-1, 4]
+    // }
+    // Here, number 4 is the index of the src attribute name. We will use this
+    // number later on the client to splice the `mergedAttrs` list by 2, starting
+    // from index 4; thus, the final list will be as follows:
+    // ['height', '100', 'width', '100']
+    // This means that during hydration, `setupStaticAttributes` will go over
+    // `mergedAttrs` and will not encounter the src attribute to set it again
+    // on the hydration-protected element.
+    serializedAttributes[tNode.index] = [STATIC_ATTRIBUTE_MARKER, index.toString()];
+  }
+
+  if (propertyBindings === null || bindingsStartIndex === -1) {
+    return;
+  }
+
+  // If the `mergedAttrs` list is the following:
+  // ['height', '100', 'width', '100', 3, 'src']
+  // We slice the array at the index of the marker plus one
+  // (where the marker is the number 3 before `src`).
+  const bindedAttributes = mergedAttrs.slice(bindingsStartIndex, mergedAttrs.length);
+  for (let index = 0; index < bindedAttributes.length; index++) {
+    const attributeName = bindedAttributes[index];
+
+    if (attributeName !== hydrationProtectedAttribute) {
+      continue;
+    }
+
+    const serializedAttributes = (ngh[ATTRIBUTES] ??= {});
+    const bindingIndex = propertyBindings[index];
+
+    const maybeSafeValue = lView[bindingIndex];
+    // If it’s a resource URL, the following object will be used:
+    // SafeResourceUrlImpl {
+    //   changingThisBreaksApplicationSecurity: 'https://resource.com'
+    // }
+    // We have to unwrap the actual URL.
+    // We'll use the `bindingIndex` to load that safe value onto the
+    // `lView` via `lView[bindingIndex] = value` on the client.
+    serializedAttributes[tNode.index] = [bindingIndex, unwrapSafeValue(maybeSafeValue)];
   }
 }

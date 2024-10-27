@@ -17,6 +17,12 @@ export const REFERENCE_NODE_HOST = 'h';
 export const REFERENCE_NODE_BODY = 'b';
 
 /**
+ * Defines whether the hydration-protected attribute is static (not a binding)
+ * in the serialized view data under the `ATTRIBUTES` key (see the constant below).
+ */
+export const STATIC_ATTRIBUTE_MARKER = -1;
+
+/**
  * Describes navigation steps that the runtime logic need to perform,
  * starting from a given (known) element.
  */
@@ -30,6 +36,7 @@ export enum NodeNavigationStep {
  * parts. See the `SerializedView` interface below for additional information.
  */
 export const ELEMENT_CONTAINERS = 'e';
+export const ATTRIBUTES = 'a';
 export const TEMPLATES = 't';
 export const CONTAINERS = 'c';
 export const MULTIPLIER = 'x';
@@ -65,6 +72,11 @@ export interface SerializedView {
    * Serialized information about <ng-container>s.
    */
   [ELEMENT_CONTAINERS]?: SerializedElementContainers;
+
+  /**
+   * TODO: add description.
+   */
+  [ATTRIBUTES]?: Record<number, [number, string]>;
 
   /**
    * Serialized information about templates.

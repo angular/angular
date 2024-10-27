@@ -55,7 +55,9 @@ export function ɵɵproperty<T>(
       sanitizer,
       false,
     );
-    ngDevMode && storePropertyBindingMetadata(tView.data, tNode, propName, bindingIndex);
+    if (ngDevMode || (typeof ngServerMode !== 'undefined' && ngServerMode)) {
+      storePropertyBindingMetadata(tView.data, tNode, propName, bindingIndex);
+    }
   }
   return ɵɵproperty;
 }

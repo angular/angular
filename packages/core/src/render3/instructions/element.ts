@@ -11,6 +11,7 @@ import {
   validateMatchingNode,
   validateNodeExists,
 } from '../../hydration/error_handling';
+import {ATTRIBUTES, STATIC_ATTRIBUTE_MARKER} from '../../hydration/interfaces';
 import {locateNextRNode} from '../../hydration/node_lookup_utils';
 import {
   hasSkipHydrationAttrOnRElement,
@@ -24,6 +25,7 @@ import {
   setSegmentHead,
 } from '../../hydration/utils';
 import {isDetachedByI18n} from '../../i18n/utils';
+import {bypassSanitizationTrustResourceUrl} from '../../sanitization/bypass';
 import {assertDefined, assertEqual, assertIndexInRange} from '../../util/assert';
 import {assertFirstCreatePass, assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
@@ -34,7 +36,6 @@ import {
   TAttributes,
   TElementNode,
   TNode,
-  TNodeFlags,
   TNodeType,
 } from '../interfaces/node';
 import {Renderer} from '../interfaces/renderer';
@@ -293,6 +294,30 @@ function locateOrCreateElementNodeImpl(
   const native = locateNextRNode<RElement>(hydrationInfo, tView, lView, tNode)!;
   ngDevMode && validateMatchingNode(native, Node.ELEMENT_NODE, name, lView, tNode);
   ngDevMode && markRNodeAsClaimedByHydration(native);
+
+  const serializedAttributes = hydrationInfo.data[ATTRIBUTES]?.[tNode.index];
+  // If the current `tNode` has a hydration-protected attribute,
+  // we check for `STATIC_ATTRIBUTE_MARKER` to determine whether that hydration-protected
+  // attribute is static (i.e., `<iframe src="https://resource.com" />`)
+  if (serializedAttributes) {
+    if (serializedAttributes[0] === STATIC_ATTRIBUTE_MARKER) {
+      const indexOfHydrationProtectedAttribute = parseInt(serializedAttributes[1], 10);
+      // Given the `mergedAttrs` is the following list:
+      // ['height', '100', 'src', 'https://resource.com', 'width', '100']
+      // We know the index of src, and we know its value is the next element.
+      // We use splice to remove `src` and its value from the `mergedAttrs` list.
+      // Thus, when `setupStaticAttributes` is invoked, it won't receive that attribute
+      // to set, effectively skipping the "write" phase.
+      // This is done only once in the hydration mode.
+      tNode.mergedAttrs!.splice(indexOfHydrationProtectedAttribute, 2);
+    } else {
+      const [bindingIndex, unsafeValue] = serializedAttributes;
+      // We're only using `bypassSanitizationTrustResourceUrl` and not other functions
+      // that return different safe values because hydration-protected attributes
+      // only use resource URLs (like `iframe.src`, etc.).
+      lView[bindingIndex] = bypassSanitizationTrustResourceUrl(unsafeValue);
+    }
+  }
 
   // This element might also be an anchor of a view container.
   if (getSerializedContainerViews(hydrationInfo, index)) {
