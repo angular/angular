@@ -56,6 +56,12 @@
           "name": "project",
           "type": "string",
           "description": "The name of the related client app."
+        },
+        {
+          "name": "server-routing",
+          "type": "boolean",
+          "default": false,
+          "description": "Creates a server application using the Server Routing API (Developer Preview)."
         }
       ],
       "aliases": [],
@@ -119,6 +125,11 @@
           "type": "boolean",
           "default": true,
           "description": "Creates an application with routing enabled."
+        },
+        {
+          "name": "server-routing",
+          "type": "boolean",
+          "description": "Creates a server application using the Server Routing and App Engine APIs (Developer Preview)."
         },
         {
           "name": "skip-install",

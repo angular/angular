@@ -23,7 +23,6 @@
     {
       "name": "app-shell",
       "type": "boolean",
-      "default": false,
       "description": "Generates an application shell during build time."
     },
     {
@@ -193,7 +192,6 @@
     {
       "name": "prerender",
       "type": "boolean",
-      "default": false,
       "description": "Prerender (SSG) pages of your application during build time."
     },
     {
