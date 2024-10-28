@@ -306,7 +306,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
     const meta: R3ComponentMetadata<R3TemplateDependency> = {
       ...facade,
       ...convertDirectiveFacadeToMetadata(facade),
-      selector: facade.selector || this.elementSchemaRegistry.getDefaultComponentElementName(),
+      selector: facade.selector || `${toKebabCase(facade.name)}, ${facade.name}`,
       template,
       declarations: facade.declarations.map(convertDeclarationFacadeToMetadata),
       declarationListEmitMode: DeclarationListEmitMode.Direct,
@@ -1045,4 +1045,23 @@ function convertDeclareInjectorFacadeToMetadata(
 export function publishFacade(global: any) {
   const ng: ExportedCompilerFacade = global.ng || (global.ng = {});
   ng.ɵcompilerFacade = new CompilerFacadeImpl();
+}
+
+/**
+ * Converts a given string to kebab case.
+ *
+ * Kebab case is a style of writing where words are all lowercase and separated by hyphens.
+ *
+ * @param {string} str - The input string to be converted.
+ * @returns {string} The kebab case representation of the input string.
+ *
+ * @example
+ * const result = toKebabCase("My Class Name"); // "my-class-name"
+ * const result = toKebabCase("MyClassName"); // "my-class-name"
+ */
+function toKebabCase(str: string): string {
+  return str
+    .replace(/([a-z])([A-Z])/g, '$1-$2')
+    .replace(/[\s_]+/g, '-')
+    .toLowerCase();
 }

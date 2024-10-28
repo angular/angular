@@ -155,10 +155,14 @@ export class PipeDecoratorHandler
     const pipe = reflectObjectLiteral(meta);
 
     if (!pipe.has('name')) {
-      throw new FatalDiagnosticError(
-        ErrorCode.PIPE_MISSING_NAME,
-        meta,
-        `@Pipe decorator is missing name field`,
+      const classNameWithoutSuffix = name.replace(new RegExp(`Pipe$`), '');
+      /// pipes are normally camelCase
+      pipe.set(
+        'name',
+        ts.factory.createStringLiteral(
+          classNameWithoutSuffix.charAt(0).toLowerCase() + classNameWithoutSuffix.slice(1),
+          true,
+        ),
       );
     }
     const pipeNameExpr = pipe.get('name')!;

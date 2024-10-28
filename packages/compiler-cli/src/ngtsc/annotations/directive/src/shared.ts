@@ -131,6 +131,8 @@ export function extractDirectiveMetadata(
     }
   | {jitForced: true} {
   let directive: Map<string, ts.Expression>;
+  let meta: ts.Expression | undefined;
+  debugger;
   if (decorator.args === null || decorator.args.length === 0) {
     directive = new Map<string, ts.Expression>();
   } else if (decorator.args.length !== 1) {
@@ -140,7 +142,7 @@ export function extractDirectiveMetadata(
       `Incorrect number of arguments to @${decorator.name} decorator`,
     );
   } else {
-    const meta = unwrapExpression(decorator.args[0]);
+    meta = unwrapExpression(decorator.args[0]);
     if (!ts.isObjectLiteralExpression(meta)) {
       throw new FatalDiagnosticError(
         ErrorCode.DECORATOR_ARG_NOT_LITERAL,
@@ -243,7 +245,48 @@ export function extractDirectiveMetadata(
 
   // Parse the selector.
   let selector = defaultSelector;
-  if (directive.has('selector')) {
+
+  // First ensure the decorator
+  if (!directive.has('selector') && decorator.import?.name && meta && selector === 'ng-component') {
+    const decoratorName = decorator.import.name;
+    // Get the class name without the decorator suffix if it exists
+    const className = clazz.name.getText().replace(new RegExp(`${decoratorName}$`), '');
+    if (decoratorName === 'Component') {
+      // Convert to kebab-case for components
+      const kebabCaseName = className
+        .split(/(?=[A-Z])/)
+        .join('-')
+        .toLowerCase();
+
+      // Create a string literal and set its parent to the decorator node
+      const selectorLiteral = ts.factory.createStringLiteral(`${kebabCaseName}, ${className}`);
+      if (ts.isObjectLiteralExpression(meta)) {
+        const selectorProp = ts.factory.createPropertyAssignment(
+          ts.factory.createIdentifier('selector'),
+          selectorLiteral,
+        );
+        ts.factory.updateObjectLiteralExpression(meta, [...meta.properties, selectorProp]);
+
+        selector = `${kebabCaseName}, ${className}`;
+      }
+    } else if (decoratorName === 'Directive') {
+      // For directives, create attribute selector
+      const camelCaseName = className.charAt(0).toLowerCase() + className.slice(1);
+      const baseName = camelCaseName.replace(/Directive$/, '').replace(/Attr$/, '');
+
+      // Create a string literal and set its parent to the decorator node
+      const selectorLiteral = ts.factory.createStringLiteral(`[${baseName}], [${className}]`);
+
+      if (ts.isObjectLiteralExpression(meta)) {
+        const selectorProp = ts.factory.createPropertyAssignment(
+          ts.factory.createIdentifier('selector'),
+          selectorLiteral,
+        );
+        ts.factory.updateObjectLiteralExpression(meta, [...meta.properties, selectorProp]);
+      }
+      selector = `[${baseName}], [${className}]`;
+    }
+  } else if (directive.has('selector')) {
     const expr = directive.get('selector')!;
     const resolved = evaluator.evaluate(expr);
     assertLocalCompilationUnresolvedConst(
@@ -1794,4 +1837,23 @@ function toR3InputMetadata(mapping: InputMapping): R3InputMetadata {
       mapping.transform !== null ? new WrappedNodeExpr(mapping.transform.node) : null,
     isSignal: mapping.isSignal,
   };
+}
+
+/**
+ * Converts a given string to kebab case.
+ *
+ * Kebab case is a style of writing where words are all lowercase and separated by hyphens.
+ *
+ * @param {string} str - The input string to be converted.
+ * @returns {string} The kebab case representation of the input string.
+ *
+ * @example
+ * const result = toKebabCase("My Class Name"); // "my-class-name"
+ * const result = toKebabCase("MyClassName"); // "my-class-name"
+ */
+export function toKebabCase(str: string): string {
+  return str
+    .replace(/([a-z])([A-Z])/g, '$1-$2')
+    .replace(/[\s_]+/g, '-')
+    .toLowerCase();
 }

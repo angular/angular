@@ -338,12 +338,14 @@ function getDirectiveMatchesForSelector<T extends {selector: string | null}>(
     }
     return new Set(
       directives.filter((dir: T) => {
-        if (dir.selector === null) {
+        // Handle case where selector is null - use class name instead
+        const effectiveSelector = dir.selector ?? getClassElementName(dir);
+        if (effectiveSelector === null) {
           return false;
         }
 
         const matcher = new SelectorMatcher();
-        matcher.addSelectables(CssSelector.parse(dir.selector));
+        matcher.addSelectables(CssSelector.parse(effectiveSelector));
 
         return selectors.some((selector) => matcher.match(selector, null));
       }),
@@ -353,6 +355,31 @@ function getDirectiveMatchesForSelector<T extends {selector: string | null}>(
     // selector.
     return new Set();
   }
+}
+
+function getClassElementName(directive: any): string | null {
+  // Handle both class declarations and expressions
+  if (ts.isClassDeclaration(directive) || ts.isClassExpression(directive)) {
+    return (
+      directive.name?.text
+        .split(/(?=[A-Z])/)
+        .join('-')
+        .toLowerCase() ?? null
+    );
+  }
+  // For cases where we have the directive instance/symbol
+  if (directive.tsSymbol?.valueDeclaration) {
+    const decl = directive.tsSymbol.valueDeclaration;
+    if (ts.isClassDeclaration(decl) || ts.isClassExpression(decl)) {
+      return (
+        decl.name?.text
+          .split(/(?=[A-Z])/)
+          .join('-')
+          .toLowerCase() ?? null
+      );
+    }
+  }
+  return null;
 }
 
 /**
