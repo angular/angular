@@ -128,7 +128,7 @@ export function analyzeFile(sourceFile: ts.SourceFile, localTypeChecker: ts.Type
 export function getConstructorUnusedParameters(
   declaration: ts.ConstructorDeclaration,
   localTypeChecker: ts.TypeChecker,
-  removedStatements: Set<ts.Statement> | null,
+  removedStatements: Set<ts.Statement>,
 ): Set<ts.Declaration> {
   const accessedTopLevelParameters = new Set<ts.Declaration>();
   const topLevelParameters = new Set<ts.Declaration>();
@@ -149,7 +149,7 @@ export function getConstructorUnusedParameters(
 
   declaration.body.forEachChild(function walk(node) {
     // Don't descend into statements that were removed already.
-    if (removedStatements && ts.isStatement(node) && removedStatements.has(node)) {
+    if (ts.isStatement(node) && removedStatements.has(node)) {
       return;
     }
 
