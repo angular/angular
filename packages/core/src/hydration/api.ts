@@ -46,7 +46,6 @@ import {
 import {enableRetrieveHydrationInfoImpl, NGH_DATA_KEY, SSR_CONTENT_INTEGRITY_MARKER} from './utils';
 import {enableFindMatchingDehydratedViewImpl} from './views';
 import {bootstrapIncrementalHydration, enableRetrieveDeferBlockDataImpl} from './incremental';
-import {enableHydrateFromBlockNameImpl} from './blocks';
 
 /**
  * Indicates whether the hydration-related code was added,
@@ -124,7 +123,6 @@ function enableIncrementalHydrationRuntimeSupport() {
   if (!isIncrementalHydrationRuntimeSupportEnabled) {
     isIncrementalHydrationRuntimeSupportEnabled = true;
     enableRetrieveDeferBlockDataImpl();
-    enableHydrateFromBlockNameImpl();
   }
 }
 

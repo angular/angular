@@ -166,3 +166,18 @@ export function isTDeferBlockDetails(value: unknown): value is TDeferBlockDetail
     typeof (value as TDeferBlockDetails).primaryTmplIndex === 'number'
   );
 }
+
+/**
+ * Whether a given TNode represents a defer block.
+ */
+export function isDeferBlock(tView: TView, tNode: TNode): boolean {
+  let tDetails: TDeferBlockDetails | null = null;
+  const slotIndex = getDeferBlockDataIndex(tNode.index);
+  // Check if a slot index is in the reasonable range.
+  // Note: we do `-1` on the right border, since defer block details are stored
+  // in the `n+1` slot, see `getDeferBlockDataIndex` for more info.
+  if (HEADER_OFFSET < slotIndex && slotIndex < tView.bindingStartIndex) {
+    tDetails = getTDeferBlockDetails(tView, tNode);
+  }
+  return !!tDetails && isTDeferBlockDetails(tDetails);
+}
