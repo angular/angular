@@ -14,7 +14,7 @@ import {
   HydrateTriggerDetails,
   TDeferBlockDetails,
 } from '../defer/interfaces';
-import {getLDeferBlockDetails, getTDeferBlockDetails} from '../defer/utils';
+import {getLDeferBlockDetails, getTDeferBlockDetails, isDeferBlock} from '../defer/utils';
 import {isDetachedByI18n} from '../i18n/utils';
 import {ViewEncapsulation} from '../metadata';
 import {Renderer2} from '../render';
@@ -91,7 +91,6 @@ import {
   TextNodeMarker,
 } from './utils';
 import {Injector} from '../di';
-import {isDeferBlock} from './blocks';
 
 /**
  * A collection that tracks all serialized views (`ngh` DOM annotations)
