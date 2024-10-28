@@ -1941,5 +1941,50 @@ describe('inject migration', () => {
         `}`,
       ]);
     });
+
+    it('should be able to insert statements after the `super` call when running in internal migration mode', async () => {
+      writeFile(
+        '/dir.ts',
+        [
+          `import { Directive, Inject, ElementRef } from '@angular/core';`,
+          `import { Foo } from 'foo';`,
+          `import { Parent } from './parent';`,
+          ``,
+          `@Directive()`,
+          `class MyDir extends Parent {`,
+          `  private value: number;`,
+          ``,
+          `  constructor(private foo: Foo, readonly elementRef: ElementRef) {`,
+          `    super();`,
+          `    this.value = this.foo.getValue();`,
+          `    console.log(elementRef.nativeElement.tagName);`,
+          `  }`,
+          `}`,
+        ].join('\n'),
+      );
+
+      await runInternalMigration();
+
+      expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+        `import { Directive, ElementRef, inject } from '@angular/core';`,
+        `import { Foo } from 'foo';`,
+        `import { Parent } from './parent';`,
+        ``,
+        `@Directive()`,
+        `class MyDir extends Parent {`,
+        `  private foo = inject(Foo);`,
+        `  readonly elementRef = inject(ElementRef);`,
+        ``,
+        `  private value: number = this.foo.getValue();`,
+        ``,
+        `  constructor() {`,
+        `    super();`,
+        `    const elementRef = this.elementRef;`,
+        ``,
+        `    console.log(elementRef.nativeElement.tagName);`,
+        `  }`,
+        `}`,
+      ]);
+    });
   });
 });

@@ -224,7 +224,16 @@ function migrateClass(
   }
 
   if (afterSuper.length > 0 && superCall !== null) {
-    tracker.insertText(sourceFile, superCall.getEnd() + 1, `\n${afterSuper.join('\n')}\n`);
+    // Note that if we can, we should insert before the next statement after the `super` call,
+    // rather than after the end of it. Otherwise the string buffering implementation may drop
+    // the text if the statement after the `super` call is being deleted. This appears to be because
+    // the full start of the next statement appears to always be the end of the `super` call plus 1.
+    const nextStatement = getNextPreservedStatement(superCall, removedStatements);
+    tracker.insertText(
+      sourceFile,
+      nextStatement ? nextStatement.getFullStart() : superCall.getEnd() + 1,
+      `\n${afterSuper.join('\n')}\n`,
+    );
   }
 
   // Need to resolve this once all constructor signatures have been removed.
@@ -674,6 +683,36 @@ function canRemoveConstructor(
     statementCount === 0 ||
     (statementCount === 1 && superCall !== null && superCall.arguments.length === 0)
   );
+}
+
+/**
+ * Gets the next statement after a node that *won't* be deleted by the migration.
+ * @param startNode Node from which to start the search.
+ * @param removedStatements Statements that have been removed by the migration.
+ * @returns
+ */
+function getNextPreservedStatement(
+  startNode: ts.Node,
+  removedStatements: Set<ts.Statement>,
+): ts.Statement | null {
+  const body = closestNode(startNode, ts.isBlock);
+  const closestStatement = closestNode(startNode, ts.isStatement);
+  if (body === null || closestStatement === null) {
+    return null;
+  }
+
+  const index = body.statements.indexOf(closestStatement);
+  if (index === -1) {
+    return null;
+  }
+
+  for (let i = index + 1; i < body.statements.length; i++) {
+    if (!removedStatements.has(body.statements[i])) {
+      return body.statements[i];
+    }
+  }
+
+  return null;
 }
 
 /**
