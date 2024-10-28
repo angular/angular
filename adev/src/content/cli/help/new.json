@@ -133,6 +133,11 @@
       "description": "Enable routing in the initial project."
     },
     {
+      "name": "server-routing",
+      "type": "boolean",
+      "description": "Creates a server application using the Server Routing and App Engine APIs (Developer Preview)."
+    },
+    {
       "name": "skip-git",
       "type": "boolean",
       "aliases": [
