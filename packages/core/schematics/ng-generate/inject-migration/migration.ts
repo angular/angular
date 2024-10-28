@@ -82,34 +82,20 @@ export function migrateFile(sourceFile: ts.SourceFile, options: MigrationOptions
   const tracker = new ChangeTracker(printer);
 
   analysis.classes.forEach(({node, constructor, superCall}) => {
-    let removedStatements: Set<ts.Statement> | null = null;
+    const memberIndentation = getLeadingLineWhitespaceOfNode(node.members[0]);
+    const prependToClass: string[] = [];
+    const removedStatements = new Set<ts.Statement>();
 
     if (options._internalCombineMemberInitializers) {
-      findUninitializedPropertiesToCombine(node, constructor, localTypeChecker)?.forEach(
-        (initializer, property) => {
-          const statement = closestNode(initializer, ts.isStatement);
-
-          if (!statement) {
-            return;
-          }
-
-          const newProperty = ts.factory.createPropertyDeclaration(
-            cloneModifiers(property.modifiers),
-            cloneName(property.name),
-            property.questionToken,
-            property.type,
-            initializer,
-          );
-          tracker.replaceText(
-            statement.getSourceFile(),
-            statement.getFullStart(),
-            statement.getFullWidth(),
-            '',
-          );
-          tracker.replaceNode(property, newProperty);
-          removedStatements = removedStatements || new Set();
-          removedStatements.add(statement);
-        },
+      applyInternalOnlyChanges(
+        node,
+        constructor,
+        localTypeChecker,
+        tracker,
+        printer,
+        removedStatements,
+        prependToClass,
+        memberIndentation,
       );
     }
 
@@ -118,6 +104,8 @@ export function migrateFile(sourceFile: ts.SourceFile, options: MigrationOptions
       constructor,
       superCall,
       options,
+      memberIndentation,
+      prependToClass,
       removedStatements,
       localTypeChecker,
       printer,
@@ -141,6 +129,8 @@ export function migrateFile(sourceFile: ts.SourceFile, options: MigrationOptions
  * @param constructor Reference to the class' constructor node.
  * @param superCall Reference to the constructor's `super()` call, if any.
  * @param options Options used to configure the migration.
+ * @param memberIndentation Indentation string of the members of the class.
+ * @param prependToClass Text that should be prepended to the class.
  * @param removedStatements Statements that have been removed from the constructor already.
  * @param localTypeChecker Type checker set up for the specific file.
  * @param printer Printer used to output AST nodes as strings.
@@ -151,7 +141,9 @@ function migrateClass(
   constructor: ts.ConstructorDeclaration,
   superCall: ts.CallExpression | null,
   options: MigrationOptions,
-  removedStatements: Set<ts.Statement> | null,
+  memberIndentation: string,
+  prependToClass: string[],
+  removedStatements: Set<ts.Statement>,
   localTypeChecker: ts.TypeChecker,
   printer: ts.Printer,
   tracker: ChangeTracker,
@@ -173,14 +165,12 @@ function migrateClass(
   const superParameters = superCall
     ? getSuperParameters(constructor, superCall, localTypeChecker)
     : null;
-  const memberIndentation = getLeadingLineWhitespaceOfNode(node.members[0]);
-  const removedStatementCount = removedStatements?.size || 0;
+  const removedStatementCount = removedStatements.size;
   const innerReference =
     superCall ||
-    constructor.body?.statements.find((statement) => !removedStatements?.has(statement)) ||
+    constructor.body?.statements.find((statement) => !removedStatements.has(statement)) ||
     constructor;
   const innerIndentation = getLeadingLineWhitespaceOfNode(innerReference);
-  const propsToAdd: string[] = [];
   const prependToConstructor: string[] = [];
   const afterSuper: string[] = [];
   const removedMembers = new Set<ts.ClassElement>();
@@ -201,7 +191,7 @@ function migrateClass(
       memberIndentation,
       innerIndentation,
       prependToConstructor,
-      propsToAdd,
+      prependToClass,
       afterSuper,
     );
   }
@@ -249,21 +239,21 @@ function migrateClass(
 
     // The new signature always has to be right before the constructor implementation.
     if (memberReference === constructor) {
-      propsToAdd.push(extraSignature);
+      prependToClass.push(extraSignature);
     } else {
       tracker.insertText(sourceFile, constructor.getFullStart(), '\n' + extraSignature);
     }
   }
 
-  if (propsToAdd.length > 0) {
+  if (prependToClass.length > 0) {
     if (removedMembers.size === node.members.length) {
-      tracker.insertText(sourceFile, constructor.getEnd() + 1, `${propsToAdd.join('\n')}\n`);
+      tracker.insertText(sourceFile, constructor.getEnd() + 1, `${prependToClass.join('\n')}\n`);
     } else {
       // Insert the new properties after the first member that hasn't been deleted.
       tracker.insertText(
         sourceFile,
         memberReference.getFullStart(),
-        `\n${propsToAdd.join('\n')}\n`,
+        `\n${prependToClass.join('\n')}\n`,
       );
     }
   }
@@ -684,4 +674,64 @@ function canRemoveConstructor(
     statementCount === 0 ||
     (statementCount === 1 && superCall !== null && superCall.arguments.length === 0)
   );
+}
+
+/**
+ * Applies the internal-specific migrations to a class.
+ * @param node Class being migrated.
+ * @param constructor The migrated class' constructor.
+ * @param localTypeChecker File-specific type checker.
+ * @param tracker Object keeping track of the changes.
+ * @param printer Printer used to output AST nodes as text.
+ * @param removedStatements Statements that have been removed by the migration.
+ * @param prependToClass Text that will be prepended to a class.
+ * @param memberIndentation Indentation string of the class' members.
+ */
+function applyInternalOnlyChanges(
+  node: ts.ClassDeclaration,
+  constructor: ts.ConstructorDeclaration,
+  localTypeChecker: ts.TypeChecker,
+  tracker: ChangeTracker,
+  printer: ts.Printer,
+  removedStatements: Set<ts.Statement>,
+  prependToClass: string[],
+  memberIndentation: string,
+) {
+  const result = findUninitializedPropertiesToCombine(node, constructor, localTypeChecker);
+
+  result?.toCombine.forEach((initializer, property) => {
+    const statement = closestNode(initializer, ts.isStatement);
+
+    if (!statement) {
+      return;
+    }
+
+    const newProperty = ts.factory.createPropertyDeclaration(
+      cloneModifiers(property.modifiers),
+      cloneName(property.name),
+      property.questionToken,
+      property.type,
+      initializer,
+    );
+    tracker.replaceText(
+      statement.getSourceFile(),
+      statement.getFullStart(),
+      statement.getFullWidth(),
+      '',
+    );
+    tracker.replaceNode(property, newProperty);
+    removedStatements.add(statement);
+  });
+
+  result?.toHoist.forEach((decl) => {
+    prependToClass.push(
+      memberIndentation + printer.printNode(ts.EmitHint.Unspecified, decl, decl.getSourceFile()),
+    );
+    tracker.replaceText(decl.getSourceFile(), decl.getFullStart(), decl.getFullWidth(), '');
+  });
+
+  // If we added any hoisted properties, separate them visually with a new line.
+  if (prependToClass.length > 0) {
+    prependToClass.push('');
+  }
 }
