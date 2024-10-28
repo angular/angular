@@ -1884,5 +1884,62 @@ describe('inject migration', () => {
         `}`,
       ]);
     });
+
+    it('should hoist property declarations that were not combined above the inject() calls', async () => {
+      writeFile(
+        '/dir.ts',
+        [
+          `import { Injectable } from '@angular/core';`,
+          `import { Observable } from 'rxjs';`,
+          `import { StateService, State } from './state';`,
+          ``,
+          `@Injectable()`,
+          `export class SomeService {`,
+          `  /** Public state */`,
+          `  readonly state: Observable<State>;`,
+          ``,
+          `  /** Private state */`,
+          `  private internalState?: State;`,
+          ``,
+          `  constructor(readonly stateService: StateService) {`,
+          `    this.initializeInternalState();`,
+          `    this.state = this.internalState;`,
+          `  }`,
+          ``,
+          `  private initializeInternalState() {`,
+          `    this.internalState = new State();`,
+          `  }`,
+          `}`,
+        ].join('\n'),
+      );
+
+      await runInternalMigration();
+
+      expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+        `import { Injectable, inject } from '@angular/core';`,
+        `import { Observable } from 'rxjs';`,
+        `import { StateService, State } from './state';`,
+        ``,
+        `@Injectable()`,
+        `export class SomeService {`,
+        `  /** Private state */`,
+        // The indentation here is slightly off, but it's not a problem because this code is internal-only.
+        `private internalState?: State;`,
+        ``,
+        `  readonly stateService = inject(StateService);`,
+        ``,
+        `  /** Public state */`,
+        `  readonly state: Observable<State> = this.internalState;`,
+        ``,
+        `  constructor() {`,
+        `    this.initializeInternalState();`,
+        `  }`,
+        ``,
+        `  private initializeInternalState() {`,
+        `    this.internalState = new State();`,
+        `  }`,
+        `}`,
+      ]);
+    });
   });
 });

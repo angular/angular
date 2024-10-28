@@ -32,8 +32,12 @@ export function findUninitializedPropertiesToCombine(
   node: ts.ClassDeclaration,
   constructor: ts.ConstructorDeclaration,
   localTypeChecker: ts.TypeChecker,
-): Map<ts.PropertyDeclaration, ts.Expression> | null {
-  let result: Map<ts.PropertyDeclaration, ts.Expression> | null = null;
+): {
+  toCombine: Map<ts.PropertyDeclaration, ts.Expression>;
+  toHoist: ts.PropertyDeclaration[];
+} | null {
+  let toCombine: Map<ts.PropertyDeclaration, ts.Expression> | null = null;
+  let toHoist: ts.PropertyDeclaration[] = [];
 
   const membersToDeclarations = new Map<string, ts.PropertyDeclaration>();
   for (const member of node.members) {
@@ -47,25 +51,43 @@ export function findUninitializedPropertiesToCombine(
   }
 
   if (membersToDeclarations.size === 0) {
-    return result;
+    return null;
   }
 
   const memberInitializers = getMemberInitializers(constructor);
   if (memberInitializers === null) {
-    return result;
+    return null;
   }
 
-  for (const [name, initializer] of memberInitializers.entries()) {
-    if (
-      membersToDeclarations.has(name) &&
-      !hasLocalReferences(initializer, constructor, localTypeChecker)
-    ) {
-      result = result || new Map();
-      result.set(membersToDeclarations.get(name)!, initializer);
+  for (const [name, decl] of membersToDeclarations.entries()) {
+    if (memberInitializers.has(name)) {
+      const initializer = memberInitializers.get(name)!;
+
+      if (!hasLocalReferences(initializer, constructor, localTypeChecker)) {
+        toCombine = toCombine || new Map();
+        toCombine.set(membersToDeclarations.get(name)!, initializer);
+      }
+    } else {
+      // Mark members that have no initializers and can't be combined to be hoisted above the
+      // injected members. This is either a no-op or it allows us to avoid some patterns internally
+      // like the following:
+      // ```
+      // class Foo {
+      //   publicFoo: Foo;
+      //   private privateFoo: Foo;
+      //
+      //   constructor() {
+      //     this.initializePrivateFooSomehow();
+      //     this.publicFoo = this.privateFoo;
+      //   }
+      // }
+      // ```
+      toHoist.push(decl);
     }
   }
 
-  return result;
+  // If no members need to be combined, none need to be hoisted either.
+  return toCombine === null ? null : {toCombine, toHoist};
 }
 
 /**
