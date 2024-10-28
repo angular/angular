@@ -166,10 +166,10 @@ function migrateClass(
     ? getSuperParameters(constructor, superCall, localTypeChecker)
     : null;
   const removedStatementCount = removedStatements.size;
-  const innerReference =
-    superCall ||
-    constructor.body?.statements.find((statement) => !removedStatements.has(statement)) ||
-    constructor;
+  const firstConstructorStatement = constructor.body?.statements.find(
+    (statement) => !removedStatements.has(statement),
+  );
+  const innerReference = superCall || firstConstructorStatement || constructor;
   const innerIndentation = getLeadingLineWhitespaceOfNode(innerReference);
   const prependToConstructor: string[] = [];
   const afterSuper: string[] = [];
@@ -217,7 +217,7 @@ function migrateClass(
     if (prependToConstructor.length > 0) {
       tracker.insertText(
         sourceFile,
-        innerReference.getFullStart(),
+        (firstConstructorStatement || innerReference).getFullStart(),
         `\n${prependToConstructor.join('\n')}\n`,
       );
     }

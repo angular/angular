@@ -1464,6 +1464,43 @@ describe('inject migration', () => {
     ]);
   });
 
+  it('should insert generated variables on top of statements that appear before the `super` call', async () => {
+    writeFile(
+      '/dir.ts',
+      [
+        `import { Directive } from '@angular/core';`,
+        `import { Parent } from './parent';`,
+        `import { SomeService } from './service';`,
+        ``,
+        `@Directive()`,
+        `class MyDir extends Parent {`,
+        `  constructor(service: SomeService) {`,
+        `    console.log(service.getId());`,
+        `    super(service);`,
+        `  }`,
+        `}`,
+      ].join('\n'),
+    );
+
+    await runMigration();
+
+    expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+      `import { Directive, inject } from '@angular/core';`,
+      `import { Parent } from './parent';`,
+      `import { SomeService } from './service';`,
+      ``,
+      `@Directive()`,
+      `class MyDir extends Parent {`,
+      `  constructor() {`,
+      `    const service = inject(SomeService);`,
+      ``,
+      `    console.log(service.getId());`,
+      `    super(service);`,
+      `  }`,
+      `}`,
+    ]);
+  });
+
   describe('internal-only behavior', () => {
     function runInternalMigration() {
       return runMigration({_internalCombineMemberInitializers: true});
