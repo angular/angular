@@ -158,7 +158,7 @@ function hasLocalReferences(
   const sourceFile = root.getSourceFile();
   let hasLocalRefs = false;
 
-  root.forEachChild(function walk(node) {
+  const walk = (node: ts.Node) => {
     // Stop searching if we know that it has local references.
     if (hasLocalRefs) {
       return;
@@ -193,7 +193,9 @@ function hasLocalReferences(
     if (!hasLocalRefs) {
       node.forEachChild(walk);
     }
-  });
+  };
+
+  walk(root);
 
   return hasLocalRefs;
 }

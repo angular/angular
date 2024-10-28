@@ -1986,5 +1986,44 @@ describe('inject migration', () => {
         `}`,
       ]);
     });
+
+    it('should not inline properties initialized to identifiers referring to constructor parameters', async () => {
+      writeFile(
+        '/dir.ts',
+        [
+          `import { Injectable } from '@angular/core';`,
+          `import { OtherService } from './other-service';`,
+          ``,
+          `@Injectable()`,
+          `export class SomeService {`,
+          `  readonly otherService: OtherService;`,
+          ``,
+          `  constructor(readonly differentName: OtherService) {`,
+          `    this.otherService = differentName;`,
+          `  }`,
+          `}`,
+        ].join('\n'),
+      );
+
+      await runInternalMigration();
+
+      expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+        `import { Injectable, inject } from '@angular/core';`,
+        `import { OtherService } from './other-service';`,
+        ``,
+        `@Injectable()`,
+        `export class SomeService {`,
+        `  readonly differentName = inject(OtherService);`,
+        ``,
+        `  readonly otherService: OtherService;`,
+        ``,
+        `  constructor() {`,
+        `    const differentName = this.differentName;`,
+        ``,
+        `    this.otherService = differentName;`,
+        `  }`,
+        `}`,
+      ]);
+    });
   });
 });
