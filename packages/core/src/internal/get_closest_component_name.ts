@@ -36,7 +36,15 @@ export function getClosestComponentName(node: Node): string | null {
         const tNode = getTNode(tView, i);
         if (isComponentHost(tNode)) {
           const def = tView.data[tNode.directiveStart + tNode.componentOffset] as ComponentDef<{}>;
-          return def.debugInfo?.className || def.type.name;
+          const name = def.debugInfo?.className || def.type.name;
+
+          // Note: the name may be an empty string if the class name is
+          // dropped due to minification. In such cases keep going up the tree.
+          if (name) {
+            return name;
+          } else {
+            break;
+          }
         }
       }
     }
