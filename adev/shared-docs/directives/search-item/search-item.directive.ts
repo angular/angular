@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Directive, ElementRef, Input, inject, signal} from '@angular/core';
+import {Directive, ElementRef, inject, signal, input, computed} from '@angular/core';
 import {Highlightable} from '@angular/cdk/a11y';
 import {SearchResult} from '../../interfaces/search-results';
 
@@ -14,36 +14,39 @@ import {SearchResult} from '../../interfaces/search-results';
   selector: '[docsSearchItem]',
   standalone: true,
   host: {
-    '[class.active]': 'isActive',
+    '[class.active]': 'isActive()',
   },
 })
 export class SearchItem implements Highlightable {
-  @Input() item?: SearchResult;
-  @Input() disabled = false;
-
   private readonly elementRef = inject(ElementRef<HTMLLIElement>);
 
-  private _isActive = signal(false);
+  readonly item = input<SearchResult>();
+  readonly disabledInput = input(false, {alias: 'disabled'});
 
-  protected get isActive() {
-    return this._isActive();
+  private isActive = signal(false);
+
+  // Highlightable interface implementation
+
+  get disabled() {
+    return this.disabledInput();
   }
 
   setActiveStyles(): void {
-    this._isActive.set(true);
+    this.isActive.set(true);
   }
 
   setInactiveStyles(): void {
-    this._isActive.set(false);
+    this.isActive.set(false);
   }
 
-  getLabel(): string {
-    if (!this.item?.hierarchy) {
+  getLabel = computed(() => {
+    const item = this.item();
+    if (!item?.hierarchy) {
       return '';
     }
-    const {hierarchy} = this.item;
+    const {hierarchy} = item;
     return `${hierarchy.lvl0}${hierarchy.lvl1}${hierarchy.lvl2}`;
-  }
+  });
 
   scrollIntoView(): void {
     this.elementRef?.nativeElement.scrollIntoView({block: 'nearest'});
