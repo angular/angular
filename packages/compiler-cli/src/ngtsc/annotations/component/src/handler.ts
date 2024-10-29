@@ -258,6 +258,7 @@ export class ComponentDecoratorHandler
     private readonly i18nPreserveSignificantWhitespace: boolean,
     private readonly strictStandalone: boolean,
     private readonly enableHmr: boolean,
+    private readonly implicitStandaloneValue: boolean,
   ) {
     this.extractTemplateOptions = {
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
@@ -464,6 +465,7 @@ export class ComponentDecoratorHandler
       this.compilationMode,
       this.elementSchemaRegistry.getDefaultComponentElementName(),
       this.strictStandalone,
+      this.implicitStandaloneValue,
     );
     // `extractDirectiveMetadata` returns `jitForced = true` when the `@Component` has
     // set `jit: true`. In this case, compilation of the decorator is skipped. Returning
