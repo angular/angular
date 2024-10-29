@@ -32,15 +32,15 @@ export class AfterRenderManager {
   });
 }
 
-export class AfterRenderImpl {
-  static readonly PHASES = /* @__PURE__ **/ (() =>
-    [
-      AfterRenderPhase.EarlyRead,
-      AfterRenderPhase.Write,
-      AfterRenderPhase.MixedReadWrite,
-      AfterRenderPhase.Read,
-    ] as const)();
+export const AFTER_RENDER_PHASES = /* @__PURE__ **/ (() =>
+  [
+    AfterRenderPhase.EarlyRead,
+    AfterRenderPhase.Write,
+    AfterRenderPhase.MixedReadWrite,
+    AfterRenderPhase.Read,
+  ] as const)();
 
+export class AfterRenderImpl {
   private readonly ngZone = inject(NgZone);
   private readonly scheduler = inject(ChangeDetectionScheduler);
   private readonly errorHandler = inject(ErrorHandler, {optional: true});
@@ -60,7 +60,7 @@ export class AfterRenderImpl {
    */
   execute(): void {
     this.executing = true;
-    for (const phase of AfterRenderImpl.PHASES) {
+    for (const phase of AFTER_RENDER_PHASES) {
       for (const sequence of this.sequences) {
         if (sequence.erroredOrDestroyed || !sequence.hooks[phase]) {
           continue;
