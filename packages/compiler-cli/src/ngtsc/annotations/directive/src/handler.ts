@@ -137,6 +137,7 @@ export class DirectiveDecoratorHandler
     private readonly compilationMode: CompilationMode,
     private readonly jitDeclarationRegistry: JitDeclarationRegistry,
     private readonly strictStandalone: boolean,
+    private readonly implicitStandaloneValue: boolean,
   ) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
@@ -192,6 +193,7 @@ export class DirectiveDecoratorHandler
       this.compilationMode,
       /* defaultSelector */ null,
       this.strictStandalone,
+      this.implicitStandaloneValue,
     );
     // `extractDirectiveMetadata` returns `jitForced = true` when the `@Directive` has
     // set `jit: true`. In this case, compilation of the decorator is skipped. Returning

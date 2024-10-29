@@ -49,7 +49,6 @@ import {
   unwrapExpression,
   wrapTypeReference,
 } from '../common';
-import {NG_STANDALONE_DEFAULT_VALUE} from '../common/src/standalone-default-value';
 
 export interface PipeHandlerData {
   meta: R3PipeMetadata;
@@ -97,6 +96,7 @@ export class PipeDecoratorHandler
     private readonly compilationMode: CompilationMode,
     private readonly generateExtraImportsInLocalMode: boolean,
     private readonly strictStandalone: boolean,
+    private readonly implicitStandaloneValue: boolean,
   ) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
@@ -177,7 +177,7 @@ export class PipeDecoratorHandler
       pure = pureValue;
     }
 
-    let isStandalone = NG_STANDALONE_DEFAULT_VALUE;
+    let isStandalone = this.implicitStandaloneValue;
     if (pipe.has('standalone')) {
       const expr = pipe.get('standalone')!;
       const resolved = this.evaluator.evaluate(expr);
