@@ -74,22 +74,27 @@ export function migrateFile(sourceFile: ts.SourceFile, rewriteFn: RewriteFn) {
       }
       const properties = decoratorArgument.properties;
       const standaloneProp = getStandaloneProperty(properties);
+      const hasImports = decoratorHasImports(decoratorArgument);
 
-      // Need to take care of 3 cases
-      // - standalone: true  => remove the property
+      // We'll use the presence of imports to keep the migration idempotent
+      // We need to take care of 3 cases
+      // - standalone: true  => remove the property if we have imports
       // - standalone: false => nothing
-      // - No standalone property => add a standalone: false property
+      // - No standalone property => add a standalone: false property if there are no imports
 
       let newProperties: undefined | ts.ObjectLiteralElementLike[];
 
       if (!standaloneProp) {
-        const standaloneFalseProperty = ts.factory.createPropertyAssignment(
-          'standalone',
-          ts.factory.createFalse(),
-        );
+        if (!hasImports) {
+          const standaloneFalseProperty = ts.factory.createPropertyAssignment(
+            'standalone',
+            ts.factory.createFalse(),
+          );
 
-        newProperties = [...properties, standaloneFalseProperty];
-      } else if (standaloneProp.value === ts.SyntaxKind.TrueKeyword) {
+          newProperties = [...properties, standaloneFalseProperty];
+        }
+      } else if (standaloneProp.value === ts.SyntaxKind.TrueKeyword && hasImports) {
+        // To keep the migration idempotent, we'll only remove the standalone prop when there are imports
         newProperties = properties.filter((p) => p !== standaloneProp.property);
       }
 
@@ -135,4 +140,22 @@ function isStandaloneProperty(prop: ts.Node): prop is ts.PropertyAssignment {
   return (
     ts.isPropertyAssignment(prop) && ts.isIdentifier(prop.name) && prop.name.text === 'standalone'
   );
+}
+
+function decoratorHasImports(decoratorArgument: ts.ObjectLiteralExpression) {
+  for (const prop of decoratorArgument.properties) {
+    if (
+      ts.isPropertyAssignment(prop) &&
+      ts.isIdentifier(prop.name) &&
+      prop.name.text === 'imports'
+    ) {
+      if (
+        prop.initializer.kind === ts.SyntaxKind.ArrayLiteralExpression ||
+        prop.initializer.kind === ts.SyntaxKind.Identifier
+      ) {
+        return true;
+      }
+    }
+  }
+  return false;
 }

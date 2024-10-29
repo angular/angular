@@ -116,7 +116,7 @@ describe('explicit-standalone-flag migration', () => {
     expect(content).toContain('standalone: false');
   });
 
-  it('should remove standalone:true', async () => {
+  it('should not remove standalone:true without imports', async () => {
     writeFile(
       '/index.ts',
       `
@@ -134,7 +134,52 @@ describe('explicit-standalone-flag migration', () => {
 
     const content = tree.readContent('/index.ts').replace(/\s+/g, ' ');
 
-    expect(content).not.toContain('standalone: true');
+    expect(content).toContain('standalone: true');
+  });
+
+  it('should remove standalone:true when imports are presents', async () => {
+    writeFile(
+      '/index.ts',
+      `
+          import { Directive } from '@angular/core';
+
+          @Directive({
+            selector: '[someDirective]',
+            imports: [FooBar],
+            standalone: true
+          })
+          export class SomeDirective {
+          }`,
+    );
+
+    await runMigration();
+
+    const content = tree.readContent('/index.ts').replace(/\s+/g, ' ');
+
+    expect(content).not.toContain('standalone');
+  });
+
+  it('should remove standalone:true when imports are presents', async () => {
+    writeFile(
+      '/index.ts',
+      `
+          import { Directive } from '@angular/core';
+          const myImports = [FooBar]
+
+          @Directive({
+            selector: '[someDirective]',
+            imports: myImports,
+            standalone: true
+          })
+          export class SomeDirective {
+          }`,
+    );
+
+    await runMigration();
+
+    const content = tree.readContent('/index.ts').replace(/\s+/g, ' ');
+
+    expect(content).not.toContain('standalone');
   });
 
   it('should not update a directive with standalone:false', async () => {
@@ -225,5 +270,49 @@ describe('explicit-standalone-flag migration', () => {
     expect(content).not.toContain('standalone: true');
     expect(content).not.toContain('standalone: false');
     expect(content).toContain('standalone');
+  });
+
+  it('should ensure that migration is idempotent for a module-based directive', async () => {
+    writeFile(
+      '/index.ts',
+      `
+      import { Directive } from '@angular/core';
+
+      @Directive({
+        selector: '[someDirective]',
+      })
+      export class SomeDirective {
+      }
+      `,
+    );
+
+    await runMigration();
+    await runMigration();
+
+    const content = tree.readContent('/index.ts').replace(/\s+/g, ' ');
+    expect(content).toContain('standalone: false');
+  });
+
+  it('should ensure that migration is idempotent for a standalone directive', async () => {
+    writeFile(
+      '/index.ts',
+      `
+      import { Directive } from '@angular/core';
+
+      @Directive({
+        selector: '[someDirective]',
+        standalone: true,
+      })
+      export class SomeDirective {
+      }
+      `,
+    );
+
+    await runMigration();
+    await runMigration();
+
+    const content = tree.readContent('/index.ts').replace(/\s+/g, ' ');
+    expect(content).not.toContain('standalone: false');
+    expect(content).toContain('standalone: true');
   });
 });
