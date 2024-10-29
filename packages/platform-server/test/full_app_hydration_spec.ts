@@ -32,7 +32,6 @@ import {
   ElementRef,
   EnvironmentInjector,
   ErrorHandler,
-  getPlatform,
   inject,
   Input,
   NgZone,
@@ -83,7 +82,6 @@ import {
   withDebugConsole,
   withNoopErrorHandler,
   verifyEmptyConsole,
-  DebugConsole,
   clearConsole,
 } from './hydration_utils';
 
@@ -101,10 +99,11 @@ describe('platform-server full application hydration integration', () => {
         }
       }
     }
-    if (getPlatform()) destroyPlatform();
   });
 
-  afterAll(() => destroyPlatform());
+  afterEach(() => {
+    destroyPlatform();
+  });
 
   describe('hydration', () => {
     let doc: Document;

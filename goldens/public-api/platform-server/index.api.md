@@ -29,7 +29,7 @@ export interface PlatformConfig {
 }
 
 // @public (undocumented)
-export const platformServer: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
+export function platformServer(extraProviders?: StaticProvider[] | undefined): PlatformRef;
 
 // @public
 export class PlatformState {

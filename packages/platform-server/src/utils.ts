@@ -53,10 +53,12 @@ function createServerPlatform(options: PlatformOptions): PlatformRef {
   const extraProviders = options.platformProviders ?? [];
   const measuringLabel = 'createServerPlatform';
   startMeasuring(measuringLabel);
+
   const platform = platformServer([
     {provide: INITIAL_CONFIG, useValue: {document: options.document, url: options.url}},
     extraProviders,
   ]);
+
   stopMeasuring(measuringLabel);
   return platform;
 }

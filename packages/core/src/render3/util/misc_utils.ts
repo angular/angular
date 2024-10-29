@@ -6,9 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {PLATFORM_ID} from '../../application/application_tokens';
-import {Injector} from '../../di';
-import {inject} from '../../di/injector_compatibility';
 import {RElement} from '../interfaces/renderer_dom';
 
 /**
@@ -60,13 +57,4 @@ export function maybeUnwrapFn<T>(value: T | (() => T)): T {
   } else {
     return value;
   }
-}
-
-/**
- * Detects whether the code is invoked in a browser.
- * Later on, this check should be replaced with a tree-shakable
- * flag (e.g. `!isServer`).
- */
-export function isPlatformBrowser(injector?: Injector): boolean {
-  return (injector ?? inject(Injector)).get(PLATFORM_ID) === 'browser';
 }

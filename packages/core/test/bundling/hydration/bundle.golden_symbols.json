@@ -1089,9 +1089,6 @@
     "name": "isLView"
   },
   {
-    "name": "isPlatformBrowser"
-  },
-  {
     "name": "isPlatformServer"
   },
   {

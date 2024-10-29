@@ -6,14 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  Component,
-  destroyPlatform,
-  ErrorHandler,
-  getPlatform,
-  PLATFORM_ID,
-  Type,
-} from '@angular/core';
+import {Component, destroyPlatform, ErrorHandler, PLATFORM_ID, Type} from '@angular/core';
 import {
   withEventReplay,
   bootstrapApplication,
@@ -78,7 +71,7 @@ describe('event replay', () => {
   });
 
   beforeEach(() => {
-    if (getPlatform()) destroyPlatform();
+    destroyPlatform();
   });
 
   afterAll(() => {
@@ -191,7 +184,7 @@ describe('event replay', () => {
     const inner = doc.getElementById('inner-button')!;
     outer.click();
     inner.click();
-    const appRef = await hydrate(doc, AppComponent, {
+    await hydrate(doc, AppComponent, {
       envProviders: [{provide: PLATFORM_ID, useValue: 'browser'}],
       hydrationFeatures: [withEventReplay()],
     });
@@ -221,7 +214,7 @@ describe('event replay', () => {
     expect(el.hasAttribute('jsaction')).toBeTrue();
     expect((el.firstChild as Element).hasAttribute('jsaction')).toBeTrue();
     resetTViewsFor(SimpleComponent);
-    const appRef = await hydrate(doc, SimpleComponent, {
+    await hydrate(doc, SimpleComponent, {
       hydrationFeatures: [withEventReplay()],
     });
     expect(el.hasAttribute('jsaction')).toBeFalse();
@@ -273,7 +266,7 @@ describe('event replay', () => {
       resetTViewsFor(SimpleComponent);
       const bottomEl = doc.getElementById('bottom')!;
       bottomEl.click();
-      const appRef = await hydrate(doc, SimpleComponent, {
+      await hydrate(doc, SimpleComponent, {
         envProviders: [{provide: PLATFORM_ID, useValue: 'browser'}],
         hydrationFeatures: [withEventReplay()],
       });
@@ -307,7 +300,7 @@ describe('event replay', () => {
       resetTViewsFor(SimpleComponent);
       const bottomEl = doc.getElementById('bottom')!;
       bottomEl.click();
-      const appRef = await hydrate(doc, SimpleComponent, {
+      await hydrate(doc, SimpleComponent, {
         hydrationFeatures: [withEventReplay()],
       });
       expect(onClickSpy).toHaveBeenCalledTimes(1);
