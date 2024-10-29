@@ -579,6 +579,43 @@ describe('outputs', () => {
       expect(stats.counters['successRate']).toBe(1);
     });
   });
+
+  describe('non-regression', () => {
+    it('should properly process import replacements across multiple files', async () => {
+      const {fs} = await runTsurgeMigration(new OutputMigration(), [
+        {
+          name: absoluteFrom('/app.component.ts'),
+          isProgramRootFile: true,
+          contents: `
+            import {Component, Output, EventEmitter} from '@angular/core';
+
+            @Component({selector: 'app-component'})
+            export class AppComponent {
+              @Output() appOut = new EventEmitter();
+            }
+          `,
+        },
+        {
+          name: absoluteFrom('/other.component.ts'),
+          isProgramRootFile: true,
+          contents: `
+            import {Component, Output, EventEmitter} from '@angular/core';
+
+            @Component({selector: 'other-component'})
+            export class OtherComponent {
+              @Output() otherOut = new EventEmitter();
+            }
+          `,
+        },
+      ]);
+
+      for (const file of ['/app.component.ts', '/other.component.ts']) {
+        const content = fs.readFile(absoluteFrom(file)).trim();
+        const firstLine = content.split('\n')[0];
+        expect(firstLine).toBe(`import {Component, output} from '@angular/core';`);
+      }
+    });
+  });
 });
 
 async function verifyDeclaration(testCase: {before: string; after: string}) {

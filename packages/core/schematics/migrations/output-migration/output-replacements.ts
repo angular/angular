@@ -68,9 +68,9 @@ export function calculateImportReplacements(info: ProgramInfo, sourceFiles: Set<
     {add: Replacement[]; addAndRemove: Replacement[]}
   > = {};
 
-  const importManager = new ImportManager();
-
   for (const sf of sourceFiles) {
+    const importManager = new ImportManager();
+
     const addOnly: Replacement[] = [];
     const addRemove: Replacement[] = [];
     const file = projectFile(sf, info);
