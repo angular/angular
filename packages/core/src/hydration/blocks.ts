@@ -11,35 +11,41 @@ import {DEFER_PARENT_BLOCK_ID} from './interfaces';
 import {NGH_DEFER_BLOCKS_KEY} from './utils';
 import {Injector} from '../di';
 import {TransferState} from '../transfer_state';
-import {removeListenersFromBlocks} from '../event_delegation_utils';
+import {removeListenersFromBlocks, cleanupContracts} from '../event_delegation_utils';
 import {cleanupLContainer} from './cleanup';
 import {DeferBlock} from '../defer/interfaces';
 import {whenStable, ApplicationRef} from '../application/application_ref';
+import {assertEqual} from '../util/assert';
 
 /**
- * Finds first hydrated parent `@defer` block for a given block id.
- * If there are any dehydrated `@defer` blocks found along the way,
- * they are also stored and returned from the function (as a list of ids).
+ * Builds a queue of blocks that need to be hydrated, looking up the
+ * tree to the topmost defer block that exists in the tree that hasn't
+ * been hydrated, but exists in the registry. This queue is in top down
+ * heirarchical order as a list of defer block ids.
  * Note: This is utilizing serialized information to navigate up the tree
  */
-export function findFirstHydratedParentDeferBlock(deferBlockId: string, injector: Injector) {
+export function getParentBlockHydrationQueue(deferBlockId: string, injector: Injector) {
   const deferBlockRegistry = injector.get(DeferBlockRegistry);
   const transferState = injector.get(TransferState);
   const deferBlockParents = transferState.get(NGH_DEFER_BLOCKS_KEY, {});
-  const dehydratedBlocks: string[] = [];
 
-  let deferBlock = deferBlockRegistry.get(deferBlockId);
+  let isTopMostDeferBlock = false;
   let currentBlockId: string | null = deferBlockId;
-  // at each level we check if the registry has the given defer block id
-  // - if it does, we know it was already hydrated and can stop here
-  // - if it does not, we continue on
-  while (!deferBlock) {
-    dehydratedBlocks.unshift(currentBlockId);
+  const deferBlockQueue: string[] = [];
+
+  while (!isTopMostDeferBlock && currentBlockId) {
+    ngDevMode &&
+      assertEqual(
+        deferBlockQueue.indexOf(currentBlockId),
+        -1,
+        'Internal error: defer block hierarchy has a cycle.',
+      );
+
+    deferBlockQueue.unshift(currentBlockId);
+    isTopMostDeferBlock = deferBlockRegistry.has(currentBlockId);
     currentBlockId = deferBlockParents[currentBlockId][DEFER_PARENT_BLOCK_ID];
-    if (!currentBlockId) break;
-    deferBlock = deferBlockRegistry.get(currentBlockId);
   }
-  return {blockId: currentBlockId, deferBlock, dehydratedBlocks};
+  return deferBlockQueue;
 }
 
 /**
@@ -50,14 +56,12 @@ export function findFirstHydratedParentDeferBlock(deferBlockId: string, injector
  * @param injector
  * @param blockName
  * @param onTriggerFn The function that triggers the block and fetches deps
- * @param hydratedBlocks The set of blocks currently being hydrated in the tree
  * @returns
  */
 export async function hydrateFromBlockName(
   injector: Injector,
   blockName: string,
   onTriggerFn: (deferBlock: DeferBlock) => void,
-  hydratedBlocks: Set<string> = new Set(),
 ): Promise<{
   deferBlock: DeferBlock | null;
   hydratedBlocks: Set<string>;
@@ -65,40 +69,43 @@ export async function hydrateFromBlockName(
   const deferBlockRegistry = injector.get(DeferBlockRegistry);
 
   // Make sure we don't hydrate/trigger the same thing multiple times
-  if (deferBlockRegistry.hydrating.has(blockName)) return {deferBlock: null, hydratedBlocks};
+  if (deferBlockRegistry.hydrating.has(blockName))
+    return {deferBlock: null, hydratedBlocks: new Set<string>()};
 
-  const {blockId, deferBlock, dehydratedBlocks} = findFirstHydratedParentDeferBlock(
-    blockName,
-    injector,
-  );
-  if (deferBlock && blockId) {
-    // Step 2: Add the current block to the tracking sets to prevent
-    // attempting to trigger hydration on a block more than once
-    // simulataneously.
-    hydratedBlocks.add(blockId);
-    deferBlockRegistry.hydrating.add(blockId);
+  // Step 1: Get the queue of items that needs to be hydrated
+  const hydrationQueue = getParentBlockHydrationQueue(blockName, injector);
 
-    // Step 3: Run the actual trigger function to fetch dependencies
+  // Step 2: Add all the items in the queue to the registry at once so we don't trigger hydration on them while
+  // the sequence of triggers fires.
+  hydrationQueue.forEach((id) => deferBlockRegistry.hydrating.add(id));
+
+  // Step 3: hydrate each block in the queue. It will be in descending order from the top down.
+  for (const dehydratedBlockId of hydrationQueue) {
+    // The registry will have the item in the queue after each loop.
+    const deferBlock = deferBlockRegistry.get(dehydratedBlockId)!;
+
+    // Step 4: Run the actual trigger function to fetch dependencies.
+    // Triggering a block adds any of its child defer blocks to the registry.
     await onTriggerFn(deferBlock);
 
-    // Step 4: Recursively trigger, fetch, and hydrate from the top of the hierarchy down
-    let hydratedBlock: DeferBlock | null = deferBlock;
-    for (const dehydratedBlock of dehydratedBlocks) {
-      const hydratedInfo = await hydrateFromBlockName(
-        injector,
-        dehydratedBlock,
-        onTriggerFn,
-        hydratedBlocks,
-      );
-      hydratedBlock = hydratedInfo.deferBlock;
-    }
-    // TODO(incremental-hydration): this is likely where we want to do Step 5: some cleanup work in the
-    // DeferBlockRegistry.
-    return {deferBlock: hydratedBlock, hydratedBlocks};
-  } else {
-    // TODO(incremental-hydration): this is likely an error, consider producing a `console.error`.
-    return {deferBlock: null, hydratedBlocks};
+    // Step 5: Remove the defer block from the list of hydrating blocks now that it's done hydrating
+    deferBlockRegistry.hydrating.delete(dehydratedBlockId);
   }
+
+  const hydratedBlocks = new Set<string>(hydrationQueue);
+
+  // The last item in the queue was the original target block;
+  const hydratedBlockId = hydrationQueue.slice(-1)[0];
+  const hydratedBlock = deferBlockRegistry.get(hydratedBlockId)!;
+
+  // Step 6: remove all hydrated blocks from the registry
+  deferBlockRegistry.removeBlocks(hydratedBlocks);
+
+  if (deferBlockRegistry.size === 0) {
+    cleanupContracts(injector);
+  }
+
+  return {deferBlock: hydratedBlock, hydratedBlocks};
 }
 
 export async function incrementallyHydrateFromBlockName(

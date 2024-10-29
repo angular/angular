@@ -11,7 +11,7 @@ import {EventContract} from '@angular/core/primitives/event-dispatch';
 import {Attribute} from '@angular/core/primitives/event-dispatch';
 import {InjectionToken, Injector} from './di';
 import {RElement} from './render3/interfaces/renderer_dom';
-import {BLOCK_ELEMENT_MAP} from './hydration/tokens';
+import {JSACTION_BLOCK_ELEMENT_MAP} from './hydration/tokens';
 
 export const DEFER_BLOCK_SSR_ID_ATTRIBUTE = 'ngb';
 
@@ -80,10 +80,11 @@ export const sharedMapFunction = (rEl: RElement, jsActionMap: Map<string, Set<El
 export function removeListenersFromBlocks(blockNames: string[], injector: Injector) {
   if (blockNames.length > 0) {
     let blockList: Element[] = [];
-    const jsActionMap = injector.get(BLOCK_ELEMENT_MAP);
+    const jsActionMap = injector.get(JSACTION_BLOCK_ELEMENT_MAP);
     for (let blockName of blockNames) {
       if (jsActionMap.has(blockName)) {
         blockList = [...blockList, ...jsActionMap.get(blockName)!];
+        jsActionMap.delete(blockName);
       }
     }
     const replayList = new Set(blockList);
@@ -108,3 +109,8 @@ export const JSACTION_EVENT_CONTRACT = new InjectionToken<EventContractDetails>(
     factory: () => ({}),
   },
 );
+
+export function cleanupContracts(injector: Injector) {
+  const eventContractDetails = injector.get(JSACTION_EVENT_CONTRACT);
+  eventContractDetails.instance!.cleanUp();
+}
