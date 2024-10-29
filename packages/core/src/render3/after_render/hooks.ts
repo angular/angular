@@ -12,7 +12,6 @@ import {inject} from '../../di/injector_compatibility';
 import {DestroyRef} from '../../linker/destroy_ref';
 import {performanceMarkFeature} from '../../util/performance';
 import {assertNotInReactiveContext} from '../reactivity/asserts';
-import {isPlatformBrowser} from '../util/misc_utils';
 import {AfterRenderPhase, AfterRenderRef} from './api';
 import {
   AfterRenderHooks,
@@ -230,7 +229,7 @@ export function afterRender(
   !options?.injector && assertInInjectionContext(afterRender);
   const injector = options?.injector ?? inject(Injector);
 
-  if (!isPlatformBrowser(injector)) {
+  if (typeof ngServerMode !== 'undefined' && ngServerMode) {
     return NOOP_AFTER_RENDER_REF;
   }
 
@@ -400,7 +399,7 @@ export function afterNextRender(
   !options?.injector && assertInInjectionContext(afterNextRender);
   const injector = options?.injector ?? inject(Injector);
 
-  if (!isPlatformBrowser(injector)) {
+  if (typeof ngServerMode !== 'undefined' && ngServerMode) {
     return NOOP_AFTER_RENDER_REF;
   }
 

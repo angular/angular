@@ -10,7 +10,6 @@ import {
   APP_ID,
   Component,
   destroyPlatform,
-  getPlatform,
   inject,
   NgZone,
   PLATFORM_ID,
@@ -38,16 +37,12 @@ describe('platform-server partial hydration integration', () => {
     await import('@angular/core/primitives/event-dispatch/contract_bundle_min.js' as string);
   });
 
-  beforeEach(() => {
-    if (getPlatform()) destroyPlatform();
-  });
-
   afterAll(() => {
     globalThis.window = originalWindow;
-    destroyPlatform();
   });
 
   afterEach(() => {
+    destroyPlatform();
     window._ejsas = {};
   });
 

@@ -25,7 +25,6 @@ import {enableApplyRootElementTransformImpl} from '../render3/instructions/share
 import {enableLocateOrCreateContainerAnchorImpl} from '../render3/instructions/template';
 import {enableLocateOrCreateTextNodeImpl} from '../render3/instructions/text';
 import {getDocument} from '../render3/interfaces/document';
-import {isPlatformBrowser} from '../render3/util/misc_utils';
 import {TransferState} from '../transfer_state';
 import {performanceMarkFeature} from '../util/performance';
 import {NgZone} from '../zone';
@@ -175,7 +174,10 @@ export const CLIENT_RENDER_MODE_FLAG = 'ngcm';
  */
 function isClientRenderModeEnabled(): boolean {
   const doc = getDocument();
-  return isPlatformBrowser() && doc.body.hasAttribute(CLIENT_RENDER_MODE_FLAG);
+  return (
+    (typeof ngServerMode === 'undefined' || !ngServerMode) &&
+    doc.body.hasAttribute(CLIENT_RENDER_MODE_FLAG)
+  );
 }
 
 /**
@@ -189,12 +191,12 @@ function isClientRenderModeEnabled(): boolean {
  * configure or change anything in NgUniversal to enable the feature.
  */
 export function withDomHydration(): EnvironmentProviders {
-  return makeEnvironmentProviders([
+  const providers: Provider[] = [
     {
       provide: IS_HYDRATION_DOM_REUSE_ENABLED,
       useFactory: () => {
         let isEnabled = true;
-        if (isPlatformBrowser()) {
+        if (typeof ngServerMode === 'undefined' || !ngServerMode) {
           // On the client, verify that the server response contains
           // hydration annotations. Otherwise, keep hydration disabled.
           const transferState = inject(TransferState, {optional: true});
@@ -213,7 +215,7 @@ export function withDomHydration(): EnvironmentProviders {
         // no way to turn it off (e.g. for tests), so we turn it off by default.
         setIsI18nHydrationSupportEnabled(false);
 
-        if (!isPlatformBrowser()) {
+        if (typeof ngServerMode !== 'undefined' && ngServerMode) {
           // Since this function is used across both server and client,
           // make sure that the runtime code is only added when invoked
           // on the client (see the `enableHydrationRuntimeSupport` function
@@ -240,43 +242,50 @@ export function withDomHydration(): EnvironmentProviders {
       },
       multi: true,
     },
-    {
-      provide: PRESERVE_HOST_CONTENT,
-      useFactory: () => {
-        // Preserve host element content only in a browser
-        // environment and when hydration is configured properly.
-        // On a server, an application is rendered from scratch,
-        // so the host content needs to be empty.
-        return isPlatformBrowser() && inject(IS_HYDRATION_DOM_REUSE_ENABLED);
+  ];
+
+  if (typeof ngServerMode === 'undefined' || !ngServerMode) {
+    providers.push(
+      {
+        provide: PRESERVE_HOST_CONTENT,
+        useFactory: () => {
+          // Preserve host element content only in a browser
+          // environment and when hydration is configured properly.
+          // On a server, an application is rendered from scratch,
+          // so the host content needs to be empty.
+          return inject(IS_HYDRATION_DOM_REUSE_ENABLED);
+        },
       },
-    },
-    {
-      provide: APP_BOOTSTRAP_LISTENER,
-      useFactory: () => {
-        if (isPlatformBrowser() && inject(IS_HYDRATION_DOM_REUSE_ENABLED)) {
-          const appRef = inject(ApplicationRef);
-          const injector = inject(Injector);
-          return () => {
-            // Wait until an app becomes stable and cleanup all views that
-            // were not claimed during the application bootstrap process.
-            // The timing is similar to when we start the serialization process
-            // on the server.
-            //
-            // Note: the cleanup task *MUST* be scheduled within the Angular zone in Zone apps
-            // to ensure that change detection is properly run afterward.
-            whenStableWithTimeout(appRef, injector).then(() => {
-              cleanupDehydratedViews(appRef);
-              if (typeof ngDevMode !== 'undefined' && ngDevMode) {
-                printHydrationStats(injector);
-              }
-            });
-          };
-        }
-        return () => {}; // noop
+      {
+        provide: APP_BOOTSTRAP_LISTENER,
+        useFactory: () => {
+          if (inject(IS_HYDRATION_DOM_REUSE_ENABLED)) {
+            const appRef = inject(ApplicationRef);
+            const injector = inject(Injector);
+            return () => {
+              // Wait until an app becomes stable and cleanup all views that
+              // were not claimed during the application bootstrap process.
+              // The timing is similar to when we start the serialization process
+              // on the server.
+              //
+              // Note: the cleanup task *MUST* be scheduled within the Angular zone in Zone apps
+              // to ensure that change detection is properly run afterward.
+              whenStableWithTimeout(appRef, injector).then(() => {
+                cleanupDehydratedViews(appRef);
+                if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+                  printHydrationStats(injector);
+                }
+              });
+            };
+          }
+          return () => {}; // noop
+        },
+        multi: true,
       },
-      multi: true,
-    },
-  ]);
+    );
+  }
+
+  return makeEnvironmentProviders(providers);
 }
 
 /**
@@ -311,7 +320,7 @@ export function withI18nSupport(): Provider[] {
  * @developerPreview
  */
 export function withIncrementalHydration(): Provider[] {
-  return [
+  const providers: Provider[] = [
     withEventReplay(),
     {
       provide: IS_INCREMENTAL_HYDRATION_ENABLED,
@@ -324,22 +333,25 @@ export function withIncrementalHydration(): Provider[] {
       },
       multi: true,
     },
-    {
+  ];
+
+  if (typeof ngServerMode === 'undefined' || !ngServerMode) {
+    providers.push({
       provide: APP_BOOTSTRAP_LISTENER,
       useFactory: () => {
-        if (isPlatformBrowser()) {
-          const injector = inject(Injector);
-          const doc = getDocument();
-          return () => {
-            bootstrapIncrementalHydration(doc, injector);
-            appendDeferBlocksToJSActionMap(doc, injector);
-          };
-        }
-        return () => {}; // noop for the server code
+        const injector = inject(Injector);
+        const doc = getDocument();
+
+        return () => {
+          bootstrapIncrementalHydration(doc, injector);
+          appendDeferBlocksToJSActionMap(doc, injector);
+        };
       },
       multi: true,
-    },
-  ];
+    });
+  }
+
+  return providers;
 }
 
 /**
