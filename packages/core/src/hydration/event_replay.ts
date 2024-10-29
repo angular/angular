@@ -27,7 +27,11 @@ import {RElement} from '../render3/interfaces/renderer_dom';
 import {CLEANUP, LView, TView} from '../render3/interfaces/view';
 import {unwrapRNode} from '../render3/util/view_utils';
 
-import {BLOCK_ELEMENT_MAP, EVENT_REPLAY_ENABLED_DEFAULT, IS_EVENT_REPLAY_ENABLED} from './tokens';
+import {
+  JSACTION_BLOCK_ELEMENT_MAP,
+  EVENT_REPLAY_ENABLED_DEFAULT,
+  IS_EVENT_REPLAY_ENABLED,
+} from './tokens';
 import {
   sharedStashFunction,
   sharedMapFunction,
@@ -38,12 +42,11 @@ import {
 } from '../event_delegation_utils';
 import {APP_ID} from '../application/application_tokens';
 import {performanceMarkFeature} from '../util/performance';
-import {hydrateFromBlockName, findFirstHydratedParentDeferBlock} from './blocks';
+import {hydrateFromBlockName} from './blocks';
 import {DeferBlock, DeferBlockTrigger, HydrateTriggerDetails} from '../defer/interfaces';
 import {triggerAndWaitForCompletion} from '../defer/instructions';
 import {cleanupDehydratedViews, cleanupLContainer} from './cleanup';
 import {hoverEventNames, interactionEventNames} from '../defer/dom_triggers';
-import {DeferBlockRegistry} from '../defer/registry';
 
 /** Apps in which we've enabled event replay.
  *  This is to prevent initializing event replay more than once per app.
@@ -98,7 +101,7 @@ export function withEventReplay(): Provider[] {
           // being present on the same page. We only want to enable event replay for the
           // apps that actually want it.
           if (!appsWithEventReplay.has(appRef)) {
-            const jsActionMap = inject(BLOCK_ELEMENT_MAP);
+            const jsActionMap = inject(JSACTION_BLOCK_ELEMENT_MAP);
             if (shouldEnableEventReplay(injector)) {
               setStashFn((rEl: RElement, eventName: string, listenerFn: VoidFunction) => {
                 sharedStashFunction(rEl, eventName, listenerFn);
@@ -253,11 +256,6 @@ async function hydrateAndInvokeBlockListeners(
     fetchAndRenderDeferBlock,
   );
   if (deferBlock !== null) {
-    // TODO(incremental-hydration): extract this work into a post
-    // hydration cleanup function
-    const deferBlockRegistry = injector.get(DeferBlockRegistry);
-    deferBlockRegistry.hydrating.delete(blockName);
-    hydratedBlocks.add(blockName);
     const appRef = injector.get(ApplicationRef);
     await appRef.whenStable();
     replayQueuedBlockEvents(hydratedBlocks, injector);
@@ -304,7 +302,7 @@ export function convertHydrateTriggersToJsAction(
 }
 
 export function appendBlocksToJSActionMap(el: RElement, injector: Injector) {
-  const jsActionMap = injector.get(BLOCK_ELEMENT_MAP);
+  const jsActionMap = injector.get(JSACTION_BLOCK_ELEMENT_MAP);
   sharedMapFunction(el, jsActionMap);
 }
 

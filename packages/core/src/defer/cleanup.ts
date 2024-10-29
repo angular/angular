@@ -48,7 +48,7 @@ export function invokeTriggerCleanupFns(type: TriggerType, lDetails: LDeferBlock
 }
 
 /**
- * Invokes registered cleanup functions for both prefetch and regular triggers.
+ * Invokes registered cleanup functions for prefetch, hydrate, and regular triggers.
  */
 export function invokeAllTriggerCleanupFns(
   lDetails: LDeferBlockDetails,
