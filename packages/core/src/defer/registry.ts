@@ -24,8 +24,11 @@ export class DeferBlockRegistry {
   get(blockId: string): DeferBlock | null {
     return this.registry.get(blockId) ?? null;
   }
-  // TODO(incremental-hydration): we need to determine when this should be invoked
-  // to prevent leaking memory in SSR cases
+
+  has(blockId: string): boolean {
+    return this.registry.has(blockId);
+  }
+
   remove(blockId: string) {
     this.registry.delete(blockId);
   }
@@ -33,6 +36,14 @@ export class DeferBlockRegistry {
     return this.registry.size;
   }
 
+  removeBlocks(blocks: Set<string>) {
+    for (let blockId of blocks) {
+      this.remove(blockId);
+    }
+  }
+
+  // we have to leave the lowest block Id in the registry
+  // unless that block has no children
   addCleanupFn(blockId: string, fn: Function) {
     let cleanupFunctions: Function[] = [];
     if (this.cleanupFns.has(blockId)) {
@@ -50,12 +61,14 @@ export class DeferBlockRegistry {
     for (let fn of fns) {
       fn();
     }
+    // We can safely clear these out now that they've fired.
+    this.cleanupFns.delete(blockId);
   }
 
   // Blocks that are being hydrated.
   // TODO(incremental-hydration): cleanup task - we currently retain ids post hydration
   // and need to determine when we can remove them.
-  hydrating = new Set();
+  hydrating = new Set<string>();
 
   /** @nocollapse */
   static ɵprov = /** @pureOrBreakMyCode */ /* @__PURE__ */ ɵɵdefineInjectable({
