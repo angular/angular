@@ -148,13 +148,21 @@ export class OutputMigration extends TsurgeFunnelMigration<
                 outputFile,
               )
             ) {
-              filesWithOutputDeclarations.add(node.getSourceFile());
-              addOutputReplacement(
-                outputFieldReplacements,
-                outputDef.id,
-                outputFile,
-                calculateDeclarationReplacement(info, node, outputDef.aliasParam),
-              );
+              const aliasParam = outputDef.aliasParam;
+              const aliasOptionValue = aliasParam ? evaluator.evaluate(aliasParam) : undefined;
+
+              if (aliasOptionValue == undefined || typeof aliasOptionValue === 'string') {
+                filesWithOutputDeclarations.add(node.getSourceFile());
+                addOutputReplacement(
+                  outputFieldReplacements,
+                  outputDef.id,
+                  outputFile,
+                  calculateDeclarationReplacement(info, node, aliasOptionValue?.toString()),
+                );
+              } else {
+                problematicUsages[outputDef.id] = true;
+                problematicDeclarationCount++;
+              }
             }
           } else {
             problematicDeclarationCount++;

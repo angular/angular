@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {ImportManager} from '../../../../compiler-cli/private/migrations';
+import {ImportManager, PartialEvaluator} from '../../../../compiler-cli/private/migrations';
 import {
   ProgramInfo,
   ProjectFile,
@@ -25,7 +25,7 @@ const printer = ts.createPrinter();
 export function calculateDeclarationReplacement(
   info: ProgramInfo,
   node: ts.PropertyDeclaration,
-  aliasParam?: ts.Expression,
+  aliasParam?: string,
 ): Replacement {
   const sf = node.getSourceFile();
   const payloadTypes =
@@ -36,7 +36,19 @@ export function calculateDeclarationReplacement(
   const outputCall = ts.factory.createCallExpression(
     ts.factory.createIdentifier('output'),
     payloadTypes,
-    aliasParam ? [aliasParam] : [],
+    aliasParam !== undefined
+      ? [
+          ts.factory.createObjectLiteralExpression(
+            [
+              ts.factory.createPropertyAssignment(
+                'alias',
+                ts.factory.createStringLiteral(aliasParam, true),
+              ),
+            ],
+            false,
+          ),
+        ]
+      : [],
   );
 
   const existingModifiers = (node.modifiers ?? []).filter(
