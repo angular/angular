@@ -34,7 +34,7 @@ function publishRepo {
 
   BUILD_REPO="${COMPONENT}-builds"
   REPO_DIR="$(pwd)/tmp/${BUILD_REPO}"
-  REPO_URL="https://github.com/angular/${BUILD_REPO}.git"
+  REPO_URL="https://github.com/${ORG}/${BUILD_REPO}.git"
 
   if [ -n "${CREATE_REPOS:-}" ]; then
     curl -u "$ORG:$TOKEN" https://api.github.com/user/repos \
