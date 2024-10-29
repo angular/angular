@@ -338,7 +338,7 @@ export class ShadowCss {
    *    captures how many (if any) leading whitespaces are present or a comma
    *  - (?:(?:(['"])((?:\\\\|\\\2|(?!\2).)+)\2)|(-?[A-Za-z][\w\-]*))
    *    captures two different possible keyframes, ones which are quoted or ones which are valid css
-   * indents (custom properties excluded)
+   * idents (custom properties excluded)
    *  - (?=[,\s;]|$)
    *    simply matches the end of the possible keyframe, valid endings are: a comma, a space, a
    * semicolon or the end of the string
@@ -459,7 +459,7 @@ export class ShadowCss {
    */
   private _scopeCssText(cssText: string, scopeSelector: string, hostSelector: string): string {
     const unscopedRules = this._extractUnscopedRulesFromCssText(cssText);
-    // replace :host and :host-context with -shadowcsshost and -shadowcsshostcontext respectively
+    // replace :host and :host-context -shadowcsshost and -shadowcsshost respectively
     cssText = this._insertPolyfillHostInCssText(cssText);
     cssText = this._convertColonHost(cssText);
     cssText = this._convertColonHostContext(cssText);
@@ -539,7 +539,7 @@ export class ShadowCss {
    * .foo<scopeName> .bar { ... }
    */
   private _convertColonHostContext(cssText: string): string {
-    return cssText.replace(_cssColonHostContextReGlobal, (selectorText, pseudoPrefix) => {
+    return cssText.replace(_cssColonHostContextReGlobal, (selectorText) => {
       // We have captured a selector that contains a `:host-context` rule.
 
       // For backward compatibility `:host-context` may contain a comma separated list of selectors.
@@ -594,12 +594,10 @@ export class ShadowCss {
       }
 
       // The context selectors now must be combined with each other to capture all the possible
-      // selectors that `:host-context` can match. See `_combineHostContextSelectors()` for more
+      // selectors that `:host-context` can match. See `combineHostContextSelectors()` for more
       // info about how this is done.
       return contextSelectorGroups
-        .map((contextSelectors) =>
-          _combineHostContextSelectors(contextSelectors, selectorText, pseudoPrefix),
-        )
+        .map((contextSelectors) => combineHostContextSelectors(contextSelectors, selectorText))
         .join(', ');
     });
   }
@@ -618,12 +616,7 @@ export class ShadowCss {
       let selector = rule.selector;
       let content = rule.content;
       if (rule.selector[0] !== '@') {
-        selector = this._scopeSelector({
-          selector,
-          scopeSelector,
-          hostSelector,
-          isParentSelector: true,
-        });
+        selector = this._scopeSelector(rule.selector, scopeSelector, hostSelector);
       } else if (scopedAtRuleIdentifiers.some((atRule) => rule.selector.startsWith(atRule))) {
         content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
       } else if (rule.selector.startsWith('@font-face') || rule.selector.startsWith('@page')) {
@@ -663,44 +656,15 @@ export class ShadowCss {
     });
   }
 
-  private _safeSelector: SafeSelector | undefined;
-  private _shouldScopeIndicator: boolean | undefined;
-
-  // `isParentSelector` is used to distinguish the selectors which are coming from
-  // the initial selector string and any nested selectors, parsed recursively,
-  // for example `selector = 'a:where(.one)'` could be the parent, while recursive call
-  // would have `selector = '.one'`.
-  private _scopeSelector({
-    selector,
-    scopeSelector,
-    hostSelector,
-    isParentSelector = false,
-  }: {
-    selector: string;
-    scopeSelector: string;
-    hostSelector: string;
-    isParentSelector?: boolean;
-  }): string {
-    // Split the selector into independent parts by `,` (comma) unless
-    // comma is within parenthesis, for example `:is(.one, two)`.
-    // Negative lookup after comma allows not splitting inside nested parenthesis,
-    // up to three levels (((,))).
-    const selectorSplitRe =
-      / ?,(?!(?:[^)(]*(?:\([^)(]*(?:\([^)(]*(?:\([^)(]*\)[^)(]*)*\)[^)(]*)*\)[^)(]*)*\))) ?/;
-
+  private _scopeSelector(selector: string, scopeSelector: string, hostSelector: string): string {
     return selector
-      .split(selectorSplitRe)
+      .split(/ ?, ?/)
       .map((part) => part.split(_shadowDeepSelectors))
       .map((deepParts) => {
         const [shallowPart, ...otherParts] = deepParts;
         const applyScope = (shallowPart: string) => {
           if (this._selectorNeedsScoping(shallowPart, scopeSelector)) {
-            return this._applySelectorScope({
-              selector: shallowPart,
-              scopeSelector,
-              hostSelector,
-              isParentSelector,
-            });
+            return this._applySelectorScope(shallowPart, scopeSelector, hostSelector);
           } else {
             return shallowPart;
           }
@@ -733,9 +697,9 @@ export class ShadowCss {
     if (_polyfillHostRe.test(selector)) {
       const replaceBy = `[${hostSelector}]`;
       return selector
-        .replace(_polyfillHostNoCombinatorReGlobal, (_hnc, selector) => {
+        .replace(_polyfillHostNoCombinatorRe, (hnc, selector) => {
           return selector.replace(
-            /([^:\)]*)(:*)(.*)/,
+            /([^:]*)(:*)(.*)/,
             (_: string, before: string, colon: string, after: string) => {
               return before + replaceBy + colon + after;
             },
@@ -749,17 +713,11 @@ export class ShadowCss {
 
   // return a selector with [name] suffix on each simple selector
   // e.g. .foo.bar > .zot becomes .foo[name].bar[name] > .zot[name]  /** @internal */
-  private _applySelectorScope({
-    selector,
-    scopeSelector,
-    hostSelector,
-    isParentSelector,
-  }: {
-    selector: string;
-    scopeSelector: string;
-    hostSelector: string;
-    isParentSelector?: boolean;
-  }): string {
+  private _applySelectorScope(
+    selector: string,
+    scopeSelector: string,
+    hostSelector: string,
+  ): string {
     const isRe = /\[is=([^\]]*)\]/g;
     scopeSelector = scopeSelector.replace(isRe, (_: string, ...parts: string[]) => parts[0]);
 
@@ -774,10 +732,6 @@ export class ShadowCss {
 
       if (p.includes(_polyfillHostNoCombinator)) {
         scopedP = this._applySimpleSelectorScope(p, scopeSelector, hostSelector);
-        if (_polyfillHostNoCombinatorWithinPseudoFunction.test(p)) {
-          const [_, before, colon, after] = scopedP.match(/([^:]*)(:*)(.*)/)!;
-          scopedP = before + attrName + colon + after;
-        }
       } else {
         // remove :host since it should be unnecessary
         const t = p.replace(_polyfillHostRe, '');
@@ -792,60 +746,13 @@ export class ShadowCss {
       return scopedP;
     };
 
-    // Wraps `_scopeSelectorPart()` to not use it directly on selectors with
-    // pseudo selector functions like `:where()`. Selectors within pseudo selector
-    // functions are recursively sent to `_scopeSelector()`.
-    const _pseudoFunctionAwareScopeSelectorPart = (selectorPart: string) => {
-      let scopedPart = '';
-
-      const cssPrefixWithPseudoSelectorFunctionMatch = selectorPart.match(
-        _cssPrefixWithPseudoSelectorFunction,
-      );
-      if (cssPrefixWithPseudoSelectorFunctionMatch) {
-        const [cssPseudoSelectorFunction] = cssPrefixWithPseudoSelectorFunctionMatch;
-
-        // Unwrap the pseudo selector to scope its contents.
-        // For example,
-        // - `:where(selectorToScope)` -> `selectorToScope`;
-        // - `:is(.foo, .bar)` -> `.foo, .bar`.
-        const selectorToScope = selectorPart.slice(cssPseudoSelectorFunction.length, -1);
-
-        if (selectorToScope.includes(_polyfillHostNoCombinator)) {
-          this._shouldScopeIndicator = true;
-        }
-
-        const scopedInnerPart = this._scopeSelector({
-          selector: selectorToScope,
-          scopeSelector,
-          hostSelector,
-        });
-
-        // Put the result back into the pseudo selector function.
-        scopedPart = `${cssPseudoSelectorFunction}${scopedInnerPart})`;
-      } else {
-        this._shouldScopeIndicator =
-          this._shouldScopeIndicator || selectorPart.includes(_polyfillHostNoCombinator);
-        scopedPart = this._shouldScopeIndicator ? _scopeSelectorPart(selectorPart) : selectorPart;
-      }
-
-      return scopedPart;
-    };
-
-    if (isParentSelector) {
-      this._safeSelector = new SafeSelector(selector);
-      selector = this._safeSelector.content();
-    }
+    const safeContent = new SafeSelector(selector);
+    selector = safeContent.content();
 
     let scopedSelector = '';
     let startIndex = 0;
     let res: RegExpExecArray | null;
-    // Combinators aren't used as a delimiter if they are within parenthesis,
-    // for example `:where(.one .two)` stays intact.
-    // Similarly to selector separation by comma initially, negative lookahead
-    // is used here to not break selectors within nested parenthesis up to three
-    // nested layers.
-    const sep =
-      /( |>|\+|~(?!=))(?!([^)(]*(?:\([^)(]*(?:\([^)(]*(?:\([^)(]*\)[^)(]*)*\)[^)(]*)*\)[^)(]*)*\)))\s*/g;
+    const sep = /( |>|\+|~(?!=))\s*/g;
 
     // If a selector appears before :host it should not be shimmed as it
     // matches on ancestor elements and not on elements in the host's shadow
@@ -859,13 +766,8 @@ export class ShadowCss {
     // - `tag :host` -> `tag [h]` (`tag` is not scoped because it's considered part of a
     //   `:host-context(tag)`)
     const hasHost = selector.includes(_polyfillHostNoCombinator);
-    // Only scope parts after or on the same level as the first `-shadowcsshost-no-combinator`
-    // when it is present. The selector has the same level when it is a part of a pseudo
-    // selector, like `:where()`, for example `:where(:host, .foo)` would result in `.foo`
-    // being scoped.
-    if (isParentSelector || this._shouldScopeIndicator) {
-      this._shouldScopeIndicator = !hasHost;
-    }
+    // Only scope parts after the first `-shadowcsshost-no-combinator` when it is present
+    let shouldScope = !hasHost;
 
     while ((res = sep.exec(selector)) !== null) {
       const separator = res[1];
@@ -884,17 +786,18 @@ export class ShadowCss {
         continue;
       }
 
-      const scopedPart = _pseudoFunctionAwareScopeSelectorPart(part);
+      shouldScope = shouldScope || part.includes(_polyfillHostNoCombinator);
+      const scopedPart = shouldScope ? _scopeSelectorPart(part) : part;
       scopedSelector += `${scopedPart} ${separator} `;
       startIndex = sep.lastIndex;
     }
 
     const part = selector.substring(startIndex);
-    scopedSelector += _pseudoFunctionAwareScopeSelectorPart(part);
+    shouldScope = shouldScope || part.includes(_polyfillHostNoCombinator);
+    scopedSelector += shouldScope ? _scopeSelectorPart(part) : part;
 
     // replace the placeholders with their original values
-    // using values stored inside the `safeSelector` instance.
-    return this._safeSelector!.restore(scopedSelector);
+    return safeContent.restore(scopedSelector);
   }
 
   private _insertPolyfillHostInCssText(selector: string): string {
@@ -959,8 +862,6 @@ class SafeSelector {
   }
 }
 
-const _cssScopedPseudoFunctionPrefix = '(:(where|is)\\()?';
-const _cssPrefixWithPseudoSelectorFunction = /^:(where|is)\(/i;
 const _cssContentNextSelectorRe =
   /polyfill-next-selector[^}]*content:[\s]*?(['"])(.*?)\1[;\s]*}([^{]*?){/gim;
 const _cssContentRuleRe = /(polyfill-rule)[^}]*(content:[\s]*(['"])(.*?)\3)[;\s]*[^}]*}/gim;
@@ -971,17 +872,10 @@ const _polyfillHost = '-shadowcsshost';
 const _polyfillHostContext = '-shadowcsscontext';
 const _parenSuffix = '(?:\\((' + '(?:\\([^)(]*\\)|[^)(]*)+?' + ')\\))?([^,{]*)';
 const _cssColonHostRe = new RegExp(_polyfillHost + _parenSuffix, 'gim');
-const _cssColonHostContextReGlobal = new RegExp(
-  _cssScopedPseudoFunctionPrefix + '(' + _polyfillHostContext + _parenSuffix + ')',
-  'gim',
-);
+const _cssColonHostContextReGlobal = new RegExp(_polyfillHostContext + _parenSuffix, 'gim');
 const _cssColonHostContextRe = new RegExp(_polyfillHostContext + _parenSuffix, 'im');
 const _polyfillHostNoCombinator = _polyfillHost + '-no-combinator';
-const _polyfillHostNoCombinatorWithinPseudoFunction = new RegExp(
-  `:.*\\(.*${_polyfillHostNoCombinator}.*\\)`,
-);
 const _polyfillHostNoCombinatorRe = /-shadowcsshost-no-combinator([^\s]*)/;
-const _polyfillHostNoCombinatorReGlobal = new RegExp(_polyfillHostNoCombinatorRe, 'g');
 const _shadowDOMSelectorsRe = [
   /::shadow/g,
   /::content/g,
@@ -1232,11 +1126,7 @@ function unescapeQuotes(str: string, isQuoted: boolean): string {
  * @param contextSelectors an array of context selectors that will be combined.
  * @param otherSelectors the rest of the selectors that are not context selectors.
  */
-function _combineHostContextSelectors(
-  contextSelectors: string[],
-  otherSelectors: string,
-  pseudoPrefix = '',
-): string {
+function combineHostContextSelectors(contextSelectors: string[], otherSelectors: string): string {
   const hostMarker = _polyfillHostNoCombinator;
   _polyfillHostRe.lastIndex = 0; // reset the regex to ensure we get an accurate test
   const otherSelectorsHasHost = _polyfillHostRe.test(otherSelectors);
@@ -1265,8 +1155,8 @@ function _combineHostContextSelectors(
   return combined
     .map((s) =>
       otherSelectorsHasHost
-        ? `${pseudoPrefix}${s}${otherSelectors}`
-        : `${pseudoPrefix}${s}${hostMarker}${otherSelectors}, ${pseudoPrefix}${s} ${hostMarker}${otherSelectors}`,
+        ? `${s}${otherSelectors}`
+        : `${s}${hostMarker}${otherSelectors}, ${s} ${hostMarker}${otherSelectors}`,
     )
     .join(',');
 }
