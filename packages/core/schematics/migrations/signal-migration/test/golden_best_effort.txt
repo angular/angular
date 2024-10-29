@@ -1233,6 +1233,8 @@ export class MyComp {
   readonly name = input('');
   other: OtherCmp = null!;
 
+  readonly scroller = input({ fn: () => { }, other: (x?: any) => { } });
+
   click() {
     const name = this.name();
     if (name) {
@@ -1242,6 +1244,22 @@ export class MyComp {
     const nameValue = this.other.name();
     if (nameValue) {
       console.error(nameValue);
+    }
+  }
+
+  onOverlayAnimationStart() {
+    if (global) {
+      console.log('some statements');
+      console.log('some statements');
+
+      const scroller = this.scroller();
+      if (window) {
+        scroller?.fn();
+        scroller.other();
+      }
+      if (window) {
+        scroller?.other(true as any);
+      }
     }
   }
 }
