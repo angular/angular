@@ -158,6 +158,7 @@ function connectSharedReferences(
   // the reference and the earliest partner. References in between can also
   // use the shared flow node and not preserve their original reference— as
   // this would be rather unreadable and inefficient.
+  const seenBlocks = new Set<ts.ArrowFunction | ts.Block | ts.SourceFile>();
   let highestBlock: ts.Block | ts.SourceFile | ts.ArrowFunction | null = null;
   for (let i = earliestPartnerId; i <= refId; i++) {
     // Different flow container captured sequentially in result. Ignore.
@@ -166,12 +167,23 @@ function connectSharedReferences(
     }
 
     // Iterate up the block, find the highest block within the flow container.
-    let block: ts.Node = result[i].originalNode.parent;
-    while (!isBlockLikeAncestor(block)) {
-      block = block.parent;
-    }
-    if (highestBlock === null || block.getStart() < highestBlock.getStart()) {
-      highestBlock = block;
+    let current: ts.Node = result[i].originalNode.parent;
+    while (current !== undefined && !ts.isSourceFile(current)) {
+      if (isBlockLikeAncestor(current)) {
+        // If we saw this block already, it is a common ancestor from another
+        // partner. Check if it would be higher than the current highest block;
+        // and choose it accordingly.
+        if (seenBlocks.has(current)) {
+          if (highestBlock === null || current.getStart() < highestBlock.getStart()) {
+            highestBlock = current;
+          }
+          break;
+        }
+
+        seenBlocks.add(current);
+      }
+
+      current = current.parent;
     }
 
     if (i !== earliestPartnerId) {
