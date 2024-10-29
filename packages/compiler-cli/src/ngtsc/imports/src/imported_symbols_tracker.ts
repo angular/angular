@@ -7,6 +7,7 @@
  */
 
 import ts from 'typescript';
+import type { ClassDeclaration } from '../../reflection';
 
 /**
  * A map of imported symbols to local names under which the symbols are available within a file.
@@ -83,6 +84,82 @@ export class ImportedSymbolsTracker {
     this.scanImports(sourceFile);
     const namespaces = this.fileToNamespaceImports.get(sourceFile)!;
     return namespaces.has(moduleName);
+  }
+
+  /**
+   * Finds all imports of a specific class in a source file.
+   * @param sourceFile File to check for imports
+   * @param classDeclaration The class declaration to look for
+   * @returns Information about how the class is imported, if at all
+   */
+  findClassImports(
+    sourceFile: ts.SourceFile,
+    classDeclaration: ClassDeclaration,
+  ): {
+    found: boolean;
+    moduleName?: string;
+    importType?: 'named' | 'namespace' | 'default';
+    localName?: string;
+  } {
+    if (!classDeclaration.name) {
+      return { found: false };
+    }
+
+    const className = classDeclaration.name.text;
+    this.scanImports(sourceFile);
+
+    // Check all modules in named imports
+    const fileImports = this.fileToNamedImports.get(sourceFile)!;
+    for (const [moduleName, moduleImports] of fileImports) {
+      // Check named imports
+      if (moduleImports.has(className)) {
+        const localNames = moduleImports.get(className)!;
+        return {
+          found: true,
+          moduleName,
+          importType: 'named',
+          localName: localNames.values().next().value
+        };
+      }
+
+      // Check default imports
+      const defaultImports = moduleImports.get('default');
+      if (defaultImports?.has(className)) {
+        return {
+          found: true,
+          moduleName,
+          importType: 'default',
+          localName: className
+        };
+      }
+    }
+
+    // Check namespace imports
+    const namespaces = this.fileToNamespaceImports.get(sourceFile)!;
+    for (const [moduleName, namespaceNames] of namespaces) {
+      if (namespaceNames.has(className)) {
+        return {
+          found: true,
+          moduleName,
+          importType: 'namespace',
+          localName: className
+        };
+      }
+    }
+
+    return { found: false };
+  }
+
+  /**
+   * Checks if a class is imported in the source file
+   * @param sourceFile File to check
+   * @param classDeclaration The class to look for
+   */
+  isClassImported(
+    sourceFile: ts.SourceFile,
+    classDeclaration: ClassDeclaration,
+  ): boolean {
+    return this.findClassImports(sourceFile, classDeclaration).found;
   }
 
   /** Scans a `SourceFile` for import statements and caches them for later use. */
