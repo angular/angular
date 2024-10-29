@@ -84,7 +84,6 @@ import {tryParseSignalInputMapping} from './input_function';
 import {tryParseSignalModelMapping} from './model_function';
 import {tryParseInitializerBasedOutput} from './output_function';
 import {tryParseSignalQueryFromInitializer} from './query_functions';
-import {NG_STANDALONE_DEFAULT_VALUE} from '../../common/src/standalone-default-value';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
 
@@ -117,6 +116,7 @@ export function extractDirectiveMetadata(
   compilationMode: CompilationMode,
   defaultSelector: string | null,
   strictStandalone: boolean,
+  implicitStandaloneValue: boolean,
 ):
   | {
       jitForced: false;
@@ -336,7 +336,7 @@ export function extractDirectiveMetadata(
         dep.token.value.name === 'TemplateRef',
     );
 
-  let isStandalone = NG_STANDALONE_DEFAULT_VALUE;
+  let isStandalone = implicitStandaloneValue;
   if (directive.has('standalone')) {
     const expr = directive.get('standalone')!;
     const resolved = evaluator.evaluate(expr);

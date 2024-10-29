@@ -159,6 +159,7 @@ function setup(
     /* i18nPreserveSignificantWhitespace */ true,
     /* strictStandalone */ false,
     /* enableHmr */ false,
+    /* implicitStandaloneValue */ true,
   );
   return {reflectionHost, handler, resourceLoader, metaRegistry};
 }
