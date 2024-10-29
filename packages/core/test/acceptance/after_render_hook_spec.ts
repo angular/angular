@@ -1542,6 +1542,14 @@ describe('after render hooks', () => {
       providers: [{provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID}],
     };
 
+    beforeAll(() => {
+      globalThis['ngServerMode'] = true;
+    });
+
+    afterAll(() => {
+      globalThis['ngServerMode'] = undefined;
+    });
+
     describe('afterRender', () => {
       it('should not run', () => {
         let afterRenderCount = 0;

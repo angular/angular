@@ -7,6 +7,7 @@
  */
 
 import '../util/ng_jit_mode';
+import '../util/ng_server_mode';
 
 import {
   setActiveConsumer,

@@ -1815,6 +1815,9 @@
     "name": "init_ng_reflect"
   },
   {
+    "name": "init_ng_server_mode"
+  },
+  {
     "name": "init_ng_zone"
   },
   {
@@ -2293,9 +2296,6 @@
   },
   {
     "name": "isNodeMatchingSelectorList"
-  },
-  {
-    "name": "isPlatformBrowser"
   },
   {
     "name": "isPlatformServer"

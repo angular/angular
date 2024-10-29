@@ -36,7 +36,6 @@ import {NOOP_AFTER_RENDER_REF, type AfterRenderOptions} from '../after_render/ho
 import {DestroyRef} from '../../linker/destroy_ref';
 import {assertNotInReactiveContext} from './asserts';
 import {assertInInjectionContext} from '../../di/contextual';
-import {isPlatformBrowser} from '../util/misc_utils';
 
 const NOT_SET = Symbol('NOT_SET');
 const EMPTY_CLEANUP_SET = new Set<() => void>();
@@ -363,12 +362,12 @@ export function afterRenderEffect<E = never, W = never, M = never>(
     );
 
   !options?.injector && assertInInjectionContext(afterRenderEffect);
-  const injector = options?.injector ?? inject(Injector);
 
-  if (!isPlatformBrowser(injector)) {
+  if (typeof ngServerMode !== 'undefined' && ngServerMode) {
     return NOOP_AFTER_RENDER_REF;
   }
 
+  const injector = options?.injector ?? inject(Injector);
   const scheduler = injector.get(ChangeDetectionScheduler);
   const manager = injector.get(AfterRenderManager);
   manager.impl ??= injector.get(AfterRenderImpl);

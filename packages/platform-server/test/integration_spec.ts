@@ -574,10 +574,6 @@ class HiddenModule {}
       destroyPlatform();
     });
 
-    afterAll(() => {
-      destroyPlatform();
-    });
-
     it('should bootstrap', async () => {
       const platform = platformServer([
         {provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}},
@@ -955,12 +951,12 @@ class HiddenModule {}
           })
           class SimpleApp {}
 
-          const bootstrap = renderApplication(
+          const output = await renderApplication(
             getStandaloneBootstrapFn(SimpleApp, [provideClientHydration()]),
             {document: doc},
           );
+
           // HttpClient cache and DOM hydration are enabled by default.
-          const output = await bootstrap;
           expect(output).toContain(`<body><!--${SSR_CONTENT_INTEGRITY_MARKER}-->`);
         });
 

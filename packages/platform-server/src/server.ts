@@ -117,5 +117,20 @@ function _document(injector: Injector) {
 /**
  * @publicApi
  */
-export const platformServer: (extraProviders?: StaticProvider[] | undefined) => PlatformRef =
-  createPlatformFactory(platformCore, 'server', INTERNAL_SERVER_PLATFORM_PROVIDERS);
+export function platformServer(extraProviders?: StaticProvider[] | undefined): PlatformRef {
+  if (typeof ngServerMode === 'undefined') {
+    globalThis['ngServerMode'] = true;
+  }
+
+  const platform = createPlatformFactory(
+    platformCore,
+    'server',
+    INTERNAL_SERVER_PLATFORM_PROVIDERS,
+  )(extraProviders);
+
+  platform.onDestroy(() => {
+    globalThis['ngServerMode'] = undefined;
+  });
+
+  return platform;
+}
