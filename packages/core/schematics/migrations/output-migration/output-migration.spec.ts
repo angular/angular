@@ -42,34 +42,22 @@ describe('outputs', () => {
 
       it('should take alias into account', async () => {
         await verifyDeclaration({
-          before: `@Output({alias: 'otherChange'}) readonly someChange = new EventEmitter();`,
+          before: `@Output('otherChange') readonly someChange = new EventEmitter();`,
           after: `readonly someChange = output({ alias: 'otherChange' });`,
         });
       });
 
-      it('should support alias as statically analyzable reference', async () => {
-        await verify({
-          before: `
+      it('should not migrate aliases that do not evaluate to static string', async () => {
+        await verifyNoChange(`
             import {Directive, Output, EventEmitter} from '@angular/core';
 
-            const aliasParam = { alias: 'otherChange' } as const;
+            const someConst = 'otherChange' as const;
 
             @Directive()
             export class TestDir {
               @Output(aliasParam) someChange = new EventEmitter();
             }
-          `,
-          after: `
-            import {Directive, output} from '@angular/core';
-
-            const aliasParam = { alias: 'otherChange' } as const;
-
-            @Directive()
-            export class TestDir {
-              readonly someChange = output(aliasParam);
-            }
-          `,
-        });
+          `);
       });
 
       it('should add readonly modifier', async () => {
