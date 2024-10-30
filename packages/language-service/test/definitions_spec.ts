@@ -668,6 +668,35 @@ describe('definitions', () => {
     assertFileNames(Array.from(definitions), ['dir.ts']);
   });
 
+  it('gets definition for a property in a "in" expression', () => {
+    initMockFileSystem('Native');
+    const files = {
+      'app.html': `<div>{{'foo' in myObj}}</div>`,
+      'app.ts': `
+         import {Component} from '@angular/core';
+         @Component({
+          templateUrl: '/app.html',
+          standalone: false,
+         })
+         export class AppCmp {
+           myObj: {foo: string} = {foo: 'bar'};
+         }
+       `,
+    };
+    const env = LanguageServiceTestEnv.setup();
+
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+    const template = project.openFile('app.html');
+    project.expectNoSourceDiagnostics();
+
+    template.moveCursorToText(`'foo' in myO¦bj`);
+    const {definitions} = getDefinitionsAndAssertBoundSpan(env, template);
+    expect(definitions[0].name).toEqual('myObj');
+    expect(definitions[0].kind).toBe(ts.ScriptElementKind.memberVariableElement);
+    expect(definitions[0].textSpan).toBe('myObj');
+    assertFileNames(Array.from(definitions), ['app.ts']);
+  });
+
   function getDefinitionsAndAssertBoundSpan(env: LanguageServiceTestEnv, file: OpenBuffer) {
     env.expectNoSourceDiagnostics();
     const definitionAndBoundSpan = file.getDefinitionAndBoundSpan();
