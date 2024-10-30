@@ -38,6 +38,7 @@ const KEYWORDS = [
   'this',
   'typeof',
   'void',
+  'in',
 ];
 
 export class Lexer {
@@ -117,6 +118,10 @@ export class Token {
 
   isKeywordVoid(): boolean {
     return this.type === TokenType.Keyword && this.strValue === 'void';
+  }
+
+  isKeywordIn(): boolean {
+    return this.type === TokenType.Keyword && this.strValue === 'in';
   }
 
   isError(): boolean {
