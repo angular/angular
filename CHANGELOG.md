@@ -1,3 +1,16 @@
+<a name="18.2.10"></a>
+# 18.2.10 (2024-10-30)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [69dce38e778](https://github.com/angular/angular/commit/69dce38e778cb4c15aa06347031765a84e3ac6a5) | fix | Revert: transform pseudo selectors correctly for the encapsulated view. ([#58417](https://github.com/angular/angular/pull/58417)) |
+### localize
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3b989ac5bd9](https://github.com/angular/angular/commit/3b989ac5bd951a3d28bcd0ada150fc81503a016a) | fix | Adding  arb format to the list of valid formats in the localization extractor cli ([#58287](https://github.com/angular/angular/pull/58287)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.2.9"></a>
 # 18.2.9 (2024-10-23)
 ### compiler-cli
