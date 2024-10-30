@@ -97,11 +97,14 @@ export class ChangeTracker {
   /**
    * Removes the text of an AST node from a file.
    * @param node Node whose text should be removed.
+   * @param useFullOffsets Whether to remove the node using its full offset (e.g. `getFullStart`
+   * rather than `fullStart`). This has the advantage of removing any comments that may be tied
+   * to the node, but can lead to too much code being deleted.
    */
-  removeNode(node: ts.Node): void {
+  removeNode(node: ts.Node, useFullOffsets = false): void {
     this._trackChange(node.getSourceFile(), {
-      start: node.getStart(),
-      removeLength: node.getWidth(),
+      start: useFullOffsets ? node.getFullStart() : node.getStart(),
+      removeLength: useFullOffsets ? node.getFullWidth() : node.getWidth(),
       text: '',
     });
   }
