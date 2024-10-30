@@ -7,7 +7,7 @@
       (ngModelChange)="updateSearchQuery($event)"
       class="docs-search-input"
       placeholder="Search docs"
-    ></docs-text-field>
+    />
 
     @if (searchResults() && searchResults()!.length > 0) {
       <ul class="docs-search-results docs-mini-scroll-track">
@@ -31,7 +31,7 @@
                     <ng-container
                       [ngTemplateOutlet]="highlightSnippet"
                       [ngTemplateOutletContext]="{snippet}"
-                    ></ng-container>
+                    />
                   </span>
                 </div>
 
@@ -43,7 +43,7 @@
                     <ng-container
                       [ngTemplateOutlet]="highlightSnippet"
                       [ngTemplateOutletContext]="{snippet}"
-                    ></ng-container>
+                    />
                   </span>
                 }
               </div>
