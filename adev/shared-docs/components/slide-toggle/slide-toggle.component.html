@@ -1,9 +1,9 @@
-<label [attr.for]="buttonId">
-  <span class="docs-label">{{ label }}</span>
+<label [attr.for]="buttonId()">
+  <span class="docs-label">{{ label() }}</span>
   <div class="docs-toggle">
     <input
       type="checkbox"
-      [id]="buttonId"
+      [id]="buttonId()"
       role="switch"
       (click)="toggle()"
       [class.docs-toggle-active]="checked()"
