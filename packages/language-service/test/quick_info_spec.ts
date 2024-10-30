@@ -660,6 +660,14 @@ describe('quick info', () => {
         });
       });
 
+      it('should work for with the in operator', () => {
+        expectQuickInfo({
+          templateOverride: `<div>{{'key' in her¦oes}}</div>`,
+          expectedSpanText: 'heroes',
+          expectedDisplayString: '(property) AppCmp.heroes: Hero[]',
+        });
+      });
+
       it('should provide documentation', () => {
         const template = project.openFile('app.html');
         template.contents = `<div>{{title}}</div>`;

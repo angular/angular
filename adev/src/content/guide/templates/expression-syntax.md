@@ -67,6 +67,7 @@ Angular supports the following operators from standard JavaScript.
 | Property Accessor     | `person['name']`                         |
 | typeof                | `typeof 42`                              |
 | void                  | `void 1`                                 |
+| in                    | `'model' in car`                         |
 
 Angular expressions additionally also support the following non-standard operators:
 
@@ -88,6 +89,8 @@ Angular expressions additionally also support the following non-standard operato
 | Array destructuring   | `const [firstItem] = items`       |
 | Comma operator        | `x = (x++, x)`                    |
 | in                    | `'model' in car`                  |
+| typeof                | `typeof 42`                       |
+| void                  | `void 1`                          |
 | instanceof            | `car instanceof Automobile`       |
 | new                   | `new Car()`                       |
 
