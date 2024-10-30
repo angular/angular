@@ -5,10 +5,18 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ɵɵdefineInjectable} from '../di';
+import {InjectionToken} from '../di/injection_token';
+import {ɵɵdefineInjectable} from '../di/interface/defs';
 import {DeferBlock} from './interfaces';
 
-// TODO(incremental-hydration): refactor this so that it's not used in CSR cases
+/**
+ * An internal injection token to reference `DeferBlockRegistry` implementation
+ * in a tree-shakable way.
+ */
+export const DEFER_BLOCK_REGISTRY = new InjectionToken<DeferBlockRegistry>(
+  ngDevMode ? 'DEFER_BLOCK_REGISTRY' : '',
+);
+
 /**
  * The DeferBlockRegistry is used for incremental hydration purposes. It keeps
  * track of the Defer Blocks that need hydration so we can effectively
@@ -73,7 +81,7 @@ export class DeferBlockRegistry {
   /** @nocollapse */
   static ɵprov = /** @pureOrBreakMyCode */ /* @__PURE__ */ ɵɵdefineInjectable({
     token: DeferBlockRegistry,
-    providedIn: 'root',
+    providedIn: null,
     factory: () => new DeferBlockRegistry(),
   });
 }

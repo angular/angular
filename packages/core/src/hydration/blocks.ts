@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DeferBlockRegistry} from '../defer/registry';
+import {DEFER_BLOCK_REGISTRY} from '../defer/registry';
 import {DEFER_PARENT_BLOCK_ID} from './interfaces';
 import {NGH_DEFER_BLOCKS_KEY} from './utils';
 import {Injector} from '../di';
@@ -25,7 +25,7 @@ import {assertEqual} from '../util/assert';
  * Note: This is utilizing serialized information to navigate up the tree
  */
 export function getParentBlockHydrationQueue(deferBlockId: string, injector: Injector) {
-  const deferBlockRegistry = injector.get(DeferBlockRegistry);
+  const deferBlockRegistry = injector.get(DEFER_BLOCK_REGISTRY);
   const transferState = injector.get(TransferState);
   const deferBlockParents = transferState.get(NGH_DEFER_BLOCKS_KEY, {});
 
@@ -66,7 +66,7 @@ export async function hydrateFromBlockName(
   deferBlock: DeferBlock | null;
   hydratedBlocks: Set<string>;
 }> {
-  const deferBlockRegistry = injector.get(DeferBlockRegistry);
+  const deferBlockRegistry = injector.get(DEFER_BLOCK_REGISTRY);
 
   // Make sure we don't hydrate/trigger the same thing multiple times
   if (deferBlockRegistry.hydrating.has(blockName))
