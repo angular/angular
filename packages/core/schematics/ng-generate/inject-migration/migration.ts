@@ -163,14 +163,14 @@ function migrateClass(
   for (const member of node.members) {
     if (ts.isConstructorDeclaration(member) && member !== constructor) {
       removedMembers.add(member);
-      tracker.replaceText(sourceFile, member.getFullStart(), member.getFullWidth(), '');
+      tracker.removeNode(member, true);
     }
   }
 
   if (canRemoveConstructor(options, constructor, removedStatementCount, superCall)) {
     // Drop the constructor if it was empty.
     removedMembers.add(constructor);
-    tracker.replaceText(sourceFile, constructor.getFullStart(), constructor.getFullWidth(), '');
+    tracker.removeNode(constructor, true);
   } else {
     // If the constructor contains any statements, only remove the parameters.
     // We always do this no matter what is passed into `backwardsCompatibleConstructors`.
@@ -714,12 +714,7 @@ function applyInternalOnlyChanges(
       property.type,
       initializer,
     );
-    tracker.replaceText(
-      statement.getSourceFile(),
-      statement.getFullStart(),
-      statement.getFullWidth(),
-      '',
-    );
+    tracker.removeNode(statement, true);
     tracker.replaceNode(property, newProperty);
     removedStatements.add(statement);
   });
@@ -728,7 +723,7 @@ function applyInternalOnlyChanges(
     prependToClass.push(
       memberIndentation + printer.printNode(ts.EmitHint.Unspecified, decl, decl.getSourceFile()),
     );
-    tracker.replaceText(decl.getSourceFile(), decl.getFullStart(), decl.getFullWidth(), '');
+    tracker.removeNode(decl, true);
   });
 
   // If we added any hoisted properties, separate them visually with a new line.
