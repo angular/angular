@@ -117,6 +117,9 @@
     "name": "DEFER_BLOCK_ID"
   },
   {
+    "name": "DEFER_BLOCK_REGISTRY"
+  },
+  {
     "name": "DEFER_BLOCK_STATE"
   },
   {
@@ -142,9 +145,6 @@
   },
   {
     "name": "DeferBlockInternalState"
-  },
-  {
-    "name": "DeferBlockRegistry"
   },
   {
     "name": "DeferBlockState"

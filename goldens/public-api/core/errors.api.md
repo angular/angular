@@ -83,6 +83,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     LOOP_TRACK_RECREATE = -956,
     // (undocumented)
+    MISCONFIGURED_INCREMENTAL_HYDRATION = 508,
+    // (undocumented)
     MISSING_DOCUMENT = 210,
     // (undocumented)
     MISSING_GENERATED_DEF = 906,

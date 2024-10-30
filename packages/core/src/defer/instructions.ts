@@ -89,6 +89,7 @@ import {onTimer, scheduleTimerTrigger} from './timer_scheduler';
 import {
   addDepsToRegistry,
   assertDeferredDependenciesLoaded,
+  assertIncrementalHydrationIsConfigured,
   getLDeferBlockDetails,
   getLoadingBlockAfter,
   getMinimumDurationForState,
@@ -98,7 +99,7 @@ import {
   setLDeferBlockDetails,
   setTDeferBlockDetails,
 } from './utils';
-import {DeferBlockRegistry} from './registry';
+import {DEFER_BLOCK_REGISTRY, DeferBlockRegistry} from './registry';
 import {incrementallyHydrateFromBlockName} from '../hydration/blocks';
 import {isIncrementalHydrationEnabled} from '../hydration/utils';
 
@@ -319,11 +320,11 @@ export function ɵɵdefer(
 
   let registry: DeferBlockRegistry | null = null;
   if (ssrUniqueId !== null) {
-    // TODO(incremental-hydration): explore how we can make
-    // `DeferBlockRegistry` tree-shakable for client-only cases.
-    registry = injector.get(DeferBlockRegistry);
+    ngDevMode && assertIncrementalHydrationIsConfigured(injector);
 
-    // Also store this defer block in the registry.
+    // Store this defer block in the registry, to have an access to
+    // internal data structures from hydration runtime code.
+    registry = injector.get(DEFER_BLOCK_REGISTRY);
     registry.add(ssrUniqueId, {lView, tNode, lContainer});
   }
 
@@ -1444,7 +1445,7 @@ export function triggerDeferBlock(lView: LView, tNode: TNode) {
 
   let registry: DeferBlockRegistry | null = null;
   if (isIncrementalHydrationEnabled(injector)) {
-    registry = injector.get(DeferBlockRegistry);
+    registry = injector.get(DEFER_BLOCK_REGISTRY);
   }
   // Defer block is triggered, cleanup all registered trigger functions.
   invokeAllTriggerCleanupFns(lDetails, registry);
