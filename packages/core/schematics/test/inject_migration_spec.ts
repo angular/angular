@@ -2062,5 +2062,25 @@ describe('inject migration', () => {
         `}`,
       ]);
     });
+
+    // There's an identical test above, but we want to ensure that the
+    // internal migration doesn't touch abstract classes either.
+    it('should not migrate abstract classes by default in the internal migration', async () => {
+      const initialContent = [
+        `import { Directive } from '@angular/core';`,
+        `import { Foo } from 'foo';`,
+        ``,
+        `@Directive()`,
+        `abstract class MyDir {`,
+        `  constructor(private foo: Foo) {}`,
+        `}`,
+      ].join('\n');
+
+      writeFile('/dir.ts', initialContent);
+
+      await runInternalMigration();
+
+      expect(tree.readContent('/dir.ts')).toBe(initialContent);
+    });
   });
 });
