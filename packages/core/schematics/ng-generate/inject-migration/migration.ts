@@ -16,6 +16,7 @@ import {
   isNullableType,
   parameterDeclaresProperty,
   DI_PARAM_SYMBOLS,
+  MigrationOptions,
 } from './analysis';
 import {getAngularDecorators} from '../../utils/ng_decorators';
 import {getImportOfIdentifier} from '../../utils/typescript/imports';
@@ -29,37 +30,6 @@ import {getLeadingLineWhitespaceOfNode} from '../../utils/tsurge/helpers/ast/lea
  */
 const PLACEHOLDER = 'ɵɵngGeneratePlaceholderɵɵ';
 
-/** Options that can be used to configure the migration. */
-export interface MigrationOptions {
-  /** Whether to generate code that keeps injectors backwards compatible. */
-  backwardsCompatibleConstructors?: boolean;
-
-  /** Whether to migrate abstract classes. */
-  migrateAbstractClasses?: boolean;
-
-  /** Whether to make the return type of `@Optinal()` parameters to be non-nullable. */
-  nonNullableOptional?: boolean;
-
-  /**
-   * Internal-only option that determines whether the migration should try to move the
-   * initializers of class members from the constructor back into the member itself. E.g.
-   *
-   * ```
-   * // Before
-   * private foo;
-   *
-   * constructor(@Inject(BAR) private bar: Bar) {
-   *   this.foo = this.bar.getValue();
-   * }
-   *
-   * // After
-   * private bar = inject(BAR);
-   * private foo = this.bar.getValue();
-   * ```
-   */
-  _internalCombineMemberInitializers?: boolean;
-}
-
 /**
  * Migrates all of the classes in a `SourceFile` away from constructor injection.
  * @param sourceFile File to be migrated.
@@ -72,7 +42,7 @@ export function migrateFile(sourceFile: ts.SourceFile, options: MigrationOptions
   // 2. All the necessary information for this migration is local so using a file-specific type
   //    checker should speed up the lookups.
   const localTypeChecker = getLocalTypeChecker(sourceFile);
-  const analysis = analyzeFile(sourceFile, localTypeChecker);
+  const analysis = analyzeFile(sourceFile, localTypeChecker, options);
 
   if (analysis === null || analysis.classes.length === 0) {
     return [];
@@ -148,14 +118,6 @@ function migrateClass(
   printer: ts.Printer,
   tracker: ChangeTracker,
 ): void {
-  const isAbstract = !!node.modifiers?.some((m) => m.kind === ts.SyntaxKind.AbstractKeyword);
-
-  // Don't migrate abstract classes by default, because
-  // their parameters aren't guaranteed to be injectable.
-  if (isAbstract && !options.migrateAbstractClasses) {
-    return;
-  }
-
   const sourceFile = node.getSourceFile();
   const unusedParameters = getConstructorUnusedParameters(
     constructor,

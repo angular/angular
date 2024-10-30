@@ -12,7 +12,8 @@ import {join, relative} from 'path';
 import {normalizePath} from '../../utils/change_tracker';
 import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host';
 
-import {migrateFile, MigrationOptions} from './migration';
+import {migrateFile} from './migration';
+import {MigrationOptions} from './analysis';
 
 interface Options extends MigrationOptions {
   path: string;
