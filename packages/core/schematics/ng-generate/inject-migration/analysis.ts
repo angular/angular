@@ -10,6 +10,37 @@ import ts from 'typescript';
 import {getAngularDecorators} from '../../utils/ng_decorators';
 import {getNamedImports} from '../../utils/typescript/imports';
 
+/** Options that can be used to configure the migration. */
+export interface MigrationOptions {
+  /** Whether to generate code that keeps injectors backwards compatible. */
+  backwardsCompatibleConstructors?: boolean;
+
+  /** Whether to migrate abstract classes. */
+  migrateAbstractClasses?: boolean;
+
+  /** Whether to make the return type of `@Optinal()` parameters to be non-nullable. */
+  nonNullableOptional?: boolean;
+
+  /**
+   * Internal-only option that determines whether the migration should try to move the
+   * initializers of class members from the constructor back into the member itself. E.g.
+   *
+   * ```
+   * // Before
+   * private foo;
+   *
+   * constructor(@Inject(BAR) private bar: Bar) {
+   *   this.foo = this.bar.getValue();
+   * }
+   *
+   * // After
+   * private bar = inject(BAR);
+   * private foo = this.bar.getValue();
+   * ```
+   */
+  _internalCombineMemberInitializers?: boolean;
+}
+
 /** Names of decorators that enable DI on a class declaration. */
 const DECORATORS_SUPPORTING_DI = new Set([
   'Component',
@@ -35,7 +66,11 @@ export const DI_PARAM_SYMBOLS = new Set([
  * @param sourceFile File which to analyze.
  * @param localTypeChecker Type checker scoped to the specific file.
  */
-export function analyzeFile(sourceFile: ts.SourceFile, localTypeChecker: ts.TypeChecker) {
+export function analyzeFile(
+  sourceFile: ts.SourceFile,
+  localTypeChecker: ts.TypeChecker,
+  options: MigrationOptions,
+) {
   const coreSpecifiers = getNamedImports(sourceFile, '@angular/core');
 
   // Exit early if there are no Angular imports.
@@ -96,6 +131,7 @@ export function analyzeFile(sourceFile: ts.SourceFile, localTypeChecker: ts.Type
       }
     } else if (ts.isClassDeclaration(node)) {
       const decorators = getAngularDecorators(localTypeChecker, ts.getDecorators(node) || []);
+      const isAbstract = !!node.modifiers?.some((m) => m.kind === ts.SyntaxKind.AbstractKeyword);
       const supportsDI = decorators.some((dec) => DECORATORS_SUPPORTING_DI.has(dec.name));
       const constructorNode = node.members.find(
         (member) =>
@@ -104,7 +140,9 @@ export function analyzeFile(sourceFile: ts.SourceFile, localTypeChecker: ts.Type
           member.parameters.length > 0,
       ) as ts.ConstructorDeclaration | undefined;
 
-      if (supportsDI && constructorNode) {
+      // Don't migrate abstract classes by default, because
+      // their parameters aren't guaranteed to be injectable.
+      if (supportsDI && constructorNode && (!isAbstract || options.migrateAbstractClasses)) {
         classes.push({
           node,
           constructor: constructorNode,
