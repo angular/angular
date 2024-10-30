@@ -28,6 +28,7 @@ export const BINARY_OPERATORS = new Map([
   ['??', o.BinaryOperator.NullishCoalesce],
   ['||', o.BinaryOperator.Or],
   ['+', o.BinaryOperator.Plus],
+  ['in', o.BinaryOperator.In],
 ]);
 
 export function namespaceForKey(namespacePrefixKey: string | null): ir.Namespace {

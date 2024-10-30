@@ -2736,6 +2736,24 @@ describe('acceptance integration tests', () => {
     expect(fixture.nativeElement.textContent).toContain('Message: Hello, Bilbo - 1');
   });
 
+  it('should support "in" expressions', () => {
+    @Component({
+      standalone: true,
+      template: `{{'foo' in obj ? 'OK' : 'KO'}}`,
+    })
+    class TestComponent {
+      obj: any = {foo: 'bar'};
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('OK');
+
+    fixture.componentInstance.obj = {bar: 'foo'};
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('KO');
+  });
+
   describe('tView.firstUpdatePass', () => {
     function isFirstUpdatePass() {
       const lView = getLView();

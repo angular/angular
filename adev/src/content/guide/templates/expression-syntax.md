@@ -63,6 +63,7 @@ Angular supports the following operators from standard JavaScript.
 | Unary Negation        | `const y = -x`                           |
 | Unary Plus            | `const x = +y`                           |
 | Property Accessor     | `person['name'] = 'Mirabel'`             |
+| in                    | `'model' in car`                         |
 
 Angular expressions additionally also support the following non-standard operators:
 
@@ -85,7 +86,6 @@ Angular expressions additionally also support the following non-standard operato
 | Comma operator        | `x = (x++, x)`                    |
 | typeof                | `typeof 42`                       |
 | void                  | `void 1`                          |
-| in                    | `'model' in car`                  |
 | instanceof            | `car instanceof Automobile`       |
 | new                   | `new Car()`                       |
 
