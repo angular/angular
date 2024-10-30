@@ -1,3 +1,36 @@
+<a name="19.0.0-rc.0"></a>
+# 19.0.0-rc.0 (2024-10-30)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [98804fd4beb](https://github.com/angular/angular/commit/98804fd4beb6292f5a50ce728424fdb33c47f654) | fix | add more specific matcher for hydrate never block ([#58360](https://github.com/angular/angular/pull/58360)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dbe612f2cd5](https://github.com/angular/angular/commit/dbe612f2cd59adecdab3abb270b014c4b26e472c) | fix | disable standalone by default on older versions of Angular ([#58405](https://github.com/angular/angular/pull/58405)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c095679f927](https://github.com/angular/angular/commit/c095679f927ad67fec6c18cb140ea550ae02639e) | fix | avoid breaking change with apps using rxjs 6.x ([#58341](https://github.com/angular/angular/pull/58341)) |
+| [fd7716440be](https://github.com/angular/angular/commit/fd7716440bec8f7ed042d79bafacf3048d45cd47) | fix | Prevents trying to trigger incremental hydration on CSR ([#58366](https://github.com/angular/angular/pull/58366)) |
+### localize
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0730d9d748a](https://github.com/angular/angular/commit/0730d9d748a8b82f5a3e071e8756afbdd22901a1) | fix | Adding  arb format to the list of valid formats in the localization extractor cli ([#58287](https://github.com/angular/angular/pull/58287)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [90c7ec39a06](https://github.com/angular/angular/commit/90c7ec39a06e5c14711e0a42e2d6a478cde2b9cc) | fix | inject migration always inserting generated variables before super call ([#58393](https://github.com/angular/angular/pull/58393)) |
+| [7a65cdd911c](https://github.com/angular/angular/commit/7a65cdd911cbbf22445c916fc754d3a3304bc5fe) | fix | inject migration not inserting generated code after super call in some cases ([#58393](https://github.com/angular/angular/pull/58393)) |
+| [616b411a6d9](https://github.com/angular/angular/commit/616b411a6d94d3dbc3e072b91c1194466c0a1add) | fix | properly migrate output aliases ([#58411](https://github.com/angular/angular/pull/58411)) |
+| [d504452e2f1](https://github.com/angular/angular/commit/d504452e2f193d3b494a0b2944cddb028c0a2231) | fix | properly replace imports across files ([#58414](https://github.com/angular/angular/pull/58414)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a49c35ec769](https://github.com/angular/angular/commit/a49c35ec769461b9eb490719f0aa3e5aea8e243f) | fix | remove setter for `injector` on `OutletContext` ([#58343](https://github.com/angular/angular/pull/58343)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.2.10"></a>
 # 18.2.10 (2024-10-30)
 ### compiler
