@@ -127,5 +127,9 @@ describe('serializer', () => {
     it('serializes void expressions', () => {
       expect(serialize(parse(' void   0 '))).toBe('void 0');
     });
+
+    it('serializes in expressions', () => {
+      expect(serialize(parse(' foo   in   bar '))).toBe('foo in bar');
+    });
   });
 });

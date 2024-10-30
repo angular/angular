@@ -99,6 +99,7 @@ MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-
     {{ typeof foo?.bar | identity }}
     {{ void 'test' }}
     {{ (-1) ** 3 }}
+    {{ 'bar' in foo }}
   `, isInline: true, dependencies: [{ kind: "pipe", type: IdentityPipe, name: "identity" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
@@ -113,6 +114,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     {{ typeof foo?.bar | identity }}
     {{ void 'test' }}
     {{ (-1) ** 3 }}
+    {{ 'bar' in foo }}
   `,
                     imports: [IdentityPipe],
                 }]
