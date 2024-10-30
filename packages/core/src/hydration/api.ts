@@ -45,6 +45,7 @@ import {
 import {enableRetrieveHydrationInfoImpl, NGH_DATA_KEY, SSR_CONTENT_INTEGRITY_MARKER} from './utils';
 import {enableFindMatchingDehydratedViewImpl} from './views';
 import {bootstrapIncrementalHydration, enableRetrieveDeferBlockDataImpl} from './incremental';
+import {DEFER_BLOCK_REGISTRY, DeferBlockRegistry} from '../defer/registry';
 
 /**
  * Indicates whether the hydration-related code was added,
@@ -325,6 +326,10 @@ export function withIncrementalHydration(): Provider[] {
     {
       provide: IS_INCREMENTAL_HYDRATION_ENABLED,
       useValue: true,
+    },
+    {
+      provide: DEFER_BLOCK_REGISTRY,
+      useClass: DeferBlockRegistry,
     },
     {
       provide: ENVIRONMENT_INITIALIZER,

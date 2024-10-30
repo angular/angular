@@ -9,7 +9,7 @@
 import {TransferState} from '../transfer_state';
 import {onIdle} from '../defer/idle_scheduler';
 import {DeferBlockTrigger} from '../defer/interfaces';
-import {DeferBlockRegistry} from '../defer/registry';
+import {DEFER_BLOCK_REGISTRY} from '../defer/registry';
 import {onTimer} from '../defer/timer_scheduler';
 import {Injector} from '../di';
 import {assertDefined} from '../util/assert';
@@ -168,7 +168,7 @@ function processAndInitTriggers(
 
 async function setIdleTriggers(injector: Injector, elementTriggers: ElementTrigger[]) {
   for (const elementTrigger of elementTriggers) {
-    const registry = injector.get(DeferBlockRegistry);
+    const registry = injector.get(DEFER_BLOCK_REGISTRY);
     const onInvoke = () =>
       incrementallyHydrateFromBlockName(
         injector,
@@ -198,7 +198,7 @@ async function setViewportTriggers(injector: Injector, elementTriggers: ElementT
 
 async function setTimerTriggers(injector: Injector, elementTriggers: ElementTrigger[]) {
   for (const elementTrigger of elementTriggers) {
-    const registry = injector.get(DeferBlockRegistry);
+    const registry = injector.get(DEFER_BLOCK_REGISTRY);
     const onInvoke = async () =>
       await incrementallyHydrateFromBlockName(
         injector,
