@@ -7,7 +7,7 @@
  */
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule} from '@angular/forms';
-import {ChangeDetectionStrategy, Component, Input, forwardRef, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, model, forwardRef, input, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
 
 type SelectOptionValue = string | number | boolean;
@@ -36,10 +36,10 @@ export interface SelectOption {
   },
 })
 export class Select implements ControlValueAccessor {
-  @Input({required: true, alias: 'selectId'}) id!: string;
-  @Input({required: true}) name!: string;
-  @Input({required: true}) options!: SelectOption[];
-  @Input() disabled = false;
+  readonly id = input.required<string>({alias: 'selectId'});
+  readonly name = input.required<string>();
+  readonly options = input.required<SelectOption[]>();
+  readonly disabled = model<boolean>(false);
 
   // Implemented as part of ControlValueAccessor.
   private onChange: (value: SelectOptionValue) => void = (_: SelectOptionValue) => {};
@@ -64,11 +64,11 @@ export class Select implements ControlValueAccessor {
 
   // Implemented as part of ControlValueAccessor.
   setDisabledState?(isDisabled: boolean): void {
-    this.disabled = isDisabled;
+    this.disabled.set(isDisabled);
   }
 
   setOption($event: SelectOptionValue): void {
-    if (this.disabled) {
+    if (this.disabled()) {
       return;
     }
 

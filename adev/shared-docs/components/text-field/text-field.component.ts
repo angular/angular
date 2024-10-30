@@ -10,11 +10,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
-  Input,
-  ViewChild,
+  input,
   afterNextRender,
   forwardRef,
   signal,
+  model,
+  viewChild,
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR} from '@angular/forms';
@@ -39,13 +40,13 @@ import {IconComponent} from '../icon/icon.component';
   },
 })
 export class TextField implements ControlValueAccessor {
-  @ViewChild('inputRef') private input?: ElementRef<HTMLInputElement>;
+  readonly input = viewChild.required<ElementRef<HTMLInputElement>>('inputRef');
 
-  @Input() name: string | null = null;
-  @Input() placeholder: string | null = null;
-  @Input() disabled = false;
-  @Input() hideIcon = false;
-  @Input() autofocus = false;
+  readonly name = input<string | null>(null);
+  readonly placeholder = input<string | null>(null);
+  readonly disabled = model<boolean>(false);
+  readonly hideIcon = input<boolean>(false);
+  readonly autofocus = input<boolean>(false);
 
   // Implemented as part of ControlValueAccessor.
   private onChange: (value: string) => void = (_: string) => {};
@@ -55,8 +56,8 @@ export class TextField implements ControlValueAccessor {
 
   constructor() {
     afterNextRender(() => {
-      if (this.autofocus) {
-        this.input?.nativeElement.focus();
+      if (this.autofocus()) {
+        this.input().nativeElement.focus();
       }
     });
   }
@@ -78,11 +79,11 @@ export class TextField implements ControlValueAccessor {
 
   // Implemented as part of ControlValueAccessor.
   setDisabledState?(isDisabled: boolean): void {
-    this.disabled = isDisabled;
+    this.disabled.set(isDisabled);
   }
 
   setValue(value: string): void {
-    if (this.disabled) {
+    if (this.disabled()) {
       return;
     }
 

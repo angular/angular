@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, Input, forwardRef, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, forwardRef, model, input, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
@@ -26,9 +26,9 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
   ],
 })
 export class SlideToggle implements ControlValueAccessor {
-  @Input({required: true}) buttonId!: string;
-  @Input({required: true}) label!: string;
-  @Input() disabled = false;
+  readonly buttonId = input.required<string>();
+  readonly label = input.required<string>();
+  readonly disabled = model<boolean>(false);
 
   // Implemented as part of ControlValueAccessor.
   private onChange: (value: boolean) => void = (_: boolean) => {};
@@ -53,12 +53,12 @@ export class SlideToggle implements ControlValueAccessor {
 
   // Implemented as part of ControlValueAccessor.
   setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
+    this.disabled.set(isDisabled);
   }
 
   // Toggles the checked state of the slide-toggle.
   toggle(): void {
-    if (this.disabled) {
+    if (this.disabled()) {
       return;
     }
 
