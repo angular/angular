@@ -2082,5 +2082,128 @@ describe('inject migration', () => {
 
       expect(tree.readContent('/dir.ts')).toBe(initialContent);
     });
+
+    it('should combine the members in their initialization order, if they only have references to each other or constructor parameters', async () => {
+      writeFile(
+        '/dir.ts',
+        [
+          `import { Directive, Injector } from '@angular/core';`,
+          `import { Service } from './service';`,
+          ``,
+          `@Directive()`,
+          `export class MyDir {`,
+          `  private serviceId: string;`,
+          `  private service: Service;`,
+          `  readonly greeting = 'hello';`,
+          `  private optionalProp?: number;`,
+          ``,
+          `  constructor(protected injector: Injector) {`,
+          `    this.service = this.injector.get(Injector);`,
+          `    this.serviceId = this.service.getId();`,
+          `  }`,
+          `}`,
+        ].join('\n'),
+      );
+
+      await runInternalMigration();
+
+      expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+        `import { Directive, Injector, inject } from '@angular/core';`,
+        `import { Service } from './service';`,
+        ``,
+        `@Directive()`,
+        `export class MyDir {`,
+        `  private optionalProp?: number;`,
+        ``,
+        `  protected injector = inject(Injector);`,
+        `  private service: Service = this.injector.get(Injector);`,
+        `  private serviceId: string = this.service.getId();`,
+        ``,
+        `  readonly greeting = 'hello';`,
+        `}`,
+      ]);
+    });
+
+    it('should leave combined the members in their declaration order if at least one of them refers to a class member not part of the migration', async () => {
+      writeFile(
+        '/dir.ts',
+        [
+          `import { Directive, Injector } from '@angular/core';`,
+          `import { Service } from './service';`,
+          ``,
+          `@Directive()`,
+          `export class MyDir {`,
+          `  private serviceId: string;`,
+          `  private service: Service;`,
+          `  readonly name = 'Frodo';`,
+          `  private optionalProp?: number;`,
+          ``,
+          `  constructor(protected injector: Injector) {`,
+          `    this.service = this.injector.get(Injector);`,
+          `    this.serviceId = this.service.getId(this.name.toUpperCase());`,
+          `  }`,
+          `}`,
+        ].join('\n'),
+      );
+
+      await runInternalMigration();
+
+      expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+        `import { Directive, Injector, inject } from '@angular/core';`,
+        `import { Service } from './service';`,
+        ``,
+        `@Directive()`,
+        `export class MyDir {`,
+        `  private optionalProp?: number;`,
+        ``,
+        `  protected injector = inject(Injector);`,
+        ``,
+        `  private serviceId: string = this.service.getId(this.name.toUpperCase());`,
+        `  private service: Service = this.injector.get(Injector);`,
+        `  readonly name = 'Frodo';`,
+        `}`,
+      ]);
+    });
+
+    it('should leave combined the members in their declaration order if none of them refer to each other', async () => {
+      writeFile(
+        '/dir.ts',
+        [
+          `import { Directive, Injector, ApplicationRef } from '@angular/core';`,
+          `import { Service } from './service';`,
+          ``,
+          `@Directive()`,
+          `export class MyDir {`,
+          `  private appRef: ApplicationRef;`,
+          `  private service: Service;`,
+          `  readonly greeting = 'hello';`,
+          `  private optionalProp?: number;`,
+          ``,
+          `  constructor(protected injector: Injector) {`,
+          `    this.service = this.injector.get(Injector);`,
+          `    this.appRef = this.injector.get(ApplicationRef);`,
+          `  }`,
+          `}`,
+        ].join('\n'),
+      );
+
+      await runInternalMigration();
+
+      expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+        `import { Directive, Injector, ApplicationRef, inject } from '@angular/core';`,
+        `import { Service } from './service';`,
+        ``,
+        `@Directive()`,
+        `export class MyDir {`,
+        `  private optionalProp?: number;`,
+        ``,
+        `  protected injector = inject(Injector);`,
+        ``,
+        `  private appRef: ApplicationRef = this.injector.get(ApplicationRef);`,
+        `  private service: Service = this.injector.get(Injector);`,
+        `  readonly greeting = 'hello';`,
+        `}`,
+      ]);
+    });
   });
 });
