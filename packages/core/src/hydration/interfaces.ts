@@ -245,11 +245,6 @@ export interface DehydratedView {
    * removed from the DOM during hydration cleanup.
    */
   dehydratedIcuData?: Map<number, DehydratedIcuData>;
-
-  /**
-   * A mapping of defer block unique ids to the defer block data
-   */
-  dehydratedDeferBlockData?: Record<string, SerializedDeferBlock>;
 }
 
 /**

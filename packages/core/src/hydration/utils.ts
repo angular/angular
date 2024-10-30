@@ -152,10 +152,6 @@ export function retrieveHydrationInfoImpl(
     firstChild: rNode.firstChild ?? null,
   };
 
-  if (nghDeferData) {
-    dehydratedView.dehydratedDeferBlockData = nghDeferData;
-  }
-
   if (isRootView) {
     // If there is hydration info present for the root view, it means that there was
     // a ViewContainerRef injected in the root component. The root component host element
