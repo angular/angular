@@ -64,8 +64,8 @@ config_setting(
 
 nodejs_binary(
     name = "yarn_vendored",
-    data = [".yarn/releases/yarn-1.22.19.cjs"],
-    entry_point = ".yarn/releases/yarn-1.22.19.cjs",
+    data = [".yarn/releases/yarn-1.22.22.cjs"],
+    entry_point = ".yarn/releases/yarn-1.22.22.cjs",
     visibility = [
         "//integration:__subpackages__",
         "//modules/ssr-benchmarks:__subpackages__",
