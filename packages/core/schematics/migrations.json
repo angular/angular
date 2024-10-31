@@ -12,7 +12,7 @@
     },
     "provide-initializer": {
       "version": "19.0.0",
-      "description": "Replaces `APP_INITIALIZER`, 'ENVIRONMENT_INITIALIZER' & 'PLATFORM_INITIALIZER' respectively with `provideAppInitializer`, `provideEnvironmentInitializer` & `providePlatormInitializer`.",
+      "description": "Replaces `APP_INITIALIZER`, `ENVIRONMENT_INITIALIZER` & `PLATFORM_INITIALIZER` respectively with `provideAppInitializer`, `provideEnvironmentInitializer` & `providePlatformInitializer`.",
       "factory": "./bundles/provide-initializer#migrate",
       "optional": true
     }
