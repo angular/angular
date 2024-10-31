@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ts_config", "ts_library")
+load("//tools:defaults.bzl", "generate_api_docs", "ts_config", "ts_library")
 load("//:packages.bzl", "DOCS_ENTRYPOINTS")
 load("//adev/shared-docs/pipeline/api-gen/manifest:generate_api_manifest.bzl", "generate_api_manifest")
 
@@ -70,6 +70,9 @@ filegroup(
 generate_api_manifest(
     name = "docs_api_manifest",
     srcs = [
+        ":angular_ssr_docs_extraction",
+        ":angular_ssr_node_docs_extraction",
+        ":angular_ssr_tokens_docs_extraction",
         "//packages/animations:animations_docs_extraction",
         "//packages/animations/browser:animations_browser_docs_extraction",
         "//packages/animations/browser/testing:animations_browser_testing_docs_extraction",
@@ -105,4 +108,35 @@ generate_api_manifest(
         "//tools/manual_api_docs/blocks",
         "//tools/manual_api_docs/elements",
     ],
+)
+
+### @angular/ssr package located in the Angular/CLI repository
+generate_api_docs(
+    name = "angular_ssr_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "@npm//@angular/ssr",
+    ],
+    entry_point = "@npm//:node_modules/@angular/ssr/index.d.ts",
+    module_name = "@angular/ssr",
+)
+
+generate_api_docs(
+    name = "angular_ssr_node_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "@npm//@angular/ssr",
+    ],
+    entry_point = "@npm//:node_modules/@angular/ssr/node/index.d.ts",
+    module_name = "@angular/ssr/node",
+)
+
+generate_api_docs(
+    name = "angular_ssr_tokens_docs",
+    srcs = [
+        ":common_files_and_deps_for_docs",
+        "@npm//@angular/ssr",
+    ],
+    entry_point = "@npm//:node_modules/@angular/ssr/tokens/index.d.ts",
+    module_name = "@angular/ssr/tokens",
 )
