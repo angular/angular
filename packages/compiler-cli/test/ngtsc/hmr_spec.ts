@@ -111,7 +111,7 @@ runInEachFileSystem(() => {
         /import\(\s*\/\* @vite-ignore \*\/\s+"\/@ng\/component\?c=test\.ts%40Cmp&t=" \+ encodeURIComponent\(d.timestamp\)/,
       );
       expect(jsContents).toMatch(
-        /\).then\(m => i0\.ɵɵreplaceMetadata\(Cmp, m\.default, \[Dep, transformValue, TOKEN, Component, Inject, ViewChild, Input\]\)\);/,
+        /\).then\(m => i0\.ɵɵreplaceMetadata\(Cmp, m\.default, i0, \[Dep, transformValue, TOKEN, Component, Inject, ViewChild, Input\]\)\);/,
       );
 
       expect(hmrContents).toContain(

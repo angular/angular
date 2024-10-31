@@ -43,10 +43,15 @@ export function compileHmrInitializer(meta: R3HmrMetadata): o.Expression {
   const dataName = 'd';
   const locals = meta.locals.map((localName) => o.variable(localName));
 
-  // ɵɵreplaceMetadata(Comp, m.default, [...]);
+  // ɵɵreplaceMetadata(Comp, m.default, core, [...]);
   const replaceMetadata = o
     .importExpr(R3.replaceMetadata)
-    .callFn([meta.type, o.variable(moduleName).prop('default'), o.literalArr(locals)]);
+    .callFn([
+      meta.type,
+      o.variable(moduleName).prop('default'),
+      new o.ExternalExpr(R3.core),
+      o.literalArr(locals),
+    ]);
 
   // (m) => ɵɵreplaceMetadata(...)
   const replaceCallback = o.arrowFn([new o.FnParam(moduleName)], replaceMetadata);
