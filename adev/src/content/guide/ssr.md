@@ -24,6 +24,8 @@ To add SSR to an **existing** project, use the Angular CLI `ng add` command.
 ng add @angular/ssr
 ```
 
+Note: Interested in the latest SSR advancements in Angular? Take a look at the developer preview [hybrid rendering APIs](guide/hybrid-rendering).
+
 These commands create and update application code to enable SSR and adds extra files to the project structure.
 
 ```

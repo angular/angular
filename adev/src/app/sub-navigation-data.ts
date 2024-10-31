@@ -455,12 +455,12 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/defer',
           },
           {
-            label: 'Image Optimization',
+            label: 'Image optimization',
             path: 'guide/image-optimization',
             contentPath: 'guide/image-optimization',
           },
           {
-            label: 'Server-side Rendering',
+            label: 'Server-side rendering',
             path: 'guide/ssr',
             contentPath: 'guide/ssr',
           },
@@ -468,6 +468,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             label: 'Build-time prerendering',
             path: 'guide/prerendering',
             contentPath: 'guide/prerendering',
+          },
+          {
+            label: 'Hybrid rendering',
+            path: 'guide/hybrid-rendering',
+            contentPath: 'guide/hybrid-rendering',
           },
           {
             label: 'Hydration',
