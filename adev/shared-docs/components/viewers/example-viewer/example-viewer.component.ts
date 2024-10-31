@@ -19,6 +19,7 @@ import {
   signal,
   ElementRef,
   forwardRef,
+  input,
 } from '@angular/core';
 import {CommonModule, DOCUMENT} from '@angular/common';
 import {MatTabGroup, MatTabsModule} from '@angular/material/tabs';
@@ -53,8 +54,8 @@ export class ExampleViewer {
     this.exampleMetadata.set(value);
   }
 
-  @Input() githubUrl: string | null = null;
-  @Input() stackblitzUrl: string | null = null;
+  readonly githubUrl = input<string | null>(null);
+  readonly stackblitzUrl = input<string | null>(null);
   @ViewChild('codeTabs') matTabGroup?: MatTabGroup;
 
   private readonly changeDetector = inject(ChangeDetectorRef);

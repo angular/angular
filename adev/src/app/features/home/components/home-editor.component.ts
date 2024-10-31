@@ -12,8 +12,8 @@ import {
   Component,
   EnvironmentInjector,
   inject,
-  Input,
   OnInit,
+  input,
 } from '@angular/core';
 
 import {injectAsync} from '../../../core/services/inject-async';
@@ -33,7 +33,7 @@ export class CodeEditorComponent implements OnInit {
   private readonly environmentInjector = inject(EnvironmentInjector);
   private readonly embeddedTutorialManager = inject(EmbeddedTutorialManager);
 
-  @Input({required: true}) tutorialFiles!: string;
+  readonly tutorialFiles = input.required<string>();
 
   ngOnInit(): void {
     this.loadEmbeddedEditor();
@@ -44,7 +44,7 @@ export class CodeEditorComponent implements OnInit {
       import('../../../editor/index').then((c) => c.NodeRuntimeSandbox),
     );
 
-    await this.embeddedTutorialManager.fetchAndSetTutorialFiles(this.tutorialFiles);
+    await this.embeddedTutorialManager.fetchAndSetTutorialFiles(this.tutorialFiles());
 
     this.cdRef.markForCheck();
 

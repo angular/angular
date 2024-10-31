@@ -10,9 +10,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
-  Input,
   computed,
   inject,
+  input,
 } from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {TableOfContentsLevel} from '../../interfaces/index';
@@ -30,7 +30,7 @@ import {IconComponent} from '../icon/icon.component';
 })
 export class TableOfContents {
   // Element that contains the content from which the Table of Contents is built
-  @Input({required: true}) contentSourceElement!: HTMLElement;
+  readonly contentSourceElement = input.required<HTMLElement>();
 
   private readonly scrollSpy = inject(TableOfContentsScrollSpy);
   private readonly tableOfContentsLoader = inject(TableOfContentsLoader);
@@ -43,8 +43,9 @@ export class TableOfContents {
   TableOfContentsLevel = TableOfContentsLevel;
 
   ngAfterViewInit() {
-    this.tableOfContentsLoader.buildTableOfContent(this.contentSourceElement);
-    this.scrollSpy.startListeningToScroll(this.contentSourceElement, this.destroyRef);
+    const contentSourceElement = this.contentSourceElement();
+    this.tableOfContentsLoader.buildTableOfContent(contentSourceElement);
+    this.scrollSpy.startListeningToScroll(contentSourceElement, this.destroyRef);
   }
 
   scrollToTop(): void {

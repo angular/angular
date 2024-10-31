@@ -10,9 +10,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
-  Input,
   Output,
   inject,
+  input,
 } from '@angular/core';
 import {NavigationItem} from '../../interfaces/index';
 import {NavigationState} from '../../services/index';
@@ -30,11 +30,11 @@ import {IsActiveNavigationItem} from '../../pipes/is-active-navigation-item.pipe
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavigationList {
-  @Input({required: true}) navigationItems: NavigationItem[] = [];
-  @Input() displayItemsToLevel: number = 2;
-  @Input() collapsableLevel: number | undefined = undefined;
-  @Input() expandableLevel: number = 2;
-  @Input() isDropdownView = false;
+  readonly navigationItems = input.required<NavigationItem[]>();
+  readonly displayItemsToLevel = input<number>(2);
+  readonly collapsableLevel = input<number>();
+  readonly expandableLevel = input<number>(2);
+  readonly isDropdownView = input(false);
 
   @Output() linkClicked = new EventEmitter<void>();
 
@@ -46,8 +46,8 @@ export class NavigationList {
   toggle(item: NavigationItem): void {
     if (
       item.level === 1 &&
-      item.level !== this.expandableLevel &&
-      item.level !== this.collapsableLevel
+      item.level !== this.expandableLevel() &&
+      item.level !== this.collapsableLevel()
     ) {
       return;
     }

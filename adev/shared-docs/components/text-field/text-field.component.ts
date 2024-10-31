@@ -15,6 +15,7 @@ import {
   afterNextRender,
   forwardRef,
   signal,
+  input,
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR} from '@angular/forms';
@@ -41,11 +42,11 @@ import {IconComponent} from '../icon/icon.component';
 export class TextField implements ControlValueAccessor {
   @ViewChild('inputRef') private input?: ElementRef<HTMLInputElement>;
 
-  @Input() name: string | null = null;
-  @Input() placeholder: string | null = null;
+  readonly name = input<string | null>(null);
+  readonly placeholder = input<string | null>(null);
   @Input() disabled = false;
-  @Input() hideIcon = false;
-  @Input() autofocus = false;
+  readonly hideIcon = input(false);
+  readonly autofocus = input(false);
 
   // Implemented as part of ControlValueAccessor.
   private onChange: (value: string) => void = (_: string) => {};
@@ -55,7 +56,7 @@ export class TextField implements ControlValueAccessor {
 
   constructor() {
     afterNextRender(() => {
-      if (this.autofocus) {
+      if (this.autofocus()) {
         this.input?.nativeElement.focus();
       }
     });

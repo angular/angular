@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Directive, ElementRef, Input, inject, signal} from '@angular/core';
+import {Directive, ElementRef, inject, signal, input} from '@angular/core';
 import {Highlightable} from '@angular/cdk/a11y';
 import {SearchResult} from '../../interfaces/search-results';
 
@@ -18,8 +18,8 @@ import {SearchResult} from '../../interfaces/search-results';
   },
 })
 export class SearchItem implements Highlightable {
-  @Input() item?: SearchResult;
-  @Input() disabled = false;
+  readonly item = input<SearchResult>();
+  readonly disabled = input(false);
 
   private readonly elementRef = inject(ElementRef<HTMLLIElement>);
 
@@ -38,10 +38,11 @@ export class SearchItem implements Highlightable {
   }
 
   getLabel(): string {
-    if (!this.item?.hierarchy) {
+    const item = this.item();
+    if (!item?.hierarchy) {
       return '';
     }
-    const {hierarchy} = this.item;
+    const {hierarchy} = item;
     return `${hierarchy.lvl0}${hierarchy.lvl1}${hierarchy.lvl2}`;
   }
 

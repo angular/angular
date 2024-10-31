@@ -8,7 +8,7 @@
 
 import {DOCS_VIEWER_SELECTOR, DocViewer, WINDOW} from '@angular/docs';
 
-import {Component, Input, signal} from '@angular/core';
+import {Component, signal, input} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {RouterTestingModule} from '@angular/router/testing';
@@ -38,7 +38,7 @@ class FakeEmbeddedEditor {}
   standalone: true,
 })
 class FakeDocViewer {
-  @Input('documentFilePath') documentFilePath: string | undefined;
+  readonly documentFilePath = input<string>();
 }
 
 // TODO: export this class, it's a helpful mock we could you on other tests.

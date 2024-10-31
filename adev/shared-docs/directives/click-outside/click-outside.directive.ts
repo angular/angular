@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Directive, ElementRef, EventEmitter, Input, Output, inject} from '@angular/core';
+import {Directive, ElementRef, EventEmitter, Output, inject, input} from '@angular/core';
 
 @Directive({
   selector: '[docsClickOutside]',
@@ -17,7 +17,7 @@ import {Directive, ElementRef, EventEmitter, Input, Output, inject} from '@angul
   },
 })
 export class ClickOutside {
-  @Input('docsClickOutsideIgnore') public ignoredElementsIds: string[] = [];
+  public readonly ignoredElementsIds = input<string[]>([], {alias: 'docsClickOutsideIgnore'});
   @Output('docsClickOutside') public clickOutside = new EventEmitter<void>();
 
   private readonly document = inject(DOCUMENT);
@@ -33,11 +33,12 @@ export class ClickOutside {
   }
 
   private wasClickedOnIgnoredElement($event: PointerEvent): boolean {
-    if (this.ignoredElementsIds.length === 0) {
+    const ignoredElementsIds = this.ignoredElementsIds();
+    if (ignoredElementsIds.length === 0) {
       return false;
     }
 
-    return this.ignoredElementsIds.some((elementId) => {
+    return ignoredElementsIds.some((elementId) => {
       const element = this.document.getElementById(elementId);
       const target = $event.target as Node;
       const contains = element?.contains(target);

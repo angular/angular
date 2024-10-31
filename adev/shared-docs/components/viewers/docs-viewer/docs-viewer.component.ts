@@ -18,7 +18,6 @@ import {
   EnvironmentInjector,
   inject,
   Injector,
-  Input,
   OnChanges,
   PLATFORM_ID,
   SimpleChanges,
@@ -28,6 +27,7 @@ import {
   ɵPendingTasks as PendingTasks,
   EventEmitter,
   Output,
+  input,
 } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {TOC_SKIP_CONTENT_MARKER, NavigationState} from '../../../services/index';
@@ -66,8 +66,8 @@ export const GITHUB_CONTENT_URL =
   },
 })
 export class DocViewer implements OnChanges {
-  @Input() docContent?: string;
-  @Input() hasToc = false;
+  readonly docContent = input<string>();
+  readonly hasToc = input(false);
   @Output() contentLoaded = new EventEmitter<void>();
 
   private readonly destroyRef = inject(DestroyRef);
@@ -92,7 +92,7 @@ export class DocViewer implements OnChanges {
   async ngOnChanges(changes: SimpleChanges): Promise<void> {
     const taskId = this.pendingTasks.add();
     if ('docContent' in changes) {
-      await this.renderContentsAndRunClientSetup(this.docContent!);
+      await this.renderContentsAndRunClientSetup(this.docContent()!);
     }
     this.pendingTasks.remove(taskId);
   }
@@ -166,7 +166,7 @@ export class DocViewer implements OnChanges {
   }
 
   private renderTableOfContents(element: HTMLElement): void {
-    if (!this.hasToc) {
+    if (!this.hasToc()) {
       return;
     }
 

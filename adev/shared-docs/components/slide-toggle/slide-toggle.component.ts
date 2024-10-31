@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, Input, forwardRef, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, forwardRef, signal, input} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
@@ -26,8 +26,8 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
   ],
 })
 export class SlideToggle implements ControlValueAccessor {
-  @Input({required: true}) buttonId!: string;
-  @Input({required: true}) label!: string;
+  readonly buttonId = input.required<string>();
+  readonly label = input.required<string>();
   @Input() disabled = false;
 
   // Implemented as part of ControlValueAccessor.
