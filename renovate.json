@@ -15,7 +15,11 @@
   "lockFileMaintenance": {"enabled": true},
   "labels": ["target: patch", "area: build & ci", "action: merge"],
   "postUpgradeTasks": {
-    "commands": ["yarn install", "yarn ng-dev misc update-generated-files"],
+    "commands": [
+      "yarn install --frozen-lockfile --non-interactive",
+      "yarn ng-dev misc update-generated-files"
+    ],
+    "fileFilters": [".github/actions/deploy-docs-site/**/*", "packages/**/*"],
     "executionMode": "update"
   },
   "ignoreDeps": [
