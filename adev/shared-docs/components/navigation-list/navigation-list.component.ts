@@ -6,14 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  inject,
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, inject, output} from '@angular/core';
 import {NavigationItem} from '../../interfaces/index';
 import {NavigationState} from '../../services/index';
 import {RouterLink, RouterLinkActive} from '@angular/router';
@@ -36,7 +29,7 @@ export class NavigationList {
   @Input() expandableLevel: number = 2;
   @Input() isDropdownView = false;
 
-  @Output() linkClicked = new EventEmitter<void>();
+  readonly linkClicked = output<void>();
 
   private readonly navigationState = inject(NavigationState);
 
