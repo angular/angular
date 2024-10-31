@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Directive, ElementRef, EventEmitter, Input, Output, inject} from '@angular/core';
+import {Directive, ElementRef, Input, inject, output} from '@angular/core';
 
 @Directive({
   selector: '[docsClickOutside]',
@@ -18,7 +18,7 @@ import {Directive, ElementRef, EventEmitter, Input, Output, inject} from '@angul
 })
 export class ClickOutside {
   @Input('docsClickOutsideIgnore') public ignoredElementsIds: string[] = [];
-  @Output('docsClickOutside') public clickOutside = new EventEmitter<void>();
+  public readonly clickOutside = output<void>({alias: 'docsClickOutside'});
 
   private readonly document = inject(DOCUMENT);
   private readonly elementRef = inject(ElementRef<HTMLElement>);
