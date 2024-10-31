@@ -1383,9 +1383,7 @@ describe('fake async', () => {
 
     it('should be able to cancel periodic timers from a callback', fakeAsync(() => {
       let cycles = 0;
-      let id: NodeJS.Timer;
-
-      id = setInterval(() => {
+      let id = setInterval(() => {
         cycles++;
         clearInterval(id);
       }, 10);
