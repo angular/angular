@@ -52,6 +52,8 @@ function main() {
     rootDir: '.',
     skipLibCheck: true,
     target: ts.ScriptTarget.ES2022,
+    // This is necessary because otherwise types that include `| null` are not included in the documentation.
+    strictNullChecks: true,
     moduleResolution: ts.ModuleResolutionKind.NodeNext,
     experimentalDecorators: true,
   };
