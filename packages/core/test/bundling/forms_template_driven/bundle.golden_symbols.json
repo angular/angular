@@ -42,12 +42,6 @@
     "name": "ApplicationRef"
   },
   {
-    "name": "BLOOM_BUCKET_BITS"
-  },
-  {
-    "name": "BLOOM_MASK"
-  },
-  {
     "name": "BROWSER_MODULE_PROVIDERS"
   },
   {
@@ -94,9 +88,6 @@
   },
   {
     "name": "COMPUTING"
-  },
-  {
-    "name": "CONTAINER_HEADER_OFFSET"
   },
   {
     "name": "CSP_NONCE"
@@ -154,9 +145,6 @@
   },
   {
     "name": "DEFAULT_VALUE_ACCESSOR"
-  },
-  {
-    "name": "DI_DECORATOR_FLAG"
   },
   {
     "name": "DOCUMENT"
@@ -297,25 +285,13 @@
     "name": "LifecycleHooksFeature"
   },
   {
-    "name": "MAXIMUM_REFRESH_RERUNS"
-  },
-  {
     "name": "MODIFIER_KEYS"
   },
   {
     "name": "MODIFIER_KEY_GETTERS"
   },
   {
-    "name": "MONKEY_PATCH_KEY_NAME"
-  },
-  {
-    "name": "MOVED_VIEWS"
-  },
-  {
     "name": "NAMESPACE_URIS"
-  },
-  {
-    "name": "NATIVE"
   },
   {
     "name": "NEW_LINE"
@@ -357,9 +333,6 @@
     "name": "NG_PROV_DEF"
   },
   {
-    "name": "NG_TEMPLATE_SELECTOR"
-  },
-  {
     "name": "NG_VALIDATORS"
   },
   {
@@ -376,9 +349,6 @@
   },
   {
     "name": "NO_CHANGE"
-  },
-  {
-    "name": "NO_PARENT_INJECTOR"
   },
   {
     "name": "NULL_INJECTOR"
@@ -585,9 +555,6 @@
     "name": "TRACKED_LVIEWS"
   },
   {
-    "name": "TYPE"
-  },
-  {
     "name": "TemplateFormsComponent"
   },
   {
@@ -684,13 +651,7 @@
     "name": "_currentInjector"
   },
   {
-    "name": "_getInsertInFrontOfRNodeWithI18n"
-  },
-  {
     "name": "_global"
-  },
-  {
-    "name": "_icuContainerIterate"
   },
   {
     "name": "_injectImplementation"
@@ -715,15 +676,6 @@
   },
   {
     "name": "_platformInjector"
-  },
-  {
-    "name": "_populateDehydratedViewsInLContainer"
-  },
-  {
-    "name": "_processI18nInsertBefore"
-  },
-  {
-    "name": "_retrieveHydrationInfoImpl"
   },
   {
     "name": "_testabilityGetter"
@@ -1641,9 +1593,6 @@
     "name": "platformCore"
   },
   {
-    "name": "postSignalSetFn"
-  },
-  {
     "name": "processInjectorTypesWithProviders"
   },
   {
@@ -1666,9 +1615,6 @@
   },
   {
     "name": "producerUpdatesAllowed"
-  },
-  {
-    "name": "profiler"
   },
   {
     "name": "providerToFactory"
@@ -1744,9 +1690,6 @@
   },
   {
     "name": "resolvedPromise2"
-  },
-  {
-    "name": "retrieveHydrationInfo"
   },
   {
     "name": "runEffectsInView"
@@ -1852,9 +1795,6 @@
   },
   {
     "name": "signalSetFn"
-  },
-  {
-    "name": "stashEventListener"
   },
   {
     "name": "storeLViewOnDestroy"

@@ -16,6 +16,7 @@ import {
   FileSystemTree,
   IFSWatcher,
   PortListener,
+  PreviewMessageListener,
   ServerReadyListener,
   Unsubscribe,
   WebContainer,
@@ -98,6 +99,7 @@ export class FakeWebContainer extends WebContainer {
   override on(event: 'port', listener: PortListener): Unsubscribe;
   override on(event: 'server-ready', listener: ServerReadyListener): Unsubscribe;
   override on(event: 'error', listener: ErrorListener): Unsubscribe;
+  override on(event: 'preview-message', listener: PreviewMessageListener): Unsubscribe;
   override on(event: unknown, listener: unknown): Unsubscribe {
     return () => {};
   }

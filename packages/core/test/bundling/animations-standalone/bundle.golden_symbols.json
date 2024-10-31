@@ -3,9 +3,6 @@
     "name": "ANIMATION_MODULE_TYPE"
   },
   {
-    "name": "ANY_STATE"
-  },
-  {
     "name": "APP_BOOTSTRAP_LISTENER"
   },
   {
@@ -75,12 +72,6 @@
     "name": "ApplicationRef"
   },
   {
-    "name": "BLOOM_BUCKET_BITS"
-  },
-  {
-    "name": "BLOOM_MASK"
-  },
-  {
     "name": "BROWSER_ANIMATIONS_PROVIDERS"
   },
   {
@@ -106,9 +97,6 @@
   },
   {
     "name": "COMPONENT_REGEX"
-  },
-  {
-    "name": "CONTAINER_HEADER_OFFSET"
   },
   {
     "name": "CSP_NONCE"
@@ -288,25 +276,13 @@
     "name": "LifecycleHooksFeature"
   },
   {
-    "name": "MAXIMUM_REFRESH_RERUNS"
-  },
-  {
     "name": "MODIFIER_KEYS"
   },
   {
     "name": "MODIFIER_KEY_GETTERS"
   },
   {
-    "name": "MONKEY_PATCH_KEY_NAME"
-  },
-  {
-    "name": "MOVED_VIEWS"
-  },
-  {
     "name": "NAMESPACE_URIS"
-  },
-  {
-    "name": "NATIVE"
   },
   {
     "name": "NEW_LINE"
@@ -342,9 +318,6 @@
     "name": "NG_PROV_DEF"
   },
   {
-    "name": "NG_TEMPLATE_SELECTOR"
-  },
-  {
     "name": "NOT_FOUND"
   },
   {
@@ -355,9 +328,6 @@
   },
   {
     "name": "NO_CHANGE"
-  },
-  {
-    "name": "NO_PARENT_INJECTOR"
   },
   {
     "name": "NULL_INJECTOR"
@@ -400,9 +370,6 @@
   },
   {
     "name": "NullInjector"
-  },
-  {
-    "name": "ONE_SECOND"
   },
   {
     "name": "ObjectUnsubscribedError"
@@ -516,9 +483,6 @@
     "name": "TRUE_BOOLEAN_VALUES"
   },
   {
-    "name": "TYPE"
-  },
-  {
     "name": "TimelineAnimationEngine"
   },
   {
@@ -603,12 +567,6 @@
     "name": "_flattenGroupPlayersRecur"
   },
   {
-    "name": "_getInsertInFrontOfRNodeWithI18n"
-  },
-  {
-    "name": "_icuContainerIterate"
-  },
-  {
     "name": "_injectImplementation"
   },
   {
@@ -622,12 +580,6 @@
   },
   {
     "name": "_platformInjector"
-  },
-  {
-    "name": "_processI18nInsertBefore"
-  },
-  {
-    "name": "_retrieveHydrationInfoImpl"
   },
   {
     "name": "_wasLastNodeCreated"
@@ -871,9 +823,6 @@
   },
   {
     "name": "enterView"
-  },
-  {
-    "name": "epoch"
   },
   {
     "name": "eraseStyles"
@@ -1329,9 +1278,6 @@
     "name": "producerUpdateValueVersion"
   },
   {
-    "name": "profiler"
-  },
-  {
     "name": "refreshContentQueries"
   },
   {
@@ -1381,9 +1327,6 @@
   },
   {
     "name": "resolveTimingValue"
-  },
-  {
-    "name": "retrieveHydrationInfo"
   },
   {
     "name": "roundOffset"
