@@ -10,7 +10,6 @@ import ts from 'typescript';
 
 import {ChangeTracker} from '../../utils/change_tracker';
 import {getImportSpecifier} from '../../utils/typescript/imports';
-import {closestNode} from '../../utils/typescript/nodes';
 
 export type RewriteFn = (startPos: number, width: number, text: string) => void;
 
@@ -22,9 +21,9 @@ export function migrateFile(sourceFile: ts.SourceFile, rewriteFn: RewriteFn) {
 
     if (provider) {
       replaceProviderWithNewApi({
-        sourceFile: sourceFile,
-        node: node,
-        provider: provider,
+        sourceFile,
+        node,
+        provider,
         changeTracker,
       });
       return;
@@ -73,29 +72,14 @@ function replaceProviderWithNewApi({
     `${provideInitializerFunctionName}(${initializerCode})`,
   );
 
-  // Import declaration and named imports are necessarily there.
-  const namedImports = closestNode(initializerTokenSpecifier, ts.isNamedImports)!;
-
-  // `provide*Initializer` function is already imported.
-  const hasProvideInitializeFunction = namedImports.elements.some(
-    (element) => element.name.getText() === provideInitializerFunctionName,
-  );
-
-  const newNamedImports = ts.factory.updateNamedImports(namedImports, [
-    // Remove the `*_INITIALIZER` token from imports.
-    ...namedImports.elements.filter((element) => element !== initializerTokenSpecifier),
-    // Add the `inject` function to imports if needed.
-    ...(importInject ? [createImportSpecifier('inject')] : []),
-    // Add the `provide*Initializer` function to imports.
-    ...(!hasProvideInitializeFunction
-      ? [createImportSpecifier(provideInitializerFunctionName)]
-      : []),
-  ]);
-  changeTracker.replaceNode(namedImports, newNamedImports);
-}
-
-function createImportSpecifier(name: string): ts.ImportSpecifier {
-  return ts.factory.createImportSpecifier(false, undefined, ts.factory.createIdentifier(name));
+  // Remove the `*_INITIALIZER` token from imports.
+  changeTracker.removeImport(sourceFile, initializerToken, angularCoreModule);
+  // Add the `inject` function to imports if needed.
+  if (importInject) {
+    changeTracker.addImport(sourceFile, 'inject', angularCoreModule);
+  }
+  // Add the `provide*Initializer` function to imports.
+  changeTracker.addImport(sourceFile, provideInitializerFunctionName, angularCoreModule);
 }
 
 function tryParseProviderExpression(node: ts.Node): ProviderInfo | undefined {
