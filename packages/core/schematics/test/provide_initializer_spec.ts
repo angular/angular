@@ -46,6 +46,24 @@ describe('Provide initializer migration', () => {
     expect(content).toContain(`import { input, provideAppInitializer } from '@angular/core';`);
   });
 
+  it('should not duplicate imported symbols with several APP_INITIALIZER', async () => {
+    const content = await migrateCode(`
+      import { APP_INITIALIZER, input } from '@angular/core';
+
+      const providers = [{
+        provide: APP_INITIALIZER,
+        useValue: () => { console.log('hello'); },
+        multi: true,
+      },{
+        provide: APP_INITIALIZER,
+        useValue: () => { console.log('world'); },
+        multi: true,
+      }];
+    `);
+
+    expect(content).toContain(`import { input, provideAppInitializer } from '@angular/core';`);
+  });
+
   it('should reuse provideAppInitializer if already imported', async () => {
     const content = await migrateCode(`
       import { APP_INITIALIZER, input, provideAppInitializer } from '@angular/core';
@@ -75,6 +93,7 @@ describe('Provide initializer migration', () => {
       `const providers = [provideAppInitializer(async () => { await Promise.resolve(); return 42; })]`,
     );
   });
+
   it('should transform APP_INITIALIZER + useValue symbol into provideAppInitializer', async () => {
     const content = await migrateCode(`
       import { APP_INITIALIZER } from '@angular/core';
