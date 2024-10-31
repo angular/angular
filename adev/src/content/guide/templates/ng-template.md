@@ -136,6 +136,11 @@ Once you have a reference to a template fragment's `TemplateRef` object, you can
 
 The `NgTemplateOutlet` directive from `@angular/common` accepts a `TemplateRef` and renders the fragment as a **sibling** to the element with the outlet. You should generally use `NgTemplateOutlet` on an [`<ng-container>` element](/guide/templates/ng-container).
 
+First, import `NgTemplateOutlet`:
+```typescript
+import { NgTemplateOutlet } from '@angular/common';
+```
+
 The following example declares a template fragment and renders that fragment to a `<ng-container>` element with `NgTemplateOutlet`:
 
 ```angular-html
@@ -145,7 +150,7 @@ The following example declares a template fragment and renders that fragment to 
   <p>This is a fragment</p>
 </ng-template>
 
-<ng-container [ngTemplateOutlet]="myFragment" />
+<ng-container *ngTemplateOutlet="myFragment"></ng-container>
 ```
 
 This example produces the following rendered DOM:
