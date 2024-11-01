@@ -7,16 +7,14 @@
  */
 
 import {
-  afterNextRender,
   Component,
+  afterRenderEffect,
   ElementRef,
   inject,
   Input,
   input,
-  OnDestroy,
   output,
   signal,
-  ViewChild,
   viewChild,
 } from '@angular/core';
 import {
@@ -86,23 +84,22 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
     FormsModule,
   ],
 })
-export class DirectiveExplorerComponent implements OnDestroy {
+export class DirectiveExplorerComponent {
   readonly showCommentNodes = input(false);
   @Input() isHydrationEnabled = false;
   readonly toggleInspector = output<void>();
 
-  readonly directiveForest = viewChild(DirectiveForestComponent);
-  @ViewChild(SplitComponent, {static: true, read: ElementRef}) splitElementRef!: ElementRef;
-  @ViewChild('directiveForestSplitArea', {static: true, read: ElementRef})
-  directiveForestSplitArea!: ElementRef;
+  readonly directiveForest = viewChild.required(DirectiveForestComponent);
+  readonly splitElementRef = viewChild.required(SplitComponent, {read: ElementRef});
+  readonly directiveForestSplitArea = viewChild.required('directiveForestSplitArea', {
+    read: ElementRef,
+  });
 
   readonly currentSelectedElement = signal<IndexedNode | null>(null);
   readonly forest = signal<DevToolsNode[]>([]);
   readonly splitDirection = signal<'horizontal' | 'vertical'>('horizontal');
   readonly parents = signal<FlatNode[] | null>(null);
   readonly showHydrationNodeHighlights = signal(false);
-
-  private _resizeObserver!: ResizeObserver;
 
   private _clickedElement: IndexedNode | null = null;
   private _refreshRetryTimeout: null | ReturnType<typeof setTimeout> = null;
@@ -113,28 +110,29 @@ export class DirectiveExplorerComponent implements OnDestroy {
   private readonly _frameManager = inject(FrameManager);
 
   constructor() {
-    afterNextRender(() => {
-      this._resizeObserver = new ResizeObserver((entries) => {
+    afterRenderEffect((cleanup) => {
+      const splitElement = this.splitElementRef().nativeElement;
+      const directiveForestSplitArea = this.directiveForestSplitArea().nativeElement;
+      const resizeObserver = new ResizeObserver((entries) => {
         this.refreshHydrationNodeHighlightsIfNeeded();
 
         const resizedEntry = entries[0];
-        if (resizedEntry.target === this.splitElementRef.nativeElement) {
+        if (resizedEntry.target === splitElement) {
           this.splitDirection.set(
             resizedEntry.contentRect.width <= 500 ? 'vertical' : 'horizontal',
           );
         }
       });
 
-      this.subscribeToBackendEvents();
-      this.refresh();
-      this._resizeObserver.observe(this.splitElementRef.nativeElement);
-      this._resizeObserver.observe(this.directiveForestSplitArea.nativeElement);
+      resizeObserver.observe(splitElement);
+      resizeObserver.observe(directiveForestSplitArea);
+      cleanup(() => {
+        resizeObserver.disconnect();
+      });
     });
-  }
 
-  ngOnDestroy(): void {
-    this._resizeObserver.unobserve(this.splitElementRef.nativeElement);
-    this._resizeObserver.unobserve(this.directiveForestSplitArea.nativeElement);
+    this.subscribeToBackendEvents();
+    this.refresh();
   }
 
   handleNodeSelection(node: IndexedNode | null): void {

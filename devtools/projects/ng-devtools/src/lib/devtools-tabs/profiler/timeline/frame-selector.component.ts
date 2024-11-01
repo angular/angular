@@ -15,7 +15,6 @@ import {
   afterRenderEffect,
   Component,
   computed,
-  effect,
   ElementRef,
   inject,
   input,
@@ -23,7 +22,6 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import {toSignal} from '@angular/core/rxjs-interop';
 
 import {TabUpdate} from '../../tab-update/index';
 
