@@ -9,14 +9,15 @@
 import ts from 'typescript';
 
 import {ErrorCode, makeDiagnostic, makeRelatedInformation} from '../../../diagnostics';
-import {ImportedSymbolsTracker, Reference} from '../../../imports';
-import {
+import type {ImportedSymbolsTracker, Reference} from '../../../imports';
+import type {ClassDeclaration} from '../../../reflection';
+import type {
   TemplateTypeChecker,
   TypeCheckableDirectiveMeta,
   TypeCheckingConfig,
 } from '../../../typecheck/api';
 
-import {SourceFileValidatorRule} from './api';
+import type {SourceFileValidatorRule} from './api';
 
 /**
  * Rule that flags unused symbols inside of the `imports` array of a component.
@@ -79,7 +80,7 @@ export class UnusedStandaloneImportsRule implements SourceFileValidatorRule {
     if (unused.length === metadata.imports.length) {
       return makeDiagnostic(
         ErrorCode.UNUSED_STANDALONE_IMPORTS,
-        metadata.rawImports,
+        this.getDiagnosticNode(metadata.rawImports),
         'All imports are unused',
         undefined,
         category,
@@ -88,14 +89,19 @@ export class UnusedStandaloneImportsRule implements SourceFileValidatorRule {
 
     return makeDiagnostic(
       ErrorCode.UNUSED_STANDALONE_IMPORTS,
-      metadata.rawImports,
+      this.getDiagnosticNode(metadata.rawImports),
       'Imports array contains unused imports',
-      unused.map(([ref, type, name]) =>
-        makeRelatedInformation(
-          ref.getOriginForDiagnostics(metadata.rawImports!),
-          `${type} "${name}" is not used within the template`,
-        ),
-      ),
+      unused.map((ref) => {
+        return makeRelatedInformation(
+          // Intentionally don't pass a message to `makeRelatedInformation` to make the diagnostic
+          // less noisy. The node will already be highlighted so the user can see which node is
+          // unused. Note that in the case where an origin can't be resolved, we fall back to
+          // the original node's identifier so the user can still see the name. This can happen
+          // when the unused is coming from an imports array within the same file.
+          ref.getOriginForDiagnostics(metadata.rawImports!, ref.node.name),
+          '',
+        );
+      }),
       category,
     );
   }
@@ -111,7 +117,7 @@ export class UnusedStandaloneImportsRule implements SourceFileValidatorRule {
       return null;
     }
 
-    let unused: [ref: Reference, type: string, name: string][] | null = null;
+    let unused: Reference<ClassDeclaration>[] | null = null;
 
     for (const current of imports) {
       const currentNode = current.node as ts.ClassDeclaration;
@@ -124,7 +130,7 @@ export class UnusedStandaloneImportsRule implements SourceFileValidatorRule {
           !this.isPotentialSharedReference(current, rawImports)
         ) {
           unused ??= [];
-          unused.push([current, dirMeta.isComponent ? 'Component' : 'Directive', dirMeta.name]);
+          unused.push(current);
         }
         continue;
       }
@@ -138,7 +144,7 @@ export class UnusedStandaloneImportsRule implements SourceFileValidatorRule {
         !this.isPotentialSharedReference(current, rawImports)
       ) {
         unused ??= [];
-        unused.push([current, 'Pipe', pipeMeta.ref.node.name.text]);
+        unused.push(current);
       }
     }
 
@@ -174,5 +180,22 @@ export class UnusedStandaloneImportsRule implements SourceFileValidatorRule {
     // Otherwise the reference likely comes from an imported
     // symbol like an array of shared common components.
     return true;
+  }
+
+  /** Gets the node on which to report the diagnostic. */
+  private getDiagnosticNode(importsExpression: ts.Expression): ts.Node {
+    let current = importsExpression.parent;
+
+    while (current) {
+      // Highlight the `imports:` part of the node instead of the entire node, because
+      // imports arrays can be long which makes the diagnostic harder to scan visually.
+      if (ts.isPropertyAssignment(current)) {
+        return current.name;
+      } else {
+        current = current.parent;
+      }
+    }
+
+    return importsExpression;
   }
 }
