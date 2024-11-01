@@ -23,7 +23,11 @@ export function isStandaloneComponent(node: ts.ClassDeclaration): boolean {
     const arg = decorator.expression.arguments[0];
     if (ts.isObjectLiteralExpression(arg)) {
       const property = findLiteralProperty(arg, 'standalone') as ts.PropertyAssignment;
-      return property ? property.initializer.getText() === 'true' : false;
+      if (property) {
+        return property.initializer.getText() === 'true';
+      } else {
+        return true; // standalone is true by default in v19
+      }
     }
   }
 

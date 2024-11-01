@@ -335,11 +335,13 @@ describe('route lazy loading migration', () => {
       import {NgModule} from '@angular/core';
       import {provideRoutes} from '@angular/router';
       import {TestComponent} from './test';
+      import {StandaloneByDefaultComponent} from './standalone-by-default';
       import {NotStandaloneComponent} from './not-standalone';
 
       const routes = [
         {path: 'test', component: TestComponent},
         {path: 'test1', component: NotStandaloneComponent},
+        {path: 'test2', component: StandaloneByDefaultComponent},
       ];
 
       @NgModule({
@@ -359,10 +361,19 @@ describe('route lazy loading migration', () => {
     );
 
     writeFile(
+      'standalone-by-default.ts',
+      `
+      import {Component} from '@angular/core';
+      @Component({template: 'hello'})
+      export class StandaloneByDefaultComponent {}
+    `,
+    );
+
+    writeFile(
       'not-standalone.ts',
       `
       import {Component, NgModule} from '@angular/core';
-      @Component({template: 'hello'})
+      @Component({template: 'hello', standalone: false})
       export class NotStandaloneComponent {}
 
       @NgModule({declarations: [NotStandaloneComponent], exports: [NotStandaloneComponent]})
@@ -381,6 +392,7 @@ describe('route lazy loading migration', () => {
         const routes = [
           {path: 'test', loadComponent: () => import('./test').then(m => m.TestComponent)},
           {path: 'test1', component: NotStandaloneComponent},
+          {path: 'test2', loadComponent: () => import('./standalone-by-default').then(m => m.StandaloneByDefaultComponent)},
         ];
 
         @NgModule({
