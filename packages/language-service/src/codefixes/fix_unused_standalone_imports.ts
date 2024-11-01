@@ -29,16 +29,20 @@ export const fixUnusedStandaloneImportsMeta: CodeActionMeta = {
       }
 
       const node = findFirstMatchingNode(file, {
-        filter: (current): current is tss.ArrayLiteralExpression =>
-          current.getStart() === start &&
-          current.getWidth() === length &&
-          tss.isArrayLiteralExpression(current),
+        filter: (
+          current,
+        ): current is tss.PropertyAssignment & {initializer: tss.ArrayLiteralExpression} =>
+          tss.isPropertyAssignment(current) &&
+          tss.isArrayLiteralExpression(current.initializer) &&
+          current.name.getStart() === start &&
+          current.name.getWidth() === length,
       });
 
       if (node === null) {
         continue;
       }
 
+      const importsArray = node.initializer;
       let newText: string;
 
       // If `relatedInformation` is empty, it means that all the imports are unused.
@@ -50,11 +54,23 @@ export const fixUnusedStandaloneImportsMeta: CodeActionMeta = {
         // filtered out. We make a set of ranges corresponding to nodes which will be deleted and
         // remove all nodes that belong to the set.
         const excludeRanges = new Set(
-          relatedInformation.map((info) => `${info.start}-${info.length}`),
+          relatedInformation.reduce((ranges, info) => {
+            // If the compiler can't resolve the unused import to an identifier within the array,
+            // it falls back to reporting the identifier of the class declaration instead. In theory
+            // that class could have the same offsets as the diagnostic location. It's a slim chance
+            // that would happen, but we filter out reports from other files just in case.
+            if (info.file === file) {
+              ranges.push(`${info.start}-${info.length}`);
+            }
+            return ranges;
+          }, [] as string[]),
         );
+
         const newArray = tss.factory.updateArrayLiteralExpression(
-          node,
-          node.elements.filter((el) => !excludeRanges.has(`${el.getStart()}-${el.getWidth()}`)),
+          importsArray,
+          importsArray.elements.filter(
+            (el) => !excludeRanges.has(`${el.getStart()}-${el.getWidth()}`),
+          ),
         );
 
         newText = tss.createPrinter().printNode(tss.EmitHint.Unspecified, newArray, file);
@@ -64,7 +80,7 @@ export const fixUnusedStandaloneImportsMeta: CodeActionMeta = {
         fileName: file.fileName,
         textChanges: [
           {
-            span: {start, length},
+            span: {start: importsArray.getStart(), length: importsArray.getWidth()},
             newText,
           },
         ],
