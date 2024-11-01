@@ -20,7 +20,7 @@
       "yarn ng-dev misc update-generated-files"
     ],
     "fileFilters": [".github/actions/deploy-docs-site/**/*", "packages/**/*"],
-    "executionMode": "update"
+    "executionMode": "branch"
   },
   "ignoreDeps": [
     "@types/node",
