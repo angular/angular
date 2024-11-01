@@ -102,16 +102,18 @@ runInEachFileSystem(() => {
       const jsContents = env.getContents('test.js');
       const hmrContents = env.driveHmr('test.ts', 'Cmp');
 
-      // We need a regex match here, because the file path changes based on
-      // the file system and the timestamp will be different for each test run.
-      expect(jsContents).toMatch(
-        /import\.meta\.hot && import\.meta\.hot\.on\("angular:component-update", d => { if \(d\.id == "test\.ts%40Cmp"\) {/,
+      expect(jsContents).toContain('function Cmp_HmrLoad(t) {');
+      expect(jsContents).toContain(
+        'import(/* @vite-ignore */\n"/@ng/component?c=test.ts%40Cmp&t=" + encodeURIComponent(t))',
       );
-      expect(jsContents).toMatch(
-        /import\(\s*\/\* @vite-ignore \*\/\s+"\/@ng\/component\?c=test\.ts%40Cmp&t=" \+ encodeURIComponent\(d.timestamp\)/,
+      expect(jsContents).toContain(
+        ').then(m => m.default && i0.ɵɵreplaceMetadata(Cmp, m.default, i0, ' +
+          '[Dep, transformValue, TOKEN, Component, Inject, ViewChild, Input]));',
       );
-      expect(jsContents).toMatch(
-        /\).then\(m => i0\.ɵɵreplaceMetadata\(Cmp, m\.default, i0, \[Dep, transformValue, TOKEN, Component, Inject, ViewChild, Input\]\)\);/,
+      expect(jsContents).toContain('Cmp_HmrLoad(Date.now());');
+      expect(jsContents).toContain(
+        'import.meta.hot && import.meta.hot.on("angular:component-update", ' +
+          'd => d.id === "test.ts%40Cmp" && Cmp_HmrLoad(d.timestamp)',
       );
 
       expect(hmrContents).toContain(
