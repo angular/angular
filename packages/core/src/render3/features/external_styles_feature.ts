@@ -25,10 +25,15 @@ export function ɵɵExternalStylesFeature(styleUrls: string[]): ComponentDefFeat
     }
 
     definition.getExternalStyles = (encapsulationId) => {
-      // Add encapsulation ID search parameter `component` to support external style encapsulation
+      // Add encapsulation ID search parameter `ngcomp` to support external style encapsulation as well as the encapsulation mode
+      // for usage tracking.
       const urls = styleUrls.map(
         (value) =>
-          value + '?ngcomp' + (encapsulationId ? '=' + encodeURIComponent(encapsulationId) : ''),
+          value +
+          '?ngcomp' +
+          (encapsulationId ? '=' + encodeURIComponent(encapsulationId) : '') +
+          '&e=' +
+          definition.encapsulation,
       );
 
       return urls;
