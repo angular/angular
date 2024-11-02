@@ -27,7 +27,7 @@ import {
 import {RuntimeErrorCode} from '../errors';
 
 import {EventManager} from './events/event_manager';
-import {SharedStylesHost} from './shared_styles_host';
+import {createLinkElement, SharedStylesHost} from './shared_styles_host';
 
 export const NAMESPACE_URIS: {[ns: string]: string} = {
   'svg': 'http://www.w3.org/2000/svg',
@@ -433,6 +433,23 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
 
       styleEl.textContent = style;
       this.shadowRoot.appendChild(styleEl);
+    }
+
+    // Apply any external component styles to the shadow root for the component's element.
+    // The ShadowDOM renderer uses an alternative execution path for component styles that
+    // does not use the SharedStylesHost that other encapsulation modes leverage. Much like
+    // the manual addition of embedded styles directly above, any external stylesheets
+    // must be manually added here to ensure ShadowDOM components are correctly styled.
+    // TODO: Consider reworking the DOM Renderers to consolidate style handling.
+    const styleUrls = component.getExternalStyles?.();
+    if (styleUrls) {
+      for (const styleUrl of styleUrls) {
+        const linkEl = createLinkElement(styleUrl, doc);
+        if (nonce) {
+          linkEl.setAttribute('nonce', nonce);
+        }
+        this.shadowRoot.appendChild(linkEl);
+      }
     }
   }
 

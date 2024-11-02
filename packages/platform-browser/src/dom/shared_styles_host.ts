@@ -84,7 +84,7 @@ function addServerStyles(
  * @param doc A DOM Document to use to create the element.
  * @returns An HTMLLinkElement instance.
  */
-function createLinkElement(url: string, doc: Document): HTMLLinkElement {
+export function createLinkElement(url: string, doc: Document): HTMLLinkElement {
   const linkElement = doc.createElement('link');
   linkElement.setAttribute('rel', 'stylesheet');
   linkElement.setAttribute('href', url);
