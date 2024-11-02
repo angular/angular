@@ -32,6 +32,10 @@ describe('parser', () => {
       checkAction('1');
     });
 
+    it('should parse bigints', () => {
+      checkAction('1234n');
+    });
+
     it('should parse strings', () => {
       checkAction("'1'", '"1"');
       checkAction('"1"');

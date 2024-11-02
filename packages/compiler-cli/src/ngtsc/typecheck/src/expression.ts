@@ -39,7 +39,7 @@ import ts from 'typescript';
 import {TypeCheckingConfig} from '../api';
 
 import {addParseSpanInfo, wrapForDiagnostics, wrapForTypeChecker} from './diagnostics';
-import {tsCastToAny, tsNumericExpression} from './ts_util';
+import {tsBigIntExpression, tsCastToAny, tsNumericExpression} from './ts_util';
 
 /**
  * Expression that is cast to any. Currently represented as `0 as any`.
@@ -249,6 +249,8 @@ class AstTranslator implements AstVisitor {
       node = ts.factory.createStringLiteral(ast.value);
     } else if (typeof ast.value === 'number') {
       node = tsNumericExpression(ast.value);
+    } else if (typeof ast.value === 'bigint') {
+      node = tsBigIntExpression(ast.value);
     } else if (typeof ast.value === 'boolean') {
       node = ast.value ? ts.factory.createTrue() : ts.factory.createFalse();
     } else {

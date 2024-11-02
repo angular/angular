@@ -334,6 +334,9 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     const value = ast.value;
     if (typeof value === 'string') {
       ctx.print(ast, escapeIdentifier(value, this._escapeDollarInStrings));
+    } else if (typeof value === 'bigint') {
+      // We want to generate a bigint literal
+      ctx.print(ast, `${value}n`);
     } else {
       ctx.print(ast, `${value}`);
     }

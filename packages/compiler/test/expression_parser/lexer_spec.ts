@@ -32,7 +32,13 @@ function expectOperatorToken(token: any, index: number, end: number, operator: s
 function expectNumberToken(token: any, index: number, end: number, n: number) {
   expectToken(token, index, end);
   expect(token.isNumber()).toBe(true);
-  expect(token.toNumber()).toEqual(n);
+  expect(token.typedValue.value).toEqual(n);
+}
+
+function expectBigIntToken(token: any, index: number, end: number, n: BigInt) {
+  expectToken(token, index, end);
+  expect(token.isBigInt()).toBe(true);
+  expect(token.typedValue.value).toEqual(n);
 }
 
 function expectStringToken(token: any, index: number, end: number, str: string) {
@@ -296,6 +302,19 @@ describe('lexer', () => {
       expectNumberToken(tokens[0], 0, 7, 0.5e-10);
       tokens = lex('0.5E+10');
       expectNumberToken(tokens[0], 0, 7, 0.5e10);
+    });
+
+    it('should tokenize bigint', () => {
+      expectBigIntToken(lex('1234n')[0], 0, 5, 1234n);
+    });
+
+    it('should return exception for invalid bigint', () => {
+      expectErrorToken(
+        lex('1.234n')[0],
+        5,
+        5,
+        'Lexer Error: Invalid bigint primitive value at column 5 in expression [1.234n]',
+      );
     });
 
     it('should return exception for invalid exponent', () => {

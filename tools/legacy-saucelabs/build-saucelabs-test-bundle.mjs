@@ -49,7 +49,7 @@ async function main() {
     treeShaking: false,
     sourceRoot: projectDir,
     platform: 'browser',
-    target: 'es2015',
+    target: 'es2020',
     format: 'iife',
     outfile: outFile,
     sourcemap: true,

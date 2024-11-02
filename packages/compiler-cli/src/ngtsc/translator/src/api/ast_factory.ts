@@ -165,7 +165,7 @@ export interface AstFactory<TStatement, TExpression> {
    *
    * @param value the value of the literal.
    */
-  createLiteral(value: string | number | boolean | null | undefined): TExpression;
+  createLiteral(value: string | number | bigint | boolean | null | undefined): TExpression;
 
   /**
    * Create an expression that is instantiating the `expression` as a class.

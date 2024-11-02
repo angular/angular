@@ -89,7 +89,7 @@ export class NgtscTestEnvironment {
         "baseUrl": ".",
         "allowJs": true,
         "declaration": true,
-        "target": "es2015",
+        "target": "es2020",
         "newLine": "lf",
         "module": "es2015",
         "moduleResolution": "node",

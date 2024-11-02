@@ -20,7 +20,7 @@ import {AmbientImport, ReflectionHost} from '../../reflection';
 
 import {Context} from './context';
 import {ImportManager} from './import_manager/import_manager';
-import {tsNumericExpression} from './ts_util';
+import {tsNumericExpression, tsBigIntExpression} from './ts_util';
 import {TypeEmitter} from './type_emitter';
 
 export function translateType(
@@ -158,6 +158,8 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
       );
     } else if (typeof ast.value === 'number') {
       return ts.factory.createLiteralTypeNode(tsNumericExpression(ast.value));
+    } else if (typeof ast.value === 'bigint') {
+      return ts.factory.createLiteralTypeNode(tsBigIntExpression(ast.value));
     } else {
       return ts.factory.createLiteralTypeNode(ts.factory.createStringLiteral(ast.value));
     }

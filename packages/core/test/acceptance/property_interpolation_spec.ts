@@ -171,6 +171,25 @@ describe('property interpolation', () => {
     );
   });
 
+  it('should handle interpolations with BigInt', () => {
+    @Component({
+      selector: 'app-comp',
+      template: `
+        <div (click)="val = 1234n">{{1234n}}</div>`,
+    })
+    class AppComp {
+      val: bigint | undefined;
+    }
+
+    const fixture = TestBed.createComponent(AppComp);
+    fixture.detectChanges();
+    const elt = fixture.debugElement.query(By.css('div')).nativeElement;
+    expect(elt.innerHTML).toEqual('1234');
+    elt.click();
+    expect(fixture.componentInstance.val).toEqual(1234n);
+    expect(typeof fixture.componentInstance.val).toEqual('bigint');
+  });
+
   it('should support the chained use cases of propertyInterpolate instructions', () => {
     // The below *just happens* to have two attributes in a row that have the same interpolation
     // count.

@@ -741,6 +741,28 @@ runInEachFileSystem(() => {
       expect(diags[0].messageText).toContain(`This comparison appears to be unintentional`);
     });
 
+    it('should error on bigint misuse', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+
+        @Component({
+          standalone: true,
+          template: \` {{ 1234n * 2}} \`,
+        })
+        class TestCmp {
+        }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toContain(
+        `Operator '*' cannot be applied to types 'bigint' and 'number'`,
+      );
+    });
+
     describe('strictInputTypes', () => {
       beforeEach(() => {
         env.write(

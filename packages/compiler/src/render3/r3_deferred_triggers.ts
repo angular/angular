@@ -234,7 +234,7 @@ class OnTriggerParser {
     );
     const nameSpan = new ParseSourceSpan(
       triggerNameStartSpan,
-      triggerNameStartSpan.moveBy(identifier.strValue.length),
+      triggerNameStartSpan.moveBy((identifier.typedValue.value as string).length),
     );
     const endSpan = triggerNameStartSpan.moveBy(this.token().end - identifier.index);
 
@@ -382,8 +382,11 @@ class OnTriggerParser {
       // individual trigger (e.g. `on foo(a, b)`). To avoid tripping up the parser with commas that
       // are part of other sorts of syntax (object literals, arrays), we treat anything inside
       // a comma-delimited syntax block as plain text.
-      if (token.type === TokenType.Character && COMMA_DELIMITED_SYNTAX.has(token.numValue)) {
-        commaDelimStack.push(COMMA_DELIMITED_SYNTAX.get(token.numValue)!);
+      if (
+        token.typedValue.type === TokenType.Character &&
+        COMMA_DELIMITED_SYNTAX.has(token.typedValue.value)
+      ) {
+        commaDelimStack.push(COMMA_DELIMITED_SYNTAX.get(token.typedValue.value)!);
       }
 
       if (

@@ -79,6 +79,8 @@ class SerializeExpressionVisitor implements expr.AstVisitor {
       case 'number':
       case 'boolean':
         return ast.value.toString();
+      case 'bigint':
+        return `${ast.value.toString()}n`;
       case 'undefined':
         return 'undefined';
       case 'string':

@@ -285,6 +285,20 @@ describe('TypeScriptAstFactory', () => {
       expect(generate(literal)).toEqual('NaN');
     });
 
+    it('should create a bigint literal', () => {
+      const {generate} = setupStatements();
+      const literal = factory.createLiteral(1234n);
+      expect(ts.isBigIntLiteral(literal)).toBe(true);
+      expect(generate(literal)).toEqual('1234n');
+    });
+
+    it('should create a negative bigint literal', () => {
+      const {generate} = setupStatements();
+      const literal = factory.createLiteral(-42n);
+      expect(ts.isPrefixUnaryExpression(literal)).toBe(true);
+      expect(generate(literal)).toEqual('-42n');
+    });
+
     it('should create a boolean literal', () => {
       const {generate} = setupStatements();
       const literal = factory.createLiteral(true);

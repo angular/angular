@@ -865,8 +865,8 @@ class _ParseAST {
     // '==','!=','===','!=='
     const start = this.inputIndex;
     let result = this.parseRelational();
-    while (this.next.type == TokenType.Operator) {
-      const operator = this.next.strValue;
+    while (this.next.typedValue.type == TokenType.Operator) {
+      const operator = this.next.typedValue.value;
       switch (operator) {
         case '==':
         case '===':
@@ -886,8 +886,8 @@ class _ParseAST {
     // '<', '>', '<=', '>='
     const start = this.inputIndex;
     let result = this.parseAdditive();
-    while (this.next.type == TokenType.Operator) {
-      const operator = this.next.strValue;
+    while (this.next.typedValue.type == TokenType.Operator) {
+      const operator = this.next.typedValue.value;
       switch (operator) {
         case '<':
         case '>':
@@ -907,8 +907,8 @@ class _ParseAST {
     // '+', '-'
     const start = this.inputIndex;
     let result = this.parseMultiplicative();
-    while (this.next.type == TokenType.Operator) {
-      const operator = this.next.strValue;
+    while (this.next.typedValue.type == TokenType.Operator) {
+      const operator = this.next.typedValue.value;
       switch (operator) {
         case '+':
         case '-':
@@ -926,8 +926,8 @@ class _ParseAST {
     // '*', '%', '/'
     const start = this.inputIndex;
     let result = this.parsePrefix();
-    while (this.next.type == TokenType.Operator) {
-      const operator = this.next.strValue;
+    while (this.next.typedValue.type == TokenType.Operator) {
+      const operator = this.next.typedValue.value;
       switch (operator) {
         case '*':
         case '%':
@@ -943,9 +943,9 @@ class _ParseAST {
   }
 
   private parsePrefix(): AST {
-    if (this.next.type == TokenType.Operator) {
+    if (this.next.typedValue.type == TokenType.Operator) {
       const start = this.inputIndex;
-      const operator = this.next.strValue;
+      const operator = this.next.typedValue.value;
       let result: AST;
       switch (operator) {
         case '+':
@@ -1034,7 +1034,11 @@ class _ParseAST {
         false,
       );
     } else if (this.next.isNumber()) {
-      const value = this.next.toNumber();
+      const value = this.next.typedValue.value;
+      this.advance();
+      return new LiteralPrimitive(this.span(start), this.sourceSpan(start), value);
+    } else if (this.next.isBigInt()) {
+      const value = this.next.typedValue.value;
       this.advance();
       return new LiteralPrimitive(this.span(start), this.sourceSpan(start), value);
     } else if (this.next.isString()) {

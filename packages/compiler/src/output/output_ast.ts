@@ -631,7 +631,7 @@ export class InstantiateExpr extends Expression {
 
 export class LiteralExpr extends Expression {
   constructor(
-    public value: number | string | boolean | null | undefined,
+    public value: number | string | boolean | bigint | null | undefined,
     type?: Type | null,
     sourceSpan?: ParseSourceSpan | null,
   ) {

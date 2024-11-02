@@ -16,6 +16,7 @@ export enum TokenType {
   String,
   Operator,
   Number,
+  BigInt,
   Error,
 }
 
@@ -50,91 +51,103 @@ export class Token {
   constructor(
     public index: number,
     public end: number,
-    public type: TokenType,
-    public numValue: number,
-    public strValue: string,
+    public typedValue:
+      | {type: TokenType.Number | TokenType.Character; value: number}
+      | {type: TokenType.BigInt; value: BigInt}
+      | {
+          type:
+            | TokenType.String
+            | TokenType.Identifier
+            | TokenType.Operator
+            | TokenType.Keyword
+            | TokenType.PrivateIdentifier
+            | TokenType.Error;
+          value: string;
+        },
   ) {}
 
-  isCharacter(code: number): boolean {
-    return this.type == TokenType.Character && this.numValue == code;
+  isCharacter(code: number): this is Token & {typedValue: {type: TokenType.Character}} {
+    return this.typedValue.type == TokenType.Character && this.typedValue.value === code;
   }
 
-  isNumber(): boolean {
-    return this.type == TokenType.Number;
+  isNumber(): this is Token & {typedValue: {type: TokenType.Number}} {
+    return this.typedValue.type == TokenType.Number;
   }
 
-  isString(): boolean {
-    return this.type == TokenType.String;
+  isBigInt(): this is Token & {typedValue: {type: TokenType.BigInt}} {
+    return this.typedValue.type == TokenType.BigInt;
   }
 
-  isOperator(operator: string): boolean {
-    return this.type == TokenType.Operator && this.strValue == operator;
+  isString(): this is Token & {typedValue: {type: TokenType.String}} {
+    return this.typedValue.type == TokenType.String;
   }
 
-  isIdentifier(): boolean {
-    return this.type == TokenType.Identifier;
+  isOperator(operator: string): this is Token & {typedValue: {type: TokenType.String}} {
+    return this.typedValue.type == TokenType.Operator && this.typedValue.value === operator;
   }
 
-  isPrivateIdentifier(): boolean {
-    return this.type == TokenType.PrivateIdentifier;
+  isIdentifier(): this is Token & {typedValue: {type: TokenType.String}} {
+    return this.typedValue.type == TokenType.Identifier;
   }
 
-  isKeyword(): boolean {
-    return this.type == TokenType.Keyword;
+  isPrivateIdentifier(): this is Token & {typedValue: {type: TokenType.String}} {
+    return this.typedValue.type == TokenType.PrivateIdentifier;
   }
 
-  isKeywordLet(): boolean {
-    return this.type == TokenType.Keyword && this.strValue == 'let';
+  isKeyword(): this is Token & {typedValue: {type: TokenType.String}} {
+    return this.typedValue.type == TokenType.Keyword;
   }
 
-  isKeywordAs(): boolean {
-    return this.type == TokenType.Keyword && this.strValue == 'as';
+  isKeywordLet(): this is Token & {typedValue: {type: TokenType.String}} {
+    return this.typedValue.type == TokenType.Keyword && this.typedValue.value === 'let';
   }
 
-  isKeywordNull(): boolean {
-    return this.type == TokenType.Keyword && this.strValue == 'null';
+  isKeywordAs(): this is Token & {typedValue: {type: TokenType.String}} {
+    return this.typedValue.type == TokenType.Keyword && this.typedValue.value === 'as';
   }
 
-  isKeywordUndefined(): boolean {
-    return this.type == TokenType.Keyword && this.strValue == 'undefined';
+  isKeywordNull(): this is Token & {typedValue: {type: TokenType.String}} {
+    return this.typedValue.type == TokenType.Keyword && this.typedValue.value === 'null';
   }
 
-  isKeywordTrue(): boolean {
-    return this.type == TokenType.Keyword && this.strValue == 'true';
+  isKeywordUndefined(): this is Token & {typedValue: {type: TokenType.String}} {
+    return this.typedValue.type == TokenType.Keyword && this.typedValue.value === 'undefined';
   }
 
-  isKeywordFalse(): boolean {
-    return this.type == TokenType.Keyword && this.strValue == 'false';
+  isKeywordTrue(): this is Token & {typedValue: {type: TokenType.String}} {
+    return this.typedValue.type == TokenType.Keyword && this.typedValue.value === 'true';
   }
 
-  isKeywordThis(): boolean {
-    return this.type == TokenType.Keyword && this.strValue == 'this';
+  isKeywordFalse(): this is Token & {typedValue: {type: TokenType.String}} {
+    return this.typedValue.type == TokenType.Keyword && this.typedValue.value === 'false';
   }
 
-  isKeywordTypeof(): boolean {
-    return this.type === TokenType.Keyword && this.strValue === 'typeof';
+  isKeywordThis(): this is Token & {typedValue: {type: TokenType.String}} {
+    return this.typedValue.type == TokenType.Keyword && this.typedValue.value === 'this';
+  }
+
+  isKeywordTypeof(): this is Token & {typedValue: {type: TokenType.String}} {
+    return this.typedValue.type === TokenType.Keyword && this.typedValue.value === 'typeof';
   }
 
   isError(): boolean {
-    return this.type == TokenType.Error;
-  }
-
-  toNumber(): number {
-    return this.type == TokenType.Number ? this.numValue : -1;
+    return this.typedValue.type == TokenType.Error;
   }
 
   toString(): string | null {
-    switch (this.type) {
-      case TokenType.Character:
+    switch (this.typedValue.type) {
       case TokenType.Identifier:
       case TokenType.Keyword:
       case TokenType.Operator:
       case TokenType.PrivateIdentifier:
       case TokenType.String:
       case TokenType.Error:
-        return this.strValue;
+        return this.typedValue.value;
+      case TokenType.Character:
+        return String.fromCharCode(this.typedValue.value);
       case TokenType.Number:
-        return this.numValue.toString();
+      case TokenType.BigInt:
+        return this.typedValue.value.toString();
       default:
         return null;
     }
@@ -142,38 +155,42 @@ export class Token {
 }
 
 function newCharacterToken(index: number, end: number, code: number): Token {
-  return new Token(index, end, TokenType.Character, code, String.fromCharCode(code));
+  return new Token(index, end, {type: TokenType.Character, value: code});
 }
 
 function newIdentifierToken(index: number, end: number, text: string): Token {
-  return new Token(index, end, TokenType.Identifier, 0, text);
+  return new Token(index, end, {type: TokenType.Identifier, value: text});
 }
 
 function newPrivateIdentifierToken(index: number, end: number, text: string): Token {
-  return new Token(index, end, TokenType.PrivateIdentifier, 0, text);
+  return new Token(index, end, {type: TokenType.PrivateIdentifier, value: text});
 }
 
 function newKeywordToken(index: number, end: number, text: string): Token {
-  return new Token(index, end, TokenType.Keyword, 0, text);
+  return new Token(index, end, {type: TokenType.Keyword, value: text});
 }
 
 function newOperatorToken(index: number, end: number, text: string): Token {
-  return new Token(index, end, TokenType.Operator, 0, text);
+  return new Token(index, end, {type: TokenType.Operator, value: text});
 }
 
 function newStringToken(index: number, end: number, text: string): Token {
-  return new Token(index, end, TokenType.String, 0, text);
+  return new Token(index, end, {type: TokenType.String, value: text});
 }
 
 function newNumberToken(index: number, end: number, n: number): Token {
-  return new Token(index, end, TokenType.Number, n, '');
+  return new Token(index, end, {type: TokenType.Number, value: n});
+}
+
+function newBigIntToken(index: number, end: number, n: BigInt): Token {
+  return new Token(index, end, {type: TokenType.BigInt, value: n});
 }
 
 function newErrorToken(index: number, end: number, message: string): Token {
-  return new Token(index, end, TokenType.Error, 0, message);
+  return new Token(index, end, {type: TokenType.Error, value: message});
 }
 
-export const EOF: Token = new Token(-1, -1, TokenType.Character, 0, '');
+export const EOF: Token = new Token(-1, -1, {type: TokenType.Character, value: 0});
 
 class _Scanner {
   length: number;
@@ -339,6 +356,8 @@ class _Scanner {
   scanNumber(start: number): Token {
     let simple = this.index === start;
     let hasSeparators = false;
+
+    let isBigInt = false;
     this.advance(); // Skip initial digit.
     while (true) {
       if (chars.isDigit(this.peek)) {
@@ -358,6 +377,13 @@ class _Scanner {
         hasSeparators = true;
       } else if (this.peek === chars.$PERIOD) {
         simple = false;
+      } else if (this.peek === chars.$n) {
+        if (!simple) {
+          return this.error('Invalid bigint primitive value', 0);
+        }
+        isBigInt = true;
+        this.advance();
+        break;
       } else if (isExponentStart(this.peek)) {
         this.advance();
         if (isExponentSign(this.peek)) this.advance();
@@ -373,8 +399,13 @@ class _Scanner {
     if (hasSeparators) {
       str = str.replace(/_/g, '');
     }
-    const value = simple ? parseIntAutoRadix(str) : parseFloat(str);
-    return newNumberToken(start, this.index, value);
+
+    if (isBigInt) {
+      return newBigIntToken(start, this.index, BigInt(str.slice(0, -1)));
+    } else {
+      const value = simple ? parseIntAutoRadix(str) : parseFloat(str);
+      return newNumberToken(start, this.index, value);
+    }
   }
 
   scanString(): Token {
