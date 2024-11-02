@@ -135,7 +135,7 @@ Angular language service can be used with Neovim by using the [nvim-lspconfig](h
 
 1. [Install nvim-lspconfig](https://github.com/neovim/nvim-lspconfig?tab=readme-ov-file#install)
 
-2. [Configure angularls for nvim-lspconfig](https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#angularls)
+2. [Configure angularls for nvim-lspconfig](https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#angularls)
 
 ## How the Language Service works
 
