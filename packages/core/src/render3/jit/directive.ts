@@ -41,7 +41,6 @@ import {
   patchComponentDefWithScope,
   transitiveScopesFor,
 } from './module';
-import {NG_STANDALONE_DEFAULT_VALUE} from '../standalone-default-value';
 import {isComponent, verifyStandaloneImport} from './util';
 
 /**
@@ -453,8 +452,7 @@ export function directiveMetadata(type: Type<any>, metadata: Directive): R3Direc
     exportAs: extractExportAs(metadata.exportAs),
     providers: metadata.providers || null,
     viewQueries: extractQueriesMetadata(type, propMetadata, isViewQuery),
-    isStandalone:
-      metadata.standalone === undefined ? NG_STANDALONE_DEFAULT_VALUE : !!metadata.standalone,
+    isStandalone: metadata.standalone === undefined ? true : !!metadata.standalone,
     isSignal: !!metadata.signals,
     hostDirectives:
       metadata.hostDirectives?.map((directive) =>
