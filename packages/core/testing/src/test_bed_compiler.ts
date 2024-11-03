@@ -65,7 +65,6 @@ import {
   ɵɵInjectableDeclaration as InjectableDeclaration,
   NgZone,
   ErrorHandler,
-  ɵNG_STANDALONE_DEFAULT_VALUE as NG_STANDALONE_DEFAULT_VALUE,
 } from '@angular/core';
 
 import {ComponentDef, ComponentType} from '../../src/render3';
@@ -103,7 +102,7 @@ function assertNoStandaloneComponents(
   types.forEach((type) => {
     if (!getAsyncClassMetadataFn(type)) {
       const component = resolver.resolve(type);
-      if (component && (component.standalone ?? NG_STANDALONE_DEFAULT_VALUE)) {
+      if (component && (component.standalone == null || component.standalone)) {
         throw new Error(ɵgenerateStandaloneInDeclarationsError(type, location));
       }
     }
