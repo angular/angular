@@ -309,4 +309,3 @@ export {
 } from './render3/deps_tracker/deps_tracker';
 export {generateStandaloneInDeclarationsError as ɵgenerateStandaloneInDeclarationsError} from './render3/jit/module';
 export {getAsyncClassMetadataFn as ɵgetAsyncClassMetadataFn} from './render3/metadata';
-export {NG_STANDALONE_DEFAULT_VALUE as ɵNG_STANDALONE_DEFAULT_VALUE} from './render3/standalone-default-value';
