@@ -271,26 +271,21 @@ class ClassExtractor {
   /** The result only contains properties, method implementations and abstracts */
   private filterMethodOverloads(declarations: ts.Declaration[]): ts.Declaration[] {
     return declarations.filter((declaration, index) => {
+      // Check if the declaration is a function or method
       if (ts.isFunctionDeclaration(declaration) || ts.isMethodDeclaration(declaration)) {
-        if (ts.getCombinedModifierFlags(declaration) & ts.ModifierFlags.Abstract) {
-          // TS enforces that all declarations of an abstract method are consecutive
-          const previousDeclaration = declarations[index - 1];
+        // TypeScript ensures that all declarations for a given abstract method appear consecutively.
+        const nextDeclaration = declarations[index + 1];
+        const isNextAbstractMethodWithSameName =
+          nextDeclaration &&
+          ts.isMethodDeclaration(nextDeclaration) &&
+          nextDeclaration.name.getText() === declaration.name?.getText();
 
-          const samePreviousAbstractMethod =
-            previousDeclaration &&
-            ts.isMethodDeclaration(previousDeclaration) &&
-            ts.getCombinedModifierFlags(previousDeclaration) & ts.ModifierFlags.Abstract &&
-            previousDeclaration.name.getText() === declaration.name?.getText();
-
-          // We just need a reference to one member
-          // In the case of Abstract Methods we only want to return the first abstract.
-          // Others with the same name are considered as overloads
-          // Later on, the function extractor will handle overloads and implementation detection
-          return !samePreviousAbstractMethod;
-        }
-
-        return !!declaration.body;
+        // Return only the last occurrence of an abstract method to avoid overload duplication.
+        // Subsequent overloads or implementations are handled separately by the function extractor.
+        return !isNextAbstractMethodWithSameName;
       }
+
+      // Include non-method declarations, such as properties, without filtering.
       return true;
     });
   }

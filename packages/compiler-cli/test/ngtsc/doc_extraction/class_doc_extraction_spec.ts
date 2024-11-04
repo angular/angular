@@ -276,15 +276,15 @@ runInEachFileSystem(() => {
             eyeColor = 'brown';
 
             /** @internal */
-            uuid: string;     
-            
+            uuid: string;
+
             // @internal
             foreignId: string;
 
             /** @internal */
             _doSomething() {}
 
-            // @internal 
+            // @internal
             _doSomethingElse() {}
         }
       `,
@@ -661,6 +661,28 @@ runInEachFileSystem(() => {
       expect(fooEntry.name).toBe('foo');
       expect(fooEntry.memberType).toBe(MemberType.Property);
       expect((fooEntry as PropertyEntry).type).toBe('string');
+    });
+
+    it('should extract members of a class from .d.ts', () => {
+      env.write(
+        'index.d.ts',
+        `
+        export declare class UserProfile {
+          firstName: string;
+          save(): void;
+        }`,
+      );
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.d.ts');
+      expect(docs.length).toBe(1);
+
+      const classEntry = docs[0] as ClassEntry;
+      expect(classEntry.members.length).toBe(2);
+
+      const [firstNameEntry, saveEntry] = classEntry.members;
+
+      expect(firstNameEntry.name).toBe('firstName');
+      expect(saveEntry.name).toBe('save');
     });
   });
 });
