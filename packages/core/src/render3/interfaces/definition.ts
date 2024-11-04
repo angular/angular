@@ -260,8 +260,17 @@ export interface DirectiveDef<T> {
       ) => void)
     | null;
 
-  /** Additional directives to be applied whenever the directive has been matched. */
-  hostDirectives: HostDirectiveDef[] | null;
+  /**
+   * Additional directives to be applied whenever the directive has been matched.
+   *
+   * `HostDirectiveConfig` objects represent a host directive that can be resolved eagerly and were
+   * already pre-processed when the definition was created. A function needs to be resolved lazily
+   * during directive matching, because it's a forward reference.
+   *
+   * **Note:** we can't `HostDirectiveConfig` in the array, because there's no way to distinguish if
+   * a function in the array is a `Type` or a `() => HostDirectiveConfig[]`.
+   */
+  hostDirectives: (HostDirectiveDef | (() => HostDirectiveConfig[]))[] | null;
 
   setInput:
     | (<U extends T>(
@@ -497,6 +506,15 @@ export type HostDirectiveBindingMap = {
  * and the configuration that was used to define it as such.
  */
 export type HostDirectiveDefs = Map<DirectiveDef<unknown>, HostDirectiveDef>;
+
+/** Value that can be used to configure a host directive. */
+export type HostDirectiveConfig =
+  | Type<unknown>
+  | {
+      directive: Type<unknown>;
+      inputs?: string[];
+      outputs?: string[];
+    };
 
 export interface ComponentDefFeature {
   <T>(componentDef: ComponentDef<T>): void;

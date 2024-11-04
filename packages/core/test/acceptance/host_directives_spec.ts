@@ -14,7 +14,6 @@ import {
   Directive,
   ElementRef,
   EventEmitter,
-  forwardRef,
   inject,
   Inject,
   InjectionToken,
@@ -26,6 +25,8 @@ import {
   Type,
   ViewChild,
   ViewContainerRef,
+  ɵɵdefineDirective,
+  ɵɵHostDirectivesFeature,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -78,21 +79,25 @@ describe('host directives', () => {
   it('should apply a host directive referenced through a forwardRef', () => {
     const logs: string[] = [];
 
-    @Directive({
-      selector: '[dir]',
-      hostDirectives: [forwardRef(() => HostDir), {directive: forwardRef(() => OtherHostDir)}],
-      standalone: false,
-    })
+    // This directive was "compiled" manually, because our tests are JIT-compiled and the JIT
+    // compiler doesn't produce the callback-based variant of the `ɵɵHostDirectivesFeature`.
+    // This represents the following metadata:
+    // @Directive({
+    //   selector: '[dir]',
+    //   hostDirectives: [forwardRef(() => HostDir), {directive: forwardRef(() => OtherHostDir)}],
+    //   standalone: false,
+    // })
     class Dir {
+      static ɵfac = () => new Dir();
+      static ɵdir = ɵɵdefineDirective({
+        type: Dir,
+        selectors: [['', 'dir', '']],
+        standalone: false,
+        features: [ɵɵHostDirectivesFeature(() => [HostDir, {directive: OtherHostDir}])],
+      });
+
       constructor() {
         logs.push('Dir');
-      }
-    }
-
-    @Directive({standalone: true})
-    class HostDir {
-      constructor() {
-        logs.push('HostDir');
       }
     }
 
@@ -100,6 +105,13 @@ describe('host directives', () => {
     class OtherHostDir {
       constructor() {
         logs.push('OtherHostDir');
+      }
+    }
+
+    @Directive({standalone: true})
+    class HostDir {
+      constructor() {
+        logs.push('HostDir');
       }
     }
 
@@ -114,6 +126,59 @@ describe('host directives', () => {
     fixture.detectChanges();
 
     expect(logs).toEqual(['HostDir', 'OtherHostDir', 'Dir']);
+  });
+
+  it('should apply a directive that references host directives through a forwardRef and is injected by its host directives', () => {
+    // This directive was "compiled" manually, because our tests are JIT-compiled and the JIT
+    // compiler doesn't produce the callback-based variant of the `ɵɵHostDirectivesFeature`.
+    // This represents the following metadata:
+    // @Directive({
+    //   selector: '[dir]',
+    //   hostDirectives: [forwardRef(() => HostDir), {directive: forwardRef(() => OtherHostDir)}],
+    //   standalone: false,
+    //   host: {'one': 'override', 'two': 'override'}
+    // })
+    class Dir {
+      static ɵfac = () => new Dir();
+      static ɵdir = ɵɵdefineDirective({
+        type: Dir,
+        selectors: [['', 'dir', '']],
+        standalone: false,
+        hostAttrs: ['one', 'override', 'two', 'override'],
+        features: [ɵɵHostDirectivesFeature(() => [HostDir, {directive: OtherHostDir}])],
+      });
+    }
+
+    @Directive({standalone: true, host: {'one': 'base'}})
+    class OtherHostDir {
+      constructor() {
+        inject(Dir);
+      }
+    }
+
+    @Directive({standalone: true, host: {'two': 'base'}})
+    class HostDir {
+      constructor() {
+        inject(Dir);
+      }
+    }
+
+    @Component({
+      template: '<div dir></div>',
+      standalone: false,
+    })
+    class App {}
+
+    TestBed.configureTestingModule({declarations: [App, Dir]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    // Note: we can't use the constructor call order here to determine the initialization order,
+    // because the act of injecting `Dir` will cause it to be created earlier than its host bindings
+    // will be invoked. Instead we check that the host bindings apply in the right order.
+    const host = fixture.nativeElement.querySelector('[dir]');
+    expect(host.getAttribute('one')).toBe('override');
+    expect(host.getAttribute('two')).toBe('override');
   });
 
   it('should apply a chain of host directives', () => {
