@@ -7,26 +7,17 @@
  */
 import {resolveForwardRef} from '../../di';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
-import {Type} from '../../interface/type';
 import {assertEqual} from '../../util/assert';
 import {EMPTY_OBJ} from '../../util/empty';
 import {getComponentDef, getDirectiveDef} from '../def_getters';
-import {
+import type {
   DirectiveDef,
   DirectiveDefFeature,
   HostDirectiveBindingMap,
+  HostDirectiveConfig,
   HostDirectiveDef,
   HostDirectiveDefs,
 } from '../interfaces/definition';
-
-/** Values that can be used to define a host directive through the `HostDirectivesFeature`. */
-type HostDirectiveConfig =
-  | Type<unknown>
-  | {
-      directive: Type<unknown>;
-      inputs?: string[];
-      outputs?: string[];
-    };
 
 /**
  * This feature adds the host directives behavior to a directive definition by patching a
@@ -52,22 +43,17 @@ export function ɵɵHostDirectivesFeature(
   rawHostDirectives: HostDirectiveConfig[] | (() => HostDirectiveConfig[]),
 ) {
   const feature: DirectiveDefFeature = (definition: DirectiveDef<unknown>) => {
-    const resolved = (
-      Array.isArray(rawHostDirectives) ? rawHostDirectives : rawHostDirectives()
-    ).map((dir) => {
-      return typeof dir === 'function'
-        ? {directive: resolveForwardRef(dir), inputs: EMPTY_OBJ, outputs: EMPTY_OBJ}
-        : {
-            directive: resolveForwardRef(dir.directive),
-            inputs: bindingArrayToMap(dir.inputs),
-            outputs: bindingArrayToMap(dir.outputs),
-          };
-    });
+    const isEager = Array.isArray(rawHostDirectives);
+
     if (definition.hostDirectives === null) {
       definition.findHostDirectiveDefs = findHostDirectiveDefs;
-      definition.hostDirectives = resolved;
+      definition.hostDirectives = isEager
+        ? rawHostDirectives.map(createHostDirectiveDef)
+        : [rawHostDirectives];
+    } else if (isEager) {
+      definition.hostDirectives.unshift(...rawHostDirectives.map(createHostDirectiveDef));
     } else {
-      definition.hostDirectives.unshift(...resolved);
+      definition.hostDirectives.unshift(rawHostDirectives);
     }
   };
   feature.ngInherit = true;
@@ -80,23 +66,50 @@ function findHostDirectiveDefs(
   hostDirectiveDefs: HostDirectiveDefs,
 ): void {
   if (currentDef.hostDirectives !== null) {
-    for (const hostDirectiveConfig of currentDef.hostDirectives) {
-      const hostDirectiveDef = getDirectiveDef(hostDirectiveConfig.directive)!;
-
-      if (typeof ngDevMode === 'undefined' || ngDevMode) {
-        validateHostDirective(hostDirectiveConfig, hostDirectiveDef);
+    for (const configOrFn of currentDef.hostDirectives) {
+      if (typeof configOrFn === 'function') {
+        const resolved = configOrFn();
+        for (const config of resolved) {
+          trackHostDirectiveDef(createHostDirectiveDef(config), matchedDefs, hostDirectiveDefs);
+        }
+      } else {
+        trackHostDirectiveDef(configOrFn, matchedDefs, hostDirectiveDefs);
       }
-
-      // We need to patch the `declaredInputs` so that
-      // `ngOnChanges` can map the properties correctly.
-      patchDeclaredInputs(hostDirectiveDef.declaredInputs, hostDirectiveConfig.inputs);
-
-      // Host directives execute before the host so that its host bindings can be overwritten.
-      findHostDirectiveDefs(hostDirectiveDef, matchedDefs, hostDirectiveDefs);
-      hostDirectiveDefs.set(hostDirectiveDef, hostDirectiveConfig);
-      matchedDefs.push(hostDirectiveDef);
     }
   }
+}
+
+/** Tracks a single host directive during directive matching. */
+function trackHostDirectiveDef(
+  def: HostDirectiveDef,
+  matchedDefs: DirectiveDef<unknown>[],
+  hostDirectiveDefs: HostDirectiveDefs,
+) {
+  const hostDirectiveDef = getDirectiveDef(def.directive)!;
+
+  if (typeof ngDevMode === 'undefined' || ngDevMode) {
+    validateHostDirective(def, hostDirectiveDef);
+  }
+
+  // We need to patch the `declaredInputs` so that
+  // `ngOnChanges` can map the properties correctly.
+  patchDeclaredInputs(hostDirectiveDef.declaredInputs, def.inputs);
+
+  // Host directives execute before the host so that its host bindings can be overwritten.
+  findHostDirectiveDefs(hostDirectiveDef, matchedDefs, hostDirectiveDefs);
+  hostDirectiveDefs.set(hostDirectiveDef, def);
+  matchedDefs.push(hostDirectiveDef);
+}
+
+/** Creates a `HostDirectiveDef` from a used-defined host directive configuration. */
+function createHostDirectiveDef(config: HostDirectiveConfig): HostDirectiveDef {
+  return typeof config === 'function'
+    ? {directive: resolveForwardRef(config), inputs: EMPTY_OBJ, outputs: EMPTY_OBJ}
+    : {
+        directive: resolveForwardRef(config.directive),
+        inputs: bindingArrayToMap(config.inputs),
+        outputs: bindingArrayToMap(config.outputs),
+      };
 }
 
 /**
