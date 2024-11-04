@@ -167,7 +167,7 @@ function tryParseProviderExpression(node: ts.Node): ProviderInfo | undefined {
     return {
       ...info,
       importInject: deps.length > 0,
-      initializerCode: `() => { return (${useFactory.getText()})(${args.join(', ')}); }`,
+      initializerCode: `(${useFactory.getText()})(${args.join(', ')})`,
     };
   }
 
