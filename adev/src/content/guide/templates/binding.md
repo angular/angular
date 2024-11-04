@@ -172,7 +172,7 @@ In the example above, Angular renders the `ul` element with all three CSS classe
 
 Angular does not guarantee any specific order of CSS classes on rendered elements.
 
-When binding `class` to an array or an object, Angular compares the previous value to the current value with the triple-equals operator (`===`). You must create a new object or array instance when you modify these values in order to Angular to apply any updates.
+When binding `class` to an array or an object, Angular compares the previous value to the current value with the triple-equals operator (`===`). You must create a new object or array instance when you modify these values in order for Angular to apply any updates.
 
 If an element has multiple bindings for the same CSS class, Angular resolves collisions by following its style precedence order.
 
