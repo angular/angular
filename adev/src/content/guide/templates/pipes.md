@@ -138,7 +138,7 @@ The pipe operator has lower precedence than other binary operators, including `+
 
 ```angular-html
 <!-- firstName and lastName are concatenated before the result is passed to the uppercase pipe -->
-{{ (firstName + lastName | uppercase }}
+{{ firstName + lastName | uppercase }}
 ```
 
 The pipe operator has higher precedence than the conditional (ternary) operator.
