@@ -105,10 +105,10 @@ describe('Provide initializer migration', () => {
       }];
     `);
 
-    expect(content).toContain(`const providers = [provideAppInitializer(() => { return (() => {
+    expect(content).toContain(`const providers = [provideAppInitializer((() => {
           const service = inject(Service);
           return () => service.init();
-        })(); })];`);
+        })())];`);
   });
 
   it('should transform APP_INITIALIZER + useExisting into provideAppInitializer', async () => {
@@ -144,9 +144,9 @@ describe('Provide initializer migration', () => {
 
     expect(content).toContain(`import { inject, provideAppInitializer } from '@angular/core';`);
     expect(content).toContain(
-      `const providers = [provideAppInitializer(() => { return ((a: ServiceA, b: ServiceB) => {
+      `const providers = [provideAppInitializer(((a: ServiceA, b: ServiceB) => {
           return () => a.init();
-        })(inject(ServiceA), inject(ServiceB)); })];`,
+        })(inject(ServiceA), inject(ServiceB)))];`,
     );
   });
 
