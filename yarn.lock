@@ -5075,10 +5075,10 @@ algoliasearch@^5.0.0:
   resolved "https://registry.yarnpkg.com/angular-mocks/-/angular-mocks-1.8.3.tgz#c0dd05e5c3fc014e07af6289b23f0e817d7a4724"
   integrity sha512-vqsT6zwu80cZ8RY7qRQBZuy6Fq5X7/N5hkV9LzNT0c8b546rw4ErGK6muW1u2JnDKYa7+jJuaGM702bWir4HGw==
 
-angular-split@^17.1.1:
-  version "17.2.0"
-  resolved "https://registry.yarnpkg.com/angular-split/-/angular-split-17.2.0.tgz#71868481e05ca2bbc604c531ce11a39af37fcd05"
-  integrity sha512-Curv39t7f7ueFF6GvglTv6js7tjTyzW/S8HjU5FgYaodQUFXRE21+kU0sybydU8fnAdQrRbtD7ScIUha3CneLA==
+angular-split@^18.0.0:
+  version "18.0.0"
+  resolved "https://registry.yarnpkg.com/angular-split/-/angular-split-18.0.0.tgz#0c79db52df4a7662fd685d09a972fb17d77b0663"
+  integrity sha512-vreR7dhwg6ubC3ZZn0vJG9Fb+8Xacf77FRQ/3IdChzsRFya1LxJh/Wk7uBk8q9Xi0pOKBKruZ3OWGjhqvHmETg==
   dependencies:
     tslib "^2.0.0"
 
