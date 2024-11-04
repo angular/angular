@@ -12,7 +12,9 @@
   "separateMajorMinor": false,
   "prHourlyLimit": 3,
   "timezone": "America/Tijuana",
-  "lockFileMaintenance": {"enabled": true},
+  "lockFileMaintenance": {
+    "enabled": true
+  },
   "labels": ["target: patch", "area: build & ci", "action: merge"],
   "postUpgradeTasks": {
     "commands": [
@@ -65,51 +67,58 @@
       "groupName": "all non-major dependencies",
       "schedule": ["after 10:00pm on monday", "before 04:00am on tuesday"]
     },
-
     {
-      "matchDepPatterns": ["^@bazel/.*", "^build_bazel.*"],
       "groupName": "bazel setup",
-      "schedule": ["at any time"]
+      "schedule": ["at any time"],
+      "matchDepNames": ["/^@bazel/.*/", "/^build_bazel.*/"]
     },
-
     {
-      "matchPackagePrefixes": ["@angular/", "angular/", "@angular-devkit", "@schematics/"],
       "followTag": "next",
       "groupName": "cross-repo Angular dependencies",
-      "schedule": ["at any time"]
+      "schedule": ["at any time"],
+      "matchPackageNames": [
+        "@angular/{/,}**",
+        "angular/{/,}**",
+        "@angular-devkit{/,}**",
+        "@schematics/{/,}**"
+      ]
     },
-
     {
-      "matchPackagePrefixes": ["@angular/", "angular/", "@angular-devkit", "@schematics/"],
-      "matchPaths": ["packages/**", "adev/src/content/tutorials/**"],
-      "followTag": null
+      "matchFileNames": ["packages/**", "adev/src/content/tutorials/**"],
+      "followTag": null,
+      "matchPackageNames": [
+        "@angular/{/,}**",
+        "angular/{/,}**",
+        "@angular-devkit{/,}**",
+        "@schematics/{/,}**"
+      ]
     },
-
     {
-      "matchPackagePrefixes": ["@babel/", "@types/babel__"],
-      "groupName": "babel dependencies"
+      "groupName": "babel dependencies",
+      "matchPackageNames": ["@babel/{/,}**", "@types/babel__{/,}**"]
     },
-
     {
-      "matchPackagePrefixes": ["@angular-eslint/", "@typescript-eslint/"],
-      "groupName": "eslint dependencies"
+      "groupName": "eslint dependencies",
+      "matchPackageNames": [
+        "@angular-eslint/{/,}**",
+        "@typescript-eslint/{/,}**"
+      ]
     },
-
     {
       "matchPackageNames": ["typescript", "tslib"],
       "groupName": "typescript dependencies"
     },
-
     {
-      "matchPaths": [".github/workflows/scorecard.yml"],
+      "matchFileNames": [".github/workflows/scorecard.yml"],
       "groupName": "scorecard action dependencies",
       "groupSlug": "scorecard-action"
     },
-
-    {"matchCurrentVersion": "0.0.0-PLACEHOLDER", "enabled": false},
-
     {
-      "matchPaths": [
+      "matchCurrentVersion": "0.0.0-PLACEHOLDER",
+      "enabled": false
+    },
+    {
+      "matchFileNames": [
         "integration/**",
         "packages/zone.js/test/typings/package.json",
         "packages/core/schematics/migrations/signal-migration/test/**"
