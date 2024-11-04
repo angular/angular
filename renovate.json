@@ -16,7 +16,9 @@
   "labels": ["target: patch", "area: build & ci", "action: merge"],
   "postUpgradeTasks": {
     "commands": [
-      "yarn renovate-update-generated-files"
+      "git restore .yarn/releases/yarn-1.22.22.cjs",
+      "yarn install --frozen-lockfile --non-interactive",
+      "yarn ng-dev misc update-generated-files"
     ],
     "fileFilters": [".github/actions/deploy-docs-site/**/*", "packages/**/*"],
     "executionMode": "branch"
