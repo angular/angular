@@ -56,7 +56,6 @@
     {
       "name": "hmr",
       "type": "boolean",
-      "default": false,
       "description": "Enable hot module replacement."
     },
     {
