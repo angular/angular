@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {ImportManager, PartialEvaluator} from '../../../../compiler-cli/private/migrations';
+import {ImportManager, PartialEvaluator} from '@angular/compiler-cli/private/migrations';
 import {
   ProgramInfo,
   ProjectFile,

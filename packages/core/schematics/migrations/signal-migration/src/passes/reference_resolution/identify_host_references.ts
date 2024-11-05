@@ -17,7 +17,7 @@ import {
   ParsedEvent,
   ParsedProperty,
   makeBindingParser,
-} from '../../../../../../../compiler/public_api';
+} from '@angular/compiler';
 import {ProgramInfo, projectFile} from '../../../../../utils/tsurge';
 import {
   TemplateExpressionReferenceVisitor,

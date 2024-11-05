@@ -20,8 +20,8 @@ import {
   TsurgeFunnelMigration,
 } from '../../utils/tsurge';
 
-import {DtsMetadataReader} from '../../../../compiler-cli/src/ngtsc/metadata';
-import {TypeScriptReflectionHost} from '../../../../compiler-cli/src/ngtsc/reflection';
+import {DtsMetadataReader} from '@angular/compiler-cli/src/ngtsc/metadata';
+import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {PartialEvaluator} from '@angular/compiler-cli/private/migrations';
 import {
   getUniqueIdForProperty,
