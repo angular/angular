@@ -4,6 +4,7 @@ ts_library(
     name = "signal_authoring_signature_test_lib",
     testonly = True,
     srcs = [
+        "resource_signature_test.ts",
         "signal_input_signature_test.ts",
         "signal_model_signature_test.ts",
         "signal_queries_signature_test.ts",

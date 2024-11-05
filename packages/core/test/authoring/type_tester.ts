@@ -20,6 +20,7 @@ const TESTS = new Map<string, (value: string) => string>([
   ['signal_queries_signature_test', (v) => `Signal<${v}>`],
   ['signal_model_signature_test', (v) => `ModelSignal<${v}>`],
   ['unwrap_writable_signal_signature_test', (v) => v],
+  ['resource_signature_test', (v) => v],
 ]);
 
 const containingDir = path.dirname(url.fileURLToPath(import.meta.url));
