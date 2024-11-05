@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {createComputed, SIGNAL} from '@angular/core/primitives/signals';
+import {createComputed, SIGNAL, ɵTYPE_MARKER} from '@angular/core/primitives/signals';
 
 import {performanceMarkFeature} from '../../util/performance';
 
@@ -42,5 +42,5 @@ export function computed<T>(computation: () => T, options?: CreateComputedOption
     getter[SIGNAL].debugName = options?.debugName;
   }
 
-  return getter;
+  return getter as typeof getter & Pick<Signal<T>, typeof ɵTYPE_MARKER>;
 }

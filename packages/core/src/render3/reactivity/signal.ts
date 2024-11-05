@@ -17,7 +17,7 @@ import {
 
 import {performanceMarkFeature} from '../../util/performance';
 
-import {isSignal, Signal, ValueEqualityFn} from './api';
+import {isSignal, Signal, ValueEqualityFn, SignalType} from './api';
 
 /** Symbol used distinguish `WritableSignal` from other non-writable signals and functions. */
 export const ɵWRITABLE_SIGNAL = /* @__PURE__ */ Symbol('WRITABLE_SIGNAL');
@@ -31,20 +31,20 @@ export interface WritableSignal<T> extends Signal<T> {
   /**
    * Directly set the signal to a new value, and notify any dependents.
    */
-  set(value: T): void;
+  set(value: SignalType<this>): void;
 
   /**
    * Update the value of the signal based on its current value, and
    * notify any dependents.
    */
-  update(updateFn: (value: T) => T): void;
+  update(updateFn: (value: SignalType<this>) => SignalType<this>): void;
 
   /**
    * Returns a readonly version of this signal. Readonly signals can be accessed to read their value
    * but can't be changed using set or update methods. The readonly signals do _not_ have
    * any built-in mechanism that would prevent deep-mutation of their value.
    */
-  asReadonly(): Signal<T>;
+  asReadonly(): Signal<SignalType<this>>;
 }
 
 /**
