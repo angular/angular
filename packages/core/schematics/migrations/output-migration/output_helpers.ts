@@ -11,10 +11,10 @@ import {
   ReflectionHost,
   ClassDeclaration,
   Decorator,
-} from '../../../../compiler-cli/src/ngtsc/reflection';
-import {DtsMetadataReader} from '../../../../compiler-cli/src/ngtsc/metadata';
-import {Reference} from '../../../../compiler-cli/src/ngtsc/imports';
-import {getAngularDecorators} from '../../../../compiler-cli/src/ngtsc/annotations';
+} from '@angular/compiler-cli/src/ngtsc/reflection';
+import {DtsMetadataReader} from '@angular/compiler-cli/src/ngtsc/metadata';
+import {Reference} from '@angular/compiler-cli/src/ngtsc/imports';
+import {getAngularDecorators} from '@angular/compiler-cli/src/ngtsc/annotations';
 
 import {ProgramInfo, projectFile} from '../../utils/tsurge';
 import {
