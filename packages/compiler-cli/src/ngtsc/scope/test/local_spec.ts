@@ -79,6 +79,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawExports: null,
       decorator: null,
       mayDeclareProviders: false,
+      isPoisoned: false,
     });
 
     const scope = scopeRegistry.getScopeOfModule(Module.node) as LocalModuleScope;
@@ -101,6 +102,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawExports: null,
       decorator: null,
       mayDeclareProviders: false,
+      isPoisoned: false,
     });
     metaRegistry.registerNgModuleMetadata({
       kind: MetaKind.NgModule,
@@ -114,6 +116,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawExports: null,
       decorator: null,
       mayDeclareProviders: false,
+      isPoisoned: false,
     });
     metaRegistry.registerNgModuleMetadata({
       kind: MetaKind.NgModule,
@@ -127,6 +130,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawExports: null,
       decorator: null,
       mayDeclareProviders: false,
+      isPoisoned: false,
     });
 
     const scopeA = scopeRegistry.getScopeOfModule(ModuleA.node) as LocalModuleScope;
@@ -149,6 +153,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawExports: null,
       decorator: null,
       mayDeclareProviders: false,
+      isPoisoned: false,
     });
     metaRegistry.registerNgModuleMetadata({
       kind: MetaKind.NgModule,
@@ -162,6 +167,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawExports: null,
       decorator: null,
       mayDeclareProviders: false,
+      isPoisoned: false,
     });
 
     const scopeA = scopeRegistry.getScopeOfModule(ModuleA.node) as LocalModuleScope;
@@ -184,6 +190,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawExports: null,
       decorator: null,
       mayDeclareProviders: false,
+      isPoisoned: false,
     });
     metaRegistry.registerNgModuleMetadata({
       kind: MetaKind.NgModule,
@@ -197,6 +204,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawExports: null,
       decorator: null,
       mayDeclareProviders: false,
+      isPoisoned: false,
     });
     metaRegistry.registerNgModuleMetadata({
       kind: MetaKind.NgModule,
@@ -210,6 +218,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawExports: null,
       decorator: null,
       mayDeclareProviders: false,
+      isPoisoned: false,
     });
 
     const scope = scopeRegistry.getScopeOfModule(ModuleA.node) as LocalModuleScope;
@@ -239,6 +248,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawExports: null,
       decorator: null,
       mayDeclareProviders: false,
+      isPoisoned: false,
     });
 
     const scope = scopeRegistry.getScopeOfModule(Module.node) as LocalModuleScope;
@@ -260,6 +270,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawExports: null,
       decorator: null,
       mayDeclareProviders: false,
+      isPoisoned: false,
     });
     metaRegistry.registerNgModuleMetadata({
       kind: MetaKind.NgModule,
@@ -273,6 +284,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawExports: null,
       decorator: null,
       mayDeclareProviders: false,
+      isPoisoned: false,
     });
 
     const scopeA = scopeRegistry.getScopeOfModule(ModuleA.node) as LocalModuleScope;
@@ -294,6 +306,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawExports: null,
       decorator: null,
       mayDeclareProviders: false,
+      isPoisoned: false,
     });
     metaRegistry.registerNgModuleMetadata({
       kind: MetaKind.NgModule,
@@ -307,6 +320,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawExports: null,
       decorator: null,
       mayDeclareProviders: false,
+      isPoisoned: false,
     });
 
     expect(scopeRegistry.getScopeOfModule(ModuleA.node)!.compilation.isPoisoned).toBeTrue();

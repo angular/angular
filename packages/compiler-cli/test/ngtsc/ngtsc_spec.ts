@@ -1215,6 +1215,43 @@ runInEachFileSystem((os: string) => {
       );
     });
 
+    it(
+      'should not throw, but issue a diagnostic when an `NgModule` from `d.ts` references ' +
+        'non-existent classes',
+      () => {
+        env.tsconfig();
+        env.write(
+          'test.ts',
+          `
+          import {NgModule} from '@angular/core';
+          import {MyModule} from './lib';
+
+          @NgModule({
+            imports: [MyModule],
+          })
+          export class Mod {}
+        `,
+        );
+        env.write(
+          'lib.d.ts',
+          `
+          import * as i0 from '@angular/core';
+          import {InvalidRef} from 'other-lib';
+
+          export declare class MyModule {
+            static ɵmod: i0.ɵɵNgModuleDeclaration<Module, [], never, [typeof InvalidRef]>
+          }
+        `,
+        );
+
+        const diagnostics = env.driveDiagnostics();
+        expect(diagnostics.length).toBe(1);
+        expect(diagnostics[0].messageText).toBe(
+          'This import contains errors, which may affect components that depend on this NgModule.',
+        );
+      },
+    );
+
     it('should respect imported module order while processing Directives and Components', () => {
       env.tsconfig({});
       env.write(

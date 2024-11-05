@@ -124,7 +124,7 @@ export class MetadataDtsModuleScopeResolver implements DtsModuleScopeResolver {
     const exportScope: ExportScope = {
       exported: {
         dependencies,
-        isPoisoned: false,
+        isPoisoned: meta.isPoisoned,
       },
     };
     this.cache.set(clazz, exportScope);

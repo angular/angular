@@ -337,4 +337,42 @@ runInEachFileSystem(() => {
     expect(meta.inputs.toDirectMappedObject()).toEqual({input: 'input', otherInput: 'alias'});
     expect(Array.from(meta.inputs).filter((i) => i.required)).toEqual([]);
   });
+
+  it('should not fail fatal at runtime when reference cannot be resolved', () => {
+    const externalPath = absoluteFrom('/external.d.ts');
+    const {program} = makeProgram(
+      [
+        {
+          name: externalPath,
+          contents: `
+            import * as i0 from '@angular/core';
+            import * as i2 from './relative';
+
+            export class ValidRef {}
+
+            export declare class ExternalModule {
+              static ɵmod: i0.ɵɵNgModuleDeclaration<RelativeModule, [], never, [typeof i2.InvalidTypesForIt, typeof ValidRef]>;
+            }
+          `,
+        },
+      ],
+      {
+        skipLibCheck: true,
+        lib: ['es6', 'dom'],
+      },
+    );
+
+    const externalSf = getSourceFileOrError(program, externalPath);
+    const clazz = externalSf.statements[3];
+    if (!isNamedClassDeclaration(clazz)) {
+      return fail('Expected class declaration');
+    }
+
+    const typeChecker = program.getTypeChecker();
+    const dtsReader = new DtsMetadataReader(typeChecker, new TypeScriptReflectionHost(typeChecker));
+
+    const withoutOwningModule = dtsReader.getNgModuleMetadata(new Reference(clazz))!;
+    expect(withoutOwningModule.exports.length).toBe(1);
+    expect(withoutOwningModule.isPoisoned).toBe(true);
+  });
 });

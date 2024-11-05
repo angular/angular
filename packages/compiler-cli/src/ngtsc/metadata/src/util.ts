@@ -31,23 +31,37 @@ import {
   TemplateGuardMeta,
 } from './api';
 import {ClassPropertyMapping, ClassPropertyName} from './property_mapping';
+import {TypeEntityToDeclarationError} from '../../reflection/src/typescript';
 
 export function extractReferencesFromType(
   checker: ts.TypeChecker,
   def: ts.TypeNode,
   bestGuessOwningModule: OwningModule | null,
-): Reference<ClassDeclaration>[] {
+): {result: Reference<ClassDeclaration>[]; isIncomplete: boolean} {
   if (!ts.isTupleTypeNode(def)) {
-    return [];
+    return {result: [], isIncomplete: false};
   }
 
-  return def.elements.map((element) => {
+  const result: Reference<ClassDeclaration>[] = [];
+  let isIncomplete = false;
+
+  for (const element of def.elements) {
     if (!ts.isTypeQueryNode(element)) {
       throw new Error(`Expected TypeQueryNode: ${nodeDebugInfo(element)}`);
     }
 
-    return extraReferenceFromTypeQuery(checker, element, def, bestGuessOwningModule);
-  });
+    const ref = extraReferenceFromTypeQuery(checker, element, def, bestGuessOwningModule);
+
+    // Note: Sometimes a reference inside the type tuple/array
+    // may not be resolvable/existent. We proceed with incomplete data.
+    if (ref === null) {
+      isIncomplete = true;
+    } else {
+      result.push(ref);
+    }
+  }
+
+  return {result, isIncomplete};
 }
 
 export function extraReferenceFromTypeQuery(
@@ -55,12 +69,28 @@ export function extraReferenceFromTypeQuery(
   typeNode: ts.TypeQueryNode,
   origin: ts.TypeNode,
   bestGuessOwningModule: OwningModule | null,
-) {
+): Reference<ClassDeclaration> | null {
   const type = typeNode.exprName;
-  const {node, from} = reflectTypeEntityToDeclaration(type, checker);
+  let node: ts.Declaration;
+  let from: string | null;
+
+  // Gracefully handle when the type entity could not be converted or
+  // resolved to its declaration node.
+  try {
+    const result = reflectTypeEntityToDeclaration(type, checker);
+    node = result.node;
+    from = result.from;
+  } catch (e) {
+    if (e instanceof TypeEntityToDeclarationError) {
+      return null;
+    }
+    throw e;
+  }
+
   if (!isNamedClassDeclaration(node)) {
     throw new Error(`Expected named ClassDeclaration: ${nodeDebugInfo(node)}`);
   }
+
   if (from !== null && !from.startsWith('.')) {
     // The symbol was imported using an absolute module specifier so return a reference that
     // uses that absolute module specifier as its best guess owning module.

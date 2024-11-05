@@ -734,6 +734,7 @@ export class NgModuleDecoratorHandler
       rawExports: analysis.rawExports,
       decorator: analysis.decorator,
       mayDeclareProviders: analysis.providers !== null,
+      isPoisoned: false,
     });
 
     this.injectableRegistry.registerInjectable(node, {
