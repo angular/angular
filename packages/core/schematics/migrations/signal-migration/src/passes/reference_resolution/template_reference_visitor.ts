@@ -33,8 +33,7 @@ import {
   TmplAstSwitchBlockCase,
   TmplAstTemplate,
   tmplAstVisitAll,
-} from '../../../../../../../compiler';
-import {BoundAttribute, BoundEvent} from '../../../../../../../compiler/src/render3/r3_ast';
+} from '@angular/compiler';
 import {lookupPropertyAccess} from '../../../../../utils/tsurge/helpers/ast/lookup_property_access';
 import {ClassFieldDescriptor, KnownFields} from './known_fields';
 
@@ -462,7 +461,7 @@ function traverseReceiverAndLookupSymbol(
 /** Whether the given node refers to a two-way binding AST node. */
 function isTwoWayBindingNode(node: unknown): boolean {
   return (
-    (node instanceof BoundAttribute && node.type === BindingType.TwoWay) ||
-    (node instanceof BoundEvent && node.type === ParsedEventType.TwoWay)
+    (node instanceof TmplAstBoundAttribute && node.type === BindingType.TwoWay) ||
+    (node instanceof TmplAstBoundEvent && node.type === ParsedEventType.TwoWay)
   );
 }
