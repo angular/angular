@@ -27,6 +27,7 @@
     "packages/localize/**",
     "packages/private/**",
     "packages/service-worker/**",
+    "packages/ssr/BUILD.bazel",
     "packages/common/locales/generate-locales-tool/**",
     "packages/common/locales/index.bzl",
     "packages/http/**",
