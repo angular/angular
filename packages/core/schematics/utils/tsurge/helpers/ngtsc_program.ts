@@ -16,6 +16,7 @@ import {
 } from '@angular/compiler-cli/src/ngtsc/file_system';
 import {NgtscProgram} from '@angular/compiler-cli/src/ngtsc/program';
 import {BaseProgramInfo} from '../program_info';
+import ts from 'typescript';
 
 /** Code of the error raised by TypeScript when a tsconfig doesn't match any files. */
 const NO_INPUTS_ERROR_CODE = 18003;
@@ -54,11 +55,19 @@ export function createNgtscProgram(
       // Avoid checking libraries to speed up migrations.
       skipLibCheck: true,
       skipDefaultLibCheck: true,
+      noEmit: true,
       // Additional override options.
       ...optionOverrides,
     },
     tsHost,
   );
+
+  // Expose an easy way to debug-print ng semantic diagnostics.
+  if (process.env['DEBUG_NG_SEMANTIC_DIAGNOSTICS'] === '1') {
+    console.error(
+      ts.formatDiagnosticsWithColorAndContext(ngtscProgram.getNgSemanticDiagnostics(), tsHost),
+    );
+  }
 
   return {
     ngCompiler: ngtscProgram.compiler,
