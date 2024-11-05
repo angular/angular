@@ -533,13 +533,21 @@ export function reflectIdentifierOfDeclaration(decl: ts.Declaration): ts.Identif
   return null;
 }
 
+export class TypeEntityToDeclarationError extends Error {}
+
+/**
+ * @throws {TypeEntityToDeclarationError} if the type cannot be converted
+ *   to a declaration.
+ */
 export function reflectTypeEntityToDeclaration(
   type: ts.EntityName,
   checker: ts.TypeChecker,
 ): {node: ts.Declaration; from: string | null} {
   let realSymbol = checker.getSymbolAtLocation(type);
   if (realSymbol === undefined) {
-    throw new Error(`Cannot resolve type entity ${type.getText()} to symbol`);
+    throw new TypeEntityToDeclarationError(
+      `Cannot resolve type entity ${type.getText()} to symbol`,
+    );
   }
   while (realSymbol.flags & ts.SymbolFlags.Alias) {
     realSymbol = checker.getAliasedSymbol(realSymbol);
@@ -551,12 +559,14 @@ export function reflectTypeEntityToDeclaration(
   } else if (realSymbol.declarations !== undefined && realSymbol.declarations.length === 1) {
     node = realSymbol.declarations[0];
   } else {
-    throw new Error(`Cannot resolve type entity symbol to declaration`);
+    throw new TypeEntityToDeclarationError(`Cannot resolve type entity symbol to declaration`);
   }
 
   if (ts.isQualifiedName(type)) {
     if (!ts.isIdentifier(type.left)) {
-      throw new Error(`Cannot handle qualified name with non-identifier lhs`);
+      throw new TypeEntityToDeclarationError(
+        `Cannot handle qualified name with non-identifier lhs`,
+      );
     }
     const symbol = checker.getSymbolAtLocation(type.left);
     if (
@@ -564,20 +574,20 @@ export function reflectTypeEntityToDeclaration(
       symbol.declarations === undefined ||
       symbol.declarations.length !== 1
     ) {
-      throw new Error(`Cannot resolve qualified type entity lhs to symbol`);
+      throw new TypeEntityToDeclarationError(`Cannot resolve qualified type entity lhs to symbol`);
     }
     const decl = symbol.declarations[0];
     if (ts.isNamespaceImport(decl)) {
       const clause = decl.parent!;
       const importDecl = clause.parent!;
       if (!ts.isStringLiteral(importDecl.moduleSpecifier)) {
-        throw new Error(`Module specifier is not a string`);
+        throw new TypeEntityToDeclarationError(`Module specifier is not a string`);
       }
       return {node, from: importDecl.moduleSpecifier.text};
     } else if (ts.isModuleDeclaration(decl)) {
       return {node, from: null};
     } else {
-      throw new Error(`Unknown import type?`);
+      throw new TypeEntityToDeclarationError(`Unknown import type?`);
     }
   } else {
     return {node, from: null};

@@ -26,6 +26,12 @@ export interface NgModuleMeta {
   schemas: SchemaMetadata[];
 
   /**
+   * Whether the module had some issue being analyzed.
+   * This means it likely does not have complete and reliable metadata.
+   */
+  isPoisoned: boolean;
+
+  /**
    * The raw `ts.Expression` which gave rise to `declarations`, if one exists.
    *
    * If this is `null`, then either no declarations exist, or no expression was available (likely
