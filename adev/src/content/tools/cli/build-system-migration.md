@@ -6,13 +6,14 @@ In v17 and higher, the new build system provides an improved way to build Angula
 - Faster build-time performance for both initial builds and incremental rebuilds.
 - Newer JavaScript ecosystem tools such as [esbuild](https://esbuild.github.io/) and [Vite](https://vitejs.dev/).
 - Integrated SSR and prerendering capabilities.
+- Automatic global and component stylesheet hot replacement.
 
 This new build system is stable and fully supported for use with Angular applications.
 You can migrate to the new build system with applications that use the `browser` builder.
 If using a custom builder, please refer to the documentation for that builder on possible migration options.
 
 IMPORTANT: The existing Webpack-based build system is still considered stable and fully supported.
-Applications can continue to use the `browser` builder and will not be automatically migrated when updating.
+Applications can continue to use the `browser` builder and projects can opt-out of migrating during an update.
 
 ## For new applications
 
@@ -176,11 +177,39 @@ ng serve
 
 You can continue to use the [command line options](/cli/serve) you have used in the past with the development server.
 
-## Hot module replacement
+### Hot module replacement
 
-JavaScript-based hot module replacement (HMR) is currently not supported.
-However, global stylesheet (`styles` build option) HMR is available and enabled by default.
-Angular focused HMR capabilities are currently planned and will be introduced in a future version.
+Hot Module Replacement (HMR) is a technique used by development servers to avoid reloading the entire page when only part of an application is changed.
+The changes in many cases can be immediately shown in the browser which allows for an improved edit/refresh cycle while developing an application.
+While general JavaScript-based hot module replacement (HMR) is currently not supported, several more specific forms of HMR are available:
+- **global stylesheets** (default)
+- **component stylesheet** (default)
+- **component template** (experimental opt-in)
+
+The stylesheet HMR capabilities are automatically enabled and require no code or configuration changes to use.
+Angular provides HMR support for both file-based (`styleUrl`/`styleUrls`) and inline (`styles`) component styles.
+The build system will attempt to compile and process the minimal amount of application code when it detects a stylesheet only change.
+In many cases, no JavaScript/TypeScript processing will be required.
+
+If preferred, the HMR capabilities can be disabled by setting the `hmr` development server option to `false`.
+This can also be changed on the command line via:
+
+<docs-code language="shell">
+
+ng serve --no-hmr
+
+</docs-code>
+
+In addition to fully supported component stylesheet HMR, Angular provides **experimental** support for component template HMR.
+Template HMR also requires no application code changes but currently requires the use of the `NG_HMR_TEMPLATES=1` environment variable to enable.
+
+IMPORTANT: Component **template** HMR is experimental and is not enabled by default.
+When manually enabled, there may be cases where the browser is not fully synchronized with the application code and a restart of the development server may be required.
+If you encounter an issue while using this feature, please [report the bug](https://github.com/angular/angular-cli/issues) to help the Angular team stabilize the feature.
+
+### Vite as a development server
+
+The usage of Vite in the Angular CLI is currently within a _development server capacity only_. Even without using the underlying Vite build system, Vite provides a full-featured development server with client side support that has been bundled into a low dependency npm package. This makes it an ideal candidate to provide comprehensive development server functionality. The current development server process uses the new build system to generate a development build of the application in memory and passes the results to Vite to serve the application. The usage of Vite, much like the Webpack-based development server, is encapsulated within the Angular CLI `dev-server` builder and currently cannot be directly configured.
 
 ## Unimplemented options and behavior
 
@@ -231,10 +260,6 @@ import moment from 'moment';
 
 console.log(moment().format());
 ```
-
-## Vite as a development server
-
-The usage of Vite in the Angular CLI is currently within a _development server capacity only_. Even without using the underlying Vite build system, Vite provides a full-featured development server with client side support that has been bundled into a low dependency npm package. This makes it an ideal candidate to provide comprehensive development server functionality. The current development server process uses the new build system to generate a development build of the application in memory and passes the results to Vite to serve the application. The usage of Vite, much like the Webpack-based development server, is encapsulated within the Angular CLI `dev-server` builder and currently cannot be directly configured.
 
 ## Known Issues
 
