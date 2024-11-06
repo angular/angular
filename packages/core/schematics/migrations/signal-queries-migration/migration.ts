@@ -104,6 +104,8 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
 
     // Pre-Analyze the program and get access to the template type checker.
     const {templateTypeChecker} = info.ngCompiler['ensureAnalyzed']();
+    // Generate all type check blocks.
+    templateTypeChecker.generateAllTypeCheckBlocks();
 
     const {sourceFiles, program} = info;
     const checker = program.getTypeChecker();
@@ -205,8 +207,7 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
         // Ignore references to non-query class fields.
         if (
           this.config.assumeNonBatch &&
-          descriptor !== null &&
-          !filteredQueriesForCompilationUnit.has(descriptor.key)
+          (descriptor === null || !filteredQueriesForCompilationUnit.has(descriptor.key))
         ) {
           return null;
         }
@@ -448,8 +449,6 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
       ts.forEachChild(node, queryWholeProgramVisitor);
     };
 
-    this.config.reportProgressFn?.(40, 'Tracking query declarations..');
-
     for (const sf of info.fullProgramSourceFiles) {
       ts.forEachChild(sf, queryWholeProgramVisitor);
     }
@@ -493,14 +492,14 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
       isClassWithKnownFields: (clazz) => knownQueries.getQueryFieldsOfClass(clazz) !== undefined,
     });
 
-    this.config.reportProgressFn?.(70, 'Checking inheritance..');
+    this.config.reportProgressFn?.(80, 'Checking inheritance..');
     groupedAstVisitor.execute();
 
     if (this.config.bestEffortMode) {
       filterBestEffortIncompatibilities(knownQueries);
     }
 
-    this.config.reportProgressFn?.(80, 'Migrating queries..');
+    this.config.reportProgressFn?.(90, 'Migrating queries..');
 
     // Migrate declarations.
     for (const extractedQuery of sourceQueries) {

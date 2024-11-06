@@ -150,7 +150,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   ) {}
 
   getTemplate(component: ts.ClassDeclaration, optimizeFor?: OptimizeFor): TmplAstNode[] | null {
-    const {data} = this.getLatestComponentState(component);
+    const {data} = this.getLatestComponentState(component, optimizeFor);
     if (data === null) {
       return null;
     }
