@@ -74,7 +74,6 @@ import {saveAndRestoreView} from './phases/save_restore_view';
 import {allocateSlots} from './phases/slot_allocation';
 import {specializeStyleBindings} from './phases/style_binding_specialization';
 import {generateTemporaryVariables} from './phases/temporary_variables';
-import {generateTrackFns} from './phases/track_fn_generation';
 import {optimizeTrackFns} from './phases/track_fn_optimization';
 import {generateTrackVariables} from './phases/track_variables';
 import {countVariables} from './phases/var_counting';
@@ -147,7 +146,6 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: resolveI18nElementPlaceholders},
   {kind: Kind.Tmpl, fn: resolveI18nExpressionPlaceholders},
   {kind: Kind.Tmpl, fn: extractI18nMessages},
-  {kind: Kind.Tmpl, fn: generateTrackFns},
   {kind: Kind.Tmpl, fn: collectI18nConsts},
   {kind: Kind.Tmpl, fn: collectConstExpressions},
   {kind: Kind.Both, fn: collectElementConsts},

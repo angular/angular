@@ -645,6 +645,21 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should support expressions requiring temporary variables inside `track`",
+      "inputFiles": ["for_track_by_temporary_variables.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect generated output.",
+          "files": [
+            {
+              "expected": "for_track_by_temporary_variables_template.js",
+              "generated": "for_track_by_temporary_variables.js"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

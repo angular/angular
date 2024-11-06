@@ -390,7 +390,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
             op.vars!,
             op.tag,
             op.attributes,
-            op.trackByFn!,
+            reifyTrackBy(unit, op),
             op.usesComponentInstance,
             emptyViewFnName,
             emptyDecls,
@@ -614,6 +614,8 @@ function reifyIrExpression(expr: o.Expression): o.Expression {
       return ng.readContextLet(expr.targetSlot.slot!);
     case ir.ExpressionKind.StoreLet:
       return ng.storeLet(expr.value, expr.sourceSpan);
+    case ir.ExpressionKind.TrackContext:
+      return o.variable('this');
     default:
       throw new Error(
         `AssertionError: Unsupported reification of ir.Expression kind: ${
@@ -656,4 +658,47 @@ function reifyListenerHandler(
   }
 
   return o.fn(params, handlerStmts, undefined, undefined, name);
+}
+
+/** Reifies the tracking expression of a `RepeaterCreateOp`. */
+function reifyTrackBy(unit: CompilationUnit, op: ir.RepeaterCreateOp): o.Expression {
+  // If the tracking function was created already, there's nothing left to do.
+  if (op.trackByFn !== null) {
+    return op.trackByFn;
+  }
+
+  const params: o.FnParam[] = [new o.FnParam('$index'), new o.FnParam('$item')];
+  let fn: o.FunctionExpr | o.ArrowFunctionExpr;
+
+  if (op.trackByOps === null) {
+    // If there are no additional ops related to the tracking function, we just need
+    // to turn it into a function that returns the result of the expression.
+    fn = op.usesComponentInstance
+      ? o.fn(params, [new o.ReturnStatement(op.track)])
+      : o.arrowFn(params, op.track);
+  } else {
+    // Otherwise first we need to reify the track-related ops.
+    reifyUpdateOperations(unit, op.trackByOps);
+
+    const statements: o.Statement[] = [];
+    for (const trackOp of op.trackByOps) {
+      if (trackOp.kind !== ir.OpKind.Statement) {
+        throw new Error(
+          `AssertionError: expected reified statements, but found op ${ir.OpKind[trackOp.kind]}`,
+        );
+      }
+      statements.push(trackOp.statement);
+    }
+
+    // Afterwards we can create the function from those ops.
+    fn =
+      op.usesComponentInstance ||
+      statements.length !== 1 ||
+      !(statements[0] instanceof o.ReturnStatement)
+        ? o.fn(params, statements)
+        : o.arrowFn(params, statements[0].value);
+  }
+
+  op.trackByFn = unit.job.pool.getSharedFunctionReference(fn, '_forTrack');
+  return op.trackByFn;
 }

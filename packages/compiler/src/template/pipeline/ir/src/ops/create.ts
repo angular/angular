@@ -323,6 +323,12 @@ export interface RepeaterCreateOp extends ElementOpBase, ConsumesVarsTrait {
   track: o.Expression;
 
   /**
+   * Some kinds of expressions (e.g. safe reads or nullish coalescing) require additional ops
+   * in order to work. This OpList keeps track of those ops, if they're necessary.
+   */
+  trackByOps: OpList<UpdateOp> | null;
+
+  /**
    * `null` initially, then an `o.Expression`. Might be a track expression, or might be a reference
    * into the constant pool.
    */
@@ -391,6 +397,7 @@ export function createRepeaterCreateOp(
     emptyView,
     track,
     trackByFn: null,
+    trackByOps: null,
     tag,
     emptyTag,
     emptyAttributes: null,
