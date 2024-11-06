@@ -57,6 +57,9 @@ function recursivelyProcessView(view: ViewCompilationUnit, parentScope: Scope | 
         if (op.emptyView) {
           recursivelyProcessView(view.job.views.get(op.emptyView)!, scope);
         }
+        if (op.trackByOps !== null) {
+          op.trackByOps.prepend(generateVariablesInScopeForView(view, scope, false));
+        }
         break;
       case ir.OpKind.Listener:
       case ir.OpKind.TwoWayListener:
