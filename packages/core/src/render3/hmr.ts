@@ -40,6 +40,7 @@ import {
 } from './interfaces/view';
 import {assertTNodeType} from './node_assert';
 import {destroyLView, removeViewFromDOM} from './node_manipulation';
+import {RendererFactory} from './interfaces/renderer';
 
 /**
  * Replaces the metadata of a component type and re-renders all live instances of the component.
@@ -115,6 +116,19 @@ function recreateMatchingLViews(def: ComponentDef<unknown>, rootLView: LView): v
 }
 
 /**
+ * Removes any cached renderers from the factory for the provided type.
+ * This is currently used by the HMR logic to ensure Renderers are kept
+ * synchronized with any definition metadata updates.
+ * @param factory A RendererFactory2 instance.
+ * @param def A ComponentDef instance.
+ */
+function clearRendererCache(factory: RendererFactory, def: ComponentDef<unknown>) {
+  // Cast to `any` to read a private field.
+  // NOTE: This must be kept synchronized with the renderer factory implementation in platform-browser.
+  (factory as any).rendererByCompId?.remove(def.id);
+}
+
+/**
  * Recreates an LView in-place from a new component definition.
  * @param def Definition from which to recreate the view.
  * @param lView View to be recreated.
@@ -132,6 +146,11 @@ function recreateLView(def: ComponentDef<unknown>, lView: LView<unknown>): void 
   // Recreate the TView since the template might've changed.
   const newTView = getOrCreateComponentTView(def);
 
+  // Always force the creation of a new renderer to ensure state captured during construction
+  // stays consistent with the new component definition by clearing any old cached factories.
+  const rendererFactory = lView[ENVIRONMENT].rendererFactory;
+  clearRendererCache(rendererFactory, def);
+
   // Create a new LView from the new TView, but reusing the existing TNode and DOM node.
   const newLView = createLView(
     parentLView,
@@ -141,7 +160,7 @@ function recreateLView(def: ComponentDef<unknown>, lView: LView<unknown>): void 
     host,
     tNode,
     null,
-    lView[ENVIRONMENT].rendererFactory.createRenderer(host, def),
+    rendererFactory.createRenderer(host, def),
     null,
     null,
     null,
