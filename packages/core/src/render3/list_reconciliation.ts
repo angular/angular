@@ -8,7 +8,6 @@
 
 import {TrackByFunction} from '../change_detection';
 import {formatRuntimeError, RuntimeErrorCode} from '../errors';
-import {assertNotSame} from '../util/assert';
 
 import {stringifyForError} from './util/stringify_utils';
 
@@ -428,8 +427,12 @@ export class UniqueValueMultiKeyMap<K, V> {
   set(key: K, value: V): void {
     if (this.kvMap.has(key)) {
       let prevValue = this.kvMap.get(key)!;
-      ngDevMode &&
-        assertNotSame(prevValue, value, `Detected a duplicated value ${value} for the key ${key}`);
+
+      // Note: we don't use `assertNotSame`, because the value needs to be stringified even if
+      // there is no error which can freeze the browser for large values (see #58509).
+      if (ngDevMode && prevValue === value) {
+        throw new Error(`Detected a duplicated value ${value} for the key ${key}`);
+      }
 
       if (this._vMap === undefined) {
         this._vMap = new Map();
