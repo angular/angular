@@ -90,36 +90,40 @@ function tryParseProviderExpression(node: ts.Node): ProviderInfo | undefined {
   let deps: string[] = [];
   let initializerToken: string | undefined;
   let useExisting: ts.Expression | undefined;
-  let useFactory: ts.Expression | undefined;
+  let useFactoryCode: string | undefined;
   let useValue: ts.Expression | undefined;
   let multi = false;
 
   for (const property of node.properties) {
-    if (!ts.isPropertyAssignment(property) || !ts.isIdentifier(property.name)) {
-      continue;
+    if (ts.isPropertyAssignment(property) && ts.isIdentifier(property.name)) {
+      switch (property.name.text) {
+        case 'deps':
+          if (ts.isArrayLiteralExpression(property.initializer)) {
+            deps = property.initializer.elements.map((el) => el.getText());
+          }
+          break;
+        case 'provide':
+          initializerToken = property.initializer.getText();
+          break;
+        case 'useExisting':
+          useExisting = property.initializer;
+          break;
+        case 'useFactory':
+          useFactoryCode = property.initializer.getText();
+          break;
+        case 'useValue':
+          useValue = property.initializer;
+          break;
+        case 'multi':
+          multi = property.initializer.kind === ts.SyntaxKind.TrueKeyword;
+          break;
+      }
     }
 
-    switch (property.name.text) {
-      case 'deps':
-        if (ts.isArrayLiteralExpression(property.initializer)) {
-          deps = property.initializer.elements.map((el) => el.getText());
-        }
-        break;
-      case 'provide':
-        initializerToken = property.initializer.getText();
-        break;
-      case 'useExisting':
-        useExisting = property.initializer;
-        break;
-      case 'useFactory':
-        useFactory = property.initializer;
-        break;
-      case 'useValue':
-        useValue = property.initializer;
-        break;
-      case 'multi':
-        multi = property.initializer.kind === ts.SyntaxKind.TrueKeyword;
-        break;
+    // Handle the `useFactory() {}` shorthand case.
+    if (ts.isMethodDeclaration(property) && property.name.getText() === 'useFactory') {
+      const params = property.parameters.map((param) => param.getText()).join(', ');
+      useFactoryCode = `(${params}) => ${property.body?.getText()}`;
     }
   }
 
@@ -146,12 +150,15 @@ function tryParseProviderExpression(node: ts.Node): ProviderInfo | undefined {
     };
   }
 
-  if (useFactory) {
+  if (useFactoryCode) {
     const args = deps.map((dep) => `inject(${dep})`);
     return {
       ...info,
       importInject: deps.length > 0,
-      initializerCode: `(${useFactory.getText()})(${args.join(', ')})`,
+      initializerCode: `() => {
+        const initializerFn = (${useFactoryCode})(${args.join(', ')});
+        return initializerFn();
+      }`,
     };
   }
 
