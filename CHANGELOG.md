@@ -1,3 +1,31 @@
+<a name="19.0.0-rc.1"></a>
+# 19.0.0-rc.1 (2024-11-06)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b25121ee4a](https://github.com/angular/angular/commit/b25121ee4aba427954fef074a967b9332654be84) | fix | avoid having to duplicate core environment ([#58444](https://github.com/angular/angular/pull/58444)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d4d76ead80](https://github.com/angular/angular/commit/d4d76ead802837bc6cc7908bc9ebfefa73eb9969) | fix | do not fail fatal when references to non-existent module are discovered ([#58515](https://github.com/angular/angular/pull/58515)) |
+| [22cd6869ef](https://github.com/angular/angular/commit/22cd6869ef453c342b206f84e857ef6c34922fa5) | fix | make the unused imports diagnostic easier to read ([#58468](https://github.com/angular/angular/pull/58468)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8ae84be3df](https://github.com/angular/angular/commit/8ae84be3df4e1393c6f00e2d28ccacd5b2159a0f) | fix | avoid slow stringification when checking for duplicates in dev mode ([#58521](https://github.com/angular/angular/pull/58521)) |
+| [6e0af6dbbb](https://github.com/angular/angular/commit/6e0af6dbbbe5e9a9e2e5809ada0b7b5a7e456402) | fix | resolve forward-referenced host directives during directive matching ([#58492](https://github.com/angular/angular/pull/58492)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c5e676bb87](https://github.com/angular/angular/commit/c5e676bb8715bcde42e56eb08a41cc1ba5c95f91) | fix | flip the default standalone flag in route-lazy-loading migration ([#58474](https://github.com/angular/angular/pull/58474)) |
+| [e85ac5c7cb](https://github.com/angular/angular/commit/e85ac5c7cb06dc0fba757a9b931e79e07978f2a9) | fix | properly bundle shared compiler code into migrations ([#58515](https://github.com/angular/angular/pull/58515)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c36a1c023b](https://github.com/angular/angular/commit/c36a1c023b34f9b2056e1bef6364787e8495bfad) | fix | correctly add external stylesheets to ShadowDOM components ([#58482](https://github.com/angular/angular/pull/58482)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.2.11"></a>
 # 18.2.11 (2024-11-06)
 ### core
