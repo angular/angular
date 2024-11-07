@@ -684,6 +684,8 @@ groups:
     conditions:
       - author in ["angular-robot"]
     reviewers:
+      users:
+        - ~alan-agius4
       teams:
         - framework-team
 
