@@ -1,4 +1,4 @@
-# Migrating to the new build system
+# Angular application build system
 
 In v17 and higher, the new build system provides an improved way to build Angular applications. This new build system includes:
 
@@ -23,6 +23,7 @@ New applications will use this new build system by default via the `application`
 
 Both automated and manual procedures are available dependening on the requirements of the project.
 Starting with v18, the update process will ask if you would like to migrate existing applications to use the new build system via the automated migration.
+Prior to migrating, please consider reviewing the [Known Issues](#known-issues) section as it may contain relevant information for your project.
 
 HELPFUL: Remember to remove any CommonJS assumptions in the application server code if using SSR such as `require`, `__filename`, `__dirname`, or other constructs from the [CommonJS module scope](https://nodejs.org/api/modules.html#the-module-scope). All application code should be ESM compatible. This does not apply to third-party dependencies.
 
@@ -57,7 +58,8 @@ Additionally for existing projects, you can manually opt-in to use the new build
 Both options are considered stable and fully supported by the Angular team.
 The choice of which option to use is a factor of how many changes you will need to make to migrate and what new features you would like to use in the project.
 
-- The `browser-esbuild` builder builds only the client-side bundle of an application designed to be compatible with the existing `browser` builder that provides the preexisting build system. It serves as a drop-in replacement for existing `browser` applications.
+- The `browser-esbuild` builder builds only the client-side bundle of an application designed to be compatible with the existing `browser` builder that provides the preexisting build system.
+This builder provides equivalent build options, and in many cases, it serves as a drop-in replacement for existing `browser` applications.
 - The `application` builder covers an entire application, such as the client-side bundle, as well as optionally building a server for server-side rendering and performing build-time prerendering of static pages.
 
 The `application` builder is generally preferred as it improves server-side rendered (SSR) builds, and makes it easier for client-side rendered projects to adopt SSR in the future.
@@ -211,13 +213,174 @@ If you encounter an issue while using this feature, please [report the bug](http
 
 The usage of Vite in the Angular CLI is currently within a _development server capacity only_. Even without using the underlying Vite build system, Vite provides a full-featured development server with client side support that has been bundled into a low dependency npm package. This makes it an ideal candidate to provide comprehensive development server functionality. The current development server process uses the new build system to generate a development build of the application in memory and passes the results to Vite to serve the application. The usage of Vite, much like the Webpack-based development server, is encapsulated within the Angular CLI `dev-server` builder and currently cannot be directly configured.
 
-## Unimplemented options and behavior
+## New features
 
-Several build options are not yet implemented but will be added in the future as the build system moves towards a stable status. If your application uses these options, you can still try out the build system without removing them. Warnings will be issued for any unimplemented options but they will otherwise be ignored. However, if your application relies on any of these options to function, you may want to wait to try.
+One of the main benefits of the application build system is the improved build and rebuild speed.
+However, the new application build system also provides additional features not present in the `browser` builder.
 
-- [WASM imports](https://github.com/angular/angular-cli/issues/25102) -- WASM can still be loaded manually via [standard web APIs](https://developer.mozilla.org/docs/WebAssembly/Loading_and_running).
+IMPORTANT: The new features of the `application` builder described here are incompatible with the `karma` test builder by default because it is using the `browser` builder internally.
+Users can opt-in to use the `application` builder by setting the `builderMode` option to `application` for the `karma` builder.
+This option is currently in developer preview.
+If you notice any issues, please report them [here](https://github.com/angular/angular-cli/issues).
 
-## ESM default imports vs. namespace imports
+### File extension loader customization
+
+IMPORTANT: This feature is only available with the `application` builder.
+
+Some projects may need to control how all files with a specific file extension are loaded and bundled into an application.
+When using the `application` builder, the `loader` option can be used to handle these cases.
+The option allows a project to define the type of loader to use with a specified file extension.
+A file with the defined extension can then be used within the application code via an import statement or dynamic import expression.
+The available loaders that can be used are:
+* `text` - inlines the content as a `string` available as the default export
+* `binary` - inlines the content as a `Uint8Array` available as the default export
+* `file` - emits the file at the application output path and provides the runtime location of the file as the default export
+* `empty` - considers the content to be empty and will not include it in bundles
+
+The `empty` value, while less common, can be useful for compatibility of third-party libraries that may contain bundler-specific import usage that needs to be removed.
+One case for this is side-effect imports (`import 'my.css';`) of CSS files which has no effect in a browser.
+Instead, the project can use `empty` and then the CSS files can be added to the `styles` build option or use some other injection method.
+
+The loader option is an object-based option with the keys used to define the file extension and the values used to define the loader type.
+
+An example of the build option usage to inline the content of SVG files into the bundled application would be as follows:
+
+<docs-code language="json">
+  "build": {
+    "builder": "@angular/build:application",
+    "options": {
+      ...
+      "loader": {
+        ".svg": "text"
+      }
+    }
+  }
+</docs-code>
+
+An SVG file can then be imported:
+```ts
+import contents from './some-file.svg';
+
+console.log(contents); // <svg>...</svg>
+```
+
+Additionally, TypeScript needs to be aware of the module type for the import to prevent type-checking errors during the build. This can be accomplished with an additional type definition file within the application source code (`src/types.d.ts`, for example) with the following or similar content:
+```ts
+declare module "*.svg" {
+  const content: string;
+  export default content;
+}
+```
+
+The default project configuration is already setup to use any type definition files (`.d.ts` files) present in the project source directories. If the TypeScript configuration for the project has been altered, the tsconfig may need to be adjusted to reference this newly added type definition file.
+
+### Import attribute loader customization
+
+For cases where only certain files should be loaded in a specific way, per file control over loading behavior is available.
+This is accomplished with a `loader` [import attribute](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import/with) that can be used with both import statements and expressions.
+The presence of the import attribute takes precedence over all other loading behavior including JS/TS and any `loader` build option values.
+For general loading for all files of an otherwise unsupported file type, the [`loader`](#file-extension-loader-customization) build option is recommended.
+
+For the import attribute, the following loader values are supported:
+* `text` - inlines the content as a `string` available as the default export
+* `binary` - inlines the content as a `Uint8Array` available as the default export
+* `file` - emits the file at the application output path and provides the runtime location of the file as the default export
+
+An additional requirement to use import attributes is that the TypeScript `module` option must be set to `esnext` to allow TypeScript to successfully build the application code.
+Once `ES2025` is available within TypeScript, this change will no longer be needed.
+
+At this time, TypeScript does not support type definitions that are based on import attribute values.
+The use of `@ts-expect-error`/`@ts-ignore` or the use of individual type definition files (assuming the file is only imported with the same loader attribute) is currently required.
+As an example, an SVG file can be imported as text via:
+```ts
+// @ts-expect-error TypeScript cannot provide types based on attributes yet
+import contents from './some-file.svg' with { loader: 'text' };
+```
+
+The same can be accomplished with an import expression inside an async function.
+```ts
+async function loadSvg(): Promise<string> {
+  // @ts-expect-error TypeScript cannot provide types based on attributes yet
+  return import('./some-file.svg', { with: { loader: 'text' } }).then((m) => m.default);
+}
+```
+For the import expression, the `loader` value must be a string literal to be statically analyzed.
+A warning will be issued if the value is not a string literal.
+
+The `file` loader is useful when a file will be loaded at runtime through either a `fetch()`, setting to an image elements `src`, or other similar method.
+```ts
+// @ts-expect-error TypeScript cannot provide types based on attributes yet
+import imagePath from './image.webp' with { loader: 'file' };
+
+console.log(imagePath); // media/image-ULK2SIIB.webp
+```
+For production builds as shown in the code comment above, hashing will be automatically added to the path for long-term caching.
+
+HELPFUL: When using the development server and using a `loader` attribute to import a file from a Node.js package, that package must be excluded from prebundling via the development server `prebundle` option.
+
+### Import/export conditions
+
+Projects may need to map certain import paths to different files based on the type of build.
+This can be particularly useful for cases such as `ng serve` needing to use debug/development specific code but `ng build` needing to use code without any development features/information.
+Several import/export [conditions](https://nodejs.org/api/packages.html#community-conditions-definitions) are automatically applied to support these project needs:
+* For optimized builds, the `production` condition is enabled.
+* For non-optimized builds, the `development` condition is enabled.
+* For browser output code, the `browser` condition is enabled.
+
+An optimized build is determined by the value of the `optimization` option.
+When `optimization` is set to `true` or more specifically if `optimization.scripts` is set to `true`, then the build is considered optimized.
+This classification applies to both `ng build` and `ng serve`.
+In a new project, `ng build` defaults to optimized and `ng serve` defaults to non-optimized.
+
+A useful method to leverage these conditions within application code is to combine them with [subpath imports](https://nodejs.org/api/packages.html#subpath-imports).
+By using the following import statement:
+```ts
+import {verboseLogging} from '#logger';
+```
+
+The file can be switched in the `imports` field in `package.json`:
+
+<docs-code language="json">
+{
+  ...
+  "imports": {
+    "#logger": {
+      "development": "./src/logging/debug.ts",
+      "default": "./src/logging/noop.ts"
+    }
+  }
+}
+</docs-code>
+
+For applications that are also using SSR, browser and server code can be switched by using the `browser` condition:
+
+<docs-code language="json">
+{
+  ...
+  "imports": {
+    "#crashReporter": {
+      "browser": "./src/browser-logger.ts",
+      "default": "./src/server-logger.ts"
+    }
+  }
+}
+</docs-code>
+
+These conditions also apply to Node.js packages and any defined [`exports`](https://nodejs.org/api/packages.html#conditional-exports) within the packages.
+
+HELPFUL: If currently using the `fileReplacements` build option, this feature may be able to replace its usage.
+
+## Known Issues
+
+There are currently several known issues that you may encounter when trying the new build system. This list will be updated to stay current. If any of these issues are currently blocking you from trying out the new build system, please check back in the future as it may have been solved.
+
+### Type-checking of Web Worker code and processing of nested Web Workers
+
+Web Workers can be used within application code using the same syntax (`new Worker(new URL('<workerfile>', import.meta.url))`) that is supported with the `browser` builder.
+However, the code within the Worker will not currently be type-checked by the TypeScript compiler. TypeScript code is supported just not type-checked.
+Additionally, any nested workers will not be processed by the build system. A nested worker is a Worker instantiation within another Worker file.
+
+### ESM default imports vs. namespace imports
 
 TypeScript by default allows default exports to be imported as namespace imports and then used in call expressions.
 This is unfortunately a divergence from the ECMAScript specification.
@@ -260,16 +423,6 @@ import moment from 'moment';
 
 console.log(moment().format());
 ```
-
-## Known Issues
-
-There are currently several known issues that you may encounter when trying the new build system. This list will be updated to stay current. If any of these issues are currently blocking you from trying out the new build system, please check back in the future as it may have been solved.
-
-### Type-checking of Web Worker code and processing of nested Web Workers
-
-Web Workers can be used within application code using the same syntax (`new Worker(new URL('<workerfile>', import.meta.url))`) that is supported with the `browser` builder.
-However, the code within the Worker will not currently be type-checked by the TypeScript compiler. TypeScript code is supported just not type-checked.
-Additionally, any nested workers will not be processed by the build system. A nested worker is a Worker instantiation within another Worker file.
 
 ### Order-dependent side-effectful imports in lazy modules
 
