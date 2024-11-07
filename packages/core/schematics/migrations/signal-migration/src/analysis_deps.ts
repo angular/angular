@@ -16,7 +16,6 @@ import {ResourceLoader} from '@angular/compiler-cli/src/ngtsc/annotations';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {ReferenceEmitter} from '@angular/compiler-cli/src/ngtsc/imports';
 import {TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
-import assert from 'assert';
 import {ProgramInfo} from '../../../utils/tsurge/program_info';
 
 /**
@@ -26,12 +25,13 @@ import {ProgramInfo} from '../../../utils/tsurge/program_info';
 export interface AnalysisProgramInfo extends ProgramInfo {
   reflector: TypeScriptReflectionHost;
   typeChecker: ts.TypeChecker;
-  templateTypeChecker: TemplateTypeChecker;
-  metaRegistry: MetadataReader;
   dtsMetadataReader: DtsMetadataReader;
   evaluator: PartialEvaluator;
-  refEmitter: ReferenceEmitter;
-  resourceLoader: ResourceLoader;
+
+  templateTypeChecker: TemplateTypeChecker | null;
+  metaRegistry: MetadataReader | null;
+  refEmitter: ReferenceEmitter | null;
+  resourceLoader: ResourceLoader | null;
 }
 
 /**
@@ -42,37 +42,37 @@ export interface AnalysisProgramInfo extends ProgramInfo {
  */
 export function prepareAnalysisInfo(
   userProgram: ts.Program,
-  compiler: NgCompiler,
+  compiler: NgCompiler | null,
   programAbsoluteRootPaths?: string[],
 ) {
-  // Analyze sync and retrieve necessary dependencies.
-  // Note: `getTemplateTypeChecker` requires the `enableTemplateTypeChecker` flag, but
-  // this has negative effects as it causes optional TCB operations to execute, which may
-  // error with unsuccessful reference emits that previously were ignored outside of the migration.
-  // The migration is resilient to TCB information missing, so this is fine, and all the information
-  // we need is part of required TCB operations anyway.
-  const {refEmitter, metaReader, templateTypeChecker} = compiler['ensureAnalyzed']();
+  let refEmitter: ReferenceEmitter | null = null;
+  let metaReader: MetadataReader | null = null;
+  let templateTypeChecker: TemplateTypeChecker | null = null;
+  let resourceLoader: ResourceLoader | null = null;
 
-  // Generate all type check blocks.
-  templateTypeChecker.generateAllTypeCheckBlocks();
+  if (compiler !== null) {
+    // Analyze sync and retrieve necessary dependencies.
+    // Note: `getTemplateTypeChecker` requires the `enableTemplateTypeChecker` flag, but
+    // this has negative effects as it causes optional TCB operations to execute, which may
+    // error with unsuccessful reference emits that previously were ignored outside of the migration.
+    // The migration is resilient to TCB information missing, so this is fine, and all the information
+    // we need is part of required TCB operations anyway.
+    const state = compiler['ensureAnalyzed']();
+
+    resourceLoader = compiler['resourceManager'];
+    refEmitter = state.refEmitter;
+    metaReader = state.metaReader;
+    templateTypeChecker = state.templateTypeChecker;
+
+    // Generate all type check blocks.
+    state.templateTypeChecker.generateAllTypeCheckBlocks();
+  }
 
   const typeChecker = userProgram.getTypeChecker();
 
   const reflector = new TypeScriptReflectionHost(typeChecker);
   const evaluator = new PartialEvaluator(reflector, typeChecker, null);
   const dtsMetadataReader = new DtsMetadataReader(typeChecker, reflector);
-  const resourceLoader = compiler['resourceManager'];
-
-  // Optional filter for testing. Allows for simulation of parallel execution
-  // even if some tsconfig's have overlap due to sharing of TS sources.
-  // (this is commonly not the case in g3 where deps are `.d.ts` files).
-  const limitToRootNamesOnly = process.env['LIMIT_TO_ROOT_NAMES_ONLY'] === '1';
-  if (limitToRootNamesOnly) {
-    assert(
-      programAbsoluteRootPaths !== undefined,
-      'Expected absolute root paths when limiting to root names.',
-    );
-  }
 
   return {
     metaRegistry: metaReader,

@@ -100,7 +100,7 @@ export enum ImportFlags {
  */
 export type ImportedFile = ts.SourceFile | 'unknown' | null;
 
-export const enum ReferenceEmitKind {
+export enum ReferenceEmitKind {
   Success,
   Failed,
 }

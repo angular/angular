@@ -45,7 +45,6 @@ export function executeAnalysisPhase(
     templateTypeChecker,
     resourceLoader,
     evaluator,
-    refEmitter,
   }: AnalysisProgramInfo,
 ) {
   // Pass 1
@@ -61,7 +60,6 @@ export function executeAnalysisPhase(
         reflector,
         dtsMetadataReader,
         evaluator,
-        refEmitter,
         knownInputs,
         result,
       ),
