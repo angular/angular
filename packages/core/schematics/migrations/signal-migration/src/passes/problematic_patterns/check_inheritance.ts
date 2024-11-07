@@ -43,7 +43,7 @@ export interface InheritanceTracker<D extends ClassFieldDescriptor> {
  */
 export function checkInheritanceOfKnownFields<D extends ClassFieldDescriptor>(
   inheritanceGraph: InheritanceGraph,
-  metaRegistry: MetadataReader,
+  metaRegistry: MetadataReader | null,
   fields: KnownFields<D> & InheritanceTracker<D>,
   opts: {
     getFieldsForClass: (node: ts.ClassDeclaration) => D[];
@@ -62,21 +62,23 @@ export function checkInheritanceOfKnownFields<D extends ClassFieldDescriptor>(
 
     assert(ts.isClassDeclaration(inputClass), 'Expected input graph node to be always a class.');
     const classFields = opts.getFieldsForClass(inputClass);
+    const inputFieldNamesFromMetadataArray = new Set<string>();
 
     // Iterate through derived class chains and determine all inputs that are overridden
     // via class metadata fields. e.g `@Component#inputs`. This is later used to mark a
     // potential similar class input as incompatible— because those cannot be migrated.
-    const inputFieldNamesFromMetadataArray = new Set<string>();
-    for (const derivedClasses of inheritanceGraph.traceDerivedClasses(inputClass)) {
-      const derivedMeta =
-        ts.isClassDeclaration(derivedClasses) && derivedClasses.name !== undefined
-          ? metaRegistry.getDirectiveMetadata(new Reference(derivedClasses as ClassDeclaration))
-          : null;
+    if (metaRegistry !== null) {
+      for (const derivedClasses of inheritanceGraph.traceDerivedClasses(inputClass)) {
+        const derivedMeta =
+          ts.isClassDeclaration(derivedClasses) && derivedClasses.name !== undefined
+            ? metaRegistry.getDirectiveMetadata(new Reference(derivedClasses as ClassDeclaration))
+            : null;
 
-      if (derivedMeta !== null && derivedMeta.inputFieldNamesFromMetadataArray !== null) {
-        derivedMeta.inputFieldNamesFromMetadataArray.forEach((b) =>
-          inputFieldNamesFromMetadataArray.add(b),
-        );
+        if (derivedMeta !== null && derivedMeta.inputFieldNamesFromMetadataArray !== null) {
+          derivedMeta.inputFieldNamesFromMetadataArray.forEach((b) =>
+            inputFieldNamesFromMetadataArray.add(b),
+          );
+        }
       }
     }
 

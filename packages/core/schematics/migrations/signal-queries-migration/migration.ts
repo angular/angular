@@ -100,12 +100,16 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
   }
 
   override async analyze(info: ProgramInfo): Promise<Serializable<CompilationUnitData>> {
-    assert(info.ngCompiler !== null, 'Expected queries migration to have an Angular program.');
-
     // Pre-Analyze the program and get access to the template type checker.
-    const {templateTypeChecker} = info.ngCompiler['ensureAnalyzed']();
-    // Generate all type check blocks.
-    templateTypeChecker.generateAllTypeCheckBlocks();
+    const {templateTypeChecker} = info.ngCompiler?.['ensureAnalyzed']() ?? {
+      templateTypeChecker: null,
+    };
+    const resourceLoader = info.ngCompiler?.['resourceManager'] ?? null;
+
+    // Generate all type check blocks, if we have Angular template information.
+    if (templateTypeChecker !== null) {
+      templateTypeChecker.generateAllTypeCheckBlocks();
+    }
 
     const {sourceFiles, program} = info;
     const checker = program.getTypeChecker();
@@ -226,7 +230,7 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
         info,
         checker,
         reflector,
-        info.ngCompiler['resourceManager'],
+        resourceLoader,
         evaluator,
         templateTypeChecker,
         allFieldsOrKnownQueries,
@@ -391,10 +395,13 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
   }
 
   override async migrate(globalMetadata: GlobalUnitData, info: ProgramInfo) {
-    assert(info.ngCompiler !== null, 'Expected queries migration to have an Angular program.');
-
     // Pre-Analyze the program and get access to the template type checker.
-    const {templateTypeChecker, metaReader} = info.ngCompiler['ensureAnalyzed']();
+    const {templateTypeChecker, metaReader} = info.ngCompiler?.['ensureAnalyzed']() ?? {
+      templateTypeChecker: null,
+      metaReader: null,
+    };
+    const resourceLoader = info.ngCompiler?.['resourceManager'] ?? null;
+
     const {program, sourceFiles} = info;
     const checker = program.getTypeChecker();
     const reflector = new TypeScriptReflectionHost(checker);
@@ -472,7 +479,7 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
           info,
           checker,
           reflector,
-          info.ngCompiler['resourceManager'],
+          resourceLoader,
           evaluator,
           templateTypeChecker,
           knownQueries,

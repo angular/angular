@@ -32,7 +32,6 @@ export function pass1__IdentifySourceFileAndDeclarationInputs(
   reflector: TypeScriptReflectionHost,
   dtsMetadataReader: DtsMetadataReader,
   evaluator: PartialEvaluator,
-  refEmitter: ReferenceEmitter,
   knownDecoratorInputs: KnownInputs,
   result: MigrationResult,
 ) {
@@ -43,7 +42,6 @@ export function pass1__IdentifySourceFileAndDeclarationInputs(
       reflector,
       dtsMetadataReader,
       evaluator,
-      refEmitter,
     );
     if (decoratorInput !== null) {
       assert(isInputContainerNode(node), 'Expected input to be declared on accessor or property.');

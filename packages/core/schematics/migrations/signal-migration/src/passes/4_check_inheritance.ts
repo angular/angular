@@ -34,7 +34,7 @@ import {checkInheritanceOfKnownFields} from './problematic_patterns/check_inheri
  */
 export function pass4__checkInheritanceOfInputs(
   inheritanceGraph: InheritanceGraph,
-  metaRegistry: MetadataReader,
+  metaRegistry: MetadataReader | null,
   knownInputs: KnownInputs,
 ) {
   checkInheritanceOfKnownFields(inheritanceGraph, metaRegistry, knownInputs, {

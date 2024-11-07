@@ -30,7 +30,7 @@ import {
 } from './passes/problematic_patterns/incompatibility';
 import {MigrationConfig} from './migration_config';
 import {ClassFieldUniqueKey} from './passes/reference_resolution/known_fields';
-import {createNgtscProgram} from '../../../utils/tsurge/helpers/ngtsc_program';
+import {createBaseProgramInfo} from '../../../utils/tsurge/helpers/create_program';
 
 /**
  * Tsurge migration for migrating Angular `@Input()` declarations to
@@ -50,9 +50,9 @@ export class SignalInputMigration extends TsurgeComplexMigration<
     super();
   }
 
-  // Override the default ngtsc program creation, to add extra flags.
+  // Override the default program creation, to add extra flags.
   override createProgram(tsconfigAbsPath: string, fs?: FileSystem): BaseProgramInfo {
-    return createNgtscProgram(tsconfigAbsPath, fs, {
+    return createBaseProgramInfo(tsconfigAbsPath, fs, {
       _compilePoisonedComponents: true,
       // We want to migrate non-exported classes too.
       compileNonExportedClasses: true,
@@ -85,7 +85,6 @@ export class SignalInputMigration extends TsurgeComplexMigration<
 
   // Extend the program info with the analysis information we need in every phase.
   prepareAnalysisDeps(info: ProgramInfo): AnalysisProgramInfo {
-    assert(info.ngCompiler !== null, 'Expected `NgCompiler` to be configured.');
     const analysisInfo = {
       ...info,
       ...prepareAnalysisInfo(info.program, info.ngCompiler, info.programAbsoluteRootFileNames),
