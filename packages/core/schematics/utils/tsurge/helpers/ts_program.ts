@@ -7,41 +7,38 @@
  */
 
 import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
-import {NgtscProgram} from '@angular/compiler-cli/src/ngtsc/program';
 import {ParsedConfiguration} from '@angular/compiler-cli/src/perform_compile';
 import ts from 'typescript';
 import {BaseProgramInfo} from '../program_info';
-import {defaultMigrationTsOptions} from './ts_program';
+
+/** Options that are good defaults for Tsurge migrations. */
+export const defaultMigrationTsOptions: Partial<ts.CompilerOptions> = {
+  // Avoid checking libraries to speed up migrations.
+  skipLibCheck: true,
+  skipDefaultLibCheck: true,
+  noEmit: true,
+};
 
 /**
- * Parses the configuration of the given TypeScript project and creates
- * an instance of the Angular compiler for the project.
+ * Creates an instance of a TypeScript program for the given project.
  */
-export function createNgtscProgram(
+export function createPlainTsProgram(
   tsHost: ts.CompilerHost,
   tsconfig: ParsedConfiguration,
   optionOverrides: NgCompilerOptions,
 ): BaseProgramInfo {
-  const ngtscProgram = new NgtscProgram(
-    tsconfig.rootNames,
-    {
+  const program = ts.createProgram({
+    rootNames: tsconfig.rootNames,
+    options: {
       ...tsconfig.options,
       ...defaultMigrationTsOptions,
       ...optionOverrides,
     },
-    tsHost,
-  );
-
-  // Expose an easy way to debug-print ng semantic diagnostics.
-  if (process.env['DEBUG_NG_SEMANTIC_DIAGNOSTICS'] === '1') {
-    console.error(
-      ts.formatDiagnosticsWithColorAndContext(ngtscProgram.getNgSemanticDiagnostics(), tsHost),
-    );
-  }
+  });
 
   return {
-    ngCompiler: ngtscProgram.compiler,
-    program: ngtscProgram.getTsProgram(),
+    ngCompiler: null,
+    program,
     userOptions: tsconfig.options,
     programAbsoluteRootFileNames: tsconfig.rootNames,
     host: tsHost,
