@@ -12,6 +12,7 @@ import {createNgtscProgram} from './helpers/ngtsc_program';
 import {BaseProgramInfo, ProgramInfo} from './program_info';
 import {getRootDirs} from '@angular/compiler-cli/src/ngtsc/util/src/typescript';
 import {Serializable} from './helpers/serializable';
+import {createProgramInfo} from './helpers/create_program_info';
 
 /**
  * Type describing statistics that could be tracked
@@ -32,9 +33,16 @@ export interface MigrationStats {
  * TypeScript programs, while also allowing migration authors to override.
  */
 export abstract class TsurgeBaseMigration<UnitAnalysisMetadata, CombinedGlobalMetadata> {
-  // By default, ngtsc programs are being created.
+  /**
+   * Advanced Tsurge users can override this method, but most of the time,
+   * overriding {@link prepareProgram} is more desirable.
+   *
+   * By default:
+   *  - In 3P: Ngtsc programs are being created.
+   *  - In 1P: Ngtsc or TS programs are created based on the Blaze target.
+   */
   createProgram(tsconfigAbsPath: string, fs?: FileSystem): BaseProgramInfo {
-    return createNgtscProgram(tsconfigAbsPath, fs);
+    return createProgramInfo(tsconfigAbsPath, fs);
   }
 
   // Optional function to prepare the base `ProgramInfo` even further,
