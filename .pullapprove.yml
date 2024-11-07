@@ -300,6 +300,7 @@ groups:
       - >
         contains_any_globs(files, [
           'packages/platform-server/**/{*,.*}',
+          'packages/ssr/**/{*,.*}',
           ])
     reviewers:
       users:
