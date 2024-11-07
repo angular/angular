@@ -93,22 +93,12 @@ describe('ShadowCss', () => {
       'div[contenta]:where(.one) {}',
     );
     expect(shim('div:where() {}', 'contenta', 'hosta')).toEqualCss('div[contenta]:where() {}');
-    // See `xit('should parse concatenated pseudo selectors'`
     expect(shim(':where(a):where(b) {}', 'contenta', 'hosta')).toEqualCss(
-      ':where(a)[contenta]:where(b) {}',
+      ':where(a[contenta]):where(b[contenta]) {}',
     );
     expect(shim('*:where(.one) {}', 'contenta', 'hosta')).toEqualCss('*[contenta]:where(.one) {}');
     expect(shim('*:where(.one) ::ng-deep .foo {}', 'contenta', 'hosta')).toEqualCss(
       '*[contenta]:where(.one) .foo {}',
-    );
-  });
-
-  xit('should parse concatenated pseudo selectors', () => {
-    // Current logic leads to a result with an outer scope
-    // It could be changed, to not increase specificity
-    // Requires a more complex parsing
-    expect(shim(':where(a):where(b) {}', 'contenta', 'hosta')).toEqualCss(
-      ':where(a[contenta]):where(b[contenta]) {}',
     );
   });
 
@@ -200,6 +190,18 @@ describe('ShadowCss', () => {
     ).toEqualCss(
       ':where(:where(a[contenta]:has(.foo), b[contenta]) :is(.one[contenta], .two[contenta]:where(.foo > .bar))) {}',
     );
+    expect(shim(':where(.two):first-child {}', 'contenta', 'hosta')).toEqualCss(
+      '[contenta]:where(.two):first-child {}',
+    );
+    expect(shim(':first-child:where(.two) {}', 'contenta', 'hosta')).toEqualCss(
+      '[contenta]:first-child:where(.two) {}',
+    );
+    expect(shim(':where(.two):nth-child(3) {}', 'contenta', 'hosta')).toEqualCss(
+      '[contenta]:where(.two):nth-child(3) {}',
+    );
+    expect(shim('table :where(td, th):hover { color: lime; }', 'contenta', 'hosta')).toEqualCss(
+      'table[contenta] [contenta]:where(td, th):hover { color:lime;}',
+    );
 
     // complex selectors
     expect(shim(':host:is([foo],[foo-2])>div.example-2 {}', 'contenta', 'a-host')).toEqualCss(
@@ -272,6 +274,18 @@ describe('ShadowCss', () => {
     expect(shim('.one :where(:host, .two) {}', 'contenta', 'hosta')).toEqualCss(
       '.one :where([hosta], .two[contenta]) {}',
     );
+    expect(shim(':is(.foo):is(:host):is(.two) {}', 'contenta', 'hosta')).toEqualCss(
+      ':is(.foo):is([hosta]):is(.two[contenta]) {}',
+    );
+    expect(shim(':where(.one, :host .two):first-letter {}', 'contenta', 'hosta')).toEqualCss(
+      '[contenta]:where(.one, [hosta] .two):first-letter {}',
+    );
+    expect(shim(':first-child:where(.one, :host .two) {}', 'contenta', 'hosta')).toEqualCss(
+      '[contenta]:first-child:where(.one, [hosta] .two) {}',
+    );
+    expect(
+      shim(':where(.one, :host .two):nth-child(3):is(.foo, a:where(.bar)) {}', 'contenta', 'hosta'),
+    ).toEqualCss('[contenta]:where(.one, [hosta] .two):nth-child(3):is(.foo, a:where(.bar)) {}');
   });
 
   it('should handle escaped selector with space (if followed by a hex char)', () => {
