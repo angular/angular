@@ -136,7 +136,7 @@ describe('event replay', () => {
     const btn = doc.getElementById('btn')!;
     btn.click();
     const appRef = await hydrate(doc, AppComponent, {
-      hydrationFeatures: [withEventReplay()],
+      hydrationFeatures: () => [withEventReplay()],
     });
     appRef.tick();
     expect(onClickSpy).toHaveBeenCalled();
@@ -186,7 +186,7 @@ describe('event replay', () => {
     inner.click();
     await hydrate(doc, AppComponent, {
       envProviders: [{provide: PLATFORM_ID, useValue: 'browser'}],
-      hydrationFeatures: [withEventReplay()],
+      hydrationFeatures: () => [withEventReplay()],
     });
     expect(outerOnClickSpy).toHaveBeenCalledBefore(innerOnClickSpy);
   });
@@ -215,7 +215,7 @@ describe('event replay', () => {
     expect((el.firstChild as Element).hasAttribute('jsaction')).toBeTrue();
     resetTViewsFor(SimpleComponent);
     await hydrate(doc, SimpleComponent, {
-      hydrationFeatures: [withEventReplay()],
+      hydrationFeatures: () => [withEventReplay()],
     });
     expect(el.hasAttribute('jsaction')).toBeFalse();
     expect((el.firstChild as Element).hasAttribute('jsaction')).toBeFalse();
@@ -268,7 +268,7 @@ describe('event replay', () => {
       bottomEl.click();
       await hydrate(doc, SimpleComponent, {
         envProviders: [{provide: PLATFORM_ID, useValue: 'browser'}],
-        hydrationFeatures: [withEventReplay()],
+        hydrationFeatures: () => [withEventReplay()],
       });
       expect(onClickSpy).toHaveBeenCalledTimes(2);
       onClickSpy.calls.reset();
@@ -301,7 +301,7 @@ describe('event replay', () => {
       const bottomEl = doc.getElementById('bottom')!;
       bottomEl.click();
       await hydrate(doc, SimpleComponent, {
-        hydrationFeatures: [withEventReplay()],
+        hydrationFeatures: () => [withEventReplay()],
       });
       expect(onClickSpy).toHaveBeenCalledTimes(1);
       onClickSpy.calls.reset();
@@ -339,7 +339,7 @@ describe('event replay', () => {
       bottomEl.click();
       await hydrate(doc, SimpleComponent, {
         envProviders: [{provide: PLATFORM_ID, useValue: 'browser'}],
-        hydrationFeatures: [withEventReplay()],
+        hydrationFeatures: () => [withEventReplay()],
       });
       const replayedEvent = currentEvent;
       expect(replayedEvent.target).not.toBeNull();
@@ -394,7 +394,7 @@ describe('event replay', () => {
           // that has no events, but enables Event Replay feature.
           withStrictErrorHandler(),
         ],
-        hydrationFeatures: [withEventReplay()],
+        hydrationFeatures: () => [withEventReplay()],
       });
     });
 
