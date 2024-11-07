@@ -743,7 +743,7 @@ export class ShadowCss {
             },
           );
         })
-        .replace(_polyfillHostRe, replaceBy + ' ');
+        .replace(_polyfillHostRe, replaceBy);
     }
 
     return scopeSelector + ' ' + selector;
@@ -765,7 +765,7 @@ export class ShadowCss {
     const isRe = /\[is=([^\]]*)\]/g;
     scopeSelector = scopeSelector.replace(isRe, (_: string, ...parts: string[]) => parts[0]);
 
-    const attrName = '[' + scopeSelector + ']';
+    const attrName = `[${scopeSelector}]`;
 
     const _scopeSelectorPart = (p: string) => {
       let scopedP = p.trim();
@@ -776,7 +776,7 @@ export class ShadowCss {
 
       if (p.includes(_polyfillHostNoCombinator)) {
         scopedP = this._applySimpleSelectorScope(p, scopeSelector, hostSelector);
-        if (_polyfillHostNoCombinatorWithinPseudoFunction.test(p)) {
+        if (!p.match(_polyfillHostNoCombinatorOutsidePseudoFunction)) {
           const [_, before, colon, after] = scopedP.match(/([^:]*)(:*)(.*)/)!;
           scopedP = before + attrName + colon + after;
         }
@@ -979,10 +979,11 @@ const _cssColonHostContextReGlobal = new RegExp(
 );
 const _cssColonHostContextRe = new RegExp(_polyfillHostContext + _parenSuffix, 'im');
 const _polyfillHostNoCombinator = _polyfillHost + '-no-combinator';
-const _polyfillHostNoCombinatorWithinPseudoFunction = new RegExp(
-  `:.*\\(.*${_polyfillHostNoCombinator}.*\\)`,
+const _polyfillHostNoCombinatorOutsidePseudoFunction = new RegExp(
+  `${_polyfillHostNoCombinator}(?![^(]*\\))`,
+  'g',
 );
-const _polyfillHostNoCombinatorRe = /-shadowcsshost-no-combinator([^\s]*)/;
+const _polyfillHostNoCombinatorRe = /-shadowcsshost-no-combinator([^\s,]*)/;
 const _polyfillHostNoCombinatorReGlobal = new RegExp(_polyfillHostNoCombinatorRe, 'g');
 const _shadowDOMSelectorsRe = [
   /::shadow/g,
