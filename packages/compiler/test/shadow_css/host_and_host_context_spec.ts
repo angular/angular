@@ -83,6 +83,21 @@ describe('ShadowCss, :host and :host-context', () => {
       expect(shim(':host(:not(p)):before {}', 'contenta', 'a-host')).toEqualCss(
         '[a-host]:not(p):before {}',
       );
+      expect(shim(':host:not(:host.foo) {}', 'contenta', 'a-host')).toEqualCss(
+        '[a-host]:not([a-host].foo) {}',
+      );
+      expect(shim(':host:not(.foo:host) {}', 'contenta', 'a-host')).toEqualCss(
+        '[a-host]:not(.foo[a-host]) {}',
+      );
+      expect(shim(':host:not(:host.foo, :host.bar) {}', 'contenta', 'a-host')).toEqualCss(
+        '[a-host]:not([a-host].foo, .bar[a-host]) {}',
+      );
+      expect(shim(':host:not(:host.foo, .bar :host) {}', 'contenta', 'a-host')).toEqualCss(
+        '[a-host]:not([a-host].foo, .bar [a-host]) {}',
+      );
+      expect(shim(':host:not(.foo, .bar) {}', 'contenta', 'a-host')).toEqualCss(
+        '[a-host]:not(.foo, .bar) {}',
+      );
     });
 
     // see b/63672152
