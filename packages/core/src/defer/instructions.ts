@@ -328,7 +328,12 @@ export function ɵɵdefer(
     registry.add(ssrUniqueId, {lView, tNode, lContainer});
   }
 
-  const cleanupTriggersFn = () => invokeAllTriggerCleanupFns(lDetails, registry);
+  const cleanupTriggersFn = () => {
+    invokeAllTriggerCleanupFns(lDetails);
+    if (ssrUniqueId !== null) {
+      registry?.cleanup(ssrUniqueId);
+    }
+  };
 
   // When defer block is triggered - unsubscribe from LView destroy cleanup.
   storeTriggerCleanupFn(TriggerType.Regular, lDetails, () =>
@@ -1444,11 +1449,12 @@ export function triggerDeferBlock(lView: LView, tNode: TNode) {
   if (!shouldTriggerDeferBlock(injector, tDetails)) return;
 
   let registry: DeferBlockRegistry | null = null;
-  if (isIncrementalHydrationEnabled(injector)) {
+  if (isIncrementalHydrationEnabled(injector) && lDetails[SSR_UNIQUE_ID] !== null) {
     registry = injector.get(DEFER_BLOCK_REGISTRY);
+    registry.invokeCleanupFns(lDetails[SSR_UNIQUE_ID]);
   }
   // Defer block is triggered, cleanup all registered trigger functions.
-  invokeAllTriggerCleanupFns(lDetails, registry);
+  invokeAllTriggerCleanupFns(lDetails);
 
   switch (tDetails.loadingState) {
     case DeferDependenciesLoadingState.NOT_STARTED:

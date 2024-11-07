@@ -5,8 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {inject} from '../di';
 import {InjectionToken} from '../di/injection_token';
 import {ɵɵdefineInjectable} from '../di/interface/defs';
+import {JSACTION_BLOCK_ELEMENT_MAP} from '../hydration/tokens';
 import {DeferBlock} from './interfaces';
 
 /**
@@ -26,6 +28,7 @@ export const DEFER_BLOCK_REGISTRY = new InjectionToken<DeferBlockRegistry>(
 export class DeferBlockRegistry {
   private registry = new Map<string, DeferBlock>();
   private cleanupFns = new Map<string, Function[]>();
+  private jsActionMap: Map<string, Set<Element>> = inject(JSACTION_BLOCK_ELEMENT_MAP);
   add(blockId: string, info: DeferBlock) {
     this.registry.set(blockId, info);
   }
@@ -40,6 +43,13 @@ export class DeferBlockRegistry {
   remove(blockId: string) {
     this.registry.delete(blockId);
   }
+
+  cleanup(blockId: string) {
+    this.remove(blockId);
+    this.jsActionMap.delete(blockId);
+    this.invokeCleanupFns(blockId);
+  }
+
   get size(): number {
     return this.registry.size;
   }
@@ -62,14 +72,10 @@ export class DeferBlockRegistry {
   }
 
   invokeCleanupFns(blockId: string) {
-    // TODO(incremental-hydration): determine if we can safely remove entries from
-    // the cleanupFns after they've been invoked. Can we reset
-    // `this.cleanupFns.get(blockId)`?
     const fns = this.cleanupFns.get(blockId) ?? [];
     for (let fn of fns) {
       fn();
     }
-    // We can safely clear these out now that they've fired.
     this.cleanupFns.delete(blockId);
   }
 
