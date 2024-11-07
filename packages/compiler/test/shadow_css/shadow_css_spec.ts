@@ -229,6 +229,24 @@ describe('ShadowCss', () => {
     expect(shim(':has(a) :has(b) {}', 'contenta', 'hosta')).toEqualCss(
       '[contenta]:has(a) [contenta]:has(b) {}',
     );
+    expect(shim(':has(a, b) {}', 'contenta', 'hosta')).toEqualCss('[contenta]:has(a, b) {}');
+    expect(shim(':has(a, b:where(.foo), :is(.bar)) {}', 'contenta', 'hosta')).toEqualCss(
+      '[contenta]:has(a, b:where(.foo), :is(.bar)) {}',
+    );
+    expect(
+      shim(':has(a, b:where(.foo), :is(.bar):first-child):first-letter {}', 'contenta', 'hosta'),
+    ).toEqualCss('[contenta]:has(a, b:where(.foo), :is(.bar):first-child):first-letter {}');
+    expect(
+      shim(':where(a, b:where(.foo), :has(.bar):first-child) {}', 'contenta', 'hosta'),
+    ).toEqualCss(
+      ':where(a[contenta], b[contenta]:where(.foo), [contenta]:has(.bar):first-child) {}',
+    );
+    expect(shim(':has(.one :host, .two) {}', 'contenta', 'hosta')).toEqualCss(
+      '[contenta]:has(.one [hosta], .two) {}',
+    );
+    expect(shim(':has(.one, :host) {}', 'contenta', 'hosta')).toEqualCss(
+      '[contenta]:has(.one, [hosta]) {}',
+    );
   });
 
   it('should handle :host inclusions inside pseudo-selectors selectors', () => {
