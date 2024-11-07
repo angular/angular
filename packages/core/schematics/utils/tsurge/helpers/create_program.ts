@@ -19,8 +19,8 @@ import {createNgtscProgram} from './ngtsc_program';
 import {parseTsconfigOrDie} from './ts_parse_config';
 import {createPlainTsProgram} from './ts_program';
 
-/** Creates the program info for the given tsconfig path. */
-export function createProgramInfo(
+/** Creates the base program info for the given tsconfig path. */
+export function createBaseProgramInfo(
   absoluteTsconfigPath: string,
   fs?: FileSystem,
   optionOverrides: NgCompilerOptions = {},
