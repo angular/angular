@@ -234,21 +234,19 @@ export function withDebugConsole() {
  */
 export async function ssr(
   component: Type<unknown>,
-  options?: {
+  options: {
     doc?: string;
     envProviders?: Provider[];
-    hydrationFeatures?: HydrationFeature<HydrationFeatureKind>[];
+    hydrationFeatures?: () => HydrationFeature<HydrationFeatureKind>[];
     enableHydration?: boolean;
-  },
+  } = {},
 ): Promise<string> {
   const defaultHtml = DEFAULT_DOCUMENT;
-  const enableHydration = options?.enableHydration ?? true;
-  const envProviders = options?.envProviders ?? [];
-  const hydrationFeatures = options?.hydrationFeatures ?? [];
+  const {enableHydration = true, envProviders = [], hydrationFeatures = () => []} = options;
   const providers = [
     ...envProviders,
     provideServerRendering(),
-    enableHydration ? provideClientHydration(...hydrationFeatures) : [],
+    enableHydration ? provideClientHydration(...hydrationFeatures()) : [],
   ];
 
   const bootstrap = () => bootstrapApplication(component, {providers});

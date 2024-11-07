@@ -17,7 +17,7 @@ import {
   ɵwhenStable as whenStable,
 } from '@angular/core';
 
-import {getAppContents, hydrate, prepareEnvironmentAndHydrate, resetTViewsFor} from './dom_utils';
+import {getAppContents, prepareEnvironmentAndHydrate, resetTViewsFor} from './dom_utils';
 import {getComponentRef, ssr, timeout} from './hydration_utils';
 import {getDocument} from '@angular/core/src/render3/interfaces/document';
 import {isPlatformServer} from '@angular/common';
@@ -103,7 +103,7 @@ describe('platform-server partial hydration integration', () => {
 
       const appId = 'custom-app-id';
       const providers = [{provide: APP_ID, useValue: appId}];
-      const hydrationFeatures = [withIncrementalHydration(), withEventReplay()];
+      const hydrationFeatures = () => [withIncrementalHydration(), withEventReplay()];
 
       const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
       const ssrContents = getAppContents(html);
@@ -154,9 +154,13 @@ describe('platform-server partial hydration integration', () => {
 
       const appId = 'custom-app-id';
       const providers = [{provide: APP_ID, useValue: appId}];
-      const hydrationFeatures = [withIncrementalHydration()];
+      const hydrationFeatures = () => [withIncrementalHydration()];
 
-      const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+      const html = await ssr(SimpleComponent, {
+        envProviders: providers,
+        hydrationFeatures,
+      });
+
       const ssrContents = getAppContents(html);
 
       // Assert that we have `jsaction` annotations and
@@ -268,7 +272,7 @@ describe('platform-server partial hydration integration', () => {
 
       const appId = 'custom-app-id';
       const providers = [{provide: APP_ID, useValue: appId}];
-      const hydrationFeatures = [withIncrementalHydration()];
+      const hydrationFeatures = () => [withIncrementalHydration()];
 
       const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
       const ssrContents = getAppContents(html);
@@ -379,7 +383,7 @@ describe('platform-server partial hydration integration', () => {
 
       const appId = 'custom-app-id';
       const providers = [{provide: APP_ID, useValue: appId}];
-      const hydrationFeatures = [withIncrementalHydration()];
+      const hydrationFeatures = () => [withIncrementalHydration()];
 
       const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
       const ssrContents = getAppContents(html);
@@ -492,7 +496,7 @@ describe('platform-server partial hydration integration', () => {
 
         const appId = 'custom-app-id';
         const providers = [{provide: APP_ID, useValue: appId}];
-        const hydrationFeatures = [withIncrementalHydration()];
+        const hydrationFeatures = () => [withIncrementalHydration()];
 
         const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
         const ssrContents = getAppContents(html);
@@ -560,7 +564,7 @@ describe('platform-server partial hydration integration', () => {
 
         const appId = 'custom-app-id';
         const providers = [{provide: APP_ID, useValue: appId}];
-        const hydrationFeatures = [withIncrementalHydration()];
+        const hydrationFeatures = () => [withIncrementalHydration()];
 
         const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
         const ssrContents = getAppContents(html);
@@ -631,7 +635,7 @@ describe('platform-server partial hydration integration', () => {
 
         const appId = 'custom-app-id';
         const providers = [{provide: APP_ID, useValue: appId}];
-        const hydrationFeatures = [withIncrementalHydration()];
+        const hydrationFeatures = () => [withIncrementalHydration()];
 
         const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
         const ssrContents = getAppContents(html);
@@ -704,7 +708,7 @@ describe('platform-server partial hydration integration', () => {
 
         const appId = 'custom-app-id';
         const providers = [{provide: APP_ID, useValue: appId}];
-        const hydrationFeatures = [withIncrementalHydration()];
+        const hydrationFeatures = () => [withIncrementalHydration()];
 
         const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
         const ssrContents = getAppContents(html);
@@ -871,7 +875,7 @@ describe('platform-server partial hydration integration', () => {
 
         const appId = 'custom-app-id';
         const providers = [{provide: APP_ID, useValue: appId}];
-        const hydrationFeatures = [withIncrementalHydration()];
+        const hydrationFeatures = () => [withIncrementalHydration()];
 
         const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
         const ssrContents = getAppContents(html);
@@ -956,7 +960,7 @@ describe('platform-server partial hydration integration', () => {
 
       const appId = 'custom-app-id';
       const providers = [{provide: APP_ID, useValue: appId}];
-      const hydrationFeatures = [withIncrementalHydration()];
+      const hydrationFeatures = () => [withIncrementalHydration()];
 
       const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
       const ssrContents = getAppContents(html);
@@ -1083,7 +1087,7 @@ describe('platform-server partial hydration integration', () => {
 
         const appId = 'custom-app-id';
         const providers = [{provide: APP_ID, useValue: appId}];
-        const hydrationFeatures = [withIncrementalHydration()];
+        const hydrationFeatures = () => [withIncrementalHydration()];
 
         const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
         const ssrContents = getAppContents(html);
@@ -1155,7 +1159,7 @@ describe('platform-server partial hydration integration', () => {
 
       const appId = 'custom-app-id';
       const providers = [{provide: APP_ID, useValue: appId}];
-      const hydrationFeatures = [withIncrementalHydration()];
+      const hydrationFeatures = () => [withIncrementalHydration()];
 
       const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
       const ssrContents = getAppContents(html);
@@ -1227,7 +1231,7 @@ describe('platform-server partial hydration integration', () => {
 
       const appId = 'custom-app-id';
       const providers = [{provide: APP_ID, useValue: appId}];
-      const hydrationFeatures = [withIncrementalHydration()];
+      const hydrationFeatures = () => [withIncrementalHydration()];
 
       const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
       const ssrContents = getAppContents(html);
@@ -1292,7 +1296,7 @@ describe('platform-server partial hydration integration', () => {
 
       const appId = 'custom-app-id';
       const providers = [{provide: APP_ID, useValue: appId}];
-      const hydrationFeatures = [withIncrementalHydration()];
+      const hydrationFeatures = () => [withIncrementalHydration()];
 
       const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
       const ssrContents = getAppContents(html);
@@ -1381,7 +1385,7 @@ describe('platform-server partial hydration integration', () => {
 
       const appId = 'custom-app-id';
       const providers = [{provide: APP_ID, useValue: appId}];
-      const hydrationFeatures = [withIncrementalHydration()];
+      const hydrationFeatures = () => [withIncrementalHydration()];
 
       const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
       const ssrContents = getAppContents(html);
@@ -1464,7 +1468,7 @@ describe('platform-server partial hydration integration', () => {
 
       const appId = 'custom-app-id';
       const providers = [{provide: APP_ID, useValue: appId}];
-      const hydrationFeatures = [withIncrementalHydration()];
+      const hydrationFeatures = () => [withIncrementalHydration()];
 
       const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
       const ssrContents = getAppContents(html);
