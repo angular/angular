@@ -1,0 +1,1 @@
+this.globalThis.Math.random()

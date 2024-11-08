@@ -83,6 +83,7 @@ import {wrapI18nIcus} from './phases/wrap_icus';
 import {optimizeStoreLet} from './phases/store_let_optimization';
 import {removeIllegalLetReferences} from './phases/remove_illegal_let_references';
 import {generateLocalLetReferences} from './phases/generate_local_let_references';
+import {accessGlobalScope} from './phases/global_scope_access';
 
 type Phase =
   | {
@@ -128,6 +129,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: generateVariables},
   {kind: Kind.Tmpl, fn: saveAndRestoreView},
   {kind: Kind.Both, fn: deleteAnyCasts},
+  {kind: Kind.Both, fn: accessGlobalScope},
   {kind: Kind.Both, fn: resolveDollarEvent},
   {kind: Kind.Tmpl, fn: generateTrackVariables},
   {kind: Kind.Tmpl, fn: removeIllegalLetReferences},

@@ -703,6 +703,18 @@ describe('type check blocks', () => {
     expect(block).toContain('((((this).foo)).$any(((this).a)))');
   });
 
+  it('should handle $global access', () => {
+    const TEMPLATE = `{{globalThis.Math.random()}}`;
+    const block = tcb(TEMPLATE);
+    expect(block).toContain('((((globalThis).Math)).random())');
+  });
+
+  it('should handle globalThis accessed through `this`', () => {
+    const TEMPLATE = `{{this.globalThis.Math.random()}}`;
+    const block = tcb(TEMPLATE);
+    expect(block).toContain('((((((this).globalThis)).Math)).random())');
+  });
+
   it('should handle a two-way binding to an input/output pair', () => {
     const TEMPLATE = `<div twoWay [(input)]="value"></div>`;
     const DIRECTIVES: TestDeclaration[] = [

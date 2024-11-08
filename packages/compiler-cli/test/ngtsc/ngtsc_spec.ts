@@ -5252,6 +5252,28 @@ runInEachFileSystem((os: string) => {
       );
     });
 
+    it('should handle globalThis used inside a listener', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test-cmp',
+          template: '<div (click)="foo = globalThis.Math.random()"></div>',
+        })
+        export class TestCmp {
+          foo=0
+        }
+    `,
+      );
+
+      env.driveMain();
+      expect(env.getContents('test.js')).toContain(
+        `ɵɵlistener("click", function TestCmp_Template_div_click_0_listener() { return ctx.foo = globalThis.Math.random(); });`,
+      );
+    });
+
     it('should accept dynamic host attribute bindings', () => {
       env.write(
         'other.d.ts',

@@ -858,6 +858,33 @@ describe('acceptance integration tests', () => {
       fixture.detectChanges();
       expect(stripHtmlComments(compElement.innerHTML)).toEqual('');
     });
+
+    it('should support accessing the globalScope', () => {
+      @Component({
+        template: '<div>{{globalThis.Math.max(0, 5)}}</div>',
+      })
+      class App {}
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const appElement = fixture.nativeElement;
+
+      expect(stripHtmlComments(appElement.innerHTML)).toEqual('<div>5</div>');
+    });
+
+    it('should support accessing the globalScope on event callbacks', () => {
+      @Component({
+        template: '<button (click)="value = globalThis.Math.max(0, value)">click me</button>',
+      })
+      class App {
+        value = -5;
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      fixture.nativeElement.querySelector('button')!.click();
+      expect(fixture.componentInstance.value).toBe(0);
+    });
   });
 
   describe('element bindings', () => {

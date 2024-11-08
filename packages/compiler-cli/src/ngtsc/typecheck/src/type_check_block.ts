@@ -2714,6 +2714,12 @@ class TcbExpressionTranslator {
       ast.receiver instanceof ImplicitReceiver &&
       !(ast.receiver instanceof ThisReceiver)
     ) {
+      // Resolves the special globalThis to access the global scope
+      if (ast.name === 'globalThis') {
+        const globalAccessExpr = ts.factory.createIdentifier('globalThis');
+        return globalAccessExpr;
+      }
+
       // Try to resolve a bound target for this expression. If no such target is available, then
       // the expression is referencing the top-level component context. In that case, `null` is
       // returned here to let it fall through resolution so it will be caught when the

@@ -1,0 +1,38 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should strip give access to the global scope",
+      "inputFiles": [
+        "basic_global.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "basic_global_template.js",
+              "generated": "basic_global.js"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should preserve globalThis if it is accessed through `this`",
+      "inputFiles": [
+        "this_globalThis_access.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "this_globalThis_access_template.js",
+              "generated": "this_globalThis_access.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    }
+  ]
+}
