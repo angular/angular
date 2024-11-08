@@ -21,11 +21,7 @@ export async function initHighlighter() {
   });
 }
 
-export function codeToHtml(
-  code: string,
-  language: string | undefined,
-  options?: {removeFunctionKeyword?: boolean},
-): string {
+export function codeToHtml(code: string, language: string | undefined): string {
   const html = highlighter.codeToHtml(code, {
     lang: language ?? 'text',
     themes: {
@@ -36,9 +32,6 @@ export function codeToHtml(
     defaultColor: false,
   });
 
-  if (options?.removeFunctionKeyword) {
-    return replaceKeywordFromShikiHtml('function', html);
-  }
   return html;
 }
 
