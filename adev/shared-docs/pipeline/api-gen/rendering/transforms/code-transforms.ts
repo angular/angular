@@ -243,7 +243,8 @@ export function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
   }
 
   if (isTypeAliasEntry(entry)) {
-    const contents = `type ${entry.name} = ${entry.type}`;
+    const generics = makeGenericsText(entry.generics);
+    const contents = `type ${entry.name}${generics} = ${entry.type}`;
 
     if (isDeprecated) {
       const numberOfLinesOfCode = getNumberOfLinesOfCode(contents);
@@ -446,7 +447,6 @@ function appendPrefixAndSuffix(entry: DocEntry, codeTocData: CodeTableOfContents
 
   if (isClassEntry(entry) || isInterfaceEntry(entry)) {
     const generics = makeGenericsText(entry.generics);
-
     const extendsStr = entry.extends ? ` extends ${entry.extends}` : '';
     // TODO: remove the ? when we distinguish Class & Decorator entries
     const implementsStr =
