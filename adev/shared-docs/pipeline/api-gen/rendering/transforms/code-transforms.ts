@@ -66,9 +66,7 @@ export function addRenderableCodeToc<T extends DocEntry & HasModuleName>(
   const metadata = mapDocEntryToCode(entry);
   appendPrefixAndSuffix(entry, metadata);
 
-  let codeWithSyntaxHighlighting = codeToHtml(metadata.contents, 'typescript', {
-    removeFunctionKeyword: true,
-  });
+  let codeWithSyntaxHighlighting = codeToHtml(metadata.contents, 'typescript');
 
   if (isDecoratorEntry(entry)) {
     // Shiki requires a keyword for correct formating of Decorators
