@@ -210,6 +210,66 @@ describe('reactive forms integration tests', () => {
 
       expect(form.value).toEqual({'login': 'updatedValue'});
     });
+
+    it('should keep multiple controls bound to the same input in sync', () => {
+      const fixture = initTest(MultipleInputsToSameControl);
+      const control = new FormControl('initial value');
+      fixture.componentInstance.control = control;
+      fixture.detectChanges();
+      const spy = jasmine.createSpy('valueChanges spy');
+      const subscription = control.valueChanges.subscribe(spy);
+      const one: HTMLInputElement = fixture.nativeElement.querySelector('.one');
+      const two: HTMLInputElement = fixture.nativeElement.querySelector('.two');
+      expect(one.value).toBe('initial value');
+      expect(two.value).toBe('initial value');
+      expect(spy).not.toHaveBeenCalled();
+
+      two.value = 'updated value';
+      dispatchEvent(two, 'input');
+      fixture.detectChanges();
+      expect(one.value).toBe('updated value');
+      expect(two.value).toBe('updated value');
+      expect(control.value).toEqual('updated value');
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      control.setValue('updated via control');
+      fixture.detectChanges();
+      expect(one.value).toBe('updated via control');
+      expect(two.value).toBe('updated via control');
+      expect(control.value).toEqual('updated via control');
+      expect(spy).toHaveBeenCalledTimes(2);
+      subscription.unsubscribe();
+    });
+
+    it('should keep multiple controls with the same formControlName in sync', () => {
+      const fixture = initTest(MultipleInputsToSameControlName);
+      const control = new FormControl('initial value');
+      fixture.componentInstance.group = new FormGroup({control});
+      fixture.detectChanges();
+      const spy = jasmine.createSpy('valueChanges spy');
+      const subscription = control.valueChanges.subscribe(spy);
+      const one: HTMLInputElement = fixture.nativeElement.querySelector('.one');
+      const two: HTMLInputElement = fixture.nativeElement.querySelector('.two');
+      expect(one.value).toBe('initial value');
+      expect(two.value).toBe('initial value');
+      expect(spy).not.toHaveBeenCalled();
+
+      two.value = 'updated value';
+      dispatchEvent(two, 'input');
+      fixture.detectChanges();
+      expect(one.value).toBe('updated value');
+      expect(two.value).toBe('updated value');
+      expect(control.value).toEqual('updated value');
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      control.setValue('updated via control');
+      fixture.detectChanges();
+      expect(one.value).toBe('updated via control');
+      expect(two.value).toBe('updated via control');
+      expect(control.value).toEqual('updated via control');
+      expect(spy).toHaveBeenCalledTimes(2);
+      subscription.unsubscribe();
+    });
   });
 
   describe('re-bound form groups', () => {
@@ -5918,6 +5978,17 @@ class FormControlComp {
 }
 
 @Component({
+  template: `
+    <input class="one" [formControl]="control">
+    <input class="two" [formControl]="control">
+  `,
+  standalone: false,
+})
+class MultipleInputsToSameControl {
+  control!: FormControl;
+}
+
+@Component({
   selector: 'form-group-comp',
   template: `
     <form [formGroup]="form" (ngSubmit)="event=$event">
@@ -5929,6 +6000,19 @@ class FormGroupComp {
   control!: FormControl;
   form!: FormGroup;
   event!: Event;
+}
+
+@Component({
+  template: `
+    <form [formGroup]="group">
+      <input class="one" formControlName="control">
+      <input class="two" formControlName="control">
+    </form>
+  `,
+  standalone: false,
+})
+class MultipleInputsToSameControlName {
+  group!: FormGroup;
 }
 
 @Component({

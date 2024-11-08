@@ -21,6 +21,7 @@ import {
   Self,
   SimpleChanges,
 } from '@angular/core';
+import {Subscription} from 'rxjs';
 
 import {FormControl} from '../../model/form_control';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
@@ -78,6 +79,8 @@ const formControlBinding: Provider = {
   standalone: false,
 })
 export class FormControlDirective extends NgControl implements OnChanges, OnDestroy {
+  private valueChangesSubscription: Subscription | undefined;
+
   /**
    * Internal reference to the view model value.
    * @nodoc
@@ -156,6 +159,7 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
         cleanUpControl(previousForm, this, /* validateControlPresenceOnChange */ false);
       }
       setUpControl(this.form, this, this.callSetDisabledState);
+      this.handleControlValueChanges();
       this.form.updateValueAndValidity({emitEvent: false});
     }
     if (isPropertyUpdated(changes, this.viewModel)) {
@@ -169,6 +173,7 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
 
   /** @nodoc */
   ngOnDestroy() {
+    this.valueChangesSubscription?.unsubscribe();
     if (this.form) {
       cleanUpControl(this.form, this, /* validateControlPresenceOnChange */ false);
     }
@@ -204,5 +209,18 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
 
   private _isControlChanged(changes: {[key: string]: any}): boolean {
     return changes.hasOwnProperty('form');
+  }
+
+  /**
+   * Handles changes coming in from the form control.
+   */
+  private handleControlValueChanges(): void {
+    this.valueChangesSubscription?.unsubscribe();
+    this.valueChangesSubscription = this.form.valueChanges.subscribe((newValue) => {
+      if (newValue !== this.viewModel) {
+        this.viewToModelUpdate(newValue);
+        this.valueAccessor?.writeValue(newValue);
+      }
+    });
   }
 }

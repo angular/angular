@@ -23,6 +23,7 @@ import {
   SkipSelf,
   ɵWritable as Writable,
 } from '@angular/core';
+import {Subscription} from 'rxjs';
 
 import {FormControl} from '../../model/form_control';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
@@ -86,6 +87,8 @@ const controlNameBinding: Provider = {
 })
 export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   private _added = false;
+  private valueChangesSubscription: Subscription | undefined;
+
   /**
    * Internal reference to the view model value.
    * @internal
@@ -180,6 +183,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
 
   /** @nodoc */
   ngOnDestroy(): void {
+    this.valueChangesSubscription?.unsubscribe();
     if (this.formDirective) {
       this.formDirective.removeControl(this);
     }
@@ -234,5 +238,12 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     this._checkParentType();
     (this as Writable<this>).control = this.formDirective.addControl(this);
     this._added = true;
+    this.valueChangesSubscription?.unsubscribe();
+    this.valueChangesSubscription = this.control.valueChanges.subscribe((newValue) => {
+      if (newValue !== this.viewModel) {
+        this.viewToModelUpdate(newValue);
+        this.valueAccessor?.writeValue(newValue);
+      }
+    });
   }
 }
