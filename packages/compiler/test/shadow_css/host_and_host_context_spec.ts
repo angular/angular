@@ -255,6 +255,18 @@ describe('ShadowCss, :host and :host-context', () => {
       );
     });
 
+    it('should handle no selector :host', () => {
+      // The second selector below should have a `[a-host]` attribute selector
+      // attached to `.one`, current `:host-context` unwrapping logic doesn't
+      // work correctly on prefixed selectors, see #58345.
+      expect(shim(':host:host-context(.one) {}', 'contenta', 'a-host')).toEqualCss(
+        '.one[a-host][a-host], .one [a-host] {}',
+      );
+      expect(shim(':host-context(.one) :host {}', 'contenta', 'a-host')).toEqualCss(
+        '.one [a-host] {}',
+      );
+    });
+
     it('should handle selectors on different elements', () => {
       expect(shim(':host-context(div) :host(.x) > .y {}', 'contenta', 'a-host')).toEqualCss(
         'div .x[a-host] > .y[contenta] {}',

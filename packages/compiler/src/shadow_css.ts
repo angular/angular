@@ -734,16 +734,18 @@ export class ShadowCss {
     _polyfillHostRe.lastIndex = 0;
     if (_polyfillHostRe.test(selector)) {
       const replaceBy = `[${hostSelector}]`;
-      return selector
-        .replace(_polyfillHostNoCombinatorReGlobal, (_hnc, selector) => {
+      let result = selector;
+      while (result.match(_polyfillHostNoCombinatorRe)) {
+        result = result.replace(_polyfillHostNoCombinatorRe, (_hnc, selector) => {
           return selector.replace(
             /([^:\)]*)(:*)(.*)/,
             (_: string, before: string, colon: string, after: string) => {
               return before + replaceBy + colon + after;
             },
           );
-        })
-        .replace(_polyfillHostRe, replaceBy);
+        });
+      }
+      return result.replace(_polyfillHostRe, replaceBy);
     }
 
     return scopeSelector + ' ' + selector;
@@ -1021,7 +1023,6 @@ const _polyfillHostNoCombinatorOutsidePseudoFunction = new RegExp(
   'g',
 );
 const _polyfillHostNoCombinatorRe = /-shadowcsshost-no-combinator([^\s,]*)/;
-const _polyfillHostNoCombinatorReGlobal = new RegExp(_polyfillHostNoCombinatorRe, 'g');
 const _shadowDOMSelectorsRe = [
   /::shadow/g,
   /::content/g,
