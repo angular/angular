@@ -955,7 +955,7 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
             path: 'cli/cache',
           },
           {
-            label: 'clear',
+            label: 'clean',
             path: 'cli/cache/clean',
           },
           {
