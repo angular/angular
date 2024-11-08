@@ -8,31 +8,32 @@
 import {inject} from '../di';
 import {InjectionToken} from '../di/injection_token';
 import {ɵɵdefineInjectable} from '../di/interface/defs';
+import {removeListenersFromBlocks} from '../event_delegation_utils';
 import {JSACTION_BLOCK_ELEMENT_MAP} from '../hydration/tokens';
-import {DeferBlock} from './interfaces';
+import {DehydratedDeferBlock} from './interfaces';
 
 /**
- * An internal injection token to reference `DeferBlockRegistry` implementation
+ * An internal injection token to reference `DehydratedBlockRegistry` implementation
  * in a tree-shakable way.
  */
-export const DEFER_BLOCK_REGISTRY = new InjectionToken<DeferBlockRegistry>(
-  ngDevMode ? 'DEFER_BLOCK_REGISTRY' : '',
+export const DEHYDRATED_BLOCK_REGISTRY = new InjectionToken<DehydratedBlockRegistry>(
+  ngDevMode ? 'DEHYDRATED_BLOCK_REGISTRY' : '',
 );
 
 /**
- * The DeferBlockRegistry is used for incremental hydration purposes. It keeps
+ * The DehydratedBlockRegistry is used for incremental hydration purposes. It keeps
  * track of the Defer Blocks that need hydration so we can effectively
  * navigate up to the top dehydrated defer block and fire appropriate cleanup
  * functions post hydration.
  */
-export class DeferBlockRegistry {
-  private registry = new Map<string, DeferBlock>();
+export class DehydratedBlockRegistry {
+  private registry = new Map<string, DehydratedDeferBlock>();
   private cleanupFns = new Map<string, Function[]>();
   private jsActionMap: Map<string, Set<Element>> = inject(JSACTION_BLOCK_ELEMENT_MAP);
-  add(blockId: string, info: DeferBlock) {
+  add(blockId: string, info: DehydratedDeferBlock) {
     this.registry.set(blockId, info);
   }
-  get(blockId: string): DeferBlock | null {
+  get(blockId: string): DehydratedDeferBlock | null {
     return this.registry.get(blockId) ?? null;
   }
 
@@ -40,24 +41,18 @@ export class DeferBlockRegistry {
     return this.registry.has(blockId);
   }
 
-  remove(blockId: string) {
-    this.registry.delete(blockId);
-  }
-
-  cleanup(blockId: string) {
-    this.remove(blockId);
-    this.jsActionMap.delete(blockId);
-    this.invokeCleanupFns(blockId);
+  cleanup(hydratedBlocks: string[]) {
+    removeListenersFromBlocks(hydratedBlocks, this.jsActionMap);
+    for (let blockId of hydratedBlocks) {
+      this.registry.delete(blockId);
+      this.jsActionMap.delete(blockId);
+      this.invokeTriggerCleanupFns(blockId);
+      this.hydrating.delete(blockId);
+    }
   }
 
   get size(): number {
     return this.registry.size;
-  }
-
-  removeBlocks(blocks: Set<string>) {
-    for (let blockId of blocks) {
-      this.remove(blockId);
-    }
   }
 
   // we have to leave the lowest block Id in the registry
@@ -71,7 +66,7 @@ export class DeferBlockRegistry {
     this.cleanupFns.set(blockId, cleanupFunctions);
   }
 
-  invokeCleanupFns(blockId: string) {
+  invokeTriggerCleanupFns(blockId: string) {
     const fns = this.cleanupFns.get(blockId) ?? [];
     for (let fn of fns) {
       fn();
@@ -80,14 +75,12 @@ export class DeferBlockRegistry {
   }
 
   // Blocks that are being hydrated.
-  // TODO(incremental-hydration): cleanup task - we currently retain ids post hydration
-  // and need to determine when we can remove them.
   hydrating = new Set<string>();
 
   /** @nocollapse */
   static ɵprov = /** @pureOrBreakMyCode */ /* @__PURE__ */ ɵɵdefineInjectable({
-    token: DeferBlockRegistry,
+    token: DehydratedBlockRegistry,
     providedIn: null,
-    factory: () => new DeferBlockRegistry(),
+    factory: () => new DehydratedBlockRegistry(),
   });
 }

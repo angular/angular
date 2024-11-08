@@ -12,13 +12,11 @@ import type {DependencyType} from '../render3/interfaces/definition';
 import type {TNode} from '../render3/interfaces/node';
 import type {LView} from '../render3/interfaces/view';
 
-// TODO(incremental-hydration): This interface should be renamed to better
-// reflect what it does. DeferBlock is to generic
 /**
  * Basic set of data structures used for identifying a defer block
  * and triggering defer blocks
  */
-export interface DeferBlock {
+export interface DehydratedDeferBlock {
   lView: LView;
   tNode: TNode;
   lContainer: LContainer;

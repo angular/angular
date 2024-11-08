@@ -38,20 +38,22 @@ import {
   DEFER_BLOCK_SSR_ID_ATTRIBUTE,
   EventContractDetails,
   JSACTION_EVENT_CONTRACT,
-  removeListenersFromBlocks,
+  invokeListeners,
+  removeListeners,
 } from '../event_delegation_utils';
 import {APP_ID} from '../application/application_tokens';
 import {performanceMarkFeature} from '../util/performance';
-import {hydrateFromBlockName} from './blocks';
-import {DeferBlock, DeferBlockTrigger, HydrateTriggerDetails} from '../defer/interfaces';
-import {triggerAndWaitForCompletion} from '../defer/instructions';
-import {cleanupDehydratedViews, cleanupLContainer} from './cleanup';
-import {hoverEventNames, interactionEventNames} from '../defer/dom_triggers';
+import {hydrateFromBlockName} from '../defer/instructions';
 
 /** Apps in which we've enabled event replay.
  *  This is to prevent initializing event replay more than once per app.
  */
 const appsWithEventReplay = new WeakSet<ApplicationRef>();
+
+/**
+ * The key that represents all replayable elements that are not in defer blocks.
+ */
+const EAGER_CONTENT_LISTENERS_KEY = '';
 
 /**
  * A list of block events that need to be replayed
@@ -135,7 +137,9 @@ export function withEventReplay(): Provider[] {
               whenStable(appRef).then(() => {
                 const eventContractDetails = injector.get(JSACTION_EVENT_CONTRACT);
                 initEventReplay(eventContractDetails, injector);
-                removeListenersFromBlocks([''], injector);
+                const jsActionMap = injector.get(JSACTION_BLOCK_ELEMENT_MAP);
+                jsActionMap.get(EAGER_CONTENT_LISTENERS_KEY)?.forEach(removeListeners);
+                jsActionMap.delete(EAGER_CONTENT_LISTENERS_KEY);
               });
             }
           };
@@ -219,16 +223,6 @@ export function collectDomEventsInfo(
   return domEventsInfo;
 }
 
-function invokeListeners(event: Event, currentTarget: Element | null) {
-  const handlerFns = currentTarget?.__jsaction_fns?.get(event.type);
-  if (!handlerFns) {
-    return;
-  }
-  for (const handler of handlerFns) {
-    handler(event);
-  }
-}
-
 export function invokeRegisteredReplayListeners(
   injector: Injector,
   event: Event,
@@ -243,32 +237,17 @@ export function invokeRegisteredReplayListeners(
   }
 }
 
-async function hydrateAndInvokeBlockListeners(
+export async function hydrateAndInvokeBlockListeners(
   blockName: string,
   injector: Injector,
   event: Event,
   currentTarget: Element,
 ) {
   blockEventQueue.push({event, currentTarget});
-  const {deferBlock, hydratedBlocks} = await hydrateFromBlockName(
-    injector,
-    blockName,
-    fetchAndRenderDeferBlock,
-  );
-  if (deferBlock !== null) {
-    const appRef = injector.get(ApplicationRef);
-    await appRef.whenStable();
-    replayQueuedBlockEvents(hydratedBlocks, injector);
-    cleanupLContainer(deferBlock.lContainer);
-  }
+  await hydrateFromBlockName(injector, blockName, replayQueuedBlockEvents);
 }
 
-export async function fetchAndRenderDeferBlock(deferBlock: DeferBlock): Promise<DeferBlock> {
-  await triggerAndWaitForCompletion(deferBlock);
-  return deferBlock;
-}
-
-function replayQueuedBlockEvents(hydratedBlocks: Set<string>, injector: Injector) {
+function replayQueuedBlockEvents(hydratedBlocks: Set<string>) {
   // clone the queue
   const queue = [...blockEventQueue];
   // empty it
@@ -281,50 +260,5 @@ function replayQueuedBlockEvents(hydratedBlocks: Set<string>, injector: Injector
       // requeue events that weren't yet hydrated
       blockEventQueue.push({event, currentTarget});
     }
-  }
-  cleanupDehydratedViews(injector.get(ApplicationRef));
-  removeListenersFromBlocks([...hydratedBlocks], injector);
-}
-
-export function convertHydrateTriggersToJsAction(
-  triggers: Map<DeferBlockTrigger, HydrateTriggerDetails | null> | null,
-): string[] {
-  let actionList: string[] = [];
-  if (triggers !== null) {
-    if (triggers.has(DeferBlockTrigger.Hover)) {
-      actionList.push(...hoverEventNames);
-    }
-    if (triggers.has(DeferBlockTrigger.Interaction)) {
-      actionList.push(...interactionEventNames);
-    }
-  }
-  return actionList;
-}
-
-export function appendBlocksToJSActionMap(el: RElement, injector: Injector) {
-  const jsActionMap = injector.get(JSACTION_BLOCK_ELEMENT_MAP);
-  sharedMapFunction(el, jsActionMap);
-}
-
-function gatherDeferBlocksByJSActionAttribute(doc: Document): Set<HTMLElement> {
-  const jsactionNodes = doc.body.querySelectorAll('[jsaction]');
-  const blockMap = new Set<HTMLElement>();
-  for (let node of jsactionNodes) {
-    const attr = node.getAttribute('jsaction');
-    const blockId = node.getAttribute('ngb');
-    const eventTypes = [...hoverEventNames.join(':;'), ...interactionEventNames.join(':;')].join(
-      '|',
-    );
-    if (attr?.match(eventTypes) && blockId !== null) {
-      blockMap.add(node as HTMLElement);
-    }
-  }
-  return blockMap;
-}
-
-export function appendDeferBlocksToJSActionMap(doc: Document, injector: Injector) {
-  const blockMap = gatherDeferBlocksByJSActionAttribute(doc);
-  for (let rNode of blockMap) {
-    appendBlocksToJSActionMap(rNode as RElement, injector);
   }
 }

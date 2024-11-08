@@ -50,6 +50,7 @@ export function invokeTriggerCleanupFns(type: TriggerType, lDetails: LDeferBlock
 export function invokeAllTriggerCleanupFns(lDetails: LDeferBlockDetails) {
   invokeTriggerCleanupFns(TriggerType.Prefetch, lDetails);
   invokeTriggerCleanupFns(TriggerType.Regular, lDetails);
+  invokeTriggerCleanupFns(TriggerType.Hydrate, lDetails);
 }
 
 function getCleanupFnKeyByType(type: TriggerType): number {

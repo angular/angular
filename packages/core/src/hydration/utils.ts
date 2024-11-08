@@ -15,11 +15,12 @@ import {RElement, RNode} from '../render3/interfaces/renderer_dom';
 import {isRootView} from '../render3/interfaces/type_checks';
 import {HEADER_OFFSET, LView, TVIEW, TViewType} from '../render3/interfaces/view';
 import {makeStateKey, TransferState} from '../transfer_state';
-import {assertDefined} from '../util/assert';
+import {assertDefined, assertEqual} from '../util/assert';
 import type {HydrationContext} from './annotate';
 
 import {
   CONTAINERS,
+  DEFER_PARENT_BLOCK_ID,
   DehydratedView,
   DISCONNECTED_NODES,
   ELEMENT_CONTAINERS,
@@ -29,7 +30,12 @@ import {
   SerializedDeferBlock,
   SerializedView,
 } from './interfaces';
-import {IS_INCREMENTAL_HYDRATION_ENABLED} from './tokens';
+import {IS_INCREMENTAL_HYDRATION_ENABLED, JSACTION_BLOCK_ELEMENT_MAP} from './tokens';
+import {RuntimeError, RuntimeErrorCode} from '../errors';
+import {DeferBlockTrigger, HydrateTriggerDetails} from '../defer/interfaces';
+import {hoverEventNames, interactionEventNames} from '../defer/dom_triggers';
+import {DEHYDRATED_BLOCK_REGISTRY} from '../defer/registry';
+import {sharedMapFunction} from '../event_delegation_utils';
 
 /**
  * The name of the key used in the TransferState collection,
@@ -386,6 +392,27 @@ export function isIncrementalHydrationEnabled(injector: Injector): boolean {
   });
 }
 
+/** Throws an error if the incremental hydration is not enabled */
+export function assertIncrementalHydrationIsConfigured(injector: Injector) {
+  if (!isIncrementalHydrationEnabled(injector)) {
+    throw new RuntimeError(
+      RuntimeErrorCode.MISCONFIGURED_INCREMENTAL_HYDRATION,
+      'Angular has detected that some `@defer` blocks use `hydrate` triggers, ' +
+        'but incremental hydration was not enabled. Please ensure that the `withIncrementalHydration()` ' +
+        'call is added as an argument for the `provideClientHydration()` function call ' +
+        'in your application config.',
+    );
+  }
+}
+
+/** Throws an error if the ssrUniqueId on the LDeferBlockDetails is not present  */
+export function assertSsrIdDefined(ssrUniqueId: unknown) {
+  assertDefined(
+    ssrUniqueId,
+    'Internal error: expecting an SSR id for a defer block that should be hydrated, but the id is not present',
+  );
+}
+
 /**
  * Returns the size of an <ng-container>, using either the information
  * serialized in `ELEMENT_CONTAINERS` (element container size) or by
@@ -502,5 +529,75 @@ export function processTextNodeBeforeSerialization(context: HydrationContext, no
     corruptedTextNodes.set(el, TextNodeMarker.EmptyNode);
   } else if (el.nextSibling?.nodeType === Node.TEXT_NODE) {
     corruptedTextNodes.set(el, TextNodeMarker.Separator);
+  }
+}
+
+export function convertHydrateTriggersToJsAction(
+  triggers: Map<DeferBlockTrigger, HydrateTriggerDetails | null> | null,
+): string[] {
+  let actionList: string[] = [];
+  if (triggers !== null) {
+    if (triggers.has(DeferBlockTrigger.Hover)) {
+      actionList.push(...hoverEventNames);
+    }
+    if (triggers.has(DeferBlockTrigger.Interaction)) {
+      actionList.push(...interactionEventNames);
+    }
+  }
+  return actionList;
+}
+
+/**
+ * Builds a queue of blocks that need to be hydrated, looking up the
+ * tree to the topmost defer block that exists in the tree that hasn't
+ * been hydrated, but exists in the registry. This queue is in top down
+ * heirarchical order as a list of defer block ids.
+ * Note: This is utilizing serialized information to navigate up the tree
+ */
+export function getParentBlockHydrationQueue(deferBlockId: string, injector: Injector) {
+  const dehydratedBlockRegistry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
+  const transferState = injector.get(TransferState);
+  const deferBlockParents = transferState.get(NGH_DEFER_BLOCKS_KEY, {});
+
+  let isTopMostDeferBlock = false;
+  let currentBlockId: string | null = deferBlockId;
+  const deferBlockQueue: string[] = [];
+
+  while (!isTopMostDeferBlock && currentBlockId) {
+    ngDevMode &&
+      assertEqual(
+        deferBlockQueue.indexOf(currentBlockId),
+        -1,
+        'Internal error: defer block hierarchy has a cycle.',
+      );
+
+    deferBlockQueue.unshift(currentBlockId);
+    isTopMostDeferBlock = dehydratedBlockRegistry.has(currentBlockId);
+    currentBlockId = deferBlockParents[currentBlockId][DEFER_PARENT_BLOCK_ID];
+  }
+  return deferBlockQueue;
+}
+
+function gatherDeferBlocksByJSActionAttribute(doc: Document): Set<HTMLElement> {
+  const jsactionNodes = doc.body.querySelectorAll('[jsaction]');
+  const blockMap = new Set<HTMLElement>();
+  for (let node of jsactionNodes) {
+    const attr = node.getAttribute('jsaction');
+    const blockId = node.getAttribute('ngb');
+    const eventTypes = [...hoverEventNames.join(':;'), ...interactionEventNames.join(':;')].join(
+      '|',
+    );
+    if (attr?.match(eventTypes) && blockId !== null) {
+      blockMap.add(node as HTMLElement);
+    }
+  }
+  return blockMap;
+}
+
+export function appendDeferBlocksToJSActionMap(doc: Document, injector: Injector) {
+  const blockMap = gatherDeferBlocksByJSActionAttribute(doc);
+  for (let rNode of blockMap) {
+    const jsActionMap = injector.get(JSACTION_BLOCK_ELEMENT_MAP);
+    sharedMapFunction(rNode, jsActionMap);
   }
 }

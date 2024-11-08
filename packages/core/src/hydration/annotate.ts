@@ -51,7 +51,7 @@ import {
   validateMatchingNode,
   validateNodeExists,
 } from './error_handling';
-import {collectDomEventsInfo, convertHydrateTriggersToJsAction} from './event_replay';
+import {collectDomEventsInfo} from './event_replay';
 import {setJSActionAttributes} from '../event_delegation_utils';
 import {
   getOrComputeI18nChildren,
@@ -82,6 +82,7 @@ import {calcPathForNode, isDisconnectedNode} from './node_lookup_utils';
 import {isInSkipHydrationBlock, SKIP_HYDRATION_ATTR_NAME} from './skip_hydration';
 import {EVENT_REPLAY_ENABLED_DEFAULT, IS_EVENT_REPLAY_ENABLED} from './tokens';
 import {
+  convertHydrateTriggersToJsAction,
   getLNodeForHydration,
   isIncrementalHydrationEnabled,
   NGH_ATTR_NAME,

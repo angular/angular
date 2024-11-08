@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationRef} from '../application/application_ref';
+import {ApplicationRef, whenStable} from '../application/application_ref';
+import {DehydratedDeferBlock} from '../defer/interfaces';
+import {DEHYDRATED_BLOCK_REGISTRY} from '../defer/registry';
+import {Injector} from '../di';
 import {
   CONTAINER_HEADER_OFFSET,
   DEHYDRATED_VIEWS,
@@ -21,6 +24,7 @@ import {nativeRemoveNode} from '../render3/node_manipulation';
 import {validateSiblingNodeExists} from './error_handling';
 import {cleanupI18nHydrationData} from './i18n';
 import {DEFER_BLOCK_ID, DehydratedContainerView, NUM_ROOT_NODES} from './interfaces';
+import {JSACTION_BLOCK_ELEMENT_MAP} from './tokens';
 import {getLNodeForHydration} from './utils';
 
 /**
@@ -128,4 +132,27 @@ export function cleanupDehydratedViews(appRef: ApplicationRef) {
       ngDevMode && ngDevMode.dehydratedViewsCleanupRuns++;
     }
   }
+}
+
+/**
+ * post hydration cleanup handling for defer blocks that were incrementally
+ * hydrated. This removes all the jsaction attributes, timers, observers,
+ * dehydrated views and containers
+ */
+export async function cleanupDeferBlock(
+  deferBlock: DehydratedDeferBlock | null,
+  hydratedBlocks: Set<string>,
+  injector: Injector,
+): Promise<void> {
+  if (deferBlock !== null) {
+    // hydratedBlocks is a set, and needs to be converted to an array
+    // for removing listeners
+    const registry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
+    registry.cleanup([...hydratedBlocks]);
+    cleanupLContainer(deferBlock.lContainer);
+    cleanupDehydratedViews(injector.get(ApplicationRef));
+  }
+  // we need to wait for app stability here so we don't continue before
+  // the hydration process has finished, which could result in problems
+  return whenStable(injector.get(ApplicationRef));
 }
