@@ -1,10 +1,10 @@
-# RxJS Interop
+# RxJS interop with Angular signals
 
 IMPORTANT: The RxJS Interop package is available for [developer preview](reference/releases#developer-preview). It's ready for you to try, but it might change before it is stable.
 
-Angular's `@angular/core/rxjs-interop` package provides useful utilities to integrate [Angular Signals](guide/signals) with RxJS Observables.
+The `@angular/rxjs-interop` package offers APIs that help you integrate RxJS and Angular signals.
 
-## `toSignal`
+## Create a signal from an RxJs Observable with `toSignal`
 
 Use the `toSignal` function to create a signal which tracks the value of an Observable. It behaves similarly to the `async` pipe in templates, but is more flexible and can be used anywhere in an application.
 
@@ -63,7 +63,7 @@ If an Observable used in `toSignal` produces an error, that error is thrown when
 
 If an Observable used in `toSignal` completes, the signal continues to return the most recently emitted value before completion.
 
-## `toObservable`
+## Create an RxJS Observale from a signal with `toObservable`
 
 Use the `toObservable` utility to create an `Observable` which tracks the value of a signal. The signal's value is monitored with an `effect` which emits the value to the Observable when it changes.
 
@@ -103,29 +103,3 @@ mySignal.set(3);
 ```
 
 Here, only the last value (3) will be logged.
-
-### `outputFromObservable`
-
-`outputFromObservable(...)` declares an Angular output that emits values based on an RxJS observable.
-
-```ts
-class MyDir {
-  nameChange$ = new Observable<string>(/* ... */);
-  nameChange = outputFromObservable(this.nameChange$); // OutputRef<string>
-}
-```
-
-See more details in the [output() API guide](/guide/components/output-fn).
-
-### `outputToObservable`
-
-`outputToObservable(...)` converts an Angular output to an observable.
-This allows you to integrate Angular outputs conveniently into RxJS streams.
-
-```ts
-outputToObservable(myComp.instance.onNameChange)
-  .pipe(...)
-  .subscribe(...)
-```
-
-See more details in the [output() API guide](/guide/components/output-fn).

@@ -92,6 +92,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
     label: 'In-depth Guides',
     children: [
       {
+        label: 'Signals',
+        path: 'guide/signals',
+        contentPath: 'guide/signals/overview',
+      },
+      {
         label: 'Components',
         children: [
           {
@@ -123,11 +128,6 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             label: 'Custom events with outputs',
             path: 'guide/components/outputs',
             contentPath: 'guide/components/outputs',
-          },
-          {
-            label: 'output() function',
-            path: 'guide/components/output-fn',
-            contentPath: 'guide/components/output-function',
           },
           {
             label: 'Content projection with ng-content',
@@ -313,36 +313,6 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             label: 'DI in action',
             path: 'guide/di/di-in-action',
             contentPath: 'guide/di/di-in-action',
-          },
-        ],
-      },
-      {
-        label: 'Signals',
-        children: [
-          {
-            label: 'Overview',
-            path: 'guide/signals',
-            contentPath: 'guide/signals/overview',
-          },
-          {
-            label: 'RxJS Interop',
-            path: 'guide/signals/rxjs-interop',
-            contentPath: 'guide/signals/rxjs-interop',
-          },
-          {
-            label: 'Inputs as signals',
-            path: 'guide/signals/inputs',
-            contentPath: 'guide/signals/inputs',
-          },
-          {
-            label: 'Model inputs',
-            path: 'guide/signals/model',
-            contentPath: 'guide/signals/model',
-          },
-          {
-            label: 'Queries as signals',
-            path: 'guide/signals/queries',
-            contentPath: 'guide/signals/queries',
           },
         ],
       },
@@ -802,6 +772,21 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
   {
     label: 'Extended Ecosystem',
     children: [
+      {
+        label: 'Using RxJS with Angular',
+        children: [
+          {
+            label: 'Signals interop',
+            path: 'ecosystem/rxjs-interop',
+            contentPath: 'ecosystem/rxjs-interop/signals-interop',
+          },
+          {
+            label: 'Component output interop',
+            path: 'ecosystem/rxjs-interop/output-interop',
+            contentPath: 'ecosystem/rxjs-interop/output-interop',
+          },
+        ],
+      },
       {
         label: 'Service Workers & PWAs',
         children: [

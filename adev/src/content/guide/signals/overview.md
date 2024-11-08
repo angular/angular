@@ -249,3 +249,7 @@ effect((onCleanup) => {
   });
 });
 ```
+
+## Using signals with RxJS
+
+See [RxJS interop with Angular signals](ecosystem/rxjs-interop) for details on interoperability between signals and RxJS.
