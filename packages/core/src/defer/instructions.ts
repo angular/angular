@@ -82,14 +82,13 @@ import {
   STATE_IS_FROZEN_UNTIL,
   TDeferBlockDetails,
   TriggerType,
-  DeferBlock,
+  DehydratedDeferBlock,
   SSR_UNIQUE_ID,
 } from './interfaces';
 import {onTimer, scheduleTimerTrigger} from './timer_scheduler';
 import {
   addDepsToRegistry,
   assertDeferredDependenciesLoaded,
-  assertIncrementalHydrationIsConfigured,
   getLDeferBlockDetails,
   getLoadingBlockAfter,
   getMinimumDurationForState,
@@ -99,9 +98,15 @@ import {
   setLDeferBlockDetails,
   setTDeferBlockDetails,
 } from './utils';
-import {DEFER_BLOCK_REGISTRY, DeferBlockRegistry} from './registry';
-import {incrementallyHydrateFromBlockName} from '../hydration/blocks';
-import {isIncrementalHydrationEnabled} from '../hydration/utils';
+import {DEHYDRATED_BLOCK_REGISTRY, DehydratedBlockRegistry} from './registry';
+import {
+  assertIncrementalHydrationIsConfigured,
+  assertSsrIdDefined,
+  getParentBlockHydrationQueue,
+  isIncrementalHydrationEnabled,
+} from '../hydration/utils';
+import {cleanupContracts} from '../event_delegation_utils';
+import {cleanupDeferBlock} from '../hydration/cleanup';
 
 /**
  * **INTERNAL**, avoid referencing it in application code.
@@ -318,28 +323,28 @@ export function ɵɵdefer(
   ];
   setLDeferBlockDetails(lView, adjustedIndex, lDetails);
 
-  let registry: DeferBlockRegistry | null = null;
+  let registry: DehydratedBlockRegistry | null = null;
   if (ssrUniqueId !== null) {
     ngDevMode && assertIncrementalHydrationIsConfigured(injector);
 
     // Store this defer block in the registry, to have an access to
     // internal data structures from hydration runtime code.
-    registry = injector.get(DEFER_BLOCK_REGISTRY);
+    registry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
     registry.add(ssrUniqueId, {lView, tNode, lContainer});
   }
 
-  const cleanupTriggersFn = () => {
+  const onLViewDestroy = () => {
     invokeAllTriggerCleanupFns(lDetails);
     if (ssrUniqueId !== null) {
-      registry?.cleanup(ssrUniqueId);
+      registry?.cleanup([ssrUniqueId]);
     }
   };
 
   // When defer block is triggered - unsubscribe from LView destroy cleanup.
   storeTriggerCleanupFn(TriggerType.Regular, lDetails, () =>
-    removeLViewOnDestroy(lView, cleanupTriggersFn),
+    removeLViewOnDestroy(lView, onLViewDestroy),
   );
-  storeLViewOnDestroy(lView, cleanupTriggersFn);
+  storeLViewOnDestroy(lView, onLViewDestroy);
 }
 
 /**
@@ -433,11 +438,10 @@ export function ɵɵdeferHydrateWhen(rawValue: unknown) {
           // The `when` condition has changed to `true`, trigger defer block loading
           // if the block is either in initial (nothing is rendered) or a placeholder
           // state.
-          incrementallyHydrateFromBlockName(
-            injector,
-            getLDeferBlockDetails(lView, tNode)[SSR_UNIQUE_ID]!,
-            (deferBlock: DeferBlock) => triggerAndWaitForCompletion(deferBlock),
-          );
+          const lDetails = getLDeferBlockDetails(lView, tNode);
+          const ssrUniqueId = lDetails[SSR_UNIQUE_ID]!;
+          ngDevMode && assertSsrIdDefined(ssrUniqueId);
+          hydrateFromBlockName(injector, ssrUniqueId);
         }
       } finally {
         const prevConsumer = setActiveConsumer(null);
@@ -550,21 +554,16 @@ export function ɵɵdeferHydrateOnImmediate() {
   const tNode = getCurrentTNode()!;
   if (shouldActivateHydrateTrigger(lView, tNode)) {
     const injector = lView[INJECTOR]!;
-    const lDetails = getLDeferBlockDetails(lView, tNode);
     const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
     hydrateTriggers.set(DeferBlockTrigger.Immediate, null);
 
     if (typeof ngServerMode !== 'undefined' && ngServerMode) {
       triggerDeferBlock(lView, tNode);
     } else {
-      // TODO(incremental-hydration): see if we can resolve the circular dep issue
-      // that required passing cleanup fns via the 3rd param here. Ideally we could
-      // move the `triggerAndWaitForCompletion` call to a better location.
-      incrementallyHydrateFromBlockName(
-        injector,
-        lDetails[SSR_UNIQUE_ID]!,
-        (deferBlock: DeferBlock) => triggerAndWaitForCompletion(deferBlock),
-      );
+      const lDetails = getLDeferBlockDetails(lView, tNode);
+      const ssrUniqueId = lDetails[SSR_UNIQUE_ID]!;
+      ngDevMode && assertSsrIdDefined(ssrUniqueId);
+      hydrateFromBlockName(injector, ssrUniqueId);
     }
   }
 }
@@ -896,15 +895,10 @@ export function scheduleDelayedHydrating(
   // since we don't want to delay the server response.
   const injector = lView[INJECTOR]!;
   const lDetails = getLDeferBlockDetails(lView, tNode);
-  const cleanupFn = scheduleFn(
-    () =>
-      incrementallyHydrateFromBlockName(
-        injector,
-        lDetails[SSR_UNIQUE_ID]!,
-        (deferBlock: DeferBlock) => triggerAndWaitForCompletion(deferBlock),
-      ),
-    injector,
-  );
+  const ssrUniqueId = lDetails[SSR_UNIQUE_ID]!;
+  ngDevMode && assertSsrIdDefined(ssrUniqueId);
+
+  const cleanupFn = scheduleFn(() => hydrateFromBlockName(injector, ssrUniqueId), injector);
   storeTriggerCleanupFn(TriggerType.Hydrate, lDetails, cleanupFn);
 }
 
@@ -1448,11 +1442,6 @@ export function triggerDeferBlock(lView: LView, tNode: TNode) {
   const tDetails = getTDeferBlockDetails(tView, tNode);
   if (!shouldTriggerDeferBlock(injector, tDetails)) return;
 
-  let registry: DeferBlockRegistry | null = null;
-  if (isIncrementalHydrationEnabled(injector) && lDetails[SSR_UNIQUE_ID] !== null) {
-    registry = injector.get(DEFER_BLOCK_REGISTRY);
-    registry.invokeCleanupFns(lDetails[SSR_UNIQUE_ID]);
-  }
   // Defer block is triggered, cleanup all registered trigger functions.
   invokeAllTriggerCleanupFns(lDetails);
 
@@ -1487,11 +1476,21 @@ export function triggerDeferBlock(lView: LView, tNode: TNode) {
   }
 }
 
+export async function hydrateFromBlockName(
+  injector: Injector,
+  blockName: string,
+  replayFn: Function = () => {},
+): Promise<void> {
+  const {deferBlock, hydratedBlocks} = await triggerBlockTreeHydrationByName(injector, blockName);
+  replayFn(hydratedBlocks);
+  await cleanupDeferBlock(deferBlock, hydratedBlocks, injector);
+}
+
 /**
  * Triggers the resource loading for a defer block and passes back a promise
  * to handle cleanup on completion
  */
-export function triggerAndWaitForCompletion(deferBlock: DeferBlock): Promise<void> {
+export function triggerAndWaitForCompletion(deferBlock: DehydratedDeferBlock): Promise<void> {
   const lDetails = getLDeferBlockDetails(deferBlock.lView, deferBlock.tNode);
   const promise = new Promise<void>((resolve) => {
     onDeferBlockCompletion(lDetails, resolve);
@@ -1509,4 +1508,52 @@ function onDeferBlockCompletion(lDetails: LDeferBlockDetails, callback: VoidFunc
     lDetails[ON_COMPLETE_FNS] = [];
   }
   lDetails[ON_COMPLETE_FNS].push(callback);
+}
+
+/**
+ * The core mechanism for incremental hydration. This triggers
+ * hydration for all the blocks in the tree that need to be hydrated and keeps
+ * track of all those blocks that were hydrated along the way.
+ */
+async function triggerBlockTreeHydrationByName(
+  injector: Injector,
+  blockName: string,
+): Promise<{
+  deferBlock: DehydratedDeferBlock | null;
+  hydratedBlocks: Set<string>;
+}> {
+  const dehydratedBlockRegistry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
+
+  // Make sure we don't hydrate/trigger the same thing multiple times
+  if (dehydratedBlockRegistry.hydrating.has(blockName))
+    return {deferBlock: null, hydratedBlocks: new Set<string>()};
+
+  // Step 1: Get the queue of items that needs to be hydrated
+  const hydrationQueue = getParentBlockHydrationQueue(blockName, injector);
+
+  // Step 2: Add all the items in the queue to the registry at once so we don't trigger hydration on them while
+  // the sequence of triggers fires.
+  hydrationQueue.forEach((id) => dehydratedBlockRegistry.hydrating.add(id));
+
+  // Step 3: hydrate each block in the queue. It will be in descending order from the top down.
+  for (const dehydratedBlockId of hydrationQueue) {
+    // The registry will have the item in the queue after each loop.
+    const deferBlock = dehydratedBlockRegistry.get(dehydratedBlockId)!;
+
+    // Step 4: Run the actual trigger function to fetch dependencies.
+    // Triggering a block adds any of its child defer blocks to the registry.
+    await triggerAndWaitForCompletion(deferBlock);
+  }
+
+  const hydratedBlocks = new Set<string>(hydrationQueue);
+
+  // The last item in the queue was the original target block;
+  const hydratedBlockId = hydrationQueue.slice(-1)[0];
+  const hydratedBlock = dehydratedBlockRegistry.get(hydratedBlockId)!;
+
+  if (dehydratedBlockRegistry.size === 0) {
+    cleanupContracts(injector);
+  }
+
+  return {deferBlock: hydratedBlock, hydratedBlocks};
 }

@@ -11,13 +11,13 @@ import {TNode} from '../render3/interfaces/node';
 import {isLContainer, isLView} from '../render3/interfaces/type_checks';
 import {HEADER_OFFSET, LView, TVIEW} from '../render3/interfaces/view';
 
-import {DeferBlock, TDeferBlockDetails} from './interfaces';
+import {DehydratedDeferBlock, TDeferBlockDetails} from './interfaces';
 import {getTDeferBlockDetails, isTDeferBlockDetails} from './utils';
 
 /**
  * Defer block instance for testing.
  */
-export interface DeferBlockDetails extends DeferBlock {
+export interface DeferBlockDetails extends DehydratedDeferBlock {
   tDetails: TDeferBlockDetails;
 }
 

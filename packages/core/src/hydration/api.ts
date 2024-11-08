@@ -28,7 +28,7 @@ import {getDocument} from '../render3/interfaces/document';
 import {TransferState} from '../transfer_state';
 import {performanceMarkFeature} from '../util/performance';
 import {NgZone} from '../zone';
-import {appendDeferBlocksToJSActionMap, withEventReplay} from './event_replay';
+import {withEventReplay} from './event_replay';
 
 import {cleanupDehydratedViews} from './cleanup';
 import {
@@ -42,10 +42,15 @@ import {
   IS_INCREMENTAL_HYDRATION_ENABLED,
   PRESERVE_HOST_CONTENT,
 } from './tokens';
-import {enableRetrieveHydrationInfoImpl, NGH_DATA_KEY, SSR_CONTENT_INTEGRITY_MARKER} from './utils';
+import {
+  appendDeferBlocksToJSActionMap,
+  enableRetrieveHydrationInfoImpl,
+  NGH_DATA_KEY,
+  SSR_CONTENT_INTEGRITY_MARKER,
+} from './utils';
 import {enableFindMatchingDehydratedViewImpl} from './views';
 import {bootstrapIncrementalHydration, enableRetrieveDeferBlockDataImpl} from './incremental';
-import {DEFER_BLOCK_REGISTRY, DeferBlockRegistry} from '../defer/registry';
+import {DEHYDRATED_BLOCK_REGISTRY, DehydratedBlockRegistry} from '../defer/registry';
 
 /**
  * Indicates whether the hydration-related code was added,
@@ -328,8 +333,8 @@ export function withIncrementalHydration(): Provider[] {
       useValue: true,
     },
     {
-      provide: DEFER_BLOCK_REGISTRY,
-      useClass: DeferBlockRegistry,
+      provide: DEHYDRATED_BLOCK_REGISTRY,
+      useClass: DehydratedBlockRegistry,
     },
     {
       provide: ENVIRONMENT_INITIALIZER,
