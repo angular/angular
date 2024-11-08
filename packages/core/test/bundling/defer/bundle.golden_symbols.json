@@ -117,13 +117,13 @@
     "name": "DEFER_BLOCK_ID"
   },
   {
-    "name": "DEFER_BLOCK_REGISTRY"
-  },
-  {
     "name": "DEFER_BLOCK_STATE"
   },
   {
     "name": "DEFER_BLOCK_STATE2"
+  },
+  {
+    "name": "DEHYDRATED_BLOCK_REGISTRY"
   },
   {
     "name": "DEHYDRATED_VIEWS"
@@ -454,9 +454,6 @@
   },
   {
     "name": "SSR_BLOCK_STATE"
-  },
-  {
-    "name": "SSR_UNIQUE_ID"
   },
   {
     "name": "SVG_NAMESPACE"
@@ -1171,9 +1168,6 @@
   },
   {
     "name": "init_bindings"
-  },
-  {
-    "name": "init_blocks"
   },
   {
     "name": "init_bootstrap"
@@ -2277,9 +2271,6 @@
     "name": "isFunction"
   },
   {
-    "name": "isIncrementalHydrationEnabled"
-  },
-  {
     "name": "isInlineTemplate"
   },
   {
@@ -2617,6 +2608,9 @@
   },
   {
     "name": "ɵɵdefer"
+  },
+  {
+    "name": "ɵɵdeferWhen"
   },
   {
     "name": "ɵɵdefineComponent"

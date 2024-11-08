@@ -9,11 +9,11 @@
 import {TransferState} from '../transfer_state';
 import {onIdle} from '../defer/idle_scheduler';
 import {DeferBlockTrigger} from '../defer/interfaces';
-import {DEFER_BLOCK_REGISTRY} from '../defer/registry';
+import {DEHYDRATED_BLOCK_REGISTRY} from '../defer/registry';
 import {onTimer} from '../defer/timer_scheduler';
 import {Injector} from '../di';
 import {assertDefined} from '../util/assert';
-import {incrementallyHydrateFromBlockName} from './blocks';
+import {hydrateFromBlockName} from '../defer/instructions';
 import {
   DEFER_HYDRATE_TRIGGERS,
   NUM_ROOT_NODES,
@@ -22,7 +22,6 @@ import {
 } from './interfaces';
 import {NGH_DEFER_BLOCKS_KEY} from './utils';
 import {onViewport} from '../defer/dom_triggers';
-import {fetchAndRenderDeferBlock} from './event_replay';
 
 /**
  * Initializes incremental hydration for non-JSAction triggers. This gathers up
@@ -168,43 +167,33 @@ function processAndInitTriggers(
 
 async function setIdleTriggers(injector: Injector, elementTriggers: ElementTrigger[]) {
   for (const elementTrigger of elementTriggers) {
-    const registry = injector.get(DEFER_BLOCK_REGISTRY);
-    const onInvoke = () =>
-      incrementallyHydrateFromBlockName(
-        injector,
-        elementTrigger.blockName,
-        fetchAndRenderDeferBlock,
-      );
+    const registry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
+    const onInvoke = () => hydrateFromBlockName(injector, elementTrigger.blockName);
     const cleanupFn = onIdle(onInvoke, injector);
     registry.addCleanupFn(elementTrigger.blockName, cleanupFn);
   }
 }
 
 async function setViewportTriggers(injector: Injector, elementTriggers: ElementTrigger[]) {
-  for (let elementTrigger of elementTriggers) {
-    onViewport(
-      elementTrigger.el,
-      async () => {
-        await incrementallyHydrateFromBlockName(
-          injector,
-          elementTrigger.blockName,
-          fetchAndRenderDeferBlock,
-        );
-      },
-      injector,
-    );
+  if (elementTriggers.length > 0) {
+    const registry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
+    for (let elementTrigger of elementTriggers) {
+      const cleanupFn = onViewport(
+        elementTrigger.el,
+        async () => {
+          await hydrateFromBlockName(injector, elementTrigger.blockName);
+        },
+        injector,
+      );
+      registry.addCleanupFn(elementTrigger.blockName, cleanupFn);
+    }
   }
 }
 
 async function setTimerTriggers(injector: Injector, elementTriggers: ElementTrigger[]) {
   for (const elementTrigger of elementTriggers) {
-    const registry = injector.get(DEFER_BLOCK_REGISTRY);
-    const onInvoke = async () =>
-      await incrementallyHydrateFromBlockName(
-        injector,
-        elementTrigger.blockName,
-        fetchAndRenderDeferBlock,
-      );
+    const registry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
+    const onInvoke = async () => await hydrateFromBlockName(injector, elementTrigger.blockName);
     const timerFn = onTimer(elementTrigger.delay!);
     const cleanupFn = timerFn(onInvoke, injector);
     registry.addCleanupFn(elementTrigger.blockName, cleanupFn);
@@ -213,11 +202,7 @@ async function setTimerTriggers(injector: Injector, elementTriggers: ElementTrig
 
 async function setImmediateTriggers(injector: Injector, elementTriggers: ElementTrigger[]) {
   for (const elementTrigger of elementTriggers) {
-    await incrementallyHydrateFromBlockName(
-      injector,
-      elementTrigger.blockName,
-      fetchAndRenderDeferBlock,
-    );
+    await hydrateFromBlockName(injector, elementTrigger.blockName);
   }
 }
 
