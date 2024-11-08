@@ -303,15 +303,14 @@
     "@angular/core" "^13.0.0 || ^14.0.0-0"
     reflect-metadata "^0.1.13"
 
-"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#4f10d65746b59e8b447f42c633daf32419617818":
-  version "0.0.0-54e1f4543ead5ce94d0729d9bc95a3768808e75d"
-  uid "4f10d65746b59e8b447f42c633daf32419617818"
-  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#4f10d65746b59e8b447f42c633daf32419617818"
+"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#71a02048ed1d97aa9d97d9103b3be829e75e8f58":
+  version "0.0.0-17df704577972751694bf1c67d0aeeb38722b9da"
+  uid "71a02048ed1d97aa9d97d9103b3be829e75e8f58"
+  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#71a02048ed1d97aa9d97d9103b3be829e75e8f58"
   dependencies:
     "@angular/benchpress" "0.3.0"
     "@angular/build" "19.0.0-rc.1"
     "@babel/core" "^7.16.0"
-    "@babel/helper-annotate-as-pure" "^7.18.6"
     "@babel/plugin-proposal-async-generator-functions" "^7.20.1"
     "@bazel/buildifier" "6.3.3"
     "@bazel/concatjs" "5.8.1"
@@ -330,7 +329,6 @@
     "@types/ws" "8.5.13"
     "@types/yargs" "^17.0.0"
     browser-sync "^3.0.0"
-    html-entities "^2.4.0"
     prettier "3.3.3"
     protractor "^7.0.0"
     selenium-webdriver "^4.18.1"
@@ -429,10 +427,10 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#47e8f2dc96a59ea69f1430aa8915db335d44fa5a":
-  version "0.0.0-54e1f4543ead5ce94d0729d9bc95a3768808e75d"
-  uid "47e8f2dc96a59ea69f1430aa8915db335d44fa5a"
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#47e8f2dc96a59ea69f1430aa8915db335d44fa5a"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#083e0563227984561bc23064069a38cce31e040b":
+  version "0.0.0-17df704577972751694bf1c67d0aeeb38722b9da"
+  uid "083e0563227984561bc23064069a38cce31e040b"
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#083e0563227984561bc23064069a38cce31e040b"
   dependencies:
     "@octokit/rest" "21.0.2"
     "@types/semver" "^7.3.6"
@@ -537,7 +535,7 @@
     "@jridgewell/trace-mapping" "^0.3.25"
     jsesc "^3.0.2"
 
-"@babel/helper-annotate-as-pure@7.25.9", "@babel/helper-annotate-as-pure@^7.18.6", "@babel/helper-annotate-as-pure@^7.25.9":
+"@babel/helper-annotate-as-pure@7.25.9", "@babel/helper-annotate-as-pure@^7.25.9":
   version "7.25.9"
   resolved "https://registry.yarnpkg.com/@babel/helper-annotate-as-pure/-/helper-annotate-as-pure-7.25.9.tgz#d8eac4d2dc0d7b6e11fa6e535332e0d3184f06b4"
   integrity sha512-gv7320KBUFJz1RnylIg5WWYPRXKZ884AGkYpgpWW02TH66Dl+HaC1t1CKd0z3R4b6hdYEcmrNZHUmfCP+1u3/g==
