@@ -94,7 +94,7 @@ If you need to respond to duplicate requests in your test, use the `match()` API
 
 <docs-code language="ts">
 const allGetRequests = httpTesting.match({method: 'GET'});
-foreach (const req of allGetRequests) {
+for (const req of allGetRequests) {
   // Handle responding to each request.
 }
 </docs-code>
