@@ -206,12 +206,50 @@ In addition to fully supported component stylesheet HMR, Angular provides **expe
 Template HMR also requires no application code changes but currently requires the use of the `NG_HMR_TEMPLATES=1` environment variable to enable.
 
 IMPORTANT: Component **template** HMR is experimental and is not enabled by default.
+Currently, only file-based (`styleUrl`) templates are supported and any inline template changes will cause a full page reload.
 When manually enabled, there may be cases where the browser is not fully synchronized with the application code and a restart of the development server may be required.
 If you encounter an issue while using this feature, please [report the bug](https://github.com/angular/angular-cli/issues) to help the Angular team stabilize the feature.
 
 ### Vite as a development server
 
 The usage of Vite in the Angular CLI is currently within a _development server capacity only_. Even without using the underlying Vite build system, Vite provides a full-featured development server with client side support that has been bundled into a low dependency npm package. This makes it an ideal candidate to provide comprehensive development server functionality. The current development server process uses the new build system to generate a development build of the application in memory and passes the results to Vite to serve the application. The usage of Vite, much like the Webpack-based development server, is encapsulated within the Angular CLI `dev-server` builder and currently cannot be directly configured.
+
+### Prebundling
+
+Prebundling provides improved build and rebuild times when using the development server.
+Vite provides [prebundling capabilities](https://vite.dev/guide/dep-pre-bundling) that are enabled by default when using the Angular CLI.
+The prebundling process analyzes all the third-party project dependencies within a project and processes them the first time the development server is executed.
+This process removes the need to rebuild and bundle the project's dependencies each time a rebuild occurs or the development server is executed.
+
+In most cases, no additional customization is required. However, some situations where it may be needed include:
+- Customizing loader behavior for imports within the dependency such as the [`loader` option](#file-extension-loader-customization)
+- Symlinking a dependency to local code for development such as [`npm link`](https://docs.npmjs.com/cli/v10/commands/npm-link)
+- Working around an error encountered during prebundling of a dependency
+
+The prebundling process can be fully disabled or individual dependencies can be excluded if needed by a project.
+The `dev-server` builder's `prebundle` option can be used for these customizations.
+To exclude specific dependencies, the `prebundle.exclude` option is available:
+
+<docs-code language="json">
+    "serve": {
+      "builder": "@angular/build:dev-server",
+      "options": {
+        "prebundle": {
+          "exclude": ["some-dep"]
+        }
+      },
+</docs-code>
+
+By default, `prebundle` is set to `true` but can be set to `false` to fully disable prebundling.
+However, excluding specific dependencies is recommended instead since rebuild times will increase with prebundling disabled.
+
+<docs-code language="json">
+    "serve": {
+      "builder": "@angular/build:dev-server",
+      "options": {
+        "prebundle": false
+      },
+</docs-code>
 
 ## New features
 
@@ -222,6 +260,70 @@ IMPORTANT: The new features of the `application` builder described here are inco
 Users can opt-in to use the `application` builder by setting the `builderMode` option to `application` for the `karma` builder.
 This option is currently in developer preview.
 If you notice any issues, please report them [here](https://github.com/angular/angular-cli/issues).
+
+### Build-time value replacement (define)
+
+The `define` option allows identifiers present in the code to be replaced with another value at build time.
+This is similar to the behavior of Webpack's `DefinePlugin` which was previously used with some custom Webpack configurations that used third-party builders.
+The option can either be used within the `angular.json` configuration file or on the command line.
+Configuring `define` within `angular.json` is useful for cases where the values are constant and able to be checked in to source control.
+
+Within the configuration file, the option is in the form of an object.
+The keys of the object represent the identifier to replace and the values of the object represent the corresponding replacement value for the identifier.
+An example is as follows:
+
+<docs-code language="json">
+  "build": {
+    "builder": "@angular/build:application",
+    "options": {
+      ...
+      "define": {
+          "SOME_NUMBER": "5",
+          "ANOTHER": "''this is a string literal, note the extra single quotes'",
+          "REFERENCE": "globalThis.someValue.noteTheAbsentSingleQuotes"
+      }
+    }
+  }
+</docs-code>
+
+HELPFUL: All replacement values are defined as strings within the configuration file.
+If the replacement is intended to be an actual string literal, it should be enclosed in single quote marks.
+This allows the flexibility of using any valid JSON type as well as a different identifier as a replacement.
+
+The command line usage is preferred for values that may change per build execution such as the git commit hash or an environment variable.
+The CLI will merge `--define` values from the command line with `define` values from `angular.json`, including both in a build.
+Command line usage takes precedence if the same identifier is present for both.
+For command line usage, the `--define` option uses the format of `IDENTIFIER=VALUE`.
+
+<docs-code language="shell">
+ng build --define SOME_NUMBER=5 --define "ANOTHER='these will overwrite existing'"
+</docs-code>
+
+Environment variables can also be selectively included in a build.
+For non-Windows shells, the quotes around the hash literal can be escaped directly if preferred.
+This example assumes a bash-like shell but similar behavior is available for other shells as well.
+
+<docs-code language="shell">
+export MY_APP_API_HOST="http://example.com"
+export API_RETRY=3
+ng build --define API_HOST=\'$MY_APP_API_HOST\' --define API_RETRY=$API_RETRY
+</docs-code>
+
+For either usage, TypeScript needs to be aware of the types for the identifiers to prevent type-checking errors during the build.
+This can be accomplished with an additional type definition file within the application source code (`src/types.d.ts`, for example) with similar content:
+
+```ts
+declare const SOME_NUMBER: number;
+declare const ANOTHER: string;
+declare const GIT_HASH: string;
+declare const API_HOST: string;
+declare const API_RETRY: number;
+```
+
+The default project configuration is already setup to use any type definition files present in the project source directories.
+If the TypeScript configuration for the project has been altered, it may need to be adjusted to reference this newly added type definition file.
+
+IMPORTANT: This option will not replace identifiers contained within Angular metadata such as a Component or Directive decorator.
 
 ### File extension loader customization
 
