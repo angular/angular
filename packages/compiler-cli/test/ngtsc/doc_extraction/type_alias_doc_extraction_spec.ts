@@ -63,5 +63,26 @@ runInEachFileSystem(() => {
           age: number;
         }`);
     });
+
+    it('should extract type aliases based with generics', () => {
+      env.write(
+        'index.ts',
+        `
+          type Foo<T> = undefined;
+          export type Bar<T extends string> = Foo<T>;
+        `,
+      );
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+
+      const typeAliasEntry = docs[0] as TypeAliasEntry;
+      expect(typeAliasEntry.name).toBe('Bar');
+      expect(typeAliasEntry.entryType).toBe(EntryType.TypeAlias);
+      expect(typeAliasEntry.type).toBe('Foo<T>');
+      expect(typeAliasEntry.generics).toEqual([
+        {name: 'T', constraint: 'string', default: undefined},
+      ]);
+    });
   });
 });
