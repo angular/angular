@@ -81,6 +81,17 @@ const serverConfig: ApplicationConfig = {
 };
 ```
 
+When using the [App shell pattern](ecosystem/service-workers/app-shell), you must specify the route to be used as the app shell for client-side rendered routes. To do this, provide an options object with the `appShellRoute` property to [`provideServerRoutesConfig`](api/ssr/provideServerRoutesConfig 'API reference'):
+
+```typescript
+const serverConfig: ApplicationConfig = {
+  providers: [
+    provideServerRoutesConfig(serverRoutes, { appShellRoute: 'shell' }),
+    // ... other providers ...
+  ]
+};
+```
+
 ### Rendering modes
 
 The server routing configuration lets you specify how each route in your application should render by setting a [`RenderMode`](api/ssr/RenderMode 'API reference'):
@@ -90,9 +101,6 @@ The server routing configuration lets you specify how each route in your applica
 | **Server (SSR)**    | Renders the application on the server for each request, sending a fully populated HTML page to the browser. See the [Server-Side Rendering (SSR) guide](guide/ssr) for more information.                                                             |
 | **Client (CSR)**    | Renders the application in the browser. This is the default Angular behavior.                                                                                                                                                                        |
 | **Prerender (SSG)** | Prerenders the application at build time, generating static HTML files for each route. See the [Prerendering guide](guide/prerendering) for more information.                                                                                        |
-| **App shell**       | Generates a static HTML shell of the application during the build process. This shell is displayed immediately for CSR routes while the full application loads. See the [App shell guide](ecosystem/service-workers/app-shell) for more information. |
-
-IMPORTANT: An application can only have a one App shell, which is applied across all client-side rendered routes. By setting `renderMode` to [`RenderMode.AppShell`](api/ssr/RenderMode#AppShell 'API reference'), you're configuring that route as the application's shell, to be used by all client-side rendered routes.
 
 #### Choosing a rendering mode
 
@@ -135,10 +143,6 @@ Prerendering generally has excellent search engine optimization (SEO), as search
 Prerendering requires you to author code that does not strictly depend on browser APIs and limits your selection of JavaScript libraries that assume they run in a browser.
 
 Prerendering incurs extremely little overhead per server request, as your server responds with static HTML documents. Static files are also easily cached by Content Delivery Networks (CDNs), browsers, and intermediate caching layers for even faster subsequent page loads. Deploying static HTML files to a CDN improves scalability by offloading work from your application web server, which is impactful for high-traffic applications.
-
-##### App shell prerendering
-
-An app shell offers improving perceived performance by displaying a basic layout quickly for client-side rendered routes. By showing users something immediately, it reduces the feeling of waiting for the application to load. App Shell provides a consistent user experience by creating a stable skeleton for the app, even while content is dynamically loaded. The shell can also be cached effectively, allowing the browser to cache it and speed up subsequent visits.
 
 ### Setting headers and status codes
 
