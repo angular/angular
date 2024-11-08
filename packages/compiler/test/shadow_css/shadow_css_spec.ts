@@ -47,6 +47,17 @@ describe('ShadowCss', () => {
     expect(shim(css, 'contenta')).toEqualCss(expected);
   });
 
+  it('should support newlines in the same selector and content ', () => {
+    const selector = `.foo:not(
+      .bar) {
+        background-color:
+          green;
+    }`;
+    expect(shim(selector, 'contenta', 'a-host')).toEqualCss(
+      '.foo[contenta]:not( .bar) { background-color:green;}',
+    );
+  });
+
   it('should handle complicated selectors', () => {
     expect(shim('one::before {}', 'contenta')).toEqualCss('one[contenta]::before {}');
     expect(shim('one two {}', 'contenta')).toEqualCss('one[contenta] two[contenta] {}');

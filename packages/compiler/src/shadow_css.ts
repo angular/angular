@@ -779,14 +779,14 @@ export class ShadowCss {
       if (p.includes(_polyfillHostNoCombinator)) {
         scopedP = this._applySimpleSelectorScope(p, scopeSelector, hostSelector);
         if (!p.match(_polyfillHostNoCombinatorOutsidePseudoFunction)) {
-          const [_, before, colon, after] = scopedP.match(/([^:]*)(:*)(.*)/)!;
+          const [_, before, colon, after] = scopedP.match(/([^:]*)(:*)([\s\S]*)/)!;
           scopedP = before + attrName + colon + after;
         }
       } else {
         // remove :host since it should be unnecessary
         const t = p.replace(_polyfillHostRe, '');
         if (t.length > 0) {
-          const matches = t.match(/([^:]*)(:*)(.*)/);
+          const matches = t.match(/([^:]*)(:*)([\s\S]*)/);
           if (matches) {
             scopedP = matches[1] + attrName + matches[2] + matches[3];
           }

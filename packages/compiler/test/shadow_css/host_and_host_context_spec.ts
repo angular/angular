@@ -119,6 +119,17 @@ describe('ShadowCss, :host and :host-context', () => {
         'cmp [a-host] child {}',
       );
     });
+
+    it('should support newlines in the same selector and content ', () => {
+      const selector = `.foo:not(
+        :host) {
+          background-color:
+            green;
+      }`;
+      expect(shim(selector, 'contenta', 'a-host')).toEqualCss(
+        '.foo[contenta]:not( [a-host]) { background-color:green;}',
+      );
+    });
   });
 
   describe(':host-context', () => {
