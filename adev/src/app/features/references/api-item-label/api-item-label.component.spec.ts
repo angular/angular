@@ -21,11 +21,11 @@ describe('ApiItemLabel', () => {
     });
     fixture = TestBed.createComponent(ApiItemLabel);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should by default display short label for Class', () => {
     fixture.componentRef.setInput('type', ApiItemType.CLASS);
+    fixture.componentRef.setInput('mode', 'short');
     fixture.detectChanges();
 
     const label = fixture.nativeElement.innerText;
