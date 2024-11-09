@@ -147,6 +147,19 @@ The root component is commonly called `AppComponent` and is in the root module's
 In a situation where you want to bootstrap a component based on an API response,
 or you want to mount the `AppComponent` in a different DOM node that doesn't match the component selector, please refer to `ApplicationRef.bootstrap()` documentation.
 
+## Bootstrapping the module
+
+Once the root module is defined it must be registered in `main.ts` to bootstrap the application:
+
+<docs-code language="typescript">
+import { platformBrowserDynamic } from "@angular/platform-browser-dynamic";
+import { AppModule } from "./app/app.module";
+
+platformBrowserDynamic().bootstrapModule(AppModule);
+
+</docs-code>
+
+
 ## More about Angular Modules
 
 See [Frequently Used Modules](guide/ngmodules/frequent) to learn more about modules you will commonly see in applications.
