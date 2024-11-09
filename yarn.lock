@@ -11966,10 +11966,10 @@ marked@^13.0.2:
   resolved "https://registry.yarnpkg.com/marked/-/marked-13.0.3.tgz#5c5b4a5d0198060c7c9bc6ef9420a7fed30f822d"
   integrity sha512-rqRix3/TWzE9rIoFGIn8JmsVfhiuC8VIQ8IdX5TfzmeBucdY05/0UlzKaw0eVtpcN/OdVFpBk7CjKGo9iHJ/zA==
 
-marked@^14.0.0:
-  version "14.1.4"
-  resolved "https://registry.yarnpkg.com/marked/-/marked-14.1.4.tgz#5e348de817bfa35a11e71de7e41dd7c3fdb186a9"
-  integrity sha512-vkVZ8ONmUdPnjCKc5uTRvmkRbx4EAi2OkTOXmfTDhZz3OFqMNBM1oTTWwTr4HY4uAEojhzPf+Fy8F1DWa3Sndg==
+marked@^15.0.0:
+  version "15.0.0"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-15.0.0.tgz#59fb02c19c98340c8668d911dc4b3a84b062a4a9"
+  integrity sha512-0mouKmBROJv/WSHJBPZZyYofUgawMChnD5je/g+aOBXsHDjb/IsnTQj7mnhQZu+qPJmRQ0ecX3mLGEUm3BgwYA==
 
 marky@^1.2.2:
   version "1.2.5"
