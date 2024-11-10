@@ -100,11 +100,21 @@ export function migrateStandardTsReference(
       }
 
       const replaceNode = traverseAccess(originalNode);
-      const fieldName = nameGenerator.generate(originalNode.text, referenceNodeInBlock);
       const filePath = projectFile(sf, info);
-      const temporaryVariableStr = `const ${fieldName} = ${replaceNode.getText()}();`;
+      const initializer = `${replaceNode.getText()}()`;
+      const fieldName = nameGenerator.generate(originalNode.text, referenceNodeInBlock);
 
-      idToSharedField.set(id, fieldName);
+      let sharedValueAccessExpr: string;
+      let temporaryVariableStr: string;
+      if (ts.isClassLike(recommendedNode)) {
+        sharedValueAccessExpr = `this.${fieldName}`;
+        temporaryVariableStr = `private readonly ${fieldName} = ${initializer};`;
+      } else {
+        sharedValueAccessExpr = fieldName;
+        temporaryVariableStr = `const ${fieldName} = ${initializer};`;
+      }
+
+      idToSharedField.set(id, sharedValueAccessExpr);
 
       // If the common ancestor block of all shared references is an arrow function
       // without a block, convert the arrow function to a block and insert the temporary
@@ -134,7 +144,7 @@ export function migrateStandardTsReference(
           new TextUpdate({
             position: replaceNode.getStart(),
             end: replaceNode.getEnd(),
-            toInsert: fieldName,
+            toInsert: sharedValueAccessExpr,
           }),
         ),
       );

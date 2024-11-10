@@ -20,6 +20,16 @@ import assert from 'assert';
 export type ControlFlowNodeIndex = number;
 
 /**
+ * Possible common ancestors for a set of references at
+ * which level a temporary variable can be inserted.
+ */
+export type InsertionCommonAncestor =
+  | ts.ArrowFunction
+  | ts.Block
+  | ts.SourceFile
+  | ts.ClassLikeDeclaration;
+
+/**
  * Representation of a reference inside a control flow
  * container.
  *
@@ -35,14 +45,11 @@ export interface ControlFlowAnalysisNode {
    * Recommended node for the reference in the container. For example:
    *   - may be "preserve" to indicate it's not narrowed.
    *   - may point to a different flow node. This means they will share for narrowing.
-   *   - may point to a block, source file or arrow function to indicate at what level this
-   *     node may be shared. I.e. a location where we generate the temporary variable
-   *     for subsequent sharing.
+   *   - may point to a block, source file, arrow function or other insertion ancestor types
+   *     to indicate at what level this node may be shared. I.e. a location where we generate
+   *     the temporary variable for subsequent sharing.
    */
-  recommendedNode:
-    | ControlFlowNodeIndex
-    | 'preserve'
-    | (ts.Block | ts.SourceFile | ts.ArrowFunction);
+  recommendedNode: ControlFlowNodeIndex | 'preserve' | InsertionCommonAncestor;
   /** Flow container this reference is part of. */
   flowContainer: ts.Node;
 }
@@ -165,8 +172,8 @@ function connectSharedReferences(
   // the reference and the earliest partner. References in between can also
   // use the shared flow node and not preserve their original reference— as
   // this would be rather unreadable and inefficient.
-  const seenBlocks = new Set<ts.ArrowFunction | ts.Block | ts.SourceFile>();
-  let highestBlock: ts.Block | ts.SourceFile | ts.ArrowFunction | null = null;
+  const seenBlocks = new Set<InsertionCommonAncestor>();
+  let highestBlock: InsertionCommonAncestor | null = null;
   for (let i = min; i <= max; i++) {
     // Different flow container captured sequentially in result. Ignore.
     if (result[i].flowContainer !== refFlowContainer) {
@@ -175,8 +182,8 @@ function connectSharedReferences(
 
     // Iterate up the block, find the highest block within the flow container.
     let current: ts.Node = result[i].originalNode.parent;
-    while (current !== undefined && !ts.isSourceFile(current)) {
-      if (isBlockLikeAncestor(current)) {
+    while (current !== undefined) {
+      if (isPotentialInsertionAncestor(current)) {
         // If we saw this block already, it is a common ancestor from another
         // partner. Check if it would be higher than the current highest block;
         // and choose it accordingly.
@@ -198,15 +205,23 @@ function connectSharedReferences(
     }
   }
 
+  if (!highestBlock) {
+    console.error(earliestPartnerId, refId, refFlowContainer.getText(), seenBlocks);
+  }
+
   assert(highestBlock, 'Expected a block anchor to be found');
   result[earliestPartnerId].recommendedNode = highestBlock;
 }
 
-function isBlockLikeAncestor(node: ts.Node): node is ts.ArrowFunction | ts.Block | ts.SourceFile {
+function isPotentialInsertionAncestor(
+  node: ts.Node,
+): node is ts.ArrowFunction | ts.Block | ts.SourceFile | ts.ClassLikeDeclaration {
   // Note: Arrow functions may not have a block, but instead use an expression
   // directly. This still signifies a "block" as we can convert the concise body
   // to a block.
-  return ts.isSourceFile(node) || ts.isBlock(node) || ts.isArrowFunction(node);
+  return (
+    ts.isSourceFile(node) || ts.isBlock(node) || ts.isArrowFunction(node) || ts.isClassLike(node)
+  );
 }
 
 /**

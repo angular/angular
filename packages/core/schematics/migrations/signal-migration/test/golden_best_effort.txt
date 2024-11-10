@@ -352,6 +352,7 @@ import {input} from '@angular/core';
 
 class Test {
   readonly maxCellsPerRow = input(5);
+  readonly maxCellsPerRow2 = input(5);
 
   private test(arr: string[]) {
     const maxCellsPerRow = this.maxCellsPerRow();
@@ -359,6 +360,10 @@ class Test {
       console.log(maxCellsPerRow);
     }
   }
+
+  private readonly maxCellsPerRowValue = this.maxCellsPerRow();
+  protected readonly test2 = this.maxCellsPerRowValue ? this.maxCellsPerRowValue === 3 : false;
+  protected readonly test3 = this.maxCellsPerRow2() === 3 ? true : false;
 }
 @@@@@@ getters.ts @@@@@@
 
