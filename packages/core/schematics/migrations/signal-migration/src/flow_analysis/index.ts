@@ -87,9 +87,17 @@ export function analyzeControlFlow(
 
   // Prepare easy lookups for reference nodes to flow info.
   for (const [idx, entry] of entries.entries()) {
+    const flowContainer = getControlFlowContainer(entry);
     referenceToMetadata.set(entry, {
-      flowContainer: getControlFlowContainer(entry),
+      flowContainer,
       resultIndex: idx,
+    });
+
+    result.push({
+      flowContainer,
+      id: idx,
+      originalNode: entry,
+      recommendedNode: 'preserve',
     });
   }
 
@@ -109,13 +117,6 @@ export function analyzeControlFlow(
       flowContainer,
       checker,
     );
-
-    result.push({
-      id: resultIndex,
-      originalNode: entry,
-      flowContainer,
-      recommendedNode: 'preserve',
-    });
 
     if (narrowPartners.length !== 0) {
       connectSharedReferences(result, narrowPartners, resultIndex);
@@ -154,13 +155,19 @@ function connectSharedReferences(
   assert(earliestPartner !== null, 'Expected an earliest partner to be found.');
   assert(earliestPartnerId !== null, 'Expected an earliest partner to be found.');
 
+  // Earliest partner ID could be higher than `refId` in cyclic
+  // situations like `loop` flow nodes. We need to find the minimum
+  // and maximum to iterate through partners in between.
+  const min = Math.min(earliestPartnerId, refId);
+  const max = Math.max(earliestPartnerId, refId);
+
   // Then, incorporate all similar references (or flow nodes) in between
   // the reference and the earliest partner. References in between can also
   // use the shared flow node and not preserve their original reference— as
   // this would be rather unreadable and inefficient.
   const seenBlocks = new Set<ts.ArrowFunction | ts.Block | ts.SourceFile>();
   let highestBlock: ts.Block | ts.SourceFile | ts.ArrowFunction | null = null;
-  for (let i = earliestPartnerId; i <= refId; i++) {
+  for (let i = min; i <= max; i++) {
     // Different flow container captured sequentially in result. Ignore.
     if (result[i].flowContainer !== refFlowContainer) {
       continue;

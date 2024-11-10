@@ -7,11 +7,12 @@
  */
 
 import ts from 'typescript';
-import {analyzeControlFlow} from '../../../flow_analysis';
+import {analyzeControlFlow, ControlFlowAnalysisNode} from '../../../flow_analysis';
 import {ProgramInfo, projectFile, Replacement, TextUpdate} from '../../../../../../utils/tsurge';
 import {traverseAccess} from '../../../utils/traverse_access';
 import {UniqueNamesGenerator} from '../../../utils/unique_names';
 import {createNewBlockToInsertVariable} from '../helpers/create_block_arrow_function';
+import assert from 'assert';
 
 export interface NarrowableTsReferences {
   accesses: ts.Identifier[];
@@ -29,6 +30,19 @@ export function migrateStandardTsReference(
   for (const reference of tsReferencesWithNarrowing.values()) {
     const controlFlowResult = analyzeControlFlow(reference.accesses, checker);
     const idToSharedField = new Map<number, string>();
+
+    const isSharePartnerRef = (val: ControlFlowAnalysisNode['recommendedNode']) => {
+      return val !== 'preserve' && typeof val !== 'number';
+    };
+
+    // Ensure we generate shared fields before reference entries.
+    // This allows us to safely make use of `idToSharedField` whenever we come
+    // across a referenced pointing to a share partner.
+    controlFlowResult.sort((a, b) => {
+      const aPriority = isSharePartnerRef(a.recommendedNode) ? 1 : 0;
+      const bPriority = isSharePartnerRef(b.recommendedNode) ? 1 : 0;
+      return bPriority - aPriority;
+    });
 
     for (const {id, originalNode, recommendedNode} of controlFlowResult) {
       const sf = originalNode.getSourceFile();
@@ -53,15 +67,18 @@ export function migrateStandardTsReference(
       // This reference is shared with a previous reference. Replace the access
       // with the temporary variable.
       if (typeof recommendedNode === 'number') {
+        // Extract the shared field name.
+        const toInsert = idToSharedField.get(recommendedNode);
         const replaceNode = traverseAccess(originalNode);
+
+        assert(toInsert, 'no shared variable yet available');
         replacements.push(
           new Replacement(
             projectFile(sf, info),
             new TextUpdate({
               position: replaceNode.getStart(),
               end: replaceNode.getEnd(),
-              // Extract the shared field name.
-              toInsert: idToSharedField.get(recommendedNode)!,
+              toInsert,
             }),
           ),
         );

@@ -344,6 +344,22 @@ import {Component, input} from '@angular/core';
 export class WithTemplate {
   readonly test = input(true);
 }
+@@@@@@ flow_cases.ts @@@@@@
+
+// tslint:disable
+
+import {input} from '@angular/core';
+
+class Test {
+  readonly maxCellsPerRow = input(5);
+
+  private test(arr: string[]) {
+    const maxCellsPerRow = this.maxCellsPerRow();
+    for (let i = 0; i < arr.length; i += maxCellsPerRow) {
+      console.log(maxCellsPerRow);
+    }
+  }
+}
 @@@@@@ getters.ts @@@@@@
 
 // tslint:disable
