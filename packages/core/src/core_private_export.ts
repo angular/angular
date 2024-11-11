@@ -37,10 +37,8 @@ export {
   DeferBlockDetails as ɵDeferBlockDetails,
   getDeferBlocks as ɵgetDeferBlocks,
 } from './defer/discovery';
-export {
-  renderDeferBlockState as ɵrenderDeferBlockState,
-  triggerResourceLoading as ɵtriggerResourceLoading,
-} from './defer/instructions';
+export {renderDeferBlockState as ɵrenderDeferBlockState} from './defer/rendering';
+export {triggerResourceLoading as ɵtriggerResourceLoading} from './defer/triggering';
 export {
   DeferBlockBehavior as ɵDeferBlockBehavior,
   DeferBlockConfig as ɵDeferBlockConfig,
