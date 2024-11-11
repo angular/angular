@@ -8,7 +8,11 @@
 import {inject} from '../di';
 import {InjectionToken} from '../di/injection_token';
 import {ɵɵdefineInjectable} from '../di/interface/defs';
-import {removeListenersFromBlocks} from '../event_delegation_utils';
+import {
+  EventContractDetails,
+  JSACTION_EVENT_CONTRACT,
+  removeListenersFromBlocks,
+} from '../event_delegation_utils';
 import {JSACTION_BLOCK_ELEMENT_MAP} from '../hydration/tokens';
 import {DehydratedDeferBlock} from './interfaces';
 
@@ -30,6 +34,7 @@ export class DehydratedBlockRegistry {
   private registry = new Map<string, DehydratedDeferBlock>();
   private cleanupFns = new Map<string, Function[]>();
   private jsActionMap: Map<string, Set<Element>> = inject(JSACTION_BLOCK_ELEMENT_MAP);
+  private contract: EventContractDetails = inject(JSACTION_EVENT_CONTRACT);
   add(blockId: string, info: DehydratedDeferBlock) {
     this.registry.set(blockId, info);
   }
@@ -48,6 +53,9 @@ export class DehydratedBlockRegistry {
       this.jsActionMap.delete(blockId);
       this.invokeTriggerCleanupFns(blockId);
       this.hydrating.delete(blockId);
+    }
+    if (this.size === 0) {
+      this.contract.instance?.cleanUp();
     }
   }
 
