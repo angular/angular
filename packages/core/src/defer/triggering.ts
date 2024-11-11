@@ -9,7 +9,6 @@
 import {Injector} from '../di';
 import {internalImportProvidersFrom} from '../di/provider_collection';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {cleanupContracts} from '../event_delegation_utils';
 import {cleanupDeferBlock} from '../hydration/cleanup';
 import {
   assertSsrIdDefined,
@@ -411,10 +410,6 @@ async function triggerBlockTreeHydrationByName(
   // The last item in the queue was the original target block;
   const hydratedBlockId = hydrationQueue.slice(-1)[0];
   const hydratedBlock = dehydratedBlockRegistry.get(hydratedBlockId)!;
-
-  if (dehydratedBlockRegistry.size === 0) {
-    cleanupContracts(injector);
-  }
 
   return {deferBlock: hydratedBlock, hydratedBlocks};
 }

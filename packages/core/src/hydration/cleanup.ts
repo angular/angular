@@ -24,7 +24,6 @@ import {nativeRemoveNode} from '../render3/node_manipulation';
 import {validateSiblingNodeExists} from './error_handling';
 import {cleanupI18nHydrationData} from './i18n';
 import {DEFER_BLOCK_ID, DehydratedContainerView, NUM_ROOT_NODES} from './interfaces';
-import {JSACTION_BLOCK_ELEMENT_MAP} from './tokens';
 import {getLNodeForHydration} from './utils';
 
 /**
