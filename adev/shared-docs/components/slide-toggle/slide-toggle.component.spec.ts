@@ -21,6 +21,8 @@ describe('SlideToggle', () => {
       providers: [provideExperimentalZonelessChangeDetection()],
     });
     fixture = TestBed.createComponent(SlideToggle);
+    fixture.componentRef.setInput('buttonId', 'id');
+    fixture.componentRef.setInput('label', 'foo');
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

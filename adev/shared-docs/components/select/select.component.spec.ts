@@ -22,6 +22,12 @@ describe('Select', () => {
     });
     fixture = TestBed.createComponent(Select);
     component = fixture.componentInstance;
+
+    // Sets the required inputs
+    fixture.componentRef.setInput('selectId', 'id');
+    fixture.componentRef.setInput('name', 'name');
+    fixture.componentRef.setInput('options', []);
+
     fixture.detectChanges();
   });
 
