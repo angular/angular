@@ -110,11 +110,6 @@ export const JSACTION_EVENT_CONTRACT = new InjectionToken<EventContractDetails>(
   },
 );
 
-export function cleanupContracts(injector: Injector) {
-  const eventContractDetails = injector.get(JSACTION_EVENT_CONTRACT);
-  eventContractDetails.instance!.cleanUp();
-}
-
 export function invokeListeners(event: Event, currentTarget: Element | null) {
   const handlerFns = currentTarget?.__jsaction_fns?.get(event.type);
   if (!handlerFns) {

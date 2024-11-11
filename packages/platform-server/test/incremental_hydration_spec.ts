@@ -28,6 +28,12 @@ import {
 } from '@angular/platform-browser';
 import {TestBed} from '@angular/core/testing';
 import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
+import {DEHYDRATED_BLOCK_REGISTRY, DehydratedBlockRegistry} from '@angular/core/src/defer/registry';
+import {JSACTION_BLOCK_ELEMENT_MAP} from '@angular/core/src/hydration/tokens';
+import {
+  EventContractDetails,
+  JSACTION_EVENT_CONTRACT,
+} from '@angular/core/src/event_delegation_utils';
 
 describe('platform-server partial hydration integration', () => {
   const originalWindow = globalThis.window;
@@ -1514,5 +1520,233 @@ describe('platform-server partial hydration integration', () => {
       expect(appHostNode.outerHTML).toContain('<span>Client!</span>');
       expect(appHostNode.outerHTML).not.toContain('>Server!</span>');
     }, 100_000);
+
+    it('should clear registry of blocks as they are hydrated', async () => {
+      @Component({
+        standalone: true,
+        selector: 'app',
+        template: `
+          <main (click)="fnA()">
+            @defer (on viewport; hydrate on interaction) {
+              <div id="main" (click)="fnA()">
+                Main defer block rendered!
+                @defer (on viewport; hydrate on interaction) {
+                  <p id="nested">Nested defer block</p>
+                } @placeholder {
+                  <span>Inner block placeholder</span>
+                }
+              </div>
+            } @placeholder {
+              <span>Outer block placeholder</span>
+            }
+          </main>
+        `,
+      })
+      class SimpleComponent {
+        fnA() {}
+
+        registry = inject(DEHYDRATED_BLOCK_REGISTRY);
+        jsActionMap = inject(JSACTION_BLOCK_ELEMENT_MAP);
+        contract = inject(JSACTION_EVENT_CONTRACT);
+      }
+
+      const appId = 'custom-app-id';
+      const providers = [{provide: APP_ID, useValue: appId}];
+      const hydrationFeatures = () => [withIncrementalHydration()];
+
+      const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+
+      // Internal cleanup before we do server->client transition in this test.
+      resetTViewsFor(SimpleComponent);
+
+      ////////////////////////////////
+      const doc = getDocument();
+
+      const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+        envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
+        hydrationFeatures,
+      });
+      const compRef = getComponentRef<SimpleComponent>(appRef);
+      appRef.tick();
+      await whenStable(appRef);
+
+      const registry = compRef.instance.registry;
+      const jsActionMap = compRef.instance.jsActionMap;
+      const contract = compRef.instance.contract;
+      spyOn(contract.instance!, 'cleanUp').and.callThrough();
+
+      expect(registry.size).toBe(1);
+      expect(jsActionMap.size).toBe(2);
+      expect(registry.has('d0')).toBeTruthy();
+
+      const mainBlock = doc.getElementById('main')!;
+      const clickEvent = new CustomEvent('click', {bubbles: true});
+      mainBlock.dispatchEvent(clickEvent);
+
+      await timeout(1000); // wait for defer blocks to resolve
+
+      appRef.tick();
+      expect(registry.size).toBe(1);
+      expect(registry.has('d0')).toBeFalsy();
+      expect(jsActionMap.size).toBe(1);
+
+      const nested = doc.getElementById('nested')!;
+      const clickEvent2 = new CustomEvent('click', {bubbles: true});
+      nested.dispatchEvent(clickEvent2);
+      await timeout(1000); // wait for defer blocks to resolve
+      appRef.tick();
+
+      expect(registry.size).toBe(0);
+      expect(jsActionMap.size).toBe(0);
+      expect(contract.instance!.cleanUp).toHaveBeenCalled();
+    });
+
+    it('should clear registry of multiple blocks if they are hydrated in one go', async () => {
+      @Component({
+        standalone: true,
+        selector: 'app',
+        template: `
+          <main (click)="fnA()">
+            @defer (on viewport; hydrate on interaction) {
+              <div id="main" (click)="fnA()">
+                Main defer block rendered!
+                @defer (on viewport; hydrate on interaction) {
+                  <p id="nested">Nested defer block</p>
+                } @placeholder {
+                  <span>Inner block placeholder</span>
+                }
+              </div>
+            } @placeholder {
+              <span>Outer block placeholder</span>
+            }
+          </main>
+        `,
+      })
+      class SimpleComponent {
+        fnA() {}
+
+        registry = inject(DEHYDRATED_BLOCK_REGISTRY);
+        jsActionMap = inject(JSACTION_BLOCK_ELEMENT_MAP);
+        contract = inject(JSACTION_EVENT_CONTRACT);
+      }
+
+      const appId = 'custom-app-id';
+      const providers = [{provide: APP_ID, useValue: appId}];
+      const hydrationFeatures = () => [withIncrementalHydration()];
+
+      const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+
+      // Internal cleanup before we do server->client transition in this test.
+      resetTViewsFor(SimpleComponent);
+
+      ////////////////////////////////
+      const doc = getDocument();
+
+      const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+        envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
+        hydrationFeatures,
+      });
+      const compRef = getComponentRef<SimpleComponent>(appRef);
+      appRef.tick();
+      await whenStable(appRef);
+
+      const registry = compRef.instance.registry;
+      const jsActionMap = compRef.instance.jsActionMap;
+      const contract = compRef.instance.contract;
+      spyOn(contract.instance!, 'cleanUp').and.callThrough();
+
+      expect(registry.size).toBe(1);
+      expect(jsActionMap.size).toBe(2);
+      expect(registry.has('d0')).toBeTruthy();
+
+      const nested = doc.getElementById('nested')!;
+      const clickEvent2 = new CustomEvent('click', {bubbles: true});
+      nested.dispatchEvent(clickEvent2);
+      await timeout(1000); // wait for defer blocks to resolve
+      appRef.tick();
+
+      expect(registry.size).toBe(0);
+      expect(jsActionMap.size).toBe(0);
+      expect(contract.instance!.cleanUp).toHaveBeenCalled();
+    });
+
+    it('should leave blocks in registry when not hydrated', async () => {
+      @Component({
+        standalone: true,
+        selector: 'app',
+        template: `
+          <main (click)="fnA()">
+            @defer (on viewport; hydrate on interaction) {
+              <div id="main" (click)="fnA()">
+                <aside>Main defer block rendered!</aside>
+                @defer (on viewport; hydrate on interaction) {
+                  <p id="nested">Nested defer block</p>
+                } @placeholder {
+                  <span>Inner block placeholder</span>
+                }
+              </div>
+            } @placeholder {
+              <span>Outer block placeholder</span>
+            }
+            @defer (on viewport; hydrate on hover) {
+              <p>This should remain in the registry</p>
+            } @placeholder {
+              <span>a second placeholder</span>
+            }
+          </main>
+        `,
+      })
+      class SimpleComponent {
+        fnA() {}
+
+        registry = inject(DEHYDRATED_BLOCK_REGISTRY);
+        jsActionMap = inject(JSACTION_BLOCK_ELEMENT_MAP);
+        contract = inject(JSACTION_EVENT_CONTRACT);
+      }
+
+      const appId = 'custom-app-id';
+      const providers = [{provide: APP_ID, useValue: appId}];
+      const hydrationFeatures = () => [withIncrementalHydration()];
+
+      const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+
+      // Internal cleanup before we do server->client transition in this test.
+      resetTViewsFor(SimpleComponent);
+
+      ////////////////////////////////
+      const doc = getDocument();
+
+      const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+        envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
+        hydrationFeatures,
+      });
+      const compRef = getComponentRef<SimpleComponent>(appRef);
+      appRef.tick();
+      await whenStable(appRef);
+      const contract = compRef.instance.contract;
+      spyOn(contract.instance!, 'cleanUp').and.callThrough();
+
+      const registry = compRef.instance.registry;
+      const jsActionMap = compRef.instance.jsActionMap;
+
+      // registry size should be the number of highest level dehydrated defer blocks
+      // in this case, 2.
+      expect(registry.size).toBe(2);
+      // jsactionmap should include all elements that have jsaction on them, in this
+      // case, 3, due to the defer block root nodes.
+      expect(jsActionMap.size).toBe(3);
+      expect(registry.has('d0')).toBeTruthy();
+
+      const nested = doc.getElementById('nested')!;
+      const clickEvent2 = new CustomEvent('click', {bubbles: true});
+      nested.dispatchEvent(clickEvent2);
+      await timeout(1000); // wait for defer blocks to resolve
+      appRef.tick();
+
+      expect(registry.size).toBe(1);
+      expect(jsActionMap.size).toBe(1);
+      expect(registry.has('d2')).toBeTruthy();
+      expect(contract.instance!.cleanUp).not.toHaveBeenCalled();
+    });
   });
 });
