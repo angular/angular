@@ -71,6 +71,8 @@ describe('TableOfContents', () => {
     spyOn(tableOfContentsLoaderSpy, 'buildTableOfContent').and.returnValue();
     tableOfContentsLoaderSpy.tableOfContentItems.set(items);
     fixture = TestBed.createComponent(TableOfContents);
+    fixture.componentRef.setInput('contentSourceElement', document.createElement('div'));
+
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
