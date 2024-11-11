@@ -231,7 +231,7 @@ class _Tokenizer {
           }
         } else if (
           this._tokenizeLet &&
-          // Use `peek` instead of `attempCharCode` since we
+          // Use `peek` instead of `attemptCharCode` since we
           // don't want to advance in case it's not `@let`.
           this._cursor.peek() === chars.$AT &&
           !this._inInterpolation &&

@@ -10,6 +10,9 @@ The `@switch` block is inspired by the JavaScript `switch` statement:
   @case (caseB) {
     Case B.
   }
+  @case (caseC; caseD) {
+    Case C or Case D.
+  }
   @default {
     Default case.
   }
@@ -19,8 +22,10 @@ The `@switch` block is inspired by the JavaScript `switch` statement:
 ## Description
 
 The `@switch` blocks displays content selected by one of the cases matching against the conditional
-expression. The value of the conditional expression is compared to the case expression using
+expression. The value of the conditional expression is compared to the case expressions using
 the `===` operator.
+
+You may provide multiple case expressions in a single `@case` block by separating each case by `;`.
 
 The `@default` block is optional and can be omitted. If no `@case` matches the expression and there
 is no `@default` block, nothing is shown.

@@ -103,7 +103,7 @@ While the `@if` block is great for most scenarios, the `@switch` block provides 
 
 ```angular-html
 @switch (userPermissions) {
-  @case ('admin') {
+  @case ('admin'; 'super-admin') {
     <app-admin-dashboard />
   }
   @case ('reviewer') {
@@ -118,7 +118,9 @@ While the `@if` block is great for most scenarios, the `@switch` block provides 
 }
 ```
 
-The value of the conditional expression is compared to the case expression using the triple-equals (`===`) operator.
+The value of the conditional expression is compared to the case expressions using the triple-equals (`===`) operator.
+
+You may provide multiple case expressions in a single `@case` block by separating each case by `;`.
 
 **`@switch` does not have a fallthrough**, so you do not need an equivalent to a `break` or `return` statement in the block.
 

@@ -90,7 +90,7 @@ class R3AstHumanizer implements t.Visitor<void> {
   visitSwitchBlockCase(block: t.SwitchBlockCase): void {
     this.result.push([
       'SwitchBlockCase',
-      block.expression === null ? null : unparse(block.expression),
+      block.expressions === null ? null : block.expressions.map((expr) => unparse(expr)),
     ]);
     this.visitAll([block.children]);
   }
@@ -1474,20 +1474,36 @@ describe('R3 template transform', () => {
           }
         `).toEqual([
         ['SwitchBlock', 'cond.kind'],
-        ['SwitchBlockCase', 'x()'],
+        ['SwitchBlockCase', ['x()']],
         ['Text', ' X case '],
-        ['SwitchBlockCase', '"hello"'],
+        ['SwitchBlockCase', ['"hello"']],
         ['Element', 'button'],
         ['Text', 'Y case'],
-        ['SwitchBlockCase', '42'],
+        ['SwitchBlockCase', ['42']],
         ['Text', ' Z case '],
         ['SwitchBlockCase', null],
         ['Text', ' No case matched '],
       ]);
     });
 
+    it('should parse a switch block with multiple options', () => {
+      expectFromHtml(`
+          @switch (cond.kind) {
+            @case ('hello'; 'hi') {<button>Y case</button>}
+            @default { No case matched }
+          }
+        `).toEqual([
+        ['SwitchBlock', 'cond.kind'],
+        ['SwitchBlockCase', ['"hello"', '"hi"']],
+        ['Element', 'button'],
+        ['Text', 'Y case'],
+        ['SwitchBlockCase', null],
+        ['Text', ' No case matched '],
+      ]);
+    });
+
     // This is a special case for `switch` blocks, because `preserveWhitespaces` will cause
-    // some text nodes with whitespace to be preserve in the primary block.
+    // some text nodes with whitespace to be preserved in the primary block.
     it('should parse a switch block when preserveWhitespaces is enabled', () => {
       const template = `
         @switch (cond.kind) {
@@ -1509,14 +1525,14 @@ describe('R3 template transform', () => {
       expectFromR3Nodes(parse(template, {preserveWhitespaces: true}).nodes).toEqual([
         ['Text', '\n        '],
         ['SwitchBlock', 'cond.kind'],
-        ['SwitchBlockCase', 'x()'],
+        ['SwitchBlockCase', ['x()']],
         ['Text', '\n            X case\n          '],
-        ['SwitchBlockCase', '"hello"'],
+        ['SwitchBlockCase', ['"hello"']],
         ['Text', '\n            '],
         ['Element', 'button'],
         ['Text', 'Y case'],
         ['Text', '\n          '],
-        ['SwitchBlockCase', '42'],
+        ['SwitchBlockCase', ['42']],
         ['Text', '\n            Z case\n          '],
         ['SwitchBlockCase', null],
         ['Text', '\n            No case matched\n          '],
@@ -1534,12 +1550,12 @@ describe('R3 template transform', () => {
           }
         `).toEqual([
         ['SwitchBlock', 'cond.kind'],
-        ['SwitchBlockCase', 'x()'],
+        ['SwitchBlockCase', ['x()']],
         ['Text', ' X case '],
-        ['SwitchBlockCase', '"hello"'],
+        ['SwitchBlockCase', ['"hello"']],
         ['Element', 'button'],
         ['Text', 'Y case'],
-        ['SwitchBlockCase', '42'],
+        ['SwitchBlockCase', ['42']],
         ['Text', ' Z case '],
         ['SwitchBlockCase', null],
         ['Text', ' No case matched '],
@@ -1572,28 +1588,28 @@ describe('R3 template transform', () => {
           }
         `).toEqual([
         ['SwitchBlock', 'cond'],
-        ['SwitchBlockCase', '"a"'],
+        ['SwitchBlockCase', ['"a"']],
         ['SwitchBlock', 'innerCond'],
-        ['SwitchBlockCase', '"innerA"'],
+        ['SwitchBlockCase', ['"innerA"']],
         ['Text', ' Inner A '],
-        ['SwitchBlockCase', '"innerB"'],
+        ['SwitchBlockCase', ['"innerB"']],
         ['Text', ' Inner B '],
-        ['SwitchBlockCase', '"b"'],
+        ['SwitchBlockCase', ['"b"']],
         ['Element', 'button'],
         ['Text', 'Y case'],
-        ['SwitchBlockCase', '"c"'],
+        ['SwitchBlockCase', ['"c"']],
         ['Text', ' Z case '],
         ['SwitchBlockCase', null],
         ['SwitchBlock', 'innerCond'],
-        ['SwitchBlockCase', '"innerC"'],
+        ['SwitchBlockCase', ['"innerC"']],
         ['Text', ' Inner C '],
-        ['SwitchBlockCase', '"innerD"'],
+        ['SwitchBlockCase', ['"innerD"']],
         ['Text', ' Inner D '],
         ['SwitchBlockCase', null],
         ['SwitchBlock', 'innerInnerCond'],
-        ['SwitchBlockCase', '"innerInnerA"'],
+        ['SwitchBlockCase', ['"innerInnerA"']],
         ['Text', ' Inner inner A '],
-        ['SwitchBlockCase', '"innerInnerA"'],
+        ['SwitchBlockCase', ['"innerInnerA"']],
         ['Text', ' Inner inner B '],
       ]);
     });
@@ -1609,7 +1625,7 @@ describe('R3 template transform', () => {
           }
         `).toEqual([
         ['SwitchBlock', 'cond.kind'],
-        ['SwitchBlockCase', 'x'],
+        ['SwitchBlockCase', ['x']],
         ['Text', ' X case '],
         ['SwitchBlockCase', null],
         ['Text', ' No case matched '],
@@ -1688,24 +1704,14 @@ describe('R3 template transform', () => {
             @case {case}
           }
         `),
-        ).toThrowError(/@case block must have exactly one parameter/);
+        ).toThrowError(/@case block must have at least one parameter/);
         expect(() =>
           parse(`
           @switch (cond) {
             @case (            ) {case}
           }
         `),
-        ).toThrowError(/@case block must have exactly one parameter/);
-      });
-
-      it('should report if a case has more than one parameter', () => {
-        expect(() =>
-          parse(`
-          @switch (cond) {
-            @case (foo; bar) {case}
-          }
-        `),
-        ).toThrowError(/@case block must have exactly one parameter/);
+        ).toThrowError(/@case block must have at least one parameter/);
       });
 
       it('should report if a switch has multiple default blocks', () => {

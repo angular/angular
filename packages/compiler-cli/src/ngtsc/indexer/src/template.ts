@@ -327,7 +327,7 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
   }
 
   override visitSwitchBlockCase(block: TmplAstSwitchBlockCase) {
-    block.expression && this.visitExpression(block.expression);
+    block.expressions && block.expressions.forEach((expr) => this.visitExpression(expr));
     this.visitAll(block.children);
   }
 

@@ -187,11 +187,14 @@ export class TemplateReferenceVisitor<
   }
 
   override visitSwitchBlockCase(block: TmplAstSwitchBlockCase): void {
-    if (block.expression) {
-      const referencedFields = this.checkExpressionForReferencedFields(block, block.expression);
-      this.descendAndCheckForNarrowedSimilarReferences(referencedFields, () => {
-        super.visitSwitchBlockCase(block);
-      });
+    if (block.expressions) {
+      for (let i = 0; i < block.expressions.length; i++) {
+        const expression = block.expressions[i];
+        const referencedFields = this.checkExpressionForReferencedFields(block, expression);
+        this.descendAndCheckForNarrowedSimilarReferences(referencedFields, () => {
+          super.visitSwitchBlockCase(block);
+        });
+      }
     } else {
       super.visitSwitchBlockCase(block);
     }

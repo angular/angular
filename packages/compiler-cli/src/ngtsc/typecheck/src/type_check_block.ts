@@ -1767,7 +1767,8 @@ class TcbSwitchOp extends TcbOp {
 
   override execute(): null {
     const switchExpression = tcbExpression(this.block.expression, this.tcb, this.scope);
-    const clauses = this.block.cases.map((current) => {
+    const clauses: ts.CaseOrDefaultClause[] = [];
+    for (const current of this.block.cases) {
       const checkBody = this.tcb.env.config.checkControlFlowBodies;
       const clauseScope = Scope.forNodes(
         this.tcb,
@@ -1778,13 +1779,29 @@ class TcbSwitchOp extends TcbOp {
       );
       const statements = [...clauseScope.render(), ts.factory.createBreakStatement()];
 
-      return current.expression === null
-        ? ts.factory.createDefaultClause(statements)
-        : ts.factory.createCaseClause(
-            tcbExpression(current.expression, this.tcb, clauseScope),
-            statements,
-          );
-    });
+      if (current.expressions === null) {
+        clauses.push(ts.factory.createDefaultClause(statements));
+        continue;
+      }
+
+      const lastExpressionIndex = current.expressions.length - 1;
+
+      for (let i = 0; i < lastExpressionIndex; ++i) {
+        const expression = current.expressions[i];
+        const caseClause = ts.factory.createCaseClause(
+          tcbExpression(expression, this.tcb, clauseScope),
+          [],
+        );
+        clauses.push(caseClause);
+      }
+
+      clauses.push(
+        ts.factory.createCaseClause(
+          tcbExpression(current.expressions[lastExpressionIndex], this.tcb, clauseScope),
+          statements,
+        ),
+      );
+    }
 
     this.scope.addStatement(
       ts.factory.createSwitchStatement(switchExpression, ts.factory.createCaseBlock(clauses)),
@@ -1799,15 +1816,34 @@ class TcbSwitchOp extends TcbOp {
   ): ts.Expression | null {
     // For non-default cases, the guard needs to compare against the case value, e.g.
     // `switchExpression === caseExpression`.
-    if (node.expression !== null) {
+    if (node.expressions !== null) {
       // The expression needs to be ignored for diagnostics since it has been checked already.
-      const expression = tcbExpression(node.expression, this.tcb, this.scope);
+      const expression = tcbExpression(node.expressions[0], this.tcb, this.scope);
       markIgnoreDiagnostics(expression);
-      return ts.factory.createBinaryExpression(
+
+      let fullExpression = ts.factory.createBinaryExpression(
         switchValue,
         ts.SyntaxKind.EqualsEqualsEqualsToken,
         expression,
       );
+
+      for (let i = 1; i < node.expressions.length; ++i) {
+        const chainedExpression = node.expressions[i];
+        const expression = tcbExpression(chainedExpression, this.tcb, this.scope);
+        markIgnoreDiagnostics(expression);
+
+        fullExpression = ts.factory.createBinaryExpression(
+          fullExpression,
+          ts.SyntaxKind.BarBarToken,
+          ts.factory.createBinaryExpression(
+            switchValue,
+            ts.SyntaxKind.EqualsEqualsEqualsToken,
+            expression,
+          ),
+        );
+      }
+
+      return fullExpression;
     }
 
     // To fully narrow the type in the default case, we need to generate an expression that negates
@@ -1821,27 +1857,29 @@ class TcbSwitchOp extends TcbOp {
     let guard: ts.Expression | null = null;
 
     for (const current of this.block.cases) {
-      if (current.expression === null) {
+      if (current.expressions === null) {
         continue;
       }
 
-      // The expression needs to be ignored for diagnostics since it has been checked already.
-      const expression = tcbExpression(current.expression, this.tcb, this.scope);
-      markIgnoreDiagnostics(expression);
-      const comparison = ts.factory.createBinaryExpression(
-        switchValue,
-        ts.SyntaxKind.ExclamationEqualsEqualsToken,
-        expression,
-      );
-
-      if (guard === null) {
-        guard = comparison;
-      } else {
-        guard = ts.factory.createBinaryExpression(
-          guard,
-          ts.SyntaxKind.AmpersandAmpersandToken,
-          comparison,
+      for (let i = 0; i < current.expressions.length; ++i) {
+        // The expression needs to be ignored for diagnostics since it has been checked already.
+        const expression = tcbExpression(current.expressions[i], this.tcb, this.scope);
+        markIgnoreDiagnostics(expression);
+        const comparison = ts.factory.createBinaryExpression(
+          switchValue,
+          ts.SyntaxKind.ExclamationEqualsEqualsToken,
+          expression,
         );
+
+        if (guard === null) {
+          guard = comparison;
+        } else {
+          guard = ts.factory.createBinaryExpression(
+            guard,
+            ts.SyntaxKind.AmpersandAmpersandToken,
+            comparison,
+          );
+        }
       }
     }
 

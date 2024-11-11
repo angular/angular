@@ -182,7 +182,7 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
   }
 
   visitSwitchBlockCase(block: t.SwitchBlockCase) {
-    block.expression?.visit(this);
+    block.expressions?.forEach((expr) => expr.visit(this));
     t.visitAll(this, block.children);
   }
 

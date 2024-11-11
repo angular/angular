@@ -556,15 +556,19 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
     if (firstXref === null) {
       firstXref = cView.xref;
     }
-    const caseExpr = switchCase.expression
-      ? convertAst(switchCase.expression, unit.job, switchBlock.startSourceSpan)
-      : null;
-    const conditionalCaseExpr = new ir.ConditionalCaseExpr(
-      caseExpr,
-      templateOp.xref,
-      templateOp.handle,
-    );
-    conditions.push(conditionalCaseExpr);
+    if (switchCase.expressions === null) {
+      conditions.push(new ir.ConditionalCaseExpr(null, templateOp.xref, templateOp.handle));
+    } else {
+      for (const expr of switchCase.expressions) {
+        const caseExpr = convertAst(expr, unit.job, switchBlock.startSourceSpan);
+        const conditionalCaseExpr = new ir.ConditionalCaseExpr(
+          caseExpr,
+          templateOp.xref,
+          templateOp.handle,
+        );
+        conditions.push(conditionalCaseExpr);
+      }
+    }
     ingestNodes(cView, switchCase.children);
   }
   unit.update.push(

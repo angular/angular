@@ -583,7 +583,7 @@ class TemplateTargetVisitor implements TmplAstVisitor {
   }
 
   visitSwitchBlockCase(block: TmplAstSwitchBlockCase) {
-    block.expression && this.visitBinding(block.expression);
+    block.expressions && block.expressions.forEach((expr) => this.visitBinding(expr));
     this.visitAll(block.children);
   }
 
