@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {ErrorCode, makeDiagnostic, makeRelatedInformation} from '../../../diagnostics';
+import {ErrorCode, makeDiagnostic} from '../../../diagnostics';
 import type {ImportedSymbolsTracker, Reference} from '../../../imports';
 import type {ClassDeclaration} from '../../../reflection';
 import type {
@@ -37,7 +37,7 @@ export class UnusedStandaloneImportsRule implements SourceFileValidatorRule {
     );
   }
 
-  checkNode(node: ts.Node): ts.Diagnostic | null {
+  checkNode(node: ts.Node): ts.Diagnostic | ts.Diagnostic[] | null {
     if (!ts.isClassDeclaration(node)) {
       return null;
     }
@@ -72,38 +72,36 @@ export class UnusedStandaloneImportsRule implements SourceFileValidatorRule {
       return null;
     }
 
+    const propertyAssignment = closestNode(metadata.rawImports, ts.isPropertyAssignment);
     const category =
       this.typeCheckingConfig.unusedStandaloneImports === 'error'
         ? ts.DiagnosticCategory.Error
         : ts.DiagnosticCategory.Warning;
 
-    if (unused.length === metadata.imports.length) {
+    if (unused.length === metadata.imports.length && propertyAssignment !== null) {
       return makeDiagnostic(
         ErrorCode.UNUSED_STANDALONE_IMPORTS,
-        this.getDiagnosticNode(metadata.rawImports),
+        propertyAssignment.name,
         'All imports are unused',
         undefined,
         category,
       );
     }
 
-    return makeDiagnostic(
-      ErrorCode.UNUSED_STANDALONE_IMPORTS,
-      this.getDiagnosticNode(metadata.rawImports),
-      'Imports array contains unused imports',
-      unused.map((ref) => {
-        return makeRelatedInformation(
-          // Intentionally don't pass a message to `makeRelatedInformation` to make the diagnostic
-          // less noisy. The node will already be highlighted so the user can see which node is
-          // unused. Note that in the case where an origin can't be resolved, we fall back to
-          // the original node's identifier so the user can still see the name. This can happen
-          // when the unused is coming from an imports array within the same file.
-          ref.getOriginForDiagnostics(metadata.rawImports!, ref.node.name),
-          '',
-        );
-      }),
-      category,
-    );
+    return unused.map((ref) => {
+      const diagnosticNode =
+        ref.getIdentityInExpression(metadata.rawImports!) ||
+        ref.getIdentityIn(node.getSourceFile()) ||
+        metadata.rawImports!;
+
+      return makeDiagnostic(
+        ErrorCode.UNUSED_STANDALONE_IMPORTS,
+        diagnosticNode,
+        `${ref.node.name.text} is not used within the template of ${metadata.name}`,
+        undefined,
+        category,
+      );
+    });
   }
 
   private getUnusedSymbols(
@@ -181,21 +179,22 @@ export class UnusedStandaloneImportsRule implements SourceFileValidatorRule {
     // symbol like an array of shared common components.
     return true;
   }
+}
 
-  /** Gets the node on which to report the diagnostic. */
-  private getDiagnosticNode(importsExpression: ts.Expression): ts.Node {
-    let current = importsExpression.parent;
+/** Gets the closest parent node of a certain type. */
+function closestNode<T extends ts.Node>(
+  start: ts.Node,
+  predicate: (node: ts.Node) => node is T,
+): T | null {
+  let current = start.parent;
 
-    while (current) {
-      // Highlight the `imports:` part of the node instead of the entire node, because
-      // imports arrays can be long which makes the diagnostic harder to scan visually.
-      if (ts.isPropertyAssignment(current)) {
-        return current.name;
-      } else {
-        current = current.parent;
-      }
+  while (current) {
+    if (predicate(current)) {
+      return current;
+    } else {
+      current = current.parent;
     }
-
-    return importsExpression;
   }
+
+  return null;
 }

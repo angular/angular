@@ -7709,9 +7709,7 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe('Imports array contains unused imports');
-        expect(diags[0].relatedInformation?.length).toBe(1);
-        expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0])).toBe('UnusedDir');
+        expect(diags[0].messageText).toBe('UnusedDir is not used within the template of MyComp');
       });
 
       it('should report when a pipe is not used within a template', () => {
@@ -7766,9 +7764,7 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe('Imports array contains unused imports');
-        expect(diags[0].relatedInformation?.length).toBe(1);
-        expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0])).toBe('UnusedPipe');
+        expect(diags[0].messageText).toBe('UnusedPipe is not used within the template of MyComp');
       });
 
       it('should not report imports only used inside @defer blocks', () => {
@@ -7835,7 +7831,6 @@ suppress
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(diags[0].messageText).toBe('All imports are unused');
-        expect(diags[0].relatedInformation).toBeFalsy();
       });
 
       it('should not report unused imports coming from modules', () => {
@@ -7953,11 +7948,9 @@ suppress
         );
 
         const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe('Imports array contains unused imports');
-        expect(diags[0].relatedInformation?.length).toBe(2);
-        expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0])).toBe('NgFor');
-        expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![1])).toBe('PercentPipe');
+        expect(diags.length).toBe(2);
+        expect(diags[0].messageText).toBe('NgFor is not used within the template of MyComp');
+        expect(diags[1].messageText).toBe('PercentPipe is not used within the template of MyComp');
       });
 
       it('should report unused imports coming from a nested array from the same file', () => {
@@ -8017,9 +8010,7 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe('Imports array contains unused imports');
-        expect(diags[0].relatedInformation?.length).toBe(1);
-        expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0])).toBe('UnusedDir');
+        expect(diags[0].messageText).toBe('UnusedDir is not used within the template of MyComp');
       });
 
       it('should report unused imports coming from an array used as the `imports` initializer', () => {
@@ -8068,9 +8059,7 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe('Imports array contains unused imports');
-        expect(diags[0].relatedInformation?.length).toBe(1);
-        expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0])).toBe('UnusedDir');
+        expect(diags[0].messageText).toBe('UnusedDir is not used within the template of MyComp');
       });
 
       it('should not report unused imports coming from an array through a spread expression from a different file', () => {
