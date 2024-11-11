@@ -13,7 +13,7 @@ import {DEHYDRATED_BLOCK_REGISTRY} from '../defer/registry';
 import {onTimer} from '../defer/timer_scheduler';
 import {Injector} from '../di';
 import {assertDefined} from '../util/assert';
-import {hydrateFromBlockName} from '../defer/instructions';
+import {triggerHydrationFromBlockName} from '../defer/triggering';
 import {
   DEFER_HYDRATE_TRIGGERS,
   NUM_ROOT_NODES,
@@ -168,7 +168,7 @@ function processAndInitTriggers(
 async function setIdleTriggers(injector: Injector, elementTriggers: ElementTrigger[]) {
   for (const elementTrigger of elementTriggers) {
     const registry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
-    const onInvoke = () => hydrateFromBlockName(injector, elementTrigger.blockName);
+    const onInvoke = () => triggerHydrationFromBlockName(injector, elementTrigger.blockName);
     const cleanupFn = onIdle(onInvoke, injector);
     registry.addCleanupFn(elementTrigger.blockName, cleanupFn);
   }
@@ -181,7 +181,7 @@ async function setViewportTriggers(injector: Injector, elementTriggers: ElementT
       const cleanupFn = onViewport(
         elementTrigger.el,
         async () => {
-          await hydrateFromBlockName(injector, elementTrigger.blockName);
+          await triggerHydrationFromBlockName(injector, elementTrigger.blockName);
         },
         injector,
       );
@@ -193,7 +193,8 @@ async function setViewportTriggers(injector: Injector, elementTriggers: ElementT
 async function setTimerTriggers(injector: Injector, elementTriggers: ElementTrigger[]) {
   for (const elementTrigger of elementTriggers) {
     const registry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
-    const onInvoke = async () => await hydrateFromBlockName(injector, elementTrigger.blockName);
+    const onInvoke = async () =>
+      await triggerHydrationFromBlockName(injector, elementTrigger.blockName);
     const timerFn = onTimer(elementTrigger.delay!);
     const cleanupFn = timerFn(onInvoke, injector);
     registry.addCleanupFn(elementTrigger.blockName, cleanupFn);
@@ -202,7 +203,7 @@ async function setTimerTriggers(injector: Injector, elementTriggers: ElementTrig
 
 async function setImmediateTriggers(injector: Injector, elementTriggers: ElementTrigger[]) {
   for (const elementTrigger of elementTriggers) {
-    await hydrateFromBlockName(injector, elementTrigger.blockName);
+    await triggerHydrationFromBlockName(injector, elementTrigger.blockName);
   }
 }
 

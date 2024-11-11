@@ -43,7 +43,7 @@ import {
 } from '../event_delegation_utils';
 import {APP_ID} from '../application/application_tokens';
 import {performanceMarkFeature} from '../util/performance';
-import {hydrateFromBlockName} from '../defer/instructions';
+import {triggerHydrationFromBlockName} from '../defer/triggering';
 
 /** Apps in which we've enabled event replay.
  *  This is to prevent initializing event replay more than once per app.
@@ -244,7 +244,7 @@ export async function hydrateAndInvokeBlockListeners(
   currentTarget: Element,
 ) {
   blockEventQueue.push({event, currentTarget});
-  await hydrateFromBlockName(injector, blockName, replayQueuedBlockEvents);
+  await triggerHydrationFromBlockName(injector, blockName, replayQueuedBlockEvents);
 }
 
 function replayQueuedBlockEvents(hydratedBlocks: Set<string>) {
