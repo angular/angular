@@ -85,10 +85,8 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: Build adev in fast mode to ensure it continues to work
         run: yarn bazel build //adev:build --config=release
-      # TODO: re-enable tests once the next release is shipped
-      # Tests are broken because of https://github.com/angular/angular/issues/54858
-      # - name: Run tests
-      # run: yarn bazel test //adev/...
+      - name: Run tests
+        run: yarn bazel test //adev/...
 
   publish-snapshots:
     runs-on:

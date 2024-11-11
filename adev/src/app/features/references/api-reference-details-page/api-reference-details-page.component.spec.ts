@@ -13,7 +13,7 @@ import {MatTabGroupHarness} from '@angular/material/tabs/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {ReferenceScrollHandler} from '../services/reference-scroll-handler.service';
 import {signal} from '@angular/core';
-import {provideRouter} from '@angular/router';
+import {provideRouter, withComponentInputBinding} from '@angular/router';
 import {RouterTestingHarness, RouterTestingModule} from '@angular/router/testing';
 
 import ApiReferenceDetailsPage from './api-reference-details-page.component';
@@ -42,18 +42,21 @@ describe('ApiReferenceDetailsPage', () => {
     TestBed.configureTestingModule({
       imports: [ApiReferenceDetailsPage, RouterTestingModule, NoopAnimationsModule],
       providers: [
-        provideRouter([
-          {
-            path: '**',
-            component: ApiReferenceDetailsPage,
-            data: {
-              'docContent': {
-                id: 'id',
-                contents: SAMPLE_CONTENT_WITH_TABS,
+        provideRouter(
+          [
+            {
+              path: '**',
+              component: ApiReferenceDetailsPage,
+              data: {
+                'docContent': {
+                  id: 'id',
+                  contents: SAMPLE_CONTENT_WITH_TABS,
+                },
               },
             },
-          },
-        ]),
+          ],
+          withComponentInputBinding(),
+        ),
       ],
     });
     TestBed.overrideProvider(ReferenceScrollHandler, {useValue: fakeApiReferenceScrollHandler});
