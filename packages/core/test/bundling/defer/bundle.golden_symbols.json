@@ -1971,6 +1971,9 @@
     "name": "init_render3"
   },
   {
+    "name": "init_rendering"
+  },
+  {
     "name": "init_reportUnhandledError"
   },
   {
@@ -2095,6 +2098,9 @@
   },
   {
     "name": "init_transfer_state"
+  },
+  {
+    "name": "init_triggering"
   },
   {
     "name": "init_trusted_types"
@@ -2572,6 +2578,9 @@
   },
   {
     "name": "trackMovedView"
+  },
+  {
+    "name": "triggerDeferBlock"
   },
   {
     "name": "uniqueIdCounter"
