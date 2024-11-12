@@ -10,7 +10,6 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import ApiItemsSection from './api-items-section.component';
 import {ApiItemsGroup} from '../interfaces/api-items-group';
-import {ApiReferenceManager} from '../api-reference-list/api-reference-manager.service';
 import {ApiItemType} from '../interfaces/api-item-type';
 import {provideRouter} from '@angular/router';
 import {By} from '@angular/platform-browser';
@@ -60,7 +59,7 @@ describe('ApiItemsSection', () => {
     fixture.detectChanges();
 
     const deprecatedApiIcons = fixture.debugElement.queryAll(
-      By.css('.adev-api-items-section-grid li .docs-deprecated'),
+      By.css('.adev-api-items-section-grid li .adev-deprecated'),
     );
     const deprecatedApiTitle = deprecatedApiIcons[0].parent?.query(By.css('.adev-item-title'));
 
