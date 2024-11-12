@@ -78,12 +78,6 @@ query --output=label_kind
 # By default, failing tests don't print any output, it goes to the log file
 test --test_output=errors
 
-################################
-# Settings for CircleCI        #
-################################
-
-# Bazel flags for CircleCI are in /.circleci/bazel.linux.rc and /.circleci/bazel.windows.rc
-
 ##################################
 # Remote Build Execution support #
 # Turn on these settings with    #
