@@ -30,6 +30,7 @@ import {
   ZONELESS_SCHEDULER_DISABLED,
   SCHEDULE_IN_ROOT_ZONE,
 } from './zoneless_scheduling';
+import {TracingService} from '../../application/tracing';
 
 const CONSECUTIVE_MICROTASK_NOTIFICATION_LIMIT = 100;
 let consecutiveMicrotaskNotifications = 0;
@@ -60,6 +61,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   private readonly taskService = inject(PendingTasksInternal);
   private readonly ngZone = inject(NgZone);
   private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
+  private readonly tracing = inject(TracingService, {optional: true});
   private readonly disableScheduling =
     inject(ZONELESS_SCHEDULER_DISABLED, {optional: true}) ?? false;
   private readonly zoneIsDefined = typeof Zone !== 'undefined' && !!Zone.root.run;
@@ -191,6 +193,10 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
         this.appRef.dirtyFlags |= ApplicationRefDirtyFlags.AfterRender;
       }
     }
+
+    // If not already defined, attempt to capture a tracing snapshot of this notification so that
+    // the resulting CD run can be attributed to the context which produced the notification.
+    this.appRef.tracingSnapshot ??= this.tracing?.snapshot();
 
     if (!this.shouldScheduleTick(force)) {
       return;

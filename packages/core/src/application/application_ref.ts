@@ -45,6 +45,7 @@ import {isPromise} from '../util/lang';
 import {NgZone} from '../zone/ng_zone';
 
 import {ApplicationInitStatus} from './application_init';
+import {TracingService} from './tracing';
 import {EffectScheduler} from '../render3/reactivity/root_effect_scheduler';
 
 /**
@@ -311,6 +312,7 @@ export class ApplicationRef {
   private readonly afterRenderManager = inject(AfterRenderManager);
   private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
   private readonly rootEffectScheduler = inject(EffectScheduler);
+  private readonly tracing = inject(TracingService, {optional: true});
 
   /**
    * Current dirty state of the application across a number of dimensions (views, afterRender hooks,
@@ -328,6 +330,16 @@ export class ApplicationRef {
    * @internal
    */
   deferredDirtyFlags = ApplicationRefDirtyFlags.None;
+
+  /**
+   * Most recent snapshot from the `TracingService`, if any.
+   *
+   * This snapshot attempts to capture the context when `tick()` was first scheduled. It then runs
+   * wrapped in this context.
+   *
+   * @internal
+   */
+  tracingSnapshot: unknown | undefined = undefined;
 
   // Needed for ComponentFixture temporarily during migration of autoDetect behavior
   // Eventually the hostView of the fixture should just attach to ApplicationRef.
@@ -577,11 +589,15 @@ export class ApplicationRef {
     if (!this.zonelessEnabled) {
       this.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeGlobal;
     }
-    this._tick();
+
+    // Run `_tick()` in the context of the most recent snapshot, if one exists.
+    this.tracing?.run(this._tick, this.tracingSnapshot) ?? this._tick();
   }
 
   /** @internal */
-  _tick(): void {
+  _tick = (): void => {
+    this.tracingSnapshot = undefined;
+
     (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
     if (this._runningTick) {
       throw new RuntimeError(
@@ -608,7 +624,7 @@ export class ApplicationRef {
       setActiveConsumer(prevConsumer);
       this.afterTick.next();
     }
-  }
+  };
 
   /**
    * Performs the core work of synchronizing the application state with the UI, resolving any
