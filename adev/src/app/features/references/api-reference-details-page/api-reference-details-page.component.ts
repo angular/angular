@@ -6,14 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  afterNextRender,
-  inject,
-  input,
-  computed,
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, input, computed} from '@angular/core';
 import {DOCUMENT} from '@angular/common';
 import {MatTabsModule} from '@angular/material/tabs';
 import {DocContent, DocViewer} from '@angular/docs';
@@ -26,7 +19,6 @@ import {
   API_REFERENCE_TAB_ATTRIBUTE,
   API_REFERENCE_TAB_API_LABEL,
   API_TAB_CLASS_NAME,
-  API_REFERENCE_TAB_BODY_CLASS_NAME,
   API_REFERENCE_TAB_URL_ATTRIBUTE,
 } from '../constants/api-reference-prerender.constants';
 import {AppScroller} from '../../../app-scroller';
@@ -51,7 +43,6 @@ export default class ApiReferenceDetailsPage {
 
   // aliases
   ApiItemType = ApiItemType;
-  membersMarginTopInPx = this.scrollHandler.membersMarginTopInPx;
 
   // computed state
   parsedDocContent = computed(() => {
@@ -107,11 +98,6 @@ export default class ApiReferenceDetailsPage {
 
   constructor() {
     this.appScroller.disableScrolling = true;
-    afterNextRender({
-      write: () => {
-        this.scrollHandler.updateMembersMarginTop(API_REFERENCE_TAB_BODY_CLASS_NAME);
-      },
-    });
   }
 
   ngOnDestroy() {
