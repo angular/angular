@@ -15,26 +15,25 @@
 
   .adev-header-and-tabs {
     &.adev-cli-content {
-      width: 50%;
+      width: 100%;
+      max-width: var(--page-width);
+
       @include mq.for-desktop-down {
-        width: 100%;
+        max-width: none;
       }
     }
   }
 
   .adev-cli-members-container {
-    width: 50%;
-    padding: 0 var(--layout-padding) 1rem 0;
-
-    margin-top: 8.3125rem;
+    padding: 0 0 var(--layout-padding) var(--layout-padding);
     padding-bottom: 1rem;
     box-sizing: border-box;
-    max-width: 60ch;
+    max-width: var(--page-width);
+
     @include mq.for-desktop-down {
       width: 100%;
       padding: var(--layout-padding);
-      // override js applied margin top
-      margin-block-start: 0 !important;
+      padding-top: 0;
       max-width: none;
     }
   }
@@ -103,7 +102,10 @@
     background: transparent;
     border-radius: 0.25rem;
     position: relative;
-    transition: color 0.3s ease, background 0.3s ease, border 0.3s ease;
+    transition:
+      color 0.3s ease,
+      background 0.3s ease,
+      border 0.3s ease;
 
     &:hover {
       color: var(--primary-contrast);
