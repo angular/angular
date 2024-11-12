@@ -19,7 +19,7 @@ You provide Angular-specific information for a component by adding a `@Component
 export class ProfilePhoto { }
 </docs-code>
 
-For full details on writing Angular templates, see the [Templates guide](guide/templates).
+For full details on writing Angular templates, including data binding, event handling, and control flow, see the [Templates guide](guide/templates).
 
 The object passed to the `@Component` decorator is called the component's **metadata**. This includes the `selector`, `template`, and other properties described throughout this guide.
 
@@ -53,6 +53,29 @@ Both `templateUrl` and `styleUrl` are relative to the directory in which the com
 
 ## Using components
 
+### Imports in the `@Component` decorator
+
+To use a component, [directive](guide/directives), or [pipe](guide/templates/pipes), you must add
+it to the `imports` array in the `@Component` decorator:
+
+```angular-ts
+import {ProfilePhoto} from './profile-photo';
+
+@Component({
+  // Import the `ProfilePhoto` component in
+  // order to use it in this component's template.
+  imports: [ProfilePhoto],
+  /* ... */
+})
+export class UserProfile { }
+```
+
+By default, Angular components are *standalone*, meaning that you can directly add them to the `imports` array of other components. Components created with an earlier version of Angular may instead specify `standalone: false` in their `@Component` decorator. For these components, you instead import the `NgMdoule` in which the component is defined. See the full [`NgModule` guide](guide/ngmodules) for details.
+
+Important: In Angular versions before 19.0.0, the `standalone` option defaults to `false`.
+
+### Showing components in a template
+
 Every component defines a [CSS selector](https://developer.mozilla.org/docs/Learn/CSS/Building_blocks/Selectors):
 
 <docs-code language="angular-ts" highlight="[2]">
@@ -65,20 +88,20 @@ export class ProfilePhoto { }
 
 See [Component Selectors](guide/components/selectors) for details about which types of selectors Angular supports and guidance on choosing a selector.
 
-You use a component by creating a matching HTML element in the template of _other_ components:
+You show a component by creating a matching HTML element in the template of _other_ components:
 
-<docs-code language="angular-ts" highlight="[4]">
+<docs-code language="angular-ts" highlight="[8]">
 @Component({
-  selector: 'user-profile',
-  template: `
-    <profile-photo />
-    <button>Upload a new profile photo</button>`,
-  ...,
+  selector: 'profile-photo',
+})
+export class ProfilePhoto { }
+
+@Component({
+  imports: [ProfilePhoto],
+  template: `<profile-photo />`
 })
 export class UserProfile { }
 </docs-code>
-
-See [Importing and using components](guide/components/importing) for details on how to reference and use other components in your template.
 
 Angular creates an instance of the component for every matching HTML element it encounters. The DOM element that matches a component's selector is referred to as that component's **host element**. The contents of a component's template are rendered inside its host element.
 
