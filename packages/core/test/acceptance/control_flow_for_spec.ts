@@ -1081,5 +1081,58 @@ describe('control flow - for', () => {
       expect(directiveCount).toBe(1);
       expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 1');
     });
+
+    it('should not project an @for that has text followed by one element node at the root', () => {
+      @Component({
+        selector: 'test',
+        template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+      })
+      class TestComponent {}
+
+      @Component({
+        imports: [TestComponent],
+        template: `
+          <test>
+            @for (item of items; track $index) {Hello <span foo>{{item}}</span>}
+          </test>
+        `,
+      })
+      class App {
+        items = [1];
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('Main: Hello 1 Slot: ');
+    });
+
+    it('should project an @for with a single root node and @let declarations into the root node slot', () => {
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+      })
+      class TestComponent {}
+
+      @Component({
+        standalone: true,
+        imports: [TestComponent],
+        template: `
+        <test>Before @for (item of items; track $index) {
+          @let a = item + 1;
+          @let b = a + 1;
+          <span foo>{{b}}</span>
+        } After</test>
+      `,
+      })
+      class App {
+        items = [1];
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 3');
+    });
   });
 });

@@ -527,6 +527,21 @@
       ]
     },
     {
+      "description": "should generate an if block with an element root node preceded by non-element node",
+      "inputFiles": ["if_element_root_node_at_end.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "if_element_root_node_at_end_template.js",
+              "generated": "if_element_root_node_at_end.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
       "description": "should generate a for block with an element root node",
       "inputFiles": ["for_element_root_node.ts"],
       "expectations": [
@@ -557,6 +572,21 @@
       ]
     },
     {
+      "description": "should generate a for block with an element root node preceded by non-element node",
+      "inputFiles": ["for_element_root_node_at_end.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_element_root_node_at_end_template.js",
+              "generated": "for_element_root_node_at_end.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
       "description": "should generate a switch block with cases that have element root nodes",
       "inputFiles": ["switch_element_root_node.ts"],
       "expectations": [
@@ -565,6 +595,21 @@
             {
               "expected": "switch_element_root_node_template.js",
               "generated": "switch_element_root_node.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a switch block with cases that have element root nodes preceded by non-element node",
+      "inputFiles": ["switch_element_root_node_at_end.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "switch_element_root_node_at_end_template.js",
+              "generated": "switch_element_root_node_at_end.js"
             }
           ],
           "failureMessage": "Incorrect template"
