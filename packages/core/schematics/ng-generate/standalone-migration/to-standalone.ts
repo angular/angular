@@ -602,7 +602,11 @@ function findNgModuleClassesToMigrate(sourceFile: ts.SourceFile, typeChecker: ts
 export function findTestObjectsToMigrate(sourceFile: ts.SourceFile, typeChecker: ts.TypeChecker) {
   const testObjects: ts.ObjectLiteralExpression[] = [];
   const testBedImport = getImportSpecifier(sourceFile, '@angular/core/testing', 'TestBed');
-  const catalystImport = getImportSpecifier(sourceFile, /testing\/catalyst$/, 'setupModule');
+  const catalystImport = getImportSpecifier(
+    sourceFile,
+    /testing\/catalyst(\/(fake_)?async)?$/,
+    'setupModule',
+  );
 
   if (testBedImport || catalystImport) {
     sourceFile.forEachChild(function walk(node) {
