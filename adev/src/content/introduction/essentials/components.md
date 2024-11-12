@@ -2,136 +2,122 @@
 The fundamental building block for creating applications in Angular.
 </docs-decorative-header>
 
-Components provide structure for organizing your project into easy-to-understand parts with clear responsibilities so that your code is maintainable and scalable.
+Components are the main building blocks of Angular applications. Each component represents a part of a larger web page. Organizing an application into components helps provide structure to your project, clearly separating code into specific parts that are easy to maintain and grow over time.
 
-Here is an example of how a Todo application could be broken down into a tree of components.
+## Defining a component
 
-```mermaid
-flowchart TD
-    A[TodoApp]-->B
-    A-->C
-    B[TodoList]-->D
-    C[TodoMetrics]
-    D[TodoListItem]
-```
+Every component has a few main parts:
 
-In this guide, we'll take a look at how to create and use components in Angular.
+1. A `@Component`[decorator](https://www.typescriptlang.org/docs/handbook/decorators.html) that contains some configuration used by Angular.
+2. An HTML template that controls what renders into the DOM.
+3. A [CSS selector](https://developer.mozilla.org/docs/Learn/CSS/Building_blocks/Selectors) that defines how the component is used in HTML.
+4. A TypeScript class with behaviors, such as handling user input or making requests to a server.
 
-## Defining a Component
-
-Every component has the following core properties:
-
-1. A `@Component`[decorator](https://www.typescriptlang.org/docs/handbook/decorators.html) that contains some configuration
-2. An HTML template that controls what renders into the DOM
-3. A [CSS selector](https://developer.mozilla.org/docs/Learn/CSS/Building_blocks/Selectors) that defines how the component is used in HTML
-4. A TypeScript class with behaviors such as managing state, handling user input, or fetching data from a server.
-
-Here is a simplified example of a TodoListItem component.
+Here is a simplified example of a `UserProfile` component.
 
 ```angular-ts
-// todo-list-item.component.ts
+// user-profile.ts
 @Component({
-  selector: 'todo-list-item',
+  selector: 'user-profile',
   template: `
-    <li>(TODO) Read Angular Essentials Guide</li>
+    <h1>User profile</h1>
+    <p>This is the user profile page</p>
   `,
 })
-export class TodoListItem {
-  /* Component behavior is defined in here */
-}
+export class UserProfile { /* Your component code goes here */ }
 ```
 
-Other common metadata that you'll also see in components include:
-
-- `standalone: true` — The recommended approach of streamlining the authoring experience of components
-- `styles` — A string or array of strings that contains any CSS styles you want applied to the component
-
-Knowing this, here is an updated version of our `TodoListItem` component.
+The `@Component` decorator also optionally accepts a `styles` property for any CSS you want to apply to your template:
 
 ```angular-ts
-// todo-list-item.component.ts
+// user-profile.ts
 @Component({
-  standalone: true,
-  selector: 'todo-list-item',
+  selector: 'user-profile',
   template: `
-    <li>(TODO) Read Angular Essentials Guide</li>
+    <h1>User profile</h1>
+    <p>This is the user profile page</p>
   `,
-  styles: `
-    li {
-      color: red;
-      font-weight: 300;
-    }
-  `,
+  styles: `h1 { font-size: 3em; } `,
 })
-export class TodoListItem {
-  /* Component behavior is defined in here */
-}
+export class UserProfile { /* Your component code goes here */ }
 ```
 
 ### Separating HTML and CSS into separate files
 
-For teams that prefer managing their HTML and/or CSS in separate files, Angular provides two additional properties: `templateUrl` and `styleUrl`.
-
-Using the previous `TodoListItem` component, the alternative approach looks like:
+You can define a component's HTML and CSS in separate files using `templateUrl` and `styleUrl`:
 
 ```angular-ts
-// todo-list-item.component.ts
+// user-profile.ts
 @Component({
-  standalone: true,
-  selector: 'todo-list-item',
-  templateUrl: './todo-list-item.component.html',
-  styleUrl: './todo-list-item.component.css',
+  selector: 'user-profile',
+  templateUrl: 'user-profile.html',
+  styleUrl: 'user-profile.css',
 })
-export class TodoListItem {
-  /* Component behavior is defined in here */
+export class UserProfile {
+  // Component behavior is defined in here
 }
 ```
 
 ```angular-html
-<!-- todo-list-item.component.html -->
-<li>(TODO) Read Angular Essentials Guide</li>
+<!-- user-profile.html -->
+<h1>Use profile</h1>
+<p>This is the user profile page</p>
 ```
 
 ```css
-/* todo-list-item.component.css */
-li {
-  color: red;
-  font-weight: 300;
+/* user-profile.css */
+h1 {
+  font-size: 3em;
 }
 ```
 
-## Using a Component
+## Using components
 
-One advantage of component architecture is that your application is modular. In other words, components can be used in other components.
+You build an application by composing multiple components together. For example, if you are building a user profile page, you might break the page up into several components like this:
 
-To use a component, you need to:
+```mermaid
+flowchart TD
+    A[UserProfile]-->B
+    A-->C
+    B[UserBiography]-->D
+    C[ProfilePhoto]
+    D[UserAddress]
+```
 
-1. Import the component into the file
-2. Add it to the component's `imports` array
-3. Use the component's selector in the `template`
+Here, the `UserProfile` component uses several other components to produce the final page.
 
-Here's an example of a `TodoList` component importing the `TodoListItem` component from before:
+To import and use a component, you need to:
+1. In your component's TypeScript file, add an `import` statement for the component you want to use.
+2. In your `@Component` decorator, add an entry to the `imports` array for the component you want to use.
+3. In your component's template, add an element that matches the selector of the component you want to use.
+
+Here's an example of a `UserProfile` component importing a `ProfilePhoto` component:
 
 ```angular-ts
-// todo-list.component.ts
-import {TodoListItem} from './todo-list-item.component.ts';
+// user-profile.ts
+import {ProfilePhoto} from 'profile-photo.ts';
 
 @Component({
-  standalone: true,
-  imports: [TodoListItem],
+  selector: 'user-profile',
+  imports: [ProfilePhoto],
   template: `
-    <ul>
-      <todo-list-item></todo-list-item>
-    </ul>
+    <h1>User profile</h1>
+    <profile-photo />
+    <p>This is the user profile page</p>
   `,
 })
-export class TodoList {}
+export class UserProfile {
+  // Component behavior is defined in here
+}
 ```
+
+Tip: Want to know more about Angular components? See the [In-depth Components guide](guide/components) for the full details.
 
 ## Next Step
 
 Now that you know how components work in Angular, it's time to learn how we add and manage dynamic data in our application.
 
 <docs-pill-row>
-  <docs-pill title="Managing Dynamic Data" href="essentials/managing-dynamic-data" />
+  <docs-pill title="Reactivity with signals" href="essentials/signals" />
+  <docs-pill title="In-depth components guide" href="guide/components" />
 </docs-pill-row>

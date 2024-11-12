@@ -1,5 +1,5 @@
-<docs-decorative-header title="Sharing Code" imgSrc="adev/src/assets/images/dependency_injection.svg"> <!-- markdownlint-disable-line -->
-Dependency injection allows you to share code.
+<docs-decorative-header title="Dependency Injection" imgSrc="adev/src/assets/images/dependency_injection.svg"> <!-- markdownlint-disable-line -->
+Reuse code and control behaviors across your application and tests.
 </docs-decorative-header>
 
 When you need to share logic between components, Angular leverages the design pattern of [dependency injection](guide/di) that allows you to create a “service” which allows you to inject code into components while managing it from a single source of truth.
@@ -18,10 +18,8 @@ Here is an example of a `Calculator` service.
 ```angular-ts
 import {Injectable} from '@angular/core';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class CalculatorService {
+@Injectable({providedIn: 'root'})
+export class Calculator {
   add(x: number, y: number) {
     return x + y;
   }
@@ -39,7 +37,7 @@ Here’s what it might look like in the `Receipt` component:
 
 ```angular-ts
 import { Component, inject } from '@angular/core';
-import { CalculatorService } from './calculator.service';
+import { Calculator } from './calculator';
 
 @Component({
   selector: 'app-receipt',
@@ -47,15 +45,16 @@ import { CalculatorService } from './calculator.service';
 })
 
 export class Receipt {
-  private calculatorService = inject(CalculatorService);
-  totalCost = this.calculatorService.add(50, 25);
+  private calculator = inject(Calculator);
+  totalCost = this.calculator.add(50, 25);
 }
 ```
 
-In this example, the `CalculatorService` is being used by calling the Angular function `inject` and passing in the service to it.
+In this example, the `Calculator` is being used by calling the Angular function `inject` and passing in the service to it.
 
 ## Next Step
 
 <docs-pill-row>
   <docs-pill title="Next Steps After Essentials" href="essentials/next-steps" />
+  <docs-pill title="In-depth dependency injection guide" href="guide/di" />
 </docs-pill-row>
