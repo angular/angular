@@ -395,3 +395,31 @@ export function calcPathForNode(
   }
   return path!;
 }
+
+/**
+ * Retrieves all comments nodes that contain ngh comments referring to a defer block
+ */
+export function gatherDeferBlocksCommentNodes(
+  doc: Document,
+  node: HTMLElement,
+): Map<string, Comment> {
+  const commentNodesIterator = doc.createNodeIterator(node, NodeFilter.SHOW_COMMENT, {acceptNode});
+  let currentNode: Comment;
+
+  const nodesByBlockId = new Map<string, Comment>();
+  while ((currentNode = commentNodesIterator.nextNode() as Comment)) {
+    // TODO(incremental-hydration: convert this to use string parsing rather than regex
+    const regex = new RegExp(/^\s*ngh=(d[0-9]+)/g);
+    const result = regex.exec(currentNode?.textContent ?? '');
+    if (result && result?.length > 0) {
+      nodesByBlockId.set(result[1], currentNode);
+    }
+  }
+  return nodesByBlockId;
+}
+
+function acceptNode(node: HTMLElement) {
+  return node.textContent?.trimStart().startsWith('ngh=')
+    ? NodeFilter.FILTER_ACCEPT
+    : NodeFilter.FILTER_REJECT;
+}
