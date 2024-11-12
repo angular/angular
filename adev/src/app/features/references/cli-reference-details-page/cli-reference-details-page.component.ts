@@ -44,7 +44,6 @@ export default class CliReferenceDetailsPage implements OnInit {
 
   cardsInnerHtml = signal<string>('');
   mainContentInnerHtml = signal<string>('');
-  membersMarginTopInPx = this.scrollHandler.membersMarginTopInPx;
 
   ngOnInit(): void {
     this.setPageContent();
@@ -52,7 +51,6 @@ export default class CliReferenceDetailsPage implements OnInit {
 
   contentLoaded(): void {
     this.scrollHandler.setupListeners(CLI_TOC);
-    this.scrollHandler.updateMembersMarginTop(CLI_TOC);
   }
 
   // Fetch the content for CLI Reference page based on the active route.

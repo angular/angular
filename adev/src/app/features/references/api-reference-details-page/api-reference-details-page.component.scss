@@ -5,9 +5,7 @@
   gap: 1rem;
   width: 100%;
   box-sizing: border-box;
-  @include mq.for-desktop-down {
-    flex-direction: column;
-  }
+  flex-direction: column;
 
   h1 {
     font-size: 1.5rem;
@@ -34,32 +32,14 @@
   .adev-header-and-tabs {
     padding: var(--layout-padding) 0 1rem var(--layout-padding);
     box-sizing: border-box;
+    width: 100%;
+    max-width: var(--page-width);
 
-    @include mq.for-desktop-up {
-      // this section should only be independently scrollable if
-      // the API tab is active & the screen is wide enough
-      &:has(.docs-reference-api-tab),
-      &.adev-cli-content {
-        position: sticky;
-        top: 0;
-        padding-inline-end: 1rem;
-        max-height: 100vh;
-        height: max-content;
-        overflow-y: scroll;
-        width: 50%;
-      }
-      &:has(.docs-reference-api-tab) {
-        width: 60%;
-      }
-      &:not(:has(.docs-reference-api-tab)) {
-        width: 100%;
-        max-width: var(--page-width);
-      }
-    }
     @include mq.for-desktop-down {
       padding: var(--layout-padding);
-      width: 100%;
+      max-width: none;
     }
+
     &::-webkit-scrollbar-thumb {
       background-color: var(--septenary-contrast);
       border-radius: 10px;
@@ -164,17 +144,15 @@
 
   .docs-reference-members-container {
     width: 40%;
-    padding: 0 var(--layout-padding) 1rem 0;
     box-sizing: border-box;
-    max-width: 60ch;
+    width: 100%;
+    max-width: var(--page-width);
+    padding: 0 0 1rem var(--layout-padding);
+
     @include mq.for-desktop-down {
-      width: 100%;
       padding: var(--layout-padding);
+      padding-top: 0;
       max-width: none;
-      // override javascript-applied margin-top:
-      // determined by how much space the sticky header takes up
-      // to align the selected card member with the code block
-      margin-block-start: 0 !important;
     }
   }
 
@@ -301,7 +279,7 @@
       h3 {
         display: inline-block;
         font-family: var(--code-font);
-        font-size: 1.25rem;
+        font-size: 1rem;
         letter-spacing: -0.025rem;
         margin: 0;
         max-width: 100%;

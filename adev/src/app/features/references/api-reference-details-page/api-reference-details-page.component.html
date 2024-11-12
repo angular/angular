@@ -1,7 +1,13 @@
-<div class="adev-header-and-tabs docs-scroll-track-transparent">
+<div class="adev-header-and-tabs">
   <docs-viewer [docContent]="parsedDocContent().header" class="docs-reference-header"></docs-viewer>
 
-  <mat-tab-group class="docs-reference-tabs" animationDuration="0ms" mat-stretch-tabs="false" [selectedIndex]="selectedTabIndex()" (selectedIndexChange)="tabChange($event)">
+  <mat-tab-group
+    class="docs-reference-tabs"
+    animationDuration="0ms"
+    mat-stretch-tabs="false"
+    [selectedIndex]="selectedTabIndex()"
+    (selectedIndexChange)="tabChange($event)"
+  >
     @for (tab of tabs(); track tab.url) {
       <mat-tab [label]="tab.title">
         <div class="adev-reference-tab-body">
@@ -12,12 +18,12 @@
   </mat-tab-group>
 </div>
 
-@if (isApiTabActive() && membersMarginTopInPx() > 0) {
+@if (isApiTabActive()) {
   <docs-viewer
     class="docs-reference-members-container"
     [docContent]="parsedDocContent().members"
-    [style.marginTop.px]="membersMarginTopInPx()"
-    (contentLoaded)="membersCardsLoaded()">
+    (contentLoaded)="membersCardsLoaded()"
+  >
   </docs-viewer>
 }
 
