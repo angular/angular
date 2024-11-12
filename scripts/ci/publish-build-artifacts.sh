@@ -75,7 +75,6 @@ function publishRepo {
 
   if [[ ${CI} ]]; then
     (
-      # The file ~/.git_credentials is created in /.circleci/config.yml
       cd $REPO_DIR && \
       git config credential.helper "store --file=$HOME/.git_credentials"
     )
