@@ -1458,36 +1458,6 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/ngmodules/overview',
           },
           {
-            label: 'JS Modules vs NgModules',
-            path: 'guide/ngmodules/vs-jsmodule',
-            contentPath: 'guide/ngmodules/vs-jsmodule',
-          },
-          {
-            label: 'Launching your app with a root module',
-            path: 'guide/ngmodules/bootstrapping',
-            contentPath: 'guide/ngmodules/bootstrapping',
-          },
-          {
-            label: 'Sharing NgModules',
-            path: 'guide/ngmodules/sharing',
-            contentPath: 'guide/ngmodules/sharing',
-          },
-          {
-            label: 'Frequently used NgModules',
-            path: 'guide/ngmodules/frequent',
-            contentPath: 'guide/ngmodules/frequent',
-          },
-          {
-            label: 'Feature modules',
-            path: 'guide/ngmodules/feature-modules',
-            contentPath: 'guide/ngmodules/feature-modules',
-          },
-          {
-            label: 'Types of feature modules',
-            path: 'guide/ngmodules/module-types',
-            contentPath: 'guide/ngmodules/module-types',
-          },
-          {
             label: 'Providing dependencies',
             path: 'guide/ngmodules/providers',
             contentPath: 'guide/ngmodules/providers',
@@ -1501,11 +1471,6 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
             label: 'Lazy-loading feature modules',
             path: 'guide/ngmodules/lazy-loading',
             contentPath: 'guide/ngmodules/lazy-loading',
-          },
-          {
-            label: 'NgModule API',
-            path: 'guide/ngmodules/api',
-            contentPath: 'guide/ngmodules/api',
           },
           {
             label: 'NgModule FAQs',
