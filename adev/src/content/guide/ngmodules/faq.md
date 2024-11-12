@@ -13,7 +13,7 @@ Declare them in a module if they belong to that particular module.
 
 ## What is a `declarable`?
 
-Declarables are the class types —components, directives, and pipes— that you can add to a module's `declarations` list.
+Declarables are the class types— components, directives, and pipes— that you can add to a module's `declarations` list.
 They're the only classes that you can add to `declarations`.
 
 ## What classes should I *not* add to `declarations`?

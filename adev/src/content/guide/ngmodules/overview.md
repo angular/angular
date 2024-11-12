@@ -1,67 +1,155 @@
 # NgModules
 
-**NgModules** configure the injector, the compiler and help organize related things together.
+IMPORTANT: The Angular team recommends using [standalone components](guide/components/anatomy-of-components#-imports-in-the-component-decorator) instead of `NgModule` for all new code. Use this guide to understand existing code built with `@NgModule`.
 
-An NgModule is a class marked by the `@NgModule` decorator.
-`@NgModule` takes a metadata object that describes how to compile a component's template and how to create an injector at runtime.
-It identifies the module's own components, directives, and pipes, making some of them public, through the `exports` property, so that external components can use them.
-`@NgModule` can also add service providers to the application dependency injectors.
+An NgModule is a class marked by the `@NgModule` decorator. This decorator accepts *metadata* that tells Angular how to compile component templates and configure dependency injection.
 
-## Angular modularity
-
-Modules are a great way to organize an application and extend it with capabilities from external libraries.
-
-Angular libraries are NgModules, such as `FormsModule`, `HttpClientModule`, and `RouterModule`.
-Many third-party libraries are available as NgModules such as the [Material Design component library](https://material.angular.io), [Ionic](https://ionicframework.com), or [Angular's Firebase integration](https://github.com/angular/angularfire).
-
-NgModules consolidate components, directives, and pipes into cohesive blocks of functionality, each focused on a feature area, application business domain, workflow, or common collection of utilities.
-
-Modules can also add services to the application.
-Such services might be internally developed, like something you'd develop yourself or come from outside sources, such as the Angular router and HTTP client.
-
-Modules can be loaded eagerly when the application starts or lazy loaded asynchronously by the router.
-
-NgModule metadata does the following:
-
-* Declares which components, directives, and pipes belong to the module
-* Makes some of those components, directives, and pipes public so that other module's component templates can use them
-* Imports other modules with the components, directives, and pipes that components in the current module need
-* Provides services that other application components can use
-
-Every Module-based Angular application has at least one module, the root module.
-You [bootstrap](guide/ngmodules/bootstrapping) that module to launch the application.
-
-The root module is all you need in an application with few components.
-As the application grows, you refactor the root module into [feature modules](guide/ngmodules/feature-modules) that represent collections of related functionality.
-You then import these modules into the root module.
-
-## The basic NgModule
-
-The [Angular CLI](/tools/cli) generates the following basic `AppModule` when creating a new application with the `--no-standalone` option.
-
-<docs-code header="src/app/app.module.ts">
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-
-import { AppComponent } from './app.component';
+```typescript
+import {NgModule} from '@angular/core';
 
 @NgModule({
-  declarations: [AppComponent],
-  imports: [BrowserModule],
-  providers: [],
-  bootstrap: [AppComponent]
+  // Metadata goes here
 })
-export class AppModule {}
-</docs-code>
+export class CustomMenuModule { }
+```
 
-At the top are the import statements.
-The next section is where you configure the `@NgModule` by stating what components and directives belong to it (`declarations`) as well as which other modules it uses (`imports`).
-For more information on the structure of an `@NgModule`, be sure to read [Bootstrapping](guide/ngmodules/bootstrapping).
+An NgModule has two main responsibilities:
+* Declaring components, directives, and pipes that belong to the NgModule
+* Add providers to the injector for components, directives, and pipes that import the NgModule
+
+## Declarations
+
+The `declarations` property of the `@NgModule` metadata declares the components, directives, and pipes that belong to the NgModule.
+
+```typescript
+@NgModule({
+  /* ... */
+  // CustomMenu and CustomMenuItem are components.
+  declarations: [CustomMenu, CustomMenuItem],
+})
+export class CustomMenuModule { }
+```
+
+In the example above, the components `CustomMenu` and `CustomMenuItem` belong to `CustomMenuModule`.
+
+If Angular discovers any components, directives, or pipes declared in more than one NgModule, it reports an error.
+
+Any components, directives, or pipes must be explitly marked as `standalone: false` in order to be declared in an NgModule.
+
+```typescript
+@Component({
+  // Mark this component as `standalone: false` so that it can be declared in an NgModule.
+  standalone: false,
+  /* ... */
+})
+export class CustomMenu { /* ... */ }
+```
+
+### imports
+
+Components declared in an NgModule may depend on other components, directives, and pipes. Add these dependencies to the `imports` property of the `@NgModule` metadata.
+
+```typescript
+@NgModule({
+  /* ... */
+  // CustomMenu and CustomMenuItem depend on the PopupTrigger and SelectorIndicator components.
+  imports: [PopupTrigger, SelectionIndicator],
+  declarations: [CustomMenu, CustomMenuItem],
+})
+export class CustomMenuModule { }
+```
+
+The `imports` array accepts other NgModules, as well as standalone components, directives, and pipes.
+
+### exports
+
+An NgModule can _export_ its declared components, directives, and pipes such that they're available to other components and NgModules.
+
+ ```typescript
+@NgModule({
+  imports: [PopupTrigger, SelectionIndicator],
+  declarations: [CustomMenu, CustomMenuItem],
+
+  // Make CustomMenu and CustomMenuItem available to
+  // components and NgModules that import CustomMenuModule.
+  exports: [CustomMenu, CustomMenuItem],
+})
+export class CustomMenuModule { }
+```
+
+The `exports` property is not limited to declarations, however. An NgModule can also export any other components, directives, pipes, and NgModules that it imports.
+
+ ```typescript
+@NgModule({
+  imports: [PopupTrigger, SelectionIndicator],
+  declarations: [CustomMenu, CustomMenuItem],
+
+  // Also make PopupTrigger available to any component or NgModule that imports CustomMenuModule.
+  exports: [CustomMenu, CustomMenuItem, PopupTrigger],
+})
+export class CustomMenuModule { }
+```
+
+## `NgModule` providers
+
+Tip: See the [Dependency Injection guide](guides/di) for information on dependency injection and providers.
+
+An `NgModule` can specify `providers` for injected dependencies. These providers are availabe to:
+* Any standalone component, directive, or pipe that imports the NgModule, and
+* The `declarations` and `providers` of any _other_ NgModule that imports the NgModule.
+
+```typescript
+@NgModule({
+  imports: [PopupTrigger, SelectionIndicator],
+  declarations: [CustomMenu, CustomMenuItem],
+
+  // Provide the OverlayManager service
+  providers: [OverlayManager],
+  /* ... */
+})
+export class CustomMenuModule { }
+
+@NgModule({
+  imports: [CustomMenuModule],
+  declarations: [UserProfile],
+  providers: [UserDataClient],
+})
+export class UserProfileModule { }
+```
+
+In the example above:
+* The `CustomMenuModule` provides `OverlayManager`.
+* The `CustomMenu` and `CustomMenuItem` components can inject `OverlayManager` because they're declared in `CustomMenuModule`.
+* `UserProfile` can inject `OverlayManager` because its NgModule imports `CustomMenuModule`.
+* `UserDataClient` can inject `OverlayManager` because its NgModule imports `CustomMenuModule`.
+
+See [NgModule Providers](guide/ngmodules/providers) for more details on using providers with `@NgModule`.
+
+## Bootstrapping an application
+
+IMPORTANT: The Angular team recommends using [bootstrapApplication](api/platform-browser/bootstrapApplication) instead of `bootstrapModule` for all new code. Use this guide to understand existing applications bootstrapped with `@NgModule`.
+
+The `@NgModule` decorator accepts an optional `bootstrap` array that may contain one or more components.
+
+You can use the [`bootstrapModule`](https://angular.dev/api/core/PlatformRef#bootstrapModule) method from either [`platformBrowser`](api/platform-browser/platformBrowser) or [`platformServer`](api/platform-server/platformServer) to start an Angular application. When run, this function locates any elements on the page with a CSS selector that matches the listed componet(s) and renders those components on the page.
+
+```typescript
+import {platformBrowser} from '@angular/platform-browser';
+
+@NgModule({
+  bootstrap: [MyApplication],
+})
+export class MyApplciationModule { }
+
+platformBrowser().bootstrapModule(MyApplicationModule);
+```
+
+Components listed in `bootstrap` are automatically included in the NgModule's declarations.
+
+When you bootstrap an application from an NgModule, the collected `providers` of this module and all of the `providers` of its `imports` are eagerly loaded and available to inject for the entire application.
 
 ## More on NgModules
 
 <docs-pill-row>
-  <docs-pill href="/guide/ngmodules/feature-modules" title="Feature Modules"/>
   <docs-pill href="/guide/ngmodules/providers" title="Providers"/>
-  <docs-pill href="/guide/ngmodules/module-types" title="Types of NgModules"/>
 </docs-pill-row>
