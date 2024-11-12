@@ -105,11 +105,6 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/components/anatomy-of-components',
           },
           {
-            label: 'Importing and using components',
-            path: 'guide/components/importing',
-            contentPath: 'guide/components/importing',
-          },
-          {
             label: 'Selectors',
             path: 'guide/components/selectors',
             contentPath: 'guide/components/selectors',
