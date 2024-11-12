@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {TracingService} from '../../application/tracing';
 import {assertInInjectionContext} from '../../di';
 import {Injector} from '../../di/injector';
 import {inject} from '../../di/injector_compatibility';
@@ -454,6 +455,8 @@ function afterRenderImpl(
   // tree-shaken if `afterRender` and `afterNextRender` aren't used.
   manager.impl ??= injector.get(AfterRenderImpl);
 
+  const tracing = injector.get(TracingService, null, {optional: true});
+
   const hooks = options?.phase ?? AfterRenderPhase.MixedReadWrite;
   const destroyRef = options?.manualCleanup !== true ? injector.get(DestroyRef) : null;
   const sequence = new AfterRenderSequence(
@@ -461,6 +464,7 @@ function afterRenderImpl(
     getHooks(callbackOrSpec, hooks),
     once,
     destroyRef,
+    tracing?.snapshot(),
   );
   manager.impl.register(sequence);
   return sequence;
