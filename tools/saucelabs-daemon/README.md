@@ -3,7 +3,7 @@
 ## Local testing
 
 1. Set up your `SAUCE_USERNAME`, `SAUCE_ACCESS_KEY` & `SAUCE_TUNNEL_IDENTIFIER` environment variables.
-These are required. You can find the values for `SAUCE_USERNAME` and `SAUCE_ACCESS_KEY` in `/.circleci/env.sh`. `SAUCE_TUNNEL_IDENTIFIER` can be set to any unique value.
+These are required. You can find the values for `SAUCE_USERNAME` and `SAUCE_ACCESS_KEY` on your Saucelabs account. `SAUCE_TUNNEL_IDENTIFIER` can be set to any unique value.
 
 If you are having trouble running Saucelabs tests locally you can contact [Joey Perrott](https://github.com/josephperrott) or [Paul Gschwendtner](https://github.com/devversion) for support.
 

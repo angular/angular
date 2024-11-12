@@ -1,6 +1,5 @@
 # Image metadata and config.
 # Ideally, the Node.js version should match what we use on CI.
-# See `executors > default-executor` in `.circleci/config.yml`.
 FROM cimg/node:18.13.0@sha256:45d0ee279f522c4562a464df71108104cc9b2187205333ffd0707d4f05589731
 
 
@@ -12,7 +11,7 @@ LABEL name="Angular dev environment" \
 EXPOSE 4000 4200 4433 5000 8080 9876
 
 
-# Switch to `root` (CircleCI images use `circleci` as the user).
+# Switch to `root`.
 USER root
 
 
