@@ -7828,6 +7828,46 @@ describe('platform-server full application hydration integration', () => {
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
         expect(clientRootNode.textContent).toContain('foo');
       });
+
+      it('should handle let declaration inside a projected control flow node', async () => {
+        @Component({
+          selector: 'test',
+          template: 'Main: <ng-content/> Slot: <ng-content slot="foo"/>',
+        })
+        class TestComponent {}
+
+        @Component({
+          selector: 'app',
+          imports: [TestComponent],
+          template: `
+            <test>
+              @let a = 1;
+              @let b = a + 1;
+              <span foo>{{b}}</span>
+            </test>
+          `,
+        })
+        class SimpleComponent {}
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+        expect(ssrContents).toContain(
+          'Main: <!--ngtns--> Slot: <span foo="">2</span></test></app>',
+        );
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        expect(clientRootNode.textContent).toContain('Main:  Slot: 2');
+      });
     });
 
     describe('zoneless', () => {

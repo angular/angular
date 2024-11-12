@@ -1965,6 +1965,70 @@ export declare class MyApp {
 }
 
 /****************************************************************************************************
+ * PARTIAL FILE: if_element_root_node_at_end.js
+ ****************************************************************************************************/
+import { Component, Directive, Input } from '@angular/core';
+import * as i0 from "@angular/core";
+export class Binding {
+    constructor() {
+        this.binding = 0;
+    }
+}
+Binding.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Binding, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+Binding.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Binding, isStandalone: true, selector: "[binding]", inputs: { binding: "binding" }, ngImport: i0 });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Binding, decorators: [{
+            type: Directive,
+            args: [{ selector: '[binding]' }]
+        }], propDecorators: { binding: [{
+                type: Input
+            }] } });
+export class MyApp {
+    constructor() {
+        this.expr = 0;
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    @if (expr === 0) {
+      Hello <div foo="1" bar="2" [binding]="3">{{expr}}</div>
+    } @else if (expr === 1) {
+      Hello <div foo="4" bar="5" [binding]="6">{{expr}}</div>
+    } @else {
+      Hello <div foo="7" bar="8" [binding]="9">{{expr}}</div>
+    }
+  `, isInline: true, dependencies: [{ kind: "directive", type: Binding, selector: "[binding]", inputs: ["binding"] }] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    @if (expr === 0) {
+      Hello <div foo="1" bar="2" [binding]="3">{{expr}}</div>
+    } @else if (expr === 1) {
+      Hello <div foo="4" bar="5" [binding]="6">{{expr}}</div>
+    } @else {
+      Hello <div foo="7" bar="8" [binding]="9">{{expr}}</div>
+    }
+  `,
+                    imports: [Binding],
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: if_element_root_node_at_end.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class Binding {
+    binding: number;
+    static ɵfac: i0.ɵɵFactoryDeclaration<Binding, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<Binding, "[binding]", never, { "binding": { "alias": "binding"; "required": false; }; }, {}, never, never, true, never>;
+}
+export declare class MyApp {
+    expr: number;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
  * PARTIAL FILE: for_element_root_node.js
  ****************************************************************************************************/
 import { Component, Directive, Input } from '@angular/core';
@@ -2085,6 +2149,66 @@ export declare class MyApp {
 }
 
 /****************************************************************************************************
+ * PARTIAL FILE: for_element_root_node_at_end.js
+ ****************************************************************************************************/
+import { Component, Directive, Input } from '@angular/core';
+import * as i0 from "@angular/core";
+export class Binding {
+    constructor() {
+        this.binding = 0;
+    }
+}
+Binding.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Binding, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+Binding.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Binding, isStandalone: true, selector: "[binding]", inputs: { binding: "binding" }, ngImport: i0 });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Binding, decorators: [{
+            type: Directive,
+            args: [{ selector: '[binding]' }]
+        }], propDecorators: { binding: [{
+                type: Input
+            }] } });
+export class MyApp {
+    constructor() {
+        this.items = [1, 2, 3];
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    @for (item of items; track item) {
+      Hello <div foo="1" bar="2" [binding]="3">{{item}}</div>
+    } @empty {
+      Hello <span empty-foo="1" empty-bar="2" [binding]="3">Empty!</span>
+    }
+  `, isInline: true, dependencies: [{ kind: "directive", type: Binding, selector: "[binding]", inputs: ["binding"] }] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    @for (item of items; track item) {
+      Hello <div foo="1" bar="2" [binding]="3">{{item}}</div>
+    } @empty {
+      Hello <span empty-foo="1" empty-bar="2" [binding]="3">Empty!</span>
+    }
+  `,
+                    imports: [Binding],
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: for_element_root_node_at_end.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class Binding {
+    binding: number;
+    static ɵfac: i0.ɵɵFactoryDeclaration<Binding, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<Binding, "[binding]", never, { "binding": { "alias": "binding"; "required": false; }; }, {}, never, never, true, never>;
+}
+export declare class MyApp {
+    items: number[];
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
  * PARTIAL FILE: switch_element_root_node.js
  ****************************************************************************************************/
 import { Component, Directive, Input } from '@angular/core';
@@ -2143,6 +2267,78 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 
 /****************************************************************************************************
  * PARTIAL FILE: switch_element_root_node.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class Binding {
+    binding: number;
+    static ɵfac: i0.ɵɵFactoryDeclaration<Binding, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<Binding, "[binding]", never, { "binding": { "alias": "binding"; "required": false; }; }, {}, never, never, true, never>;
+}
+export declare class MyApp {
+    expr: number;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: switch_element_root_node_at_end.js
+ ****************************************************************************************************/
+import { Component, Directive, Input } from '@angular/core';
+import * as i0 from "@angular/core";
+export class Binding {
+    constructor() {
+        this.binding = 0;
+    }
+}
+Binding.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Binding, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+Binding.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Binding, isStandalone: true, selector: "[binding]", inputs: { binding: "binding" }, ngImport: i0 });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Binding, decorators: [{
+            type: Directive,
+            args: [{ selector: '[binding]' }]
+        }], propDecorators: { binding: [{
+                type: Input
+            }] } });
+export class MyApp {
+    constructor() {
+        this.expr = 0;
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    @switch (expr) {
+      @case (0) {
+        Hello <div foo="1" bar="2" [binding]="3">{{expr}}</div>
+      }
+      @case (1) {
+        Hello <div foo="4" bar="5" [binding]="6">{{expr}}</div>
+      }
+      @default {
+        Hello <div foo="7" bar="8" [binding]="9">{{expr}}</div>
+      }
+    }
+  `, isInline: true, dependencies: [{ kind: "directive", type: Binding, selector: "[binding]", inputs: ["binding"] }] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    @switch (expr) {
+      @case (0) {
+        Hello <div foo="1" bar="2" [binding]="3">{{expr}}</div>
+      }
+      @case (1) {
+        Hello <div foo="4" bar="5" [binding]="6">{{expr}}</div>
+      }
+      @default {
+        Hello <div foo="7" bar="8" [binding]="9">{{expr}}</div>
+      }
+    }
+  `,
+                    imports: [Binding],
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: switch_element_root_node_at_end.d.ts
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class Binding {
