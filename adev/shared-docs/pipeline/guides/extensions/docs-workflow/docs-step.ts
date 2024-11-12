@@ -7,7 +7,7 @@
  */
 
 import {Token, Tokens, RendererThis, TokenizerThis} from 'marked';
-import {formatHeading, headingRender} from '../../tranformations/heading';
+import {formatHeading} from '../../tranformations/heading';
 
 interface DocsStepToken extends Tokens.Generic {
   type: 'docs-step';
