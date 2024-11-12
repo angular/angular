@@ -10,6 +10,7 @@ import {Injector} from '../di';
 import {internalImportProvidersFrom} from '../di/provider_collection';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {cleanupDeferBlock} from '../hydration/cleanup';
+import {BlockSummary, ElementTrigger, NUM_ROOT_NODES} from '../hydration/interfaces';
 import {
   assertSsrIdDefined,
   getParentBlockHydrationQueue,
@@ -30,6 +31,8 @@ import {
   invokeTriggerCleanupFns,
   storeTriggerCleanupFn,
 } from './cleanup';
+import {onViewport} from './dom_triggers';
+import {onIdle} from './idle_scheduler';
 import {
   DeferBlockBehavior,
   DeferBlockState,
@@ -51,6 +54,7 @@ import {
   renderDeferStateAfterResourceLoading,
   renderPlaceholder,
 } from './rendering';
+import {onTimer} from './timer_scheduler';
 import {
   addDepsToRegistry,
   assertDeferredDependenciesLoaded,
@@ -493,4 +497,94 @@ export function getHydrateTriggers(
  */
 export function getPrefetchTriggers(tDetails: TDeferBlockDetails): Set<DeferBlockTrigger> {
   return (tDetails.prefetchTriggers ??= new Set());
+}
+
+/**
+ * Loops through all defer block summaries and ensures all the blocks triggers are
+ * properly initialized
+ */
+export function processAndInitTriggers(
+  injector: Injector,
+  blockData: Map<string, BlockSummary>,
+  nodes: Map<string, Comment>,
+) {
+  const idleElements: ElementTrigger[] = [];
+  const timerElements: ElementTrigger[] = [];
+  const viewportElements: ElementTrigger[] = [];
+  const immediateElements: ElementTrigger[] = [];
+  for (let [blockId, blockSummary] of blockData) {
+    const commentNode = nodes.get(blockId);
+    if (commentNode !== undefined) {
+      const numRootNodes = blockSummary.data[NUM_ROOT_NODES];
+      let currentNode: Comment | HTMLElement = commentNode;
+      for (let i = 0; i < numRootNodes; i++) {
+        currentNode = currentNode.previousSibling as HTMLElement;
+        if (currentNode.nodeType !== Node.ELEMENT_NODE) {
+          continue;
+        }
+        const elementTrigger: ElementTrigger = {el: currentNode, blockName: blockId};
+        // hydrate
+        if (blockSummary.hydrate.idle) {
+          idleElements.push(elementTrigger);
+        }
+        if (blockSummary.hydrate.immediate) {
+          immediateElements.push(elementTrigger);
+        }
+        if (blockSummary.hydrate.timer !== null) {
+          elementTrigger.delay = blockSummary.hydrate.timer;
+          timerElements.push(elementTrigger);
+        }
+        if (blockSummary.hydrate.viewport) {
+          viewportElements.push(elementTrigger);
+        }
+      }
+    }
+  }
+
+  setIdleTriggers(injector, idleElements);
+  setImmediateTriggers(injector, immediateElements);
+  setViewportTriggers(injector, viewportElements);
+  setTimerTriggers(injector, timerElements);
+}
+
+async function setIdleTriggers(injector: Injector, elementTriggers: ElementTrigger[]) {
+  for (const elementTrigger of elementTriggers) {
+    const registry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
+    const onInvoke = () => triggerHydrationFromBlockName(injector, elementTrigger.blockName);
+    const cleanupFn = onIdle(onInvoke, injector);
+    registry.addCleanupFn(elementTrigger.blockName, cleanupFn);
+  }
+}
+
+async function setViewportTriggers(injector: Injector, elementTriggers: ElementTrigger[]) {
+  if (elementTriggers.length > 0) {
+    const registry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
+    for (let elementTrigger of elementTriggers) {
+      const cleanupFn = onViewport(
+        elementTrigger.el,
+        async () => {
+          await triggerHydrationFromBlockName(injector, elementTrigger.blockName);
+        },
+        injector,
+      );
+      registry.addCleanupFn(elementTrigger.blockName, cleanupFn);
+    }
+  }
+}
+
+async function setTimerTriggers(injector: Injector, elementTriggers: ElementTrigger[]) {
+  for (const elementTrigger of elementTriggers) {
+    const registry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
+    const onInvoke = async () =>
+      await triggerHydrationFromBlockName(injector, elementTrigger.blockName);
+    const timerFn = onTimer(elementTrigger.delay!);
+    const cleanupFn = timerFn(onInvoke, injector);
+    registry.addCleanupFn(elementTrigger.blockName, cleanupFn);
+  }
+}
+
+async function setImmediateTriggers(injector: Injector, elementTriggers: ElementTrigger[]) {
+  for (const elementTrigger of elementTriggers) {
+    await triggerHydrationFromBlockName(injector, elementTrigger.blockName);
+  }
 }

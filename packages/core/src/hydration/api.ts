@@ -44,13 +44,16 @@ import {
 } from './tokens';
 import {
   appendDeferBlocksToJSActionMap,
+  enableRetrieveDeferBlockDataImpl,
   enableRetrieveHydrationInfoImpl,
   NGH_DATA_KEY,
+  processBlockData,
   SSR_CONTENT_INTEGRITY_MARKER,
 } from './utils';
 import {enableFindMatchingDehydratedViewImpl} from './views';
-import {bootstrapIncrementalHydration, enableRetrieveDeferBlockDataImpl} from './incremental';
 import {DEHYDRATED_BLOCK_REGISTRY, DehydratedBlockRegistry} from '../defer/registry';
+import {gatherDeferBlocksCommentNodes} from './node_lookup_utils';
+import {processAndInitTriggers} from '../defer/triggering';
 
 /**
  * Indicates whether the hydration-related code was added,
@@ -353,7 +356,9 @@ export function withIncrementalHydration(): Provider[] {
         const doc = getDocument();
 
         return () => {
-          bootstrapIncrementalHydration(doc, injector);
+          const deferBlockData = processBlockData(injector);
+          const commentsByBlockId = gatherDeferBlocksCommentNodes(doc, doc.body);
+          processAndInitTriggers(injector, deferBlockData, commentsByBlockId);
           appendDeferBlocksToJSActionMap(doc, injector);
         };
       },

@@ -19,7 +19,9 @@ import {assertDefined, assertEqual} from '../util/assert';
 import type {HydrationContext} from './annotate';
 
 import {
+  BlockSummary,
   CONTAINERS,
+  DEFER_HYDRATE_TRIGGERS,
   DEFER_PARENT_BLOCK_ID,
   DehydratedView,
   DISCONNECTED_NODES,
@@ -28,6 +30,7 @@ import {
   NUM_ROOT_NODES,
   SerializedContainerView,
   SerializedDeferBlock,
+  SerializedTriggerDetails,
   SerializedView,
 } from './interfaces';
 import {IS_INCREMENTAL_HYDRATION_ENABLED, JSACTION_BLOCK_ELEMENT_MAP} from './tokens';
@@ -600,4 +603,83 @@ export function appendDeferBlocksToJSActionMap(doc: Document, injector: Injector
     const jsActionMap = injector.get(JSACTION_BLOCK_ELEMENT_MAP);
     sharedMapFunction(rNode, jsActionMap);
   }
+}
+
+/**
+ * Retrieves defer block hydration information from the TransferState.
+ *
+ * @param injector Injector that this component has access to.
+ */
+let _retrieveDeferBlockDataImpl: typeof retrieveDeferBlockDataImpl = () => {
+  return {};
+};
+
+export function retrieveDeferBlockDataImpl(injector: Injector): {
+  [key: string]: SerializedDeferBlock;
+} {
+  const transferState = injector.get(TransferState, null, {optional: true});
+  if (transferState !== null) {
+    const nghDeferData = transferState.get(NGH_DEFER_BLOCKS_KEY, {});
+
+    ngDevMode &&
+      assertDefined(nghDeferData, 'Unable to retrieve defer block info from the TransferState.');
+    return nghDeferData;
+  }
+
+  return {};
+}
+
+/**
+ * Sets the implementation for the `retrieveDeferBlockData` function.
+ */
+export function enableRetrieveDeferBlockDataImpl() {
+  _retrieveDeferBlockDataImpl = retrieveDeferBlockDataImpl;
+}
+
+/**
+ * Retrieves defer block data from TransferState storage
+ */
+export function retrieveDeferBlockData(injector: Injector): {[key: string]: SerializedDeferBlock} {
+  return _retrieveDeferBlockDataImpl(injector);
+}
+
+function isTimerTrigger(triggerInfo: DeferBlockTrigger | SerializedTriggerDetails): boolean {
+  return typeof triggerInfo === 'object' && triggerInfo.trigger === DeferBlockTrigger.Timer;
+}
+
+function getHydrateTimerTrigger(blockData: SerializedDeferBlock): number | null {
+  const trigger = blockData[DEFER_HYDRATE_TRIGGERS]?.find((t) => isTimerTrigger(t));
+  return (trigger as SerializedTriggerDetails)?.delay ?? null;
+}
+
+function hasHydrateTrigger(blockData: SerializedDeferBlock, trigger: DeferBlockTrigger): boolean {
+  return blockData[DEFER_HYDRATE_TRIGGERS]?.includes(trigger) ?? false;
+}
+
+/**
+ * Creates a summary of the given serialized defer block, which is used later to properly initialize
+ * specific triggers.
+ */
+function createBlockSummary(blockInfo: SerializedDeferBlock): BlockSummary {
+  return {
+    data: blockInfo,
+    hydrate: {
+      idle: hasHydrateTrigger(blockInfo, DeferBlockTrigger.Idle),
+      immediate: hasHydrateTrigger(blockInfo, DeferBlockTrigger.Immediate),
+      timer: getHydrateTimerTrigger(blockInfo),
+      viewport: hasHydrateTrigger(blockInfo, DeferBlockTrigger.Viewport),
+    },
+  };
+}
+
+/**
+ * Processes all of the defer block data in the transfer state and creates a map of the summaries
+ */
+export function processBlockData(injector: Injector): Map<string, BlockSummary> {
+  const blockData = retrieveDeferBlockData(injector);
+  let blockDetails = new Map<string, BlockSummary>();
+  for (let blockId in blockData) {
+    blockDetails.set(blockId, createBlockSummary(blockData[blockId]));
+  }
+  return blockDetails;
 }

@@ -275,3 +275,20 @@ export interface DehydratedIcuData {
    */
   node: I18nICUNode;
 }
+
+/**
+ * Summarizes the presence of specific types of triggers anywhere in the DOM
+ */
+export interface BlockSummary {
+  data: SerializedDeferBlock;
+  hydrate: {idle: boolean; immediate: boolean; viewport: boolean; timer: number | null};
+}
+
+/**
+ * The details of a specific element's trigger and how it is associated to a block
+ */
+export interface ElementTrigger {
+  el: HTMLElement;
+  blockName: string;
+  delay?: number;
+}
