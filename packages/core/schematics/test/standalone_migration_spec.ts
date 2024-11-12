@@ -170,11 +170,15 @@ describe('standalone migration', () => {
     `,
     );
 
+    const fakeCatalyst = `export declare function setupModule(config: any);`;
+    writeFile('/node_modules/some_internal_path/angular/testing/catalyst/index.d.ts', fakeCatalyst);
     writeFile(
-      '/node_modules/some_internal_path/angular/testing/catalyst/index.d.ts',
-      `
-      export declare function setupModule(config: any);
-    `,
+      '/node_modules/some_internal_path/angular/testing/catalyst/fake_async/index.d.ts',
+      fakeCatalyst,
+    );
+    writeFile(
+      '/node_modules/some_internal_path/angular/testing/catalyst/async/index.d.ts',
+      fakeCatalyst,
     );
 
     previousWorkingDir = shx.pwd();
@@ -1456,86 +1460,92 @@ describe('standalone migration', () => {
     expect(tree.readContent('app.spec.ts')).toBe(initialContent);
   });
 
-  it('should migrate tests with a component declared through Catalyst', async () => {
-    writeFile(
-      'app.spec.ts',
-      `
-      import {NgModule, Component} from '@angular/core';
-      import {bootstrap, setupModule} from 'some_internal_path/angular/testing/catalyst';
-      import {ButtonModule} from './button.module';
-      import {MatCardModule} from '@angular/material/card';
+  [
+    {name: 'plain', path: 'some_internal_path/angular/testing/catalyst'},
+    {name: 'fakeAsync', path: 'some_internal_path/angular/testing/catalyst/fake_async'},
+    {name: 'async', path: 'some_internal_path/angular/testing/catalyst/async'},
+  ].forEach(({name, path}) => {
+    it(`[${name}] should migrate tests with a component declared through Catalyst`, async () => {
+      writeFile(
+        'app.spec.ts',
+        `
+        import {NgModule, Component} from '@angular/core';
+        import {bootstrap, setupModule} from '${path}';
+        import {ButtonModule} from './button.module';
+        import {MatCardModule} from '@angular/material/card';
 
-      describe('bootstrapping an app', () => {
+        describe('bootstrapping an app', () => {
+          it('should work', () => {
+            setupModule({
+              declarations: [App, Hello],
+              imports: [ButtonModule, MatCardModule]
+            });
+            const fixture = bootstrap(App);
+            expect(fixture.nativeElement.innerHTML).toBe('<hello>Hello</hello>');
+          });
+
+          it('should work in a different way', () => {
+            setupModule({declarations: [App, Hello], imports: [MatCardModule]});
+            const fixture = bootstrap(App);
+            expect(fixture.nativeElement.innerHTML).toBe('<hello>Hello</hello>');
+          });
+        });
+
+        @Component({selector: 'hello', template: 'Hello', standalone: false})
+        class Hello {}
+
+        @Component({template: '<hello></hello>', standalone: false})
+        class App {}
+      `,
+      );
+
+      await runMigration('convert-to-standalone');
+
+      const content = stripWhitespace(tree.readContent('app.spec.ts'));
+
+      expect(content).toContain(
+        stripWhitespace(`
+        @Component({
+          selector: 'hello',
+          template: 'Hello',
+          imports: [ButtonModule, MatCardModule]
+        })
+        class Hello {}
+      `),
+      );
+
+      expect(content).toContain(
+        stripWhitespace(`
+        @Component({
+          template: '<hello></hello>',
+          imports: [ButtonModule, MatCardModule]
+        })
+        class App {}
+      `),
+      );
+
+      expect(content).toContain(
+        stripWhitespace(`
         it('should work', () => {
           setupModule({
-            declarations: [App, Hello],
-            imports: [ButtonModule, MatCardModule]
+            imports: [ButtonModule, MatCardModule, App, Hello]
           });
           const fixture = bootstrap(App);
           expect(fixture.nativeElement.innerHTML).toBe('<hello>Hello</hello>');
         });
+      `),
+      );
 
+      expect(content).toContain(
+        stripWhitespace(`
         it('should work in a different way', () => {
-          setupModule({declarations: [App, Hello], imports: [MatCardModule]});
+          setupModule({imports: [MatCardModule, App, Hello]});
           const fixture = bootstrap(App);
           expect(fixture.nativeElement.innerHTML).toBe('<hello>Hello</hello>');
         });
-      });
-
-      @Component({selector: 'hello', template: 'Hello', standalone: false})
-      class Hello {}
-
-      @Component({template: '<hello></hello>', standalone: false})
-      class App {}
-    `,
-    );
-
-    await runMigration('convert-to-standalone');
-
-    const content = stripWhitespace(tree.readContent('app.spec.ts'));
-
-    expect(content).toContain(
-      stripWhitespace(`
-      @Component({
-        selector: 'hello',
-        template: 'Hello',
-        imports: [ButtonModule, MatCardModule]
-      })
-      class Hello {}
-    `),
-    );
-
-    expect(content).toContain(
-      stripWhitespace(`
-      @Component({
-        template: '<hello></hello>',
-        imports: [ButtonModule, MatCardModule]
-      })
-      class App {}
-    `),
-    );
-
-    expect(content).toContain(
-      stripWhitespace(`
-      it('should work', () => {
-        setupModule({
-          imports: [ButtonModule, MatCardModule, App, Hello]
-        });
-        const fixture = bootstrap(App);
-        expect(fixture.nativeElement.innerHTML).toBe('<hello>Hello</hello>');
-      });
-    `),
-    );
-
-    expect(content).toContain(
-      stripWhitespace(`
-      it('should work in a different way', () => {
-        setupModule({imports: [MatCardModule, App, Hello]});
-        const fixture = bootstrap(App);
-        expect(fixture.nativeElement.innerHTML).toBe('<hello>Hello</hello>');
-      });
-    `),
-    );
+      `),
+      );
+    });
   });
 
   it('should not copy over the NoopAnimationsModule into the imports of a test component', async () => {
