@@ -51,20 +51,16 @@ export function ClassMember(props: {member: MemberEntryRenderable}) {
   const memberName = props.member.name;
   const returnType = getMemberType(props.member);
   return (
-    <div id={memberName} className={REFERENCE_MEMBER_CARD} tabIndex={-1}>
-      <header>
-        <div className={REFERENCE_MEMBER_CARD_HEADER}>
-          <h3>{memberName}</h3>
-          <div>
-            {isClassMethodEntry(props.member) && props.member.signatures.length > 1 ? (
-              <span>{props.member.signatures.length} overloads</span>
-            ) : returnType ? (
-              <CodeSymbol code={returnType} />
-            ) : (
-              <></>
-            )}
-          </div>
-        </div>
+    <div id={memberName} tabIndex={-1} className={REFERENCE_MEMBER_CARD}>
+      <header className={REFERENCE_MEMBER_CARD_HEADER}>
+        <h3>{memberName}</h3>
+        {isClassMethodEntry(props.member) && props.member.signatures.length > 1 ? (
+          <span>{props.member.signatures.length} overloads</span>
+        ) : returnType ? (
+          <CodeSymbol code={returnType} />
+        ) : (
+          <></>
+        )}
       </header>
       {body}
     </div>
