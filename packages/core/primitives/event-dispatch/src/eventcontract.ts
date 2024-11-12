@@ -254,7 +254,7 @@ export class EventContract implements UnrenamedEventContract {
    * after it has been cleaned up.
    */
   cleanUp() {
-    this.containerManager!.cleanUp();
+    this.containerManager?.cleanUp();
     this.containerManager = null;
     this.eventHandlers = {};
     this.browserEventTypeToExtraEventTypes = {};
