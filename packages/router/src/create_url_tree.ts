@@ -11,7 +11,15 @@ import {ɵRuntimeError as RuntimeError} from '@angular/core';
 import {RuntimeErrorCode} from './errors';
 import {ActivatedRouteSnapshot} from './router_state';
 import {Params, PRIMARY_OUTLET} from './shared';
-import {createRoot, squashSegmentGroup, UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
+import {
+  createRoot,
+  DefaultUrlSerializer,
+  squashSegmentGroup,
+  UrlSegment,
+  UrlSegmentGroup,
+  UrlSerializer,
+  UrlTree,
+} from './url_tree';
 import {last, shallowEqual} from './utils/collection';
 
 /**
@@ -70,9 +78,16 @@ export function createUrlTreeFromSnapshot(
   commands: any[],
   queryParams: Params | null = null,
   fragment: string | null = null,
+  urlSerializer: UrlSerializer = new DefaultUrlSerializer(),
 ): UrlTree {
   const relativeToUrlSegmentGroup = createSegmentGroupFromRoute(relativeTo);
-  return createUrlTreeFromSegmentGroup(relativeToUrlSegmentGroup, commands, queryParams, fragment);
+  return createUrlTreeFromSegmentGroup(
+    relativeToUrlSegmentGroup,
+    commands,
+    queryParams,
+    fragment,
+    urlSerializer,
+  );
 }
 
 export function createSegmentGroupFromRoute(route: ActivatedRouteSnapshot): UrlSegmentGroup {
@@ -103,6 +118,7 @@ export function createUrlTreeFromSegmentGroup(
   commands: any[],
   queryParams: Params | null,
   fragment: string | null,
+  urlSerializer: UrlSerializer,
 ): UrlTree {
   let root = relativeTo;
   while (root.parent) {
@@ -112,20 +128,20 @@ export function createUrlTreeFromSegmentGroup(
   // `UrlSegmentGroup`. All we need to do is update the `queryParams` and `fragment` without
   // applying any other logic.
   if (commands.length === 0) {
-    return tree(root, root, root, queryParams, fragment);
+    return tree(root, root, root, queryParams, fragment, urlSerializer);
   }
 
   const nav = computeNavigation(commands);
 
   if (nav.toRoot()) {
-    return tree(root, root, new UrlSegmentGroup([], {}), queryParams, fragment);
+    return tree(root, root, new UrlSegmentGroup([], {}), queryParams, fragment, urlSerializer);
   }
 
   const position = findStartingPositionForTargetGroup(nav, root, relativeTo);
   const newSegmentGroup = position.processChildren
     ? updateSegmentGroupChildren(position.segmentGroup, position.index, nav.commands)
     : updateSegmentGroup(position.segmentGroup, position.index, nav.commands);
-  return tree(root, position.segmentGroup, newSegmentGroup, queryParams, fragment);
+  return tree(root, position.segmentGroup, newSegmentGroup, queryParams, fragment, urlSerializer);
 }
 
 function isMatrixParams(command: any): boolean {
@@ -146,12 +162,13 @@ function tree(
   newSegmentGroup: UrlSegmentGroup,
   queryParams: Params | null,
   fragment: string | null,
+  urlSerializer: UrlSerializer,
 ): UrlTree {
   let qp: any = {};
   if (queryParams) {
-    Object.entries(queryParams).forEach(([name, value]) => {
-      qp[name] = Array.isArray(value) ? value.map((v: any) => `${v}`) : `${value}`;
-    });
+    qp = urlSerializer.parse(
+      urlSerializer.serialize(new UrlTree(undefined, queryParams)),
+    ).queryParams;
   }
 
   let rootCandidate: UrlSegmentGroup;

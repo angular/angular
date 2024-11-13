@@ -113,6 +113,7 @@ export class Recognizer {
           [],
           this.urlTree.queryParams,
           this.urlTree.fragment,
+          this.urlSerializer,
         );
         // https://github.com/angular/angular/issues/47307
         // Creating the tree stringifies the query params
