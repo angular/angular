@@ -50,7 +50,7 @@ export function getMessageForFieldIncompatibility(
           `This ${fieldName.single} is used in combination with \`@HostBinding\` and ` +
           `migrating would break.`,
         extra:
-          `\`@HostBinding\` does not invoke the signal automatically and your code would. ` +
+          `\`@HostBinding\` does not invoke the signal automatically and your code would ` +
           `break after migration. Use \`host\` of \`@Directive\`/\`@Component\`for host bindings.`,
       };
     case FieldIncompatibilityReason.PotentiallyNarrowedInTemplateButNoSupportYet:
@@ -144,7 +144,7 @@ export function getMessageForClassIncompatibility(
       return {
         short:
           `Class of this ${fieldName.single} is manually instantiated. ` +
-          'This is discouraged and prevents migration',
+          'This is discouraged and prevents migration.',
         extra:
           `Signal ${fieldName.plural} require a DI injection context. Manually instantiating ` +
           'breaks this requirement in some cases, so the migration is skipped.',
