@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT, isPlatformBrowser} from '@angular/common';
-import {DestroyRef, Injectable, PLATFORM_ID, inject} from '@angular/core';
+import {DestroyRef, Injectable, Injector, PLATFORM_ID, inject} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {fromEvent} from 'rxjs';
 import {MEMBER_ID_ATTRIBUTE} from '../constants/api-reference-prerender.constants';
@@ -22,6 +22,7 @@ const SCROLL_MARGIN_TOP = 100;
 export class ReferenceScrollHandler {
   private readonly destroyRef = inject(DestroyRef);
   private readonly document = inject(DOCUMENT);
+  private readonly injector = inject(Injector);
   private readonly window = inject(WINDOW);
   private readonly router = inject(Router);
   private readonly appScroller = inject(AppScroller);
@@ -43,7 +44,7 @@ export class ReferenceScrollHandler {
         // If there is no fragment or the scroll event has a position (traversing through history),
         // allow the scroller to handler scrolling instead of going to the fragment
         if (!fragment || this.appScroller.lastScrollEvent?.position) {
-          this.appScroller.scroll();
+          this.appScroller.scroll(this.injector);
           return;
         }
 

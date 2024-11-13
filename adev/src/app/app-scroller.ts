@@ -12,6 +12,7 @@ import {
   ApplicationRef,
   afterNextRender,
   EnvironmentInjector,
+  Injector,
 } from '@angular/core';
 import {Scroll, Router} from '@angular/router';
 import {filter, firstValueFrom, map, switchMap, tap} from 'rxjs';
@@ -62,7 +63,7 @@ export class AppScroller {
       });
   }
 
-  scroll() {
+  scroll(injector?: Injector) {
     if (!this._lastScrollEvent || !this.canScroll) {
       return;
     }
@@ -83,7 +84,9 @@ export class AppScroller {
           }
         },
       },
-      {injector: this.injector},
+      // Use the component injector when provided so that the manager can
+      // deregister the sequence once the component is destroyed.
+      {injector: injector ?? this.injector},
     );
     this.cancelScroll = () => {
       ref.destroy();
