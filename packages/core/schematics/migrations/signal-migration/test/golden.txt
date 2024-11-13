@@ -827,7 +827,7 @@ import {Component, Input} from '@angular/core';
 export class ManualInstantiation {
   // TODO: Skipped for migration because:
   //  Class of this input is manually instantiated. This is discouraged and prevents
-  //  migration
+  //  migration.
   @Input() bla: string = '';
 }
 @@@@@@ modifier_tests.ts @@@@@@
