@@ -93,9 +93,16 @@ export function readConfiguration(
         return parentOptions;
       }
 
+      // Note: In Google, `angularCompilerOptions` are stored in `bazelOptions`.
+      // This function typically doesn't run for actual Angular compilations, but
+      // tooling like Tsurge, or schematics may leverage this helper, so we account
+      // for this here.
+      const angularCompilerOptions =
+        config.angularCompilerOptions ?? config.bazelOptions?.angularCompilerOptions;
+
       // we are only interested into merging 'angularCompilerOptions' as
       // other options like 'compilerOptions' are merged by TS
-      let existingNgCompilerOptions = {...config.angularCompilerOptions, ...parentOptions};
+      let existingNgCompilerOptions = {...angularCompilerOptions, ...parentOptions};
       if (!config.extends) {
         return existingNgCompilerOptions;
       }
