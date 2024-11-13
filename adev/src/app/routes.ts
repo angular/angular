@@ -123,6 +123,10 @@ const API_REFERENCE_ROUTES: Route[] = mapApiManifestToRoutes();
 
 const REDIRECT_ROUTES: Route[] = [
   {
+    path: 'guide/defer',
+    redirectTo: 'guide/templates/defer',
+  },
+  {
     path: 'guide/components/importing',
     redirectTo: 'guide/components/anatomy-of-components#using-components',
   },
