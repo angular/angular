@@ -16,7 +16,7 @@ import {getAngularDecorators} from '../../utils/ng_decorators';
 import {closestNode} from '../../utils/typescript/nodes';
 
 import {
-  ComponentImportsRemapper,
+  DeclarationImportsRemapper,
   convertNgModuleDeclarationToStandalone,
   extractDeclarationsFromModule,
   findTestObjectsToMigrate,
@@ -59,7 +59,7 @@ export function toStandaloneBootstrap(
   printer: ts.Printer,
   importRemapper?: ImportRemapper,
   referenceLookupExcludedFiles?: RegExp,
-  componentImportRemapper?: ComponentImportsRemapper,
+  declarationImportRemapper?: DeclarationImportsRemapper,
 ) {
   const tracker = new ChangeTracker(printer, importRemapper);
   const typeChecker = program.getTsProgram().getTypeChecker();
@@ -121,7 +121,7 @@ export function toStandaloneBootstrap(
       allDeclarations,
       tracker,
       templateTypeChecker,
-      componentImportRemapper,
+      declarationImportRemapper,
     );
   }
 
