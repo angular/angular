@@ -28,12 +28,9 @@ import {
 } from '@angular/platform-browser';
 import {TestBed} from '@angular/core/testing';
 import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
-import {DEHYDRATED_BLOCK_REGISTRY, DehydratedBlockRegistry} from '@angular/core/src/defer/registry';
+import {DEHYDRATED_BLOCK_REGISTRY} from '@angular/core/src/defer/registry';
 import {JSACTION_BLOCK_ELEMENT_MAP} from '@angular/core/src/hydration/tokens';
-import {
-  EventContractDetails,
-  JSACTION_EVENT_CONTRACT,
-} from '@angular/core/src/event_delegation_utils';
+import {JSACTION_EVENT_CONTRACT} from '@angular/core/src/event_delegation_utils';
 
 describe('platform-server partial hydration integration', () => {
   const originalWindow = globalThis.window;
@@ -1445,6 +1442,88 @@ describe('platform-server partial hydration integration', () => {
     });
   });
 
+  describe('control flow', () => {
+    it('should support hydration for all items in a for loop', async () => {
+      @Component({
+        standalone: true,
+        selector: 'app',
+        template: `
+          <main>
+            @defer (on interaction; hydrate on interaction) {
+              <div id="main" (click)="fnA()">
+                <p>Main defer block rendered!</p>
+                @for (item of items; track $index) {
+                  @defer (on interaction; hydrate on interaction) {
+                    <article id="item-{{item}}">
+                      defer block {{item}} rendered!
+                      <span (click)="fnB()">{{value()}}</span>
+                    </article>
+                  } @placeholder {
+                    <span>Outer block placeholder</span>
+                  }
+                }
+              </div>
+            } @placeholder {
+              <span>Outer block placeholder</span>
+            }
+          </main>
+        `,
+      })
+      class SimpleComponent {
+        value = signal('start');
+        items = [1, 2, 3, 4, 5, 6];
+        fnA() {}
+        fnB() {
+          this.value.set('end');
+        }
+      }
+
+      const appId = 'custom-app-id';
+      const providers = [{provide: APP_ID, useValue: appId}];
+      const hydrationFeatures = () => [withIncrementalHydration()];
+
+      const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+      const ssrContents = getAppContents(html);
+
+      // <main> uses "eager" `custom-app-id` namespace.
+      // <div>s inside a defer block have `d0` as a namespace.
+      expect(ssrContents).toContain('<article id="item-1" jsaction="click:;keydown:;"');
+      // Outer defer block is rendered.
+      expect(ssrContents).toContain('defer block 1 rendered');
+
+      // Internal cleanup before we do server->client transition in this test.
+      resetTViewsFor(SimpleComponent);
+
+      ////////////////////////////////
+      const doc = getDocument();
+      const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+        envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
+        hydrationFeatures,
+      });
+      const compRef = getComponentRef<SimpleComponent>(appRef);
+      appRef.tick();
+      await whenStable(appRef);
+
+      const appHostNode = compRef.location.nativeElement;
+
+      expect(appHostNode.outerHTML).toContain('<article id="item-1" jsaction="click:;keydown:;"');
+
+      // Emit an event inside of a defer block, which should result
+      // in triggering the defer block (start loading deps, etc) and
+      // subsequent hydration.
+      const article = doc.getElementById('item-1')!;
+      const clickEvent = new CustomEvent('click', {bubbles: true});
+      article.dispatchEvent(clickEvent);
+      await timeout(1000); // wait for defer blocks to resolve
+
+      appRef.tick();
+      expect(appHostNode.outerHTML).not.toContain(
+        '<article id="item-1" jsaction="click:;keydown:;"',
+      );
+      expect(appHostNode.outerHTML).not.toContain('<span>Outer block placeholder</span>');
+    });
+  });
+
   describe('cleanup', () => {
     it('should cleanup partial hydration blocks appropriately', async () => {
       @Component({
@@ -1585,7 +1664,6 @@ describe('platform-server partial hydration integration', () => {
 
       await timeout(1000); // wait for defer blocks to resolve
 
-      appRef.tick();
       expect(registry.size).toBe(1);
       expect(registry.has('d0')).toBeFalsy();
       expect(jsActionMap.size).toBe(1);
