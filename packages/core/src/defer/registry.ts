@@ -35,9 +35,11 @@ export class DehydratedBlockRegistry {
   private cleanupFns = new Map<string, Function[]>();
   private jsActionMap: Map<string, Set<Element>> = inject(JSACTION_BLOCK_ELEMENT_MAP);
   private contract: EventContractDetails = inject(JSACTION_EVENT_CONTRACT);
+
   add(blockId: string, info: DehydratedDeferBlock) {
     this.registry.set(blockId, info);
   }
+
   get(blockId: string): DehydratedDeferBlock | null {
     return this.registry.get(blockId) ?? null;
   }
