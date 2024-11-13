@@ -397,6 +397,8 @@ export class ApplicationRef {
   }
 
   private readonly _injector = inject(EnvironmentInjector);
+  private _rendererFactory: RendererFactory2 | null = null;
+
   /**
    * The `EnvironmentInjector` used to create this application.
    */
@@ -641,9 +643,8 @@ export class ApplicationRef {
    * pending dirtiness (potentially in a loop).
    */
   private synchronize(): void {
-    let rendererFactory: RendererFactory2 | null = null;
-    if (!(this._injector as R3Injector).destroyed) {
-      rendererFactory = this._injector.get(RendererFactory2, null, {optional: true});
+    if (this._rendererFactory === null && !(this._injector as R3Injector).destroyed) {
+      this._rendererFactory = this._injector.get(RendererFactory2, null, {optional: true});
     }
 
     // When beginning synchronization, all deferred dirtiness becomes active dirtiness.
@@ -652,7 +653,7 @@ export class ApplicationRef {
 
     let runs = 0;
     while (this.dirtyFlags !== ApplicationRefDirtyFlags.None && runs++ < MAXIMUM_REFRESH_RERUNS) {
-      this.synchronizeOnce(rendererFactory);
+      this.synchronizeOnce();
     }
 
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && runs >= MAXIMUM_REFRESH_RERUNS) {
@@ -669,7 +670,7 @@ export class ApplicationRef {
   /**
    * Perform a single synchronization pass.
    */
-  private synchronizeOnce(rendererFactory: RendererFactory2 | null): void {
+  private synchronizeOnce(): void {
     // If we happened to loop, deferred dirtiness can be processed as active dirtiness again.
     this.dirtyFlags |= this.deferredDirtyFlags;
     this.deferredDirtyFlags = ApplicationRefDirtyFlags.None;
@@ -721,8 +722,8 @@ export class ApplicationRef {
     } else {
       // If we skipped refreshing views above, there might still be unflushed animations
       // because we never called `detectChangesInternal` on the views.
-      rendererFactory?.begin?.();
-      rendererFactory?.end?.();
+      this._rendererFactory?.begin?.();
+      this._rendererFactory?.end?.();
     }
 
     // Even if there were no dirty views, afterRender hooks might still be dirty.
