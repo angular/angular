@@ -13,6 +13,8 @@ import ts from 'typescript';
 
 import {normalizePath} from '../../utils/change_tracker';
 import {closestNode} from '../../utils/typescript/nodes';
+import {isReferenceToImport} from '../../utils/typescript/symbol';
+import {getImportSpecifier} from '../../utils/typescript/imports';
 
 /** Map used to look up nodes based on their positions in a source file. */
 export type NodeLookup = Map<number, ts.Node[]>;
@@ -46,6 +48,10 @@ export class UniqueItemTracker<K, V> {
 
   getEntries(): IterableIterator<[K, Set<V>]> {
     return this._nodes.entries();
+  }
+
+  isEmpty(): boolean {
+    return this._nodes.size === 0;
   }
 }
 
@@ -329,4 +335,47 @@ export function isClassReferenceInAngularModule(
       ? closestClass.name.text === className
       : className.test(closestClass.name.text);
   });
+}
+
+/**
+ * Finds the imports of testing libraries in a file.
+ */
+export function getTestingImports(sourceFile: ts.SourceFile) {
+  return {
+    testBed: getImportSpecifier(sourceFile, '@angular/core/testing', 'TestBed'),
+    catalyst: getImportSpecifier(sourceFile, /testing\/catalyst(\/(fake_)?async)?$/, 'setupModule'),
+  };
+}
+
+/**
+ * Determines if a node is a call to a testing API.
+ * @param typeChecker Type checker to use when resolving references.
+ * @param node Node to check.
+ * @param testBedImport Import of TestBed within the file.
+ * @param catalystImport Import of Catalyst within the file.
+ */
+export function isTestCall(
+  typeChecker: ts.TypeChecker,
+  node: ts.Node,
+  testBedImport: ts.ImportSpecifier | null,
+  catalystImport: ts.ImportSpecifier | null,
+): node is ts.CallExpression & {arguments: [ts.ObjectLiteralExpression, ...ts.Expression[]]} {
+  const isObjectLiteralCall =
+    ts.isCallExpression(node) &&
+    node.arguments.length > 0 &&
+    // `arguments[0]` is the testing module config.
+    ts.isObjectLiteralExpression(node.arguments[0]);
+  const isTestBedCall =
+    isObjectLiteralCall &&
+    testBedImport &&
+    ts.isPropertyAccessExpression(node.expression) &&
+    node.expression.name.text === 'configureTestingModule' &&
+    isReferenceToImport(typeChecker, node.expression.expression, testBedImport);
+  const isCatalystCall =
+    isObjectLiteralCall &&
+    catalystImport &&
+    ts.isIdentifier(node.expression) &&
+    isReferenceToImport(typeChecker, node.expression, catalystImport);
+
+  return !!(isTestBedCall || isCatalystCall);
 }
