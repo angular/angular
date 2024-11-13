@@ -257,6 +257,40 @@ describe('outputs', () => {
         });
       });
 
+      it('should _not_ migrate .next usages when not an EventEmitter in external template', async () => {
+        const tsContents = `
+              import {Component} from '@angular/core';
+              import {Subject} from 'rxjs';
+
+              @Component({
+                selector: 'test-cmp',
+                templateUrl: '/app.component.html'
+              })
+              export class TestCmpWithTemplate {
+                someChange = new Subject<void>();
+              }
+            `;
+        const htmlContents = `<button (click)="someChange.next()">click me</button>`;
+        const {fs} = await runTsurgeMigration(new OutputMigration(), [
+          {
+            name: absoluteFrom('/app.component.ts'),
+            isProgramRootFile: true,
+            contents: tsContents,
+          },
+          {
+            name: absoluteFrom('/app.component.html'),
+            contents: htmlContents,
+          },
+        ]);
+
+        const cmpActual = fs.readFile(absoluteFrom('/app.component.ts'));
+        const htmlActual = fs.readFile(absoluteFrom('/app.component.html'));
+
+        // nothing should have changed
+        expect(cmpActual).withContext(diffText(tsContents, cmpActual)).toEqual(tsContents);
+        expect(htmlActual).withContext(diffText(htmlContents, htmlActual)).toEqual(htmlContents);
+      });
+
       it('should migrate .next usage inside external template expressions', async () => {
         const {fs} = await runTsurgeMigration(new OutputMigration(), [
           {
@@ -331,6 +365,25 @@ describe('outputs', () => {
             }
           `,
         });
+      });
+
+      it('should _not_ migrate .next usage inside host listeners if not an EventEmitter', async () => {
+        await verifyNoChange(
+          `
+            import {Component, Output, EventEmitter} from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              host: {
+                '(click)': 'someChange.next()'
+              },
+              template: ''
+            })
+            export class TestCmpWithTemplate {
+              someChange = new Subject();
+            }
+          `,
+        );
       });
 
       it('should migrate .next usage in @HostListener', async () => {
