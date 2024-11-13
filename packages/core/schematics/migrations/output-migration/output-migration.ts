@@ -112,7 +112,7 @@ export class OutputMigration extends TsurgeFunnelMigration<
     const knownFields: KnownFields<ClassFieldDescriptor> = {
       // Note: We don't support cross-target migration of `Partial<T>` usages.
       // This is an acceptable limitation for performance reasons.
-      shouldTrackClassReference: (node) => false,
+      shouldTrackClassReference: () => false,
       attemptRetrieveDescriptorFromSymbol: (s) => {
         const propDeclaration = getTargetPropertyDeclaration(s);
         if (propDeclaration !== null) {
@@ -278,7 +278,11 @@ export class OutputMigration extends TsurgeFunnelMigration<
       // detect .next usages that should be migrated to .emit in template and host binding expressions
       if (ref.kind === ReferenceKind.InTemplate) {
         const callExpr = checkNonTsReferenceCallsField(ref, 'next');
-        if (callExpr !== null) {
+        // TODO: here and below for host bindings, we should ideally filter in the global meta stage
+        // (instead of using the `outputFieldReplacements` map)
+        //  as technically, the call expression could refer to an output
+        //  from a whole different compilation unit (e.g. tsconfig.json).
+        if (callExpr !== null && outputFieldReplacements[ref.target.key] !== undefined) {
           addOutputReplacement(
             outputFieldReplacements,
             ref.target.key,
@@ -288,7 +292,7 @@ export class OutputMigration extends TsurgeFunnelMigration<
         }
       } else if (ref.kind === ReferenceKind.InHostBinding) {
         const callExpr = checkNonTsReferenceCallsField(ref, 'next');
-        if (callExpr !== null) {
+        if (callExpr !== null && outputFieldReplacements[ref.target.key] !== undefined) {
           addOutputReplacement(
             outputFieldReplacements,
             ref.target.key,
