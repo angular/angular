@@ -172,9 +172,7 @@ class LibCardComponent implement AfterContentInit {
   @ContentChild(LibHeaderToken) header: LibHeaderToken|null = null;
 
   ngAfterContentInit(): void {
-    if (this.header !== null) {
-      this.header?.doSomething();
-    }
+    this.header?.doSomething();
   }
 }
 </docs-code>
