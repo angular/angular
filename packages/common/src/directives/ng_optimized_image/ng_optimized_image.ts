@@ -974,7 +974,7 @@ function postInitInputChangeError(dir: NgOptimizedImage, inputName: string): {} 
     `${imgDirectiveDetails(dir.ngSrc)} \`${inputName}\` was updated after initialization. ` +
       `The NgOptimizedImage directive will not react to this input change. ${reason} ` +
       `To fix this, either switch \`${inputName}\` to a static value ` +
-      `or wrap the image element in an *ngIf that is gated on the necessary value.`,
+      `or wrap the image element in an @if that is gated on the necessary value.`,
   );
 }
 
