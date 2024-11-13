@@ -1,8 +1,5 @@
 <header class="adev-api-items-section-header">
   <h3 [id]="group().id">
-    @if (group().isFeatured) {
-      <docs-icon aria-hidden>star</docs-icon>
-    }
     <!-- we use innerHtml because the title can be an html string-->
     <a
       routerLink="/api"
@@ -33,15 +30,6 @@
       </a>
       @if (apiItem.isDeprecated) {
         <span class="docs-deprecated"> &lt;!&gt; </span>
-      }
-      @if (apiItem.isFeatured) {
-        <docs-icon
-          class="adev-api-items-section-item-featured"
-          [class.adev-api-item-in-featured-section]="group().isFeatured"
-          [class.adev-api-items-section-item-featured-active]="apiItem.isFeatured"
-        >
-          star
-        </docs-icon>
       }
     </li>
   }
