@@ -8,6 +8,7 @@ export const format: FormatConfig = {
     'matchers': [
       '**/*.{yaml,yml}',
       '**/*.{js,ts}',
+      'devtools/**/*.{js,ts,html,scss}',
 
       // Do not format d.ts files as they are generated
       '!**/*.d.ts',

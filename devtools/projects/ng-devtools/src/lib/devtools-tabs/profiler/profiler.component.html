@@ -7,7 +7,7 @@
         (click)="startRecording()"
         class="profiler-control start-recording-button"
         matTooltip="Start recording"
-        >
+      >
         <mat-icon> circle </mat-icon>
       </button>
     } @else if (state() === 'recording') {
@@ -16,7 +16,7 @@
         (click)="stopRecording()"
         class="profiler-control recording-button"
         matTooltip="Stop recording"
-        >
+      >
         <mat-icon> circle </mat-icon>
       </button>
     } @else if (state() === 'visualizing') {
@@ -26,15 +26,23 @@
         (click)="discardRecording()"
         class="profiler-control discard-button"
         matTooltip="Clear recording"
-        >
+      >
         <mat-icon> not_interested </mat-icon>
       </button>
     }
     <p class="instructions" [class.hidden]="state() !== 'idle'">
-      <span> Click the record button to start a new recording, or upload a json file containing profiler data. </span>
+      <span>
+        Click the record button to start a new recording, or upload a json file containing profiler
+        data.
+      </span>
       <br />
       <span>
-        <input type="file" (change)="importProfilerResults($event)" placeholder="Upload file" accept=".json" />
+        <input
+          type="file"
+          (change)="importProfilerResults($event)"
+          placeholder="Upload file"
+          accept=".json"
+        />
       </span>
     </p>
     <p class="instructions" [class.hidden]="state() !== 'recording'">
@@ -47,7 +55,7 @@
   <div id="profiler-content-wrapper">
     @if (state() !== 'idle') {
       <div class="visualization">
-        <ng-recording-timeline [stream]="stream" (exportProfile)="exportProfilerResults()"/>
+        <ng-recording-timeline [stream]="stream" (exportProfile)="exportProfilerResults()" />
       </div>
     }
   </div>
