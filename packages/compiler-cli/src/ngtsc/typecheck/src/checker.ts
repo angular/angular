@@ -846,7 +846,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   private emit(
     kind: PotentialImportKind,
     refTo: Reference<ClassDeclaration>,
-    inContext: ts.ClassDeclaration,
+    inContext: ts.Node,
   ): PotentialImport | null {
     const emittedRef = this.refEmitter.emit(refTo, inContext.getSourceFile());
     if (emittedRef.kind === ReferenceEmitKind.Failed) {
@@ -889,7 +889,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
   getPotentialImportsFor(
     toImport: Reference<ClassDeclaration>,
-    inContext: ts.ClassDeclaration,
+    inContext: ts.Node,
     importMode: PotentialImportMode,
   ): ReadonlyArray<PotentialImport> {
     const imports: PotentialImport[] = [];

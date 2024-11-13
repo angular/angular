@@ -169,7 +169,7 @@ export interface TemplateTypeChecker {
    */
   getPotentialImportsFor(
     toImport: Reference<ClassDeclaration>,
-    inComponent: ts.ClassDeclaration,
+    inContext: ts.Node,
     importMode: PotentialImportMode,
   ): ReadonlyArray<PotentialImport>;
 
