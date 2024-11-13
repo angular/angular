@@ -60,6 +60,7 @@ const enableG3Suppression = false;
 // See `angular2/copy.bara.sky` for more information.
 const suppressDiagnosticsInG3: number[] = [
   parseInt(`-99${ErrorCode.COMPONENT_RESOURCE_NOT_FOUND}`),
+  parseInt(`-99${ErrorCode.INLINE_TCB_REQUIRED}`),
 ];
 
 export class LanguageService {
