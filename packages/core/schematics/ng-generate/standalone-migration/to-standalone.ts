@@ -25,18 +25,17 @@ import {isReferenceToImport} from '../../utils/typescript/symbol';
 import {
   findClassDeclaration,
   findLiteralProperty,
+  getTestingImports,
   isClassReferenceInAngularModule,
+  isTestCall,
   NamedClassDeclaration,
 } from './util';
 
 /**
  * Function that can be used to prcess the dependencies that
- * are going to be added to the imports of a component.
+ * are going to be added to the imports of a declaration.
  */
-export type ComponentImportsRemapper = (
-  imports: PotentialImport[],
-  component: ts.ClassDeclaration,
-) => PotentialImport[];
+export type DeclarationImportsRemapper = (imports: PotentialImport[]) => PotentialImport[];
 
 /**
  * Converts all declarations in the specified files to standalone.
@@ -44,7 +43,7 @@ export type ComponentImportsRemapper = (
  * @param program
  * @param printer
  * @param fileImportRemapper Optional function that can be used to remap file-level imports.
- * @param componentImportRemapper Optional function that can be used to remap component-level
+ * @param declarationImportRemapper Optional function that can be used to remap declaration-level
  * imports.
  */
 export function toStandalone(
@@ -52,7 +51,7 @@ export function toStandalone(
   program: NgtscProgram,
   printer: ts.Printer,
   fileImportRemapper?: ImportRemapper,
-  componentImportRemapper?: ComponentImportsRemapper,
+  declarationImportRemapper?: DeclarationImportsRemapper,
 ): ChangesByFile {
   const templateTypeChecker = program.compiler.getTemplateTypeChecker();
   const typeChecker = program.getTsProgram().getTypeChecker();
@@ -89,7 +88,7 @@ export function toStandalone(
       declarations,
       tracker,
       templateTypeChecker,
-      componentImportRemapper,
+      declarationImportRemapper,
     );
   }
 
@@ -120,7 +119,7 @@ export function convertNgModuleDeclarationToStandalone(
   allDeclarations: Set<ts.ClassDeclaration>,
   tracker: ChangeTracker,
   typeChecker: TemplateTypeChecker,
-  importRemapper?: ComponentImportsRemapper,
+  importRemapper?: DeclarationImportsRemapper,
 ): void {
   const directiveMeta = typeChecker.getDirectiveMetadata(decl);
 
@@ -176,7 +175,7 @@ function getComponentImportExpressions(
   allDeclarations: Set<ts.ClassDeclaration>,
   tracker: ChangeTracker,
   typeChecker: TemplateTypeChecker,
-  importRemapper?: ComponentImportsRemapper,
+  importRemapper?: DeclarationImportsRemapper,
 ): ts.Expression[] {
   const templateDependencies = findTemplateDependencies(decl, typeChecker);
   const usedDependenciesInMigration = new Set(
@@ -201,7 +200,12 @@ function getComponentImportExpressions(
     }
   }
 
-  return potentialImportsToExpressions(resolvedDependencies, decl, tracker, importRemapper);
+  return potentialImportsToExpressions(
+    resolvedDependencies,
+    decl.getSourceFile(),
+    tracker,
+    importRemapper,
+  );
 }
 
 /**
@@ -214,34 +218,25 @@ function getComponentImportExpressions(
  */
 export function potentialImportsToExpressions(
   potentialImports: PotentialImport[],
-  component: ts.ClassDeclaration,
+  toFile: ts.SourceFile,
   tracker: ChangeTracker,
-  importRemapper?: ComponentImportsRemapper,
+  importRemapper?: DeclarationImportsRemapper,
 ): ts.Expression[] {
   const processedDependencies = importRemapper
-    ? importRemapper(potentialImports, component)
+    ? importRemapper(potentialImports)
     : potentialImports;
 
   return processedDependencies.map((importLocation) => {
     if (importLocation.moduleSpecifier) {
-      return tracker.addImport(
-        component.getSourceFile(),
-        importLocation.symbolName,
-        importLocation.moduleSpecifier,
-      );
+      return tracker.addImport(toFile, importLocation.symbolName, importLocation.moduleSpecifier);
     }
 
     const identifier = ts.factory.createIdentifier(importLocation.symbolName);
-
     if (!importLocation.isForwardReference) {
       return identifier;
     }
 
-    const forwardRefExpression = tracker.addImport(
-      component.getSourceFile(),
-      'forwardRef',
-      '@angular/core',
-    );
+    const forwardRefExpression = tracker.addImport(toFile, 'forwardRef', '@angular/core');
     const arrowFunction = ts.factory.createArrowFunction(
       undefined,
       undefined,
@@ -522,17 +517,17 @@ function isNamedPropertyAssignment(
 /**
  * Finds the import from which to bring in a template dependency of a component.
  * @param target Dependency that we're searching for.
- * @param inComponent Component in which the dependency is used.
+ * @param inContext Component in which the dependency is used.
  * @param importMode Mode in which to resolve the import target.
  * @param typeChecker
  */
 export function findImportLocation(
   target: Reference<NamedClassDeclaration>,
-  inComponent: ts.ClassDeclaration,
+  inContext: ts.Node,
   importMode: PotentialImportMode,
   typeChecker: TemplateTypeChecker,
 ): PotentialImport | null {
-  const importLocations = typeChecker.getPotentialImportsFor(target, inComponent, importMode);
+  const importLocations = typeChecker.getPotentialImportsFor(target, inContext, importMode);
   let firstSameFileImport: PotentialImport | null = null;
   let firstModuleImport: PotentialImport | null = null;
 
@@ -601,34 +596,12 @@ function findNgModuleClassesToMigrate(sourceFile: ts.SourceFile, typeChecker: ts
 /** Finds all testing object literals that need to be migrated. */
 export function findTestObjectsToMigrate(sourceFile: ts.SourceFile, typeChecker: ts.TypeChecker) {
   const testObjects: ts.ObjectLiteralExpression[] = [];
-  const testBedImport = getImportSpecifier(sourceFile, '@angular/core/testing', 'TestBed');
-  const catalystImport = getImportSpecifier(
-    sourceFile,
-    /testing\/catalyst(\/(fake_)?async)?$/,
-    'setupModule',
-  );
+  const {testBed, catalyst} = getTestingImports(sourceFile);
 
-  if (testBedImport || catalystImport) {
+  if (testBed || catalyst) {
     sourceFile.forEachChild(function walk(node) {
-      const isObjectLiteralCall =
-        ts.isCallExpression(node) &&
-        node.arguments.length > 0 &&
-        // `arguments[0]` is the testing module config.
-        ts.isObjectLiteralExpression(node.arguments[0]);
-      const config = isObjectLiteralCall ? (node.arguments[0] as ts.ObjectLiteralExpression) : null;
-      const isTestBedCall =
-        isObjectLiteralCall &&
-        testBedImport &&
-        ts.isPropertyAccessExpression(node.expression) &&
-        node.expression.name.text === 'configureTestingModule' &&
-        isReferenceToImport(typeChecker, node.expression.expression, testBedImport);
-      const isCatalystCall =
-        isObjectLiteralCall &&
-        catalystImport &&
-        ts.isIdentifier(node.expression) &&
-        isReferenceToImport(typeChecker, node.expression, catalystImport);
-
-      if ((isTestBedCall || isCatalystCall) && config) {
+      if (isTestCall(typeChecker, node, testBed, catalyst)) {
+        const config = node.arguments[0];
         const declarations = findLiteralProperty(config, 'declarations');
         if (
           declarations &&

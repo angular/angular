@@ -17,6 +17,8 @@ import {
   findClassDeclaration,
   findLiteralProperty,
   getNodeLookup,
+  getTestingImports,
+  isTestCall,
   NamedClassDeclaration,
   offsetsToNodes,
   ReferenceResolver,
@@ -29,7 +31,7 @@ import {
   TemplateTypeChecker,
 } from '@angular/compiler-cli/private/migrations';
 import {
-  ComponentImportsRemapper,
+  DeclarationImportsRemapper,
   findImportLocation,
   findTemplateDependencies,
   potentialImportsToExpressions,
@@ -52,7 +54,7 @@ export function pruneNgModules(
   printer: ts.Printer,
   importRemapper?: ImportRemapper,
   referenceLookupExcludedFiles?: RegExp,
-  componentImportRemapper?: ComponentImportsRemapper,
+  declarationImportRemapper?: DeclarationImportsRemapper,
 ) {
   const filesToRemove = new Set<ts.SourceFile>();
   const tracker = new ChangeTracker(printer, importRemapper);
@@ -75,6 +77,7 @@ export function pruneNgModules(
   const classesToRemove = new Set<ts.ClassDeclaration>();
   const barrelExports = new UniqueItemTracker<ts.SourceFile, ts.ExportDeclaration>();
   const componentImportArrays = new UniqueItemTracker<ts.ArrayLiteralExpression, ts.Node>();
+  const testArrays = new UniqueItemTracker<ts.ArrayLiteralExpression, ts.Node>();
   const nodesToRemove = new Set<ts.Node>();
 
   sourceFiles.forEach(function walk(node: ts.Node) {
@@ -83,6 +86,7 @@ export function pruneNgModules(
         node,
         removalLocations,
         componentImportArrays,
+        testArrays,
         templateTypeChecker,
         referenceResolver,
         program,
@@ -106,13 +110,23 @@ export function pruneNgModules(
     node.forEachChild(walk);
   });
 
-  replaceInImportsArray(
+  replaceInComponentImportsArray(
     componentImportArrays,
     classesToRemove,
     tracker,
     typeChecker,
     templateTypeChecker,
-    componentImportRemapper,
+    declarationImportRemapper,
+  );
+
+  replaceInTestImportsArray(
+    testArrays,
+    removalLocations,
+    classesToRemove,
+    tracker,
+    typeChecker,
+    templateTypeChecker,
+    declarationImportRemapper,
   );
 
   // We collect all the places where we need to remove references first before generating the
@@ -157,6 +171,7 @@ export function pruneNgModules(
  * @param ngModule Module being removed.
  * @param removalLocations Tracks the different places from which the class should be removed.
  * @param componentImportArrays Set of `imports` arrays of components that need to be adjusted.
+ * @param testImportArrays Set of `imports` arrays of tests that need to be adjusted.
  * @param referenceResolver
  * @param program
  */
@@ -164,12 +179,14 @@ function collectChangeLocations(
   ngModule: ts.ClassDeclaration,
   removalLocations: RemovalLocations,
   componentImportArrays: UniqueItemTracker<ts.ArrayLiteralExpression, ts.Node>,
+  testImportArrays: UniqueItemTracker<ts.ArrayLiteralExpression, ts.Node>,
   templateTypeChecker: TemplateTypeChecker,
   referenceResolver: ReferenceResolver,
   program: NgtscProgram,
 ) {
   const refsByFile = referenceResolver.findReferencesInProject(ngModule.name!);
   const tsProgram = program.getTsProgram();
+  const typeChecker = tsProgram.getTypeChecker();
   const nodes = new Set<ts.Node>();
 
   for (const [fileName, refs] of refsByFile) {
@@ -185,21 +202,34 @@ function collectChangeLocations(
     if (closestArray) {
       const closestAssignment = closestNode(closestArray, ts.isPropertyAssignment);
 
-      // If the module was flagged as being removable, but it's still being used in a standalone
-      // component's `imports` array, it means that it was likely changed outside of the migration
-      // and deleting it now will be breaking. Track it separately so it can be handled properly.
       if (closestAssignment && isInImportsArray(closestAssignment, closestArray)) {
-        const closestDecorator = closestNode(closestAssignment, ts.isDecorator);
-        const closestClass = closestDecorator
-          ? closestNode(closestDecorator, ts.isClassDeclaration)
-          : null;
-        const directiveMeta = closestClass
-          ? templateTypeChecker.getDirectiveMetadata(closestClass)
-          : null;
+        const closestCall = closestNode(closestAssignment, ts.isCallExpression);
 
-        if (directiveMeta && directiveMeta.isComponent && directiveMeta.isStandalone) {
-          componentImportArrays.track(closestArray, node);
-          continue;
+        if (closestCall) {
+          const closestDecorator = closestNode(closestCall, ts.isDecorator);
+          const closestClass = closestDecorator
+            ? closestNode(closestDecorator, ts.isClassDeclaration)
+            : null;
+          const directiveMeta = closestClass
+            ? templateTypeChecker.getDirectiveMetadata(closestClass)
+            : null;
+
+          // If the module was flagged as being removable, but it's still being used in a
+          // standalone component's `imports` array, it means that it was likely changed
+          // outside of the  migration and deleting it now will be breaking. Track it
+          // separately so it can be handled properly.
+          if (directiveMeta && directiveMeta.isComponent && directiveMeta.isStandalone) {
+            componentImportArrays.track(closestArray, node);
+            continue;
+          }
+
+          // If the module is removable and used inside a test's `imports`,
+          // we track it separately so it can be replaced with its `exports`.
+          const {testBed, catalyst} = getTestingImports(node.getSourceFile());
+          if (isTestCall(typeChecker, closestCall, testBed, catalyst)) {
+            testImportArrays.track(closestArray, node);
+            continue;
+          }
         }
       }
 
@@ -224,7 +254,7 @@ function collectChangeLocations(
 }
 
 /**
- * Replaces all the leftover modules in imports arrays with their exports.
+ * Replaces all the leftover modules in component `imports` arrays with their exports.
  * @param componentImportArrays All the imports arrays and their nodes that represent NgModules.
  * @param classesToRemove Set of classes that were marked for removal.
  * @param tracker
@@ -232,13 +262,13 @@ function collectChangeLocations(
  * @param templateTypeChecker
  * @param importRemapper
  */
-function replaceInImportsArray(
+function replaceInComponentImportsArray(
   componentImportArrays: UniqueItemTracker<ts.ArrayLiteralExpression, ts.Node>,
   classesToRemove: Set<ts.ClassDeclaration>,
   tracker: ChangeTracker,
   typeChecker: ts.TypeChecker,
   templateTypeChecker: TemplateTypeChecker,
-  importRemapper?: ComponentImportsRemapper,
+  importRemapper?: DeclarationImportsRemapper,
 ) {
   for (const [array, toReplace] of componentImportArrays.getEntries()) {
     const closestClass = closestNode(array, ts.isClassDeclaration);
@@ -272,22 +302,66 @@ function replaceInImportsArray(
       }
     }
 
-    replaceModulesInImportsArray(
-      array,
-      closestClass,
-      replacements,
-      tracker,
-      templateTypeChecker,
-      importRemapper,
-    );
+    replaceModulesInImportsArray(array, replacements, tracker, templateTypeChecker, importRemapper);
   }
 }
 
 /**
- * Replaces any leftover modules in `imports` arrays with their exports that are used within a
- * component.
+ * Replaces all the leftover modules in testing `imports` arrays with their exports.
+ * @param testImportArrays All test `imports` arrays and their nodes that represent modules.
+ * @param classesToRemove Classes marked for removal by the migration.
+ * @param tracker
+ * @param typeChecker
+ * @param templateTypeChecker
+ * @param importRemapper
+ */
+function replaceInTestImportsArray(
+  testImportArrays: UniqueItemTracker<ts.ArrayLiteralExpression, ts.Node>,
+  removalLocations: RemovalLocations,
+  classesToRemove: Set<ts.ClassDeclaration>,
+  tracker: ChangeTracker,
+  typeChecker: ts.TypeChecker,
+  templateTypeChecker: TemplateTypeChecker,
+  importRemapper?: DeclarationImportsRemapper,
+) {
+  for (const [array, toReplace] of testImportArrays.getEntries()) {
+    const replacements = new UniqueItemTracker<ts.Node, Reference<NamedClassDeclaration>>();
+
+    for (const node of toReplace) {
+      const moduleDecl = findClassDeclaration(node, typeChecker);
+
+      if (moduleDecl) {
+        const moduleMeta = templateTypeChecker.getNgModuleMetadata(moduleDecl);
+
+        if (moduleMeta) {
+          // Since we don't have access to the template type checker in tests,
+          // we copy over all the `exports` that aren't flagged for removal.
+          const exports = moduleMeta.exports.filter(
+            (exp) => !classesToRemove.has(exp.node as NamedClassDeclaration),
+          );
+
+          if (exports.length > 0) {
+            exports.forEach((exp) =>
+              replacements.track(node, exp as Reference<NamedClassDeclaration>),
+            );
+          } else {
+            removalLocations.arrays.track(array, node);
+          }
+        } else {
+          // It's unlikely not to have module metadata at this point, but just in
+          // case unmark the class for removal to reduce the chance of breakages.
+          classesToRemove.delete(moduleDecl);
+        }
+      }
+    }
+
+    replaceModulesInImportsArray(array, replacements, tracker, templateTypeChecker, importRemapper);
+  }
+}
+
+/**
+ * Replaces any leftover modules in an `imports` arrays with a set of specified exports
  * @param array Imports array which is being migrated.
- * @param componentClass Class that the imports array belongs to.
  * @param replacements Map of NgModule references to their exports.
  * @param tracker
  * @param templateTypeChecker
@@ -295,13 +369,23 @@ function replaceInImportsArray(
  */
 function replaceModulesInImportsArray(
   array: ts.ArrayLiteralExpression,
-  componentClass: ts.ClassDeclaration,
   replacements: UniqueItemTracker<ts.Node, Reference<NamedClassDeclaration>>,
   tracker: ChangeTracker,
   templateTypeChecker: TemplateTypeChecker,
-  importRemapper?: ComponentImportsRemapper,
+  importRemapper?: DeclarationImportsRemapper,
 ): void {
+  if (replacements.isEmpty()) {
+    return;
+  }
+
   const newElements: ts.Expression[] = [];
+  const identifiers = new Set<string>();
+
+  for (const element of array.elements) {
+    if (ts.isIdentifier(element)) {
+      identifiers.add(element.text);
+    }
+  }
 
   for (const element of array.elements) {
     const replacementRefs = replacements.get(element);
@@ -316,7 +400,7 @@ function replaceModulesInImportsArray(
     for (const ref of replacementRefs) {
       const importLocation = findImportLocation(
         ref,
-        componentClass,
+        array,
         PotentialImportMode.Normal,
         templateTypeChecker,
       );
@@ -326,9 +410,16 @@ function replaceModulesInImportsArray(
       }
     }
 
-    newElements.push(
-      ...potentialImportsToExpressions(potentialImports, componentClass, tracker, importRemapper),
-    );
+    potentialImportsToExpressions(
+      potentialImports,
+      array.getSourceFile(),
+      tracker,
+      importRemapper,
+    ).forEach((expr) => {
+      if (!ts.isIdentifier(expr) || !identifiers.has(expr.text)) {
+        newElements.push(expr);
+      }
+    });
   }
 
   tracker.replaceNode(array, ts.factory.updateArrayLiteralExpression(array, newElements));
