@@ -264,6 +264,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             path: 'guide/directives/directive-composition-api',
             contentPath: 'guide/directives/directive-composition-api',
           },
+          {
+            label: 'Optimizing images with NgOptimizedImage',
+            path: 'guide/image-optimization',
+            contentPath: 'guide/image-optimization',
+          },
         ],
       },
       {
@@ -407,22 +412,12 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         ],
       },
       {
-        label: 'Performance',
+        label: 'Server-side & hybrid-rendering',
         children: [
           {
             label: 'Overview',
             path: 'guide/performance',
             contentPath: 'guide/performance/overview',
-          },
-          {
-            label: 'Deferrable views',
-            path: 'guide/defer',
-            contentPath: 'guide/defer',
-          },
-          {
-            label: 'Image optimization',
-            path: 'guide/image-optimization',
-            contentPath: 'guide/image-optimization',
           },
           {
             label: 'Server-side rendering',
@@ -435,7 +430,7 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/prerendering',
           },
           {
-            label: 'Hybrid rendering',
+            label: 'Hybrid rendering with server routing',
             path: 'guide/hybrid-rendering',
             contentPath: 'guide/hybrid-rendering',
           },
