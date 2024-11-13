@@ -1,10 +1,9 @@
 :host {
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  position: relative;
 }
-
 
 .hidden {
   visibility: hidden;
@@ -62,17 +61,16 @@ as-split-area {
         }
       }
     }
-    
+
     .mat-expansion-panel-body {
       padding: 0;
     }
-    
-    
+
     .mat-tab-label {
       // padding: 0;
       min-width: unset;
     }
-    
+
     .injector-param {
       display: flex;
       align-items: center;
@@ -96,27 +94,27 @@ as-split-area {
       .parameter {
         width: 100%;
       }
-    
+
       .icon {
         display: flex;
         cursor: pointer;
-    
+
         mat-icon {
           font-size: 18px;
           display: flex;
           align-items: center;
           justify-content: center;
         }
-    
+
         &:hover {
           opacity: 0.8;
         }
       }
-    
+
       .parameter-name {
         color: #d23a32;
       }
-    
+
       .parameter-flag {
         a {
           display: inline-block;
@@ -125,7 +123,7 @@ as-split-area {
           border-radius: 10px;
           color: inherit;
           text-decoration: none;
-    
+
           &:hover {
             background: #c6c6c6;
           }
@@ -152,7 +150,7 @@ as-split-area {
     border-bottom: 1px solid #e8e8e8;
     border-left: 1px solid #e8e8e8;
     padding: 1rem;
-    
+
     &:last-of-type {
       border-right: 1px solid #e8e8e8;
     }
@@ -163,12 +161,10 @@ as-split-area {
   }
 }
 
-
 .no-deps {
   padding: 1rem;
-  font-size: .8rem;
+  font-size: 0.8rem;
 }
-
 
 .providers-title {
   width: 100%;
@@ -196,7 +192,7 @@ as-split-area {
 .injector-hierarchy {
   height: 100%;
   overflow: hidden;
-  
+
   h2 {
     padding: 4px 16px;
     margin: 0;

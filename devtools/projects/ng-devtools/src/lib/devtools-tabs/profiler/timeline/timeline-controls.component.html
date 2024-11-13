@@ -7,10 +7,13 @@
         class="filter-input"
         (keyup)="filter.emit($event.target.value)"
         placeholder="duration: >30 source: click"
-        />
+      />
     </mat-form-field>
     <mat-form-field [class.hidden]="!record()">
-      <mat-select [value]="visualizationMode()" (selectionChange)="visualizationMode.set($event.value)">
+      <mat-select
+        [value]="visualizationMode()"
+        (selectionChange)="visualizationMode.set($event.value)"
+      >
         <mat-option [value]="flameGraphMode"> Flame graph </mat-option>
         <mat-option [value]="treeMapMode"> Tree map </mat-option>
         <mat-option [value]="barGraphMode"> Bar chart </mat-option>
@@ -21,7 +24,7 @@
     class="details"
     [class.flame-details]="visualizationMode() == flameGraphMode"
     [class.bar-details]="visualizationMode() == barGraphMode"
-    >
+  >
     @if (estimatedFrameRate() >= 60 && record()) {
       <label>
         Time spent: <span class="value">{{ record()?.duration | number }} ms</span>
@@ -43,10 +46,7 @@
       </label>
     }
     @if (visualizationMode() == flameGraphMode) {
-      <mat-checkbox
-        [checked]="changeDetection()"
-        (change)="changeDetection.set($event.checked)"
-        >
+      <mat-checkbox [checked]="changeDetection()" (change)="changeDetection.set($event.checked)">
         Show only change detection
       </mat-checkbox>
     }
