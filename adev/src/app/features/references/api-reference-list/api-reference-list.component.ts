@@ -51,7 +51,6 @@ export default class ApiReferenceList {
   itemTypes = Object.values(ApiItemType);
 
   // state
-  featuredGroup = this.apiReferenceManager.featuredGroup; // THINK: this is a shortcut - why would people write this?
   includeDeprecated = signal(false);
 
   // queries
@@ -91,7 +90,6 @@ export default class ApiReferenceList {
       .apiGroups()
       .map((group) => ({
         title: group.title,
-        isFeatured: group.isFeatured,
         id: group.id,
         items: group.items.filter((apiItem) => {
           return (
