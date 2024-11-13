@@ -303,10 +303,10 @@
     "@angular/core" "^13.0.0 || ^14.0.0-0"
     reflect-metadata "^0.1.13"
 
-"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#027ae92e9eaa20845aaf96e49fae89d0be750c91":
-  version "0.0.0-1694163487c2ccb7f70660249a545ebc73559654"
-  uid "027ae92e9eaa20845aaf96e49fae89d0be750c91"
-  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#027ae92e9eaa20845aaf96e49fae89d0be750c91"
+"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#6015e51c2e328001edb510780fc01104239e4aae":
+  version "0.0.0-16ca8c9748725258eac3753146a4e7f11f3d0759"
+  uid "6015e51c2e328001edb510780fc01104239e4aae"
+  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#6015e51c2e328001edb510780fc01104239e4aae"
   dependencies:
     "@angular/benchpress" "0.3.0"
     "@angular/build" "19.0.0-rc.1"
@@ -374,10 +374,10 @@
   optionalDependencies:
     lmdb "3.1.4"
 
-"@angular/cdk@19.0.0-rc.1":
-  version "19.0.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-19.0.0-rc.1.tgz#6d486e9b9f358e86f9f13f0045566e1f21711d3d"
-  integrity sha512-aNpSadgqq3bpyZ/OsCiAl/TGMzUZYqAltctgYS3kXIrSphamus+9wOR7SF1dK87RUX/RWj3SMpol6e4kLmyfpw==
+"@angular/cdk@19.0.0-rc.2":
+  version "19.0.0-rc.2"
+  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-19.0.0-rc.2.tgz#8bbf71eb6144e9e3224b0921c0381dca78516479"
+  integrity sha512-fzQwvzsXcmLLsBsDLQ0mRE9sSm0VFLZxnhIARPxLG8rGUbPTFsqwY3+jHS8maVSCB6XRHrwZlTFNIrjMd5F01Q==
   dependencies:
     tslib "^2.3.0"
   optionalDependencies:
@@ -420,17 +420,17 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/material@19.0.0-rc.1":
-  version "19.0.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@angular/material/-/material-19.0.0-rc.1.tgz#787035d9bdddb301a5a3ceb80b36486da0585f46"
-  integrity sha512-PCT4t4JL1INyLj0WEtGOVeS6i7Xk8wQa1sXqFV4nJADD+TPLFkvGFaW/mnXjKGFNXq8BAPe/lZ26uPFgy0HGfA==
+"@angular/material@19.0.0-rc.2":
+  version "19.0.0-rc.2"
+  resolved "https://registry.yarnpkg.com/@angular/material/-/material-19.0.0-rc.2.tgz#e7eaf03d8c69f5a5d208dd31b9d523110505d06c"
+  integrity sha512-hSuugemFhtNcnV4I5hUw8a28EAhXMd/edzUy4rubBVi+smLBraz72aIXMeTrxRTlhgcvMpEvtRH0/WhcGO4A6A==
   dependencies:
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#2eb75fc8fd434fe57a4b1fc510dc03737b658023":
-  version "0.0.0-1694163487c2ccb7f70660249a545ebc73559654"
-  uid "2eb75fc8fd434fe57a4b1fc510dc03737b658023"
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#2eb75fc8fd434fe57a4b1fc510dc03737b658023"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#4fa48fe9939686e2fb06b2759a69e9eb132ee9e9":
+  version "0.0.0-16ca8c9748725258eac3753146a4e7f11f3d0759"
+  uid "4fa48fe9939686e2fb06b2759a69e9eb132ee9e9"
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#4fa48fe9939686e2fb06b2759a69e9eb132ee9e9"
   dependencies:
     "@octokit/rest" "21.0.2"
     "@types/semver" "^7.3.6"
