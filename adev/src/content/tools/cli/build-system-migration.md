@@ -21,7 +21,7 @@ New applications will use this new build system by default via the `application`
 
 ## For existing applications
 
-Both automated and manual procedures are available dependening on the requirements of the project.
+Both automated and manual procedures are available depending on the requirements of the project.
 Starting with v18, the update process will ask if you would like to migrate existing applications to use the new build system via the automated migration.
 Prior to migrating, please consider reviewing the [Known Issues](#known-issues) section as it may contain relevant information for your project.
 
