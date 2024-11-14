@@ -21,7 +21,7 @@ import {
   Input,
   signal,
   Type,
-  ViewChild,
+  viewChild,
 } from '@angular/core';
 import {CommonModule, DOCUMENT} from '@angular/common';
 import {MatTabGroup, MatTabsModule} from '@angular/material/tabs';
@@ -54,7 +54,7 @@ export class ExampleViewer {
 
   @Input() githubUrl: string | null = null;
   @Input() stackblitzUrl: string | null = null;
-  @ViewChild('codeTabs') matTabGroup?: MatTabGroup;
+  readonly matTabGroup = viewChild<MatTabGroup>('codeTabs');
 
   private readonly changeDetector = inject(ChangeDetectorRef);
   private readonly clipboard = inject(Clipboard);
@@ -111,7 +111,7 @@ export class ExampleViewer {
           `example-${this.exampleMetadata()?.id.toString()!}`,
         );
 
-        this.matTabGroup?.realignInkBar();
+        this.matTabGroup()?.realignInkBar();
 
         this.listenToMatTabIndexChange();
 
@@ -142,8 +142,9 @@ export class ExampleViewer {
   }
 
   private listenToMatTabIndexChange(): void {
-    this.matTabGroup?.realignInkBar();
-    this.matTabGroup?.selectedIndexChange
+    const matTabGroup = this.matTabGroup();
+    matTabGroup?.realignInkBar();
+    matTabGroup?.selectedIndexChange
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((index) => {
         this.snippetCode.set(this.exampleMetadata()?.files[index]);
