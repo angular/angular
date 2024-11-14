@@ -1,3 +1,12 @@
+<a name="18.2.12"></a>
+# 18.2.12 (2024-11-14)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4c38160853](https://github.com/angular/angular/commit/4c3816085363614497eecf6b722a91e15e1b2051) | fix | correct extraction of generics from type aliases ([#58548](https://github.com/angular/angular/pull/58548)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.0.0-rc.1"></a>
 # 19.0.0-rc.1 (2024-11-06)
 ### compiler
