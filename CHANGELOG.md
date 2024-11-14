@@ -1,3 +1,28 @@
+<a name="19.0.0-rc.2"></a>
+# 19.0.0-rc.2 (2024-11-14)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [560282aa9b](https://github.com/angular/angular/commit/560282aa9b3204ad8311017905beed63072c7303) | fix | control flow nodes with root at the end projected incorrectly ([#58607](https://github.com/angular/angular/pull/58607)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [791ee323dc](https://github.com/angular/angular/commit/791ee323dc5e9ba60b385048f42ff5c5ded7a8c0) | fix | correct extraction of generics from type aliases ([#58548](https://github.com/angular/angular/pull/58548)) |
+| [9bbb01c85e](https://github.com/angular/angular/commit/9bbb01c85e763b0457456a2393a834db15008671) | fix | report individual diagnostics for unused imports ([#58589](https://github.com/angular/angular/pull/58589)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [71ee81af2c](https://github.com/angular/angular/commit/71ee81af2c4c5854a54cf94a48d5829da41878a7) | fix | clean up event contract once hydration is done ([#58174](https://github.com/angular/angular/pull/58174)) |
+| [5fe57d4fbb](https://github.com/angular/angular/commit/5fe57d4fbb578c35a8e8ef037ae8c19c8a0e901c) | fix | fixes issues with control flow and incremental hydration ([#58644](https://github.com/angular/angular/pull/58644)) |
+| [51933ef5a6](https://github.com/angular/angular/commit/51933ef5a6ce62df37945fa22e87e3868288e318) | fix | prevent errors on contract cleanup ([#58614](https://github.com/angular/angular/pull/58614)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b84ed2b628](https://github.com/angular/angular/commit/b84ed2b6288d101661abdc880c45b52398bc1022) | fix | include the output migration in the defaults of the signal migration ([#58635](https://github.com/angular/angular/pull/58635)) |
+| [e26797b38e](https://github.com/angular/angular/commit/e26797b38efe0ac813601c10581f34b7591954c1) | fix | replace removed NgModules in tests with their exports ([#58627](https://github.com/angular/angular/pull/58627)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.2.12"></a>
 # 18.2.12 (2024-11-14)
 ### compiler-cli
