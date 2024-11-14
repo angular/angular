@@ -7,7 +7,6 @@ import {ChildComponent} from './child.component';
     <app-child (addItemEvent)="addItem($event)" />
     <p>🐢 all the way down {{ items.length }}</p>
   `,
-  standalone: true,
   imports: [ChildComponent],
 })
 export class AppComponent {

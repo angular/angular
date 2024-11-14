@@ -816,9 +816,8 @@ Because the injector has only to look at the `ElementInjector` of the `<app-chil
 As in the `FlowerService` example, if you add `@SkipSelf()` to the constructor for the `AnimalService`, the injector won't look in the  `ElementInjector` of the current `<app-child>` for the `AnimalService`.
 Instead, the injector will begin at the `<app-root>` `ElementInjector`.
 
-<docs-code language="typescript" highlight="[6]">
+<docs-code language="typescript" highlight="[5]">
 @Component({
-  standalone: true,
   selector: 'app-child',
   …
   viewProviders: [
@@ -853,9 +852,8 @@ If you just use `@Host()` for the injection of `AnimalService`, the result is do
 The `ChildComponent` configures the `viewProviders` so that the dog emoji is provided as `AnimalService` value.
 You can also see `@Host()` in the constructor:
 
-<docs-code language="typescript" highlight="[[6],[10]]">
+<docs-code language="typescript" highlight="[[5],[9]]">
 @Component({
-  standalone: true
   selector: 'app-child',
   …
   viewProviders: [
@@ -886,9 +884,8 @@ export class ChildComponent {
 
 Add a `viewProviders` array with a third animal, hedgehog <code>&#x1F994;</code>, to the `app.component.ts` `@Component()` metadata:
 
-<docs-code language="typescript" highlight="[7]">
+<docs-code language="typescript" highlight="[6]">
 @Component({
-  standalone: true,
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: [ './app.component.css' ],

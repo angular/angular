@@ -69,7 +69,7 @@ export class MasterService {
 /*
  * Reverse the input string.
  */
-@Pipe({name: 'reverse', standalone: true})
+@Pipe({name: 'reverse'})
 export class ReversePipe implements PipeTransform {
   transform(s: string) {
     let r = '';
@@ -82,7 +82,6 @@ export class ReversePipe implements PipeTransform {
 
 //////////// Components /////////////
 @Component({
-  standalone: true,
   selector: 'bank-account',
   template: ` Bank Name: {{ bank }} Account Id: {{ id }} `,
 })
@@ -98,7 +97,6 @@ export class BankAccountComponent {
 
 /** A component with attributes, styles, classes, and property setting */
 @Component({
-  standalone: true,
   selector: 'bank-account-parent',
   template: `
     <bank-account
@@ -121,7 +119,6 @@ export class BankAccountParentComponent {
 
 // #docregion LightswitchComp
 @Component({
-  standalone: true,
   selector: 'lightswitch-comp',
   template: ` <button type="button" (click)="clicked()">Click me!</button>
     <span>{{ message }}</span>`,
@@ -138,7 +135,6 @@ export class LightswitchComponent {
 // #enddocregion LightswitchComp
 
 @Component({
-  standalone: true,
   selector: 'child-1',
   template: '<span>Child-1({{text}})</span>',
 })
@@ -147,7 +143,6 @@ export class Child1Component {
 }
 
 @Component({
-  standalone: true,
   selector: 'child-2',
   template: '<div>Child-2({{text}})</div>',
 })
@@ -156,7 +151,6 @@ export class Child2Component {
 }
 
 @Component({
-  standalone: true,
   selector: 'child-3',
   template: '<div>Child-3({{text}})</div>',
 })
@@ -165,7 +159,6 @@ export class Child3Component {
 }
 
 @Component({
-  standalone: true,
   selector: 'input-comp',
   template: '<input [(ngModel)]="name">',
   imports: [FormsModule],
@@ -190,7 +183,7 @@ export class InputComponent {
 // }
 
 // As the styleguide recommends
-@Directive({standalone: true, selector: 'input[value]'})
+@Directive({selector: 'input[value]'})
 export class InputValueBinderDirective {
   @HostBinding() @Input() value: any;
 
@@ -203,7 +196,6 @@ export class InputValueBinderDirective {
 }
 
 @Component({
-  standalone: true,
   selector: 'input-value-comp',
   template: ` Name: <input [value]="name" /> {{ name }} `,
 })
@@ -212,7 +204,6 @@ export class InputValueBinderComponent {
 }
 
 @Component({
-  standalone: true,
   selector: 'parent-comp',
   imports: [Child1Component],
   template: 'Parent(<child-1></child-1>)',
@@ -220,7 +211,6 @@ export class InputValueBinderComponent {
 export class ParentComponent {}
 
 @Component({
-  standalone: true,
   selector: 'io-comp',
   template: '<button type="button" class="hero" (click)="click()">Original {{hero.name}}</button>',
 })
@@ -233,7 +223,6 @@ export class IoComponent {
 }
 
 @Component({
-  standalone: true,
   selector: 'io-parent-comp',
   template: `
     @if (!selectedHero) {
@@ -257,7 +246,6 @@ export class IoParentComponent {
 }
 
 @Component({
-  standalone: true,
   selector: 'my-if-comp',
   template: 'MyIf(@if (showMore) {<span>More</span>})',
   imports: [sharedImports],
@@ -267,7 +255,6 @@ export class MyIfComponent {
 }
 
 @Component({
-  standalone: true,
   selector: 'my-service-comp',
   template: 'injected value: {{valueService.value}}',
   providers: [ValueService],
@@ -277,7 +264,6 @@ export class TestProvidersComponent {
 }
 
 @Component({
-  standalone: true,
   selector: 'my-service-comp',
   template: 'injected value: {{valueService.value}}',
   viewProviders: [ValueService],
@@ -287,7 +273,6 @@ export class TestViewProvidersComponent {
 }
 
 @Component({
-  standalone: true,
   selector: 'external-template-comp',
   templateUrl: './demo-external-template.html',
 })
@@ -304,7 +289,6 @@ export class ExternalTemplateComponent implements OnInit {
 }
 
 @Component({
-  standalone: true,
   selector: 'comp-w-ext-comp',
   imports: [ExternalTemplateComponent],
   template: `
@@ -314,7 +298,7 @@ export class ExternalTemplateComponent implements OnInit {
 })
 export class InnerCompWithExternalTemplateComponent {}
 
-@Component({standalone: true, selector: 'needs-content', template: '<ng-content></ng-content>'})
+@Component({selector: 'needs-content', template: '<ng-content></ng-content>'})
 export class NeedsContentComponent {
   // children with #content local variable
   @ContentChildren('content') children: any;
@@ -322,7 +306,6 @@ export class NeedsContentComponent {
 
 ///////// MyIfChildComp ////////
 @Component({
-  standalone: true,
   selector: 'my-if-child-1',
   template: ` <h4>MyIfChildComp</h4>
     <div>
@@ -381,7 +364,6 @@ export class MyIfChildComponent implements OnInit, OnChanges, OnDestroy {
 ///////// MyIfParentComp ////////
 
 @Component({
-  standalone: true,
   selector: 'my-if-parent-comp',
   template: `
     <h3>MyIfParentComp</h3>
@@ -416,7 +398,6 @@ export class MyIfParentComponent implements OnInit {
 }
 
 @Component({
-  standalone: true,
   selector: 'reverse-pipe-comp',
   template: `
     <input [(ngModel)]="text" />
@@ -429,14 +410,12 @@ export class ReversePipeComponent {
 }
 
 @Component({
-  standalone: true,
   imports: [NeedsContentComponent],
   template: '<div>Replace Me</div>',
 })
 export class ShellComponent {}
 
 @Component({
-  standalone: true,
   selector: 'demo-comp',
   template: `
     <h1>Specs Demo</h1>

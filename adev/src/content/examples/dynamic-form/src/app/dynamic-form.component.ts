@@ -9,7 +9,6 @@ import {QuestionBase} from './question-base';
 import {QuestionControlService} from './question-control.service';
 
 @Component({
-  standalone: true,
   selector: 'app-dynamic-form',
   templateUrl: './dynamic-form.component.html',
   providers: [QuestionControlService],

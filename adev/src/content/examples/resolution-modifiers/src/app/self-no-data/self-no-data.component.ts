@@ -3,7 +3,6 @@ import {LeafService} from '../leaf.service';
 
 // #docregion self-no-data-component
 @Component({
-  standalone: true,
   selector: 'app-self-no-data',
   templateUrl: './self-no-data.component.html',
   styleUrls: ['./self-no-data.component.css'],

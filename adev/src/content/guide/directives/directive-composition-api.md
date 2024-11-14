@@ -16,7 +16,6 @@ works similarly to applying the `MenuBehavior` to the `<admin-menu>` element in 
 
 ```typescript
 @Component({
-  standalone: true,
   selector: 'admin-menu',
   template: 'admin-menu.html',
   hostDirectives: [MenuBehavior],
@@ -32,7 +31,7 @@ and outputs are not exposed as part of the component's public API. See
 **Angular applies host directives statically at compile time.** You cannot dynamically add
 directives at runtime.
 
-**Directives used in `hostDirectives` must be `standalone: true`.**
+**Directives used in `hostDirectives` may not specify `standalone: false`.**
 
 **Angular ignores the `selector` of directives applied in the `hostDirectives` property.**
 
@@ -44,7 +43,6 @@ in your component's API by expanding the entry in `hostDirectives`:
 
 ```typescript
 @Component({
-  standalone: true,
   selector: 'admin-menu',
   template: 'admin-menu.html',
   hostDirectives: [{
@@ -69,7 +67,6 @@ component:
 
 ```typescript
 @Component({
-  standalone: true,
   selector: 'admin-menu',
   template: 'admin-menu.html',
   hostDirectives: [{
@@ -108,14 +105,12 @@ export class Tooltip { }
 
 // MenuWithTooltip can compose behaviors from multiple other directives
 @Directive({
-  standalone: true,
   hostDirectives: [Tooltip, Menu],
 })
 export class MenuWithTooltip { }
 
 // CustomWidget can apply the already-composed behaviors from MenuWithTooltip
 @Directive({
-  standalone: true,
   hostDirectives: [MenuWithTooltip],
 })
 export class SpecializedMenuWithTooltip { }
@@ -132,7 +127,6 @@ The following example shows minimal use of a host directive:
 
 ```typescript
 @Component({
-  standalone: true,
   selector: 'admin-menu',
   template: 'admin-menu.html',
   hostDirectives: [MenuBehavior],
@@ -160,13 +154,11 @@ example.
 export class Tooltip { }
 
 @Directive({
-  standalone: true,
   hostDirectives: [Tooltip],
 })
 export class CustomTooltip { }
 
 @Directive({
-  standalone: true,
   hostDirectives: [CustomTooltip],
 })
 export class EvenMoreCustomTooltip { }

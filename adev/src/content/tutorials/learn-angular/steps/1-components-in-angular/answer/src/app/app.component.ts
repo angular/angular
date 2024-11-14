@@ -10,6 +10,5 @@ import {Component} from '@angular/core';
       color: #a144eb;
     }
   `,
-  standalone: true,
 })
 export class AppComponent {}

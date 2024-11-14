@@ -1,7 +1,6 @@
 import {Directive, Input, TemplateRef, ViewContainerRef} from '@angular/core';
 
 @Directive({
-  standalone: true,
   selector: '[appTrigonometry]',
 })
 export class TrigonometryDirective {

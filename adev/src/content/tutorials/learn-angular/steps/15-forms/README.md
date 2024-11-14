@@ -35,7 +35,6 @@ import {FormsModule} from '@angular/forms';
 
 @Component({
   ...
-  standalone: true,
   imports: [FormsModule],
 })
 export class UserComponent {}

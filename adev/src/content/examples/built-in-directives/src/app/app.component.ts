@@ -25,7 +25,6 @@ import {StoutItemComponent} from './item-switch.component';
 
 // #docregion import-ng-if, import-ng-for, import-ng-switch, import-ng-style, import-ng-class, import-forms-module
 @Component({
-  standalone: true,
   // #enddocregion import-ng-if, import-ng-for, import-ng-switch, import-ng-style, import-ng-class, import-forms-module
   selector: 'app-root',
   templateUrl: './app.component.html',

@@ -62,7 +62,6 @@ import {RouterOutlet} from '@angular/router';
     </nav>
     <router-outlet />
   `,
-  standalone: true,
   imports: [RouterOutlet],
 })
 export class AppComponent {}

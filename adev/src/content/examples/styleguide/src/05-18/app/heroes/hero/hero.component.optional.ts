@@ -2,7 +2,6 @@ import {Component, Input} from '@angular/core';
 
 // #docregion example
 @Component({
-  standalone: true,
   selector: 'toh-hero',
   template: `...`,
 })

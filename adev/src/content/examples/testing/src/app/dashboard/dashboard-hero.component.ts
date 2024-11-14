@@ -6,7 +6,6 @@ import {Hero} from '../model/hero';
 
 // #docregion component
 @Component({
-  standalone: true,
   selector: 'dashboard-hero',
   template: `
     <button type="button" (click)="click()" class="hero">

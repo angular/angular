@@ -7,7 +7,6 @@ import {Component} from '@angular/core';
     <p>{{ user.name }}</p>
     }
   `,
-  standalone: true,
 })
 export class AppComponent {
   users = [

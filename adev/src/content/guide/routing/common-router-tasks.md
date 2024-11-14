@@ -110,7 +110,6 @@ You also need to add the `RouterLink`, `RouterLinkActive`, and `RouterOutlet` to
 ```ts
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
