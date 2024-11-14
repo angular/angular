@@ -137,12 +137,13 @@ describe('Tutorial', () => {
     setupResetRevealAnswerValues();
     fixture.detectChanges();
 
-    if (!component.revealAnswerButton) throw new Error('revealAnswerButton is undefined');
+    const revealAnswerButton = component.revealAnswerButton();
+    if (!revealAnswerButton) throw new Error('revealAnswerButton is undefined');
 
     const revealAnswerSpy = spyOn(component['embeddedTutorialManager'], 'revealAnswer');
     const resetRevealAnswerSpy = spyOn(component['embeddedTutorialManager'], 'resetRevealAnswer');
 
-    component.revealAnswerButton.nativeElement.click();
+    revealAnswerButton.nativeElement.click();
 
     expect(revealAnswerSpy).not.toHaveBeenCalled();
     expect(resetRevealAnswerSpy).toHaveBeenCalled();
@@ -152,35 +153,37 @@ describe('Tutorial', () => {
     setupRevealAnswerValues();
     fixture.detectChanges();
 
-    if (!component.revealAnswerButton) throw new Error('revealAnswerButton is undefined');
+    const revealAnswerButton = component.revealAnswerButton();
+    if (!revealAnswerButton) throw new Error('revealAnswerButton is undefined');
 
     const embeddedTutorialManagerRevealAnswerSpy = spyOn(
       component['embeddedTutorialManager'],
       'revealAnswer',
     );
-    component.revealAnswerButton.nativeElement.click();
+    revealAnswerButton.nativeElement.click();
 
     expect(embeddedTutorialManagerRevealAnswerSpy).toHaveBeenCalled();
 
     await fixture.whenStable();
     fixture.detectChanges();
 
-    expect(component.revealAnswerButton.nativeElement.textContent?.trim()).toBe('Reset');
+    expect(revealAnswerButton.nativeElement.textContent?.trim()).toBe('Reset');
   });
 
   it('should not reveal the answer when button is disabled', async () => {
     setupDisabledRevealAnswerValues();
     fixture.detectChanges();
 
-    if (!component.revealAnswerButton) throw new Error('revealAnswerButton is undefined');
+    const revealAnswerButton = component.revealAnswerButton();
+    if (!revealAnswerButton) throw new Error('revealAnswerButton is undefined');
 
     spyOn(component, 'canRevealAnswer').and.returnValue(false);
 
     const handleRevealAnswerSpy = spyOn(component, 'handleRevealAnswer');
 
-    component.revealAnswerButton.nativeElement.click();
+    revealAnswerButton.nativeElement.click();
 
-    expect(component.revealAnswerButton.nativeElement.getAttribute('disabled')).toBeDefined();
+    expect(revealAnswerButton.nativeElement.getAttribute('disabled')).toBeDefined();
     expect(handleRevealAnswerSpy).not.toHaveBeenCalled();
   });
 
@@ -188,6 +191,6 @@ describe('Tutorial', () => {
     setupNoRevealAnswerValues();
     fixture.detectChanges();
 
-    expect(component.revealAnswerButton).toBe(undefined);
+    expect(component.revealAnswerButton()).toBe(undefined);
   });
 });
