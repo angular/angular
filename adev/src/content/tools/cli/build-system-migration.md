@@ -20,7 +20,7 @@ New applications will use this new build system by default via the `application`
 
 ## For existing applications
 
-Both automated and manual procedures are available dependening on the requirements of the project.
+Both automated and manual procedures are available depending on the requirements of the project.
 Starting with v18, the update process will ask if you would like to migrate existing applications to use the new build system via the automated migration.
 
 HELPFUL: Remember to remove any CommonJS assumptions in the application server code if using SSR such as `require`, `__filename`, `__dirname`, or other constructs from the [CommonJS module scope](https://nodejs.org/api/modules.html#the-module-scope). All application code should be ESM compatible. This does not apply to third-party dependencies.
