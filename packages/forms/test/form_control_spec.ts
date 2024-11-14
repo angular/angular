@@ -26,6 +26,15 @@ import {asyncValidator, asyncValidatorReturningObservable} from './util';
       expect(c.value).toBe(null);
     });
 
+    describe('markAllAsDirty', () => {
+      it('should mark only the control itself as dirty', () => {
+        const control = new FormControl('');
+        expect(control.dirty).toBe(false);
+        control.markAllAsDirty();
+        expect(control.dirty).toBe(true);
+      });
+    });
+
     describe('markAllAsTouched', () => {
       it('should mark only the control itself as touched', () => {
         const control = new FormControl('');
