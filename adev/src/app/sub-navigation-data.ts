@@ -93,8 +93,18 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
     children: [
       {
         label: 'Signals',
-        path: 'guide/signals',
-        contentPath: 'guide/signals/overview',
+        children: [
+          {
+            label: 'Overview',
+            path: 'guide/signals',
+            contentPath: 'guide/signals/overview',
+          },
+          {
+            label: 'linkedSignal',
+            path: 'guide/signals/linked-signal',
+            contentPath: 'guide/signals/linked-signal',
+          },
+        ],
       },
       {
         label: 'Components',

@@ -2,7 +2,7 @@
 Angular Signals is a system that granularly tracks how and where your state is used throughout an application, allowing the framework to optimize rendering updates.
 </docs-decorative-header>
 
-Tip: Check out Angular's [Essentials](essentials/managing-dynamic-data) before diving into this comprehensive guide.
+Tip: Check out Angular's [Essentials](essentials/signals) before diving into this comprehensive guide.
 
 ## What are signals?
 
@@ -154,7 +154,7 @@ export class EffectiveCounterComponent {
 }
 ```
 
-To create an effect outside of the constructor, you can pass an `Injector` to `effect` via its options:
+To create an effect outside the constructor, you can pass an `Injector` to `effect` via its options:
 
 ```ts
 @Component({...})
