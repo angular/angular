@@ -3,7 +3,6 @@ import {FlowerService} from '../flower.service';
 
 // #docregion self-component
 @Component({
-  standalone: true,
   selector: 'app-self',
   templateUrl: './self.component.html',
   styleUrls: ['./self.component.css'],

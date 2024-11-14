@@ -10,7 +10,6 @@ import {RouterOutlet} from '@angular/router';
       <a href="/user">User</a>
     </nav>
   `,
-  standalone: true,
   imports: [RouterOutlet],
 })
 export class AppComponent {}

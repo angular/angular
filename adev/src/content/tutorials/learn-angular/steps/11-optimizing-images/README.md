@@ -16,7 +16,6 @@ In order to leverage the `NgOptimizedImage` directive, first import it from the 
 import { NgOptimizedImage } from '@angular/common';
 
 @Component({
-  standalone: true,
   imports: [NgOptimizedImage],
   ...
 })
@@ -32,7 +31,6 @@ To enable the `NgOptimizedImage` directive, swap out the `src` attribute for `ng
 import { NgOptimizedImage } from '@angular/common';
 
 @Component({
-  standalone: true,
   template: `
     ...
     <li>

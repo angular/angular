@@ -4,7 +4,6 @@ import {Component, OnInit} from '@angular/core';
 import {Hero, HeroService} from '../shared';
 
 @Component({
-  standalone: true,
   selector: 'toh-hero-list',
   template: `...`,
 })

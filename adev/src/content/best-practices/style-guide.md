@@ -293,8 +293,8 @@ Provides a consistent way to quickly identify and reference pipes.
 
 | Symbol name                                                                                                                                                                          | File name |
 |:---                                                                                                                                                                                  |:---       |
-| <docs-code hideCopy language="typescript"> @Pipe({ standalone: true, name: 'ellipsis' }) <br>export class EllipsisPipe implements PipeTransform { } </docs-code> | ellipsis.pipe.ts  |
-| <docs-code hideCopy language="typescript"> @Pipe({ standalone: true, name: 'initCaps' }) <br>export class InitCapsPipe implements PipeTransform { } </docs-code> | init-caps.pipe.ts |
+| <docs-code hideCopy language="typescript"> @Pipe({ name: 'ellipsis' }) <br>export class EllipsisPipe implements PipeTransform { } </docs-code> | ellipsis.pipe.ts  |
+| <docs-code hideCopy language="typescript"> @Pipe({ name: 'initCaps' }) <br>export class InitCapsPipe implements PipeTransform { } </docs-code> | init-caps.pipe.ts |
 
 ### Unit test file names
 

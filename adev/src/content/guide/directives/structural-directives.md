@@ -79,7 +79,6 @@ Import `TemplateRef`, and `ViewContainerRef`. Inject `TemplateRef` and `ViewCont
 import {Directive, TemplateRef, ViewContainerRef} from '@angular/core';
 
 @Directive({
-  standalone: true,
   selector: '[select]',
 })
 export class SelectDirective {

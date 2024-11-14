@@ -3,7 +3,6 @@ import {Component, EventEmitter, HostBinding, Input, Output} from '@angular/core
 import {animate, state, style, transition, trigger} from '@angular/animations';
 
 @Component({
-  standalone: true,
   selector: 'my-popup',
   template: `
     <span>Popup: {{ message }}</span>

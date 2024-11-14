@@ -2,7 +2,6 @@ import {Component} from '@angular/core';
 import {SwUpdate} from '@angular/service-worker';
 
 @Component({
-  standalone: true,
   selector: 'app-root',
   templateUrl: './app.component.html',
 })

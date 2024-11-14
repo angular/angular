@@ -14,7 +14,6 @@ import { Component } from '@angular/core';
 import { DatePipe } from '@angular/common';
 
 @Component({
-  standalone: true,
   templateUrl: './app.component.html',
   imports: [DatePipe],
 })

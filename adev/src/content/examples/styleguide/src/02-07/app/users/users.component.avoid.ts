@@ -5,7 +5,6 @@ import {Component} from '@angular/core';
 
 // UsersComponent is in an Admin feature
 @Component({
-  standalone: true,
   selector: 'users',
   template: '',
 })

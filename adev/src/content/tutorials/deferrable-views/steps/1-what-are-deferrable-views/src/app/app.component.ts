@@ -20,7 +20,6 @@ import {ArticleCommentsComponent} from './article-comments.component';
 
     </div>
   `,
-  standalone: true,
   imports: [ArticleCommentsComponent],
 })
 export class AppComponent {}

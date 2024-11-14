@@ -7,7 +7,6 @@ import {HeroSearchComponent} from '../hero-search/hero-search.component';
 import {HeroService} from '../hero.service';
 
 @Component({
-  standalone: true,
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   imports: [NgFor, RouterLink, HeroSearchComponent],
