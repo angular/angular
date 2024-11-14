@@ -12,7 +12,6 @@ import {
   inject,
   OnInit,
   PLATFORM_ID,
-  Signal,
   viewChild,
 } from '@angular/core';
 import {isPlatformBrowser} from '@angular/common';
@@ -41,7 +40,7 @@ export const PROGRESS_BAR_DELAY = 30;
 export class ProgressBarComponent implements OnInit {
   private readonly router = inject(Router);
 
-  progressBar = viewChild.required(NgProgressRef);
+  readonly progressBar = viewChild.required(NgProgressRef);
 
   isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
