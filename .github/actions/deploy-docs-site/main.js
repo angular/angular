@@ -320,7 +320,7 @@ var require_tunnel = __commonJS({
     var http = __require("http");
     var https = __require("https");
     var events = __require("events");
-    var assert = __require("assert");
+    var assert2 = __require("assert");
     var util = __require("util");
     exports.httpOverHttp = httpOverHttp;
     exports.httpsOverHttp = httpsOverHttp;
@@ -10152,6 +10152,7 @@ var supports_color_default2 = supportsColor2;
 
 // 
 import { spawn as _spawn, spawnSync as _spawnSync, exec as _exec } from "child_process";
+import assert from "assert";
 var ChildProcess = class {
   static spawnInteractive(command, args, options = {}) {
     return new Promise((resolve, reject) => {
@@ -10196,6 +10197,11 @@ function processAsyncCmd(command, options, childProcess) {
     let stdout = "";
     let stderr = "";
     Log.debug(`Executing command: ${command}`);
+    if (options.input !== void 0) {
+      assert(childProcess.stdin, "Cannot write process `input` if there is no pipe `stdin` channel.");
+      childProcess.stdin.write(options.input);
+      childProcess.stdin.end();
+    }
     (_a = childProcess.stderr) == null ? void 0 : _a.on("data", (message) => {
       stderr += message;
       logOutput += message;
