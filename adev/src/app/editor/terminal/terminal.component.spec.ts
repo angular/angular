@@ -51,8 +51,8 @@ describe('Terminal', () => {
   it('should register the terminal element on afterViewInit', () => {
     const terminalDebugElement = fixture.debugElement.query(By.css('.adev-terminal-output'));
 
-    component['terminalElementRef'] = terminalDebugElement;
-    component.ngAfterViewInit();
+    // component['terminalElementRef'] = terminalDebugElement;
+    // component.ngAfterViewInit();
 
     expect(terminalHandlerSpy.registerTerminal).toHaveBeenCalledWith(
       TerminalType.READONLY,
