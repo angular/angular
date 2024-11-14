@@ -12,7 +12,6 @@ import {FormsModule} from '@angular/forms';
     </label>
     <button (click)="showFramework()">Show Framework</button>
   `,
-  standalone: true,
   imports: [FormsModule],
 })
 export class UserComponent {

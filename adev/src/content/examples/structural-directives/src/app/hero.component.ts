@@ -7,7 +7,6 @@ import {LoadingState} from './loading-state';
 import {Hero, heroes} from './hero';
 
 @Component({
-  standalone: true,
   selector: 'app-hero',
   template: `
     <button (click)="onLoadHero()">Load Hero</button>

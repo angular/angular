@@ -5,7 +5,6 @@ import {Hero} from './hero';
 import {NgFor} from '@angular/common';
 
 @Component({
-  standalone: true,
   selector: 'app-hero-list-enter-leave',
   template: `
     <ul class="heroes">

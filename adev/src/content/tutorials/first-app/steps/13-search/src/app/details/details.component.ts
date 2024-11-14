@@ -6,7 +6,6 @@ import {HousingLocation} from '../housinglocation';
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 @Component({
   selector: 'app-details',
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   template: `
     <article>

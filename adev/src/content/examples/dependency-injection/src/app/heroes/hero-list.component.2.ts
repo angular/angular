@@ -13,7 +13,6 @@ import { HeroService } from './hero.service';
 // #docregion
 
 @Component({
-  standalone: true,
   selector: 'app-hero-list',
   template: `
     @for (hero of heroes; track hero) {

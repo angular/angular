@@ -17,7 +17,6 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   template: `
     <form>
       <label>Name

@@ -6,7 +6,6 @@ import {trigger, transition, state, animate, style} from '@angular/animations';
 // #docregion toggle-animation
 @Component({
   // #enddocregion toggle-animation
-  standalone: true,
   selector: 'app-open-close-toggle',
   templateUrl: 'open-close.component.4.html',
   styleUrls: ['open-close.component.css'],

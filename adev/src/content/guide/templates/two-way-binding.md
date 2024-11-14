@@ -17,7 +17,6 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  standalone: true,
   imports: [FormsModule],
   template: `
     <main>
@@ -54,7 +53,6 @@ import { CounterComponent } from './counter/counter.component';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [CounterComponent],
   template: `
     <main>
@@ -74,7 +72,6 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-counter',
-  standalone: true,
   template: `
     <button (click)="updateCount(-1)">-</button>
     <span>{{ count }}</span>
@@ -134,7 +131,6 @@ import { CounterComponent } from './counter/counter.component';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [CounterComponent],
   template: `
     <main>

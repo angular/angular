@@ -8,7 +8,6 @@ import {FlyingHeroesPipe, FlyingHeroesImpurePipe} from './flying-heroes.pipe';
 import {HEROES} from './heroes';
 
 @Component({
-  standalone: true,
   selector: 'app-flying-heroes',
   templateUrl: './flying-heroes.component.html',
   imports: [CommonModule, FormsModule, FlyingHeroesPipe],
@@ -63,7 +62,6 @@ export class FlyingHeroesComponent {
 
 ////// Identical except for impure pipe //////
 @Component({
-  standalone: true,
   selector: 'app-flying-heroes-impure',
   templateUrl: './flying-heroes-impure.component.html',
   imports: [CommonModule, FormsModule, FlyingHeroesImpurePipe],

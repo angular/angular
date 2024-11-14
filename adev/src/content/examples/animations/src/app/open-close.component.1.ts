@@ -10,7 +10,6 @@ import {
 } from '@angular/animations';
 
 @Component({
-  standalone: true,
   selector: 'app-open-close',
   animations: [
     // #docregion trigger

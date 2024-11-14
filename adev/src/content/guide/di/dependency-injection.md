@@ -50,9 +50,8 @@ In this case the `HeroService` becomes available to all instances of this compon
 
 For example:
 
-<docs-code language="typescript" highlight="[5]">
+<docs-code language="typescript" highlight="[4]">
 @Component({
-  standalone: true,
   selector: 'hero-list',
   template: '...',
   providers: [HeroService]

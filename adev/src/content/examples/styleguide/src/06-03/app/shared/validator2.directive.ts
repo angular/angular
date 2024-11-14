@@ -3,7 +3,6 @@
 import {Directive} from '@angular/core';
 
 @Directive({
-  standalone: true,
   selector: '[tohValidator2]',
   host: {
     '[attr.role]': 'role',

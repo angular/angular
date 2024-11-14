@@ -5,7 +5,6 @@ import {Component} from '@angular/core';
 
 // HeroComponent is in the Tour of Heroes feature
 @Component({
-  standalone: true,
   selector: 'hero',
   template: '',
 })

@@ -10,7 +10,6 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'button[baseButton]',
-  standalone: true,
   template: `
       <ng-content />
   `,
@@ -25,7 +24,6 @@ import { BaseButton } from './base-button/base-button.component.ts';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [BaseButton],
   template: `
     <button baseButton>

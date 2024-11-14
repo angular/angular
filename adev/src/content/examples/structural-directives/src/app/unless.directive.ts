@@ -25,7 +25,6 @@ import {Directive, Input, TemplateRef, ViewContainerRef} from '@angular/core';
  */
 // #docregion skeleton
 @Directive({
-  standalone: true,
   selector: '[appUnless]',
 })
 export class UnlessDirective {
