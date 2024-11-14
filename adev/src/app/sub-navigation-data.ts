@@ -444,6 +444,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             path: 'guide/hydration',
             contentPath: 'guide/hydration',
           },
+          {
+            label: 'Incremental Hydration',
+            path: 'guide/incremental-hydration',
+            contentPath: 'guide/incremental-hydration',
+          },
         ],
       },
       {

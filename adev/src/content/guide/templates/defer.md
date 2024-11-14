@@ -200,7 +200,7 @@ Alternatively, you can specify a [template reference variable](/guide/templates/
 
 #### `hover`
 
-The `hover` trigger loads the deferred content when the mouse has hovered over the triggered area through the `mouseenter` and `focusin` events.
+The `hover` trigger loads the deferred content when the mouse has hovered over the triggered area through the `mouseover` and `focusin` events.
 
 By default, the placeholder acts as the interaction element. Placeholders used this way must have a single root element.
 
