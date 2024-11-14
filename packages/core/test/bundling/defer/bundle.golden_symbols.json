@@ -1887,6 +1887,9 @@
     "name": "init_platform_ref"
   },
   {
+    "name": "init_platform_tokens"
+  },
+  {
     "name": "init_profiler"
   },
   {
