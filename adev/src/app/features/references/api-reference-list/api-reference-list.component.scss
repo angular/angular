@@ -79,6 +79,10 @@
           border: 1px solid var(--quinary-contrast);
           color: var(--primary-contrast);
         }
+
+        .docs-api-item-label-full {
+          white-space: nowrap;
+        }
       }
     }
 
@@ -100,7 +104,7 @@
     }
   }
 
-  .docs-api-item-label-full {
-    white-space: nowrap;
+  adev-api-items-section {
+    width: 100%;
   }
 }
