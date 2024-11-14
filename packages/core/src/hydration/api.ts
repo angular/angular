@@ -343,6 +343,7 @@ export function withIncrementalHydration(): Provider[] {
       provide: ENVIRONMENT_INITIALIZER,
       useValue: () => {
         enableIncrementalHydrationRuntimeSupport();
+        performanceMarkFeature('NgIncrementalHydration');
       },
       multi: true,
     },
