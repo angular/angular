@@ -101,7 +101,6 @@ generate_api_manifest(
         "//packages/service-worker:service-worker_docs_extraction",
         "//packages/ssr:ssr_docs_extraction",
         "//packages/ssr:ssr_node_docs_extraction",
-        "//packages/ssr:ssr_tokens_docs_extraction",
         "//packages/upgrade:upgrade_docs_extraction",
         "//packages/upgrade/static:upgrade_static_docs_extraction",
         "//packages/upgrade/static/testing:upgrade_static_testing_docs_extraction",
