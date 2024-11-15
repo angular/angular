@@ -93,6 +93,7 @@ export async function runOneBuild(
     'generateExtraImportsInLocalMode',
     '_enableLetSyntax',
     '_enableHmr',
+    'strictStandalone',
   ]);
 
   const userOverrides = Object.entries(userOptions)
