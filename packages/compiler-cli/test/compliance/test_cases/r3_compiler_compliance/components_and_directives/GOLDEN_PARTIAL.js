@@ -700,3 +700,36 @@ export declare class MainStandalone {
     static ɵcmp: i0.ɵɵComponentDeclaration<MainStandalone, "ng-component", never, {}, {}, never, never, true, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: nested_component_definition.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+class Outer {
+    constructor() {
+        class Inner {
+            static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Inner, deps: [], target: i0.ɵɵFactoryTarget.Component });
+            static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Inner, isStandalone: true, selector: "ng-component", ngImport: i0, template: 'inner', isInline: true });
+        }
+        i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Inner, decorators: [{
+                    type: Component,
+                    args: [{
+                            template: 'inner',
+                        }]
+                }] });
+    }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Outer, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Outer, isStandalone: true, selector: "ng-component", ngImport: i0, template: 'outer', isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Outer, decorators: [{
+            type: Component,
+            args: [{
+                    template: 'outer',
+                }]
+        }], ctorParameters: () => [] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: nested_component_definition.d.ts
+ ****************************************************************************************************/
+export {};
+
