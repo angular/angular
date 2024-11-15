@@ -1,3 +1,19 @@
+<a name="19.0.0-rc.3"></a>
+# 19.0.0-rc.3 (2024-11-15)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2be161d015](https://github.com/angular/angular/commit/2be161d015ce6bab0142b6e6c34a8ede6341f627) | fix | fix `:host` parsing in pseudo-selectors ([#58681](https://github.com/angular/angular/pull/58681)) |
+| [806a61b5a6](https://github.com/angular/angular/commit/806a61b5a619d98c0226ba6a566b1562f6e16e5a) | fix | fix multiline selectors ([#58681](https://github.com/angular/angular/pull/58681)) |
+| [e5d3abb298](https://github.com/angular/angular/commit/e5d3abb29842412f82a67562aceff245d493ec53) | fix | resolve `:host:host-context(.foo)` ([#58681](https://github.com/angular/angular/pull/58681)) |
+| [80f56954ce](https://github.com/angular/angular/commit/80f56954cecf763e36bdcfbbd592a82d693eeef7) | fix | transform chained pseudo-selectors ([#58681](https://github.com/angular/angular/pull/58681)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e6514b9f3d](https://github.com/angular/angular/commit/e6514b9f3dc1e2bdaa12d7096251769dc6c3e262) | fix | do not migrate next calls in template if not an EventEmitter ([#58631](https://github.com/angular/angular/pull/58631)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.0.0-rc.2"></a>
 # 19.0.0-rc.2 (2024-11-14)
 ### compiler
