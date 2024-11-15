@@ -105,12 +105,21 @@ function createLinkedSignal<S, D>(node: LinkedSignalNode<S, D>): WritableSignal<
 }
 
 /**
- * @experimental
+ * Creates a writable signals whose value is initialized and reset by the linked, reactive computation.
+ *
+ * @developerPreview
  */
 export function linkedSignal<D>(
   computation: () => D,
   options?: {equal?: ValueEqualityFn<NoInfer<D>>},
 ): WritableSignal<D>;
+
+/**
+ * Creates a writable signals whose value is initialized and reset by the linked, reactive computation.
+ * This is an advanced API form where the computation has access to the previous value of the signal and the computation result.
+ *
+ * @developerPreview
+ */
 export function linkedSignal<S, D>(options: {
   source: () => S;
   computation: (source: NoInfer<S>, previous?: {source: NoInfer<S>; value: NoInfer<D>}) => D;
