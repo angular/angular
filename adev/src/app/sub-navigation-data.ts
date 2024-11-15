@@ -562,36 +562,6 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         ],
       },
       {
-        label: 'Animations',
-        children: [
-          {
-            label: 'Overview',
-            path: 'guide/animations',
-            contentPath: 'guide/animations/overview',
-          },
-          {
-            label: 'Transition and Triggers',
-            path: 'guide/animations/transition-and-triggers',
-            contentPath: 'guide/animations/transition-and-triggers',
-          },
-          {
-            label: 'Complex Sequences',
-            path: 'guide/animations/complex-sequences',
-            contentPath: 'guide/animations/complex-sequences',
-          },
-          {
-            label: 'Reusable Animations',
-            path: 'guide/animations/reusable-animations',
-            contentPath: 'guide/animations/reusable-animations',
-          },
-          {
-            label: 'Route transition animations',
-            path: 'guide/animations/route-animations',
-            contentPath: 'guide/animations/route-animations',
-          },
-        ],
-      },
-      {
         label: 'Experimental features',
         children: [
           {label: 'Zoneless', path: 'guide/experimental/zoneless', contentPath: 'guide/zoneless'},
@@ -772,6 +742,41 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
   {
     label: 'Extended Ecosystem',
     children: [
+      {
+        label: 'NgModules',
+        path: 'guide/ngmodules/overview',
+        contentPath: 'guide/ngmodules/overview',
+      },
+      {
+        label: 'Animations',
+        children: [
+          {
+            label: 'Overview',
+            path: 'guide/animations',
+            contentPath: 'guide/animations/overview',
+          },
+          {
+            label: 'Transition and Triggers',
+            path: 'guide/animations/transition-and-triggers',
+            contentPath: 'guide/animations/transition-and-triggers',
+          },
+          {
+            label: 'Complex Sequences',
+            path: 'guide/animations/complex-sequences',
+            contentPath: 'guide/animations/complex-sequences',
+          },
+          {
+            label: 'Reusable Animations',
+            path: 'guide/animations/reusable-animations',
+            contentPath: 'guide/animations/reusable-animations',
+          },
+          {
+            label: 'Route transition animations',
+            path: 'guide/animations/route-animations',
+            contentPath: 'guide/animations/route-animations',
+          },
+        ],
+      },
       {
         label: 'Using RxJS with Angular',
         children: [
@@ -1443,46 +1448,6 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'Signal queries',
         path: 'reference/migrations/signal-queries',
         contentPath: 'reference/migrations/signal-queries',
-      },
-    ],
-  },
-  {
-    label: 'Concepts',
-    children: [
-      {
-        label: 'Overview',
-        path: 'reference/concepts',
-        contentPath: 'reference/concepts/overview',
-      },
-      {
-        label: 'NgModule',
-        children: [
-          {
-            label: 'Overview',
-            path: 'guide/ngmodules',
-            contentPath: 'guide/ngmodules/overview',
-          },
-          {
-            label: 'Providing dependencies',
-            path: 'guide/ngmodules/providers',
-            contentPath: 'guide/ngmodules/providers',
-          },
-          {
-            label: 'Singleton services',
-            path: 'guide/ngmodules/singleton-services',
-            contentPath: 'guide/ngmodules/singleton-services',
-          },
-          {
-            label: 'Lazy-loading feature modules',
-            path: 'guide/ngmodules/lazy-loading',
-            contentPath: 'guide/ngmodules/lazy-loading',
-          },
-          {
-            label: 'NgModule FAQs',
-            path: 'guide/ngmodules/faq',
-            contentPath: 'guide/ngmodules/faq',
-          },
-        ],
       },
     ],
   },

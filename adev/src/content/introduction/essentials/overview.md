@@ -4,7 +4,7 @@ A short introduction to some of Angular's main concepts.
 
 ## Interested in Angular?
 
-Welcome! This _Essentials_ guide explains some of Angular's main concepts, helping you understand what it's like to use the framework. This guide focuses on just a few building blocks as a short introduction. If you're looking for deep, comprehensive documentation, you can navigate to specific _In-depth Guides_ from the [documentation landing page](https://angular.dev/overview).
+Welcome! This _Essentials_ guide explains some of Angular's main concepts, helping you understand what it's like to use the framework. This guide focuses on just a few building blocks as a short introduction. If you're looking for deep, comprehensive documentation, you can navigate to specific _In-depth Guides_ from the [documentation landing page](overview).
 
 If you prefer to immediately start writing some code, you can [skip straight to the hands-on tutorial](tutorials/learn-angular).
 
