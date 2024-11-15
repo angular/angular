@@ -94,6 +94,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             path: 'guide/signals/linked-signal',
             contentPath: 'guide/signals/linked-signal',
           },
+          {
+            label: 'Resource',
+            path: 'guide/signals/resource',
+            contentPath: 'guide/signals/resource',
+          },
         ],
       },
       {
