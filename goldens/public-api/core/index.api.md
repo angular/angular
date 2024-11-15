@@ -1123,12 +1123,12 @@ export class KeyValueDiffers {
     static ɵprov: unknown;
 }
 
-// @public (undocumented)
+// @public
 export function linkedSignal<D>(computation: () => D, options?: {
     equal?: ValueEqualityFn<NoInfer<D>>;
 }): WritableSignal<D>;
 
-// @public (undocumented)
+// @public
 export function linkedSignal<S, D>(options: {
     source: () => S;
     computation: (source: NoInfer<S>, previous?: {
