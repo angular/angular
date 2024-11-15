@@ -32,9 +32,24 @@ export class CustomMenuModule { }
 
 In the example above, the components `CustomMenu` and `CustomMenuItem` belong to `CustomMenuModule`.
 
+The `declarations` property additionally accepts _arrays_ of components, directives, and pipes. These arrays, in turn, may also contain other arrays.
+
+```typescript
+const MENU_COMPONENTS = [CustomMenu, CustomMenuItem];
+const WIDGETS = [MENU_COMPONENTS, CustomSlider];
+
+@NgModule({
+  /* ... */
+  // This NgModule declares all of CustomMenu, CustomMenuItem,
+  // CustomSlider, and CustomCheckbox.
+  declarations: [WIDGETS, CustomCheckbox],
+})
+export class CustomMenuModule { }
+```
+
 If Angular discovers any components, directives, or pipes declared in more than one NgModule, it reports an error.
 
-Any components, directives, or pipes must be explitly marked as `standalone: false` in order to be declared in an NgModule.
+Any components, directives, or pipes must be explicitly marked as `standalone: false` in order to be declared in an NgModule.
 
 ```typescript
 @Component({
@@ -94,7 +109,7 @@ export class CustomMenuModule { }
 
 Tip: See the [Dependency Injection guide](guides/di) for information on dependency injection and providers.
 
-An `NgModule` can specify `providers` for injected dependencies. These providers are availabe to:
+An `NgModule` can specify `providers` for injected dependencies. These providers are available to:
 * Any standalone component, directive, or pipe that imports the NgModule, and
 * The `declarations` and `providers` of any _other_ NgModule that imports the NgModule.
 
@@ -123,7 +138,31 @@ In the example above:
 * `UserProfile` can inject `OverlayManager` because its NgModule imports `CustomMenuModule`.
 * `UserDataClient` can inject `OverlayManager` because its NgModule imports `CustomMenuModule`.
 
-See [NgModule Providers](guide/ngmodules/providers) for more details on using providers with `@NgModule`.
+### The `forRoot` and `forChild` pattern
+
+Some NgModules define a static `forRoot` method that accepts some configuration and returns an array of providers. The name "`forRoot`" is a convention that indicates that these providers are intended to be added exclusively to the _root_ of your application during bootstrap.
+
+Any providers included in this way are eagerly loaded, increasing the JavaScript bundle size of your initial page load.
+
+```typescript
+boorstrapApplication(MyApplicationRoot, {
+  providers: [
+    CustomMenuModule.forRoot(/* some config */),
+  ],
+});
+```
+
+Similarly, some NgModules may before a static `forChild` that indicates the providers are intended to be added to components within your application hierarchy.
+
+```typescript
+@Component({
+  /* ... */
+  providers: [
+    CustomMenuModule.forChild(/* some config */),
+  ],
+})
+export class UserProfile { /* ... */ }
+```
 
 ## Bootstrapping an application
 
@@ -147,9 +186,3 @@ platformBrowser().bootstrapModule(MyApplicationModule);
 Components listed in `bootstrap` are automatically included in the NgModule's declarations.
 
 When you bootstrap an application from an NgModule, the collected `providers` of this module and all of the `providers` of its `imports` are eagerly loaded and available to inject for the entire application.
-
-## More on NgModules
-
-<docs-pill-row>
-  <docs-pill href="/guide/ngmodules/providers" title="Providers"/>
-</docs-pill-row>
