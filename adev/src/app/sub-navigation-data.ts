@@ -735,7 +735,7 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
       {
         label: 'NgModules',
         path: 'guide/ngmodules/overview',
-        contentPath: 'guide/ngmodules/overview'
+        contentPath: 'guide/ngmodules/overview',
       },
       {
         label: 'Animations',
@@ -1440,7 +1440,7 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'reference/migrations/signal-queries',
       },
     ],
-  }
+  },
 ];
 
 const FOOTER_NAVIGATION_DATA: NavigationItem[] = [
