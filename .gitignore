@@ -4,7 +4,7 @@
 /bazel-out
 /integration/bazel/bazel-*
 *.log
-/node_modules/
+node_modules/
 
 # Include when developing application packages.
 pubspec.lock
