@@ -124,71 +124,71 @@ const API_REFERENCE_ROUTES: Route[] = mapApiManifestToRoutes();
 const REDIRECT_ROUTES: Route[] = [
   {
     path: 'guide/defer',
-    redirectTo: 'guide/templates/defer',
+    redirectTo: '/guide/templates/defer',
   },
   {
     path: 'guide/components/importing',
-    redirectTo: 'guide/components/anatomy-of-components#using-components',
+    redirectTo: '/guide/components/anatomy-of-components#using-components',
   },
   {
     path: 'guide/templates/attribute-binding',
-    redirectTo: 'guide/templates/binding#binding-dynamic-properties-and-attributes',
+    redirectTo: '/guide/templates/binding#binding-dynamic-properties-and-attributes',
   },
   {
     path: 'guide/templates/interpolation',
-    redirectTo: 'guide/templates/binding#render-dynamic-text-with-text-interpolation',
+    redirectTo: '/guide/templates/binding#render-dynamic-text-with-text-interpolation',
   },
   {
     path: 'guide/templates/class-binding',
-    redirectTo: 'guide/templates/binding#css-class-and-style-property-bindings',
+    redirectTo: '/guide/templates/binding#css-class-and-style-property-bindings',
   },
   {
     path: 'guide/templates/event-binding',
-    redirectTo: 'guide/templates/event-listeners',
+    redirectTo: '/guide/templates/event-listeners',
   },
   {
     path: 'guide/templates/let-template-variables',
-    redirectTo: 'guide/templates/variables#local-template-variables-with-let',
+    redirectTo: '/guide/templates/variables#local-template-variables-with-let',
   },
   {
     path: 'guide/templates/property-binding',
-    redirectTo: 'guide/templates/binding#binding-dynamic-properties-and-attributes',
+    redirectTo: '/guide/templates/binding#binding-dynamic-properties-and-attributes',
   },
   {
     path: 'guide/templates/property-binding-best-practices',
-    redirectTo: 'guide/templates/binding#binding-dynamic-properties-and-attributes',
+    redirectTo: '/guide/templates/binding#binding-dynamic-properties-and-attributes',
   },
   {
     path: 'guide/templates/reference-variables',
-    redirectTo: 'guide/templates/variables#template-reference-variables',
+    redirectTo: '/guide/templates/variables#template-reference-variables',
   },
   {
     path: 'guide/templates/svg-in-templates',
-    redirectTo: 'guide/templates/binding',
+    redirectTo: '/guide/templates/binding',
   },
   {
     path: 'guide/templates/template-statements',
-    redirectTo: 'guide/templates/event-listeners',
+    redirectTo: '/guide/templates/event-listeners',
   },
   {
     path: 'guide/signals/rxjs-interop',
-    redirectTo: 'ecosystem/rxjs-interop',
+    redirectTo: '/ecosystem/rxjs-interop',
   },
   {
     path: 'guide/components/output-function',
-    redirectTo: 'guide/components/outputs',
+    redirectTo: '/guide/components/outputs',
   },
   {
     path: 'guide/signals/queries',
-    redirectTo: 'guide/components/queries',
+    redirectTo: '/guide/components/queries',
   },
   {
     path: 'guide/signals/model',
-    redirectTo: 'guide/signals/inputs',
+    redirectTo: '/guide/signals/inputs',
   },
   {
     path: 'guide/signals/inputs',
-    redirectTo: 'guide/components/inputs',
+    redirectTo: '/guide/components/inputs',
   },
   {
     path: 'guide',
