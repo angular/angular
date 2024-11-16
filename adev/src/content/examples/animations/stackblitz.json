@@ -1,0 +1,10 @@
+{
+  "description": "Angular Animations Guide",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1,2,3].*"
+  ],
+  "file": "src/app/app.component.ts",
+  "tags": ["animations"]
+}

@@ -1,0 +1,38 @@
+load("//tools:defaults.bzl", "esbuild", "http_server", "ng_module")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "router_activated_route_examples",
+    srcs = glob(
+        ["**/*.ts"],
+    ),
+    deps = [
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/router",
+        "//packages/zone.js/lib",
+        "@npm//rxjs",
+    ],
+)
+
+esbuild(
+    name = "app_bundle",
+    entry_point = ":main.ts",
+    deps = [":router_activated_route_examples"],
+)
+
+http_server(
+    name = "devserver",
+    srcs = ["//packages/examples:index.html"],
+    additional_root_paths = ["angular/packages/examples"],
+    deps = [":app_bundle"],
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "**/*.ts",
+    ]),
+)

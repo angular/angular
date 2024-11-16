@@ -1,0 +1,37 @@
+load("//tools:defaults.bzl", "nodejs_binary", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "generate_element_api_json_lib",
+    srcs = ["generate_element_api_json.ts"],
+    deps = [
+        "//packages/compiler-cli",
+        "@npm//@types/node",
+    ],
+)
+
+nodejs_binary(
+    name = "generate_element_api_json",
+    data = [
+        ":generate_element_api_json_lib",
+    ],
+    entry_point = ":generate_element_api_json.ts",
+)
+
+ts_library(
+    name = "generate_block_api_json_lib",
+    srcs = ["generate_block_api_json.ts"],
+    deps = [
+        "//packages/compiler-cli",
+        "@npm//@types/node",
+    ],
+)
+
+nodejs_binary(
+    name = "generate_block_api_json",
+    data = [
+        ":generate_block_api_json_lib",
+    ],
+    entry_point = ":generate_block_api_json.ts",
+)

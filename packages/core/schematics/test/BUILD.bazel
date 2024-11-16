@@ -1,0 +1,36 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["*.ts"]),
+    deps = [
+        "//packages/core/schematics/utils",
+        "//packages/core/schematics/utils/tsurge",
+        "@npm//@angular-devkit/core",
+        "@npm//@angular-devkit/schematics",
+        "@npm//@bazel/runfiles",
+        "@npm//@types/shelljs",
+        "@npm//tslint",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    data = [
+        "//packages/core/schematics:bundles",
+        "//packages/core/schematics:collection.json",
+        "//packages/core/schematics:migrations.json",
+        "//packages/core/schematics/ng-generate/control-flow-migration:static_files",
+        "//packages/core/schematics/ng-generate/inject-migration:static_files",
+        "//packages/core/schematics/ng-generate/output-migration:static_files",
+        "//packages/core/schematics/ng-generate/route-lazy-loading:static_files",
+        "//packages/core/schematics/ng-generate/signal-queries-migration:static_files",
+        "//packages/core/schematics/ng-generate/signals:static_files",
+        "//packages/core/schematics/ng-generate/standalone-migration:static_files",
+    ],
+    deps = [
+        ":test_lib",
+        "@npm//shelljs",
+    ],
+)

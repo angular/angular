@@ -1,0 +1,11 @@
+<div class="adev-header-and-tabs adev-cli-content docs-scroll-track-transparent">
+  <docs-viewer [docContent]="mainContentInnerHtml()" />
+</div>
+
+<docs-viewer
+  class="adev-cli-members-container"
+  [docContent]="cardsInnerHtml()"
+  (contentLoaded)="contentLoaded()"
+/>
+
+<div id="jump-msg" class="cdk-visually-hidden">Jump to details</div>

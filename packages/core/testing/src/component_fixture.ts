@@ -1,0 +1,272 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
+import {
+  ApplicationRef,
+  ChangeDetectorRef,
+  ComponentRef,
+  ɵChangeDetectionScheduler,
+  ɵNotificationSource,
+  DebugElement,
+  ElementRef,
+  getDebugNode,
+  inject,
+  NgZone,
+  RendererFactory2,
+  ViewRef,
+  ɵDeferBlockDetails as DeferBlockDetails,
+  ɵgetDeferBlocks as getDeferBlocks,
+  ɵNoopNgZone as NoopNgZone,
+  ɵZONELESS_ENABLED as ZONELESS_ENABLED,
+  ɵPendingTasks as PendingTasks,
+  ɵEffectScheduler as EffectScheduler,
+  ɵMicrotaskEffectScheduler as MicrotaskEffectScheduler,
+} from '@angular/core';
+import {Subscription} from 'rxjs';
+
+import {DeferBlockFixture} from './defer';
+import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone} from './test_bed_common';
+import {TestBedApplicationErrorHandler} from './application_error_handler';
+
+interface TestAppRef {
+  externalTestViews: Set<ViewRef>;
+  skipCheckNoChangesForExternalTestViews: Set<ViewRef>;
+}
+
+/**
+ * Fixture for debugging and testing a component.
+ *
+ * @publicApi
+ */
+export class ComponentFixture<T> {
+  /**
+   * The DebugElement associated with the root element of this component.
+   */
+  debugElement: DebugElement;
+
+  /**
+   * The instance of the root component class.
+   */
+  componentInstance: T;
+
+  /**
+   * The native element at the root of the component.
+   */
+  nativeElement: any;
+
+  /**
+   * The ElementRef for the element at the root of the component.
+   */
+  elementRef: ElementRef;
+
+  /**
+   * The ChangeDetectorRef for the component
+   */
+  changeDetectorRef: ChangeDetectorRef;
+
+  private _renderer: RendererFactory2 | null | undefined;
+  private _isDestroyed: boolean = false;
+  /** @internal */
+  protected readonly _noZoneOptionIsSet = inject(ComponentFixtureNoNgZone, {optional: true});
+  /** @internal */
+  protected _ngZone: NgZone = this._noZoneOptionIsSet ? new NoopNgZone() : inject(NgZone);
+  // Inject ApplicationRef to ensure NgZone stableness causes after render hooks to run
+  // This will likely happen as a result of fixture.detectChanges because it calls ngZone.run
+  // This is a crazy way of doing things but hey, it's the world we live in.
+  // The zoneless scheduler should instead do this more imperatively by attaching
+  // the `ComponentRef` to `ApplicationRef` and calling `appRef.tick` as the `detectChanges`
+  // behavior.
+  /** @internal */
+  protected readonly _appRef = inject(ApplicationRef);
+  private readonly _testAppRef = this._appRef as unknown as TestAppRef;
+  private readonly pendingTasks = inject(PendingTasks);
+  private readonly appErrorHandler = inject(TestBedApplicationErrorHandler);
+  private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
+  private readonly scheduler = inject(ɵChangeDetectionScheduler);
+  private readonly rootEffectScheduler = inject(EffectScheduler);
+  private readonly microtaskEffectScheduler = inject(MicrotaskEffectScheduler);
+  private readonly autoDetectDefault = this.zonelessEnabled ? true : false;
+  private autoDetect =
+    inject(ComponentFixtureAutoDetect, {optional: true}) ?? this.autoDetectDefault;
+
+  private subscriptions = new Subscription();
+
+  // TODO(atscott): Remove this from public API
+  ngZone = this._noZoneOptionIsSet ? null : this._ngZone;
+
+  /** @nodoc */
+  constructor(public componentRef: ComponentRef<T>) {
+    this.changeDetectorRef = componentRef.changeDetectorRef;
+    this.elementRef = componentRef.location;
+    this.debugElement = <DebugElement>getDebugNode(this.elementRef.nativeElement);
+    this.componentInstance = componentRef.instance;
+    this.nativeElement = this.elementRef.nativeElement;
+    this.componentRef = componentRef;
+
+    if (this.autoDetect) {
+      this._testAppRef.externalTestViews.add(this.componentRef.hostView);
+      this.scheduler?.notify(ɵNotificationSource.ViewAttached);
+      this.scheduler?.notify(ɵNotificationSource.MarkAncestorsForTraversal);
+    }
+    this.componentRef.hostView.onDestroy(() => {
+      this._testAppRef.externalTestViews.delete(this.componentRef.hostView);
+    });
+    // Create subscriptions outside the NgZone so that the callbacks run outside
+    // of NgZone.
+    this._ngZone.runOutsideAngular(() => {
+      this.subscriptions.add(
+        this._ngZone.onError.subscribe({
+          next: (error: any) => {
+            throw error;
+          },
+        }),
+      );
+    });
+  }
+
+  /**
+   * Trigger a change detection cycle for the component.
+   */
+  detectChanges(checkNoChanges = true): void {
+    this.microtaskEffectScheduler.flush();
+    const originalCheckNoChanges = this.componentRef.changeDetectorRef.checkNoChanges;
+    try {
+      if (!checkNoChanges) {
+        this.componentRef.changeDetectorRef.checkNoChanges = () => {};
+      }
+
+      if (this.zonelessEnabled) {
+        try {
+          this._testAppRef.externalTestViews.add(this.componentRef.hostView);
+          this._appRef.tick();
+        } finally {
+          if (!this.autoDetect) {
+            this._testAppRef.externalTestViews.delete(this.componentRef.hostView);
+          }
+        }
+      } else {
+        // Run the change detection inside the NgZone so that any async tasks as part of the change
+        // detection are captured by the zone and can be waited for in isStable.
+        this._ngZone.run(() => {
+          // Flush root effects before `detectChanges()`, to emulate the sequencing of `tick()`.
+          this.rootEffectScheduler.flush();
+          this.changeDetectorRef.detectChanges();
+          this.checkNoChanges();
+        });
+      }
+    } finally {
+      this.componentRef.changeDetectorRef.checkNoChanges = originalCheckNoChanges;
+    }
+    this.microtaskEffectScheduler.flush();
+  }
+
+  /**
+   * Do a change detection run to make sure there were no changes.
+   */
+  checkNoChanges(): void {
+    this.changeDetectorRef.checkNoChanges();
+  }
+
+  /**
+   * Set whether the fixture should autodetect changes.
+   *
+   * Also runs detectChanges once so that any existing change is detected.
+   *
+   * @param autoDetect Whether to autodetect changes. By default, `true`.
+   */
+  autoDetectChanges(autoDetect = true): void {
+    if (this._noZoneOptionIsSet && !this.zonelessEnabled) {
+      throw new Error('Cannot call autoDetectChanges when ComponentFixtureNoNgZone is set.');
+    }
+
+    if (autoDetect !== this.autoDetect) {
+      if (autoDetect) {
+        this._testAppRef.externalTestViews.add(this.componentRef.hostView);
+      } else {
+        this._testAppRef.externalTestViews.delete(this.componentRef.hostView);
+      }
+    }
+
+    this.autoDetect = autoDetect;
+    this.detectChanges();
+  }
+
+  /**
+   * Return whether the fixture is currently stable or has async tasks that have not been completed
+   * yet.
+   */
+  isStable(): boolean {
+    return !this.pendingTasks.hasPendingTasks.value;
+  }
+
+  /**
+   * Get a promise that resolves when the fixture is stable.
+   *
+   * This can be used to resume testing after events have triggered asynchronous activity or
+   * asynchronous change detection.
+   */
+  whenStable(): Promise<any> {
+    if (this.isStable()) {
+      return Promise.resolve(false);
+    }
+
+    return new Promise((resolve, reject) => {
+      this.appErrorHandler.whenStableRejectFunctions.add(reject);
+      this._appRef.whenStable().then(() => {
+        this.appErrorHandler.whenStableRejectFunctions.delete(reject);
+        resolve(true);
+      });
+    });
+  }
+
+  /**
+   * Retrieves all defer block fixtures in the component fixture.
+   */
+  getDeferBlocks(): Promise<DeferBlockFixture[]> {
+    const deferBlocks: DeferBlockDetails[] = [];
+    const lView = (this.componentRef.hostView as any)['_lView'];
+    getDeferBlocks(lView, deferBlocks);
+
+    const deferBlockFixtures = [];
+    for (const block of deferBlocks) {
+      deferBlockFixtures.push(new DeferBlockFixture(block, this));
+    }
+
+    return Promise.resolve(deferBlockFixtures);
+  }
+
+  private _getRenderer() {
+    if (this._renderer === undefined) {
+      this._renderer = this.componentRef.injector.get(RendererFactory2, null);
+    }
+    return this._renderer as RendererFactory2 | null;
+  }
+
+  /**
+   * Get a promise that resolves when the ui state is stable following animations.
+   */
+  whenRenderingDone(): Promise<any> {
+    const renderer = this._getRenderer();
+    if (renderer && renderer.whenRenderingDone) {
+      return renderer.whenRenderingDone();
+    }
+    return this.whenStable();
+  }
+
+  /**
+   * Trigger component destruction.
+   */
+  destroy(): void {
+    this.subscriptions.unsubscribe();
+    this._testAppRef.externalTestViews.delete(this.componentRef.hostView);
+    if (!this._isDestroyed) {
+      this.componentRef.destroy();
+      this._isDestroyed = true;
+    }
+  }
+}

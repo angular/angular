@@ -1,0 +1,7 @@
+load("//modules/playground/e2e_test:example_test.bzl", "example_test")
+
+example_test(
+    name = "order_management",
+    srcs = glob(["**/*.ts"]),
+    server = "//modules/playground/src/order_management:devserver",
+)

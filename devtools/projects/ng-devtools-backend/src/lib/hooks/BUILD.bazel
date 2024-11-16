@@ -1,0 +1,32 @@
+load("//devtools/tools:typescript.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "hooks",
+    srcs = glob(
+        include = ["*.ts"],
+        exclude = [
+            "*.spec.ts",
+            "identity-tracker.ts",
+        ],
+    ),
+    deps = [
+        ":identity_tracker",
+        "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
+        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
+        "//devtools/projects/ng-devtools-backend/src/lib:utils",
+        "//devtools/projects/ng-devtools-backend/src/lib/hooks/profiler",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_library(
+    name = "identity_tracker",
+    srcs = ["identity-tracker.ts"],
+    deps = [
+        "//devtools/projects/ng-devtools-backend/src/lib:component_tree",
+        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
+        "//devtools/projects/protocol",
+    ],
+)

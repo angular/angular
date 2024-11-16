@@ -1,0 +1,61 @@
+load("//tools:defaults.bzl", "karma_web_test_suite", "ng_module", "ts_library")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+
+package(default_visibility = ["//visibility:private"])
+
+ng_module(
+    name = "search-dialog",
+    srcs = [
+        "search-dialog.component.ts",
+    ],
+    assets = [
+        ":search-dialog.component.css",
+        "search-dialog.component.html",
+    ],
+    visibility = [
+        "//adev/shared-docs/components:__pkg__",
+    ],
+    deps = [
+        "//adev/shared-docs/components/algolia-icon",
+        "//adev/shared-docs/components/text-field",
+        "//adev/shared-docs/directives",
+        "//adev/shared-docs/interfaces",
+        "//adev/shared-docs/pipes",
+        "//adev/shared-docs/services",
+        "//packages/common",
+        "//packages/core",
+        "//packages/forms",
+        "//packages/router",
+    ],
+)
+
+sass_binary(
+    name = "style",
+    src = "search-dialog.component.scss",
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["*.spec.ts"],
+    ),
+    deps = [
+        ":search-dialog",
+        "//adev/shared-docs/components/algolia-icon",
+        "//adev/shared-docs/interfaces",
+        "//adev/shared-docs/providers",
+        "//adev/shared-docs/services",
+        "//adev/shared-docs/testing",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/router",
+        "//packages/router/testing",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    deps = [":test_lib"],
+)

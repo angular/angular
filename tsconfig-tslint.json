@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "esModuleInterop": true
+  },
+  "include": [
+    "packages/**/*",
+    "modules/**/*",
+    "tools/**/*",
+    "scripts/**/*",
+    "devtools/**/*",
+  ]
+}

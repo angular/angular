@@ -1,0 +1,212 @@
+{
+  "root": true,
+  "ignorePatterns": ["*.js", "styleguide/**/*.avoid.ts"],
+  "overrides": [
+    {
+      "files": ["*.html"],
+      "extends": ["plugin:@angular-eslint/template/recommended"],
+      "rules": {
+        "@angular-eslint/template/alt-text": "error",
+        "@angular-eslint/template/elements-content": "error",
+        "@angular-eslint/template/label-has-associated-control": "error",
+        "@angular-eslint/template/table-scope": "error",
+        "@angular-eslint/template/valid-aria": "error",
+        "@angular-eslint/template/click-events-have-key-events": "error",
+        "@angular-eslint/template/eqeqeq": "off",
+        "@angular-eslint/template/mouse-events-have-key-events": "error",
+        "@angular-eslint/template/no-autofocus": "error",
+        "@angular-eslint/template/no-distracting-elements": "error",
+        "@angular-eslint/template/no-positive-tabindex": "error"
+      }
+    },
+    {
+      "files": ["*.ts"],
+      "extends": [
+        "plugin:@angular-eslint/template/process-inline-templates"
+      ],
+      "parserOptions": {
+        "createDefaultProgram": false,
+        "project": "content/examples/tsconfig.eslint.json"
+      },
+      "plugins": [
+        "@typescript-eslint",
+        "@angular-eslint", "eslint-plugin-import", "eslint-plugin-jsdoc", "eslint-plugin-prefer-arrow"],
+      "rules": {
+        "@typescript-eslint/interface-name-prefix": "off",
+        "@typescript-eslint/explicit-member-accessibility": "off",
+        "sort-keys": "off",
+        "@angular-eslint/component-class-suffix": "error",
+
+        "@angular-eslint/contextual-lifecycle": "error",
+        "@angular-eslint/directive-class-suffix": "error",
+
+        "@angular-eslint/no-conflicting-lifecycle": "error",
+        "@angular-eslint/no-host-metadata-property": "error",
+        "@angular-eslint/no-input-rename": "error",
+        "@angular-eslint/no-inputs-metadata-property": "error",
+        "@angular-eslint/no-output-native": "error",
+        "@angular-eslint/no-output-on-prefix": "error",
+        "@angular-eslint/no-output-rename": "error",
+        "@angular-eslint/no-outputs-metadata-property": "error",
+        "@angular-eslint/use-lifecycle-interface": "error",
+        "@angular-eslint/use-pipe-transform-interface": "error",
+        "@typescript-eslint/adjacent-overload-signatures": "error",
+        "@typescript-eslint/array-type": "off",
+
+        "@typescript-eslint/consistent-type-assertions": "error",
+        "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/no-empty-interface": "error",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-inferrable-types": [
+          "error",
+          {
+            "ignoreParameters": true
+          }
+        ],
+        "@typescript-eslint/no-misused-new": "error",
+        "@typescript-eslint/no-namespace": "error",
+        "@typescript-eslint/no-parameter-properties": "off",
+        "@typescript-eslint/no-use-before-define": "off",
+        "@typescript-eslint/no-var-requires": "off",
+        "@typescript-eslint/prefer-for-of": "error",
+        "@typescript-eslint/prefer-function-type": "error",
+        "@typescript-eslint/prefer-namespace-keyword": "error",
+        "@typescript-eslint/triple-slash-reference": [
+          "error",
+          {
+            "path": "always",
+            "types": "prefer-import",
+            "lib": "always"
+          }
+        ],
+        "@typescript-eslint/unified-signatures": "error",
+        "complexity": "off",
+        "constructor-super": "error",
+        "eqeqeq": ["error", "smart"],
+        "guard-for-in": "error",
+        "id-blacklist": [
+          "error",
+          "any",
+          "Number",
+          "number",
+          "String",
+          "string",
+          "Boolean",
+          "boolean",
+          "Undefined",
+          "undefined"
+        ],
+        "id-match": "error",
+        "import/no-deprecated": "warn",
+        "jsdoc/no-types": "error",
+        "max-classes-per-file": "off",
+        "no-bitwise": "error",
+        "no-caller": "error",
+        "no-cond-assign": "error",
+
+        "no-debugger": "error",
+        "no-empty": "off",
+        "no-eval": "error",
+        "no-fallthrough": "error",
+        "no-invalid-this": "off",
+        "no-new-wrappers": "error",
+        "no-restricted-imports": [
+          "error",
+          {
+            "name": "rxjs/Rx",
+            "message": "Please import directly from 'rxjs' instead"
+          }
+        ],
+        "no-throw-literal": "error",
+        "no-undef-init": "error",
+        "no-unsafe-finally": "error",
+        "no-unused-labels": "error",
+        "no-var": "error",
+        "object-shorthand": "error",
+        "one-var": ["error", "never"],
+        "prefer-const": "error",
+        "radix": "error",
+        "use-isnan": "error",
+        "valid-typeof": "off",
+        "arrow-body-style": "error",
+        "arrow-parens": "off",
+        "comma-dangle": "off",
+        "curly": "error",
+        "eol-last": "error",
+        "jsdoc/check-alignment": "error",
+        "new-parens": "error",
+        "no-multiple-empty-lines": "off",
+        "no-trailing-spaces": "error",
+        "quote-props": ["error", "as-needed"],
+        "space-before-function-paren": [
+          "error",
+          {
+            "anonymous": "never",
+            "asyncArrow": "always",
+            "named": "never"
+          }
+        ],
+        "@typescript-eslint/semi": ["error", "always"],
+        "@typescript-eslint/type-annotation-spacing": "error",
+
+        "@typescript-eslint/ban-types": "error",
+        "@angular-eslint/component-selector": [
+          "error",
+          {
+            "type": "element",
+            "prefix": "", // TODO: Fix the code and change the prefix to `"app"` (or whatever makes sense).
+            "style": "kebab-case"
+          }
+        ],
+        "@angular-eslint/directive-selector": [
+          "error",
+          {
+            "type": "attribute",
+            "prefix": ["app", "toh"],
+            "style": "camelCase"
+          }
+        ],
+        "dot-notation": "off",
+        "@typescript-eslint/dot-notation": ["error", {"allowIndexSignaturePropertyAccess": true}],
+        "indent": "off",
+        "max-len": ["error", {"code": 120, "ignoreUrls": true}],
+        "@typescript-eslint/member-delimiter-style": [
+          "error",
+          {
+            "singleline": {
+              "delimiter": "comma",
+              "requireLast": false
+            }
+          }
+        ],
+        "@typescript-eslint/member-ordering": "off",
+        "@typescript-eslint/naming-convention": "off",
+        "no-console": ["error", {"allow": ["log", "warn", "error"]}],
+        "no-empty-function": "off",
+        "@typescript-eslint/no-non-null-assertion": "off", // TODO: Fix the code violating this rule and enable it.
+        "no-restricted-syntax": [
+          "error",
+          {
+            "selector": "CallExpression[callee.name=/^(fdescribe|fit)$/]",
+            "message": "Don't keep jasmine focus methods."
+          }
+        ],
+        "no-shadow": "off",
+        "@typescript-eslint/no-shadow": "error",
+        "no-tabs": "error",
+        "no-underscore-dangle": "off",
+        "no-unused-expressions": "off",
+        "@typescript-eslint/no-unused-expressions": "error",
+        "no-use-before-define": "off",
+        "prefer-arrow/prefer-arrow-functions": "off",
+        "quotes": "off",
+        "@typescript-eslint/quotes": [
+          "error",
+          "single",
+          {"avoidEscape": true, "allowTemplateLiterals": true}
+        ],
+        "semi": "error"
+      }
+    }
+  ]
+}

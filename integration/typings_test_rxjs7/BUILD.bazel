@@ -1,0 +1,7 @@
+load("//integration:index.bzl", "ng_integration_test")
+
+ng_integration_test(
+    name = "test",
+    # The project root uses an older version than the one we want to test here.
+    pinned_npm_packages = ["rxjs"],
+)

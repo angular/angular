@@ -1,0 +1,19 @@
+{
+    "projectType": "cli",
+    "overrideBoilerplate": [
+      "tsconfig.json",
+      "tsconfig.app.json"
+    ],
+    "tests": [
+      {
+        "cmd": "yarn",
+        "args": [
+          "e2e",
+          "--protractor-config=e2e/protractor-bazel.conf.js",
+          "--no-webdriver-update",
+          "--port=0"
+        ]
+      }
+    ]
+  }
+  

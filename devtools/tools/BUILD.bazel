@@ -1,0 +1,3 @@
+exports_files([
+    "bazel-karma-local-config.js",
+])
