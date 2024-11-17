@@ -276,6 +276,12 @@
       overflow-x: auto;
       display: flex;
       flex-direction: column;
+      align-items: start;
+    }
+
+    pre > * {
+      min-width: 100%;
+      width: auto;
     }
   }
 
