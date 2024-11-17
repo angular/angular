@@ -272,7 +272,7 @@
     header {
       display: flex;
       flex-direction: column;
-      border-radius: 0.25rem;
+      border-radius: 0.25rem 0.25rem 0 0;
       background-color: var(--octonary-contrast);
       position: relative;
       z-index: 10;
