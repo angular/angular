@@ -57,7 +57,7 @@ export class QueryList<T> implements Iterable<T> {
   /**
    * Returns `Observable` of `QueryList` notifying the subscriber of changes.
    */
-  get changes(): Observable<any> {
+  get changes(): Observable<QueryList<T>> {
     return (this._changes ??= new Subject());
   }
 
