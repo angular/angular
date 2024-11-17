@@ -25,7 +25,6 @@ export abstract class CompilationJob {
   constructor(
     readonly componentName: string,
     readonly pool: ConstantPool,
-    readonly compatibility: ir.CompatibilityMode,
   ) {}
 
   kind: CompilationJobKind = CompilationJobKind.Both;
@@ -68,13 +67,12 @@ export class ComponentCompilationJob extends CompilationJob {
   constructor(
     componentName: string,
     pool: ConstantPool,
-    compatibility: ir.CompatibilityMode,
     readonly relativeContextFilePath: string,
     readonly i18nUseExternalIds: boolean,
     readonly deferMeta: R3ComponentDeferMetadata,
     readonly allDeferrableDepsFn: o.ReadVarExpr | null,
   ) {
-    super(componentName, pool, compatibility);
+    super(componentName, pool);
     this.root = new ViewCompilationUnit(this, this.allocateXrefId(), null);
     this.views.set(this.root.xref, this.root);
   }
@@ -231,8 +229,8 @@ export class ViewCompilationUnit extends CompilationUnit {
  * Compilation-in-progress of a host binding, which contains a single unit for that host binding.
  */
 export class HostBindingCompilationJob extends CompilationJob {
-  constructor(componentName: string, pool: ConstantPool, compatibility: ir.CompatibilityMode) {
-    super(componentName, pool, compatibility);
+  constructor(componentName: string, pool: ConstantPool) {
+    super(componentName, pool);
     this.root = new HostBindingCompilationUnit(this);
   }
 

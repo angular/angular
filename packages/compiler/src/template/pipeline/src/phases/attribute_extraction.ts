@@ -74,10 +74,7 @@ export function extractAttributes(job: CompilationJob): void {
           // The old compiler treated empty style bindings as regular bindings for the purpose of
           // directive matching. That behavior is incorrect, but we emulate it in compatibility
           // mode.
-          if (
-            unit.job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder &&
-            op.expression instanceof ir.EmptyExpr
-          ) {
+          if (op.expression instanceof ir.EmptyExpr) {
             ir.OpList.insertBefore<ir.CreateOp>(
               ir.createExtractedAttributeOp(
                 op.target,
@@ -106,14 +103,9 @@ export function extractAttributes(job: CompilationJob): void {
               SecurityContext.NONE,
             );
             if (job.kind === CompilationJobKind.Host) {
-              if (job.compatibility) {
-                // TemplateDefinitionBuilder does not extract listener bindings to the const array
-                // (which is honestly pretty inconsistent).
-                break;
-              }
-              // This attribute will apply to the enclosing host binding compilation unit, so order
-              // doesn't matter.
-              unit.create.push(extractedAttributeOp);
+              // TemplateDefinitionBuilder does not extract listener bindings to the const array
+              // (which is honestly pretty inconsistent).
+              break;
             } else {
               ir.OpList.insertBefore<ir.CreateOp>(
                 extractedAttributeOp,
@@ -173,11 +165,9 @@ function extractAttributeOp(
   }
 
   let extractable = op.isTextAttribute || op.expression.isConstant();
-  if (unit.job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder) {
-    // TemplateDefinitionBuilder only extracts text attributes. It does not extract attriibute
-    // bindings, even if they are constants.
-    extractable &&= op.isTextAttribute;
-  }
+  // TemplateDefinitionBuilder only extracts text attributes. It does not extract attriibute
+  // bindings, even if they are constants.
+  extractable &&= op.isTextAttribute;
 
   if (extractable) {
     const extractedAttributeOp = ir.createExtractedAttributeOp(

@@ -23,8 +23,6 @@ import {
   DeclarationListEmitMode,
   DeferBlockDepsEmitMode,
   R3ComponentMetadata,
-  R3DeferPerBlockDependency,
-  R3DeferPerComponentDependency,
   R3DeferResolverFunctionMetadata,
   R3DirectiveMetadata,
   R3HostMetadata,

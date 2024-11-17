@@ -39,12 +39,12 @@ export function optimizeVariables(job: CompilationJob): void {
       }
     }
 
-    optimizeVariablesInOpList(unit.create, job.compatibility);
-    optimizeVariablesInOpList(unit.update, job.compatibility);
+    optimizeVariablesInOpList(unit.create);
+    optimizeVariablesInOpList(unit.update);
 
     for (const op of unit.create) {
       if (op.kind === ir.OpKind.Listener || op.kind === ir.OpKind.TwoWayListener) {
-        optimizeVariablesInOpList(op.handlerOps, job.compatibility);
+        optimizeVariablesInOpList(op.handlerOps);
       }
     }
   }
@@ -138,10 +138,7 @@ function inlineAlwaysInlineVariables(ops: ir.OpList<ir.CreateOp | ir.UpdateOp>):
 /**
  * Process a list of operations and optimize variables within that list.
  */
-function optimizeVariablesInOpList(
-  ops: ir.OpList<ir.CreateOp | ir.UpdateOp>,
-  compatibility: ir.CompatibilityMode,
-): void {
+function optimizeVariablesInOpList(ops: ir.OpList<ir.CreateOp | ir.UpdateOp>): void {
   const varDecls = new Map<ir.XrefId, ir.VariableOp<ir.CreateOp | ir.UpdateOp>>();
   const varUsages = new Map<ir.XrefId, number>();
 
@@ -263,10 +260,7 @@ function optimizeVariablesInOpList(
 
       // Is the variable used in this operation?
       if (opInfo.variablesUsed.has(candidate)) {
-        if (
-          compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder &&
-          !allowConservativeInlining(decl, targetOp)
-        ) {
+        if (!allowConservativeInlining(decl, targetOp)) {
           // We're in conservative mode, and this variable is not eligible for inlining into the
           // target operation in this mode.
           break;
