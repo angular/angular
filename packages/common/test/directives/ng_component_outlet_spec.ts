@@ -304,6 +304,19 @@ describe('insert/remove', () => {
 
     expect(fixture.nativeElement.textContent).toBe('Hello World');
   });
+
+  it('should be able to get the current component instance', () => {
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    const outlet = fixture.componentInstance.ngComponentOutlet!;
+
+    expect(outlet.componentInstance).toBeNull();
+
+    fixture.componentInstance.currentComponent = InjectedComponent;
+    fixture.detectChanges();
+
+    expect(outlet.componentInstance).toBeInstanceOf(InjectedComponent);
+  });
 });
 
 describe('inputs', () => {

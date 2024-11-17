@@ -93,9 +93,12 @@ import {
  */
 @Directive({
   selector: '[ngComponentOutlet]',
-  standalone: true,
+  exportAs: 'ngComponentOutlet',
 })
-export class NgComponentOutlet implements OnChanges, DoCheck, OnDestroy {
+export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy {
+  // TODO(crisbeto): this should be `Type<T>`, but doing so broke a few
+  // targets in a TGP so we need to do it in a major version.
+  /** Component that should be rendered in the outlet. */
   @Input() ngComponentOutlet: Type<any> | null = null;
 
   @Input() ngComponentOutletInputs?: Record<string, unknown>;
@@ -108,7 +111,7 @@ export class NgComponentOutlet implements OnChanges, DoCheck, OnDestroy {
    */
   @Input() ngComponentOutletNgModuleFactory?: NgModuleFactory<any>;
 
-  private _componentRef: ComponentRef<any> | undefined;
+  private _componentRef: ComponentRef<T> | undefined;
   private _moduleRef: NgModuleRef<any> | undefined;
 
   /**
@@ -117,6 +120,14 @@ export class NgComponentOutlet implements OnChanges, DoCheck, OnDestroy {
    * that are no longer referenced.
    */
   private _inputsUsed = new Map<string, boolean>();
+
+  /**
+   * Gets the instance of the currently-rendered component.
+   * Will be null if no component has been rendered.
+   */
+  get componentInstance(): T | null {
+    return this._componentRef?.instance ?? null;
+  }
 
   constructor(private _viewContainerRef: ViewContainerRef) {}
 
