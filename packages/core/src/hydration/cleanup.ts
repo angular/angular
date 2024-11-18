@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationRef, whenStable} from '../application/application_ref';
+import {ApplicationRef} from '../application/application_ref';
 import {DehydratedDeferBlock} from '../defer/interfaces';
-import {DEHYDRATED_BLOCK_REGISTRY} from '../defer/registry';
-import {Injector} from '../di';
+import {DehydratedBlockRegistry} from '../defer/registry';
 import {
   CONTAINER_HEADER_OFFSET,
   DEHYDRATED_VIEWS,
@@ -138,20 +137,15 @@ export function cleanupDehydratedViews(appRef: ApplicationRef) {
  * hydrated. This removes all the jsaction attributes, timers, observers,
  * dehydrated views and containers
  */
-export async function cleanupDeferBlock(
+export function cleanupHydratedDeferBlocks(
   deferBlock: DehydratedDeferBlock | null,
-  hydratedBlocks: Set<string>,
-  injector: Injector,
-): Promise<void> {
+  hydratedBlocks: string[],
+  registry: DehydratedBlockRegistry,
+  appRef: ApplicationRef,
+): void {
   if (deferBlock !== null) {
-    // hydratedBlocks is a set, and needs to be converted to an array
-    // for removing listeners
-    const registry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
-    registry.cleanup([...hydratedBlocks]);
+    registry.cleanup(hydratedBlocks);
     cleanupLContainer(deferBlock.lContainer);
-    cleanupDehydratedViews(injector.get(ApplicationRef));
+    cleanupDehydratedViews(appRef);
   }
-  // we need to wait for app stability here so we don't continue before
-  // the hydration process has finished, which could result in problems
-  return whenStable(injector.get(ApplicationRef));
 }
