@@ -250,24 +250,25 @@ export function invokeRegisteredReplayListeners(
   }
 }
 
-export async function hydrateAndInvokeBlockListeners(
+function hydrateAndInvokeBlockListeners(
   blockName: string,
   injector: Injector,
   event: Event,
   currentTarget: Element,
 ) {
   blockEventQueue.push({event, currentTarget});
-  await triggerHydrationFromBlockName(injector, blockName, replayQueuedBlockEvents);
+  triggerHydrationFromBlockName(injector, blockName, replayQueuedBlockEvents);
 }
 
-function replayQueuedBlockEvents(hydratedBlocks: Set<string>) {
+function replayQueuedBlockEvents(hydratedBlocks: string[]) {
   // clone the queue
   const queue = [...blockEventQueue];
+  const hydrated = new Set<string>(hydratedBlocks);
   // empty it
   blockEventQueue = [];
   for (let {event, currentTarget} of queue) {
     const blockName = currentTarget.getAttribute(DEFER_BLOCK_SSR_ID_ATTRIBUTE)!;
-    if (hydratedBlocks.has(blockName)) {
+    if (hydrated.has(blockName)) {
       invokeListeners(event, currentTarget);
     } else {
       // requeue events that weren't yet hydrated

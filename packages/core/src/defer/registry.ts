@@ -85,7 +85,7 @@ export class DehydratedBlockRegistry {
   }
 
   // Blocks that are being hydrated.
-  hydrating = new Set<string>();
+  hydrating = new Map<string, PromiseWithResolvers<void>>();
 
   /** @nocollapse */
   static ɵprov = /** @pureOrBreakMyCode */ /* @__PURE__ */ ɵɵdefineInjectable({
