@@ -123,9 +123,9 @@ function recreateMatchingLViews(def: ComponentDef<unknown>, rootLView: LView): v
  * @param def A ComponentDef instance.
  */
 function clearRendererCache(factory: RendererFactory, def: ComponentDef<unknown>) {
-  // Cast to `any` to read a private field.
+  // Cast to read a private field.
   // NOTE: This must be kept synchronized with the renderer factory implementation in platform-browser.
-  (factory as any).rendererByCompId?.remove(def.id);
+  (factory as {rendererByCompId?: Map<string, unknown>}).rendererByCompId?.delete(def.id);
 }
 
 /**
