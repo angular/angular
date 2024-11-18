@@ -320,13 +320,6 @@ function applyDeferBlockState(
       lDetails[ON_COMPLETE_FNS] = null;
     }
   }
-
-  if (newState === DeferBlockState.Complete && Array.isArray(lDetails[ON_COMPLETE_FNS])) {
-    for (const callback of lDetails[ON_COMPLETE_FNS]) {
-      callback();
-    }
-    lDetails[ON_COMPLETE_FNS] = null;
-  }
 }
 
 /**
