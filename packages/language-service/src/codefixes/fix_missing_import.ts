@@ -47,19 +47,13 @@ export const missingImportMeta: CodeActionMeta = {
   },
 };
 
-function getCodeActions({
-  templateInfo,
-  start,
-  compiler,
-  formatOptions,
-  preferences,
-  errorCode,
-  tsLs,
-}: CodeActionContext) {
+function getCodeActions({templateInfo, start, compiler}: CodeActionContext) {
+  if (templateInfo === null) {
+    return [];
+  }
+
   let codeActions: ts.CodeFixAction[] = [];
   const checker = compiler.getTemplateTypeChecker();
-  const tsChecker = compiler.programDriver.getProgram().getTypeChecker();
-
   const target = getTargetAtPosition(templateInfo.template, start);
   if (target === null) {
     return [];

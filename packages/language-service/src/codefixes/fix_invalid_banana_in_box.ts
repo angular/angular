@@ -21,7 +21,8 @@ import {CodeActionMeta, FixIdForCodeFixesAll} from './utils';
 export const fixInvalidBananaInBoxMeta: CodeActionMeta = {
   errorCodes: [ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX)],
   getCodeActions({start, fileName, templateInfo}) {
-    const boundEvent = getTheBoundEventAtPosition(templateInfo, start);
+    const boundEvent =
+      templateInfo === null ? null : getTheBoundEventAtPosition(templateInfo, start);
     if (boundEvent === null) {
       return [];
     }

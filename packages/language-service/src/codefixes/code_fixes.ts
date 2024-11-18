@@ -46,7 +46,7 @@ export class CodeFixes {
    */
   getCodeFixesAtPosition(
     fileName: string,
-    templateInfo: TemplateInfo,
+    templateInfo: TemplateInfo | null,
     compiler: NgCompiler,
     start: number,
     end: number,

@@ -20,7 +20,7 @@ import {TemplateInfo} from '../utils';
  * context will be provided to the `CodeActionMeta` which could handle the `errorCode`.
  */
 export interface CodeActionContext {
-  templateInfo: TemplateInfo;
+  templateInfo: TemplateInfo | null;
   fileName: string;
   compiler: NgCompiler;
   start: number;
