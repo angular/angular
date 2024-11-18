@@ -8,11 +8,7 @@
 
 import tss from 'typescript';
 
-import {
-  getTargetAtPosition,
-  getTcbNodesOfTemplateAtPosition,
-  TargetNodeKind,
-} from '../template_target';
+import {getTcbNodesOfTemplateAtPosition} from '../template_target';
 import {getTemplateInfoAtPosition} from '../utils';
 
 import {CodeActionMeta, convertFileTextChangeInTcb, FixIdForCodeFixesAll} from './utils';
@@ -37,7 +33,8 @@ export const missingMemberMeta: CodeActionMeta = {
     errorCode,
     tsLs,
   }) {
-    const tcbNodesInfo = getTcbNodesOfTemplateAtPosition(templateInfo, start, compiler);
+    const tcbNodesInfo =
+      templateInfo === null ? null : getTcbNodesOfTemplateAtPosition(templateInfo, start, compiler);
     if (tcbNodesInfo === null) {
       return [];
     }
