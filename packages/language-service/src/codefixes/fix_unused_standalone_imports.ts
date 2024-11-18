@@ -17,7 +17,78 @@ import {findFirstMatchingNode} from '../utils/ts_utils';
  */
 export const fixUnusedStandaloneImportsMeta: CodeActionMeta = {
   errorCodes: [ngErrorCode(ErrorCode.UNUSED_STANDALONE_IMPORTS)],
-  getCodeActions: () => [],
+  getCodeActions: ({start, fileName, compiler}) => {
+    const file = compiler.programDriver.getProgram().getSourceFile(fileName) || null;
+
+    if (file === null) {
+      return [];
+    }
+
+    const node = findFirstMatchingNode(file, {
+      filter: (n): n is tss.Identifier =>
+        tss.isIdentifier(n) && start >= n.getStart() && start <= n.getEnd(),
+    });
+    const parent = node?.parent || null;
+
+    if (node === null || parent === null) {
+      return [];
+    }
+
+    if (isFullyUnusedArray(node, parent)) {
+      return [
+        {
+          fixName: FixIdForCodeFixesAll.FIX_UNUSED_STANDALONE_IMPORTS,
+          fixId: FixIdForCodeFixesAll.FIX_UNUSED_STANDALONE_IMPORTS,
+          fixAllDescription: `Remove all unused imports`,
+          description: `Remove all unused imports`,
+          changes: [
+            {
+              fileName,
+              textChanges: [
+                {
+                  span: {
+                    start: parent.initializer.getStart(),
+                    length: parent.initializer.getWidth(),
+                  },
+                  newText: '[]',
+                },
+              ],
+            },
+          ],
+        },
+      ];
+    } else if (tss.isArrayLiteralExpression(parent)) {
+      const newArray = tss.factory.updateArrayLiteralExpression(
+        parent,
+        parent.elements.filter((el) => el !== node),
+      );
+
+      return [
+        {
+          fixName: FixIdForCodeFixesAll.FIX_UNUSED_STANDALONE_IMPORTS,
+          fixId: FixIdForCodeFixesAll.FIX_UNUSED_STANDALONE_IMPORTS,
+          fixAllDescription: `Remove all unused imports`,
+          description: `Remove unused import ${node.text}`,
+          changes: [
+            {
+              fileName,
+              textChanges: [
+                {
+                  span: {
+                    start: parent.getStart(),
+                    length: parent.getWidth(),
+                  },
+                  newText: tss.createPrinter().printNode(tss.EmitHint.Unspecified, newArray, file),
+                },
+              ],
+            },
+          ],
+        },
+      ];
+    }
+
+    return [];
+  },
   fixIds: [FixIdForCodeFixesAll.FIX_UNUSED_STANDALONE_IMPORTS],
   getAllCodeActions: ({diagnostics}) => {
     const arrayUpdates = new Map<tss.ArrayLiteralExpression, Set<tss.Expression>>();
@@ -42,11 +113,7 @@ export const fixUnusedStandaloneImportsMeta: CodeActionMeta = {
       // If the diagnostic is reported on the name of the `imports` array initializer, it means
       // that all imports are unused so we can clear the entire array. Otherwise if it's reported
       // on a single element, we only have to remove that element.
-      if (
-        tss.isPropertyAssignment(parent) &&
-        parent.name === node &&
-        tss.isArrayLiteralExpression(parent.initializer)
-      ) {
+      if (isFullyUnusedArray(node, parent)) {
         arraysToClear.add(parent.initializer);
       } else if (tss.isArrayLiteralExpression(parent)) {
         if (!arrayUpdates.has(parent)) {
@@ -93,3 +160,15 @@ export const fixUnusedStandaloneImportsMeta: CodeActionMeta = {
     return {changes};
   },
 };
+
+/** Checks whether a diagnostic was reported on a node where all imports are unused. */
+function isFullyUnusedArray(
+  node: tss.Node,
+  parent: tss.Node,
+): parent is tss.PropertyAssignment & {initializer: tss.ArrayLiteralExpression} {
+  return (
+    tss.isPropertyAssignment(parent) &&
+    parent.name === node &&
+    tss.isArrayLiteralExpression(parent.initializer)
+  );
+}
