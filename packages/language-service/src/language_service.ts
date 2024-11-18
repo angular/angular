@@ -404,17 +404,13 @@ export class LanguageService {
           return [];
         }
 
-        const templateInfo = getTemplateInfoAtPosition(fileName, start, compiler);
-        if (templateInfo === undefined) {
-          return [];
-        }
         const diags = this.getSemanticDiagnostics(fileName);
         if (diags.length === 0) {
           return [];
         }
         return this.codeFixes.getCodeFixesAtPosition(
           fileName,
-          templateInfo,
+          getTemplateInfoAtPosition(fileName, start, compiler) ?? null,
           compiler,
           start,
           end,
