@@ -665,7 +665,7 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
   deferOp.placeholderMinimumTime = deferBlock.placeholder?.minimumTime ?? null;
   deferOp.loadingMinimumTime = deferBlock.loading?.minimumTime ?? null;
   deferOp.loadingAfterTime = deferBlock.loading?.afterTime ?? null;
-  deferOp.flags = hasHydrateTriggers(deferBlock.hydrateTriggers);
+  deferOp.flags = calcDeferBlockFlags(deferBlock);
   unit.create.push(deferOp);
 
   // Configure all defer `on` conditions.
@@ -722,21 +722,8 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
   unit.update.push(deferWhenOps);
 }
 
-function hasHydrateTriggers(
-  triggers: Readonly<t.DeferredBlockTriggers>,
-): ir.TDeferDetailsFlags | null {
-  if (
-    !!(
-      triggers.hover ||
-      triggers.idle ||
-      triggers.immediate ||
-      triggers.interaction ||
-      triggers.never ||
-      triggers.timer ||
-      triggers.viewport ||
-      triggers.when
-    )
-  ) {
+function calcDeferBlockFlags(deferBlockDetails: t.DeferredBlock): ir.TDeferDetailsFlags | null {
+  if (Object.keys(deferBlockDetails.hydrateTriggers).length > 0) {
     return ir.TDeferDetailsFlags.HasHydrateTriggers;
   }
   return null;
