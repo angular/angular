@@ -385,7 +385,7 @@ export class LanguageService {
    * Related context: https://github.com/angular/vscode-ng-language-service/pull/2050#discussion_r1673079263
    */
   hasCodeFixesForErrorCode(errorCode: number): boolean {
-    return this.codeFixes.codeActionMetas.some((m) => m.errorCodes.includes(errorCode));
+    return this.codeFixes.hasFixForCode(errorCode);
   }
 
   getCodeFixesAtPosition(
