@@ -14,7 +14,7 @@ import {TemplateInfo} from '../utils';
 import {CodeActionMeta, FixIdForCodeFixesAll, isFixAllAvailable} from './utils';
 
 export class CodeFixes {
-  private errorCodeToFixes: Map<number, CodeActionMeta[]> = new Map();
+  private errorCodeToFixes = new Map<number, CodeActionMeta[]>();
   private fixIdToRegistration = new Map<FixIdForCodeFixesAll, CodeActionMeta>();
 
   constructor(
@@ -38,6 +38,10 @@ export class CodeFixes {
         this.fixIdToRegistration.set(fixId, meta);
       }
     }
+  }
+
+  hasFixForCode(code: number): boolean {
+    return this.errorCodeToFixes.has(code);
   }
 
   /**
