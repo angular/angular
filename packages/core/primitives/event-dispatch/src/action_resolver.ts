@@ -31,8 +31,8 @@ const DEFAULT_EVENT_TYPE: string = EventType.CLICK;
 
 /** Resolves actions for Events. */
 export class ActionResolver {
-  private a11yClickSupport: boolean = false;
-  private clickModSupport: boolean = true;
+  private a11yClickSupport = false;
+  private clickModSupport = true;
   private readonly syntheticMouseEventSupport: boolean;
 
   private updateEventInfoForA11yClick?: (eventInfo: eventInfoLib.EventInfo) => void = undefined;

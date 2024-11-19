@@ -109,7 +109,7 @@ function prepareEventForBubbling(eventInfoWrapper: EventInfoWrapper) {
   patchEventInstance(event, 'stopImmediatePropagation', stopPropagation);
 }
 
-function propagationStopped(eventInfoWrapper: EventInfoWrapper) {
+function propagationStopped(eventInfoWrapper: EventInfoWrapper): boolean {
   const event = eventInfoWrapper.getEvent();
   return !!event[PROPAGATION_STOPPED_SYMBOL];
 }

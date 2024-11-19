@@ -65,7 +65,7 @@ export class EarlyEventContract {
 }
 
 /** Creates an `EarlyJsactionData` object. */
-export function createEarlyJsactionData(container: HTMLElement) {
+export function createEarlyJsactionData(container: HTMLElement): EarlyJsactionData {
   const q: EventInfo[] = [];
   const d = (eventInfo: EventInfo) => {
     q.push(eventInfo);

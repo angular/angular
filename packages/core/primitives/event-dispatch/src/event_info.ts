@@ -59,7 +59,7 @@ export declare interface EventInfo {
 }
 
 /** Added for readability when accessing stable property names. */
-export function getEventType(eventInfo: EventInfo) {
+export function getEventType(eventInfo: EventInfo): string {
   return eventInfo.eventType;
 }
 
@@ -69,7 +69,7 @@ export function setEventType(eventInfo: EventInfo, eventType: string) {
 }
 
 /** Added for readability when accessing stable property names. */
-export function getEvent(eventInfo: EventInfo) {
+export function getEvent(eventInfo: EventInfo): Event {
   return eventInfo.event;
 }
 
@@ -79,7 +79,7 @@ export function setEvent(eventInfo: EventInfo, event: Event) {
 }
 
 /** Added for readability when accessing stable property names. */
-export function getTargetElement(eventInfo: EventInfo) {
+export function getTargetElement(eventInfo: EventInfo): Element {
   return eventInfo.targetElement;
 }
 
@@ -89,7 +89,7 @@ export function setTargetElement(eventInfo: EventInfo, targetElement: Element) {
 }
 
 /** Added for readability when accessing stable property names. */
-export function getContainer(eventInfo: EventInfo) {
+export function getContainer(eventInfo: EventInfo): Element {
   return eventInfo.eic;
 }
 
@@ -99,7 +99,7 @@ export function setContainer(eventInfo: EventInfo, container: Element) {
 }
 
 /** Added for readability when accessing stable property names. */
-export function getTimestamp(eventInfo: EventInfo) {
+export function getTimestamp(eventInfo: EventInfo): number {
   return eventInfo.timeStamp;
 }
 
@@ -109,7 +109,7 @@ export function setTimestamp(eventInfo: EventInfo, timestamp: number) {
 }
 
 /** Added for readability when accessing stable property names. */
-export function getAction(eventInfo: EventInfo) {
+export function getAction(eventInfo: EventInfo): ActionInfoInternal | undefined {
   return eventInfo.eia;
 }
 
@@ -124,17 +124,17 @@ export function unsetAction(eventInfo: EventInfo) {
 }
 
 /** Added for readability when accessing stable property names. */
-export function getActionName(actionInfo: ActionInfoInternal) {
+export function getActionName(actionInfo: ActionInfoInternal): string {
   return actionInfo[0];
 }
 
 /** Added for readability when accessing stable property names. */
-export function getActionElement(actionInfo: ActionInfoInternal) {
+export function getActionElement(actionInfo: ActionInfoInternal): Element {
   return actionInfo[1];
 }
 
 /** Added for readability when accessing stable property names. */
-export function getIsReplay(eventInfo: EventInfo) {
+export function getIsReplay(eventInfo: EventInfo): boolean | undefined {
   return eventInfo.eirp;
 }
 
@@ -144,7 +144,7 @@ export function setIsReplay(eventInfo: EventInfo, replay: boolean) {
 }
 
 /** Added for readability when accessing stable property names. */
-export function getA11yClickKey(eventInfo: EventInfo) {
+export function getA11yClickKey(eventInfo: EventInfo): boolean | undefined {
   return eventInfo.eiack;
 }
 
@@ -154,7 +154,7 @@ export function setA11yClickKey(eventInfo: EventInfo, a11yClickKey: boolean) {
 }
 
 /** Added for readability when accessing stable property names. */
-export function getResolved(eventInfo: EventInfo) {
+export function getResolved(eventInfo: EventInfo): boolean | undefined {
   return eventInfo.eir;
 }
 
@@ -252,7 +252,7 @@ export function createEventInfo({
 export class EventInfoWrapper {
   constructor(readonly eventInfo: EventInfo) {}
 
-  getEventType() {
+  getEventType(): string {
     return getEventType(this.eventInfo);
   }
 
@@ -260,7 +260,7 @@ export class EventInfoWrapper {
     setEventType(this.eventInfo, eventType);
   }
 
-  getEvent() {
+  getEvent(): Event {
     return getEvent(this.eventInfo);
   }
 
@@ -268,7 +268,7 @@ export class EventInfoWrapper {
     setEvent(this.eventInfo, event);
   }
 
-  getTargetElement() {
+  getTargetElement(): Element {
     return getTargetElement(this.eventInfo);
   }
 
@@ -276,14 +276,14 @@ export class EventInfoWrapper {
     setTargetElement(this.eventInfo, targetElement);
   }
 
-  getContainer() {
+  getContainer(): Element {
     return getContainer(this.eventInfo);
   }
 
   setContainer(container: Element) {
     setContainer(this.eventInfo, container);
   }
-  getTimestamp() {
+  getTimestamp(): number {
     return getTimestamp(this.eventInfo);
   }
 
@@ -291,7 +291,7 @@ export class EventInfoWrapper {
     setTimestamp(this.eventInfo, timestamp);
   }
 
-  getAction() {
+  getAction(): {name: string; element: Element} | undefined {
     const action = getAction(this.eventInfo);
     if (!action) return undefined;
     return {
@@ -308,7 +308,7 @@ export class EventInfoWrapper {
     setAction(this.eventInfo, action.name, action.element);
   }
 
-  getIsReplay() {
+  getIsReplay(): boolean | undefined {
     return getIsReplay(this.eventInfo);
   }
 
@@ -316,7 +316,7 @@ export class EventInfoWrapper {
     setIsReplay(this.eventInfo, replay);
   }
 
-  getResolved() {
+  getResolved(): boolean | undefined {
     return getResolved(this.eventInfo);
   }
 

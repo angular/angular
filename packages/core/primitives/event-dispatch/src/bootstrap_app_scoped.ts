@@ -41,7 +41,7 @@ export function bootstrapAppScopedEarlyEventContract(
 export function getAppScopedQueuedEventInfos(
   appId: string,
   dataContainer: EarlyJsactionDataContainer = window,
-) {
+): EventInfo[] {
   return getQueuedEventInfos(dataContainer._ejsas?.[appId]);
 }
 

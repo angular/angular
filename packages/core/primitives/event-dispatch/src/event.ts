@@ -13,22 +13,24 @@ import {KeyCode} from './key_code';
 /**
  * Gets a browser event type, if it would differ from the JSAction event type.
  */
-export function getBrowserEventType(eventType: string) {
+export function getBrowserEventType(eventType: string): string {
   // Mouseenter and mouseleave events are not handled directly because they
   // are not available everywhere. In browsers where they are available, they
   // don't bubble and aren't visible at the container boundary. Instead, we
   // synthesize the mouseenter and mouseleave events from mouseover and
   // mouseout events, respectively. Cf. eventcontract.js.
-  if (eventType === EventType.MOUSEENTER) {
-    return EventType.MOUSEOVER;
-  } else if (eventType === EventType.MOUSELEAVE) {
-    return EventType.MOUSEOUT;
-  } else if (eventType === EventType.POINTERENTER) {
-    return EventType.POINTEROVER;
-  } else if (eventType === EventType.POINTERLEAVE) {
-    return EventType.POINTEROUT;
+  switch (eventType) {
+    case EventType.MOUSEENTER:
+      return EventType.MOUSEOVER;
+    case EventType.MOUSELEAVE:
+      return EventType.MOUSEOUT;
+    case EventType.POINTERENTER:
+      return EventType.POINTEROVER;
+    case EventType.POINTERLEAVE:
+      return EventType.POINTEROUT;
+    default:
+      return eventType;
   }
-  return eventType;
 }
 
 /**
@@ -62,11 +64,7 @@ export function addEventListener(
   //
   // Error and load events (i.e. on images) do not bubble so they are also
   // handled in the capture phase.
-  let capture = false;
-
-  if (isCaptureEventType(eventType)) {
-    capture = true;
-  }
+  const capture = isCaptureEventType(eventType);
 
   const options = typeof passive === 'boolean' ? {capture, passive} : capture;
   element.addEventListener(eventType, handler, options);
@@ -204,18 +202,14 @@ export const isGecko: boolean =
  * @return Whether the given element is a valid action key target.
  */
 export function isValidActionKeyTarget(el: Element): boolean {
-  if (!('getAttribute' in el)) {
-    return false;
-  }
-  if (isTextControl(el)) {
-    return false;
-  }
-  if (isNativelyActivatable(el)) {
-    return false;
-  }
-  // `isContentEditable` is an old DOM API.
-  // tslint:disable-next-line:no-any
-  if ((el as any).isContentEditable) {
+  if (
+    !('getAttribute' in el) ||
+    isTextControl(el) ||
+    isNativelyActivatable(el) ||
+    // `isContentEditable` is an old DOM API.
+    // tslint:disable-next-line:no-any
+    (el as any).isContentEditable
+  ) {
     return false;
   }
 
@@ -259,26 +253,21 @@ export function shouldCallPreventDefaultOnNativeHtmlControl(e: Event): boolean {
   if (tagName === 'BUTTON' || role === 'BUTTON') {
     return true;
   }
-  if (!isNativeHTMLControl(el)) {
+  if (
+    !isNativeHTMLControl(el) ||
+    tagName === 'A' ||
+    /**
+     * Fix for physical d-pads on feature phone platforms; the native event
+     * (ie. isTrusted: true) needs to fire to show the OPTION list. See
+     * b/135288469 for more info.
+     */
+    tagName === 'SELECT' ||
+    processSpace(el) ||
+    isTextControl(el)
+  ) {
     return false;
   }
-  if (tagName === 'A') {
-    return false;
-  }
-  /**
-   * Fix for physical d-pads on feature phone platforms; the native event
-   * (ie. isTrusted: true) needs to fire to show the OPTION list. See
-   * b/135288469 for more info.
-   */
-  if (tagName === 'SELECT') {
-    return false;
-  }
-  if (processSpace(el)) {
-    return false;
-  }
-  if (isTextControl(el)) {
-    return false;
-  }
+
   return true;
 }
 
@@ -308,21 +297,20 @@ export function isActionKeyEvent(e: Event): boolean {
   if (key !== KeyCode.ENTER && key !== KeyCode.SPACE) {
     return false;
   }
+
   const el = getTarget(e);
-  if (e.type !== EventType.KEYDOWN || !isValidActionKeyTarget(el) || hasModifierKey(e)) {
-    return false;
-  }
-
-  // For <input type="checkbox">, we must only handle the browser's native click
-  // event, so that the browser can toggle the checkbox.
-  if (processSpace(el) && key === KeyCode.SPACE) {
-    return false;
-  }
-
-  // If this element is non-focusable, ignore stray keystrokes (b/18337209)
-  // Sscreen readers can move without tab focus, so any tabIndex is focusable.
-  // See B/21809604
-  if (!isFocusable(el)) {
+  if (
+    e.type !== EventType.KEYDOWN ||
+    !isValidActionKeyTarget(el) ||
+    hasModifierKey(e) ||
+    // For <input type="checkbox">, we must only handle the browser's native click
+    // event, so that the browser can toggle the checkbox.
+    (processSpace(el) && key === KeyCode.SPACE) ||
+    // If this element is non-focusable, ignore stray keystrokes (b/18337209)
+    // Sscreen readers can move without tab focus, so any tabIndex is focusable.
+    // See B/21809604
+    !isFocusable(el)
+  ) {
     return false;
   }
 
@@ -454,15 +442,21 @@ export function createMouseSpecialEvent(e: Event, target: Element): Event {
     // tslint:disable-next-line:no-any
     copy[key] = value as any;
   }
-  if (e.type === EventType.MOUSEOVER) {
-    copy['type'] = EventType.MOUSEENTER;
-  } else if (e.type === EventType.MOUSEOUT) {
-    copy['type'] = EventType.MOUSELEAVE;
-  } else if (e.type === EventType.POINTEROVER) {
-    copy['type'] = EventType.POINTERENTER;
-  } else {
-    copy['type'] = EventType.POINTERLEAVE;
+
+  switch (e.type) {
+    case EventType.MOUSEOVER:
+      copy['type'] = EventType.MOUSEENTER;
+      break;
+    case EventType.MOUSEOUT:
+      copy['type'] = EventType.MOUSELEAVE;
+      break;
+    case EventType.POINTEROVER:
+      copy['type'] = EventType.POINTERENTER;
+      break;
+    default:
+      copy['type'] = EventType.POINTERLEAVE;
   }
+
   copy['target'] = copy['srcElement'] = target;
   copy['bubbles'] = false;
   return copy as Event;
