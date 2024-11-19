@@ -211,6 +211,10 @@ const REDIRECT_ROUTES: Route[] = [
     redirectTo: '/guide/ngmodules/overview',
   },
   {
+    path: 'guide/components/anatomy-of-components',
+    redirectTo: '/guide/components',
+  },
+  {
     path: 'guide',
     children: [
       {
