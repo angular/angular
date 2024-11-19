@@ -6,6 +6,11 @@ Blog post: https://blog.angular.dev/meet-angular-v19-7b29dfd05b84
 ## Breaking Changes
 ### compiler
 - `this.foo` property reads no longer refer to template context variables. If you intended to read the template variable, do not use `this.`.
+- changes to CSS selectors parsing where introduced, mainly to: pseudo selectors `:where()` and `:is()`,
+  parsing of `:host` and `host-context`, parsing selectors within pseudo selector arguments (for instance comma separated selectors).
+  These changes could lead to a different specificity of the resulting selectors and/or previously broken selectors being applied now,
+  for example `:where(:host)` used to transform to `:where()[ng-host]` and is being `:where([ng-host])` now. Unlike the previous outcome,
+  the new result can target elements and therefore could lead to breakages.
 ### core
 - Angular directives, components and pipes are now standalone by default.
    * Specify `standalone: false` for declarations that are currently declared in `@NgModule`s.
