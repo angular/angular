@@ -1,4 +1,4 @@
-# `linkedSignal`
+# Dependent state with `linkedSignal`
 
 IMPORTANT: `linkedSignal` is [developer preview](reference/releases#developer-preview). It's ready for you to try, but it might change before it is stable.
 
