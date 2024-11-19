@@ -4,68 +4,51 @@
 ### compiler
 - `this.foo` property reads no longer refer to template context variables. If you intended to read the template variable, do not use `this.`.
 ### core
-- Generally this PR has two implications:
-  
+- Angular directives, components and pipes are now standalone by default.
+   * Specify `standalone: false` for declarations that are currently declared in `@NgModule`s.
+   * `ng update` for v19 will take care of this automatically.
+- TypeScript versions less than 5.5 are no longer supported.
+- Timing changes for `effect` API (in developer preview):
+
   * effects which are triggered outside of change detection run as part of
     the change detection process instead of as a microtask. Depending on the
     specifics of application/test setup, this can result in them executing
     earlier or later (or requiring additional test steps to trigger; see below
     examples).
-  
+
   * effects which are triggered during change detection (e.g. by input
     signals) run _earlier_, before the component's template.
-  
-  We've seen a few common failure cases:
-  
-  * Tests which used to rely on the `Promise` timing of effects now need to
-    `await whenStable()` or call `.detectChanges()` in order for effects to
-    run.
-  
-  * Tests which use faked clocks may need to fast-forward/flush the clock to
-    cause effects to run.
-  
-  * `effect()`s triggered during CD could rely on the application being fully
-    rendered (for example, they could easily read computed styles, etc). With
-    the change, they run before the component's updates and can get incorrect
-    answers. The recent `afterRenderEffect()` API is a natural replacement for
-    this style of effect.
-  
-  * `effect()`s which synchronize with the forms system are particularly
-    timing-sensitive and might need to adjust their initialization timing.
-- * TypeScript versions less than 5.5 are no longer supported.
-- `ExperimentalPendingTasks` has been renamed to
-  `PendingTasks`.
-- Angular directives, components and pipes are now standalone by default. Specify  for declarations that are currently declared in s.  for v19 will take care of this automatically.
+
+- `ExperimentalPendingTasks` has been renamed to `PendingTasks`.
 - The `autoDetect` feature of `ComponentFixture` will now
   attach the fixture to the `ApplicationRef`. As a result, errors during
   automatic change detection of the fixture be reported to the `ErrorHandler`.
   This change may cause custom error handlers to observe new failures that were previously unreported.
-- Render default fallback with empty `projectableNodes`.
-  
-  When passing an empty array to `projectableNodes` in the `createComponent` API, the default fallback content of the `ng-content` will be rendered if present. To prevent rendering the default content, pass `document.createTextNode('')` as a `projectableNode`.
-  
-  For example:
-  
+- `createComponent` will now render default fallback with empty `projectableNodes`.
+
+  * When passing an empty array to `projectableNodes` in the `createComponent` API, the default fallback content
+  of the `ng-content` will be rendered if present. To prevent rendering the default content, pass `document.createTextNode('')` as a `projectableNode`.
+
   ```ts
   // The first ng-content will render the default fallback content if present
   createComponent(MyComponent. { projectableNodes: [[], [secondNode]] });
-  
+
   // To prevent projecting the default fallback content:
   createComponent(MyComponent. { projectableNodes: [[document.createTextNode('')], [secondNode]] });
-  
+
   ```
 - Errors that are thrown during `ApplicationRef.tick`
   will now be rethrown when using `TestBed`. These errors should be
   resolved by ensuring the test environment is set up correctly to
   complete change detection successfully. There are two alternatives to
   catch the errors:
-  
+
   * Instead of waiting for automatic change detection to happen, trigger
     it synchronously and expect the error. For example, a jasmine test
     could write `expect(() => TestBed.inject(ApplicationRef).tick()).toThrow()`
   * `TestBed` will reject any outstanding `ComponentFixture.whenStable` promises. A jasmine test,
   for example, could write `expectAsync(fixture.whenStable()).toBeRejected()`.
-  
+
   As a last resort, you can configure errors to _not_ be rethrown by
   setting `rethrowApplicationErrors` to `false` in `TestBed.configureTestingModule`.
 - The timers that are used for zone coalescing and hybrid
@@ -206,25 +189,10 @@
 | -- | -- | -- |
 | [dff4de0f75](https://github.com/angular/angular/commit/dff4de0f75741bc629462bb8da833b876c754453) | feat | add a combined migration for all signals APIs ([#58259](https://github.com/angular/angular/pull/58259)) |
 | [b6bc93803c](https://github.com/angular/angular/commit/b6bc93803c246d47aac0d2d8619271d42b249a4a) | feat | add schematic to migrate to signal queries ([#58032](https://github.com/angular/angular/pull/58032)) |
-| [bb286f65e7](https://github.com/angular/angular/commit/bb286f65e7a38c21ae61807b9a7811908a9030ed) | feat | capture output migration stats ([#58321](https://github.com/angular/angular/pull/58321)) |
 | [2bfc64daf1](https://github.com/angular/angular/commit/2bfc64daf1cad9be8099759e8de7a361555ad5d1) | feat | expose output as function migration ([#58299](https://github.com/angular/angular/pull/58299)) |
 | [59fe9bc772](https://github.com/angular/angular/commit/59fe9bc77236f1374427a851e55b0fa5216d9cf9) | feat | introduce signal input migration as `ng generate` schematic ([#57805](https://github.com/angular/angular/pull/57805)) |
-| [cbec46a51d](https://github.com/angular/angular/commit/cbec46a51d22a1238cc8bf1ebdf343d031b8f0ba) | feat | migrate .pipe calls in outputs used in tests ([#57691](https://github.com/angular/angular/pull/57691)) |
-| [cf70d626cd](https://github.com/angular/angular/commit/cf70d626cdedfd978d058b973420d8f31980555d) | feat | print output migration stats in ng generate ([#58321](https://github.com/angular/angular/pull/58321)) |
-| [68e5370a66](https://github.com/angular/angular/commit/68e5370a66633f4b069d6adffa95c2ea94291820) | feat | remove complete calls for migrated outputs ([#57671](https://github.com/angular/angular/pull/57671)) |
-| [9da21f798d](https://github.com/angular/angular/commit/9da21f798de2033af9d39a8a9b255ef2fe74f948) | feat | replace .next usage on outputs ([#57654](https://github.com/angular/angular/pull/57654)) |
-| [42607bf0f2](https://github.com/angular/angular/commit/42607bf0f28a2421a0d41809485c09dca26ea599) | fix | add outputs migration to combined shorthand ([#58318](https://github.com/angular/angular/pull/58318)) |
-| [71f5ef2aa5](https://github.com/angular/angular/commit/71f5ef2aa53a74bab7d0543f98870d81c44c4978) | fix | change imports to be G3 compatible ([#57654](https://github.com/angular/angular/pull/57654)) |
-| [e6514b9f3d](https://github.com/angular/angular/commit/e6514b9f3dc1e2bdaa12d7096251769dc6c3e262) | fix | do not migrate next calls in template if not an EventEmitter ([#58631](https://github.com/angular/angular/pull/58631)) |
-| [c5e676bb87](https://github.com/angular/angular/commit/c5e676bb8715bcde42e56eb08a41cc1ba5c95f91) | fix | flip the default standalone flag in route-lazy-loading migration ([#58474](https://github.com/angular/angular/pull/58474)) |
-| [b84ed2b628](https://github.com/angular/angular/commit/b84ed2b6288d101661abdc880c45b52398bc1022) | fix | include the output migration in the defaults of the signal migration ([#58635](https://github.com/angular/angular/pull/58635)) |
 | [90c7ec39a0](https://github.com/angular/angular/commit/90c7ec39a06e5c14711e0a42e2d6a478cde2b9cc) | fix | inject migration always inserting generated variables before super call ([#58393](https://github.com/angular/angular/pull/58393)) |
 | [7a65cdd911](https://github.com/angular/angular/commit/7a65cdd911cbbf22445c916fc754d3a3304bc5fe) | fix | inject migration not inserting generated code after super call in some cases ([#58393](https://github.com/angular/angular/pull/58393)) |
-| [00e2001351](https://github.com/angular/angular/commit/00e20013512f75327e5644ad5ac7829fc0e866d4) | fix | migrate more .next output usages ([#58282](https://github.com/angular/angular/pull/58282)) |
-| [e85ac5c7cb](https://github.com/angular/angular/commit/e85ac5c7cb06dc0fba757a9b931e79e07978f2a9) | fix | properly bundle shared compiler code into migrations ([#58515](https://github.com/angular/angular/pull/58515)) |
-| [3a264db866](https://github.com/angular/angular/commit/3a264db86611cba9b69780d7f01ee25787278320) | fix | properly handle comments in output migration ([#57691](https://github.com/angular/angular/pull/57691)) |
-| [616b411a6d](https://github.com/angular/angular/commit/616b411a6d94d3dbc3e072b91c1194466c0a1add) | fix | properly migrate output aliases ([#58411](https://github.com/angular/angular/pull/58411)) |
-| [d504452e2f](https://github.com/angular/angular/commit/d504452e2f193d3b494a0b2944cddb028c0a2231) | fix | properly replace imports across files ([#58414](https://github.com/angular/angular/pull/58414)) |
 | [c1aa411cf1](https://github.com/angular/angular/commit/c1aa411cf13259d991c8f224a2bafc3e9763fe8d) | fix | properly resolve tsconfig paths on windows ([#58137](https://github.com/angular/angular/pull/58137)) |
 | [e26797b38e](https://github.com/angular/angular/commit/e26797b38efe0ac813601c10581f34b7591954c1) | fix | replace removed NgModules in tests with their exports ([#58627](https://github.com/angular/angular/pull/58627)) |
 ### platform-browser
