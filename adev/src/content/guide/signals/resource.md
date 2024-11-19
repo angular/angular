@@ -4,7 +4,7 @@ IMPORTANT: `resource` is [experimental](reference/releases#experimental). It's r
 
 Most signal APIs are synchronous— `signal`, `computed`, `input`, etc. However, applications often need to deal with data that is available asynchronously. A `Resource` gives you a way to incorporate async data into your application's signal-based code.
 
-You can use a `Resource` to perform any kind of async operation, but the most common use-case for `Resource` is fetching data from a server. The following creates a resource to fetch some user data.
+You can use a `Resource` to perform any kind of async operation, but the most common use-case for `Resource` is fetching data from a server. The following example creates a resource to fetch some user data.
 
 The easiest way to create a `Resource` is the `resource` function.
 
@@ -47,6 +47,9 @@ The `ResourceLoaderParams` object contains three properties: `request`, `previou
 | `previous`    | An object with a `status` property, containing the previous `ResourceStatus`.                                                                    |
 | `abortSignal` | An [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal). See [Aborting requests](#aborting-requests) below for details. |
 
+
+If the `request` computation returns `undefined`, the loader function does not run and the resource and the resource status becomes `Idle`.
+
 ### Aborting requests
 
 A resource aborts an outstanding request if the `request` computation changes while the resource is loading.
@@ -84,10 +87,6 @@ const userResource = resource({
 
 userResource.reload();
 ```
-
-### `undefined` requests
-
-A request value of `undefined` prevents the resource from running its loader, and will put the resource into an `Idle` state.
 
 ## Resource status
 

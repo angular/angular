@@ -90,12 +90,12 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/signals/overview',
           },
           {
-            label: 'linkedSignal',
+            label: 'Dependent state with linkedSignal',
             path: 'guide/signals/linked-signal',
             contentPath: 'guide/signals/linked-signal',
           },
           {
-            label: 'Resource',
+            label: 'Async reactivity with resources',
             path: 'guide/signals/resource',
             contentPath: 'guide/signals/resource',
           },
