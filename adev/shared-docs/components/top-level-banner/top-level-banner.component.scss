@@ -2,8 +2,12 @@
   &:not(:empty) {
     z-index: 50;
     position: fixed;
-    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: auto;
     width: 100vw;
+    padding: .5rem;
     border-bottom: 1px solid var(--septenary-contrast);
     text-align: center;
     align-content: center;
@@ -12,16 +16,14 @@
   }
 
   a.docs-top-level-banner {
-    width: 100%;
-    display: inherit;
+    display: grid;
+    width: auto;
+    margin: 0rem 2.5rem;
   }
 
   h1.docs-top-level-banner-cta {
-    display: inline;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    grid-row-start: 1;
+    grid-column-start: 1;
     font-size: 0.875rem;
     margin: 0;
     width: fit-content;
@@ -29,40 +31,46 @@
 
     &.background {
       color: var(--tertiary-contrast);
+      
+      & .docs-top-level-banner-cta__text{
+        position:relative;
+
+        &::after {
+          content: '';
+          position: absolute;
+          width: calc(100% + 2rem);
+          height: 1px;
+          bottom: -2px;
+          left: -1rem;
+          background: var(--tertiary-contrast);
+          transform: scaleX(0);
+          transform-origin: bottom right;
+          @media (prefers-reduced-motion: no-preference) {
+            transition: transform 0.3s ease;
+          }
+        }
+
+        &:hover {
+          &::after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+          }
+        }
+      }
+      
     }
 
     &:not(.background) {
       color: transparent;
-
-      &::after {
-        content: '';
-        position: absolute;
-        width: 100%;
-        height: 1px;
-        bottom: -2px;
-        left: 0;
-        background: var(--tertiary-contrast);
-        transform: scaleX(0);
-        transform-origin: bottom right;
-        @media (prefers-reduced-motion: no-preference) {
-          transition: transform 0.3s ease;
-        }
-      }
-
-      &:hover {
-        &::after {
-          transform: scaleX(1);
-          transform-origin: bottom left;
-        }
-      }
     }
   }
 
   .docs-top-level-banner-close {
     position: absolute;
     top: 0.25rem;
-    right: 0.5rem;
+    right: 1.4rem;
     color: var(--tertiary-contrast);
+    padding-left: 0rem;
   }
 }
 
