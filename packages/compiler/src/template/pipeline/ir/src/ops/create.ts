@@ -942,6 +942,11 @@ export interface DeferOp extends Op<CreateOp>, ConsumesSlotOpTrait {
    */
   resolverFn: o.Expression | null;
 
+  /**
+   * Specifies defer block flags, which should be used for all
+   * instances of a given defer block (the flags that should be
+   * placed into the `TDeferDetails` at runtime).
+   */
   flags: TDeferDetailsFlags | null;
 
   sourceSpan: ParseSourceSpan;

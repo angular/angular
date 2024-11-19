@@ -44,6 +44,7 @@ import {
   SSR_BLOCK_STATE,
   SSR_UNIQUE_ID,
   TDeferBlockDetails,
+  TDeferDetailsFlags,
   TriggerType,
 } from './interfaces';
 import {DEHYDRATED_BLOCK_REGISTRY, DehydratedBlockRegistry} from './registry';
@@ -74,16 +75,14 @@ export function scheduleDelayedTrigger(
   const tNode = getCurrentTNode()!;
   const injector = lView[INJECTOR];
   const lDetails = getLDeferBlockDetails(lView, tNode);
-  const tDetails = getTDeferBlockDetails(lView[TVIEW], tNode);
 
   renderPlaceholder(lView, tNode);
 
-  if (shouldTriggerWhenOnClient(lView[INJECTOR], lDetails, tDetails)) {
-    // Only trigger the scheduled trigger on the browser
-    // since we don't want to delay the server response.
-    const cleanupFn = scheduleFn(() => triggerDeferBlock(lView, tNode), injector);
-    storeTriggerCleanupFn(TriggerType.Regular, lDetails, cleanupFn);
-  }
+  const cleanupFn = scheduleFn(
+    () => triggerDeferBlock(TriggerType.Regular, lView, tNode),
+    injector,
+  );
+  storeTriggerCleanupFn(TriggerType.Regular, lDetails, cleanupFn);
 }
 
 /**
@@ -95,9 +94,7 @@ export function scheduleDelayedPrefetching(
   scheduleFn: (callback: VoidFunction, injector: Injector) => VoidFunction,
   trigger: DeferBlockTrigger,
 ) {
-  if (typeof ngServerMode !== 'undefined' && ngServerMode) {
-    return;
-  }
+  if (typeof ngServerMode !== 'undefined' && ngServerMode) return;
 
   const lView = getLView();
   const injector = lView[INJECTOR];
@@ -107,8 +104,6 @@ export function scheduleDelayedPrefetching(
   const tNode = getCurrentTNode()!;
   const tView = lView[TVIEW];
   const tDetails = getTDeferBlockDetails(tView, tNode);
-  const prefetchTriggers = getPrefetchTriggers(tDetails);
-  prefetchTriggers.add(trigger);
 
   if (tDetails.loadingState === DeferDependenciesLoadingState.NOT_STARTED) {
     const lDetails = getLDeferBlockDetails(lView, tNode);
@@ -126,9 +121,7 @@ export function scheduleDelayedHydrating(
   lView: LView,
   tNode: TNode,
 ) {
-  if (typeof ngServerMode !== 'undefined' && ngServerMode) {
-    return;
-  }
+  if (typeof ngServerMode !== 'undefined' && ngServerMode) return;
 
   // Only trigger the scheduled trigger on the browser
   // since we don't want to delay the server response.
@@ -149,12 +142,10 @@ export function scheduleDelayedHydrating(
  *
  * @param tDetails Static information about this defer block.
  * @param lView LView of a host view.
+ * @param tNode TNode that represents a defer block.
  */
 export function triggerPrefetching(tDetails: TDeferBlockDetails, lView: LView, tNode: TNode) {
-  const tDeferBlockDetails = getTDeferBlockDetails(lView[TVIEW], tNode);
-  if (lView[INJECTOR] && shouldTriggerDeferBlock(lView[INJECTOR], tDeferBlockDetails)) {
-    triggerResourceLoading(tDetails, lView, tNode);
-  }
+  triggerResourceLoading(tDetails, lView, tNode);
 }
 
 /**
@@ -288,19 +279,37 @@ export function triggerResourceLoading(
 }
 
 /**
+ * Defines whether we should proceed with triggering a given defer block.
+ */
+function shouldTriggerDeferBlock(triggerType: TriggerType, lView: LView): boolean {
+  // prevents triggering regular triggers when on the server.
+  if (triggerType === TriggerType.Regular && typeof ngServerMode !== 'undefined' && ngServerMode) {
+    return false;
+  }
+
+  // prevents triggering in the case of a test run with manual defer block configuration.
+  const injector = lView[INJECTOR];
+  const config = injector.get(DEFER_BLOCK_CONFIG, null, {optional: true});
+  if (config?.behavior === DeferBlockBehavior.Manual) {
+    return false;
+  }
+  return true;
+}
+
+/**
  * Attempts to trigger loading of defer block dependencies.
  * If the block is already in a loading, completed or an error state -
  * no additional actions are taken.
  */
-export function triggerDeferBlock(lView: LView, tNode: TNode) {
+export function triggerDeferBlock(triggerType: TriggerType, lView: LView, tNode: TNode) {
   const tView = lView[TVIEW];
   const lContainer = lView[tNode.index];
-  const injector = lView[INJECTOR];
   ngDevMode && assertLContainer(lContainer);
+
+  if (!shouldTriggerDeferBlock(triggerType, lView)) return;
 
   const lDetails = getLDeferBlockDetails(lView, tNode);
   const tDetails = getTDeferBlockDetails(tView, tNode);
-  if (!shouldTriggerDeferBlock(injector, tDetails)) return;
 
   // Defer block is triggered, cleanup all registered trigger functions.
   invokeAllTriggerCleanupFns(lDetails);
@@ -386,7 +395,7 @@ export async function triggerHydrationFromBlockName(
 
   // Actually do the triggering and hydration of the queue of blocks
   for (const dehydratedBlockId of hydrationQueue) {
-    await triggerDeferBlockResourceLoading(dehydratedBlockId, dehydratedBlockRegistry);
+    await triggerResourceLoadingForHydration(dehydratedBlockId, dehydratedBlockRegistry);
     await nextRender(injector);
     // TODO(incremental-hydration): assert (in dev mode) that a defer block is present in the dehydrated registry
     // at this point. If not - it means that the block has not been hydrated, for example due to different
@@ -437,7 +446,7 @@ function nextRender(injector: Injector): Promise<void> {
   return promise;
 }
 
-function triggerDeferBlockResourceLoading(
+function triggerResourceLoadingForHydration(
   dehydratedBlockId: string,
   dehydratedBlockRegistry: DehydratedBlockRegistry,
 ) {
@@ -451,7 +460,7 @@ function triggerDeferBlockResourceLoading(
     const {tNode, lView} = deferBlock;
     const lDetails = getLDeferBlockDetails(lView, tNode);
     onDeferBlockCompletion(lDetails, () => resolve());
-    triggerDeferBlock(lView, tNode);
+    triggerDeferBlock(TriggerType.Hydrate, lView, tNode);
 
     // TODO(incremental-hydration): handle the cleanup for cases when
     // defer block is no longer present during hydration (e.g. `@if` condition
@@ -472,66 +481,51 @@ function onDeferBlockCompletion(lDetails: LDeferBlockDetails, callback: VoidFunc
 }
 
 /**
- * Determines whether "hydrate" triggers should be activated. Triggers are activated in the following cases:
- *  - on the server, when incremental hydration is enabled, to trigger the block and render the main content
- *  - on the client for blocks that were server-side rendered, to start hydration process
+ * Determines whether specific trigger types should be attached during an instruction firing
+ * to ensure the proper triggers for a given type are used.
  */
-export function shouldActivateHydrateTrigger(lView: LView, tNode: TNode): boolean {
-  const lDetails = getLDeferBlockDetails(lView, tNode);
-  const injector = lView[INJECTOR];
-  // TODO(incremental-hydration): ideally, this check should only happen once and then stored on
-  // LDeferBlockDetails as a flag. This would make subsequent lookups very cheap.
-  return (
-    isIncrementalHydrationEnabled(injector) &&
-    ((typeof ngServerMode !== 'undefined' && ngServerMode) || lDetails[SSR_UNIQUE_ID] !== null)
-  );
+export function shouldAttachTrigger(triggerType: TriggerType, lView: LView, tNode: TNode) {
+  if (triggerType === TriggerType.Regular) {
+    return shouldAttachRegularTrigger(lView, tNode);
+  } else if (triggerType === TriggerType.Hydrate) {
+    return !shouldAttachRegularTrigger(lView, tNode);
+  }
+  // TriggerType.Prefetch is active only on the client
+  return !(typeof ngServerMode !== 'undefined' && ngServerMode);
 }
 
-// TODO(incremental-hydration): Optimize this further by moving the calculation to earlier
-// in the process. Consider a flag we can check similar to LView[FLAGS].
-
 /**
- * Determines whether regular defer block triggers should be invoked based on client state
- * and whether incremental hydration is enabled. Hydrate triggers are invoked elsewhere.
+ * Defines whether a regular trigger logic (e.g. "on viewport") should be attached
+ * to a defer block. This function defines a condition, which mutually excludes
+ * `deferOn*` and `deferHydrateOn*` triggers, to make sure only one of the trigger
+ * types is active for a block with the current state.
  */
-export function shouldTriggerWhenOnClient(
-  injector: Injector,
-  lDetails: LDeferBlockDetails,
-  tDetails: TDeferBlockDetails,
-): boolean {
+function shouldAttachRegularTrigger(lView: LView, tNode: TNode) {
+  const injector = lView[INJECTOR];
+
+  const tDetails = getTDeferBlockDetails(lView[TVIEW], tNode);
+  const incrementalHydrationEnabled = isIncrementalHydrationEnabled(injector);
+  const hasHydrateTriggers =
+    tDetails.flags !== null &&
+    (tDetails.flags & TDeferDetailsFlags.HasHydrateTriggers) ===
+      TDeferDetailsFlags.HasHydrateTriggers;
+
+  // On the server:
   if (typeof ngServerMode !== 'undefined' && ngServerMode) {
-    return false;
+    // Regular triggers are activated on the server when:
+    //  - Either Incremental Hydration is *not* enabled
+    //  - Or Incremental Hydration is enabled, but a given block doesn't have "hydrate" triggers
+    return !incrementalHydrationEnabled || !hasHydrateTriggers;
   }
 
-  const isServerRendered =
-    lDetails[SSR_BLOCK_STATE] && lDetails[SSR_BLOCK_STATE] === DeferBlockState.Complete;
-  const hasHydrateTriggers = tDetails.hydrateTriggers && tDetails.hydrateTriggers.size > 0;
-  if (hasHydrateTriggers && isServerRendered && isIncrementalHydrationEnabled(injector)) {
+  // On the client:
+  const lDetails = getLDeferBlockDetails(lView, tNode);
+  const wasServerSideRendered = lDetails[SSR_UNIQUE_ID] !== null;
+
+  if (hasHydrateTriggers && wasServerSideRendered && incrementalHydrationEnabled) {
     return false;
   }
   return true;
-}
-
-/**
- * Returns whether defer blocks should be triggered.
- *
- * Currently, defer blocks are not triggered on the server,
- * only placeholder content is rendered (if provided).
- */
-export function shouldTriggerDeferBlock(
-  injector: Injector,
-  tDeferBlockDetails: TDeferBlockDetails,
-): boolean {
-  const config = injector.get(DEFER_BLOCK_CONFIG, null, {optional: true});
-  if (config?.behavior === DeferBlockBehavior.Manual) {
-    return false;
-  }
-
-  return (
-    typeof ngServerMode === 'undefined' ||
-    !ngServerMode ||
-    tDeferBlockDetails.hydrateTriggers !== null
-  );
 }
 
 /**
@@ -543,13 +537,6 @@ export function getHydrateTriggers(
 ): Map<DeferBlockTrigger, number | null> {
   const tDetails = getTDeferBlockDetails(tView, tNode);
   return (tDetails.hydrateTriggers ??= new Map());
-}
-
-/**
- * Retrives a Defer Block's list of prefetch triggers
- */
-export function getPrefetchTriggers(tDetails: TDeferBlockDetails): Set<DeferBlockTrigger> {
-  return (tDetails.prefetchTriggers ??= new Set());
 }
 
 /**
