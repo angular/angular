@@ -134,6 +134,18 @@ export function verifyAllChildNodesClaimedForHydration(
   }
 }
 
+export function verifyNodeWasHydrated(el: HTMLElement) {
+  if (readHydrationInfo(el)?.status !== HydrationStatus.Hydrated) {
+    fail('Hydration error: the node is *not* hydrated: ' + el.outerHTML);
+  }
+}
+
+export function verifyNodeWasNotHydrated(el: HTMLElement) {
+  if (readHydrationInfo(el)?.status === HydrationStatus.Hydrated) {
+    fail('Hydration error: the node is hydrated and should not be: ' + el.outerHTML);
+  }
+}
+
 /**
  * Walks over DOM nodes starting from a given node and make sure
  * those nodes were not annotated as "claimed" by hydration.

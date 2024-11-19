@@ -456,6 +456,9 @@
     "name": "SSR_BLOCK_STATE"
   },
   {
+    "name": "SSR_UNIQUE_ID"
+  },
+  {
     "name": "SVG_NAMESPACE"
   },
   {
@@ -2565,6 +2568,9 @@
     "name": "shimStylesContent"
   },
   {
+    "name": "shouldAttachRegularTrigger"
+  },
+  {
     "name": "shouldSearchParent"
   },
   {
@@ -2626,9 +2632,6 @@
   },
   {
     "name": "ɵɵdefer"
-  },
-  {
-    "name": "ɵɵdeferWhen"
   },
   {
     "name": "ɵɵdefineComponent"

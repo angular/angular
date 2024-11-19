@@ -602,6 +602,11 @@ export const enum DeferOpModifierKind {
   HYDRATE = 'hydrate',
 }
 
+/**
+ * Specifies defer block flags, which should be used for all
+ * instances of a given defer block (the flags that should be
+ * placed into the `TDeferDetails` at runtime).
+ */
 export const enum TDeferDetailsFlags {
   Default = 0,
 
