@@ -19,25 +19,25 @@ Start developing with the latest Angular features from our roadmap. This list re
 
 ### Available to experiment with
 
-* [Incremental hydration](/guide/experimental/incremental-hydration)
-* [Zoneless change detection](https://angular.dev/guide/experimental/zoneless)
-* [Hydration support for i18n blocks](https://angular.dev/api/platform-browser/withI18nSupport)
-* Resource API
-* Effect API
-* Linked Signal API
-* [Route-level render mode](https://next.angular.dev/guide/hybrid-rendering)
+* [Incremental hydration](/guide/incremental-hydration)
+* [Zoneless change detection](/guide/experimental/zoneless)
+* [Hydration support for i18n blocks](/api/platform-browser/withI18nSupport)
+* [Resource API](/guide/signals/resource)
+* [Effect API](/api/core/effect)
+* [Linked Signal API](/guide/signals/linked-signal)
+* [Route-level render mode](/guide/hybrid-rendering)
 
 ### Production ready
 
-* [Explore Angular Signals](guide/signals)
-* [Event replay with SSR](https://angular.dev/api/platform-browser/withEventReplay)
-* [Deferrable views](https://angular.dev/guide/defer)
-* [Built-in control flow](https://angular.dev/guide/templates/control-flow)
-* [Local variable declaration](https://angular.dev/guide/templates/variables)
-* [Signal inputs](https://angular.dev/guide/signals/inputs)
-* [Model inputs](https://angular.dev/guide/signals/model)
-* [Signal queries](https://angular.dev/guide/signals/queries)
-* [Function-based outputs](https://angular.dev/guide/components/output-fn)
+* [Explore Angular Signals](/guide/signals)
+* [Event replay with SSR](/api/platform-browser/withEventReplay)
+* [Deferrable views](/guide/defer)
+* [Built-in control flow](/guide/templates/control-flow)
+* [Local variable declaration](/guide/templates/variables)
+* [Signal inputs](/guide/signals/inputs)
+* [Model inputs](/guide/signals/model)
+* [Signal queries](/guide/signals/queries)
+* [Function-based outputs](/guide/components/output-fn)
 
 ## Improving the Angular developer experience
 
