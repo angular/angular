@@ -179,6 +179,10 @@ ng serve
 
 You can continue to use the [command line options](/cli/serve) you have used in the past with the development server.
 
+HELPFUL: With the development server, you may see a small Flash of Unstyled Content (FOUC) on startup as the server initializes.
+The development server attempts to defer processing of stylesheets until first use to improve rebuild times.
+This will not occur in builds outside the development server.
+
 ### Hot module replacement
 
 Hot Module Replacement (HMR) is a technique used by development servers to avoid reloading the entire page when only part of an application is changed.
