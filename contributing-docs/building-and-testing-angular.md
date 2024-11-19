@@ -135,7 +135,7 @@ node --preserve-symlinks --preserve-symlinks-main node_modules/@angular/cli/lib/
 
 ## Formatting your source code
 
-Angular uses [prettier](https://clang.llvm.org/docs/ClangFormat.html) to format the source code.
+Angular uses [prettier](https://prettier.io) to format the source code.
 If the source code is not properly formatted, the CI will fail and the PR cannot be merged.
 
 You can automatically format your code by running:
