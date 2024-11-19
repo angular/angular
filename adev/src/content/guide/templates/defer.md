@@ -10,7 +10,7 @@ To use this feature, you can declaratively wrap a section of your template in a 
 }
 ```
 
-The code for any components, directives, and pipes inside of the `@defer` block is split into a separate JavaScript file and loaded only when necessary, after the rest of the template has been rendered.
+The code for any components, directives, and pipes inside the `@defer` block is split into a separate JavaScript file and loaded only when necessary, after the rest of the template has been rendered.
 
 Deferrable views support a variety of triggers, prefetching options, and sub-blocks for placeholder, loading, and error state management.
 
@@ -20,10 +20,12 @@ Components, directives, pipes, and any component CSS styles can be deferred when
 
 In order for the dependencies within a `@defer` block to be deferred, they need to meet two conditions:
 
-1. **They must be standalone.** Non-stadalone dependencies cannot be deferred and are still eagerly loaded, even if they are inside of `@defer` blocks.
-1. **They cannot be referenced outside of `@defer` blocks within the same file.** If they are referenced outside of the `@defer` block or referenced within ViewChild queries, the dependencies will be eagerly loaded.
+1. **They must be standalone.** Non-standalone dependencies cannot be deferred and are still eagerly loaded, even if they are inside of `@defer` blocks.
+1. **They cannot be referenced outside of `@defer` blocks within the same file.** If they are referenced outside the `@defer` block or referenced within ViewChild queries, the dependencies will be eagerly loaded.
 
 The _transitive_ dependencies of the components, directives and pipes used in the `@defer` block do not strictly need to be standalone; transitive dependencies can still be declared in an `NgModule` and participate in deferred loading.
+
+Angular's compiler produces a [dynamic import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import) statement for each component, directive, and pipe used in the `@defer` block. The main content of the block renders after all the imports resolve. Angular does not guarantee any particular order for these imports.
 
 ## How to manage different stages of deferred loading
 
