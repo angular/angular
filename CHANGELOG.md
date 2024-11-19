@@ -1,5 +1,8 @@
 <a name="19.0.0"></a>
 # 19.0.0 (2024-11-19)
+
+Blog post: https://blog.angular.dev/meet-angular-v19-7b29dfd05b84
+
 ## Breaking Changes
 ### compiler
 - `this.foo` property reads no longer refer to template context variables. If you intended to read the template variable, do not use `this.`.
