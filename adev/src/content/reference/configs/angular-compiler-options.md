@@ -213,6 +213,10 @@ See [troubleshooting template errors](tools/cli/template-typecheck#troubleshooti
 
 When you use the Angular CLI command `ng new --strict`, it is set to `true` in the new project's configuration.
 
+### `strictStandalone`
+
+When `true`, reports an error if a component, directive, or pipe is not standalone.
+
 ### `trace`
 
 When `true`, prints extra information while compiling templates.
