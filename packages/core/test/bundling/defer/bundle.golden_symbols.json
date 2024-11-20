@@ -504,6 +504,12 @@
     "name": "TYPE"
   },
   {
+    "name": "TracingAction"
+  },
+  {
+    "name": "TracingService"
+  },
+  {
     "name": "USE_VALUE"
   },
   {
@@ -2095,6 +2101,9 @@
   },
   {
     "name": "init_tokens3"
+  },
+  {
+    "name": "init_tracing"
   },
   {
     "name": "init_transfer_state"

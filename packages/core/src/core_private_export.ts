@@ -17,7 +17,11 @@ export {
   IMAGE_CONFIG_DEFAULTS as ɵIMAGE_CONFIG_DEFAULTS,
   ImageConfig as ɵImageConfig,
 } from './application/application_tokens';
-export {TracingService as ɵTracingService} from './application/tracing';
+export {
+  TracingAction as ɵTracingAction,
+  TracingService as ɵTracingService,
+  TracingSnapshot as ɵTracingSnapshot,
+} from './application/tracing';
 export {internalCreateApplication as ɵinternalCreateApplication} from './application/create_application';
 export {
   defaultIterableDiffers as ɵdefaultIterableDiffers,
