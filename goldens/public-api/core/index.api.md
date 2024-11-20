@@ -134,6 +134,7 @@ export class ApplicationModule {
 
 // @public
 export class ApplicationRef {
+    constructor();
     attachView(viewRef: ViewRef): void;
     bootstrap<C>(component: Type<C>, rootSelectorOrNode?: string | any): ComponentRef<C>;
     // @deprecated

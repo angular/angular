@@ -8,27 +8,37 @@
 
 import {InjectionToken} from '../di/injection_token';
 
+/** Actions that are supported by the tracing framework. */
+export enum TracingAction {
+  CHANGE_DETECTION,
+  AFTER_NEXT_RENDER,
+}
+
+/** A single tracing snapshot. */
+export interface TracingSnapshot {
+  run<T>(action: TracingAction, fn: () => T): T;
+}
+
 /**
  * Injection token for a `TracingService`, optionally provided.
  */
-export const TracingService = new InjectionToken<TracingService<unknown>>('');
+export const TracingService = new InjectionToken<TracingService<TracingSnapshot>>(
+  ngDevMode ? 'TracingService' : '',
+);
 
 /**
- * Tracing mechanism which can associate causes (snapshots) with runs of subsequent operations.
+ * Tracing mechanism which can associate causes (snapshots) with runs of
+ * subsequent operations.
  *
- * Not defined by Angular directly, but defined in contexts where tracing is desired.
+ * Not defined by Angular directly, but defined in contexts where tracing is
+ * desired.
  */
-export interface TracingService<TSnapshot> {
+export interface TracingService<T extends TracingSnapshot> {
   /**
-   * Take a snapshot of the current context which will be stored by Angular and used when additional
-   * work is performed that was scheduled in this context.
-   */
-  snapshot(): TSnapshot;
-
-  /**
-   * Invoke `fn` within the given tracing snapshot, which may be `undefined`.
+   * Take a snapshot of the current context which will be stored by Angular and
+   * used when additional work is performed that was scheduled in this context.
    *
-   * This _must_ return the result of the function invocation.
+   * @param linkedSnapshot Optional snapshot to use link to the current context.
    */
-  run<T>(fn: () => T, snapshot: TSnapshot | undefined): T;
+  snapshot(linkedSnapshot: T | null): T;
 }

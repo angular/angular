@@ -464,7 +464,7 @@ function afterRenderImpl(
     getHooks(callbackOrSpec, hooks),
     once,
     destroyRef,
-    tracing?.snapshot(),
+    tracing?.snapshot(null),
   );
   manager.impl.register(sequence);
   return sequence;

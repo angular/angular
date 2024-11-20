@@ -489,6 +489,12 @@
     "name": "TimelineBuilder"
   },
   {
+    "name": "TracingAction"
+  },
+  {
+    "name": "TracingService"
+  },
+  {
     "name": "TransitionAnimationEngine"
   },
   {

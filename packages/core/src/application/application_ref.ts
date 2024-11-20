@@ -45,7 +45,7 @@ import {isPromise} from '../util/lang';
 import {NgZone} from '../zone/ng_zone';
 
 import {ApplicationInitStatus} from './application_init';
-import {TracingService} from './tracing';
+import {TracingAction, TracingService, TracingSnapshot} from './tracing';
 import {EffectScheduler} from '../render3/reactivity/root_effect_scheduler';
 
 /**
@@ -312,7 +312,6 @@ export class ApplicationRef {
   private readonly afterRenderManager = inject(AfterRenderManager);
   private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
   private readonly rootEffectScheduler = inject(EffectScheduler);
-  private readonly tracing = inject(TracingService, {optional: true});
 
   /**
    * Current dirty state of the application across a number of dimensions (views, afterRender hooks,
@@ -334,12 +333,12 @@ export class ApplicationRef {
   /**
    * Most recent snapshot from the `TracingService`, if any.
    *
-   * This snapshot attempts to capture the context when `tick()` was first scheduled. It then runs
-   * wrapped in this context.
+   * This snapshot attempts to capture the context when `tick()` was first
+   * scheduled. It then runs wrapped in this context.
    *
    * @internal
    */
-  tracingSnapshot: unknown | undefined = undefined;
+  tracingSnapshot: TracingSnapshot | null = null;
 
   // Needed for ComponentFixture temporarily during migration of autoDetect behavior
   // Eventually the hostView of the fixture should just attach to ApplicationRef.
@@ -375,6 +374,11 @@ export class ApplicationRef {
   public readonly isStable: Observable<boolean> = inject(PendingTasksInternal).hasPendingTasks.pipe(
     map((pending) => !pending),
   );
+
+  constructor() {
+    // Inject the tracing service to initialize it.
+    inject(TracingService, {optional: true});
+  }
 
   /**
    * @returns A promise that resolves when the application becomes stable
@@ -591,12 +595,12 @@ export class ApplicationRef {
     }
 
     // Run `_tick()` in the context of the most recent snapshot, if one exists.
-    this.tracing?.run(this._tick, this.tracingSnapshot) ?? this._tick();
+    this.tracingSnapshot?.run(TracingAction.CHANGE_DETECTION, this._tick) ?? this._tick();
   }
 
   /** @internal */
   _tick = (): void => {
-    this.tracingSnapshot = undefined;
+    this.tracingSnapshot = null;
 
     (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
     if (this._runningTick) {

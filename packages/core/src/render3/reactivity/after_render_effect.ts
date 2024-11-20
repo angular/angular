@@ -36,7 +36,7 @@ import {NOOP_AFTER_RENDER_REF, type AfterRenderOptions} from '../after_render/ho
 import {DestroyRef} from '../../linker/destroy_ref';
 import {assertNotInReactiveContext} from './asserts';
 import {assertInInjectionContext} from '../../di/contextual';
-import {TracingService} from '../../application/tracing';
+import {TracingService, TracingSnapshot} from '../../application/tracing';
 
 const NOT_SET = Symbol('NOT_SET');
 const EMPTY_CLEANUP_SET = new Set<() => void>();
@@ -176,7 +176,7 @@ class AfterRenderEffectSequence extends AfterRenderSequence {
     effectHooks: Array<AfterRenderPhaseEffectHook | undefined>,
     readonly scheduler: ChangeDetectionScheduler,
     destroyRef: DestroyRef,
-    snapshot: unknown,
+    snapshot: TracingSnapshot | null = null,
   ) {
     // Note that we also initialize the underlying `AfterRenderSequence` hooks to `undefined` and
     // populate them as we create reactive nodes below.
@@ -385,7 +385,7 @@ export function afterRenderEffect<E = never, W = never, M = never>(
     [spec.earlyRead, spec.write, spec.mixedReadWrite, spec.read] as AfterRenderPhaseEffectHook[],
     scheduler,
     injector.get(DestroyRef),
-    tracing?.snapshot(),
+    tracing?.snapshot(null),
   );
   manager.impl.register(sequence);
   return sequence;
