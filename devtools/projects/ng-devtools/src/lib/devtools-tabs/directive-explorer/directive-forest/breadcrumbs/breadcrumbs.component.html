@@ -11,7 +11,7 @@
         color="primary"
         (click)="handleSelect.emit(node)"
         [class.selected]="$last"
-        >
+      >
         {{ node.original.component?.name || node.original.element }}
       </button>
     }
