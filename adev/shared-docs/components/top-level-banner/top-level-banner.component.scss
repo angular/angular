@@ -1,6 +1,6 @@
 :host {
   &:not(:empty) {
-    z-index: 50;
+    z-index: var(--z-index-top-level-banner);
     position: fixed;
     display: flex;
     align-items: center;
@@ -76,7 +76,8 @@
 
 .shimmer {
   background: var(--red-to-pink-to-purple-horizontal-gradient);
-
+  z-index: 1;
+  
   @media (prefers-reduced-motion: no-preference) {
     background-repeat: no-repeat;
     -webkit-background-size: 125px 100%;
