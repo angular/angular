@@ -19,6 +19,11 @@
       transform: translateY(0);
       transition: transform 0.3s ease-out 0.6s;
     }
+
+    // show it under the navbar.
+    @include mq.for-tablet-landscape-down{
+      z-index: calc(var(--z-index-nav) - 1);
+    }
   }
 
   // Case: If secondary navigation exists, display banner below secondary navigation for tablets.
