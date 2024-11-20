@@ -308,7 +308,7 @@ export class FormBuilder {
     control<T>(formState: T | FormControlState<T>, opts: FormControlOptions, asyncValidator: AsyncValidatorFn | AsyncValidatorFn[]): FormControl<T | null>;
     // (undocumented)
     control<T>(formState: T | FormControlState<T>, validatorOrOpts?: ValidatorFn | ValidatorFn[] | FormControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormControl<T | null>;
-    group<T extends {}>(controls: T, options?: AbstractControlOptions | null): ɵNullableFormGroup<T>;
+    group<T extends {}>(controls: T, options?: AbstractControlOptions | null): FormGroup<ɵNullableFormControls<T>>;
     // @deprecated
     group(controls: {
         [key: string]: any;
@@ -766,7 +766,7 @@ export class NgSelectOption implements OnDestroy {
 export abstract class NonNullableFormBuilder {
     abstract array<T>(controls: Array<T>, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormArray<ɵElement<T, never>>;
     abstract control<T>(formState: T | FormControlState<T>, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormControl<T>;
-    abstract group<T extends {}>(controls: T, options?: AbstractControlOptions | null): ɵNonNullableFormGroup<T>;
+    abstract group<T extends {}>(controls: T, options?: AbstractControlOptions | null): FormGroup<ɵNonNullableFormControls<T>>;
     abstract record<T>(controls: {
         [key: string]: T;
     }, options?: AbstractControlOptions | null): FormRecord<ɵElement<T, never>>;
