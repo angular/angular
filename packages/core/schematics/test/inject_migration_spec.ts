@@ -1501,6 +1501,149 @@ describe('inject migration', () => {
     ]);
   });
 
+  it('should preserve initializers', async () => {
+    writeFile(
+      '/dir.ts',
+      [
+        `import { Directive, Optional } from '@angular/core';`,
+        `import { Foo } from './foo';`,
+        ``,
+        `function createFoo() { return new Foo(); }`,
+        ``,
+        `@Directive()`,
+        `class MyDir {`,
+        `  constructor(@Optional() private foo: Foo = createFoo()) {}`,
+        `}`,
+      ].join('\n'),
+    );
+
+    await runMigration();
+
+    expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+      `import { Directive, inject } from '@angular/core';`,
+      `import { Foo } from './foo';`,
+      ``,
+      `function createFoo() { return new Foo(); }`,
+      ``,
+      `@Directive()`,
+      `class MyDir {`,
+      `  private foo = inject(Foo, { optional: true }) ?? createFoo();`,
+      `}`,
+    ]);
+  });
+
+  it('should handle initializers referencing other parameters', async () => {
+    writeFile(
+      '/dir.ts',
+      [
+        `import { Directive, Optional } from '@angular/core';`,
+        `import { Foo, Bar } from './providers';`,
+        ``,
+        `function createFoo(bar: Bar) { return new Foo(bar); }`,
+        ``,
+        `@Directive()`,
+        `class MyDir {`,
+        `  constructor(bar: Bar, @Optional() private foo: Foo = createFoo(bar)) {}`,
+        `}`,
+      ].join('\n'),
+    );
+
+    await runMigration();
+
+    expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+      `import { Directive, inject } from '@angular/core';`,
+      `import { Foo, Bar } from './providers';`,
+      ``,
+      `function createFoo(bar: Bar) { return new Foo(bar); }`,
+      ``,
+      `@Directive()`,
+      `class MyDir {`,
+      `  private foo: Foo;`,
+      ``,
+      `  constructor() {`,
+      `    const bar = inject(Bar);`,
+      `    this.foo = inject(Foo, { optional: true }) ?? createFoo(bar);`,
+      `  }`,
+      `}`,
+    ]);
+  });
+
+  it('should handle initializers referencing other parameters through "this"', async () => {
+    writeFile(
+      '/dir.ts',
+      [
+        `import { Directive, Optional } from '@angular/core';`,
+        `import { Foo, Bar } from './providers';`,
+        ``,
+        `function createFoo(bar: Bar) { return new Foo(bar); }`,
+        ``,
+        `@Directive()`,
+        `class MyDir {`,
+        `  constructor(private bar: Bar, @Optional() private foo: Foo = createFoo(this.bar)) {}`,
+        `}`,
+      ].join('\n'),
+    );
+
+    await runMigration();
+
+    expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+      `import { Directive, inject } from '@angular/core';`,
+      `import { Foo, Bar } from './providers';`,
+      ``,
+      `function createFoo(bar: Bar) { return new Foo(bar); }`,
+      ``,
+      `@Directive()`,
+      `class MyDir {`,
+      `  private bar = inject(Bar);`,
+      `  private foo = inject(Foo, { optional: true }) ?? createFoo(this.bar);`,
+      `}`,
+    ]);
+  });
+
+  it('should handle parameters with initializers referenced inside super()', async () => {
+    writeFile(
+      '/dir.ts',
+      [
+        `import { Directive, Optional } from '@angular/core';`,
+        `import { Foo, Bar } from './providers';`,
+        `import { Parent } from './parent';`,
+        ``,
+        `function createFoo(bar: Bar) { return new Foo(bar); }`,
+        ``,
+        `@Directive()`,
+        `class MyDir extends Parent {`,
+        `  constructor(bar: Bar, @Optional() private foo: Foo = createFoo(bar)) {`,
+        `    super(foo);`,
+        `  }`,
+        `}`,
+      ].join('\n'),
+    );
+
+    await runMigration();
+
+    expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+      `import { Directive, inject } from '@angular/core';`,
+      `import { Foo, Bar } from './providers';`,
+      `import { Parent } from './parent';`,
+      ``,
+      `function createFoo(bar: Bar) { return new Foo(bar); }`,
+      ``,
+      `@Directive()`,
+      `class MyDir extends Parent {`,
+      `  private foo: Foo;`,
+      ``,
+      `  constructor() {`,
+      `    const bar = inject(Bar);`,
+      `    const foo = inject(Foo, { optional: true }) ?? createFoo(bar);`,
+      ``,
+      `    super(foo);`,
+      `    this.foo = foo;`,
+      ``,
+      `  }`,
+      `}`,
+    ]);
+  });
+
   describe('internal-only behavior', () => {
     function runInternalMigration() {
       return runMigration({_internalCombineMemberInitializers: true});

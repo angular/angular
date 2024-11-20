@@ -185,14 +185,14 @@ export function getConstructorUnusedParameters(
     return topLevelParameters;
   }
 
-  declaration.body.forEachChild(function walk(node) {
+  const analyze = (node: ts.Node) => {
     // Don't descend into statements that were removed already.
     if (ts.isStatement(node) && removedStatements.has(node)) {
       return;
     }
 
     if (!ts.isIdentifier(node) || !topLevelParameterNames.has(node.text)) {
-      node.forEachChild(walk);
+      node.forEachChild(analyze);
       return;
     }
 
@@ -213,7 +213,15 @@ export function getConstructorUnusedParameters(
         }
       }
     });
+  };
+
+  declaration.parameters.forEach((param) => {
+    if (param.initializer) {
+      analyze(param.initializer);
+    }
   });
+
+  declaration.body.forEachChild(analyze);
 
   for (const param of topLevelParameters) {
     if (!accessedTopLevelParameters.has(param)) {
@@ -259,6 +267,51 @@ export function getSuperParameters(
   });
 
   return usedParams;
+}
+
+/**
+ * Determines if a specific parameter has references to other parameters.
+ * @param param Parameter to check.
+ * @param allParameters All parameters of the containing function.
+ * @param localTypeChecker Type checker scoped to the current file.
+ */
+export function parameterReferencesOtherParameters(
+  param: ts.ParameterDeclaration,
+  allParameters: ts.NodeArray<ts.ParameterDeclaration>,
+  localTypeChecker: ts.TypeChecker,
+): boolean {
+  // A parameter can only reference other parameters through its initializer.
+  if (!param.initializer || allParameters.length < 2) {
+    return false;
+  }
+
+  const paramNames = new Set<string>();
+  for (const current of allParameters) {
+    if (current !== param && ts.isIdentifier(current.name)) {
+      paramNames.add(current.name.text);
+    }
+  }
+
+  let result = false;
+  const analyze = (node: ts.Node) => {
+    if (ts.isIdentifier(node) && paramNames.has(node.text) && !isAccessedViaThis(node)) {
+      const symbol = localTypeChecker.getSymbolAtLocation(node);
+      const referencesOtherParam = symbol?.declarations?.some((decl) => {
+        return (allParameters as ts.NodeArray<ts.Declaration>).includes(decl);
+      });
+
+      if (referencesOtherParam) {
+        result = true;
+      }
+    }
+
+    if (!result) {
+      node.forEachChild(analyze);
+    }
+  };
+
+  analyze(param.initializer);
+  return result;
 }
 
 /** Checks whether a parameter node declares a property on its class. */
