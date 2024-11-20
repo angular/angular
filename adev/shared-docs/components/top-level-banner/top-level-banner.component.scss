@@ -19,6 +19,14 @@
     display: grid;
     width: auto;
     margin: 0rem 2.5rem;
+
+    &:hover{
+      h1.docs-top-level-banner-cta.background{ 
+        span.docs-top-level-banner-cta__text::after{ 
+          transform: scaleX(1);
+          transform-origin: bottom left;
+        }}
+    }
   }
 
   h1.docs-top-level-banner-cta {
@@ -50,12 +58,6 @@
           }
         }
 
-        &:hover {
-          &::after {
-            transform: scaleX(1);
-            transform-origin: bottom left;
-          }
-        }
       }
       
     }
@@ -77,7 +79,7 @@
 .shimmer {
   background: var(--red-to-pink-to-purple-horizontal-gradient);
   z-index: 1;
-  
+
   @media (prefers-reduced-motion: no-preference) {
     background-repeat: no-repeat;
     -webkit-background-size: 125px 100%;
