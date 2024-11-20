@@ -2397,7 +2397,14 @@ export const RECOMMENDATIONS: Step[] = [
     action:
       'You may experience tests failures if you have tests that rely on change detection execution order when using `ComponentFixture.autoDetect` because it now executes change detection for fixtures within `ApplicationRef.tick`. For example, this will cause test fixture to refresh before any dialogs that it creates whereas this may have been the other way around in the past.',
   },
-
+  {
+    action:
+      "In the application's project directory, run `ng update @angular/core@19 @angular/cli@19` to update your application to Angular v19.",
+    level: ApplicationComplexity.Basic,
+    necessaryAsOf: 1900,
+    possibleIn: 1900,
+    step: '19.0.0_ng_update',
+  },
   {
     action:
       'Angular directives, components and pipes are now standalone by default. Specify "standalone: false" for declarations that are currently declared in an NgModule. The Angular CLI will automatically update your code to reflect that.',
