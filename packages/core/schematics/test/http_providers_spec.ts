@@ -475,4 +475,38 @@ describe('Http providers migration', () => {
     expect(content).not.toContain('HttpClientModule');
     expect(content).not.toContain('provideHttpClient');
   });
+
+  it('should migrate testing module with both modules imported', async () => {
+    writeFile(
+      '/index.ts',
+      `
+        import { HttpClientModule } from '@angular/common/http';
+        import { HttpClientTestingModule } from '@angular/common/http/testing';
+
+        describe('AppComponent', () => {
+
+          beforeEach(async (): void => {
+            TestBed.configureTestingModule({
+              imports: [
+                HttpClientModule,
+                HttpClientTestingModule,
+              ],
+            })
+          });
+        });
+    `,
+    );
+
+    await runMigration();
+
+    const content = tree.readContent('/index.ts');
+    expect(content).not.toContain('HttpClientModule');
+    expect(content).not.toContain('HttpClientTestingModule');
+
+    expect(content).toMatch(/import.*provideHttpClient.*withInterceptorsFromDi.*from/);
+    expect(content).toMatch(/import.*provideHttpClientTesting/);
+    expect(content).toContain(
+      `provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()`,
+    );
+  });
 });

@@ -317,7 +317,56 @@ function migrateTestingModuleImports(
 
   // Does the imports array contain the HttpClientModule?
   const httpClient = importsArray.elements.find((elt) => elt.getText() === HTTP_CLIENT_MODULE);
-  if (httpClient && commonHttpIdentifiers.has(HTTP_CLIENT_MODULE)) {
+
+  // Does the imports array contain the HttpClientTestingModule?
+  const httpClientTesting = importsArray.elements.find(
+    (elt) => elt.getText() === HTTP_CLIENT_TESTING_MODULE,
+  );
+
+  if (httpClientTesting && commonHttpTestingIdentifiers.has(HTTP_CLIENT_TESTING_MODULE)) {
+    // We add the imports for provideHttpClient(withInterceptorsFromDi()) and provideHttpClientTesting()
+    commonHttpAddedImports?.add(PROVIDE_HTTP_CLIENT);
+    commonHttpAddedImports?.add(WITH_INTERCEPTORS_FROM_DI);
+    addedImports.get(COMMON_HTTP_TESTING)?.add(PROVIDE_HTTP_CLIENT_TESTING);
+
+    const newImports = ts.factory.createArrayLiteralExpression([
+      ...importsArray.elements.filter((item) => item !== httpClientTesting && item !== httpClient),
+    ]);
+
+    const provideHttpClient = createCallExpression(PROVIDE_HTTP_CLIENT, [
+      createCallExpression(WITH_INTERCEPTORS_FROM_DI),
+    ]);
+    const provideHttpClientTesting = createCallExpression(PROVIDE_HTTP_CLIENT_TESTING);
+
+    // Adding the new providers
+    const providers = getProvidersFromLiteralExpr(configureTestingModuleArgs);
+
+    let newProviders: ts.ArrayLiteralExpression;
+    if (!providers) {
+      // No existing providers, we add a property to the literal
+      newProviders = ts.factory.createArrayLiteralExpression([
+        provideHttpClient,
+        provideHttpClientTesting,
+      ]);
+    } else {
+      // We add the provider to the existing provider array
+      newProviders = ts.factory.updateArrayLiteralExpression(
+        providers,
+        ts.factory.createNodeArray(
+          [...providers.elements, provideHttpClient, provideHttpClientTesting],
+          providers.elements.hasTrailingComma,
+        ),
+      );
+    }
+
+    // Replacing the existing configuration with the new one (with the new imports and providers)
+    const newTestingModuleArgs = updateTestBedConfiguration(
+      configureTestingModuleArgs,
+      newImports,
+      newProviders,
+    );
+    changeTracker.replaceNode(configureTestingModuleArgs, newTestingModuleArgs);
+  } else if (httpClient && commonHttpIdentifiers.has(HTTP_CLIENT_MODULE)) {
     // We add the imports for provideHttpClient(withInterceptorsFromDi())
     commonHttpAddedImports?.add(PROVIDE_HTTP_CLIENT);
     commonHttpAddedImports?.add(WITH_INTERCEPTORS_FROM_DI);
@@ -343,55 +392,6 @@ function migrateTestingModuleImports(
         providers,
         ts.factory.createNodeArray(
           [...providers.elements, provideHttpClient],
-          providers.elements.hasTrailingComma,
-        ),
-      );
-    }
-
-    // Replacing the existing configuration with the new one (with the new imports and providers)
-    const newTestingModuleArgs = updateTestBedConfiguration(
-      configureTestingModuleArgs,
-      newImports,
-      newProviders,
-    );
-    changeTracker.replaceNode(configureTestingModuleArgs, newTestingModuleArgs);
-  }
-
-  // Does the imports array contain the HttpClientTestingModule?
-  const httpClientTesting = importsArray.elements.find(
-    (elt) => elt.getText() === HTTP_CLIENT_TESTING_MODULE,
-  );
-  if (httpClientTesting && commonHttpTestingIdentifiers.has(HTTP_CLIENT_TESTING_MODULE)) {
-    // We add the imports for provideHttpClient(withInterceptorsFromDi()) and provideHttpClientTesting()
-    commonHttpAddedImports?.add(PROVIDE_HTTP_CLIENT);
-    commonHttpAddedImports?.add(WITH_INTERCEPTORS_FROM_DI);
-    addedImports.get(COMMON_HTTP_TESTING)?.add(PROVIDE_HTTP_CLIENT_TESTING);
-
-    const newImports = ts.factory.createArrayLiteralExpression([
-      ...importsArray.elements.filter((item) => item !== httpClientTesting),
-    ]);
-
-    const provideHttpClient = createCallExpression(PROVIDE_HTTP_CLIENT, [
-      createCallExpression(WITH_INTERCEPTORS_FROM_DI),
-    ]);
-    const provideHttpClientTesting = createCallExpression(PROVIDE_HTTP_CLIENT_TESTING);
-
-    // Adding the new providers
-    const providers = getProvidersFromLiteralExpr(configureTestingModuleArgs);
-
-    let newProviders: ts.ArrayLiteralExpression;
-    if (!providers) {
-      // No existing providers, we add a property to the literal
-      newProviders = ts.factory.createArrayLiteralExpression([
-        provideHttpClient,
-        provideHttpClientTesting,
-      ]);
-    } else {
-      // We add the provider to the existing provider array
-      newProviders = ts.factory.updateArrayLiteralExpression(
-        providers,
-        ts.factory.createNodeArray(
-          [...providers.elements, provideHttpClient, provideHttpClientTesting],
           providers.elements.hasTrailingComma,
         ),
       );
