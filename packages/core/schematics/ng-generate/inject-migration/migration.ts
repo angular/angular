@@ -17,6 +17,7 @@ import {
   parameterDeclaresProperty,
   DI_PARAM_SYMBOLS,
   MigrationOptions,
+  parameterReferencesOtherParameters,
 } from './analysis';
 import {getAngularDecorators} from '../../utils/ng_decorators';
 import {getImportOfIdentifier} from '../../utils/typescript/imports';
@@ -149,6 +150,11 @@ function migrateClass(
   for (const param of constructor.parameters) {
     const usedInSuper = superParameters !== null && superParameters.has(param);
     const usedInConstructor = !unusedParameters.has(param);
+    const usesOtherParams = parameterReferencesOtherParameters(
+      param,
+      constructor.parameters,
+      localTypeChecker,
+    );
 
     migrateParameter(
       param,
@@ -159,6 +165,7 @@ function migrateClass(
       superCall,
       usedInSuper,
       usedInConstructor,
+      usesOtherParams,
       memberIndentation,
       innerIndentation,
       prependToConstructor,
@@ -176,7 +183,15 @@ function migrateClass(
     }
   }
 
-  if (canRemoveConstructor(options, constructor, removedStatementCount, superCall)) {
+  if (
+    canRemoveConstructor(
+      options,
+      constructor,
+      removedStatementCount,
+      prependToConstructor,
+      superCall,
+    )
+  ) {
     // Drop the constructor if it was empty.
     removedMembers.add(constructor);
     tracker.removeNode(constructor, true);
@@ -186,11 +201,24 @@ function migrateClass(
     stripConstructorParameters(constructor, tracker);
 
     if (prependToConstructor.length > 0) {
-      tracker.insertText(
-        sourceFile,
-        (firstConstructorStatement || innerReference).getFullStart(),
-        `\n${prependToConstructor.join('\n')}\n`,
-      );
+      if (
+        firstConstructorStatement ||
+        (innerReference !== constructor &&
+          innerReference.getStart() >= constructor.getStart() &&
+          innerReference.getEnd() <= constructor.getEnd())
+      ) {
+        tracker.insertText(
+          sourceFile,
+          (firstConstructorStatement || innerReference).getFullStart(),
+          `\n${prependToConstructor.join('\n')}\n`,
+        );
+      } else {
+        tracker.insertText(
+          sourceFile,
+          constructor.body!.getStart() + 1,
+          `\n${prependToConstructor.map((p) => innerIndentation + p).join('\n')}\n${innerIndentation}`,
+        );
+      }
     }
   }
 
@@ -268,6 +296,7 @@ function migrateParameter(
   superCall: ts.CallExpression | null,
   usedInSuper: boolean,
   usedInConstructor: boolean,
+  usesOtherParams: boolean,
   memberIndentation: string,
   innerIndentation: string,
   prependToConstructor: string[],
@@ -290,6 +319,9 @@ function migrateParameter(
 
   // If the parameter declares a property, we need to declare it (e.g. `private foo: Foo`).
   if (declaresProp) {
+    // We can't initialize the property if it's referenced within a `super` call or  it references
+    // other parameters. See the logic further below for the initialization.
+    const canInitialize = !usedInSuper && !usesOtherParams;
     const prop = ts.factory.createPropertyDeclaration(
       cloneModifiers(
         node.modifiers?.filter((modifier) => {
@@ -302,10 +334,8 @@ function migrateParameter(
       node.modifiers?.some((modifier) => modifier.kind === ts.SyntaxKind.PrivateKeyword)
         ? undefined
         : node.questionToken,
-      // We can't initialize the property if it's referenced within a `super` call.
-      // See the logic further below for the initialization.
-      usedInSuper ? node.type : undefined,
-      usedInSuper ? undefined : ts.factory.createIdentifier(PLACEHOLDER),
+      canInitialize ? undefined : node.type,
+      canInitialize ? ts.factory.createIdentifier(PLACEHOLDER) : undefined,
     );
 
     propsToAdd.push(
@@ -340,6 +370,14 @@ function migrateParameter(
       // If the parameter is only referenced in the constructor, we
       // don't need to declare any new properties.
       prependToConstructor.push(`${innerIndentation}const ${name} = ${replacementCall};`);
+    }
+  } else if (usesOtherParams && declaresProp) {
+    const toAdd = `${innerIndentation}this.${name} = ${replacementCall};`;
+
+    if (superCall === null) {
+      prependToConstructor.push(toAdd);
+    } else {
+      afterSuper.push(toAdd);
     }
   }
 }
@@ -447,6 +485,15 @@ function createInjectReplacementCall(
     if (!hasNullableType) {
       expression = ts.factory.createNonNullExpression(expression);
     }
+  }
+
+  // If the parameter is initialized, add the initializer as a fallback.
+  if (param.initializer) {
+    expression = ts.factory.createBinaryExpression(
+      expression,
+      ts.SyntaxKind.QuestionQuestionToken,
+      param.initializer,
+    );
   }
 
   return replaceNodePlaceholder(param.getSourceFile(), expression, injectedType, printer);
@@ -638,15 +685,17 @@ function cloneName(node: ts.PropertyName): ts.PropertyName {
  * @param options Options used to configure the migration.
  * @param constructor Node representing the constructor.
  * @param removedStatementCount Number of statements that were removed by the migration.
+ * @param prependToConstructor Statements that should be prepended to the constructor.
  * @param superCall Node representing the `super()` call within the constructor.
  */
 function canRemoveConstructor(
   options: MigrationOptions,
   constructor: ts.ConstructorDeclaration,
   removedStatementCount: number,
+  prependToConstructor: string[],
   superCall: ts.CallExpression | null,
 ): boolean {
-  if (options.backwardsCompatibleConstructors) {
+  if (options.backwardsCompatibleConstructors || prependToConstructor.length > 0) {
     return false;
   }
 
