@@ -66,6 +66,7 @@ export const REACTIVE_NODE: ReactiveNode = {
   liveConsumerIndexOfThis: undefined,
   consumerAllowSignalWrites: false,
   consumerIsAlwaysLive: false,
+  kind: 'unknown',
   producerMustRecompute: () => false,
   producerRecomputeValue: () => {},
   consumerMarkedDirty: () => {},
@@ -184,6 +185,16 @@ export interface ReactiveNode {
    * A debug name for the reactive node. Used in Angular DevTools to identify the node.
    */
   debugName?: string;
+
+  /**
+   * Kind of node. Example: 'signal', 'computed', 'input', 'effect'.
+   *
+   * ReactiveNode has this as 'unknown' by default, but derived node types should override this to
+   * make available the kind of signal that particular instance of a ReactiveNode represents.
+   *
+   * Used in Angular DevTools to identify the kind of signal.
+   */
+  kind: string;
 }
 
 interface ConsumerNode extends ReactiveNode {

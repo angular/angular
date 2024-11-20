@@ -86,6 +86,7 @@ export interface ReactiveNode {
     consumerOnSignalRead(node: unknown): void;
     debugName?: string;
     dirty: boolean;
+    kind: string;
     lastCleanEpoch: Version;
     liveConsumerIndexOfThis: number[] | undefined;
     liveConsumerNode: ReactiveNode[] | undefined;
