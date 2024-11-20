@@ -99,6 +99,7 @@ export const SIGNAL_NODE: SignalNode<unknown> = /* @__PURE__ */ (() => {
     ...REACTIVE_NODE,
     equal: defaultEquals,
     value: undefined,
+    kind: 'signal',
   };
 })();
 

@@ -101,6 +101,7 @@ const COMPUTED_NODE = /* @__PURE__ */ (() => {
     dirty: true,
     error: null,
     equal: defaultEquals,
+    kind: 'computed',
 
     producerMustRecompute(node: ComputedNode<unknown>): boolean {
       // Force a recomputation if there's no current value, or if the current value is in the
