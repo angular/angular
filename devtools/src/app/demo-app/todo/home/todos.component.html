@@ -5,7 +5,13 @@
 <section class="todoapp">
   <header class="header">
     <h1>todos</h1>
-    <input (keydown.enter)="addTodo(input)" #input class="new-todo" placeholder="What needs to be done?" autofocus />
+    <input
+      (keydown.enter)="addTodo(input)"
+      #input
+      class="new-todo"
+      placeholder="What needs to be done?"
+      autofocus
+    />
   </header>
   <section class="main">
     <input id="toggle-all" class="toggle-all" type="checkbox" />
@@ -29,10 +35,9 @@
     <!-- This should be `0 items left` by default -->
     <span class="todo-count"
       ><strong>{{ itemsLeft }}</strong> item left</span
-      >
-      <!-- Remove this if you don't implement routing -->
-      <!-- Hidden if no completed items are left ↓ -->
-      <button class="clear-completed" (click)="clearCompleted()">Clear completed</button>
-    </footer>
-  </section>
-  
+    >
+    <!-- Remove this if you don't implement routing -->
+    <!-- Hidden if no completed items are left ↓ -->
+    <button class="clear-completed" (click)="clearCompleted()">Clear completed</button>
+  </footer>
+</section>

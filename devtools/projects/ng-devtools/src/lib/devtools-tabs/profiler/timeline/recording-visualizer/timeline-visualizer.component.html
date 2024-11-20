@@ -9,10 +9,10 @@
         />
       }
       @case (cmpVisualizationModes.TreeMap) {
-        <ng-tree-map-visualizer [frame]="frame()"/>
+        <ng-tree-map-visualizer [frame]="frame()" />
       }
       @case (cmpVisualizationModes.BarGraph) {
-        <ng-bargraph-visualizer [frame]="frame()" (nodeSelect)="handleNodeSelect($event)"/>
+        <ng-bargraph-visualizer [frame]="frame()" (nodeSelect)="handleNodeSelect($event)" />
       }
     }
   </as-split-area>
@@ -25,7 +25,7 @@
             <label>Total time spent:</label><span> {{ entry.value | number }} ms</span>
           </div>
           @if (entry.value > 0) {
-            <ng-execution-details [data]="selectedDirectives()"/>
+            <ng-execution-details [data]="selectedDirectives()" />
           }
           @if (parentHierarchy().length > 0) {
             <div>
