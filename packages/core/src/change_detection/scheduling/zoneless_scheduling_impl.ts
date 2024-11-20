@@ -194,9 +194,10 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
       }
     }
 
-    // If not already defined, attempt to capture a tracing snapshot of this notification so that
-    // the resulting CD run can be attributed to the context which produced the notification.
-    this.appRef.tracingSnapshot ??= this.tracing?.snapshot();
+    // If not already defined, attempt to capture a tracing snapshot of this
+    // notification so that the resulting CD run can be attributed to the
+    // context which produced the notification.
+    this.appRef.tracingSnapshot = this.tracing?.snapshot(this.appRef.tracingSnapshot) ?? null;
 
     if (!this.shouldScheduleTick(force)) {
       return;

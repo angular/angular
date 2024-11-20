@@ -414,6 +414,12 @@
     "name": "TestabilityRegistry"
   },
   {
+    "name": "TracingAction"
+  },
+  {
+    "name": "TracingService"
+  },
+  {
     "name": "TriggerComponent"
   },
   {
