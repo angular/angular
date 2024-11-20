@@ -2406,6 +2406,14 @@ export const RECOMMENDATIONS: Step[] = [
     step: '19.0.0_ng_update',
   },
   {
+    possibleIn: 1900,
+    necessaryAsOf: 1900,
+    level: ApplicationComplexity.Basic,
+    material: true,
+    step: 'update @angular/material',
+    action: 'Run `ng update @angular/material@19`.',
+  },
+  {
     action:
       'Angular directives, components and pipes are now standalone by default. Specify "standalone: false" for declarations that are currently declared in an NgModule. The Angular CLI will automatically update your code to reflect that.',
     level: ApplicationComplexity.Basic,
