@@ -302,7 +302,7 @@ import express from 'express';
 const app = express();
 const angularApp = new AngularNodeAppEngine();
 
-app.get('*', (req, res, next) =>
+app.use('*', (req, res, next) => {
   angularApp
     .handle(req)
     .then(response => {
@@ -319,4 +319,4 @@ app.get('*', (req, res, next) =>
  * The request handler used by the Angular CLI (dev-server and during build).
  */
 export const reqHandler = createNodeRequestHandler(app);
-```v
+```
