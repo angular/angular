@@ -190,8 +190,8 @@ export interface LView<T = unknown> extends Array<any> {
    */
   [CONTEXT]: T;
 
-  /** An optional Module Injector to be used as fall back after Element Injectors are consulted. */
-  readonly [INJECTOR]: Injector | null;
+  /** A Module Injector to be used as fall back after Element Injectors are consulted. */
+  readonly [INJECTOR]: Injector;
 
   /**
    * Contextual data that is shared across multiple instances of `LView` in the same application.

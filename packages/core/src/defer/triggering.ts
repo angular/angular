@@ -72,13 +72,13 @@ export function scheduleDelayedTrigger(
 ) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
-  const injector = lView[INJECTOR]!;
+  const injector = lView[INJECTOR];
   const lDetails = getLDeferBlockDetails(lView, tNode);
   const tDetails = getTDeferBlockDetails(lView[TVIEW], tNode);
 
   renderPlaceholder(lView, tNode);
 
-  if (shouldTriggerWhenOnClient(lView[INJECTOR]!, lDetails, tDetails)) {
+  if (shouldTriggerWhenOnClient(lView[INJECTOR], lDetails, tDetails)) {
     // Only trigger the scheduled trigger on the browser
     // since we don't want to delay the server response.
     const cleanupFn = scheduleFn(() => triggerDeferBlock(lView, tNode), injector);
@@ -100,7 +100,7 @@ export function scheduleDelayedPrefetching(
   }
 
   const lView = getLView();
-  const injector = lView[INJECTOR]!;
+  const injector = lView[INJECTOR];
 
   // Only trigger the scheduled trigger on the browser
   // since we don't want to delay the server response.
@@ -132,7 +132,7 @@ export function scheduleDelayedHydrating(
 
   // Only trigger the scheduled trigger on the browser
   // since we don't want to delay the server response.
-  const injector = lView[INJECTOR]!;
+  const injector = lView[INJECTOR];
   const lDetails = getLDeferBlockDetails(lView, tNode);
   const ssrUniqueId = lDetails[SSR_UNIQUE_ID]!;
   ngDevMode && assertSsrIdDefined(ssrUniqueId);
@@ -152,7 +152,7 @@ export function scheduleDelayedHydrating(
  */
 export function triggerPrefetching(tDetails: TDeferBlockDetails, lView: LView, tNode: TNode) {
   const tDeferBlockDetails = getTDeferBlockDetails(lView[TVIEW], tNode);
-  if (lView[INJECTOR] && shouldTriggerDeferBlock(lView[INJECTOR]!, tDeferBlockDetails)) {
+  if (lView[INJECTOR] && shouldTriggerDeferBlock(lView[INJECTOR], tDeferBlockDetails)) {
     triggerResourceLoading(tDetails, lView, tNode);
   }
 }
@@ -168,7 +168,7 @@ export function triggerResourceLoading(
   lView: LView,
   tNode: TNode,
 ): Promise<unknown> {
-  const injector = lView[INJECTOR]!;
+  const injector = lView[INJECTOR];
   const tView = lView[TVIEW];
 
   if (tDetails.loadingState !== DeferDependenciesLoadingState.NOT_STARTED) {
@@ -295,7 +295,7 @@ export function triggerResourceLoading(
 export function triggerDeferBlock(lView: LView, tNode: TNode) {
   const tView = lView[TVIEW];
   const lContainer = lView[tNode.index];
-  const injector = lView[INJECTOR]!;
+  const injector = lView[INJECTOR];
   ngDevMode && assertLContainer(lContainer);
 
   const lDetails = getLDeferBlockDetails(lView, tNode);
@@ -478,7 +478,7 @@ function onDeferBlockCompletion(lDetails: LDeferBlockDetails, callback: VoidFunc
  */
 export function shouldActivateHydrateTrigger(lView: LView, tNode: TNode): boolean {
   const lDetails = getLDeferBlockDetails(lView, tNode);
-  const injector = lView[INJECTOR]!;
+  const injector = lView[INJECTOR];
   // TODO(incremental-hydration): ideally, this check should only happen once and then stored on
   // LDeferBlockDetails as a flag. This would make subsequent lookups very cheap.
   return (
