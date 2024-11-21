@@ -37,7 +37,7 @@ Start developing with the latest Angular features from our roadmap. This list re
 * [Signal inputs](/guide/signals/inputs)
 * [Model inputs](/guide/signals/model)
 * [Signal queries](/guide/signals/queries)
-* [Function-based outputs](/guide/components/output-fn)
+* [Function-based outputs](/guide/components/outputs)
 
 ## Improving the Angular developer experience
 
