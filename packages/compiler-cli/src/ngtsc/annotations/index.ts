@@ -10,6 +10,7 @@
 
 export {
   forwardRefResolver,
+  findAngularDecorator,
   getAngularDecorators,
   isAngularDecorator,
   NoopReferencesRegistry,

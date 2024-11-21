@@ -8,6 +8,10 @@
 
 import ts from 'typescript';
 
+import {
+  ReflectionHost,
+  TypeScriptReflectionHost,
+} from '@angular/compiler-cli/src/ngtsc/reflection/index';
 import {ChangeTracker, PendingChange} from '../../utils/change_tracker';
 
 import {findClassDeclaration} from '../../utils/typescript/class_declaration';
@@ -46,6 +50,7 @@ export function migrateFileToLazyRoutes(
   skippedRoutes: RouteMigrationData[];
 } {
   const typeChecker = program.getTypeChecker();
+  const reflector = new TypeScriptReflectionHost(typeChecker);
   const printer = ts.createPrinter();
   const tracker = new ChangeTracker(printer);
 
@@ -58,6 +63,7 @@ export function migrateFileToLazyRoutes(
   const {skippedRoutes, migratedRoutes} = migrateRoutesArray(
     routeArraysToMigrate,
     typeChecker,
+    reflector,
     tracker,
   );
 
@@ -146,6 +152,7 @@ function findRoutesArrayToMigrate(sourceFile: ts.SourceFile, typeChecker: ts.Typ
 function migrateRoutesArray(
   routesArray: RouteData[],
   typeChecker: ts.TypeChecker,
+  reflector: ReflectionHost,
   tracker: ChangeTracker,
 ): {migratedRoutes: RouteMigrationData[]; skippedRoutes: RouteMigrationData[]} {
   const migratedRoutes: RouteMigrationData[] = [];
@@ -159,7 +166,7 @@ function migrateRoutesArray(
           migratedRoutes: migrated,
           skippedRoutes: toBeSkipped,
           importsToRemove: toBeRemoved,
-        } = migrateRoute(element, route, typeChecker, tracker);
+        } = migrateRoute(element, route, typeChecker, reflector, tracker);
         migratedRoutes.push(...migrated);
         skippedRoutes.push(...toBeSkipped);
         importsToRemove.push(...toBeRemoved);
@@ -182,6 +189,7 @@ function migrateRoute(
   element: ts.ObjectLiteralExpression,
   route: RouteData,
   typeChecker: ts.TypeChecker,
+  reflector: ReflectionHost,
   tracker: ChangeTracker,
 ): {
   migratedRoutes: RouteMigrationData[];
@@ -207,7 +215,7 @@ function migrateRoute(
           migratedRoutes: migrated,
           skippedRoutes: toBeSkipped,
           importsToRemove: toBeRemoved,
-        } = migrateRoute(childRoute, route, typeChecker, tracker);
+        } = migrateRoute(childRoute, route, typeChecker, reflector, tracker);
         migratedRoutes.push(...migrated);
         skippedRoutes.push(...toBeSkipped);
         importsToRemove.push(...toBeRemoved);
@@ -228,7 +236,7 @@ function migrateRoute(
   }
 
   // if component is not a standalone component, skip it
-  if (!isStandaloneComponent(componentDeclaration)) {
+  if (!isStandaloneComponent(componentDeclaration, reflector)) {
     skippedRoutes.push({path: routePath, file: route.routeFilePath});
     return routeMigrationResults;
   }

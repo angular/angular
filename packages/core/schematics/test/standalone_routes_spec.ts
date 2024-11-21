@@ -733,6 +733,49 @@ describe('route lazy loading migration', () => {
     );
   });
 
+  it('should support components with additional decorators', async () => {
+    writeFile(
+      'app.module.ts',
+      `
+      import {NgModule} from '@angular/core';
+      import {RouterModule} from '@angular/router';
+      import {TestComponent} from './test';
+
+      @NgModule({
+        imports: [RouterModule.forRoot([{path: 'test', component: TestComponent}])],
+      })
+      export class AppModule {}
+    `,
+    );
+
+    writeFile(
+      'test.ts',
+      `
+      import {Component, Directive} from '@angular/core';
+
+      function OtherDecorator() {}
+
+      @OtherDecorator()
+      @Component({template: 'hello', standalone: true})
+      export class TestComponent {}
+    `,
+    );
+
+    await runMigration('route-lazy-loading');
+
+    expect(stripWhitespace(tree.readContent('app.module.ts'))).toContain(
+      stripWhitespace(`
+         import {NgModule} from '@angular/core';
+         import {RouterModule} from '@angular/router';
+
+         @NgModule({
+           imports: [RouterModule.forRoot([{path: 'test', loadComponent: () => import('./test').then(m => m.TestComponent)}])],
+         })
+         export class AppModule {}
+      `),
+    );
+  });
+
   it('should not migrate routes if the routes array doesnt have type and is not referenced', async () => {
     writeFile(
       'routes.ts',
