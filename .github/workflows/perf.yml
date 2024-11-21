@@ -19,7 +19,7 @@ jobs:
       workflows: ${{ steps.workflows.outputs.workflows }}
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@53fb7c37cf14343f14ed79e2fefbbb2489ead4ee
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@01c8c16f830d02110c28640aea16f145a7937080
       - name: Install node modules
         run: yarn -s install --frozen-lockfile
       - id: workflows
@@ -34,9 +34,9 @@ jobs:
         workflow: ${{ fromJSON(needs.list.outputs.workflows) }}
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@53fb7c37cf14343f14ed79e2fefbbb2489ead4ee
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@01c8c16f830d02110c28640aea16f145a7937080
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@53fb7c37cf14343f14ed79e2fefbbb2489ead4ee
+        uses: angular/dev-infra/github-actions/bazel/setup@01c8c16f830d02110c28640aea16f145a7937080
       - name: Install node modules
         run: yarn -s install --frozen-lockfile
       - run: yarn -s ng-dev perf workflows --name ${{ matrix.workflow }}
