@@ -276,7 +276,7 @@ function applyDeferBlockState(
       const tDetails = getTDeferBlockDetails(hostTView, tNode);
       const providers = tDetails.providers;
       if (providers && providers.length > 0) {
-        injector = createDeferBlockInjector(hostLView[INJECTOR]!, tDetails, providers);
+        injector = createDeferBlockInjector(hostLView[INJECTOR], tDetails, providers);
       }
     }
 
@@ -400,7 +400,7 @@ function scheduleDeferBlockUpdate(
       renderDeferBlockState(nextState, tNode, lContainer);
     }
   };
-  return scheduleTimerTrigger(timeout, callback, hostLView[INJECTOR]!);
+  return scheduleTimerTrigger(timeout, callback, hostLView[INJECTOR]);
 }
 
 /**

@@ -35,7 +35,7 @@ export function renderComponent(hostLView: LView, componentHostIdx: number) {
   const hostRNode = componentView[HOST];
   // Populate an LView with hydration info retrieved from the DOM via TransferState.
   if (hostRNode !== null && componentView[HYDRATION] === null) {
-    componentView[HYDRATION] = retrieveHydrationInfo(hostRNode, componentView[INJECTOR]!);
+    componentView[HYDRATION] = retrieveHydrationInfo(hostRNode, componentView[INJECTOR]);
   }
 
   renderView(componentTView, componentView, componentView[CONTEXT]);

@@ -357,7 +357,7 @@ function serializeLContainer(
         // The `+1` is to capture the `<app-root />` element.
         numRootNodes = calcNumRootNodesInLContainer(childLView) + 1;
 
-        annotateLContainerForHydration(childLView, context, lView[INJECTOR]!);
+        annotateLContainerForHydration(childLView, context, lView[INJECTOR]);
 
         const componentLView = unwrapLView(childLView[HOST]) as LView<unknown>;
 

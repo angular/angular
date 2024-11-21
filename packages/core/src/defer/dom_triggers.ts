@@ -278,7 +278,7 @@ export function registerDomTrigger(
   callback: VoidFunction,
   type: TriggerType,
 ) {
-  const injector = initialLView[INJECTOR]!;
+  const injector = initialLView[INJECTOR];
   const zone = injector.get(NgZone);
   function pollDomTrigger() {
     // If the initial view was destroyed, we don't need to do anything.
