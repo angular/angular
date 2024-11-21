@@ -217,7 +217,7 @@ We have very precise rules over how our Git commit messages must be formatted:
 <type>(<scope>): <short summary>
 ```
 
-See [Commit Message Guidelines][commit-message-guidelines].
+See [Commit Message Guidelines][commit-message-guidelines] for details.
 
 ## <a name="cla"></a> Signing the CLA
 

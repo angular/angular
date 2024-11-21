@@ -1,7 +1,5 @@
 # Commit Message Format
 
-*This specification is inspired by and supersedes the [AngularJS commit message format][angularjs-commit-message-format].*
-
 We have very precise rules over how our Git commit messages must be formatted.
 This format leads to **easier to read commit history**.
 
@@ -47,17 +45,19 @@ The `<type>` and `<summary>` fields are mandatory, the `(<scope>)` field is opti
 
 Must be one of the following:
 
-* **build**: Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)
-* **ci**: Changes to our CI configuration files and scripts (examples: Github Actions, SauceLabs)
-* **docs**: Documentation only changes
-* **feat**: A new feature
-* **fix**: A bug fix
-* **perf**: A code change that improves performance
-* **refactor**: A code change that neither fixes a bug nor adds a feature
-* **test**: Adding missing tests or correcting existing tests
+| Type         | Description                                                                                         |
+|--------------|-----------------------------------------------------------------------------------------------------|
+| **build**    | Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm) |
+| **ci**       | Changes to our CI configuration files and scripts (examples: Github Actions, SauceLabs)             |
+| **docs**     | Documentation only changes                                                                          |
+| **feat**     | A new feature                                                                                       |
+| **fix**      | A bug fix                                                                                           |
+| **perf**     | A code change that improves performance                                                             |
+| **refactor** | A code change that neither fixes a bug nor adds a feature                                           |
+| **test**     | Adding missing tests or correcting existing tests                                                   |
 
 
-### Scope
+### <a name="scope"></a> Scope
 The scope should be the name of the npm package affected (as perceived by the person reading the changelog generated from commit messages).
 
 The following is the list of supported scopes:
@@ -65,21 +65,28 @@ The following is the list of supported scopes:
 * `animations`
 * `bazel`
 * `benchpress`
+* `changelog`
 * `common`
 * `compiler`
 * `compiler-cli`
 * `core`
+* `dev-infra`
+* `devtools`
+* `docs-infra`
 * `elements`
 * `forms`
 * `http`
 * `language-service`
 * `localize`
+* `migrations`
+* `packaging`
 * `platform-browser`
 * `platform-browser-dynamic`
 * `platform-server`
-* `router`
+* `uter`
 * `service-worker`
 * `upgrade`
+* `ve`
 * `zone.js`
 
 There are currently a few exceptions to the "use package name" rule:
@@ -118,7 +125,7 @@ You can include a comparison of the previous behavior with the new behavior in o
 
 ## <a name="commit-footer"></a>Commit Message Footer
 
-The footer can contain information about breaking changes and deprecations and is also the place to reference GitHub issues, Jira tickets, and other PRs that this commit closes or is related to.
+The footer can contain information about breaking changes and deprecations and is also the place to reference GitHub issues and other PRs that this commit closes or is related to.
 For example:
 
 ```
@@ -141,10 +148,9 @@ DEPRECATED: <what is deprecated>
 Closes #<pr number>
 ```
 
-Breaking Change section should start with the phrase `BREAKING CHANGE: ` followed by a summary of the breaking change, a blank line, and a detailed description of the breaking change that also includes migration instructions.
+Breaking Change section should start with the phrase `BREAKING CHANGE: ` followed by a *brief* summary of the breaking change, a blank line, and a detailed description of the breaking change that also includes migration instructions.
 
 Similarly, a Deprecation section should start with `DEPRECATED: ` followed by a short description of what is deprecated, a blank line, and a detailed description of the deprecation that also mentions the recommended update path.
-
 
 ## Revert commits
 
