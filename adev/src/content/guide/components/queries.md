@@ -156,7 +156,7 @@ export class CustomCard {
 }
 ```
 
-If a required query does not find a matching result, Angular reports an error. Because this guarantees that a result is available, require queries do not automatially include `undefined` in the signal's value type.
+If a required query does not find a matching result, Angular reports an error. Because this guarantees that a result is available, require queries do not automatically include `undefined` in the signal's value type.
 
 ## Query locators
 
