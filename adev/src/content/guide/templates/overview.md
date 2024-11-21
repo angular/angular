@@ -44,5 +44,5 @@ You might also be interested in the following:
 | [Grouping elements with ng-container](guide/templates/ng-container)         | Group multiple elements together or mark a location for rendering.                      |
 | [Variables in templates](guide/templates/variables)                         | Learn about variable declarations.                                                      |
 | [Deferred loading with @defer](guide/templates/defer)                       | Create deferrable views with `@defer`.                                                  |
-| [Expression syntax](guide/templates/expression-syntax)                      | Learn similarities and differences betwene Angular expressions and standard JavaScript. |
+| [Expression syntax](guide/templates/expression-syntax)                      | Learn similarities and differences between Angular expressions and standard JavaScript. |
 | [Whitespace in templates](guide/templates/whitespace)                       | Learn how Angular handles whitespace.                                                   |
