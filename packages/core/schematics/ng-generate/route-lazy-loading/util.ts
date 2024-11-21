@@ -7,27 +7,35 @@
  */
 
 import ts from 'typescript';
+import {findAngularDecorator} from '@angular/compiler-cli/src/ngtsc/annotations';
+import {ReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection/index';
 import {findLiteralProperty} from '../../utils/typescript/property_name';
 
 /**
  * Checks whether a component is standalone.
  * @param node Class being checked.
+ * @param reflector The reflection host to use.
  */
-export function isStandaloneComponent(node: ts.ClassDeclaration): boolean {
-  const decorator = node.modifiers?.find((m) => m.kind === ts.SyntaxKind.Decorator);
-  if (!decorator) {
+export function isStandaloneComponent(
+  node: ts.ClassDeclaration,
+  reflector: ReflectionHost,
+): boolean {
+  const decorators = reflector.getDecoratorsOfDeclaration(node);
+  if (decorators === null) {
+    return false;
+  }
+  const decorator = findAngularDecorator(decorators, 'Component', false);
+  if (decorator === undefined || decorator.args === null || decorator.args.length !== 1) {
     return false;
   }
 
-  if (ts.isCallExpression(decorator.expression)) {
-    const arg = decorator.expression.arguments[0];
-    if (ts.isObjectLiteralExpression(arg)) {
-      const property = findLiteralProperty(arg, 'standalone') as ts.PropertyAssignment;
-      if (property) {
-        return property.initializer.getText() === 'true';
-      } else {
-        return true; // standalone is true by default in v19
-      }
+  const arg = decorator.args[0];
+  if (ts.isObjectLiteralExpression(arg)) {
+    const property = findLiteralProperty(arg, 'standalone') as ts.PropertyAssignment;
+    if (property) {
+      return property.initializer.getText() === 'true';
+    } else {
+      return true; // standalone is true by default in v19
     }
   }
 
