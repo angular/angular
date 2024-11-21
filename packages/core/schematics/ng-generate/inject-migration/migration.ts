@@ -814,6 +814,7 @@ function applyInternalOnlyChanges(
       memberIndentation + printer.printNode(ts.EmitHint.Unspecified, decl, decl.getSourceFile()),
     );
     tracker.removeNode(decl, true);
+    removedMembers.add(decl);
   });
 
   // If we added any hoisted properties, separate them visually with a new line.

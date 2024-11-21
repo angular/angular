@@ -2122,6 +2122,45 @@ describe('inject migration', () => {
       ]);
     });
 
+    it('should handle re-ordering when all fields are removed or hoisted', async () => {
+      writeFile(
+        '/dir.ts',
+        [
+          `import { Injectable } from '@angular/core';`,
+          `import { ActivatedRoute } from '@angular/router';`,
+          ``,
+          `@Injectable()`,
+          `export class MyClass {`,
+          `  uninitialized!: string;`,
+          ``,
+          `  readonly b;`,
+          `  readonly a;`,
+          ``,
+          `  constructor(private readonly route: ActivatedRoute) {`,
+          `    this.a = this.route.get();`,
+          `    this.b = this.a.get();`,
+          `  }`,
+          `}`,
+        ].join('\n'),
+      );
+
+      await runInternalMigration();
+
+      expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+        `import { Injectable, inject } from '@angular/core';`,
+        `import { ActivatedRoute } from '@angular/router';`,
+        ``,
+        `@Injectable()`,
+        `export class MyClass {`,
+        `  uninitialized!: string;`,
+        ``,
+        `  private readonly route = inject(ActivatedRoute);`,
+        `  readonly a = this.route.get();`,
+        `  readonly b = this.a.get();`,
+        `}`,
+      ]);
+    });
+
     it('should be able to insert statements after the `super` call when running in internal migration mode', async () => {
       writeFile(
         '/dir.ts',
