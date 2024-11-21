@@ -23,7 +23,7 @@ const userResource = resource({
   loader: ({request}) => fetchUser(request),
 });
 
-// Created a computed based on the result of the resource's loader function.
+// Create a computed signal based on the result of the resource's loader function.
 const firstName = computed(() => userResource.value().firstName);
 ```
 
@@ -48,7 +48,7 @@ The `ResourceLoaderParams` object contains three properties: `request`, `previou
 | `abortSignal` | An [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal). See [Aborting requests](#aborting-requests) below for details. |
 
 
-If the `request` computation returns `undefined`, the loader function does not run and the resource and the resource status becomes `Idle`.
+If the `request` computation returns `undefined`, the loader function does not run and the resource status becomes `Idle`.
 
 ### Aborting requests
 
