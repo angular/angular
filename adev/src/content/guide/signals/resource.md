@@ -94,7 +94,7 @@ The resource object has several signal properties for reading the status of the 
 
 | Property    | Description                                                                                                     |
 | ----------- | --------------------------------------------------------------------------------------------------------------- |
-| `value`     | The most recent value of the resource, or `undefined` if no value has been recieved.                            |
+| `value`     | The most recent value of the resource, or `undefined` if no value has been received.                            |
 | `hasValue`  | Whether the resource has a value.                                                                               |
 | `error`     | The most recent error encountered while running the resource's loader, or `undefined` if no error has occurred. |
 | `isLoading` | Whether the resource loader is currently running.                                                               |
