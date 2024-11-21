@@ -531,7 +531,7 @@ function createRootComponentView(
   // and passed to the component LView.
   let hydrationInfo: DehydratedView | null = null;
   if (hostRNode !== null) {
-    hydrationInfo = retrieveHydrationInfo(hostRNode, rootView[INJECTOR]!);
+    hydrationInfo = retrieveHydrationInfo(hostRNode, rootView[INJECTOR]);
   }
   const viewRenderer = environment.rendererFactory.createRenderer(hostRNode, rootComponentDef);
   const componentView = createLView(
