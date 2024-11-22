@@ -1,4 +1,4 @@
-# RxJS interop with component and dirctive outputs
+# RxJS interop with component and directive outputs
 
 IMPORTANT: The RxJS Interop package is available for [developer preview](reference/releases#developer-preview). It's ready for you to try, but it might change before it is stable.
 
