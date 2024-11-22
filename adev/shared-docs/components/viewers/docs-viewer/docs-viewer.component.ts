@@ -58,6 +58,7 @@ export const GITHUB_CONTENT_URL = 'https://github.com/angular/angular/blob/main/
   encapsulation: ViewEncapsulation.None,
   host: {
     '[class.docs-animate-content]': 'animateContent',
+    '[class.docs-with-TOC]': 'hasToc',
   },
 })
 export class DocViewer implements OnChanges {

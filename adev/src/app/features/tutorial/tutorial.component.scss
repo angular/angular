@@ -67,7 +67,6 @@ $column-width: calc(50% - #{$resizer-width} - var(--layout-padding));
 }
 
 .docs-tutorial-content {
-  max-width: var(--page-width);
   min-width: 300px;
   width: 100%;
   box-sizing: content-box;
