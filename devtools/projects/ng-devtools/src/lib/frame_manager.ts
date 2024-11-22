@@ -6,30 +6,29 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable, inject} from '@angular/core';
+import {Injectable, inject, signal, computed} from '@angular/core';
 import {Events, MessageBus} from 'protocol';
 
 import {Frame, TOP_LEVEL_FRAME_ID} from './application-environment';
 
 @Injectable()
 export class FrameManager {
-  private _selectedFrameId: number | null = null;
-  private _frames = new Map<number, Frame>();
+  private _selectedFrameId = signal<number | null>(null);
+  private _frames = signal(new Map<number, Frame>());
   private _inspectedWindowTabId: number | null = null;
   private _frameUrlToFrameIds = new Map<string, Set<number>>();
   private _messageBus = inject<MessageBus<Events>>(MessageBus);
 
-  get frames(): Frame[] {
-    return Array.from(this._frames.values());
-  }
+  readonly frames = computed(() => Array.from(this._frames().values()));
 
-  get selectedFrame(): Frame | null {
-    if (this._selectedFrameId === null) {
+  readonly selectedFrame = computed(() => {
+    const selectedFrameId = this._selectedFrameId();
+    if (selectedFrameId === null) {
       return null;
     }
 
-    return this._frames.get(this._selectedFrameId) ?? null;
-  }
+    return this._frames().get(selectedFrameId) ?? null;
+  });
 
   static initialize(inspectedWindowTabIdTestOnly?: number | null) {
     const manager = new FrameManager();
@@ -45,8 +44,8 @@ export class FrameManager {
     }
 
     this._messageBus.on('frameConnected', (frameId: number) => {
-      if (this._frames.has(frameId)) {
-        this._selectedFrameId = frameId;
+      if (this._frames().has(frameId)) {
+        this._selectedFrameId.set(frameId);
       }
     });
 
@@ -58,36 +57,38 @@ export class FrameManager {
 
       this.addFrame({name, id: frameId, url: urlWithoutHash});
 
-      if (this.frames.length === 1) {
-        this.inspectFrame(this._frames.get(frameId)!);
+      if (this.frames().length === 1) {
+        this.inspectFrame(this._frames().get(frameId)!);
       }
     });
 
     this._messageBus.on('contentScriptDisconnected', (frameId: number) => {
-      if (!this._frames.has(frameId)) {
+      const frame = this._frames().get(frameId);
+      if (!frame) {
         return;
       }
 
-      this.removeFrame(this._frames.get(frameId)!);
+      this.removeFrame(frame);
 
       // Defensive check. This case should never happen, since we're always connected to at least
       // the top level frame.
-      if (this.frames.length === 0) {
-        this._selectedFrameId = null;
+      if (this.frames().length === 0) {
+        this._selectedFrameId.set(null);
         console.error('Angular DevTools is not connected to any frames.');
         return;
       }
 
-      if (frameId === this._selectedFrameId) {
-        this._selectedFrameId = TOP_LEVEL_FRAME_ID;
-        this.inspectFrame(this._frames.get(this._selectedFrameId!)!);
+      const selectedFrameId = this._selectedFrameId();
+      if (frameId === selectedFrameId) {
+        this._selectedFrameId.set(TOP_LEVEL_FRAME_ID);
+        this.inspectFrame(this._frames().get(TOP_LEVEL_FRAME_ID)!);
         return;
       }
     });
   }
 
   isSelectedFrame(frame: Frame): boolean {
-    return this._selectedFrameId === frame.id;
+    return this._selectedFrameId() === frame.id;
   }
 
   inspectFrame(frame: Frame): void {
@@ -95,11 +96,11 @@ export class FrameManager {
       return;
     }
 
-    if (!this._frames.has(frame.id)) {
+    if (!this._frames().has(frame.id)) {
       throw new Error('Attempted to inspect a frame that is not connected to Angular DevTools.');
     }
 
-    this._selectedFrameId = null;
+    this._selectedFrameId.set(null);
     this._messageBus.emit('enableFrameConnection', [frame.id, this._inspectedWindowTabId]);
   }
 
@@ -113,11 +114,14 @@ export class FrameManager {
   }
 
   private addFrame(frame: Frame): void {
-    this._frames.set(frame.id, frame);
-    const frameUrl = frame.url.toString();
-    const frameIdSet = this._frameUrlToFrameIds.get(frameUrl) ?? new Set<number>();
-    frameIdSet.add(frame.id);
-    this._frameUrlToFrameIds.set(frameUrl, frameIdSet);
+    this._frames.update((frames) => {
+      frames.set(frame.id, frame);
+      const frameUrl = frame.url.toString();
+      const frameIdSet = this._frameUrlToFrameIds.get(frameUrl) ?? new Set<number>();
+      frameIdSet.add(frame.id);
+      this._frameUrlToFrameIds.set(frameUrl, frameIdSet);
+      return new Map(frames);
+    });
   }
 
   private removeFrame(frame: Frame): void {
@@ -128,6 +132,9 @@ export class FrameManager {
     if (urlFrameIds.size === 0) {
       this._frameUrlToFrameIds.delete(frameUrl);
     }
-    this._frames.delete(frameId);
+    this._frames.update((frames) => {
+      frames.delete(frameId);
+      return new Map(frames);
+    });
   }
 }

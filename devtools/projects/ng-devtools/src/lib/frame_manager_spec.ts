@@ -17,7 +17,7 @@ describe('FrameManager', () => {
   let topicToCallback: {[topic: string]: Function | null};
 
   function getFrameFromFrameManager(frameId: number): Frame | undefined {
-    return frameManager.frames.find((f: Frame) => f.id === frameId);
+    return frameManager.frames().find((f: Frame) => f.id === frameId);
   }
 
   function frameConnected(frameId: number): void {
@@ -66,35 +66,36 @@ describe('FrameManager', () => {
 
   it('should add frame when contentScriptConnected event is emitted', () => {
     contentScriptConnected(topLevelFrameId, 'name', 'http://localhost:4200/url');
-    expect(frameManager.frames.length).toBe(1);
-    expect(frameManager.frames[0].id).toBe(topLevelFrameId);
-    expect(frameManager.frames[0].name).toBe('name');
-    expect(frameManager.frames[0].url.toString()).toBe('http://localhost:4200/url');
+    const frames = frameManager.frames();
+    expect(frames.length).toBe(1);
+    expect(frames[0].id).toBe(topLevelFrameId);
+    expect(frames[0].name).toBe('name');
+    expect(frames[0].url.toString()).toBe('http://localhost:4200/url');
   });
 
   it('should set the selected frame to the first frame when there is only one frame', () => {
     contentScriptConnected(topLevelFrameId, 'name', 'http://localhost:4200/url');
-    expect(frameManager.selectedFrame?.id).toBe(topLevelFrameId);
+    expect(frameManager.selectedFrame()?.id).toBe(topLevelFrameId);
   });
 
   it('should set selected frame when frameConnected event is emitted', () => {
     contentScriptConnected(topLevelFrameId, 'name', 'http://localhost:4200/url');
     contentScriptConnected(otherFrameId, 'name2', 'http://localhost:4200/url2');
     frameConnected(otherFrameId);
-    expect(frameManager.selectedFrame?.id).toBe(otherFrameId);
+    expect(frameManager.selectedFrame()?.id).toBe(otherFrameId);
   });
 
   it('should remove frame when contentScriptDisconnected event is emitted', () => {
     contentScriptConnected(topLevelFrameId, 'name', 'http://localhost:4200/url');
     contentScriptConnected(otherFrameId, 'name2', 'http://localhost:4200/url2');
-    expect(frameManager.frames.length).toBe(2);
+    expect(frameManager.frames().length).toBe(2);
     contentScriptDisconnected(otherFrameId);
-    expect(frameManager.frames.length).toBe(1);
-    expect(frameManager.frames[0].id).toBe(topLevelFrameId);
+    expect(frameManager.frames().length).toBe(1);
+    expect(frameManager.frames()[0].id).toBe(topLevelFrameId);
 
     const errorSpy = spyOn(console, 'error');
     contentScriptDisconnected(topLevelFrameId);
-    expect(frameManager.frames.length).toBe(0);
+    expect(frameManager.frames().length).toBe(0);
     expect(errorSpy).toHaveBeenCalledWith('Angular DevTools is not connected to any frames.');
   });
 
@@ -102,18 +103,18 @@ describe('FrameManager', () => {
     contentScriptConnected(topLevelFrameId, 'name', 'http://localhost:4200/url');
     contentScriptConnected(otherFrameId, 'name2', 'http://localhost:4200/url2');
     frameConnected(otherFrameId);
-    expect(frameManager.selectedFrame?.id).toBe(otherFrameId);
+    expect(frameManager.selectedFrame()?.id).toBe(otherFrameId);
     contentScriptDisconnected(otherFrameId);
-    expect(frameManager.selectedFrame?.id).toBe(topLevelFrameId);
+    expect(frameManager.selectedFrame()?.id).toBe(topLevelFrameId);
   });
 
   it('should not set selected frame to top level frame when contentScriptDisconnected event is emitted for non selected frame', () => {
     contentScriptConnected(topLevelFrameId, 'name', 'http://localhost:4200/url');
     contentScriptConnected(otherFrameId, 'name2', 'http://localhost:4200/url2');
     frameConnected(topLevelFrameId);
-    expect(frameManager.selectedFrame?.id).toBe(topLevelFrameId);
+    expect(frameManager.selectedFrame()?.id).toBe(topLevelFrameId);
     contentScriptDisconnected(otherFrameId);
-    expect(frameManager.selectedFrame?.id).toBe(topLevelFrameId);
+    expect(frameManager.selectedFrame()?.id).toBe(topLevelFrameId);
   });
 
   it('should not set selected frame to top level frame when contentScriptDisconnected event is emitted for non existing frame', () => {
@@ -122,9 +123,9 @@ describe('FrameManager', () => {
     contentScriptConnected(topLevelFrameId, 'name', 'http://localhost:4200/url');
     contentScriptConnected(otherFrameId, 'name2', 'http://localhost:4200/url2');
     frameConnected(otherFrameId);
-    expect(frameManager.selectedFrame?.id).toBe(otherFrameId);
+    expect(frameManager.selectedFrame()?.id).toBe(otherFrameId);
     contentScriptDisconnected(nonExistingFrameId);
-    expect(frameManager.selectedFrame?.id).toBe(otherFrameId);
+    expect(frameManager.selectedFrame()?.id).toBe(otherFrameId);
   });
 
   it('isSelectedFrame should return true when frame matches selected frame', () => {
@@ -161,21 +162,21 @@ describe('FrameManager', () => {
     const topLevelFrame = getFrameFromFrameManager(topLevelFrameId);
     expect(topLevelFrame).toBeDefined();
     frameManager.inspectFrame(topLevelFrame!);
-    expect(frameManager.selectedFrame?.id).toBe(topLevelFrameId);
+    expect(frameManager.selectedFrame()?.id).toBe(topLevelFrameId);
   });
 
   it('frameHasUniqueUrl should return false when a two frames have the same url', () => {
     contentScriptConnected(topLevelFrameId, 'name', 'https://angular.dev/');
     contentScriptConnected(otherFrameId, 'name2', 'https://angular.dev/');
-    expect(frameManager.selectedFrame?.url.toString()).toBe('https://angular.dev/');
-    expect(frameManager.frameHasUniqueUrl(frameManager.selectedFrame!)).toBe(false);
+    expect(frameManager.selectedFrame()?.url.toString()).toBe('https://angular.dev/');
+    expect(frameManager.frameHasUniqueUrl(frameManager.selectedFrame()!)).toBe(false);
   });
 
   it('frameHasUniqueUrl should return true when only one frame has a given url', () => {
     contentScriptConnected(topLevelFrameId, 'name', 'https://angular.dev/');
     contentScriptConnected(otherFrameId, 'name', 'https://angular.dev/overview');
-    expect(frameManager.selectedFrame?.url.toString()).toBe('https://angular.dev/');
-    expect(frameManager.frameHasUniqueUrl(frameManager.selectedFrame!)).toBe(true);
+    expect(frameManager.selectedFrame()?.url.toString()).toBe('https://angular.dev/');
+    expect(frameManager.frameHasUniqueUrl(frameManager.selectedFrame()!)).toBe(true);
   });
 
   it('frameHasUniqueUrl should not consider url fragments as part of the url comparison', () => {
@@ -185,8 +186,10 @@ describe('FrameManager', () => {
       'name',
       'https://angular.dev/guide/components#using-components',
     );
-    expect(frameManager.selectedFrame?.url.toString()).toBe('https://angular.dev/guide/components');
-    expect(frameManager.frameHasUniqueUrl(frameManager.selectedFrame!)).toBe(false);
+    expect(frameManager.selectedFrame()?.url.toString()).toBe(
+      'https://angular.dev/guide/components',
+    );
+    expect(frameManager.frameHasUniqueUrl(frameManager.selectedFrame()!)).toBe(false);
   });
 
   it('frameHasUniqueUrl should return false when frame is null', () => {

@@ -101,7 +101,7 @@ export class DevToolsTabsComponent {
   }
 
   emitSelectedFrame(frameId: string): void {
-    const frame = this.frameManager.frames.find((frame) => frame.id === parseInt(frameId, 10));
+    const frame = this.frameManager.frames().find((frame) => frame.id === parseInt(frameId, 10));
     this.frameSelected.emit(frame!);
   }
 
