@@ -19,7 +19,7 @@
     "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
     "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
     "@angular/router": "file:../../dist/packages-dist/router",
-    "@angular/ssr": "file:../../dist/node_modules/@angular/ssr",
+    "@angular/ssr": "file:../../node_modules/@angular/ssr",
     "rxjs": "file:../../node_modules/rxjs",
     "typescript": "file:../../node_modules/typescript",
     "http-server": "file:../../node_modules/http-server",
