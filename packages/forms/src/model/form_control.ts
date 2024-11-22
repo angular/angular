@@ -379,14 +379,11 @@ export interface ɵFormControlCtor {
   /**
    * Creates a new `FormControl` instance.
    *
-   * @param formState Initializes the control with an initial value,
+   * @param value Initializes the control with an initial value,
    * or an object that defines the initial value and disabled state.
    *
-   * @param validatorOrOpts A synchronous validator function, or an array of
-   * such functions, or a `FormControlOptions` object that contains validation functions
-   * and a validation trigger.
-   *
-   * @param asyncValidator A single async validator or array of async validator functions
+   * @param opts A `FormControlOptions` object that contains validation functions and a
+   * validation trigger. `nonNullable` have to be `true`
    */
   new <T = any>(
     value: FormControlState<T> | T,
@@ -412,6 +409,18 @@ export interface ɵFormControlCtor {
     asyncValidator: AsyncValidatorFn | AsyncValidatorFn[],
   ): FormControl<T | null>;
 
+  /**
+   * Creates a new `FormControl` instance.
+   *
+   * @param value Initializes the control with an initial value,
+   * or an object that defines the initial value and disabled state.
+   *
+   * @param validatorOrOpts A synchronous validator function, or an array of
+   * such functions, or a `FormControlOptions` object that contains validation functions
+   * and a validation trigger.
+   *
+   * @param asyncValidator A single async validator or array of async validator functions
+   */
   new <T = any>(
     value: FormControlState<T> | T,
     validatorOrOpts?: ValidatorFn | ValidatorFn[] | FormControlOptions | null,
