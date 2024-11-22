@@ -61,6 +61,7 @@ export const GITHUB_CONTENT_URL =
   encapsulation: ViewEncapsulation.None,
   host: {
     '[class.docs-animate-content]': 'animateContent',
+    '[class.docs-with-TOC]': 'hasToc',
   },
 })
 export class DocViewer implements OnChanges {
