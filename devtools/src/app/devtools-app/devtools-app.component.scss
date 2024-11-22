@@ -1,9 +1,13 @@
 iframe {
-  height: 339px;
+  height: 100%;
   width: 100%;
   border: 0;
 }
 
 .devtools-wrapper {
-  height: calc(100vh - 344px);
+  height: 100%;
+}
+:host {
+  display: block;
+  height: 100vh;
 }
