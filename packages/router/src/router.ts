@@ -58,10 +58,6 @@ import {validateConfig} from './utils/config';
 import {afterNextNavigation} from './utils/navigations';
 import {standardizeConfig} from './components/empty_outlet';
 
-function defaultErrorHandler(error: any): never {
-  throw error;
-}
-
 /**
  * The equivalent `IsActiveMatchOptions` options for `Router.isActive` is called with `true`
  * (exact = true).
