@@ -15,7 +15,6 @@ import {
   PLATFORM_ID,
   Provider,
   signal,
-  ɵwhenStable as whenStable,
   ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
 } from '@angular/core';
 
@@ -223,7 +222,7 @@ describe('platform-server partial hydration integration', () => {
       });
       const compRef = getComponentRef<SimpleComponent>(appRef);
       appRef.tick();
-      await whenStable(appRef);
+      await appRef.whenStable();
 
       const appHostNode = compRef.location.nativeElement;
 
@@ -338,7 +337,7 @@ describe('platform-server partial hydration integration', () => {
       });
       const compRef = getComponentRef<SimpleComponent>(appRef);
       appRef.tick();
-      await whenStable(appRef);
+      await appRef.whenStable();
 
       const appHostNode = compRef.location.nativeElement;
 
@@ -449,7 +448,7 @@ describe('platform-server partial hydration integration', () => {
       });
       const compRef = getComponentRef<SimpleComponent>(appRef);
       appRef.tick();
-      await whenStable(appRef);
+      await appRef.whenStable();
 
       const appHostNode = compRef.location.nativeElement;
 
@@ -549,7 +548,7 @@ describe('platform-server partial hydration integration', () => {
         });
         const compRef = getComponentRef<SimpleComponent>(appRef);
         appRef.tick();
-        await whenStable(appRef);
+        await appRef.whenStable();
 
         const appHostNode = compRef.location.nativeElement;
 
@@ -617,7 +616,7 @@ describe('platform-server partial hydration integration', () => {
         });
         const compRef = getComponentRef<SimpleComponent>(appRef);
         appRef.tick();
-        await whenStable(appRef);
+        await appRef.whenStable();
 
         const appHostNode = compRef.location.nativeElement;
 
@@ -688,7 +687,7 @@ describe('platform-server partial hydration integration', () => {
         });
         const compRef = getComponentRef<SimpleComponent>(appRef);
         appRef.tick();
-        await whenStable(appRef);
+        await appRef.whenStable();
 
         const appHostNode = compRef.location.nativeElement;
 
@@ -761,7 +760,7 @@ describe('platform-server partial hydration integration', () => {
         });
         const compRef = getComponentRef<SimpleComponent>(appRef);
         appRef.tick();
-        await whenStable(appRef);
+        await appRef.whenStable();
 
         const appHostNode = compRef.location.nativeElement;
 
@@ -928,7 +927,7 @@ describe('platform-server partial hydration integration', () => {
         });
         const compRef = getComponentRef<SimpleComponent>(appRef);
         appRef.tick();
-        await whenStable(appRef);
+        await appRef.whenStable();
 
         const appHostNode = compRef.location.nativeElement;
         expect(appHostNode.outerHTML).toContain(
@@ -1011,7 +1010,7 @@ describe('platform-server partial hydration integration', () => {
       });
       const compRef = getComponentRef<SimpleComponent>(appRef);
       appRef.tick();
-      await whenStable(appRef);
+      await appRef.whenStable();
       appRef.tick();
 
       const appHostNode = compRef.location.nativeElement;
@@ -1141,7 +1140,7 @@ describe('platform-server partial hydration integration', () => {
         });
         const compRef = getComponentRef<SimpleComponent>(appRef);
         appRef.tick();
-        await whenStable(appRef);
+        await appRef.whenStable();
 
         const appHostNode = compRef.location.nativeElement;
 
@@ -1213,7 +1212,7 @@ describe('platform-server partial hydration integration', () => {
       });
       const compRef = getComponentRef<SimpleComponent>(appRef);
       appRef.tick();
-      await whenStable(appRef);
+      await appRef.whenStable();
 
       const appHostNode = compRef.location.nativeElement;
 
@@ -1285,7 +1284,7 @@ describe('platform-server partial hydration integration', () => {
       });
       const compRef = getComponentRef<SimpleComponent>(appRef);
       appRef.tick();
-      await whenStable(appRef);
+      await appRef.whenStable();
 
       const appHostNode = compRef.location.nativeElement;
 
@@ -1350,7 +1349,7 @@ describe('platform-server partial hydration integration', () => {
       });
       const compRef = getComponentRef<SimpleComponent>(appRef);
       appRef.tick();
-      await whenStable(appRef);
+      await appRef.whenStable();
 
       const appHostNode = compRef.location.nativeElement;
 
@@ -1533,7 +1532,7 @@ describe('platform-server partial hydration integration', () => {
       const registry = compRef.instance.registry;
       spyOn(registry, 'cleanup').and.callThrough();
       appRef.tick();
-      await whenStable(appRef);
+      await appRef.whenStable();
 
       const appHostNode = compRef.location.nativeElement;
 
@@ -1614,7 +1613,7 @@ describe('platform-server partial hydration integration', () => {
       spyOn(registry, 'cleanup').and.callThrough();
 
       appRef.tick();
-      await whenStable(appRef);
+      await appRef.whenStable();
       const appHostNode = compRef.location.nativeElement;
 
       expect(appHostNode.outerHTML).toContain(
@@ -1684,7 +1683,7 @@ describe('platform-server partial hydration integration', () => {
       });
       const compRef = getComponentRef<SimpleComponent>(appRef);
       appRef.tick();
-      await whenStable(appRef);
+      await appRef.whenStable();
 
       const registry = compRef.instance.registry;
       const jsActionMap = compRef.instance.jsActionMap;
@@ -1766,7 +1765,7 @@ describe('platform-server partial hydration integration', () => {
       });
       const compRef = getComponentRef<SimpleComponent>(appRef);
       appRef.tick();
-      await whenStable(appRef);
+      await appRef.whenStable();
 
       const registry = compRef.instance.registry;
       const jsActionMap = compRef.instance.jsActionMap;
@@ -1835,7 +1834,7 @@ describe('platform-server partial hydration integration', () => {
       });
       const compRef = getComponentRef<SimpleComponent>(appRef);
       appRef.tick();
-      await whenStable(appRef);
+      await appRef.whenStable();
 
       const registry = compRef.instance.registry;
       const jsActionMap = compRef.instance.jsActionMap;
@@ -1911,7 +1910,7 @@ describe('platform-server partial hydration integration', () => {
       });
       const compRef = getComponentRef<SimpleComponent>(appRef);
       appRef.tick();
-      await whenStable(appRef);
+      await appRef.whenStable();
       const contract = compRef.instance.contract;
       spyOn(contract.instance!, 'cleanUp').and.callThrough();
 

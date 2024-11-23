@@ -19,7 +19,6 @@ import {
   ɵformatRuntimeError as formatRuntimeError,
   ɵperformanceMarkFeature as performanceMarkFeature,
   ɵtruncateMiddle as truncateMiddle,
-  ɵwhenStable as whenStable,
   ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 import {isPlatformServer} from '@angular/common';
@@ -338,7 +337,7 @@ export function withHttpTransferCache(cacheOptions: HttpTransferCacheOptions): P
         const cacheState = inject(CACHE_OPTIONS);
 
         return () => {
-          whenStable(appRef).then(() => {
+          appRef.whenStable().then(() => {
             cacheState.isCacheActive = false;
           });
         };
