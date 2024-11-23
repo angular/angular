@@ -915,6 +915,10 @@ let whenStableStore: WeakMap<ApplicationRef, Promise<void>> | undefined;
 /**
  * Returns a Promise that resolves when the application becomes stable after this method is called
  * the first time.
+ *
+ * Note: this function is unused in the FW code, but it's still present since the CLI code relies
+ * on it currently (see https://github.com/angular/angular-cli/blob/20411f696eb52c500e096e3dfc5e195185794edc/packages/angular/ssr/src/routes/ng-routes.ts#L435).
+ * Remove this function once CLI code is updated to use `ApplicationRef.whenStable` instead.
  */
 export function whenStable(applicationRef: ApplicationRef): Promise<void> {
   whenStableStore ??= new WeakMap();

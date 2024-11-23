@@ -18,7 +18,7 @@ import {
   EventPhase,
 } from '@angular/core/primitives/event-dispatch';
 
-import {APP_BOOTSTRAP_LISTENER, ApplicationRef, whenStable} from '../application/application_ref';
+import {APP_BOOTSTRAP_LISTENER, ApplicationRef} from '../application/application_ref';
 import {ENVIRONMENT_INITIALIZER, Injector} from '../di';
 import {inject} from '../di/injector_compatibility';
 import {Provider} from '../di/interface/provider';
@@ -134,7 +134,7 @@ export function withEventReplay(): Provider[] {
             // Kick off event replay logic once hydration for the initial part
             // of the application is completed. This timing is similar to the unclaimed
             // dehydrated views cleanup timing.
-            whenStable(appRef).then(() => {
+            appRef.whenStable().then(() => {
               const eventContractDetails = injector.get(JSACTION_EVENT_CONTRACT);
               initEventReplay(eventContractDetails, injector);
               const jsActionMap = injector.get(JSACTION_BLOCK_ELEMENT_MAP);

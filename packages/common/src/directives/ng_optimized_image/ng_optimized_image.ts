@@ -31,7 +31,6 @@ import {
   ɵunwrapSafeValue as unwrapSafeValue,
   ChangeDetectorRef,
   ApplicationRef,
-  ɵwhenStable as whenStable,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../../errors';
@@ -1310,7 +1309,7 @@ function assertNoLoaderParamsWithoutLoader(dir: NgOptimizedImage, imageLoader: I
 async function assetPriorityCountBelowThreshold(appRef: ApplicationRef) {
   if (IMGS_WITH_PRIORITY_ATTR_COUNT === 0) {
     IMGS_WITH_PRIORITY_ATTR_COUNT++;
-    await whenStable(appRef);
+    await appRef.whenStable();
     if (IMGS_WITH_PRIORITY_ATTR_COUNT > PRIORITY_COUNT_THRESHOLD) {
       console.warn(
         formatRuntimeError(
