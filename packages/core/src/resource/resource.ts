@@ -34,6 +34,8 @@ import {DestroyRef} from '../linker';
  * `resource` will cancel in-progress loads via the `AbortSignal` when destroyed or when a new
  * request object becomes available, which could prematurely abort mutations.
  *
+ * @see [rxResource](api/core/rxjs-interop/rxResource)
+ *
  * @experimental
  */
 export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T> {
