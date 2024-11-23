@@ -19,7 +19,6 @@ import {
   ɵannotateForHydration as annotateForHydration,
   ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED,
   ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER,
-  ɵwhenStable as whenStable,
   ɵstartMeasuring as startMeasuring,
   ɵstopMeasuring as stopMeasuring,
 } from '@angular/core';
@@ -178,8 +177,10 @@ function insertEventRecordScript(
 async function _render(platformRef: PlatformRef, applicationRef: ApplicationRef): Promise<string> {
   const measuringLabel = 'whenStable';
   startMeasuring(measuringLabel);
+
   // Block until application is stable.
-  await whenStable(applicationRef);
+  await applicationRef.whenStable();
+
   stopMeasuring(measuringLabel);
 
   const platformState = platformRef.injector.get(PlatformState);

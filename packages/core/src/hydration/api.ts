@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {APP_BOOTSTRAP_LISTENER, ApplicationRef, whenStable} from '../application/application_ref';
+import {APP_BOOTSTRAP_LISTENER, ApplicationRef} from '../application/application_ref';
 import {Console} from '../console';
 import {
   ENVIRONMENT_INITIALIZER,
@@ -152,7 +152,7 @@ function printHydrationStats(injector: Injector) {
  * Returns a Promise that is resolved when an application becomes stable.
  */
 function whenStableWithTimeout(appRef: ApplicationRef, injector: Injector): Promise<void> {
-  const whenStablePromise = whenStable(appRef);
+  const whenStablePromise = appRef.whenStable();
   if (typeof ngDevMode !== 'undefined' && ngDevMode) {
     const timeoutTime = APPLICATION_IS_STABLE_TIMEOUT;
     const console = injector.get(Console);

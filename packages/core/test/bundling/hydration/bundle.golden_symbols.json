@@ -135,9 +135,6 @@
     "name": "ElementRef"
   },
   {
-    "name": "EmptyError"
-  },
-  {
     "name": "EmulatedEncapsulationDomRenderer2"
   },
   {
@@ -679,9 +676,6 @@
   },
   {
     "name": "deepForEachProvider"
-  },
-  {
-    "name": "defaultErrorFactory"
   },
   {
     "name": "detachMovedView"
@@ -1299,9 +1293,6 @@
     "name": "subscribeOn"
   },
   {
-    "name": "throwIfEmpty"
-  },
-  {
     "name": "throwProviderNotFoundError"
   },
   {
@@ -1336,12 +1327,6 @@
   },
   {
     "name": "walkProviderTree"
-  },
-  {
-    "name": "whenStable"
-  },
-  {
-    "name": "whenStableStore"
   },
   {
     "name": "withDomHydration"

@@ -41,7 +41,6 @@ import {
   Type,
   ViewEncapsulation,
   ɵPendingTasks as PendingTasks,
-  ɵwhenStable as whenStable,
   APP_INITIALIZER,
   inject,
   getPlatform,
@@ -782,7 +781,7 @@ class HiddenModule {}
 
         const moduleRef = await platform.bootstrapModule(AsyncServerModule);
         const applicationRef = moduleRef.injector.get(ApplicationRef);
-        await whenStable(applicationRef);
+        await applicationRef.whenStable();
         // Note: the `ng-server-context` is not present in this output, since
         // `renderModule` or `renderApplication` functions are not used here.
         const expectedOutput =
