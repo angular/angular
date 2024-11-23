@@ -442,21 +442,15 @@ export function createMouseSpecialEvent(e: Event, target: Element): Event {
     // tslint:disable-next-line:no-any
     copy[key] = value as any;
   }
-
-  switch (e.type) {
-    case EventType.MOUSEOVER:
-      copy['type'] = EventType.MOUSEENTER;
-      break;
-    case EventType.MOUSEOUT:
-      copy['type'] = EventType.MOUSELEAVE;
-      break;
-    case EventType.POINTEROVER:
-      copy['type'] = EventType.POINTERENTER;
-      break;
-    default:
-      copy['type'] = EventType.POINTERLEAVE;
+  if (e.type === EventType.MOUSEOVER) {
+    copy['type'] = EventType.MOUSEENTER;
+  } else if (e.type === EventType.MOUSEOUT) {
+    copy['type'] = EventType.MOUSELEAVE;
+  } else if (e.type === EventType.POINTEROVER) {
+    copy['type'] = EventType.POINTERENTER;
+  } else {
+    copy['type'] = EventType.POINTERLEAVE;
   }
-
   copy['target'] = copy['srcElement'] = target;
   copy['bubbles'] = false;
   return copy as Event;
