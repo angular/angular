@@ -472,7 +472,7 @@ export class LowerCasePipe implements PipeTransform {
     static ɵpipe: i0.ɵɵPipeDeclaration<LowerCasePipe, "lowercase", true>;
 }
 
-// @public
+// @public @deprecated
 export class NgClass implements DoCheck {
     constructor(_ngEl: ElementRef, _renderer: Renderer2);
     // (undocumented)
@@ -666,7 +666,7 @@ export class NgPluralCase {
     static ɵfac: i0.ɵɵFactoryDeclaration<NgPluralCase, [{ attribute: "ngPluralCase"; }, null, null, { host: true; }]>;
 }
 
-// @public
+// @public @deprecated
 export class NgStyle implements DoCheck {
     constructor(_ngEl: ElementRef, _differs: KeyValueDiffers, _renderer: Renderer2);
     // (undocumented)

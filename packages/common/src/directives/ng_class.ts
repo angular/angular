@@ -10,8 +10,6 @@ import {
   DoCheck,
   ElementRef,
   Input,
-  IterableDiffers,
-  KeyValueDiffers,
   Renderer2,
   ɵstringify as stringify,
 } from '@angular/core';
@@ -63,6 +61,8 @@ interface CssClassState {
  * - `Array` - the CSS classes declared as Array elements are added,
  * - `Object` - keys are CSS classes that get added when the expression given in the value
  *              evaluates to a truthy value, otherwise they are removed.
+ *
+ * @deprecated  Use class bindings with the [class] or [class.prop] syntax.
  *
  * @publicApi
  */

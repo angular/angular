@@ -51,6 +51,8 @@ import {
  * is assigned to the given style property.
  * If the result of evaluation is null, the corresponding style is removed.
  *
+ * @deprecated Use style bindings with the [style] or [style.prop] syntax.
+ *
  * @publicApi
  */
 @Directive({
