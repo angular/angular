@@ -63,7 +63,9 @@
   // render primary nav / mini menu above tablet secondary bar
   z-index: 250;
   position: relative;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
   height: 100dvh;
   padding-block-start: 1rem;
   padding-block-end: 2rem;
@@ -77,13 +79,13 @@
       color-mix(in srgb, var(--orange-red), transparent 60%) 0%,
       color-mix(in srgb, var(--vivid-pink), transparent 40%) 15%,
       color-mix(in srgb, var(--electric-violet), transparent 70%) 25%,
-      color-mix(in srgb, var(--bright-blue), transparent 60%) 90%,
-      );
+      color-mix(in srgb, var(--bright-blue), transparent 60%) 90%
+    );
   }
 
   &.adev-nav-primary--deprecated {
     // change nav background to indicate this is an outdated version of the docs
-    background-color: color-mix(in srgb, var(--symbolic-gray), transparent 30%);
+    background-color: var(--deprecated-docs-bg);
   }
 
   // div containing mobile close button and adev-nav_top
@@ -278,7 +280,9 @@
   border-block-end: 1px solid var(--septenary-contrast);
   padding-block: 1rem;
   padding-inline: var(--layout-padding);
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
   button {
     display: flex;
     gap: 0.5rem;
