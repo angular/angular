@@ -12,7 +12,7 @@ import {ChangeDetectorRef, signal} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatTabGroupHarness} from '@angular/material/tabs/testing';
 import {By} from '@angular/platform-browser';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {provideNoopAnimations} from '@angular/platform-browser/animations';
 import {BehaviorSubject} from 'rxjs';
 
 import {EmbeddedTutorialManager} from '../embedded-tutorial-manager.service';
@@ -21,7 +21,6 @@ import {CodeEditor, REQUIRED_FILES} from './code-editor.component';
 import {CodeMirrorEditor} from './code-mirror-editor.service';
 import {FakeChangeDetectorRef} from '@angular/docs';
 import {TutorialType} from '@angular/docs';
-import {MatTooltip} from '@angular/material/tooltip';
 import {MatTooltipHarness} from '@angular/material/tooltip/testing';
 
 const files = [
@@ -53,8 +52,9 @@ describe('CodeEditor', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CodeEditor, NoopAnimationsModule, MatTooltip],
+      imports: [CodeEditor],
       providers: [
+        provideNoopAnimations(),
         {
           provide: CodeMirrorEditor,
           useValue: codeMirrorEditorService,

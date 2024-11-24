@@ -11,7 +11,7 @@ import {ExampleViewer} from './example-viewer.component';
 import {DocsContentLoader, ExampleMetadata, ExampleViewerContentLoader} from '../../../interfaces';
 import {DOCS_CONTENT_LOADER, EXAMPLE_VIEWER_CONTENT_LOADER} from '../../../providers';
 import {Component, provideExperimentalZonelessChangeDetection} from '@angular/core';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {provideNoopAnimations} from '@angular/platform-browser/animations';
 import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Clipboard} from '@angular/cdk/clipboard';
@@ -35,8 +35,9 @@ describe('ExampleViewer', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ExampleViewer, NoopAnimationsModule],
+      imports: [ExampleViewer],
       providers: [
+        provideNoopAnimations(),
         provideExperimentalZonelessChangeDetection(),
         {provide: EXAMPLE_VIEWER_CONTENT_LOADER, useValue: exampleContentSpy},
         {provide: DOCS_CONTENT_LOADER, useValue: contentServiceSpy},
