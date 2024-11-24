@@ -169,7 +169,7 @@ export function effect(
 
   if (ngDevMode && options?.allowSignalWrites !== undefined) {
     console.warn(
-      `The 'allowSignalWrites' flag is deprecated & longer required for effect() (writes are allowed by default)`,
+      `The 'allowSignalWrites' flag is deprecated & no longer required for effect() (writes are allowed by default)`,
     );
   }
 
