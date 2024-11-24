@@ -26,6 +26,12 @@ import {NgZone} from './zone';
  *   }
  * }
  *
+ * // Provide in standalone apps
+ * bootstrapApplication(AppComponent, {
+ *   providers: [{provide: ErrorHandler, useClass: MyErrorHandler}]
+ * })
+ *
+ * // Provide in module-based apps
  * @NgModule({
  *   providers: [{provide: ErrorHandler, useClass: MyErrorHandler}]
  * })
