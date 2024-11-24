@@ -10,11 +10,11 @@ import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {TestBed} from '@angular/core/testing';
 import {MatTabGroupHarness} from '@angular/material/tabs/testing';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {provideNoopAnimations} from '@angular/platform-browser/animations';
 import {ReferenceScrollHandler} from '../services/reference-scroll-handler.service';
 import {signal} from '@angular/core';
 import {provideRouter, withComponentInputBinding} from '@angular/router';
-import {RouterTestingHarness, RouterTestingModule} from '@angular/router/testing';
+import {RouterTestingHarness} from '@angular/router/testing';
 
 import ApiReferenceDetailsPage from './api-reference-details-page.component';
 import {By} from '@angular/platform-browser';
@@ -40,8 +40,9 @@ describe('ApiReferenceDetailsPage', () => {
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
-      imports: [ApiReferenceDetailsPage, RouterTestingModule, NoopAnimationsModule],
+      imports: [ApiReferenceDetailsPage],
       providers: [
+        provideNoopAnimations(),
         provideRouter(
           [
             {
