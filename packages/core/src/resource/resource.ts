@@ -115,8 +115,9 @@ abstract class BaseWritableResource<T> implements WritableResource<T> {
    * Put the resource into the error state.
    */
   protected setErrorState(err: unknown): void {
-    this.status.set(ResourceStatus.Error);
     this.value.set(undefined);
+    // The previous line will set the status to `Local`, so we need to update it.
+    this.status.set(ResourceStatus.Error);
     this.error.set(err);
   }
 
