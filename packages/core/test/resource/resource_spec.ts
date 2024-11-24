@@ -128,8 +128,43 @@ describe('resource', () => {
 
     expect(echoResource.status()).toBe(ResourceStatus.Error);
     expect(echoResource.isLoading()).toBeFalse();
+    expect(echoResource.hasValue()).toBeFalse();
     expect(echoResource.value()).toEqual(undefined);
     expect(echoResource.error()).toBe('Something went wrong....');
+  });
+
+  it('should expose errors on reload', async () => {
+    const backend = new MockEchoBackend();
+    const counter = signal(0);
+    const echoResource = resource({
+      request: () => ({counter: counter()}),
+      loader: (params) => {
+        if (params.request.counter % 2 === 0) {
+          return Promise.resolve('ok');
+        } else {
+          throw new Error('KO');
+        }
+      },
+      injector: TestBed.inject(Injector),
+    });
+
+    TestBed.flushEffects();
+    await backend.flush();
+
+    expect(echoResource.status()).toBe(ResourceStatus.Resolved);
+    expect(echoResource.isLoading()).toBeFalse();
+    expect(echoResource.hasValue()).toBeTrue();
+    expect(echoResource.value()).toEqual('ok');
+    expect(echoResource.error()).toBe(undefined);
+
+    counter.update((value) => value + 1);
+    TestBed.flushEffects();
+
+    expect(echoResource.status()).toBe(ResourceStatus.Error);
+    expect(echoResource.isLoading()).toBeFalse();
+    expect(echoResource.hasValue()).toBeFalse();
+    expect(echoResource.value()).toEqual(undefined);
+    expect(echoResource.error()).toEqual(Error('KO'));
   });
 
   it('should _not_ load if the request resolves to undefined', () => {
