@@ -262,6 +262,7 @@ export function ɵɵdeferHydrateWhen(rawValue: unknown) {
       // We are on the server and SSR for defer blocks is enabled.
       triggerDeferBlock(lView, tNode);
     } else {
+      const prevConsumer = setActiveConsumer(null);
       try {
         const value = Boolean(rawValue); // handle truthy or falsy values
         if (value === true) {
@@ -274,7 +275,6 @@ export function ɵɵdeferHydrateWhen(rawValue: unknown) {
           triggerHydrationFromBlockName(injector, ssrUniqueId);
         }
       } finally {
-        const prevConsumer = setActiveConsumer(null);
         setActiveConsumer(prevConsumer);
       }
     }
