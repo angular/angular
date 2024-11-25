@@ -1,7 +1,7 @@
 # Commit Message Format
 
 We have very precise rules over how our Git commit messages must be formatted.
-This format leads to **easier to read commit history**.
+This format leads to **easier to read commit history** and makes it analyzable for changelog generation.
 
 Each commit message consists of a **header**, a **body**, and a **footer**.
 
