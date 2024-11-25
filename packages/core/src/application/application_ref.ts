@@ -301,8 +301,6 @@ export function optionsReducer<T extends Object>(dst: T, objs: T | T[]): T {
 @Injectable({providedIn: 'root'})
 export class ApplicationRef {
   /** @internal */
-  private _bootstrapListeners: ((compRef: ComponentRef<any>) => void)[] = [];
-  /** @internal */
   _runningTick: boolean = false;
   private _destroyed = false;
   private _destroyListeners: Array<() => void> = [];
@@ -792,7 +790,7 @@ export class ApplicationRef {
           '`multi: true` provider.',
       );
     }
-    [...this._bootstrapListeners, ...listeners].forEach((listener) => listener(componentRef));
+    listeners.forEach((listener) => listener(componentRef));
   }
 
   /** @internal */
@@ -811,7 +809,6 @@ export class ApplicationRef {
 
       // Release all references.
       this._views = [];
-      this._bootstrapListeners = [];
       this._destroyListeners = [];
     }
   }
