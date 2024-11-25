@@ -20,14 +20,14 @@ export function normalizeSeparators(path: string): string {
 }
 
 /**
- * Attempts to generate a project-relative path
- * @param sourceFile
- * @param rootDirs
- * @param compilerHost
+ * Attempts to generate a project-relative path for a file.
+ * @param fileName Absolute path to the file.
+ * @param rootDirs Root directories of the project.
+ * @param compilerHost Host used to resolve file names.
  * @returns
  */
 export function getProjectRelativePath(
-  sourceFile: ts.SourceFile,
+  fileName: string,
   rootDirs: readonly string[],
   compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
 ): string | null {
@@ -35,7 +35,7 @@ export function getProjectRelativePath(
   // because the root directories might've been passed through it already while the source files
   // definitely have not. This can break the relative return value, because in some platforms
   // getCanonicalFileName lowercases the path.
-  const filePath = compilerHost.getCanonicalFileName(sourceFile.fileName);
+  const filePath = compilerHost.getCanonicalFileName(fileName);
 
   for (const rootDir of rootDirs) {
     const rel = relative(compilerHost.getCanonicalFileName(rootDir), filePath);
