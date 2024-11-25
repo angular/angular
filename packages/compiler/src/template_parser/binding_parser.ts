@@ -770,13 +770,14 @@ export class BindingParser {
     message: string,
     sourceSpan: ParseSourceSpan,
     level: ParseErrorLevel = ParseErrorLevel.ERROR,
+    relatedError?: ParserError,
   ) {
-    this.errors.push(new ParseError(sourceSpan, message, level));
+    this.errors.push(new ParseError(sourceSpan, message, level, relatedError));
   }
 
   private _reportExpressionParserErrors(errors: ParserError[], sourceSpan: ParseSourceSpan) {
     for (const error of errors) {
-      this._reportError(error.message, sourceSpan);
+      this._reportError(error.message, sourceSpan, undefined, error);
     }
   }
 
