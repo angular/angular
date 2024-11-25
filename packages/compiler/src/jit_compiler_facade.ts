@@ -321,6 +321,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
         facade.viewProviders != null ? new WrappedNodeExpr(facade.viewProviders) : null,
       relativeContextFilePath: '',
       i18nUseExternalIds: true,
+      relativeTemplatePath: null,
     };
     const jitExpressionSourceMap = `ng:///${facade.name}.js`;
     return this.compileComponentFromMeta(angularCoreEnv, jitExpressionSourceMap, meta);
@@ -673,6 +674,7 @@ function convertDeclareComponentFacadeToMetadata(
     declarationListEmitMode: DeclarationListEmitMode.ClosureResolved,
     relativeContextFilePath: '',
     i18nUseExternalIds: true,
+    relativeTemplatePath: null,
   };
 }
 

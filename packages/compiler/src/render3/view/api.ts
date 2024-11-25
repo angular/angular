@@ -289,6 +289,12 @@ export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency>
   changeDetection: ChangeDetectionStrategy | o.Expression | null;
 
   /**
+   * Relative path to the component's template from the root of the project.
+   * Used to generate debugging information.
+   */
+  relativeTemplatePath: string | null;
+
+  /**
    * The imports expression as appears on the component decorate for standalone component. This
    * field is currently needed only for local compilation, and so in other compilation modes it may
    * not be set. If component has empty array imports then this field is not set.
