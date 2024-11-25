@@ -608,6 +608,13 @@ export class ApplicationRef {
       return;
     }
 
+      // Ensure we always run `_tick()` in the context of the most recent snapshot,
+      // if one exists. Snapshots may be reference counted by the implementation so
+      // we want to ensure that if we request a snapshot that we use it.
+      snapshot.run(TracingAction.CHANGE_DETECTION, this._tick);
+      return;
+    }
+
     (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
     if (this._runningTick) {
       throw new RuntimeError(
