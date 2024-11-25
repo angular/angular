@@ -40,6 +40,10 @@ export class MockBody implements Body {
     throw 'Not implemented';
   }
 
+  async bytes(): Promise<Uint8Array<ArrayBufferLike>> {
+    throw 'Not implemented';
+  }
+
   private getBody(): string {
     if (this.bodyUsed === true) {
       throw new Error('Cannot reuse body without cloning.');
