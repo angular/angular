@@ -24,7 +24,7 @@ export function extractClassDebugInfo(
   }
 
   const srcFile = clazz.getSourceFile();
-  const srcFileMaybeRelativePath = getProjectRelativePath(srcFile, rootDirs, compilerHost);
+  const srcFileMaybeRelativePath = getProjectRelativePath(srcFile.fileName, rootDirs, compilerHost);
 
   return {
     type: new WrappedNodeExpr(clazz.name),

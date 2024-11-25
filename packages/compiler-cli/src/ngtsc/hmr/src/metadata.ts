@@ -40,7 +40,7 @@ export function extractHmrMetatadata(
 
   const sourceFile = clazz.getSourceFile();
   const filePath =
-    getProjectRelativePath(sourceFile, rootDirs, compilerHost) ||
+    getProjectRelativePath(sourceFile.fileName, rootDirs, compilerHost) ||
     compilerHost.getCanonicalFileName(sourceFile.fileName);
 
   const dependencies = extractHmrDependencies(clazz, definition, factory, classMetadata, debugInfo);
