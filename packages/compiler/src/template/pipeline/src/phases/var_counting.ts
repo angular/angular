@@ -134,6 +134,7 @@ function varsUsedByOp(op: (ir.CreateOp | ir.UpdateOp) & ir.ConsumesVarsTrait): n
     case ir.OpKind.I18nExpression:
     case ir.OpKind.Conditional:
     case ir.OpKind.DeferWhen:
+    case ir.OpKind.DeferHydrateWhen:
     case ir.OpKind.StoreLet:
       return 1;
     case ir.OpKind.RepeaterCreate:

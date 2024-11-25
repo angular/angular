@@ -446,6 +446,10 @@ export function deferWhen(
   return call(Identifiers.deferWhen, [expr], sourceSpan);
 }
 
+export function deferHydrateWhen(sourceSpan: ParseSourceSpan | null): ir.CreateOp {
+  return call(Identifiers.deferHydrateWhen, [], sourceSpan);
+}
+
 export function declareLet(slot: number, sourceSpan: ParseSourceSpan): ir.CreateOp {
   return call(Identifiers.declareLet, [o.literal(slot)], sourceSpan);
 }

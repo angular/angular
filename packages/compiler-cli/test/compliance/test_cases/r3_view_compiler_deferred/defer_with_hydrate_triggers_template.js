@@ -10,6 +10,7 @@ function MyApp_Template(rf, ctx) {
     $r3$.ɵɵdeferHydrateOnInteraction();
     $r3$.ɵɵdeferHydrateOnViewport();
     $r3$.ɵɵdeferOnIdle();
+    $r3$.ɵɵdeferHydrateWhen();
   }
   if (rf & 2) {
     $r3$.ɵɵtextInterpolate1(" ", ctx.message, " ");

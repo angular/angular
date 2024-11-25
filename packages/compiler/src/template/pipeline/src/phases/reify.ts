@@ -303,6 +303,9 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         }
         ir.OpList.replace(op, ng.deferOn(op.trigger.kind, args, op.modifier, op.sourceSpan));
         break;
+      case ir.OpKind.DeferHydrateWhen:
+        ir.OpList.replace(op, ng.deferHydrateWhen(op.sourceSpan));
+        break;
       case ir.OpKind.ProjectionDef:
         ir.OpList.replace<ir.CreateOp>(op, ng.projectionDef(op.def));
         break;

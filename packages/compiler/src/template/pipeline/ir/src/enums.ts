@@ -161,6 +161,11 @@ export enum OpKind {
   DeferWhen,
 
   /**
+   * An operation that controls when a `@defer` hydrates, using a custom expression as the condition.
+   */
+  DeferHydrateWhen,
+
+  /**
    * An i18n message that has been extracted for inclusion in the consts array.
    */
   I18nMessage,

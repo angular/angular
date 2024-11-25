@@ -672,6 +672,7 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
   // make it easier to refactor prefetch behavior in the future.
   const deferOnOps: ir.DeferOnOp[] = [];
   const deferWhenOps: ir.DeferWhenOp[] = [];
+  const deferHydrateWhenOps: ir.DeferHydrateWhenOp[] = [];
 
   // Ingest the hydrate triggers first since they set up all the other triggers during SSR.
   ingestDeferTriggers(
@@ -679,6 +680,7 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
     deferBlock.hydrateTriggers,
     deferOnOps,
     deferWhenOps,
+    deferHydrateWhenOps,
     unit,
     deferXref,
   );
@@ -688,6 +690,7 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
     deferBlock.triggers,
     deferOnOps,
     deferWhenOps,
+    deferHydrateWhenOps,
     unit,
     deferXref,
   );
@@ -697,6 +700,7 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
     deferBlock.prefetchTriggers,
     deferOnOps,
     deferWhenOps,
+    deferHydrateWhenOps,
     unit,
     deferXref,
   );
@@ -718,6 +722,7 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
   }
 
   unit.create.push(deferOnOps);
+  unit.create.push(deferHydrateWhenOps);
   unit.update.push(deferWhenOps);
 }
 
@@ -726,6 +731,7 @@ function ingestDeferTriggers(
   triggers: Readonly<t.DeferredBlockTriggers>,
   onOps: ir.DeferOnOp[],
   whenOps: ir.DeferWhenOp[],
+  hydrateWhenOps: ir.DeferHydrateWhenOp[],
   unit: ViewCompilationUnit,
   deferXref: ir.XrefId,
 ) {
@@ -819,13 +825,17 @@ function ingestDeferTriggers(
       // even mean?
       throw new Error(`Unexpected interpolation in defer block when trigger`);
     }
-    const deferOnOp = ir.createDeferWhenOp(
+    if (modifier === ir.DeferOpModifierKind.HYDRATE) {
+      hydrateWhenOps.push(ir.createDeferHydrateWhenOp(deferXref, triggers.when.sourceSpan));
+    }
+
+    const deferWhenOp = ir.createDeferWhenOp(
       deferXref,
       convertAst(triggers.when.value, unit.job, triggers.when.sourceSpan),
       modifier,
       triggers.when.sourceSpan,
     );
-    whenOps.push(deferOnOp);
+    whenOps.push(deferWhenOp);
   }
 }
 

@@ -59,6 +59,7 @@ export type CreateOp =
   | ExtractedAttributeOp
   | DeferOp
   | DeferOnOp
+  | DeferHydrateWhenOp
   | RepeaterCreateOp
   | I18nMessageOp
   | I18nOp
@@ -1074,6 +1075,29 @@ export function createDeferOnOp(
     defer,
     trigger,
     modifier,
+    sourceSpan,
+    ...NEW_OP,
+  };
+}
+
+export interface DeferHydrateWhenOp extends Op<CreateOp> {
+  kind: OpKind.DeferHydrateWhen;
+
+  /**
+   * The `defer` create op associated with this when condition.
+   */
+  target: XrefId;
+
+  sourceSpan: ParseSourceSpan;
+}
+
+export function createDeferHydrateWhenOp(
+  target: XrefId,
+  sourceSpan: ParseSourceSpan,
+): DeferHydrateWhenOp {
+  return {
+    kind: OpKind.DeferHydrateWhen,
+    target,
     sourceSpan,
     ...NEW_OP,
   };
