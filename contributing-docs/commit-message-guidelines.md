@@ -83,10 +83,9 @@ The following is the list of supported scopes:
 * `platform-browser`
 * `platform-browser-dynamic`
 * `platform-server`
-* `uter`
+* `router`
 * `service-worker`
 * `upgrade`
-* `ve`
 * `zone.js`
 
 There are currently a few exceptions to the "use package name" rule:
