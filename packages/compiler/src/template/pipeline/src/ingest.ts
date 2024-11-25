@@ -58,6 +58,7 @@ export function ingestComponent(
   i18nUseExternalIds: boolean,
   deferMeta: R3ComponentDeferMetadata,
   allDeferrableDepsFn: o.ReadVarExpr | null,
+  relativeTemplatePath: string | null,
 ): ComponentCompilationJob {
   const job = new ComponentCompilationJob(
     componentName,
@@ -67,6 +68,7 @@ export function ingestComponent(
     i18nUseExternalIds,
     deferMeta,
     allDeferrableDepsFn,
+    relativeTemplatePath,
   );
   ingestNodes(job.root, template);
   return job;
