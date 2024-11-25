@@ -5114,9 +5114,7 @@ runInEachFileSystem((os: string) => {
       );
 
       const errors = env.driveDiagnostics();
-      expect(getDiagnosticSourceCode(errors[0])).toBe(`{
-            '(click)': 'act() | pipe',
-          }`);
+      expect(getDiagnosticSourceCode(errors[0])).toBe(`'act() | pipe'`);
       expect(errors[0].messageText).toContain('/test.ts@7:17');
     });
 
@@ -5158,10 +5156,12 @@ runInEachFileSystem((os: string) => {
             class FooCmp {}
          `,
       );
-      const errors = env.driveDiagnostics();
-      expect(trim(errors[0].messageText as string)).toContain(
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(trim(diags[0].messageText as string)).toContain(
         'Host binding expression cannot contain pipes',
       );
+      expect(getDiagnosticSourceCode(diags[0])).toBe(`'id | myPipe'`);
     });
 
     it('should generate host bindings for directives', () => {
