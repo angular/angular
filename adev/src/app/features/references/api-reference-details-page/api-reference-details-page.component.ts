@@ -110,9 +110,7 @@ export default class ApiReferenceDetailsPage {
     this.appScroller.disableScrolling = true;
     afterNextRender({
       write: () => {
-        if (this.isApiTabActive()) {
-          this.scrollHandler.updateMembersMarginTop(API_REFERENCE_TAB_BODY_CLASS_NAME);
-        }
+        this.scrollHandler.updateMembersMarginTop(API_REFERENCE_TAB_BODY_CLASS_NAME);
       },
     });
   }
