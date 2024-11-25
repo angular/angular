@@ -73,6 +73,7 @@ export class ComponentCompilationJob extends CompilationJob {
     readonly i18nUseExternalIds: boolean,
     readonly deferMeta: R3ComponentDeferMetadata,
     readonly allDeferrableDepsFn: o.ReadVarExpr | null,
+    readonly relativeTemplatePath: string | null,
   ) {
     super(componentName, pool, compatibility);
     this.root = new ViewCompilationUnit(this, this.allocateXrefId(), null);
