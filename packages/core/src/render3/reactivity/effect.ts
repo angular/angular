@@ -245,6 +245,7 @@ export const BASE_EFFECT_NODE: Omit<EffectNode, 'fn' | 'destroy' | 'injector' | 
     hasRun: false,
     cleanupFns: undefined,
     zone: null,
+    kind: 'effect',
     onDestroyFn: noop,
     run(this: EffectNode): void {
       this.dirty = false;
