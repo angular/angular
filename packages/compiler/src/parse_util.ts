@@ -150,9 +150,17 @@ export enum ParseErrorLevel {
 
 export class ParseError {
   constructor(
-    public span: ParseSourceSpan,
-    public msg: string,
-    public level: ParseErrorLevel = ParseErrorLevel.ERROR,
+    /** Location of the error. */
+    readonly span: ParseSourceSpan,
+    /** Error message. */
+    readonly msg: string,
+    /** Severity level of the error. */
+    readonly level: ParseErrorLevel = ParseErrorLevel.ERROR,
+    /**
+     * Error that caused the error to be surfaced. For example, an error in a sub-expression that
+     * couldn't be parsed. Not guaranteed to be defined, but can be used to provide more context.
+     */
+    readonly relatedError?: unknown,
   ) {}
 
   contextualMessage(): string {
