@@ -17,6 +17,8 @@ export const defaultMigrationTsOptions: Partial<ts.CompilerOptions> = {
   skipLibCheck: true,
   skipDefaultLibCheck: true,
   noEmit: true,
+  // Does not apply to g3 and externally is enforced when the app is built by the compiler.
+  disableTypeScriptVersionCheck: true,
 };
 
 /**
