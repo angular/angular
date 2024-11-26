@@ -18,6 +18,7 @@ import {
   I18nParamValueFlags,
   Namespace,
   OpKind,
+  TDeferDetailsFlags,
   TemplateKind,
 } from '../enums';
 import {SlotHandle} from '../handle';
@@ -941,6 +942,8 @@ export interface DeferOp extends Op<CreateOp>, ConsumesSlotOpTrait {
    */
   resolverFn: o.Expression | null;
 
+  flags: TDeferDetailsFlags | null;
+
   sourceSpan: ParseSourceSpan;
 }
 
@@ -971,6 +974,7 @@ export function createDeferOp(
     errorSlot: null,
     ownResolverFn,
     resolverFn,
+    flags: null,
     sourceSpan,
     ...NEW_OP,
     ...TRAIT_CONSUMES_SLOT,
