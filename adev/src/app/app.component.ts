@@ -13,8 +13,8 @@ import {
   inject,
   OnInit,
   PLATFORM_ID,
-  signal,
-  WritableSignal,
+  input,
+  linkedSignal,
 } from '@angular/core';
 import {NavigationEnd, NavigationSkipped, Router, RouterOutlet} from '@angular/router';
 import {filter, map, skip} from 'rxjs/operators';
@@ -56,12 +56,12 @@ export class AppComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly headerService = inject(HeaderService);
 
-  currentUrl = signal('');
-  displayFooter = signal(false);
-  displaySecondaryNav = signal(false);
-  displaySearchDialog: WritableSignal<boolean> = inject(IS_SEARCH_DIALOG_OPEN);
-
   isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
+  displaySecondaryNav = input(false);
+  hideFooter = input(true);
+  displayFooter = linkedSignal(() => !this.hideFooter());
+  displaySearchDialog = inject(IS_SEARCH_DIALOG_OPEN);
 
   ngOnInit(): void {
     this.closeSearchDialogOnNavigationSkipped();
@@ -71,35 +71,20 @@ export class AppComponent implements OnInit {
         map((event) => event.urlAfterRedirects),
       )
       .subscribe((url) => {
-        this.currentUrl.set(url);
-        this.setComponentsVisibility();
-        this.displaySearchDialog.set(false);
+        const activatedRoute = getActivatedRouteSnapshotFromRouter(this.router);
+        this.displayFooter.set(!activatedRoute.data['hideFooter']);
 
+        this.displaySearchDialog.set(false);
         this.updateCanonicalLink(url);
       });
   }
 
   focusFirstHeading(): void {
-    if (!this.isBrowser) {
-      return;
-    }
-
     const h1 = this.document.querySelector<HTMLHeadingElement>('h1:not(docs-top-level-banner h1)');
     h1?.focus();
   }
 
-  private updateCanonicalLink(absoluteUrl: string) {
-    this.headerService.setCanonical(absoluteUrl);
-  }
-
-  private setComponentsVisibility(): void {
-    const activatedRoute = getActivatedRouteSnapshotFromRouter(this.router as any);
-
-    this.displaySecondaryNav.set(activatedRoute.data['displaySecondaryNav']);
-    this.displayFooter.set(!activatedRoute.data['hideFooter']);
-  }
-
-  private setSearchDialogVisibilityOnKeyPress(event: KeyboardEvent): void {
+  protected setSearchDialogVisibilityOnKeyPress(event: KeyboardEvent): void {
     if (event.key === SEARCH_TRIGGER_KEY && (event.metaKey || event.ctrlKey)) {
       event.preventDefault();
       this.displaySearchDialog.update((display) => !display);
@@ -109,6 +94,10 @@ export class AppComponent implements OnInit {
       event.preventDefault();
       this.displaySearchDialog.set(false);
     }
+  }
+
+  private updateCanonicalLink(absoluteUrl: string) {
+    this.headerService.setCanonical(absoluteUrl);
   }
 
   private closeSearchDialogOnNavigationSkipped(): void {
