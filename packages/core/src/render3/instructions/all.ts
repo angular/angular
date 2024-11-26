@@ -63,3 +63,4 @@ export * from './text';
 export * from './text_interpolation';
 export * from './two_way';
 export * from './let_declaration';
+export * from './attach_source_locations';
