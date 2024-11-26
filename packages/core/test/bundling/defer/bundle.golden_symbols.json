@@ -1161,6 +1161,9 @@
     "name": "init_async_stack_tagging"
   },
   {
+    "name": "init_attach_source_locations"
+  },
+  {
     "name": "init_attribute"
   },
   {
