@@ -10,11 +10,11 @@ import {DOCUMENT} from '@angular/common';
 import {provideHttpClient, withFetch} from '@angular/common/http';
 import {
   ApplicationConfig,
-  ENVIRONMENT_INITIALIZER,
   ErrorHandler,
   VERSION,
   inject,
   provideExperimentalZonelessChangeDetection,
+  provideEnvironmentInitializer,
 } from '@angular/core';
 import {
   DOCS_CONTENT_LOADER,
@@ -76,21 +76,13 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(),
     provideHttpClient(withFetch()),
     provideAnimationsAsync(),
+    provideEnvironmentInitializer(() => inject(AppScroller)),
+    provideEnvironmentInitializer(() => inject(AnalyticsService)),
     {
       provide: CURRENT_MAJOR_VERSION,
       useValue: Number(VERSION.major),
     },
     {provide: ENVIRONMENT, useValue: environment},
-    {
-      provide: ENVIRONMENT_INITIALIZER,
-      multi: true,
-      useValue: () => inject(AppScroller),
-    },
-    {
-      provide: ENVIRONMENT_INITIALIZER,
-      multi: true,
-      useValue: () => inject(AnalyticsService),
-    },
     {provide: ErrorHandler, useClass: CustomErrorHandler},
     {provide: PREVIEWS_COMPONENTS, useValue: PREVIEWS_COMPONENTS_MAP},
     {provide: DOCS_CONTENT_LOADER, useClass: ContentLoader},
