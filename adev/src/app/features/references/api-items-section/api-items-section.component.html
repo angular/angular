@@ -1,14 +1,14 @@
 <header class="adev-api-items-section-header">
   <h3 [id]="group().id">
-    <!-- we use innerHtml because the title can be an html string-->
     <a
       routerLink="/api"
       [fragment]="group().id"
       queryParamsHandling="preserve"
       class="adev-api-anchor"
       tabindex="-1"
-      [innerHtml]="group().title"
-    ></a>
+    >
+      {{group().title}}
+    </a>
   </h3>
 </header>
 
