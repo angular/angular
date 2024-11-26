@@ -15,6 +15,7 @@ import {
   inject,
   provideExperimentalZonelessChangeDetection,
   provideEnvironmentInitializer,
+  provideChangeDetectionTracingService,
 } from '@angular/core';
 import {
   DOCS_CONTENT_LOADER,
@@ -50,6 +51,11 @@ import {AppScroller} from './app-scroller';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    // More than 10 change detections in 1 second triggers a warning.
+    provideChangeDetectionTracingService({
+      msThresholdWindow: 1000,
+      cdThreshold: 10,
+    }),
     provideRouter(
       routes,
       withInMemoryScrolling(),

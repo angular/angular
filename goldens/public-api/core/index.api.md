@@ -1430,6 +1430,12 @@ export type Predicate<T> = (value: T) => boolean;
 export function provideAppInitializer(initializerFn: () => Observable<unknown> | Promise<unknown> | void): EnvironmentProviders;
 
 // @public
+export function provideChangeDetectionTracingService(options?: {
+    msThresholdWindow: number;
+    cdThreshold: number;
+}): Provider[];
+
+// @public
 export function provideEnvironmentInitializer(initializerFn: () => void): EnvironmentProviders;
 
 // @public
