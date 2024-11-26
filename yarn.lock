@@ -308,10 +308,10 @@
     ora "5.4.1"
     rxjs "7.8.1"
 
-"@angular/animations@^19.0.0":
-  version "19.0.0"
-  resolved "https://registry.yarnpkg.com/@angular/animations/-/animations-19.0.0.tgz#7cd4f5e6bf15ec834738f3807e77900ac8ac7d42"
-  integrity sha512-+uZTvEXjYh8PZKB4ijk8uuH1K+Tz/A67mUlltFv9pYKtnmbZAeS/PI66g/7pigRYDvEgid1fvlAANeBShAiPZQ==
+"@angular/animations@^19.1.0-next":
+  version "19.1.0-next.0"
+  resolved "https://registry.yarnpkg.com/@angular/animations/-/animations-19.1.0-next.0.tgz#1af2f138d80a59d71d63cd870d8ceb369579d850"
+  integrity sha512-tVixJSU9J4B+m/mMC6yS+6m5PtaOfltrtT0fw92XM2zA0sVeS4d9+DiewkdMU9wwYwUdMfJEf+jXe7N1rOUtHQ==
   dependencies:
     tslib "^2.3.0"
 
@@ -465,10 +465,10 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/core@^19.0.0":
-  version "19.0.0"
-  resolved "https://registry.yarnpkg.com/@angular/core/-/core-19.0.0.tgz#ba977b5b436b89acb31d204b26622c533334139c"
-  integrity sha512-aNG2kd30BOM/zf0jC+aEVG8OA27IwqCki9EkmyRNYnaP2O5Mj1n7JpCyZGI+0LrWTJ2UUCfRNZiZdZwmNThr1Q==
+"@angular/core@^19.1.0-next":
+  version "19.1.0-next.0"
+  resolved "https://registry.yarnpkg.com/@angular/core/-/core-19.1.0-next.0.tgz#e0d0b5bf8fe7367ac7be6b55bf4d2a41c1bc781f"
+  integrity sha512-EyFu4Jki1QCzn/jqEoOZokwRyYyR4HABxbJIkxdiXVv/UaCYCZIRwCOjNAD0kmmFU0btm5UVJtoXSrTo3mQBBg==
   dependencies:
     tslib "^2.3.0"
 
