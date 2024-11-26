@@ -1,3 +1,36 @@
+<a name="19.0.1"></a>
+# 19.0.1 (2024-11-26)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fb1fa8b0fc](https://github.com/angular/angular/commit/fb1fa8b0fc04c9cfac6551ca27bee89dcd7c72ac) | fix | more accurate diagnostics for host binding parser errors ([#58870](https://github.com/angular/angular/pull/58870)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [502ee0e722](https://github.com/angular/angular/commit/502ee0e7221a9e7cfa0fa3bd92298d3b650a7713) | fix | correctly clear template HMR internal renderer cache ([#58724](https://github.com/angular/angular/pull/58724)) |
+| [99715104a1](https://github.com/angular/angular/commit/99715104a1a787c3899dfbfac6b44f28c7d24356) | fix | correctly perform lazy routes migration for components with additional decorators ([#58796](https://github.com/angular/angular/pull/58796)) |
+| [118803035f](https://github.com/angular/angular/commit/118803035f366acdffc577ec857b888f764bb338) | fix | Ensure _tick is always run within the TracingSnapshot. ([#58881](https://github.com/angular/angular/pull/58881)) |
+| [08b9452f01](https://github.com/angular/angular/commit/08b9452f012b2ef660f767c2f0a4bf86bb15bb61) | fix | Ensure resource sets an error ([#58855](https://github.com/angular/angular/pull/58855)) |
+| [84f45ea3ff](https://github.com/angular/angular/commit/84f45ea3ffe02003350c6c19fdafdc6f4d521ccb) | fix | make component id generation more stable between client and server builds ([#58813](https://github.com/angular/angular/pull/58813)) |
+| [d3491c7cee](https://github.com/angular/angular/commit/d3491c7cee3d110da1adb51f8047b4e1976ece71) | fix | Prevents race condition of cleanup for incremental hydration ([#58722](https://github.com/angular/angular/pull/58722)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4dfe5b6cef](https://github.com/angular/angular/commit/4dfe5b6cefd7901a466b37b660f8b3a051a06cb3) | fix | work around TypeScript 5.7 issue ([#58731](https://github.com/angular/angular/pull/58731)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a983865bff](https://github.com/angular/angular/commit/a983865bffa828a982ef7e56204924d9c2989ead) | fix | add fix for individual unused imports ([#58719](https://github.com/angular/angular/pull/58719)) |
+| [e6e7a4e22b](https://github.com/angular/angular/commit/e6e7a4e22b0a654808e5eb88a30cd6effa383332) | fix | allow fixes to run without template info ([#58719](https://github.com/angular/angular/pull/58719)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5ce10264a4](https://github.com/angular/angular/commit/5ce10264a434ffc8e31cdc68208d2c3c7f8378ed) | fix | fix provide-initializer migration when using useFactory ([#58518](https://github.com/angular/angular/pull/58518)) |
+| [d4f5c85f60](https://github.com/angular/angular/commit/d4f5c85f60133550303d59b3f9e3e34f14ca63ce) | fix | handle parameters with initializers in inject migration ([#58769](https://github.com/angular/angular/pull/58769)) |
+| [a6d2d2dc10](https://github.com/angular/angular/commit/a6d2d2dc104608f14c3850b21bc23ba75ca04e4d) | fix | Mark hoisted properties as removed in inject migration ([#58804](https://github.com/angular/angular/pull/58804)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.0.0"></a>
 # 19.0.0 (2024-11-19)
 
