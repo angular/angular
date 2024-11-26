@@ -10,14 +10,14 @@ import {ChangeDetectionStrategy, Component, inject, input, output} from '@angula
 import {NavigationItem} from '../../interfaces/index';
 import {NavigationState} from '../../services/index';
 import {RouterLink, RouterLinkActive} from '@angular/router';
-import {CommonModule} from '@angular/common';
 import {IconComponent} from '../icon/icon.component';
 import {IsActiveNavigationItem} from '../../pipes/is-active-navigation-item.pipe';
+import {NgTemplateOutlet} from '@angular/common';
 
 @Component({
   selector: 'docs-navigation-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, IconComponent, IsActiveNavigationItem],
+  imports: [RouterLink, RouterLinkActive, IconComponent, IsActiveNavigationItem, NgTemplateOutlet],
   templateUrl: './navigation-list.component.html',
   styleUrls: ['./navigation-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
