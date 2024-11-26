@@ -263,6 +263,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
             op.placeholderConfig,
             timerScheduling,
             op.sourceSpan,
+            op.flags,
           ),
         );
         break;

@@ -144,6 +144,20 @@ export interface TDeferBlockDetails {
    * List of prefetch triggers for a given block
    */
   prefetchTriggers: Set<DeferBlockTrigger> | null;
+
+  /**
+   * Flags
+   */
+  flags: TDeferDetailsFlags;
+}
+
+export const enum TDeferDetailsFlags {
+  Default = 0,
+
+  /**
+   * Whether or not the defer block has hydrate triggers.
+   */
+  HasHydrateTriggers = 1 << 0,
 }
 
 /**

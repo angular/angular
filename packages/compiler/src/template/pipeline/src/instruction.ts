@@ -243,6 +243,7 @@ export function defer(
   placeholderConfig: o.Expression | null,
   enableTimerScheduling: boolean,
   sourceSpan: ParseSourceSpan | null,
+  flags: ir.TDeferDetailsFlags | null,
 ): ir.CreateOp {
   const args: Array<o.Expression> = [
     o.literal(selfSlot),
@@ -254,6 +255,7 @@ export function defer(
     loadingConfig ?? o.literal(null),
     placeholderConfig ?? o.literal(null),
     enableTimerScheduling ? o.importExpr(Identifiers.deferEnableTimerScheduling) : o.literal(null),
+    o.literal(flags),
   ];
 
   let expr: o.Expression;
