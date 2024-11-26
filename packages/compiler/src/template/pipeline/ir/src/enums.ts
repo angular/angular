@@ -601,3 +601,12 @@ export const enum DeferOpModifierKind {
   PREFETCH = 'prefetch',
   HYDRATE = 'hydrate',
 }
+
+export const enum TDeferDetailsFlags {
+  Default = 0,
+
+  /**
+   * Whether or not the defer block has hydrate triggers.
+   */
+  HasHydrateTriggers = 1 << 0,
+}

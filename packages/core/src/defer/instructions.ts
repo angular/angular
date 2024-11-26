@@ -40,6 +40,7 @@ import {
   TDeferBlockDetails,
   TriggerType,
   SSR_UNIQUE_ID,
+  TDeferDetailsFlags,
 } from './interfaces';
 import {onTimer} from './timer_scheduler';
 import {
@@ -82,6 +83,9 @@ import {
  *     placeholder block.
  * @param enableTimerScheduling Function that enables timer-related scheduling if `after`
  *     or `minimum` parameters are setup on the `@loading` or `@placeholder` blocks.
+ * @param flags A set of flags to define a particular behavior (e.g. to indicate that
+ *              hydrate triggers are present and regular triggers should be deactivated
+ *              in certain scenarios).
  *
  * @codeGenApi
  */
@@ -95,6 +99,7 @@ export function ɵɵdefer(
   loadingConfigIndex?: number | null,
   placeholderConfigIndex?: number | null,
   enableTimerScheduling?: typeof ɵɵdeferEnableTimerScheduling,
+  flags?: TDeferDetailsFlags | null,
 ) {
   const lView = getLView();
   const tView = getTView();
@@ -118,6 +123,7 @@ export function ɵɵdefer(
       providers: null,
       hydrateTriggers: null,
       prefetchTriggers: null,
+      flags: flags ?? TDeferDetailsFlags.Default,
     };
     enableTimerScheduling?.(tView, tDetails, placeholderConfigIndex, loadingConfigIndex);
     setTDeferBlockDetails(tView, adjustedIndex, tDetails);
