@@ -16,6 +16,6 @@ generate_api_docs(
         "//packages:common_files_and_deps_for_docs",
     ],
     entry_point = ":index.ts",
-    module_label = "<code>window.ng</code> globals",
+    module_label = "window.ng globals",
     module_name = "@angular/core/globals",
 )
