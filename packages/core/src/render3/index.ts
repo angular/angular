@@ -179,6 +179,7 @@ export {
   ɵɵdeclareLet,
   ɵɵstoreLet,
   ɵɵreadContextLet,
+  ɵɵattachSourceLocations,
 } from './instructions/all';
 export {
   ɵɵdeferEnableTimerScheduling,
