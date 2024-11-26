@@ -1,3 +1,16 @@
+<a name="19.1.0-next.0"></a>
+# 19.1.0-next.0 (2024-11-26)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e4c50b3bea](https://github.com/angular/angular/commit/e4c50b3bea22ca2afba74465893c36730952f4b9) | feat | expose component instance in NgComponentOutlet ([#58698](https://github.com/angular/angular/pull/58698)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [bd1f1294ae](https://github.com/angular/angular/commit/bd1f1294aeb0d47b24421b7b7a608988689a459f) | feat | support TypeScript 5.7 ([#58609](https://github.com/angular/angular/pull/58609)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.0.1"></a>
 # 19.0.1 (2024-11-26)
 ### compiler-cli
