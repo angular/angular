@@ -14,7 +14,7 @@ import {
   setThrowInvalidWriteToSignalError,
 } from '@angular/core/primitives/signals';
 import {Observable, Subject, Subscription} from 'rxjs';
-import {first, map} from 'rxjs/operators';
+import {map} from 'rxjs/operators';
 
 import {ZONELESS_ENABLED} from '../change_detection/scheduling/zoneless_scheduling';
 import {Console} from '../console';
@@ -913,34 +913,6 @@ export const enum ApplicationRefDirtyFlags {
    * Effects at the `ApplicationRef` level.
    */
   RootEffects = 0b00010000,
-}
-
-let whenStableStore: WeakMap<ApplicationRef, Promise<void>> | undefined;
-/**
- * Returns a Promise that resolves when the application becomes stable after this method is called
- * the first time.
- *
- * Note: this function is unused in the FW code, but it's still present since the CLI code relies
- * on it currently (see https://github.com/angular/angular-cli/blob/20411f696eb52c500e096e3dfc5e195185794edc/packages/angular/ssr/src/routes/ng-routes.ts#L435).
- * Remove this function once CLI code is updated to use `ApplicationRef.whenStable` instead.
- */
-export function whenStable(applicationRef: ApplicationRef): Promise<void> {
-  whenStableStore ??= new WeakMap();
-  const cachedWhenStable = whenStableStore.get(applicationRef);
-  if (cachedWhenStable) {
-    return cachedWhenStable;
-  }
-
-  const whenStablePromise = applicationRef.isStable
-    .pipe(first((isStable) => isStable))
-    .toPromise()
-    .then(() => void 0);
-  whenStableStore.set(applicationRef, whenStablePromise);
-
-  // Be a good citizen and clean the store `onDestroy` even though we are using `WeakMap`.
-  applicationRef.onDestroy(() => whenStableStore?.delete(applicationRef));
-
-  return whenStablePromise;
 }
 
 export function detectChangesInViewIfRequired(

@@ -7,10 +7,7 @@
  */
 
 export {setAlternateWeakRefImpl as ɵsetAlternateWeakRefImpl} from '../primitives/signals';
-export {
-  detectChangesInViewIfRequired as ɵdetectChangesInViewIfRequired,
-  whenStable as ɵwhenStable,
-} from './application/application_ref';
+export {detectChangesInViewIfRequired as ɵdetectChangesInViewIfRequired} from './application/application_ref';
 export {INTERNAL_APPLICATION_ERROR_HANDLER as ɵINTERNAL_APPLICATION_ERROR_HANDLER} from './error_handler';
 export {
   IMAGE_CONFIG as ɵIMAGE_CONFIG,
