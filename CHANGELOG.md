@@ -1,3 +1,12 @@
+<a name="18.2.13"></a>
+# 18.2.13 (2024-11-26)
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [06d70a25ea](https://github.com/angular/angular/commit/06d70a25ea7a6ef32f47516fcb8542d98ac45e14) | fix | take care of tests that import both HttpClientModule & HttpClientTestingModule. ([#58777](https://github.com/angular/angular/pull/58777)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.2.12"></a>
 # 18.2.12 (2024-11-14)
 ### compiler-cli
