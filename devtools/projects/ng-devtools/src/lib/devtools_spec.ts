@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, signal} from '@angular/core';
+import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {FrameManager} from './frame_manager';
 import {DevToolsComponent} from './devtools.component';
@@ -16,7 +16,6 @@ import {MessageBus} from 'protocol';
 @Component({
   selector: 'ng-devtools-tabs',
   template: '',
-  standalone: true,
 })
 export class MockNgDevToolsTabs {}
 

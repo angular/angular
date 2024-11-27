@@ -18,7 +18,6 @@ import {IndexedNode} from './directive-forest/index-forest';
 import SpyObj = jasmine.SpyObj;
 import {By} from '@angular/platform-browser';
 import {FrameManager} from '../../frame_manager';
-import {TabUpdate} from '../tab-update';
 import {Component, CUSTOM_ELEMENTS_SCHEMA, output, input} from '@angular/core';
 import {ElementPropertyResolver, FlatNode} from './property-resolver/element-property-resolver';
 import {BreadcrumbsComponent} from './directive-forest/breadcrumbs/breadcrumbs.component';
@@ -27,7 +26,6 @@ import {PropertyTabComponent} from './property-tab/property-tab.component';
 @Component({
   selector: 'ng-directive-forest',
   template: '',
-  standalone: true,
 })
 class MockDirectiveForestComponent {
   readonly forest = input<IndexedNode[]>([]);
@@ -44,7 +42,6 @@ class MockDirectiveForestComponent {
 @Component({
   selector: 'ng-breadcrumbs',
   template: '',
-  standalone: true,
 })
 class MockBreadcrumbsComponent {
   readonly parents = input<IndexedNode[]>([]);
@@ -56,7 +53,6 @@ class MockBreadcrumbsComponent {
 @Component({
   selector: 'ng-property-tab',
   template: '',
-  standalone: true,
 })
 class MockPropertyTabComponent {
   readonly currentSelectedElement = input<IndexedNode | null>(null);

@@ -17,7 +17,6 @@ import {PropertyViewComponent} from './property-view.component';
   templateUrl: './property-tab-body.component.html',
   selector: 'ng-property-tab-body',
   styleUrls: ['./property-tab-body.component.scss'],
-  standalone: true,
   imports: [PropertyViewComponent],
 })
 export class PropertyTabBodyComponent {

@@ -16,7 +16,7 @@ import {Events, MessageBus, Route} from 'protocol';
 
 import {ApplicationEnvironment, Frame, TOP_LEVEL_FRAME_ID} from '../application-environment/index';
 import {FrameManager} from '../frame_manager';
-import {Theme, ThemeService} from '../theme-service';
+import {ThemeService} from '../theme-service';
 
 import {DirectiveExplorerComponent} from './directive-explorer/directive-explorer.component';
 import {InjectorTreeComponent} from './injector-tree/injector-tree.component';
@@ -30,7 +30,6 @@ type Tabs = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree';
   selector: 'ng-devtools-tabs',
   templateUrl: './devtools-tabs.component.html',
   styleUrls: ['./devtools-tabs.component.scss'],
-  standalone: true,
   imports: [
     MatTabNav,
     MatTabNavPanel,

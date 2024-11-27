@@ -28,7 +28,6 @@ import {RouterOutlet} from '@angular/router';
   templateUrl: './demo-app.component.html',
   styleUrls: ['./demo-app.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [HeavyComponent, SamplePropertiesComponent, RouterOutlet],
 })

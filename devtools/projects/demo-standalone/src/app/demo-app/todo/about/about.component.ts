@@ -11,7 +11,6 @@ import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-about',
-  standalone: true,
   imports: [RouterLink],
   template: `
     About component

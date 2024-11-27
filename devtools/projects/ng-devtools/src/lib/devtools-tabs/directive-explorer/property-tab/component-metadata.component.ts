@@ -16,7 +16,6 @@ import {ElementPropertyResolver} from '../property-resolver/element-property-res
   templateUrl: './component-metadata.component.html',
   styleUrls: ['./component-metadata.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
 })
 export class ComponentMetadataComponent {
   readonly currentSelectedComponent = input.required<ComponentType>();

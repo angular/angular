@@ -36,7 +36,6 @@ import {InjectorTreeNode, InjectorTreeVisualizer} from './injector-tree-visualiz
       }
     `,
   ],
-  standalone: true,
 })
 export class ResolutionPathComponent implements OnDestroy {
   private svgContainer = viewChild.required<ElementRef>('svgContainer');
