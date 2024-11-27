@@ -11,7 +11,6 @@ import {Directive, ElementRef, Input, inject, output} from '@angular/core';
 
 @Directive({
   selector: '[docsClickOutside]',
-  standalone: true,
   host: {
     '(document:click)': 'onClick($event)',
   },

@@ -16,7 +16,6 @@ import {NgTemplateOutlet} from '@angular/common';
 
 @Component({
   selector: 'docs-navigation-list',
-  standalone: true,
   imports: [RouterLink, RouterLinkActive, IconComponent, IsActiveNavigationItem, NgTemplateOutlet],
   templateUrl: './navigation-list.component.html',
   styleUrls: ['./navigation-list.component.scss'],
