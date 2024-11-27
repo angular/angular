@@ -20,7 +20,6 @@ import {takeUntilDestroyed, toObservable} from '@angular/core/rxjs-interop';
 import {
   ClickOutside,
   NavigationState,
-  WINDOW,
   IconComponent,
   getBaseUrlAfterRedirects,
   isApple,
@@ -56,7 +55,6 @@ export class Navigation implements OnInit {
   private readonly location = inject(Location);
   private readonly themeManager = inject(ThemeManager);
   private readonly isSearchDialogOpen = inject(IS_SEARCH_DIALOG_OPEN);
-  private readonly window = inject(WINDOW);
   private readonly versionManager = inject(VersionManager);
 
   readonly DOCS_ROUTE = PagePrefix.DOCS;
