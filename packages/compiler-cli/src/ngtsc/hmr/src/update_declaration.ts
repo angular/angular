@@ -27,7 +27,11 @@ export function getHmrUpdateDeclaration(
   meta: R3HmrMetadata,
   sourceFile: ts.SourceFile,
 ): ts.FunctionDeclaration {
-  const importRewriter = new HmrModuleImportRewriter(meta.coreName);
+  const namespaceSpecifiers = meta.namespaceDependencies.reduce((result, current) => {
+    result.set(current.moduleName, current.assignedName);
+    return result;
+  }, new Map<string, string>());
+  const importRewriter = new HmrModuleImportRewriter(namespaceSpecifiers);
   const importManager = new ImportManager({
     ...presetImportManagerForceNamespaceImports,
     rewriter: importRewriter,
@@ -52,12 +56,11 @@ export function getHmrUpdateDeclaration(
   );
 }
 
-/** Rewriter that replaces namespace imports to `@angular/core` with a specifier identifier. */
 class HmrModuleImportRewriter {
-  constructor(private readonly coreName: string) {}
+  constructor(private readonly lookup: Map<string, string>) {}
 
   rewriteNamespaceImportIdentifier(specifier: string, moduleName: string): string {
-    return moduleName === '@angular/core' ? this.coreName : specifier;
+    return this.lookup.has(moduleName) ? this.lookup.get(moduleName)! : specifier;
   }
 
   rewriteSymbol(symbol: string): string {

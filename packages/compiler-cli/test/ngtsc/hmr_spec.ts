@@ -102,12 +102,13 @@ runInEachFileSystem(() => {
       const jsContents = env.getContents('test.js');
       const hmrContents = env.driveHmr('test.ts', 'Cmp');
 
+      expect(jsContents).toContain(`import * as i0 from "@angular/core";`);
       expect(jsContents).toContain('function Cmp_HmrLoad(t) {');
       expect(jsContents).toContain(
         'import(/* @vite-ignore */\n"/@ng/component?c=test.ts%40Cmp&t=" + encodeURIComponent(t))',
       );
       expect(jsContents).toContain(
-        ').then(m => m.default && i0.ɵɵreplaceMetadata(Cmp, m.default, i0, ' +
+        ').then(m => m.default && i0.ɵɵreplaceMetadata(Cmp, m.default, [i0], ' +
           '[Dep, transformValue, TOKEN, Component, Inject, ViewChild, Input]));',
       );
       expect(jsContents).toContain('Cmp_HmrLoad(Date.now());');
@@ -117,12 +118,82 @@ runInEachFileSystem(() => {
       );
 
       expect(hmrContents).toContain(
-        'export default function Cmp_UpdateMetadata(Cmp, __ngCore__, Dep, transformValue, TOKEN, Component, Inject, ViewChild, Input) {',
+        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, Dep, transformValue, TOKEN, Component, Inject, ViewChild, Input) {',
       );
+      expect(hmrContents).toContain(`const ɵhmr0 = ɵɵnamespaces[0];`);
       expect(hmrContents).toContain('Cmp.ɵfac = function Cmp_Factory');
-      expect(hmrContents).toContain('Cmp.ɵcmp = /*@__PURE__*/ __ngCore__.ɵɵdefineComponent');
-      expect(hmrContents).toContain('__ngCore__.ɵsetClassMetadata(Cmp,');
-      expect(hmrContents).toContain('__ngCore__.ɵsetClassDebugInfo(Cmp,');
+      expect(hmrContents).toContain('Cmp.ɵcmp = /*@__PURE__*/ ɵhmr0.ɵɵdefineComponent');
+      expect(hmrContents).toContain('ɵhmr0.ɵsetClassMetadata(Cmp,');
+      expect(hmrContents).toContain('ɵhmr0.ɵsetClassDebugInfo(Cmp,');
+    });
+
+    it('should generate an HMR initializer and update function for a class that depends on multiple namespaces', () => {
+      enableHmr();
+      env.write(
+        'dep.ts',
+        `
+          import {Directive, NgModule} from '@angular/core';
+
+          @Directive({
+            selector: '[dep]',
+            standalone: true,
+          })
+          export class Dep {}
+
+          @NgModule({
+            imports: [Dep],
+            exports: [Dep]
+          })
+          export class DepModule {}
+        `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+          import {Component, ViewChild, Input, Inject} from '@angular/core';
+          import {DepModule} from './dep';
+
+          @Component({
+            selector: 'cmp',
+            standalone: true,
+            template: '<div dep><div>',
+            imports: [DepModule],
+          })
+          export class Cmp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      const hmrContents = env.driveHmr('test.ts', 'Cmp');
+      expect(jsContents).toContain(`import * as i0 from "@angular/core";`);
+      expect(jsContents).toContain(`import * as i1 from "./dep";`);
+      expect(jsContents).toContain('function Cmp_HmrLoad(t) {');
+      expect(jsContents).toContain(
+        'import(/* @vite-ignore */\n"/@ng/component?c=test.ts%40Cmp&t=" + encodeURIComponent(t))',
+      );
+      expect(jsContents).toContain(
+        ').then(m => m.default && i0.ɵɵreplaceMetadata(Cmp, m.default, [i0, i1], ' +
+          '[DepModule, Component]));',
+      );
+      expect(jsContents).toContain('Cmp_HmrLoad(Date.now());');
+      expect(jsContents).toContain(
+        'import.meta.hot && import.meta.hot.on("angular:component-update", ' +
+          'd => d.id === "test.ts%40Cmp" && Cmp_HmrLoad(d.timestamp)',
+      );
+
+      expect(hmrContents).toContain(
+        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, DepModule, Component) {',
+      );
+      expect(hmrContents).toContain(`const ɵhmr0 = ɵɵnamespaces[0];`);
+      expect(hmrContents).toContain(`const ɵhmr1 = ɵɵnamespaces[1];`);
+      expect(hmrContents).toContain('Cmp.ɵfac = function Cmp_Factory');
+      expect(hmrContents).toContain('Cmp.ɵcmp = /*@__PURE__*/ ɵhmr0.ɵɵdefineComponent');
+      expect(hmrContents).toContain('ɵhmr0.ɵsetClassMetadata(Cmp,');
+      expect(hmrContents).toContain('ɵhmr0.ɵsetClassDebugInfo(Cmp,');
+      expect(hmrContents).toContain('dependencies: [DepModule, ɵhmr1.Dep]');
     });
 
     it('should generate an HMR update function for a component that has embedded views', () => {
@@ -144,10 +215,10 @@ runInEachFileSystem(() => {
       const hmrContents = env.driveHmr('test.ts', 'Cmp');
 
       expect(hmrContents).toContain(
-        'export default function Cmp_UpdateMetadata(Cmp, __ngCore__, Component) {',
+        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, Component) {',
       );
       expect(hmrContents).toContain('function Cmp_Conditional_0_Template(rf, ctx) {');
-      expect(hmrContents).toContain('__ngCore__.ɵɵtemplate(0, Cmp_Conditional_0_Template, 1, 0);');
+      expect(hmrContents).toContain('ɵhmr0.ɵɵtemplate(0, Cmp_Conditional_0_Template, 1, 0);');
     });
 
     it('should generate an HMR update function for a component whose definition produces variables', () => {
@@ -169,12 +240,12 @@ runInEachFileSystem(() => {
       const hmrContents = env.driveHmr('test.ts', 'Cmp');
 
       expect(hmrContents).toContain(
-        'export default function Cmp_UpdateMetadata(Cmp, __ngCore__, Component) {',
+        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, Component) {',
       );
       expect(hmrContents).toContain('const _c0 = [[["header"]], "*"];');
       expect(hmrContents).toContain('const _c1 = ["header", "*"];');
       expect(hmrContents).toContain('ngContentSelectors: _c1');
-      expect(hmrContents).toContain('__ngCore__.ɵɵprojectionDef(_c0);');
+      expect(hmrContents).toContain('ɵhmr0.ɵɵprojectionDef(_c0);');
     });
 
     it('should not defer dependencies when HMR is enabled', () => {
@@ -219,11 +290,11 @@ runInEachFileSystem(() => {
       expect(jsContents).toContain('i0.ɵɵdefer(1, 0, Cmp_Defer_1_DepsFn);');
 
       expect(hmrContents).toContain(
-        'export default function Cmp_UpdateMetadata(Cmp, __ngCore__, Component, Dep) {',
+        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, Component, Dep) {',
       );
       expect(hmrContents).toContain('const Cmp_Defer_1_DepsFn = () => [Dep];');
       expect(hmrContents).toContain('function Cmp_Defer_0_Template(rf, ctx) {');
-      expect(hmrContents).toContain('__ngCore__.ɵɵdefer(1, 0, Cmp_Defer_1_DepsFn);');
+      expect(hmrContents).toContain('ɵhmr0.ɵɵdefer(1, 0, Cmp_Defer_1_DepsFn);');
       expect(hmrContents).not.toContain('import(');
     });
 

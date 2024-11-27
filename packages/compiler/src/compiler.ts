@@ -177,6 +177,7 @@ export {
   compileHmrInitializer,
   compileHmrUpdateCallback,
   R3HmrMetadata,
+  R3HmrNamespaceDependency,
 } from './render3/r3_hmr_compiler';
 export {
   compileFactoryFunction,
