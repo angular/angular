@@ -604,6 +604,7 @@ export class ApplicationRef {
       // if one exists. Snapshots may be reference counted by the implementation so
       // we want to ensure that if we request a snapshot that we use it.
       snapshot.run(TracingAction.CHANGE_DETECTION, this._tick);
+      snapshot[Symbol.dispose]();
       return;
     }
 
