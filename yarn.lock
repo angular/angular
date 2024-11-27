@@ -323,9 +323,10 @@
     "@angular/core" "^13.0.0 || ^14.0.0-0"
     reflect-metadata "^0.1.13"
 
-"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#41d5efafd8094da3c8455e1b54b381e346d0c7a9":
-  version "0.0.0-9bf81f9c029a09347afb376b9e1ae12b33f1a1fa"
-  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#41d5efafd8094da3c8455e1b54b381e346d0c7a9"
+"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#a35ad7f4e30ae1fc531517867efcae89cce5afa2":
+  version "0.0.0-9ad44d7add69b53cec32d6486e9e8a83e7ec6622"
+  uid a35ad7f4e30ae1fc531517867efcae89cce5afa2
+  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#a35ad7f4e30ae1fc531517867efcae89cce5afa2"
   dependencies:
     "@angular/benchpress" "0.3.0"
     "@angular/build" "19.0.0"
@@ -479,9 +480,10 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#47ccf2ca29307997c021994c859c03c71fae686e":
-  version "0.0.0-9bf81f9c029a09347afb376b9e1ae12b33f1a1fa"
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#47ccf2ca29307997c021994c859c03c71fae686e"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#dde9fb807550b7634613f88bb224702155f58e07":
+  version "0.0.0-9ad44d7add69b53cec32d6486e9e8a83e7ec6622"
+  uid dde9fb807550b7634613f88bb224702155f58e07
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#dde9fb807550b7634613f88bb224702155f58e07"
   dependencies:
     "@google-cloud/spanner" "7.16.0"
     "@octokit/rest" "21.0.2"
