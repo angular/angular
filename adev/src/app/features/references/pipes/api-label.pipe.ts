@@ -12,7 +12,6 @@ import {ApiItemType} from '../interfaces/api-item-type';
 
 @Pipe({
   name: 'adevApiLabel',
-  standalone: true,
 })
 export class ApiLabel implements PipeTransform {
   private readonly shortLabelsMap: Record<ApiItemType, string> = {

@@ -11,7 +11,6 @@ import {normalizePath, removeTrailingSlash} from '../utils/index';
 
 @Pipe({
   name: 'relativeLink',
-  standalone: true,
 })
 export class RelativeLink implements PipeTransform {
   transform(absoluteUrl: string, result: 'relative' | 'pathname' | 'hash' = 'relative'): string {

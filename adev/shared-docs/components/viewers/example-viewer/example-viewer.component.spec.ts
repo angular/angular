@@ -226,6 +226,5 @@ const getMetadata = (value: Partial<ExampleMetadata> = {}): ExampleMetadata => {
 
 @Component({
   template: '',
-  standalone: true,
 })
 class ExampleComponent {}

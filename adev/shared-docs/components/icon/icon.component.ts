@@ -18,7 +18,6 @@ import {
 
 @Component({
   selector: 'docs-icon',
-  standalone: true,
   templateUrl: './icon.component.html',
   styleUrl: './icon.component.scss',
   host: {

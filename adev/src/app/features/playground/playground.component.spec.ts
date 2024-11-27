@@ -22,7 +22,6 @@ import TutorialPlayground from './playground.component';
 @Component({
   selector: EMBEDDED_EDITOR_SELECTOR,
   template: '<div>FakeEmbeddedEditor</div>',
-  standalone: true,
 })
 class FakeEmbeddedEditor {}
 

@@ -32,7 +32,6 @@ export const PROGRESS_BAR_DELAY = 30;
 
 @Component({
   selector: 'adev-progress-bar',
-  standalone: true,
   imports: [NgProgressbar],
   template: `
     <ng-progress aria-label="Page load progress" />
