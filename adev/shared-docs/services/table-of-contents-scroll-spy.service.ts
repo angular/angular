@@ -19,11 +19,9 @@ import {RESIZE_EVENT_DELAY} from '../constants/index';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {auditTime, debounceTime, fromEvent, startWith} from 'rxjs';
 import {WINDOW} from '../providers/index';
-import {shouldReduceMotion} from '../utils/index';
 import {TableOfContentsLoader} from './table-of-contents-loader.service';
 
 export const SCROLL_EVENT_DELAY = 20;
-export const SCROLL_FINISH_DELAY = SCROLL_EVENT_DELAY * 2;
 
 @Injectable({providedIn: 'root'})
 // The service is responsible for listening for scrolling and resizing,
@@ -35,6 +33,7 @@ export class TableOfContentsScrollSpy {
   private readonly viewportScroller = inject(ViewportScroller);
   private readonly injector = inject(EnvironmentInjector);
   private contentSourceElement: HTMLElement | null = null;
+
   private lastContentWidth = 0;
 
   activeItemId = signal<string | null>(null);
@@ -63,24 +62,6 @@ export class TableOfContentsScrollSpy {
 
   scrollToTop(): void {
     this.viewportScroller.scrollToPosition([0, 0]);
-  }
-
-  scrollToSection(id: string): void {
-    if (shouldReduceMotion()) {
-      this.offsetToSection(id);
-    } else {
-      const section = this.document.getElementById(id);
-      section?.scrollIntoView({behavior: 'smooth', block: 'start'});
-      // We don't want to set the active item here, it would mess up the animation
-      // The scroll event handler will handle it for us
-    }
-  }
-
-  private offsetToSection(id: string): void {
-    const section = this.document.getElementById(id);
-    section?.scrollIntoView({block: 'start'});
-    // Here we need to set the active item manually because scroll events might not be fired
-    this.activeItemId.set(id);
   }
 
   // After window resize, we should update top value of each table content item
