@@ -1967,7 +1967,7 @@ describe('hot module replacement', () => {
         (type as any)[ɵNG_COMP_DEF] = null;
         compileComponent(type, metadata);
       },
-      angularCoreEnv,
+      [angularCoreEnv],
       [],
     );
   }

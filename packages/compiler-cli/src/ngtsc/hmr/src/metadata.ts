@@ -10,7 +10,7 @@ import {R3CompiledExpression, R3HmrMetadata, outputAst as o} from '@angular/comp
 import {DeclarationNode, ReflectionHost} from '../../reflection';
 import {getProjectRelativePath} from '../../util/src/path';
 import {CompileResult} from '../../transform';
-import {extractHmrLocals} from './extract_locals';
+import {extractHmrDependencies} from './extract_dependencies';
 import ts from 'typescript';
 
 /**
@@ -43,12 +43,13 @@ export function extractHmrMetatadata(
     getProjectRelativePath(sourceFile, rootDirs, compilerHost) ||
     compilerHost.getCanonicalFileName(sourceFile.fileName);
 
+  const dependencies = extractHmrDependencies(clazz, definition, factory, classMetadata, debugInfo);
   const meta: R3HmrMetadata = {
     type: new o.WrappedNodeExpr(clazz.name),
     className: clazz.name.text,
     filePath,
-    locals: extractHmrLocals(clazz, definition, factory, classMetadata, debugInfo),
-    coreName: '__ngCore__',
+    localDependencies: dependencies.local,
+    namespaceDependencies: dependencies.external,
   };
 
   return meta;
