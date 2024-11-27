@@ -187,6 +187,7 @@ export class AfterRenderSequence implements AfterRenderRef {
     // associates the initial run of the hook with the context that created it.
     // Follow-up runs are independent of that initial context and have different
     // triggers.
+    this.snapshot?.dispose();
     this.snapshot = null;
   }
 

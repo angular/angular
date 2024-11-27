@@ -27,6 +27,7 @@ describe('TracingService', () => {
         actions.push(action);
         return fn();
       },
+      dispose() {},
     };
     mockTracingService = {
       snapshot: jasmine.createSpy('snapshot').and.returnValue(fakeSnapshot),
