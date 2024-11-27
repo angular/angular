@@ -1,7 +1,5 @@
 # RxJS interop with component and directive outputs
 
-IMPORTANT: The RxJS Interop package is available for [developer preview](reference/releases#developer-preview). It's ready for you to try, but it might change before it is stable.
-
 Tip: This guide assumes you're familiar with [component and directive outputs](guide/components/outputs).
 
 The `@angular/rxjs-interop` package offers two APIs related to component and directive outputs.
