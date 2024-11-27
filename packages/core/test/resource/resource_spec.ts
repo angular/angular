@@ -12,6 +12,7 @@ import {
   EnvironmentInjector,
   Injector,
   resource,
+  ResourceRef,
   ResourceStatus,
   signal,
 } from '../../src/core';
@@ -718,6 +719,20 @@ describe('resource', () => {
     expect(echoResource.value()).toBe(null);
     expect(echoResource.error()).toBe(undefined);
     expect(aborted).toEqual([{counter: 0}, {counter: 0}]);
+  });
+
+  it('should infer request type correctly', () => {
+    // This is a typing test
+    const array = signal<number[] | undefined>([3]);
+    const res = resource({
+      request: () => array(),
+      loader: async ({request}) => {
+        // We check the undefined is correctly removed from the type
+        const arr: number[] = request;
+        return Promise.resolve(arr);
+      },
+      injector: TestBed.inject(Injector),
+    });
   });
 });
 

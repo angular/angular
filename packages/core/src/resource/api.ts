@@ -148,7 +148,7 @@ export interface ResourceRef<T> extends WritableResource<T> {
  * @experimental
  */
 export interface ResourceLoaderParams<R> {
-  request: Exclude<NoInfer<R>, undefined>;
+  request: NoInfer<Exclude<R, undefined>>;
   abortSignal: AbortSignal;
   previous: {
     status: ResourceStatus;
