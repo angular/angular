@@ -1194,6 +1194,9 @@
     "name": "init_callback_scheduler"
   },
   {
+    "name": "init_cd_tracing"
+  },
+  {
     "name": "init_chained_injector"
   },
   {
