@@ -14,7 +14,6 @@ import {DevToolsComponent} from 'ng-devtools';
 @Component({
   templateUrl: './devtools-app.component.html',
   styleUrls: ['./devtools-app.component.scss'],
-  standalone: true,
   imports: [DevToolsComponent],
 })
 export class AppDevToolsComponent {

@@ -39,7 +39,6 @@ const parseValue = (value: EditorResult): EditorResult => {
   templateUrl: './property-editor.component.html',
   selector: 'ng-property-editor',
   styleUrls: ['./property-editor.component.scss'],
-  standalone: true,
   imports: [FormsModule],
 })
 export class PropertyEditorComponent {

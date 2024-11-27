@@ -26,7 +26,6 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {DevToolsNode, ElementPosition, Events, MessageBus} from 'protocol';
 
 import {TabUpdate} from '../../tab-update/index';
@@ -43,7 +42,6 @@ import {MatTooltip} from '@angular/material/tooltip';
   templateUrl: './directive-forest.component.html',
   styleUrls: ['./directive-forest.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
   imports: [
     FilterComponent,
     CdkVirtualScrollViewport,

@@ -17,7 +17,6 @@ import {RouterLink} from '@angular/router';
     <a [routerLink]="">Home</a>
     <a [routerLink]="">Home</a>
   `,
-  standalone: true,
   imports: [RouterLink],
 })
 export class AboutComponent {}

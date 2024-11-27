@@ -20,7 +20,6 @@ import {BarChartComponent} from './bar-chart.component';
   selector: 'ng-bargraph-visualizer',
   templateUrl: './bargraph-visualizer.component.html',
   styleUrls: ['./bargraph-visualizer.component.scss'],
-  standalone: true,
   imports: [BarChartComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -9,15 +9,12 @@
 import {Component} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MatDialog, MatDialogModule} from '@angular/material/dialog';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
 import {RouterLink, RouterOutlet} from '@angular/router';
 
 import {DialogComponent} from './dialog.component';
 
 @Component({
   selector: 'app-todo-demo',
-  standalone: true,
   imports: [RouterLink, RouterOutlet, MatDialogModule, FormsModule],
   styles: [
     `
