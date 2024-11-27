@@ -29,7 +29,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     NO_MATCH = 4002,
     // (undocumented)
-    NULLISH_COMMAND = 4008,
+    NULLISH_COMMAND = -4008,
     // (undocumented)
     OUTLET_ALREADY_ACTIVATED = 4013,
     // (undocumented)

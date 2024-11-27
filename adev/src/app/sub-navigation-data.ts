@@ -1305,6 +1305,11 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         path: 'errors/NG8003',
         contentPath: 'reference/errors/NG8003',
       },
+      {
+        label: 'NG04008: Invalid or undefined route configuration or navigation path',
+        path: 'errors/NG04008',
+        contentPath: 'reference/errors/NG04008',
+      },
     ],
   },
   {
