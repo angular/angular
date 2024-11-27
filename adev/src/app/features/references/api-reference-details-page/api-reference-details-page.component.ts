@@ -33,7 +33,6 @@ import {AppScroller} from '../../../app-scroller';
 
 @Component({
   selector: 'adev-reference-page',
-  standalone: true,
   imports: [DocViewer, MatTabsModule],
   templateUrl: './api-reference-details-page.component.html',
   styleUrls: ['./api-reference-details-page.component.scss'],

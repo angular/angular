@@ -12,7 +12,6 @@ import {ApiLabel} from '../pipes/api-label.pipe';
 
 @Component({
   selector: 'docs-api-item-label',
-  standalone: true,
   templateUrl: './api-item-label.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {

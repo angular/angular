@@ -13,7 +13,6 @@ import {GITHUB, X, MEDIUM, YOUTUBE} from './../../constants/links';
 
 @Component({
   selector: 'footer[adev-footer]',
-  standalone: true,
   imports: [ExternalLink, RouterLink],
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.scss'],

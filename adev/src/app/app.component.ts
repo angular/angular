@@ -35,7 +35,6 @@ import {HeaderService} from './core/services/header.service';
 @Component({
   selector: 'adev-root',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
   imports: [
     CookiePopup,
     Navigation,

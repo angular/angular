@@ -20,7 +20,6 @@ import {WINDOW} from '../../providers/index';
   host: {
     '[attr.target]': 'target',
   },
-  standalone: true,
 })
 export class ExternalLink implements OnInit {
   private readonly anchor: ElementRef<HTMLAnchorElement> = inject(ElementRef);

@@ -12,7 +12,6 @@ import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 @Component({
   selector: 'docs-docs',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
   imports: [DocViewer],
   styleUrls: ['./docs.component.scss'],
   templateUrl: './docs.component.html',
