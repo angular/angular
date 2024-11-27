@@ -102,3 +102,11 @@ export function isOctalDigit(code: number): boolean {
 export function isQuote(code: number): boolean {
   return code === $SQ || code === $DQ || code === $BT;
 }
+
+export function isLeftBrace(code: number): boolean {
+  return code === $LBRACE;
+}
+
+export function isRightBrace(code: number): boolean {
+  return code === $RBRACE;
+}

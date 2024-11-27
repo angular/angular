@@ -458,7 +458,10 @@ export class Parser {
    */
   private _getInterpolationEndIndex(input: string, expressionEnd: string, start: number): number {
     for (const charIndex of this._forEachUnquotedChar(input, start)) {
-      if (input.startsWith(expressionEnd, charIndex)) {
+      if (
+        input.startsWith(expressionEnd, charIndex) &&
+        !input.startsWith(expressionEnd, charIndex + 1)
+      ) {
         return charIndex;
       }
 
