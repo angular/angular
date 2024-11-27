@@ -1445,6 +1445,11 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'reference/migrations/signal-inputs',
       },
       {
+        label: 'Outputs',
+        path: 'reference/migrations/outputs',
+        contentPath: 'reference/migrations/outputs',
+      },
+      {
         label: 'Signal queries',
         path: 'reference/migrations/signal-queries',
         contentPath: 'reference/migrations/signal-queries',
