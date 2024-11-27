@@ -6,27 +6,26 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {R3CompiledExpression, outputAst as o} from '@angular/compiler';
+import {R3CompiledExpression, R3HmrNamespaceDependency, outputAst as o} from '@angular/compiler';
 import {DeclarationNode} from '../../reflection';
 import {CompileResult} from '../../transform';
 import ts from 'typescript';
 
 /**
- * Determines the names of the file-level locals that the HMR
- * initializer needs to capture and pass along.
+ * Determines the file-level dependencies that the HMR initializer needs to capture and pass along.
  * @param sourceFile File in which the file is being compiled.
  * @param definition Compiled component definition.
  * @param factory Compiled component factory.
  * @param classMetadata Compiled `setClassMetadata` expression, if any.
  * @param debugInfo Compiled `setClassDebugInfo` expression, if any.
  */
-export function extractHmrLocals(
+export function extractHmrDependencies(
   node: DeclarationNode,
   definition: R3CompiledExpression,
   factory: CompileResult,
   classMetadata: o.Statement | null,
   debugInfo: o.Statement | null,
-): string[] {
+): {local: string[]; external: R3HmrNamespaceDependency[]} {
   const name = ts.isClassDeclaration(node) && node.name ? node.name.text : null;
   const visitor = new PotentialTopLevelReadsVisitor();
   const sourceFile = node.getSourceFile();
@@ -44,7 +43,14 @@ export function extractHmrLocals(
   // variables inside of functions. Note that we filter out the class name since it is always
   // defined and it saves us having to repeat this logic wherever the locals are consumed.
   const availableTopLevel = getTopLevelDeclarationNames(sourceFile);
-  return Array.from(visitor.allReads).filter((r) => r !== name && availableTopLevel.has(r));
+
+  return {
+    local: Array.from(visitor.allReads).filter((r) => r !== name && availableTopLevel.has(r)),
+    external: Array.from(visitor.namespaceReads, (name, index) => ({
+      moduleName: name,
+      assignedName: `ɵhmr${index}`,
+    })),
+  };
 }
 
 /**
@@ -138,6 +144,14 @@ function trackBindingName(node: ts.BindingName, results: Set<string>): void {
  */
 class PotentialTopLevelReadsVisitor extends o.RecursiveAstVisitor {
   readonly allReads = new Set<string>();
+  readonly namespaceReads = new Set<string>();
+
+  override visitExternalExpr(ast: o.ExternalExpr, context: any) {
+    if (ast.value.moduleName !== null) {
+      this.namespaceReads.add(ast.value.moduleName);
+    }
+    super.visitExternalExpr(ast, context);
+  }
 
   override visitReadVarExpr(ast: o.ReadVarExpr, context: any) {
     this.allReads.add(ast.name);
