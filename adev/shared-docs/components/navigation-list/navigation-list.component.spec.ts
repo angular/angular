@@ -11,7 +11,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NavigationList} from './navigation-list.component';
 import {By} from '@angular/platform-browser';
 import {NavigationItem} from '../../interfaces';
-import {RouterTestingModule} from '@angular/router/testing';
+import {provideRouter} from '@angular/router';
 import {provideExperimentalZonelessChangeDetection, signal} from '@angular/core';
 import {NavigationState} from '../../services';
 
@@ -37,8 +37,9 @@ describe('NavigationList', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NavigationList, RouterTestingModule],
+      imports: [NavigationList],
       providers: [
+        provideRouter([]),
         {provide: NavigationState, useClass: FakeNavigationListState},
         provideExperimentalZonelessChangeDetection(),
       ],
@@ -121,24 +122,34 @@ describe('NavigationList', () => {
     expect(toggleItemSpy).toHaveBeenCalledOnceWith(itemToToggle);
   });
 
-  it('should display items to provided level', () => {
+  it('should display only items to provided level (Level 1)', () => {
     fixture.componentRef.setInput('navigationItems', [...navigationItems]);
     fixture.componentRef.setInput('displayItemsToLevel', 1);
     fixture.detectChanges(true);
 
-    const visibleItems = fixture.debugElement.queryAll(
-      By.css('li.docs-faceted-list-item:not(.docs-navigation-link-hidden)'),
-    );
-    const hiddenItems = fixture.debugElement.queryAll(
-      By.css('li.docs-faceted-list-item.docs-navigation-link-hidden'),
-    );
+    const items = fixture.debugElement.queryAll(By.css('li.docs-faceted-list-item'));
 
-    expect(visibleItems.length).toBe(2);
-    expect(visibleItems[0].nativeElement.innerText).toBe(navigationItems[0].label);
-    expect(visibleItems[1].nativeElement.innerText).toBe(navigationItems[1].label);
-    expect(hiddenItems.length).toBe(2);
-    expect(hiddenItems[0].nativeElement.innerText).toBe(navigationItems[1].children![0].label);
-    expect(hiddenItems[1].nativeElement.innerText).toBe(navigationItems[1].children![1].label);
+    expect(items.length).toBe(2);
+    expect(items[0].nativeElement.innerText).toBe(navigationItems[0].label);
+    expect(items[1].nativeElement.innerText).toBe(navigationItems[1].label);
+  });
+
+  it('should display all items (Level 2)', () => {
+    fixture.componentRef.setInput('navigationItems', [...navigationItems]);
+    fixture.componentRef.setInput('displayItemsToLevel', 2);
+    fixture.detectChanges(true);
+
+    const items = fixture.debugElement.queryAll(By.css('li.docs-faceted-list-item'));
+
+    expect(items.length).toBe(4);
+
+    expect(items[0].nativeElement.innerText).toBe(navigationItems[0].label);
+    expect(items[1].nativeElement.innerText.startsWith(navigationItems[1].label)).toBeTrue();
+
+    const secondItemChildren = navigationItems[1].children || [];
+
+    expect(items[2].nativeElement.innerText).toBe(secondItemChildren[0].label);
+    expect(items[3].nativeElement.innerText).toBe(secondItemChildren[1].label);
   });
 });
 
