@@ -4,10 +4,7 @@
     [class.docs-navigation-list-dropdown]="isDropdownView()"
   >
     @for (item of navigationItems; track $index) {
-      <li
-        class="docs-faceted-list-item"
-        [class.docs-navigation-link-hidden]="displayItemsToLevel() && item.level > displayItemsToLevel()"
-      >
+      <li class="docs-faceted-list-item">
         @if (item.path) {
           @if (item.isExternal) {
             <a [href]="item.path" target="_blank">
@@ -67,7 +64,7 @@
             </button>
           }
         }
-        @if (item.children?.length > 0) {
+        @if (displayItemsToLevel() > item.level && item.children?.length > 0) {
           <ng-container *ngTemplateOutlet="navigationList; context: {$implicit: item.children}" />
         }
       </li>
