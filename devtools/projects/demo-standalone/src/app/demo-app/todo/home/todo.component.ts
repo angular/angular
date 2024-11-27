@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule} from '@angular/common';
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 
 import {TooltipDirective} from './tooltip.directive';
@@ -20,7 +19,6 @@ export interface Todo {
 @Component({
   selector: 'app-todo',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
   imports: [TooltipDirective],
   styles: [
     `

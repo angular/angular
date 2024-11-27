@@ -10,7 +10,6 @@ import {Directive} from '@angular/core';
 
 @Directive({
   selector: '[appTooltip]',
-  standalone: true,
   host: {
     '(click)': 'handleClick()',
   },

@@ -14,7 +14,6 @@ import {Events, MessageBus} from 'protocol';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  standalone: true,
   imports: [DevToolsComponent],
 })
 export class AppComponent implements OnInit {

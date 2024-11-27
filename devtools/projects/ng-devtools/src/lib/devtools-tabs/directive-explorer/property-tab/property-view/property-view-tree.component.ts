@@ -20,7 +20,6 @@ import {MatTree, MatTreeNode, MatTreeNodeDef, MatTreeNodePadding} from '@angular
   selector: 'ng-property-view-tree',
   templateUrl: './property-view-tree.component.html',
   styleUrls: ['./property-view-tree.component.scss'],
-  standalone: true,
   imports: [
     MatTree,
     MatTreeNode,

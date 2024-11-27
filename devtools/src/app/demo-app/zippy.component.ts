@@ -12,7 +12,6 @@ import {Component, input} from '@angular/core';
   selector: 'app-zippy',
   templateUrl: './zippy.component.html',
   styleUrls: ['./zippy.component.scss'],
-  standalone: true,
 })
 export class ZippyComponent {
   readonly title = input<string>('title');
