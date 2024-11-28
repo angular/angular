@@ -1341,6 +1341,24 @@ describe('inject migration', () => {
     ]);
   });
 
+  it('should not migrate class that has un-injectable parameters', async () => {
+    const initialText = [
+      `import { Directive, Inject } from '@angular/core';`,
+      `import { FOO_TOKEN, Foo } from 'foo';`,
+      ``,
+      `@Directive()`,
+      `class MyDir {`,
+      `  constructor(readonly injectable: Foo, private notInjectable: string) {}`,
+      `}`,
+    ].join('\n');
+
+    writeFile('/dir.ts', initialText);
+
+    await runMigration();
+
+    expect(tree.readContent('/dir.ts')).toBe(initialText);
+  });
+
   it('should unwrap forwardRef with an implicit return', async () => {
     writeFile(
       '/dir.ts',

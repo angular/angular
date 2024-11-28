@@ -62,6 +62,16 @@ export const DI_PARAM_SYMBOLS = new Set([
   'forwardRef',
 ]);
 
+/** Kinds of nodes which aren't injectable when set as a type of a parameter. */
+const UNINJECTABLE_TYPE_KINDS = new Set([
+  ts.SyntaxKind.TrueKeyword,
+  ts.SyntaxKind.FalseKeyword,
+  ts.SyntaxKind.NumberKeyword,
+  ts.SyntaxKind.StringKeyword,
+  ts.SyntaxKind.NullKeyword,
+  ts.SyntaxKind.VoidKeyword,
+]);
+
 /**
  * Finds the necessary information for the `inject` migration in a file.
  * @param sourceFile File which to analyze.
@@ -156,9 +166,26 @@ export function analyzeFile(
           member.parameters.length > 0,
       ) as ts.ConstructorDeclaration | undefined;
 
+      // Basic check to determine if all parameters are injectable. This isn't exhaustive, but it
+      // should catch the majority of cases. An exhaustive check would require a full type checker
+      // which we don't have in this migration.
+      const allParamsInjectable = !!constructorNode?.parameters.every((param) => {
+        if (!param.type || !UNINJECTABLE_TYPE_KINDS.has(param.type.kind)) {
+          return true;
+        }
+        return getAngularDecorators(localTypeChecker, ts.getDecorators(param) || []).some(
+          (dec) => dec.name === 'Inject' || dec.name === 'Attribute',
+        );
+      });
+
       // Don't migrate abstract classes by default, because
       // their parameters aren't guaranteed to be injectable.
-      if (supportsDI && constructorNode && (!isAbstract || options.migrateAbstractClasses)) {
+      if (
+        supportsDI &&
+        constructorNode &&
+        allParamsInjectable &&
+        (!isAbstract || options.migrateAbstractClasses)
+      ) {
         classes.push({
           node,
           constructor: constructorNode,
