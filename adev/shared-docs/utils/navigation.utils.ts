@@ -78,16 +78,18 @@ export const findNavigationItem = (
   return result;
 };
 
-export const isExternalLink = (link: string, windowOrigin: string) =>
-  new URL(link).origin !== windowOrigin;
+/**
+ * For perf reasons, we only don't rely on creating a new Url object and comparing the origins
+ */
+export function isExternalLink(link: string): boolean {
+  return link.startsWith('http://') || link.startsWith('https://');
+}
 
-export const markExternalLinks = (item: NavigationItem, origin: string): void => {
+export function markExternalLinks(item: NavigationItem): void {
   if (item.path) {
-    try {
-      item.isExternal = isExternalLink(item.path, origin);
-    } catch (err) {}
+    item.isExternal = isExternalLink(item.path);
   }
-};
+}
 
 export const mapNavigationItemsToRoutes = (
   navigationItems: NavigationItem[],
