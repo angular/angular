@@ -1282,6 +1282,65 @@ describe('inject migration', () => {
     ]);
   });
 
+  it('should preserve type literals in @Inject parameter', async () => {
+    writeFile(
+      '/dir.ts',
+      [
+        `import { Directive, Inject } from '@angular/core';`,
+        `import { FOO_TOKEN } from 'foo';`,
+        ``,
+        `@Directive()`,
+        `class MyDir {`,
+        `  constructor(@Inject(FOO_TOKEN) private foo: {id: number}) {}`,
+        `}`,
+      ].join('\n'),
+    );
+
+    await runMigration();
+
+    expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+      `import { Directive, inject } from '@angular/core';`,
+      `import { FOO_TOKEN } from 'foo';`,
+      ``,
+      `@Directive()`,
+      `class MyDir {`,
+      `  private foo = inject<{`,
+      `    id: number;`,
+      `}>(FOO_TOKEN);`,
+      `}`,
+    ]);
+  });
+
+  it('should preserve tuple types in @Inject parameter', async () => {
+    writeFile(
+      '/dir.ts',
+      [
+        `import { Directive, Inject } from '@angular/core';`,
+        `import { FOO_TOKEN } from 'foo';`,
+        ``,
+        `@Directive()`,
+        `class MyDir {`,
+        `  constructor(@Inject(FOO_TOKEN) private foo: [a: number, b: number]) {}`,
+        `}`,
+      ].join('\n'),
+    );
+
+    await runMigration();
+
+    expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+      `import { Directive, inject } from '@angular/core';`,
+      `import { FOO_TOKEN } from 'foo';`,
+      ``,
+      `@Directive()`,
+      `class MyDir {`,
+      `  private foo = inject<[`,
+      `    a: number,`,
+      `    b: number`,
+      `]>(FOO_TOKEN);`,
+      `}`,
+    ]);
+  });
+
   it('should unwrap forwardRef with an implicit return', async () => {
     writeFile(
       '/dir.ts',
