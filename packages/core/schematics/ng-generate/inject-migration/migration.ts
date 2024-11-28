@@ -259,7 +259,15 @@ function migrateClass(
 
   if (prependToClass.length > 0) {
     if (removedMembers.size === node.members.length) {
-      tracker.insertText(sourceFile, constructor.getEnd() + 1, `${prependToClass.join('\n')}\n`);
+      tracker.insertText(
+        sourceFile,
+        // If all members were deleted, insert after the last one.
+        // This allows us to preserve the indentation.
+        node.members.length > 0
+          ? node.members[node.members.length - 1].getEnd() + 1
+          : node.getEnd() - 1,
+        `${prependToClass.join('\n')}\n`,
+      );
     } else {
       // Insert the new properties after the first member that hasn't been deleted.
       tracker.insertText(

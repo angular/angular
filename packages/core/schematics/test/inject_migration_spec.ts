@@ -2387,5 +2387,41 @@ describe('inject migration', () => {
         `}`,
       ]);
     });
+
+    it('should handle properties being migrated both before and after the constructor', async () => {
+      writeFile(
+        '/dir.ts',
+        [
+          `import { Directive } from '@angular/core';`,
+          `import { Foo } from 'foo';`,
+          ``,
+          `@Directive()`,
+          `class MyDir {`,
+          `  private beforeConstructor: number;`,
+          ``,
+          `  constructor(private foo: Foo) {`,
+          `    this.beforeConstructor = this.foo.getValue();`,
+          `    this.afterConstructor = this.beforeConstructor + 1;`,
+          `  }`,
+          ``,
+          `  private afterConstructor: number;`,
+          `}`,
+        ].join('\n'),
+      );
+
+      await runInternalMigration();
+
+      expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+        `import { Directive, inject } from '@angular/core';`,
+        `import { Foo } from 'foo';`,
+        ``,
+        `@Directive()`,
+        `class MyDir {`,
+        `  private foo = inject(Foo);`,
+        `  private beforeConstructor: number = this.foo.getValue();`,
+        `  private afterConstructor: number = this.beforeConstructor + 1;`,
+        `}`,
+      ]);
+    });
   });
 });
