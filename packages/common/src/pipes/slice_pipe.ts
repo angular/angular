@@ -48,7 +48,6 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 @Pipe({
   name: 'slice',
   pure: false,
-  standalone: true,
 })
 export class SlicePipe implements PipeTransform {
   /**

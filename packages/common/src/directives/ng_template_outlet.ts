@@ -44,7 +44,6 @@ import {
  */
 @Directive({
   selector: '[ngTemplateOutlet]',
-  standalone: true,
 })
 export class NgTemplateOutlet<C = unknown> implements OnChanges {
   private _viewRef: EmbeddedViewRef<C> | null = null;

@@ -284,7 +284,6 @@ describe('AsyncPipe', () => {
       selector: 'test-component',
       imports: [AsyncPipe],
       template: '{{ value | async }}',
-      standalone: true,
     })
     class TestComponent {
       value = of('foo');

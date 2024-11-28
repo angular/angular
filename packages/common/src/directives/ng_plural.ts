@@ -45,7 +45,6 @@ import {SwitchView} from './ng_switch';
  */
 @Directive({
   selector: '[ngPlural]',
-  standalone: true,
 })
 export class NgPlural {
   private _activeView?: SwitchView;
@@ -104,7 +103,6 @@ export class NgPlural {
  */
 @Directive({
   selector: '[ngPluralCase]',
-  standalone: true,
 })
 export class NgPluralCase {
   constructor(

@@ -156,7 +156,6 @@ import {
  */
 @Directive({
   selector: '[ngIf]',
-  standalone: true,
 })
 export class NgIf<T = unknown> {
   private _context: NgIfContext<T> = new NgIfContext<T>();

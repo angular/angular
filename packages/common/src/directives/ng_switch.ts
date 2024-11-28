@@ -114,7 +114,6 @@ export class SwitchView {
  */
 @Directive({
   selector: '[ngSwitch]',
-  standalone: true,
 })
 export class NgSwitch {
   private _defaultViews: SwitchView[] = [];
@@ -200,7 +199,6 @@ export class NgSwitch {
  */
 @Directive({
   selector: '[ngSwitchCase]',
-  standalone: true,
 })
 export class NgSwitchCase implements DoCheck {
   private _view: SwitchView;
@@ -247,7 +245,6 @@ export class NgSwitchCase implements DoCheck {
  */
 @Directive({
   selector: '[ngSwitchDefault]',
-  standalone: true,
 })
 export class NgSwitchDefault {
   constructor(
