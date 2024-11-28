@@ -36,6 +36,7 @@ dialog {
   ul {
     max-height: 50vh;
     overflow-y: auto;
+    overscroll-behavior: contain;
     list-style-type: none;
     padding-inline: 0;
     padding-block-start: 1rem;
