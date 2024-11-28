@@ -1,4 +1,4 @@
-/*!
+/**
  * @license
  * Copyright Google LLC All Rights Reserved.
  *
@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {CodeAction} from 'typescript';
+import ts from 'typescript';
 
 export interface AutocompleteItem {
   kind: string;
   name: string;
   sortText: string;
 
-  codeActions?: CodeAction[];
+  codeActions?: ts.CodeAction[];
 }
 
 /**

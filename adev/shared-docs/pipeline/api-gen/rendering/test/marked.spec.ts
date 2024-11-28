@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
 import {runfiles} from '@bazel/runfiles';
 import {readFile} from 'fs/promises';
 import {JSDOM} from 'jsdom';
@@ -42,7 +50,6 @@ describe('markdown to html', () => {
     expect(header).toBeDefined();
     expect(header.outerHTML).not.toContain('```');
 
-    console.log(entries2.get('afterNextRender'));
     const list = afterNextRenderEntry.querySelector('ul')!;
     expect(list).toBeDefined();
 

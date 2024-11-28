@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {JSDocTagInfo, SymbolDisplayPart} from 'typescript';
+import ts from 'typescript';
 
 export interface DisplayTooltipResponse {
-  displayParts: SymbolDisplayPart[] | null;
-  tags: JSDocTagInfo[] | null;
-  documentation: SymbolDisplayPart[] | null;
+  displayParts: ts.SymbolDisplayPart[] | null;
+  tags: ts.JSDocTagInfo[] | null;
+  documentation: ts.SymbolDisplayPart[] | null;
 }

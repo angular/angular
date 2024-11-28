@@ -17,9 +17,8 @@ import {
   Type,
   inject,
 } from '@angular/core';
-import {IconComponent} from '@angular/docs';
+import {IconComponent, PlaygroundTemplate} from '@angular/docs';
 
-import {PlaygroundTemplate} from '@angular/docs';
 import {injectAsync} from '../../core/services/inject-async';
 import {EmbeddedTutorialManager} from '../../editor/index';
 

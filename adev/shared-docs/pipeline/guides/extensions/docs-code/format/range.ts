@@ -1,4 +1,12 @@
 /**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
+/**
  * Expand a provided set of range values into a singel array of all values in the range.
  *
  * For example,  [[1,3], [12-13]] is expanded to [1,2,3,12,13].

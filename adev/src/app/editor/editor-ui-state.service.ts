@@ -10,8 +10,7 @@ import {DestroyRef, inject, Injectable, signal} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {filter, map, Subject} from 'rxjs';
 
-import {TutorialMetadata} from '@angular/docs';
-import {TutorialType} from '@angular/docs';
+import {TutorialMetadata, TutorialType} from '@angular/docs';
 
 import {EmbeddedTutorialManager} from './embedded-tutorial-manager.service';
 

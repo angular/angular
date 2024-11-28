@@ -64,9 +64,6 @@ describe('ApiItemsSection', () => {
     );
     const deprecatedApiTitle = deprecatedApiIcons[0].parent?.query(By.css('.adev-item-title'));
 
-    console.log('DEPRECATED API ICONS', deprecatedApiIcons);
-    console.log('DEPRECATED API TITLE', deprecatedApiTitle);
-
     expect(deprecatedApiIcons.length).toBe(1);
     expect(deprecatedApiIcons[0]).toBeTruthy();
     expect(deprecatedApiTitle?.nativeElement.innerText).toBe('Fake Deprecated Title');

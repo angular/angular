@@ -30,6 +30,9 @@ import {
   IconComponent,
   NavigationItem,
   NavigationList,
+  TutorialType,
+  TutorialNavigationData,
+  TutorialNavigationItem,
 } from '@angular/docs';
 import {ActivatedRoute, RouterLink} from '@angular/router';
 import {filter} from 'rxjs/operators';
@@ -42,8 +45,6 @@ import {
   EmbeddedEditor,
 } from '../../editor/index';
 import {SplitResizerHandler} from './split-resizer-handler.service';
-import {TutorialType} from '@angular/docs';
-import {TutorialNavigationData, TutorialNavigationItem} from '@angular/docs';
 
 const INTRODUCTION_LABEL = 'Introduction';
 

@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
 import {parseMarkdown} from '../../../guides/parse';
 import {runfiles} from '@bazel/runfiles';
 import {readFile} from 'fs/promises';
@@ -43,14 +51,14 @@ describe('markdown to html', () => {
     expect(codeBlock).toBeTruthy();
 
     const codeLines = codeBlock.querySelectorAll('.line');
-    expect(codeLines[0].textContent).toContain('oldFuncName');
-    expect(codeLines[0].classList.contains('remove')).toBeTrue();
+    expect(codeLines[8].textContent).toContain('oldFuncName');
+    expect(codeLines[8].classList.contains('remove')).toBeTrue();
 
-    expect(codeLines[1].textContent).toContain('newName');
-    expect(codeLines[1].classList.contains('add')).toBeTrue();
+    expect(codeLines[9].textContent).toContain('newName');
+    expect(codeLines[9].classList.contains('add')).toBeTrue();
 
-    expect(codeLines[2].classList.contains('add')).toBeFalse();
-    expect(codeLines[2].classList.contains('remove')).toBeFalse();
+    expect(codeLines[10].classList.contains('add')).toBeFalse();
+    expect(codeLines[10].classList.contains('remove')).toBeFalse();
   });
 
   it('should load header and html code', () => {

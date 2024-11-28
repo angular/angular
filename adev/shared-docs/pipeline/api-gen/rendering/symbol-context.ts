@@ -1,4 +1,12 @@
 /**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
+/**
  * API pages are generated each package at a time.
  * This allows to use a global context to store the symbols and their corresponding module names.
  */

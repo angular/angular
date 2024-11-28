@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
 // @ts-ignore This compiles fine, but Webstorm doesn't like the ESM import in a CJS context.
 import type {DocEntry, EntryCollection, JsDocTagEntry, FunctionEntry} from '@angular/compiler-cli';
 

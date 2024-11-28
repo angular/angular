@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCS_VIEWER_SELECTOR, DocViewer, WINDOW} from '@angular/docs';
+import {DOCS_VIEWER_SELECTOR, DocViewer, WINDOW, TutorialConfig, TutorialType} from '@angular/docs';
 
 import {Component, Input, signal} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
@@ -23,7 +23,6 @@ import {
 
 import {mockAsyncProvider} from '../../core/services/inject-async';
 import Tutorial from './tutorial.component';
-import {TutorialConfig, TutorialType} from '@angular/docs';
 
 @Component({
   selector: EMBEDDED_EDITOR_SELECTOR,

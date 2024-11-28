@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
 import {ChangeDetectionStrategy, Component, inject, input, OnInit, signal} from '@angular/core';
 import {ExternalLink} from '../../directives';
 import {LOCAL_STORAGE} from '../../providers';
