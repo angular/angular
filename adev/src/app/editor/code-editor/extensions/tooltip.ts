@@ -10,7 +10,8 @@ import {Signal} from '@angular/core';
 import {Tooltip, hoverTooltip} from '@codemirror/view';
 import {marked} from 'marked';
 import {Subject, filter, take} from 'rxjs';
-import type {JSDocTagInfo, SymbolDisplayPart} from 'typescript';
+
+import ts from 'typescript';
 
 import {EditorFile} from '../code-mirror-editor.service';
 import {TsVfsWorkerActions} from '../workers/enums/actions';
@@ -97,7 +98,7 @@ function getMarkedHtmlFromString(content: string): HTMLDivElement {
   return wrapper;
 }
 
-function getHtmlFromDisplayParts(displayParts: SymbolDisplayPart[]): HTMLDivElement {
+function getHtmlFromDisplayParts(displayParts: ts.SymbolDisplayPart[]): HTMLDivElement {
   const wrapper = document.createElement('div');
 
   let displayPartWrapper = document.createElement('div');
@@ -122,7 +123,7 @@ function getHtmlFromDisplayParts(displayParts: SymbolDisplayPart[]): HTMLDivElem
   return wrapper;
 }
 
-function getTagsHtml(tags: JSDocTagInfo[]): HTMLDivElement {
+function getTagsHtml(tags: ts.JSDocTagInfo[]): HTMLDivElement {
   const tagsWrapper = document.createElement('div');
 
   let contentString = '';

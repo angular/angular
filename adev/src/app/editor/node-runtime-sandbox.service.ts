@@ -7,12 +7,10 @@
  */
 
 import {DestroyRef, inject, Injectable, signal} from '@angular/core';
-import {checkFilesInDirectory} from '@angular/docs';
 import {FileSystemTree, WebContainer, WebContainerProcess} from '@webcontainer/api';
 import {BehaviorSubject, filter, map, Subject} from 'rxjs';
 
-import type {FileAndContent} from '@angular/docs';
-import {TutorialType} from '@angular/docs';
+import {type FileAndContent, TutorialType, checkFilesInDirectory} from '@angular/docs';
 
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AlertManager} from './alert-manager.service';
