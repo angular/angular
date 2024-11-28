@@ -12,7 +12,6 @@ import {
   inject,
   OnInit,
   PLATFORM_ID,
-  Signal,
   viewChild,
 } from '@angular/core';
 import {isPlatformBrowser} from '@angular/common';
@@ -25,7 +24,7 @@ import {
   NavigationStart,
   Router,
 } from '@angular/router';
-import {filter, map, switchMap, take} from 'rxjs/operators';
+import {filter, first, map, switchMap} from 'rxjs/operators';
 
 /** Time to wait after navigation starts before showing the progress bar. This delay allows a small amount of time to skip showing the progress bar when a navigation is effectively immediate. 30ms is approximately the amount of time we can wait before a delay is perceptible.*/
 export const PROGRESS_BAR_DELAY = 30;
@@ -67,7 +66,7 @@ export class ProgressBarComponent implements OnInit {
         }),
         switchMap((timeoutId) => {
           return this.router.events.pipe(
-            filter((e) => {
+            first((e) => {
               return (
                 e instanceof NavigationEnd ||
                 e instanceof NavigationCancel ||
@@ -75,7 +74,6 @@ export class ProgressBarComponent implements OnInit {
                 e instanceof NavigationError
               );
             }),
-            take(1),
             map(() => timeoutId),
           );
         }),
