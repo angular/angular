@@ -9,6 +9,7 @@
 import ts from 'typescript';
 import {getAngularDecorators} from '../../utils/ng_decorators';
 import {getNamedImports} from '../../utils/typescript/imports';
+import {closestNode} from '../../utils/typescript/nodes';
 
 /** Options that can be used to configure the migration. */
 export interface MigrationOptions {
@@ -99,11 +100,26 @@ export function analyzeFile(
       return;
     }
 
-    // Only visit the initializer of parameters, because we won't exclude
-    // their decorators from the identifier counting result below.
     if (ts.isParameter(node)) {
+      const closestConstructor = closestNode(node, ts.isConstructorDeclaration);
+
+      // Visiting the same parameters that we're about to remove can throw off the reference
+      // counting logic below. If we run into an initializer, we always visit its initializer
+      // and optionally visit the modifiers/decorators if it's not due to be deleted. Note that
+      // here we technically aren't dealing with the the full list of classes, but the parent class
+      // will have been visited by the time we reach the parameters.
       if (node.initializer) {
         walk(node.initializer);
+      }
+
+      if (
+        closestConstructor === null ||
+        // This is meant to avoid the case where this is a
+        // parameter inside a function placed in a constructor.
+        !closestConstructor.parameters.includes(node) ||
+        !classes.some((c) => c.constructor === closestConstructor)
+      ) {
+        node.modifiers?.forEach(walk);
       }
       return;
     }
