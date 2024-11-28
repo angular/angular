@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {STORAGE_KEY_PREFIX, TopLevelBannerComponent} from './top-level-banner.component';
