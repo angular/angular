@@ -218,7 +218,6 @@ export const DATE_PIPE_DEFAULT_OPTIONS = new InjectionToken<DatePipeConfig>(
  */
 @Pipe({
   name: 'date',
-  standalone: true,
 })
 export class DatePipe implements PipeTransform {
   constructor(

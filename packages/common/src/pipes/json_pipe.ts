@@ -26,7 +26,6 @@ import {Pipe, PipeTransform} from '@angular/core';
 @Pipe({
   name: 'json',
   pure: false,
-  standalone: true,
 })
 export class JsonPipe implements PipeTransform {
   /**

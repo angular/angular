@@ -153,7 +153,6 @@ it('should be available as a standalone directive', () => {
       '<ng-template ngPluralCase="=0"><li>no messages</li></ng-template>' +
       '<ng-template ngPluralCase="=1"><li>one message</li></ng-template>' +
       '</ul>',
-    standalone: true,
   })
   class TestComponent {
     switchValue = 1;

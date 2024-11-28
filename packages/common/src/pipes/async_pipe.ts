@@ -97,7 +97,6 @@ const _subscribableStrategy = new SubscribableStrategy();
 @Pipe({
   name: 'async',
   pure: false,
-  standalone: true,
 })
 export class AsyncPipe implements OnDestroy, PipeTransform {
   private _ref: ChangeDetectorRef | null;
