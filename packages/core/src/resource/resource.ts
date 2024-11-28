@@ -15,6 +15,7 @@ import {
   ResourceOptions,
   ResourceStatus,
   WritableResource,
+  ValuedWritableResource,
   ResourceLoader,
   Resource,
   ResourceRef,
@@ -90,7 +91,7 @@ abstract class BaseWritableResource<T> implements WritableResource<T> {
     () => this.status() === ResourceStatus.Loading || this.status() === ResourceStatus.Reloading,
   );
 
-  hasValue(): this is WritableResource<T> & {value: WritableSignal<T>} {
+  hasValue(): this is ValuedWritableResource<T> {
     return (
       this.status() === ResourceStatus.Resolved ||
       this.status() === ResourceStatus.Local ||

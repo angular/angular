@@ -91,7 +91,7 @@ export interface Resource<T> {
    *
    * This function is reactive.
    */
-  hasValue(): this is Resource<T> & {value: Signal<T>};
+  hasValue(): this is ValuedResource<T>;
 
   /**
    * Instructs the resource to re-load any asynchronous dependency it may have.
@@ -105,6 +105,15 @@ export interface Resource<T> {
 }
 
 /**
+ * A `Resource` with a valid current value.
+ *
+ * @experimental
+ */
+export interface ValuedResource<T> extends Resource<T> {
+  readonly value: Signal<T>;
+}
+
+/**
  * A `Resource` with a mutable value.
  *
  * Overwriting the value of a resource sets it to the 'local' state.
@@ -113,7 +122,7 @@ export interface Resource<T> {
  */
 export interface WritableResource<T> extends Resource<T> {
   readonly value: WritableSignal<T | undefined>;
-  hasValue(): this is WritableResource<T> & {value: WritableSignal<T>};
+  hasValue(): this is ValuedWritableResource<T>;
 
   /**
    * Convenience wrapper for `value.set`.
@@ -125,6 +134,15 @@ export interface WritableResource<T> extends Resource<T> {
    */
   update(updater: (value: T | undefined) => T | undefined): void;
   asReadonly(): Resource<T>;
+}
+
+/**
+ * A `Resource` with a mutable value that is currently valid.
+ *
+ * @experimental
+ */
+export interface ValuedWritableResource<T> extends Resource<T> {
+  readonly value: WritableSignal<T>;
 }
 
 /**
