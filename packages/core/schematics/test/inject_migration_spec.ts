@@ -1644,6 +1644,46 @@ describe('inject migration', () => {
     ]);
   });
 
+  it('should handle removing parameters surrounded by comments', async () => {
+    writeFile(
+      '/dir.ts',
+      [
+        `import { Directive } from '@angular/core';`,
+        `import { Foo } from 'foo';`,
+        `import { Bar } from 'bar';`,
+        ``,
+        `@Directive()`,
+        `class MyClass {`,
+        `  constructor(`,
+        `     // start`,
+        `     private foo: Foo,`,
+        `     readonly bar: Bar, // end`,
+        `  ) {`,
+        `    console.log(this.bar);`,
+        `  }`,
+        `}`,
+      ].join('\n'),
+    );
+
+    await runMigration();
+
+    expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+      `import { Directive, inject } from '@angular/core';`,
+      `import { Foo } from 'foo';`,
+      `import { Bar } from 'bar';`,
+      ``,
+      `@Directive()`,
+      `class MyClass {`,
+      `  private foo = inject(Foo);`,
+      `  readonly bar = inject(Bar);`,
+      ``,
+      `  constructor() {`,
+      `    console.log(this.bar);`,
+      `  }`,
+      `}`,
+    ]);
+  });
+
   describe('internal-only behavior', () => {
     function runInternalMigration() {
       return runMigration({_internalCombineMemberInitializers: true});
