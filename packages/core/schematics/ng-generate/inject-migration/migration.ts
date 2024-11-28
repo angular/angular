@@ -586,37 +586,25 @@ function stripConstructorParameters(node: ts.ConstructorDeclaration, tracker: Ch
   const constructorText = node.getText();
   const lastParamText = node.parameters[node.parameters.length - 1].getText();
   const lastParamStart = constructorText.indexOf(lastParamText);
-  const whitespacePattern = /\s/;
-  let trailingCharacters = 0;
 
-  if (lastParamStart > -1) {
-    let lastParamEnd = lastParamStart + lastParamText.length;
-    let closeParenIndex = -1;
-
-    for (let i = lastParamEnd; i < constructorText.length; i++) {
-      const char = constructorText[i];
-
-      if (char === ')') {
-        closeParenIndex = i;
-        break;
-      } else if (!whitespacePattern.test(char)) {
-        // The end of the last parameter won't include
-        // any trailing commas which we need to account for.
-        lastParamEnd = i + 1;
-      }
-    }
-
-    if (closeParenIndex > -1) {
-      trailingCharacters = closeParenIndex - lastParamEnd;
-    }
+  // This shouldn't happen, but bail out just in case so we don't mangle the code.
+  if (lastParamStart === -1) {
+    return;
   }
 
-  tracker.replaceText(
-    node.getSourceFile(),
-    node.parameters.pos,
-    node.parameters.end - node.parameters.pos + trailingCharacters,
-    '',
-  );
+  for (let i = lastParamStart + lastParamText.length; i < constructorText.length; i++) {
+    const char = constructorText[i];
+
+    if (char === ')') {
+      tracker.replaceText(
+        node.getSourceFile(),
+        node.parameters.pos,
+        node.getStart() + i - node.parameters.pos,
+        '',
+      );
+      break;
+    }
+  }
 }
 
 /**
