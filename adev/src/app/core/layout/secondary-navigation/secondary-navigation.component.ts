@@ -63,7 +63,6 @@ export class SecondaryNavigation implements OnInit {
   private readonly navigationState = inject(NavigationState);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly router = inject(Router);
-  private readonly window = inject(WINDOW);
 
   readonly isSecondaryNavVisible = this.navigationState.isMobileNavVisible;
   readonly primaryActiveRouteItem = this.navigationState.primaryActiveRouteItem;
@@ -84,10 +83,10 @@ export class SecondaryNavigation implements OnInit {
 
   private readonly routeMap: Record<string, NavigationItem[]> = {
     [PagePrefix.REFERENCE]: getNavigationItemsTree(SUB_NAVIGATION_DATA.reference, (tree) =>
-      markExternalLinks(tree, this.window.origin),
+      markExternalLinks(tree),
     ),
     [PagePrefix.DOCS]: getNavigationItemsTree(SUB_NAVIGATION_DATA.docs, (tree) =>
-      markExternalLinks(tree, this.window.origin),
+      markExternalLinks(tree),
     ),
   };
 

@@ -25,7 +25,6 @@ import {WINDOW} from '../../providers/index';
 export class ExternalLink implements OnInit {
   private readonly anchor: ElementRef<HTMLAnchorElement> = inject(ElementRef);
   private readonly platformId = inject(PLATFORM_ID);
-  private readonly window = inject(WINDOW);
 
   target?: '_blank' | '_self' | '_parent' | '_top' | '';
 
@@ -38,7 +37,7 @@ export class ExternalLink implements OnInit {
       return;
     }
 
-    if (isExternalLink(this.anchor.nativeElement.href, this.window.location.origin)) {
+    if (isExternalLink(this.anchor.nativeElement.href)) {
       this.target = '_blank';
     }
   }
