@@ -59,7 +59,16 @@ function main() {
   };
 
   const compilerHost = createCompilerHost({options: compilerOptions});
-  const program: NgtscProgram = new NgtscProgram(srcs.split(','), compilerOptions, compilerHost);
+  const files = srcs.split(',');
+
+  // Code examples should not be fed to the compiler.
+  const filesWithoutExamples = files.filter((path) => !path.startsWith('packages/examples'));
+
+  const program: NgtscProgram = new NgtscProgram(
+    filesWithoutExamples,
+    compilerOptions,
+    compilerHost,
+  );
 
   const extraEntries: DocEntry[] = (extraEntriesSrcs ?? '')
     .split(',')
