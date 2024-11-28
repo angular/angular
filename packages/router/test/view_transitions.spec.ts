@@ -30,7 +30,6 @@ describe('view transitions', () => {
 
   @Component({
     selector: 'test-app',
-    standalone: true,
     template: ``,
   })
   class App {}
@@ -62,7 +61,6 @@ describe('view transitions', () => {
     @Component({
       selector: 'component-b',
       template: `b`,
-      standalone: true,
     })
     class ComponentB {}
 
@@ -83,7 +81,6 @@ describe('view transitions', () => {
     it('should not create a view transition if only the fragment changes', async () => {
       @Component({
         selector: 'test-app',
-        standalone: true,
         template: `{{checks}}`,
       })
       class App {

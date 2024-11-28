@@ -253,7 +253,6 @@ for (const browserAPI of ['navigation', 'history'] as const) {
           },
         ]);
         @Component({
-          standalone: true,
           imports: [RouterLink],
           template: `<a #simpleLink [routerLink]="'/simple'" [info]="simpleLink"></a>`,
         })
@@ -5873,7 +5872,6 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       it('should allow guards as functions', fakeAsync(() => {
         @Component({
           template: '',
-          standalone: true,
         })
         class BlankCmp {}
         const router = TestBed.inject(Router);
@@ -5932,7 +5930,6 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       it('should allow DI in plain function guards', fakeAsync(() => {
         @Component({
           template: '',
-          standalone: true,
         })
         class BlankCmp {}
 
@@ -6883,7 +6880,6 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         const fixture = createRoot(router, RootCmp);
 
         @Component({
-          standalone: true,
           imports: [RouterModule],
           template: '[right outlet component: <router-outlet></router-outlet>]',
         })
