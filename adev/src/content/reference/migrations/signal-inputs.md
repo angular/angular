@@ -49,18 +49,18 @@ export class MyComponent {
 import {Component, input} from '@angular/core';
 
 @Component({
-template: `Name: {{name() ?? ''}}`
+  template: `Name: {{name() ?? ''}}`
 })
 export class MyComponent {
-readonly name = input<string>();
+  readonly name = input<string>();
 
-someMethod(): number {
-const name = this.name();
-if (name) {
-return name.length;
-}
-return -1;
-}
+  someMethod(): number {
+    const name = this.name();
+    if (name) {
+      return name.length;
+    }
+    return -1;
+    }
 }
 </docs-code>
 
@@ -88,7 +88,7 @@ The TODOs will include reasoning on why inputs were skipped. E.g.
 
 ```ts
 // TODO: Skipped for migration because:
-//  Your application code writes to the input. This prevents migration.
+// Your application code writes to the input. This prevents migration.
 @Input() myInput = false;
 ```
 
