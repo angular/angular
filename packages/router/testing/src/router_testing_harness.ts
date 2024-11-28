@@ -42,7 +42,6 @@ export class RootFixtureService {
 }
 
 @Component({
-  standalone: true,
   template: '<router-outlet [routerOutletData]="routerOutletData()"></router-outlet>',
   imports: [RouterOutlet],
 })

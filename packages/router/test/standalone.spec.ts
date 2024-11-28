@@ -11,7 +11,7 @@ import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing'
 import {By} from '@angular/platform-browser';
 import {provideRoutes, Router, RouterModule, ROUTES} from '@angular/router';
 
-@Component({template: '<div>simple standalone</div>', standalone: true})
+@Component({template: '<div>simple standalone</div>'})
 export class SimpleStandaloneComponent {}
 
 @Component({template: '<div>not standalone</div>', standalone: false})
@@ -19,7 +19,6 @@ export class NotStandaloneComponent {}
 
 @Component({
   template: '<router-outlet></router-outlet>',
-  standalone: true,
   imports: [RouterModule],
 })
 export class RootCmp {}

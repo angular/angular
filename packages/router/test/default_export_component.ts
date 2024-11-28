@@ -9,7 +9,6 @@
 import {Component} from '@angular/core';
 
 @Component({
-  standalone: true,
   template: 'default exported',
   selector: 'test-route',
 })

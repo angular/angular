@@ -11,12 +11,11 @@ import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing'
 import {Router, RouterModule} from '@angular/router';
 import {getLoadedRoutes} from '../src/router_devtools';
 
-@Component({template: '<div>simple standalone</div>', standalone: true})
+@Component({template: '<div>simple standalone</div>'})
 export class SimpleStandaloneComponent {}
 
 @Component({
   template: '<router-outlet></router-outlet>',
-  standalone: true,
   imports: [RouterModule],
 })
 export class RootCmp {}
