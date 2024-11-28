@@ -553,14 +553,10 @@ function migrateInjectDecorator(
       }
     }
   } else if (
-    // Pass the type for cases like `@Inject(FOO_TOKEN) foo: Foo`, because:
-    // 1. It guarantees that the type stays the same as before.
-    // 2. Avoids leaving unused imports behind.
-    // We only do this for type references since the `@Inject` pattern above is fairly common and
-    // apps don't necessarily type their injection tokens correctly, whereas doing it for literal
-    // types will add a lot of noise to the generated code.
     type &&
     (ts.isTypeReferenceNode(type) ||
+      ts.isTypeLiteralNode(type) ||
+      ts.isTupleTypeNode(type) ||
       (ts.isUnionTypeNode(type) && type.types.some(ts.isTypeReferenceNode)))
   ) {
     typeArguments = [type];
