@@ -1684,6 +1684,45 @@ describe('inject migration', () => {
     ]);
   });
 
+  it('should not remove decorator imports if unmigrated classes are still using them', async () => {
+    writeFile(
+      '/dir.ts',
+      [
+        `import { Directive, Optional } from '@angular/core';`,
+        `import { Foo } from 'foo';`,
+        `import { Bar } from 'bar';`,
+        ``,
+        `@Directive()`,
+        `class WillMigrate {`,
+        `  constructor(@Optional() private foo: Foo) {}`,
+        `}`,
+        ``,
+        `@Directive()`,
+        `abstract class WillNotMigrate {`,
+        `  constructor(@Optional() private bar: Bar) {}`,
+        `}`,
+      ].join('\n'),
+    );
+
+    await runMigration();
+
+    expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+      `import { Directive, Optional, inject } from '@angular/core';`,
+      `import { Foo } from 'foo';`,
+      `import { Bar } from 'bar';`,
+      ``,
+      `@Directive()`,
+      `class WillMigrate {`,
+      `  private foo = inject(Foo, { optional: true });`,
+      `}`,
+      ``,
+      `@Directive()`,
+      `abstract class WillNotMigrate {`,
+      `  constructor(@Optional() private bar: Bar) {}`,
+      `}`,
+    ]);
+  });
+
   describe('internal-only behavior', () => {
     function runInternalMigration() {
       return runMigration({_internalCombineMemberInitializers: true});
