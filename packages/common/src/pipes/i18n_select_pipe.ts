@@ -29,7 +29,6 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  */
 @Pipe({
   name: 'i18nSelect',
-  standalone: true,
 })
 export class I18nSelectPipe implements PipeTransform {
   /**

@@ -261,7 +261,6 @@ describe('ngIf directive', () => {
           <div *ngIf="true">Hello</div>
           <div *ngIf="false">World</div>
         `,
-        standalone: true,
       })
       class TestComponent {}
 

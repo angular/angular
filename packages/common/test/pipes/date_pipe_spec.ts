@@ -82,7 +82,6 @@ describe('DatePipe', () => {
         selector: 'test-component',
         imports: [DatePipe],
         template: '{{ value | date }}',
-        standalone: true,
         providers: [{provide: DATE_PIPE_DEFAULT_OPTIONS, useValue: {dateFormat: 'shortDate'}}],
       })
       class TestComponent {
@@ -101,7 +100,6 @@ describe('DatePipe', () => {
         selector: 'test-component',
         imports: [DatePipe],
         template: '{{ value | date }}',
-        standalone: true,
       })
       class TestComponent {
         value = '2017-01-11T10:14:39+0000';
@@ -176,7 +174,6 @@ describe('DatePipe', () => {
         selector: 'test-component',
         imports: [DatePipe],
         template: '{{ value | date }}',
-        standalone: true,
         providers: [{provide: DATE_PIPE_DEFAULT_OPTIONS, useValue: {timezone: '-1200'}}],
       })
       class TestComponent {
@@ -195,7 +192,6 @@ describe('DatePipe', () => {
         selector: 'test-component',
         imports: [DatePipe],
         template: '{{ value | date }}',
-        standalone: true,
       })
       class TestComponent {
         value = '2017-01-11T00:00:00';
@@ -218,7 +214,6 @@ describe('DatePipe', () => {
       selector: 'test-component',
       imports: [DatePipe],
       template: '{{ value | date }}',
-      standalone: true,
     })
     class TestComponent {
       value = '2017-01-11T10:14:39+0000';
