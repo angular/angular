@@ -35,7 +35,7 @@ export class NodeRuntimeState {
   private readonly _isResetting = signal(false);
   readonly isResetting = this._isResetting.asReadonly();
 
-  readonly _error = signal<NodeRuntimeError | undefined>(undefined);
+  private readonly _error = signal<NodeRuntimeError | undefined>(undefined);
   readonly error = this._error.asReadonly();
 
   constructor() {
