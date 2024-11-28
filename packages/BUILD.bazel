@@ -1,6 +1,6 @@
-load("//tools:defaults.bzl", "ts_config", "ts_library")
 load("//:packages.bzl", "DOCS_ENTRYPOINTS")
 load("//adev/shared-docs/pipeline/api-gen/manifest:generate_api_manifest.bzl", "generate_api_manifest")
+load("//tools:defaults.bzl", "ts_config", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -60,6 +60,7 @@ filegroup(
         "//packages/core/src/interface:files_for_docgen",
         "//packages/core/src/reflection:files_for_docgen",
         "//packages/core/src/util:files_for_docgen",
+        "//packages/examples:files_for_docgen",
         "//packages/platform-browser:files_for_docgen",
         "//packages/platform-browser-dynamic:files_for_docgen",
         "//packages/zone.js/lib:zone_d_ts",
