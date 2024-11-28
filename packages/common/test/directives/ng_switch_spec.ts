@@ -150,7 +150,6 @@ describe('NgSwitch', () => {
         '<li *ngSwitchCase="\'a\'">when a</li>' +
         '<li *ngSwitchDefault>when default</li>' +
         '</ul>',
-      standalone: true,
     })
     class TestComponent {
       switchValue = 'a';

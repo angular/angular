@@ -55,7 +55,6 @@ import {
  */
 @Directive({
   selector: '[ngStyle]',
-  standalone: true,
 })
 export class NgStyle implements DoCheck {
   private _ngStyle: {[key: string]: string} | null | undefined = null;
