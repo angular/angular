@@ -101,9 +101,7 @@ export function addHtmlUsageNotes<T extends HasJsDocTags>(entry: T): T & HasHtml
     ({name}) => name === JS_DOC_USAGE_NOTES_TAG || name === JS_DOC_REMARKS_TAG,
   );
   const htmlUsageNotes = usageNotesTag
-    ? (marked.parse(
-        convertJsDocExampleToHtmlExample(wrapExampleHtmlElementsWithCode(usageNotesTag.comment)),
-      ) as string)
+    ? (marked.parse(wrapExampleHtmlElementsWithCode(usageNotesTag.comment)) as string)
     : '';
 
   const transformedHtml = addApiLinksToHtml(htmlUsageNotes);
@@ -176,17 +174,6 @@ function wrapExampleHtmlElementsWithCode(text: string) {
   return text
     .replace(/'<input>'/g, `<code><input></code>`)
     .replace(/'<img>'/g, `<code><img></code>`);
-}
-
-function convertJsDocExampleToHtmlExample(text: string): string {
-  const codeExampleAtRule = /{@example (\S+) region=(['"])([^'"]+)\2\s*}/g;
-
-  return text.replace(
-    codeExampleAtRule,
-    (_: string, path: string, separator: string, region: string) => {
-      return `<code-example path="${path}" region="${region}" />`;
-    },
-  );
 }
 
 /**
