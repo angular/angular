@@ -11,14 +11,21 @@ import {readFileSync} from 'fs';
 import {basename, dirname, resolve} from 'path';
 
 export const EXAMPLES_PATH = 'packages/examples';
+
+// It's assumed that all markers start with #.
 const REGION_START_MARKER = '#docregion';
 const REGION_END_MARKER = '#enddocregion';
+
+// Used only for clean up
+const TS_COMMENT_REGION_REGEX = /[ \t]*\/\/[ \t]*#(docregion|enddocregion)[ \t]*[\w-]*(\n|$)/g;
+const HTML_COMMENT_REGION_REGEX =
+  /[ \t]*<!--[ \t]*#(docregion|enddocregion)[ \t]*[\w-]*[ \t]*-->(\n|$)/g;
 
 const examplesCache = new Map<string, Map<string, string>>(); // <file_path, <region, example>>
 
 type FileType = 'ts' | 'js' | 'html';
 
-type RegionToken = {name: string; startIdx: number};
+type RegionStartToken = {name: string; startIdx: number};
 
 /**
  * Interpolate code examples in the `DocEntry`-ies JSDocs content and raw comments in place.
@@ -65,63 +72,81 @@ function getExample(path: string, region: string): string {
   return fileExamples.get(region) || '';
 }
 
-/** Extract a `#docregion` example from file contents (represented as a string) by a provided `region`. */
 /**
+ * Extract a `#docregion` example from file contents (represented as a string) by a provided `region`.
  *
- * @param contents
- * @param fileType
- * @returns
+ * @param contents File contents represented as a string
+ * @param fileType File type
+ * @returns A map with all available examples in a given file contents
  */
 function extractExamplesFromContents(contents: string, fileType: FileType): Map<string, string> {
   let markerBuffer = '';
-  let regionBuffer = '';
-  let startMarkerFound = false;
+  let paramBuffer = '';
+  let markerFound = false;
 
-  const regionStack: RegionToken[] = [];
+  const regionStack: RegionStartToken[] = [];
   const examples = new Map<string, string>();
 
   // Iterate over the contents string and determine the start and end indices.
   for (let i = 0; i < contents.length; i++) {
     const char = contents[i];
 
-    // Build the marker string
+    // Build the marker string.
     if (char === REGION_START_MARKER[0]) {
       markerBuffer = char;
-    } else if (markerBuffer) {
-      markerBuffer += char;
-    }
-
-    // Check if the marker corresponds to the start or the end region markers
-    if (markerBuffer === REGION_START_MARKER) {
-      startMarkerFound = true;
-      markerBuffer = '';
-
-      // We need to skip the region checks in this case.
-      continue;
-    } else if (markerBuffer === REGION_END_MARKER) {
-      markerBuffer = '';
-
-      if (regionStack.length) {
-        const {startIdx, name} = regionStack.pop()!;
-        const endIdx = i - REGION_END_MARKER.length;
-        let example = contents.substring(startIdx, endIdx);
-        example = removeLeftoverCommentsFromExample(example, fileType);
-
-        examples.set(name, example);
+    } else if (markerBuffer && !markerFound) {
+      if (!/\s/.test(char)) {
+        markerBuffer += char;
+      } else {
+        markerFound = true;
       }
     }
 
-    // Build the region string
-    if (startMarkerFound && !/\s/.test(char)) {
-      regionBuffer += char;
-    } else if (startMarkerFound && regionBuffer) {
-      regionStack.push({
-        name: regionBuffer,
-        startIdx: i + 1,
-      });
+    if (markerFound && !/\s/.test(char)) {
+      // Build param string.
+      paramBuffer += char;
+    } else if (markerFound && char === '\n') {
+      // Resolve found marker.
+      switch (markerBuffer) {
+        case REGION_START_MARKER:
+          // Push the current index to the stack, if a start marker.
+          regionStack.push({
+            name: paramBuffer,
+            startIdx: i + 1,
+          });
+          break;
+        case REGION_END_MARKER:
+          if (regionStack.length) {
+            // Check whether the end marker has a parameter or not.
+            // If not, pop from the stack (it corresponds to the last inserted token).
+            // If yes, pull the corresponding token index.
+            let tokenIdx = paramBuffer ? regionStack.findIndex((t) => t.name === paramBuffer) : -1;
+            let token: RegionStartToken;
 
-      regionBuffer = '';
-      startMarkerFound = false;
+            if (tokenIdx > -1) {
+              token = regionStack.splice(tokenIdx, 1)[0];
+            } else {
+              token = regionStack.pop()!;
+            }
+
+            // Caclculate the end index (should represent the start of the marker).
+            const endIdx =
+              i - REGION_END_MARKER.length - (paramBuffer ? paramBuffer.length + 1 : 0);
+
+            let example = contents.substring(token.startIdx, endIdx);
+            example = removeLeftoverCommentsFromExample(example, fileType);
+
+            // A code example can be composed by multiple regions;
+            // hence, we check for an existing one.
+            const existing = examples.get(token.name) || '';
+            examples.set(token.name, existing + example);
+          }
+          break;
+      }
+
+      markerFound = false;
+      markerBuffer = '';
+      paramBuffer = '';
     }
   }
 
@@ -136,11 +161,9 @@ function removeLeftoverCommentsFromExample(example: string, fileType: FileType):
     case 'js':
       return example
         .replace(/\n?\/\/\s*$/, '') // We can have only a trailing TS comment leftover
-        .replace(/\/\/\s*#(docregion|enddocregion)\s*\w*\n/g, '');
+        .replace(TS_COMMENT_REGION_REGEX, '');
     case 'html':
-      return example
-        .replace(/(^\s*-->)|(<!--\s*$)/, '')
-        .replace(/<!--\s*#(docregion|enddocregion)\s*\w*\s*-->\n/g, '');
+      return example.replace(/(^\s*-->)|(<!--\s*$)/, '').replace(HTML_COMMENT_REGION_REGEX, '');
     default:
       return example;
   }
