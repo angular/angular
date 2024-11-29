@@ -14,9 +14,11 @@ export const EXAMPLES_PATH = 'packages/examples';
 const REGION_START_MARKER = '#docregion';
 const REGION_END_MARKER = '#enddocregion';
 
-const examplesFilesCache = new Map<string, string>();
+const examplesCache = new Map<string, Map<string, string>>(); // <file_path, <region, example>>
 
 type FileType = 'ts' | 'js' | 'html';
+
+type RegionToken = {name: string; startIdx: number};
 
 /**
  * Interpolate code examples in the `DocEntry`-ies JSDocs content and raw comments in place.
@@ -38,50 +40,45 @@ function replaceExample(text: string): string {
   const examplesTagRegex = /{@example (\S+) region=(['"])([^'"]+)\2\s*}/g;
 
   return text.replace(examplesTagRegex, (_: string, path: string, __: string, region: string) => {
-    const contents = getExampleFileContents(path);
-    const fileType = path.split('.').pop() as FileType;
-    const example = extractExampleFromContents(contents, region, fileType);
-
+    const example = getExample(path, region);
     if (!example) {
-      throw new Error(`Missing code example for ${path}#${region}`);
+      throw new Error(`Missing code example ${path}#${region}`);
     }
 
     return '```typescript\n' + example + '\n```';
   });
 }
 
-function getExampleFileContents(path: string): string {
-  let contents = examplesFilesCache.get(path);
-  if (!contents) {
+function getExample(path: string, region: string): string {
+  let fileExamples = examplesCache.get(path);
+
+  if (!fileExamples) {
     const src = `${EXAMPLES_PATH}/${path}`;
     const fullPath = resolve(dirname(src), basename(src));
-    contents = readFileSync(fullPath, {encoding: 'utf8'});
-    examplesFilesCache.set(path, contents);
-  }
-  return contents;
-}
+    const contents = readFileSync(fullPath, {encoding: 'utf8'});
+    const fileType = path.split('.').pop() as FileType;
 
-function trimLeftoverCommentsFromExample(example: string, fileType: FileType): string {
-  switch (fileType) {
-    case 'ts':
-    case 'js':
-      // We can have only a trailing TS comment leftover
-      return example.replace(/\/\/\s*$/, '');
-    case 'html':
-      return example.replace(/(^\s*-->)|(<!--\s*$)/, '');
-    default:
-      return example;
+    fileExamples = extractExamplesFromContents(contents, fileType);
+    examplesCache.set(path, fileExamples);
   }
+
+  return fileExamples.get(region) || '';
 }
 
 /** Extract a `#docregion` example from file contents (represented as a string) by a provided `region`. */
-function extractExampleFromContents(contents: string, region: string, fileType: FileType): string {
-  let startIdx = -1;
-  let endIdx = -1;
-
+/**
+ *
+ * @param contents
+ * @param fileType
+ * @returns
+ */
+function extractExamplesFromContents(contents: string, fileType: FileType): Map<string, string> {
   let markerBuffer = '';
   let regionBuffer = '';
-  let isInRegion = false;
+  let startMarkerFound = false;
+
+  const regionStack: RegionToken[] = [];
+  const examples = new Map<string, string>();
 
   // Iterate over the contents string and determine the start and end indices.
   for (let i = 0; i < contents.length; i++) {
@@ -96,46 +93,55 @@ function extractExampleFromContents(contents: string, region: string, fileType: 
 
     // Check if the marker corresponds to the start or the end region markers
     if (markerBuffer === REGION_START_MARKER) {
-      isInRegion = true;
+      startMarkerFound = true;
       markerBuffer = '';
-      startIdx = -1;
 
       // We need to skip the region checks in this case.
       continue;
     } else if (markerBuffer === REGION_END_MARKER) {
-      isInRegion = false;
       markerBuffer = '';
 
-      // If the startIdx is set, this means that
-      // we've successfully found the region start marker
-      // and we can break from the loop with the respective
-      // end index.
-      if (startIdx > -1) {
-        endIdx = i - REGION_END_MARKER.length;
-        break;
+      if (regionStack.length) {
+        const {startIdx, name} = regionStack.pop()!;
+        const endIdx = i - REGION_END_MARKER.length;
+        let example = contents.substring(startIdx, endIdx);
+        example = removeLeftoverCommentsFromExample(example, fileType);
+
+        examples.set(name, example);
       }
     }
 
     // Build the region string
-    if (isInRegion && !/\s/.test(char) && startIdx === -1) {
+    if (startMarkerFound && !/\s/.test(char)) {
       regionBuffer += char;
-    } else if (isInRegion) {
-      // If the region string matches the argument,
-      // we can safely set the start index.
-      if (regionBuffer === region) {
-        startIdx = i + 1;
-      }
+    } else if (startMarkerFound && regionBuffer) {
+      regionStack.push({
+        name: regionBuffer,
+        startIdx: i + 1,
+      });
+
       regionBuffer = '';
+      startMarkerFound = false;
     }
   }
 
-  // If any of the indices are missing, we cannot determine the borders
-  // or the region. Therefore, we return an empty string.
-  if (startIdx === -1 || endIdx === -1) {
-    return '';
+  return examples;
+}
+
+function removeLeftoverCommentsFromExample(example: string, fileType: FileType): string {
+  example = example.trim();
+
+  switch (fileType) {
+    case 'ts':
+    case 'js':
+      return example
+        .replace(/\n?\/\/\s*$/, '') // We can have only a trailing TS comment leftover
+        .replace(/\/\/\s*#(docregion|enddocregion)\s*\w*\n/g, '');
+    case 'html':
+      return example
+        .replace(/(^\s*-->)|(<!--\s*$)/, '')
+        .replace(/<!--\s*#(docregion|enddocregion)\s*\w*\s*-->\n/g, '');
+    default:
+      return example;
   }
-
-  const example = contents.substring(startIdx, endIdx);
-
-  return trimLeftoverCommentsFromExample(example, fileType);
 }
