@@ -59,9 +59,24 @@ In some cases, the computation for a `linkedSignal` needs to account for the pre
 In the example above, `selectedOption` always updates back to the first option when `shippingOptions` changes. You may, however, want to preserve the user's selection if their selected option is still somewhere in the list. To accomplish this, you can create a `linkedSignal` with a separate _source_ and _computation_:
 
 ```typescript
+interface ShippingMethod {
+  id: number;
+  name: string;
+}
+
 @Component({/* ... */})
 export class ShippingMethodPicker {
-  shippingOptions: Signal<ShippingMethod[]> = getShippingOptions();
+  constructor() {
+    this.changeShipping(2);
+    this.changeShippingOptions();
+    console.log(this.selectedOption()); // {"id":2,"name":"Postal Service"}
+  }
+
+  shippingOptions: WritableSignal<ShippingMethod[]> = signal([
+    { id: 0, name: 'Ground' },
+    { id: 1, name: 'Air' },
+    { id: 2, name: 'Sea' },
+  ]);
 
   selectedOption = linkedSignal<ShippingMethod[], ShippingMethod>({
     // `selectedOption` is set to the `computation` result whenever this `source` changes.
@@ -69,12 +84,22 @@ export class ShippingMethodPicker {
     computation: (newOptions, previous) => {
       // If the newOptions contain the previously selected option, preserve that selection.
       // Otherwise, default to the first option.
-      return newOptions.find(opt => opt.id === previous?.value?.id) ?? newOptions[0];
-    }
+      return (
+        newOptions.find((opt) => opt.id === previous?.value.id) ?? newOptions[0]
+      );
+    },
   });
 
-  changeShipping(newOptionIndex: number) {
-    this.selectedOption.set(this.shippingOptions()[newOptionIndex]);
+  changeShipping(index: number) {
+    this.selectedOption.set(this.shippingOptions()[index]);
+  }
+
+  changeShippingOptions() {
+    this.shippingOptions.set([
+      { id: 0, name: 'Email' },
+      { id: 1, name: 'Sea' },
+      { id: 2, name: 'Postal Service' },
+    ]);
   }
 }
 ```
