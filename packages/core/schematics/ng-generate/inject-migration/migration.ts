@@ -230,8 +230,8 @@ function migrateClass(
     const nextStatement = getNextPreservedStatement(superCall, removedStatements);
     tracker.insertText(
       sourceFile,
-      nextStatement ? nextStatement.getFullStart() : superCall.getEnd() + 1,
-      `\n${afterSuper.join('\n')}\n`,
+      nextStatement ? nextStatement.getFullStart() : constructor.getEnd() - 1,
+      `\n${afterSuper.join('\n')}\n` + (nextStatement ? '' : memberIndentation),
     );
   }
 
