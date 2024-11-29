@@ -1714,8 +1714,8 @@ describe('inject migration', () => {
       `    const foo = inject(Foo, { optional: true }) ?? createFoo(bar);`,
       ``,
       `    super(foo);`,
+      `  `,
       `    this.foo = foo;`,
-      ``,
       `  }`,
       `}`,
     ]);
@@ -2576,6 +2576,50 @@ describe('inject migration', () => {
         `  private foo = inject(Foo);`,
         `  private beforeConstructor: number = this.foo.getValue();`,
         `  private afterConstructor: number = this.beforeConstructor + 1;`,
+        `}`,
+      ]);
+    });
+
+    it('should be able to insert statements after the `super` call when all subsequent statements have been deleted', async () => {
+      writeFile(
+        '/dir.ts',
+        [
+          `import { Directive } from '@angular/core';`,
+          `import { Foo } from 'deps';`,
+          `import { Parent } from './parent';`,
+          ``,
+          `@Directive()`,
+          `class MyDir extends Parent {`,
+          `  private value: number;`,
+          ``,
+          `  constructor(private foo: Foo) {`,
+          `    super(foo, bar);`,
+          `    this.value = this.foo.getValue();`,
+          `  }`,
+          `}`,
+        ].join('\n'),
+      );
+
+      await runInternalMigration();
+
+      expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+        `import { Directive, inject } from '@angular/core';`,
+        `import { Foo } from 'deps';`,
+        `import { Parent } from './parent';`,
+        ``,
+        `@Directive()`,
+        `class MyDir extends Parent {`,
+        `  private foo: Foo;`,
+        ``,
+        `  private value: number = this.foo.getValue();`,
+        ``,
+        `  constructor() {`,
+        `    const foo = inject(Foo);`,
+        ``,
+        `    super(foo, bar);`,
+        `  `,
+        `    this.foo = foo;`,
+        `  }`,
         `}`,
       ]);
     });
