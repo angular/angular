@@ -7,8 +7,8 @@
  */
 
 import {DocEntry} from '@angular/compiler-cli';
-import {readFileSync} from 'fs';
 import {basename, dirname, resolve} from 'path';
+import fs from 'fs';
 
 export const EXAMPLES_PATH = 'packages/examples';
 
@@ -16,7 +16,7 @@ export const EXAMPLES_PATH = 'packages/examples';
 const REGION_START_MARKER = '#docregion';
 const REGION_END_MARKER = '#enddocregion';
 
-// Used only for clean up
+// Used only for clean up of leftovers comments
 const TS_COMMENT_REGION_REGEX = /[ \t]*\/\/[ \t]*#(docregion|enddocregion)[ \t]*[\w-]*(\n|$)/g;
 const HTML_COMMENT_REGION_REGEX =
   /[ \t]*<!--[ \t]*#(docregion|enddocregion)[ \t]*[\w-]*[ \t]*-->(\n|$)/g;
@@ -27,8 +27,15 @@ type FileType = 'ts' | 'js' | 'html';
 
 type RegionStartToken = {name: string; startIdx: number};
 
+const MD_CTYPE_MAP: {[key in FileType]: string} = {
+  'ts': 'typescript',
+  'js': 'javascript',
+  'html': 'html',
+};
+
 /**
  * Interpolate code examples in the `DocEntry`-ies JSDocs content and raw comments in place.
+ * The examples are wrapped in a Markdown code block.
  *
  * @param entries Target `DocEntry`-ies array that has its examples substituted with the actual TS code.
  * @param examplesFiles A set with all examples files sources.
@@ -52,24 +59,30 @@ function replaceExample(text: string): string {
       throw new Error(`Missing code example ${path}#${region}`);
     }
 
-    return '```typescript\n' + example + '\n```';
+    return example;
   });
 }
 
+/** Returns the example wrapped in a Markdown code block or an empty string, if the example doesn't exist. */
 function getExample(path: string, region: string): string {
   let fileExamples = examplesCache.get(path);
+  const src = `${EXAMPLES_PATH}/${path}`;
+  const fullPath = resolve(dirname(src), basename(src));
+  const fileType = path.split('.').pop() as FileType;
 
   if (!fileExamples) {
-    const src = `${EXAMPLES_PATH}/${path}`;
-    const fullPath = resolve(dirname(src), basename(src));
-    const contents = readFileSync(fullPath, {encoding: 'utf8'});
-    const fileType = path.split('.').pop() as FileType;
+    const contents = fs.readFileSync(fullPath, {encoding: 'utf8'});
 
     fileExamples = extractExamplesFromContents(contents, fileType);
     examplesCache.set(path, fileExamples);
   }
 
-  return fileExamples.get(region) || '';
+  const example = fileExamples.get(region);
+  if (!example) {
+    return '';
+  }
+
+  return `\`\`\`${MD_CTYPE_MAP[fileType]}\n${example}\n\`\`\``;
 }
 
 /**
@@ -103,7 +116,7 @@ function extractExamplesFromContents(contents: string, fileType: FileType): Map<
     }
 
     if (markerFound && !/\s/.test(char)) {
-      // Build param string.
+      // Build a param string.
       paramBuffer += char;
     } else if (markerFound && char === '\n') {
       // Resolve found marker.
@@ -119,7 +132,7 @@ function extractExamplesFromContents(contents: string, fileType: FileType): Map<
           if (regionStack.length) {
             // Check whether the end marker has a parameter or not.
             // If not, pop from the stack (it corresponds to the last inserted token).
-            // If yes, pull the corresponding token index.
+            // If yes, pull the corresponding token.
             let tokenIdx = paramBuffer ? regionStack.findIndex((t) => t.name === paramBuffer) : -1;
             let token: RegionStartToken;
 
