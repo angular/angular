@@ -72,7 +72,7 @@ export class ShippingMethodPicker {
     console.log(this.selectedOption()); // {"id":2,"name":"Postal Service"}
   }
 
-  shippingOptions: WritableSignal<ShippingMethod[]> = signal([
+  shippingOptions = signal<ShippingMethod[]>([
     { id: 0, name: 'Ground' },
     { id: 1, name: 'Air' },
     { id: 2, name: 'Sea' },
