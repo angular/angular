@@ -232,7 +232,7 @@ export class MediaControls {
 }
 ```
 
-In the example above, the `CustomSlider` can write values into its `checked` model input, which then propagates those values back to the `isAdmin` property in `UserProfile`. This binding keeps that values of `checked` and `isAdmin` in sync.
+In the example above, the `CustomSlider` can write values into its `value` model input, which then propagates those values back to the `volume` property in `MediaControls`. This binding keeps that values of `value` and `volume` in sync.
 
 ### Implicit `change` events
 

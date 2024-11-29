@@ -1176,6 +1176,11 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'reference/errors/NG0403',
       },
       {
+        label: 'NG04008: Invalid or undefined route configuration or navigation path',
+        path: 'errors/NG04008',
+        contentPath: 'reference/errors/NG04008',
+      },
+      {
         label: 'NG0500: Hydration Node Mismatch',
         path: 'errors/NG0500',
         contentPath: 'reference/errors/NG0500',
