@@ -1407,7 +1407,7 @@ export class TcbDirectiveOutputsOp extends TcbOp {
 
       if (this.tcb.env.config.checkTypeOfOutputEvents && output.name.endsWith('Change')) {
         const inputName = output.name.slice(0, -6);
-        isSplitTwoWayBinding(inputName, output, this.node.inputs, this.tcb);
+        checkSplitTwoWayBinding(inputName, output, this.node.inputs, this.tcb);
       }
       // TODO(alxhub): consider supporting multiple fields with the same property name for outputs.
       const field = outputs.getByBindingPropertyName(output.name)![0].classPropertyName;
@@ -1481,7 +1481,7 @@ class TcbUnclaimedOutputsOp extends TcbOp {
 
       if (this.tcb.env.config.checkTypeOfOutputEvents && output.name.endsWith('Change')) {
         const inputName = output.name.slice(0, -6);
-        if (isSplitTwoWayBinding(inputName, output, this.element.inputs, this.tcb)) {
+        if (checkSplitTwoWayBinding(inputName, output, this.element.inputs, this.tcb)) {
           // Skip this event handler as the error was already handled.
           continue;
         }
@@ -3142,7 +3142,7 @@ function tcbEventHandlerExpression(ast: AST, tcb: Context, scope: Scope): ts.Exp
   return translator.translate(ast);
 }
 
-function isSplitTwoWayBinding(
+function checkSplitTwoWayBinding(
   inputName: string,
   output: TmplAstBoundEvent,
   inputs: TmplAstBoundAttribute[],
