@@ -11,6 +11,7 @@ import {
   ClassEntry,
 } from '@angular/compiler-cli';
 import ts from 'typescript';
+import {EXAMPLES_PATH, interpolateCodeExamples} from './interpolate_code_examples';
 
 function main() {
   const [paramFilePath] = process.argv.slice(2);
@@ -58,12 +59,9 @@ function main() {
     experimentalDecorators: true,
   };
 
-  const compilerHost = createCompilerHost({options: compilerOptions});
-  const files = srcs.split(',');
-
   // Code examples should not be fed to the compiler.
-  const filesWithoutExamples = files.filter((path) => !path.startsWith('packages/examples'));
-
+  const filesWithoutExamples = srcs.split(',').filter((src) => !src.startsWith(EXAMPLES_PATH));
+  const compilerHost = createCompilerHost({options: compilerOptions});
   const program: NgtscProgram = new NgtscProgram(
     filesWithoutExamples,
     compilerOptions,
@@ -80,6 +78,8 @@ function main() {
   const apiDoc = program.getApiDocumentation(entryPointExecRootRelativePath, privateModules);
   const extractedEntries = apiDoc.entries;
   const combinedEntries = extractedEntries.concat(extraEntries);
+
+  interpolateCodeExamples(combinedEntries);
 
   const normalized = moduleName.replace('@', '').replace(/[\/]/g, '_');
 
