@@ -23,7 +23,7 @@ export class TodoListItem {
 When Angular renders the component, you see:
 
 ```html
-<h1>Profile file pro_programmer_123</h1>
+<h1>Profile for pro_programmer_123</h1>
 ```
 
 Angular automatically keeps the binding up-to-date when the value of the signal changes. Building on
@@ -36,7 +36,7 @@ this.userName.set('cool_coder_789');
 The rendered page updates to reflect the new value:
 
 ```html
-<h1>Profile file cool_coder_789</h1>
+<h1>Profile for cool_coder_789</h1>
 ```
 
 ## Setting dynamic properties and attributes
