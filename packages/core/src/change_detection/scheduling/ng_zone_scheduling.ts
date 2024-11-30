@@ -15,6 +15,7 @@ import {
   inject,
   Injectable,
   InjectionToken,
+  Injector,
   makeEnvironmentProviders,
   StaticProvider,
 } from '../../di';
@@ -38,7 +39,7 @@ export class NgZoneChangeDetectionScheduler {
   private readonly zone = inject(NgZone);
   private readonly changeDetectionScheduler = inject(ChangeDetectionScheduler);
   private readonly applicationRef = inject(ApplicationRef);
-  private readonly applicationErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
+  private readonly injector = inject(Injector);
 
   private _onMicrotaskEmptySubscription?: Subscription;
 
@@ -59,7 +60,8 @@ export class NgZoneChangeDetectionScheduler {
           try {
             this.applicationRef.tick();
           } catch (e) {
-            this.applicationErrorHandler(e);
+            const applicationErrorHandler = this.injector.get(INTERNAL_APPLICATION_ERROR_HANDLER);
+            applicationErrorHandler(e);
           }
         });
       },

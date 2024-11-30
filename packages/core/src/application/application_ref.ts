@@ -281,7 +281,7 @@ export class ApplicationRef {
   private _destroyListeners: Array<() => void> = [];
   /** @internal */
   _views: InternalViewRef<unknown>[] = [];
-  private readonly internalErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
+  private internalErrorHandler: ((error: any) => void) | undefined;
   private readonly afterRenderManager = inject(AfterRenderManager);
   private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
   private readonly rootEffectScheduler = inject(EffectScheduler);
@@ -754,6 +754,7 @@ export class ApplicationRef {
     try {
       this.tick();
     } catch (e) {
+      this.internalErrorHandler ??= this._injector.get(INTERNAL_APPLICATION_ERROR_HANDLER);
       this.internalErrorHandler(e);
     }
     this.components.push(componentRef);
