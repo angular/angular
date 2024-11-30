@@ -9,6 +9,7 @@
 import {Subscription} from 'rxjs';
 
 import {ApplicationRef, ApplicationRefDirtyFlags} from '../../application/application_ref';
+import {Injector} from '../../di/injector';
 import {Injectable} from '../../di/injectable';
 import {inject} from '../../di/injector_compatibility';
 import {EnvironmentProviders} from '../../di/interface/provider';
@@ -58,8 +59,8 @@ function trackMicrotaskNotificationForDebugging() {
 
 @Injectable({providedIn: 'root'})
 export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
-  private readonly applicationErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
   private readonly appRef = inject(ApplicationRef);
+  private readonly injector = inject(Injector);
   private readonly taskService = inject(PendingTasksInternal);
   private readonly ngZone = inject(NgZone);
   private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
@@ -294,7 +295,8 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
       );
     } catch (e: unknown) {
       this.taskService.remove(task);
-      this.applicationErrorHandler(e);
+      const applicationErrorHandler = this.injector.get(INTERNAL_APPLICATION_ERROR_HANDLER);
+      applicationErrorHandler(e);
     } finally {
       this.cleanup();
     }
