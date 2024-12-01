@@ -304,6 +304,9 @@
         font-size: 1.25rem;
         letter-spacing: -0.025rem;
         margin: 0;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       code,
