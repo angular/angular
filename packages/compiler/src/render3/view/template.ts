@@ -130,14 +130,6 @@ export interface ParseTemplateOptions {
 
   /** Whether the `@let` syntax is enabled. */
   enableLetSyntax?: boolean;
-
-  // TODO(crisbeto): delete this option when the migration is deleted.
-  /**
-   * Whether the parser should allow invalid two-way bindings.
-   *
-   * This option is only present to support an automated migration away from the invalid syntax.
-   */
-  allowInvalidAssignmentEvents?: boolean;
 }
 
 /**
@@ -152,13 +144,8 @@ export function parseTemplate(
   templateUrl: string,
   options: ParseTemplateOptions = {},
 ): ParsedTemplate {
-  const {
-    interpolationConfig,
-    preserveWhitespaces,
-    enableI18nLegacyMessageIdFormat,
-    allowInvalidAssignmentEvents,
-  } = options;
-  const bindingParser = makeBindingParser(interpolationConfig, allowInvalidAssignmentEvents);
+  const {interpolationConfig, preserveWhitespaces, enableI18nLegacyMessageIdFormat} = options;
+  const bindingParser = makeBindingParser(interpolationConfig);
   const htmlParser = new HtmlParser();
   const parseResult = htmlParser.parse(template, templateUrl, {
     leadingTriviaChars: LEADING_TRIVIA_CHARS,
@@ -302,15 +289,8 @@ const elementRegistry = new DomElementSchemaRegistry();
  */
 export function makeBindingParser(
   interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
-  allowInvalidAssignmentEvents = false,
 ): BindingParser {
-  return new BindingParser(
-    new Parser(new Lexer()),
-    interpolationConfig,
-    elementRegistry,
-    [],
-    allowInvalidAssignmentEvents,
-  );
+  return new BindingParser(new Parser(new Lexer()), interpolationConfig, elementRegistry, []);
 }
 
 /**
