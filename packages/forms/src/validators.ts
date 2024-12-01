@@ -853,6 +853,7 @@ export function isPhoneNumberValidator(
           }
         : null;
     } catch (error) {
+      // if the `error` exists always return an object of an invalid number 
       return {
         phoneNumber: {
           invalidPhoneNumber: true,
