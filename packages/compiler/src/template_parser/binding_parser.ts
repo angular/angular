@@ -64,7 +64,6 @@ export class BindingParser {
     private _interpolationConfig: InterpolationConfig,
     private _schemaRegistry: ElementSchemaRegistry,
     public errors: ParseError[],
-    private _allowInvalidAssignmentEvents = false,
   ) {}
 
   get interpolationConfig(): InterpolationConfig {
@@ -816,20 +815,7 @@ export class BindingParser {
       return true;
     }
 
-    // TODO(crisbeto): this logic is only here to support the automated migration away
-    // from invalid bindings. It should be removed once the migration is deleted.
-    if (!this._allowInvalidAssignmentEvents) {
-      return false;
-    }
-
-    if (ast instanceof Binary) {
-      return (
-        (ast.operation === '&&' || ast.operation === '||' || ast.operation === '??') &&
-        (ast.right instanceof PropertyRead || ast.right instanceof KeyedRead)
-      );
-    }
-
-    return ast instanceof Conditional || ast instanceof PrefixNot;
+    return false;
   }
 }
 
