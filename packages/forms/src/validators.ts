@@ -25,6 +25,9 @@ import type {
 import {RuntimeErrorCode} from './errors';
 import type {AbstractControl} from './model/abstract_model';
 
+import { allPhoneNumberTypes, PhoneNumberType } from './model/phone_number';
+import { parsePhoneNumberFromString, CountryCode } from 'libphonenumber-js/max';
+
 function isEmptyInputValue(value: any): boolean {
   /**
    * Check if the object is a string or array before evaluating the length attribute.
@@ -448,6 +451,32 @@ export class Validators {
   static composeAsync(validators: (AsyncValidatorFn | null)[]): AsyncValidatorFn | null {
     return composeAsync(validators);
   }
+
+  /**
+   * @description
+   * Validator for phone numbers that checks if the input matches the specified types.
+   * This validator uses the `isPhoneNumberValidator` function internally.
+   * @see {@link isPhoneNumberValidator}
+   *
+   * @param acceptedNumbersTypes Optional array of allowed phone number types.
+   * @see {@link PhoneNumberType}
+   * if the array is empty [] or it hasn't been passed to the validator, the function will consider all possible
+   * `PhoneNumberTypes` as valid.
+   *
+   * @usageNotes
+   * Value of the control should be Object of {number: string, countryCode: CountryCode}
+   * @see {@link CountryCode}
+   * const control = new FormControl({number: '1234567890', countryCode: 'US'}, Validators.phoneNumber([PhoneNumberType.MOBILE, PhoneNumberType.FIXED_LINE]));
+   * console.log(control.errors); // phoneNumber: {phoneType: 'PERSONAL_NUMBER', acceptedTypes: ['MOBILE', 'FIXED_LINE']}
+   *
+   * @returns A ValidatorFn that validates phone numbers against specified types and checks if the number
+   * is an actual phone number according to country standards.
+   */
+  static phoneNumber(
+    acceptedNumbersTypes?: Array<PhoneNumberType>,
+  ): ValidatorFn {
+    return isPhoneNumberValidator(acceptedNumbersTypes);
+  }
 }
 
 /**
@@ -774,4 +803,62 @@ export function removeValidators<T extends ValidatorFn | AsyncValidatorFn>(
   currentValidators: T | T[] | null,
 ): T[] {
   return makeValidatorsArray(currentValidators).filter((v) => !hasValidator(validators, v));
+}
+
+/**
+ * @param acceptedNumbersTypes Optional array of allowed phone number types.
+ * @see {@link PhoneNumberType}
+ * if the array is empty [] or it hasn't been passed to the validator, the function will consider all possible
+ * `PhoneNumberTypes` as valid.
+ *
+ * @returns `null` if all values are valid, and an object of validation errors like so
+ * phoneNumber: {phoneType: 'PERSONAL_NUMBER', acceptedTypes: ['MOBILE', 'FIXED_LINE']}
+ * phoneNumber: {invalidPhoneNumber: true, acceptedTypes: ['MOBILE', 'FIXED_LINE']}
+ */
+export function isPhoneNumberValidator(
+  acceptedNumbersTypes?: Array<PhoneNumberType>,
+): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value: { number: string; countryCode: CountryCode } = control.value;
+    if (!value) return null; // No validation needed for empty values
+
+    // the list of all phone number types that are the output of .getType() method
+    let checkedNumberTypes: Array<PhoneNumberType> = allPhoneNumberTypes;
+
+    // Checking if accepted types array is passed to override the default
+    if (acceptedNumbersTypes && acceptedNumbersTypes.length > 0) {
+      checkedNumberTypes = acceptedNumbersTypes;
+    }
+
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const phoneNum: any = parsePhoneNumberFromString(
+        value.number,
+        value.countryCode,
+      );
+
+      if (!phoneNum?.isValid()) {
+        return {
+          phoneNumber: {
+            invalidPhoneNumber: true,
+            acceptedTypes: checkedNumberTypes,
+          },
+        };
+      }
+
+      return !checkedNumberTypes.some((item) => item === phoneNum?.getType())
+        ? {
+            phoneType: phoneNum?.getType(),
+            acceptedTypes: checkedNumberTypes,
+          }
+        : null;
+    } catch (error) {
+      return {
+        phoneNumber: {
+          invalidPhoneNumber: true,
+          acceptedTypes: checkedNumberTypes,
+        },
+      };
+    }
+  };
 }
