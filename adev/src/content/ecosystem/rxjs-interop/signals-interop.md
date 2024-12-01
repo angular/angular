@@ -69,6 +69,7 @@ Use the `toObservable` utility to create an `Observable` which tracks the value 
 
 ```ts
 import { Component, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 @Component(...)
 export class SearchResults {
