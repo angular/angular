@@ -418,7 +418,7 @@ export interface ComponentDecorator {
    * The following example creates a component with two data-bound properties,
    * specified by the `inputs` value.
    *
-   * <code-example path="core/ts/metadata/directives.ts" region="component-input"></code-example>
+   * {@example core/ts/metadata/directives.ts region='component-input'}
    *
    *
    * ### Setting component outputs

@@ -13,6 +13,7 @@ filegroup(
         "//packages/examples/core/di/ts/forward_ref:files_for_docgen",
         "//packages/examples/core/testing/ts:files_for_docgen",
         "//packages/examples/forms:files_for_docgen",
+        "//packages/examples/injection-token:files_for_docgen",
         "//packages/examples/platform-browser:files_for_docgen",
         "//packages/examples/router:files_for_docgen",
         "//packages/examples/router/activated-route:files_for_docgen",

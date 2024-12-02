@@ -35,8 +35,7 @@ import {ViewRef} from '../render3/view_ref';
  * (`CheckOnce`, rather than the default `CheckAlways`), then forces a second check
  * after an interval.
  *
- * <code-example path="core/ts/change_detect/change-detection.ts"
- * region="mark-for-check"></code-example>
+ * {@example core/ts/change_detect/change-detection.ts region='mark-for-check'}
  *
  * ### Detach change detector to limit how often check occurs
  *
@@ -46,7 +45,7 @@ import {ViewRef} from '../render3/view_ref';
  * less often than the changes actually occur. To do that, we detach
  * the component's change detector and perform an explicit local check every five seconds.
  *
- * <code-example path="core/ts/change_detect/change-detection.ts" region="detach"></code-example>
+ * {@example core/ts/change_detect/change-detection.ts region='detach'}
  *
  *
  * ### Reattaching a detached component
@@ -56,7 +55,7 @@ import {ViewRef} from '../render3/view_ref';
  * when the `live` property is set to false, and reattaches it when the property
  * becomes true.
  *
- * <code-example path="core/ts/change_detect/change-detection.ts" region="reattach"></code-example>
+ * {@example core/ts/change_detect/change-detection.ts region='reattach'}
  *
  * @publicApi
  */
