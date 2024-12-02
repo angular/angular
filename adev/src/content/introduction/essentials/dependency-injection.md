@@ -6,7 +6,7 @@ When you need to share logic between components, Angular leverages the design pa
 
 ## What are services?
 
-Services are reusable pieces of code that can be injected
+Services are reusable pieces of code that can be injected.
 
 Similar to defining a component, services are comprised of the following:
 
