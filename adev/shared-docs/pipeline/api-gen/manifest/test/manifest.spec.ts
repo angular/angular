@@ -1,5 +1,5 @@
 // @ts-ignore This compiles fine, but Webstorm doesn't like the ESM import in a CJS context.
-import {DocEntry, EntryType, JsDocTagEntry} from '@angular/compiler-cli';
+import {DocEntry, EntryType, FunctionEntry, JsDocTagEntry} from '@angular/compiler-cli';
 import {generateManifest, Manifest} from '../generate_manifest';
 
 describe('api manifest generation', () => {
@@ -178,44 +178,40 @@ describe('api manifest generation', () => {
     ]);
   });
 
-  it('should deduplicate function overloads', () => {
-    const manifest = generateManifest([
-      {
-        moduleName: '@angular/core',
-        entries: [
-          entry({name: 'save', entryType: EntryType.Function}),
-          entry({name: 'save', entryType: EntryType.Function}),
-        ],
-        normalizedModuleName: 'angular_core',
-        moduleLabel: 'core',
-      },
-    ]);
-
-    expect(manifest).toEqual([
-      {
-        moduleName: '@angular/core',
-        moduleLabel: 'core',
-        normalizedModuleName: 'angular_core',
-        entries: [
-          {
-            name: 'save',
-            type: EntryType.Function,
-            isDeprecated: false,
-            isDeveloperPreview: false,
-            isExperimental: false,
-          },
-        ],
-      },
-    ]);
-  });
-
   it('should not mark a function as deprecated if only one overload is deprecated', () => {
     const manifest = generateManifest([
       {
         moduleName: '@angular/core',
         entries: [
-          entry({name: 'save', entryType: EntryType.Function}),
-          entry({name: 'save', entryType: EntryType.Function, jsdocTags: jsdocTags('deprecated')}),
+          functionEntry({
+            name: 'save',
+            entryType: EntryType.Function,
+            jsdocTags: [],
+            signatures: [
+              {
+                name: 'save',
+                returnType: 'void',
+                jsdocTags: [],
+                description: '',
+                entryType: EntryType.Function,
+                params: [],
+                generics: [],
+                isNewType: false,
+                rawComment: '',
+              },
+              {
+                name: 'save',
+                returnType: 'void',
+                jsdocTags: jsdocTags('deprecated'),
+                description: '',
+                entryType: EntryType.Function,
+                params: [],
+                generics: [],
+                isNewType: false,
+                rawComment: '',
+              },
+            ],
+          }),
         ],
         normalizedModuleName: 'angular_core',
         moduleLabel: 'core',
@@ -245,8 +241,35 @@ describe('api manifest generation', () => {
       {
         moduleName: '@angular/core',
         entries: [
-          entry({name: 'save', entryType: EntryType.Function, jsdocTags: jsdocTags('deprecated')}),
-          entry({name: 'save', entryType: EntryType.Function, jsdocTags: jsdocTags('deprecated')}),
+          functionEntry({
+            name: 'save',
+            entryType: EntryType.Function,
+            jsdocTags: [],
+            signatures: [
+              {
+                name: 'save',
+                returnType: 'void',
+                jsdocTags: jsdocTags('deprecated'),
+                description: '',
+                entryType: EntryType.Function,
+                params: [],
+                generics: [],
+                isNewType: false,
+                rawComment: '',
+              },
+              {
+                name: 'save',
+                returnType: 'void',
+                jsdocTags: jsdocTags('deprecated'),
+                description: '',
+                entryType: EntryType.Function,
+                params: [],
+                generics: [],
+                isNewType: false,
+                rawComment: '',
+              },
+            ],
+          }),
         ],
         normalizedModuleName: 'angular_core',
         moduleLabel: 'core',
@@ -374,6 +397,15 @@ function entry(patch: Partial<DocEntry>): DocEntry {
     rawComment: '',
     ...patch,
   };
+}
+
+function functionEntry(patch: Partial<FunctionEntry>): FunctionEntry {
+  return entry({
+    entryType: EntryType.Function,
+    implementation: [],
+    signatures: [],
+    ...patch,
+  } as FunctionEntry) as FunctionEntry;
 }
 
 /** Creates a fake jsdoc tag entry list that contains a tag with the given name */
