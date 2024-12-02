@@ -8,6 +8,7 @@ import {
   FunctionEntry,
   InitializerApiFunctionEntry,
   InterfaceEntry,
+  JsDocTagEntry,
   MemberEntry,
   MemberType,
   MethodEntry,
@@ -125,7 +126,7 @@ export function isSetterEntry(entry: MemberEntry): entry is PropertyEntry {
 
 /** Gets whether the given entry is deprecated. */
 export function isDeprecatedEntry<T extends HasJsDocTags>(entry: T) {
-  return entry.jsdocTags.some((tag) => tag.name === 'deprecated');
+  return hasTag(entry, 'deprecated', /* every */ true);
 }
 
 export function getDeprecatedEntry<T extends HasJsDocTags>(entry: T) {
@@ -133,13 +134,30 @@ export function getDeprecatedEntry<T extends HasJsDocTags>(entry: T) {
 }
 
 /** Gets whether the given entry is developer preview. */
-export function isDeveloperPreview<T extends HasJsDocTags>(entry: T) {
-  return entry.jsdocTags.some((tag) => tag.name === 'developerPreview');
+export function isDeveloperPreview<T extends HasJsDocTags | FunctionEntry>(entry: T) {
+  return hasTag(entry, 'developerPreview', false);
 }
 
 /** Gets whether the given entry is is experimental. */
 export function isExperimental<T extends HasJsDocTags>(entry: T) {
-  return entry.jsdocTags.some((tag) => tag.name === 'experimental');
+  return hasTag(entry, 'experimental');
+}
+/** Gets whether the given entry has a given JsDoc tag. */
+function hasTag<T extends HasJsDocTags | FunctionEntry>(entry: T, tag: string, every = false) {
+  const hasTagName = (t: JsDocTagEntry) => t.name === tag;
+
+  if (every && 'signatures' in entry && entry.signatures.length > 1) {
+    // For overloads we need to check all signatures.
+    return entry.signatures.every((s) => s.jsdocTags.some(hasTagName));
+  }
+
+  const jsdocTags = [
+    ...entry.jsdocTags,
+    ...((entry as FunctionEntry).signatures?.flatMap((s) => s.jsdocTags) ?? []),
+    ...((entry as FunctionEntry).implementation?.jsdocTags ?? []),
+  ];
+
+  return jsdocTags.some(hasTagName);
 }
 
 /** Gets whether the given entry is a cli entry. */
