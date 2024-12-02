@@ -568,10 +568,15 @@ runInEachFileSystem(() => {
       );
 
       const diags = env.driveDiagnostics();
-      expect(diags.length).toBe(1);
+      expect(diags.length).toBe(2);
       expect(diags[0].messageText).toEqual(
         jasmine.objectContaining({
           messageText: `Type '{ id: number; }' is not assignable to type '{ id: string; }'.`,
+        }),
+      );
+      expect(diags[1].messageText).toEqual(
+        jasmine.objectContaining({
+          messageText: `Type '{ id: string; }' is not assignable to type '{ id: number; }'.`,
         }),
       );
     });
@@ -603,7 +608,7 @@ runInEachFileSystem(() => {
               imports: [Dir],
             })
             export class FooCmp {
-              nullableType = null;
+              nullableType: string | null = null;
             }
           `,
       );
@@ -639,12 +644,45 @@ runInEachFileSystem(() => {
       );
 
       const diags = env.driveDiagnostics();
-      expect(diags.length).toBe(1);
+      expect(diags.length).toBe(2);
       expect(diags[0].messageText).toEqual(
         jasmine.objectContaining({
           messageText: `Type '(val: string) => number' is not assignable to type 'TestFn'.`,
         }),
       );
+      expect(diags[1].messageText).toEqual(
+        jasmine.objectContaining({
+          messageText: `Type 'TestFn' is not assignable to type '(val: string) => number'.`,
+        }),
+      );
+    });
+
+    it('should type check a two-way binding to input/output pair where the input has a wider type than the output', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write(
+        'test.ts',
+        `
+          import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
+
+          @Directive({selector: '[dir]'})
+          export class Dir {
+            @Input() value: string | number;
+            @Output() valueChange = new EventEmitter<number>();
+          }
+
+          @Component({
+            template: '<div dir [(value)]="value"></div>',
+            imports: [Dir],
+          })
+          export class App {
+            value = 'hello';
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toBe(`Type 'number' is not assignable to type 'string'.`);
     });
 
     it('should check the fallback content of ng-content', () => {

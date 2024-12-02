@@ -507,7 +507,7 @@ describe('find references and rename locations', () => {
             import {Directive} from '@angular/core';
 
             @Directive({
-              selector: '[dir]', 
+              selector: '[dir]',
               exportAs: 'myDir',
               standalone: false,
             })
@@ -734,7 +734,7 @@ describe('find references and rename locations', () => {
           constructor(readonly $implicit: T, readonly identifier: string) {}
         }
 
-        @Directive({ 
+        @Directive({
           selector: '[example]',
           standalone: false,
         })
@@ -751,7 +751,7 @@ describe('find references and rename locations', () => {
 
         @Component({
           template: '<div *example="state; let id = identifier">{{id}}</div>',
-          standalone: false,  
+          standalone: false,
         })
         export class AppCmp {
           state = {};
@@ -793,7 +793,7 @@ describe('find references and rename locations', () => {
 
             @Component({
               template: '<div *ngFor="let hero of heroes">{{hero.name}}</div>',
-              standalone: false,  
+              standalone: false,
             })
             export class AppCmp {
               heroes: Array<{name: string}> = [];
@@ -865,7 +865,7 @@ describe('find references and rename locations', () => {
     const prefixPipe = `
         import {Pipe, PipeTransform} from '@angular/core';
 
-        @Pipe({ 
+        @Pipe({
           name: 'prefixPipe',
           standalone: false,
         })
@@ -964,7 +964,7 @@ describe('find references and rename locations', () => {
           '/base_pipe.ts': `
         import {Pipe, PipeTransform} from '@angular/core';
 
-        @Pipe({ 
+        @Pipe({
           name: 'basePipe',
           standalone: false,
         })
@@ -1553,7 +1553,7 @@ describe('find references and rename locations', () => {
           standalone: false,
         })
         export class AppCmp {
-          title = 'title';
+          title = 'title' as string | undefined;
         }`,
     };
 
@@ -1577,7 +1577,7 @@ describe('find references and rename locations', () => {
       import {Directive} from '@angular/core';
 
       @Directive({
-        selector: '[dir]', 
+        selector: '[dir]',
         standalone: false,
       })
       export class Dir {}`,
@@ -1728,7 +1728,7 @@ describe('find references and rename locations', () => {
       import {Component} from '@angular/core';
 
       @Component({
-        selector: 'my-comp', 
+        selector: 'my-comp',
         template: '',
         standalone: false,
       })
@@ -1780,7 +1780,7 @@ describe('find references and rename locations', () => {
       import {Component} from '@angular/core';
 
       @Component({
-        selector: 'my-comp', template: '', 
+        selector: 'my-comp', template: '',
         standalone: false,
       })
       export class MyComp {}`;
@@ -1866,7 +1866,7 @@ describe('find references and rename locations', () => {
             import {Component} from '@angular/core';
 
             @Component({
-              selector: 'my-comp', 
+              selector: 'my-comp',
               template: '',
               standalone: false,
             })
@@ -1888,7 +1888,7 @@ describe('find references and rename locations', () => {
             import {Component, Input} from '@angular/core';
 
             @Component({
-              selector: 'my-comp', 
+              selector: 'my-comp',
               template: '',
               standalone: false,
             })
@@ -1912,7 +1912,7 @@ describe('find references and rename locations', () => {
             import {Component} from '@angular/core';
 
             @Component({
-              selector: 'my-comp', 
+              selector: 'my-comp',
               template: '{{ myObj["myProp"] }}',
               standalone: false,
             })
@@ -1948,7 +1948,7 @@ describe('find references and rename locations', () => {
         'dir.ts': `
         import {Directive, Input} from '@angular/core';
         @Directive({
-          selector: '[dir]', 
+          selector: '[dir]',
           standalone: false,
         })
         export class MyDir {
@@ -1958,7 +1958,7 @@ describe('find references and rename locations', () => {
             import {Component, Input} from '@angular/core';
 
             @Component({
-              selector: 'my-comp', 
+              selector: 'my-comp',
               template: '<div dir="something"></div>',
               standalone: false,
             })

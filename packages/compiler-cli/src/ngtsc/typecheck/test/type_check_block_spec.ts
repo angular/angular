@@ -717,6 +717,8 @@ describe('type check blocks', () => {
     const block = tcb(TEMPLATE, DIRECTIVES);
     expect(block).toContain('var _t1 = null! as i0.TwoWay;');
     expect(block).toContain('_t1.input = i1.ɵunwrapWritableSignal((((this).value)));');
+    expect(block).toContain('var _t2 = i1.ɵunwrapWritableSignal(((this).value));');
+    expect(block).toContain('_t2 = $event;');
   });
 
   it('should handle a two-way binding to an input/output pair of a generic directive', () => {
@@ -739,6 +741,8 @@ describe('type check blocks', () => {
       'var _t1 = _ctor1({ "input": (i1.ɵunwrapWritableSignal(((this).value))) });',
     );
     expect(block).toContain('_t1.input = i1.ɵunwrapWritableSignal((((this).value)));');
+    expect(block).toContain('var _t2 = i1.ɵunwrapWritableSignal(((this).value));');
+    expect(block).toContain('_t2 = $event;');
   });
 
   it('should handle a two-way binding to a model()', () => {
@@ -765,6 +769,8 @@ describe('type check blocks', () => {
     expect(block).toContain(
       '_t1.input[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] = i1.ɵunwrapWritableSignal((((this).value)));',
     );
+    expect(block).toContain('var _t2 = i1.ɵunwrapWritableSignal(((this).value));');
+    expect(block).toContain('_t2 = $event;');
   });
 
   it('should handle a two-way binding to an input with a transform', () => {
@@ -806,6 +812,8 @@ describe('type check blocks', () => {
     const block = tcb(TEMPLATE, DIRECTIVES);
     expect(block).toContain('var _t1 = null! as boolean | string;');
     expect(block).toContain('_t1 = i1.ɵunwrapWritableSignal((((this).value)));');
+    expect(block).toContain('var _t3 = i1.ɵunwrapWritableSignal(((this).value));');
+    expect(block).toContain('_t3 = $event;');
   });
 
   describe('experimental DOM checking via lib.dom.d.ts', () => {
@@ -1733,15 +1741,15 @@ describe('type check blocks', () => {
 
       const result = tcb(TEMPLATE);
 
-      expect(result).toContain(`if ((((this).expr)) === (0)) (this).zero();`);
+      expect(result).toContain(`if ((((this).expr)) === (0)) { (this).zero(); }`);
       expect(result).toContain(
-        `if (!((((this).expr)) === (0)) && (((this).expr)) === (1)) (this).one();`,
+        `if (!((((this).expr)) === (0)) && (((this).expr)) === (1)) { (this).one(); }`,
       );
       expect(result).toContain(
-        `if (!((((this).expr)) === (0)) && !((((this).expr)) === (1)) && (((this).expr)) === (2)) (this).two();`,
+        `if (!((((this).expr)) === (0)) && !((((this).expr)) === (1)) && (((this).expr)) === (2)) { (this).two(); }`,
       );
       expect(result).toContain(
-        `if (!((((this).expr)) === (0)) && !((((this).expr)) === (1)) && !((((this).expr)) === (2))) (this).otherwise();`,
+        `if (!((((this).expr)) === (0)) && !((((this).expr)) === (1)) && !((((this).expr)) === (2))) { (this).otherwise(); }`,
       );
     });
 
@@ -1830,9 +1838,11 @@ describe('type check blocks', () => {
 
       const result = tcb(TEMPLATE);
 
-      expect(result).toContain(`if (((this).expr) === 1) (this).one();`);
-      expect(result).toContain(`if (((this).expr) === 2) (this).two();`);
-      expect(result).toContain(`if (((this).expr) !== 1 && ((this).expr) !== 2) (this).default();`);
+      expect(result).toContain(`if (((this).expr) === 1) { (this).one(); }`);
+      expect(result).toContain(`if (((this).expr) === 2) { (this).two(); }`);
+      expect(result).toContain(
+        `if (((this).expr) !== 1 && ((this).expr) !== 2) { (this).default(); }`,
+      );
     });
 
     it('should generate a switch block inside a template', () => {

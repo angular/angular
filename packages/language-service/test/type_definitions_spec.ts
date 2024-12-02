@@ -182,7 +182,7 @@ describe('type definitions', () => {
         })
         export class AppCmp {
           noop() {}
-          value = 'hello';
+          value = 'hello' as string | undefined;
         }
       `,
       'app.html': `Will be overridden`,
