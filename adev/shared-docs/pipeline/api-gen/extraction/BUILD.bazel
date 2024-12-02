@@ -23,7 +23,12 @@ esbuild_esm_bundle(
 
 ts_library(
     name = "extract_api_to_json_lib",
-    srcs = glob(["**/*.ts"]),
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = [
+            "**/*.spec.ts",
+        ],
+    ),
     devmode_module = "commonjs",
     tsconfig = "//adev:tsconfig.json",
     deps = [
