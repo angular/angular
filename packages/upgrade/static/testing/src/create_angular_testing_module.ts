@@ -39,7 +39,7 @@ export class AngularTestingModule {
  * The `Ng2AppModule` is the Angular part of our hybrid application and the `ng1AppModule` is the
  * AngularJS part.
  *
- * <code-example path="upgrade/static/ts/full/module.spec.ts" region="angular-setup"></code-example>
+ * {@example upgrade/static/ts/full/module.spec.ts region='angular-setup'}
  *
  * Once this is done we can get hold of services via the Angular `Injector` as normal.
  * Services that are (or have dependencies on) an upgraded AngularJS service, will be instantiated
@@ -48,7 +48,7 @@ export class AngularTestingModule {
  * In the following code snippet, `HeroesService` is an Angular service that depends upon an
  * AngularJS service, `titleCase`.
  *
- * <code-example path="upgrade/static/ts/full/module.spec.ts" region="angular-spec"></code-example>
+ * {@example upgrade/static/ts/full/module.spec.ts region='angular-spec'}
  *
  * <div class="alert is-important">
  *

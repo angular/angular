@@ -30,8 +30,7 @@ import {ɵɵdefineInjectable} from './interface/defs';
  *
  * </div>
  *
- * <code-example format="typescript" language="typescript" path="injection-token/src/main.ts"
- * region="InjectionToken"></code-example>
+ * {@example injection-token/src/main.ts region='InjectionToken'}
  *
  * When creating an `InjectionToken`, you can optionally specify a factory function which returns
  * (possibly by creating) a default value of the parameterized type `T`. This sets up the

@@ -20,7 +20,7 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  * The following example defines a view that allows the user to enter
  * text, and then uses the pipe to convert the input text to all lower case.
  *
- * <code-example path="common/pipes/ts/lowerupper_pipe.ts" region='LowerUpperPipe'></code-example>
+ * {@example common/pipes/ts/lowerupper_pipe.ts region='LowerUpperPipe'}
  *
  * @ngModule CommonModule
  * @publicApi
@@ -69,7 +69,7 @@ const unicodeWordMatch =
  * @usageNotes
  * The following example shows the result of transforming various strings into title case.
  *
- * <code-example path="common/pipes/ts/titlecase_pipe.ts" region='TitleCasePipe'></code-example>
+ * {@example common/pipes/ts/titlecase_pipe.ts region='TitleCasePipe'}
  *
  * @ngModule CommonModule
  * @publicApi

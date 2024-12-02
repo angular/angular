@@ -72,7 +72,7 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  * according to various format specifications,
  * where the caller's default locale is `en-US`.
  *
- * <code-example path="common/pipes/ts/number_pipe.ts" region='NumberPipe'></code-example>
+ * {@example common/pipes/ts/number_pipe.ts region='NumberPipe'}
  *
  * @publicApi
  */
@@ -131,7 +131,7 @@ export class DecimalPipe implements PipeTransform {
  * into text strings, according to various format specifications,
  * where the caller's default locale is `en-US`.
  *
- * <code-example path="common/pipes/ts/percent_pipe.ts" region='PercentPipe'></code-example>
+ * {@example common/pipes/ts/percent_pipe.ts region='PercentPipe'}
  *
  * @publicApi
  */
@@ -198,7 +198,7 @@ export class PercentPipe implements PipeTransform {
  * into text strings, according to various format specifications,
  * where the caller's default locale is `en-US`.
  *
- * <code-example path="common/pipes/ts/currency_pipe.ts" region='CurrencyPipe'></code-example>
+ * {@example common/pipes/ts/currency_pipe.ts region='CurrencyPipe'}
  *
  * @publicApi
  */
