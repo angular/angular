@@ -26,12 +26,14 @@ describe('rxResource()', () => {
   it('should cancel the fetch when a new request comes in', async () => {
     const injector = TestBed.inject(Injector);
     const appRef = TestBed.inject(ApplicationRef);
-    let unsub = false;
     const request = signal(1);
-    const res = rxResource({
+    let unsub = false;
+    let lastSeenRequest: number = 0;
+    rxResource({
       request,
-      loader: ({request}) =>
-        new Observable((sub) => {
+      loader: ({request}) => {
+        lastSeenRequest = request;
+        return new Observable((sub) => {
           if (request === 2) {
             sub.next(true);
           }
@@ -40,12 +42,13 @@ describe('rxResource()', () => {
               unsub = true;
             }
           };
-        }),
+        });
+      },
       injector,
     });
 
     // Wait for the resource to reach loading state.
-    await waitFor(() => res.isLoading());
+    await waitFor(() => lastSeenRequest === 1);
 
     // Setting request = 2 should cancel request = 1
     request.set(2);
