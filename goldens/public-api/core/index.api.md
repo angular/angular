@@ -1680,14 +1680,9 @@ export interface SelfDecorator {
 export function setTestabilityGetter(getter: GetTestability): void;
 
 // @public
-export interface Signal<T> {
-    // (undocumented)
-    (): SignalType<this>;
-    // (undocumented)
-    [ɵTYPE_MARKER]: T;
-    // (undocumented)
+export type Signal<T> = SignalFn<T> & {
     [SIGNAL]: unknown;
-}
+};
 
 // @public
 export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): WritableSignal<T>;

@@ -9,7 +9,13 @@
 import {SIGNAL, ɵTYPE_MARKER} from '@angular/core/primitives/signals';
 
 /** Extracts the inner type of a Signal. */
-export type SignalType<T extends Signal<unknown>> = T[typeof ɵTYPE_MARKER];
+export type SignalType<T extends SignalFn<unknown>> = T[typeof ɵTYPE_MARKER];
+
+/** Function type definition for a `Signal`. */
+export interface SignalFn<T> {
+  (): SignalType<this>;
+  [ɵTYPE_MARKER]: T;
+}
 
 /**
  * A reactive value which notifies consumers of any changes.
@@ -19,11 +25,7 @@ export type SignalType<T extends Signal<unknown>> = T[typeof ɵTYPE_MARKER];
  *
  * Ordinary values can be turned into `Signal`s with the `signal` function.
  */
-export interface Signal<T> {
-  (): SignalType<this>;
-  [ɵTYPE_MARKER]: T;
-  [SIGNAL]: unknown;
-}
+export type Signal<T> = SignalFn<T> & { [SIGNAL]: unknown; };
 
 /**
  * Checks if the given `value` is a reactive `Signal`.
