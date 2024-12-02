@@ -15,7 +15,6 @@ ng_module(
     ),
     deps = [
         ":bundled_domino_lib",
-        "//packages/animations/browser",
         "//packages/common",
         "//packages/common/http",
         "//packages/compiler",
