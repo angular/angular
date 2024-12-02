@@ -62,6 +62,7 @@ function quickInfoSkeleton(): {[fileName: string]: string} {
           setTitle(newTitle: string) {}
           trackByFn!: any;
           name!: any;
+          signalValue: string|undefined;
           someObject = {
             someProp: 'prop',
             someSignal: signal<number>(0),
@@ -267,7 +268,7 @@ describe('quick info', () => {
 
         it('should work for signal-based two-way binding providers', () => {
           expectQuickInfo({
-            templateOverride: `<test-comp signal-model [(signa¦lModel)]="title"></test-comp>`,
+            templateOverride: `<test-comp signal-model [(signa¦lModel)]="signalValue"></test-comp>`,
             expectedSpanText: 'signalModel',
             expectedDisplayString:
               '(property) SignalModel.signalModel: ModelSignal<string | undefined>',

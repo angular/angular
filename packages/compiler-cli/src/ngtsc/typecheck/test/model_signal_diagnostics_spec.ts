@@ -381,7 +381,10 @@ runInEachFileSystem(() => {
           otherVal!: string;
         `,
         template: `<div dir [(gen)]="genVal" [(other)]="otherVal">`,
-        expected: [`TestComponent.html(1, 29): Type 'string' is not assignable to type 'boolean'.`],
+        expected: [
+          `TestComponent.html(1, 29): Type 'string' is not assignable to type 'boolean'.`,
+          `TestComponent.html(1, 27): Type 'boolean' is not assignable to type 'string'.`,
+        ],
       },
       {
         id: 'generic inference and two-way binding to directive, mix of zone input and model',
@@ -405,7 +408,10 @@ runInEachFileSystem(() => {
           genVal!: boolean;
           otherVal!: string;
         `,
-        expected: [`TestComponent.html(1, 12): Type 'boolean' is not assignable to type 'string'.`],
+        expected: [
+          `TestComponent.html(1, 12): Type 'boolean' is not assignable to type 'string'.`,
+          `TestComponent.html(1, 10): Type 'string' is not assignable to type 'boolean'.`,
+        ],
       },
       {
         id: 'generic inference and two-way binding to directive (with `extends boolean`), all model inputs',
@@ -426,7 +432,10 @@ runInEachFileSystem(() => {
           genVal!: boolean;
           otherVal!: string;
         `,
-        expected: [`TestComponent.html(1, 29): Type 'string' is not assignable to type 'boolean'.`],
+        expected: [
+          `TestComponent.html(1, 29): Type 'string' is not assignable to type 'boolean'.`,
+          `TestComponent.html(1, 27): Type 'boolean' is not assignable to type 'string'.`,
+        ],
       },
       {
         id: 'generic inference and two-way binding to directive (with `extends boolean`), mix of zone inputs and model',
@@ -450,7 +459,10 @@ runInEachFileSystem(() => {
           genVal!: boolean;
           otherVal!: string;
         `,
-        expected: [`TestComponent.html(1, 29): Type 'string' is not assignable to type 'boolean'.`],
+        expected: [
+          `TestComponent.html(1, 29): Type 'string' is not assignable to type 'boolean'.`,
+          `TestComponent.html(1, 27): Type 'boolean' is not assignable to type 'string'.`,
+        ],
       },
       {
         id: 'generic multi-inference and two-way bindings to directive, all model inputs',
@@ -583,7 +595,10 @@ runInEachFileSystem(() => {
         outputs: {valueChange: {type: 'ModelSignal<string>'}},
         template: `<div dir [(value)]="bla">`,
         component: `bla = true;`,
-        expected: [`TestComponent.html(1, 12): Type 'boolean' is not assignable to type 'string'.`],
+        expected: [
+          `TestComponent.html(1, 12): Type 'boolean' is not assignable to type 'string'.`,
+          `TestComponent.html(1, 10): Type 'string' is not assignable to type 'boolean'.`,
+        ],
       },
       {
         id: 'two-way binding to primitive, valid',
@@ -652,7 +667,10 @@ runInEachFileSystem(() => {
         outputs: {valueChange: {type: 'ModelSignal<boolean>'}},
         template: `<div dir [(value)]="val">`,
         component: `val!: WritableSignal<string>;`,
-        expected: [`TestComponent.html(1, 12): Type 'string' is not assignable to type 'boolean'.`],
+        expected: [
+          `TestComponent.html(1, 12): Type 'string' is not assignable to type 'boolean'.`,
+          `TestComponent.html(1, 10): Type 'boolean' is not assignable to type 'string'.`,
+        ],
       },
       {
         id: 'non-writable signal binding',
@@ -662,6 +680,7 @@ runInEachFileSystem(() => {
         component: `val!: InputSignal<boolean>;`,
         expected: [
           `TestComponent.html(1, 10): Type 'InputSignal<boolean>' is not assignable to type 'boolean'.`,
+          `TestComponent.html(1, 10): Type 'boolean' is not assignable to type 'InputSignal<boolean>'.`,
         ],
       },
       {
@@ -681,6 +700,9 @@ runInEachFileSystem(() => {
         expected: [
           jasmine.stringContaining(
             `TestComponent.html(1, 12): Type '(v: string) => number' is not assignable to type '(v: number) => number`,
+          ),
+          jasmine.stringContaining(
+            `TestComponent.html(1, 10): Type '(v: number) => number' is not assignable to type '(v: string) => number`,
           ),
         ],
       },
