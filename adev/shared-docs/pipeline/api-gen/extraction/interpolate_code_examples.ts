@@ -56,7 +56,7 @@ function replaceExample(text: string): string {
   return text.replace(examplesTagRegex, (_: string, path: string, __: string, region: string) => {
     const example = getExample(path, region);
     if (!example) {
-      throw new Error(`Missing code example ${path}#${region}`);
+      throw new Error(`Missing code example ${EXAMPLES_PATH}/${path}#${region}`);
     }
 
     return example;
@@ -118,7 +118,7 @@ function extractExamplesFromContents(contents: string, fileType: FileType): Map<
     if (markerFound && !/\s/.test(char)) {
       // Build a param string.
       paramBuffer += char;
-    } else if (markerFound && char === '\n') {
+    } else if ((markerFound && char === '\n') || (paramBuffer && char === ' ')) {
       // Resolve found marker.
       switch (markerBuffer) {
         case REGION_START_MARKER:
@@ -151,8 +151,9 @@ function extractExamplesFromContents(contents: string, fileType: FileType): Map<
 
             // A code example can be composed by multiple regions;
             // hence, we check for an existing one.
-            const existing = examples.get(token.name) || '';
-            examples.set(token.name, existing + example);
+            const existing = examples.get(token.name);
+            example = (!!existing ? existing + '\n' : '') + example;
+            examples.set(token.name, example);
           }
           break;
       }
@@ -173,10 +174,12 @@ function removeLeftoverCommentsFromExample(example: string, fileType: FileType):
     case 'ts':
     case 'js':
       return example
-        .replace(/\n?\/\/\s*$/, '') // We can have only a trailing TS comment leftover
+        .replace(/\n[ \t]*?\/\/\s*$/, '') // We can have only a trailing TS comment leftover
         .replace(TS_COMMENT_REGION_REGEX, '');
     case 'html':
-      return example.replace(/(^\s*-->)|(<!--\s*$)/, '').replace(HTML_COMMENT_REGION_REGEX, '');
+      return example
+        .replace(/(^\s*-->\n)|(\n[ \t]*?<!--\s*$)/g, '')
+        .replace(HTML_COMMENT_REGION_REGEX, '');
     default:
       return example;
   }
