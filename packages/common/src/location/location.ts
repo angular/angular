@@ -43,8 +43,7 @@ export interface PopStateEvent {
  *
  * ### Example
  *
- * <code-example path='common/location/ts/path_location_component.ts'
- * region='LocationComponent'></code-example>
+ * {@example common/location/ts/path_location_component.ts region='LocationComponent'}
  *
  * @publicApi
  */
