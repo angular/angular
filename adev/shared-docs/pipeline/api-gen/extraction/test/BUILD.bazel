@@ -44,7 +44,10 @@ filegroup(
 ts_library(
     name = "unit_test_lib",
     testonly = True,
-    srcs = glob(["*.spec.ts"]),
+    srcs =
+        glob(["*.spec.ts"]) + [
+            "fake-examples.ts",
+        ],
     deps = [
         "//adev/shared-docs/pipeline/api-gen/extraction:extract_api_to_json_lib",
         "@angular//packages/compiler-cli",
