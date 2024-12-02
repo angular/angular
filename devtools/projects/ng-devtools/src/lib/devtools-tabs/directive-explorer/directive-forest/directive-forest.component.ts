@@ -35,6 +35,7 @@ import {IndexedNode} from './index-forest';
 import {MatIcon} from '@angular/material/icon';
 import {FilterComponent} from './filter/filter.component';
 import {MatTooltip} from '@angular/material/tooltip';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'ng-directive-forest',
