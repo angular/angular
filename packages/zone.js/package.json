@@ -15,7 +15,7 @@
     "jest": "^29.0",
     "jest-environment-jsdom": "^29.0.3",
     "jest-environment-node": "^29.0.3",
-    "mocha": "^10.2.0",
+    "mocha": "^11.0.0",
     "mock-require": "3.0.3",
     "tslib": "^2.3.0"
   },
