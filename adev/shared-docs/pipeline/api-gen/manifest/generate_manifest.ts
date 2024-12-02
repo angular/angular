@@ -1,5 +1,5 @@
 // @ts-ignore This compiles fine, but Webstorm doesn't like the ESM import in a CJS context.
-import type {DocEntry, EntryCollection, JsDocTagEntry} from '@angular/compiler-cli';
+import type {DocEntry, EntryCollection, JsDocTagEntry, FunctionEntry} from '@angular/compiler-cli';
 
 export interface ManifestEntry {
   name: string;
@@ -17,78 +17,37 @@ export type Manifest = {
   entries: ManifestEntry[];
 }[];
 
-/** Gets a unique lookup key for an API, e.g. "@angular/core/ElementRef". */
-function getApiLookupKey(moduleName: string, name: string) {
-  return `${moduleName}/${name}`;
-}
+/** Gets whether the given entry has a given JsDoc tag. */
+function hasTag(entry: DocEntry | FunctionEntry, tag: string, every = false) {
+  const hasTagName = (t: JsDocTagEntry) => t.name === tag;
 
-/** Gets whether the given entry has the "@deprecated" JsDoc tag. */
-function hasDeprecatedTag(entry: DocEntry) {
-  return entry.jsdocTags.some((t: JsDocTagEntry) => t.name === 'deprecated');
-}
+  if (every && 'signatures' in entry && entry.signatures.length > 1) {
+    // For overloads we need to check all signatures.
+    return entry.signatures.every((s) => s.jsdocTags.some(hasTagName));
+  }
 
-/** Gets whether the given entry has the "@developerPreview" JsDoc tag. */
-function hasDeveloperPreviewTag(entry: DocEntry) {
-  return entry.jsdocTags.some((t: JsDocTagEntry) => t.name === 'developerPreview');
-}
+  const jsdocTags = [
+    ...entry.jsdocTags,
+    ...((entry as FunctionEntry).signatures?.flatMap((s) => s.jsdocTags) ?? []),
+    ...((entry as FunctionEntry).implementation?.jsdocTags ?? []),
+  ];
 
-/** Gets whether the given entry has the "@experimental" JsDoc tag. */
-function hasExperimentalTag(entry: DocEntry) {
-  return entry.jsdocTags.some((t: JsDocTagEntry) => t.name === 'experimental');
+  return jsdocTags.some(hasTagName);
 }
 
 /** Gets whether the given entry is deprecated in the manifest. */
-function isDeprecated(
-  lookup: Map<string, DocEntry[]>,
-  moduleName: string,
-  entry: DocEntry,
-): boolean {
-  const entriesWithSameName = lookup.get(getApiLookupKey(moduleName, entry.name));
-
-  // If there are multiple entries with the same name in the same module, only
-  // mark them as deprecated if *all* of the entries with the same name are
-  // deprecated (e.g. function overloads).
-  if (entriesWithSameName && entriesWithSameName.length > 1) {
-    return entriesWithSameName.every((entry) => hasDeprecatedTag(entry));
-  }
-
-  return hasDeprecatedTag(entry);
+function isDeprecated(entry: DocEntry): boolean {
+  return hasTag(entry, 'deprecated', /* every */ true);
 }
 
 /** Gets whether the given entry is hasDeveloperPreviewTag in the manifest. */
-function isDeveloperPreview(
-  lookup: Map<string, DocEntry[]>,
-  moduleName: string,
-  entry: DocEntry,
-): boolean {
-  const entriesWithSameName = lookup.get(getApiLookupKey(moduleName, entry.name));
-
-  // If there are multiple entries with the same name in the same module, only
-  // mark them as developer preview if *all* of the entries with the same name
-  // are hasDeveloperPreviewTag (e.g. function overloads).
-  if (entriesWithSameName && entriesWithSameName.length > 1) {
-    return entriesWithSameName.every((entry) => hasDeveloperPreviewTag(entry));
-  }
-
-  return hasDeveloperPreviewTag(entry);
+function isDeveloperPreview(entry: DocEntry): boolean {
+  return hasTag(entry, 'developerPreview');
 }
 
 /** Gets whether the given entry is hasExperimentalTag in the manifest. */
-function isExperimental(
-  lookup: Map<string, DocEntry[]>,
-  moduleName: string,
-  entry: DocEntry,
-): boolean {
-  const entriesWithSameName = lookup.get(getApiLookupKey(moduleName, entry.name));
-
-  // If there are multiple entries with the same name in the same module, only
-  // mark them as developer preview if *all* of the entries with the same name
-  // are hasExperimentalTag (e.g. function overloads).
-  if (entriesWithSameName && entriesWithSameName.length > 1) {
-    return entriesWithSameName.every((entry) => hasExperimentalTag(entry));
-  }
-
-  return hasExperimentalTag(entry);
+function isExperimental(entry: DocEntry): boolean {
+  return hasTag(entry, 'experimental');
 }
 
 /**
@@ -96,31 +55,14 @@ function isExperimental(
  * extract_api_to_json.
  */
 export function generateManifest(apiCollections: EntryCollection[]): Manifest {
-  // Filter out repeated entries for function overloads, but also keep track of
-  // all symbols keyed to their lookup key. We need this lookup later for
-  // determining whether to mark an entry as deprecated.
-  const entryLookup = new Map<string, DocEntry[]>();
-  for (const collection of apiCollections) {
-    collection.entries = collection.entries.filter((entry) => {
-      const lookupKey = getApiLookupKey(collection.moduleName, entry.name);
-      if (entryLookup.has(lookupKey)) {
-        entryLookup.get(lookupKey)!.push(entry);
-        return false;
-      }
-
-      entryLookup.set(lookupKey, [entry]);
-      return true;
-    });
-  }
-
   const manifest: Manifest = [];
   for (const collection of apiCollections) {
-    const entries = collection.entries.map((entry) => ({
+    const entries = collection.entries.map((entry: DocEntry) => ({
       name: entry.name,
       type: entry.entryType,
-      isDeprecated: isDeprecated(entryLookup, collection.moduleName, entry),
-      isDeveloperPreview: isDeveloperPreview(entryLookup, collection.moduleName, entry),
-      isExperimental: isExperimental(entryLookup, collection.moduleName, entry),
+      isDeprecated: isDeprecated(entry),
+      isDeveloperPreview: isDeveloperPreview(entry),
+      isExperimental: isExperimental(entry),
     }));
 
     const existingEntry = manifest.find((entry) => entry.moduleName === collection.moduleName);

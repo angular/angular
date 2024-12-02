@@ -669,6 +669,91 @@
         "startLine": 103,
         "endLine": 125
       }
+    },
+    {
+      "name": "linkedSignal",
+      "signatures": [
+        {
+          "name": "linkedSignal",
+          "entryType": "function",
+          "description": "Creates a writable signals whose value is initialized and reset by the linked, reactive computation.",
+          "generics": [{"name": "D"}],
+          "isNewType": false,
+          "jsdocTags": [{"name": "developerPreview", "comment": ""}],
+          "params": [
+            {
+              "name": "computation",
+              "description": "",
+              "type": "() => D",
+              "isOptional": false,
+              "isRestParam": false
+            },
+            {
+              "name": "options",
+              "description": "",
+              "type": "{ equal?: ValueEqualityFn<NoInfer<D>> | undefined; } | undefined",
+              "isOptional": true,
+              "isRestParam": false
+            }
+          ],
+          "rawComment": "/**\n * Creates a writable signals whose value is initialized and reset by the linked, reactive computation.\n *\n * @developerPreview\n */",
+          "returnType": "WritableSignal<D>"
+        },
+        {
+          "name": "linkedSignal",
+          "entryType": "function",
+          "description": "Creates a writable signals whose value is initialized and reset by the linked, reactive computation.\nThis is an advanced API form where the computation has access to the previous value of the signal and the computation result.",
+          "generics": [{"name": "S"}, {"name": "D"}],
+          "isNewType": false,
+          "jsdocTags": [{"name": "developerPreview", "comment": ""}],
+          "params": [
+            {
+              "name": "options",
+              "description": "",
+              "type": "{ source: () => S; computation: (source: NoInfer<S>, previous?: { source: NoInfer<S>; value: NoInfer<D>; } | undefined) => D; equal?: ValueEqualityFn<NoInfer<D>> | undefined; }",
+              "isOptional": false,
+              "isRestParam": false
+            }
+          ],
+          "rawComment": "/**\n * Creates a writable signals whose value is initialized and reset by the linked, reactive computation.\n * This is an advanced API form where the computation has access to the previous value of the signal and the computation result.\n *\n * @developerPreview\n */",
+          "returnType": "WritableSignal<D>"
+        }
+      ],
+      "implementation": {
+        "params": [
+          {
+            "name": "optionsOrComputation",
+            "description": "",
+            "type": "{ source: () => S; computation: ComputationFn<S, D>; equal?: ValueEqualityFn<D> | undefined; } | (() => D)",
+            "isOptional": false,
+            "isRestParam": false
+          },
+          {
+            "name": "options",
+            "description": "",
+            "type": "{ equal?: ValueEqualityFn<D> | undefined; } | undefined",
+            "isOptional": true,
+            "isRestParam": false
+          }
+        ],
+        "isNewType": false,
+        "returnType": "WritableSignal<D>",
+        "generics": [{"name": "S"}, {"name": "D"}],
+        "name": "linkedSignal",
+        "description": "",
+        "entryType": "function",
+        "jsdocTags": [],
+        "rawComment": ""
+      },
+      "entryType": "function",
+      "description": "",
+      "jsdocTags": [],
+      "rawComment": "",
+      "source": {
+        "filePath": "/packages/core/src/render3/reactivity/linked_signal.ts",
+        "startLine": 112,
+        "endLine": 115
+      }
     }
   ]
 }
