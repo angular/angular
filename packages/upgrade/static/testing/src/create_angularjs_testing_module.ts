@@ -28,8 +28,7 @@ import {UpgradeAppType} from '../../../src/common/src/util';
  * The AngularJS `ng1AppModule`, which is the AngularJS part of our hybrid application and the
  * `Ng2AppModule`, which is the Angular part.
  *
- * <code-example path="upgrade/static/ts/full/module.spec.ts"
- * region="angularjs-setup"></code-example>
+ * {@example upgrade/static/ts/full/module.spec.ts region='angularjs-setup'}
  *
  * Once this is done we can get hold of services via the AngularJS `$injector` as normal.
  * Services that are (or have dependencies on) a downgraded Angular service, will be instantiated as
@@ -38,8 +37,7 @@ import {UpgradeAppType} from '../../../src/common/src/util';
  * In the following code snippet, `heroesService` is a downgraded Angular service that we are
  * accessing from AngularJS.
  *
- * <code-example path="upgrade/static/ts/full/module.spec.ts"
- * region="angularjs-spec"></code-example>
+ * {@example upgrade/static/ts/full/module.spec.ts region='angularjs-spec'}
  *
  * <div class="docs-alert docs-alert-important">
  *
