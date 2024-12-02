@@ -86,7 +86,7 @@ function getExample(path: string, region: string): string {
 }
 
 /**
- * Extract a `#docregion` example from file contents (represented as a string) by a provided `region`.
+ * Extract `#docregion` examples from file contents represented as a string.
  *
  * @param contents File contents represented as a string
  * @param fileType File type
