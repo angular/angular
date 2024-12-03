@@ -473,7 +473,7 @@ function getTemplateHeadTStylingKey(
  * method allows us to update the first template instruction `TStylingKey` with a new value.
  *
  * Assume:
- * ```
+ * ```angular-ts
  * <div my-dir style="color: red" [style.color]="tmplExp"></div>
  *
  * @Directive({
@@ -486,7 +486,7 @@ function getTemplateHeadTStylingKey(
  * ```
  *
  * when `[style.color]="tmplExp"` executes it creates this data structure.
- * ```
+ * ```ts
  *  ['', 'color', 'color', 'red', 'width', '100px'],
  * ```
  *
@@ -496,14 +496,14 @@ function getTemplateHeadTStylingKey(
  * `color' and 'width`)
  *
  * When `'[style.color]': 'dirExp',` executes we need to insert a new data into the linked list.
- * ```
+ * ```ts
  *  ['', 'color', 'width', '100px'],  // newly inserted
  *  ['', 'color', 'color', 'red', 'width', '100px'], // this is wrong
  * ```
  *
  * Notice that the template statics is now wrong as it incorrectly contains `width` so we need to
  * update it like so:
- * ```
+ * ```ts
  *  ['', 'color', 'width', '100px'],
  *  ['', 'color', 'color', 'red'],    // UPDATE
  * ```

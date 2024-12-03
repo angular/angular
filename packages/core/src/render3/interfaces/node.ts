@@ -853,11 +853,11 @@ export type LocalRefExtractor = (tNode: TNodeWithLocalRefs, currentView: LView) 
 /**
  * Returns `true` if the `TNode` has a directive which has `@Input()` for `class` binding.
  *
- * ```
+ * ```html
  * <div my-dir [class]="exp"></div>
  * ```
  * and
- * ```
+ * ```ts
  * @Directive({
  * })
  * class MyDirective {
@@ -878,11 +878,11 @@ export function hasClassInput(tNode: TNode) {
 /**
  * Returns `true` if the `TNode` has a directive which has `@Input()` for `style` binding.
  *
- * ```
+ * ```html
  * <div my-dir [style]="exp"></div>
  * ```
  * and
- * ```
+ * ```ts
  * @Directive({
  * })
  * class MyDirective {

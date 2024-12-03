@@ -21,7 +21,7 @@ import {ɵresetJitOptions as resetJitOptions} from '@angular/core';
  *
  * Example:
  *
- * ```
+ * ```ts
  * describe('something', () => {
  *   it('should do something', withBody('<app-root></app-root>', async () => {
  *     const fixture = TestBed.createComponent(MyApp);
@@ -55,7 +55,7 @@ export function withBody(
  *
  * Example:
  *
- * ```
+ * ```ts
  * describe('something', () => {
  *   it('should do something', withHead('<link rel="preconnect" href="...">', async () => {
  *     // ...

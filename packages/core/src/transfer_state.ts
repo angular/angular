@@ -16,7 +16,7 @@ import {getDocument} from './render3/interfaces/document';
  *
  * Example:
  *
- * ```
+ * ```ts
  * const COUNTER_KEY = makeStateKey<number>('counter');
  * let value = 10;
  *
@@ -35,7 +35,7 @@ export type StateKey<T> = string & {
  *
  * Example:
  *
- * ```
+ * ```ts
  * const COUNTER_KEY = makeStateKey<number>('counter');
  * let value = 10;
  *

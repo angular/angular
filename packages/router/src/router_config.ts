@@ -150,7 +150,7 @@ export interface InMemoryScrollingOptions {
    * You can implement custom scroll restoration behavior by adapting the enabled behavior as
    * in the following example.
    *
-   * ```typescript
+   * ```ts
    * class AppComponent {
    *   movieData: any;
    *

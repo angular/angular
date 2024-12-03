@@ -11,7 +11,7 @@
  *
  * For example, if you had the following code:
  *
- * ```
+ * ```ts
  * function foo() {
  *   function bar () {
  *     ɵɵngDeclareDirective({...});

@@ -19,7 +19,7 @@ import * as compiler from '../src/compiler_facade_interface';
  *  - packages/core/src/render3/jit/compiler_facade_interface.ts     (copy)
  *
  * Please ensure that the two files are in sync using this command:
- * ```
+ * ```shell
  * cp packages/compiler/src/compiler_facade_interface.ts \
  *    packages/core/src/render3/jit/compiler_facade_interface.ts
  * ```

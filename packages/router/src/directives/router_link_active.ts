@@ -43,7 +43,7 @@ import {RouterLink} from './router_link';
  * For example, the following code highlights the word "Bob" when the router
  * activates the associated route:
  *
- * ```
+ * ```html
  * <a routerLink="/user/bob" routerLinkActive="active-link">Bob</a>
  * ```
  *
@@ -53,14 +53,14 @@ import {RouterLink} from './router_link';
  * You can set more than one class using a space-separated string or an array.
  * For example:
  *
- * ```
+ * ```html
  * <a routerLink="/user/bob" routerLinkActive="class1 class2">Bob</a>
  * <a routerLink="/user/bob" [routerLinkActive]="['class1', 'class2']">Bob</a>
  * ```
  *
  * To add the classes only when the URL matches the link exactly, add the option `exact: true`:
  *
- * ```
+ * ```html
  * <a routerLink="/user/bob" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact:
  * true}">Bob</a>
  * ```
@@ -69,7 +69,7 @@ import {RouterLink} from './router_link';
  * instance to a template variable.
  * For example, the following checks the status without assigning any CSS classes:
  *
- * ```
+ * ```html
  * <a routerLink="/user/bob" routerLinkActive #rla="routerLinkActive">
  *   Bob {{ rla.isActive ? '(already open)' : ''}}
  * </a>
@@ -79,7 +79,7 @@ import {RouterLink} from './router_link';
  * For example, the following sets the active-link class on the `<div>`  parent tag
  * when the URL is either '/user/jim' or '/user/bob'.
  *
- * ```
+ * ```html
  * <div routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">
  *   <a routerLink="/user/jim">Jim</a>
  *   <a routerLink="/user/bob">Bob</a>
@@ -92,7 +92,7 @@ import {RouterLink} from './router_link';
  * For example, the following code adds the 'active' class to the Home Page link when it is
  * indeed active and in such case also sets its aria-current attribute to 'page':
  *
- * ```
+ * ```html
  * <a routerLink="/" routerLinkActive="active" ariaCurrentWhenActive="page">Home Page</a>
  * ```
  *

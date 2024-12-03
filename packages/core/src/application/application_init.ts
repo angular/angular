@@ -45,7 +45,7 @@ import {isPromise, isSubscribable} from '../util/lang';
  * The following example illustrates how to configure a multi-provider using `APP_INITIALIZER` token
  * and a function returning a promise.
  * ### Example with NgModule-based application
- * ```
+ * ```ts
  *  function initializeApp(): Promise<any> {
  *    const http = inject(HttpClient);
  *    return firstValueFrom(
@@ -69,7 +69,7 @@ import {isPromise, isSubscribable} from '../util/lang';
  * ```
  *
  * ### Example with standalone application
- * ```
+ * ```ts
  * function initializeApp() {
  *   const http = inject(HttpClient);
  *   return firstValueFrom(
@@ -99,7 +99,7 @@ import {isPromise, isSubscribable} from '../util/lang';
  * through DI.
  *
  * ### Example with NgModule-based application
- * ```
+ * ```ts
  * function initializeApp() {
  *   const http = inject(HttpClient);
  *   return firstValueFrom(
@@ -123,7 +123,7 @@ import {isPromise, isSubscribable} from '../util/lang';
  * ```
  *
  * ### Example with standalone application
- * ```
+ * ```ts
  * function initializeApp() {
  *   const http = inject(HttpClient);
  *   return firstValueFrom(
@@ -171,7 +171,7 @@ export const APP_INITIALIZER = new InjectionToken<
  * @usageNotes
  * The following example illustrates how to configure an initialization function using
  * `provideAppInitializer()`
- * ```
+ * ```ts
  * bootstrapApplication(App, {
  *   providers: [
  *     provideAppInitializer(() => {

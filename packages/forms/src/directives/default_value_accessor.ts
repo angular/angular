@@ -66,7 +66,7 @@ export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>(
  * const firstNameControl = new FormControl();
  * ```
  *
- * ```
+ * ```html
  * <input type="text" [formControl]="firstNameControl">
  * ```
  *
@@ -75,7 +75,7 @@ export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>(
  * processing. In order to attach the default value accessor to a custom element, add the
  * `ngDefaultControl` attribute as shown below.
  *
- * ```
+ * ```html
  * <custom-input-component ngDefaultControl [(ngModel)]="value"></custom-input-component>
  * ```
  *

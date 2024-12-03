@@ -17,7 +17,7 @@ import {Directive} from '@angular/core';
  *
  * If you want to use native validation with Angular forms, just add `ngNativeValidate` attribute:
  *
- * ```
+ * ```html
  * <form ngNativeValidate></form>
  * ```
  *

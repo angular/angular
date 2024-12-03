@@ -92,7 +92,7 @@ export class PlatformRef {
    * @usageNotes
    * ### Simple Example
    *
-   * ```typescript
+   * ```ts
    * @NgModule({
    *   imports: [BrowserModule]
    * })

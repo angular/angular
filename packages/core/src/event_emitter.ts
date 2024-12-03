@@ -30,7 +30,7 @@ import {PendingTasksInternal} from './pending_tasks';
  * that create event emitters. When the title is clicked, the emitter
  * emits an open or close event to toggle the current visibility state.
  *
- * ```html
+ * ```angular-ts
  * @Component({
  *   selector: 'zippy',
  *   template: `

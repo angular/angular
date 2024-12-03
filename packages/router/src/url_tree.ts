@@ -188,7 +188,7 @@ function matrixParamsMatch(
  * @usageNotes
  * ### Example
  *
- * ```
+ * ```ts
  * @Component({templateUrl:'template.html'})
  * class MyComponent {
  *   constructor(router: Router) {
@@ -289,7 +289,7 @@ export class UrlSegmentGroup {
  * @usageNotes
  * ### Example
  *
- * ```
+ * ```ts
  * @Component({templateUrl:'template.html'})
  * class MyComponent {
  *   constructor(router: Router) {

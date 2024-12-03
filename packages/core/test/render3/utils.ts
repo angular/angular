@@ -49,7 +49,7 @@ function numOfWhiteSpaceLeadingChars(text: string): number {
 /**
  * Jasmine AsymmetricMatcher which can be used to assert `.debug` properties.
  *
- * ```
+ * ```ts
  * expect(obj).toEqual({
  *   create: matchDebug('someValue')
  * })

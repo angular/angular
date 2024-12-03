@@ -55,7 +55,7 @@ function hasValidLength(value: any): boolean {
  * The following example registers a custom validator directive. Adding the validator to the
  * existing collection of validators requires the `multi: true` option.
  *
- * ```typescript
+ * ```ts
  * @Directive({
  *   selector: '[customValidator]',
  *   providers: [{provide: NG_VALIDATORS, useExisting: CustomValidatorDirective, multi: true}]
@@ -87,7 +87,7 @@ export const NG_VALIDATORS = new InjectionToken<ReadonlyArray<Validator | Functi
  * The following example implements the `AsyncValidator` interface to create an
  * async validator directive with a custom error key.
  *
- * ```typescript
+ * ```ts
  * @Directive({
  *   selector: '[customAsyncValidator]',
  *   providers: [{provide: NG_ASYNC_VALIDATORS, useExisting: CustomAsyncValidatorDirective, multi:
@@ -159,7 +159,7 @@ export class Validators {
    *
    * ### Validate against a minimum of 3
    *
-   * ```typescript
+   * ```ts
    * const control = new FormControl(2, Validators.min(3));
    *
    * console.log(control.errors); // {min: {min: 3, actual: 2}}
@@ -183,7 +183,7 @@ export class Validators {
    *
    * ### Validate against a maximum of 15
    *
-   * ```typescript
+   * ```ts
    * const control = new FormControl(16, Validators.max(15));
    *
    * console.log(control.errors); // {max: {max: 15, actual: 16}}
@@ -207,7 +207,7 @@ export class Validators {
    *
    * ### Validate that the field is non-empty
    *
-   * ```typescript
+   * ```ts
    * const control = new FormControl('', Validators.required);
    *
    * console.log(control.errors); // {required: true}
@@ -232,7 +232,7 @@ export class Validators {
    *
    * ### Validate that the field value is true
    *
-   * ```typescript
+   * ```ts
    * const control = new FormControl('some value', Validators.requiredTrue);
    *
    * console.log(control.errors); // {required: true}
@@ -272,7 +272,7 @@ export class Validators {
    *
    * ### Validate that the field matches a valid email pattern
    *
-   * ```typescript
+   * ```ts
    * const control = new FormControl('bad@', Validators.email);
    *
    * console.log(control.errors); // {email: true}
@@ -302,7 +302,7 @@ export class Validators {
    *
    * ### Validate that the field has a minimum of 3 characters
    *
-   * ```typescript
+   * ```ts
    * const control = new FormControl('ng', Validators.minLength(3));
    *
    * console.log(control.errors); // {minlength: {requiredLength: 3, actualLength: 2}}
@@ -333,7 +333,7 @@ export class Validators {
    *
    * ### Validate that the field has maximum of 5 characters
    *
-   * ```typescript
+   * ```ts
    * const control = new FormControl('Angular', Validators.maxLength(5));
    *
    * console.log(control.errors); // {maxlength: {requiredLength: 5, actualLength: 7}}
@@ -362,7 +362,7 @@ export class Validators {
    *
    * ### Validate that the field only contains letters or spaces
    *
-   * ```typescript
+   * ```ts
    * const control = new FormControl('1', Validators.pattern('[a-zA-Z ]*'));
    *
    * console.log(control.errors); // {pattern: {requiredPattern: '^[a-zA-Z ]*$', actualValue: '1'}}
@@ -383,7 +383,7 @@ export class Validators {
    * `Validators.pattern` you **do not** pass in a `RegExp` object with either the global or sticky
    * flag enabled.
    *
-   * ```typescript
+   * ```ts
    * // Not recommended (since the `g` flag is used)
    * const controlOne = new FormControl('1', Validators.pattern(/foo/g));
    *

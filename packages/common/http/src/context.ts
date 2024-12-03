@@ -25,7 +25,7 @@ export class HttpContextToken<T> {
  *
  * ### Usage Example
  *
- * ```typescript
+ * ```ts
  * // inside cache.interceptors.ts
  * export const IS_CACHE_ENABLED = new HttpContextToken<boolean>(() => false);
  *

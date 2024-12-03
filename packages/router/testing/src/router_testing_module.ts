@@ -53,7 +53,7 @@ function throwInvalidConfigError(parameter: string): never {
  * @usageNotes
  * ### Example
  *
- * ```
+ * ```ts
  * beforeEach(() => {
  *   TestBed.configureTestingModule({
  *     imports: [

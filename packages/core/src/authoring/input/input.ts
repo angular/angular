@@ -118,7 +118,7 @@ export interface InputFunction {
  * @usageNotes
  * To use signal-based inputs, import `input` from `@angular/core`.
  *
- * ```
+ * ```ts
  * import {input} from '@angular/core`;
  * ```
  *

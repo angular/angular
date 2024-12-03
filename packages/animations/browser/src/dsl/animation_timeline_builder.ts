@@ -57,7 +57,7 @@ const LEAVE_TOKEN_REGEX = new RegExp(LEAVE_TOKEN, 'g');
  *
  * The code below will be converted from:
  *
- * ```
+ * ```ts
  * sequence([
  *   style({ opacity: 0 }),
  *   animate(1000, style({ opacity: 0 }))
@@ -65,7 +65,7 @@ const LEAVE_TOKEN_REGEX = new RegExp(LEAVE_TOKEN, 'g');
  * ```
  *
  * To:
- * ```
+ * ```ts
  * keyframes = [{ opacity: 0, offset: 0 }, { opacity: 1, offset: 1 }]
  * duration = 1000
  * delay = 0
@@ -104,7 +104,7 @@ const LEAVE_TOKEN_REGEX = new RegExp(LEAVE_TOKEN, 'g');
  * Each timeline has a `backFill` property which is responsible for filling in new styles into
  * already processed keyframes if a new style shows up later within the animation sequence.
  *
- * ```
+ * ```ts
  * sequence([
  *   style({ width: 0 }),
  *   animate(1000, style({ width: 100 })),

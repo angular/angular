@@ -568,13 +568,13 @@ export function isStandaloneDecorator(decorator: ts.Decorator): boolean | null {
 
 /**
  * Generate a new import. Follows the format:
- * ```
+ * ```ts
  * import {exportedSpecifierName as localName} from 'rawModuleSpecifier';
  * ```
  *
  * If the component is exported by default, follows the format:
  *
- * ```
+ * ```ts
  * import exportedSpecifierName from 'rawModuleSpecifier';
  * ```
  *

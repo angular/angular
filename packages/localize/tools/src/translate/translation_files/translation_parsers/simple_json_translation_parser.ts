@@ -20,7 +20,7 @@ interface SimpleJsonFile {
 /**
  * A translation parser that can parse JSON that has the form:
  *
- * ```
+ * ```json
  * {
  *   "locale": "...",
  *   "translations": {

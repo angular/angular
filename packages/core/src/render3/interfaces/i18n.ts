@@ -34,7 +34,7 @@ export interface I18nRemoveOpCodes extends Array<number> {
  * 3322 2222 2222 1111 1111 1110 0000 0000
  * 1098 7654 3210 9876 5432 1098 7654 3210
  *
- * ```
+ * ```ts
  * var parent = lView[opCode >>> SHIFT_PARENT];
  * var refNode = lView[((opCode & MASK_REF) >>> SHIFT_REF)];
  * var instruction = opCode & MASK_OPCODE;
@@ -199,7 +199,7 @@ export interface I18nDebug {
  * The number is shifted and encoded according to `I18nCreateOpCode`
  *
  * Pseudocode:
- * ```
+ * ```ts
  * const i18nCreateOpCodes = [
  *   10 << I18nCreateOpCode.SHIFT, "Text Node add to DOM",
  *   11 << I18nCreateOpCode.SHIFT | I18nCreateOpCode.COMMENT, "Comment Node add to DOM",

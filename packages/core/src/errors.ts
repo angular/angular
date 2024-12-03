@@ -144,7 +144,7 @@ export const enum RuntimeErrorCode {
  * Formats and outputs the error message in a consistent way.
  *
  * Example:
- * ```
+ * ```ts
  *  throw new RuntimeError(
  *    RuntimeErrorCode.INJECTOR_ALREADY_DESTROYED,
  *    ngDevMode && 'Injector has already been destroyed.');

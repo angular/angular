@@ -41,14 +41,14 @@ export const DATE_PIPE_DEFAULT_TIMEZONE = new InjectionToken<string>(
  * For example:
  *
  * Override the default date format by providing a value using the token:
- * ```typescript
+ * ```ts
  * providers: [
  *   {provide: DATE_PIPE_DEFAULT_OPTIONS, useValue: {dateFormat: 'shortDate'}}
  * ]
  * ```
  *
  * Override the default timezone by providing a value using the token:
- * ```typescript
+ * ```ts
  * providers: [
  *   {provide: DATE_PIPE_DEFAULT_OPTIONS, useValue: {timezone: '-1200'}}
  * ]
@@ -199,7 +199,7 @@ export const DATE_PIPE_DEFAULT_OPTIONS = new InjectionToken<DatePipeConfig>(
  *
  * The following component uses a date pipe to display the current date in different formats.
  *
- * ```
+ * ```angular-ts
  * @Component({
  *  selector: 'date-pipe',
  *  template: `<div>

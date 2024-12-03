@@ -26,7 +26,7 @@ import {DirectiveDef, DirectiveDefFeature} from '../interfaces/definition';
  *
  * Example usage:
  *
- * ```
+ * ```ts
  * static ɵcmp = defineComponent({
  *   ...
  *   inputs: {name: 'publicName'},

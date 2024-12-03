@@ -71,7 +71,7 @@ export const TESTABILITY_GETTER = new InjectionToken<GetTestability>('');
  * providers using the `provideProtractorTestingSupport()` function and adding them into the
  * `options.providers` array. Example:
  *
- * ```typescript
+ * ```ts
  * import {provideProtractorTestingSupport} from '@angular/platform-browser';
  *
  * await bootstrapApplication(RootComponent, providers: [provideProtractorTestingSupport()]);

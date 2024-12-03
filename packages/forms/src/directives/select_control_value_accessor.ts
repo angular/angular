@@ -79,7 +79,7 @@ function _extractId(valueString: string): string {
  * const selectedCountriesControl = new FormControl();
  * ```
  *
- * ```
+ * ```html
  * <select [compareWith]="compareFn"  [formControl]="selectedCountriesControl">
  *     <option *ngFor="let country of countries" [ngValue]="country">
  *         {{country.name}}

@@ -57,7 +57,7 @@ export abstract class LocationStrategy {
  * The following example shows how to use this token to configure the root app injector
  * with a base href value, so that the DI framework can supply the dependency anywhere in the app.
  *
- * ```typescript
+ * ```ts
  * import {NgModule} from '@angular/core';
  * import {APP_BASE_HREF} from '@angular/common';
  *

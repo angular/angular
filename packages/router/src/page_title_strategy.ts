@@ -18,7 +18,7 @@ import {PRIMARY_OUTLET, RouteTitleKey} from './shared';
  * The built-in implementation traverses the router state snapshot and finds the deepest primary
  * outlet with `title` property. Given the `Routes` below, navigating to
  * `/base/child(popup:aux)` would result in the document title being set to "child".
- * ```
+ * ```ts
  * [
  *   {path: 'base', title: 'base', children: [
  *     {path: 'child', title: 'child'},

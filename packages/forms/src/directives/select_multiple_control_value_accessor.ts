@@ -75,7 +75,7 @@ abstract class HTMLCollection {
  * const countryControl = new FormControl();
  * ```
  *
- * ```
+ * ```html
  * <select multiple name="countries" [formControl]="countryControl">
  *   <option *ngFor="let country of countries" [ngValue]="country">
  *     {{ country.name }}

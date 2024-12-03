@@ -57,7 +57,7 @@ const formControlBinding: Provider = {
 /**
  * `ngModel` forces an additional change detection run when its inputs change:
  * E.g.:
- * ```
+ * ```html
  * <div>{{myModel.valid}}</div>
  * <input [(ngModel)]="myValue" #myModel="ngModel">
  * ```

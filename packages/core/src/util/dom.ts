@@ -28,7 +28,7 @@ const COMMENT_DELIMITER_ESCAPED = '\u200B$1\u200B';
  *
  * see: https://html.spec.whatwg.org/multipage/syntax.html#comments
  *
- * ```
+ * ```ts
  * div.innerHTML = div.innerHTML
  * ```
  *

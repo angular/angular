@@ -69,7 +69,7 @@ export function getLastParsedValue(text: string): string {
  * Initializes `className` string for parsing and parses the first token.
  *
  * This function is intended to be used in this format:
- * ```
+ * ```ts
  * for (let i = parseClassName(text); i >= 0; i = parseClassNameNext(text, i)) {
  *   const key = getLastParsedKey();
  *   ...
@@ -87,7 +87,7 @@ export function parseClassName(text: string): number {
  * Parses next `className` token.
  *
  * This function is intended to be used in this format:
- * ```
+ * ```ts
  * for (let i = parseClassName(text); i >= 0; i = parseClassNameNext(text, i)) {
  *   const key = getLastParsedKey();
  *   ...
@@ -111,7 +111,7 @@ export function parseClassNameNext(text: string, index: number): number {
  * Initializes `cssText` string for parsing and parses the first key/values.
  *
  * This function is intended to be used in this format:
- * ```
+ * ```ts
  * for (let i = parseStyle(text); i >= 0; i = parseStyleNext(text, i))) {
  *   const key = getLastParsedKey();
  *   const value = getLastParsedValue();
@@ -130,7 +130,7 @@ export function parseStyle(text: string): number {
  * Parses the next `cssText` key/values.
  *
  * This function is intended to be used in this format:
- * ```
+ * ```ts
  * for (let i = parseStyle(text); i >= 0; i = parseStyleNext(text, i))) {
  *   const key = getLastParsedKey();
  *   const value = getLastParsedValue();

@@ -31,7 +31,7 @@ import {last, shallowEqual} from './utils/collection';
  *
  * @usageNotes
  *
- * ```
+ * ```ts
  * // create /team/33/user/11
  * createUrlTreeFromSnapshot(snapshot, ['/team', 33, 'user', 11]);
  *

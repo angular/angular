@@ -101,7 +101,7 @@ import {EmbeddedViewRef, ViewRef} from './view_ref';
  * Note: the example uses standalone components, but the function can also be used for
  * non-standalone components (declared in an NgModule) as well.
  *
- * ```typescript
+ * ```angular-ts
  * @Component({
  *   standalone: true,
  *   selector: 'dynamic',

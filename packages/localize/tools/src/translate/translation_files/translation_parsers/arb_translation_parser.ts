@@ -32,7 +32,7 @@ export interface ArbLocation {
  *
  * See https://github.com/google/app-resource-bundle/wiki/ApplicationResourceBundleSpecification
  *
- * ```
+ * ```json
  * {
  *   "@@locale": "en-US",
  *   "message-id": "Target message string",

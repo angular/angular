@@ -46,12 +46,12 @@ import {PRIMARY_OUTLET} from '../shared';
  * @usageNotes
  *
  * To set the data from the template of the component with `router-outlet`:
- * ```
+ * ```html
  * <router-outlet [routerOutletData]="{name: 'Angular'}" />
  * ```
  *
  * To read the data in the routed component:
- * ```
+ * ```ts
  * data = inject(ROUTER_OUTLET_DATA) as Signal<{name: string}>;
  * ```
  *
@@ -162,7 +162,7 @@ export interface RouterOutletContract {
  * Each outlet can have a unique name, determined by the optional `name` attribute.
  * The name cannot be set or changed dynamically. If not set, default value is "primary".
  *
- * ```
+ * ```html
  * <router-outlet></router-outlet>
  * <router-outlet name='left'></router-outlet>
  * <router-outlet name='right'></router-outlet>
@@ -189,7 +189,7 @@ export interface RouterOutletContract {
  * subtree, and the detached event emits when the `RouteReuseStrategy` instructs the outlet to
  * detach the subtree.
  *
- * ```
+ * ```html
  * <router-outlet
  *   (activate)='onActivate($event)'
  *   (deactivate)='onDeactivate($event)'

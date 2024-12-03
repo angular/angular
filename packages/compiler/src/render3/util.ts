@@ -157,7 +157,7 @@ export function convertFromMaybeForwardRefExpression({
 /**
  * Generate an expression that has the given `expr` wrapped in the following form:
  *
- * ```
+ * ```ts
  * forwardRef(() => expr)
  * ```
  */

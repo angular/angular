@@ -36,7 +36,7 @@ const NUMBER_VALUE_ACCESSOR: Provider = {
  * const totalCountControl = new FormControl();
  * ```
  *
- * ```
+ * ```html
  * <input type="number" [formControl]="totalCountControl">
  * ```
  *

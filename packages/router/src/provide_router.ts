@@ -57,7 +57,7 @@ import {
  * @usageNotes
  *
  * Basic example of how you can add a Router to your application:
- * ```
+ * ```ts
  * const appRoutes: Routes = [];
  * bootstrapApplication(AppComponent, {
  *   providers: [provideRouter(appRoutes)]
@@ -66,7 +66,7 @@ import {
  *
  * You can also enable optional features in the Router by adding functions from the `RouterFeatures`
  * type:
- * ```
+ * ```ts
  * const appRoutes: Routes = [];
  * bootstrapApplication(AppComponent,
  *   {
@@ -152,7 +152,7 @@ const routerIsProvidedDevModeCheck = {
  *
  * @usageNotes
  *
- * ```
+ * ```ts
  * @NgModule({
  *   providers: [provideRoutes(ROUTES)]
  * })
@@ -186,7 +186,7 @@ export type InMemoryScrollingFeature = RouterFeature<RouterFeatureKind.InMemoryS
  * @usageNotes
  *
  * Basic example of how you can enable scrolling feature:
- * ```
+ * ```ts
  * const appRoutes: Routes = [];
  * bootstrapApplication(AppComponent,
  *   {
@@ -329,7 +329,7 @@ export type InitialNavigationFeature =
  * @usageNotes
  *
  * Basic example of how you can enable this navigation behavior:
- * ```
+ * ```ts
  * const appRoutes: Routes = [];
  * bootstrapApplication(AppComponent,
  *   {
@@ -407,7 +407,7 @@ export type DisabledInitialNavigationFeature =
  * @usageNotes
  *
  * Basic example of how you can disable initial navigation:
- * ```
+ * ```ts
  * const appRoutes: Routes = [];
  * bootstrapApplication(AppComponent,
  *   {
@@ -458,7 +458,7 @@ export type DebugTracingFeature = RouterFeature<RouterFeatureKind.DebugTracingFe
  * @usageNotes
  *
  * Basic example of how you can enable debug tracing:
- * ```
+ * ```ts
  * const appRoutes: Routes = [];
  * bootstrapApplication(AppComponent,
  *   {
@@ -524,7 +524,7 @@ export type PreloadingFeature = RouterFeature<RouterFeatureKind.PreloadingFeatur
  * @usageNotes
  *
  * Basic example of how you can configure preloading:
- * ```
+ * ```ts
  * const appRoutes: Routes = [];
  * bootstrapApplication(AppComponent,
  *   {
@@ -568,7 +568,7 @@ export type RouterConfigurationFeature =
  * @usageNotes
  *
  * Basic example of how you can provide extra configuration options:
- * ```
+ * ```ts
  * const appRoutes: Routes = [];
  * bootstrapApplication(AppComponent,
  *   {
@@ -610,7 +610,7 @@ export type RouterHashLocationFeature = RouterFeature<RouterFeatureKind.RouterHa
  * @usageNotes
  *
  * Basic example of how you can use the hash location option:
- * ```
+ * ```ts
  * const appRoutes: Routes = [];
  * bootstrapApplication(AppComponent,
  *   {
@@ -659,7 +659,7 @@ export type NavigationErrorHandlerFeature =
  * @usageNotes
  *
  * Basic example of how you can use the error handler option:
- * ```
+ * ```ts
  * const appRoutes: Routes = [];
  * bootstrapApplication(AppComponent,
  *   {
@@ -719,7 +719,7 @@ export type ViewTransitionsFeature = RouterFeature<RouterFeatureKind.ViewTransit
  * @usageNotes
  *
  * Basic example of how you can enable the feature:
- * ```
+ * ```ts
  * const appRoutes: Routes = [];
  * bootstrapApplication(AppComponent,
  *   {
@@ -770,7 +770,7 @@ export function withComponentInputBinding(): ComponentInputBindingFeature {
  * @usageNotes
  *
  * Basic example of how you can enable the feature:
- * ```
+ * ```ts
  * const appRoutes: Routes = [];
  * bootstrapApplication(AppComponent,
  *   {

@@ -39,7 +39,7 @@ const __forward_ref__ = getClosureSafeProperty({__forward_ref__: getClosureSafeP
  * {@example core/di/ts/forward_ref/forward_ref_spec.ts region='forward_ref'}
  *
  * ### Circular standalone reference import example
- * ```ts
+ * ```angular-ts
  * @Component({
  *   standalone: true,
  *   imports: [ChildComponent],

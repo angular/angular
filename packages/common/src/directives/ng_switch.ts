@@ -61,14 +61,14 @@ export class SwitchView {
  * Define a container element for the directive, and specify the switch expression
  * to match against as an attribute:
  *
- * ```
+ * ```html
  * <container-element [ngSwitch]="switch_expression">
  * ```
  *
  * Within the container, `*ngSwitchCase` statements specify the match expressions
  * as attributes. Include `*ngSwitchDefault` as the final case.
  *
- * ```
+ * ```html
  * <container-element [ngSwitch]="switch_expression">
  *    <some-element *ngSwitchCase="match_expression_1">...</some-element>
  * ...
@@ -80,7 +80,7 @@ export class SwitchView {
  *
  * The following example shows how to use more than one case to display the same view:
  *
- * ```
+ * ```html
  * <container-element [ngSwitch]="switch_expression">
  *   <!-- the same view can be shown in more than one case -->
  *   <some-element *ngSwitchCase="match_expression_1">...</some-element>
@@ -92,7 +92,7 @@ export class SwitchView {
  * ```
  *
  * The following example shows how cases can be nested:
- * ```
+ * ```html
  * <container-element [ngSwitch]="switch_expression">
  *       <some-element *ngSwitchCase="match_expression_1">...</some-element>
  *       <some-element *ngSwitchCase="match_expression_2">...</some-element>
@@ -177,7 +177,7 @@ export class NgSwitch {
  * Within a switch container, `*ngSwitchCase` statements specify the match expressions
  * as attributes. Include `*ngSwitchDefault` as the final case.
  *
- * ```
+ * ```html
  * <container-element [ngSwitch]="switch_expression">
  *   <some-element *ngSwitchCase="match_expression_1">...</some-element>
  *   ...

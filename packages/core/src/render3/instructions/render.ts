@@ -48,7 +48,7 @@ export function renderComponent(hostLView: LView, componentHostIdx: number) {
  * will be skipped. However, consider this case of two components side-by-side:
  *
  * App template:
- * ```
+ * ```html
  * <comp></comp>
  * <comp></comp>
  * ```

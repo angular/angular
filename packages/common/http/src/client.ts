@@ -71,7 +71,7 @@ function addBody<T>(
  *
  * ### HTTP Request Example
  *
- * ```
+ * ```ts
  *  // GET heroes whose name contains search term
  * searchHeroes(term: string): observable<Hero[]>{
  *
@@ -82,20 +82,20 @@ function addBody<T>(
  *
  * Alternatively, the parameter string can be used without invoking HttpParams
  * by directly joining to the URL.
- * ```
+ * ```ts
  * this.httpClient.request('GET', this.heroesUrl + '?' + 'name=term', {responseType:'json'});
  * ```
  *
  *
  * ### JSONP Example
- * ```
+ * ```ts
  * requestJsonp(url, callback = 'callback') {
  *  return this.httpClient.jsonp(this.heroesURL, callback);
  * }
  * ```
  *
  * ### PATCH Example
- * ```
+ * ```ts
  * // PATCH one of the heroes' name
  * patchHero (id: number, heroName: string): Observable<{}> {
  * const url = `${this.heroesUrl}/${id}`;   // PATCH api/heroes/42

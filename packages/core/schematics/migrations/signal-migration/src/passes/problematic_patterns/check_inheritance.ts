@@ -25,7 +25,7 @@ export interface InheritanceTracker<D extends ClassFieldDescriptor> {
  * Phase that propagates incompatibilities to derived classes or
  * base classes. For example, consider:
  *
- * ```
+ * ```ts
  * class Base {
  *   bla = true;
  * }

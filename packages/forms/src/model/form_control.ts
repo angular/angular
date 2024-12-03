@@ -120,7 +120,7 @@ export interface FormControlOptions extends AbstractControlOptions {
  * If you are initializing the control to `null`, or you otherwise wish to provide a
  * wider type, you may specify the argument explicitly:
  *
- * ```
+ * ```ts
  * let fc = new FormControl<string|null>(null);
  * fc.setValue('foo');
  * ```
@@ -166,7 +166,7 @@ export interface FormControlOptions extends AbstractControlOptions {
  * If you wish to always reset the control to its initial value (instead of null),
  * you can pass the `nonNullable` option:
  *
- * ```
+ * ```ts
  * const control = new FormControl('Nancy', {nonNullable: true});
  *
  * console.log(control.value); // 'Nancy'
@@ -178,7 +178,7 @@ export interface FormControlOptions extends AbstractControlOptions {
  *
  * ### Reset the control back to an initial value and disabled
  *
- * ```
+ * ```ts
  * const control = new FormControl('Nancy');
  *
  * console.log(control.value); // 'Nancy'
@@ -365,7 +365,7 @@ type FormControlInterface<TValue = any> = FormControl<TValue>;
 /**
  * Various available constructors for `FormControl`.
  * Do not use this interface directly. Instead, use `FormControl`:
- * ```
+ * ```ts
  * const fc = new FormControl('foo');
  * ```
  * This symbol is prefixed with ɵ to make plain that it is an internal symbol.

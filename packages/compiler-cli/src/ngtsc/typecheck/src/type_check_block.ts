@@ -673,7 +673,7 @@ class TcbGenericDirectiveTypeWithAnyParamsOp extends TcbDirectiveTypeOpBase {
  * The initializer for the variable is the variable expression for the directive, template, or
  * element the ref refers to. When the reference is used in the template, those TCB statements will
  * access this variable as well. For example:
- * ```
+ * ```ts
  * var _t1 = document.createElement('div');
  * var _t2 = _t1;
  * _t2.value

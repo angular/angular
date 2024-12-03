@@ -27,7 +27,7 @@ import {assertComponentDef} from './errors';
  * Note: the example uses standalone components, but the function can also be used for
  * non-standalone components (declared in an NgModule) as well.
  *
- * ```typescript
+ * ```angular-ts
  * @Component({
  *   standalone: true,
  *   template: `Hello {{ name }}!`
@@ -150,7 +150,7 @@ export interface ComponentMirror<C> {
  * The example below demonstrates how to use the function and how the fields
  * of the returned object map to the component metadata.
  *
- * ```typescript
+ * ```angular-ts
  * @Component({
  *   standalone: true,
  *   selector: 'foo-component',

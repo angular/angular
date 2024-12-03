@@ -13,7 +13,7 @@ import {ɵɵinjectAttribute} from '../render3/instructions/di_attr';
  *
  * @usageNotes
  * ### Injecting an attribute that is known to exist
- * ```typescript
+ * ```ts
  * @Directive()
  * class MyDir {
  *   attr: string = inject(new HostAttributeToken('some-attr'));
@@ -21,7 +21,7 @@ import {ɵɵinjectAttribute} from '../render3/instructions/di_attr';
  * ```
  *
  * ### Optionally injecting an attribute
- * ```typescript
+ * ```ts
  * @Directive()
  * class MyDir {
  *   attr: string | null = inject(new HostAttributeToken('some-attr'), {optional: true});

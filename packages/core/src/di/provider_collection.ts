@@ -63,7 +63,7 @@ export function makeEnvironmentProviders(
  * @usageNotes
  * The following example illustrates how to configure an initialization function using
  * `provideEnvironmentInitializer()`
- * ```
+ * ```ts
  * createEnvironmentInjector(
  *   [
  *     provideEnvironmentInitializer(() => {
@@ -115,7 +115,7 @@ type WalkProviderTreeVisitor = (
  * @usageNotes
  * The results of the `importProvidersFrom` call can be used in the `bootstrapApplication` call:
  *
- * ```typescript
+ * ```ts
  * await bootstrapApplication(RootComponent, {
  *   providers: [
  *     importProvidersFrom(NgModuleOne, NgModuleTwo)
@@ -126,7 +126,7 @@ type WalkProviderTreeVisitor = (
  * You can also use the `importProvidersFrom` results in the `providers` field of a route, when a
  * standalone component is used:
  *
- * ```typescript
+ * ```ts
  * export const ROUTES: Route[] = [
  *   {
  *     path: 'foo',

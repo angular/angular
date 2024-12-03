@@ -224,7 +224,7 @@ export function optionsReducer<T extends Object>(dst: T, objs: T | T[]): T {
  * (here incrementing a counter, using RxJS `interval`),
  * and at the same time subscribe to `isStable`.
  *
- * ```
+ * ```ts
  * constructor(appRef: ApplicationRef) {
  *   appRef.isStable.pipe(
  *      filter(stable => stable)
@@ -239,7 +239,7 @@ export function optionsReducer<T extends Object>(dst: T, objs: T | T[]): T {
  * you have to wait for the application to be stable
  * before starting your polling process.
  *
- * ```
+ * ```ts
  * constructor(appRef: ApplicationRef) {
  *   appRef.isStable.pipe(
  *     first(stable => stable),
@@ -259,7 +259,7 @@ export function optionsReducer<T extends Object>(dst: T, objs: T | T[]): T {
  * you update a field of your component
  * and display it in its template.
  *
- * ```
+ * ```ts
  * constructor(appRef: ApplicationRef) {
  *   appRef.isStable.pipe(
  *     first(stable => stable),
@@ -273,7 +273,7 @@ export function optionsReducer<T extends Object>(dst: T, objs: T | T[]): T {
  *
  * You'll have to manually trigger the change detection to update the template.
  *
- * ```
+ * ```ts
  * constructor(appRef: ApplicationRef, cd: ChangeDetectorRef) {
  *   appRef.isStable.pipe(
  *     first(stable => stable),
@@ -287,7 +287,7 @@ export function optionsReducer<T extends Object>(dst: T, objs: T | T[]): T {
  *
  * Or make the subscription callback run inside the zone.
  *
- * ```
+ * ```ts
  * constructor(appRef: ApplicationRef, zone: NgZone) {
  *   appRef.isStable.pipe(
  *     first(stable => stable),

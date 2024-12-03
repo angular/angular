@@ -49,7 +49,7 @@ export function getImportOfIdentifier(
  * Gets a top-level import specifier with a specific name that is imported from a particular module.
  * E.g. given a file that looks like:
  *
- * ```
+ * ```ts
  * import { Component, Directive } from '@angular/core';
  * import { Foo } from './foo';
  * ```

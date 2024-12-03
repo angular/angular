@@ -34,7 +34,7 @@ import {getTView} from '../state';
  * instructions can be traversed in priority order when computing the styles.
  *
  * Assume we are dealing with the following code:
- * ```
+ * ```angular-ts
  * @Component({
  *   template: `
  *     <my-cmp [style]=" {color: '#001'} "
@@ -105,7 +105,7 @@ import {getTView} from '../state';
  *
  * NOTE: the comment binding location is for illustrative purposes only.
  *
- * ```
+ * ```ts
  * // Template: (ExampleComponent)
  *     ɵɵstyleMap({color: '#001'});   // Binding index: 10
  *     ɵɵstyleProp('color', '#002');  // Binding index: 12
@@ -122,7 +122,7 @@ import {getTView} from '../state';
  *
  * The correct priority order of concatenation is:
  *
- * ```
+ * ```ts
  * // MyComponent
  *     ɵɵstyleMap({color: '#003'});   // Binding index: 20
  *     ɵɵstyleProp('color', '#004');  // Binding index: 22

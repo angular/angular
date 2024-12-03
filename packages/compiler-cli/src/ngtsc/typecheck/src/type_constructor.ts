@@ -249,7 +249,7 @@ export function requiresInlineTypeCtor(
  * fails. This can happen when inferring a complex type from 'any'. For example, if `NgFor`'s
  * inference is done with the TCB code:
  *
- * ```
+ * ```ts
  * class NgFor<T> {
  *   ngForOf: T[];
  * }
@@ -260,14 +260,14 @@ export function requiresInlineTypeCtor(
  *
  * An invocation looks like:
  *
- * ```
+ * ```ts
  * var _t1 = ctor({ngForOf: [1, 2], ngForTrackBy: null as any, ngForTemplate: null as any});
  * ```
  *
  * This correctly infers the type `NgFor<number>` for `_t1`, since `T` is inferred from the
  * assignment of type `number[]` to `ngForOf`'s type `T[]`. However, if `any` is passed instead:
  *
- * ```
+ * ```ts
  * var _t2 = ctor({ngForOf: [1, 2] as any, ngForTrackBy: null as any, ngForTemplate: null as
  * any});
  * ```
@@ -278,7 +278,7 @@ export function requiresInlineTypeCtor(
  * Adding a default type to the generic declaration in the constructor solves this problem, as
  * the default type will be used in the event that inference fails.
  *
- * ```
+ * ```ts
  * declare function ctor<T = any>(o: Pick<NgFor<T>, 'ngForOf'>): NgFor<T>;
  *
  * var _t3 = ctor({ngForOf: [1, 2] as any});

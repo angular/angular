@@ -685,7 +685,7 @@ function projectNodes(
  *
  * Example:
  *
- * ```
+ * ```ts
  * renderComponent(AppComponent, {hostFeatures: [LifecycleHooksFeature]});
  * ```
  */

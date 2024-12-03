@@ -64,7 +64,7 @@ function internalCompileClassMetadata(metadata: R3ClassMetadata): o.InvokeFuncti
  * loads dependencies from `@defer` blocks.
  *
  * Generates a call like this:
- * ```
+ * ```ts
  * setClassMetadataAsync(type, () => [
  *   import('./cmp-a').then(m => m.CmpA);
  *   import('./cmp-b').then(m => m.CmpB);

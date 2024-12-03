@@ -164,7 +164,7 @@ export interface Directive {
    *
    * The following example creates a component with two data-bound properties.
    *
-   * ```typescript
+   * ```ts
    * @Component({
    *   selector: 'bank-account',
    *   inputs: ['bankName', {name: 'id', alias: 'account-id'}],
@@ -204,7 +204,7 @@ export interface Directive {
    *
    * @usageNotes
    *
-   * ```typescript
+   * ```ts
    * @Component({
    *   selector: 'child-dir',
    *   outputs: [ 'bankNameChange' ],
@@ -714,7 +714,7 @@ export interface PipeDecorator {
    * For example, if the name is "myPipe", use a template binding expression
    * such as the following:
    *
-   * ```
+   * ```html
    * {{ exp | myPipe }}
    * ```
    *
@@ -801,7 +801,7 @@ export interface InputDecorator {
    * The following example creates a component with two input properties,
    * one of which is given a special binding name.
    *
-   * ```typescript
+   * ```ts
    * import { Component, Input, numberAttribute, booleanAttribute } from '@angular/core';
    * @Component({
    *   selector: 'bank-account',
@@ -953,7 +953,7 @@ export interface HostBindingDecorator {
    * The following example creates a directive that sets the `valid` and `invalid`
    * class, a style color, and an id on the DOM element that has an `ngModel` directive on it.
    *
-   * ```typescript
+   * ```ts
    * @Directive({selector: '[ngModel]'})
    * class NgModelStatus {
    *   constructor(public control: NgModel) {}

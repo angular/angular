@@ -31,7 +31,7 @@ import {createScript} from './transfer_state';
 /**
  * Event dispatch (JSAction) script is inlined into the HTML by the build
  * process to avoid extra blocking request on a page. The script looks like this:
- * ```
+ * ```html
  * <script type="text/javascript" id="ng-event-dispatch-contract">...</script>
  * ```
  * This const represents the "id" attribute value.
@@ -282,7 +282,7 @@ export async function renderModule<T>(
 /**
  * Bootstraps an instance of an Angular application and renders it to a string.
 
- * ```typescript
+ * ```ts
  * const bootstrap = () => bootstrapApplication(RootComponent, appConfig);
  * const output: string = await renderApplication(bootstrap);
  * ```

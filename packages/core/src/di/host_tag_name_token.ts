@@ -18,7 +18,7 @@ import {InjectFlags} from './interface/injector';
  *
  * @usageNotes
  * ### Injecting a tag name that is known to exist
- * ```typescript
+ * ```ts
  * @Directive()
  * class MyDir {
  *   tagName: string = inject(HOST_TAG_NAME);
@@ -26,7 +26,7 @@ import {InjectFlags} from './interface/injector';
  * ```
  *
  * ### Optionally injecting a tag name
- * ```typescript
+ * ```ts
  * @Directive()
  * class MyDir {
  *   tagName: string | null = inject(HOST_TAG_NAME, {optional: true});
