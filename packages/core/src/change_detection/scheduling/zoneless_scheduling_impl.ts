@@ -364,7 +364,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
  * - registering a render hook (templates are only refreshed if render hooks do one of the above)
  *
  * @usageNotes
- * ```typescript
+ * ```ts
  * bootstrapApplication(MyApp, {providers: [
  *   provideExperimentalZonelessChangeDetection(),
  * ]});

@@ -16,7 +16,7 @@ import {SwitchView} from './ng_switch';
  * @ngModule CommonModule
  *
  * @usageNotes
- * ```
+ * ```html
  * <some-element [ngPlural]="value">
  *   <ng-template ngPluralCase="=0">there is nothing</ng-template>
  *   <ng-template ngPluralCase="=1">there is one</ng-template>
@@ -90,7 +90,7 @@ export class NgPlural {
  * given expression matches the plural expression according to CLDR rules.
  *
  * @usageNotes
- * ```
+ * ```html
  * <some-element [ngPlural]="value">
  *   <ng-template ngPluralCase="=0">...</ng-template>
  *   <ng-template ngPluralCase="other">...</ng-template>

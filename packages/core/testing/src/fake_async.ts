@@ -91,7 +91,7 @@ export function fakeAsync(fn: Function, options?: {flush?: boolean}): (...args: 
  * `processNewMacroTasksSynchronously` defaults to true, and the nested
  * function is executed on each tick.
  *
- * ```
+ * ```ts
  * it ('test with nested setTimeout', fakeAsync(() => {
  *   let nestedTimeoutInvoked = false;
  *   function funcWithNestedTimeout() {
@@ -108,7 +108,7 @@ export function fakeAsync(fn: Function, options?: {flush?: boolean}): (...args: 
  * In the following case, `processNewMacroTasksSynchronously` is explicitly
  * set to false, so the nested timeout function is not invoked.
  *
- * ```
+ * ```ts
  * it ('test with nested setTimeout', fakeAsync(() => {
  *   let nestedTimeoutInvoked = false;
  *   function funcWithNestedTimeout() {

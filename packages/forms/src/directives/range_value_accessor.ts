@@ -36,7 +36,7 @@ const RANGE_VALUE_ACCESSOR: Provider = {
  * const ageControl = new FormControl();
  * ```
  *
- * ```
+ * ```html
  * <input type="range" [formControl]="ageControl">
  * ```
  *

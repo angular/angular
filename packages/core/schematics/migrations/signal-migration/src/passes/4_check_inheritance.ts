@@ -16,7 +16,7 @@ import {checkInheritanceOfKnownFields} from './problematic_patterns/check_inheri
  * Phase that propagates incompatibilities to derived classes or
  * base classes. For example, consider:
  *
- * ```
+ * ```ts
  * class Base {
  *   bla = true;
  * }

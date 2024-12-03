@@ -59,7 +59,7 @@ export function matchObjectShape<T>(
  * Asymmetric matcher which matches a `TView` of a given shape.
  *
  * Expected usage:
- * ```
+ * ```ts
  * expect(tNode).toEqual(matchTView({type: TViewType.Root}));
  * expect({
  *   node: tNode
@@ -78,7 +78,7 @@ export function matchTView(expected?: Partial<TView>): jasmine.AsymmetricMatcher
  * Asymmetric matcher which matches a `TNode` of a given shape.
  *
  * Expected usage:
- * ```
+ * ```ts
  * expect(tNode).toEqual(matchTNode({type: TNodeType.Element}));
  * expect({
  *   node: tNode
@@ -97,7 +97,7 @@ export function matchTNode(expected?: Partial<TNode>): jasmine.AsymmetricMatcher
  * Asymmetric matcher which matches a `T18n` of a given shape.
  *
  * Expected usage:
- * ```
+ * ```ts
  * expect(tNode).toEqual(matchT18n({vars: 0}));
  * expect({
  *   node: tNode
@@ -116,7 +116,7 @@ export function matchTI18n(expected?: Partial<TI18n>): jasmine.AsymmetricMatcher
  * Asymmetric matcher which matches a `T1cu` of a given shape.
  *
  * Expected usage:
- * ```
+ * ```ts
  * expect(tNode).toEqual(matchTIcu({type: TIcuType.select}));
  * expect({
  *   type: TIcuType.select
@@ -135,7 +135,7 @@ export function matchTIcu(expected?: Partial<TIcu>): jasmine.AsymmetricMatcher<T
  * Asymmetric matcher which matches a DOM Element.
  *
  * Expected usage:
- * ```
+ * ```ts
  * expect(div).toEqual(matchT18n('div', {id: '123'}));
  * expect({
  *   node: div
@@ -199,7 +199,7 @@ export function matchDomElement(
  * Asymmetric matcher which matches DOM text node.
  *
  * Expected usage:
- * ```
+ * ```ts
  * expect(div).toEqual(matchDomText('text'));
  * expect({
  *   node: div

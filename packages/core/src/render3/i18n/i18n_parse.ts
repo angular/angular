@@ -531,7 +531,7 @@ function removeInnerTemplateTranslation(message: string): string {
  * translated message can span multiple templates.
  *
  * Example:
- * ```
+ * ```html
  * <div i18n>Translate <span *ngIf>me</span>!</div>
  * ```
  *

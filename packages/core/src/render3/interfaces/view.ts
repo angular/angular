@@ -516,7 +516,7 @@ export const enum PreOrderHookFlags {
  *
  * ## Example
  *
- * ```
+ * ```ts
  * const hostBindingOpCodes = [
  *   ~30,                               // Select element 30
  *   40, 45, MyDir.ɵdir.hostBindings    // Invoke host bindings on MyDir on element 30;
@@ -527,7 +527,7 @@ export const enum PreOrderHookFlags {
  * ```
  *
  * ## Pseudocode
- * ```
+ * ```ts
  * const hostBindingOpCodes = tView.hostBindingOpCodes;
  * if (hostBindingOpCodes === null) return;
  * for (let i = 0; i < hostBindingOpCodes.length; i++) {

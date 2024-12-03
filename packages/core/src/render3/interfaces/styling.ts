@@ -44,7 +44,7 @@ export type TStylingKeyPrimitive = string | null | false;
  *
  * Imagine we have:
  *
- * ```
+ * ```angular-ts
  * <div class="TEMPLATE" my-dir>
  *
  * @Directive({
@@ -57,7 +57,7 @@ export type TStylingKeyPrimitive = string | null | false;
  *
  * In the above case the linked list will contain one item:
  *
- * ```
+ * ```ts
  *   // assume binding location: 10 for `ɵɵclassProp('dynamic', ctx.exp);`
  *   tData[10] = <TStylingStatic>[
  *     '': 'dynamic', // This is the wrapped value of `TStylingKey`
@@ -74,13 +74,13 @@ export type TStylingKeyPrimitive = string | null | false;
  * `dynamic` (there is not). Therefore it is safe to remove it.
  *
  * If setting `true` case:
- * ```
+ * ```ts
  *   lView[10] = true;     // assume `ctx.exp` is `true`
  *   lView[10 + 1] = true; // Just normalized `lView[10]`
  * ```
  * So when the function is resolving styling value, it first needs to look into the linked list
  * (there is none) and than into `TNode.residualClass` (TNode.residualStyle) which contains
- * ```
+ * ```ts
  *   tNode.residualClass = [
  *     'TEMPLATE': true,
  *   ];

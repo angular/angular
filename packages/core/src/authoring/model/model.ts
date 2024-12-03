@@ -68,7 +68,7 @@ export interface ModelFunction {
  *
  * To use `model()`, import the function from `@angular/core`.
  *
- * ```
+ * ```ts
  * import {model} from '@angular/core`;
  * ```
  *

@@ -54,19 +54,19 @@ import {
  * ### Syntax
  *
  * Simple
- * ```
+ * ```html
  * <ng-container *ngComponentOutlet="componentTypeExpression"></ng-container>
  * ```
  *
  * With inputs
- * ```
+ * ```html
  * <ng-container *ngComponentOutlet="componentTypeExpression;
  *                                   inputs: inputsExpression;">
  * </ng-container>
  * ```
  *
  * Customized injector/content
- * ```
+ * ```html
  * <ng-container *ngComponentOutlet="componentTypeExpression;
  *                                   injector: injectorExpression;
  *                                   content: contentNodesExpression;">
@@ -74,7 +74,7 @@ import {
  * ```
  *
  * Customized NgModule reference
- * ```
+ * ```html
  * <ng-container *ngComponentOutlet="componentTypeExpression;
  *                                   ngModule: ngModuleClass;">
  * </ng-container>

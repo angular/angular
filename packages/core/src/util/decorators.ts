@@ -14,7 +14,7 @@ import {noSideEffects} from './closure';
  * An interface implemented by all Angular type decorators, which allows them to be used as
  * decorators as well as Angular syntax.
  *
- * ```
+ * ```ts
  * @ng.Component({...})
  * class MyClass {...}
  * ```

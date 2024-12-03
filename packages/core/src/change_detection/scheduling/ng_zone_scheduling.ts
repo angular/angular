@@ -137,7 +137,7 @@ export function internalProvideZoneChangeDetection({
  * `BootstrapOptions` instead.
  *
  * @usageNotes
- * ```typescript
+ * ```ts
  * bootstrapApplication(MyApp, {providers: [
  *   provideZoneChangeDetection({eventCoalescing: true}),
  * ]});

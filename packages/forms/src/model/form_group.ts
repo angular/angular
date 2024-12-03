@@ -83,7 +83,7 @@ export type ɵOptionalKeys<T> = {
  *
  * ### Create a form group with 2 controls
  *
- * ```
+ * ```ts
  * const form = new FormGroup({
  *   first: new FormControl('Nancy', Validators.minLength(2)),
  *   last: new FormControl('Drew'),
@@ -102,7 +102,7 @@ export type ɵOptionalKeys<T> = {
  * If you have controls that are optional (i.e. they can be removed, you can use the `?` in the
  * type):
  *
- * ```
+ * ```ts
  * const form = new FormGroup<{
  *   first: FormControl<string|null>,
  *   middle?: FormControl<string|null>, // Middle name is optional.
@@ -119,7 +119,7 @@ export type ɵOptionalKeys<T> = {
  * validators as the third arg. These come in handy when you want to perform validation
  * that considers the value of more than one child control.
  *
- * ```
+ * ```ts
  * const form = new FormGroup({
  *   password: new FormControl('', Validators.minLength(2)),
  *   passwordConfirm: new FormControl('', Validators.minLength(2)),
@@ -135,7 +135,7 @@ export type ɵOptionalKeys<T> = {
  * Like `FormControl` instances, you choose to pass in
  * validators and async validators as part of an options object.
  *
- * ```
+ * ```ts
  * const form = new FormGroup({
  *   password: new FormControl('')
  *   passwordConfirm: new FormControl('')
@@ -714,7 +714,7 @@ export const isFormGroup = (control: unknown): control is FormGroup => control i
  *
  * @usageNotes
  *
- * ```
+ * ```ts
  * let numbers = new FormRecord({bill: new FormControl('415-123-456')});
  * numbers.addControl('bob', new FormControl('415-234-567'));
  * numbers.removeControl('bill');

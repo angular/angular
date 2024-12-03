@@ -24,19 +24,19 @@ import {
  *
  * Set the font of the containing element to the result of an expression.
  *
- * ```
+ * ```html
  * <some-element [ngStyle]="{'font-style': styleExp}">...</some-element>
  * ```
  *
  * Set the width of the containing element to a pixel value returned by an expression.
  *
- * ```
+ * ```html
  * <some-element [ngStyle]="{'max-width.px': widthExp}">...</some-element>
  * ```
  *
  * Set a collection of style values using an expression that returns key-value pairs.
  *
- * ```
+ * ```html
  * <some-element [ngStyle]="objExp">...</some-element>
  * ```
  *

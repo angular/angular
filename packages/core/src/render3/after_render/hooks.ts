@@ -125,7 +125,7 @@ export interface AfterRenderOptions {
  * Use `afterRender` to read or write the DOM after each render.
  *
  * ### Example
- * ```ts
+ * ```angular-ts
  * @Component({
  *   selector: 'my-cmp',
  *   template: `<span #content>{{ ... }}</span>`,
@@ -187,7 +187,7 @@ export function afterRender<E = never, W = never, M = never>(
  * Use `afterRender` to read or write the DOM after each render.
  *
  * ### Example
- * ```ts
+ * ```angular-ts
  * @Component({
  *   selector: 'my-cmp',
  *   template: `<span #content>{{ ... }}</span>`,
@@ -297,7 +297,7 @@ export function afterRender(
  * for example to initialize a non-Angular library.
  *
  * ### Example
- * ```ts
+ * ```angular-ts
  * @Component({
  *   selector: 'my-chart-cmp',
  *   template: `<div #chart>{{ ... }}</div>`,
@@ -360,7 +360,7 @@ export function afterNextRender<E = never, W = never, M = never>(
  * for example to initialize a non-Angular library.
  *
  * ### Example
- * ```ts
+ * ```angular-ts
  * @Component({
  *   selector: 'my-chart-cmp',
  *   template: `<div #chart>{{ ... }}</div>`,

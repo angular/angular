@@ -202,7 +202,7 @@ export interface ImagePlaceholderConfig {
  *
  * Step 1: import the `NgOptimizedImage` directive.
  *
- * ```typescript
+ * ```ts
  * import { NgOptimizedImage } from '@angular/common';
  *
  * // Include it into the necessary NgModule
@@ -227,7 +227,7 @@ export interface ImagePlaceholderConfig {
  * To use an existing loader for a **third-party image service**: add the provider factory for your
  * chosen service to the `providers` array. In the example below, the Imgix loader is used:
  *
- * ```typescript
+ * ```ts
  * import {provideImgixLoader} from '@angular/common';
  *
  * // Call the function and add the result to the `providers` array:
@@ -248,7 +248,7 @@ export interface ImagePlaceholderConfig {
  * To use a **custom loader**: provide your loader function as a value for the `IMAGE_LOADER` DI
  * token.
  *
- * ```typescript
+ * ```ts
  * import {IMAGE_LOADER, ImageLoaderConfig} from '@angular/common';
  *
  * // Configure the loader using the `IMAGE_LOADER` token.
@@ -264,7 +264,7 @@ export interface ImagePlaceholderConfig {
  *
  * Step 3: update `<img>` tags in templates to use `ngSrc` instead of `src`.
  *
- * ```
+ * ```html
  * <img ngSrc="logo.png" width="200" height="100">
  * ```
  *

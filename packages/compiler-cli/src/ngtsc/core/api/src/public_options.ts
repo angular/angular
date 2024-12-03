@@ -288,14 +288,14 @@ export interface BazelAndG3Options {
    *
    * A consumer of such a path-mapped library will write an import like:
    *
-   * ```typescript
+   * ```ts
    * import {LibModule} from 'lib/deep/path/to/module';
    * ```
    *
    * The compiler will attempt to generate imports of directives/pipes from that same module
    * specifier (the compiler does not rewrite the user's given import path, unlike View Engine).
    *
-   * ```typescript
+   * ```ts
    * import {LibDir, LibCmp, LibPipe} from 'lib/deep/path/to/module';
    * ```
    *
