@@ -263,7 +263,7 @@ export class MyComponent {
 }
 ```
 
-IMPORTANT: The above tokens will be `null` in the following scenarios:<br><br>
+IMPORTANT: The above tokens will be `null` in the following scenarios:
 - During the build processes.
 - When the application is rendered in the browser (client-side rendering).
 - When performing static site generation (SSG).
