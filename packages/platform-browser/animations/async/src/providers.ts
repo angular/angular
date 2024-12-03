@@ -35,7 +35,7 @@ import {AsyncAnimationRendererFactory} from './async_animation_renderer';
  * is no need to import the `BrowserAnimationsModule` NgModule at all, just add
  * providers returned by this function to the `providers` list as show below.
  *
- * ```typescript
+ * ```ts
  * bootstrapApplication(RootComponent, {
  *   providers: [
  *     provideAnimationsAsync()

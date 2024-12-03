@@ -277,7 +277,7 @@ export function isSkipHydrationRootTNode(tNode: TNode): boolean {
  * Enables directive matching on elements.
  *
  *  * Example:
- * ```
+ * ```html
  * <my-comp my-directive>
  *   Should match component / directive.
  * </my-comp>
@@ -308,7 +308,7 @@ export function enterSkipHydrationBlock(tNode: TNode): void {
  * Disables directive matching on element.
  *
  *  * Example:
- * ```
+ * ```html
  * <my-comp my-directive>
  *   Should match component / directive.
  * </my-comp>

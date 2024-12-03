@@ -29,7 +29,7 @@ import {Tree, TreeNode} from './utils/tree';
  * The following fragment shows how a component gets the root node
  * of the current state to establish its own route tree:
  *
- * ```
+ * ```ts
  * @Component({templateUrl:'template.html'})
  * class MyComponent {
  *   constructor(router: Router) {
@@ -305,7 +305,7 @@ export function getInherited(
  * The following example initializes a component with route information extracted
  * from the snapshot of the root node at the time of creation.
  *
- * ```
+ * ```ts
  * @Component({templateUrl:'./my-component.html'})
  * class MyComponent {
  *   constructor(route: ActivatedRoute) {
@@ -433,7 +433,7 @@ export class ActivatedRouteSnapshot {
  * The following example shows how a component is initialized with information
  * from the snapshot of the root node's state at the time of creation.
  *
- * ```
+ * ```ts
  * @Component({templateUrl:'template.html'})
  * class MyComponent {
  *   constructor(router: Router) {

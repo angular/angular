@@ -21,7 +21,7 @@ import {ApplicationRef} from '../application/application_ref';
  * The example below uses `ApplicationRef.bootstrap()` to render the
  * `AppComponent` on the page.
  *
- * ```typescript
+ * ```ts
  * class AppModule implements DoBootstrap {
  *   ngDoBootstrap(appRef: ApplicationRef) {
  *     appRef.bootstrap(AppComponent); // Or some other component

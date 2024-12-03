@@ -81,7 +81,7 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
  * The following example shows the shorthand syntax with some options,
  * contained in an `<li>` element.
  *
- * ```
+ * ```html
  * <li *ngFor="let item of items; index as i; trackBy: trackByFn">...</li>
  * ```
  *
@@ -92,7 +92,7 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
  *
  * Here is the expanded version of the short-form example.
  *
- * ```
+ * ```html
  * <ng-template ngFor let-item [ngForOf]="items" let-i="index" [ngForTrackBy]="trackByFn">
  *   <li>...</li>
  * </ng-template>
@@ -116,7 +116,7 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
  * `NgForOf` provides exported values that can be aliased to local variables.
  * For example:
  *
- *  ```
+ *  ```html
  * <li *ngFor="let user of users; index as i; first as isFirst">
  *    {{i}}/{{users.length}}. {{user}} <span *ngIf="isFirst">default</span>
  * </li>

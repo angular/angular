@@ -131,7 +131,7 @@ const queryAdvancePlaceholder = Symbol('queryAdvancePlaceholder');
  *
  *   --> will turn into
  *
- * ```
+ * ```ts
  *   bla();
  *   queryAdvance(2);
  *   bla();

@@ -15,7 +15,7 @@
  *  - packages/core/src/compiler/compiler_facade_interface.ts     (replica)
  *
  * Please ensure that the two files are in sync using this command:
- * ```
+ * ```shell
  * cp packages/compiler/src/compiler_facade_interface.ts \
  *    packages/core/src/compiler/compiler_facade_interface.ts
  * ```

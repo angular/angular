@@ -72,7 +72,7 @@ export type ValidationErrors = {
  * The following example implements the `Validator` interface to create a
  * validator directive with a custom error key.
  *
- * ```typescript
+ * ```ts
  * @Directive({
  *   selector: '[customValidator]',
  *   providers: [{provide: NG_VALIDATORS, useExisting: CustomValidatorDirective, multi: true}]
@@ -303,7 +303,7 @@ export class MinValidator extends AbstractValidatorDirective {
  * The following example implements the `AsyncValidator` interface to create an
  * async validator directive with a custom error key.
  *
- * ```typescript
+ * ```ts
  * import { of } from 'rxjs';
  *
  * @Directive({
@@ -366,7 +366,7 @@ export const CHECKBOX_REQUIRED_VALIDATOR: Provider = {
  *
  * ### Adding a required validator using template-driven forms
  *
- * ```
+ * ```html
  * <input name="fullName" ngModel required>
  * ```
  *
@@ -416,7 +416,7 @@ export class RequiredValidator extends AbstractValidatorDirective {
  * The following example shows how to add a checkbox required validator to an input attached to an
  * ngModel binding.
  *
- * ```
+ * ```html
  * <input type="checkbox" name="active" ngModel required>
  * ```
  *
@@ -463,7 +463,7 @@ export const EMAIL_VALIDATOR: any = {
  * The following example shows how to add an email validator to an input attached to an ngModel
  * binding.
  *
- * ```
+ * ```html
  * <input type="email" name="email" ngModel email>
  * <input type="email" name="email" ngModel email="true">
  * <input type="email" name="email" ngModel [email]="true">

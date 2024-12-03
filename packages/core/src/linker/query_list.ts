@@ -34,7 +34,7 @@ function symbolIterator<T>(this: QueryList<T>): Iterator<T> {
  *
  * @usageNotes
  * ### Example
- * ```typescript
+ * ```ts
  * @Component({...})
  * class Container {
  *   @ViewChildren(Item) items:QueryList<Item>;

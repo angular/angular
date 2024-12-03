@@ -98,7 +98,7 @@ let upgradeCount: number = 0;
  *
  * ### Example
  *
- * ```
+ * ```ts
  * const adapter = new UpgradeAdapter(forwardRef(() => MyNg2Module), myCompilerOptions);
  * const module = angular.module('myExample', []);
  * module.directive('ng2Comp', adapter.downgradeNg2Component(Ng2Component));

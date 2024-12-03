@@ -23,7 +23,7 @@ import {ReferenceMigrationHost} from './reference_migration_host';
  * The phase takes care of control flow analysis and generates temporary variables
  * where needed to ensure narrowing continues to work. E.g.
  *
- * ```
+ * ```ts
  * someMethod() {
  *   if (this.input) {
  *     this.input.charAt(0);
@@ -33,7 +33,7 @@ import {ReferenceMigrationHost} from './reference_migration_host';
  *
  * will be transformed into:
  *
- * ```
+ * ```ts
  * someMethod() {
  *   const input_1 = this.input();
  *   if (input_1) {

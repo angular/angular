@@ -35,7 +35,7 @@ const CHECKBOX_VALUE_ACCESSOR: Provider = {
  * const rememberLoginControl = new FormControl();
  * ```
  *
- * ```
+ * ```html
  * <input type="checkbox" [formControl]="rememberLoginControl">
  * ```
  *

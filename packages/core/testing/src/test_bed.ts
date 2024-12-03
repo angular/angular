@@ -880,7 +880,7 @@ export const TestBed: TestBedStatic = TestBedImpl;
  *
  * Example:
  *
- * ```
+ * ```ts
  * beforeEach(inject([Dependency, AClass], (dep, object) => {
  *   // some code that uses `dep` and `object`
  *   // ...

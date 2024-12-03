@@ -25,7 +25,7 @@ const GOOG_GET_MSG = 'goog.getMsg';
  *
  * Generates:
  *
- * ```typescript
+ * ```ts
  * const MSG_FOO = goog.getMsg(
  *   // Message template.
  *   'Sent from {$interpolation} to {$startTagSpan}{$interpolation_1}{$closeTagSpan}.',
