@@ -8,7 +8,7 @@ The initialization happens as a [side effect of importing](https://developer.moz
 import '@angular/platform-server/init';
 ```
 
-<div class="alert is-important">
+<div class="docs-alert docs-alert-important">
 
   The import must come before any imports (direct or transitive) that rely on DOM built-ins being available.
 

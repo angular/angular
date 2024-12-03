@@ -241,7 +241,7 @@ export type ɵFirstAvailableSignal<T extends unknown[]> = T extends [infer H, ..
  * Register an effect that, when triggered, is invoked when the application finishes rendering, during the
  * `mixedReadWrite` phase.
  *
- * <div class="alert is-critical">
+ * <div class="docs-alert docs-alert-critical">
  *
  * You should prefer specifying an explicit phase for the effect instead, or you risk significant
  * performance degradation.
@@ -254,7 +254,7 @@ export type ɵFirstAvailableSignal<T extends unknown[]> = T extends [infer H, ..
  * - on browser platforms only
  * - during the `mixedReadWrite` phase
  *
- * <div class="alert is-important">
+ * <div class="docs-alert docs-alert-important">
  *
  * Components are not guaranteed to be [hydrated](guide/hydration) before the callback runs.
  * You must use caution when directly reading or writing the DOM and layout.
@@ -285,7 +285,7 @@ export function afterRenderEffect(
  * - `read`
  *    Use this phase to **read** from the DOM. **Never** write to the DOM in this phase.
  *
- * <div class="alert is-critical">
+ * <div class="docs-alert docs-alert-critical">
  *
  * You should prefer using the `read` and `write` phases over the `earlyRead` and `mixedReadWrite`
  * phases when possible, to avoid performance degradation.
@@ -313,7 +313,7 @@ export function afterRenderEffect(
  * manual DOM access, ensuring the best experience for the end users of your application
  * or library.
  *
- * <div class="alert is-important">
+ * <div class="docs-alert docs-alert-important">
  *
  * Components are not guaranteed to be [hydrated](guide/hydration) before the callback runs.
  * You must use caution when directly reading or writing the DOM and layout.

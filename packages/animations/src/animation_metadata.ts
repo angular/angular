@@ -966,7 +966,7 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  *  - `true` and `false` also match expression values of `1` and `0` respectively (but do not match
  *    _truthy_ and _falsy_ values)
  *
- * <div class="alert is-helpful">
+ * <div class="docs-alert docs-alert-helpful">
  *
  *  Be careful about entering end leaving elements as their transitions present a common
  *  pitfall for developers.
@@ -1205,7 +1205,7 @@ export function useAnimation(
  *  - Those inserted dynamically (via `ViewContainerRef`)
  *  - Those that have a structural directive (which, under the hood, are a subset of the above ones)
  *
- * <div class="alert is-helpful">
+ * <div class="docs-alert docs-alert-helpful">
  *
  *  Note that elements will be successfully queried via `:enter`/`:leave` even if their
  *  insertion/removal is not done manually via `ViewContainerRef`or caused by their structural
@@ -1213,7 +1213,7 @@ export function useAnimation(
  *
  * </div>
  *
- * <div class="alert is-important">
+ * <div class="docs-alert docs-alert-important">
  *
  *  There is an exception to what previously mentioned, besides elements entering/leaving based on
  *  their own logic, elements with an animation trigger can always be queried via `:leave` when

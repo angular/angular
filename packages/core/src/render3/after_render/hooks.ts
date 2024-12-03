@@ -55,7 +55,7 @@ export interface AfterRenderOptions {
   /**
    * The phase the callback should be invoked in.
    *
-   * <div class="alert is-critical">
+   * <div class="docs-alert docs-alert-critical">
    *
    * Defaults to `AfterRenderPhase.MixedReadWrite`. You should choose a more specific
    * phase instead. See `AfterRenderPhase` for more information.
@@ -83,7 +83,7 @@ export interface AfterRenderOptions {
  * - `read`
  *    Use this phase to **read** from the DOM. **Never** write to the DOM in this phase.
  *
- * <div class="alert is-critical">
+ * <div class="docs-alert docs-alert-critical">
  *
  * You should prefer using the `read` and `write` phases over the `earlyRead` and `mixedReadWrite`
  * phases when possible, to avoid performance degradation.
@@ -110,7 +110,7 @@ export interface AfterRenderOptions {
  * manual DOM access, ensuring the best experience for the end users of your application
  * or library.
  *
- * <div class="alert is-important">
+ * <div class="docs-alert docs-alert-important">
  *
  * Components are not guaranteed to be [hydrated](guide/hydration) before the callback runs.
  * You must use caution when directly reading or writing the DOM and layout.
@@ -159,7 +159,7 @@ export function afterRender<E = never, W = never, M = never>(
  * Register a callback to be invoked each time the application finishes rendering, during the
  * `mixedReadWrite` phase.
  *
- * <div class="alert is-critical">
+ * <div class="docs-alert docs-alert-critical">
  *
  * You should prefer specifying an explicit phase for the callback instead, or you risk significant
  * performance degradation.
@@ -172,7 +172,7 @@ export function afterRender<E = never, W = never, M = never>(
  * - on browser platforms only
  * - during the `mixedReadWrite` phase
  *
- * <div class="alert is-important">
+ * <div class="docs-alert docs-alert-important">
  *
  * Components are not guaranteed to be [hydrated](guide/hydration) before the callback runs.
  * You must use caution when directly reading or writing the DOM and layout.
@@ -254,7 +254,7 @@ export function afterRender(
  * - `read`
  *    Use this phase to **read** from the DOM. **Never** write to the DOM in this phase.
  *
- * <div class="alert is-critical">
+ * <div class="docs-alert docs-alert-critical">
  *
  * You should prefer using the `read` and `write` phases over the `earlyRead` and `mixedReadWrite`
  * phases when possible, to avoid performance degradation.
@@ -281,7 +281,7 @@ export function afterRender(
  * manual DOM access, ensuring the best experience for the end users of your application
  * or library.
  *
- * <div class="alert is-important">
+ * <div class="docs-alert docs-alert-important">
  *
  * Components are not guaranteed to be [hydrated](guide/hydration) before the callback runs.
  * You must use caution when directly reading or writing the DOM and layout.
@@ -332,7 +332,7 @@ export function afterNextRender<E = never, W = never, M = never>(
  * Register a callback to be invoked the next time the application finishes rendering, during the
  * `mixedReadWrite` phase.
  *
- * <div class="alert is-critical">
+ * <div class="docs-alert docs-alert-critical">
  *
  * You should prefer specifying an explicit phase for the callback instead, or you risk significant
  * performance degradation.
@@ -344,7 +344,7 @@ export function afterNextRender<E = never, W = never, M = never>(
  * - on browser platforms only
  * - during the `mixedReadWrite` phase
  *
- * <div class="alert is-important">
+ * <div class="docs-alert docs-alert-important">
  *
  * Components are not guaranteed to be [hydrated](guide/hydration) before the callback runs.
  * You must use caution when directly reading or writing the DOM and layout.

@@ -41,7 +41,7 @@ import {UpgradeAppType} from '../../../src/common/src/util';
  * <code-example path="upgrade/static/ts/full/module.spec.ts"
  * region="angularjs-spec"></code-example>
  *
- * <div class="alert is-important">
+ * <div class="docs-alert docs-alert-important">
  *
  * This helper is for testing services not components.
  * For Component testing you must still bootstrap a hybrid app. See `UpgradeModule` or
@@ -49,7 +49,7 @@ import {UpgradeAppType} from '../../../src/common/src/util';
  *
  * </div>
  *
- * <div class="alert is-important">
+ * <div class="docs-alert docs-alert-important">
  *
  * The resulting configuration does not wire up AngularJS digests to Zone hooks. It is the
  * responsibility of the test writer to call `$rootScope.$apply`, as necessary, to trigger
@@ -57,7 +57,7 @@ import {UpgradeAppType} from '../../../src/common/src/util';
  *
  * </div>
  *
- * <div class="alert is-important">
+ * <div class="docs-alert docs-alert-important">
  *
  * The helper sets up global variables to hold the shared Angular and AngularJS injectors.
  *
