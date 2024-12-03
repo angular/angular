@@ -32,7 +32,7 @@ abstract class MockBackend<T, R> {
   }
 
   abort(req: T) {
-    this.reject(req, 'aborted');
+    return this.reject(req, 'aborted');
   }
 
   reject(req: T, reason: any) {
@@ -42,10 +42,10 @@ abstract class MockBackend<T, R> {
       entry.reject(reason);
     }
 
-    return Promise.resolve();
+    return flushMicrotasks();
   }
 
-  async flush() {
+  async flush(): Promise<void> {
     const allPending = Array.from(this.pending.values()).map((pending) => pending.promise);
 
     for (const [req, {resolve}] of this.pending) {
@@ -53,7 +53,8 @@ abstract class MockBackend<T, R> {
     }
     this.pending.clear();
 
-    return Promise.all(allPending);
+    await Promise.all(allPending);
+    await flushMicrotasks();
   }
 
   protected abstract prepareResponse(request: T): R;
@@ -151,6 +152,7 @@ describe('resource', () => {
 
     counter.update((value) => value + 1);
     TestBed.flushEffects();
+    await backend.flush();
 
     expect(echoResource.status()).toBe(ResourceStatus.Error);
     expect(echoResource.isLoading()).toBeFalse();
@@ -496,4 +498,85 @@ describe('resource', () => {
     expect(echoResource.status()).toBe(ResourceStatus.Local);
     expect(echoResource.value()).toBe(3);
   });
+
+  it('should allow streaming', async () => {
+    const appRef = TestBed.inject(ApplicationRef);
+    const res = resource({
+      stream: async () => signal({value: 'done'}),
+      injector: TestBed.inject(Injector),
+    });
+
+    await appRef.whenStable();
+    expect(res.status()).toBe(ResourceStatus.Resolved);
+    expect(res.value()).toBe('done');
+  });
+
+  it('should error via error()', async () => {
+    const appRef = TestBed.inject(ApplicationRef);
+    const res = resource({
+      stream: async () => signal({error: 'fail'}),
+      injector: TestBed.inject(Injector),
+    });
+
+    await appRef.whenStable();
+    expect(res.status()).toBe(ResourceStatus.Error);
+    expect(res.error()).toBe('fail');
+  });
+
+  it('should transition across streamed states', async () => {
+    const appRef = TestBed.inject(ApplicationRef);
+    const stream = signal<{value: number} | {error: unknown}>({value: 1});
+
+    const res = resource({
+      stream: async () => stream,
+      injector: TestBed.inject(Injector),
+    });
+    await appRef.whenStable();
+
+    stream.set({value: 2});
+    expect(res.value()).toBe(2);
+
+    stream.set({value: 3});
+    expect(res.value()).toBe(3);
+
+    stream.set({error: 'fail'});
+    expect(res.error()).toBe('fail');
+
+    stream.set({value: 4});
+    expect(res.value()).toBe(4);
+  });
+
+  it('should not accept new values/errors after a request is cancelled', async () => {
+    const appRef = TestBed.inject(ApplicationRef);
+    const stream = signal<{value: number} | {error: unknown}>({value: 0});
+    const request = signal(1);
+    const res = resource({
+      request,
+      stream: async ({request}) => {
+        if (request === 1) {
+          return stream;
+        } else {
+          return signal({value: 0});
+        }
+      },
+      injector: TestBed.inject(Injector),
+    });
+    await appRef.whenStable();
+
+    stream.set({value: 1});
+    expect(res.value()).toBe(1);
+
+    // Changing the request aborts the previous one.
+    request.set(2);
+
+    // The previous set/error functions should no longer result in changes to the resource.
+    stream.set({value: 2});
+    expect(res.value()).toBe(undefined);
+    stream.set({error: 'fail'});
+    expect(res.value()).toBe(undefined);
+  });
 });
+
+function flushMicrotasks(): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, 0));
+}
