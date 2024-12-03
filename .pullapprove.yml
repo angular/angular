@@ -189,6 +189,7 @@ groups:
         - devversion
         - thePunderWoman
         - pkozlowski-opensource
+        - kirjs
 
   # =========================================================
   #  Framework: Common
@@ -208,6 +209,7 @@ groups:
         - atscott
         - thePunderWoman
         - pkozlowski-opensource
+        - kirjs
 
   # =========================================================
   #  Framework: Http
@@ -227,6 +229,7 @@ groups:
         - atscott
         - thePunderWoman
         - pkozlowski-opensource
+        - kirjs
 
   # =========================================================
   #  Framework: Elements
@@ -246,6 +249,7 @@ groups:
         - atscott
         - thePunderWoman
         - pkozlowski-opensource
+        - kirjs
 
   # =========================================================
   #  Framework: Forms
@@ -376,6 +380,7 @@ groups:
         - atscott
         - thePunderWoman
         - pkozlowski-opensource
+        - kirjs
 
   # =========================================================
   #  Framework: Benchmarks
@@ -537,6 +542,7 @@ groups:
         - atscott
         - thePunderWoman
         - josephperrott
+        - kirjs
 
   # =========================================================
   #  Docs: Packaging, Tooling, Releasing
@@ -604,6 +610,7 @@ groups:
         - pkozlowski-opensource
         - MarkTechson
         - ~JeanMeche
+        - kirjs
 
   # =========================================================
   #  Angular DevTools
@@ -709,6 +716,7 @@ groups:
         - ~jelbourn
         - thePunderWoman
         - pkozlowski-opensource
+        - kirjs
         - ~iteriani
         - ~tbondwilkinson
         - ~rahatarmanahmed
@@ -734,6 +742,7 @@ groups:
         - alxhub
         - AndrewKushnir
         - atscott
+        - kirjs
         - ~jelbourn
         - thePunderWoman
         - pkozlowski-opensource
@@ -762,6 +771,7 @@ groups:
         - ~jelbourn
         - thePunderWoman
         - pkozlowski-opensource
+        - kirjs
 
   ####################################################################################
   #  Special Cases
