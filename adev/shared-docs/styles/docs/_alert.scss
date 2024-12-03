@@ -28,6 +28,14 @@
 
     p {
       margin-inline-start: 1.65rem;
+
+      &:first-child {
+        margin-block-start: 0;
+      }
+
+      &:last-child {
+        margin-block-end: 0;
+      }
     }
 
     .docs-dark-mode & {
@@ -37,10 +45,6 @@
     .docs-pill-row {
       margin-block-end: 0;
     }
-  }
-
-  .docs-viewer .docs-alert p {
-    margin-block: 0;
   }
 
   .docs-alert-note {
