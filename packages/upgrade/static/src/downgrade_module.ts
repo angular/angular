@@ -67,7 +67,7 @@ let moduleUid = 0;
  * available until the downgraded module has been bootstrapped, i.e. by instantiating a downgraded
  * component.
  *
- * <div class="alert is-important">
+ * <div class="docs-alert docs-alert-important">
  *
  *   You cannot use `downgradeModule()` and `UpgradeModule` in the same hybrid application.<br />
  *   Use one or the other.
@@ -98,7 +98,7 @@ let moduleUid = 0;
  * For a more detailed discussion of the differences and their implications, see
  * [Upgrading for Performance](https://angular.io/guide/upgrade).
  *
- * <div class="alert is-helpful">
+ * <div class="docs-alert docs-alert-helpful">
  *
  *   You can manually trigger a change detection run in AngularJS using
  *   [scope.$apply(...)](https://docs.angularjs.org/api/ng/type/$rootScope.Scope#$apply) or
@@ -183,7 +183,7 @@ export function downgradeModule<T>(
  * available until the downgraded module has been bootstrapped, i.e. by instantiating a downgraded
  * component.
  *
- * <div class="alert is-important">
+ * <div class="docs-alert docs-alert-important">
  *
  *   You cannot use `downgradeModule()` and `UpgradeModule` in the same hybrid application.<br />
  *   Use one or the other.
@@ -214,7 +214,7 @@ export function downgradeModule<T>(
  * For a more detailed discussion of the differences and their implications, see
  * [Upgrading for Performance](https://angular.io/guide/upgrade).
  *
- * <div class="alert is-helpful">
+ * <div class="docs-alert docs-alert-helpful">
  *
  *   You can manually trigger a change detection run in AngularJS using
  *   [scope.$apply(...)](https://docs.angularjs.org/api/ng/type/$rootScope.Scope#$apply) or
@@ -300,7 +300,7 @@ export function downgradeModule<T>(moduleOrBootstrapFn: NgModuleFactory<T>): str
  * available until the downgraded module has been bootstrapped, i.e. by instantiating a downgraded
  * component.
  *
- * <div class="alert is-important">
+ * <div class="docs-alert docs-alert-important">
  *
  *   You cannot use `downgradeModule()` and `UpgradeModule` in the same hybrid application.<br />
  *   Use one or the other.
@@ -331,7 +331,7 @@ export function downgradeModule<T>(moduleOrBootstrapFn: NgModuleFactory<T>): str
  * For a more detailed discussion of the differences and their implications, see
  * [Upgrading for Performance](https://angular.io/guide/upgrade).
  *
- * <div class="alert is-helpful">
+ * <div class="docs-alert docs-alert-helpful">
  *
  *   You can manually trigger a change detection run in AngularJS using
  *   [scope.$apply(...)](https://docs.angularjs.org/api/ng/type/$rootScope.Scope#$apply) or

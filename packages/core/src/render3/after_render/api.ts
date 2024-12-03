@@ -35,7 +35,7 @@ export enum AfterRenderPhase {
    * `AfterRenderPhase.EarlyRead` phase if reading can wait until after the write phase.
    * **Never** write to the DOM in this phase.
    *
-   * <div class="alert is-important">
+   * <div class="docs-alert docs-alert-important">
    *
    * Using this value can degrade performance.
    * Instead, prefer using built-in browser functionality when possible.
@@ -55,7 +55,7 @@ export enum AfterRenderPhase {
    * DOM, that haven't been refactored to use a different phase. **Never** use this phase if
    * it is possible to divide the work among the other phases instead.
    *
-   * <div class="alert is-critical">
+   * <div class="docs-alert docs-alert-critical">
    *
    * Using this value can **significantly** degrade performance.
    * Instead, prefer dividing work into the appropriate phase callbacks.
