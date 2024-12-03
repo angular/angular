@@ -31,7 +31,7 @@ export interface RxResourceOptions<T, R> extends Omit<ResourceOptions<T, R>, 'lo
  *
  * @experimental
  */
-export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T> {
+export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T | undefined> {
   opts?.injector || assertInInjectionContext(rxResource);
   return resource<T, R>({
     ...opts,
