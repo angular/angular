@@ -80,7 +80,7 @@ export const LOCALE_ID: InjectionToken<string> = new InjectionToken(ngDevMode ? 
  *
  * See the [i18n guide](guide/i18n/locale-id) for more information.
  *
- * <div class="alert is-helpful">
+ * <div class="docs-alert docs-alert-helpful">
  *
  * **Deprecation notice:**
  *

@@ -42,7 +42,7 @@ ng serve
 In your browser, open http://localhost:4200/ to see the new application run.
 When you use the [ng serve](cli/serve) command to build an application and serve it locally, the server automatically rebuilds the application and reloads the page when you change any of the source files.
 
-<div class="alert is-helpful">
+<div class="docs-alert docs-alert-helpful">
 
 When you run `ng new my-first-project` a new folder, named `my-first-project`, will be created in the current working directory.
 Since you want to be able to create files inside that folder, make sure you have sufficient rights in the current working directory before running the command.

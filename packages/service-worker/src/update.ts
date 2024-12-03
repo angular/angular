@@ -91,7 +91,7 @@ export class SwUpdate {
    * In most cases, you should not use this method and instead should update a client by reloading
    * the page.
    *
-   * <div class="alert is-important">
+   * <div class="docs-alert docs-alert-important">
    *
    * Updating a client without reloading can easily result in a broken application due to a version
    * mismatch between the application shell and other page resources,
