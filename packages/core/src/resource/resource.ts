@@ -36,10 +36,16 @@ import {DestroyRef} from '../linker';
  *
  * @experimental
  */
-export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T> {
+export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | undefined> {
   options?.injector || assertInInjectionContext(resource);
   const request = (options.request ?? (() => null)) as () => R;
-  return new WritableResourceImpl<T, R>(request, options.loader, options.equal, options.injector);
+  return new WritableResourceImpl<T | undefined, R>(
+    request,
+    options.loader,
+    undefined,
+    options.equal ? wrapEqualityFn(options.equal) : undefined,
+    options.injector,
+  );
 }
 
 /**
@@ -49,23 +55,23 @@ export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T> {
  * Mainly factored out for better readability.
  */
 abstract class BaseWritableResource<T> implements WritableResource<T> {
-  readonly value: WritableSignal<T | undefined>;
+  readonly value: WritableSignal<T>;
   readonly status = signal<ResourceStatus>(ResourceStatus.Idle);
   readonly error = signal<unknown>(undefined);
 
-  protected readonly rawSetValue: (value: T | undefined) => void;
+  protected readonly rawSetValue: (value: T) => void;
 
-  constructor(equal: ValueEqualityFn<T> | undefined) {
-    this.value = signal<T | undefined>(undefined, {
-      equal: equal ? wrapEqualityFn(equal) : undefined,
-    });
+  constructor(
+    protected defaultValue: T,
+    equal: ValueEqualityFn<T> | undefined,
+  ) {
+    this.value = signal<T>(this.defaultValue, {equal});
     this.rawSetValue = this.value.set;
-    this.value.set = (value: T | undefined) => this.set(value);
-    this.value.update = (fn: (value: T | undefined) => T | undefined) =>
-      this.set(fn(untracked(this.value)));
+    this.value.set = (value: T) => this.set(value);
+    this.value.update = (fn: (value: T) => T) => this.set(fn(untracked(this.value)));
   }
 
-  set(value: T | undefined): void {
+  set(value: T): void {
     // Set the value signal and check whether its `version` changes. This will tell us
     // if the value signal actually updated or not.
     const prevVersion = (this.value[SIGNAL] as SignalNode<T>).version;
@@ -82,7 +88,7 @@ abstract class BaseWritableResource<T> implements WritableResource<T> {
     this.error.set(undefined);
   }
 
-  update(updater: (value: T | undefined) => T | undefined): void {
+  update(updater: (value: T) => T): void {
     this.value.update(updater);
   }
 
@@ -90,12 +96,8 @@ abstract class BaseWritableResource<T> implements WritableResource<T> {
     () => this.status() === ResourceStatus.Loading || this.status() === ResourceStatus.Reloading,
   );
 
-  hasValue(): this is WritableResource<T> & {value: WritableSignal<T>} {
-    return (
-      this.status() === ResourceStatus.Resolved ||
-      this.status() === ResourceStatus.Local ||
-      this.status() === ResourceStatus.Reloading
-    );
+  hasValue(): this is WritableResource<Exclude<T, undefined>> {
+    return this.value() !== undefined;
   }
 
   asReadonly(): Resource<T> {
@@ -105,7 +107,7 @@ abstract class BaseWritableResource<T> implements WritableResource<T> {
   /**
    * Put the resource in a state with a given value.
    */
-  protected setValueState(status: ResourceStatus, value: T | undefined = undefined): void {
+  protected setValueState(status: ResourceStatus, value: T = this.defaultValue): void {
     this.status.set(status);
     this.rawSetValue(value);
     this.error.set(undefined);
@@ -115,7 +117,7 @@ abstract class BaseWritableResource<T> implements WritableResource<T> {
    * Put the resource into the error state.
    */
   protected setErrorState(err: unknown): void {
-    this.value.set(undefined);
+    this.value.set(this.defaultValue);
     // The previous line will set the status to `Local`, so we need to update it.
     this.status.set(ResourceStatus.Error);
     this.error.set(err);
@@ -142,10 +144,11 @@ class WritableResourceImpl<T, R> extends BaseWritableResource<T> implements Reso
   constructor(
     requestFn: () => R,
     private readonly loaderFn: ResourceLoader<T, R>,
+    defaultValue: T,
     equal: ValueEqualityFn<T> | undefined,
     injector: Injector | undefined,
   ) {
-    super(equal);
+    super(defaultValue, equal);
     injector = injector ?? inject(Injector);
     this.pendingTasks = injector.get(PendingTasks);
 
