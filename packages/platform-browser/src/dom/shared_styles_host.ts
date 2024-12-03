@@ -57,22 +57,31 @@ function createStyleElement(style: string, doc: Document): HTMLStyleElement {
  * identifier attribute (`ng-app-id`) to the provide identifier and adds usage records for each.
  * @param doc An HTML DOM document instance.
  * @param appId A string containing an Angular application identifer.
- * @param usages A Map object for tracking style usage.
+ * @param inline A Map object for tracking inline (defined via `styles` in component decorator) style usage.
+ * @param external A Map object for tracking external (defined via `styleUrls` in component decorator) style usage.
  */
 function addServerStyles(
   doc: Document,
   appId: string,
-  usages: Map<string, UsageRecord<HTMLStyleElement>>,
+  inline: Map<string, UsageRecord<HTMLStyleElement>>,
+  external: Map<string, UsageRecord<HTMLLinkElement>>,
 ): void {
-  const styleElements = doc.head?.querySelectorAll<HTMLStyleElement>(
-    `style[${APP_ID_ATTRIBUTE_NAME}="${appId}"]`,
+  const elements = doc.head?.querySelectorAll<HTMLStyleElement | HTMLLinkElement>(
+    `style[${APP_ID_ATTRIBUTE_NAME}="${appId}"],link[${APP_ID_ATTRIBUTE_NAME}="${appId}"]`,
   );
 
-  if (styleElements) {
-    for (const styleElement of styleElements) {
-      if (styleElement.textContent) {
-        styleElement.removeAttribute(APP_ID_ATTRIBUTE_NAME);
-        usages.set(styleElement.textContent, {usage: 0, elements: [styleElement]});
+  if (elements) {
+    for (const styleElement of elements) {
+      styleElement.removeAttribute(APP_ID_ATTRIBUTE_NAME);
+      if (styleElement instanceof HTMLLinkElement) {
+        // Only use filename from href
+        // The href is build time generated with a unique value to prevent duplicates.
+        external.set(styleElement.href.slice(styleElement.href.lastIndexOf('/') + 1), {
+          usage: 0,
+          elements: [styleElement],
+        });
+      } else if (styleElement.textContent) {
+        inline.set(styleElement.textContent, {usage: 0, elements: [styleElement]});
       }
     }
   }
@@ -123,7 +132,7 @@ export class SharedStylesHost implements OnDestroy {
     @Inject(PLATFORM_ID) platformId: object = {},
   ) {
     this.isServer = isPlatformServer(platformId);
-    addServerStyles(doc, appId, this.inline);
+    addServerStyles(doc, appId, this.inline, this.external);
     this.hosts.add(doc.head);
   }
 
