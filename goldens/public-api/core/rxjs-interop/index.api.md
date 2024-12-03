@@ -27,7 +27,7 @@ export function outputToObservable<T>(ref: OutputRef<T>): Observable<T>;
 export function pendingUntilEvent<T>(injector?: Injector): MonoTypeOperatorFunction<T>;
 
 // @public
-export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T>;
+export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T | undefined>;
 
 // @public
 export interface RxResourceOptions<T, R> extends Omit<ResourceOptions<T, R>, 'loader'> {

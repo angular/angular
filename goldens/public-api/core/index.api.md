@@ -1585,17 +1585,15 @@ export function resolveForwardRef<T>(type: T): T;
 // @public
 export interface Resource<T> {
     readonly error: Signal<unknown>;
-    hasValue(): this is Resource<T> & {
-        value: Signal<T>;
-    };
+    hasValue(): this is Resource<Exclude<T, undefined>>;
     readonly isLoading: Signal<boolean>;
     reload(): boolean;
     readonly status: Signal<ResourceStatus>;
-    readonly value: Signal<T | undefined>;
+    readonly value: Signal<T>;
 }
 
 // @public
-export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T>;
+export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | undefined>;
 
 // @public
 export type ResourceLoader<T, R> = (param: ResourceLoaderParams<R>) => PromiseLike<T>;
@@ -1984,13 +1982,11 @@ export interface WritableResource<T> extends Resource<T> {
     // (undocumented)
     asReadonly(): Resource<T>;
     // (undocumented)
-    hasValue(): this is WritableResource<T> & {
-        value: WritableSignal<T>;
-    };
-    set(value: T | undefined): void;
-    update(updater: (value: T | undefined) => T | undefined): void;
+    hasValue(): this is WritableResource<Exclude<T, undefined>>;
+    set(value: T): void;
+    update(updater: (value: T) => T): void;
     // (undocumented)
-    readonly value: WritableSignal<T | undefined>;
+    readonly value: WritableSignal<T>;
 }
 
 // @public
