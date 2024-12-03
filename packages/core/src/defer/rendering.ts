@@ -223,17 +223,9 @@ function findMatchingDehydratedViewForDeferBlock(
   lContainer: LContainer,
   lDetails: LDeferBlockDetails,
 ): DehydratedContainerView | null {
-  // TODO(incremental-hydration): extract into a separate util function and use in relevant places.
-  const views = lContainer[DEHYDRATED_VIEWS];
-  if (views === null || views.length === 0) {
-    return null;
-  }
-
   // Find matching view based on serialized defer block state.
-  // TODO(incremental-hydration): reconcile this logic with the regular logic that looks up
-  // dehydrated views to see if there is anything missing in this function.
   return (
-    views.find(
+    lContainer[DEHYDRATED_VIEWS]?.find(
       (view: any) => view.data[SERIALIZED_DEFER_BLOCK_STATE] === lDetails[DEFER_BLOCK_STATE],
     ) ?? null
   );
@@ -279,32 +271,22 @@ function applyDeferBlockState(
         injector = createDeferBlockInjector(hostLView[INJECTOR], tDetails, providers);
       }
     }
-
     const dehydratedView = findMatchingDehydratedViewForDeferBlock(lContainer, lDetails);
-    // Render either when we don't have dehydrated views at all (e.g. client rendering)
-    // or when dehydrated view is found (in which case we hydrate).
-    // Otherwise, do nothing, since we'd end up erasing SSR'ed content.
-    // TODO(incremental-hydration): Use the util function for checking dehydrated views mentioned above
-    const isClientOnly =
-      lContainer[DEHYDRATED_VIEWS] === null || lContainer[DEHYDRATED_VIEWS].length === 0;
-    if (isClientOnly || dehydratedView) {
-      // Erase dehydrated view info, so that it's not removed later
-      // by post-hydration cleanup process.
-      // TODO(incremental-hydration): we need a better mechanism here.
-      lContainer[DEHYDRATED_VIEWS] = null;
+    // Erase dehydrated view info, so that it's not removed later
+    // by post-hydration cleanup process.
+    lContainer[DEHYDRATED_VIEWS] = null;
 
-      const embeddedLView = createAndRenderEmbeddedLView(hostLView, activeBlockTNode, null, {
-        injector,
-        dehydratedView,
-      });
-      addLViewToLContainer(
-        lContainer,
-        embeddedLView,
-        viewIndex,
-        shouldAddViewToDom(activeBlockTNode, dehydratedView),
-      );
-      markViewDirty(embeddedLView, NotificationSource.DeferBlockStateUpdate);
-    }
+    const embeddedLView = createAndRenderEmbeddedLView(hostLView, activeBlockTNode, null, {
+      injector,
+      dehydratedView,
+    });
+    addLViewToLContainer(
+      lContainer,
+      embeddedLView,
+      viewIndex,
+      shouldAddViewToDom(activeBlockTNode, dehydratedView),
+    );
+    markViewDirty(embeddedLView, NotificationSource.DeferBlockStateUpdate);
 
     // TODO(incremental-hydration):
     // - what if we had some views in `lContainer[DEHYDRATED_VIEWS]`, but
@@ -312,8 +294,10 @@ function applyDeferBlockState(
     // - for example, handle a situation when a block was in the "completed" state
     //   on the server, but the loading failing on the client. How do we reconcile and cleanup?
 
-    // TODO(incremental-hydration): should we also invoke if newState === DeferBlockState.Error?
-    if (newState === DeferBlockState.Complete && Array.isArray(lDetails[ON_COMPLETE_FNS])) {
+    if (
+      (newState === DeferBlockState.Complete || newState === DeferBlockState.Error) &&
+      Array.isArray(lDetails[ON_COMPLETE_FNS])
+    ) {
       for (const callback of lDetails[ON_COMPLETE_FNS]) {
         callback();
       }

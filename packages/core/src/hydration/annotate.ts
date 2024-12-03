@@ -303,7 +303,6 @@ export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
 
   if (deferBlocks.size > 0) {
     const blocks: {[key: string]: SerializedDeferBlock} = {};
-    // TODO(incremental-hydration): we should probably have an object here instead of a Map?
     for (const [id, info] of deferBlocks.entries()) {
       blocks[id] = info;
     }
@@ -447,11 +446,10 @@ function serializeLContainer(
       }
 
       if (!isHydrateNeverBlock) {
-        // TODO(incremental-hydration): avoid copying of an object here
-        serializedView = {
-          ...serializedView,
-          ...serializeLView(lContainer[i] as LView, parentDeferBlockId, context),
-        };
+        Object.assign(
+          serializedView,
+          serializeLView(lContainer[i] as LView, parentDeferBlockId, context),
+        );
       }
     }
 
