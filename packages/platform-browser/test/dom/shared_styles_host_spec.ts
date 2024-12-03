@@ -61,6 +61,18 @@ describe('SharedStylesHost', () => {
       ssh.addHost(someHost);
       expect(someHost.innerHTML).toEqual('<style nonce="{% nonce %}">a {};</style>');
     });
+
+    it(`should reuse SSR generated element`, () => {
+      const style = doc.createElement('style');
+      style.setAttribute('ng-app-id', 'app-id');
+      style.textContent = 'a {};';
+      doc.head.appendChild(style);
+
+      ssh = new SharedStylesHost(doc, 'app-id');
+      ssh.addStyles(['a {};']);
+      expect(doc.head.innerHTML).toContain('<style ng-style-reused="">a {};</style>');
+      expect(doc.head.innerHTML).not.toContain('ng-app-id');
+    });
   });
 
   describe('external', () => {
@@ -113,6 +125,21 @@ describe('SharedStylesHost', () => {
       expect(someHost.innerHTML).toEqual(
         '<link rel="stylesheet" href="component-1.css?ngcomp=ng-app-c123456789">',
       );
+    });
+
+    it(`should reuse SSR generated element`, () => {
+      const link = doc.createElement('link');
+      link.setAttribute('rel', 'stylesheet');
+      link.setAttribute('href', 'component-1.css');
+      link.setAttribute('ng-app-id', 'app-id');
+      doc.head.appendChild(link);
+
+      ssh = new SharedStylesHost(doc, 'app-id');
+      ssh.addStyles([], ['component-1.css']);
+      expect(doc.head.innerHTML).toContain(
+        '<link rel="stylesheet" href="component-1.css" ng-style-reused="">',
+      );
+      expect(doc.head.innerHTML).not.toContain('ng-app-id');
     });
   });
 });
