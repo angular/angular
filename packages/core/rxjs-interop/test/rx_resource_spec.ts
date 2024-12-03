@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {of, Observable} from 'rxjs';
+import {of, Observable, BehaviorSubject} from 'rxjs';
 import {TestBed} from '@angular/core/testing';
 import {ApplicationRef, Injector, signal} from '@angular/core';
 import {rxResource} from '@angular/core/rxjs-interop';
@@ -54,6 +54,27 @@ describe('rxResource()', () => {
     request.set(2);
     await appRef.whenStable();
     expect(unsub).toBe(true);
+  });
+
+  it('should stream when the loader returns multiple values', async () => {
+    const injector = TestBed.inject(Injector);
+    const appRef = TestBed.inject(ApplicationRef);
+    const response = new BehaviorSubject(1);
+    const res = rxResource({
+      loader: () => response,
+      injector,
+    });
+    await appRef.whenStable();
+    expect(res.value()).toBe(1);
+
+    response.next(2);
+    expect(res.value()).toBe(2);
+
+    response.next(3);
+    expect(res.value()).toBe(3);
+
+    response.error('fail');
+    expect(res.error()).toBe('fail');
   });
 });
 

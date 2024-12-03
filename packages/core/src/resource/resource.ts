@@ -18,6 +18,9 @@ import {
   ResourceLoader,
   Resource,
   ResourceRef,
+  ResourceStreamingLoader,
+  PromiseResourceOptions,
+  StreamingResourceOptions,
 } from './api';
 import {ValueEqualityFn} from '@angular/core/primitives/signals';
 import {Injector} from '../di/injector';
@@ -42,7 +45,7 @@ export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | 
   const request = (options.request ?? (() => null)) as () => R;
   return new ResourceImpl<T | undefined, R>(
     request,
-    options.loader,
+    getLoader(options),
     undefined,
     options.equal ? wrapEqualityFn(options.equal) : undefined,
     options.injector ?? inject(Injector),
@@ -53,10 +56,10 @@ export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | 
  * Internal state of a resource.
  */
 interface ResourceState<T> {
-  status: ResourceStatus;
+  // Error state is defined as Resolved && state.error.
+  status: Exclude<ResourceStatus, ResourceStatus.Error>;
   previousStatus: ResourceStatus;
-  value: T;
-  error: unknown | undefined;
+  stream: Signal<{value: T} | {error: unknown}> | undefined;
 }
 
 /**
@@ -118,14 +121,22 @@ class ResourceImpl<T, R> extends BaseWritableResource<T> implements ResourceRef<
 
   constructor(
     request: () => R,
-    private readonly loaderFn: ResourceLoader<T, R>,
+    private readonly loaderFn: ResourceStreamingLoader<T, R>,
     private readonly defaultValue: T,
     private readonly equal: ValueEqualityFn<T> | undefined,
     injector: Injector,
   ) {
-    // Feed a computed signal for the value to `BaseWritableResource`, which will upgrade it to a
-    // `WritableSignal` that delegates to `ResourceImpl.set`.
-    super(computed(() => this.state().value, {equal}));
+    super(
+      // Feed a computed signal for the value to `BaseWritableResource`, which will upgrade it to a
+      // `WritableSignal` that delegates to `ResourceImpl.set`.
+      computed(
+        () => {
+          const stream = this.state()?.stream?.();
+          return stream && isResolved(stream) ? stream.value : this.defaultValue;
+        },
+        {equal},
+      ),
+    );
     this.pendingTasks = injector.get(PendingTasks);
 
     // Extend `request()` to include a writable reload signal.
@@ -136,7 +147,10 @@ class ResourceImpl<T, R> extends BaseWritableResource<T> implements ResourceRef<
 
     // The main resource state is managed in a `linkedSignal`, which allows the resource to change
     // state instantaneously when the request signal changes.
-    this.state = linkedSignal<ResourceStatus, ResourceState<T>>({
+    this.state = linkedSignal<
+      ResourceStatus.Idle | ResourceStatus.Loading | ResourceStatus.Reloading,
+      ResourceState<T>
+    >({
       // We use the request (as well as its reload signal) to derive the initial status of the
       // resource (Idle, Loading, or Reloading) in response to request changes. From this initial
       // status, the resource's effect will then trigger the loader and update to a Resolved or
@@ -154,14 +168,11 @@ class ResourceImpl<T, R> extends BaseWritableResource<T> implements ResourceRef<
           status,
           // When the state of the resource changes due to the request, remember the previous status
           // for the loader to consider.
-          previousStatus: previous?.value.status ?? ResourceStatus.Idle,
+          previousStatus: computeStatusOfState(previous?.value),
           // In `Reloading` state, we keep the previous value if there is one, since the identity of
           // the request hasn't changed. Otherwise, we switch back to the default value.
-          value:
-            previous && status === ResourceStatus.Reloading
-              ? previous.value.value
-              : this.defaultValue,
-          error: undefined,
+          stream:
+            previous && status === ResourceStatus.Reloading ? previous.value.stream : undefined,
         }) satisfies ResourceState<T>,
     });
 
@@ -174,8 +185,17 @@ class ResourceImpl<T, R> extends BaseWritableResource<T> implements ResourceRef<
     injector.get(DestroyRef).onDestroy(() => this.destroy());
   }
 
-  override readonly status = computed(() => this.state().status);
-  override readonly error = computed(() => this.state().error);
+  override readonly status = computed(() => {
+    if (this.state().status !== ResourceStatus.Resolved) {
+      return this.state().status;
+    }
+    return isResolved(this.state().stream!()) ? ResourceStatus.Resolved : ResourceStatus.Error;
+  });
+
+  override readonly error = computed(() => {
+    const stream = this.state().stream?.();
+    return stream && !isResolved(stream) ? stream.error : undefined;
+  });
 
   /**
    * Called either directly via `WritableResource.set` or via `.value.set()`.
@@ -185,8 +205,8 @@ class ResourceImpl<T, R> extends BaseWritableResource<T> implements ResourceRef<
       return;
     }
 
-    const currentState = untracked(this.state);
-    if (this.equal ? this.equal(currentState.value, value) : currentState.value === value) {
+    const current = untracked(this.value);
+    if (this.equal ? this.equal(current, value) : current === value) {
       return;
     }
 
@@ -194,8 +214,7 @@ class ResourceImpl<T, R> extends BaseWritableResource<T> implements ResourceRef<
     this.state.set({
       status: ResourceStatus.Local,
       previousStatus: ResourceStatus.Local,
-      value,
-      error: undefined,
+      stream: signal({value}),
     });
 
     // We're departing from whatever state the resource was in previously, so cancel any in-progress
@@ -228,8 +247,7 @@ class ResourceImpl<T, R> extends BaseWritableResource<T> implements ResourceRef<
     this.state.set({
       status: ResourceStatus.Idle,
       previousStatus: ResourceStatus.Idle,
-      value: this.defaultValue,
-      error: undefined,
+      stream: undefined,
     });
   }
 
@@ -268,51 +286,48 @@ class ResourceImpl<T, R> extends BaseWritableResource<T> implements ResourceRef<
     // After the loading operation is cancelled, `this.resolvePendingTask` no longer represents this
     // particular task, but this `await` may eventually resolve/reject. Thus, when we cancel in
     // response to (1) below, we need to cancel the locally saved task.
-    const resolvePendingTask = (this.resolvePendingTask = this.pendingTasks.add());
+    let resolvePendingTask: (() => void) | undefined = (this.resolvePendingTask =
+      this.pendingTasks.add());
 
     const {signal: abortSignal} = (this.pendingController = new AbortController());
+
     try {
       // The actual loading is run through `untracked` - only the request side of `resource` is
       // reactive. This avoids any confusion with signals tracking or not tracking depending on
       // which side of the `await` they are.
-      const result = await untracked(() =>
+      const stream = await untracked(() =>
         this.loaderFn({
-          abortSignal,
           request: request as Exclude<R, undefined>,
+          abortSignal,
           previous: {
             status: previousStatus,
           },
         }),
       );
+
       if (abortSignal.aborted) {
-        // This load operation was cancelled.
         return;
       }
-      // Success :)
+
       this.state.set({
         status: ResourceStatus.Resolved,
         previousStatus: ResourceStatus.Resolved,
-        value: result,
-        error: undefined,
+        stream,
       });
     } catch (err) {
       if (abortSignal.aborted) {
-        // This load operation was cancelled.
         return;
       }
-      // Fail :(
+
       this.state.set({
-        status: ResourceStatus.Error,
+        status: ResourceStatus.Resolved,
         previousStatus: ResourceStatus.Error,
-        value: this.defaultValue,
-        error: err,
+        stream: signal({error: err}),
       });
     } finally {
-      // Resolve the pending task now that loading is done.
-      resolvePendingTask();
-
-      // Free the abort controller to drop any registered 'abort' callbacks.
-      this.pendingController = undefined;
+      // Resolve the pending task now that the resource has a value.
+      resolvePendingTask?.();
+      resolvePendingTask = undefined;
     }
   }
 
@@ -331,4 +346,39 @@ class ResourceImpl<T, R> extends BaseWritableResource<T> implements ResourceRef<
  */
 function wrapEqualityFn<T>(equal: ValueEqualityFn<T>): ValueEqualityFn<T | undefined> {
   return (a, b) => (a === undefined || b === undefined ? a === b : equal(a, b));
+}
+
+function getLoader<T, R>(options: ResourceOptions<T, R>): ResourceStreamingLoader<T, R> {
+  if (isStreamingResourceOptions(options)) {
+    return options.stream;
+  }
+
+  return async (params) => {
+    try {
+      return signal({value: await options.loader(params)});
+    } catch (err) {
+      return signal({error: err});
+    }
+  };
+}
+
+function isStreamingResourceOptions<T, R>(
+  options: ResourceOptions<T, R>,
+): options is StreamingResourceOptions<T, R> {
+  return !!(options as StreamingResourceOptions<T, R>).stream;
+}
+
+function computeStatusOfState(state: ResourceState<unknown> | undefined): ResourceStatus {
+  switch (state?.status) {
+    case undefined:
+      return ResourceStatus.Idle;
+    case ResourceStatus.Resolved:
+      return isResolved(untracked(state.stream!)) ? ResourceStatus.Resolved : ResourceStatus.Error;
+    default:
+      return state!.status;
+  }
+}
+
+function isResolved<T>(state: {value: T} | {error: unknown}): state is {value: T} {
+  return (state as {error: unknown}).error === undefined;
 }
