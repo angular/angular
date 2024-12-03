@@ -53,7 +53,7 @@ export abstract class ViewRef extends ChangeDetectorRef {
  * The following template breaks down into two separate `TemplateRef` instances,
  * an outer one and an inner one.
  *
- * ```
+ * ```html
  * Count: {{items.length}}
  * <ul>
  *   <li *ngFor="let  item of items">{{item}}</li>
@@ -62,7 +62,7 @@ export abstract class ViewRef extends ChangeDetectorRef {
  *
  * This is the outer `TemplateRef`:
  *
- * ```
+ * ```html
  * Count: {{items.length}}
  * <ul>
  *   <ng-template ngFor let-item [ngForOf]="items"></ng-template>
@@ -71,13 +71,13 @@ export abstract class ViewRef extends ChangeDetectorRef {
  *
  * This is the inner `TemplateRef`:
  *
- * ```
+ * ```html
  *   <li>{{item}}</li>
  * ```
  *
  * The outer and inner `TemplateRef` instances are assembled into views as follows:
  *
- * ```
+ * ```html
  * <!-- ViewRef: outer-0 -->
  * Count: 2
  * <ul>

@@ -107,7 +107,7 @@ export type HttpHandlerFn = (req: HttpRequest<unknown>) => Observable<HttpEvent<
  *
  * @usageNotes
  * Here is a noop interceptor that passes the request through without modifying it:
- * ```typescript
+ * ```ts
  * export const noopInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, next:
  * HttpHandlerFn) => {
  *   return next(modifiedReq);
@@ -118,7 +118,7 @@ export type HttpHandlerFn = (req: HttpRequest<unknown>) => Observable<HttpEvent<
  * `next()` handler function.
  *
  * Here is a basic interceptor that adds a bearer token to the headers
- * ```typescript
+ * ```ts
  * export const authenticationInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, next:
  * HttpHandlerFn) => {
  *    const userToken = 'MY_TOKEN'; const modifiedReq = req.clone({

@@ -12,7 +12,7 @@
  *
  * Example:
  *
- * ```
+ * ```ts
  * it('...', waitForAsync(inject([AClass], (object) => {
  *   object.doSomething.then(() => {
  *     expect(...);

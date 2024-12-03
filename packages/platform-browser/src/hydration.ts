@@ -109,7 +109,7 @@ export function withI18nSupport(): HydrationFeature<HydrationFeatureKind.I18nSup
  *
  * Basic example of how you can enable event replay in your application when
  * `bootstrapApplication` function is used:
- * ```
+ * ```ts
  * bootstrapApplication(AppComponent, {
  *   providers: [provideClientHydration(withEventReplay())]
  * });
@@ -128,7 +128,7 @@ export function withEventReplay(): HydrationFeature<HydrationFeatureKind.EventRe
  *
  * Basic example of how you can enable incremental hydration in your application when
  * the `bootstrapApplication` function is used:
- * ```
+ * ```ts
  * bootstrapApplication(AppComponent, {
  *   providers: [provideClientHydration(withIncrementalHydration())]
  * });
@@ -194,7 +194,7 @@ function provideZoneJsCompatibilityDetector(): Provider[] {
  *
  * Basic example of how you can enable hydration in your application when
  * `bootstrapApplication` function is used:
- * ```
+ * ```ts
  * bootstrapApplication(AppComponent, {
  *   providers: [provideClientHydration()]
  * });
@@ -202,7 +202,7 @@ function provideZoneJsCompatibilityDetector(): Provider[] {
  *
  * Alternatively if you are using NgModules, you would add `provideClientHydration`
  * to your root app module's provider list.
- * ```
+ * ```ts
  * @NgModule({
  *   declarations: [RootCmp],
  *   bootstrap: [RootCmp],

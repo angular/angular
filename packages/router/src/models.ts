@@ -155,7 +155,7 @@ export type UrlMatchResult = {
  *
  * The following example implementation matches HTML files.
  *
- * ```
+ * ```ts
  * export function htmlFiles(url: UrlSegment[]) {
  *   return url.length === 1 && url[0].path.endsWith('.html') ? ({consumed: url}) : null;
  * }
@@ -226,14 +226,14 @@ export interface DefaultExport<T> {
  *
  * For example:
  *
- * ```
+ * ```ts
  * [{
  *   path: 'lazy',
  *   loadChildren: () => import('./lazy-route/lazy.module').then(mod => mod.LazyModule),
  * }];
  * ```
  * or
- * ```
+ * ```ts
  * [{
  *   path: 'lazy',
  *   loadChildren: () => import('./lazy-route/lazy.routes').then(mod => mod.ROUTES),
@@ -241,7 +241,7 @@ export interface DefaultExport<T> {
  * ```
  *
  * If the lazy-loaded routes are exported via a `default` export, the `.then` can be omitted:
- * ```
+ * ```ts
  * [{
  *   path: 'lazy',
  *   loadChildren: () => import('./lazy-route/lazy.routes'),
@@ -351,7 +351,7 @@ export type RunGuardsAndResolvers =
  * `/team/11/user/bob`, the router creates the 'Team' component
  * with the 'User' child component in it.
  *
- * ```
+ * ```ts
  * [{
  *   path: 'team/:id',
  *  component: Team,
@@ -368,7 +368,7 @@ export type RunGuardsAndResolvers =
  * When navigating to `/team/11(aux:chat/jim)`, the router creates the 'Team' component next to
  * the 'Chat' component. The 'Chat' component is placed into the 'aux' outlet.
  *
- * ```
+ * ```ts
  * [{
  *   path: 'team/:id',
  *   component: Team
@@ -384,7 +384,7 @@ export type RunGuardsAndResolvers =
  * The following route uses wild-card notation to specify a component
  * that is always instantiated regardless of where you navigate to.
  *
- * ```
+ * ```ts
  * [{
  *   path: '**',
  *   component: WildcardComponent
@@ -400,7 +400,7 @@ export type RunGuardsAndResolvers =
  * '/team/11/legacy/user/jim' to '/team/11/user/jim', and then instantiates
  * the Team component with the User child component in it.
  *
- * ```
+ * ```ts
  * [{
  *   path: 'team/:id',
  *   component: Team,
@@ -426,7 +426,7 @@ export type RunGuardsAndResolvers =
  * In the following configuration, when navigating to
  * `/team/11`, the router instantiates the 'AllUsers' component.
  *
- * ```
+ * ```ts
  * [{
  *   path: 'team/:id',
  *   component: Team,
@@ -446,7 +446,7 @@ export type RunGuardsAndResolvers =
  *
  * Note that an empty path route inherits its parent's parameters and data.
  *
- * ```
+ * ```ts
  * [{
  *   path: 'team/:id',
  *   component: Team,
@@ -467,7 +467,7 @@ export type RunGuardsAndResolvers =
  * checks URL elements from the left to see if the URL matches a specified path.
  * For example, '/team/11/user' matches 'team/:id'.
  *
- * ```
+ * ```ts
  * [{
  *   path: '',
  *   pathMatch: 'prefix', //default
@@ -487,7 +487,7 @@ export type RunGuardsAndResolvers =
  * In the following example, supplying the 'full' `pathMatch` strategy ensures
  * that the router applies the redirect if and only if navigating to '/'.
  *
- * ```
+ * ```ts
  * [{
  *   path: '',
  *   pathMatch: 'full',
@@ -510,7 +510,7 @@ export type RunGuardsAndResolvers =
  * the main child and aux child components next to each other.
  * For this to work, the application component must have the primary and aux outlets defined.
  *
- * ```
+ * ```ts
  * [{
  *    path: 'parent/:id',
  *    children: [
@@ -528,7 +528,7 @@ export type RunGuardsAndResolvers =
  * With this configuration, navigating to '/parent/10' creates
  * the main child and aux components.
  *
- * ```
+ * ```ts
  * [{
  *    path: 'parent/:id',
  *    children: [
@@ -548,7 +548,7 @@ export type RunGuardsAndResolvers =
  * Given the following example route, the router will lazy load
  * the associated module on demand using the browser native import system.
  *
- * ```
+ * ```ts
  * [{
  *   path: 'lazy',
  *   loadChildren: () => import('./lazy-route/lazy.module').then(mod => mod.LazyModule),
@@ -763,7 +763,7 @@ export interface LoadedRouterConfig {
  * The following example implements a `CanActivate` function that checks whether the
  * current user has permission to activate the requested route.
  *
- * ```
+ * ```ts
  * class UserToken {}
  * class Permissions {
  *   canActivate(): boolean {
@@ -787,7 +787,7 @@ export interface LoadedRouterConfig {
  * Here, the defined guard function is provided as part of the `Route` object
  * in the router configuration:
  *
- * ```
+ * ```ts
  * @NgModule({
  *   imports: [
  *     RouterModule.forRoot([
@@ -877,7 +877,7 @@ export type CanActivateFn = (
  * The following example implements a `CanActivateChild` function that checks whether the
  * current user has permission to activate the requested child route.
  *
- * ```
+ * ```ts
  * class UserToken {}
  * class Permissions {
  *   canActivate(user: UserToken, id: string): boolean {
@@ -901,7 +901,7 @@ export type CanActivateFn = (
  * Here, the defined guard function is provided as part of the `Route` object
  * in the router configuration:
  *
- * ```
+ * ```ts
  * @NgModule({
  *   imports: [
  *     RouterModule.forRoot([
@@ -962,7 +962,7 @@ export type CanActivateChildFn = (
  * The following example implements a `CanDeactivate` function that checks whether the
  * current user has permission to deactivate the requested route.
  *
- * ```
+ * ```ts
  * class UserToken {}
  * class Permissions {
  *   canDeactivate(user: UserToken, id: string): boolean {
@@ -1050,7 +1050,7 @@ export type CanDeactivateFn<T> = (
  * current user has permission to access the users page.
  *
  *
- * ```
+ * ```ts
  * class UserToken {}
  * class Permissions {
  *   canAccess(user: UserToken, route: Route, segments: UrlSegment[]): boolean {
@@ -1134,7 +1134,7 @@ export type CanMatchFn = (route: Route, segments: UrlSegment[]) => MaybeAsync<Gu
  * The following example implements a `resolve()` method that retrieves the data
  * needed to activate the requested route.
  *
- * ```
+ * ```ts
  * @Injectable({ providedIn: 'root' })
  * export class HeroResolver implements Resolve<Hero> {
  *   constructor(private service: HeroService) {}
@@ -1172,7 +1172,7 @@ export type CanMatchFn = (route: Route, segments: UrlSegment[]) => MaybeAsync<Gu
  *
  * And you can access to your resolved data from `HeroComponent`:
  *
- * ```
+ * ```ts
  * @Component({
  *  selector: "app-hero",
  *  templateUrl: "hero.component.html",
@@ -1196,7 +1196,7 @@ export type CanMatchFn = (route: Route, segments: UrlSegment[]) => MaybeAsync<Gu
  * all guards have run and succeeded.
  * For example, consider the following route configuration:
  *
- * ```
+ * ```ts
  * {
  *  path: 'base'
  *  canActivate: [BaseGuard],
@@ -1305,7 +1305,7 @@ export interface Resolve<T> {
  * all guards have run and succeeded.
  * For example, consider the following route configuration:
  *
- * ```
+ * ```ts
  * {
  *  path: 'base'
  *  canActivate: [baseGuard],
@@ -1342,7 +1342,7 @@ export type ResolveFn<T> = (
  * current user has permission to load requested child routes.
  *
  *
- * ```
+ * ```ts
  * class UserToken {}
  * class Permissions {
  *   canLoadChildren(user: UserToken, id: string, segments: UrlSegment[]): boolean {

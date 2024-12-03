@@ -27,7 +27,7 @@ import {MockRendererFactory} from './mock_renderer_factory';
 /**
  * Setups a simple `LView` so that it is possible to do unit tests on instructions.
  *
- * ```
+ * ```ts
  * describe('styling', () => {
  *  beforeEach(enterViewWithOneDiv);
  *  afterEach(leaveView);

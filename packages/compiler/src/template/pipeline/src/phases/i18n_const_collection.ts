@@ -319,7 +319,7 @@ function addSubMessageParams(
 /**
  * Generate statements that define a given translation message.
  *
- * ```
+ * ```ts
  * var I18N_1;
  * if (typeof ngI18nClosureMode !== undefined && ngI18nClosureMode) {
  *     var MSG_EXTERNAL_XXX = goog.getMsg(
@@ -375,7 +375,7 @@ function getTranslationDeclStmts(
  * Create the expression that will be used to guard the closure mode block
  * It is equivalent to:
  *
- * ```
+ * ```ts
  * typeof ngI18nClosureMode !== undefined && ngI18nClosureMode
  * ```
  */

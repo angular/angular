@@ -68,7 +68,7 @@ export type HttpTransferCacheOptions = {
  *
  * When the same API endpoint is accessed via `http://internal-domain.com:8080` on the server and
  * via `https://external-domain.com` on the client, you can use the following configuration:
- * ```typescript
+ * ```ts
  * // in app.server.config.ts
  * {
  *     provide: HTTP_TRANSFER_CACHE_ORIGIN_MAP,

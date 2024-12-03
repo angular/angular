@@ -55,7 +55,7 @@ export function getGlobalLocale(): string {
  * @usageNotes
  * ### Example
  *
- * ```typescript
+ * ```ts
  * import { LOCALE_ID } from '@angular/core';
  * import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
  * import { AppModule } from './app/app.module';
@@ -100,7 +100,7 @@ export const LOCALE_ID: InjectionToken<string> = new InjectionToken(ngDevMode ? 
  * @usageNotes
  * ### Example
  *
- * ```typescript
+ * ```ts
  * import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
  * import { AppModule } from './app/app.module';
  *
@@ -128,7 +128,7 @@ export const DEFAULT_CURRENCY_CODE = new InjectionToken<string>(
  * @usageNotes
  * ### Example
  *
- * ```typescript
+ * ```ts
  * import { TRANSLATIONS } from '@angular/core';
  * import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
  * import { AppModule } from './app/app.module';
@@ -154,7 +154,7 @@ export const TRANSLATIONS = new InjectionToken<string>(ngDevMode ? 'Translations
  * @usageNotes
  * ### Example
  *
- * ```typescript
+ * ```ts
  * import { TRANSLATIONS_FORMAT } from '@angular/core';
  * import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
  * import { AppModule } from './app/app.module';
@@ -181,7 +181,7 @@ export const TRANSLATIONS_FORMAT = new InjectionToken<string>(
  *
  * @usageNotes
  * ### Example
- * ```typescript
+ * ```ts
  * import { MissingTranslationStrategy } from '@angular/core';
  * import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
  * import { AppModule } from './app/app.module';

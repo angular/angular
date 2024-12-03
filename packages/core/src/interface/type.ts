@@ -43,18 +43,18 @@ export interface Type<T> extends Function {
  *
  * USAGE:
  * Given:
- * ```
+ * ```ts
  * interface Person {readonly name: string}
  * ```
  *
  * We would like to get a read/write version of `Person`.
- * ```
+ * ```ts
  * const WritablePerson = Writable<Person>;
  * ```
  *
  * The result is that you can do:
  *
- * ```
+ * ```ts
  * const readonlyPerson: Person = {name: 'Marry'};
  * readonlyPerson.name = 'John'; // TypeError
  * (readonlyPerson as WritablePerson).name = 'John'; // OK

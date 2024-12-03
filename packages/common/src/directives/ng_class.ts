@@ -42,7 +42,7 @@ interface CssClassState {
  * @ngModule CommonModule
  *
  * @usageNotes
- * ```
+ * ```html
  *     <some-element [ngClass]="'first second'">...</some-element>
  *
  *     <some-element [ngClass]="['first', 'second']">...</some-element>

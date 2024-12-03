@@ -75,7 +75,7 @@ export {ApplicationConfig};
  * The root component passed into this function *must* be a standalone one (should have the
  * `standalone: true` flag in the `@Component` decorator config).
  *
- * ```typescript
+ * ```angular-ts
  * @Component({
  *   standalone: true,
  *   template: 'Hello world!'
@@ -88,7 +88,7 @@ export {ApplicationConfig};
  * You can add the list of providers that should be available in the application injector by
  * specifying the `providers` field in an object passed as the second argument:
  *
- * ```typescript
+ * ```ts
  * await bootstrapApplication(RootComponent, {
  *   providers: [
  *     {provide: BACKEND_URL, useValue: 'https://yourdomain.com/api'}
@@ -99,7 +99,7 @@ export {ApplicationConfig};
  * The `importProvidersFrom` helper method can be used to collect all providers from any
  * existing NgModule (and transitively from all NgModules that it imports):
  *
- * ```typescript
+ * ```ts
  * await bootstrapApplication(RootComponent, {
  *   providers: [
  *     importProvidersFrom(SomeNgModule)
@@ -112,7 +112,7 @@ export {ApplicationConfig};
  * providers using `provideProtractorTestingSupport()` function and adding them into the `providers`
  * array, for example:
  *
- * ```typescript
+ * ```ts
  * import {provideProtractorTestingSupport} from '@angular/platform-browser';
  *
  * await bootstrapApplication(RootComponent, {providers: [provideProtractorTestingSupport()]});

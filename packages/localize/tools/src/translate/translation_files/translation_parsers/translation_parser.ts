@@ -50,7 +50,7 @@ export interface ParsedTranslationBundle {
  *
  * Example usage:
  *
- * ```
+ * ```ts
  * const parser: TranslationParser = getParser();
  * const analysis = parser.analyze(filePath, content);
  * if (analysis.canParse) {

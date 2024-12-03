@@ -95,7 +95,7 @@ export interface ViewChildFunction {
  * Create a child query in your component by declaring a
  * class field and initializing it with the `viewChild()` function.
  *
- * ```ts
+ * ```angular-ts
  * @Component({template: '<div #el></div><my-component #cmp />'})
  * export class TestComponent {
  *   divEl = viewChild<ElementRef>('el');                   // Signal<ElementRef|undefined>

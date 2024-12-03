@@ -30,7 +30,7 @@ import {
  * by the local template `let` declarations.
  *
  * @usageNotes
- * ```
+ * ```html
  * <ng-container *ngTemplateOutlet="templateRefExp; context: contextExp"></ng-container>
  * ```
  *

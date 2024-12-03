@@ -70,7 +70,7 @@ type ReferenceMetadata = Map<
  *
  * E.g. consider the following snippet:
  *
- * ```
+ * ```ts
  * someMethod() {
  *   if (this.bla) {
  *     this.bla.charAt(0);

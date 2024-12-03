@@ -39,7 +39,7 @@ let ngZoneInstanceId = 0;
  * @usageNotes
  * ### Example
  *
- * ```
+ * ```ts
  * import {Component, NgZone} from '@angular/core';
  * import {NgIf} from '@angular/common';
  *

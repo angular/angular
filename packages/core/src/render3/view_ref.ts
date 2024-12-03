@@ -159,7 +159,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
    * @usageNotes
    * ### Example
    *
-   * ```typescript
+   * ```ts
    * @Component({
    *   selector: 'app-root',
    *   template: `Number of ticks: {{numberOfTicks}}`
@@ -205,7 +205,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
    * we want to check and update the list every five seconds. We can do that by detaching
    * the component's change detector and doing a local check every five seconds.
    *
-   * ```typescript
+   * ```ts
    * class DataProvider {
    *   // in a real application the returned data will be different every time
    *   get data() {
@@ -258,7 +258,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
    * its change detector from the main change detector tree when the component's live property
    * is set to false.
    *
-   * ```typescript
+   * ```ts
    * class DataProvider {
    *   data = 1;
    *

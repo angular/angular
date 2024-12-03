@@ -21,7 +21,7 @@ interface CombineCandidate {
  * Finds class property declarations without initializers whose constructor-based initialization
  * can be inlined into the declaration spot after migrating to `inject`. For example:
  *
- * ```
+ * ```ts
  * private foo: number;
  *
  * constructor(private service: MyService) {
@@ -103,7 +103,7 @@ export function findUninitializedPropertiesToCombine(
  * The internal-specific migration will combine such properties which will result in a compilation
  * error, for example:
  *
- * ```
+ * ```ts
  * class MyClass {
  *   foo: Foo;
  *   bar: Bar;
@@ -117,7 +117,7 @@ export function findUninitializedPropertiesToCombine(
  *
  * Will become:
  *
- * ```
+ * ```ts
  * class MyClass {
  *   foo: Foo = this.bar.getFoo();
  *   bar: Bar = inject(Bar);
@@ -179,7 +179,7 @@ export function shouldCombineInInitializationOrder(
 /**
  * Finds the expressions from the constructor that initialize class members, for example:
  *
- * ```
+ * ```ts
  * private foo: number;
  *
  * constructor() {

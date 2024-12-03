@@ -31,7 +31,7 @@ export abstract class DestroyRef {
    *
    * @usageNotes
    * ### Example
-   * ```typescript
+   * ```ts
    * const destroyRef = inject(DestroyRef);
    *
    * // register a destroy callback

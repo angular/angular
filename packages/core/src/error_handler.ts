@@ -19,7 +19,7 @@ import {NgZone} from './zone';
  * @usageNotes
  * ### Example
  *
- * ```
+ * ```ts
  * class MyErrorHandler implements ErrorHandler {
  *   handleError(error) {
  *     // do something with the exception

@@ -89,7 +89,7 @@ function makeHttpFeature<KindT extends HttpFeatureKind>(
  * Server-Side Rendering for better performance and compatibility. To enable `fetch`, add
  * `withFetch()` feature to the `provideHttpClient()` call at the root of the application:
  *
- * ```
+ * ```ts
  * provideHttpClient(withFetch());
  * ```
  *
