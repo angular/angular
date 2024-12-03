@@ -185,6 +185,13 @@ export interface AttributeDecorator {
 }
 
 // @public
+export interface BaseResourceOptions<T, R> {
+    equal?: ValueEqualityFn<T>;
+    injector?: Injector;
+    request?: () => R;
+}
+
+// @public
 export function booleanAttribute(value: unknown): boolean;
 
 // @public
@@ -1437,6 +1444,11 @@ export class PlatformRef {
 export type Predicate<T> = (value: T) => boolean;
 
 // @public
+export interface PromiseResourceOptions<T, R> extends BaseResourceOptions<T, R> {
+    loader: ResourceLoader<T, R>;
+}
+
+// @public
 export function provideAppInitializer(initializerFn: () => Observable<unknown> | Promise<unknown> | void): EnvironmentProviders;
 
 // @public
@@ -1610,13 +1622,8 @@ export interface ResourceLoaderParams<R> {
     request: Exclude<NoInfer<R>, undefined>;
 }
 
-// @public
-export interface ResourceOptions<T, R> {
-    equal?: ValueEqualityFn<T>;
-    injector?: Injector;
-    loader: ResourceLoader<T, R>;
-    request?: () => R;
-}
+// @public (undocumented)
+export type ResourceOptions<T, R> = PromiseResourceOptions<T, R> | StreamingResourceOptions<T, R>;
 
 // @public
 export interface ResourceRef<T> extends WritableResource<T> {
@@ -1632,6 +1639,13 @@ export enum ResourceStatus {
     Reloading = 3,
     Resolved = 4
 }
+
+// @public
+export type ResourceStreamingLoader<T, R> = (param: ResourceLoaderParams<R>) => PromiseLike<Signal<{
+    value: T;
+} | {
+    error: unknown;
+}>>;
 
 // @public
 export const RESPONSE_INIT: InjectionToken<ResponseInit | null>;
@@ -1746,6 +1760,11 @@ export interface StaticClassSansProvider {
 
 // @public
 export type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvider | ConstructorProvider | FactoryProvider | any[];
+
+// @public
+export interface StreamingResourceOptions<T, R> extends BaseResourceOptions<T, R> {
+    stream: ResourceStreamingLoader<T, R>;
+}
 
 // @public
 export abstract class TemplateRef<C> {
