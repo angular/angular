@@ -28,9 +28,9 @@ type FileType = 'ts' | 'js' | 'html';
 type RegionStartToken = {name: string; startIdx: number};
 
 const MD_CTYPE_MAP: {[key in FileType]: string} = {
-  'ts': 'typescript',
+  'ts': 'angular-ts',
   'js': 'javascript',
-  'html': 'html',
+  'html': 'angular-html',
 };
 
 /**

@@ -11,8 +11,8 @@ import {interpolateCodeExamples} from '../interpolate_code_examples';
 import {DocEntry} from '@angular/compiler-cli';
 import {mockReadFileSync} from './fake-examples';
 
-const tsMdBlock = (code: string) => '```typescript\n' + code + '\n```';
-const htmlMdBlock = (code: string) => '```html\n' + code + '\n```';
+const tsMdBlock = (code: string) => '```angular-ts\n' + code + '\n```';
+const htmlMdBlock = (code: string) => '```angular-html\n' + code + '\n```';
 
 const entriesBuilder = (comment: string): DocEntry[] => [
   {jsdocTags: [], rawComment: comment} as unknown as DocEntry,
