@@ -1,3 +1,8 @@
+<a name="19.0.3"></a>
+# 19.0.3 (2024-12-04)
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.0.2"></a>
 # 19.0.2 (2024-12-04)
 ### compiler-cli
