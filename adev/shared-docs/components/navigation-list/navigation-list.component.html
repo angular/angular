@@ -8,7 +8,7 @@
         @if (item.path) {
           @if (item.isExternal) {
             <a [href]="item.path" target="_blank">
-              <span [class.docs-external-link]="item.isExternal">{{ item.label }}</span>
+              <span [class.docs-external-link]="item.isExternal" class="docs-faceted-list-item-text">{{ item.label }}</span>
               @if (item.children && item.level! > 1 && !item.isExpanded) {
                 <docs-icon>chevron_right</docs-icon>
               }
@@ -25,8 +25,8 @@
               }"
               routerLinkActive="docs-faceted-list-item-active"
               (click)="emitClickOnLink()"
-            >
-              <span>{{item.label}}</span>
+              >
+              <span class="docs-faceted-list-item-text">{{item.label}}</span>
               @if (item.children && !item.isExpanded) {
                 <docs-icon>chevron_right</docs-icon>
               }
@@ -36,7 +36,7 @@
           <!-- Nav Section Header -->
           @if (item.level !== collapsableLevel() && item.level !== expandableLevel()) {
             <div class="docs-secondary-nav-header">
-              <span>{{item.label}}</span>
+              <span class="docs-faceted-list-item-text">{{item.label}}</span>
             </div>
           }
 
@@ -54,13 +54,11 @@
               [class.docs-expanded-button]="item.children && item.level == collapsableLevel()"
               [class.docs-not-expanded-button]="item.children && item.level === expandableLevel()"
               [class.docs-nav-item-has-icon]="
-              item.children && item.level === expandableLevel() && !item.isExpanded
-            "
-            >
+              item.children && item.level === expandableLevel() && !item.isExpanded">
               @if (item.children && item.level === collapsableLevel()) {
                 <docs-icon>arrow_back</docs-icon>
               }
-              <span>{{ item.label }}</span>
+              <span class="docs-faceted-list-item-text">{{ item.label }}</span>
             </button>
           }
         }
