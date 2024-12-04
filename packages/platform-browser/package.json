@@ -15,11 +15,6 @@
     "@angular/core": "0.0.0-PLACEHOLDER",
     "@angular/common": "0.0.0-PLACEHOLDER"
   },
-  "peerDependenciesMeta": {
-    "@angular/animations": {
-      "optional": true
-    }
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.git",
