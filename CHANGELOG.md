@@ -1,3 +1,29 @@
+<a name="19.0.2"></a>
+# 19.0.2 (2024-12-04)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9f99196d23](https://github.com/angular/angular/commit/9f99196d239479bcba0b42a18a5155ed5a1764ff) | fix | account for multiple generated namespace imports in HMR ([#58924](https://github.com/angular/angular/pull/58924)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4792db9a6d](https://github.com/angular/angular/commit/4792db9a6d3a7dc076c9b200cd31a53a4fd30683) | fix | Explicitly manage TracingSnapshot lifecycle and dispose of it once it's been used. ([#58929](https://github.com/angular/angular/pull/58929)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7b5bacc228](https://github.com/angular/angular/commit/7b5bacc2285803e6ac9691c2dae2361ddca9da9a) | fix | class content being deleted in some edge cases ([#58959](https://github.com/angular/angular/pull/58959)) |
+| [d1cbdd6acb](https://github.com/angular/angular/commit/d1cbdd6acb228773e0fb33958978a14e12be178f) | fix | correctly strip away parameters surrounded by comments in inject migration ([#58959](https://github.com/angular/angular/pull/58959)) |
+| [e17ff71c31](https://github.com/angular/angular/commit/e17ff71c318a1b32d5207b7516856f330f2bcf5a) | fix | don't migrate classes with parameters that can't be injected ([#58959](https://github.com/angular/angular/pull/58959)) |
+| [7c5f990001](https://github.com/angular/angular/commit/7c5f990001c4aac9f48c5461421579c398295356) | fix | inject migration aggressively removing imports ([#58959](https://github.com/angular/angular/pull/58959)) |
+| [4392ccedf9](https://github.com/angular/angular/commit/4392ccedf997e79486af7ad60172eea98ed3351f) | fix | inject migration dropping code if everything except super is removed ([#58959](https://github.com/angular/angular/pull/58959)) |
+| [9cbebc6dda](https://github.com/angular/angular/commit/9cbebc6dda89d2fdfc52799aef1ea895dcac2d00) | fix | preserve type literals and tuples in inject migrations ([#58959](https://github.com/angular/angular/pull/58959)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f3c388ecda](https://github.com/angular/angular/commit/f3c388ecda5e836946031a554827cdaee9801734) | fix | remove peer dependency on animations ([#58997](https://github.com/angular/angular/pull/58997)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.0.1"></a>
 # 19.0.1 (2024-11-26)
 ### compiler-cli
