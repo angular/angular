@@ -276,7 +276,14 @@ export class HttpInterceptorHandler extends HttpHandler {
     // a warning otherwise.
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && !fetchBackendWarningDisplayed) {
       const isServer = isPlatformServer(injector.get(PLATFORM_ID));
-      if (isServer && !(this.backend instanceof FetchBackend)) {
+
+      // This flag is necessary because provideHttpClientTesting() overrides the backend
+      // even if `withFetch()` is used within the test. When the testing HTTP backend is provided,
+      // no HTTP calls are actually performed during the test, so producing a warning would be
+      // misleading.
+      const isTestingBackend = (this.backend as any).isTestingBackend;
+
+      if (isServer && !(this.backend instanceof FetchBackend) && !isTestingBackend) {
         fetchBackendWarningDisplayed = true;
         injector
           .get(Console)

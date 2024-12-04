@@ -32,6 +32,11 @@ export class HttpClientTestingBackend implements HttpBackend, HttpTestingControl
   private open: TestRequest[] = [];
 
   /**
+   * Used when checking if we need to throw the NOT_USING_FETCH_BACKEND_IN_SSR error
+   */
+  private isTestingBackend = true;
+
+  /**
    * Handle an incoming request by queueing it in the list of open requests.
    */
   handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
