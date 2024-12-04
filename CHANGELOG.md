@@ -1,3 +1,30 @@
+<a name="19.1.0-next.1"></a>
+# 19.1.0-next.1 (2024-12-04)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f280467398](https://github.com/angular/angular/commit/f280467398c6980878b5e755a78606251814447b) | fix | account for multiple generated namespace imports in HMR ([#58924](https://github.com/angular/angular/pull/58924)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e894a5daea](https://github.com/angular/angular/commit/e894a5daea401b4e1173b0e66557ae40140eb9a0) | feat | set kind field on template and effect nodes ([#58865](https://github.com/angular/angular/pull/58865)) |
+| [3b765367f3](https://github.com/angular/angular/commit/3b765367f31b6d1bb32406505f18151acdf1f2b2) | fix | Explicitly manage TracingSnapshot lifecycle and dispose of it once it's been used. ([#58929](https://github.com/angular/angular/pull/58929)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e31e52e177](https://github.com/angular/angular/commit/e31e52e1771ea565a6869b4ed252d6ff7097d4ad) | fix | class content being deleted in some edge cases ([#58959](https://github.com/angular/angular/pull/58959)) |
+| [508d3a1b3b](https://github.com/angular/angular/commit/508d3a1b3bc5770f18e3e46e2105bf0ba6178a87) | fix | correctly strip away parameters surrounded by comments in inject migration ([#58959](https://github.com/angular/angular/pull/58959)) |
+| [7191aa6e09](https://github.com/angular/angular/commit/7191aa6e09ca3b85efd3fd14a18944eac4384763) | fix | don't migrate classes with parameters that can't be injected ([#58959](https://github.com/angular/angular/pull/58959)) |
+| [a4924af6d5](https://github.com/angular/angular/commit/a4924af6d580c5bdaa185c4c97277c4effb55af9) | fix | inject migration aggressively removing imports ([#58959](https://github.com/angular/angular/pull/58959)) |
+| [35165d152d](https://github.com/angular/angular/commit/35165d152d7f9c3c8789ebdf792037aafdc1cc66) | fix | inject migration dropping code if everything except super is removed ([#58959](https://github.com/angular/angular/pull/58959)) |
+| [68e5ba7a3a](https://github.com/angular/angular/commit/68e5ba7a3a44c2f1647c4c6cc7ed66b010f85d15) | fix | preserve type literals and tuples in inject migrations ([#58959](https://github.com/angular/angular/pull/58959)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1cfbfc66d3](https://github.com/angular/angular/commit/1cfbfc66d3a24b6c41abf13550e7c2911e20b550) | fix | remove peer dependency on animations ([#58997](https://github.com/angular/angular/pull/58997)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.0.2"></a>
 # 19.0.2 (2024-12-04)
 ### compiler-cli
