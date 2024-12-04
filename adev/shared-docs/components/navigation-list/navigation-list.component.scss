@@ -45,6 +45,12 @@
     border: 0;
   }
 
+  .docs-faceted-list-item-text {
+    max-width: calc(100% - 1rem);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .docs-nav-item-has-icon {
     &::after {
       // FIXME: for some reason this disappears when transformed
