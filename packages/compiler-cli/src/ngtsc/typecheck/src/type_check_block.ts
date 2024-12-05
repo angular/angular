@@ -3094,7 +3094,8 @@ function tcbCreateEventHandler(
   const handler = tcbEventHandlerExpression(event.handler, tcb, scope);
   const statements: ts.Statement[] = [];
 
-  if (event.type === ParsedEventType.TwoWay) {
+  // TODO(crisbeto): remove the `checkTwoWayBoundEvents` check in v20.
+  if (event.type === ParsedEventType.TwoWay && tcb.env.config.checkTwoWayBoundEvents) {
     // If we're dealing with a two-way event, we create a variable initialized to the unwrapped
     // signal value of the expression and then we assign `$event` to it. Note that in most cases
     // this will already be covered by the corresponding input binding, however it allows us to

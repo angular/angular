@@ -21,7 +21,7 @@ runInEachFileSystem(() => {
 
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
-      env.tsconfig({strictTemplates: true});
+      env.tsconfig({strictTemplates: true, _checkTwoWayBoundEvents: true});
     });
 
     it('should declare an input/output pair for a field initialized to a model()', () => {
