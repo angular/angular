@@ -1,9 +1,5 @@
 [
   [
-    "packages/core/src/di/injectable.ts",
-    "packages/core/src/di/jit/injectable.ts"
-  ],
-  [
     "packages/core/src/linker/component_factory_resolver.ts",
     "packages/core/src/linker/component_factory.ts",
     "packages/core/src/linker/ng_module_factory.ts"
