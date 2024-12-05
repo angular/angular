@@ -499,6 +499,26 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             path: 'guide/testing/utility-apis',
             contentPath: 'guide/testing/utility-apis',
           },
+          {
+            label: 'Component harnesses overview',
+            path: 'guide/testing/component-harnesses-overview',
+            contentPath: 'guide/testing/component-harnesses-overview',
+          },
+          {
+            label: 'Using component harnesses in tests',
+            path: 'guide/testing/using-component-harnesses',
+            contentPath: 'guide/testing/using-component-harnesses',
+          },
+          {
+            label: 'Creating harnesses for your components',
+            path: 'guide/testing/creating-component-harnesses',
+            contentPath: 'guide/testing/creating-component-harnesses',
+          },
+          {
+            label: 'Adding harness support for additional testing environments',
+            path: 'guide/testing/component-harnesses-testing-environments',
+            contentPath: 'guide/testing/component-harnesses-testing-environments',
+          },
         ],
       },
       {
