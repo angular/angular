@@ -13,13 +13,16 @@ import {
 } from '../../compiler/compiler_facade';
 import {resolveForwardRef} from '../../di/forward_ref';
 import {NG_INJ_DEF} from '../../di/interface/defs';
-import {ModuleWithProviders} from '../../di/interface/provider';
+import type {ModuleWithProviders} from '../../di/interface/provider';
 import {reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
 import {registerNgModuleType} from '../../linker/ng_module_registration';
-import {Component} from '../../metadata/directives';
-import {NgModule} from '../../metadata/ng_module';
-import {NgModuleDef, NgModuleTransitiveScopes, NgModuleType} from '../../metadata/ng_module_def';
+import type {NgModule} from '../../metadata/ng_module';
+import type {
+  NgModuleDef,
+  NgModuleTransitiveScopes,
+  NgModuleType,
+} from '../../metadata/ng_module_def';
 import {deepForEach, flatten} from '../../util/array_utils';
 import {assertDefined} from '../../util/assert';
 import {EMPTY_ARRAY} from '../../util/empty';
@@ -33,7 +36,7 @@ import {
 } from '../def_getters';
 import {depsTracker, USE_RUNTIME_DEPS_TRACKER_FOR_JIT} from '../deps_tracker/deps_tracker';
 import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF, NG_MOD_DEF, NG_PIPE_DEF} from '../fields';
-import {ComponentDef} from '../interfaces/definition';
+import type {ComponentDef} from '../interfaces/definition';
 import {maybeUnwrapFn} from '../util/misc_utils';
 import {stringifyForError} from '../util/stringify_utils';
 

@@ -1,27 +1,5 @@
 [
   [
-    "packages/core/src/metadata/directives.ts",
-    "packages/core/src/render3/jit/directive.ts"
-  ],
-  [
-    "packages/core/src/metadata/directives.ts",
-    "packages/core/src/render3/jit/directive.ts",
-    "packages/core/src/metadata/resource_loading.ts"
-  ],
-  [
-    "packages/core/src/metadata/directives.ts",
-    "packages/core/src/render3/jit/directive.ts",
-    "packages/core/src/render3/jit/module.ts"
-  ],
-  [
-    "packages/core/src/metadata/directives.ts",
-    "packages/core/src/render3/jit/pipe.ts"
-  ],
-  [
-    "packages/core/src/metadata/ng_module.ts",
-    "packages/core/src/render3/jit/module.ts"
-  ],
-  [
     "packages/core/src/render3/interfaces/container.ts",
     "packages/core/src/render3/interfaces/view.ts"
   ],
