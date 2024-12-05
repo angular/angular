@@ -1,9 +1,5 @@
 [
   [
-    "packages/core/src/change_detection/change_detector_ref.ts",
-    "packages/core/src/render3/view_ref.ts"
-  ],
-  [
     "packages/core/src/change_detection/differs/default_iterable_differ.ts",
     "packages/core/src/change_detection/differs/iterable_differs.ts"
   ],
