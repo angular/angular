@@ -1,14 +1,5 @@
 [
   [
-    "packages/router/src/models.ts",
-    "packages/router/src/router_state.ts"
-  ],
-  [
-    "packages/router/src/models.ts",
-    "packages/router/src/url_tree.ts",
-    "packages/router/src/shared.ts"
-  ],
-  [
     "packages/router/src/navigation_transition.ts",
     "packages/router/src/operators/activate_routes.ts"
   ],
@@ -23,9 +14,5 @@
   [
     "packages/router/src/navigation_transition.ts",
     "packages/router/src/operators/resolve_data.ts"
-  ],
-  [
-    "packages/router/src/shared.ts",
-    "packages/router/src/url_tree.ts"
   ]
 ]
