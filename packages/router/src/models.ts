@@ -16,8 +16,8 @@ import {
 } from '@angular/core';
 import {Observable} from 'rxjs';
 
-import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
-import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
+import type {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
+import type {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 
 /**
  * How to handle a navigation request to the current URL. One of:
