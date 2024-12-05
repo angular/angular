@@ -23,13 +23,12 @@ import {
   DeclarationListEmitMode,
   DeferBlockDepsEmitMode,
   R3ComponentMetadata,
-  R3DeferPerBlockDependency,
-  R3DeferPerComponentDependency,
   R3DeferResolverFunctionMetadata,
   R3DirectiveMetadata,
   R3HostMetadata,
   R3TemplateDependency,
 } from './api';
+import {getTemplateSourceLocationsEnabled} from './config';
 import {createContentQueriesFunction, createViewQueriesFunction} from './query_generation';
 import {makeBindingParser} from './template';
 import {asLiteral, conditionallyCreateDirectiveBindingLiteral, DefinitionMap} from './util';
@@ -235,6 +234,7 @@ export function compileComponentFromMetadata(
     meta.defer,
     allDeferrableDepsFn,
     meta.relativeTemplatePath,
+    getTemplateSourceLocationsEnabled(),
   );
 
   // Then the IR is transformed to prepare it for cod egeneration.

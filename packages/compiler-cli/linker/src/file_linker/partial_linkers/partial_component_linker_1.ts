@@ -237,6 +237,7 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression>
         : ChangeDetectionStrategy.Default,
       animations: metaObj.has('animations') ? metaObj.getOpaque('animations') : null,
       relativeContextFilePath: this.sourceUrl,
+      relativeTemplatePath: null,
       i18nUseExternalIds: false,
       declarations,
     };
