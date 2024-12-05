@@ -9,7 +9,7 @@
 import {Type} from '../interface/type';
 import {stringify} from '../util/stringify';
 
-import {ComponentFactory} from './component_factory';
+import type {ComponentFactory} from './component_factory';
 
 class _NullComponentFactoryResolver implements ComponentFactoryResolver {
   resolveComponentFactory<T>(component: {new (...args: any[]): T}): ComponentFactory<T> {

@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectorRef} from '../change_detection/change_detection';
-import {Injector} from '../di/injector';
-import {EnvironmentInjector} from '../di/r3_injector';
+import type {ChangeDetectorRef} from '../change_detection/change_detection';
+import type {Injector} from '../di/injector';
+import type {EnvironmentInjector} from '../di/r3_injector';
 import {Type} from '../interface/type';
 
-import {ElementRef} from './element_ref';
-import {NgModuleRef} from './ng_module_factory';
-import {ViewRef} from './view_ref';
+import type {ElementRef} from './element_ref';
+import type {NgModuleRef} from './ng_module_factory';
+import type {ViewRef} from './view_ref';
 
 /**
  * Represents a component created by a `ComponentFactory`.
