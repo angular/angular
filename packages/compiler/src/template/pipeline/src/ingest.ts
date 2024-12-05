@@ -59,6 +59,7 @@ export function ingestComponent(
   deferMeta: R3ComponentDeferMetadata,
   allDeferrableDepsFn: o.ReadVarExpr | null,
   relativeTemplatePath: string | null,
+  enableDebugLocations: boolean,
 ): ComponentCompilationJob {
   const job = new ComponentCompilationJob(
     componentName,
@@ -69,6 +70,7 @@ export function ingestComponent(
     deferMeta,
     allDeferrableDepsFn,
     relativeTemplatePath,
+    enableDebugLocations,
   );
   ingestNodes(job.root, template);
   return job;
