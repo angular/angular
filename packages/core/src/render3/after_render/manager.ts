@@ -135,7 +135,7 @@ export class AfterRenderImpl {
 
   protected maybeTrace<T>(fn: () => T, snapshot: TracingSnapshot | null): T {
     // Only trace the execution if the snapshot is defined.
-    return snapshot?.run(TracingAction.AFTER_NEXT_RENDER, fn) ?? fn();
+    return snapshot ? snapshot.run(TracingAction.AFTER_NEXT_RENDER, fn) : fn();
   }
 
   /** @nocollapse */
