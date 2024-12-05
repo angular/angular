@@ -10,11 +10,10 @@ import {MonoTypeOperatorFunction} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {ActivationEnd, ChildActivationEnd, Event} from '../events';
-import {NavigationTransition} from '../navigation_transition';
-import {DetachedRouteHandleInternal, RouteReuseStrategy} from '../route_reuse_strategy';
-import {ChildrenOutletContexts} from '../router_outlet_context';
+import type {NavigationTransition} from '../navigation_transition';
+import type {DetachedRouteHandleInternal, RouteReuseStrategy} from '../route_reuse_strategy';
+import type {ChildrenOutletContexts} from '../router_outlet_context';
 import {ActivatedRoute, advanceActivatedRoute, RouterState} from '../router_state';
-import {getClosestRouteInjector} from '../utils/config';
 import {nodeChildrenAsMap, TreeNode} from '../utils/tree';
 
 let warnedAboutUnsupportedInputBinding = false;

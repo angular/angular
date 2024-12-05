@@ -81,7 +81,7 @@ import {
   RouterState,
   RouterStateSnapshot,
 } from './router_state';
-import {Params} from './shared';
+import type {Params} from './shared';
 import {UrlHandlingStrategy} from './url_handling_strategy';
 import {isUrlTree, UrlSerializer, UrlTree} from './url_tree';
 import {Checks, getAllRouteGuards} from './utils/preactivation';

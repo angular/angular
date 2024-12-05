@@ -1,18 +1,1 @@
-[
-  [
-    "packages/router/src/navigation_transition.ts",
-    "packages/router/src/operators/activate_routes.ts"
-  ],
-  [
-    "packages/router/src/navigation_transition.ts",
-    "packages/router/src/operators/check_guards.ts"
-  ],
-  [
-    "packages/router/src/navigation_transition.ts",
-    "packages/router/src/operators/recognize.ts"
-  ],
-  [
-    "packages/router/src/navigation_transition.ts",
-    "packages/router/src/operators/resolve_data.ts"
-  ]
-]
+[]
