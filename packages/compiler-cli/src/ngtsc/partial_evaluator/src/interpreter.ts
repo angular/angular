@@ -16,7 +16,7 @@ import {isDeclaration} from '../../util/src/typescript';
 
 import {ArrayConcatBuiltinFn, ArraySliceBuiltinFn, StringConcatBuiltinFn} from './builtin';
 import {DynamicValue} from './dynamic';
-import {ForeignFunctionResolver} from './interface';
+import type {ForeignFunctionResolver} from './interface';
 import {
   EnumValue,
   KnownFn,
