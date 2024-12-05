@@ -1,9 +1,5 @@
 [
   [
-    "packages/compiler-cli/src/ngtsc/partial_evaluator/src/interface.ts",
-    "packages/compiler-cli/src/ngtsc/partial_evaluator/src/interpreter.ts"
-  ],
-  [
     "packages/compiler/src/output/output_ast.ts",
     "packages/compiler/src/render3/view/i18n/meta.ts"
   ],
