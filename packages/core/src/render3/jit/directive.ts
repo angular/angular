@@ -18,8 +18,8 @@ import {
 import {resolveForwardRef} from '../../di/forward_ref';
 import {getReflect, reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
-import {Query} from '../../metadata/di';
-import {Component, Directive, Input} from '../../metadata/directives';
+import type {Query} from '../../metadata/di';
+import type {Component, Directive, Input} from '../../metadata/directives';
 import {
   componentNeedsResolution,
   maybeQueueResolutionOfComponentResources,
