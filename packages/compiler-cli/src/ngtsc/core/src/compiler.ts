@@ -469,7 +469,7 @@ export class NgCompiler {
     // version of the compiler against an older version of Angular.
     this.implicitStandaloneValue =
       this.angularCoreVersion === null ||
-      coreVersionSupportsFeature(this.angularCoreVersion, '>= 19.0.0-0');
+      coreVersionSupportsFeature(this.angularCoreVersion, '>= 19.0.0');
     this.enableHmr = !!options['_enableHmr'];
     this.constructionDiagnostics.push(
       ...this.adapter.constructionDiagnostics,
@@ -1036,7 +1036,7 @@ export class NgCompiler {
     let allowSignalsInTwoWayBindings =
       coreHasSymbol(this.inputProgram, R3Identifiers.unwrapWritableSignal) ??
       (this.angularCoreVersion === null ||
-        coreVersionSupportsFeature(this.angularCoreVersion, '>= 17.2.0-0'));
+        coreVersionSupportsFeature(this.angularCoreVersion, '>= 17.2.0'));
 
     // First select a type-checking configuration, based on whether full template type-checking is
     // requested.
