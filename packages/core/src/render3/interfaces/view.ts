@@ -13,11 +13,10 @@ import {ProviderToken} from '../../di/provider_token';
 import {DehydratedView} from '../../hydration/interfaces';
 import {SchemaMetadata} from '../../metadata/schema';
 import {Sanitizer} from '../../sanitization/sanitizer';
-import type {AfterRenderManager} from '../after_render/manager';
 import type {ReactiveLViewConsumer} from '../reactive_lview_consumer';
 import type {ViewEffectNode} from '../reactivity/effect';
 
-import {LContainer} from './container';
+import type {LContainer} from './container';
 import {
   ComponentDef,
   ComponentTemplate,
