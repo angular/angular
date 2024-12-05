@@ -8,7 +8,7 @@
 
 import {ComponentRef, EnvironmentInjector, Injectable} from '@angular/core';
 
-import {RouterOutletContract} from './directives/router_outlet';
+import type {RouterOutletContract} from './directives/router_outlet';
 import {ActivatedRoute} from './router_state';
 import {getClosestRouteInjector} from './utils/config';
 
