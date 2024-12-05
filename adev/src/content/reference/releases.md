@@ -74,9 +74,9 @@ HELPFUL: Approximate dates are offered as general guidance and are subject to ch
 
 | Version | Date               |
 |:--------|:-------------------|
-| v19.1   | TBD                |
-| v19.2   | TBD                |
-| v20.0   | TBD                |
+| v19.1   | Week of 2025-01-13 |
+| v19.2   | Week of 2025-02-24 |
+| v20.0   | Week of 2025-05-19 |
 
 ### Support window
 
