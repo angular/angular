@@ -1,13 +1,5 @@
 [
   [
-    "packages/core/src/change_detection/differs/default_iterable_differ.ts",
-    "packages/core/src/change_detection/differs/iterable_differs.ts"
-  ],
-  [
-    "packages/core/src/change_detection/differs/default_keyvalue_differ.ts",
-    "packages/core/src/change_detection/differs/keyvalue_differs.ts"
-  ],
-  [
     "packages/core/src/di/injectable.ts",
     "packages/core/src/di/jit/injectable.ts"
   ],
