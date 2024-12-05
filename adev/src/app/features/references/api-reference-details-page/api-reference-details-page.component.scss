@@ -97,13 +97,6 @@
 
       button {
         transition: background-color 0.3s ease;
-        font-family: monospace;
-
-        &.line {
-          font-weight: 400;
-          text-align: left;
-          padding-block: 0.25rem;
-        }
 
         &.shiki-ln-line-highlighted {
           background-color: var(--senary-contrast);
