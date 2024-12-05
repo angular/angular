@@ -10,7 +10,7 @@ import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {isJsObject} from '../../util/iterable';
 import {stringify} from '../../util/stringify';
 
-import {
+import type {
   KeyValueChangeRecord,
   KeyValueChanges,
   KeyValueDiffer,
