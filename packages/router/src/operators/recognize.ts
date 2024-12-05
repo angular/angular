@@ -10,11 +10,11 @@ import {EnvironmentInjector, Type} from '@angular/core';
 import {MonoTypeOperatorFunction} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 
-import {Route} from '../models';
-import {NavigationTransition} from '../navigation_transition';
+import type {Route} from '../models';
+import type {NavigationTransition} from '../navigation_transition';
 import {recognize as recognizeFn} from '../recognize';
-import {RouterConfigLoader} from '../router_config_loader';
-import {UrlSerializer} from '../url_tree';
+import type {RouterConfigLoader} from '../router_config_loader';
+import type {UrlSerializer} from '../url_tree';
 
 export function recognize(
   injector: EnvironmentInjector,
