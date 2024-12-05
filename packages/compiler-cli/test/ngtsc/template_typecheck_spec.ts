@@ -544,7 +544,7 @@ runInEachFileSystem(() => {
     });
 
     it('should type check a two-way binding to a generic property', () => {
-      env.tsconfig({strictTemplates: true});
+      env.tsconfig({strictTemplates: true, _checkTwoWayBoundEvents: true});
       env.write(
         'test.ts',
         `
@@ -582,7 +582,7 @@ runInEachFileSystem(() => {
     });
 
     it('should use the setter type when assigning using a two-way binding to an input with different getter and setter types', () => {
-      env.tsconfig({strictTemplates: true});
+      env.tsconfig({strictTemplates: true, _checkTwoWayBoundEvents: true});
       env.write(
         'test.ts',
         `
@@ -618,7 +618,7 @@ runInEachFileSystem(() => {
     });
 
     it('should type check a two-way binding to a function value', () => {
-      env.tsconfig({strictTemplates: true});
+      env.tsconfig({strictTemplates: true, _checkTwoWayBoundEvents: true});
       env.write(
         'test.ts',
         `
@@ -658,7 +658,7 @@ runInEachFileSystem(() => {
     });
 
     it('should type check a two-way binding to input/output pair where the input has a wider type than the output', () => {
-      env.tsconfig({strictTemplates: true});
+      env.tsconfig({strictTemplates: true, _checkTwoWayBoundEvents: true});
       env.write(
         'test.ts',
         `
@@ -3007,7 +3007,7 @@ runInEachFileSystem(() => {
       });
 
       it('should type check a two-way binding to an input with a transform', () => {
-        env.tsconfig({strictTemplates: true});
+        env.tsconfig({strictTemplates: true, _checkTwoWayBoundEvents: true});
         env.write(
           'test.ts',
           `
