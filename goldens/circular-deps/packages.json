@@ -1,14 +1,5 @@
 [
   [
-    "packages/compiler/src/output/output_ast.ts",
-    "packages/compiler/src/render3/view/i18n/meta.ts"
-  ],
-  [
-    "packages/compiler/src/output/output_ast.ts",
-    "packages/compiler/src/render3/view/i18n/meta.ts",
-    "packages/compiler/src/render3/view/i18n/util.ts"
-  ],
-  [
     "packages/core/src/change_detection/change_detector_ref.ts",
     "packages/core/src/render3/view_ref.ts"
   ],
