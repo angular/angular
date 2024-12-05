@@ -284,6 +284,7 @@ export const ALL_ENABLED_CONFIG: Readonly<TypeCheckingConfig> = {
   controlFlowPreventingContentProjection: 'warning',
   unusedStandaloneImports: 'warning',
   allowSignalsInTwoWayBindings: true,
+  checkTwoWayBoundEvents: true,
 };
 
 // Remove 'ref' from TypeCheckableDirectiveMeta and add a 'selector' instead.
@@ -423,6 +424,7 @@ export function tcb(
     useInlineTypeConstructors: true,
     suggestionsForSuboptimalTypeInference: false,
     allowSignalsInTwoWayBindings: true,
+    checkTwoWayBoundEvents: true,
     ...config,
   };
   options = options || {

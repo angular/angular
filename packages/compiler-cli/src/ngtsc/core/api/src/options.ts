@@ -120,6 +120,12 @@ export interface InternalOptions {
    * @internal
    */
   _enableHmr?: boolean;
+
+  // TODO(crisbeto): this is a temporary flag that will be removed in v20.
+  /**
+   * Whether to check the event side of two-way bindings.
+   */
+  _checkTwoWayBoundEvents?: boolean;
 }
 
 /**

@@ -981,6 +981,7 @@ describe('type check blocks', () => {
       controlFlowPreventingContentProjection: 'warning',
       unusedStandaloneImports: 'warning',
       allowSignalsInTwoWayBindings: true,
+      checkTwoWayBoundEvents: true,
     };
 
     describe('config.applyTemplateContextGuards', () => {
