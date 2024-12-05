@@ -172,7 +172,10 @@ export class UnusedStandaloneImportsRule implements SourceFileValidatorRule {
       if (ts.isVariableStatement(current)) {
         return !!current.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword);
       }
-      current = current.parent;
+
+      // `Node.parent` can be undefined, but the TS types don't reflect it.
+      // Coerce to null so the value is consitent with the type.
+      current = current.parent ?? null;
     }
 
     // Otherwise the reference likely comes from an imported
