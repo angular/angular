@@ -2,6 +2,8 @@
 
 /* stylelint-disable */
 
+$code-font-size: 0.875rem;
+
 @mixin docs-code-block {
   // code across docs, inline, blocks, shell, example viewer, etc.
   code {
@@ -106,7 +108,7 @@
     code {
       display: flex;
       flex-direction: column;
-      font-size: 0.875rem;
+      font-size: $code-font-size;
       counter-reset: line;
     }
   }
@@ -222,7 +224,7 @@
       background-clip: text;
       -webkit-background-clip: text;
       color: transparent;
-      font-size: 0.875rem;
+      font-size: $code-font-size;
       font-style: normal;
       font-weight: 400;
       line-height: 1.4rem;
@@ -296,7 +298,7 @@
     padding-inline-start: 0.75rem;
     padding-inline-end: 0.5rem;
     color: var(--quaternary-contrast);
-    font-size: 0.875rem;
+    font-size: $code-font-size;
     text-align: right;
   }
 
@@ -322,8 +324,13 @@
     min-height: 1.375em;
     padding-inline: 1rem;
     color: var(--tertiary-contrast);
-
     display: block;
+    font-size: $code-font-size;
+    font-family: var(--code-font);
+    font-weight: 400;
+    text-align: left;
+    padding-block: 0.25rem;
+
     &.hidden {
       display: none;
     }
