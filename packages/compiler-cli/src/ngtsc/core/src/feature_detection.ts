@@ -23,5 +23,5 @@ export function coreVersionSupportsFeature(coreVersion: string, minVersion: stri
     return true;
   }
 
-  return semver.satisfies(coreVersion, minVersion);
+  return semver.satisfies(coreVersion, minVersion, {includePrerelease: true});
 }
