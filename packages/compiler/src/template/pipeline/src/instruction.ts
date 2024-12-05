@@ -723,6 +723,13 @@ export function pureFunction(
   );
 }
 
+export function attachSourceLocation(
+  templatePath: string,
+  locations: o.LiteralArrayExpr,
+): ir.CreateOp {
+  return call(Identifiers.attachSourceLocations, [o.literal(templatePath), locations], null);
+}
+
 /**
  * Collates the string an expression arguments for an interpolation instruction.
  */

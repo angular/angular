@@ -1219,6 +1219,7 @@ export function transformExpressionsInOp(
     case OpKind.I18nAttributes:
     case OpKind.IcuPlaceholder:
     case OpKind.DeclareLet:
+    case OpKind.SourceLocation:
       // These operations contain no expressions.
       break;
     default:

@@ -264,6 +264,11 @@ export enum OpKind {
    * A creation op that corresponds to i18n attributes on an element.
    */
   I18nAttributes,
+
+  /**
+   * Creation op that attaches the location at which an element was defined in a template to it.
+   */
+  SourceLocation,
 }
 
 /**
