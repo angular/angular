@@ -22,7 +22,7 @@ describe('ApiReferenceDetailsPage', () => {
     setupListeners: () => {},
   };
 
-  const SAMPLE_CONTENT_WITH_TABS = `<div class="docs-api">
+  const SAMPLE_CONTENT_WITH_SECTIONS = `<div class="docs-api">
     <div class="docs-reference-section">API</div>
     <div class="docs-reference-members"></div>
     <div class="docs-reference-section">Description</div>
@@ -43,7 +43,7 @@ describe('ApiReferenceDetailsPage', () => {
               data: {
                 'docContent': {
                   id: 'id',
-                  contents: SAMPLE_CONTENT_WITH_TABS,
+                  contents: SAMPLE_CONTENT_WITH_SECTIONS,
                 },
               },
             },

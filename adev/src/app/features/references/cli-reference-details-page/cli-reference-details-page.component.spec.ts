@@ -11,7 +11,8 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import CliReferenceDetailsPage from './cli-reference-details-page.component';
 import {RouterTestingHarness} from '@angular/router/testing';
 import {ReferenceScrollHandler} from '../services/reference-scroll-handler.service';
-import {provideRouter} from '@angular/router';
+import {provideRouter, withComponentInputBinding} from '@angular/router';
+import {provideNoopAnimations} from '@angular/platform-browser/animations';
 
 describe('CliReferenceDetailsPage', () => {
   let component: CliReferenceDetailsPage;
@@ -32,18 +33,22 @@ describe('CliReferenceDetailsPage', () => {
     TestBed.configureTestingModule({
       imports: [CliReferenceDetailsPage],
       providers: [
-        provideRouter([
-          {
-            path: '**',
-            component: CliReferenceDetailsPage,
-            data: {
-              'docContent': {
-                id: 'id',
-                contents: SAMPLE_CONTENT,
+        provideNoopAnimations(),
+        provideRouter(
+          [
+            {
+              path: '**',
+              component: CliReferenceDetailsPage,
+              data: {
+                'docContent': {
+                  id: 'id',
+                  contents: SAMPLE_CONTENT,
+                },
               },
             },
-          },
-        ]),
+          ],
+          withComponentInputBinding(),
+        ),
       ],
     });
     TestBed.overrideProvider(ReferenceScrollHandler, {useValue: fakeApiReferenceScrollHandler});

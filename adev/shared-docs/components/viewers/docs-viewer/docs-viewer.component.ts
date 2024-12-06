@@ -343,11 +343,10 @@ export class DocViewer implements OnChanges {
             relativeUrl = hrefAttr;
           }
 
-          // Unless this is a link to an element within the same page,
-          // use the Angular router.
+          // Unless this is a link to an element within the same page, use the Angular router.
           // https://github.com/angular/angular/issues/30139
-          const scrollToElement = relativeUrl.replace(this.location.path(), '').startsWith('#');
-          if (!scrollToElement) {
+          const scrollToElementExists = relativeUrl.startsWith(this.location.path() + '#');
+          if (!scrollToElementExists) {
             handleHrefClickEventWithRouter(e, this.router, relativeUrl);
           }
         });

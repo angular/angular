@@ -20,16 +20,16 @@ export class ReferenceScrollHandler {
   private readonly router = inject(Router);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  setupListeners(tocSelector: string): void {
+  setupListeners(tocClass: string): void {
     if (!this.isBrowser) {
       return;
     }
 
-    this.setupCodeToCListeners(tocSelector);
+    this.setupCodeToCListeners(tocClass);
   }
 
-  private setupCodeToCListeners(tocSelector: string): void {
-    const tocContainer = this.document.querySelector<HTMLDivElement>(`.${tocSelector}`);
+  private setupCodeToCListeners(tocClass: string): void {
+    const tocContainer = this.document.querySelector<HTMLDivElement>(`.${tocClass}`);
 
     if (!tocContainer) {
       return;

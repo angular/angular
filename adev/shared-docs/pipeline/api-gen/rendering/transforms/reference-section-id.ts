@@ -10,5 +10,5 @@ export const convertSectionNameToId = (sectionName: string): string => {
   return sectionName
     .toLowerCase()
     .replace(/\s|\//g, '-') // remove spaces and slashes
-    .replace(/[^0-9a-zA-Z\-]/g, ''); // only keep letters, digits & dashes
+    .replace(/[^0-9a-z\-]/g, ''); // only keep letters, digits & dashes
 };
