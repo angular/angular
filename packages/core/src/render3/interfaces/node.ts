@@ -244,7 +244,7 @@ export interface TNode {
    * such a case the value stores an array of text nodes to insert.
    *
    * Example:
-   * ```
+   * ```html
    * <div i18n>
    *   Hello <span>World</span>!
    * </div>
@@ -257,7 +257,7 @@ export interface TNode {
    * `<span>` itself.
    *
    * Pseudo code:
-   * ```
+   * ```ts
    *   if (insertBeforeIndex === null) {
    *     // append as normal
    *   } else if (Array.isArray(insertBeforeIndex)) {
@@ -490,12 +490,12 @@ export interface TNode {
    *
    * For easier discussion assume this example:
    * `<parent>`'s view definition:
-   * ```
+   * ```html
    * <child id="c1">content1</child>
    * <child id="c2"><span>content2</span></child>
    * ```
    * `<child>`'s view definition:
-   * ```
+   * ```html
    * <ng-content id="cont1"></ng-content>
    * ```
    *
@@ -558,7 +558,7 @@ export interface TNode {
    * styling than the instruction.
    *
    * Imagine:
-   * ```
+   * ```angular-ts
    * <div style="color: highest;" my-dir>
    *
    * @Directive({

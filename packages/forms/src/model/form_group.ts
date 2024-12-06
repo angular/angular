@@ -381,7 +381,7 @@ export class FormGroup<
    * @usageNotes
    * ### Set the complete value for the form group
    *
-   * ```
+   * ```ts
    * const form = new FormGroup({
    *   first: new FormControl(),
    *   last: new FormControl()
@@ -437,7 +437,7 @@ export class FormGroup<
    * @usageNotes
    * ### Patch the value for a form group
    *
-   * ```
+   * ```ts
    * const form = new FormGroup({
    *    first: new FormControl(),
    *    last: new FormControl()
@@ -528,7 +528,7 @@ export class FormGroup<
    *
    * ### Reset the form group values and disabled status
    *
-   * ```
+   * ```ts
    * const form = new FormGroup({
    *   first: new FormControl('first name'),
    *   last: new FormControl('last name')

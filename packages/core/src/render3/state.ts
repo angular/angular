@@ -176,7 +176,7 @@ interface InstructionState {
    * directives on children of that element.
    *
    * Example:
-   * ```
+   * ```html
    * <my-comp my-directive>
    *   Should match component / directive.
    * </my-comp>
@@ -193,7 +193,7 @@ interface InstructionState {
    * Stores the root TNode that has the 'ngSkipHydration' attribute on it for later reference.
    *
    * Example:
-   * ```
+   * ```html
    * <my-comp ngSkipHydration>
    *   Should reference this root node
    * </my-comp>
