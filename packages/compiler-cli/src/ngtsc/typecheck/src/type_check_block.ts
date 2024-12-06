@@ -8,6 +8,7 @@
 
 import {
   AST,
+  ASTWithSource,
   BindingPipe,
   BindingType,
   BoundTarget,
@@ -16,6 +17,7 @@ import {
   CssSelector,
   DYNAMIC_TYPE,
   ImplicitReceiver,
+  NonNullAssert,
   ParsedEventType,
   ParseSourceSpan,
   PropertyRead,
@@ -3101,10 +3103,19 @@ function tcbCreateEventHandler(
     // this will already be covered by the corresponding input binding, however it allows us to
     // handle the case where the input has a wider type than the output (see #58971).
     const target = tcb.allocateId();
+    const handlerExpression =
+      event.handler instanceof ASTWithSource ? event.handler.ast : event.handler;
+    let eventReference: ts.Expression = ts.factory.createIdentifier(EVENT_PARAMETER);
+
+    // If the handler is non-null asserted, we need to assert `$event` as well.
+    if (handlerExpression instanceof NonNullAssert) {
+      eventReference = ts.factory.createNonNullExpression(eventReference);
+    }
+
     const assignment = ts.factory.createBinaryExpression(
       target,
       ts.SyntaxKind.EqualsToken,
-      ts.factory.createIdentifier(EVENT_PARAMETER),
+      eventReference,
     );
 
     statements.push(

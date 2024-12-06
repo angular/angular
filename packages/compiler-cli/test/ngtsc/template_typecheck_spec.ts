@@ -685,6 +685,33 @@ runInEachFileSystem(() => {
       expect(diags[0].messageText).toBe(`Type 'number' is not assignable to type 'string'.`);
     });
 
+    it('should apply non-null assertions both to the property and event sides of two-way bindings', () => {
+      env.tsconfig({strictTemplates: true, _checkTwoWayBoundEvents: true});
+      env.write(
+        'test.ts',
+        `
+          import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
+
+          @Directive({selector: '[dir]'})
+          export class Dir {
+            @Input() value: number | null;
+            @Output() valueChange = new EventEmitter<number | null>();
+          }
+
+          @Component({
+            template: '<div dir [(value)]="value!"></div>',
+            imports: [Dir],
+          })
+          export class App {
+            value = 123;
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
     it('should check the fallback content of ng-content', () => {
       env.write(
         'test.ts',
