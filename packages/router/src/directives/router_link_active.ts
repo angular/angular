@@ -143,7 +143,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
    * true  -> Route is active
    * false -> Route is inactive
    *
-   * ```
+   * ```html
    * <a
    *  routerLink="/user/bob"
    *  routerLinkActive="active-link"

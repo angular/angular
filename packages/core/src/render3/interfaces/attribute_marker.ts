@@ -34,12 +34,12 @@ export const enum AttributeMarker {
    * ## Example:
    *
    * Given:
-   * ```
-   * <div class="foo bar baz">...<d/vi>
+   * ```html
+   * <div class="foo bar baz">...</div>
    * ```
    *
    * the generated code is:
-   * ```
+   * ```ts
    * var _c1 = [AttributeMarker.Classes, 'foo', 'bar', 'baz'];
    * ```
    */
@@ -53,12 +53,12 @@ export const enum AttributeMarker {
    * ## Example:
    *
    * Given:
-   * ```
+   * ```html
    * <div style="width:100px; height:200px; color:red">...</div>
    * ```
    *
    * the generated code is:
-   * ```
+   * ```ts
    * var _c1 = [AttributeMarker.Styles, 'width', '100px', 'height'. '200px', 'color', 'red'];
    * ```
    */
@@ -69,13 +69,13 @@ export const enum AttributeMarker {
    *
    * For example, given the following HTML:
    *
-   * ```
+   * ```html
    * <div moo="car" [foo]="exp" (bar)="doSth()">
    * ```
    *
    * the generated code is:
    *
-   * ```
+   * ```ts
    * var _c1 = ['moo', 'car', AttributeMarker.Bindings, 'foo', 'bar'];
    * ```
    */
@@ -86,7 +86,7 @@ export const enum AttributeMarker {
    *
    * For example, given the following HTML:
    *
-   * ```
+   * ```html
    * <div *ngFor="let value of values; trackBy:trackBy" dirA [dirB]="value">
    * ```
    *
@@ -112,13 +112,13 @@ export const enum AttributeMarker {
    *
    * For example, given the following HTML:
    *
-   * ```
+   * ```html
    * <h1 attr="value" ngProjectAs="[title]">
    * ```
    *
    * the generated code for the `element()` instruction would include:
    *
-   * ```
+   * ```ts
    * ['attr', 'value', AttributeMarker.ProjectAs, ['', 'title', '']]
    * ```
    */
@@ -129,14 +129,15 @@ export const enum AttributeMarker {
    *
    * For example, given the following HTML:
    *
-   * ```
+   * ```html
    * <div moo="car" foo="value" i18n-foo [bar]="binding" i18n-bar>
    * ```
    *
    * the generated code is:
    *
-   * ```
+   * ```ts
    * var _c1 = ['moo', 'car', AttributeMarker.I18n, 'foo', 'bar'];
+   * ```
    */
   I18n = 6,
 }

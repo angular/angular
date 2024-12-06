@@ -319,13 +319,13 @@ export class TypeScriptReflectionHost implements ReflectionHost {
    *
    * For example, if the identifier is the `Directive` part of a qualified type chain like:
    *
-   * ```
+   * ```ts
    * core.Directive
    * ```
    *
    * then it might be that `core` is a namespace import such as:
    *
-   * ```
+   * ```ts
    * import * as core from 'tslib';
    * ```
    *

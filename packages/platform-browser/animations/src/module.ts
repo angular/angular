@@ -46,7 +46,7 @@ export class BrowserAnimationsModule {
    * @usageNotes
    * When registering the `BrowserAnimationsModule`, you can use the `withConfig`
    * function as follows:
-   * ```
+   * ```ts
    * @NgModule({
    *   imports: [BrowserAnimationsModule.withConfig(config)]
    * })
