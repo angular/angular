@@ -12,6 +12,7 @@ import {
   InjectionToken,
   NgZone,
   ɵRuntimeError as RuntimeError,
+  type ListenerOptions,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../../errors';
@@ -56,11 +57,17 @@ export class EventManager {
    * @param eventName The name of the event to listen for.
    * @param handler A function to call when the notification occurs. Receives the
    * event object as an argument.
+   * @param options Options that configure how the event listener is bound.
    * @returns  A callback function that can be used to remove the handler.
    */
-  addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
+  addEventListener(
+    element: HTMLElement,
+    eventName: string,
+    handler: Function,
+    options?: ListenerOptions,
+  ): Function {
     const plugin = this._findPluginFor(eventName);
-    return plugin.addEventListener(element, eventName, handler);
+    return plugin.addEventListener(element, eventName, handler, options);
   }
 
   /**
@@ -115,5 +122,10 @@ export abstract class EventManagerPlugin {
   /**
    * Implement the behaviour for the supported events
    */
-  abstract addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
+  abstract addEventListener(
+    element: HTMLElement,
+    eventName: string,
+    handler: Function,
+    options?: ListenerOptions,
+  ): Function;
 }

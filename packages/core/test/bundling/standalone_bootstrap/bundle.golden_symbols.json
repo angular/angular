@@ -96,6 +96,9 @@
     "name": "DomAdapter"
   },
   {
+    "name": "DomEventsPlugin"
+  },
+  {
     "name": "DomRendererFactory2"
   },
   {
@@ -175,6 +178,9 @@
   },
   {
     "name": "InputFlags"
+  },
+  {
+    "name": "KeyEventsPlugin"
   },
   {
     "name": "LContainerFlags"
