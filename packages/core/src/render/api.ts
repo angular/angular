@@ -217,12 +217,14 @@ export abstract class Renderer2 {
    * DOM element.
    * @param eventName The event to listen for.
    * @param callback A handler function to invoke when the event occurs.
+   * @param options Options that configure how the event listener is bound.
    * @returns An "unlisten" function for disposing of this handler.
    */
   abstract listen(
     target: 'window' | 'document' | 'body' | any,
     eventName: string,
     callback: (event: any) => boolean | void,
+    options?: ListenerOptions,
   ): () => void;
 
   /**
@@ -251,4 +253,14 @@ export function injectRenderer2(): Renderer2 {
 export const enum AnimationRendererType {
   Regular = 0,
   Delegated = 1,
+}
+
+/**
+ * Options that can be used to configure an event listener.
+ * @publicApi
+ */
+export interface ListenerOptions {
+  capture?: boolean;
+  once?: boolean;
+  passive?: boolean;
 }

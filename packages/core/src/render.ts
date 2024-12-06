@@ -7,5 +7,5 @@
  */
 
 // Public API for render
-export {Renderer2, RendererFactory2} from './render/api';
+export {Renderer2, RendererFactory2, ListenerOptions} from './render/api';
 export {RendererStyleFlags2, RendererType2} from './render/api_flags';

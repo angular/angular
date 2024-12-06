@@ -19,16 +19,15 @@ import {GenericBrowserDomAdapter} from './generic_browser_adapter';
  * @security Tread carefully! Interacting with the DOM directly is dangerous and
  * can introduce XSS risks.
  */
-/* tslint:disable:requireParameterType no-console */
 export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   static makeCurrent() {
     setRootDomAdapter(new BrowserDomAdapter());
   }
 
-  override onAndCancel(el: Node, evt: any, listener: any): Function {
-    el.addEventListener(evt, listener);
+  override onAndCancel(el: Node, evt: any, listener: any, options: any): Function {
+    el.addEventListener(evt, listener, options);
     return () => {
-      el.removeEventListener(evt, listener);
+      el.removeEventListener(evt, listener, options);
     };
   }
   override dispatchEvent(el: Node, evt: any) {

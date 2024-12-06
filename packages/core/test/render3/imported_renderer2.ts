@@ -7,7 +7,7 @@
  */
 
 import {PLATFORM_BROWSER_ID, PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
-import {NgZone, RendererFactory2, RendererType2} from '@angular/core';
+import {type ListenerOptions, NgZone, RendererFactory2, RendererType2} from '@angular/core';
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {EventManager, ɵDomRendererFactory2, ɵSharedStylesHost} from '@angular/platform-browser';
 import {EventManagerPlugin} from '@angular/platform-browser/src/dom/events/event_manager';
@@ -21,13 +21,23 @@ export class SimpleDomEventsPlugin extends EventManagerPlugin {
     return true;
   }
 
-  override addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
+  override addEventListener(
+    element: HTMLElement,
+    eventName: string,
+    handler: Function,
+    options?: ListenerOptions,
+  ): Function {
     let callback: EventListener = handler as EventListener;
-    element.addEventListener(eventName, callback, false);
-    return () => this.removeEventListener(element, eventName, callback);
+    element.addEventListener(eventName, callback, options);
+    return () => this.removeEventListener(element, eventName, callback, options);
   }
 
-  removeEventListener(target: any, eventName: string, callback: Function): void {
+  removeEventListener(
+    target: any,
+    eventName: string,
+    callback: Function,
+    options?: ListenerOptions,
+  ): void {
     return target.removeEventListener.apply(target, [eventName, callback, false]);
   }
 }
