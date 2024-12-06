@@ -974,8 +974,7 @@ export type CanActivateChildFn = (
  * Here, the defined guard function is provided as part of the `Route` object
  * in the router configuration:
  *
- * ```
- *
+ * ```ts
  * @Injectable()
  * class CanDeactivateTeam implements CanDeactivate<TeamComponent> {
  *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
@@ -1071,8 +1070,7 @@ export type CanDeactivateFn<T> = (
  * Here, the defined guard function is provided as part of the `Route` object
  * in the router configuration:
  *
- * ```
- *
+ * ```ts
  * @NgModule({
  *   imports: [
  *     RouterModule.forRoot([
@@ -1151,8 +1149,7 @@ export type CanMatchFn = (route: Route, segments: UrlSegment[]) => MaybeAsync<Gu
  * Here, the defined `resolve()` function is provided as part of the `Route` object
  * in the router configuration:
  *
- * ```
-
+ * ```ts
  * @NgModule({
  *   imports: [
  *     RouterModule.forRoot([
@@ -1363,8 +1360,7 @@ export type ResolveFn<T> = (
  * Here, the defined guard function is provided as part of the `Route` object
  * in the router configuration:
  *
- * ```
- *
+ * ```ts
  * @NgModule({
  *   imports: [
  *     RouterModule.forRoot([
@@ -1497,7 +1493,7 @@ export interface NavigationBehaviorOptions {
    * This feature is useful for redirects, such as redirecting to an error page, without changing
    * the value that will be displayed in the browser's address bar.
    *
-   * ```
+   * ```ts
    * const canActivate: CanActivateFn = (route: ActivatedRouteSnapshot) => {
    *   const userService = inject(UserService);
    *   const router = inject(Router);

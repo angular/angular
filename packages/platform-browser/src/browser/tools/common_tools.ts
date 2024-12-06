@@ -39,7 +39,7 @@ export class AngularProfiler {
    * `record` (boolean) - causes the profiler to record a CPU profile while
    * it exercises the change detector. Example:
    *
-   * ```
+   * ```ts
    * ng.profiler.timeChangeDetection({record: true})
    * ```
    */

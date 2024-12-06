@@ -28,7 +28,7 @@ export interface LocalizeFn {
    *
    * The compile-time translation inliner is able to replace the following code:
    *
-   * ```
+   * ```ts
    * typeof $localize !== "undefined" && $localize.locale
    * ```
    *
