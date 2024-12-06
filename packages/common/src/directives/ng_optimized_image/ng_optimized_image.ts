@@ -317,7 +317,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
    * descriptors to generate the final `srcset` property of the image.
    *
    * Example:
-   * ```
+   * ```html
    * <img ngSrc="hello.jpg" ngSrcset="100w, 200w" />  =>
    * <img src="path/hello.jpg" srcset="path/hello.jpg?w=100 100w, path/hello.jpg?w=200 200w" />
    * ```

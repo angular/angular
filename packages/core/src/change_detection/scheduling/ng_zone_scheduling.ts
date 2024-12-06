@@ -181,7 +181,7 @@ export interface NgZoneOptions {
    * Optionally specify coalescing event change detections or not.
    * Consider the following case.
    *
-   * ```
+   * ```html
    * <div (click)="doSomething()">
    *   <button (click)="doSomethingElse()"></button>
    * </div>
@@ -204,7 +204,7 @@ export interface NgZoneOptions {
    * into a single change detection.
    *
    * Consider the following case.
-   * ```
+   * ```ts
    * for (let i = 0; i < 10; i ++) {
    *   ngZone.run(() => {
    *     // do something

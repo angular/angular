@@ -278,7 +278,7 @@ export abstract class AbstractControlDirective {
    * @usageNotes
    * For example, for the following `FormGroup`:
    *
-   * ```
+   * ```ts
    * form = new FormGroup({
    *   address: new FormGroup({ street: new FormControl() })
    * });
@@ -312,7 +312,7 @@ export abstract class AbstractControlDirective {
    * @usageNotes
    * For example, for the following `FormGroup`:
    *
-   * ```
+   * ```ts
    * form = new FormGroup({
    *   address: new FormGroup({ street: new FormControl() })
    * });

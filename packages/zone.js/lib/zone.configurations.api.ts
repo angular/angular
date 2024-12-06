@@ -22,7 +22,7 @@ declare global {
      *
      * Consider the following example:
      *
-     * ```
+     * ```ts
      * const EventEmitter = require('events');
      * class MyEmitter extends EventEmitter {}
      * const myEmitter = new MyEmitter();
@@ -52,7 +52,7 @@ declare global {
      *
      * Consider the following example:
      *
-     * ```
+     * ```ts
      * const fs = require('fs');
      *
      * const zone = Zone.current.fork({name: 'myZone'});
@@ -80,7 +80,7 @@ declare global {
      *
      * Consider the following example:
      *
-     * ```
+     * ```ts
      * const zone = Zone.current.fork({name: 'myZone'});
      * zone.run(() => {
      *   setTimeout(() => {
@@ -106,7 +106,7 @@ declare global {
      *
      * Consider the following example:
      *
-     * ```
+     * ```ts
      * const zone = Zone.current.fork({name: 'myZone'});
      * zone.run(() => {
      *   process.nextTick(() => {
@@ -132,7 +132,7 @@ declare global {
      *
      * Consider the following example:
      *
-     * ```
+     * ```ts
      * const crypto = require('crypto');
      *
      * const zone = Zone.current.fork({name: 'myZone'});
@@ -182,7 +182,7 @@ declare global {
      *
      * Consider the following example:
      *
-     * ```
+     * ```ts
      * const proto = Object.create(HTMLElement.prototype);
      * proto.createdCallback = function() {
      *   console.log('createdCallback is invoked in the zone', Zone.current.name);
@@ -225,7 +225,7 @@ declare global {
      *
      * Consider the following example:
      *
-     * ```
+     * ```ts
      * const zone = Zone.current.fork({name: 'myZone'});
      * zone.run(() => {
      *   div.addEventListener('click', () => {
@@ -251,7 +251,7 @@ declare global {
      *
      * Consider the following example:
      *
-     * ```
+     * ```ts
      * const zone = Zone.current.fork({name: 'myZone'});
      * zone.run(() => {
      *   setTimeout(() => {
@@ -279,7 +279,7 @@ declare global {
      *
      * Consider the following example:
      *
-     * ```
+     * ```ts
      * const zone = Zone.current.fork({name: 'myZone'});
      * zone.run(() => {
      *   requestAnimationFrame(() => {
@@ -310,7 +310,7 @@ declare global {
      *
      * Consider the following example:
      *
-     * ```
+     * ```ts
      * const zone = Zone.current.fork({name: 'myZone'});
      * zone.run(() => {
      *   queueMicrotask(() => {
@@ -342,7 +342,7 @@ declare global {
      *
      * Consider the following example:
      *
-     * ```
+     * ```ts
      * const zone = Zone.current.fork({name: 'myZone'});
      * zone.run(() => {
      *   div.addEventListener('click', () => {
@@ -382,7 +382,7 @@ declare global {
      *
      * Consider the following example:
      *
-     * ```
+     * ```ts
      * const zone = Zone.current.fork({name: 'myZone'});
      * zone.run(() => {
      *   div.onclick = () => {
@@ -407,7 +407,7 @@ declare global {
      *
      * Consider the following example:
      *
-     * ```
+     * ```ts
      * class TestCustomElement extends HTMLElement {
      *   constructor() { super(); }
      *   connectedCallback() {}
@@ -443,7 +443,7 @@ declare global {
      *
      * Consider the following example:
      *
-     * ```
+     * ```ts
      * const zone = Zone.current.fork({
      *   name: 'myZone',
      *   onScheduleTask: (delegate, curr, target, task) => {
@@ -477,7 +477,7 @@ declare global {
      *
      * Consider the following examples:
      *
-     * ```
+     * ```ts
      * const zone = Zone.current.fork({
      *   name: 'myZone'
      * });
@@ -506,7 +506,7 @@ declare global {
      *
      * Consider the following example:
      *
-     * ```
+     * ```ts
      * const zone = Zone.current.fork({
      *   name: 'myZone'
      * });
@@ -533,7 +533,7 @@ declare global {
      *
      * Consider the following examples:
      *
-     * ```
+     * ```ts
      * const zone = Zone.current.fork({name: 'myZone'});
      *
      * const p = Promise.resolve(1);
@@ -716,7 +716,7 @@ declare global {
      *
      * Consider the following example:
      *
-     * ```
+     * ```ts
      * describe('jasmine.clock integration', () => {
      *   beforeEach(() => {
      *     jasmine.clock().install();
@@ -749,7 +749,7 @@ declare global {
      *
      * Consider the following example:
      *
-     * ```
+     * ```ts
      * describe('jasmine.clock integration', () => {
      *   beforeEach(() => {
      *     jasmine.clock().install();
@@ -774,7 +774,7 @@ declare global {
      *
      * Consider the following example:
      *
-     * ```
+     * ```ts
      * describe('jasmine.clock integration', () => {
      *   beforeEach(() => {
      *     jasmine.clock().install();
@@ -803,7 +803,7 @@ declare global {
      *
      * Consider the following example:
      *
-     * ```
+     * ```ts
      * describe('wait never resolved promise', () => {
      *   it('async with never resolved promise test', async(() => {
      *     const p = new Promise(() => {});

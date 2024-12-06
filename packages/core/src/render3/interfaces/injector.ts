@@ -202,7 +202,7 @@ export class NodeInjectorFactory {
    * Example:
    *
    * If we have a component and directive active an a single element as declared here
-   * ```
+   * ```ts
    * component:
    *   providers: [ {provide: String, useValue: 'component', multi: true} ],
    *   viewProviders: [ {provide: String, useValue: 'componentView', multi: true} ],
@@ -213,7 +213,7 @@ export class NodeInjectorFactory {
    *
    * Then the expected results are:
    *
-   * ```
+   * ```ts
    * providers: ['component', 'directive']
    * viewProviders: ['component', 'componentView', 'directive']
    * ```
@@ -238,7 +238,7 @@ export class NodeInjectorFactory {
    * Example:
    *
    * Given:
-   * ```
+   * ```ts
    * providers: [ {provide: String, useValue: 'all', multi: true} ],
    * viewProviders: [ {provide: String, useValue: 'viewOnly', multi: true} ],
    * ```

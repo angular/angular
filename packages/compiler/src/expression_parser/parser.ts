@@ -176,7 +176,7 @@ export class Parser {
    * parsing errors in case the given expression is invalid.
    *
    * For example,
-   * ```
+   * ```html
    *   <div *ngFor="let item of items">
    *         ^      ^ absoluteValueOffset for `templateValue`
    *         absoluteKeyOffset for `templateKey`
@@ -187,7 +187,7 @@ export class Parser {
    * 3. ngForOf -> items
    *
    * This is apparent from the de-sugared template:
-   * ```
+   * ```html
    *   <ng-template ngFor let-item [ngForOf]="items">
    * ```
    *
@@ -1215,7 +1215,7 @@ class _ParseAST {
    * parsing errors in case the given expression is invalid.
    *
    * For example,
-   * ```
+   * ```html
    *   <div *ngFor="let item of items; index as i; trackBy: func">
    * ```
    * contains five bindings:

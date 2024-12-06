@@ -273,7 +273,7 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
    * @usageNotes
    * ### Set the values for the controls in the form array
    *
-   * ```
+   * ```ts
    * const arr = new FormArray([
    *   new FormControl(),
    *   new FormControl()
@@ -322,7 +322,7 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
    * @usageNotes
    * ### Patch the values for controls in a form array
    *
-   * ```
+   * ```ts
    * const arr = new FormArray([
    *    new FormControl(),
    *    new FormControl()
@@ -388,7 +388,7 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
    *
    * ### Reset the values in a form array and the disabled status for the first control
    *
-   * ```
+   * ```ts
    * arr.reset([
    *   {value: 'name', disabled: true},
    *   'last'

@@ -124,7 +124,7 @@ export interface UrlCreationOptions {
    * The following `go()` function navigates to the `list` route by
    * interpreting the destination URI as relative to the activated `child`  route
    *
-   * ```
+   * ```ts
    *  @Component({...})
    *  class ChildComponent {
    *    constructor(private router: Router, private route: ActivatedRoute) {}

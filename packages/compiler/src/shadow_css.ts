@@ -214,7 +214,7 @@ export class ShadowCss {
    *
    * For example, we convert this css:
    *
-   * ```
+   * ```scss
    * .box {
    *   animation: box-animation 1s forwards;
    * }
@@ -228,7 +228,7 @@ export class ShadowCss {
    *
    * to this:
    *
-   * ```
+   * ```scss
    * .box {
    *   animation: scopeName_box-animation 1s forwards;
    * }
@@ -262,7 +262,7 @@ export class ShadowCss {
    *
    * For example, it takes a rule such as:
    *
-   * ```
+   * ```scss
    * @keyframes box-animation {
    *   to {
    *     background-color: green;
@@ -272,7 +272,7 @@ export class ShadowCss {
    *
    * and returns:
    *
-   * ```
+   * ```scss
    * @keyframes scopeName_box-animation {
    *   to {
    *     background-color: green;

@@ -242,7 +242,7 @@ interface ComponentDefinition<T> extends Omit<DirectiveDefinition<T>, 'features'
    *
    * This function has following structure.
    *
-   * ```
+   * ```ts
    * function Template<T>(ctx:T, creationMode: boolean) {
    *   if (creationMode) {
    *     // Contains creation mode instructions.

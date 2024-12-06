@@ -142,7 +142,7 @@ export class HttpRequest<T> {
    * To pass a string representation of HTTP parameters in the URL-query-string format,
    * the `HttpParamsOptions`' `fromString` may be used. For example:
    *
-   * ```
+   * ```ts
    * new HttpParams({fromString: 'angular=awesome'})
    * ```
    */

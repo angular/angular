@@ -190,7 +190,7 @@ export interface ReferenceSymbol {
   /**
    * The location in the shim file of a variable that holds the type of the local ref.
    * For example, a reference declaration like the following:
-   * ```
+   * ```ts
    * var _t1 = document.createElement('div');
    * var _t2 = _t1; // This is the reference declaration
    * ```

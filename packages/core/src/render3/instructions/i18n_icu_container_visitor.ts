@@ -74,7 +74,7 @@ export function loadIcuContainerVisitor() {
    * to determine which root belong to the ICU.
    *
    * Example of usage.
-   * ```
+   * ```ts
    * const nextRNode = icuContainerIteratorStart(tIcuContainerNode, lView);
    * let rNode: RNode|null;
    * while(rNode = nextRNode()) {

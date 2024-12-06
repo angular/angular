@@ -156,7 +156,7 @@ export const enum DeclarationListEmitMode {
   /**
    * The list of declarations is emitted into the generated code as is.
    *
-   * ```
+   * ```ts
    * directives: [MyDir],
    * ```
    */
@@ -166,7 +166,7 @@ export const enum DeclarationListEmitMode {
    * The list of declarations is emitted into the generated code wrapped inside a closure, which
    * is needed when at least one declaration is a forward reference.
    *
-   * ```
+   * ```ts
    * directives: function () { return [MyDir, ForwardDir]; },
    * ```
    */
@@ -180,13 +180,13 @@ export const enum DeclarationListEmitMode {
    * any forward references within the list are resolved when the outer closure is invoked.
    *
    * Consider the case where the runtime has captured two declarations in two distinct values:
-   * ```
+   * ```ts
    * const dirA = MyDir;
    * const dirB = forwardRef(function() { return ForwardRef; });
    * ```
    *
    * This mode would emit the declarations captured in `dirA` and `dirB` as follows:
-   * ```
+   * ```ts
    * directives: function () { return [dirA, dirB].map(ng.resolveForwardRef); },
    * ```
    */

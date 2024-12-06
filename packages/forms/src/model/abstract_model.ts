@@ -1430,7 +1430,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    *
    * ### Manually set the errors for a control
    *
-   * ```
+   * ```ts
    * const login = new FormControl('someLogin');
    * login.setErrors({
    *   notUnique: true
@@ -1532,7 +1532,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * @usageNotes
    * For example, for the following `FormGroup`:
    *
-   * ```
+   * ```ts
    * form = new FormGroup({
    *   address: new FormGroup({ street: new FormControl() })
    * });
@@ -1564,7 +1564,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * @usageNotes
    * For example, for the following `FormGroup`:
    *
-   * ```
+   * ```ts
    * form = new FormGroup({
    *   address: new FormGroup({ street: new FormControl() })
    * });
