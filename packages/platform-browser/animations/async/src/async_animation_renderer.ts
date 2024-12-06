@@ -24,8 +24,8 @@ import {
   ɵChangeDetectionScheduler as ChangeDetectionScheduler,
   ɵNotificationSource as NotificationSource,
   ɵRuntimeError as RuntimeError,
-  Injector,
   InjectionToken,
+  type ListenerOptions,
 } from '@angular/core';
 import {ɵRuntimeErrorCode as RuntimeErrorCode} from '@angular/platform-browser';
 
@@ -278,13 +278,20 @@ export class DynamicDelegationRenderer implements Renderer2 {
     this.delegate.setValue(node, value);
   }
 
-  listen(target: any, eventName: string, callback: (event: any) => boolean | void): () => void {
+  listen(
+    target: any,
+    eventName: string,
+    callback: (event: any) => boolean | void,
+    options?: ListenerOptions,
+  ): () => void {
     // We need to keep track of animation events registred by the default renderer
     // So we can also register them against the animation renderer
     if (this.shouldReplay(eventName)) {
-      this.replay!.push((renderer: Renderer2) => renderer.listen(target, eventName, callback));
+      this.replay!.push((renderer: Renderer2) =>
+        renderer.listen(target, eventName, callback, options),
+      );
     }
-    return this.delegate.listen(target, eventName, callback);
+    return this.delegate.listen(target, eventName, callback, options);
   }
 
   private shouldReplay(propOrEventName: string): boolean {

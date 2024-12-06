@@ -14,6 +14,7 @@ import { HttpTransferCacheOptions } from '@angular/common/http';
 import * as i0 from '@angular/core';
 import * as i1 from '@angular/common';
 import { InjectionToken } from '@angular/core';
+import { ListenerOptions } from '@angular/core';
 import { NgZone } from '@angular/core';
 import { PlatformRef } from '@angular/core';
 import { Predicate } from '@angular/core';
@@ -77,7 +78,7 @@ export const EVENT_MANAGER_PLUGINS: InjectionToken<EventManagerPlugin[]>;
 // @public
 export class EventManager {
     constructor(plugins: EventManagerPlugin[], _zone: NgZone);
-    addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
+    addEventListener(element: HTMLElement, eventName: string, handler: Function, options?: ListenerOptions): Function;
     getZone(): NgZone;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<EventManager, never>;
@@ -88,7 +89,7 @@ export class EventManager {
 // @public
 export abstract class EventManagerPlugin {
     constructor(_doc: any);
-    abstract addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
+    abstract addEventListener(element: HTMLElement, eventName: string, handler: Function, options?: ListenerOptions): Function;
     // (undocumented)
     manager: EventManager;
     abstract supports(eventName: string): boolean;

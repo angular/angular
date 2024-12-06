@@ -22,6 +22,7 @@ import {
   RendererType2,
   ViewEncapsulation,
   ɵRuntimeError as RuntimeError,
+  type ListenerOptions,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
@@ -342,6 +343,7 @@ class DefaultDomRenderer2 implements Renderer2 {
     target: 'window' | 'document' | 'body' | any,
     event: string,
     callback: (event: any) => boolean,
+    options?: ListenerOptions,
   ): () => void {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       this.throwOnSyntheticProps &&
@@ -357,6 +359,7 @@ class DefaultDomRenderer2 implements Renderer2 {
       target,
       event,
       this.decoratePreventDefault(callback),
+      options,
     ) as VoidFunction;
   }
 

@@ -14,6 +14,7 @@ import {
   RendererFactory2,
   RendererStyleFlags2,
   ɵAnimationRendererType as AnimationRendererType,
+  type ListenerOptions,
 } from '@angular/core';
 import type {AnimationEngine} from './animation_engine_next';
 
@@ -135,8 +136,13 @@ export class BaseAnimationRenderer implements Renderer2 {
     this.delegate.setValue(node, value);
   }
 
-  listen(target: any, eventName: string, callback: (event: any) => boolean | void): () => void {
-    return this.delegate.listen(target, eventName, callback);
+  listen(
+    target: any,
+    eventName: string,
+    callback: (event: any) => boolean | void,
+    options?: ListenerOptions,
+  ): () => void {
+    return this.delegate.listen(target, eventName, callback, options);
   }
 
   protected disableAnimations(element: any, value: boolean) {
@@ -173,6 +179,7 @@ export class AnimationRenderer extends BaseAnimationRenderer implements Renderer
     target: 'window' | 'document' | 'body' | any,
     eventName: string,
     callback: (event: any) => any,
+    options?: ListenerOptions,
   ): () => void {
     if (eventName.charAt(0) == ANIMATION_PREFIX) {
       const element = resolveElementFromTarget(target);
@@ -188,7 +195,7 @@ export class AnimationRenderer extends BaseAnimationRenderer implements Renderer
         this.factory.scheduleListenerCallback(countId, callback, event);
       });
     }
-    return this.delegate.listen(target, eventName, callback);
+    return this.delegate.listen(target, eventName, callback, options);
   }
 }
 
