@@ -107,7 +107,7 @@ export class PendingTasks {
   /**
    * Runs an asynchronous function and blocks the application's stability until the function completes.
    *
-   * ```
+   * ```ts
    * pendingTasks.run(async () => {
    *   const userData = await fetch('/api/user');
    *   this.userData.set(userData);
@@ -117,7 +117,7 @@ export class PendingTasks {
    * Application stability is at least delayed until the next tick after the `run` method resolves
    * so it is safe to make additional updates to application state that would require UI synchronization:
    *
-   * ```
+   * ```ts
    * const userData = await pendingTasks.run(() => fetch('/api/user'));
    * this.userData.set(userData);
    * ```

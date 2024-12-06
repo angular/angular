@@ -139,7 +139,7 @@ export interface LView<T = unknown> extends Array<any> {
    * Store the `TNode` of the location where the current `LView` is inserted into.
    *
    * Given:
-   * ```
+   * ```html
    * <div>
    *   <ng-template><span></span></ng-template>
    * </div>
@@ -154,7 +154,7 @@ export interface LView<T = unknown> extends Array<any> {
    * insertion information in the `TView` and instead we must store it in the `LView[T_HOST]`.
    *
    * So to determine where is our insertion parent we would execute:
-   * ```
+   * ```ts
    * const parentLView = lView[PARENT];
    * const parentTNode = lView[T_HOST];
    * const insertionParent = parentLView[parentTNode.index];
@@ -249,7 +249,7 @@ export interface LView<T = unknown> extends Array<any> {
    * `DECLARATION_VIEW`.
    *
    * Example:
-   * ```
+   * ```html
    * <#VIEW #myComp>
    *  <div *ngIf="true">
    *   <ng-template #myTmpl>...</ng-template>
@@ -274,7 +274,7 @@ export interface LView<T = unknown> extends Array<any> {
    * `DECLARATION_COMPONENT_VIEW` to differentiate them. As in this example.
    *
    * Example showing intra component `LView` movement.
-   * ```
+   * ```html
    * <#VIEW #myComp>
    *   <div *ngIf="condition; then thenBlock else elseBlock"></div>
    *   <ng-template #thenBlock>Content to render when condition is true.</ng-template>
@@ -284,7 +284,7 @@ export interface LView<T = unknown> extends Array<any> {
    * The `thenBlock` and `elseBlock` is moved but not transplanted.
    *
    * Example showing inter component `LView` movement (transplanted view).
-   * ```
+   * ```html
    * <#VIEW #myComp>
    *   <ng-template #myTmpl>...</ng-template>
    *   <insertion-component [template]="myTmpl"></insertion-component>

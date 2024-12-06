@@ -263,7 +263,7 @@ export class BindingParser {
 
   /**
    * Parses the bindings in a microsyntax expression, e.g.
-   * ```
+   * ```html
    *    <tag *tplKey="let value1 = prop; let value2 = localVar">
    * ```
    *
