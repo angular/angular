@@ -1,0 +1,16 @@
+<div class="router-tree-wrapper">
+  <div>
+    <input
+      matInput
+      (input)="searchRoutes($event)"
+      placeholder="Search routes"
+      class="filter-input"
+    />
+    <mat-checkbox (change)="togglePathSettings()">Show Full Path </mat-checkbox>
+  </div>
+  <section #routerTree class="router-tree router-graph router-tree-container">
+    <svg #routerTreeSvgContainer>
+      <g #routerTreeMainGroup></g>
+    </svg>
+  </section>
+</div>

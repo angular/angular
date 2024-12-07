@@ -1,0 +1,41 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "zip",
+    srcs = glob(
+        [
+            "*.ts",
+        ],
+        exclude = [
+            "index.ts",
+        ],
+    ),
+    deps = [
+        "//adev/shared-docs/interfaces",
+        "//adev/shared-docs/pipeline/examples/shared",
+        "//adev/shared-docs/pipeline/guides",
+        "@npm//@types/node",
+        "@npm//fast-glob",
+        "@npm//fflate",
+    ],
+)
+
+ts_library(
+    name = "index",
+    srcs = [
+        "index.ts",
+    ],
+    visibility = [
+        "//adev/shared-docs:__subpackages__",
+    ],
+    deps = [
+        ":zip",
+        "@npm//@types/node",
+    ],
+)
+
+exports_files([
+    "index.ts",
+])

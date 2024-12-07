@@ -1,0 +1,231 @@
+:host {
+  // backgrounds
+  --code-editor-selection-background: color-mix(
+    in srgb,
+    var(--selection-background) 5%,
+    var(--octonary-contrast)
+  );
+  --code-editor-focused-selection-background: color-mix(
+    in srgb,
+    var(--selection-background) 12%,
+    var(--octonary-contrast)
+  );
+
+  // text base colors
+  --code-editor-text-base-color: var(--primary-contrast);
+
+  // tooltips
+  --code-editor-tooltip-background: color-mix(
+    in srgb,
+    var(--bright-blue),
+    var(--page-background) 90%
+  );
+  --code-editor-tooltip-color: var(--primary-contrast);
+  --code-editor-tooltip-border: 1px solid
+    color-mix(in srgb, var(--bright-blue), var(--page-background) 70%);
+  --code-editor-tooltip-border-radius: 0.25rem;
+
+  // autocomplete
+  --code-editor-autocomplete-item-background: var(--senary-contrast);
+  --code-editor-autocomplete-item-color: var(--primary-contrast);
+
+  // cursor
+  --code-name: var(--primary-contrast);
+  --code-editor-cursor-color: var(--code-name);
+  --code-variable-name: var(--bright-blue);
+  --code-property-name: var(--code-name);
+  --code-definition-keyword: var(--electric-violet);
+
+  // comments
+  --code-comment: var(--electric-violet);
+  --code-line-comment: var(--symbolic-gray);
+  --code-block-comment: var(--symbolic-brown);
+  --code-doc-comment: var(--code-comment);
+
+  // keywords
+  --code-keyword: var(--electric-violet);
+  --code-modifier: var(--code-keyword);
+  --code-operator-keyword: var(--code-keyword);
+  --code-control-keyword: var(--code-keyword);
+  --code-module-keyword: var(--code-keyword);
+
+  // structural
+  --code-brace: var(--vivid-pink);
+
+  // Misc
+  --code-bool: var(--bright-blue);
+  --code-string: var(--orange-red);
+  --code-regexp: var(--orange-red);
+
+  --code-tags: var(--bright-blue);
+  --code-component: var(--primary-contrast);
+  --code-type-name: var(--vivid-pink);
+  --code-self: var(--orange-red);
+
+  position: relative;
+}
+
+.docs-code-editor-tabs {
+  display: flex;
+  background: var(--octonary-contrast);
+  border-block-end: 1px solid var(--senary-contrast);
+  transition: background 0.3s ease, border 0.3s ease;
+}
+
+.adev-tabs-and-plus {
+  display: flex;
+  width: calc(100% - 2.875rem * 2);
+  min-height: 48px;
+}
+
+.adev-add-file,
+.docs-delete-file,
+.docs-rename-file {
+  docs-icon {
+    color: var(--gray-400);
+    transition: color 0.3s ease;
+    font-size: 1.2rem;
+  }
+  &:hover {
+    docs-icon {
+      color: var(--primary-contrast);
+    }
+  }
+}
+
+.docs-delete-file,
+.docs-rename-file {
+  padding-inline-start: 0.1rem;
+  padding-inline-end: 0;
+  margin-block-start: 0.2rem;
+  docs-icon {
+    font-size: 1rem;
+  }
+}
+
+.adev-new-file-input,
+.adev-rename-file-input {
+  color: var(--primary-contrast);
+  border: none;
+  border-radius: 0;
+  border-block-end: 1px solid var(--senary-contrast);
+  background: transparent;
+  outline: none;
+  transition: color 0.3s ease;
+  &:focus {
+    background: transparent;
+    border-block-end: 1px solid var(--primary-contrast);
+  }
+}
+
+.adev-code-editor-wrapper {
+  // adjust height for terminal tabs
+  // so that scroll bar & content do not render under tabs
+  height: calc(100% - 49px);
+  transition: height 0.3s ease;
+
+  &-hidden {
+    display: none;
+  }
+
+  // If error box are displayed, move inline-errors-box
+  // to bottom of the editor and adjust height
+  // so that scroll bar & content do not render under tabs
+  &:has(~ .adev-inline-errors-box) ~ .adev-inline-errors-box {
+      bottom: auto;
+  }
+  &:has(~ .adev-inline-errors-box) {
+    height: min(75% - 49px);
+  }
+}
+
+.adev-inline-errors-box {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 0.5rem;
+  right: 0.5rem;
+  padding: 0.25rem;
+  background-color: color-mix(in srgb, var(--bright-blue), var(--page-background) 90%);
+  border: 1px solid color-mix(in srgb, var(--bright-blue), var(--page-background) 70%);
+  border-radius: 0.25rem;
+  overflow: auto;
+  max-height: 25%;
+
+  button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0.25rem;
+
+    docs-icon {
+      font-size: 1.25rem;
+      color: var(--quaternary-contrast);
+      transition: color 0.3s ease;
+    }
+
+    &:hover {
+      docs-icon {
+        color: var(--primary-contrast);
+      }
+    }
+  }
+
+  ul {
+    padding: 0;
+    margin: 0;
+    margin-inline: 1.25rem;
+    color: var(--tertiary-contrast);
+    overflow: auto;
+  }
+}
+
+.adev-editor-download-button {
+  padding: 0;
+  width: 2.875rem;
+  border-radius: 0 0.19rem 0 0;
+  background: var(--octonary-contrast);
+  border-inline-start: 1px solid var(--senary-contrast);
+
+  docs-icon {
+    color: var(--gray-400);
+    transition: color 0.3s ease;
+    font-size: 1.3rem;
+  }
+
+  &:hover {
+    docs-icon {
+      color: var(--primary-contrast);
+    }
+  }
+}
+
+.adev-editor-dropdown {
+  border: 1px solid var(--senary-contrast);
+  border-radius: 0.25rem;
+  padding: 0;
+  transform: translateY(-0.7rem);
+
+  button {
+    background: var(--page-background);
+    font-size: 0.875rem;
+    width: 100%;
+    text-align: left;
+    padding-block: 0.5rem;
+    color: var(--quaternary-contrast);
+    transition: color 0.3s ease, background 0.3s ease;
+    font-weight: 400;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &:hover {
+      background: var(--senary-contrast);
+      color: var(--primary-contrast);
+    }
+    .icon {
+      margin: initial;
+      padding: initial;
+      width: auto;
+    }
+  }
+}

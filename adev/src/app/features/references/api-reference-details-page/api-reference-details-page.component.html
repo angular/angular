@@ -1,0 +1,30 @@
+<div class="adev-header-and-tabs">
+  <docs-viewer [docContent]="parsedDocContent().header" class="docs-reference-header"></docs-viewer>
+
+  <mat-tab-group
+    class="docs-reference-tabs"
+    animationDuration="0ms"
+    mat-stretch-tabs="false"
+    [selectedIndex]="selectedTabIndex()"
+    (selectedIndexChange)="tabChange($event)"
+  >
+    @for (tab of tabs(); track tab.url) {
+      <mat-tab [label]="tab.title">
+        <div class="adev-reference-tab-body">
+          <docs-viewer [docContent]="tab.content"></docs-viewer>
+        </div>
+      </mat-tab>
+    }
+  </mat-tab-group>
+</div>
+
+@if (isApiTabActive()) {
+  <docs-viewer
+    class="docs-reference-members-container"
+    [docContent]="parsedDocContent().members"
+    (contentLoaded)="membersCardsLoaded()"
+  >
+  </docs-viewer>
+}
+
+<div id="jump-msg" class="cdk-visually-hidden">Jump to details</div>

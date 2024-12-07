@@ -1,0 +1,205 @@
+@use '@angular/docs/styles/_split.scss';
+
+$pane-border: 1px solid var(--senary-contrast);
+$width-breakpoint: 950px;
+
+.adev-editor-container {
+  container-type: size;
+  container-name: embedded-editor;
+  height: 100%;
+  position: relative;
+  border: 1px solid var(--senary-contrast);
+}
+
+// The entire thing - editor, terminal, console
+.adev-editor {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  border: $pane-border;
+  transition: border-color 0.3s ease;
+  border-radius: 0.25rem;
+  overflow: hidden;
+  height: 100%;
+
+  @container embedded-editor (min-width: $width-breakpoint) {
+    flex-direction: row;
+  }
+
+  @container embedded-editor (max-width: $width-breakpoint) {
+    > div {
+      height: 50%;
+    }
+  }
+
+  // If files are displayed, share the space
+  &:has(.docs-editor-tabs) {
+    .adev-tutorial-code-editor {
+      display: block;
+      box-sizing: border-box;
+
+      // prevent border flicker when resizing editor
+      transition: border-color 0s;
+      @container embedded-editor (min-width: $width-breakpoint) {
+        // row : embedded-editor's flex-direction
+        border-inline-end: $pane-border;
+      }
+      @container embedded-editor (max-width: $width-breakpoint) {
+        // column : embedded-editor's flex-direction
+        border-block-end: $pane-border;
+      }
+    }
+  }
+}
+
+.adev-tutorial-code-editor {
+  width: 100%;
+  height: 100%;
+}
+
+.docs-right-side {
+  height: 100%;
+
+  // prevent border flicker when resizing editor
+  transition: border-color 0s;
+  @container embedded-editor (min-width: $width-breakpoint) {
+    // row : embedded-editor's flex-direction
+    border-inline-start: $pane-border;
+  }
+  @container embedded-editor (max-width: $width-breakpoint) {
+    // column : embedded-editor's flex-direction
+    border-block-start: $pane-border;
+  }
+}
+
+.docs-editor-tabs-and-refresh {
+  position: relative;
+  height: 100%;
+
+  // prevent border flicker when resizing editor
+  transition: border-color 0s;
+  border-block-start: $pane-border;
+}
+
+// preview, terminal, console side/container of the embedded editor
+.docs-editor-tabs {
+  height: 100%;
+  display: block;
+}
+
+.adev-refresh-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 48px;
+  width: 46px;
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  border-inline-start: $pane-border;
+  background: var(--octonary-contrast);
+  z-index: var(--z-index-content);
+
+  docs-icon {
+    color: var(--gray-400);
+    margin: auto;
+    font-size: 1.3rem;
+    transition: color 0.3s ease;
+  }
+
+  &:hover {
+    docs-icon {
+      color: var(--primary-contrast);
+    }
+  }
+
+  &:disabled {
+    docs-icon {
+      color: var(--gray-400);
+    }
+  }
+}
+
+.adev-console-section {
+  display: block;
+}
+
+.adev-preview-section {
+  height: 100%;
+
+  // prevent border flicker when resizing editor
+  transition: border-color 0s;
+  @container embedded-editor (min-width: $width-breakpoint) {
+    // row : embedded-editor's flex-direction
+    border-block-end: $pane-border;
+  }
+  @container embedded-editor (max-width: $width-breakpoint) {
+    // column : embedded-editor's flex-direction
+    border-block-start: $pane-border;
+  }
+}
+
+.adev-preview-header {
+  border-block-end: $pane-border;
+  font-size: 0.875rem;
+  padding: 0.98rem 1.25rem;
+  display: flex;
+  align-items: center;
+  background-color: var(--octonary-contrast);
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
+
+  i {
+    color: var(--bright-blue);
+    margin-inline-start: 0.5rem;
+    margin-inline-end: 0.25rem;
+    font-size: 1.25rem;
+  }
+  span {
+    color: var(--primary-contrast);
+  }
+}
+
+.adev-alert {
+  position: absolute;
+  inset: 0;
+  border-radius: 0.25rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: color-mix(var(--page-background) 50%, transparent);
+  backdrop-filter: blur(3px);
+  height: 100%;
+  width: 100%;
+  z-index: 100;
+
+  h2 {
+    margin-block: 0;
+  }
+
+  p {
+    margin-block-end: 1rem;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    max-width: 300px;
+    border: 1px solid var(--quinary-contrast);
+    border-radius: 0.25rem;
+    background-color: color-mix(in srgb, var(--page-background) 90%, transparent);
+    button {
+      align-self: flex-end;
+    }
+    padding: 1.5rem;
+  }
+}
+
+::ng-deep mat-tab-group {
+  .mat-mdc-tab-body-wrapper,
+  .mat-mdc-tab-body,
+  .mat-mdc-tab-body-content {
+    display: contents;
+  }
+}

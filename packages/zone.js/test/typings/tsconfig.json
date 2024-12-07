@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "experimentalDecorators": true,
+    "outDir": "./build",
+    "typeRoots": [],
+    "rootDir": ".",
+    "target": "es2020",
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "noEmitOnError": false,
+    "stripInternal": false,
+    "strict": true,
+    "lib": ["es5", "dom", "es2015.collection", "es2015.iterable", "es2015.promise"]
+  },
+  "files": ["./type.test.ts", "./node_modules/zone.js/zone.d.ts"]
+}

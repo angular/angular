@@ -1,0 +1,17 @@
+:host {
+  .docs-viewer {
+    &.docs-animate-content {
+      animation: fade-in 500ms;
+    }
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

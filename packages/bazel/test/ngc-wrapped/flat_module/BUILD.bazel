@@ -1,0 +1,16 @@
+load("//tools:defaults.bzl", "ng_module")
+
+package(default_visibility = ["//packages/bazel/test:__subpackages__"])
+
+ng_module(
+    name = "flat_module",
+    srcs = [
+        "export.ts",
+        "index.ts",
+    ],
+    module_name = "flat_module",
+    tsconfig = ":tsconfig.json",
+    deps = [
+        "//packages/core",
+    ],
+)

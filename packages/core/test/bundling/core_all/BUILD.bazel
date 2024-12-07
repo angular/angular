@@ -1,0 +1,35 @@
+load("//tools:defaults.bzl", "app_bundle", "ts_library")
+load("@npm//@angular/build-tooling/bazel/map-size-tracking:index.bzl", "js_mapping_size_test")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "core_all",
+    srcs = ["index.ts"],
+    tags = [],
+    deps = [
+        "//packages/core",
+    ],
+)
+
+app_bundle(
+    name = "bundle",
+    entry_point = ":index.ts",
+    deps = [
+        ":core_all",
+        "//packages/core",
+        "@npm//rxjs",
+    ],
+)
+
+js_mapping_size_test(
+    name = "size_test",
+    src = ":bundle.min.js",
+    golden_file = ":bundle.golden_size_map.json",
+    max_byte_diff = 250,
+    max_percentage_diff = 15,
+    source_map = ":bundle.min.js.map",
+    tags = [
+        "manual",
+    ],
+)

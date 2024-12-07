@@ -1,0 +1,61 @@
+:host,
+.profiler-wrapper {
+  font-size: 1em;
+  width: 100%;
+  height: calc(100% - 30px);
+
+  p {
+    margin: 0;
+  }
+}
+
+.mat-icon {
+  font-size: 18px;
+  top: 4px;
+  position: relative;
+}
+
+.profiler-control {
+  cursor: pointer;
+
+  &.recording-button {
+    color: #d83c34;
+  }
+}
+
+.instructions {
+  &.hidden {
+    display: none;
+  }
+
+  input,
+  span {
+    margin-top: 5px;
+    font-size: 1em;
+    cursor: pointer;
+  }
+}
+
+#profiler-content-wrapper {
+  margin: 0;
+  height: calc(100% - 30px);
+  width: 100%;
+}
+
+.visualization {
+  margin: 0;
+  height: 100%;
+}
+
+:host-context(.dark-theme) {
+  .profiler-control {
+    &.recording-button {
+      color: #ff625a;
+    }
+  }
+}
+
+.mdc-card {
+  flex-direction: row;
+  align-items: center;
+}

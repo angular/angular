@@ -1,0 +1,12 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "saucelabs-daemon",
+    srcs = [
+        "browser.ts",
+        "ipc-defaults.ts",
+        "ipc-messages.ts",
+    ],
+)

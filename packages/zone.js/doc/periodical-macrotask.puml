@@ -1,0 +1,18 @@
+@startuml
+[*] --> notScheduled: initialize
+notScheduled --> scheduling: setInterval
+
+scheduling: zoneSpec.onScheduleTask
+scheduling: zoneSpec.onHasTask
+
+scheduling --> scheduled
+scheduled --> running: interval\n callback
+running: zoneSpec:onInvokeTask
+
+scheduled --> canceling: clearInterval
+canceling: zoneSpec.onCancelTask
+canceling --> notScheduled
+canceling: zoneSpec.onHasTask
+running --> scheduled: callback\n finished
+running --> canceling: clearInterval
+@enduml

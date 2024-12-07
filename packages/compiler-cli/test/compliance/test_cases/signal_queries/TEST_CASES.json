@@ -1,0 +1,50 @@
+{
+  "$schema": "../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should generate signal based query instructions for a directive",
+      "inputFiles": ["query_in_directive.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "query_in_directive.js",
+              "generated": "query_in_directive.js"
+            }
+          ],
+          "failureMessage": "Incorrect definition"
+        }
+      ]
+    },
+    {
+      "description": "should generate signal based query instructions for a component",
+      "inputFiles": ["query_in_component.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "query_in_component.js",
+              "generated": "query_in_component.js"
+            }
+          ],
+          "failureMessage": "Incorrect definition"
+        }
+      ]
+    },
+    {
+      "description": "should handle a mix of decorator-based and signal-based queries",
+      "inputFiles": ["mixed_query_variants.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "mixed_query_variants.js",
+              "generated": "mixed_query_variants.js"
+            }
+          ],
+          "failureMessage": "Incorrect output"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+load("//devtools/tools:typescript.bzl", "ts_library", "ts_test_library")
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "tsconfig.lib.json",
+    "tsconfig.spec.json",
+])
+
+ts_library(
+    name = "protocol_ts",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = [
+            "**/*.spec.ts",
+            "src/test.ts",
+        ],
+    ),
+    deps = [
+        "//packages/core",
+        "//packages/platform-browser-dynamic",
+        "@npm//@types",
+    ],
+)
+
+ts_test_library(
+    name = "protocol_test",
+    srcs = glob(
+        ["**/*.spec.ts"],
+    ),
+    deps = [
+        ":protocol_ts",
+        "//packages/core/testing",
+        "//packages/platform-browser-dynamic/testing",
+        "@npm//@types",
+    ],
+)
+
+js_library(
+    name = "protocol",
+    package_name = "protocol",
+    deps = [":protocol_ts"],
+)
+
+karma_web_test_suite(
+    name = "test",
+    deps = [
+        "//devtools/projects/protocol:protocol_test",
+    ],
+)

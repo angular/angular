@@ -1,0 +1,20 @@
+{
+  "moduleName": "@angular/core",
+  "entries": [
+    {
+      "name": "ng-content",
+      "entryType": "element",
+      "jsdocTags": []
+    },
+    {
+      "name": "ng-template",
+      "entryType": "element",
+      "jsdocTags": []
+    },
+    {
+      "name": "ng-container",
+      "entryType": "element",
+      "jsdocTags": []
+    }
+  ]
+}

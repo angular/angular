@@ -1,0 +1,36 @@
+load("//tools:defaults.bzl", "esbuild", "http_server", "ts_library")
+
+package(default_visibility = ["//modules/playground:__subpackages__"])
+
+# Since this test uses the AOT-incompatible version of "@angular/upgrade", we cannot
+# use the "ng_module" rule here unless we switch this example to "upgrade/static".
+ts_library(
+    name = "upgrade",
+    srcs = glob(["**/*.ts"]),
+    tsconfig = "//modules/playground:tsconfig-build.json",
+    deps = [
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/upgrade",
+    ],
+)
+
+# Note: Not using `app_bundle` here because this example relies on JIT.
+esbuild(
+    name = "app_bundle",
+    entry_point = ":index.ts",
+    deps = [":upgrade"],
+)
+
+http_server(
+    name = "devserver",
+    srcs = [
+        "index.html",
+        "@npm//:node_modules/angular-1.8/angular.js",
+        "@npm//:node_modules/reflect-metadata/Reflect.js",
+    ],
+    deps = [
+        ":app_bundle",
+        "//packages/zone.js/bundles:zone.umd.js",
+    ],
+)

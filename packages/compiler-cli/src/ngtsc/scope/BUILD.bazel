@@ -1,0 +1,19 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "scope",
+    srcs = ["index.ts"] + glob([
+        "src/**/*.ts",
+    ]),
+    deps = [
+        "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/diagnostics",
+        "//packages/compiler-cli/src/ngtsc/imports",
+        "//packages/compiler-cli/src/ngtsc/metadata",
+        "//packages/compiler-cli/src/ngtsc/reflection",
+        "//packages/compiler-cli/src/ngtsc/util",
+        "@npm//typescript",
+    ],
+)

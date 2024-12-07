@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <style>
+    table {
+      border-collapse: collapse;
+    }
+
+    table,
+    th,
+    td {
+      border: 1px solid black;
+    }
+
+    ul {
+      font-size: 24px
+    }
+
+    li {
+      font-size: 16px
+    }
+  </style>
+  <script src='../../dist/zone.js'></script>
+  <script src='./performance_setup.js'></script>
+  <script src='./performance_ui.js'></script>
+  <script src='./timeout.js'></script>
+  <script src='./requestAnimationFrame.js'></script>
+  <script src='./eventTarget.js'></script>
+  <script src='./xhr.js'></script>
+  <script src='./promise.js'></script>
+  <script>
+    window.onload = function () {
+      var jsonResult = {};
+
+      var div = document.getElementById('tests');
+      var json = document.getElementById('json');
+      var table = document.getElementById('summary');
+
+      var tests = window['__zone_symbol__performance_tasks'];
+      window['__zone_symbol__testTargetsUIBuild']({
+        tests: tests,
+        targetContainer: div,
+        resultsContainer: table,
+        jsonContainer: json,
+        jsonResult: jsonResult
+      });
+    }
+  </script>
+</head>
+
+<body>
+  <div id="thetext">Performance Bencnhmark of Zone.js vs Native Delegate!</div>
+  <div id="tests"></div>
+  <div>
+    <table id="summary" class="table">
+      <tr class="tableheader">
+        <th>
+          Module
+        </th>
+        <th>
+          API
+        </th>
+        <th>
+          Performance overhead
+        </th>
+      </tr>
+    </table>
+  </div>
+  <div id="json"></div>
+</body>
+
+</html>

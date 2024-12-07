@@ -1,0 +1,21 @@
+load("//tools:defaults.bzl", "generate_api_docs")
+
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = [
+        "index.ts",
+    ],
+)
+
+generate_api_docs(
+    name = "core_global_docs",
+    srcs = [
+        ":files_for_docgen",
+        "//packages:common_files_and_deps_for_docs",
+    ],
+    entry_point = ":index.ts",
+    module_label = "window.ng globals",
+    module_name = "@angular/core/globals",
+)
