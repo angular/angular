@@ -23,9 +23,6 @@
 
 .adev-mobile-nav-bar {
   display: none;
-  @include mq.for-phone-only {
-    display: flex;
-  }
   gap: 0.75rem;
   backdrop-filter: blur(16px);
   background-color: color-mix(in srgb, var(--page-background) 70%, transparent);
@@ -39,6 +36,10 @@
   transform: translateY(0);
   // mobile bar: enter with delay
   transition: transform 0.3s ease-out 0.6s;
+
+  @include mq.for-phone-only {
+    display: flex;
+  }
 
   &:has(+ .adev-nav-primary--open) {
     transform: translateY(-100%);
@@ -68,6 +69,24 @@
   padding-block-start: 1rem;
   padding-block-end: 2rem;
   box-sizing: border-box;
+  // Add a subtle border for the home page
+  border-block-end: 1px solid var(--septenary-contrast);
+
+  @include mq.for-tablet-up {
+    border-inline-end: 1px solid var(--septenary-contrast);
+  }
+
+  @include mq.for-phone-only {
+    border-inline-end: 1px solid var(--septenary-contrast);
+  }
+
+  @include mq.for-tablet {
+    flex-direction: row;
+    width: 100vw;
+    padding-inline: calc(var(--layout-padding) - 1.25rem);
+    height: auto;
+    padding-block: 0;
+  }
 
   &.adev-nav-primary--next,
   &.adev-nav-primary--rc {
@@ -114,23 +133,6 @@
     @media (prefers-reduced-motion: reduce-motion) {
       transition: none;
     }
-  }
-
-  @include mq.for-tablet {
-    flex-direction: row;
-    width: 100vw;
-    padding-inline: calc(var(--layout-padding) - 1.25rem);
-    height: auto;
-    padding-block: 0;
-  }
-
-  // Add a subtle border for the home page
-  border-block-end: 1px solid var(--septenary-contrast);
-  @include mq.for-tablet-up {
-    border-inline-end: 1px solid var(--septenary-contrast);
-  }
-  @include mq.for-phone-only {
-    border-inline-end: 1px solid var(--septenary-contrast);
   }
 }
 
@@ -253,10 +255,11 @@
 
 .adev-close-nav {
   display: none;
+  color: var(--primary-contrast);
+
   @include mq.for-phone-only {
     display: block;
   }
-  color: var(--primary-contrast);
 }
 
 .adev-search-desktop {

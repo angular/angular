@@ -23,12 +23,6 @@
     top: 0;
     left: 0;
     width: 2px;
-    @include mq.for-tablet {
-      width: auto;
-      top: auto;
-      right: 0;
-      height: 2px;
-    }
 
     // TODO: Make this gradient if the page is currently active, and black if child page active
     background-color: var(--primary-contrast);
@@ -36,6 +30,13 @@
     transform: scale(0.9);
     transform-origin: center;
     transition: opacity 0.3s ease, transform 0.3s ease;
+
+    @include mq.for-tablet {
+      width: auto;
+      top: auto;
+      right: 0;
+      height: 2px;
+    }
   }
 
   &:not(.adev-nav-item--logo) {
@@ -56,9 +57,6 @@
   .adev-nav-button {
     display: flex;
     flex-direction: column;
-    @include mq.for-tablet {
-      flex-direction: row;
-    }
     justify-content: center;
     align-items: center;
     gap: 0.75rem;
@@ -68,6 +66,10 @@
     color: inherit;
     cursor: pointer;
     transition: fill 0.3s ease;
+
+    @include mq.for-tablet {
+      flex-direction: row;
+    }
   }
 
   &__label {
