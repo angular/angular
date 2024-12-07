@@ -4,13 +4,6 @@
 .adev-tutorial-nav-container {
   position: sticky;
   top: 0;
-
-  @include mq.for-tablet-landscape-down {
-    top: 60px;
-  }
-  @include mq.for-phone-only {
-    top: 55px;
-  }
   width: 100%;
   background-color: var(--page-background);
   padding-block-start: var(--layout-padding);
@@ -20,6 +13,14 @@
   z-index: var(--z-index-nav);
   transition: background-color 0.3s ease;
   container: nav-container / inline-size;
+
+  @include mq.for-tablet-landscape-down {
+    top: 60px;
+  }
+
+  @include mq.for-phone-only {
+    top: 55px;
+  }
 
   &:has(.docs-reveal-answer-button) {
     @container tutorial-content (max-width: 430px) {

@@ -377,12 +377,11 @@
       margin: 0 auto;
       display: flex;
       width: 75vw;
+      height: calc(100vh - 110px);
 
       @include mq.for-phone-only {
         width: 95vw;
       }
-
-      height: calc(100vh - 110px);
 
       .adev-editor-container {
         width: 100%;

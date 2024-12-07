@@ -25,9 +25,6 @@
 // .adev-secondary-nav-mask stays in the same place during nav animation, as a mask
 .adev-secondary-nav-mask {
   position: sticky;
-  @include mq.for-tablet-landscape-down {
-    position: absolute;
-  }
   top: 0;
   overflow-x: hidden;
   min-width: var(--secondary-nav-width);
@@ -35,6 +32,10 @@
   background-color: var(--page-background);
   z-index: var(--z-index-nav);
   transition: transform 0.45s ease;
+
+  @include mq.for-tablet-landscape-down {
+    position: absolute;
+  }
 
   @media (prefers-reduced-motion: no-preference) {
     transition:
