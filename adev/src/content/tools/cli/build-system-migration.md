@@ -283,7 +283,7 @@ An example is as follows:
       ...
       "define": {
           "SOME_NUMBER": "5",
-          "ANOTHER": "''this is a string literal, note the extra single quotes'",
+          "ANOTHER": "'this is a string literal, note the extra single quotes'",
           "REFERENCE": "globalThis.someValue.noteTheAbsentSingleQuotes"
       }
     }
