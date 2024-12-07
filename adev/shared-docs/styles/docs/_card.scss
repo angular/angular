@@ -4,11 +4,12 @@
   .docs-card-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
+    grid-gap: 1.25rem;
+    margin-block: 1rem;
+
     @container docs-content (max-width: 450px) {
       grid-template-columns: 1fr;
     }
-    grid-gap: 1.25rem;
-    margin-block: 1rem;
   }
 
   .docs-card {
