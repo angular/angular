@@ -86,6 +86,11 @@ export function generateManifest(apiCollections: EntryCollection[]): Manifest {
     }
   }
 
+  // We sort the API entries alphabetically by name to ensure a stable order in the manifest.
+  manifest.forEach((entry) => {
+    entry.entries.sort((entry1, entry2) => entry1.name.localeCompare(entry2.name));
+  });
+
   manifest.sort((entry1, entry2) => {
     // Ensure that labels that start with a `code` tag like `window.ng` are last
     if (entry1.moduleLabel.startsWith('<')) {

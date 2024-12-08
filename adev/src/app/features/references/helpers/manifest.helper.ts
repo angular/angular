@@ -43,12 +43,10 @@ export function getApiNavigationItems(): NavigationItem[] {
   for (const packageEntry of manifest) {
     const packageNavigationItem: NavigationItem = {
       label: packageEntry.moduleLabel,
-      children: packageEntry.entries
-        .map((api) => ({
-          path: getApiUrl(packageEntry, api.name),
-          label: api.name,
-        }))
-        .sort((a, b) => a.label.localeCompare(b.label)),
+      children: packageEntry.entries.map((api) => ({
+        path: getApiUrl(packageEntry, api.name),
+        label: api.name,
+      })),
     };
 
     apiNavigationItems.push(packageNavigationItem);
