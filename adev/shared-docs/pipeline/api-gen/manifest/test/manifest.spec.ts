@@ -14,25 +14,39 @@ describe('api manifest generation', () => {
   it('should generate a manifest from multiple collections', () => {
     const manifest: Manifest = generateManifest([
       {
+        moduleName: '@angular/router',
+        entries: [entry({name: 'Router', entryType: EntryType.UndecoratedClass})],
+        normalizedModuleName: 'angular_router',
+        moduleLabel: 'router',
+      },
+      {
         moduleName: '@angular/core',
         entries: [entry({name: 'PI', entryType: EntryType.Constant})],
         normalizedModuleName: 'angular_core',
         moduleLabel: 'core',
       },
       {
-        moduleName: '@angular/router',
-        entries: [entry({name: 'Router', entryType: EntryType.UndecoratedClass})],
-        normalizedModuleName: 'angular_router',
-        moduleLabel: 'router',
+        moduleName: '@angular/core',
+        entries: [entry({name: 'foo', entryType: EntryType.Constant})],
+        normalizedModuleName: 'angular_core',
+        moduleLabel: 'core',
       },
     ]);
 
+    // The test also makes sure that we sort modules & entries by name.
     expect(manifest).toEqual([
       {
         moduleName: '@angular/core',
         moduleLabel: 'core',
         normalizedModuleName: 'angular_core',
         entries: [
+          {
+            name: 'foo',
+            type: EntryType.Constant,
+            isDeprecated: false,
+            isDeveloperPreview: false,
+            isExperimental: false,
+          },
           {
             name: 'PI',
             type: EntryType.Constant,
