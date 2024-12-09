@@ -102,7 +102,7 @@ Now that you have defined your routes, add them to your application. First, add 
   </ul>
 </nav>
 <!-- The routed views render in the <router-outlet>-->
-<router-outlet></router-outlet>
+<router-outlet />
 ```
 
 You also need to add the `RouterLink`, `RouterLinkActive`, and `RouterOutlet` to the `imports` array of `AppComponent`.
@@ -110,7 +110,7 @@ You also need to add the `RouterLink`, `RouterLinkActive`, and `RouterOutlet` to
 ```ts
 @Component({
   selector: 'app-root',
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
@@ -269,7 +269,7 @@ Here, `FirstComponent` has its own `<nav>` and a second `<router-outlet>` in add
   </ul>
 </nav>
 
-<router-outlet></router-outlet>
+<router-outlet />
 ```
 
 A child route is like any other route, in that it needs both a `path` and a `component`.
@@ -328,7 +328,7 @@ HELPFUL: The `title` property follows the same rules as static route `data` and 
 You can also provide a custom title strategy by extending the `TitleStrategy`.
 
 ```ts
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class TemplatePageTitleStrategy extends TitleStrategy {
   constructor(private readonly title: Title) {
     super();
@@ -345,7 +345,7 @@ export class TemplatePageTitleStrategy extends TitleStrategy {
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
-    {provide: TitleStrategy, useClass: TemplatePageTitleStrategy},
+    { provide: TitleStrategy, useClass: TemplatePageTitleStrategy },
   ]
 };
 ```
@@ -365,7 +365,7 @@ Rather than writing out the whole path to get to `SecondComponent`, use the `../
     <li><a routerLink="../second-component">Relative Route to second component</a></li>
   </ul>
 </nav>
-<router-outlet></router-outlet>
+<router-outlet />
 ```
 
 In addition to `../`, use `./` or no leading slash to specify the current level.
@@ -394,12 +394,12 @@ Sometimes, a feature of your application requires accessing a part of a route, s
 In this example, the route contains an `id` parameter we can use to target a specific hero page.
 
 ```ts
-import {ApplicationConfig} from "@angular/core";
-import {Routes} from '@angular/router';
-import {HeroListComponent} from './hero-list.component';
+import { ApplicationConfig } from "@angular/core";
+import { Routes } from '@angular/router';
+import { HeroListComponent } from './hero-list.component';
 
 export const routes: Routes = [
-  {path: 'hero/:id', component: HeroDetailComponent}
+  { path: 'hero/:id', component: HeroDetailComponent }
 ];
 
 export const appConfig: ApplicationConfig = {
@@ -410,15 +410,15 @@ export const appConfig: ApplicationConfig = {
 First, import the following members in the component you want to navigate from.
 
 ```ts
+import { inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { Observable, switchMap } from 'rxjs';
 ```
 
 Next inject the activated route service:
 
 ```ts
-constructor(private route: ActivatedRoute) {}
+private readonly route = inject(ActivatedRoute);
 ```
 
 Configure the class so that you have an observable, `heroes$`, a `selectedId` to hold the `id` number of the hero, and the heroes in the `ngOnInit()`, add the following code to get the `id` of the selected hero.
@@ -449,11 +449,10 @@ import { Observable } from 'rxjs';
 Inject `ActivatedRoute` and `Router` in the constructor of the component class so they are available to this component:
 
 ```ts
-hero$: Observable<Hero>;
+private readonly route = inject(ActivatedRoute);
+private readonly router = inject(Router);
 
-constructor(
-  private route: ActivatedRoute,
-  private router: Router  ) {}
+hero$: Observable<Hero>;
 
 ngOnInit() {
   const heroId = this.route.snapshot.paramMap.get('id');
@@ -601,7 +600,7 @@ You could also redefine the `AppComponent` template with Crisis Center routes ex
       <a [routerLink]="['/crisis-center/1', { foo: 'foo' }]">Dragon Crisis</a>
       <a [routerLink]="['/crisis-center/2']">Shark Crisis</a>
     </nav>
-    <router-outlet></router-outlet>
+    <router-outlet />
   `
 })
 export class AppComponent {}
