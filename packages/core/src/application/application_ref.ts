@@ -14,7 +14,7 @@ import {
   setThrowInvalidWriteToSignalError,
 } from '@angular/core/primitives/signals';
 import {Observable, Subject, Subscription} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {map, startWith} from 'rxjs/operators';
 
 import {ZONELESS_ENABLED} from '../change_detection/scheduling/zoneless_scheduling';
 import {Console} from '../console';
@@ -369,9 +369,9 @@ export class ApplicationRef {
   /**
    * Returns an Observable that indicates when the application is stable or unstable.
    */
-  public readonly isStable: Observable<boolean> = inject(PendingTasksInternal).hasPendingTasks.pipe(
-    map((pending) => !pending),
-  );
+  public readonly isStable: Observable<boolean> = inject(PendingTasksInternal)
+    .pendingTasksObservable()
+    .pipe(map((pending) => !pending));
 
   constructor() {
     // Inject the tracing service to initialize it.

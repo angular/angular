@@ -36,10 +36,10 @@ describe('pendingUntilEvent', () => {
   it('should not block stability until subscription', async () => {
     const originalSource = new BehaviorSubject(0);
     const delayedSource = originalSource.pipe(delay(5), pendingUntilEvent(injector));
-    expect(taskService.hasPendingTasks.value).toEqual(false);
+    expect(taskService.hasPendingTasks).toEqual(false);
 
     const emitPromise = firstValueFrom(delayedSource);
-    expect(taskService.hasPendingTasks.value).toEqual(true);
+    expect(taskService.hasPendingTasks).toEqual(true);
 
     await expectAsync(emitPromise).toBeResolvedTo(0);
     await expectAsync(appRef.whenStable()).toBeResolved();
@@ -49,10 +49,10 @@ describe('pendingUntilEvent', () => {
     const source = of(1).pipe(pendingUntilEvent(injector));
 
     // stable before subscription
-    expect(taskService.hasPendingTasks.value).toEqual(false);
+    expect(taskService.hasPendingTasks).toEqual(false);
     source.subscribe(() => {
       // unstable within synchronous subscription body
-      expect(taskService.hasPendingTasks.value).toBe(true);
+      expect(taskService.hasPendingTasks).toBe(true);
     });
     // stable after above synchronous subscription execution
     await expectAsync(appRef.whenStable()).toBeResolved();
@@ -60,12 +60,12 @@ describe('pendingUntilEvent', () => {
 
   it('only blocks stability until first emit', async () => {
     const intervalSource = interval(5).pipe(pendingUntilEvent(injector));
-    expect(taskService.hasPendingTasks.value).toEqual(false);
+    expect(taskService.hasPendingTasks).toEqual(false);
 
     await new Promise<void>(async (resolve) => {
       const subscription = intervalSource.subscribe(async (v) => {
         if (v === 0) {
-          expect(taskService.hasPendingTasks.value).toBe(true);
+          expect(taskService.hasPendingTasks).toBe(true);
         } else {
           await expectAsync(appRef.whenStable()).toBeResolved();
         }
@@ -74,14 +74,14 @@ describe('pendingUntilEvent', () => {
           resolve();
         }
       });
-      expect(taskService.hasPendingTasks.value).toBe(true);
+      expect(taskService.hasPendingTasks).toBe(true);
     });
   });
 
   it('should unblock stability on complete (but no emit)', async () => {
     const sub = new Subject();
     sub.asObservable().pipe(pendingUntilEvent(injector)).subscribe();
-    expect(taskService.hasPendingTasks.value).toBe(true);
+    expect(taskService.hasPendingTasks).toBe(true);
     sub.complete();
     await expectAsync(appRef.whenStable()).toBeResolved();
   });
@@ -89,7 +89,7 @@ describe('pendingUntilEvent', () => {
   it('should unblock stability on unsubscribe before emit', async () => {
     const sub = new Subject();
     const subscription = sub.asObservable().pipe(pendingUntilEvent(injector)).subscribe();
-    expect(taskService.hasPendingTasks.value).toBe(true);
+    expect(taskService.hasPendingTasks).toBe(true);
     subscription.unsubscribe();
     await expectAsync(appRef.whenStable()).toBeResolved();
   });
@@ -107,12 +107,12 @@ describe('pendingUntilEvent', () => {
       .pipe(
         finalize(() => {
           finalizeExecuted = true;
-          expect(taskService.hasPendingTasks.value).toBe(true);
+          expect(taskService.hasPendingTasks).toBe(true);
         }),
         pendingUntilEvent(injector),
       )
       .subscribe();
-    expect(taskService.hasPendingTasks.value).toBe(true);
+    expect(taskService.hasPendingTasks).toBe(true);
     subscription.unsubscribe();
     await expectAsync(appRef.whenStable()).toBeResolved();
     expect(finalizeExecuted).toBe(true);
@@ -121,7 +121,7 @@ describe('pendingUntilEvent', () => {
   it('should not throw if application is destroyed before emit', async () => {
     const sub = new Subject<void>();
     sub.asObservable().pipe(pendingUntilEvent(injector)).subscribe();
-    expect(taskService.hasPendingTasks.value).toBe(true);
+    expect(taskService.hasPendingTasks).toBe(true);
     TestBed.resetTestingModule();
     await expectAsync(appRef.whenStable()).toBeResolved();
     sub.next();
@@ -137,7 +137,7 @@ describe('pendingUntilEvent', () => {
         catchError(() => EMPTY),
       )
       .subscribe();
-    expect(taskService.hasPendingTasks.value).toBe(true);
+    expect(taskService.hasPendingTasks).toBe(true);
     sub.error(new Error('error in pipe'));
     await expectAsync(appRef.whenStable()).toBeResolved();
     sub.next();
@@ -162,7 +162,7 @@ describe('pendingUntilEvent', () => {
           throw new Error('oh noes');
         },
       });
-    expect(taskService.hasPendingTasks.value).toBe(true);
+    expect(taskService.hasPendingTasks).toBe(true);
     const errorPromise = nextUncaughtError();
     sub.next();
     await expectAsync(errorPromise).toBeResolved();
@@ -225,13 +225,13 @@ describe('pendingUntilEvent', () => {
     const observable = sub.asObservable().pipe(delay(5), pendingUntilEvent(injector));
 
     observable.subscribe();
-    expect(taskService.hasPendingTasks.value).toBe(true);
+    expect(taskService.hasPendingTasks).toBe(true);
     sub.next();
     observable.subscribe();
     // first subscription unblocks
     await new Promise((r) => setTimeout(r, 5));
     // still pending because the other subscribed after the emit
-    expect(taskService.hasPendingTasks.value).toBe(true);
+    expect(taskService.hasPendingTasks).toBe(true);
 
     sub.next();
     await new Promise((r) => setTimeout(r, 3));
@@ -240,7 +240,7 @@ describe('pendingUntilEvent', () => {
     // second subscription unblocks
     await new Promise((r) => setTimeout(r, 2));
     // still pending because third subscription delay not finished
-    expect(taskService.hasPendingTasks.value).toBe(true);
+    expect(taskService.hasPendingTasks).toBe(true);
 
     // finishes third subscription
     await new Promise((r) => setTimeout(r, 3));

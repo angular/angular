@@ -8,8 +8,7 @@
 
 import {ApplicationRef, PendingTasks} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {EMPTY, firstValueFrom, of} from 'rxjs';
-import {filter, map, take, withLatestFrom} from 'rxjs/operators';
+import {firstValueFrom} from 'rxjs';
 
 import {PendingTasksInternal} from '../../src/pending_tasks';
 
@@ -23,32 +22,32 @@ describe('PendingTasks', () => {
     pendingTasks.remove(taskA);
     pendingTasks.remove(taskB);
     pendingTasks.remove(taskC);
-    expect(await hasPendingTasks(pendingTasks)).toBeFalse();
+    expect(pendingTasks.hasPendingTasks).toBeFalse();
   });
 
   it('should allow calls to remove the same task multiple times', async () => {
     const pendingTasks = TestBed.inject(PendingTasksInternal);
-    expect(await hasPendingTasks(pendingTasks)).toBeFalse();
+    expect(pendingTasks.hasPendingTasks).toBeFalse();
 
     const taskA = pendingTasks.add();
-    expect(await hasPendingTasks(pendingTasks)).toBeTrue();
+    expect(pendingTasks.hasPendingTasks).toBeTrue();
 
     pendingTasks.remove(taskA);
     pendingTasks.remove(taskA);
     pendingTasks.remove(taskA);
 
-    expect(await hasPendingTasks(pendingTasks)).toBeFalse();
+    expect(pendingTasks.hasPendingTasks).toBeFalse();
   });
 
   it('should be tolerant to removal of non-existent ids', async () => {
     const pendingTasks = TestBed.inject(PendingTasksInternal);
-    expect(await hasPendingTasks(pendingTasks)).toBeFalse();
+    expect(pendingTasks.hasPendingTasks).toBeFalse();
 
     pendingTasks.remove(Math.random());
     pendingTasks.remove(Math.random());
     pendingTasks.remove(Math.random());
 
-    expect(await hasPendingTasks(pendingTasks)).toBeFalse();
+    expect(pendingTasks.hasPendingTasks).toBeFalse();
   });
 
   it('contributes to applicationRef stableness', async () => {
@@ -131,13 +130,4 @@ describe('public PendingTasks', () => {
 
 function applicationRefIsStable(applicationRef: ApplicationRef) {
   return firstValueFrom(applicationRef.isStable);
-}
-
-function hasPendingTasks(pendingTasks: PendingTasksInternal): Promise<boolean> {
-  return of(EMPTY)
-    .pipe(
-      withLatestFrom(pendingTasks.hasPendingTasks),
-      map(([_, hasPendingTasks]) => hasPendingTasks),
-    )
-    .toPromise() as Promise<boolean>;
 }

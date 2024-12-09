@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {BehaviorSubject} from 'rxjs';
-
 import {inject} from './di/injector_compatibility';
 import {ɵɵdefineInjectable} from './di/interface/defs';
 import {OnDestroy} from './interface/lifecycle_hooks';
@@ -15,6 +13,7 @@ import {
   ChangeDetectionScheduler,
   NotificationSource,
 } from './change_detection/scheduling/zoneless_scheduling';
+import {Observable, startWith, Subject} from 'rxjs';
 
 /**
  * Internal implementation of the pending tasks service.
@@ -22,14 +21,14 @@ import {
 export class PendingTasksInternal implements OnDestroy {
   private taskId = 0;
   private pendingTasks = new Set<number>();
-  private get _hasPendingTasks() {
-    return this.hasPendingTasks.value;
-  }
-  hasPendingTasks = new BehaviorSubject<boolean>(false);
+
+  // We keep them separate instead of using a BehaviorSubject to avoid pulling BehaviorSubject
+  hasPendingTasks = false;
+  private _pendingTaskObservable = new Subject<boolean>();
 
   add(): number {
-    if (!this._hasPendingTasks) {
-      this.hasPendingTasks.next(true);
+    if (!this.hasPendingTasks) {
+      this.setPendingTasks(true);
     }
     const taskId = this.taskId++;
     this.pendingTasks.add(taskId);
@@ -42,15 +41,15 @@ export class PendingTasksInternal implements OnDestroy {
 
   remove(taskId: number): void {
     this.pendingTasks.delete(taskId);
-    if (this.pendingTasks.size === 0 && this._hasPendingTasks) {
-      this.hasPendingTasks.next(false);
+    if (this.pendingTasks.size === 0 && this.hasPendingTasks) {
+      this.setPendingTasks(false);
     }
   }
 
   ngOnDestroy(): void {
     this.pendingTasks.clear();
-    if (this._hasPendingTasks) {
-      this.hasPendingTasks.next(false);
+    if (this.hasPendingTasks) {
+      this.setPendingTasks(false);
     }
   }
 
@@ -60,6 +59,14 @@ export class PendingTasksInternal implements OnDestroy {
     providedIn: 'root',
     factory: () => new PendingTasksInternal(),
   });
+
+  private setPendingTasks(value: boolean) {
+    this.hasPendingTasks = value;
+  }
+
+  pendingTasksObservable(): Observable<boolean> {
+    return this._pendingTaskObservable.pipe(startWith(this.hasPendingTasks));
+  }
 }
 
 /**

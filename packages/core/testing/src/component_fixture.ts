@@ -201,7 +201,7 @@ export class ComponentFixture<T> {
    * yet.
    */
   isStable(): boolean {
-    return !this.pendingTasks.hasPendingTasks.value;
+    return !this.pendingTasks.hasPendingTasks;
   }
 
   /**
