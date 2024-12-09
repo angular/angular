@@ -1,1 +1,3 @@
-@import './styles/xterm'; 
+@use './styles/xterm';
+
+@include xterm.xterm();
