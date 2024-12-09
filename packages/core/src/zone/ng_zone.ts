@@ -233,7 +233,7 @@ export class NgZone {
    * Executes the `fn` function synchronously within the Angular zone as a task and returns value
    * returned by the function.
    *
-   * Running functions via `run` allows you to reenter Angular zone from a task that was executed
+   * Running functions via `runTask` allows you to reenter Angular zone from a task that was executed
    * outside of the Angular zone (typically started via {@link #runOutsideAngular}).
    *
    * Any future tasks or microtasks scheduled from within this function will continue executing from
