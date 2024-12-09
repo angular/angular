@@ -152,7 +152,7 @@ boorstrapApplication(MyApplicationRoot, {
 });
 ```
 
-Similarly, some NgModules may before a static `forChild` that indicates the providers are intended to be added to components within your application hierarchy.
+Similarly, some NgModules may define a static `forChild` that indicates the providers are intended to be added to components within your application hierarchy.
 
 ```typescript
 @Component({
