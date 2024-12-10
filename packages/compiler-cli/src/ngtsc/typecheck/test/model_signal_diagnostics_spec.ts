@@ -383,7 +383,7 @@ runInEachFileSystem(() => {
         template: `<div dir [(gen)]="genVal" [(other)]="otherVal">`,
         expected: [
           `TestComponent.html(1, 29): Type 'string' is not assignable to type 'boolean'.`,
-          `TestComponent.html(1, 27): Type 'boolean' is not assignable to type 'string'.`,
+          `TestComponent.html(1, 27): Argument of type 'boolean' is not assignable to parameter of type 'string'.`,
         ],
       },
       {
@@ -410,7 +410,7 @@ runInEachFileSystem(() => {
         `,
         expected: [
           `TestComponent.html(1, 12): Type 'boolean' is not assignable to type 'string'.`,
-          `TestComponent.html(1, 10): Type 'string' is not assignable to type 'boolean'.`,
+          `TestComponent.html(1, 10): Argument of type 'string' is not assignable to parameter of type 'boolean'.`,
         ],
       },
       {
@@ -434,7 +434,7 @@ runInEachFileSystem(() => {
         `,
         expected: [
           `TestComponent.html(1, 29): Type 'string' is not assignable to type 'boolean'.`,
-          `TestComponent.html(1, 27): Type 'boolean' is not assignable to type 'string'.`,
+          `TestComponent.html(1, 27): Argument of type 'boolean' is not assignable to parameter of type 'string'.`,
         ],
       },
       {
@@ -461,7 +461,7 @@ runInEachFileSystem(() => {
         `,
         expected: [
           `TestComponent.html(1, 29): Type 'string' is not assignable to type 'boolean'.`,
-          `TestComponent.html(1, 27): Type 'boolean' is not assignable to type 'string'.`,
+          `TestComponent.html(1, 27): Argument of type 'boolean' is not assignable to parameter of type 'string'.`,
         ],
       },
       {
@@ -597,7 +597,7 @@ runInEachFileSystem(() => {
         component: `bla = true;`,
         expected: [
           `TestComponent.html(1, 12): Type 'boolean' is not assignable to type 'string'.`,
-          `TestComponent.html(1, 10): Type 'string' is not assignable to type 'boolean'.`,
+          `TestComponent.html(1, 10): Argument of type 'string' is not assignable to parameter of type 'boolean'.`,
         ],
       },
       {
@@ -669,7 +669,7 @@ runInEachFileSystem(() => {
         component: `val!: WritableSignal<string>;`,
         expected: [
           `TestComponent.html(1, 12): Type 'string' is not assignable to type 'boolean'.`,
-          `TestComponent.html(1, 10): Type 'boolean' is not assignable to type 'string'.`,
+          `TestComponent.html(1, 10): Argument of type 'boolean' is not assignable to parameter of type 'string'.`,
         ],
       },
       {
@@ -680,7 +680,7 @@ runInEachFileSystem(() => {
         component: `val!: InputSignal<boolean>;`,
         expected: [
           `TestComponent.html(1, 10): Type 'InputSignal<boolean>' is not assignable to type 'boolean'.`,
-          `TestComponent.html(1, 10): Type 'boolean' is not assignable to type 'InputSignal<boolean>'.`,
+          `TestComponent.html(1, 10): Argument of type 'boolean' is not assignable to parameter of type 'InputSignal<boolean>'.`,
         ],
       },
       {
@@ -702,7 +702,7 @@ runInEachFileSystem(() => {
             `TestComponent.html(1, 12): Type '(v: string) => number' is not assignable to type '(v: number) => number`,
           ),
           jasmine.stringContaining(
-            `TestComponent.html(1, 10): Type '(v: number) => number' is not assignable to type '(v: string) => number`,
+            `TestComponent.html(1, 10): Argument of type '(v: number) => number' is not assignable to parameter of type '(v: string) => number`,
           ),
         ],
       },
