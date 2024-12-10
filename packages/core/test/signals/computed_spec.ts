@@ -7,7 +7,7 @@
  */
 
 import {computed, signal} from '@angular/core';
-import {createWatch, ReactiveNode, SIGNAL} from '@angular/core/primitives/signals';
+import {createWatch, ReactiveNode, SIGNAL, defaultEquals} from '@angular/core/primitives/signals';
 
 describe('computed', () => {
   it('should create computed', () => {
@@ -290,6 +290,31 @@ describe('computed', () => {
       // Equally important is that the signal read in `equal` doesn't leak into the outer reactive
       // context either.
       expect(outerRunCount).toBe(1);
+    });
+
+    it('should recover from exception', () => {
+      let shouldThrow = true;
+      const source = signal(0);
+      const derived = computed(source, {
+        equal: (a, b) => {
+          if (shouldThrow) {
+            throw new Error('equal');
+          }
+          return defaultEquals(a, b);
+        },
+      });
+
+      // Initial read doesn't throw because it doesn't call `equal`.
+      expect(derived()).toBe(0);
+
+      // Update `source` to begin throwing.
+      source.set(1);
+      expect(() => derived()).toThrowError('equal');
+
+      // Stop throwing and update `source` to cause `derived` to recompute.
+      shouldThrow = false;
+      source.set(2);
+      expect(derived()).toBe(2);
     });
   });
 });
