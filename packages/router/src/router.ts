@@ -12,7 +12,7 @@ import {
   Injectable,
   Type,
   ɵConsole as Console,
-  ɵPendingTasks as PendingTasks,
+  ɵPendingTasksInternal as PendingTasks,
   ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 import {Observable, Subject, Subscription, SubscriptionLike} from 'rxjs';

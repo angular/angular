@@ -23,7 +23,7 @@ import {
   ɵgetDeferBlocks as getDeferBlocks,
   ɵNoopNgZone as NoopNgZone,
   ɵZONELESS_ENABLED as ZONELESS_ENABLED,
-  ɵPendingTasks as PendingTasks,
+  ɵPendingTasksInternal as PendingTasks,
   ɵEffectScheduler as EffectScheduler,
   ɵMicrotaskEffectScheduler as MicrotaskEffectScheduler,
 } from '@angular/core';
