@@ -48,4 +48,13 @@ export interface TracingService<T extends TracingSnapshot> {
    * snapshot.
    */
   snapshot(linkedSnapshot: T | null): T;
+
+  /**
+   * Wrap an event listener bound by the framework for tracing.
+   * @param element Element on which the event is bound.
+   * @param eventName Name of the event.
+   * @param handler Event handler.
+   * @return A new event handler to be bound instead of the original one.
+   */
+  wrapEventListener?<T extends Function>(element: HTMLElement, eventName: string, handler: T): T;
 }
