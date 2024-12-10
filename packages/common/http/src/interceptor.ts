@@ -16,7 +16,7 @@ import {
   runInInjectionContext,
   ɵConsole as Console,
   ɵformatRuntimeError as formatRuntimeError,
-  ɵPendingTasks as PendingTasks,
+  ɵPendingTasksInternal as PendingTasks,
 } from '@angular/core';
 import {Observable} from 'rxjs';
 import {finalize} from 'rxjs/operators';
