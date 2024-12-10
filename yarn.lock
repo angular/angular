@@ -525,10 +525,10 @@
     call-me-maybe "^1.0.1"
     js-yaml "^4.1.0"
 
-"@babel/cli@7.25.9":
-  version "7.25.9"
-  resolved "https://registry.yarnpkg.com/@babel/cli/-/cli-7.25.9.tgz#51036166fd0e9cfb26eee1b9ddc264a0d6d5f843"
-  integrity sha512-I+02IfrTiSanpxJBlZQYb18qCxB6c2Ih371cVpfgIrPQrjAYkf45XxomTJOG8JBWX5GY35/+TmhCMdJ4ZPkL8Q==
+"@babel/cli@7.26.4":
+  version "7.26.4"
+  resolved "https://registry.yarnpkg.com/@babel/cli/-/cli-7.26.4.tgz#4101ff8ee5de8447a6c395397a97921056411d20"
+  integrity sha512-+mORf3ezU3p3qr+82WvJSnQNE1GAYeoCfEv4fik6B5/2cvKZ75AX8oawWQdXtM9MmndooQj15Jr9kelRFWsuRw==
   dependencies:
     "@jridgewell/trace-mapping" "^0.3.25"
     commander "^6.2.0"
@@ -575,17 +575,6 @@
     gensync "^1.0.0-beta.2"
     json5 "^2.2.3"
     semver "^6.3.1"
-
-"@babel/generator@7.26.2":
-  version "7.26.2"
-  resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.26.2.tgz#87b75813bec87916210e5e01939a4c823d6bb74f"
-  integrity sha512-zevQbhbau95nkoxSq3f/DC/SC+EEOUZd3DYqfSkMhY2/wfSeaHV1Ew4vk8e+x8lja31IbyuUa2uQ3JONqKbysw==
-  dependencies:
-    "@babel/parser" "^7.26.2"
-    "@babel/types" "^7.26.0"
-    "@jridgewell/gen-mapping" "^0.3.5"
-    "@jridgewell/trace-mapping" "^0.3.25"
-    jsesc "^3.0.2"
 
 "@babel/generator@7.26.3", "@babel/generator@^7.26.0", "@babel/generator@^7.26.3":
   version "7.26.3"
@@ -758,7 +747,7 @@
     "@babel/template" "^7.25.9"
     "@babel/types" "^7.26.0"
 
-"@babel/parser@^7.1.0", "@babel/parser@^7.14.7", "@babel/parser@^7.20.7", "@babel/parser@^7.23.9", "@babel/parser@^7.24.4", "@babel/parser@^7.25.3", "@babel/parser@^7.25.9", "@babel/parser@^7.26.0", "@babel/parser@^7.26.2", "@babel/parser@^7.26.3":
+"@babel/parser@^7.1.0", "@babel/parser@^7.14.7", "@babel/parser@^7.20.7", "@babel/parser@^7.23.9", "@babel/parser@^7.24.4", "@babel/parser@^7.25.3", "@babel/parser@^7.25.9", "@babel/parser@^7.26.0", "@babel/parser@^7.26.3":
   version "7.26.3"
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.26.3.tgz#8c51c5db6ddf08134af1ddbacf16aaab48bac234"
   integrity sha512-WJ/CvmY8Mea8iDXo6a7RK2wbmJITT5fN3BEkRuFlxVyNx8jOKIIhmC4fSkTcPcf8JyavbBwIe6OpiCOBXt/IcA==
