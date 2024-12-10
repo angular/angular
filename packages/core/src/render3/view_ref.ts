@@ -26,7 +26,6 @@ import {
   LView,
   LViewFlags,
   PARENT,
-  REACTIVE_TEMPLATE_CONSUMER,
   TVIEW,
 } from './interfaces/view';
 import {
@@ -41,6 +40,7 @@ import {
   markViewForRefresh,
   storeLViewOnDestroy,
   updateAncestorTraversalFlagsOnAttach,
+  requiresRefreshOrTraversal,
 } from './util/view_utils';
 
 // Needed due to tsickle downleveling where multiple `implements` with classes creates
@@ -84,18 +84,6 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
 
   get context(): T {
     return this._lView[CONTEXT] as unknown as T;
-  }
-
-  /**
-   * Reports whether the given view is considered dirty according to the different marking mechanisms.
-   */
-  get dirty(): boolean {
-    return (
-      !!(
-        this._lView[FLAGS] &
-        (LViewFlags.Dirty | LViewFlags.RefreshView | LViewFlags.HasChildViewsToRefresh)
-      ) || !!this._lView[REACTIVE_TEMPLATE_CONSUMER]?.dirty
-    );
   }
 
   /**
@@ -180,10 +168,6 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
    */
   markForCheck(): void {
     markViewDirty(this._cdRefInjectingView || this._lView, NotificationSource.MarkForCheck);
-  }
-
-  markForRefresh(): void {
-    markViewForRefresh(this._cdRefInjectingView || this._lView);
   }
 
   /**
@@ -386,4 +370,15 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
     }
     updateAncestorTraversalFlagsOnAttach(this._lView);
   }
+}
+
+/**
+ * Reports whether the given view is considered dirty according to the different marking mechanisms.
+ */
+export function isViewDirty(view: ViewRef<unknown>): boolean {
+  return requiresRefreshOrTraversal(view._lView) || !!(view._lView[FLAGS] & LViewFlags.Dirty);
+}
+
+export function markForRefresh(view: ViewRef<unknown>): void {
+  markViewForRefresh(view['_cdRefInjectingView'] || view._lView);
 }
