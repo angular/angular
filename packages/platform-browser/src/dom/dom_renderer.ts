@@ -23,6 +23,9 @@ import {
   ViewEncapsulation,
   ɵRuntimeError as RuntimeError,
   type ListenerOptions,
+  ɵTracingService as TracingService,
+  ɵTracingSnapshot as TracingSnapshot,
+  Optional,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
@@ -95,6 +98,9 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
     @Inject(PLATFORM_ID) readonly platformId: Object,
     readonly ngZone: NgZone,
     @Inject(CSP_NONCE) private readonly nonce: string | null = null,
+    @Inject(TracingService)
+    @Optional()
+    private readonly tracingService: TracingService<TracingSnapshot> | null = null,
   ) {
     this.platformIsServer = isPlatformServer(platformId);
     this.defaultRenderer = new DefaultDomRenderer2(
@@ -102,6 +108,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
       doc,
       ngZone,
       this.platformIsServer,
+      this.tracingService,
     );
   }
 
@@ -150,6 +157,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             doc,
             ngZone,
             platformIsServer,
+            this.tracingService,
           );
           break;
         case ViewEncapsulation.ShadowDom:
@@ -162,6 +170,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             ngZone,
             this.nonce,
             platformIsServer,
+            this.tracingService,
           );
         default:
           renderer = new NoneEncapsulationDomRenderer(
@@ -172,6 +181,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             doc,
             ngZone,
             platformIsServer,
+            this.tracingService,
           );
           break;
       }
@@ -201,6 +211,7 @@ class DefaultDomRenderer2 implements Renderer2 {
     private readonly doc: Document,
     private readonly ngZone: NgZone,
     private readonly platformIsServer: boolean,
+    private readonly tracingService: TracingService<TracingSnapshot> | null,
   ) {}
 
   destroy(): void {}
@@ -355,10 +366,16 @@ class DefaultDomRenderer2 implements Renderer2 {
       }
     }
 
+    let wrappedCallback = this.decoratePreventDefault(callback);
+
+    if (this.tracingService !== null && this.tracingService.wrapEventListener) {
+      wrappedCallback = this.tracingService.wrapEventListener(target, event, wrappedCallback);
+    }
+
     return this.eventManager.addEventListener(
       target,
       event,
-      this.decoratePreventDefault(callback),
+      wrappedCallback,
       options,
     ) as VoidFunction;
   }
@@ -420,8 +437,9 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
     ngZone: NgZone,
     nonce: string | null,
     platformIsServer: boolean,
+    tracingService: TracingService<TracingSnapshot> | null,
   ) {
-    super(eventManager, doc, ngZone, platformIsServer);
+    super(eventManager, doc, ngZone, platformIsServer, tracingService);
     this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
 
     this.sharedStylesHost.addHost(this.shadowRoot);
@@ -490,9 +508,10 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
     doc: Document,
     ngZone: NgZone,
     platformIsServer: boolean,
+    tracingService: TracingService<TracingSnapshot> | null,
     compId?: string,
   ) {
-    super(eventManager, doc, ngZone, platformIsServer);
+    super(eventManager, doc, ngZone, platformIsServer, tracingService);
     this.styles = compId ? shimStylesContent(compId, component.styles) : component.styles;
     this.styleUrls = component.getExternalStyles?.(compId);
   }
@@ -523,6 +542,7 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
     doc: Document,
     ngZone: NgZone,
     platformIsServer: boolean,
+    tracingService: TracingService<TracingSnapshot> | null,
   ) {
     const compId = appId + '-' + component.id;
     super(
@@ -533,6 +553,7 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
       doc,
       ngZone,
       platformIsServer,
+      tracingService,
       compId,
     );
     this.contentAttr = shimContentAttribute(compId);
