@@ -37,6 +37,7 @@ ng_package(
     ],
     deps = [
         ":forms_rjs",
+        "//packages/forms/experimental",
     ],
 )
 
@@ -72,10 +73,15 @@ api_golden_test(
 
 filegroup(
     name = "files_for_docgen",
-    srcs = glob([
-        "*.ts",
-        "src/**/*.ts",
-    ]) + ["PACKAGE.md"],
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+        exclude = [
+            "experimental/**/*.ts",
+        ],
+    ) + ["PACKAGE.md"],
 )
 
 generate_api_docs(
