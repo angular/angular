@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentInjector, ɵPendingTasks as PendingTasks, ApplicationRef} from '@angular/core';
+import {
+  EnvironmentInjector,
+  ɵPendingTasksInternal as PendingTasks,
+  ApplicationRef,
+} from '@angular/core';
 import {
   BehaviorSubject,
   EMPTY,

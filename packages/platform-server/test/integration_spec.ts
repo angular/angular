@@ -40,7 +40,7 @@ import {
   TransferState,
   Type,
   ViewEncapsulation,
-  ɵPendingTasks as PendingTasks,
+  ɵPendingTasksInternal as PendingTasks,
   APP_INITIALIZER,
   inject,
   getPlatform,
