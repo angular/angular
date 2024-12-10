@@ -95,7 +95,7 @@ export class Recognizer {
   private noMatchError(e: NoMatch): RuntimeError<RuntimeErrorCode.NO_MATCH> {
     return new RuntimeError(
       RuntimeErrorCode.NO_MATCH,
-      typeof ngDevMode === 'undefined' || ngDevMode
+      typeof ngDevMode !== 'undefined' && ngDevMode
         ? `Cannot match any routes. URL Segment: '${e.segmentGroup}'`
         : `'${e.segmentGroup}'`,
     );
@@ -232,7 +232,7 @@ export class Recognizer {
         // multiple activated results for the same outlet. We should merge the children of
         // these results so the final return value is only one `TreeNode` per outlet.
         const mergedChildren = mergeEmptyPathMatches(children);
-        if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        if (typeof ngDevMode !== 'undefined' && ngDevMode) {
           // This should really never happen - we are only taking the first match for each
           // outlet and merge the empty path matches.
           checkOutletNameUniqueness(mergedChildren);
@@ -591,7 +591,8 @@ function checkOutletNameUniqueness(nodes: TreeNode<ActivatedRouteSnapshot>[]): v
       const c = n.value.url.map((s) => s.toString()).join('/');
       throw new RuntimeError(
         RuntimeErrorCode.TWO_SEGMENTS_WITH_SAME_OUTLET,
-        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        typeof ngDevMode !== 'undefined' &&
+          ngDevMode &&
           `Two segments cannot have the same outlet name: '${p}' and '${c}'.`,
       );
     }

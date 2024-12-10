@@ -196,7 +196,7 @@ export function transferCacheInterceptorFn(
     // That HttpTransferCache alters the headers
     // The warning will be logged a single time by HttpHeaders instance
     let headers = new HttpHeaders(httpHeaders);
-    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+    if (typeof ngDevMode !== 'undefined' && ngDevMode) {
       // Append extra logic in dev mode to produce a warning when a header
       // that was not transferred to the client is accessed in the code via `get`
       // and `has` calls.
@@ -401,7 +401,7 @@ function mapRequestOriginUrl(url: string, originMap: Record<string, string>): st
     return url;
   }
 
-  if (typeof ngDevMode === 'undefined' || ngDevMode) {
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
     verifyMappedOrigin(mappedOrigin);
   }
 

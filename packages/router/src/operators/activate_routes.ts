@@ -235,7 +235,7 @@ export class ActivateRoutes {
         this.activateChildRoutes(futureNode, null, parentContexts);
       }
     }
-    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+    if (typeof ngDevMode !== 'undefined' && ngDevMode) {
       const context = parentContexts.getOrCreateContext(future.outlet);
       const outlet = context.outlet;
       if (

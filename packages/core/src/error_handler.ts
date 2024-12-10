@@ -58,7 +58,7 @@ export class ErrorHandler {
  * is calling `ErrorHandler.handleError` outside of the Angular zone.
  */
 export const INTERNAL_APPLICATION_ERROR_HANDLER = new InjectionToken<(e: any) => void>(
-  typeof ngDevMode === 'undefined' || ngDevMode ? 'internal error handler' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'internal error handler' : '',
   {
     providedIn: 'root',
     factory: () => {

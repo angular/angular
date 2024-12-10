@@ -26,7 +26,7 @@ export function getCompilerFacade(request: JitCompilerUsageRequest): CompilerFac
     return globalNg.ɵcompilerFacade;
   }
 
-  if (typeof ngDevMode === 'undefined' || ngDevMode) {
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
     // Log the type as an error so that a developer can easily navigate to the type from the
     // console.
     console.error(`JIT compilation failed for ${request.kind}`, request.type);

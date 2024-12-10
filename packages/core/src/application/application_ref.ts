@@ -531,14 +531,15 @@ export class ApplicationRef {
     componentOrFactory: ComponentFactory<C> | Type<C>,
     rootSelectorOrNode?: string | any,
   ): ComponentRef<C> {
-    (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
+    typeof ngDevMode !== 'undefined' && ngDevMode && this.warnIfDestroyed();
     const isComponentFactory = componentOrFactory instanceof ComponentFactory;
     const initStatus = this._injector.get(ApplicationInitStatus);
 
     if (!initStatus.done) {
       const standalone = !isComponentFactory && isStandalone(componentOrFactory);
       const errorMessage =
-        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        typeof ngDevMode !== 'undefined' &&
+        ngDevMode &&
         'Cannot bootstrap as there are still asynchronous initializers running.' +
           (standalone
             ? ''
@@ -572,7 +573,7 @@ export class ApplicationRef {
     });
 
     this._loadComponent(compRef);
-    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+    if (typeof ngDevMode !== 'undefined' && ngDevMode) {
       const _console = this._injector.get(Console);
       _console.log(`Angular is running in development mode.`);
     }
@@ -610,7 +611,7 @@ export class ApplicationRef {
       return;
     }
 
-    (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
+    typeof ngDevMode !== 'undefined' && ngDevMode && this.warnIfDestroyed();
     if (this._runningTick) {
       throw new RuntimeError(
         RuntimeErrorCode.RECURSIVE_APPLICATION_REF_TICK,
@@ -623,7 +624,7 @@ export class ApplicationRef {
       this._runningTick = true;
       this.synchronize();
 
-      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      if (typeof ngDevMode !== 'undefined' && ngDevMode) {
         for (let view of this.allViews) {
           view.checkNoChanges();
         }
@@ -656,7 +657,7 @@ export class ApplicationRef {
       this.synchronizeOnce();
     }
 
-    if ((typeof ngDevMode === 'undefined' || ngDevMode) && runs >= MAXIMUM_REFRESH_RERUNS) {
+    if (typeof ngDevMode !== 'undefined' && ngDevMode && runs >= MAXIMUM_REFRESH_RERUNS) {
       throw new RuntimeError(
         RuntimeErrorCode.INFINITE_CHANGE_DETECTION,
         ngDevMode &&
@@ -768,7 +769,7 @@ export class ApplicationRef {
    * This will throw if the view is already attached to a ViewContainer.
    */
   attachView(viewRef: ViewRef): void {
-    (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
+    typeof ngDevMode !== 'undefined' && ngDevMode && this.warnIfDestroyed();
     const view = viewRef as InternalViewRef<unknown>;
     this._views.push(view);
     view.attachToAppRef(this);
@@ -778,7 +779,7 @@ export class ApplicationRef {
    * Detaches a view from dirty checking again.
    */
   detachView(viewRef: ViewRef): void {
-    (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
+    typeof ngDevMode !== 'undefined' && ngDevMode && this.warnIfDestroyed();
     const view = viewRef as InternalViewRef<unknown>;
     remove(this._views, view);
     view.detachFromAppRef();
@@ -829,7 +830,7 @@ export class ApplicationRef {
    * @returns A function which unregisters a listener.
    */
   onDestroy(callback: () => void): VoidFunction {
-    (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
+    typeof ngDevMode !== 'undefined' && ngDevMode && this.warnIfDestroyed();
     this._destroyListeners.push(callback);
     return () => remove(this._destroyListeners, callback);
   }
@@ -865,7 +866,7 @@ export class ApplicationRef {
   }
 
   private warnIfDestroyed() {
-    if ((typeof ngDevMode === 'undefined' || ngDevMode) && this._destroyed) {
+    if (typeof ngDevMode !== 'undefined' && ngDevMode && this._destroyed) {
       console.warn(
         formatRuntimeError(
           RuntimeErrorCode.APPLICATION_REF_ALREADY_DESTROYED,

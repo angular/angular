@@ -161,7 +161,7 @@ export function internalImportProvidersFrom(
   };
 
   deepForEach(sources, (source) => {
-    if ((typeof ngDevMode === 'undefined' || ngDevMode) && checkForStandaloneCmp) {
+    if (typeof ngDevMode !== 'undefined' && ngDevMode && checkForStandaloneCmp) {
       const cmpDef = getComponentDef(source);
       if (cmpDef?.standalone) {
         throw new RuntimeError(

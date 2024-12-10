@@ -335,7 +335,7 @@ interface InternalRouterInterface {
 
 export const NAVIGATION_ERROR_HANDLER = new InjectionToken<
   (error: NavigationError) => unknown | RedirectCommand
->(typeof ngDevMode === 'undefined' || ngDevMode ? 'navigation error handler' : '');
+>(typeof ngDevMode !== 'undefined' && ngDevMode ? 'navigation error handler' : '');
 
 @Injectable({providedIn: 'root'})
 export class NavigationTransitions {
@@ -461,7 +461,7 @@ export class NavigationTransitions {
             // https://github.com/ReactiveX/rxjs/issues/7455
             if (this.navigationId > overallTransitionState.id) {
               const cancellationReason =
-                typeof ngDevMode === 'undefined' || ngDevMode
+                typeof ngDevMode !== 'undefined' && ngDevMode
                   ? `Navigation ID ${overallTransitionState.id} is not equal to the current navigation id ${this.navigationId}`
                   : '';
               this.cancelNavigationTransition(
@@ -496,7 +496,7 @@ export class NavigationTransitions {
             const onSameUrlNavigation = t.extras.onSameUrlNavigation ?? router.onSameUrlNavigation;
             if (!urlTransition && onSameUrlNavigation !== 'reload') {
               const reason =
-                typeof ngDevMode === 'undefined' || ngDevMode
+                typeof ngDevMode !== 'undefined' && ngDevMode
                   ? `Navigation to ${t.rawUrl} was ignored because it is the same as the current Router URL.`
                   : '';
               this.events.next(
@@ -594,7 +594,7 @@ export class NavigationTransitions {
                * from the current URL in the browser.
                */
               const reason =
-                typeof ngDevMode === 'undefined' || ngDevMode
+                typeof ngDevMode !== 'undefined' && ngDevMode
                   ? `Navigation was ignored because the UrlHandlingStrategy` +
                     ` indicated neither the current URL ${t.currentRawUrl} nor target URL ${t.rawUrl} should be processed.`
                   : '';
@@ -678,7 +678,7 @@ export class NavigationTransitions {
                         if (!dataResolved) {
                           this.cancelNavigationTransition(
                             t,
-                            typeof ngDevMode === 'undefined' || ngDevMode
+                            typeof ngDevMode !== 'undefined' && ngDevMode
                               ? `At least one route resolver didn't emit any value.`
                               : '',
                             NavigationCancellationCode.NoDataFromResolver,
@@ -814,7 +814,7 @@ export class NavigationTransitions {
              * navigation gets cancelled but not caught by other means. */
             if (!completed && !errored) {
               const cancelationReason =
-                typeof ngDevMode === 'undefined' || ngDevMode
+                typeof ngDevMode !== 'undefined' && ngDevMode
                   ? `Navigation ID ${overallTransitionState.id} is not equal to the current navigation id ${this.navigationId}`
                   : '';
               this.cancelNavigationTransition(

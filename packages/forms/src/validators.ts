@@ -586,7 +586,7 @@ function isPresent(o: any): boolean {
 
 export function toObservable(value: any): Observable<any> {
   const obs = isPromise(value) ? from(value) : value;
-  if ((typeof ngDevMode === 'undefined' || ngDevMode) && !isSubscribable(obs)) {
+  if (typeof ngDevMode !== 'undefined' && ngDevMode && !isSubscribable(obs)) {
     let errorMessage = `Expected async validator to return Promise or Observable.`;
     // A synchronous validator will return object or null.
     if (typeof value === 'object') {

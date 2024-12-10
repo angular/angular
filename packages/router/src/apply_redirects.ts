@@ -43,7 +43,8 @@ export function namedOutletsRedirect(redirectTo: string): Observable<any> {
   return throwError(
     new RuntimeError(
       RuntimeErrorCode.NAMED_OUTLET_REDIRECT,
-      (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      typeof ngDevMode !== 'undefined' &&
+        ngDevMode &&
         `Only absolute redirects can have named outlets. redirectTo: '${redirectTo}'`,
     ),
   );
@@ -52,7 +53,8 @@ export function namedOutletsRedirect(redirectTo: string): Observable<any> {
 export function canLoadFails(route: Route): Observable<LoadedRouterConfig> {
   return throwError(
     navigationCancelingError(
-      (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      typeof ngDevMode !== 'undefined' &&
+        ngDevMode &&
         `Cannot load children because the guard of the route "path: '${route.path}'" returned false`,
       NavigationCancellationCode.GuardRejected,
     ),
@@ -181,7 +183,8 @@ export class ApplyRedirects {
     if (!pos)
       throw new RuntimeError(
         RuntimeErrorCode.MISSING_REDIRECT,
-        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        typeof ngDevMode !== 'undefined' &&
+          ngDevMode &&
           `Cannot redirect to '${redirectTo}'. Cannot find '${redirectToUrlSegment.path}'.`,
       );
     return pos;

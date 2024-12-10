@@ -89,7 +89,8 @@ export class EventManager {
     if (!plugin) {
       throw new RuntimeError(
         RuntimeErrorCode.NO_PLUGIN_FOR_EVENT,
-        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        typeof ngDevMode !== 'undefined' &&
+          ngDevMode &&
           `No event manager plugin found for event ${eventName}`,
       );
     }

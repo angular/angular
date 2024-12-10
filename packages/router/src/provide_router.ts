@@ -89,7 +89,7 @@ import {
 export function provideRouter(routes: Routes, ...features: RouterFeatures[]): EnvironmentProviders {
   return makeEnvironmentProviders([
     {provide: ROUTES, multi: true, useValue: routes},
-    typeof ngDevMode === 'undefined' || ngDevMode
+    typeof ngDevMode !== 'undefined' && ngDevMode
       ? {provide: ROUTER_IS_PROVIDED, useValue: true}
       : [],
     {provide: ActivatedRoute, useFactory: rootRoute, deps: [Router]},
@@ -166,7 +166,7 @@ const routerIsProvidedDevModeCheck = {
 export function provideRoutes(routes: Routes): Provider[] {
   return [
     {provide: ROUTES, multi: true, useValue: routes},
-    typeof ngDevMode === 'undefined' || ngDevMode ? routerIsProvidedDevModeCheck : [],
+    typeof ngDevMode !== 'undefined' && ngDevMode ? routerIsProvidedDevModeCheck : [],
   ];
 }
 
@@ -256,7 +256,7 @@ export function getBootstrapListener() {
  * to the activation phase.
  */
 const BOOTSTRAP_DONE = new InjectionToken<Subject<void>>(
-  typeof ngDevMode === 'undefined' || ngDevMode ? 'bootstrap done indicator' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'bootstrap done indicator' : '',
   {
     factory: () => {
       return new Subject<void>();
@@ -289,7 +289,7 @@ const enum InitialNavigation {
 }
 
 const INITIAL_NAVIGATION = new InjectionToken<InitialNavigation>(
-  typeof ngDevMode === 'undefined' || ngDevMode ? 'initial navigation' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'initial navigation' : '',
   {providedIn: 'root', factory: () => InitialNavigation.EnabledNonBlocking},
 );
 
@@ -477,7 +477,7 @@ export type DebugTracingFeature = RouterFeature<RouterFeatureKind.DebugTracingFe
  */
 export function withDebugTracing(): DebugTracingFeature {
   let providers: Provider[] = [];
-  if (typeof ngDevMode === 'undefined' || ngDevMode) {
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
     providers = [
       {
         provide: ENVIRONMENT_INITIALIZER,
@@ -503,7 +503,7 @@ export function withDebugTracing(): DebugTracingFeature {
 }
 
 const ROUTER_PRELOADER = new InjectionToken<RouterPreloader>(
-  typeof ngDevMode === 'undefined' || ngDevMode ? 'router preloader' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'router preloader' : '',
 );
 
 /**

@@ -298,7 +298,7 @@ export class UpgradeModule {
           setTimeout(() => {
             const subscription = this.ngZone.onMicrotaskEmpty.subscribe(() => {
               if ($rootScope.$$phase) {
-                if (typeof ngDevMode === 'undefined' || ngDevMode) {
+                if (typeof ngDevMode !== 'undefined' && ngDevMode) {
                   console.warn(
                     'A digest was triggered while one was already in progress. This may mean that something is triggering digests outside the Angular zone.',
                   );

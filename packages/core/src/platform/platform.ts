@@ -120,7 +120,8 @@ export function assertPlatform(requiredToken: any): PlatformRef {
   }
 
   if (
-    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+    typeof ngDevMode !== 'undefined' &&
+    ngDevMode &&
     !platform.injector.get(requiredToken, null)
   ) {
     throw new RuntimeError(

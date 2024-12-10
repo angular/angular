@@ -24,7 +24,8 @@ export class BrowserGetTestability implements GetTestability {
       if (testability == null) {
         throw new RuntimeError(
           RuntimeErrorCode.TESTABILITY_NOT_FOUND,
-          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+          typeof ngDevMode !== 'undefined' &&
+            ngDevMode &&
             'Could not find testability for element.',
         );
       }

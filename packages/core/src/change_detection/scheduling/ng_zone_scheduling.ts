@@ -70,7 +70,7 @@ export class NgZoneChangeDetectionScheduler {
  * with the bootstrapModule API.
  */
 export const PROVIDED_NG_ZONE = new InjectionToken<boolean>(
-  typeof ngDevMode === 'undefined' || ngDevMode ? 'provideZoneChangeDetection token' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'provideZoneChangeDetection token' : '',
   {factory: () => false},
 );
 
@@ -95,7 +95,8 @@ export function internalProvideZoneChangeDetection({
           optional: true,
         });
         if (
-          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+          typeof ngDevMode !== 'undefined' &&
+          ngDevMode &&
           ngZoneChangeDetectionScheduler === null
         ) {
           throw new RuntimeError(

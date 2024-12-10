@@ -186,7 +186,7 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
     }
 
     if (!(window as any).Hammer && !this.loader) {
-      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      if (typeof ngDevMode !== 'undefined' && ngDevMode) {
         this.console.warn(
           `The "${eventName}" event cannot be bound because Hammer.JS is not ` +
             `loaded and no custom loader has been specified.`,
@@ -218,7 +218,7 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
         this._loaderPromise!.then(() => {
           // If Hammer isn't actually loaded when the custom loader resolves, give up.
           if (!(window as any).Hammer) {
-            if (typeof ngDevMode === 'undefined' || ngDevMode) {
+            if (typeof ngDevMode !== 'undefined' && ngDevMode) {
               this.console.warn(
                 `The custom HAMMER_LOADER completed, but Hammer.JS is not present.`,
               );
@@ -234,7 +234,7 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
             deregister = this.addEventListener(element, eventName, handler);
           }
         }).catch(() => {
-          if (typeof ngDevMode === 'undefined' || ngDevMode) {
+          if (typeof ngDevMode !== 'undefined' && ngDevMode) {
             this.console.warn(
               `The "${eventName}" event cannot be bound because the custom ` +
                 `Hammer.JS loader failed.`,

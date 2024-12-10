@@ -652,7 +652,7 @@ export class UpgradeAdapter {
                 let subscription = ngZone.onMicrotaskEmpty.subscribe({
                   next: () => {
                     if (rootScope.$$phase) {
-                      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+                      if (typeof ngDevMode !== 'undefined' && ngDevMode) {
                         console.warn(
                           'A digest was triggered while one was already in progress. This may mean that something is triggering digests outside the Angular zone.',
                         );

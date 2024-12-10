@@ -197,7 +197,8 @@ class Navigation {
     if (isAbsolute && commands.length > 0 && isMatrixParams(commands[0])) {
       throw new RuntimeError(
         RuntimeErrorCode.ROOT_SEGMENT_MATRIX_PARAMS,
-        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        typeof ngDevMode !== 'undefined' &&
+          ngDevMode &&
           'Root segment cannot have matrix parameters',
       );
     }
@@ -206,8 +207,7 @@ class Navigation {
     if (cmdWithOutlet && cmdWithOutlet !== last(commands)) {
       throw new RuntimeError(
         RuntimeErrorCode.MISPLACED_OUTLETS_COMMAND,
-        (typeof ngDevMode === 'undefined' || ngDevMode) &&
-          '{outlets:{}} has to be the last command',
+        typeof ngDevMode !== 'undefined' && ngDevMode && '{outlets:{}} has to be the last command',
       );
     }
   }
@@ -316,7 +316,7 @@ function createPositionApplyingDoubleDots(
     if (!g) {
       throw new RuntimeError(
         RuntimeErrorCode.INVALID_DOUBLE_DOTS,
-        (typeof ngDevMode === 'undefined' || ngDevMode) && "Invalid number of '../'",
+        typeof ngDevMode !== 'undefined' && ngDevMode && "Invalid number of '../'",
       );
     }
     ci = g.segments.length;

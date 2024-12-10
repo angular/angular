@@ -122,7 +122,7 @@ export class SelectMultipleControlValueAccessor
    */
   @Input()
   set compareWith(fn: (o1: any, o2: any) => boolean) {
-    if (typeof fn !== 'function' && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+    if (typeof fn !== 'function' && typeof ngDevMode !== 'undefined' && ngDevMode) {
       throw new RuntimeError(
         RuntimeErrorCode.COMPAREWITH_NOT_A_FN,
         `compareWith must be a function, but received ${JSON.stringify(fn)}`,

@@ -727,7 +727,7 @@ function getComponentId<T>(componentDef: ComponentDef<T>): string {
     !!componentDef.viewQuery,
   ];
 
-  if (typeof ngDevMode === 'undefined' || ngDevMode) {
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
     // If client and server bundles were produced with different minification configurations,
     // the serializable contents of the function body would be different on the client and on
     // the server. Ensure that we do not accidentally use functions in component id computation.
@@ -750,7 +750,7 @@ function getComponentId<T>(componentDef: ComponentDef<T>): string {
 
   const compId = 'c' + hash;
 
-  if (typeof ngDevMode === 'undefined' || ngDevMode) {
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
     if (GENERATED_COMP_IDS.has(compId)) {
       const previousCompDefType = GENERATED_COMP_IDS.get(compId)!;
       if (previousCompDefType !== componentDef.type) {

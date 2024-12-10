@@ -170,7 +170,7 @@ export class SharedStylesHost implements OnDestroy {
 
     // If existing, just increment the usage count
     if (record) {
-      if ((typeof ngDevMode === 'undefined' || ngDevMode) && record.usage === 0) {
+      if (typeof ngDevMode !== 'undefined' && ngDevMode && record.usage === 0) {
         // A usage count of zero indicates a preexisting server generated style.
         // This attribute is solely used for debugging purposes of SSR style reuse.
         record.elements.forEach((element) => element.setAttribute('ng-style-reused', ''));

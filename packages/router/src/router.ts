@@ -365,7 +365,7 @@ export class Router {
    * ```
    */
   resetConfig(config: Routes): void {
-    (typeof ngDevMode === 'undefined' || ngDevMode) && validateConfig(config);
+    typeof ngDevMode !== 'undefined' && ngDevMode && validateConfig(config);
     this.config = config.map(standardizeConfig);
     this.navigated = false;
   }
@@ -675,7 +675,8 @@ function validateCommands(commands: string[]): void {
     if (cmd == null) {
       throw new RuntimeError(
         RuntimeErrorCode.NULLISH_COMMAND,
-        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        typeof ngDevMode !== 'undefined' &&
+          ngDevMode &&
           `The requested path contains ${cmd} segment at index ${i}`,
       );
     }

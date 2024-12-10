@@ -68,7 +68,7 @@ export class HttpHeaders {
       });
     } else {
       this.lazyInit = () => {
-        if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        if (typeof ngDevMode !== 'undefined' && ngDevMode) {
           assertValidHeaders(headers);
         }
         this.headers = new Map<string, string[]>();

@@ -203,7 +203,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
       return;
     }
 
-    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+    if (typeof ngDevMode !== 'undefined' && ngDevMode) {
       if (this.useMicrotaskScheduler) {
         trackMicrotaskNotificationForDebugging();
       } else {
@@ -381,7 +381,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
 export function provideExperimentalZonelessChangeDetection(): EnvironmentProviders {
   performanceMarkFeature('NgZoneless');
 
-  if ((typeof ngDevMode === 'undefined' || ngDevMode) && typeof Zone !== 'undefined' && Zone) {
+  if (typeof ngDevMode !== 'undefined' && ngDevMode && typeof Zone !== 'undefined' && Zone) {
     const message = formatRuntimeError(
       RuntimeErrorCode.UNEXPECTED_ZONEJS_PRESENT_IN_ZONELESS_MODE,
       `The application is using zoneless change detection, but is still loading Zone.js. ` +
@@ -396,7 +396,7 @@ export function provideExperimentalZonelessChangeDetection(): EnvironmentProvide
     {provide: NgZone, useClass: NoopNgZone},
     {provide: ZONELESS_ENABLED, useValue: true},
     {provide: SCHEDULE_IN_ROOT_ZONE, useValue: false},
-    typeof ngDevMode === 'undefined' || ngDevMode
+    typeof ngDevMode !== 'undefined' && ngDevMode
       ? [{provide: PROVIDED_ZONELESS, useValue: true}]
       : [],
   ]);

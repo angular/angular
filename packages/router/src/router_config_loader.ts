@@ -62,7 +62,8 @@ export class RouterConfigLoader {
         if (this.onLoadEndListener) {
           this.onLoadEndListener(route);
         }
-        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        typeof ngDevMode !== 'undefined' &&
+          ngDevMode &&
           assertStandalone(route.path ?? '', component);
         route._loadedComponent = component;
       }),
@@ -153,7 +154,8 @@ export function loadChildren(
         rawRoutes = injector.get(ROUTES, [], {optional: true, self: true}).flat();
       }
       const routes = rawRoutes.map(standardizeConfig);
-      (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      typeof ngDevMode !== 'undefined' &&
+        ngDevMode &&
         validateConfig(routes, route.path, requireStandaloneComponents);
       return {routes, injector};
     }),

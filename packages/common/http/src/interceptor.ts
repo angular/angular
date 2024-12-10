@@ -274,7 +274,7 @@ export class HttpInterceptorHandler extends HttpHandler {
     // We strongly recommend using fetch backend for HTTP calls when SSR is used
     // for an application. The logic below checks if that's the case and produces
     // a warning otherwise.
-    if ((typeof ngDevMode === 'undefined' || ngDevMode) && !fetchBackendWarningDisplayed) {
+    if (typeof ngDevMode !== 'undefined' && ngDevMode && !fetchBackendWarningDisplayed) {
       const isServer = isPlatformServer(injector.get(PLATFORM_ID));
 
       // This flag is necessary because provideHttpClientTesting() overrides the backend

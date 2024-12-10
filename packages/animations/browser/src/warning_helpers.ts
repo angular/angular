@@ -15,12 +15,14 @@ function createListOfWarnings(warnings: string[]): string {
 }
 
 export function warnValidation(warnings: string[]): void {
-  (typeof ngDevMode === 'undefined' || ngDevMode) &&
+  typeof ngDevMode !== 'undefined' &&
+    ngDevMode &&
     console.warn(`animation validation warnings:${createListOfWarnings(warnings)}`);
 }
 
 export function warnTriggerBuild(name: string, warnings: string[]): void {
-  (typeof ngDevMode === 'undefined' || ngDevMode) &&
+  typeof ngDevMode !== 'undefined' &&
+    ngDevMode &&
     console.warn(
       `The animation trigger "${name}" has built with the following warnings:${createListOfWarnings(
         warnings,
@@ -29,12 +31,14 @@ export function warnTriggerBuild(name: string, warnings: string[]): void {
 }
 
 export function warnRegister(warnings: string[]): void {
-  (typeof ngDevMode === 'undefined' || ngDevMode) &&
+  typeof ngDevMode !== 'undefined' &&
+    ngDevMode &&
     console.warn(`Animation built with the following warnings:${createListOfWarnings(warnings)}`);
 }
 
 export function triggerParsingWarnings(name: string, warnings: string[]): void {
-  (typeof ngDevMode === 'undefined' || ngDevMode) &&
+  typeof ngDevMode !== 'undefined' &&
+    ngDevMode &&
     console.warn(
       `Animation parsing for the ${name} trigger presents the following warnings:${createListOfWarnings(
         warnings,

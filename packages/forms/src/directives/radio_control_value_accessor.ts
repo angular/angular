@@ -261,7 +261,8 @@ export class RadioControlValueAccessor
       this.name &&
       this.formControlName &&
       this.name !== this.formControlName &&
-      (typeof ngDevMode === 'undefined' || ngDevMode)
+      typeof ngDevMode !== 'undefined' &&
+      ngDevMode
     ) {
       throwNameError();
     }

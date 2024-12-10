@@ -186,7 +186,8 @@ export function toSignal<T, U = undefined>(
   if (options?.requireSync && state().kind === StateKind.NoValue) {
     throw new ɵRuntimeError(
       ɵRuntimeErrorCode.REQUIRE_SYNC_WITHOUT_SYNC_EMIT,
-      (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      typeof ngDevMode !== 'undefined' &&
+        ngDevMode &&
         '`toSignal()` called with `requireSync` but `Observable` did not emit synchronously.',
     );
   }
@@ -208,7 +209,8 @@ export function toSignal<T, U = undefined>(
           // This shouldn't really happen because the error is thrown on creation.
           throw new ɵRuntimeError(
             ɵRuntimeErrorCode.REQUIRE_SYNC_WITHOUT_SYNC_EMIT,
-            (typeof ngDevMode === 'undefined' || ngDevMode) &&
+            typeof ngDevMode !== 'undefined' &&
+              ngDevMode &&
               '`toSignal()` called with `requireSync` but `Observable` did not emit synchronously.',
           );
       }

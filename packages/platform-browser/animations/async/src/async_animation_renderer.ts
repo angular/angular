@@ -86,7 +86,8 @@ export class AsyncAnimationRendererFactory implements OnDestroy, RendererFactory
       .catch((e) => {
         throw new RuntimeError(
           RuntimeErrorCode.ANIMATION_RENDERER_ASYNC_LOADING_FAILURE,
-          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+          typeof ngDevMode !== 'undefined' &&
+            ngDevMode &&
             'Async loading for animations package was ' +
               'enabled, but loading failed. Angular falls back to using regular rendering. ' +
               "No animations will be displayed and their styles won't be applied.",

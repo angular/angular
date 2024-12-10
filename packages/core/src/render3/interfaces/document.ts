@@ -52,7 +52,8 @@ export function getDocument(): Document {
 
   throw new RuntimeError(
     RuntimeErrorCode.MISSING_DOCUMENT,
-    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+    typeof ngDevMode !== 'undefined' &&
+      ngDevMode &&
       `The document object is not available in this context. Make sure the DOCUMENT injection token is provided.`,
   );
 

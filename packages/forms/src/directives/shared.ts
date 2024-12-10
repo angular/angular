@@ -67,7 +67,7 @@ export function setUpControl(
   dir: NgControl,
   callSetDisabledState: SetDisabledStateOption = setDisabledStateDefault,
 ): void {
-  if (typeof ngDevMode === 'undefined' || ngDevMode) {
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
     if (!control) _throwError(dir, 'Cannot find control with');
     if (!dir.valueAccessor) _throwMissingValueAccessorError(dir);
   }
@@ -108,7 +108,7 @@ export function cleanUpControl(
   validateControlPresenceOnChange: boolean = true,
 ): void {
   const noop = () => {
-    if (validateControlPresenceOnChange && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+    if (validateControlPresenceOnChange && typeof ngDevMode !== 'undefined' && ngDevMode) {
       _noControlError(dir);
     }
   };
@@ -301,7 +301,7 @@ export function setUpFormContainer(
   control: FormGroup | FormArray,
   dir: AbstractFormGroupDirective | FormArrayName,
 ) {
-  if (control == null && (typeof ngDevMode === 'undefined' || ngDevMode))
+  if (control == null && typeof ngDevMode !== 'undefined' && ngDevMode)
     _throwError(dir, 'Cannot find control with');
   setUpValidators(control, dir);
 }
@@ -388,7 +388,7 @@ export function selectValueAccessor(
 ): ControlValueAccessor | null {
   if (!valueAccessors) return null;
 
-  if (!Array.isArray(valueAccessors) && (typeof ngDevMode === 'undefined' || ngDevMode))
+  if (!Array.isArray(valueAccessors) && typeof ngDevMode !== 'undefined' && ngDevMode)
     _throwInvalidValueAccessorError(dir);
 
   let defaultAccessor: ControlValueAccessor | undefined = undefined;
@@ -399,11 +399,11 @@ export function selectValueAccessor(
     if (v.constructor === DefaultValueAccessor) {
       defaultAccessor = v;
     } else if (isBuiltInAccessor(v)) {
-      if (builtinAccessor && (typeof ngDevMode === 'undefined' || ngDevMode))
+      if (builtinAccessor && typeof ngDevMode !== 'undefined' && ngDevMode)
         _throwError(dir, 'More than one built-in value accessor matches form control with');
       builtinAccessor = v;
     } else {
-      if (customAccessor && (typeof ngDevMode === 'undefined' || ngDevMode))
+      if (customAccessor && typeof ngDevMode !== 'undefined' && ngDevMode)
         _throwError(dir, 'More than one custom value accessor matches form control with');
       customAccessor = v;
     }
@@ -413,7 +413,7 @@ export function selectValueAccessor(
   if (builtinAccessor) return builtinAccessor;
   if (defaultAccessor) return defaultAccessor;
 
-  if (typeof ngDevMode === 'undefined' || ngDevMode) {
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
     _throwError(dir, 'No valid value accessor for form control with');
   }
   return null;

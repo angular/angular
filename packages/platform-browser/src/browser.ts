@@ -209,7 +209,7 @@ export const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef
  * `BrowserModule` providers without referencing the module itself.
  */
 const BROWSER_MODULE_PROVIDERS_MARKER = new InjectionToken(
-  typeof ngDevMode === 'undefined' || ngDevMode ? 'BrowserModule Providers Marker' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'BrowserModule Providers Marker' : '',
 );
 
 const TESTABILITY_PROVIDERS = [
@@ -245,7 +245,7 @@ const BROWSER_MODULE_PROVIDERS: Provider[] = [
   EventManager,
   {provide: RendererFactory2, useExisting: DomRendererFactory2},
   {provide: XhrFactory, useClass: BrowserXhr, deps: []},
-  typeof ngDevMode === 'undefined' || ngDevMode
+  typeof ngDevMode !== 'undefined' && ngDevMode
     ? {provide: BROWSER_MODULE_PROVIDERS_MARKER, useValue: true}
     : [],
 ];
@@ -270,7 +270,7 @@ export class BrowserModule {
     @Inject(BROWSER_MODULE_PROVIDERS_MARKER)
     providersAlreadyPresent: boolean | null,
   ) {
-    if ((typeof ngDevMode === 'undefined' || ngDevMode) && providersAlreadyPresent) {
+    if (typeof ngDevMode !== 'undefined' && ngDevMode && providersAlreadyPresent) {
       throw new RuntimeError(
         RuntimeErrorCode.BROWSER_MODULE_ALREADY_LOADED,
         `Providers from the \`BrowserModule\` have already been loaded. If you need access ` +

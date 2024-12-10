@@ -44,7 +44,7 @@ export function provideExperimentalCheckNoChangesForDebug(options: {
   useNgZoneOnStable?: boolean;
   exhaustive?: boolean;
 }) {
-  if (typeof ngDevMode === 'undefined' || ngDevMode) {
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
     if (options.interval === undefined && !options.useNgZoneOnStable) {
       throw new Error('Must provide one of `useNgZoneOnStable` or `interval`');
     }

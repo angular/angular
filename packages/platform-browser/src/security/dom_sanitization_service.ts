@@ -189,8 +189,7 @@ export class DomSanitizerImpl extends DomSanitizer {
         }
         throw new RuntimeError(
           RuntimeErrorCode.SANITIZATION_UNSAFE_SCRIPT,
-          (typeof ngDevMode === 'undefined' || ngDevMode) &&
-            'unsafe value used in a script context',
+          typeof ngDevMode !== 'undefined' && ngDevMode && 'unsafe value used in a script context',
         );
       case SecurityContext.URL:
         if (allowSanitizationBypassOrThrow(value, BypassType.Url)) {
@@ -203,13 +202,15 @@ export class DomSanitizerImpl extends DomSanitizer {
         }
         throw new RuntimeError(
           RuntimeErrorCode.SANITIZATION_UNSAFE_RESOURCE_URL,
-          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+          typeof ngDevMode !== 'undefined' &&
+            ngDevMode &&
             `unsafe value used in a resource URL context (see ${XSS_SECURITY_URL})`,
         );
       default:
         throw new RuntimeError(
           RuntimeErrorCode.SANITIZATION_UNEXPECTED_CTX,
-          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+          typeof ngDevMode !== 'undefined' &&
+            ngDevMode &&
             `Unexpected SecurityContext ${ctx} (see ${XSS_SECURITY_URL})`,
         );
     }

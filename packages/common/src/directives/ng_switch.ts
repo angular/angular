@@ -212,7 +212,7 @@ export class NgSwitchCase implements DoCheck {
     templateRef: TemplateRef<Object>,
     @Optional() @Host() private ngSwitch: NgSwitch,
   ) {
-    if ((typeof ngDevMode === 'undefined' || ngDevMode) && !ngSwitch) {
+    if (typeof ngDevMode !== 'undefined' && ngDevMode && !ngSwitch) {
       throwNgSwitchProviderNotFoundError('ngSwitchCase', 'NgSwitchCase');
     }
 
@@ -252,7 +252,7 @@ export class NgSwitchDefault {
     templateRef: TemplateRef<Object>,
     @Optional() @Host() ngSwitch: NgSwitch,
   ) {
-    if ((typeof ngDevMode === 'undefined' || ngDevMode) && !ngSwitch) {
+    if (typeof ngDevMode !== 'undefined' && ngDevMode && !ngSwitch) {
       throwNgSwitchProviderNotFoundError('ngSwitchDefault', 'NgSwitchDefault');
     }
 

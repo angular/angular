@@ -128,7 +128,7 @@ export class AnimationTransitionFactory {
       }
     });
 
-    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+    if (typeof ngDevMode !== 'undefined' && ngDevMode) {
       checkNonAnimatableInTimelines(timelines, this._triggerName, driver);
     }
 

@@ -87,7 +87,7 @@ function trackHostDirectiveDef(
 ) {
   const hostDirectiveDef = getDirectiveDef(def.directive)!;
 
-  if (typeof ngDevMode === 'undefined' || ngDevMode) {
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
     validateHostDirective(def, hostDirectiveDef);
   }
 
@@ -163,7 +163,8 @@ function patchDeclaredInputs(
       // `validateMappings`. If we somehow did, it would lead to `ngOnChanges` being invoked
       // with the wrong name so we have a non-user-friendly assertion here just in case.
       if (
-        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        typeof ngDevMode !== 'undefined' &&
+        ngDevMode &&
         declaredInputs.hasOwnProperty(remappedPublicName)
       ) {
         assertEqual(

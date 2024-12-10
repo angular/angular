@@ -224,7 +224,7 @@ export class ApplicationInitStatus {
   private readonly injector = inject(Injector);
 
   constructor() {
-    if ((typeof ngDevMode === 'undefined' || ngDevMode) && !Array.isArray(this.appInits)) {
+    if (typeof ngDevMode !== 'undefined' && ngDevMode && !Array.isArray(this.appInits)) {
       throw new RuntimeError(
         RuntimeErrorCode.INVALID_MULTI_PROVIDER,
         'Unexpected type of the `APP_INITIALIZER` token value ' +

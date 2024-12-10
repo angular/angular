@@ -197,7 +197,7 @@ export class FormGroup<
     asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null,
   ) {
     super(pickValidators(validatorOrOpts), pickAsyncValidators(asyncValidator, validatorOrOpts));
-    (typeof ngDevMode === 'undefined' || ngDevMode) && validateFormGroupControls(controls);
+    typeof ngDevMode !== 'undefined' && ngDevMode && validateFormGroupControls(controls);
     this.controls = controls;
     this._initObservables();
     this._setUpdateStrategy(validatorOrOpts);

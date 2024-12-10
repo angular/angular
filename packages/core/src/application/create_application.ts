@@ -40,7 +40,7 @@ export function internalCreateApplication(config: {
   try {
     const {rootComponent, appProviders, platformProviders} = config;
 
-    if ((typeof ngDevMode === 'undefined' || ngDevMode) && rootComponent !== undefined) {
+    if (typeof ngDevMode !== 'undefined' && ngDevMode && rootComponent !== undefined) {
       assertStandaloneComponentType(rootComponent);
     }
 
@@ -56,7 +56,7 @@ export function internalCreateApplication(config: {
     const adapter = new EnvironmentNgModuleRefAdapter({
       providers: allAppProviders,
       parent: platformInjector as EnvironmentInjector,
-      debugName: typeof ngDevMode === 'undefined' || ngDevMode ? 'Environment Injector' : '',
+      debugName: typeof ngDevMode !== 'undefined' && ngDevMode ? 'Environment Injector' : '',
       // We skip environment initializers because we need to run them inside the NgZone, which
       // happens after we get the NgZone instance from the Injector.
       runEnvironmentInitializers: false,

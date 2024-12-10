@@ -66,7 +66,8 @@ export class HttpXhrBackend implements HttpBackend {
     if (req.method === 'JSONP') {
       throw new RuntimeError(
         RuntimeErrorCode.MISSING_JSONP_MODULE,
-        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        typeof ngDevMode !== 'undefined' &&
+          ngDevMode &&
           `Cannot make a JSONP request without JSONP support. To fix the problem, either add the \`withJsonpSupport()\` call (if \`provideHttpClient()\` is used) or import the \`HttpClientJsonpModule\` in the root NgModule.`,
       );
     }

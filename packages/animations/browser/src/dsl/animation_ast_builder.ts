@@ -141,7 +141,7 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
       visitDslNode(this, normalizeAnimationEntry(metadata), context)
     );
 
-    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+    if (typeof ngDevMode !== 'undefined' && ngDevMode) {
       if (context.unsupportedCSSPropertiesFound.size) {
         pushUnrecognizedPropertiesWarning(warnings, [
           ...context.unsupportedCSSPropertiesFound.keys(),
@@ -387,7 +387,7 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
       if (typeof tuple === 'string') return;
 
       tuple.forEach((value, prop) => {
-        if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        if (typeof ngDevMode !== 'undefined' && ngDevMode) {
           if (!this._driver.validateStyleProperty(prop)) {
             tuple.delete(prop);
             context.unsupportedCSSPropertiesFound.add(prop);

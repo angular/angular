@@ -218,7 +218,7 @@ export class UrlTree {
     /** The fragment of the URL */
     public fragment: string | null = null,
   ) {
-    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+    if (typeof ngDevMode !== 'undefined' && ngDevMode) {
       if (root.segments.length > 0) {
         throw new RuntimeError(
           RuntimeErrorCode.INVALID_ROOT_URL_SEGMENT,
@@ -630,7 +630,8 @@ class UrlParser {
     if (path === '' && this.peekStartsWith(';')) {
       throw new RuntimeError(
         RuntimeErrorCode.EMPTY_PATH_WITH_PARAMS,
-        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        typeof ngDevMode !== 'undefined' &&
+          ngDevMode &&
           `Empty path url segment cannot have parameters: '${this.remaining}'.`,
       );
     }
@@ -713,7 +714,7 @@ class UrlParser {
       if (next !== '/' && next !== ')' && next !== ';') {
         throw new RuntimeError(
           RuntimeErrorCode.UNPARSABLE_URL,
-          (typeof ngDevMode === 'undefined' || ngDevMode) && `Cannot parse url '${this.url}'`,
+          typeof ngDevMode !== 'undefined' && ngDevMode && `Cannot parse url '${this.url}'`,
         );
       }
 
@@ -754,7 +755,7 @@ class UrlParser {
     if (!this.consumeOptional(str)) {
       throw new RuntimeError(
         RuntimeErrorCode.UNEXPECTED_VALUE_IN_URL,
-        (typeof ngDevMode === 'undefined' || ngDevMode) && `Expected "${str}".`,
+        typeof ngDevMode !== 'undefined' && ngDevMode && `Expected "${str}".`,
       );
     }
   }

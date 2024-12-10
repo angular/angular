@@ -325,7 +325,7 @@ export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): Trusted
     const safeHtml = sanitizer.sanitizeChildren(
       (getTemplateContent(inertBodyElement!) as Element) || inertBodyElement,
     );
-    if ((typeof ngDevMode === 'undefined' || ngDevMode) && sanitizer.sanitizedSomething) {
+    if (typeof ngDevMode !== 'undefined' && ngDevMode && sanitizer.sanitizedSomething) {
       console.warn(`WARNING: sanitizing HTML stripped some content, see ${XSS_SECURITY_URL}`);
     }
 

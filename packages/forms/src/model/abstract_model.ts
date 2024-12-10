@@ -197,7 +197,7 @@ export function pickAsyncValidators(
   asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null,
   validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null,
 ): AsyncValidatorFn | AsyncValidatorFn[] | null {
-  if (typeof ngDevMode === 'undefined' || ngDevMode) {
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
     if (isOptionsObj(validatorOrOpts) && asyncValidator) {
       console.warn(asyncValidatorsDroppedWithOptsWarning);
     }
@@ -257,13 +257,13 @@ export function assertControlPresent(parent: any, isGroup: boolean, key: string 
   if (!collection.length) {
     throw new RuntimeError(
       RuntimeErrorCode.NO_CONTROLS,
-      typeof ngDevMode === 'undefined' || ngDevMode ? noControlsError(isGroup) : '',
+      typeof ngDevMode !== 'undefined' && ngDevMode ? noControlsError(isGroup) : '',
     );
   }
   if (!controls[key]) {
     throw new RuntimeError(
       RuntimeErrorCode.MISSING_CONTROL,
-      typeof ngDevMode === 'undefined' || ngDevMode ? missingControlError(isGroup, key) : '',
+      typeof ngDevMode !== 'undefined' && ngDevMode ? missingControlError(isGroup, key) : '',
     );
   }
 }
@@ -273,7 +273,7 @@ export function assertAllValuesPresent(control: any, isGroup: boolean, value: an
     if (value[key] === undefined) {
       throw new RuntimeError(
         RuntimeErrorCode.MISSING_CONTROL_VALUE,
-        typeof ngDevMode === 'undefined' || ngDevMode ? missingControlValueError(isGroup, key) : '',
+        typeof ngDevMode !== 'undefined' && ngDevMode ? missingControlValueError(isGroup, key) : '',
       );
     }
   });

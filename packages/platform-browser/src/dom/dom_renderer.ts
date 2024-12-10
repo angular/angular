@@ -265,7 +265,8 @@ class DefaultDomRenderer2 implements Renderer2 {
     if (!el) {
       throw new RuntimeError(
         RuntimeErrorCode.ROOT_NODE_NOT_FOUND,
-        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        typeof ngDevMode !== 'undefined' &&
+          ngDevMode &&
           `The selector "${selectorOrNode}" did not match any elements`,
       );
     }
@@ -340,7 +341,8 @@ class DefaultDomRenderer2 implements Renderer2 {
       return;
     }
 
-    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+    typeof ngDevMode !== 'undefined' &&
+      ngDevMode &&
       this.throwOnSyntheticProps &&
       checkNoSyntheticProp(name, 'property');
     el[name] = value;
@@ -356,7 +358,8 @@ class DefaultDomRenderer2 implements Renderer2 {
     callback: (event: any) => boolean,
     options?: ListenerOptions,
   ): () => void {
-    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+    typeof ngDevMode !== 'undefined' &&
+      ngDevMode &&
       this.throwOnSyntheticProps &&
       checkNoSyntheticProp(event, 'listener');
     if (typeof target === 'string') {

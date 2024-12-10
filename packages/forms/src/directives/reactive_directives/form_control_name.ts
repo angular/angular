@@ -116,7 +116,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    */
   @Input('disabled')
   set isDisabled(isDisabled: boolean) {
-    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+    if (typeof ngDevMode !== 'undefined' && ngDevMode) {
       console.warn(disabledAttrWarning);
     }
   }
@@ -170,7 +170,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   ngOnChanges(changes: SimpleChanges) {
     if (!this._added) this._setUpControl();
     if (isPropertyUpdated(changes, this.viewModel)) {
-      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      if (typeof ngDevMode !== 'undefined' && ngDevMode) {
         _ngModelWarning('formControlName', FormControlName, this, this._ngModelWarningConfig);
       }
       this.viewModel = this.model;
@@ -214,7 +214,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   }
 
   private _checkParentType(): void {
-    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+    if (typeof ngDevMode !== 'undefined' && ngDevMode) {
       if (
         !(this._parent instanceof FormGroupName) &&
         this._parent instanceof AbstractFormGroupDirective

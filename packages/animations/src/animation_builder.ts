@@ -121,7 +121,8 @@ export class BrowserAnimationBuilder extends AnimationBuilder {
 
       throw new RuntimeError(
         RuntimeErrorCode.BROWSER_ANIMATION_BUILDER_INJECTED_WITHOUT_ANIMATIONS,
-        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        typeof ngDevMode !== 'undefined' &&
+          ngDevMode &&
           'Angular detected that the `AnimationBuilder` was injected, but animation support was not enabled. ' +
             'Please make sure that you enable animations in your application by calling `provideAnimations()` or `provideAnimationsAsync()` function.',
       );

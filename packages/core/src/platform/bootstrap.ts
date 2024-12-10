@@ -66,7 +66,7 @@ export function bootstrap<M>(
       config.moduleRef.resolveInjectorInitializers();
     }
     const exceptionHandler = envInjector.get(ErrorHandler, null);
-    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+    if (typeof ngDevMode !== 'undefined' && ngDevMode) {
       if (exceptionHandler === null) {
         const errorMessage = isApplicationBootstrapConfig(config)
           ? 'No `ErrorHandler` found in the Dependency Injection tree.'
@@ -125,7 +125,7 @@ export function bootstrap<M>(
         // If the `LOCALE_ID` provider is defined at bootstrap then we set the value for ivy
         const localeId = envInjector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
         setLocaleId(localeId || DEFAULT_LOCALE_ID);
-        if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        if (typeof ngDevMode !== 'undefined' && ngDevMode) {
           const imagePerformanceService = envInjector.get(ImagePerformanceWarning);
           imagePerformanceService.start();
         }

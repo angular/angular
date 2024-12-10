@@ -40,7 +40,7 @@ export function _sanitizeUrl(url: string): string {
   url = String(url);
   if (url.match(SAFE_URL_PATTERN)) return url;
 
-  if (typeof ngDevMode === 'undefined' || ngDevMode) {
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
     console.warn(`WARNING: sanitizing unsafe URL value ${url} (see ${XSS_SECURITY_URL})`);
   }
 

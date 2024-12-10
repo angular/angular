@@ -86,7 +86,7 @@ export function assertStandalone(fullPath: string, component: Type<unknown> | un
 }
 
 function validateNode(route: Route, fullPath: string, requireStandaloneComponents: boolean): void {
-  if (typeof ngDevMode === 'undefined' || ngDevMode) {
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
     if (!route) {
       throw new RuntimeError(
         RuntimeErrorCode.INVALID_ROUTE_CONFIG,
