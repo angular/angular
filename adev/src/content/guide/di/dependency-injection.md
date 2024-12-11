@@ -127,7 +127,7 @@ serviceC[Service C]
 serviceD[Service D]
 end
 direction TB
-componentConstructor["Component\nconstructor(HeroService)"]
+componentConstructor["Component <br> constructor(HeroService)"]
 heroService-->componentConstructor
 style componentConstructor text-align: left
 ```
