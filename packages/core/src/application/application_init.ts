@@ -254,23 +254,23 @@ export class ApplicationInitStatus {
       }
     }
 
-    const complete = () => {
-      // @ts-expect-error overwriting a readonly
-      this.done = true;
-      this.resolve();
-    };
-
-    Promise.all(asyncInitPromises)
-      .then(() => {
-        complete();
-      })
-      .catch((e) => {
-        this.reject(e);
-      });
-
     if (asyncInitPromises.length === 0) {
-      complete();
+      this.complete();
+    } else {
+      Promise.all(asyncInitPromises)
+        .then(() => {
+          this.complete();
+        })
+        .catch((e) => {
+          this.reject(e);
+        });
     }
     this.initialized = true;
+  }
+
+  private complete(): void {
+    // @ts-expect-error overwriting a readonly
+    this.done = true;
+    this.resolve();
   }
 }
