@@ -1,8 +1,4 @@
 [
-  {
-    "name": "Class"
-  },
-  {
-    "name": "fn"
-  }
+  "Class",
+  "fn"
 ]
