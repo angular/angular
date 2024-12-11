@@ -19,7 +19,7 @@ import {getFirstNativeNode} from '../render3/node_manipulation';
 import {ɵɵresolveBody} from '../render3/util/misc_utils';
 import {renderStringify} from '../render3/util/stringify_utils';
 import {getNativeByTNode, unwrapRNode} from '../render3/util/view_utils';
-import {assertDefined} from '../util/assert';
+import {assertDefined, assertEqual} from '../util/assert';
 
 import {compressNodeLocation, decompressNodeLocation} from './compression';
 import {
@@ -408,11 +408,19 @@ export function gatherDeferBlocksCommentNodes(
 
   const nodesByBlockId = new Map<string, Comment>();
   while ((currentNode = commentNodesIterator.nextNode() as Comment)) {
-    // TODO(incremental-hydration: convert this to use string parsing rather than regex
-    const regex = new RegExp(/^\s*ngh=(d[0-9]+)/g);
-    const result = regex.exec(currentNode?.textContent ?? '');
-    if (result && result?.length > 0) {
-      nodesByBlockId.set(result[1], currentNode);
+    const nghPattern = 'ngh=';
+    const content = currentNode?.textContent;
+    const nghIdx = content?.indexOf(nghPattern) ?? -1;
+    if (nghIdx > -1) {
+      const nghValue = content!.substring(nghIdx + nghPattern.length).trim();
+      // Make sure the value has an expected format.
+      ngDevMode &&
+        assertEqual(
+          nghValue.startsWith('d'),
+          true,
+          'Invalid defer block id found in a comment node.',
+        );
+      nodesByBlockId.set(nghValue, currentNode);
     }
   }
   return nodesByBlockId;
