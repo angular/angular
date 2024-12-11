@@ -39,7 +39,7 @@ function main(argv: [string, string, string] | [string, string]): boolean {
     console.error('Updated gold file:', goldenFilePath);
     passed = true;
   } else {
-    passed = symbolExtractor.compareAndPrintError(goldenFilePath, goldenContent);
+    passed = symbolExtractor.compareAndPrintError(goldenContent);
     if (!passed) {
       console.error(`TEST FAILED!`);
       console.error(`  To update the golden file run: `);

@@ -1,209 +1,71 @@
 [
-  {
-    "name": "CIRCULAR"
-  },
-  {
-    "name": "EMPTY_ARRAY"
-  },
-  {
-    "name": "ENVIRONMENT_INITIALIZER"
-  },
-  {
-    "name": "EnvironmentInjector"
-  },
-  {
-    "name": "INJECTOR"
-  },
-  {
-    "name": "INJECTOR_DEF_TYPES"
-  },
-  {
-    "name": "INJECTOR_SCOPE"
-  },
-  {
-    "name": "InjectFlags"
-  },
-  {
-    "name": "InjectionToken"
-  },
-  {
-    "name": "NEW_LINE"
-  },
-  {
-    "name": "NG_COMP_DEF"
-  },
-  {
-    "name": "NG_ENV_ID"
-  },
-  {
-    "name": "NG_FACTORY_DEF"
-  },
-  {
-    "name": "NG_INJECTABLE_DEF"
-  },
-  {
-    "name": "NG_INJECTOR_DEF"
-  },
-  {
-    "name": "NG_INJ_DEF"
-  },
-  {
-    "name": "NG_PROV_DEF"
-  },
-  {
-    "name": "NOT_YET"
-  },
-  {
-    "name": "NULL_INJECTOR"
-  },
-  {
-    "name": "NullInjector"
-  },
-  {
-    "name": "R3Injector"
-  },
-  {
-    "name": "RuntimeError"
-  },
-  {
-    "name": "ScopedService"
-  },
-  {
-    "name": "Subscription"
-  },
-  {
-    "name": "THROW_IF_NOT_FOUND"
-  },
-  {
-    "name": "USE_VALUE"
-  },
-  {
-    "name": "UnsubscriptionError"
-  },
-  {
-    "name": "__defProp"
-  },
-  {
-    "name": "__forward_ref__"
-  },
-  {
-    "name": "__publicField"
-  },
-  {
-    "name": "_currentInjector"
-  },
-  {
-    "name": "_injectImplementation"
-  },
-  {
-    "name": "activeConsumer"
-  },
-  {
-    "name": "arrRemove"
-  },
-  {
-    "name": "assertNotDestroyed"
-  },
-  {
-    "name": "createErrorClass"
-  },
-  {
-    "name": "createInjector"
-  },
-  {
-    "name": "createLFrame"
-  },
-  {
-    "name": "deepForEach"
-  },
-  {
-    "name": "deepForEachProvider"
-  },
-  {
-    "name": "execFinalizer"
-  },
-  {
-    "name": "forEachSingleProvider"
-  },
-  {
-    "name": "forwardRef"
-  },
-  {
-    "name": "getClosureSafeProperty"
-  },
-  {
-    "name": "getFactoryDef"
-  },
-  {
-    "name": "getInjectableDef"
-  },
-  {
-    "name": "getInjectorDef"
-  },
-  {
-    "name": "getNullInjector"
-  },
-  {
-    "name": "getOwnDefinition"
-  },
-  {
-    "name": "importProvidersFrom"
-  },
-  {
-    "name": "injectArgs"
-  },
-  {
-    "name": "injectInjectorOnly"
-  },
-  {
-    "name": "injectableDefOrInjectorDefFactory"
-  },
-  {
-    "name": "instructionState"
-  },
-  {
-    "name": "internalImportProvidersFrom"
-  },
-  {
-    "name": "isEnvironmentProviders"
-  },
-  {
-    "name": "isFunction"
-  },
-  {
-    "name": "isTypeProvider"
-  },
-  {
-    "name": "isValueProvider"
-  },
-  {
-    "name": "makeRecord"
-  },
-  {
-    "name": "processInjectorTypesWithProviders"
-  },
-  {
-    "name": "resolveForwardRef"
-  },
-  {
-    "name": "setActiveConsumer"
-  },
-  {
-    "name": "setCurrentInjector"
-  },
-  {
-    "name": "setInjectImplementation"
-  },
-  {
-    "name": "stringify"
-  },
-  {
-    "name": "walkProviderTree"
-  },
-  {
-    "name": "ɵɵdefineInjectable"
-  },
-  {
-    "name": "ɵɵinject"
-  }
+  "CIRCULAR",
+  "EMPTY_ARRAY",
+  "ENVIRONMENT_INITIALIZER",
+  "EnvironmentInjector",
+  "INJECTOR",
+  "INJECTOR_DEF_TYPES",
+  "INJECTOR_SCOPE",
+  "InjectFlags",
+  "InjectionToken",
+  "NEW_LINE",
+  "NG_COMP_DEF",
+  "NG_ENV_ID",
+  "NG_FACTORY_DEF",
+  "NG_INJECTABLE_DEF",
+  "NG_INJECTOR_DEF",
+  "NG_INJ_DEF",
+  "NG_PROV_DEF",
+  "NOT_YET",
+  "NULL_INJECTOR",
+  "NullInjector",
+  "R3Injector",
+  "RuntimeError",
+  "ScopedService",
+  "Subscription",
+  "THROW_IF_NOT_FOUND",
+  "USE_VALUE",
+  "UnsubscriptionError",
+  "__defProp",
+  "__forward_ref__",
+  "__publicField",
+  "_currentInjector",
+  "_injectImplementation",
+  "activeConsumer",
+  "arrRemove",
+  "assertNotDestroyed",
+  "createErrorClass",
+  "createInjector",
+  "createLFrame",
+  "deepForEach",
+  "deepForEachProvider",
+  "execFinalizer",
+  "forEachSingleProvider",
+  "forwardRef",
+  "getClosureSafeProperty",
+  "getFactoryDef",
+  "getInjectableDef",
+  "getInjectorDef",
+  "getNullInjector",
+  "getOwnDefinition",
+  "importProvidersFrom",
+  "injectArgs",
+  "injectInjectorOnly",
+  "injectableDefOrInjectorDefFactory",
+  "instructionState",
+  "internalImportProvidersFrom",
+  "isEnvironmentProviders",
+  "isFunction",
+  "isTypeProvider",
+  "isValueProvider",
+  "makeRecord",
+  "processInjectorTypesWithProviders",
+  "resolveForwardRef",
+  "setActiveConsumer",
+  "setCurrentInjector",
+  "setInjectImplementation",
+  "stringify",
+  "walkProviderTree",
+  "ɵɵdefineInjectable",
+  "ɵɵinject"
 ]
