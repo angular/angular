@@ -50,7 +50,7 @@ import {unHighlight} from './highlighter';
 import {disableTimingAPI, enableTimingAPI, initializeOrGetDirectiveForestHooks} from './hooks';
 import {start as startProfiling, stop as stopProfiling} from './hooks/capture';
 import {ComponentTreeNode} from './interfaces';
-import {parseRoutes} from './router-tree';
+import {getElementRefByName, getComponentRefByName, parseRoutes} from './router-tree';
 import {ngDebugDependencyInjectionApiIsSupported} from './ng-debug-api/ng-debug-api';
 import {setConsoleReference} from './set-console-reference';
 import {serializeDirectiveState} from './state-serializer/state-serializer';
@@ -84,6 +84,7 @@ export const subscribeToClientEvents = (
 
   messageBus.on('getNestedProperties', getNestedPropertiesCallback(messageBus));
   messageBus.on('getRoutes', getRoutesCallback(messageBus));
+  messageBus.on('navigateRoute', navigateRouteCallback(messageBus));
 
   messageBus.on('updateState', updateState);
 
@@ -171,6 +172,23 @@ const getLatestComponentExplorerViewCallback =
 const checkForAngularCallback = (messageBus: MessageBus<Events>) => () =>
   checkForAngular(messageBus);
 const getRoutesCallback = (messageBus: MessageBus<Events>) => () => getRoutes(messageBus);
+
+const navigateRouteCallback = (messageBus: MessageBus<Events>) => (path: string) => {
+  const router: any = getRouterInstance();
+  router.navigateByUrl(path);
+};
+
+export const viewSourceFromRouter = (path: string, type: string) => {
+  const router: any = getRouterInstance();
+
+  let element;
+  if (type === 'component') {
+    element = getComponentRefByName(router.config, path);
+  } else {
+    element = getElementRefByName(type, router.config, path);
+  }
+  return element;
+};
 
 const startProfilingCallback = (messageBus: MessageBus<Events>) => () =>
   startProfiling((frame: ProfilerFrame) => {
@@ -386,6 +404,20 @@ export interface SerializableComponentTreeNode
   hasNativeElement: boolean;
 }
 
+function getRouterInstance() {
+  const forest = prepareForestForSerialization(
+    initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
+    ngDebugDependencyInjectionApiIsSupported(),
+  );
+  const rootInjector = (forest[0].resolutionPath ?? []).find((i) => i.name === 'Root');
+  const serializedProviderRecords = getSerializedProviderRecords(rootInjector!) ?? [];
+  const routerInstance = serializedProviderRecords.filter(
+    (provider) => provider.token === 'Router', // get the instance of router using token
+  );
+  const router = getInjectorInstance(rootInjector!, routerInstance[0]);
+  return router;
+}
+
 // Here we drop properties to prepare the tree for serialization.
 // We don't need the component instance, so we just traverse the tree
 // and leave the component name.
@@ -550,4 +582,26 @@ const logProvider = (
   }
 
   console.groupEnd();
+};
+
+const getInjectorInstance = (
+  serializedInjector: SerializedInjector,
+  serializedProvider: SerializedProviderRecord,
+) => {
+  if (!idToInjector.has(serializedInjector.id)) {
+    return;
+  }
+
+  const injector = idToInjector.get(serializedInjector.id)!;
+  const providerRecords = getInjectorProviders(injector);
+  let value;
+
+  if (typeof serializedProvider.index === 'number') {
+    const provider = providerRecords[serializedProvider.index];
+    value = injector.get(provider.token, null, {optional: true});
+  } else if (Array.isArray(serializedProvider.index)) {
+    const providers = serializedProvider.index.map((index) => providerRecords[index]);
+    value = injector.get(providers[0].token, null, {optional: true});
+  }
+  return value;
 };

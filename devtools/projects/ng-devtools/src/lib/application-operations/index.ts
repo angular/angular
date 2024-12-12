@@ -13,4 +13,5 @@ export abstract class ApplicationOperations {
   abstract viewSource(position: ElementPosition, target: Frame, directiveIndex?: number): void;
   abstract selectDomElement(position: ElementPosition, target: Frame): void;
   abstract inspect(directivePosition: DirectivePosition, objectPath: string[], target: Frame): void;
+  abstract viewSourceFromRouter(name: string, type: string): void;
 }

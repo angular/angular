@@ -272,6 +272,9 @@ export interface Route {
   handler?: string;
   pathMatch?: 'prefix' | 'full';
   canActivateGuards?: string[] | null;
+  canActivateChildGuards?: string[] | null;
+  canMatchGuards?: string[] | null;
+  canDeActivateGuards?: string[] | null;
   providers?: string[] | null;
   title?: string;
   children?: Array<Route>;
@@ -330,6 +333,7 @@ export interface Events {
   setSelectedComponent: (position: ElementPosition) => void;
   getRoutes: () => void;
   updateRouterTree: (routes: Route[]) => void;
+  navigateRoute: (route: string) => void;
 
   componentTreeDirty: () => void;
   getLatestComponentExplorerView: (query?: ComponentExplorerViewQuery) => void;

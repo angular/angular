@@ -12,3 +12,4 @@
 
 export * from './lib';
 export {findNodeFromSerializedPosition} from './lib/component-tree/component-tree';
+export {viewSourceFromRouter} from './lib/client-event-subscribers';
