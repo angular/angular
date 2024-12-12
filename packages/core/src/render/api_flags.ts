@@ -41,8 +41,7 @@ export interface RendererType2 {
   data: {[kind: string]: any};
 
   /**
-   * A function added by the {@link ɵɵExternalStylesFeature} and used by the framework to create
-   * the list of external runtime style URLs.
+   * A function used by the framework to create the list of external runtime style URLs.
    */
   getExternalStyles?: ((encapsulationId?: string) => string[]) | null;
 }

@@ -23,7 +23,7 @@ import {
 } from '@angular/core';
 
 /**
- * Instantiates a {@link Component} type and inserts its Host View into the current View.
+ * Instantiates a [`Component`](/api/core/Component) type and inserts its Host View into the current View.
  * `NgComponentOutlet` provides a declarative approach for dynamic component creation.
  *
  * `NgComponentOutlet` requires a component type, if a falsy value is set the view will clear and

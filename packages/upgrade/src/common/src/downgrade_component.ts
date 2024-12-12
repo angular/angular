@@ -78,7 +78,7 @@ import {
  *   <br />
  *   (This option is only necessary when using `downgradeModule()` to downgrade more than one
  *   Angular module.)
- * - `propagateDigest?: boolean`: Whether to perform {@link ChangeDetectorRef#detectChanges} on the
+ * - `propagateDigest?: boolean`: Whether to perform [`detectChanges`](/api/core/ChangeDetectorRef#detectChanges) on the
  * component on every
  *   [$digest](https://docs.angularjs.org/api/ng/type/$rootScope.Scope#$digest). If set to `false`,
  *   change detection will still be performed when any of the component's inputs changes.

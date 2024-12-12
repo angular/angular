@@ -369,7 +369,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
  *
  * @publicApi
  * @experimental
- * @see [bootstrapApplication](/api/platform-browser/bootstrapApplication)
+ * @see {@link /api/platform-browser/bootstrapApplication bootstrapApplication}
  */
 export function provideExperimentalZonelessChangeDetection(): EnvironmentProviders {
   performanceMarkFeature('NgZoneless');

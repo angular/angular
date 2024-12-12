@@ -26,8 +26,8 @@ import {DOCUMENT} from '../dom_tokens';
  * when they need to interact with the DOM APIs like pushState, popState, etc.
  *
  * {@link LocationStrategy} in turn is used by the {@link Location} service which is used directly
- * by the {@link Router} in order to navigate between routes. Since all interactions between {@link
- * Router} /
+ * by the [`Router`](/api/router/Router) in order to navigate between routes. Since all interactions between
+ * [`Router`](/api/router/Router) /
  * {@link Location} / {@link LocationStrategy} and DOM APIs flow through the `PlatformLocation`
  * class, they are all platform-agnostic.
  *
