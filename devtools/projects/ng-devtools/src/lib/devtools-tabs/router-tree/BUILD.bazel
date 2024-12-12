@@ -11,6 +11,7 @@ sass_binary(
 ng_project(
     name = "router-tree",
     srcs = [
+        "route-details-row.component.ts",
         "router-tree.component.ts",
         "router-tree-visualizer.ts",
     ],

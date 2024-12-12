@@ -24,14 +24,15 @@ export function parseRoutes(router: Router): Route {
     children: rootChildren ? assignChildrenToParent(null, rootChildren, currentUrl) : [],
     isAux: false,
     isLazy: false,
+    data: [],
     isActive: currentUrl === '/',
   };
 
   return root;
 }
 
-function getGuardNames(child: AngularRoute): string[] | null {
-  const guards = child?.canActivate || [];
+function getGuardNames(child: AngularRoute, type: string): string[] | null {
+  const guards = child?.[type] || [];
   const names = guards.map((g: any) => g.name);
   return names || null;
 }
@@ -58,15 +59,21 @@ function assignChildrenToParent(
     // only found in aux routes, otherwise property will be undefined
     const isAux = Boolean(child.outlet);
     const isLazy = Boolean(child.loadChildren || child.loadComponent);
-    const isActive = routePath === currentUrl;
+
+    const pathWithoutParams = routePath.split('/:')[0];
+    const isActive = currentUrl?.startsWith(pathWithoutParams);
 
     const routeConfig: Route = {
       title: child.title,
       pathMatch: child.pathMatch,
       component: childName,
-      canActivateGuards: getGuardNames(child),
+      canActivateGuards: getGuardNames(child, 'canActivate'),
+      canActivateChildGuards: getGuardNames(child, 'canActivateChild'),
+      canMatchGuards: getGuardNames(child, 'canMatch'),
+      canDeActivateGuards: getGuardNames(child, 'canDeactivate'),
       providers: getProviderName(child),
       path: routePath,
+      data: [],
       isAux,
       isLazy,
       isActive,
@@ -101,4 +108,53 @@ function childRouteName(child: AngularRoute): string {
   } else {
     return 'no-name-route';
   }
+}
+
+export function getElementRefByName(ref: string, routes: any[], name: string): any | null {
+  for (const element of routes) {
+    if (element[ref]) {
+      for (const guard of element[ref]) {
+        if (guard.name === name) {
+          return guard;
+        }
+      }
+    }
+
+    if (element?._loadedRoutes) {
+      const result = getElementRefByName(ref, element._loadedRoutes, name);
+      if (result !== null) {
+        return result;
+      }
+    }
+
+    if (element?.children) {
+      const result = getElementRefByName(ref, element.children, name);
+      if (result !== null) {
+        return result;
+      }
+    }
+  }
+}
+
+export function getComponentRefByName(routes: any[], name: string): any | null {
+  for (const element of routes) {
+    if (element?.component?.name === name) {
+      return element.component;
+    }
+
+    if (element?._loadedRoutes) {
+      const result = getComponentRefByName(element._loadedRoutes, name);
+      if (result !== null) {
+        return result;
+      }
+    }
+
+    if (element?.children) {
+      const result = getComponentRefByName(element.children, name);
+      if (result !== null) {
+        return result;
+      }
+    }
+  }
+  return null;
 }
