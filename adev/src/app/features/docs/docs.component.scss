@@ -4,6 +4,12 @@
       animation: fade-in 500ms;
     }
   }
+  padding: var(--layout-padding);
+  
+  @media only screen and (min-width: 1430px) {
+    display: flex;
+    justify-content: center;
+  }
 }
 
 @keyframes fade-in {
