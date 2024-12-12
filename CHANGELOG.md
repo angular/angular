@@ -1,3 +1,21 @@
+<a name="19.0.4"></a>
+# 19.0.4 (2024-12-12)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7e612171709](https://github.com/angular/angular/commit/7e6121717098462b4f53dc7212064243f2bcf024) | fix | consider pre-release versions when detecting feature support ([#59061](https://github.com/angular/angular/pull/59061)) |
+| [cd764a31152](https://github.com/angular/angular/commit/cd764a31152004d37aa621efc4990c090d86f1e0) | fix | error in unused standalone imports diagnostic ([#59064](https://github.com/angular/angular/pull/59064)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [34ded10fa60](https://github.com/angular/angular/commit/34ded10fa6061a12531de8837a436cf0a1ac20b8) | fix | Fix a bug where snapshotted functions are being run twice if they return a nullish/falsey value. ([#59073](https://github.com/angular/angular/pull/59073)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ae0802d63c5](https://github.com/angular/angular/commit/ae0802d63c50307791e8a5d765573836dfe89075) | fix | collect external component styles from server rendering ([#59031](https://github.com/angular/angular/pull/59031)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.1.0-next.2"></a>
 # 19.1.0-next.2 (2024-12-04)
 
