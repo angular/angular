@@ -7,7 +7,7 @@
  */
 
 /**
- * Defines the CSS styles encapsulation policies for the {@link Component} decorator's
+ * Defines the CSS styles encapsulation policies for the {@link /api/core/Component Component} decorator's
  * `encapsulation` option.
  *
  * See {@link Component#encapsulation encapsulation}.
