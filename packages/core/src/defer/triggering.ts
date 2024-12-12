@@ -39,9 +39,9 @@ import {
   DeferBlockState,
   DeferBlockTrigger,
   DeferDependenciesLoadingState,
+  HydrateTriggerDetails,
   LDeferBlockDetails,
   ON_COMPLETE_FNS,
-  SSR_BLOCK_STATE,
   SSR_UNIQUE_ID,
   TDeferBlockDetails,
   TDeferDetailsFlags,
@@ -534,7 +534,7 @@ function shouldAttachRegularTrigger(lView: LView, tNode: TNode) {
 export function getHydrateTriggers(
   tView: TView,
   tNode: TNode,
-): Map<DeferBlockTrigger, number | null> {
+): Map<DeferBlockTrigger, HydrateTriggerDetails | null> {
   const tDetails = getTDeferBlockDetails(tView, tNode);
   return (tDetails.hydrateTriggers ??= new Map());
 }
