@@ -1,12 +1,144 @@
 <div class="router-tree-wrapper">
-  <div>
-    <input
-      matInput
-      (input)="searchRoutes($event)"
-      placeholder="Search routes"
-      class="filter-input"
-    />
-    <mat-checkbox (change)="togglePathSettings()">Show Full Path </mat-checkbox>
-  </div>
-  <ng-tree-visualizer-host #routerTree />
+  <as-split unit="pixel" direction="vertical" [gutterSize]="9" [disabled]="true">
+    <as-split-area size="50">
+      <div>
+        <input
+          matInput
+          (input)="searchRoutes($event)"
+          placeholder="Search routes"
+          class="filter-input"
+        />
+        <mat-checkbox (change)="togglePathSettings()">Show Full Path </mat-checkbox>
+      </div>
+    </as-split-area>
+    <as-split-area>
+      <as-split unit="percent" direction="horizontal" [gutterSize]="9">
+        <as-split-area size="70">
+          <as-split unit="percent" direction="vertical" [gutterSize]="9">
+            <as-split-area size="100">
+              <ng-tree-visualizer-host #routerTree />
+              <section #routerTree class="router-tree router-graph router-tree-container">
+                <svg #routerTreeSvgContainer>
+                  <g #routerTreeMainGroup></g>
+                </svg>
+              </section>
+            </as-split-area>
+          </as-split>
+        </as-split-area>
+
+        @let route = selectedRoute();
+
+        @if (route) {
+          <as-split-area size="30" minSize="20">
+            <div>
+              <div class="selected-node-title">
+                <h1>Routes Details</h1>
+                <button mat-icon-button (click)="selectedRoute.set(null)">
+                  <mat-icon fontIcon="close"></mat-icon>
+                </button>
+              </div>
+              <table id="route-details-table">
+                <tr
+                  ng-route-details-row
+                  title="Path"
+                  rowType="chip"
+                  [data]="route.data.path"
+                  (chipClick)="navigateRoute(route)"
+                ></tr>
+                <tr
+                  ng-route-details-row
+                  title="Component"
+                  rowType="chip"
+                  [data]="route.data.component"
+                  (chipClick)="viewComponentSource(route.data.component)"
+                ></tr>
+                @if (route.data.pathMatch) {
+                  <tr ng-route-details-row title="Path Match" [data]="route.data.pathMatch"></tr>
+                }
+                @if (route.data.data && route.data.data.length > 0) {
+                  <tr ng-route-details-row title="Data" [data]="route.data.data | json"></tr>
+                }
+                @if (route.data.canActivateGuards && route.data.canActivateGuards.length > 0) {
+                  <tr
+                    ng-route-details-row
+                    title="Can Activate Guards"
+                    rowType="list"
+                    [data]="route.data.canActivateGuards"
+                    (chipClick)="viewSourceFromRouter($event, 'canActivate')"
+                  ></tr>
+                }
+                @if (
+                  route.data.canActivateChildGuards && route.data.canActivateChildGuards.length > 0
+                ) {
+                  <tr
+                    ng-route-details-row
+                    title="Can Activate Child Guards"
+                    rowType="list"
+                    [data]="route.data.canActivateChildGuards"
+                    (chipClick)="viewSourceFromRouter($event, 'canActivateChild')"
+                  ></tr>
+                }
+                @if (route.data.canDeActivateGuards && route.data.canDeActivateGuards.length > 0) {
+                  <tr
+                    ng-route-details-row
+                    title="Can DeActivate Guards"
+                    rowType="list"
+                    [data]="route.data.canDeActivateGuards"
+                    (chipClick)="viewSourceFromRouter($event, 'canDeactivate')"
+                  ></tr>
+                }
+                @if (route.data.canMatchGuards && route.data.canMatchGuards.length > 0) {
+                  <tr
+                    ng-route-details-row
+                    title="Can Match Guards"
+                    rowType="list"
+                    [data]="route.data.canMatchGuards"
+                    (chipClick)="viewSourceFromRouter($event, 'canMatch')"
+                  ></tr>
+                }
+
+                @if (route.data.providers && route.data.providers.length > 0) {
+                  <tr
+                    ng-route-details-row
+                    title="Providers"
+                    rowType="list"
+                    [data]="route.data.providers"
+                    (chipClick)="viewSourceFromRouter($event, 'providers')"
+                  ></tr>
+                }
+                @if (route.data.title) {
+                  <tr ng-route-details-row title="Title" [data]="route.data.title"></tr>
+                }
+                @if (route.data.children && route.data.children.length > 0) {
+                  <tr
+                    ng-route-details-row
+                    title="Children"
+                    [data]="route.data.children?.length"
+                  ></tr>
+                }
+                <tr
+                  ng-route-details-row
+                  title="Active"
+                  rowType="flag"
+                  [data]="route.data.isActive"
+                ></tr>
+                <tr
+                  ng-route-details-row
+                  title="Auxiliary"
+                  rowType="flag"
+                  [data]="route.data.isAux"
+                ></tr>
+                <tr
+                  ng-route-details-row
+                  title="Lazy"
+                  rowType="flag"
+                  [data]="route.data.isLazy"
+                ></tr>
+              </table>
+            </div>
+          </as-split-area>
+        }
+      </as-split>
+    </as-split-area>
+  </as-split>
 </div>
