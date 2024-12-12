@@ -97,6 +97,7 @@ You show a component by creating a matching HTML element in the template of _oth
 export class ProfilePhoto { }
 
 @Component({
+  selector: 'user-profile',
   imports: [ProfilePhoto],
   template: `<profile-photo />`
 })
