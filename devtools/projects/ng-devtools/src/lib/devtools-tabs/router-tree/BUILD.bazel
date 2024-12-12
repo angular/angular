@@ -11,6 +11,7 @@ sass_binary(
 ng_module(
     name = "router-tree",
     srcs = [
+        "route-details-row.component.ts",
         "router-tree.component.ts",
         "router-tree-visualizer.ts",
     ],
@@ -20,6 +21,8 @@ ng_module(
     ],
     deps = [
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tree-visualizer-host",
+        "//devtools/projects/ng-devtools/src/lib/application-operations",
+        "//devtools/projects/ng-devtools/src/lib/vendor/angular-split",
         "//devtools/projects/protocol",
         "//packages/common",
         "//packages/core",
