@@ -3,29 +3,29 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "newProjectRoot": "projects",
-  // #docregion locale-config, i18n-baseHref
+  // #docregion locale-config, i18n-subPath
   "projects": {
     "angular.io-example": {
-      // #enddocregion locale-config, i18n-baseHref
+      // #enddocregion locale-config, i18n-subPath
       "projectType": "application",
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
-      // #docregion locale-config, i18n-baseHref
+      // #docregion locale-config, i18n-subPath
       "i18n": {
         "sourceLocale": "en-US",
         "locales": {
           "fr": {
             "translation": "src/locale/messages.fr.xlf",
             // #enddocregion locale-config
-            "baseHref": ""
+            "subPath": ""
             // #docregion locale-config
           }
         }
       },
       // #docregion build-production-french
       "architect": {
-        // #enddocregion locale-config, i18n-baseHref
+        // #enddocregion locale-config, i18n-subPath
         // #docregion build-localize-true, build-single-locale, missing-translation-error
         "build": {
           // #enddocregion build-single-locale
@@ -132,12 +132,12 @@
             }
           }
         }
-        // #docregion locale-config, build-single-locale, build-production-french, i18n-baseHref
+        // #docregion locale-config, build-single-locale, build-production-french, i18n-subPath
       }
       // #enddocregion build-single-locale, build-production-french
     }
   }
-  // #enddocregion i18n-baseHref
-  // #docregion i18n-baseHref
+  // #enddocregion i18n-subPath
+  // #docregion i18n-subPath
 }
-// #enddocregion locale-config, i18n-baseHref
+// #enddocregion locale-config, i18n-subPath
