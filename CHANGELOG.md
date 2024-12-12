@@ -1,3 +1,23 @@
+<a name="19.1.0-next.3"></a>
+# 19.1.0-next.3 (2024-12-12)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c5c20e9d86](https://github.com/angular/angular/commit/c5c20e9d86d72b33840dcf0adea02876437a589f) | fix | check event side of two-way bindings ([#59002](https://github.com/angular/angular/pull/59002)) |
+| [0dee2681f7](https://github.com/angular/angular/commit/0dee2681f782106fdb0fdcf9bc6ad1bca562751d) | fix | consider pre-release versions when detecting feature support ([#59061](https://github.com/angular/angular/pull/59061)) |
+| [1b9492edf8](https://github.com/angular/angular/commit/1b9492edf88f8a217c0fd1a8203df489d91b623b) | fix | error in unused standalone imports diagnostic ([#59064](https://github.com/angular/angular/pull/59064)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d010e11b73](https://github.com/angular/angular/commit/d010e11b735562ded439989ddb84cc83c6c00e81) | feat | add event listener options to renderer ([#59092](https://github.com/angular/angular/pull/59092)) |
+| [30e676098d](https://github.com/angular/angular/commit/30e676098d72e9e11a6628b9716668df08f18c62) | fix | Fix a bug where snapshotted functions are being run twice if they return a nullish/falsey value. ([#59073](https://github.com/angular/angular/pull/59073)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [52be35118f](https://github.com/angular/angular/commit/52be35118feee587d2efe5a6c55502c171caaa97) | fix | collect external component styles from server rendering ([#59031](https://github.com/angular/angular/pull/59031)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.0.4"></a>
 # 19.0.4 (2024-12-12)
 ### compiler-cli
