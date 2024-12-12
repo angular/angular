@@ -141,11 +141,6 @@ export interface TDeferBlockDetails {
   hydrateTriggers: Map<DeferBlockTrigger, HydrateTriggerDetails | null> | null;
 
   /**
-   * List of prefetch triggers for a given block
-   */
-  prefetchTriggers: Set<DeferBlockTrigger> | null;
-
-  /**
    * Defer block flags, which should be used for all
    * instances of a given defer block (the flags that should be
    * placed into the `TDeferDetails` at runtime).

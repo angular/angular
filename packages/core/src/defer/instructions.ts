@@ -119,7 +119,6 @@ export function ɵɵdefer(
       loadingPromise: null,
       providers: null,
       hydrateTriggers: null,
-      prefetchTriggers: null,
       flags: flags ?? TDeferDetailsFlags.Default,
     };
     enableTimerScheduling?.(tView, tDetails, placeholderConfigIndex, loadingConfigIndex);
