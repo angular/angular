@@ -19,6 +19,13 @@
     transition: background-color 0.3s ease;
   }
 
+  & > *{
+    padding-inline: 0px;
+    @include mq.for-big-desktop-up{
+      width: var(--page-width);
+    }
+  }
+  
   h1 {
     font-size: 1.5rem;
   }
