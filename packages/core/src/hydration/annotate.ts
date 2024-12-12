@@ -482,13 +482,13 @@ function serializeHydrateTriggers(
     DeferBlockTrigger.Viewport,
     DeferBlockTrigger.Timer,
   ]);
-  let triggers = [];
+  let triggers: (DeferBlockTrigger | SerializedTriggerDetails)[] = [];
   for (let [trigger, details] of triggerMap) {
     if (serializableDeferBlockTrigger.has(trigger)) {
       if (details === null) {
         triggers.push(trigger);
       } else {
-        triggers.push({trigger, details});
+        triggers.push({trigger, delay: details.delay});
       }
     }
   }

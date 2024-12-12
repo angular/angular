@@ -1155,76 +1155,157 @@ describe('platform-server partial hydration integration', () => {
       });
     });
 
-    it('timer', async () => {
-      @Component({
-        selector: 'app',
-        template: `
-          <main (click)="fnA()">
-            @defer (hydrate on timer(500)) {
-              <article>
-                defer block rendered!
-                <span id="test" (click)="fnB()">{{value()}}</span>
-              </article>
-            } @placeholder {
-              <span>Outer block placeholder</span>
-            }
-          </main>
-        `,
-      })
-      class SimpleComponent {
-        value = signal('start');
-        fnA() {}
-        fnB() {
-          this.value.set('end');
+    describe('timer', () => {
+      it('top level timer', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            <main (click)="fnA()">
+              @defer (hydrate on timer(500)) {
+                <article>
+                  defer block rendered!
+                  <span id="test" (click)="fnB()">{{value()}}</span>
+                </article>
+              } @placeholder {
+                <span>Outer block placeholder</span>
+              }
+            </main>
+          `,
+        })
+        class SimpleComponent {
+          value = signal('start');
+          fnA() {}
+          fnB() {
+            this.value.set('end');
+          }
         }
-      }
 
-      const appId = 'custom-app-id';
-      const providers = [{provide: APP_ID, useValue: appId}];
-      const hydrationFeatures = () => [withIncrementalHydration()];
+        const appId = 'custom-app-id';
+        const providers = [{provide: APP_ID, useValue: appId}];
+        const hydrationFeatures = () => [withIncrementalHydration()];
 
-      const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
-      const ssrContents = getAppContents(html);
+        const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+        const ssrContents = getAppContents(html);
 
-      // <main> uses "eager" `custom-app-id` namespace.
-      expect(ssrContents).toContain('<main jsaction="click:;');
-      // <div>s inside a defer block have `d0` as a namespace.
-      expect(ssrContents).toContain('<article>');
-      // Outer defer block is rendered.
-      expect(ssrContents).toContain('defer block rendered');
+        // <main> uses "eager" `custom-app-id` namespace.
+        expect(ssrContents).toContain('<main jsaction="click:;');
+        // <div>s inside a defer block have `d0` as a namespace.
+        expect(ssrContents).toContain('<article>');
+        // Outer defer block is rendered.
+        expect(ssrContents).toContain('defer block rendered');
 
-      // Internal cleanup before we do server->client transition in this test.
-      resetTViewsFor(SimpleComponent);
+        // Internal cleanup before we do server->client transition in this test.
+        resetTViewsFor(SimpleComponent);
 
-      ////////////////////////////////
-      const doc = getDocument();
-      const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
-        envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
-        hydrationFeatures,
+        ////////////////////////////////
+        const doc = getDocument();
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+          envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
+          hydrationFeatures,
+        });
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+        await appRef.whenStable();
+
+        const appHostNode = compRef.location.nativeElement;
+
+        expect(appHostNode.outerHTML).toContain('<article>');
+
+        await timeout(500); // wait for timer
+        appRef.tick();
+
+        await allPendingDynamicImports();
+        appRef.tick();
+
+        expect(appHostNode.outerHTML).toContain('<span id="test">start</span>');
+
+        const testElement = doc.getElementById('test')!;
+        const clickEvent2 = new CustomEvent('click');
+        testElement.dispatchEvent(clickEvent2);
+
+        appRef.tick();
+
+        expect(appHostNode.outerHTML).toContain('<span id="test">end</span>');
       });
-      const compRef = getComponentRef<SimpleComponent>(appRef);
-      appRef.tick();
-      await appRef.whenStable();
 
-      const appHostNode = compRef.location.nativeElement;
+      it('nested timer', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            <main (click)="fnA()">
+              @defer (on viewport; hydrate on interaction) {
+                <div id="main" (click)="fnA()">
+                  defer block rendered!
+                  @defer (on viewport; hydrate on timer(500)) {
+                    <article>
+                      <p id="nested">Nested defer block</p>
+                      <span id="test" (click)="fnB()">{{value()}}</span>
+                    </article>
+                  } @placeholder {
+                    <span>Inner block placeholder</span>
+                  }
+                </div>
+              } @placeholder {
+                <span>Outer block placeholder</span>
+              }
+            </main>
+          `,
+        })
+        class SimpleComponent {
+          value = signal('start');
+          fnA() {}
+          fnB() {
+            this.value.set('end');
+          }
+        }
 
-      expect(appHostNode.outerHTML).toContain('<article>');
+        const appId = 'custom-app-id';
+        const providers = [{provide: APP_ID, useValue: appId}];
+        const hydrationFeatures = () => [withIncrementalHydration()];
 
-      await timeout(500); // wait for timer
-      appRef.tick();
+        const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+        const ssrContents = getAppContents(html);
 
-      await allPendingDynamicImports();
-      appRef.tick();
+        // <main> uses "eager" `custom-app-id` namespace.
+        expect(ssrContents).toContain('<main jsaction="click:;');
+        // <div>s inside a defer block have `d0` as a namespace.
+        expect(ssrContents).toContain('<article>');
+        // Outer defer block is rendered.
+        expect(ssrContents).toContain('defer block rendered');
 
-      expect(appHostNode.outerHTML).toContain('<span id="test">start</span>');
+        // Internal cleanup before we do server->client transition in this test.
+        resetTViewsFor(SimpleComponent);
 
-      const testElement = doc.getElementById('test')!;
-      const clickEvent2 = new CustomEvent('click');
-      testElement.dispatchEvent(clickEvent2);
+        ////////////////////////////////
+        const doc = getDocument();
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+          envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
+          hydrationFeatures,
+        });
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+        await appRef.whenStable();
 
-      appRef.tick();
+        const appHostNode = compRef.location.nativeElement;
 
-      expect(appHostNode.outerHTML).toContain('<span id="test">end</span>');
+        expect(appHostNode.outerHTML).toContain('<article>');
+
+        await timeout(500); // wait for timer
+        appRef.tick();
+
+        await allPendingDynamicImports();
+        appRef.tick();
+
+        expect(appHostNode.outerHTML).toContain('<span id="test">start</span>');
+
+        const testElement = doc.getElementById('test')!;
+        const clickEvent2 = new CustomEvent('click');
+        testElement.dispatchEvent(clickEvent2);
+
+        appRef.tick();
+
+        expect(appHostNode.outerHTML).toContain('<span id="test">end</span>');
+      });
     });
 
     it('when', async () => {
