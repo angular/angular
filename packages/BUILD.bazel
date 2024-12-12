@@ -81,7 +81,6 @@ generate_api_manifest(
         "//packages/common/upgrade:common_upgrade_docs_extraction",
         "//packages/core:core_docs_extraction",
         "//packages/core/global:core_global_docs_extraction",
-        "//packages/core/reference-manifests",
         "//packages/core/rxjs-interop:core_rxjs-interop_docs_extraction",
         "//packages/core/testing:core_testing_docs_extraction",
         "//packages/elements:elements_docs_extraction",
