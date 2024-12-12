@@ -451,7 +451,7 @@ export function ɵɵdeferHydrateOnTimer(delay: number) {
   if (!shouldAttachTrigger(TriggerType.Hydrate, lView, tNode)) return;
 
   const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
-  hydrateTriggers.set(DeferBlockTrigger.Timer, delay);
+  hydrateTriggers.set(DeferBlockTrigger.Timer, {delay});
 
   if (typeof ngServerMode !== 'undefined' && ngServerMode) {
     // We are on the server and SSR for defer blocks is enabled.
