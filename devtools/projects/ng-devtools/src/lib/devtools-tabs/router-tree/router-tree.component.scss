@@ -13,5 +13,53 @@
   width: 300px;
   height: 28px;
   outline: none;
-  color: black;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+@include theme.dark-theme {
+.router-tree-container {
+  height: 100%;
+}
+
+.svg-container {
+  max-height: inherit;
+}
+
+.selected-node-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #f5f5f5;
+}
+
+.selected-node-title > h1 {
+  padding: 0px;
+  margin: 0px;
+}
+
+#route-details-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#route-details-table td,
+#route-details-table th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#route-details-table tr:nth-child(even) {
+  background-color: #ebf1fb;
+}
+
+#route-details-table tr:hover {
+  background-color: #ebf1fb;
+}
+
+:host-context(.dark-theme) {
+  .filter-input {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.87);
+  }
 }

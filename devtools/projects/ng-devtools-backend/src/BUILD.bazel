@@ -8,5 +8,6 @@ ts_project(
     deps = [
         "//devtools/projects/ng-devtools-backend/src/lib:lib_rjs",
         "//devtools/projects/ng-devtools-backend/src/lib/component-tree:component-tree_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:client_event_subscribers_rjs",
     ],
 )

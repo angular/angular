@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {findNodeFromSerializedPosition} from '../../../ng-devtools-backend';
+import {findNodeFromSerializedPosition, viewSourceFromRouter} from 'ng-devtools-backend';
 
 import {
   buildDirectiveForest,
@@ -85,6 +85,9 @@ const chromeWindowExtensions = {
     if (node.component) {
       return traverseDirective(node.component.instance, objectPath);
     }
+  },
+  findConstructorByNameForRouter: (name: string, type: string): any => {
+    return viewSourceFromRouter(name, type);
   },
 };
 
