@@ -148,4 +148,6 @@ export {
   disableProfiling as ɵdisableProfiling,
 } from './profiler';
 
+export {ResourceImpl as ɵResourceImpl} from './resource/resource';
+
 export {getClosestComponentName as ɵgetClosestComponentName} from './internal/get_closest_component_name';
