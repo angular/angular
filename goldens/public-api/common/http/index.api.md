@@ -8,9 +8,13 @@ import { EnvironmentInjector } from '@angular/core';
 import { EnvironmentProviders } from '@angular/core';
 import * as i0 from '@angular/core';
 import { InjectionToken } from '@angular/core';
+import { Injector } from '@angular/core';
 import { ModuleWithProviders } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Provider } from '@angular/core';
+import { Signal } from '@angular/core';
+import { ValueEqualityFn } from '@angular/core';
+import { WritableResource } from '@angular/core';
 import { XhrFactory } from '@angular/common';
 
 // @public
@@ -1997,6 +2001,16 @@ export interface HttpInterceptor {
 export type HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn) => Observable<HttpEvent<unknown>>;
 
 // @public
+export interface HttpJsonResourceFn extends HttpResourceFn<unknown> {
+    // (undocumented)
+    readonly arrayBuffer: HttpResourceFn<ArrayBuffer>;
+    // (undocumented)
+    readonly blob: HttpResourceFn<Blob>;
+    // (undocumented)
+    readonly text: HttpResourceFn<string>;
+}
+
+// @public
 export interface HttpParameterCodec {
     // (undocumented)
     decodeKey(key: string): string;
@@ -2151,6 +2165,61 @@ export class HttpRequest<T> {
     readonly url: string;
     readonly urlWithParams: string;
     readonly withCredentials: boolean;
+}
+
+// @public
+export interface HttpResource<T> extends WritableResource<T> {
+    readonly headers: Signal<HttpHeaders | undefined>;
+    readonly progress: Signal<HttpProgressEvent | undefined>;
+    readonly statusCode: Signal<number | undefined>;
+}
+
+// @public (undocumented)
+export const httpResource: HttpJsonResourceFn;
+
+// @public
+export interface HttpResourceFn<TRaw> {
+    <TResult = TRaw>(url: string | (() => string), options: HttpResourceOptions<TResult, TRaw> & {
+        defaultValue: NoInfer<TResult>;
+    }): HttpResource<TResult>;
+    <TResult = TRaw>(url: string | (() => string), options?: HttpResourceOptions<TResult, TRaw>): HttpResource<TResult | undefined>;
+    <TResult = TRaw>(request: HttpResourceRequest | (() => HttpResourceRequest), options: HttpResourceOptions<TResult, TRaw> & {
+        defaultValue: NoInfer<TResult>;
+    }): HttpResource<TResult>;
+    <TResult = TRaw>(request: HttpResourceRequest | (() => HttpResourceRequest), options?: HttpResourceOptions<TResult, TRaw>): HttpResource<TResult | undefined>;
+}
+
+// @public
+export interface HttpResourceOptions<TResult, TRaw> {
+    defaultValue?: NoInfer<TResult>;
+    // (undocumented)
+    equal?: ValueEqualityFn<NoInfer<TResult>>;
+    // (undocumented)
+    injector?: Injector;
+    // (undocumented)
+    map?: (value: TRaw) => TResult;
+}
+
+// @public
+export interface HttpResourceRequest {
+    // (undocumented)
+    body?: unknown;
+    // (undocumented)
+    headers?: HttpHeaders | Record<string, string | ReadonlyArray<string>>;
+    // (undocumented)
+    method?: string;
+    // (undocumented)
+    params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
+    // (undocumented)
+    reportProgress?: boolean;
+    // (undocumented)
+    transferCache?: {
+        includeHeaders?: string[];
+    } | boolean;
+    // (undocumented)
+    url: string;
+    // (undocumented)
+    withCredentials?: boolean;
 }
 
 // @public

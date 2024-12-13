@@ -55,6 +55,14 @@ export {
   HttpUserEvent,
 } from './src/response';
 export {
+  httpResource,
+  HttpResource,
+  HttpJsonResourceFn,
+  HttpResourceFn,
+  HttpResourceOptions,
+  HttpResourceRequest,
+} from './src/resource';
+export {
   HttpTransferCacheOptions,
   withHttpTransferCache as ɵwithHttpTransferCache,
   HTTP_TRANSFER_CACHE_ORIGIN_MAP,
