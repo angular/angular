@@ -177,7 +177,7 @@ export interface SerializedDeferBlock {
    * The list of triggers that exist for incremental hydration, based on the
    * `Trigger` enum.
    */
-  [DEFER_HYDRATE_TRIGGERS]: (DeferBlockTrigger | SerializedTriggerDetails)[] | null;
+  [DEFER_HYDRATE_TRIGGERS]?: (DeferBlockTrigger | SerializedTriggerDetails)[];
 }
 
 export interface SerializedTriggerDetails {

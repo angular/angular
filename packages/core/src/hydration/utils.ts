@@ -135,7 +135,6 @@ export function retrieveHydrationInfoImpl(
   const remainingNgh = isRootView ? componentViewNgh : rootNgh;
 
   let data: SerializedView = {};
-  let nghDeferData: {[key: string]: SerializedDeferBlock} | undefined;
   // An element might have an empty `ngh` attribute value (e.g. `<comp ngh="" />`),
   // which means that no special annotations are required. Do not attempt to read
   // from the TransferState in this case.
@@ -143,8 +142,6 @@ export function retrieveHydrationInfoImpl(
     const transferState = injector.get(TransferState, null, {optional: true});
     if (transferState !== null) {
       const nghData = transferState.get(NGH_DATA_KEY, []);
-
-      nghDeferData = transferState.get(NGH_DEFER_BLOCKS_KEY, {});
 
       // The nghAttrValue is always a number referencing an index
       // in the hydration TransferState data.
@@ -342,6 +339,14 @@ export function markRNodeAsSkippedByHydration(node: RNode) {
   }
   patchHydrationInfo(node, {status: HydrationStatus.Skipped});
   ngDevMode.componentsSkippedHydration++;
+}
+
+export function countBlocksSkippedByHydration(injector: Injector) {
+  const transferState = injector.get(TransferState);
+  const nghDeferData = transferState.get(NGH_DEFER_BLOCKS_KEY, {});
+  if (ngDevMode) {
+    ngDevMode.deferBlocksWithIncrementalHydration = Object.keys(nghDeferData).length;
+  }
 }
 
 export function markRNodeAsHavingHydrationMismatch(
