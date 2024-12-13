@@ -130,7 +130,7 @@ abstract class BaseWritableResource<T> implements WritableResource<T> {
 /**
  * Implementation for `resource()` which uses a `linkedSignal` to manage the resource's state.
  */
-class ResourceImpl<T, R> extends BaseWritableResource<T> implements ResourceRef<T> {
+export class ResourceImpl<T, R> extends BaseWritableResource<T> implements ResourceRef<T> {
   private readonly pendingTasks: PendingTasks;
 
   /**
@@ -142,7 +142,7 @@ class ResourceImpl<T, R> extends BaseWritableResource<T> implements ResourceRef<
    * Combines the current request with a reload counter which allows the resource to be reloaded on
    * imperative command.
    */
-  private readonly extRequest: WritableSignal<WrappedRequest>;
+  protected readonly extRequest: WritableSignal<WrappedRequest>;
   private readonly effectRef: EffectRef;
 
   private pendingController: AbortController | undefined;
