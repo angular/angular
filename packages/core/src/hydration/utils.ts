@@ -571,7 +571,7 @@ export function getParentBlockHydrationQueue(
   const deferBlockParents = transferState.get(NGH_DEFER_BLOCKS_KEY, {});
 
   let isTopMostDeferBlock = false;
-  let currentBlockId: string | null = deferBlockId;
+  let currentBlockId: string | undefined = deferBlockId;
   let parentBlockPromise: Promise<void> | null = null;
   const hydrationQueue: string[] = [];
 

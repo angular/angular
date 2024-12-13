@@ -158,7 +158,7 @@ export interface SerializedDeferBlock {
   /**
    * This contains the unique id of this defer block's parent, if it exists.
    */
-  [DEFER_PARENT_BLOCK_ID]: string | null;
+  [DEFER_PARENT_BLOCK_ID]?: string;
 
   /**
    * This field represents a status, based on the `DeferBlockState` enum.
