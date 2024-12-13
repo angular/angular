@@ -44,8 +44,10 @@ import {
 } from './tokens';
 import {
   appendDeferBlocksToJSActionMap,
+  countBlocksSkippedByHydration,
   enableRetrieveDeferBlockDataImpl,
   enableRetrieveHydrationInfoImpl,
+  isIncrementalHydrationEnabled,
   NGH_DATA_KEY,
   processBlockData,
   SSR_CONTENT_INTEGRITY_MARKER,
@@ -143,6 +145,9 @@ function printHydrationStats(injector: Injector) {
     `Angular hydrated ${ngDevMode!.hydratedComponents} component(s) ` +
     `and ${ngDevMode!.hydratedNodes} node(s), ` +
     `${ngDevMode!.componentsSkippedHydration} component(s) were skipped. ` +
+    (isIncrementalHydrationEnabled(injector)
+      ? `${ngDevMode!.deferBlocksWithIncrementalHydration} defer block(s) were configured to use incremental hydration. `
+      : '') +
     `Learn more at https://angular.dev/guide/hydration.`;
   // tslint:disable-next-line:no-console
   console.log(message);
@@ -282,6 +287,7 @@ export function withDomHydration(): EnvironmentProviders {
               whenStableWithTimeout(appRef, injector).then(() => {
                 cleanupDehydratedViews(appRef);
                 if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+                  countBlocksSkippedByHydration(injector);
                   printHydrationStats(injector);
                 }
               });

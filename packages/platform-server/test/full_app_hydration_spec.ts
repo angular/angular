@@ -82,22 +82,14 @@ import {
   withNoopErrorHandler,
   verifyEmptyConsole,
   clearConsole,
+  resetNgDevModeCounters,
 } from './hydration_utils';
 
 import {CLIENT_RENDER_MODE_FLAG} from '@angular/core/src/hydration/api';
 
 describe('platform-server full application hydration integration', () => {
   beforeEach(() => {
-    if (typeof ngDevMode === 'object') {
-      // Reset all ngDevMode counters.
-      for (const metric of Object.keys(ngDevMode!)) {
-        const currentValue = (ngDevMode as unknown as {[key: string]: number | boolean})[metric];
-        if (typeof currentValue === 'number') {
-          // Rest only numeric values, which represent counters.
-          (ngDevMode as unknown as {[key: string]: number | boolean})[metric] = 0;
-        }
-      }
-    }
+    resetNgDevModeCounters();
   });
 
   afterEach(() => {
