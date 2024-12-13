@@ -3052,6 +3052,41 @@ describe('platform-server full application hydration integration', () => {
         expect(clientRootNode.outerHTML).toContain('<my-lazy-cmp>Hi!</my-lazy-cmp>');
       });
 
+      it('should not trigger `setTimeout` calls for `on timer` triggers on the server', async () => {
+        const setTimeoutSpy = spyOn(globalThis, 'setTimeout').and.callThrough();
+
+        @Component({
+          selector: 'my-lazy-cmp',
+          standalone: true,
+          template: 'Hi!',
+        })
+        class MyLazyCmp {}
+
+        @Component({
+          standalone: true,
+          selector: 'app',
+          imports: [MyLazyCmp],
+          template: `
+            @defer (on timer(123ms)) {
+              <my-lazy-cmp />
+            }
+          `,
+        })
+        class SimpleComponent {}
+
+        const html = await ssr(SimpleComponent);
+
+        const ssrContents = getAppContents(html);
+        expect(ssrContents).toContain('<app ngh');
+
+        // Make sure that there were no `setTimeout` calls with the # of ms
+        // defined in the `on timer` trigger.
+        for (let i = 0; i < setTimeoutSpy.calls.count(); i++) {
+          const args = setTimeoutSpy.calls.argsFor(i);
+          expect(args[1]).not.toBe(123, 'on timer was triggered during SSR unexpectedly');
+        }
+      });
+
       it('should hydrate a placeholder block', async () => {
         @Component({
           selector: 'my-lazy-cmp',
