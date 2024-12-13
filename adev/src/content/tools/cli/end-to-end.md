@@ -20,6 +20,7 @@ Cannot find "e2e" target for the specified project.
 You can add a package that implements these capabilities.
 
 For example:
+Cypress: ng add @whereisthecode/ schematic
 Cypress: ng add @cypress/schematic
 Nightwatch: ng add @nightwatch/schematics
 WebdriverIO: ng add @wdio/schematics
