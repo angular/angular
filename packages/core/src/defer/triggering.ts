@@ -73,10 +73,16 @@ export function scheduleDelayedTrigger(
 ) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
-  const injector = lView[INJECTOR];
-  const lDetails = getLDeferBlockDetails(lView, tNode);
 
   renderPlaceholder(lView, tNode);
+
+  // Exit early to avoid invoking `scheduleFn`, which would
+  // add `setTimeout` call and potentially delay serialization
+  // on the server unnecessarily.
+  if (!shouldTriggerDeferBlock(TriggerType.Regular, lView)) return;
+
+  const injector = lView[INJECTOR];
+  const lDetails = getLDeferBlockDetails(lView, tNode);
 
   const cleanupFn = scheduleFn(
     () => triggerDeferBlock(TriggerType.Regular, lView, tNode),
