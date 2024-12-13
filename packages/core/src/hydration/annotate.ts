@@ -391,12 +391,12 @@ function serializeLContainer(
       // If this is a defer block, serialize extra info.
       if (isDeferBlock(lView[TVIEW], tNode)) {
         const lDetails = getLDeferBlockDetails(lView, tNode);
+        const tDetails = getTDeferBlockDetails(lView[TVIEW], tNode);
 
-        if (context.isIncrementalHydrationEnabled) {
+        if (context.isIncrementalHydrationEnabled && tDetails.hydrateTriggers !== null) {
           const deferBlockId = `d${context.deferBlocks.size}`;
 
-          const tDetails = getTDeferBlockDetails(lView[TVIEW], tNode);
-          if (tDetails.hydrateTriggers?.has(DeferBlockTrigger.Never)) {
+          if (tDetails.hydrateTriggers.has(DeferBlockTrigger.Never)) {
             isHydrateNeverBlock = true;
           }
 
@@ -408,8 +408,12 @@ function serializeLContainer(
             [DEFER_PARENT_BLOCK_ID]: parentDeferBlockId,
             [NUM_ROOT_NODES]: rootNodes.length,
             [DEFER_BLOCK_STATE]: lDetails[CURRENT_DEFER_BLOCK_STATE],
-            [DEFER_HYDRATE_TRIGGERS]: serializeHydrateTriggers(tDetails.hydrateTriggers),
           };
+
+          const serializedTriggers = serializeHydrateTriggers(tDetails.hydrateTriggers);
+          if (serializedTriggers.length > 0) {
+            deferBlockInfo[DEFER_HYDRATE_TRIGGERS] = serializedTriggers;
+          }
 
           context.deferBlocks.set(deferBlockId, deferBlockInfo);
 
@@ -471,11 +475,8 @@ function serializeLContainer(
 }
 
 function serializeHydrateTriggers(
-  triggerMap: Map<DeferBlockTrigger, HydrateTriggerDetails | null> | null,
-): (DeferBlockTrigger | SerializedTriggerDetails)[] | null {
-  if (triggerMap === null) {
-    return null;
-  }
+  triggerMap: Map<DeferBlockTrigger, HydrateTriggerDetails | null>,
+): (DeferBlockTrigger | SerializedTriggerDetails)[] {
   const serializableDeferBlockTrigger = new Set<DeferBlockTrigger>([
     DeferBlockTrigger.Idle,
     DeferBlockTrigger.Immediate,

@@ -286,3 +286,17 @@ export function clearConsole(appRef: ApplicationRef) {
   const console = appRef.injector.get(Console) as DebugConsole;
   console.logs = [];
 }
+
+// Clears all the counts in ngDevMode
+export function resetNgDevModeCounters() {
+  if (typeof ngDevMode === 'object') {
+    // Reset all ngDevMode counters.
+    for (const metric of Object.keys(ngDevMode!)) {
+      const currentValue = (ngDevMode as unknown as {[key: string]: number | boolean})[metric];
+      if (typeof currentValue === 'number') {
+        // Rest only numeric values, which represent counters.
+        (ngDevMode as unknown as {[key: string]: number | boolean})[metric] = 0;
+      }
+    }
+  }
+}
