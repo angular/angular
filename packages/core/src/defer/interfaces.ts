@@ -146,6 +146,14 @@ export interface TDeferBlockDetails {
    * placed into the `TDeferDetails` at runtime).
    */
   flags: TDeferDetailsFlags;
+
+  /**
+   * Tracks debugging information about the deferred block.
+   */
+  debug: {
+    /** Text representations of the block's triggers. */
+    triggers?: Set<string>;
+  } | null;
 }
 
 /**
