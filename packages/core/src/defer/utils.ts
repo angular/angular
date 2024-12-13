@@ -181,3 +181,16 @@ export function isDeferBlock(tView: TView, tNode: TNode): boolean {
   }
   return !!tDetails && isTDeferBlockDetails(tDetails);
 }
+
+/**
+ * Tracks debugging information about a trigger.
+ * @param tView TView in which the trigger is declared.
+ * @param tNode TNode on which the trigger is declared.
+ * @param textRepresentation Text representation of the trigger to be used for debugging purposes.
+ */
+export function trackTriggerForDebugging(tView: TView, tNode: TNode, textRepresentation: string) {
+  const tDetails = getTDeferBlockDetails(tView, tNode);
+  tDetails.debug ??= {};
+  tDetails.debug.triggers ??= new Set();
+  tDetails.debug.triggers.add(textRepresentation);
+}

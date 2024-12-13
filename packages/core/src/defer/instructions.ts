@@ -48,6 +48,7 @@ import {
   getTDeferBlockDetails,
   setLDeferBlockDetails,
   setTDeferBlockDetails,
+  trackTriggerForDebugging,
 } from './utils';
 import {DEHYDRATED_BLOCK_REGISTRY, DehydratedBlockRegistry} from './registry';
 import {assertIncrementalHydrationIsConfigured, assertSsrIdDefined} from '../hydration/utils';
@@ -119,6 +120,7 @@ export function ɵɵdefer(
       loadingPromise: null,
       providers: null,
       hydrateTriggers: null,
+      debug: null,
       flags: flags ?? TDeferDetailsFlags.Default,
     };
     enableTimerScheduling?.(tView, tDetails, placeholderConfigIndex, loadingConfigIndex);
@@ -187,6 +189,10 @@ export function ɵɵdeferWhen(rawValue: unknown) {
   const lView = getLView();
   const tNode = getSelectedTNode();
 
+  if (ngDevMode) {
+    trackTriggerForDebugging(lView[TVIEW], tNode, 'when <expression>');
+  }
+
   if (!shouldAttachTrigger(TriggerType.Regular, lView, tNode)) return;
 
   const bindingIndex = nextBindingIndex();
@@ -220,6 +226,10 @@ export function ɵɵdeferPrefetchWhen(rawValue: unknown) {
   const lView = getLView();
   const tNode = getSelectedTNode();
 
+  if (ngDevMode) {
+    trackTriggerForDebugging(lView[TVIEW], tNode, 'prefetch when <expression>');
+  }
+
   if (!shouldAttachTrigger(TriggerType.Prefetch, lView, tNode)) return;
 
   const bindingIndex = nextBindingIndex();
@@ -248,6 +258,10 @@ export function ɵɵdeferPrefetchWhen(rawValue: unknown) {
 export function ɵɵdeferHydrateWhen(rawValue: unknown) {
   const lView = getLView();
   const tNode = getSelectedTNode();
+
+  if (ngDevMode) {
+    trackTriggerForDebugging(lView[TVIEW], tNode, 'hydrate when <expression>');
+  }
 
   if (!shouldAttachTrigger(TriggerType.Hydrate, lView, tNode)) return;
 
@@ -291,6 +305,10 @@ export function ɵɵdeferHydrateNever() {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
+  if (ngDevMode) {
+    trackTriggerForDebugging(lView[TVIEW], tNode, 'hydrate never');
+  }
+
   if (!shouldAttachTrigger(TriggerType.Hydrate, lView, tNode)) return;
 
   const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
@@ -310,6 +328,10 @@ export function ɵɵdeferOnIdle() {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
+  if (ngDevMode) {
+    trackTriggerForDebugging(lView[TVIEW], tNode, 'on idle');
+  }
+
   if (!shouldAttachTrigger(TriggerType.Regular, lView, tNode)) return;
 
   scheduleDelayedTrigger(onIdle);
@@ -323,6 +345,10 @@ export function ɵɵdeferPrefetchOnIdle() {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
+  if (ngDevMode) {
+    trackTriggerForDebugging(lView[TVIEW], tNode, 'prefetch on idle');
+  }
+
   if (!shouldAttachTrigger(TriggerType.Prefetch, lView, tNode)) return;
 
   scheduleDelayedPrefetching(onIdle, DeferBlockTrigger.Idle);
@@ -335,6 +361,10 @@ export function ɵɵdeferPrefetchOnIdle() {
 export function ɵɵdeferHydrateOnIdle() {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
+
+  if (ngDevMode) {
+    trackTriggerForDebugging(lView[TVIEW], tNode, 'hydrate on idle');
+  }
 
   if (!shouldAttachTrigger(TriggerType.Hydrate, lView, tNode)) return;
 
@@ -357,6 +387,10 @@ export function ɵɵdeferOnImmediate() {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
+  if (ngDevMode) {
+    trackTriggerForDebugging(lView[TVIEW], tNode, 'on immediate');
+  }
+
   if (!shouldAttachTrigger(TriggerType.Regular, lView, tNode)) return;
 
   // Render placeholder block only if loading template is not present and we're on
@@ -377,6 +411,10 @@ export function ɵɵdeferPrefetchOnImmediate() {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
+  if (ngDevMode) {
+    trackTriggerForDebugging(lView[TVIEW], tNode, 'prefetch on immediate');
+  }
+
   if (!shouldAttachTrigger(TriggerType.Prefetch, lView, tNode)) return;
 
   const tView = lView[TVIEW];
@@ -394,6 +432,10 @@ export function ɵɵdeferPrefetchOnImmediate() {
 export function ɵɵdeferHydrateOnImmediate() {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
+
+  if (ngDevMode) {
+    trackTriggerForDebugging(lView[TVIEW], tNode, 'hydrate on immediate');
+  }
 
   if (!shouldAttachTrigger(TriggerType.Hydrate, lView, tNode)) return;
 
@@ -419,6 +461,10 @@ export function ɵɵdeferOnTimer(delay: number) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
+  if (ngDevMode) {
+    trackTriggerForDebugging(lView[TVIEW], tNode, `on timer(${delay}ms)`);
+  }
+
   if (!shouldAttachTrigger(TriggerType.Regular, lView, tNode)) return;
 
   scheduleDelayedTrigger(onTimer(delay));
@@ -433,6 +479,10 @@ export function ɵɵdeferPrefetchOnTimer(delay: number) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
+  if (ngDevMode) {
+    trackTriggerForDebugging(lView[TVIEW], tNode, `prefetch on timer(${delay}ms)`);
+  }
+
   if (!shouldAttachTrigger(TriggerType.Prefetch, lView, tNode)) return;
 
   scheduleDelayedPrefetching(onTimer(delay), DeferBlockTrigger.Timer);
@@ -446,6 +496,10 @@ export function ɵɵdeferPrefetchOnTimer(delay: number) {
 export function ɵɵdeferHydrateOnTimer(delay: number) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
+
+  if (ngDevMode) {
+    trackTriggerForDebugging(lView[TVIEW], tNode, `hydrate on timer(${delay}ms)`);
+  }
 
   if (!shouldAttachTrigger(TriggerType.Hydrate, lView, tNode)) return;
 
@@ -469,6 +523,14 @@ export function ɵɵdeferHydrateOnTimer(delay: number) {
 export function ɵɵdeferOnHover(triggerIndex: number, walkUpTimes?: number) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
+
+  if (ngDevMode) {
+    trackTriggerForDebugging(
+      lView[TVIEW],
+      tNode,
+      `on hover${walkUpTimes === -1 ? '' : '(<target>)'}`,
+    );
+  }
 
   if (!shouldAttachTrigger(TriggerType.Regular, lView, tNode)) return;
 
@@ -498,6 +560,14 @@ export function ɵɵdeferPrefetchOnHover(triggerIndex: number, walkUpTimes?: num
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
+  if (ngDevMode) {
+    trackTriggerForDebugging(
+      lView[TVIEW],
+      tNode,
+      `prefetch on hover${walkUpTimes === -1 ? '' : '(<target>)'}`,
+    );
+  }
+
   if (!shouldAttachTrigger(TriggerType.Prefetch, lView, tNode)) return;
 
   const tView = lView[TVIEW];
@@ -524,6 +594,10 @@ export function ɵɵdeferHydrateOnHover() {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
+  if (ngDevMode) {
+    trackTriggerForDebugging(lView[TVIEW], tNode, 'hydrate on hover');
+  }
+
   if (!shouldAttachTrigger(TriggerType.Hydrate, lView, tNode)) return;
 
   const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
@@ -546,6 +620,14 @@ export function ɵɵdeferHydrateOnHover() {
 export function ɵɵdeferOnInteraction(triggerIndex: number, walkUpTimes?: number) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
+
+  if (ngDevMode) {
+    trackTriggerForDebugging(
+      lView[TVIEW],
+      tNode,
+      `on interaction${walkUpTimes === -1 ? '' : '(<target>)'}`,
+    );
+  }
 
   if (!shouldAttachTrigger(TriggerType.Regular, lView, tNode)) return;
 
@@ -575,6 +657,14 @@ export function ɵɵdeferPrefetchOnInteraction(triggerIndex: number, walkUpTimes
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
+  if (ngDevMode) {
+    trackTriggerForDebugging(
+      lView[TVIEW],
+      tNode,
+      `prefetch on interaction${walkUpTimes === -1 ? '' : '(<target>)'}`,
+    );
+  }
+
   if (!shouldAttachTrigger(TriggerType.Prefetch, lView, tNode)) return;
 
   const tView = lView[TVIEW];
@@ -601,6 +691,10 @@ export function ɵɵdeferHydrateOnInteraction() {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
+  if (ngDevMode) {
+    trackTriggerForDebugging(lView[TVIEW], tNode, 'hydrate on interaction');
+  }
+
   if (!shouldAttachTrigger(TriggerType.Hydrate, lView, tNode)) return;
 
   const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
@@ -623,6 +717,14 @@ export function ɵɵdeferHydrateOnInteraction() {
 export function ɵɵdeferOnViewport(triggerIndex: number, walkUpTimes?: number) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
+
+  if (ngDevMode) {
+    trackTriggerForDebugging(
+      lView[TVIEW],
+      tNode,
+      `on viewport${walkUpTimes === -1 ? '' : '(<target>)'}`,
+    );
+  }
 
   if (!shouldAttachTrigger(TriggerType.Regular, lView, tNode)) return;
 
@@ -652,6 +754,14 @@ export function ɵɵdeferPrefetchOnViewport(triggerIndex: number, walkUpTimes?: 
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
+  if (ngDevMode) {
+    trackTriggerForDebugging(
+      lView[TVIEW],
+      tNode,
+      `prefetch on viewport${walkUpTimes === -1 ? '' : '(<target>)'}`,
+    );
+  }
+
   if (!shouldAttachTrigger(TriggerType.Prefetch, lView, tNode)) return;
 
   const tView = lView[TVIEW];
@@ -677,6 +787,10 @@ export function ɵɵdeferPrefetchOnViewport(triggerIndex: number, walkUpTimes?: 
 export function ɵɵdeferHydrateOnViewport() {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
+
+  if (ngDevMode) {
+    trackTriggerForDebugging(lView[TVIEW], tNode, 'hydrate on viewport');
+  }
 
   if (!shouldAttachTrigger(TriggerType.Hydrate, lView, tNode)) return;
 
