@@ -20,6 +20,7 @@ import {factory as textAttributeNotBindingFactory} from './checks/text_attribute
 import {factory as uninvokedFunctionInEventBindingFactory} from './checks/uninvoked_function_in_event_binding';
 import {factory as unusedLetDeclarationFactory} from './checks/unused_let_declaration';
 import {factory as skipHydrationNotStaticFactory} from './checks/skip_hydration_not_static';
+import {factory as uninvokedFunctionInTextInterpolationFactory} from './checks/uninvoked_function_in_text_interpolation';
 
 export {ExtendedTemplateCheckerImpl} from './src/extended_template_checker';
 
@@ -38,6 +39,7 @@ export const ALL_DIAGNOSTIC_FACTORIES: readonly TemplateCheckFactory<
   uninvokedFunctionInEventBindingFactory,
   unusedLetDeclarationFactory,
   skipHydrationNotStaticFactory,
+  uninvokedFunctionInTextInterpolationFactory,
 ];
 
 export const SUPPORTED_DIAGNOSTIC_NAMES = new Set<string>([
