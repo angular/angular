@@ -448,6 +448,7 @@
   "init_def_getters",
   "init_default_iterable_differ",
   "init_default_keyvalue_differ",
+  "init_defer",
   "init_defer_component",
   "init_definition",
   "init_definition_factory",
