@@ -23,6 +23,7 @@ Currently, Angular supports the following extended diagnostics:
 | `NG8113` | [`unusedStandaloneImports`](extended-diagnostics/NG8113)          |
 | `NG8114` | [`unparenthesizedNullishCoalescing`](extended-diagnostics/NG8114) |
 | `NG8116` | [`missingStructuralDirective`](extended-diagnostics/NG8116)       |
+| `NG8117` | [`uninvokedFunctionInTextInterpolation`](extended-diagnostics/NG8114) |
 
 ## Configuration
 

@@ -24,6 +24,7 @@ ts_project(
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/uninvoked_function_in_event_binding",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/uninvoked_track_function",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/unparenthesized_nullish_coalescing",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/uninvoked_function_in_text_interpolation",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/unused_let_declaration",
     ],
     visibility = ["//packages/compiler-cli/src/ngtsc:__subpackages__"],
