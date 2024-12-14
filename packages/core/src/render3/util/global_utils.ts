@@ -12,6 +12,7 @@ import {setProfiler} from '../profiler';
 import {isSignal} from '../reactivity/api';
 
 import {applyChanges} from './change_detection_utils';
+import {getDeferBlocks} from './defer';
 import {
   getComponent,
   getContext,
@@ -67,6 +68,7 @@ const globalUtilsFunctions = {
   'ɵgetInjectorMetadata': getInjectorMetadata,
   'ɵsetProfiler': setProfiler,
   'ɵgetSignalGraph': getSignalGraph,
+  'ɵgetDeferBlocks': getDeferBlocks,
 
   'getDirectiveMetadata': getDirectiveMetadata,
   'getComponent': getComponent,
