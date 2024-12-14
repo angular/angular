@@ -277,18 +277,12 @@ Avoid creating impure pipes unless absolutely necessary, as they can incur a sig
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'featuredItemsImpure',
+  name: 'joinNamesImpure',
   pure: false,
 })
-export class FeaturedItemsImpurePipe implements PipeTransform {
-  transform(value: string, format: string): string {
-    let msg = `My custom transformation of ${value}.`
-
-    if (format === 'uppercase') {
-      return msg.toUpperCase()
-    else {
-      return msg
-    }
+export class JoinNamesImpurePipe implements PipeTransform {
+  transform(names: string[]): string {
+    return names.join();
   }
 }
 ```
