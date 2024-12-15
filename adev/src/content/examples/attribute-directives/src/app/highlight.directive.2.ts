@@ -2,7 +2,6 @@
 // #docregion imports
 import {Directive, ElementRef, HostListener} from '@angular/core';
 // #enddocregion imports
-import {Input} from '@angular/core';
 // #docregion
 
 @Directive({
