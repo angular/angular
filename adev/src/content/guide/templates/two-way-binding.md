@@ -93,7 +93,7 @@ If we break down the example above to its core , each two-way binding for compon
 
 The child component must contain:
 
-1. An `model` property
+1. A `model` property
 
 Here is a simplified example:
 
