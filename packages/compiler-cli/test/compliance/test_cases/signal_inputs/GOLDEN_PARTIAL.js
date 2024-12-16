@@ -5,8 +5,8 @@ import { Directive, input } from '@angular/core';
 import * as i0 from "@angular/core";
 export class TestDir {
     constructor() {
-        this.counter = input(0);
-        this.name = input.required();
+        this.counter = input(0, ...(ngDevMode ? [{ debugName: "counter" }] : []));
+        this.name = input.required(...(ngDevMode ? [{ debugName: "name" }] : []));
     }
 }
 TestDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
@@ -34,8 +34,8 @@ import { Component, input } from '@angular/core';
 import * as i0 from "@angular/core";
 export class TestComp {
     constructor() {
-        this.counter = input(0);
-        this.name = input.required();
+        this.counter = input(0, ...(ngDevMode ? [{ debugName: "counter" }] : []));
+        this.name = input.required(...(ngDevMode ? [{ debugName: "name" }] : []));
     }
 }
 TestComp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
@@ -68,9 +68,9 @@ function convertToBoolean(value) {
 }
 export class TestDir {
     constructor() {
-        this.counter = input(0);
-        this.signalWithTransform = input(false, { transform: convertToBoolean });
-        this.signalWithTransformAndAlias = input(false, { alias: 'publicNameSignal', transform: convertToBoolean });
+        this.counter = input(0, ...(ngDevMode ? [{ debugName: "counter" }] : []));
+        this.signalWithTransform = input(false, ...(ngDevMode ? [{ debugName: "signalWithTransform", transform: convertToBoolean }] : [{ transform: convertToBoolean }]));
+        this.signalWithTransformAndAlias = input(false, ...(ngDevMode ? [{ debugName: "signalWithTransformAndAlias", alias: 'publicNameSignal', transform: convertToBoolean }] : [{ alias: 'publicNameSignal', transform: convertToBoolean }]));
         this.decoratorInput = true;
         this.decoratorInputWithAlias = true;
         this.decoratorInputWithTransformAndAlias = true;
@@ -117,9 +117,9 @@ function convertToBoolean(value) {
 }
 export class TestDir {
     constructor() {
-        this.name = input.required({
-            transform: convertToBoolean,
-        });
+        this.name = input.required(...(ngDevMode ? [{ debugName: "name", transform: convertToBoolean }] : [{
+                transform: convertToBoolean,
+            }]));
     }
 }
 TestDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
@@ -150,12 +150,12 @@ const toBoolean = (v) => v === true || v !== '';
 const complexTransform = (defaultVal) => (v) => v || defaultVal;
 export class TestDir {
     constructor() {
-        this.name = input.required({
-            transform: (v) => v === true || v !== '',
-        });
-        this.name2 = input.required({ transform: toBoolean });
-        this.genericTransform = input.required({ transform: complexTransform(1) });
-        this.genericTransform2 = input.required({ transform: complexTransform(null) });
+        this.name = input.required(...(ngDevMode ? [{ debugName: "name", transform: (v) => v === true || v !== '' }] : [{
+                transform: (v) => v === true || v !== '',
+            }]));
+        this.name2 = input.required(...(ngDevMode ? [{ debugName: "name2", transform: toBoolean }] : [{ transform: toBoolean }]));
+        this.genericTransform = input.required(...(ngDevMode ? [{ debugName: "genericTransform", transform: complexTransform(1) }] : [{ transform: complexTransform(1) }]));
+        this.genericTransform2 = input.required(...(ngDevMode ? [{ debugName: "genericTransform2", transform: complexTransform(null) }] : [{ transform: complexTransform(null) }]));
     }
 }
 TestDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
