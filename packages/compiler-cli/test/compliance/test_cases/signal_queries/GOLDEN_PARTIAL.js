@@ -8,15 +8,15 @@ export class SomeToken {
 const nonAnalyzableRefersToString = 'a, b, c';
 export class TestDir {
     constructor() {
-        this.query1 = viewChild('locatorA');
-        this.query2 = viewChildren('locatorB');
-        this.query3 = contentChild('locatorC');
-        this.query4 = contentChildren('locatorD');
-        this.query5 = viewChild(forwardRef(() => SomeToken));
-        this.query6 = viewChildren(SomeToken);
-        this.query7 = viewChild('locatorE', { read: SomeToken });
-        this.query8 = contentChildren('locatorF, locatorG', { descendants: true });
-        this.query9 = contentChildren(nonAnalyzableRefersToString, { descendants: true });
+        this.query1 = viewChild(...(ngDevMode ? ['locatorA', { debugName: "query1" }] : ['locatorA']));
+        this.query2 = viewChildren(...(ngDevMode ? ['locatorB', { debugName: "query2" }] : ['locatorB']));
+        this.query3 = contentChild(...(ngDevMode ? ['locatorC', { debugName: "query3" }] : ['locatorC']));
+        this.query4 = contentChildren(...(ngDevMode ? ['locatorD', { debugName: "query4" }] : ['locatorD']));
+        this.query5 = viewChild(...(ngDevMode ? [forwardRef(() => SomeToken), { debugName: "query5" }] : [forwardRef(() => SomeToken)]));
+        this.query6 = viewChildren(...(ngDevMode ? [SomeToken, { debugName: "query6" }] : [SomeToken]));
+        this.query7 = viewChild(...(ngDevMode ? ['locatorE', { debugName: "query7", read: SomeToken }] : ['locatorE', { read: SomeToken }]));
+        this.query8 = contentChildren(...(ngDevMode ? ['locatorF, locatorG', { debugName: "query8", descendants: true }] : ['locatorF, locatorG', { descendants: true }]));
+        this.query9 = contentChildren(...(ngDevMode ? [nonAnalyzableRefersToString, { debugName: "query9", descendants: true }] : [nonAnalyzableRefersToString, { descendants: true }]));
     }
 }
 TestDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
@@ -53,10 +53,10 @@ import { Component, contentChild, contentChildren, viewChild, viewChildren } fro
 import * as i0 from "@angular/core";
 export class TestComp {
     constructor() {
-        this.query1 = viewChild('locatorA');
-        this.query2 = viewChildren('locatorB');
-        this.query3 = contentChild('locatorC');
-        this.query4 = contentChildren('locatorD');
+        this.query1 = viewChild(...(ngDevMode ? ['locatorA', { debugName: "query1" }] : ['locatorA']));
+        this.query2 = viewChildren(...(ngDevMode ? ['locatorB', { debugName: "query2" }] : ['locatorB']));
+        this.query3 = contentChild(...(ngDevMode ? ['locatorC', { debugName: "query3" }] : ['locatorC']));
+        this.query4 = contentChildren(...(ngDevMode ? ['locatorD', { debugName: "query4" }] : ['locatorD']));
     }
 }
 TestComp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
@@ -88,8 +88,8 @@ import { ContentChild, contentChild, Directive, ViewChild, viewChild } from '@an
 import * as i0 from "@angular/core";
 export class TestDir {
     constructor() {
-        this.signalViewChild = viewChild('locator1');
-        this.signalContentChild = contentChild('locator2');
+        this.signalViewChild = viewChild(...(ngDevMode ? ['locator1', { debugName: "signalViewChild" }] : ['locator1']));
+        this.signalContentChild = contentChild(...(ngDevMode ? ['locator2', { debugName: "signalContentChild" }] : ['locator2']));
     }
 }
 TestDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
