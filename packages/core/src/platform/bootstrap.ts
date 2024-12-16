@@ -8,7 +8,7 @@
 import {Subscription} from 'rxjs';
 
 import {PROVIDED_NG_ZONE} from '../change_detection/scheduling/ng_zone_scheduling';
-import {EnvironmentInjector, R3Injector} from '../di/r3_injector';
+import {R3Injector} from '../di/r3_injector';
 import {ErrorHandler} from '../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {DEFAULT_LOCALE_ID} from '../i18n/localization';
@@ -22,9 +22,33 @@ import {NgZone} from '../zone/ng_zone';
 import {ApplicationInitStatus} from '../application/application_init';
 import {_callAndReportToErrorHandler, ApplicationRef, remove} from '../application/application_ref';
 import {PROVIDED_ZONELESS} from '../change_detection/scheduling/zoneless_scheduling';
-import {Injector} from '../di';
+import {InjectionToken, Injector} from '../di';
 import {InternalNgModuleRef, NgModuleRef} from '../linker/ng_module_factory';
 import {stringify} from '../util/stringify';
+
+/**
+ * InjectionToken to control root component bootstrap behavior.
+ *
+ * This token is primarily used in Angular's server-side rendering (SSR) scenarios,
+ * particularly by the `@angular/ssr` package, to manage whether the root component
+ * should be bootstrapped during the application initialization process.
+ *
+ * ## Purpose:
+ * During SSR route extraction, setting this token to `false` prevents Angular from
+ * bootstrapping the root component. This avoids unnecessary component rendering,
+ * enabling route extraction without requiring additional APIs or triggering
+ * component logic.
+ *
+ * ## Behavior:
+ * - **`false`**: Prevents the root component from being bootstrapped.
+ * - **`true`** (default): Proceeds with the normal root component bootstrap process.
+ *
+ * This mechanism ensures SSR can efficiently separate route extraction logic
+ * from component rendering.
+ */
+export const ENABLE_ROOT_COMPONENT_BOOTSTRAP = new InjectionToken<boolean>(
+  ngDevMode ? 'ENABLE_ROOT_COMPONENT_BOOTSTRAP' : '',
+);
 
 export interface BootstrapConfig {
   platformInjector: Injector;
@@ -125,6 +149,17 @@ export function bootstrap<M>(
         // If the `LOCALE_ID` provider is defined at bootstrap then we set the value for ivy
         const localeId = envInjector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
         setLocaleId(localeId || DEFAULT_LOCALE_ID);
+
+        const enableRootComponentBoostrap = envInjector.get(ENABLE_ROOT_COMPONENT_BOOTSTRAP, true);
+        if (!enableRootComponentBoostrap) {
+          if (isApplicationBootstrapConfig(config)) {
+            return envInjector.get(ApplicationRef);
+          }
+
+          config.allPlatformModules.push(config.moduleRef);
+          return config.moduleRef;
+        }
+
         if (typeof ngDevMode === 'undefined' || ngDevMode) {
           const imagePerformanceService = envInjector.get(ImagePerformanceWarning);
           imagePerformanceService.start();
