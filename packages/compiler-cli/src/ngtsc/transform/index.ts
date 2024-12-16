@@ -23,3 +23,4 @@ export {
   TraitState,
 } from './src/trait';
 export {ivyTransformFactory} from './src/transform';
+export {signalMetadataTransform} from './src/implicit_signal_debug_name_transform';
