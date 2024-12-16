@@ -183,6 +183,9 @@
     "name": "EMPTY_SUBSCRIPTION"
   },
   {
+    "name": "ENABLE_ROOT_COMPONENT_BOOTSTRAP"
+  },
+  {
     "name": "ENVIRONMENT_INITIALIZER"
   },
   {
