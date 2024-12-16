@@ -74,7 +74,7 @@ import { Component, model } from '@angular/core';
   selector: 'app-counter',
   template: `
     <button (click)="updateCount(-1)">-</button>
-    <span>{{ count }}</span>
+    <span>{{ count() }}</span>
     <button (click)="updateCount(+1)">+</button>
   `,
 })
@@ -89,11 +89,9 @@ export class CounterComponent {
 
 ### Enabling two-way binding between components
 
-If we break down the example above to its core , each two-way binding for components requires the following:
+If we break down the example above to its core, each two-way binding for components requires the following:
 
-The child component must contain:
-
-1. A `model` property
+The child component must contain a `model` property.
 
 Here is a simplified example:
 
@@ -114,7 +112,7 @@ export class CounterComponent {
 The parent component must:
 
 1. Wrap the `model` property name in the two-way binding syntax.
-1. Specify the corresponding property to which the updated value is assigned
+1. Assign a property or a signal to the `model` property.
 
 Here is a simplified example:
 
