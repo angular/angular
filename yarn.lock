@@ -305,7 +305,6 @@
 
 "@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#457307f2f05aacd6555daa95ac18f05b7e8ee934":
   version "0.0.0-18d61ca14bb1732e065a81aeaf4c86606d97059e"
-  uid "457307f2f05aacd6555daa95ac18f05b7e8ee934"
   resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#457307f2f05aacd6555daa95ac18f05b7e8ee934"
   dependencies:
     "@angular/benchpress" "0.3.0"
@@ -429,7 +428,6 @@
 
 "@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#095f9e6fab54f0324d1bb5d322f5c9b7a8fc6010":
   version "0.0.0-18d61ca14bb1732e065a81aeaf4c86606d97059e"
-  uid "095f9e6fab54f0324d1bb5d322f5c9b7a8fc6010"
   resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#095f9e6fab54f0324d1bb5d322f5c9b7a8fc6010"
   dependencies:
     "@google-cloud/spanner" "7.16.0"
@@ -444,10 +442,9 @@
     typescript "~4.9.0"
     yaml "2.6.1"
 
-"@angular/ssr@19.1.0-next.1":
+"@angular/ssr@https://github.com/angular/angular-ssr-builds.git#8de8bf485218d5cc4874fada1ad8537a21b866b7":
   version "19.1.0-next.1"
-  resolved "https://registry.yarnpkg.com/@angular/ssr/-/ssr-19.1.0-next.1.tgz#775a3d020358cd75e9b6f17aabd8643a746213b2"
-  integrity sha512-cUzhYPtd7tyFQ11zUoLDC0Om79CO+eqwmkspWSrfhUnZ3cCWdj6WMA0z4Cg6gNz1qABvfnSCIdcBE8H5lVYKnA==
+  resolved "https://github.com/angular/angular-ssr-builds.git#8de8bf485218d5cc4874fada1ad8537a21b866b7"
   dependencies:
     tslib "^2.3.0"
 
@@ -7648,8 +7645,7 @@ domhandler@^5.0.2, domhandler@^5.0.3:
     domelementtype "^2.3.0"
 
 "domino@https://github.com/angular/domino.git#8f228f8862540c6ccd14f76b5a1d9bb5458618af":
-  version "2.1.6+git"
-  uid "8f228f8862540c6ccd14f76b5a1d9bb5458618af"
+  version "2.1.6"
   resolved "https://github.com/angular/domino.git#8f228f8862540c6ccd14f76b5a1d9bb5458618af"
 
 dompurify@^3.2.1:

@@ -55,7 +55,7 @@
     "@angular/cdk": "19.1.0-next.2",
     "@angular/cli": "19.1.0-next.1",
     "@angular/material": "19.1.0-next.2",
-    "@angular/ssr": "19.1.0-next.1",
+    "@angular/ssr": "https://github.com/angular/angular-ssr-builds.git#8de8bf485218d5cc4874fada1ad8537a21b866b7",
     "@babel/cli": "7.26.4",
     "@babel/core": "7.26.0",
     "@babel/generator": "7.26.3",
