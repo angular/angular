@@ -8,13 +8,15 @@
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import ApiReferenceList, {ALL_STATUSES_KEY} from './api-reference-list.component';
+import ApiReferenceList, {ALL_TYPES_KEY} from './api-reference-list.component';
 import {ApiReferenceManager} from './api-reference-manager.service';
 import {signal} from '@angular/core';
 import {ApiItemType} from '../interfaces/api-item-type';
 import {RouterTestingHarness} from '@angular/router/testing';
 import {provideRouter} from '@angular/router';
 import {Location} from '@angular/common';
+import {By} from '@angular/platform-browser';
+import {TextField} from '@angular/docs';
 
 describe('ApiReferenceList', () => {
   let component: ApiReferenceList;
@@ -103,7 +105,7 @@ describe('ApiReferenceList', () => {
   });
 
   it('should set selected type when provided type is different than selected', async () => {
-    expect(component.type()).toBe(ALL_STATUSES_KEY);
+    expect(component.type()).toBe(ALL_TYPES_KEY);
     component.filterByItemType(ApiItemType.BLOCK);
     await RouterTestingHarness.create(`/api?type=${ApiItemType.BLOCK}`);
     expect(component.type()).toBe(ApiItemType.BLOCK);
@@ -116,12 +118,15 @@ describe('ApiReferenceList', () => {
 
     component.filterByItemType(ApiItemType.BLOCK);
     harness.navigateByUrl(`/api`);
-    expect(component.type()).toBe(ALL_STATUSES_KEY);
+    expect(component.type()).toBe(ALL_TYPES_KEY);
   });
 
-  it('should set the value of the queryParam equal to the query value', async () => {
+  it('should set the value of the queryParam equal to the query text field', async () => {
     const location = TestBed.inject(Location);
-    component.query.set('item1');
+
+    const textField = fixture.debugElement.query(By.directive(TextField));
+    (textField.componentInstance as TextField).setValue('item1');
+
     await fixture.whenStable();
     expect(location.path()).toBe(`?query=item1&type=All`);
   });
@@ -129,7 +134,8 @@ describe('ApiReferenceList', () => {
   it('should keep the values of existing queryParams and set new queryParam equal to the type', async () => {
     const location = TestBed.inject(Location);
 
-    component.query.set('item1');
+    const textField = fixture.debugElement.query(By.directive(TextField));
+    (textField.componentInstance as TextField).setValue('item1');
     await fixture.whenStable();
     expect(location.path()).toBe(`?query=item1&type=All`);
 

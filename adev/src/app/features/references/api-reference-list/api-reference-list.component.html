@@ -4,7 +4,12 @@
 
 <div class="adev-reference-list-filter">
   <div class="adev-reference-list-query-filter">
-    <docs-text-field name="query" placeholder="Filter" [(ngModel)]="query" />
+    <docs-text-field
+      name="query"
+      placeholder="Filter"
+      [(ngModel)]="query"
+      (ngModelChange)="syncUrlWithFilters()"
+    />
 
     <docs-slide-toggle
       buttonId="includeDeprecated"
