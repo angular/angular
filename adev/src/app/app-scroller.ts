@@ -23,10 +23,11 @@ export class AppScroller {
   private readonly viewportScroller = inject(ViewportScroller);
   private readonly appRef = inject(ApplicationRef);
   private readonly injector = inject(EnvironmentInjector);
-  disableScrolling = false;
+
   private _lastScrollEvent?: Scroll;
   private canScroll = false;
   private cancelScroll?: () => void;
+
   get lastScrollEvent(): Scroll | undefined {
     return this._lastScrollEvent;
   }
@@ -41,7 +42,6 @@ export class AppScroller {
           this.canScroll = true;
           this._lastScrollEvent = e;
         }),
-        filter(() => !this.disableScrolling),
         filter(() => {
           const info = this.router.lastSuccessfulNavigation?.extras.info as Record<
             'disableScrolling',

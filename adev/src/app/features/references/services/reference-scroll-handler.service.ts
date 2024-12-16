@@ -42,7 +42,7 @@ export class ReferenceScrollHandler {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((fragment) => {
         // If there is no fragment or the scroll event has a position (traversing through history),
-        // allow the scroller to handler scrolling instead of going to the fragment
+        // allow the scroller to handle scrolling instead of going to the fragment
         if (!fragment || this.appScroller.lastScrollEvent?.position) {
           this.appScroller.scroll(this.injector);
           return;

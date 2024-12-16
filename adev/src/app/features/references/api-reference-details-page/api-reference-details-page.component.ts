@@ -21,7 +21,6 @@ import {
   API_TAB_CLASS_NAME,
   API_REFERENCE_TAB_URL_ATTRIBUTE,
 } from '../constants/api-reference-prerender.constants';
-import {AppScroller} from '../../../app-scroller';
 
 @Component({
   selector: 'adev-reference-page',
@@ -36,7 +35,6 @@ export default class ApiReferenceDetailsPage {
   private readonly document = inject(DOCUMENT);
   private readonly router = inject(Router);
   private readonly scrollHandler = inject(ReferenceScrollHandler);
-  private readonly appScroller = inject(AppScroller);
 
   docContent = input<DocContent | undefined>();
   tab = input<string | undefined>();
@@ -95,14 +93,6 @@ export default class ApiReferenceDetailsPage {
     const activeTabTitle = this.tabs()[this.selectedTabIndex()]?.title;
     return activeTabTitle === API_REFERENCE_TAB_API_LABEL || activeTabTitle === 'CLI';
   });
-
-  constructor() {
-    this.appScroller.disableScrolling = true;
-  }
-
-  ngOnDestroy() {
-    this.appScroller.disableScrolling = false;
-  }
 
   membersCardsLoaded(): void {
     this.scrollHandler.setupListeners(API_TAB_CLASS_NAME);
