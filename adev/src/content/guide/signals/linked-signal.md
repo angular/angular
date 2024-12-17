@@ -90,19 +90,17 @@ The `computation` is a function that receives the new value of `source` and a `p
 `linkedSignal` updates to the result of the computation every time its linked state changes. By default, Angular uses referential equality to determine if the linked state has changed. You can alternatively provide a custom equality function.
 
 ```typescript
-const activeUser = signal({id: 123, name: 'Morgan'});
-const email = linkedSignal(() => `${activeUser().name}@example.com`, {
+const activeUser = signal({id: 123, name: 'Morgan', isAdmin: true});
+const email = linkedSignal(() => ({id:`${activeUser().name}@example.com`}), {
   // Consider the user as the same if it's the same `id`.
   equal: (a, b) => a.id === b.id,
 });
-
 // Or, if separating `source` and `computation`
 const alternateEmail = linkedSignal({
   source: activeUser,
-  computation: user => `${user.name}@example.com`,
+  computation: user => ({id:`${user.name}@example.com`}),
   equal: (a, b) => a.id === b.id,
 });
-
 // This update to `activeUser` does not cause `email` or `alternateEmail`
 // to update because the `id` is the same.
 activeUser.set({id: 123, name: 'Morgan', isAdmin: false});
