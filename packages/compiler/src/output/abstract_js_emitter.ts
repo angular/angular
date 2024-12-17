@@ -42,7 +42,10 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     ctx.println(stmt, `;`);
     return null;
   }
-  override visitTaggedTemplateExpr(ast: o.TaggedTemplateExpr, ctx: EmitterVisitorContext): any {
+  override visitTaggedTemplateLiteralExpr(
+    ast: o.TaggedTemplateLiteralExpr,
+    ctx: EmitterVisitorContext,
+  ): any {
     // The following convoluted piece of code is effectively the downlevelled equivalent of
     // ```
     // tag`...`
@@ -64,6 +67,26 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
       expression.visitExpression(this, ctx);
     });
     ctx.print(ast, ')');
+    return null;
+  }
+  override visitTemplateLiteralExpr(expr: o.TemplateLiteralExpr, ctx: EmitterVisitorContext): any {
+    ctx.print(expr, '`');
+    for (let i = 0; i < expr.elements.length; i++) {
+      expr.elements[i].visitExpression(this, ctx);
+      const expression = i < expr.expressions.length ? expr.expressions[i] : null;
+      if (expression !== null) {
+        ctx.print(expression, '${');
+        expression.visitExpression(this, ctx);
+        ctx.print(expression, '}');
+      }
+    }
+    ctx.print(expr, '`');
+  }
+  override visitTemplateLiteralElementExpr(
+    expr: o.TemplateLiteralElementExpr,
+    ctx: EmitterVisitorContext,
+  ): any {
+    ctx.print(expr, expr.rawText);
     return null;
   }
   override visitFunctionExpr(ast: o.FunctionExpr, ctx: EmitterVisitorContext): any {
