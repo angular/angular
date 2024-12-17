@@ -447,8 +447,28 @@ class AstTranslator implements AstVisitor {
     return node;
   }
 
-  visitTemplateLiteral(ast: TemplateLiteral, context: any) {
-    throw new Error('Method not implemented');
+  visitTemplateLiteral(ast: TemplateLiteral): ts.TemplateLiteral {
+    const length = ast.elements.length;
+    const head = ast.elements[0];
+    let result: ts.TemplateLiteral;
+
+    if (length === 1) {
+      result = ts.factory.createNoSubstitutionTemplateLiteral(head.text);
+    } else {
+      const spans: ts.TemplateSpan[] = [];
+      const tailIndex = length - 1;
+
+      for (let i = 1; i < tailIndex; i++) {
+        const middle = ts.factory.createTemplateMiddle(ast.elements[i].text);
+        spans.push(ts.factory.createTemplateSpan(this.translate(ast.expressions[i - 1]), middle));
+      }
+      const resolvedExpression = this.translate(ast.expressions[tailIndex - 1]);
+      const templateTail = ts.factory.createTemplateTail(ast.elements[tailIndex].text);
+      spans.push(ts.factory.createTemplateSpan(resolvedExpression, templateTail));
+      result = ts.factory.createTemplateExpression(ts.factory.createTemplateHead(head.text), spans);
+    }
+
+    return result;
   }
 
   visitTemplateLiteralElement(ast: TemplateLiteralElement, context: any) {
