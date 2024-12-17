@@ -184,16 +184,17 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
 
   visitTaggedTemplateLiteralExpr(ast: o.TaggedTemplateLiteralExpr, context: Context): TExpression {
     return this.setSourceMapRange(
-      this.createTaggedTemplateExpression(ast.tag.visitExpression(this, context), {
-        elements: ast.template.elements.map((e) =>
-          createTemplateElement({
-            cooked: e.text,
-            raw: e.rawText,
-            range: e.sourceSpan ?? ast.sourceSpan,
-          }),
-        ),
-        expressions: ast.template.expressions.map((e) => e.visitExpression(this, context)),
-      }),
+      this.createTaggedTemplateExpression(
+        ast.tag.visitExpression(this, context),
+        this.getTemplateLiteralFromAst(ast.template, context),
+      ),
+      ast.sourceSpan,
+    );
+  }
+
+  visitTemplateLiteralExpr(ast: o.TemplateLiteralExpr, context: Context): TExpression {
+    return this.setSourceMapRange(
+      this.factory.createTemplateLiteral(this.getTemplateLiteralFromAst(ast, context)),
       ast.sourceSpan,
     );
   }
@@ -433,10 +434,6 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
     throw new Error('Method not implemented.');
   }
 
-  visitTemplateLiteralExpr(ast: o.TemplateLiteralExpr, context: Context): TExpression {
-    throw new Error('Method not implemented');
-  }
-
   visitTemplateLiteralElementExpr(ast: o.TemplateLiteralElementExpr, context: any) {
     throw new Error('Method not implemented');
   }
@@ -481,6 +478,22 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
       this.factory.attachComments(statement, leadingComments);
     }
     return statement;
+  }
+
+  private getTemplateLiteralFromAst(
+    ast: o.TemplateLiteralExpr,
+    context: Context,
+  ): TemplateLiteral<TExpression> {
+    return {
+      elements: ast.elements.map((e) =>
+        createTemplateElement({
+          cooked: e.text,
+          raw: e.rawText,
+          range: e.sourceSpan ?? ast.sourceSpan,
+        }),
+      ),
+      expressions: ast.expressions.map((e) => e.visitExpression(this, context)),
+    };
   }
 }
 
