@@ -19,6 +19,12 @@ export enum TokenType {
   Error,
 }
 
+export enum StringTokenKind {
+  Plain,
+  TemplateLiteralPart,
+  TemplateLiteralEnd,
+}
+
 const KEYWORDS = [
   'var',
   'let',
@@ -56,7 +62,7 @@ export class Token {
     return this.type === TokenType.Number;
   }
 
-  isString(): boolean {
+  isString(): this is StringToken {
     return this.type === TokenType.String;
   }
 
@@ -116,6 +122,22 @@ export class Token {
     return this.type === TokenType.Number ? this.numValue : -1;
   }
 
+  isTemplateLiteralPart(): this is StringToken {
+    return this.isString() && this.kind === StringTokenKind.TemplateLiteralPart;
+  }
+
+  isTemplateLiteralEnd(): this is StringToken {
+    return this.isString() && this.kind === StringTokenKind.TemplateLiteralEnd;
+  }
+
+  isTemplateLiteralInterpolationStart(): boolean {
+    return this.isOperator('${');
+  }
+
+  isTemplateLiteralInterpolationEnd(): boolean {
+    return this.isOperator('}');
+  }
+
   toString(): string | null {
     switch (this.type) {
       case TokenType.Character:
@@ -131,6 +153,17 @@ export class Token {
       default:
         return null;
     }
+  }
+}
+
+export class StringToken extends Token {
+  constructor(
+    index: number,
+    end: number,
+    strValue: string,
+    readonly kind: StringTokenKind,
+  ) {
+    super(index, end, TokenType.String, 0, strValue);
   }
 }
 
@@ -154,10 +187,6 @@ function newOperatorToken(index: number, end: number, text: string): Token {
   return new Token(index, end, TokenType.Operator, 0, text);
 }
 
-function newStringToken(index: number, end: number, text: string): Token {
-  return new Token(index, end, TokenType.String, 0, text);
-}
-
 function newNumberToken(index: number, end: number, n: number): Token {
   return new Token(index, end, TokenType.Number, n, '');
 }
@@ -173,6 +202,8 @@ class _Scanner {
   private readonly length: number;
   private peek = 0;
   private index = -1;
+  private literalInterpolationDepth = 0;
+  private braceDepth = 0;
 
   constructor(private readonly input: string) {
     this.length = input.length;
@@ -235,17 +266,22 @@ class _Scanner {
           : newCharacterToken(start, this.index, chars.$PERIOD);
       case chars.$LPAREN:
       case chars.$RPAREN:
-      case chars.$LBRACE:
-      case chars.$RBRACE:
       case chars.$LBRACKET:
       case chars.$RBRACKET:
       case chars.$COMMA:
       case chars.$COLON:
       case chars.$SEMICOLON:
         return this.scanCharacter(start, peek);
+      case chars.$LBRACE:
+        return this.scanOpenBrace(start, peek);
+      case chars.$RBRACE:
+        return this.scanCloseBrace(start, peek);
       case chars.$SQ:
       case chars.$DQ:
         return this.scanString();
+      case chars.$BT:
+        this.advance();
+        return this.scanTemplateLiteralPart(start);
       case chars.$HASH:
         return this.scanPrivateIdentifier();
       case chars.$PLUS:
@@ -291,6 +327,25 @@ class _Scanner {
   private scanOperator(start: number, str: string): Token {
     this.advance();
     return newOperatorToken(start, this.index, str);
+  }
+
+  private scanOpenBrace(start: number, code: number): Token {
+    this.braceDepth++;
+    this.advance();
+    return newCharacterToken(start, this.index, code);
+  }
+
+  private scanCloseBrace(start: number, code: number): Token {
+    this.advance();
+
+    if (this.braceDepth === 0 && this.literalInterpolationDepth > 0) {
+      this.literalInterpolationDepth--;
+      this.tokens.push(newOperatorToken(start, this.index, '}'));
+      return this.scanTemplateLiteralPart(this.index);
+    }
+
+    this.braceDepth--;
+    return newCharacterToken(start, this.index, code);
   }
 
   /**
@@ -388,36 +443,21 @@ class _Scanner {
   }
 
   private scanString(): Token {
-    const start: number = this.index;
-    const quote: number = this.peek;
+    const start = this.index;
+    const quote = this.peek;
     this.advance(); // Skip initial quote.
 
-    let buffer: string = '';
-    let marker: number = this.index;
-    const input: string = this.input;
+    let buffer = '';
+    let marker = this.index;
+    const input = this.input;
 
     while (this.peek != quote) {
       if (this.peek == chars.$BACKSLASH) {
-        buffer += input.substring(marker, this.index);
-        let unescapedCode: number;
-        this.advance(); // mutates this.peek
-        // @ts-expect-error see microsoft/TypeScript#9998
-        if (this.peek == chars.$u) {
-          // 4 character hex code for unicode character.
-          const hex: string = input.substring(this.index + 1, this.index + 5);
-          if (/^[0-9a-f]+$/i.test(hex)) {
-            unescapedCode = parseInt(hex, 16);
-          } else {
-            return this.error(`Invalid unicode escape [\\u${hex}]`, 0);
-          }
-          for (let i: number = 0; i < 5; i++) {
-            this.advance();
-          }
-        } else {
-          unescapedCode = unescape(this.peek);
-          this.advance();
+        const result = this.scanStringBackslash(buffer, marker);
+        if (typeof result !== 'string') {
+          return result; // Error
         }
-        buffer += String.fromCharCode(unescapedCode);
+        buffer = result;
         marker = this.index;
       } else if (this.peek == chars.$EOF) {
         return this.error('Unterminated quote', 0);
@@ -429,7 +469,7 @@ class _Scanner {
     const last: string = input.substring(marker, this.index);
     this.advance(); // Skip terminating quote.
 
-    return newStringToken(start, this.index, buffer + last);
+    return new StringToken(start, this.index, buffer + last, StringTokenKind.Plain);
   }
 
   private scanQuestion(start: number): Token {
@@ -443,13 +483,81 @@ class _Scanner {
     return newOperatorToken(start, this.index, str);
   }
 
-  private error(message: string, offset: number): Token {
+  private scanTemplateLiteralPart(start: number): Token {
+    let buffer = '';
+    let marker = this.index;
+
+    while (this.peek !== chars.$BT) {
+      if (this.peek === chars.$BACKSLASH) {
+        const result = this.scanStringBackslash(buffer, marker);
+        if (typeof result !== 'string') {
+          return result; // Error
+        }
+        buffer = result;
+        marker = this.index;
+      } else if (this.peek === chars.$$) {
+        const dollar = this.index;
+        this.advance();
+
+        // @ts-expect-error
+        if (this.peek === chars.$LBRACE) {
+          this.literalInterpolationDepth++;
+          this.tokens.push(
+            new StringToken(
+              start,
+              dollar,
+              buffer + this.input.substring(marker, dollar),
+              StringTokenKind.TemplateLiteralPart,
+            ),
+          );
+          this.advance();
+          return newOperatorToken(dollar, this.index, this.input.substring(dollar, this.index));
+        }
+      } else if (this.peek === chars.$EOF) {
+        return this.error('Unterminated template literal', 0);
+      } else {
+        this.advance();
+      }
+    }
+
+    const last = this.input.substring(marker, this.index);
+    this.advance();
+    return new StringToken(start, this.index, buffer + last, StringTokenKind.TemplateLiteralEnd);
+  }
+
+  private error(message: string, offset: number): Token & {type: TokenType.Error} {
     const position: number = this.index + offset;
     return newErrorToken(
       position,
       this.index,
       `Lexer Error: ${message} at column ${position} in expression [${this.input}]`,
-    );
+    ) as Token & {type: TokenType.Error};
+  }
+
+  private scanStringBackslash(
+    buffer: string,
+    marker: number,
+  ): string | (Token & {type: TokenType.Error}) {
+    buffer += this.input.substring(marker, this.index);
+    let unescapedCode: number;
+    this.advance();
+    if (this.peek === chars.$u) {
+      // 4 character hex code for unicode character.
+      const hex: string = this.input.substring(this.index + 1, this.index + 5);
+      if (/^[0-9a-f]+$/i.test(hex)) {
+        unescapedCode = parseInt(hex, 16);
+      } else {
+        return this.error(`Invalid unicode escape [\\u${hex}]`, 0);
+      }
+      for (let i = 0; i < 5; i++) {
+        this.advance();
+      }
+    } else {
+      unescapedCode = unescape(this.peek);
+      this.advance();
+    }
+    buffer += String.fromCharCode(unescapedCode);
+    return buffer;
   }
 }
 
