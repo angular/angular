@@ -533,7 +533,16 @@ export function reflectIdentifierOfDeclaration(decl: ts.Declaration): ts.Identif
   return null;
 }
 
-export class TypeEntityToDeclarationError extends Error {}
+export class TypeEntityToDeclarationError extends Error {
+  constructor(message: string) {
+    super(message);
+
+    // Extending `Error` ends up breaking some internal tests. This appears to be a known issue
+    // when extending errors in TS and the workaround is to explicitly set the prototype.
+    // https://stackoverflow.com/questions/41102060/typescript-extending-error-class
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
+}
 
 /**
  * @throws {TypeEntityToDeclarationError} if the type cannot be converted
