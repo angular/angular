@@ -552,10 +552,10 @@ export class InvokeFunctionExpr extends Expression {
   }
 }
 
-export class TaggedTemplateExpr extends Expression {
+export class TaggedTemplateLiteralExpr extends Expression {
   constructor(
     public tag: Expression,
-    public template: TemplateLiteral,
+    public template: TemplateLiteralExpr,
     type?: Type | null,
     sourceSpan?: ParseSourceSpan | null,
   ) {
@@ -564,14 +564,9 @@ export class TaggedTemplateExpr extends Expression {
 
   override isEquivalent(e: Expression): boolean {
     return (
-      e instanceof TaggedTemplateExpr &&
+      e instanceof TaggedTemplateLiteralExpr &&
       this.tag.isEquivalent(e.tag) &&
-      areAllEquivalentPredicate(
-        this.template.elements,
-        e.template.elements,
-        (a, b) => a.text === b.text,
-      ) &&
-      areAllEquivalent(this.template.expressions, e.template.expressions)
+      this.template.isEquivalent(e.template)
     );
   }
 
@@ -580,11 +575,11 @@ export class TaggedTemplateExpr extends Expression {
   }
 
   override visitExpression(visitor: ExpressionVisitor, context: any): any {
-    return visitor.visitTaggedTemplateExpr(this, context);
+    return visitor.visitTaggedTemplateLiteralExpr(this, context);
   }
 
-  override clone(): TaggedTemplateExpr {
-    return new TaggedTemplateExpr(
+  override clone(): TaggedTemplateLiteralExpr {
+    return new TaggedTemplateLiteralExpr(
       this.tag.clone(),
       this.template.clone(),
       this.type,
@@ -655,26 +650,48 @@ export class LiteralExpr extends Expression {
   }
 }
 
-export class TemplateLiteral {
+export class TemplateLiteralExpr extends Expression {
   constructor(
-    public elements: TemplateLiteralElement[],
+    public elements: TemplateLiteralElementExpr[],
     public expressions: Expression[],
-  ) {}
+    sourceSpan?: ParseSourceSpan | null,
+  ) {
+    super(null, sourceSpan);
+  }
 
-  clone(): TemplateLiteral {
-    return new TemplateLiteral(
+  override isEquivalent(e: Expression): boolean {
+    return (
+      e instanceof TemplateLiteralExpr &&
+      areAllEquivalentPredicate(this.elements, e.elements, (a, b) => a.text === b.text) &&
+      areAllEquivalent(this.expressions, e.expressions)
+    );
+  }
+
+  override isConstant() {
+    return false;
+  }
+
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
+    return visitor.visitTemplateLiteralExpr(this, context);
+  }
+
+  override clone(): TemplateLiteralExpr {
+    return new TemplateLiteralExpr(
       this.elements.map((el) => el.clone()),
       this.expressions.map((expr) => expr.clone()),
     );
   }
 }
-export class TemplateLiteralElement {
+export class TemplateLiteralElementExpr extends Expression {
   rawText: string;
+
   constructor(
     public text: string,
-    public sourceSpan?: ParseSourceSpan,
+    sourceSpan?: ParseSourceSpan | null,
     rawText?: string,
   ) {
+    super(STRING_TYPE, sourceSpan);
+
     // If `rawText` is not provided, try to extract the raw string from its
     // associated `sourceSpan`. If that is also not available, "fake" the raw
     // string instead by escaping the following control sequences:
@@ -685,8 +702,22 @@ export class TemplateLiteralElement {
       rawText ?? sourceSpan?.toString() ?? escapeForTemplateLiteral(escapeSlashes(text));
   }
 
-  clone(): TemplateLiteralElement {
-    return new TemplateLiteralElement(this.text, this.sourceSpan, this.rawText);
+  override visitExpression(visitor: ExpressionVisitor, context: any) {
+    return visitor.visitTemplateLiteralElementExpr(this, context);
+  }
+
+  override isEquivalent(e: Expression): boolean {
+    return (
+      e instanceof TemplateLiteralElementExpr && e.text === this.text && e.rawText === this.rawText
+    );
+  }
+
+  override isConstant(): boolean {
+    return true;
+  }
+
+  override clone(): TemplateLiteralElementExpr {
+    return new TemplateLiteralElementExpr(this.text, this.sourceSpan, this.rawText);
   }
 }
 
@@ -1383,7 +1414,9 @@ export interface ExpressionVisitor {
   visitWriteKeyExpr(expr: WriteKeyExpr, context: any): any;
   visitWritePropExpr(expr: WritePropExpr, context: any): any;
   visitInvokeFunctionExpr(ast: InvokeFunctionExpr, context: any): any;
-  visitTaggedTemplateExpr(ast: TaggedTemplateExpr, context: any): any;
+  visitTaggedTemplateLiteralExpr(ast: TaggedTemplateLiteralExpr, context: any): any;
+  visitTemplateLiteralExpr(ast: TemplateLiteralExpr, context: any): any;
+  visitTemplateLiteralElementExpr(ast: TemplateLiteralElementExpr, context: any): any;
   visitInstantiateExpr(ast: InstantiateExpr, context: any): any;
   visitLiteralExpr(ast: LiteralExpr, context: any): any;
   visitLocalizedString(ast: LocalizedString, context: any): any;
@@ -1634,9 +1667,9 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
     this.visitAllExpressions(ast.args, context);
     return this.visitExpression(ast, context);
   }
-  visitTaggedTemplateExpr(ast: TaggedTemplateExpr, context: any): any {
+  visitTaggedTemplateLiteralExpr(ast: TaggedTemplateLiteralExpr, context: any): any {
     ast.tag.visitExpression(this, context);
-    this.visitAllExpressions(ast.template.expressions, context);
+    ast.template.visitExpression(this, context);
     return this.visitExpression(ast, context);
   }
   visitInstantiateExpr(ast: InstantiateExpr, context: any): any {
@@ -1709,6 +1742,14 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
   }
   visitCommaExpr(ast: CommaExpr, context: any): any {
     this.visitAllExpressions(ast.parts, context);
+    return this.visitExpression(ast, context);
+  }
+  visitTemplateLiteralExpr(ast: TemplateLiteralExpr, context: any) {
+    this.visitAllExpressions(ast.elements, context);
+    this.visitAllExpressions(ast.expressions, context);
+    return this.visitExpression(ast, context);
+  }
+  visitTemplateLiteralElementExpr(ast: TemplateLiteralElementExpr, context: any) {
     return this.visitExpression(ast, context);
   }
   visitAllExpressions(exprs: Expression[], context: any): void {
@@ -1865,11 +1906,11 @@ export function ifStmt(
 
 export function taggedTemplate(
   tag: Expression,
-  template: TemplateLiteral,
+  template: TemplateLiteralExpr,
   type?: Type | null,
   sourceSpan?: ParseSourceSpan | null,
-): TaggedTemplateExpr {
-  return new TaggedTemplateExpr(tag, template, type, sourceSpan);
+): TaggedTemplateLiteralExpr {
+  return new TaggedTemplateLiteralExpr(tag, template, type, sourceSpan);
 }
 
 export function literal(
