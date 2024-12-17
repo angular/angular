@@ -136,7 +136,7 @@ export interface TDeferBlockDetails {
   providers: Provider[] | null;
 
   /**
-   * List of hydrate triggers for a given block
+   * Set of hydrate triggers for a given block.
    */
   hydrateTriggers: Map<DeferBlockTrigger, HydrateTriggerDetails | null> | null;
 

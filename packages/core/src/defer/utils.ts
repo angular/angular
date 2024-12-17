@@ -15,7 +15,9 @@ import {assertEqual, throwError} from '../util/assert';
 
 import {
   DeferBlockState,
+  DeferBlockTrigger,
   DeferDependenciesLoadingState,
+  HydrateTimerTriggerDetails,
   LDeferBlockDetails,
   LOADING_AFTER_SLOT,
   MINIMUM_SLOT,
@@ -193,4 +195,18 @@ export function trackTriggerForDebugging(tView: TView, tNode: TNode, textReprese
   tDetails.debug ??= {};
   tDetails.debug.triggers ??= new Set();
   tDetails.debug.triggers.add(textRepresentation);
+}
+
+/**
+ * Registers trigger information that would be needed for serialization during the SSR.
+ */
+export function trackTriggerForSerialization(
+  tView: TView,
+  tNode: TNode,
+  trigger: DeferBlockTrigger,
+  details: HydrateTimerTriggerDetails | null,
+) {
+  const tDetails = getTDeferBlockDetails(tView, tNode);
+  tDetails.hydrateTriggers ??= new Map();
+  tDetails.hydrateTriggers.set(trigger, details);
 }

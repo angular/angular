@@ -49,13 +49,13 @@ import {
   setLDeferBlockDetails,
   setTDeferBlockDetails,
   trackTriggerForDebugging,
+  trackTriggerForSerialization,
 } from './utils';
 import {DEHYDRATED_BLOCK_REGISTRY, DehydratedBlockRegistry} from './registry';
 import {assertIncrementalHydrationIsConfigured, assertSsrIdDefined} from '../hydration/utils';
 import {ɵɵdeferEnableTimerScheduling, renderPlaceholder} from './rendering';
 
 import {
-  getHydrateTriggers,
   triggerHydrationFromBlockName,
   scheduleDelayedHydrating,
   scheduleDelayedPrefetching,
@@ -256,21 +256,21 @@ export function ɵɵdeferPrefetchWhen(rawValue: unknown) {
  * @codeGenApi
  */
 export function ɵɵdeferHydrateWhen(rawValue: unknown) {
+  const tView = getTView();
   const lView = getLView();
   const tNode = getSelectedTNode();
 
   if (ngDevMode) {
-    trackTriggerForDebugging(lView[TVIEW], tNode, 'hydrate when <expression>');
+    trackTriggerForDebugging(tView, tNode, 'hydrate when <expression>');
+  }
+
+  if (typeof ngServerMode !== 'undefined' && ngServerMode) {
+    trackTriggerForSerialization(tView, tNode, DeferBlockTrigger.When, null);
   }
 
   if (!shouldAttachTrigger(TriggerType.Hydrate, lView, tNode)) return;
 
-  // TODO(incremental-hydration): audit all defer instructions to reduce unnecessary work by
-  // moving function calls inside their relevant control flow blocks
   const bindingIndex = nextBindingIndex();
-  const tView = getTView();
-  const hydrateTriggers = getHydrateTriggers(tView, tNode);
-  hydrateTriggers.set(DeferBlockTrigger.When, null);
 
   if (bindingUpdated(lView, bindingIndex, rawValue)) {
     if (typeof ngServerMode !== 'undefined' && ngServerMode) {
@@ -302,17 +302,19 @@ export function ɵɵdeferHydrateWhen(rawValue: unknown) {
  * @codeGenApi
  */
 export function ɵɵdeferHydrateNever() {
+  const tView = getTView();
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
   if (ngDevMode) {
-    trackTriggerForDebugging(lView[TVIEW], tNode, 'hydrate never');
+    trackTriggerForDebugging(tView, tNode, 'hydrate never');
+  }
+
+  if (typeof ngServerMode !== 'undefined' && ngServerMode) {
+    trackTriggerForSerialization(tView, tNode, DeferBlockTrigger.Never, null);
   }
 
   if (!shouldAttachTrigger(TriggerType.Hydrate, lView, tNode)) return;
-
-  const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
-  hydrateTriggers.set(DeferBlockTrigger.Never, null);
 
   if (typeof ngServerMode !== 'undefined' && ngServerMode) {
     // We are on the server and SSR for defer blocks is enabled.
@@ -359,17 +361,19 @@ export function ɵɵdeferPrefetchOnIdle() {
  * @codeGenApi
  */
 export function ɵɵdeferHydrateOnIdle() {
+  const tView = getTView();
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
   if (ngDevMode) {
-    trackTriggerForDebugging(lView[TVIEW], tNode, 'hydrate on idle');
+    trackTriggerForDebugging(tView, tNode, 'hydrate on idle');
+  }
+
+  if (typeof ngServerMode !== 'undefined' && ngServerMode) {
+    trackTriggerForSerialization(tView, tNode, DeferBlockTrigger.Idle, null);
   }
 
   if (!shouldAttachTrigger(TriggerType.Hydrate, lView, tNode)) return;
-
-  const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
-  hydrateTriggers.set(DeferBlockTrigger.Idle, null);
 
   if (typeof ngServerMode !== 'undefined' && ngServerMode) {
     // We are on the server and SSR for defer blocks is enabled.
@@ -430,17 +434,19 @@ export function ɵɵdeferPrefetchOnImmediate() {
  * @codeGenApi
  */
 export function ɵɵdeferHydrateOnImmediate() {
+  const tView = getTView();
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
   if (ngDevMode) {
-    trackTriggerForDebugging(lView[TVIEW], tNode, 'hydrate on immediate');
+    trackTriggerForDebugging(tView, tNode, 'hydrate on immediate');
+  }
+
+  if (typeof ngServerMode !== 'undefined' && ngServerMode) {
+    trackTriggerForSerialization(tView, tNode, DeferBlockTrigger.Immediate, null);
   }
 
   if (!shouldAttachTrigger(TriggerType.Hydrate, lView, tNode)) return;
-
-  const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
-  hydrateTriggers.set(DeferBlockTrigger.Immediate, null);
 
   if (typeof ngServerMode !== 'undefined' && ngServerMode) {
     triggerDeferBlock(TriggerType.Hydrate, lView, tNode);
@@ -494,17 +500,19 @@ export function ɵɵdeferPrefetchOnTimer(delay: number) {
  * @codeGenApi
  */
 export function ɵɵdeferHydrateOnTimer(delay: number) {
+  const tView = getTView();
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
   if (ngDevMode) {
-    trackTriggerForDebugging(lView[TVIEW], tNode, `hydrate on timer(${delay}ms)`);
+    trackTriggerForDebugging(tView, tNode, `hydrate on timer(${delay}ms)`);
+  }
+
+  if (typeof ngServerMode !== 'undefined' && ngServerMode) {
+    trackTriggerForSerialization(tView, tNode, DeferBlockTrigger.Timer, {delay});
   }
 
   if (!shouldAttachTrigger(TriggerType.Hydrate, lView, tNode)) return;
-
-  const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
-  hydrateTriggers.set(DeferBlockTrigger.Timer, {delay});
 
   if (typeof ngServerMode !== 'undefined' && ngServerMode) {
     // We are on the server and SSR for defer blocks is enabled.
@@ -591,17 +599,19 @@ export function ɵɵdeferPrefetchOnHover(triggerIndex: number, walkUpTimes?: num
  * @codeGenApi
  */
 export function ɵɵdeferHydrateOnHover() {
+  const tView = getTView();
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
   if (ngDevMode) {
-    trackTriggerForDebugging(lView[TVIEW], tNode, 'hydrate on hover');
+    trackTriggerForDebugging(tView, tNode, 'hydrate on hover');
+  }
+
+  if (typeof ngServerMode !== 'undefined' && ngServerMode) {
+    trackTriggerForSerialization(tView, tNode, DeferBlockTrigger.Hover, null);
   }
 
   if (!shouldAttachTrigger(TriggerType.Hydrate, lView, tNode)) return;
-
-  const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
-  hydrateTriggers.set(DeferBlockTrigger.Hover, null);
 
   if (typeof ngServerMode !== 'undefined' && ngServerMode) {
     // We are on the server and SSR for defer blocks is enabled.
@@ -688,17 +698,19 @@ export function ɵɵdeferPrefetchOnInteraction(triggerIndex: number, walkUpTimes
  * @codeGenApi
  */
 export function ɵɵdeferHydrateOnInteraction() {
+  const tView = getTView();
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
   if (ngDevMode) {
-    trackTriggerForDebugging(lView[TVIEW], tNode, 'hydrate on interaction');
+    trackTriggerForDebugging(tView, tNode, 'hydrate on interaction');
+  }
+
+  if (typeof ngServerMode !== 'undefined' && ngServerMode) {
+    trackTriggerForSerialization(tView, tNode, DeferBlockTrigger.Interaction, null);
   }
 
   if (!shouldAttachTrigger(TriggerType.Hydrate, lView, tNode)) return;
-
-  const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
-  hydrateTriggers.set(DeferBlockTrigger.Interaction, null);
 
   if (typeof ngServerMode !== 'undefined' && ngServerMode) {
     // We are on the server and SSR for defer blocks is enabled.
@@ -785,17 +797,19 @@ export function ɵɵdeferPrefetchOnViewport(triggerIndex: number, walkUpTimes?: 
  * @codeGenApi
  */
 export function ɵɵdeferHydrateOnViewport() {
+  const tView = getTView();
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
   if (ngDevMode) {
-    trackTriggerForDebugging(lView[TVIEW], tNode, 'hydrate on viewport');
+    trackTriggerForDebugging(tView, tNode, 'hydrate on viewport');
+  }
+
+  if (typeof ngServerMode !== 'undefined' && ngServerMode) {
+    trackTriggerForSerialization(tView, tNode, DeferBlockTrigger.Viewport, null);
   }
 
   if (!shouldAttachTrigger(TriggerType.Hydrate, lView, tNode)) return;
-
-  const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
-  hydrateTriggers.set(DeferBlockTrigger.Viewport, null);
 
   if (typeof ngServerMode !== 'undefined' && ngServerMode) {
     // We are on the server and SSR for defer blocks is enabled.
