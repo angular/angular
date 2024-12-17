@@ -49,8 +49,10 @@ import {
   ThisReceiver,
   Unary,
   VariableBinding,
+  TemplateLiteral,
+  TemplateLiteralElement,
 } from './ast';
-import {EOF, Lexer, Token, TokenType} from './lexer';
+import {EOF, Lexer, StringTokenKind, Token, TokenType} from './lexer';
 
 export interface InterpolationPiece {
   text: string;
@@ -1037,7 +1039,11 @@ class _ParseAST {
       const value = this.next.toNumber();
       this.advance();
       return new LiteralPrimitive(this.span(start), this.sourceSpan(start), value);
-    } else if (this.next.isString()) {
+    } else if (this.next.isTemplateLiteralEnd()) {
+      return this.parseNoInterpolationTemplateLiteral(start);
+    } else if (this.next.isTemplateLiteralPart()) {
+      return this.parseTemplateLiteral();
+    } else if (this.next.isString() && this.next.kind === StringTokenKind.Plain) {
       const literalValue = this.next.toString();
       this.advance();
       return new LiteralPrimitive(this.span(start), this.sourceSpan(start), literalValue);
@@ -1398,6 +1404,55 @@ class _ParseAST {
     this.consumeStatementTerminator();
     const sourceSpan = new AbsoluteSourceSpan(spanStart, this.currentAbsoluteOffset);
     return new VariableBinding(sourceSpan, key, value);
+  }
+
+  private parseNoInterpolationTemplateLiteral(start: number): AST {
+    const text = this.next.strValue;
+    this.advance();
+    const span = this.span(start);
+    const sourceSpan = this.sourceSpan(start);
+    return new TemplateLiteral(
+      span,
+      sourceSpan,
+      [new TemplateLiteralElement(span, sourceSpan, text)],
+      [],
+    );
+  }
+
+  private parseTemplateLiteral(): AST {
+    const start = this.inputIndex;
+    const elements: TemplateLiteralElement[] = [];
+    const expressions: AST[] = [];
+
+    while (this.next !== EOF) {
+      const token = this.next;
+
+      if (token.isTemplateLiteralPart() || token.isTemplateLiteralEnd()) {
+        elements.push(
+          new TemplateLiteralElement(
+            this.span(this.inputIndex),
+            this.sourceSpan(this.inputIndex),
+            token.strValue,
+          ),
+        );
+        this.advance();
+        if (token.isTemplateLiteralEnd()) {
+          break;
+        }
+      } else if (token.isTemplateLiteralInterpolationStart()) {
+        this.advance();
+        const expression = this.parsePipe();
+        if (expression instanceof EmptyExpr) {
+          this.error('Template literal interpolation cannot be empty');
+        } else {
+          expressions.push(expression);
+        }
+      } else {
+        this.advance();
+      }
+    }
+
+    return new TemplateLiteral(this.span(start), this.sourceSpan(start), elements, expressions);
   }
 
   /**

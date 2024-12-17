@@ -30,6 +30,8 @@ import {
   SafeKeyedRead,
   SafePropertyRead,
   Unary,
+  TemplateLiteral,
+  TemplateLiteralElement,
 } from '../../../src/expression_parser/ast';
 
 import {unparse} from './unparser';
@@ -139,6 +141,14 @@ class ASTValidator extends RecursiveAstVisitor {
 
   override visitSafeCall(ast: SafeCall, context: any): any {
     this.validate(ast, () => super.visitSafeCall(ast, context));
+  }
+
+  override visitTemplateLiteral(ast: TemplateLiteral, context: any): any {
+    this.validate(ast, () => super.visitTemplateLiteral(ast, context));
+  }
+
+  override visitTemplateLiteralElement(ast: TemplateLiteralElement, context: any): any {
+    this.validate(ast, () => super.visitTemplateLiteralElement(ast, context));
   }
 }
 

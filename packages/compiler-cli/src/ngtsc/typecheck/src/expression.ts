@@ -33,6 +33,8 @@ import {
   SafePropertyRead,
   ThisReceiver,
   Unary,
+  TemplateLiteral,
+  TemplateLiteralElement,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -445,6 +447,14 @@ class AstTranslator implements AstVisitor {
     return node;
   }
 
+  visitTemplateLiteral(ast: TemplateLiteral, context: any) {
+    throw new Error('Method not implemented');
+  }
+
+  visitTemplateLiteralElement(ast: TemplateLiteralElement, context: any) {
+    throw new Error('Method not implemented');
+  }
+
   private convertToSafeCall(
     ast: Call | SafeCall,
     expr: ts.Expression,
@@ -565,6 +575,12 @@ class VeSafeLhsInferenceBugDetector implements AstVisitor {
     return false;
   }
   visitSafeKeyedRead(ast: SafeKeyedRead): boolean {
+    return false;
+  }
+  visitTemplateLiteral(ast: TemplateLiteral, context: any) {
+    return false;
+  }
+  visitTemplateLiteralElement(ast: TemplateLiteralElement, context: any) {
     return false;
   }
 }
