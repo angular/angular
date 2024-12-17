@@ -33,6 +33,8 @@ import {
   SafePropertyRead,
   ThisReceiver,
   Unary,
+  TemplateLiteralElement,
+  TemplateLiteral,
 } from '../../../src/expression_parser/ast';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../src/ml_parser/defaults';
 
@@ -213,6 +215,24 @@ class Unparser implements AstVisitor {
     this._expression += '?.[';
     this._visit(ast.key);
     this._expression += ']';
+  }
+
+  visitTemplateLiteral(ast: TemplateLiteral, context: any) {
+    this._expression += '`';
+    for (let i = 0; i < ast.elements.length; i++) {
+      this._visit(ast.elements[i]);
+      const expression = i < ast.expressions.length ? ast.expressions[i] : null;
+      if (expression !== null) {
+        this._expression += '${';
+        this._visit(expression);
+        this._expression += '}';
+      }
+    }
+    this._expression += '`';
+  }
+
+  visitTemplateLiteralElement(ast: TemplateLiteralElement, context: any) {
+    this._expression += ast.text;
   }
 
   private _visit(ast: AST) {
