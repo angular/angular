@@ -12,6 +12,7 @@ import {
   InjectionToken,
   makeEnvironmentProviders,
   Provider,
+  ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 
 import {HttpBackend, HttpHandler} from './backend';
@@ -38,6 +39,7 @@ import {
   XSRF_HEADER_NAME,
   xsrfInterceptorFn,
 } from './xsrf';
+import {RuntimeErrorCode} from './errors';
 
 /**
  * Identifies a particular kind of `HttpFeature`.
@@ -73,6 +75,17 @@ function makeHttpFeature<KindT extends HttpFeatureKind>(
     ɵproviders: providers,
   };
 }
+
+/**
+ * Token to track registered interceptors.
+ *  @publicApi
+ */
+export const CHECKED_INTERCEPTORS = new InjectionToken<Set<HttpInterceptorFn>>(
+  ngDevMode ? 'CHECKED_INTERCEPTORS' : '',
+  {
+    factory: () => new Set<HttpInterceptorFn>(), // Initialize an empty set for tracking.
+  },
+);
 
 /**
  * Configures Angular's `HttpClient` service to be available for injection.
@@ -163,7 +176,11 @@ export function withInterceptors(
     interceptorFns.map((interceptorFn) => {
       return {
         provide: HTTP_INTERCEPTOR_FNS,
-        useValue: interceptorFn,
+        useFactory: () => {
+          const checkedInterceptors = inject(CHECKED_INTERCEPTORS);
+          checkedInterceptors.add(interceptorFn);
+          return interceptorFn;
+        },
         multi: true,
       };
     }),
@@ -173,6 +190,21 @@ export function withInterceptors(
 const LEGACY_INTERCEPTOR_FN = new InjectionToken<HttpInterceptorFn>(
   ngDevMode ? 'LEGACY_INTERCEPTOR_FN' : '',
 );
+
+/**
+ * Ensures that a required interceptor is registered.
+ *  @publicApi
+ */
+export function assertInterceptorRegistered(interceptor: HttpInterceptorFn): void {
+  const checkedInterceptors = inject(CHECKED_INTERCEPTORS);
+  if (!checkedInterceptors.has(interceptor)) {
+    throw new RuntimeError(
+      RuntimeErrorCode.MISSING_INTERCEPTOR,
+      ngDevMode &&
+        `Required interceptor is not registered. Please add it using withInterceptors().`,
+    );
+  }
+}
 
 /**
  * Includes class-based interceptors configured using a multi-provider in the current injector into
