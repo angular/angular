@@ -145,6 +145,14 @@ describe('type check blocks', () => {
     expect(tcb(TEMPLATE)).toContain('_t2(1)');
   });
 
+  it('should handle template literals', () => {
+    expect(tcb('{{ `hello world` }}')).toContain('"" + (`hello world`);');
+    expect(tcb('{{ `hello \\${name}!!!` }}')).toContain('"" + (`hello \\${name}!!!`);');
+    expect(tcb('{{ `${a} - ${b} - ${c}` }}')).toContain(
+      '"" + (`${((this).a)} - ${((this).b)} - ${((this).c)}`);',
+    );
+  });
+
   describe('type constructors', () => {
     it('should handle missing property bindings', () => {
       const TEMPLATE = `<div dir [inputA]="foo"></div>`;
