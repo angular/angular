@@ -182,7 +182,7 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
     );
   }
 
-  visitTaggedTemplateExpr(ast: o.TaggedTemplateExpr, context: Context): TExpression {
+  visitTaggedTemplateLiteralExpr(ast: o.TaggedTemplateLiteralExpr, context: Context): TExpression {
     return this.setSourceMapRange(
       this.createTaggedTemplateExpression(ast.tag.visitExpression(this, context), {
         elements: ast.template.elements.map((e) =>
@@ -431,6 +431,14 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
 
   visitCommaExpr(ast: o.CommaExpr, context: Context): never {
     throw new Error('Method not implemented.');
+  }
+
+  visitTemplateLiteralExpr(ast: o.TemplateLiteralExpr, context: Context): TExpression {
+    throw new Error('Method not implemented');
+  }
+
+  visitTemplateLiteralElementExpr(ast: o.TemplateLiteralElementExpr, context: any) {
+    throw new Error('Method not implemented');
   }
 
   visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, _context: Context): any {
