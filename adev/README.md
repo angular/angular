@@ -36,7 +36,7 @@ And if you're new, check out one of our issues labeled as <kbd>[help wanted](htt
 
 ### Code of Conduct
 
-Help us keep Angular open and inclusive. Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md).
+Help us keep Angular open and inclusive. Please read and follow our [Code of Conduct](/CODE_OF_CONDUCT.md).
 
 ## FAQs
 
