@@ -444,35 +444,32 @@ function populateHydratingStateForQueue(registry: DehydratedBlockRegistry, queue
 
 // Waits for the next render cycle to complete
 function nextRender(injector: Injector): Promise<void> {
-  let resolve: VoidFunction;
-  const promise = new Promise<void>((resolveFn) => {
-    resolve = resolveFn;
-  });
-  afterNextRender(() => resolve(), {injector});
-  return promise;
+  return new Promise<void>((resolveFn) => afterNextRender(resolveFn, {injector}));
 }
 
-function triggerResourceLoadingForHydration(
+async function triggerResourceLoadingForHydration(
   dehydratedBlockId: string,
   dehydratedBlockRegistry: DehydratedBlockRegistry,
-) {
-  let resolve: Function;
-  const promise = new Promise((resolveFn) => (resolve = resolveFn));
+): Promise<void> {
   const deferBlock = dehydratedBlockRegistry.get(dehydratedBlockId);
   // Since we trigger hydration for nested defer blocks in a sequence (parent -> child),
   // there is a chance that a defer block may not be present at hydration time. For example,
   // when a nested block was in an `@if` condition, which has changed.
-  if (deferBlock !== null) {
-    const {tNode, lView} = deferBlock;
-    const lDetails = getLDeferBlockDetails(lView, tNode);
-    onDeferBlockCompletion(lDetails, () => resolve());
-    triggerDeferBlock(TriggerType.Hydrate, lView, tNode);
-
+  if (deferBlock === null) {
     // TODO(incremental-hydration): handle the cleanup for cases when
     // defer block is no longer present during hydration (e.g. `@if` condition
     // has changed during hydration/rendering).
+
+    return;
   }
-  return promise;
+
+  const {tNode, lView} = deferBlock;
+  const lDetails = getLDeferBlockDetails(lView, tNode);
+
+  return new Promise<void>((resolve) => {
+    onDeferBlockCompletion(lDetails, resolve);
+    triggerDeferBlock(TriggerType.Hydrate, lView, tNode);
+  });
 }
 
 /**
@@ -490,7 +487,7 @@ function onDeferBlockCompletion(lDetails: LDeferBlockDetails, callback: VoidFunc
  * Determines whether specific trigger types should be attached during an instruction firing
  * to ensure the proper triggers for a given type are used.
  */
-export function shouldAttachTrigger(triggerType: TriggerType, lView: LView, tNode: TNode) {
+export function shouldAttachTrigger(triggerType: TriggerType, lView: LView, tNode: TNode): boolean {
   if (triggerType === TriggerType.Regular) {
     return shouldAttachRegularTrigger(lView, tNode);
   } else if (triggerType === TriggerType.Hydrate) {
@@ -506,7 +503,7 @@ export function shouldAttachTrigger(triggerType: TriggerType, lView: LView, tNod
  * `deferOn*` and `deferHydrateOn*` triggers, to make sure only one of the trigger
  * types is active for a block with the current state.
  */
-function shouldAttachRegularTrigger(lView: LView, tNode: TNode) {
+function shouldAttachRegularTrigger(lView: LView, tNode: TNode): boolean {
   const injector = lView[INJECTOR];
 
   const tDetails = getTDeferBlockDetails(lView[TVIEW], tNode);
