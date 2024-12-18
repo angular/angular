@@ -46,7 +46,7 @@ Angular supports binding dynamic values into DOM properties with square brackets
 ```angular-ts
 @Component({
   /*...*/
-  // Set the `disabled` property of the button based on the value of `isAccountDisabled`.
+  // Set the `disabled` property of the button based on the value of `isValidUserId`.
   template: `<button [disabled]="isValidUserId()">Save changes</button>`,
 })
 export class UserProfile {
