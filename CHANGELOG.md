@@ -1,3 +1,17 @@
+<a name="19.0.5"></a>
+# 19.0.5 (2024-12-18)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3793218e77](https://github.com/angular/angular/commit/3793218e77d699ddfae95a53ad048d4bfb9f042c) | fix | avoid triggering `on timer` and `on idle` on the server ([#59177](https://github.com/angular/angular/pull/59177)) |
+| [cfc96ed82c](https://github.com/angular/angular/commit/cfc96ed82cbe958ea7548718f76a2e7a3d6826a9) | fix | Fix nested timer serialization ([#59173](https://github.com/angular/angular/pull/59173)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9085a8fbd8](https://github.com/angular/angular/commit/9085a8fbd8cb61e3ce45adfa9ca2e96ba0be6f62) | fix | Warn user when transfer state happens more than once ([#58935](https://github.com/angular/angular/pull/58935)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.1.0-next.3"></a>
 # 19.1.0-next.3 (2024-12-12)
 ### compiler-cli
