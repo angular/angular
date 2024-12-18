@@ -27,13 +27,13 @@ In the code editor:
 1.  Navigate to `src/app/housing-location/housing-location.component.ts`
 1.  In the template property of the `@Component` decorator, replace the existing HTML markup with the following code:
 
-        <docs-code header="Update HousingLocationComponent template" path="adev/src/content/tutorials/first-app/steps/08-ngFor/src/app/housing-location/housing-location.component.ts" visibleLines="[9,20]"/>
+<docs-code header="Update HousingLocationComponent template" path="adev/src/content/tutorials/first-app/steps/08-ngFor/src/app/housing-location/housing-location.component.ts" visibleLines="[9,20]"/>
 
-        In this updated template code you have used property binding to bind the `housingLocation.photo` to the `src` attribute. The `alt` attribute uses interpolation to give more context to the alt text of the image.
+  In this updated template code you have used property binding to bind the `housingLocation.photo` to the `src` attribute. The `alt` attribute uses interpolation to give more context to the alt text of the image.
 
-        You use interpolation to include the values for `name`, `city` and `state` of the `housingLocation` property.
+  You use interpolation to include the values for `name`, `city` and `state` of the `housingLocation` property.
 
-    </docs-step>
+</docs-step>
 
 <docs-step title="Confirm the changes render in the browser">
 1.  Save all changes.
