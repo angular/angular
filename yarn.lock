@@ -9792,11 +9792,6 @@ grpc-gcp@^1.0.0:
   dependencies:
     "@grpc/grpc-js" "^1.7.0"
 
-gsap@^3.12.3:
-  version "3.12.7"
-  resolved "https://registry.yarnpkg.com/gsap/-/gsap-3.12.7.tgz#1b690def901ac9b21d4909f39c2b52418154463d"
-  integrity sha512-V4GsyVamhmKefvcAKaoy0h6si0xX7ogwBoBSs2CTJwt7luW0oZzC0LhdkyuKV8PJAXr7Yaj8pMjCKD4GJ+eEMg==
-
 gtoken@^7.0.0:
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/gtoken/-/gtoken-7.1.0.tgz#d61b4ebd10132222817f7222b1e6064bd463fc26"
@@ -13104,11 +13099,6 @@ obuf@^1.0.0, obuf@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.2.tgz#09bea3343d41859ebd446292d11c9d4db619084e"
   integrity sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==
-
-ogl@^1.0.3:
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/ogl/-/ogl-1.0.10.tgz#88d9a641eb41e126398950da3c8aec61ba337d8b"
-  integrity sha512-8zXEqktV0CsvYgqvlcDSITj5/zIbZanU2Ox8qDw6FByJ/AqpfBylRM2fXn0/cKZTN8ydOUsJlakKQuSCOjH/lQ==
 
 on-finished@2.4.1, on-finished@^2.2.0, on-finished@^2.4.1:
   version "2.4.1"
