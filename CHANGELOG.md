@@ -1,3 +1,19 @@
+<a name="19.1.0-next.4"></a>
+# 19.1.0-next.4 (2024-12-18)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [57f3550219](https://github.com/angular/angular/commit/57f3550219f2a57c7c26c9183e48ee66845e0439) | feat | add utility for resolving defer block information to ng global ([#59184](https://github.com/angular/angular/pull/59184)) |
+| [22f191f763](https://github.com/angular/angular/commit/22f191f76339a08bb8f0f2dfbc60dde0f2e38e73) | feat | extend the set of profiler events ([#59183](https://github.com/angular/angular/pull/59183)) |
+| [1f4ff2fa36](https://github.com/angular/angular/commit/1f4ff2fa36f5d6240cbc4a40839d3d89501519d8) | fix | avoid triggering `on timer` and `on idle` on the server ([#59177](https://github.com/angular/angular/pull/59177)) |
+| [cf89f14766](https://github.com/angular/angular/commit/cf89f14766b0ed0204f7012d44a4732fccb35398) | fix | Fix nested timer serialization ([#59173](https://github.com/angular/angular/pull/59173)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [300b141cc8](https://github.com/angular/angular/commit/300b141cc8652fd714b02f05c943cb79167ea844) | fix | Warn user when transfer state happens more than once ([#58935](https://github.com/angular/angular/pull/58935)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.0.5"></a>
 # 19.0.5 (2024-12-18)
 ### core
