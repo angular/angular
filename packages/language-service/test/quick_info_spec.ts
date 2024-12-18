@@ -402,6 +402,14 @@ describe('quick info', () => {
           expectedDisplayString: '(property) name: "name"',
         });
       });
+
+      it('should work for template literal interpolations', () => {
+        expectQuickInfo({
+          templateOverride: `<div *ngFor="let name of constNames">{{\`Hello \${na¦me}\`}}</div>`,
+          expectedSpanText: 'name',
+          expectedDisplayString: '(variable) name: { readonly name: "name"; }',
+        });
+      });
     });
 
     describe('pipes', () => {

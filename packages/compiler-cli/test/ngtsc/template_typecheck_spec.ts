@@ -3352,6 +3352,58 @@ runInEachFileSystem(() => {
       expect(diags.length).toBe(0);
     });
 
+    describe('template literals', () => {
+      it('should treat template literals as strings', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: 'Result: {{getValue(\`foo\`)}}',
+            standalone: true,
+          })
+          export class Main {
+            getValue(value: number) {
+              return value;
+            }
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          `Argument of type 'string' is not assignable to parameter of type 'number'.`,
+        );
+      });
+
+      it('should check interpolations inside template literals', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: '{{\`Hello \${getName(123)}\`}}',
+            standalone: true,
+          })
+          export class Main {
+            getName(value: string) {
+              return value;
+            }
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        );
+      });
+    });
+
     describe('legacy schema checking with the DOM schema', () => {
       beforeEach(() => {
         env.tsconfig({fullTemplateTypeCheck: false});
