@@ -69,6 +69,8 @@ These steps are not necessary to implement `ngClass`.
 
 ## Setting inline styles with `NgStyle`
 
+HELPFUL: To add or remove a _single_ style, use [style bindings](guide/templates/binding#css-class-and-style-property-bindings) rather than `NgStyle`.
+
 ### Import `NgStyle` in the component
 
 To use `NgStyle`, add it to the component's `imports` list.
