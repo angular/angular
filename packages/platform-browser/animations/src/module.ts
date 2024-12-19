@@ -17,6 +17,9 @@ import {BROWSER_ANIMATIONS_PROVIDERS, BROWSER_NOOP_ANIMATIONS_PROVIDERS} from '.
 
 /**
  * Object used to configure the behavior of {@link BrowserAnimationsModule}
+ *
+ * @deprecated use the `provideNoopAnimations` provider function instead if you want to disable animations.
+ *
  * @publicApi
  */
 export interface BrowserAnimationsModuleConfig {
@@ -30,6 +33,9 @@ export interface BrowserAnimationsModuleConfig {
 /**
  * Exports `BrowserModule` with additional dependency-injection providers
  * for use with animations. See [Animations](guide/animations).
+ *
+ * @deprecated Use the `provideAnimations` or `provideAnimationsAsync` provider functions instead.
+ *
  * @publicApi
  */
 @NgModule({
@@ -96,6 +102,11 @@ export function provideAnimations(): Provider[] {
 
 /**
  * A null player that must be imported to allow disabling of animations.
+ *
+ * You can also use the `provideNoopAnimations` provider function to disable animations.
+ *
+ * @see  {@link provideNoopAnimations}
+ *
  * @publicApi
  */
 @NgModule({

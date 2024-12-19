@@ -12,7 +12,7 @@ import { Provider } from '@angular/core';
 
 export { ANIMATION_MODULE_TYPE }
 
-// @public
+// @public @deprecated
 export class BrowserAnimationsModule {
     static withConfig(config: BrowserAnimationsModuleConfig): ModuleWithProviders<BrowserAnimationsModule>;
     // (undocumented)
@@ -23,7 +23,7 @@ export class BrowserAnimationsModule {
     static ɵmod: i0.ɵɵNgModuleDeclaration<BrowserAnimationsModule, never, never, [typeof i1.BrowserModule]>;
 }
 
-// @public
+// @public @deprecated
 export interface BrowserAnimationsModuleConfig {
     disableAnimations?: boolean;
 }
