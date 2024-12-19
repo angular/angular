@@ -10,6 +10,7 @@ import {DOCUMENT} from '@angular/common';
 import {
   ANIMATION_MODULE_TYPE,
   EnvironmentProviders,
+  InjectionToken,
   makeEnvironmentProviders,
   NgZone,
   RendererFactory2,
@@ -18,6 +19,9 @@ import {
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 
 import {AsyncAnimationRendererFactory} from './async_animation_renderer';
+
+type AnimationsTypes = 'animations' | 'noop';
+const ANIMATIONS_TYPE_TOKEN = new InjectionToken<AnimationsTypes>('ANIMATIONS_TYPE');
 
 /**
  * Returns the set of dependency-injection providers
@@ -42,25 +46,56 @@ import {AsyncAnimationRendererFactory} from './async_animation_renderer';
  * });
  * ```
  *
+ * You can also pass a function that returns the type of animations to use. This is useful if you want to
+ * dynamically set the animations type based on the current environment.
+ *
+ * ```typescript
+ * bootstrapApplication(RootComponent, {
+ *   providers: [
+ *     provideAnimationsAsync(() => {
+ *       const document = inject(DOCUMENT);
+ *       const disableAnimations = !('animate' in document.documentElement)
+ *         || (navigator && /iPhone OS (8|9|10|11|12|13)_/.test(navigator.userAgent));
+ *       return disableAnimations ? 'noop' : 'animations';
+ *     })
+ *   ]
+ * });
+ * ```
+ *
  * @param type pass `'noop'` as argument to disable animations.
  *
  * @publicApi
  */
 export function provideAnimationsAsync(
-  type: 'animations' | 'noop' = 'animations',
+  type: AnimationsTypes | (() => AnimationsTypes) = 'animations',
 ): EnvironmentProviders {
   performanceMarkFeature('NgAsyncAnimations');
   return makeEnvironmentProviders([
     {
-      provide: RendererFactory2,
-      useFactory: (doc: Document, renderer: DomRendererFactory2, zone: NgZone) => {
-        return new AsyncAnimationRendererFactory(doc, renderer, zone, type);
+      provide: ANIMATIONS_TYPE_TOKEN,
+      useFactory: () => {
+        if (typeof type === 'function') {
+          return type();
+        }
+        return type;
       },
-      deps: [DOCUMENT, DomRendererFactory2, NgZone],
     },
     {
       provide: ANIMATION_MODULE_TYPE,
-      useValue: type === 'noop' ? 'NoopAnimations' : 'BrowserAnimations',
+      useFactory: (type: string) => (type === 'noop' ? 'NoopAnimations' : 'BrowserAnimations'),
+      deps: [ANIMATIONS_TYPE_TOKEN],
+    },
+    {
+      provide: RendererFactory2,
+      useFactory: (
+        doc: Document,
+        renderer: DomRendererFactory2,
+        zone: NgZone,
+        type: AnimationsTypes,
+      ) => {
+        return new AsyncAnimationRendererFactory(doc, renderer, zone, type);
+      },
+      deps: [DOCUMENT, DomRendererFactory2, NgZone, ANIMATIONS_TYPE_TOKEN],
     },
   ]);
 }
