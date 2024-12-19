@@ -516,10 +516,11 @@ The following example uses `canActivateFn` to guard the route.
 
 ```ts
 export const yourGuardFunction: CanActivateFn = (
-    next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot) => {
-      // your  logic goes here
-  }
+  next: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot
+) => {
+  // your  logic goes here
+}
 ```
 
 In your routing module, use the appropriate property in your `routes` configuration.
