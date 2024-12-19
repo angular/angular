@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ng_module", "ng_package")
+load("//tools:defaults.bzl", "ng_module")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -13,27 +13,5 @@ ng_module(
     deps = [
         "//packages/core",
         "//packages/forms",
-    ],
-)
-
-ng_package(
-    name = "npm_package",
-    package_name = "@angular/forms/experimental",
-    srcs = ["package.json"],
-    tags = [
-        "release-with-framework",
-    ],
-    # Do not add more to this list.
-    # Dependencies on the full npm_package cause long re-builds.
-    visibility = [
-        "//adev:__pkg__",
-        "//integration:__subpackages__",
-        "//modules/ssr-benchmarks:__pkg__",
-        "//packages/compiler-cli/integrationtest:__pkg__",
-        "//packages/compiler-cli/test/diagnostics:__pkg__",
-        "//packages/language-service/test:__pkg__",
-    ],
-    deps = [
-        ":experimental",
     ],
 )
