@@ -33,7 +33,7 @@ export const setProfiler = (profiler: Profiler | null) => {
  *  execution context
  * @returns
  */
-export const profiler: Profiler = function (event, instance, hookOrListener) {
+export const profiler: Profiler = function (event, instance = null, hookOrListener) {
   if (profilerCallback != null /* both `null` and `undefined` */) {
     profilerCallback(event, instance, hookOrListener);
   }

@@ -160,5 +160,5 @@ export const enum ProfilerEvent {
  * Profiler function which the runtime will invoke before and after user code.
  */
 export interface Profiler {
-  (event: ProfilerEvent, instance: {} | null, hookOrListener?: (e?: any) => any): void;
+  (event: ProfilerEvent, instance?: {} | null, hookOrListener?: (e?: any) => any): void;
 }
