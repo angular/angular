@@ -24,6 +24,7 @@ import {
   afterNextRender,
   ANIMATION_MODULE_TYPE,
   Component,
+  ErrorHandler,
   inject,
   Injectable,
   Injector,
@@ -446,6 +447,26 @@ type AnimationBrowserModule = typeof import('@angular/animations/browser');
           expect((err as Error).message).toBe('SchedulingError');
         }
       });
+    });
+
+    it('should be able to inject the renderer factory in an ErrorHandler', async () => {
+      @Injectable({providedIn: 'root'})
+      class CustomErrorHandler {
+        renderer = inject(RendererFactory2).createRenderer(null, null);
+      }
+
+      @Component({template: ''})
+      class App {}
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          provideAnimationsAsync(),
+          {provide: ErrorHandler, useClass: CustomErrorHandler},
+        ],
+      });
+
+      expect(() => TestBed.createComponent(App)).not.toThrow();
     });
   });
 })();
