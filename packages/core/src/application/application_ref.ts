@@ -531,7 +531,7 @@ export class ApplicationRef {
     componentOrFactory: ComponentFactory<C> | Type<C>,
     rootSelectorOrNode?: string | any,
   ): ComponentRef<C> {
-    (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
+    (typeof ngDevMode === 'undefined' || ngDevMode) && warnIfDestroyed(this._destroyed);
     const isComponentFactory = componentOrFactory instanceof ComponentFactory;
     const initStatus = this._injector.get(ApplicationInitStatus);
 
@@ -610,7 +610,7 @@ export class ApplicationRef {
       return;
     }
 
-    (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
+    (typeof ngDevMode === 'undefined' || ngDevMode) && warnIfDestroyed(this._destroyed);
     if (this._runningTick) {
       throw new RuntimeError(
         RuntimeErrorCode.RECURSIVE_APPLICATION_REF_TICK,
@@ -768,7 +768,7 @@ export class ApplicationRef {
    * This will throw if the view is already attached to a ViewContainer.
    */
   attachView(viewRef: ViewRef): void {
-    (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
+    (typeof ngDevMode === 'undefined' || ngDevMode) && warnIfDestroyed(this._destroyed);
     const view = viewRef as InternalViewRef<unknown>;
     this._views.push(view);
     view.attachToAppRef(this);
@@ -778,7 +778,7 @@ export class ApplicationRef {
    * Detaches a view from dirty checking again.
    */
   detachView(viewRef: ViewRef): void {
-    (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
+    (typeof ngDevMode === 'undefined' || ngDevMode) && warnIfDestroyed(this._destroyed);
     const view = viewRef as InternalViewRef<unknown>;
     remove(this._views, view);
     view.detachFromAppRef();
@@ -829,7 +829,7 @@ export class ApplicationRef {
    * @returns A function which unregisters a listener.
    */
   onDestroy(callback: () => void): VoidFunction {
-    (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
+    (typeof ngDevMode === 'undefined' || ngDevMode) && warnIfDestroyed(this._destroyed);
     this._destroyListeners.push(callback);
     return () => remove(this._destroyListeners, callback);
   }
@@ -863,16 +863,16 @@ export class ApplicationRef {
   get viewCount() {
     return this._views.length;
   }
+}
 
-  private warnIfDestroyed() {
-    if ((typeof ngDevMode === 'undefined' || ngDevMode) && this._destroyed) {
-      console.warn(
-        formatRuntimeError(
-          RuntimeErrorCode.APPLICATION_REF_ALREADY_DESTROYED,
-          'This instance of the `ApplicationRef` has already been destroyed.',
-        ),
-      );
-    }
+function warnIfDestroyed(destroyed: boolean): void {
+  if (destroyed) {
+    console.warn(
+      formatRuntimeError(
+        RuntimeErrorCode.APPLICATION_REF_ALREADY_DESTROYED,
+        'This instance of the `ApplicationRef` has already been destroyed.',
+      ),
+    );
   }
 }
 
