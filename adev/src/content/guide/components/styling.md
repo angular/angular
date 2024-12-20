@@ -97,6 +97,9 @@ Shadow DOM in your application before enabling this option.
 This mode disables all style encapsulation for the component. Any styles associated with the
 component behave as global styles.
 
+Note: In `Emulated` and `ShadowDom` modes, Angular doesn't 100% guarantee that your component's styles will always override styles coming from outside it.
+It is assumed that these styles have the same specificity as your component's styles in case of collision.
+
 ## Defining styles in templates
 
 You can use the `<style>` element in a component's template to define additional styles. The
