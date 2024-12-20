@@ -34,7 +34,8 @@ const ANIMATION_PREFIX = '@';
 @Injectable()
 export class AsyncAnimationRendererFactory implements OnDestroy, RendererFactory2 {
   private _rendererFactoryPromise: Promise<AnimationRendererFactory> | null = null;
-  private readonly scheduler = inject(ChangeDetectionScheduler, {optional: true});
+  private scheduler: ChangeDetectionScheduler | null = null;
+  private readonly injector = inject(Injector);
   private readonly loadingSchedulerFn = inject(ɵASYNC_ANIMATION_LOADING_SCHEDULER_FN, {
     optional: true,
   });
@@ -143,6 +144,7 @@ export class AsyncAnimationRendererFactory implements OnDestroy, RendererFactory
           rendererType,
         );
         dynamicRenderer.use(animationRenderer);
+        this.scheduler ??= this.injector.get(ChangeDetectionScheduler, null, {optional: true});
         this.scheduler?.notify(NotificationSource.AsyncAnimationsLoaded);
       })
       .catch((e) => {
