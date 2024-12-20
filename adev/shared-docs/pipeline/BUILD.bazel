@@ -97,11 +97,24 @@ esbuild_esm_bundle(
     ],
 )
 
+esbuild_esm_bundle(
+    name = "navigation-bundle",
+    entry_point = "//adev/shared-docs/pipeline/navigation:index.ts",
+    output = "navigation.mjs",
+    platform = "node",
+    target = "es2022",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//adev/shared-docs/pipeline/navigation",
+    ],
+)
+
 exports_files([
     "_guides.bzl",
     "_stackblitz.bzl",
     "_playground.bzl",
     "_tutorial.bzl",
+    "_navigation.bzl",
     "BUILD.bazel",
 ])
 
@@ -158,5 +171,11 @@ nodejs_binary(
 nodejs_binary(
     name = "tutorial",
     entry_point = "//adev/shared-docs/pipeline:tutorial.mjs",
+    visibility = ["//visibility:public"],
+)
+
+nodejs_binary(
+    name = "navigation",
+    entry_point = "//adev/shared-docs/pipeline:navigation.mjs",
     visibility = ["//visibility:public"],
 )
