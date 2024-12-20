@@ -29,8 +29,6 @@ ts_library(
         "//adev/shared-docs/providers",
         "//packages/core",
         "//packages/router",
-        "@npm//@types/node",
-        "@npm//@webcontainer/api",
         "@npm//fflate",
     ],
 )
