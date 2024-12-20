@@ -24,6 +24,11 @@ You can also choose to write your styles in separate files:
 export class ProfilePhoto { }
 </docs-code>
 
+### Note
+
+The `styleUrl` property is supported in Angular 17 and later. For earlier versions of Angular, 
+use the `styleUrls` property to reference one or more external stylesheets.
+
 When Angular compiles your component, these styles are emitted with your component's JavaScript
 output. This means that component styles participate in the JavaScript module system. When you
 render an Angular component, the framework automatically includes its associated styles, even when
