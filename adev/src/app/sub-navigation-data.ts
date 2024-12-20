@@ -12,6 +12,8 @@ import {NavigationItem} from '@angular/docs';
 import FIRST_APP_TUTORIAL_NAV_DATA from '../../src/assets/tutorials/first-app/routes.json';
 import LEARN_ANGULAR_TUTORIAL_NAV_DATA from '../../src/assets/tutorials/learn-angular/routes.json';
 import DEFERRABLE_VIEWS_TUTORIAL_NAV_DATA from '../../src/assets/tutorials/deferrable-views/routes.json';
+import ERRORS_NAV_DATA from '../../src/assets/content/reference/errors/routes.json';
+import EXT_DIAGNOSTICS_NAV_DATA from '../../src/assets/content/reference/extended-diagnostics/routes.json';
 
 import {DefaultPage} from './core/enums/pages';
 import {getApiNavigationItems} from './features/references/helpers/manifest.helper';
@@ -1335,6 +1337,7 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         path: 'errors/NG8003',
         contentPath: 'reference/errors/NG8003',
       },
+      ...ERRORS_NAV_DATA,
     ],
   },
   {
@@ -1345,61 +1348,7 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         path: 'extended-diagnostics',
         contentPath: 'reference/extended-diagnostics/overview',
       },
-      {
-        label: 'NG8101: Invalid Banana-in-Box',
-        path: 'extended-diagnostics/NG8101',
-        contentPath: 'reference/extended-diagnostics/NG8101',
-      },
-      {
-        label: 'NG8102: Nullish coalescing not nullable',
-        path: 'extended-diagnostics/NG8102',
-        contentPath: 'reference/extended-diagnostics/NG8102',
-      },
-      {
-        label: 'NG8103: Missing control flow directive',
-        path: 'extended-diagnostics/NG8103',
-        contentPath: 'reference/extended-diagnostics/NG8103',
-      },
-      {
-        label: 'NG8104: Text attribute not binding',
-        path: 'extended-diagnostics/NG8104',
-        contentPath: 'reference/extended-diagnostics/NG8104',
-      },
-      {
-        label: 'NG8105: Missing `let` keyword in an *ngFor expression',
-        path: 'extended-diagnostics/NG8105',
-        contentPath: 'reference/extended-diagnostics/NG8105',
-      },
-      {
-        label: 'NG8106: Suffix not supported',
-        path: 'extended-diagnostics/NG8106',
-        contentPath: 'reference/extended-diagnostics/NG8106',
-      },
-      {
-        label: 'NG8107: Optional chain not nullable',
-        path: 'extended-diagnostics/NG8107',
-        contentPath: 'reference/extended-diagnostics/NG8107',
-      },
-      {
-        label: 'NG8108: ngSkipHydration should be a static attribute',
-        path: 'extended-diagnostics/NG8108',
-        contentPath: 'reference/extended-diagnostics/NG8108',
-      },
-      {
-        label: 'NG8109: Signals must be invoked in template interpolations',
-        path: 'extended-diagnostics/NG8109',
-        contentPath: 'reference/extended-diagnostics/NG8109',
-      },
-      {
-        label: 'NG8111: Functions must be invoked in event bindings',
-        path: 'extended-diagnostics/NG8111',
-        contentPath: 'reference/extended-diagnostics/NG8111',
-      },
-      {
-        label: 'NG8113: Unused Standalone Imports',
-        path: 'extended-diagnostics/NG8113',
-        contentPath: 'reference/extended-diagnostics/NG8113',
-      },
+      ...EXT_DIAGNOSTICS_NAV_DATA,
     ],
   },
   {

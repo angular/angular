@@ -3,14 +3,13 @@ load("//tools:defaults.bzl", "ts_library")
 package(default_visibility = ["//visibility:public"])
 
 ts_library(
-    name = "editor",
+    name = "lib",
     srcs = glob(
         [
             "*.ts",
         ],
         exclude = [
-            "playground.ts",
-            "tutorial.ts",
+            "index.ts",
         ],
     ),
     deps = [
@@ -22,30 +21,15 @@ ts_library(
 )
 
 ts_library(
-    name = "playground",
+    name = "navigation",
     srcs = [
-        "playground.ts",
+        "index.ts",
     ],
     visibility = [
         "//adev/shared-docs:__subpackages__",
     ],
     deps = [
-        ":editor",
-        "//adev/shared-docs/interfaces",
-        "@npm//@types/node",
-    ],
-)
-
-ts_library(
-    name = "tutorials",
-    srcs = [
-        "tutorial.ts",
-    ],
-    visibility = [
-        "//adev/shared-docs:__subpackages__",
-    ],
-    deps = [
-        ":editor",
+        ":lib",
         "//adev/shared-docs/interfaces",
         "@npm//@types/node",
     ],
