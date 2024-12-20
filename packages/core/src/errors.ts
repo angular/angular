@@ -97,7 +97,7 @@ export const enum RuntimeErrorCode {
   MISSING_LOCALE_DATA = 701,
 
   // Defer errors (750-799 range)
-  DEFER_LOADING_FAILED = 750,
+  DEFER_LOADING_FAILED = -750,
 
   // standalone errors
   IMPORT_PROVIDERS_FROM_STANDALONE = 800,

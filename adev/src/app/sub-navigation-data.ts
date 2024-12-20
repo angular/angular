@@ -1286,6 +1286,11 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'reference/errors/NG05000',
       },
       {
+        label: 'NG0750: @defer dependencies failed to load',
+        path: 'errors/NG0750',
+        contentPath: 'reference/errors/NG0750',
+      },
+      {
         label: 'NG6100: NgModule.id Set to module.id anti-pattern',
         path: 'errors/NG6100',
         contentPath: 'reference/errors/NG6100',
