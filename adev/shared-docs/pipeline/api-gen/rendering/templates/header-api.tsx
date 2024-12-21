@@ -36,11 +36,7 @@ export function HeaderApi(props: {entry: DocEntryRenderable; showFullDescription
       <div className={HEADER_ENTRY_TITLE}>
         <div>
           <h1>{entry.name}</h1>
-          <div
-            className={HEADER_ENTRY_LABEL}
-            data-mode={'full'}
-            data-type={entry.entryType.toLowerCase()}
-          >
+          <div className={`${HEADER_ENTRY_LABEL} type-${entry.entryType.toLowerCase()} full`}>
             {getEntryTypeDisplayName(entry.entryType)}
           </div>
           {entry.isDeprecated && (
