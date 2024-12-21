@@ -257,6 +257,23 @@ describe('ShadowCss, :host and :host-context', () => {
           '{}',
       );
     });
+
+    it('should handle :host-context with comma-separated child selector', () => {
+      expect(shim(':host-context(.foo) a:not(.a, .b) {}', 'contenta', 'a-host')).toEqualCss(
+        '.foo[a-host] a[contenta]:not(.a, .b), .foo [a-host] a[contenta]:not(.a, .b) {}',
+      );
+      expect(
+        shim(
+          ':host-context(.foo) a:not([a], .b), .bar, :host-context(.baz) a:not([c], .d) {}',
+          'contenta',
+          'a-host',
+        ),
+      ).toEqualCss(
+        '.foo[a-host] a[contenta]:not([a], .b), .foo [a-host] a[contenta]:not([a], .b), ' +
+          '.bar[contenta], .baz[a-host] a[contenta]:not([c], .d), ' +
+          '.baz [a-host] a[contenta]:not([c], .d) {}',
+      );
+    });
   });
 
   describe(':host-context and :host combination selector', () => {
