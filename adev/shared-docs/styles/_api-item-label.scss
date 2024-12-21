@@ -14,12 +14,12 @@
       background-color 0.3s ease;
     text-transform: capitalize;
 
-    &[data-mode='short'] {
+    &:not(.full) {
       height: 22px;
       width: 22px;
     }
 
-    &[data-mode='full'] {
+    &.full {
       font-size: 0.75rem;
       padding: 0.25rem 0.5rem;
     }
@@ -44,58 +44,58 @@
       background: color-mix(in srgb, var(--label-theme) 10%, white);
     }
 
-    &[data-type='undecorated_class'],
-    &[data-type='class'] {
+    &.type-undecorated_class,
+    &.type-class {
       --label-theme: var(--symbolic-purple);
     }
 
-    &[data-type='constant'],
-    &[data-type='const'] {
+    &.type-constant,
+    &.type-const {
       --label-theme: var(--symbolic-gray);
     }
 
-    &[data-type='decorator'] {
+    &.type-decorator {
       --label-theme: var(--symbolic-blue);
     }
 
-    &[data-type='directive'] {
+    &.type-directive {
       --label-theme: var(--symbolic-pink);
     }
 
-    &[data-type='element'] {
+    &.type-element {
       --label-theme: var(--symbolic-orange);
     }
 
-    &[data-type='enum'] {
+    &.type-enum {
       --label-theme: var(--symbolic-yellow);
     }
 
-    &[data-type='function'] {
+    &.type-function {
       --label-theme: var(--symbolic-green);
     }
 
-    &[data-type='interface'] {
+    &.type-interface {
       --label-theme: var(--symbolic-cyan);
     }
 
-    &[data-type='pipe'] {
+    &.type-pipe {
       --label-theme: var(--symbolic-teal);
     }
 
-    &[data-type='ng_module'] {
+    &.type-ng_module {
       --label-theme: var(--symbolic-brown);
     }
 
-    &[data-type='type_alias'] {
+    &.type-type_alias {
       --label-theme: var(--symbolic-lime);
     }
 
-    &[data-type='block'] {
+    &.type-block {
       --label-theme: var(--vivid-pink);
     }
 
-    &[data-type='developer_preview'],
-    &[data-type='deprecated'] {
+    &.type-developer_preview,
+    &.type-deprecated {
       --label-theme: var(--hot-red);
     }
   }
