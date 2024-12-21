@@ -33,19 +33,8 @@ describe('ApiItemLabel', () => {
     expect(label).toBe('C');
   });
 
-  it('should display full label for Class when labelMode equals full', () => {
+  it('should display short label for Class', () => {
     fixture.componentRef.setInput('type', ApiItemType.CLASS);
-    fixture.componentRef.setInput('mode', 'full');
-    fixture.detectChanges();
-
-    const label = fixture.nativeElement.innerText;
-
-    expect(label).toBe('Class');
-  });
-
-  it('should display short label for Class when labelMode equals short', () => {
-    fixture.componentRef.setInput('type', ApiItemType.CLASS);
-    fixture.componentRef.setInput('mode', 'short');
     fixture.detectChanges();
 
     const label = fixture.nativeElement.innerText;

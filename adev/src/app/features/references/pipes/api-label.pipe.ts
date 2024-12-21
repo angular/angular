@@ -14,39 +14,39 @@ import {ApiItemType} from '../interfaces/api-item-type';
   name: 'adevApiLabel',
 })
 export class ApiLabel implements PipeTransform {
-  private readonly shortLabelsMap: Record<ApiItemType, string> = {
-    [ApiItemType.BLOCK]: 'B',
-    [ApiItemType.CLASS]: 'C',
-    [ApiItemType.CONST]: 'K',
-    [ApiItemType.DECORATOR]: '@',
-    [ApiItemType.DIRECTIVE]: 'D',
-    [ApiItemType.ELEMENT]: 'El',
-    [ApiItemType.ENUM]: 'E',
-    [ApiItemType.FUNCTION]: 'F',
-    [ApiItemType.INTERFACE]: 'I',
-    [ApiItemType.PIPE]: 'P',
-    [ApiItemType.NG_MODULE]: 'M',
-    [ApiItemType.TYPE_ALIAS]: 'T',
-    [ApiItemType.INITIALIZER_API_FUNCTION]: 'IA',
-  };
-
-  private readonly fullLabelsMap: Record<ApiItemType, string> = {
-    [ApiItemType.BLOCK]: 'Block',
-    [ApiItemType.CLASS]: 'Class',
-    [ApiItemType.CONST]: 'Const',
-    [ApiItemType.DECORATOR]: 'Decorator',
-    [ApiItemType.DIRECTIVE]: 'Directive',
-    [ApiItemType.ELEMENT]: 'Element',
-    [ApiItemType.ENUM]: 'Enum',
-    [ApiItemType.FUNCTION]: 'Function',
-    [ApiItemType.INTERFACE]: 'Interface',
-    [ApiItemType.PIPE]: 'Pipe',
-    [ApiItemType.NG_MODULE]: 'Module',
-    [ApiItemType.TYPE_ALIAS]: 'Type Alias',
-    [ApiItemType.INITIALIZER_API_FUNCTION]: 'Initializer API',
-  };
-
   transform(value: ApiItemType, labelType: 'short' | 'full'): string {
-    return labelType === 'full' ? this.fullLabelsMap[value] : this.shortLabelsMap[value];
+    return labelType === 'full' ? fullLabelsMap[value] : shortLabelsMap[value];
   }
 }
+
+export const shortLabelsMap: Record<ApiItemType, string> = {
+  [ApiItemType.BLOCK]: 'B',
+  [ApiItemType.CLASS]: 'C',
+  [ApiItemType.CONST]: 'K',
+  [ApiItemType.DECORATOR]: '@',
+  [ApiItemType.DIRECTIVE]: 'D',
+  [ApiItemType.ELEMENT]: 'El',
+  [ApiItemType.ENUM]: 'E',
+  [ApiItemType.FUNCTION]: 'F',
+  [ApiItemType.INTERFACE]: 'I',
+  [ApiItemType.PIPE]: 'P',
+  [ApiItemType.NG_MODULE]: 'M',
+  [ApiItemType.TYPE_ALIAS]: 'T',
+  [ApiItemType.INITIALIZER_API_FUNCTION]: 'IA',
+};
+
+export const fullLabelsMap: Record<ApiItemType, string> = {
+  [ApiItemType.BLOCK]: 'Block',
+  [ApiItemType.CLASS]: 'Class',
+  [ApiItemType.CONST]: 'Const',
+  [ApiItemType.DECORATOR]: 'Decorator',
+  [ApiItemType.DIRECTIVE]: 'Directive',
+  [ApiItemType.ELEMENT]: 'Element',
+  [ApiItemType.ENUM]: 'Enum',
+  [ApiItemType.FUNCTION]: 'Function',
+  [ApiItemType.INTERFACE]: 'Interface',
+  [ApiItemType.PIPE]: 'Pipe',
+  [ApiItemType.NG_MODULE]: 'Module',
+  [ApiItemType.TYPE_ALIAS]: 'Type Alias',
+  [ApiItemType.INITIALIZER_API_FUNCTION]: 'Initializer API',
+};
