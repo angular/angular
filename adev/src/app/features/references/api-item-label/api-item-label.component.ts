@@ -6,21 +6,21 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, input} from '@angular/core';
 import {ApiItemType} from '../interfaces/api-item-type';
-import {ApiLabel} from '../pipes/api-label.pipe';
+import {ApiLabel, shortLabelsMap} from '../pipes/api-label.pipe';
 
 @Component({
   selector: 'docs-api-item-label',
-  templateUrl: './api-item-label.component.html',
+  template: `{{ label() }}`,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '[attr.data-type]': 'type()',
-    '[attr.data-mode]': 'mode()',
+    '[class]': `clazz()`,
   },
   imports: [ApiLabel],
 })
 export default class ApiItemLabel {
   readonly type = input.required<ApiItemType>();
-  readonly mode = input.required<'short' | 'full'>();
+  readonly label = computed(() => shortLabelsMap[this.type()]);
+  readonly clazz = computed(() => `type-${this.type()}`);
 }
