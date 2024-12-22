@@ -2,14 +2,14 @@
 // #docregion formgroup, nested-formgroup
 import {Component} from '@angular/core';
 // #docregion imports
-import {FormGroup, FormControl} from '@angular/forms';
+import {FormGroup, FormControl, ReactiveFormsModule} from '@angular/forms';
 // #enddocregion imports
 
 @Component({
   selector: 'app-profile-editor',
   templateUrl: './profile-editor.component.html',
   styleUrls: ['./profile-editor.component.css'],
-  standalone: false,
+  imports: [ReactiveFormsModule],
 })
 export class ProfileEditorComponent {
   // #docregion formgroup-compare

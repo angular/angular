@@ -2,7 +2,7 @@
 // #docregion form-builder
 import {Component, inject} from '@angular/core';
 // #docregion form-builder-imports
-import {FormBuilder} from '@angular/forms';
+import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
 // #enddocregion form-builder-imports, form-builder
 // #docregion form-array-imports
 import {FormArray} from '@angular/forms';
@@ -13,7 +13,7 @@ import {FormArray} from '@angular/forms';
   selector: 'app-profile-editor',
   templateUrl: './profile-editor.component.html',
   styleUrls: ['./profile-editor.component.css'],
-  standalone: false,
+  imports: [ReactiveFormsModule],
 })
 export class ProfileEditorComponent {
   // #docregion inject-form-builder

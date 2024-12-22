@@ -36,10 +36,9 @@ In the example, the user enters their name into an input field, captures that in
 <docs-workflow>
 
 <docs-step title="Import the ReactiveFormsModule">
-To use reactive form controls, import `ReactiveFormsModule` from the `@angular/forms` package and add it to your NgModule's `imports` array.
+To use reactive form controls, import `ReactiveFormsModule` from the `@angular/forms` package and add it your components `imports` array.
 
-<docs-code header="src/app/app.module.ts (excerpt)" path="adev/src/content/examples/reactive-forms/src/app/app.module.ts" visibleRegion="imports" />
-</docs-step>
+<docs-code header="src/app/name-editor/name-editor.component.ts" path="adev/src/content/examples/reactive-forms/src/app/name-editor/name-editor.component.ts" visibleRegion="imports"/></docs-step>
 
 <docs-step title="Generate a new component with a FormControl">
 Use the CLI command `ng generate component` to generate a component in your project to host the control.
