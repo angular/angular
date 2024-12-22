@@ -205,7 +205,7 @@ To ensure consistency throughout the source code, keep these rules in mind as yo
 
 * All features or bug fixes **must be tested** by one or more specs (unit-tests).
 * All public API methods **must be documented**.
-* We follow [Google's JavaScript Style Guide][js-style-guide], but wrap all code at **100 characters**.
+* We follow [Google's TypeScript Style Guide][ts-style-guide], but wrap all code at **100 characters**.
 
    An automated formatter is available, see [DEVELOPER.md](contributing-docs/building-and-testing-angular.md#formatting-your-source-code).
 
@@ -396,4 +396,4 @@ The following documents can help you sort out issues with GitHub accounts and mu
 [github]: https://github.com/angular/angular
 [discord]: https://discord.gg/angular
 [individual-cla]: https://cla.developers.google.com/about/google-individual
-[js-style-guide]: https://google.github.io/styleguide/jsguide.html
+[ts-style-guide]: https://google.github.io/styleguide/tsguide.html
