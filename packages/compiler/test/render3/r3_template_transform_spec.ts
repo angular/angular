@@ -1979,7 +1979,7 @@ describe('R3 template transform', () => {
 
       it('should report unrecognized for loop parameters', () => {
         expect(() => parse(`@for (a of b; foo bar) {hello}`)).toThrowError(
-          /Unrecognized @for loop paramater "foo bar"/,
+          /Unrecognized @for loop parameter "foo bar"/,
         );
       });
 
@@ -2257,7 +2257,7 @@ describe('R3 template transform', () => {
           parse(`
           @if (foo; bar) {hello}
         `),
-        ).toThrowError(/Unrecognized conditional paramater "bar"/);
+        ).toThrowError(/Unrecognized conditional parameter "bar"/);
       });
 
       it('should report an unknown parameter in an else if block', () => {
@@ -2265,7 +2265,7 @@ describe('R3 template transform', () => {
           parse(`
           @if (foo) {hello} @else if (bar; baz) {goodbye}
         `),
-        ).toThrowError(/Unrecognized conditional paramater "baz"/);
+        ).toThrowError(/Unrecognized conditional parameter "baz"/);
       });
 
       it('should report an if block that has multiple `as` expressions', () => {

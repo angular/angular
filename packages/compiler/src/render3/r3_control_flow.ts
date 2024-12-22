@@ -386,7 +386,7 @@ function parseForLoopParameters(
     }
 
     errors.push(
-      new ParseError(param.sourceSpan, `Unrecognized @for loop paramater "${param.expression}"`),
+      new ParseError(param.sourceSpan, `Unrecognized @for loop parameter "${param.expression}"`),
     );
   }
 
@@ -614,7 +614,7 @@ function parseConditionalBlockParameters(
       errors.push(
         new ParseError(
           param.sourceSpan,
-          `Unrecognized conditional paramater "${param.expression}"`,
+          `Unrecognized conditional parameter "${param.expression}"`,
         ),
       );
     } else if (block.name !== 'if') {
