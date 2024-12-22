@@ -196,8 +196,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
    * @description
    * Tracks whether the control is disabled.
    */
-  // TODO(issue/24571): remove '!'.
-  @Input('disabled') isDisabled!: boolean;
+  @Input('disabled') isDisabled?: boolean;
 
   /**
    * @description
@@ -221,8 +220,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
    * Defaults to 'change'. Possible values: `'change'` | `'blur'` | `'submit'`.
    *
    */
-  // TODO(issue/24571): remove '!'.
-  @Input('ngModelOptions') options!: {name?: string; standalone?: boolean; updateOn?: FormHooks};
+  @Input('ngModelOptions') options?: {name?: string; standalone?: boolean; updateOn?: FormHooks};
 
   /**
    * @description
