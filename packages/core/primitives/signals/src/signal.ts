@@ -70,7 +70,7 @@ export function signalGetFn<T>(this: SignalNode<T>): T {
 
 export function signalSetFn<T>(node: SignalNode<T>, newValue: T) {
   if (!producerUpdatesAllowed()) {
-    throwInvalidWriteToSignalError();
+    throwInvalidWriteToSignalError(node);
   }
 
   if (!node.equal(node.value, newValue)) {
@@ -81,7 +81,7 @@ export function signalSetFn<T>(node: SignalNode<T>, newValue: T) {
 
 export function signalUpdateFn<T>(node: SignalNode<T>, updater: (value: T) => T): void {
   if (!producerUpdatesAllowed()) {
-    throwInvalidWriteToSignalError();
+    throwInvalidWriteToSignalError(node);
   }
 
   signalSetFn(node, updater(node.value));
