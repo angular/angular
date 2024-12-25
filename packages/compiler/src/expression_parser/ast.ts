@@ -429,6 +429,21 @@ export class SafeCall extends AST {
   }
 }
 
+export class Range extends AST {
+  constructor(
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    public from: AST,
+    public to: AST,
+    public step: AST | null,
+  ) {
+    super(span, sourceSpan);
+  }
+  override visit(visitor: AstVisitor, context: any = null): any {
+    return visitor.visitRange(this, context);
+  }
+}
+
 /**
  * Records the absolute position of a text span in a source file, where `start` and `end` are the
  * starting and ending byte offsets, respectively, of the text span in a source file.
@@ -555,6 +570,7 @@ export interface AstVisitor {
   visitSafeKeyedRead(ast: SafeKeyedRead, context: any): any;
   visitCall(ast: Call, context: any): any;
   visitSafeCall(ast: SafeCall, context: any): any;
+  visitRange(ast: Range, context: any): any;
   visitASTWithSource?(ast: ASTWithSource, context: any): any;
   /**
    * This function is optionally defined to allow classes that implement this
@@ -648,6 +664,11 @@ export class RecursiveAstVisitor implements AstVisitor {
     for (const ast of asts) {
       this.visit(ast, context);
     }
+  }
+  visitRange(ast: Range, context: any) {
+    this.visit(ast.from, context);
+    this.visit(ast.to, context);
+    if (ast.step) this.visit(ast.step, context);
   }
 }
 
@@ -814,6 +835,10 @@ export class AstTransformer implements AstVisitor {
       ast.receiver.visit(this),
       ast.key.visit(this),
     );
+  }
+
+  visitRange(ast: Range, context: any): AST {
+    throw new Error('Method not implemented.');
   }
 }
 
@@ -1011,6 +1036,10 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
       return new SafeKeyedRead(ast.span, ast.sourceSpan, obj, key);
     }
     return ast;
+  }
+
+  visitRange(ast: Range, context: any): AST {
+    throw new Error('Method not implemented.');
   }
 }
 

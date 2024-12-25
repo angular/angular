@@ -435,6 +435,15 @@ export function repeater(
   return call(Identifiers.repeater, [collection], sourceSpan);
 }
 
+export function repeaterRangeGenerator(
+  from: o.Expression,
+  to: o.Expression,
+  step: o.Expression | null,
+  sourceSpan: ParseSourceSpan | null,
+): ir.UpdateOp {
+  return call(Identifiers.repeaterRangeGenerator, step ? [from, to, step] : [from, to], sourceSpan);
+}
+
 export function deferWhen(
   modifier: ir.DeferOpModifierKind,
   expr: o.Expression,

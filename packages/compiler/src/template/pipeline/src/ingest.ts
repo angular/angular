@@ -14,6 +14,7 @@ import {splitNsName} from '../../../ml_parser/tags';
 import * as o from '../../../output/output_ast';
 import {ParseSourceSpan} from '../../../parse_util';
 import * as t from '../../../render3/r3_ast';
+import {Identifiers} from '../../../render3/r3_identifiers';
 import {DeferBlockDepsEmitMode, R3ComponentDeferMetadata} from '../../../render3/view/api';
 import {icuFromI18nMessage} from '../../../render3/view/i18n/util';
 import {DomElementSchemaRegistry} from '../../../schema/dom_element_schema_registry';
@@ -939,15 +940,29 @@ function ingestForBlock(unit: ViewCompilationUnit, forBlock: t.ForLoopBlock): vo
   );
   unit.create.push(repeaterCreate);
 
-  const expression = convertAst(
-    forBlock.expression,
-    unit.job,
-    convertSourceSpan(forBlock.expression.span, forBlock.sourceSpan),
-  );
+  let collectionOrRange: o.Expression;
+  if (forBlock.expression.type === 'collection') {
+    collectionOrRange = convertAst(
+      forBlock.expression.ast,
+      unit.job,
+      convertSourceSpan(forBlock.expression.ast.span, forBlock.sourceSpan),
+    );
+  } else {
+    const fromExpr = convertAst(forBlock.expression.from, unit.job, forBlock.sourceSpan);
+    const toExpr = convertAst(forBlock.expression.to, unit.job, forBlock.sourceSpan);
+    collectionOrRange = o
+      .importExpr(Identifiers.repeaterRangeGenerator)
+      .callFn(
+        forBlock.expression.step !== null
+          ? [fromExpr, toExpr, convertAst(forBlock.expression.step, unit.job, forBlock.sourceSpan)]
+          : [fromExpr, toExpr],
+      );
+  }
+
   const repeater = ir.createRepeaterOp(
     repeaterCreate.xref,
     repeaterCreate.handle,
-    expression,
+    collectionOrRange,
     forBlock.sourceSpan,
   );
   unit.update.push(repeater);
@@ -1164,6 +1179,13 @@ function convertAst(
     );
   } else if (ast instanceof e.TypeofExpression) {
     return o.typeofExpr(convertAst(ast.expression, job, baseSourceSpan));
+  } else if (ast instanceof e.Range) {
+    return o.rangeGenerator(
+      convertAst(ast.from, job, baseSourceSpan),
+      convertAst(ast.to, job, baseSourceSpan),
+      ast.step ? convertAst(ast.step, job, baseSourceSpan) : null,
+      convertSourceSpan(ast.span, baseSourceSpan),
+    );
   } else {
     throw new Error(
       `Unhandled expression type "${ast.constructor.name}" in file "${baseSourceSpan?.start.file.url}"`,

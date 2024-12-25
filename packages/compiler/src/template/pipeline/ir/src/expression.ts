@@ -1159,7 +1159,11 @@ export function transformExpressionsInOp(
       }
       break;
     case OpKind.Repeater:
-      op.collection = transformExpressionsInExpression(op.collection, transform, flags);
+      op.collectionOrRange = transformExpressionsInExpression(
+        op.collectionOrRange,
+        transform,
+        flags,
+      );
       break;
     case OpKind.Defer:
       if (op.loadingConfig !== null) {
@@ -1303,6 +1307,10 @@ export function transformExpressionsInExpression(
     } else {
       expr.body = transformExpressionsInExpression(expr.body, transform, flags);
     }
+  } else if (expr instanceof o.RangeGeneratorExpr) {
+    expr.from = transformExpressionsInExpression(expr.from, transform, flags);
+    expr.to = transformExpressionsInExpression(expr.to, transform, flags);
+    if (expr.step) expr.step = transformExpressionsInExpression(expr.step, transform, flags);
   } else if (expr instanceof o.WrappedNodeExpr) {
     // TODO: Do we need to transform any TS nodes nested inside of this expression?
   } else if (

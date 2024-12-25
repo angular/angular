@@ -334,7 +334,13 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
   override visitForLoopBlock(block: TmplAstForLoopBlock): void {
     block.item.visit(this);
     this.visitAll(block.contextVariables);
-    this.visitExpression(block.expression);
+    if (block.expression.type === 'range') {
+      this.visitExpression(block.expression.from);
+      this.visitExpression(block.expression.to);
+      if (block.expression.step) this.visitExpression(block.expression.step);
+    } else {
+      this.visitExpression(block.expression.ast);
+    }
     this.visitAll(block.children);
     block.empty?.visit(this);
   }

@@ -1377,6 +1377,31 @@ export class CommaExpr extends Expression {
   }
 }
 
+export class RangeGeneratorExpr extends Expression {
+  constructor(
+    public from: Expression,
+    public to: Expression,
+    public step: Expression | null,
+    type?: Type | null,
+    sourceSpan?: ParseSourceSpan | null,
+  ) {
+    super(type, sourceSpan);
+  }
+
+  override visitExpression(visitor: ExpressionVisitor, context: any) {
+    throw visitor.visitRangeExpr(this, context);
+  }
+  override isEquivalent(e: Expression): boolean {
+    throw false;
+  }
+  override isConstant(): boolean {
+    throw false;
+  }
+  override clone(): Expression {
+    return new RangeGeneratorExpr(this.from, this.to, this.step, this.type, this.sourceSpan);
+  }
+}
+
 export interface ExpressionVisitor {
   visitReadVarExpr(ast: ReadVarExpr, context: any): any;
   visitWriteVarExpr(expr: WriteVarExpr, context: any): any;
@@ -1402,6 +1427,7 @@ export interface ExpressionVisitor {
   visitWrappedNodeExpr(ast: WrappedNodeExpr<any>, context: any): any;
   visitTypeofExpr(ast: TypeofExpr, context: any): any;
   visitArrowFunctionExpr(ast: ArrowFunctionExpr, context: any): any;
+  visitRangeExpr(ast: RangeGeneratorExpr, context: any): any;
 }
 
 export const NULL_EXPR = new LiteralExpr(null, null, null);
@@ -1748,6 +1774,10 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
   visitAllStatements(stmts: Statement[], context: any): void {
     stmts.forEach((stmt) => stmt.visitStatement(this, context));
   }
+
+  visitRangeExpr(ast: RangeGeneratorExpr, context: any) {
+    return ast;
+  }
 }
 
 export function leadingComment(
@@ -1819,6 +1849,15 @@ export function literalMap(
     type,
     null,
   );
+}
+
+export function rangeGenerator(
+  from: Expression,
+  to: Expression,
+  step: Expression | null,
+  sourceSpan?: ParseSourceSpan | null,
+): RangeGeneratorExpr {
+  return new RangeGeneratorExpr(from, to, step, null, sourceSpan);
 }
 
 export function unary(

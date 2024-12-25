@@ -559,7 +559,7 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
         ir.OpList.replace(op, ng.conditional(op.processed, op.contextValue, op.sourceSpan));
         break;
       case ir.OpKind.Repeater:
-        ir.OpList.replace(op, ng.repeater(op.collection, op.sourceSpan));
+        ir.OpList.replace(op, ng.repeater(op.collectionOrRange, op.sourceSpan));
         break;
       case ir.OpKind.DeferWhen:
         ir.OpList.replace(op, ng.deferWhen(op.modifier, op.expr, op.sourceSpan));

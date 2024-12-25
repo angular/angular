@@ -33,6 +33,7 @@ import {
   SafePropertyRead,
   ThisReceiver,
   Unary,
+  Range,
 } from '../../../src/expression_parser/ast';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../src/ml_parser/defaults';
 
@@ -213,6 +214,16 @@ class Unparser implements AstVisitor {
     this._expression += '?.[';
     this._visit(ast.key);
     this._expression += ']';
+  }
+
+  visitRange(ast: Range, context: any) {
+    this._visit(ast.from);
+    this._expression += '...';
+    this._visit(ast.to);
+    if (ast.step) {
+      this._expression += ':';
+      this._visit(ast.step);
+    }
   }
 
   private _visit(ast: AST) {

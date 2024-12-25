@@ -452,6 +452,10 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
     );
   }
 
+  visitRangeExpr(ast: o.outputAst.RangeGeneratorExpr, context: any) {
+    throw new Error('Method not implemented.');
+  }
+
   private visitStatements(statements: o.Statement[], context: Context): TStatement[] {
     return statements
       .map((stmt) => stmt.visitStatement(this, context))

@@ -736,9 +736,9 @@ export interface RepeaterOp extends Op<UpdateOp>, DependsOnSlotContextOpTrait {
   targetSlot: SlotHandle;
 
   /**
-   * The collection provided to the for loop as its expression.
+   * The collection or range provided to the for loop as its expression.
    */
-  collection: o.Expression;
+  collectionOrRange: o.Expression | o.RangeGeneratorExpr;
 
   sourceSpan: ParseSourceSpan;
 }
@@ -746,14 +746,14 @@ export interface RepeaterOp extends Op<UpdateOp>, DependsOnSlotContextOpTrait {
 export function createRepeaterOp(
   repeaterCreate: XrefId,
   targetSlot: SlotHandle,
-  collection: o.Expression,
+  collectionOrRange: o.Expression | o.RangeGeneratorExpr,
   sourceSpan: ParseSourceSpan,
 ): RepeaterOp {
   return {
     kind: OpKind.Repeater,
     target: repeaterCreate,
     targetSlot,
-    collection,
+    collectionOrRange,
     sourceSpan,
     ...NEW_OP,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,

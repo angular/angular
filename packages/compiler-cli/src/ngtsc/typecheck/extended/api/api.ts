@@ -268,7 +268,9 @@ class TemplateVisitor<Code extends ErrorCode>
   visitForLoopBlock(block: TmplAstForLoopBlock): void {
     block.item.visit(this);
     this.visitAllNodes(block.contextVariables);
-    this.visitAst(block.expression);
+    if (block.expression.type === 'collection') {
+      this.visitAst(block.expression.ast);
+    }
     this.visitAllNodes(block.children);
     block.empty?.visit(this);
   }

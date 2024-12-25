@@ -173,6 +173,7 @@ export {
   ɵɵrepeaterCreate,
   ɵɵrepeaterTrackByIdentity,
   ɵɵrepeaterTrackByIndex,
+  ɵɵrepeaterRangeGenerator,
   ɵɵsetComponentScope,
   ɵɵsetNgModuleScope,
   ɵɵgetComponentDepsFactory,

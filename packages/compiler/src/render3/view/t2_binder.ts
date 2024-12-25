@@ -843,7 +843,13 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   }
 
   visitForLoopBlock(block: ForLoopBlock) {
-    block.expression.visit(this);
+    if (block.expression.type === 'range') {
+      block.expression.from.visit(this);
+      block.expression.to.visit(this);
+      block.expression.step?.visit(this);
+    } else {
+      block.expression.ast.visit(this);
+    }
     this.ingestScopedNode(block);
     block.empty?.visit(this);
   }

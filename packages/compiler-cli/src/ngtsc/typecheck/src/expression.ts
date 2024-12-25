@@ -33,6 +33,7 @@ import {
   SafePropertyRead,
   ThisReceiver,
   Unary,
+  Range,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -478,6 +479,10 @@ class AstTranslator implements AstVisitor {
       ts.factory.createCallExpression(ts.factory.createNonNullExpression(expr), undefined, args),
     );
   }
+
+  visitRange(ast: Range, context: any): ts.Expression {
+    throw new Error('Method not implemented.');
+  }
 }
 
 /**
@@ -565,6 +570,10 @@ class VeSafeLhsInferenceBugDetector implements AstVisitor {
     return false;
   }
   visitSafeKeyedRead(ast: SafeKeyedRead): boolean {
+    return false;
+  }
+
+  visitRange(ast: Range, context: any) {
     return false;
   }
 }

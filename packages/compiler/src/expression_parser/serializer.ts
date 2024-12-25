@@ -143,6 +143,10 @@ class SerializeExpressionVisitor implements expr.AstVisitor {
   visitASTWithSource(ast: expr.ASTWithSource, context: any): string {
     return ast.ast.visit(this, context);
   }
+
+  visitRange(ast: expr.Range, context: any): string {
+    return `${ast.from}...${ast.to}:${ast.step}`;
+  }
 }
 
 /** Zips the two input arrays into a single array of pairs of elements at the same index. */

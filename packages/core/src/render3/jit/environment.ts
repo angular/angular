@@ -168,6 +168,7 @@ export const angularCoreEnv: {[name: string]: unknown} = (() => ({
   'ɵɵrepeaterCreate': r3.ɵɵrepeaterCreate,
   'ɵɵrepeaterTrackByIndex': r3.ɵɵrepeaterTrackByIndex,
   'ɵɵrepeaterTrackByIdentity': r3.ɵɵrepeaterTrackByIdentity,
+  'ɵɵrepeaterRangeGenerator': r3.ɵɵrepeaterRangeGenerator,
   'ɵɵcomponentInstance': r3.ɵɵcomponentInstance,
   'ɵɵtext': r3.ɵɵtext,
   'ɵɵtextInterpolate': r3.ɵɵtextInterpolate,

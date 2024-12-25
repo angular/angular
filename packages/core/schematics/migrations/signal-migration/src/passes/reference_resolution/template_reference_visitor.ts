@@ -174,7 +174,14 @@ export class TemplateReferenceVisitor<
   }
 
   override visitForLoopBlock(block: TmplAstForLoopBlock): void {
-    this.checkExpressionForReferencedFields(block, block.expression);
+    if (block.expression.type === 'range') {
+      this.checkExpressionForReferencedFields(block, block.expression.from);
+      this.checkExpressionForReferencedFields(block, block.expression.to);
+      if (block.expression.step)
+        this.checkExpressionForReferencedFields(block, block.expression.step);
+    } else {
+      this.checkExpressionForReferencedFields(block, block.expression.ast);
+    }
     this.checkExpressionForReferencedFields(block, block.trackBy);
     super.visitForLoopBlock(block);
   }

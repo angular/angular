@@ -8,6 +8,7 @@
 
 import {
   AST,
+  ASTWithSource,
   BindingPipe,
   BindingType,
   BoundTarget,
@@ -1886,11 +1887,17 @@ class TcbForOfOp extends TcbOp {
       ts.NodeFlags.Const,
     );
     addParseSpanInfo(initializer, this.block.item.keySpan);
-    // It's common to have a for loop over a nullable value (e.g. produced by the `async` pipe).
-    // Add a non-null expression to allow such values to be assigned.
-    const expression = ts.factory.createNonNullExpression(
-      tcbExpression(this.block.expression, this.tcb, this.scope),
-    );
+    let expression: ts.Expression;
+    if (this.block.expression.type === 'collection') {
+      // It's common to have a for loop over a nullable value (e.g. produced by the `async` pipe).
+      // Add a non-null expression to allow such values to be assigned.
+      expression = ts.factory.createNonNullExpression(
+        tcbExpression(this.block.expression.ast, this.tcb, this.scope),
+      );
+    } else {
+      expression = this.rangeGeneratorExpression(this.block.expression);
+    }
+
     const trackTranslator = new TcbForLoopTrackTranslator(this.tcb, loopScope, this.block);
     const trackExpression = trackTranslator.translate(this.block.trackBy);
     const statements = [
@@ -1908,6 +1915,38 @@ class TcbForOfOp extends TcbOp {
     );
 
     return null;
+  }
+
+  private rangeGeneratorExpression(ast: {
+    type: 'range';
+    from: ASTWithSource;
+    to: ASTWithSource;
+    step: ASTWithSource | null;
+  }) {
+    const generatorFn = ts.factory.createFunctionExpression(
+      undefined,
+      ts.factory.createToken(ts.SyntaxKind.AsteriskToken), // `*` for generator
+      undefined,
+      undefined,
+      [
+        createNumberParam('from'),
+        createNumberParam('to'),
+        createNumberParam('step', /* optional */ true),
+      ],
+      undefined,
+      ts.factory.createBlock([], true), // empty body
+    );
+
+    const fromExpr = tcbExpression(ast.from, this.tcb, this.scope);
+    const toExpr = tcbExpression(ast.to, this.tcb, this.scope);
+
+    return ts.factory.createCallExpression(
+      generatorFn,
+      undefined,
+      ast.step
+        ? [fromExpr, toExpr, tcbExpression(ast.step, this.tcb, this.scope)]
+        : [fromExpr, toExpr],
+    );
   }
 }
 
@@ -3270,4 +3309,14 @@ class TcbForLoopTrackTranslator extends TcbExpressionTranslator {
 
     return super.resolve(ast);
   }
+}
+
+function createNumberParam(name: string, optional = false) {
+  return ts.factory.createParameterDeclaration(
+    undefined, // No decorators
+    undefined, // No modifiers
+    ts.factory.createIdentifier(name), // Parameter name
+    optional ? ts.factory.createToken(ts.SyntaxKind.QuestionToken) : undefined, // Optional
+    ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword), // Type: number
+  );
 }

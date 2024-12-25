@@ -194,7 +194,7 @@ export function createForLoop(
       );
       node = new t.ForLoopBlock(
         params.itemName,
-        params.expression,
+        params.collectionOrRange,
         params.trackBy.expression,
         params.trackBy.keywordSpan,
         params.context,
@@ -323,10 +323,18 @@ function parseForLoopParameters(
     expressionParam.sourceSpan.start,
     expressionParam.sourceSpan.start.moveBy(variableName.length),
   );
+
+  const isRangeExpression = rawExpression.includes('...');
+
   const result = {
     itemName: new t.Variable(itemName, '$implicit', variableSpan, variableSpan),
     trackBy: null as {expression: ASTWithSource; keywordSpan: ParseSourceSpan} | null,
-    expression: parseBlockParameterToBinding(expressionParam, bindingParser, rawExpression),
+    collectionOrRange: isRangeExpression
+      ? parseRangeExpression(expressionParam, bindingParser, rawExpression)
+      : {
+          type: 'collection' as const,
+          ast: parseBlockParameterToBinding(expressionParam, bindingParser, rawExpression),
+        },
     context: Array.from(ALLOWED_FOR_LOOP_LET_VARIABLES, (variableName) => {
       // Give ambiently-available context variables empty spans at the end of
       // the start of the `for` block, since they are not explicitly defined.
@@ -468,6 +476,53 @@ function parseLetParameter(
     }
     startSpan = startSpan.moveBy(part.length + 1 /* add 1 to move past the comma */);
   }
+}
+
+function parseRangeExpression(
+  ast: html.BlockParameter,
+  bindingParser: BindingParser,
+  part: string,
+) {
+  // We match the format 1...5:1, with the step being optional.
+  const [_, fromStr, toStr, stepStr] = part.match(/^(.+)\.\.\.(.+?)(?::(.+))?$/) ?? [];
+
+  // Note: `lastIndexOf` here should be enough to know the start index of the expression,
+  // because we know that it'll be at the end of the param. Ideally we could use the `d`
+  // flag when matching via regex and get the index from `match.indices`, but it's unclear
+  // if we can use it yet since it's a relatively new feature. See:
+  // https://github.com/tc39/proposal-regexp-match-indices
+  const start = Math.max(0, ast.expression.lastIndexOf(part));
+  const end = start + part.length;
+
+  const fromBinding = bindingParser.parseBinding(
+    fromStr,
+    false,
+    ast.sourceSpan,
+    ast.sourceSpan.start.offset + start,
+  );
+  const toBinding = bindingParser.parseBinding(
+    toStr,
+    false,
+    ast.sourceSpan,
+    ast.sourceSpan.start.offset + start + fromStr.length + 3,
+  );
+
+  const stepBinding: ASTWithSource | null = stepStr
+    ? bindingParser.parseBinding(
+        stepStr,
+        false,
+        ast.sourceSpan,
+        // from + ... + to + :
+        ast.sourceSpan.start.offset + start + fromStr.length + 3 + toStr.length + 1,
+      )
+    : null;
+
+  return {
+    type: 'range' as const,
+    from: fromBinding,
+    to: toBinding,
+    step: stepBinding,
+  };
 }
 
 /**

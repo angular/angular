@@ -499,10 +499,14 @@ runInEachFileSystem(() => {
         });
 
         it('should retrieve a symbol for the loop expression', () => {
-          const symbol = templateTypeChecker.getSymbolOfNode(forLoopNode.expression.ast, cmp)!;
-          assertExpressionSymbol(symbol);
-          expect(program.getTypeChecker().symbolToString(symbol.tsSymbol!)).toEqual('users');
-          expect(program.getTypeChecker().typeToString(symbol.tsType)).toEqual('Array<User>');
+          if (forLoopNode.expression.type === 'collection') {
+            const symbol = templateTypeChecker.getSymbolOfNode(forLoopNode.expression.ast, cmp)!;
+            assertExpressionSymbol(symbol);
+            expect(program.getTypeChecker().symbolToString(symbol.tsSymbol!)).toEqual('users');
+            expect(program.getTypeChecker().typeToString(symbol.tsType)).toEqual('Array<User>');
+          } else {
+            fail('Expected a collection expression');
+          }
         });
 
         it('should retrieve a symbol for the track expression', () => {

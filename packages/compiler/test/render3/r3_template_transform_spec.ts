@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {BindingType, ParsedEventType} from '../../src/expression_parser/ast';
+import {BindingType, ParsedEventType, Range} from '../../src/expression_parser/ast';
 import * as t from '../../src/render3/r3_ast';
 import {unparse} from '../expression_parser/utils/unparser';
 
@@ -96,7 +96,17 @@ class R3AstHumanizer implements t.Visitor<void> {
   }
 
   visitForLoopBlock(block: t.ForLoopBlock): void {
-    const result: any[] = ['ForLoopBlock', unparse(block.expression), unparse(block.trackBy)];
+    const result: any[] = [
+      'ForLoopBlock',
+      ...(block.expression.type === 'range'
+        ? [
+            unparse(block.expression.from),
+            unparse(block.expression.to),
+            block.expression.step ? unparse(block.expression.step) : null,
+          ]
+        : [unparse(block.expression.ast)]),
+      unparse(block.trackBy),
+    ];
     this.result.push(result);
     this.visitAll([[block.item], block.contextVariables, block.children]);
     block.empty?.visit(this);
@@ -1940,6 +1950,42 @@ describe('R3 template transform', () => {
         }
       `).toEqual([
         ['ForLoopBlock', '[{id: 1}, {id: 2}]', 'item.id'],
+        ['Variable', 'item', '$implicit'],
+        ['Variable', '$index', '$index'],
+        ['Variable', '$first', '$first'],
+        ['Variable', '$last', '$last'],
+        ['Variable', '$even', '$even'],
+        ['Variable', '$odd', '$odd'],
+        ['Variable', '$count', '$count'],
+        ['BoundText', ' {{ item }} '],
+      ]);
+    });
+
+    it('should parse for loop block range expression', () => {
+      expectFromHtml(`
+        @for (item of 1...5; track item.id) {
+          {{ item }}
+        }
+      `).toEqual([
+        ['ForLoopBlock', '1', '5', null, 'item.id'],
+        ['Variable', 'item', '$implicit'],
+        ['Variable', '$index', '$index'],
+        ['Variable', '$first', '$first'],
+        ['Variable', '$last', '$last'],
+        ['Variable', '$even', '$even'],
+        ['Variable', '$odd', '$odd'],
+        ['Variable', '$count', '$count'],
+        ['BoundText', ' {{ item }} '],
+      ]);
+    });
+
+    it('should parse for loop block range expression with step', () => {
+      expectFromHtml(`
+        @for (item of 1...5:5; track item.id) {
+          {{ item }}
+        }
+      `).toEqual([
+        ['ForLoopBlock', '1', '5', '5', 'item.id'],
         ['Variable', 'item', '$implicit'],
         ['Variable', '$index', '$index'],
         ['Variable', '$first', '$first'],

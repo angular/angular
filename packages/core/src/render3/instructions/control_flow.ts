@@ -447,6 +447,17 @@ export function ɵɵrepeater(collection: Iterable<unknown> | undefined | null): 
   }
 }
 
+/**
+ *
+ * We explicitly return any, to make sure to not break es5 targets.
+ * The `Generator` return type requires the es6 target or libs.
+ */
+export function* ɵɵrepeaterRangeGenerator(start: number, end: number, step = 1): any {
+  for (let i = start; i <= end; i += step) {
+    yield i;
+  }
+}
+
 function getLContainer(lView: LView, index: number): LContainer {
   const lContainer = lView[index];
   ngDevMode && assertLContainer(lContainer);

@@ -797,6 +797,34 @@ describe('R3 AST source spans', () => {
         ['Text', 'There were no items in the list.'],
       ]);
     });
+
+    it('is correct for loop blocks with ranges', () => {
+      const html =
+        `@for (item of 2...10:2; track item.id; let i = $index, _o_d_d_ = $odd) {<h1>{{ item }}</h1>}` +
+        `@empty {There were no items in the list.}`;
+
+      expectFromHtml(html).toEqual([
+        [
+          'ForLoopBlock',
+          '@for (item of 2...10:2; track item.id; let i = $index, _o_d_d_ = $odd) {<h1>{{ item }}</h1>}@empty {There were no items in the list.}',
+          '@for (item of 2...10:2; track item.id; let i = $index, _o_d_d_ = $odd) {',
+          '}',
+        ],
+        ['Variable', 'item', 'item', '<empty>'],
+        ['Variable', '', '', '<empty>'],
+        ['Variable', '', '', '<empty>'],
+        ['Variable', '', '', '<empty>'],
+        ['Variable', '', '', '<empty>'],
+        ['Variable', '', '', '<empty>'],
+        ['Variable', '', '', '<empty>'],
+        ['Variable', 'i = $index', 'i', '$index'],
+        ['Variable', '_o_d_d_ = $odd', '_o_d_d_', '$odd'],
+        ['Element', '<h1>{{ item }}</h1>', '<h1>', '</h1>'],
+        ['BoundText', '{{ item }}'],
+        ['ForLoopBlockEmpty', '@empty {There were no items in the list.}', '@empty {'],
+        ['Text', 'There were no items in the list.'],
+      ]);
+    });
   });
 
   describe('if blocks', () => {

@@ -294,6 +294,10 @@ export class Identifiers {
     name: 'ɵɵrepeaterTrackByIdentity',
     moduleName: CORE,
   };
+  static repeaterRangeGenerator: o.ExternalReference = {
+    name: 'ɵɵrepeaterRangeGenerator',
+    moduleName: CORE,
+  };
   static componentInstance: o.ExternalReference = {name: 'ɵɵcomponentInstance', moduleName: CORE};
 
   static text: o.ExternalReference = {name: 'ɵɵtext', moduleName: CORE};

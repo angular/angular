@@ -1135,4 +1135,28 @@ describe('control flow - for', () => {
       expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 3');
     });
   });
+
+  describe('range support', () => {
+    it('should support range expressions', () => {
+      @Component({
+        template: '@for (i of 1...5; track $index) { {{i}} }',
+      })
+      class TestComponent {}
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe(' 1  2  3  4  5 ');
+    });
+
+    it('should support range expressions with a step', () => {
+      @Component({
+        template: '@for (i of 2...10:2; track $index) { {{i}} }',
+      })
+      class TestComponent {}
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe(' 2  4  6  8  10 ');
+    });
+  });
 });

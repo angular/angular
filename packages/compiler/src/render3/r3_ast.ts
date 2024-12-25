@@ -439,7 +439,9 @@ export class SwitchBlockCase extends BlockNode implements Node {
 export class ForLoopBlock extends BlockNode implements Node {
   constructor(
     public item: Variable,
-    public expression: ASTWithSource,
+    public expression:
+      | {type: 'collection'; ast: ASTWithSource}
+      | {type: 'range'; from: ASTWithSource; to: ASTWithSource; step: ASTWithSource | null},
     public trackBy: ASTWithSource,
     public trackKeywordSpan: ParseSourceSpan,
     public contextVariables: Variable[],
@@ -458,6 +460,12 @@ export class ForLoopBlock extends BlockNode implements Node {
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitForLoopBlock(this);
   }
+}
+
+export interface ForLoopRangeAST {
+  from: ASTWithSource;
+  to: ASTWithSource;
+  step: ASTWithSource | null;
 }
 
 export class ForLoopBlockEmpty extends BlockNode implements Node {

@@ -268,6 +268,10 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
     return ts.factory.createTypeQueryNode(typeNode.typeName);
   }
 
+  visitRangeExpr(ast: o.outputAst.RangeGeneratorExpr, context: any) {
+    throw new Error('Method not implemented.');
+  }
+
   private translateType(type: o.Type, context: Context): ts.TypeNode {
     const typeNode = type.visitType(this, context);
     if (!ts.isTypeNode(typeNode)) {

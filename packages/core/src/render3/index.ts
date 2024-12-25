@@ -111,6 +111,7 @@ export {
   ɵɵrepeaterCreate,
   ɵɵrepeaterTrackByIdentity,
   ɵɵrepeaterTrackByIndex,
+  ɵɵrepeaterRangeGenerator,
   ɵɵstyleMap,
   ɵɵstyleMapInterpolate1,
   ɵɵstyleMapInterpolate2,

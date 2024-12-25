@@ -548,6 +548,10 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   visitAllStatements(statements: o.Statement[], ctx: EmitterVisitorContext): void {
     statements.forEach((stmt) => stmt.visitStatement(this, ctx));
   }
+
+  visitRangeExpr(ast: o.RangeGeneratorExpr, context: any) {
+    return `rangeGenerator(${ast.from}, ${ast.to}, ${ast.step})`;
+  }
 }
 
 export function escapeIdentifier(
