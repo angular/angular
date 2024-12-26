@@ -3,7 +3,11 @@
 The actual demo you can see in [demo.ts](./demo.ts),
 or [demo-but-no-comments.ts](demo-but-no-comments.ts)
 
-My focus here is to explore a way to create a form that would be
+Note, that there are no signals yet, I generally feel we should be able to use
+signals for everything: inputs (such as values, disabled, validators), as well
+as outputs (values, states, etc.), so that's coming later.
+
+My focus here is to explore a way to create a form that would be:
 
 1. Simple, intuitive
 2. Type safe
