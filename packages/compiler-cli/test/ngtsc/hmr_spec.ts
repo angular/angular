@@ -20,13 +20,14 @@ runInEachFileSystem(() => {
       env.tsconfig();
     });
 
-    function enableHmr(): void {
+    function enableHmr(additionalOptions: Record<string, unknown> = {}): void {
       env.write(
         'tsconfig.json',
         JSON.stringify({
           extends: './tsconfig-base.json',
           angularCompilerOptions: {
             _enableHmr: true,
+            ...additionalOptions,
           },
         }),
       );
@@ -296,6 +297,60 @@ runInEachFileSystem(() => {
       expect(hmrContents).toContain('function Cmp_Defer_0_Template(rf, ctx) {');
       expect(hmrContents).toContain('ɵhmr0.ɵɵdefer(1, 0, Cmp_Defer_1_DepsFn);');
       expect(hmrContents).not.toContain('import(');
+    });
+
+    it('should capture deferred dependencies when no class metadata is produced', () => {
+      // `supportTestBed` determines whether we produce `setClassMetadata` calls.
+      enableHmr({supportTestBed: false});
+      env.write(
+        'dep.ts',
+        `
+          import {Directive} from '@angular/core';
+
+          @Directive({
+            selector: '[dep]',
+            standalone: true,
+          })
+          export class Dep {}
+        `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import {Dep} from './dep';
+
+          @Component({
+            selector: 'cmp',
+            standalone: true,
+            template: '@defer (on timer(1000)) {<div dep></div>}',
+            imports: [Dep],
+          })
+          export class Cmp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      const hmrContents = env.driveHmr('test.ts', 'Cmp');
+
+      expect(jsContents).toContain(`import { Dep } from './dep';`);
+      expect(jsContents).toContain('const Cmp_Defer_1_DepsFn = () => [Dep];');
+      expect(jsContents).toContain('function Cmp_Defer_0_Template(rf, ctx) { if (rf & 1) {');
+      expect(jsContents).toContain('i0.ɵɵdefer(1, 0, Cmp_Defer_1_DepsFn);');
+      expect(jsContents).toContain('ɵɵreplaceMetadata(Cmp, m.default, [i0], [Dep]));');
+      expect(jsContents).not.toContain('setClassMetadata');
+
+      expect(hmrContents).toContain(
+        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, Dep) {',
+      );
+      expect(hmrContents).toContain('const Cmp_Defer_1_DepsFn = () => [Dep];');
+      expect(hmrContents).toContain('function Cmp_Defer_0_Template(rf, ctx) {');
+      expect(hmrContents).toContain('ɵhmr0.ɵɵdefer(1, 0, Cmp_Defer_1_DepsFn);');
+      expect(hmrContents).not.toContain('import(');
+      expect(hmrContents).not.toContain('setClassMetadata');
     });
 
     it('should not generate an HMR update function for a component that has errors', () => {
