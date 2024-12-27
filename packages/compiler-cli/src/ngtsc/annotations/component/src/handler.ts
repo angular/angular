@@ -272,7 +272,7 @@ export class ComponentDecoratorHandler
 
     // Dependencies can't be deferred during HMR, because the HMR update module can't have
     // dynamic imports and its dependencies need to be passed in directly. If dependencies
-    // are deferred, their imports will be deleted so we won't may lose the reference to them.
+    // are deferred, their imports will be deleted so we may lose the reference to them.
     this.canDeferDeps = !enableHmr;
   }
 
@@ -1617,10 +1617,11 @@ export class ComponentDecoratorHandler
     const perComponentDeferredDeps = this.canDeferDeps
       ? this.resolveAllDeferredDependencies(resolution)
       : null;
+    const defer = this.compileDeferBlocks(resolution);
     const meta: R3ComponentMetadata<R3TemplateDependency> = {
       ...analysis.meta,
       ...resolution,
-      defer: this.compileDeferBlocks(resolution),
+      defer,
     };
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
 
@@ -1646,6 +1647,7 @@ export class ComponentDecoratorHandler
           this.rootDirs,
           def,
           fac,
+          defer,
           classMetadata,
           debugInfo,
         )
@@ -1687,10 +1689,11 @@ export class ComponentDecoratorHandler
     const perComponentDeferredDeps = this.canDeferDeps
       ? this.resolveAllDeferredDependencies(resolution)
       : null;
+    const defer = this.compileDeferBlocks(resolution);
     const meta: R3ComponentMetadata<R3TemplateDependencyMetadata> = {
       ...analysis.meta,
       ...resolution,
-      defer: this.compileDeferBlocks(resolution),
+      defer,
     };
     const fac = compileDeclareFactory(toFactoryMetadata(meta, FactoryTarget.Component));
     const inputTransformFields = compileInputTransformFields(analysis.inputs);
@@ -1710,6 +1713,7 @@ export class ComponentDecoratorHandler
           this.rootDirs,
           def,
           fac,
+          defer,
           classMetadata,
           null,
         )
@@ -1741,10 +1745,11 @@ export class ComponentDecoratorHandler
     // doesn't have information on which dependencies belong to which defer blocks.
     const deferrableTypes = this.canDeferDeps ? analysis.explicitlyDeferredTypes : null;
 
+    const defer = this.compileDeferBlocks(resolution);
     const meta = {
       ...analysis.meta,
       ...resolution,
-      defer: this.compileDeferBlocks(resolution),
+      defer,
     } as R3ComponentMetadata<R3TemplateDependency>;
 
     if (deferrableTypes !== null) {
@@ -1770,6 +1775,7 @@ export class ComponentDecoratorHandler
           this.rootDirs,
           def,
           fac,
+          defer,
           classMetadata,
           debugInfo,
         )
@@ -1801,10 +1807,11 @@ export class ComponentDecoratorHandler
 
     // Create a brand-new constant pool since there shouldn't be any constant sharing.
     const pool = new ConstantPool();
+    const defer = this.compileDeferBlocks(resolution);
     const meta: R3ComponentMetadata<R3TemplateDependency> = {
       ...analysis.meta,
       ...resolution,
-      defer: this.compileDeferBlocks(resolution),
+      defer,
     };
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
     const def = compileComponentFromMetadata(meta, pool, makeBindingParser());
@@ -1824,6 +1831,7 @@ export class ComponentDecoratorHandler
           this.rootDirs,
           def,
           fac,
+          defer,
           classMetadata,
           debugInfo,
         )
