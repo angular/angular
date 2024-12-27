@@ -37,13 +37,18 @@ _NG_PACKAGE_MODULE_MAPPINGS_ATTR = "ng_package_module_mappings"
 
 def _ng_package_module_mappings_aspect_impl(target, ctx):
     mappings = dict()
-    for dep in ctx.rule.attr.deps:
-        if hasattr(dep, _NG_PACKAGE_MODULE_MAPPINGS_ATTR):
-            for k, v in getattr(dep, _NG_PACKAGE_MODULE_MAPPINGS_ATTR).items():
-                if k in mappings and mappings[k] != v:
-                    fail(("duplicate module mapping at %s: %s maps to both %s and %s" %
-                          (target.label, k, mappings[k], v)), "deps")
-                mappings[k] = v
+
+    # Note: the target might not have `deps`. e.g.
+    # in `rules_js`, node module targets don't have such attribute.
+    if hasattr(ctx.rule.attr, "deps"):
+        for dep in ctx.rule.attr.deps:
+            if hasattr(dep, _NG_PACKAGE_MODULE_MAPPINGS_ATTR):
+                for k, v in getattr(dep, _NG_PACKAGE_MODULE_MAPPINGS_ATTR).items():
+                    if k in mappings and mappings[k] != v:
+                        fail(("duplicate module mapping at %s: %s maps to both %s and %s" %
+                              (target.label, k, mappings[k], v)), "deps")
+                    mappings[k] = v
+
     if ((hasattr(ctx.rule.attr, "module_name") and ctx.rule.attr.module_name) or
         (hasattr(ctx.rule.attr, "module_root") and ctx.rule.attr.module_root)):
         mn = ctx.rule.attr.module_name
