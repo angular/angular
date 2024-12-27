@@ -178,7 +178,7 @@ import {platformBrowser} from '@angular/platform-browser';
 @NgModule({
   bootstrap: [MyApplication],
 })
-export class MyApplciationModule { }
+export class MyApplicationModule { }
 
 platformBrowser().bootstrapModule(MyApplicationModule);
 ```
