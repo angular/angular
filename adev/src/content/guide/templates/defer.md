@@ -323,9 +323,9 @@ it('should render a defer block in different states', async () => {
 
 ## How does `@defer` work with server-side rendering (SSR) and static-site generation (SSG)?
 
-When rendering an application on the server (either using SSR or SSG), defer blocks always render their `@placeholder` (or nothing if a placeholder is not specified).
+By default, when rendering an application on the server (either using SSR or SSG), defer blocks always render their `@placeholder` (or nothing if a placeholder is not specified) and triggers are not invoked. On the client, the content of the `@placeholder` is hydrated and triggers are activated.
 
-Triggers are ignored on the server.
+To render the main content of `@defer` blocks on the server (both SSR and SSG), you can enable [the Incremental Hydration feature](/guide/incremental-hydration) and configure `hydrate` triggers for the necessary blocks.
 
 ## Best practices for deferring views
 
