@@ -26,6 +26,10 @@ This confirms that your development environment has what you need to continue th
 In the **Terminal** pane of your IDE:
 
 1. In your project directory, navigate to the `first-app` directory.
+1. Run this command and follow instructions to generate the package.json
+    <docs-code language="shell">
+    npm init
+    </docs-code>
 1. Run this command to install the dependencies needed to run the app.
 
     <docs-code language="shell">
