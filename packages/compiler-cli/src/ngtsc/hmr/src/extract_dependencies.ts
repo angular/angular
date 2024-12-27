@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {R3CompiledExpression, R3HmrNamespaceDependency, outputAst as o} from '@angular/compiler';
+import {
+  DeferBlockDepsEmitMode,
+  R3CompiledExpression,
+  R3ComponentDeferMetadata,
+  R3HmrNamespaceDependency,
+  outputAst as o,
+} from '@angular/compiler';
 import {DeclarationNode} from '../../reflection';
 import {CompileResult} from '../../transform';
 import ts from 'typescript';
@@ -16,6 +22,7 @@ import ts from 'typescript';
  * @param sourceFile File in which the file is being compiled.
  * @param definition Compiled component definition.
  * @param factory Compiled component factory.
+ * @param deferBlockMetadata Metadata about the defer blocks in the component.
  * @param classMetadata Compiled `setClassMetadata` expression, if any.
  * @param debugInfo Compiled `setClassDebugInfo` expression, if any.
  */
@@ -23,6 +30,7 @@ export function extractHmrDependencies(
   node: DeclarationNode,
   definition: R3CompiledExpression,
   factory: CompileResult,
+  deferBlockMetadata: R3ComponentDeferMetadata,
   classMetadata: o.Statement | null,
   debugInfo: o.Statement | null,
 ): {local: string[]; external: R3HmrNamespaceDependency[]} {
@@ -30,7 +38,7 @@ export function extractHmrDependencies(
   const visitor = new PotentialTopLevelReadsVisitor();
   const sourceFile = node.getSourceFile();
 
-  // Visit all of the compiled expression to look for potential
+  // Visit all of the compiled expressions to look for potential
   // local references that would have to be retained.
   definition.expression.visitExpression(visitor, null);
   definition.statements.forEach((statement) => statement.visitStatement(visitor, null));
@@ -38,6 +46,12 @@ export function extractHmrDependencies(
   factory.statements.forEach((statement) => statement.visitStatement(visitor, null));
   classMetadata?.visitStatement(visitor, null);
   debugInfo?.visitStatement(visitor, null);
+
+  if (deferBlockMetadata.mode === DeferBlockDepsEmitMode.PerBlock) {
+    deferBlockMetadata.blocks.forEach((loader) => loader?.visitExpression(visitor, null));
+  } else {
+    deferBlockMetadata.dependenciesFn?.visitExpression(visitor, null);
+  }
 
   // Filter out only the references to defined top-level symbols. This allows us to ignore local
   // variables inside of functions. Note that we filter out the class name since it is always
