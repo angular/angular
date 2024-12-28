@@ -209,8 +209,24 @@ class PotentialTopLevelReadsVisitor extends o.RecursiveAstVisitor {
       return parent.expression === node || parent.arguments.includes(node);
     }
 
-    // Identifier used in a property read is only top-level if it's the expression.
-    if (ts.isPropertyAccessExpression(parent)) {
+    // Identifier used in a nested expression is only top-level if it's the actual expression.
+    if (
+      ts.isPropertyAccessExpression(parent) ||
+      ts.isComputedPropertyName(parent) ||
+      ts.isTemplateSpan(parent) ||
+      ts.isSpreadAssignment(parent) ||
+      ts.isSpreadElement(parent) ||
+      ts.isAwaitExpression(parent) ||
+      ts.isNonNullExpression(parent) ||
+      ts.isIfStatement(parent) ||
+      ts.isDoStatement(parent) ||
+      ts.isWhileStatement(parent) ||
+      ts.isForInStatement(parent) ||
+      ts.isForOfStatement(parent) ||
+      ts.isSwitchStatement(parent) ||
+      ts.isCaseClause(parent) ||
+      ts.isThrowStatement(parent)
+    ) {
       return parent.expression === node;
     }
 
@@ -224,9 +240,29 @@ class PotentialTopLevelReadsVisitor extends o.RecursiveAstVisitor {
       return parent.initializer === node;
     }
 
-    // Identifier in a class is only top level if it's the name.
-    if (ts.isClassDeclaration(parent)) {
+    // Identifier in a declaration is only top level if it's the name.
+    // In shorthand assignments the name is also the value.
+    if (
+      ts.isClassDeclaration(parent) ||
+      ts.isFunctionDeclaration(parent) ||
+      ts.isVariableDeclaration(parent) ||
+      ts.isShorthandPropertyAssignment(parent)
+    ) {
       return parent.name === node;
+    }
+
+    if (ts.isElementAccessExpression(parent)) {
+      return parent.expression === node || parent.argumentExpression === node;
+    }
+
+    if (ts.isBinaryExpression(parent)) {
+      return parent.left === node || parent.right === node;
+    }
+
+    // It's unlikely that we'll run into imports/exports in this use case.
+    // We handle them since it's simple and for completeness' sake.
+    if (ts.isImportSpecifier(parent) || ts.isExportSpecifier(parent)) {
+      return (parent.propertyName || parent.name) === node;
     }
 
     // Otherwise it's not top-level.

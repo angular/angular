@@ -349,5 +349,32 @@ runInEachFileSystem(() => {
       const hmrContents = env.driveHmr('test.ts', 'Foo');
       expect(hmrContents).toBe(null);
     });
+
+    it('should capture shorthand property assignment dependencies', () => {
+      enableHmr();
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+
+          const providers: any[] = [];
+
+          @Component({template: '', providers})
+          export class Cmp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      const hmrContents = env.driveHmr('test.ts', 'Cmp');
+
+      expect(jsContents).toContain(
+        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [providers, Component]));',
+      );
+      expect(hmrContents).toContain(
+        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, providers, Component) {',
+      );
+    });
   });
 });
