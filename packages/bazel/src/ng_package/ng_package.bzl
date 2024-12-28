@@ -236,11 +236,12 @@ def _serialize_files_for_arg(files):
         result.append(_serialize_file(file))
     return json.encode(result)
 
-def _find_matching_file(files, search_short_path):
+def _find_matching_file(files, search_short_paths):
     for file in files:
-        if file.short_path == search_short_path:
-            return file
-    fail("Could not find file that is expected to exist: %s" % search_short_path)
+        for search_short_path in search_short_paths:
+            if file.short_path == search_short_path:
+                return file
+    fail("Could not find file that matches: %s" % (", ".join(search_short_paths)))
 
 def _is_part_of_package(file, owning_package):
     return file.short_path.startswith(owning_package)
@@ -313,7 +314,7 @@ def _ng_package_impl(ctx):
         # Module name of the current entry-point. eg. @angular/core/testing
         module_name = ""
 
-        # Packsge name where this entry-point is defined in,
+        # Package name where this entry-point is defined in,
         entry_point_package = dep.label.package
 
         # Intentionally evaluates to empty string for the main entry point
@@ -333,6 +334,10 @@ def _ng_package_impl(ctx):
         # set the "module_name" in the provider struct.
         if hasattr(dep, "module_name"):
             module_name = dep.module_name
+        elif LinkablePackageInfo in dep:
+            # Modern `ts_project` interop targets don't make use of legacy struct
+            # providers, and instead encapsulate the `module_name` in an idiomatic provider.
+            module_name = dep[LinkablePackageInfo].package_name
 
         if is_primary_entry_point:
             npm_package_name = module_name
@@ -373,8 +378,15 @@ def _ng_package_impl(ctx):
             # In case the dependency is built through the "ts_library" rule, or the "ng_module"
             # rule does not generate a flat module bundle, we determine the index file and
             # typings entry-point through the most reasonable defaults (i.e. "package/index").
-            es2022_entry_point = _find_matching_file(unscoped_esm2022_list, "%s/index.mjs" % entry_point_package)
-            typings_entry_point = _find_matching_file(unscoped_types, "%s/index.d.ts" % entry_point_package)
+            es2022_entry_point = _find_matching_file(
+                unscoped_esm2022_list,
+                [
+                    "%s/index.mjs" % entry_point_package,
+                    # Fallback for `ts_project` support where `.mjs` is not auto-generated.
+                    "%s/index.js" % entry_point_package,
+                ],
+            )
+            typings_entry_point = _find_matching_file(unscoped_types, ["%s/index.d.ts" % entry_point_package])
             guessed_paths = True
 
         bundle_name = "%s.mjs" % (primary_bundle_name if is_primary_entry_point else entry_point)
