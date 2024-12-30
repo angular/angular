@@ -95,6 +95,10 @@ export class RouterTreeVisualizer {
 
     const size = 20;
 
+    svg.selectAll('text').remove();
+    svg.selectAll('rect').remove();
+    svg.selectAll('defs').remove();
+
     svg
       .append('rect')
       .attr('x', 10)
@@ -126,8 +130,8 @@ export class RouterTreeVisualizer {
       .append('text')
       .attr('x', 37)
       .attr('y', 21)
+      .attr('class', 'legend-router-tree')
       .text('Eager loaded routes')
-
       .style('font-size', '15px')
       .attr('alignment-baseline', 'middle');
 
@@ -135,6 +139,7 @@ export class RouterTreeVisualizer {
       .append('text')
       .attr('x', 37)
       .attr('y', 56)
+      .attr('class', 'legend-router-tree')
       .text('Lazy Loaded Route')
       .style('font-size', '15px')
       .attr('alignment-baseline', 'middle');
@@ -143,6 +148,7 @@ export class RouterTreeVisualizer {
       .append('text')
       .attr('x', 37)
       .attr('y', 92)
+      .attr('class', 'legend-router-tree')
       .text('Active Route')
       .style('font-size', '15px')
       .attr('alignment-baseline', 'middle');

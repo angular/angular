@@ -19,7 +19,7 @@ import {Events, MessageBus, SerializedInjector, SerializedProviderRecord} from '
 @Component({
   selector: 'ng-injector-providers',
   template: `
-    <h1>Providers for {{ injector()?.name }}</h1>
+    <h1 class="providers-title">Providers for {{ injector()?.name }}</h1>
     @if (injector()) {
     <div class="injector-providers">
       <mat-form-field appearance="fill" class="form-field-spacer">
@@ -139,6 +139,12 @@ import {Events, MessageBus, SerializedInjector, SerializedProviderRecord} from '
 
       .example-element-description-attribution {
         opacity: 0.5;
+      }
+
+      :host-context(.dark-theme) {
+        .providers-title {
+          color: #ffffff;
+        }
       }
     `,
   ],
