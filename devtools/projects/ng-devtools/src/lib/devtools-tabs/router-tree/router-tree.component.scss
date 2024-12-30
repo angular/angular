@@ -25,3 +25,10 @@
 .svg-container {
   max-height: inherit;
 }
+
+:host-context(.dark-theme) {
+  .filter-input {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.87);
+  }
+}

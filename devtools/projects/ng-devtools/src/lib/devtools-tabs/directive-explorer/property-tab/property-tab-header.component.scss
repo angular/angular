@@ -43,3 +43,9 @@
     }
   }
 }
+
+:host-context(.dark-theme) {
+  .element-name {
+    color: #ffffff;
+  }
+}

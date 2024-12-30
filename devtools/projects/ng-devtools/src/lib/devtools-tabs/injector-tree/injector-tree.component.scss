@@ -133,12 +133,6 @@ as-split-area {
   }
 }
 
-:host-context(.dark-theme) {
-  .deps {
-    background: #161515;
-  }
-}
-
 .deps {
   display: flex;
   overflow: auto;
@@ -179,16 +173,6 @@ as-split-area {
   background: #f5f5f5;
 }
 
-:host-context(.dark-theme) {
-  .providers-title {
-    background: #161515;
-  }
-
-  .injector-graph {
-    background: #1a1a1a;
-  }
-}
-
 .injector-hierarchy {
   height: 100%;
   overflow: hidden;
@@ -212,4 +196,20 @@ as-split-area {
 .hierarchy-ref {
   color: currentColor;
   text-decoration: none;
+}
+
+:host-context(.dark-theme) {
+  .injector-hierarchy {
+    h2 {
+      color: #ffffff;
+    }
+  }
+
+  .deps {
+    background: #161515;
+  }
+
+  .injector-graph {
+    background: #1a1a1a;
+  }
 }

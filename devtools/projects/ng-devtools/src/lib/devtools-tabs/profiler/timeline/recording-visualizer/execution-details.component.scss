@@ -10,3 +10,11 @@ th,
 td {
   border-bottom: 1px solid #ddd;
 }
+
+:host-context(.dark-theme) {
+  .name,
+  .method,
+  .value {
+    color: #ffffff;
+  }
+}
