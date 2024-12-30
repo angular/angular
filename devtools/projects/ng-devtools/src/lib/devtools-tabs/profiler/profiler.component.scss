@@ -36,6 +36,12 @@
   }
 }
 
+:host-context(.dark-theme) {
+  .instructions {
+    color: #ffffff;
+  }
+}
+
 #profiler-content-wrapper {
   margin: 0;
   height: calc(100% - 30px);
