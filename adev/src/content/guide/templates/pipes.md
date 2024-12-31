@@ -260,7 +260,7 @@ export class MyCustomTransformationPipe implements PipeTransform {
 
     if (format === 'uppercase') {
       return msg.toUpperCase()
-    else {
+    } else {
       return msg
     }
   }
