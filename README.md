@@ -83,6 +83,8 @@ cd [PROJECT NAME]
 ng serve
 ```
 
+Disable ZoneJS -> https://angular.dev/guide/experimental/zoneless
+
 Angular is cross-platform, fast, scalable, has incredible tooling, and is loved by millions.
 
 ## Quickstart
