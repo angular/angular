@@ -40,12 +40,12 @@ import {from} from 'rxjs';
 import {filter} from 'rxjs/operators';
 
 import {PagePrefix} from '../../core/enums/pages';
-import {injectAsync} from '../../core/services/inject-async';
 import {
   EmbeddedTutorialManager,
   LoadingStep,
   NodeRuntimeState,
   EmbeddedEditor,
+  injectNodeRuntimeSandbox,
 } from '../../editor/index';
 import {SplitResizerHandler} from './split-resizer-handler.service';
 
@@ -151,9 +151,7 @@ export default class Tutorial {
 
     this.embeddedTutorialManager.revealAnswer();
 
-    const nodeRuntimeSandbox = await injectAsync(this.environmentInjector, () =>
-      import('../../editor/index').then((s) => s.NodeRuntimeSandbox),
-    );
+    const nodeRuntimeSandbox = await injectNodeRuntimeSandbox(this.environmentInjector);
 
     await Promise.all(
       Object.entries(this.embeddedTutorialManager.answerFiles()).map(([path, contents]) =>
@@ -169,9 +167,7 @@ export default class Tutorial {
 
     this.embeddedTutorialManager.resetRevealAnswer();
 
-    const nodeRuntimeSandbox = await injectAsync(this.environmentInjector, () =>
-      import('../../editor/index').then((s) => s.NodeRuntimeSandbox),
-    );
+    const nodeRuntimeSandbox = await injectNodeRuntimeSandbox(this.environmentInjector);
 
     await Promise.all(
       Object.entries(this.embeddedTutorialManager.tutorialFiles()).map(([path, contents]) =>
@@ -258,9 +254,7 @@ export default class Tutorial {
   }
 
   private async loadEmbeddedEditor() {
-    const nodeRuntimeSandbox = await injectAsync(this.environmentInjector, () =>
-      import('../../editor/index').then((s) => s.NodeRuntimeSandbox),
-    );
+    const nodeRuntimeSandbox = await injectNodeRuntimeSandbox(this.environmentInjector);
 
     this.canRevealAnswer = computed(() => this.nodeRuntimeState.loadingStep() > LoadingStep.BOOT);
 
