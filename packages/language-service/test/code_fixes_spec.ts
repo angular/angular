@@ -491,6 +491,38 @@ describe('code fixes', () => {
       ]);
     });
 
+    it('for an exported component from the node_modules', () => {
+      const standaloneFiles = {
+        'foo.ts': `
+         import {Component} from '@angular/core';
+         @Component({
+           selector: 'foo',
+           template: '<mat-card></mat-card>',
+           standalone: true
+         })
+         export class FooComponent {}
+         `,
+        'bar.ts': `
+         // make sure the @angular/common is found by the project
+         import {} from '@angular/common';
+         `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', {}, {}, standaloneFiles);
+      const diags = project.getDiagnosticsForFile('foo.ts');
+      const fixFile = project.openFile('foo.ts');
+      fixFile.moveCursorToText('<¦mat-card>');
+
+      const codeActions = project.getCodeFixesAtPosition('foo.ts', fixFile.cursor, fixFile.cursor, [
+        diags[0].code,
+      ]);
+      const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
+      actionChangesMatch(actionChanges, `Import MatCard from '@angular/common' on FooComponent`, [
+        [``, `import { MatCard } from "@angular/common";`],
+        [``, `, imports: [MatCard]`],
+      ]);
+    });
+
     it('for a default exported component and reuse the existing import declarations', () => {
       const standaloneFiles = {
         'foo.ts': `

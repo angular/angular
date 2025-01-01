@@ -26,7 +26,7 @@ import ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {absoluteFromSourceFile, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
-import {Reference, ReferenceEmitKind, ReferenceEmitter} from '../../imports';
+import {OwningModule, Reference, ReferenceEmitKind, ReferenceEmitter} from '../../imports';
 import {IncrementalBuild} from '../../incremental/api';
 import {
   DirectiveMeta,
@@ -84,6 +84,7 @@ import {TypeCheckShimGenerator} from './shim';
 import {TemplateSourceManager} from './source';
 import {findTypeCheckBlock, getTemplateMapping, TemplateSourceResolver} from './tcb_util';
 import {SymbolBuilder} from './template_symbol_builder';
+import {PackageMetadataCollector} from '../../metadata/src/package_metadata_collector';
 
 const REGISTRY = new DomElementSchemaRegistry();
 /**
@@ -147,6 +148,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     private readonly componentScopeReader: ComponentScopeReader,
     private readonly typeCheckScopeRegistry: TypeCheckScopeRegistry,
     private readonly perf: PerfRecorder,
+    private packageMetadataCollector: PackageMetadataCollector,
   ) {}
 
   getTemplate(component: ts.ClassDeclaration, optimizeFor?: OptimizeFor): TmplAstNode[] | null {
@@ -689,6 +691,25 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return builder;
   }
 
+  /**
+   * For the clazz in the node_modules, the `bestGuessOwningModule` should be appended here.
+   */
+  private makeClazzReference(
+    clazz: ClassDeclaration,
+    resolutionContext: string,
+  ): Reference<ClassDeclaration> {
+    const moduleSpecifier = this.packageMetadataCollector.getModuleSpecifier(clazz);
+    const ownModule: OwningModule | undefined =
+      moduleSpecifier !== undefined
+        ? {
+            specifier: moduleSpecifier,
+            resolutionContext,
+          }
+        : undefined;
+
+    return new Reference(clazz, ownModule);
+  }
+
   getPotentialTemplateDirectives(component: ts.ClassDeclaration): PotentialDirective[] {
     const typeChecker = this.programDriver.getProgram().getTypeChecker();
     const inScopeDirectives = this.getScopeData(component)?.directives ?? [];
@@ -697,11 +718,20 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     for (const d of inScopeDirectives) {
       resultingDirectives.set(d.ref.node, d);
     }
+
+    const allDirectiveClass = this.localMetaReader
+      .getKnown(MetaKind.Directive)
+      .concat(this.packageMetadataCollector.getKnown(MetaKind.Directive));
+
     // Any additional directives found from the global registry can be used, but are not in scope.
     // In the future, we can also walk other registries for .d.ts files, or traverse the
     // import/export graph.
-    for (const directiveClass of this.localMetaReader.getKnown(MetaKind.Directive)) {
-      const directiveMeta = this.metaReader.getDirectiveMetadata(new Reference(directiveClass));
+    for (const directiveClass of allDirectiveClass) {
+      const directiveRef = this.makeClazzReference(
+        directiveClass,
+        component.getSourceFile().fileName,
+      );
+      const directiveMeta = this.metaReader.getDirectiveMetadata(directiveRef);
       if (directiveMeta === null) continue;
       if (resultingDirectives.has(directiveClass)) continue;
       const withScope = this.scopeDataOfDirectiveMeta(typeChecker, directiveMeta);

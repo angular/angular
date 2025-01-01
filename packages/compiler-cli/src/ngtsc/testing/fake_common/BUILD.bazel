@@ -1,3 +1,4 @@
+load("//packages/bazel:index.bzl", "types_bundle")
 load("//tools:defaults.bzl", "ng_package", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
@@ -6,6 +7,7 @@ ts_library(
     name = "fake_common",
     srcs = [
         "index.ts",
+        "public_api.ts",
     ],
     module_name = "@angular/common",
     deps = [
@@ -13,10 +15,24 @@ ts_library(
     ],
 )
 
+# Not all the npm packages are bundled into one file. This is used to
+# test whether the language service can extract the package name from
+# the DTS file.
+types_bundle(
+    name = "api_type_definitions",
+    entry_point = "public_api.d.ts",
+    output_name = "public_api/index.d.ts",
+    deps = [":fake_common"],
+)
+
 ng_package(
     name = "npm_package",
     srcs = [
         "package.json",
+        ":api_type_definitions",
+    ],
+    skip_type_bundling = [
+        "",
     ],
     deps = [
         ":fake_common",
