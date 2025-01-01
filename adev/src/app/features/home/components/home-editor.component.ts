@@ -19,8 +19,11 @@ import {
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {forkJoin, switchMap} from 'rxjs';
 
-import {injectAsync} from '../../../core/services/inject-async';
-import {EmbeddedEditor, injectEmbeddedTutorialManager} from '../../../editor';
+import {
+  EmbeddedEditor,
+  injectEmbeddedTutorialManager,
+  injectNodeRuntimeSandbox,
+} from '../../../editor';
 
 @Component({
   selector: 'adev-code-editor',
@@ -46,9 +49,7 @@ export class CodeEditorComponent implements OnInit {
     // and completed, which can lead to a memory leak if the user navigates away from
     // this component to another page.
     forkJoin([
-      injectAsync(this.environmentInjector, () =>
-        import('../../../editor/index').then((c) => c.NodeRuntimeSandbox),
-      ),
+      injectNodeRuntimeSandbox(this.environmentInjector),
       injectEmbeddedTutorialManager(this.environmentInjector),
     ])
       .pipe(
