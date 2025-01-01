@@ -24,7 +24,8 @@ import {IconComponent, PlaygroundTemplate} from '@angular/docs';
 import {forkJoin, switchMap, tap} from 'rxjs';
 
 import {injectAsync} from '../../core/services/inject-async';
-import type {EmbeddedTutorialManager, NodeRuntimeSandbox} from '../../editor/index';
+import {injectNodeRuntimeSandbox} from '../../editor/index';
+import type {NodeRuntimeSandbox} from '../../editor/node-runtime-sandbox.service';
 
 import PLAYGROUND_ROUTE_DATA_JSON from '../../../../src/assets/tutorials/playground/routes.json';
 
@@ -62,9 +63,7 @@ export default class PlaygroundComponent implements AfterViewInit {
     // and completed, which can lead to a memory leak if the user navigates away from
     // the playground component to another page.
     forkJoin({
-      nodeRuntimeSandbox: injectAsync(this.environmentInjector, () =>
-        import('../../editor/index').then((c) => c.NodeRuntimeSandbox),
-      ),
+      nodeRuntimeSandbox: injectNodeRuntimeSandbox(this.environmentInjector),
       embeddedEditorComponent: import('../../editor/index').then((c) => c.EmbeddedEditor),
     })
       .pipe(
