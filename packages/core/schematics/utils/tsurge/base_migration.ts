@@ -7,9 +7,10 @@
  */
 
 import {absoluteFrom, FileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
+import {getRootDirs} from '@angular/compiler-cli/src/ngtsc/util/src/typescript';
 import {isShim} from '@angular/compiler-cli/src/ngtsc/shims';
 import {BaseProgramInfo, ProgramInfo} from './program_info';
-import {getRootDirs} from '@angular/compiler-cli/src/ngtsc/util/src/typescript';
 import {Serializable} from './helpers/serializable';
 import {createBaseProgramInfo} from './helpers/create_program';
 
@@ -40,8 +41,12 @@ export abstract class TsurgeBaseMigration<UnitAnalysisMetadata, CombinedGlobalMe
    *  - In 3P: Ngtsc programs are being created.
    *  - In 1P: Ngtsc or TS programs are created based on the Blaze target.
    */
-  createProgram(tsconfigAbsPath: string, fs?: FileSystem): BaseProgramInfo {
-    return createBaseProgramInfo(tsconfigAbsPath, fs);
+  createProgram(
+    tsconfigAbsPath: string,
+    fs?: FileSystem,
+    optionOverrides?: NgCompilerOptions,
+  ): BaseProgramInfo {
+    return createBaseProgramInfo(tsconfigAbsPath, fs, optionOverrides);
   }
 
   // Optional function to prepare the base `ProgramInfo` even further,
