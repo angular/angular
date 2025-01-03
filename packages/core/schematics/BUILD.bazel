@@ -1,5 +1,5 @@
-load("//tools:defaults.bzl", "pkg_npm")
 load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
+load("//tools:defaults.bzl", "pkg_npm")
 
 exports_files([
     "tsconfig.json",
@@ -13,6 +13,7 @@ pkg_npm(
         "collection.json",
         "migrations.json",
         "package.json",
+        "//packages/core/schematics/ng-generate/cleanup-unused-imports:static_files",
         "//packages/core/schematics/ng-generate/control-flow-migration:static_files",
         "//packages/core/schematics/ng-generate/inject-migration:static_files",
         "//packages/core/schematics/ng-generate/output-migration:static_files",
@@ -37,6 +38,7 @@ rollup_bundle(
         "//packages/core/schematics/ng-generate/inject-migration:index.ts": "inject-migration",
         "//packages/core/schematics/ng-generate/route-lazy-loading:index.ts": "route-lazy-loading",
         "//packages/core/schematics/ng-generate/standalone-migration:index.ts": "standalone-migration",
+        "//packages/core/schematics/ng-generate/cleanup-unused-imports:index.ts": "cleanup-unused-imports",
         "//packages/core/schematics/ng-generate/signals:index.ts": "signals",
         "//packages/core/schematics/ng-generate/signal-input-migration:index.ts": "signal-input-migration",
         "//packages/core/schematics/ng-generate/signal-queries-migration:index.ts": "signal-queries-migration",
@@ -56,6 +58,7 @@ rollup_bundle(
         "//packages/core/schematics/migrations/explicit-standalone-flag",
         "//packages/core/schematics/migrations/pending-tasks",
         "//packages/core/schematics/migrations/provide-initializer",
+        "//packages/core/schematics/ng-generate/cleanup-unused-imports",
         "//packages/core/schematics/ng-generate/control-flow-migration",
         "//packages/core/schematics/ng-generate/inject-migration",
         "//packages/core/schematics/ng-generate/output-migration",

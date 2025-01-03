@@ -46,6 +46,11 @@
       "description": "Combines all signals-related migrations into a single migration",
       "factory": "./bundles/signals#migrate",
       "schema": "./ng-generate/signals/schema.json"
+    },
+    "cleanup-unused-imports": {
+      "description": "Removes unused imports from standalone components.",
+      "factory": "./bundles/cleanup-unused-imports#migrate",
+      "schema": "./ng-generate/cleanup-unused-imports/schema.json"
     }
   }
 }
