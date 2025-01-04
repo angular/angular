@@ -11,12 +11,12 @@ import {
   AbsoluteSourceSpan,
   AST,
   ASTWithSource,
-  Binary,
   BindingPipe,
   BindingType,
   BoundElementProperty,
-  Conditional,
+  Call,
   EmptyExpr,
+  ImplicitReceiver,
   KeyedRead,
   NonNullAssert,
   ParsedEvent,
@@ -25,10 +25,10 @@ import {
   ParsedPropertyType,
   ParsedVariable,
   ParserError,
-  PrefixNot,
   PropertyRead,
   RecursiveAstVisitor,
   TemplateBinding,
+  ThisReceiver,
   VariableBinding,
 } from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
@@ -809,6 +809,17 @@ export class BindingParser {
 
     if (ast instanceof NonNullAssert) {
       return this._isAllowedAssignmentEvent(ast.expression);
+    }
+
+    if (
+      ast instanceof Call &&
+      ast.args.length === 1 &&
+      ast.receiver instanceof PropertyRead &&
+      ast.receiver.name === '$any' &&
+      ast.receiver.receiver instanceof ImplicitReceiver &&
+      !(ast.receiver.receiver instanceof ThisReceiver)
+    ) {
+      return this._isAllowedAssignmentEvent(ast.args[0]);
     }
 
     if (ast instanceof PropertyRead || ast instanceof KeyedRead) {
