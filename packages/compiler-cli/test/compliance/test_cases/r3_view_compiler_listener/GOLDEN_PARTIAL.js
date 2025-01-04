@@ -1016,3 +1016,50 @@ export declare class TestCmp {
     static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "ng-component", never, {}, {}, never, never, true, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: two_way_to_any.js
+ ****************************************************************************************************/
+import { Component, Directive, model } from '@angular/core';
+import * as i0 from "@angular/core";
+export class NgModelDirective {
+    constructor() {
+        this.ngModel = model('');
+    }
+}
+NgModelDirective.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NgModelDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+NgModelDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.1.0", version: "0.0.0-PLACEHOLDER", type: NgModelDirective, isStandalone: true, selector: "[ngModel]", inputs: { ngModel: { classPropertyName: "ngModel", publicName: "ngModel", isSignal: true, isRequired: false, transformFunction: null } }, outputs: { ngModel: "ngModelChange" }, ngImport: i0 });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NgModelDirective, decorators: [{
+            type: Directive,
+            args: [{ selector: '[ngModel]' }]
+        }] });
+export class TestCmp {
+    constructor() {
+        this.value = 123;
+    }
+}
+TestCmp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, isStandalone: true, selector: "test-cmp", ngImport: i0, template: '<input [(ngModel)]="$any(value)">', isInline: true, dependencies: [{ kind: "directive", type: NgModelDirective, selector: "[ngModel]", inputs: ["ngModel"], outputs: ["ngModelChange"] }] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'test-cmp',
+                    template: '<input [(ngModel)]="$any(value)">',
+                    imports: [NgModelDirective],
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: two_way_to_any.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class NgModelDirective {
+    ngModel: import("@angular/core").ModelSignal<string>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgModelDirective, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgModelDirective, "[ngModel]", never, { "ngModel": { "alias": "ngModel"; "required": false; "isSignal": true; }; }, { "ngModel": "ngModelChange"; }, never, never, true, never>;
+}
+export declare class TestCmp {
+    value: number;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, true, never>;
+}
+

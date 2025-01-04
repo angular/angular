@@ -491,6 +491,14 @@ describe('R3 template transform', () => {
       ]);
     });
 
+    it('should parse $any in a two-way binding', () => {
+      expectFromHtml('<div [(prop)]="$any(v)"></div>').toEqual([
+        ['Element', 'div'],
+        ['BoundAttribute', BindingType.TwoWay, 'prop', '$any(v)'],
+        ['BoundEvent', ParsedEventType.TwoWay, 'propChange', null, '$any(v)'],
+      ]);
+    });
+
     it('should parse bound events and properties via bindon-', () => {
       expectFromHtml('<div bindon-prop="v"></div>').toEqual([
         ['Element', 'div'],
@@ -553,6 +561,9 @@ describe('R3 template transform', () => {
         '!a',
         '!!a',
         'a ? b : c',
+        '$any(a || b)',
+        'this.$any(a)',
+        '$any(a, b)',
       ];
 
       for (const expression of unsupportedExpressions) {
