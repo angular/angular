@@ -12557,12 +12557,12 @@ ngx-flamegraph@0.0.12:
   dependencies:
     tslib "^2.0.0"
 
-ngx-progressbar@^13.0.0:
-  version "13.0.0"
-  resolved "https://registry.yarnpkg.com/ngx-progressbar/-/ngx-progressbar-13.0.0.tgz#8054ef717218de9778fe4a42f502141438c376e7"
-  integrity sha512-vzycISa9kddf2eo1qF7WSrHPLFRR0dia2NaxYFCSnvspJ30D69OBN8qV9gZ0BLU+AQib5I3CGhDbjF6QqvKtzA==
+ngx-progressbar@^14.0.0:
+  version "14.0.0"
+  resolved "https://registry.yarnpkg.com/ngx-progressbar/-/ngx-progressbar-14.0.0.tgz#941dd19a20bf1846f94685cda5f8aa030711934f"
+  integrity sha512-tDj7h5F2aSI4/XaJjs50FnELVe6qFqyz3vVq22acacd3oDW2EyJB4c+IYaxMf5972OdTw0WL4n6UwQ3dqC+gCA==
   dependencies:
-    tslib "^2.0.0"
+    tslib "^2.3.0"
 
 nice-try@^1.0.4:
   version "1.0.5"
