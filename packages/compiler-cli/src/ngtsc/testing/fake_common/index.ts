@@ -127,8 +127,22 @@ export * from './public_api';
 export declare class CommonModule {
   static ɵmod: ɵɵNgModuleDeclaration<
     CommonModule,
-    [typeof NgForOf, typeof NgIf, typeof DatePipe, typeof IndexPipe, typeof NgTemplateOutlet],
+    [
+      typeof NgForOf,
+      typeof NgIf,
+      typeof DatePipe,
+      typeof IndexPipe,
+      typeof NgTemplateOutlet,
+      typeof MatCard,
+    ],
     never,
-    [typeof NgForOf, typeof NgIf, typeof DatePipe, typeof IndexPipe, typeof NgTemplateOutlet]
+    [
+      typeof NgForOf,
+      typeof NgIf,
+      typeof DatePipe,
+      typeof IndexPipe,
+      typeof NgTemplateOutlet,
+      typeof MatCard,
+    ]
   >;
 }
