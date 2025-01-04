@@ -657,6 +657,34 @@ runInEachFileSystem(() => {
       );
     });
 
+    it('should be able to cast to any in a two-way binding', () => {
+      env.tsconfig({strictTemplates: true, _checkTwoWayBoundEvents: true});
+      env.write(
+        'test.ts',
+        `
+        import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
+
+        @Directive({selector: '[dir]', standalone: true})
+        export class Dir {
+          @Input() val!: number;
+          @Output() valChange = new EventEmitter<number>();
+        }
+
+        @Component({
+          template: '<input dir [(val)]="$any(invalidType)">',
+          standalone: true,
+          imports: [Dir],
+        })
+        export class FooCmp {
+          invalidType = 'hello';
+        }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
     it('should type check a two-way binding to input/output pair where the input has a wider type than the output', () => {
       env.tsconfig({strictTemplates: true, _checkTwoWayBoundEvents: true});
       env.write(

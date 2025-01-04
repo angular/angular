@@ -370,6 +370,23 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should generate a two-way binding to a $any expression",
+      "inputFiles": [
+        "two_way_to_any.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "two_way_to_any_template.js",
+              "generated": "two_way_to_any.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }
