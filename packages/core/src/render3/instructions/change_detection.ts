@@ -69,6 +69,7 @@ import {
   refreshContentQueries,
 } from './shared';
 import {runEffectsInView} from '../reactivity/view_effect_runner';
+import {isDestroyed} from '../interfaces/type_checks';
 
 /**
  * The maximum number of times the change detection traversal will rerun before throwing an error.
@@ -193,8 +194,10 @@ export function refreshView<T>(
   context: T,
 ) {
   ngDevMode && assertEqual(isCreationMode(lView), false, 'Should be run in update mode');
+
+  if (isDestroyed(lView)) return;
+
   const flags = lView[FLAGS];
-  if ((flags & LViewFlags.Destroyed) === LViewFlags.Destroyed) return;
 
   // Check no changes mode is a dev only mode used to verify that bindings have not changed
   // since they were assigned. We do not want to execute lifecycle hooks in that mode.

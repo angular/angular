@@ -459,6 +459,7 @@
   "isContentQueryHost",
   "isCssClassMatching",
   "isCurrentTNodeParent",
+  "isDestroyed",
   "isDirectiveHost",
   "isEmptyInputValue",
   "isEnvironmentProviders",

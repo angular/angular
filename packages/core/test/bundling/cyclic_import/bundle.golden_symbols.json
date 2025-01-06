@@ -316,6 +316,7 @@
   "isContentQueryHost",
   "isCssClassMatching",
   "isCurrentTNodeParent",
+  "isDestroyed",
   "isEnvironmentProviders",
   "isFunction",
   "isInlineTemplate",
