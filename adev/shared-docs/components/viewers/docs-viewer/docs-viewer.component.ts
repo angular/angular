@@ -79,7 +79,6 @@ export class DocViewer implements OnChanges {
   private readonly injector = inject(Injector);
   private readonly appRef = inject(ApplicationRef);
 
-  // tslint:disable-next-line:no-unused-variable
   private animateContent = false;
   private readonly pendingTasks = inject(PendingTasks);
 

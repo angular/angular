@@ -621,7 +621,6 @@ describe('event test.ts', () => {
     const originalEvent = document.createEvent('UIEvent') as TouchEvent;
     originalEvent.initEvent('touchend', false, false);
     // touches is readonly.
-    // tslint:disable-next-line:no-any
     (originalEvent as any).touches = [
       {clientX: 1, clientY: 2, screenX: 3, screenY: 4, pageX: 5, pageY: 6},
       {},
@@ -640,7 +639,6 @@ describe('event test.ts', () => {
     const originalEvent = document.createEvent('UIEvent') as TouchEvent;
     originalEvent.initEvent('touchend', false, false);
     // changedTouches is readonly.
-    // tslint:disable-next-line:no-any
     (originalEvent as any).changedTouches = [
       {
         clientX: 'other',
@@ -660,7 +658,6 @@ describe('event test.ts', () => {
     expect(event.screenX).toBe(3);
     expect(event.screenY).toBe(4);
     // originalEventType is a non-standard added property.
-    // tslint:disable-next-line:no-any
     expect((event as any).originalEventType).toBe('touchend');
   });
 
@@ -668,10 +665,8 @@ describe('event test.ts', () => {
     const originalEvent = document.createEvent('UIEvent') as TouchEvent;
     originalEvent.initEvent('touchend', false, false);
     // changedTouches is readonly.
-    // tslint:disable-next-line:no-any
     (originalEvent as any).changedTouches = [];
     // touches is readonly.
-    // tslint:disable-next-line:no-any
     (originalEvent as any).touches = [{clientX: 1}, {}];
 
     const event = jsactionEvent.recreateTouchEventAsClick(originalEvent);
@@ -685,7 +680,6 @@ describe('event test.ts', () => {
     const originalEvent = document.createEvent('UIEvent') as TouchEvent;
     originalEvent.initEvent('touchend', false, false);
     // touches is readonly.
-    // tslint:disable-next-line:no-any
     (originalEvent as any).touches = [
       {'clientX': 101, 'clientY': 102, 'screenX': 201, 'screenY': 202},
     ];
@@ -698,7 +692,6 @@ describe('event test.ts', () => {
 
     expect(event.type).toBe(EventType.CLICK);
     // originalEventType is a non-standard added property.
-    // tslint:disable-next-line:no-any
     expect((event as any).originalEventType).toBe(EventType.TOUCHEND);
     expect(event.target).toBe(div);
     expect(event.clientX).toBe(101);
@@ -720,7 +713,6 @@ describe('event test.ts', () => {
 
     expect(event.type).toBe(EventType.CLICK);
     // originalEventType is a non-standard added property.
-    // tslint:disable-next-line:no-any
     expect((event as any).originalEventType).toBe(EventType.TOUCHEND);
     expect(event.target).toBe(div);
     expect(event.clientX).toBeUndefined();
@@ -733,7 +725,6 @@ describe('event test.ts', () => {
     const originalEvent = document.createEvent('UIEvent') as TouchEvent;
     originalEvent.initEvent('touchend', false, false);
     // touches is readonly.
-    // tslint:disable-next-line:no-any
     (originalEvent as any).touches = [
       {clientX: 1, clientY: 2, screenX: 3, screenY: 4, pageX: 5, pageY: 6},
       {},
@@ -747,11 +738,9 @@ describe('event test.ts', () => {
     expect(event.defaultPrevented).toBe(true);
 
     // _propagationStopped is a non-standard added property.
-    // tslint:disable-next-line:no-any
     expect((event as any)['_propagationStopped']).toBe(false);
     event.stopPropagation();
     // _propagationStopped is a non-standard added property.
-    // tslint:disable-next-line:no-any
     expect((event as any)['_propagationStopped']).toBe(true);
   });
 
@@ -759,7 +748,6 @@ describe('event test.ts', () => {
     const originalEvent = document.createEvent('UIEvent') as TouchEvent;
     originalEvent.initEvent('touchend', false, false);
     // touches is readonly.
-    // tslint:disable-next-line:no-any
     (originalEvent as any).touches = [
       {clientX: 1, clientY: 2, screenX: 3, screenY: 4, pageX: 5, pageY: 6},
       {},

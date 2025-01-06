@@ -16,7 +16,6 @@ export function setRootDomAdapter(adapter: DomAdapter) {
   _DOM ??= adapter;
 }
 
-/* tslint:disable:requireParameterType */
 /**
  * Provides DOM operations in an environment-agnostic way.
  *

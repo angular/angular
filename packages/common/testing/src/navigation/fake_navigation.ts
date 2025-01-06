@@ -603,7 +603,6 @@ export class FakeNavigationHistoryEntry implements NavigationHistoryEntry {
   private readonly state: unknown;
   private readonly historyState: unknown;
 
-  // tslint:disable-next-line:no-any
   ondispose: ((this: NavigationHistoryEntry, ev: Event) => any) | null = null;
 
   constructor(
