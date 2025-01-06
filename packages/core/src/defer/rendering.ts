@@ -66,7 +66,9 @@ import {
  * This token is only injected in devMode
  */
 export const DEFER_BLOCK_DEPENDENCY_INTERCEPTOR =
-  new InjectionToken<DeferBlockDependencyInterceptor>('DEFER_BLOCK_DEPENDENCY_INTERCEPTOR');
+  /* @__PURE__ */ new InjectionToken<DeferBlockDependencyInterceptor>(
+    'DEFER_BLOCK_DEPENDENCY_INTERCEPTOR',
+  );
 
 /**
  * **INTERNAL**, token used for configuring defer block behavior.
