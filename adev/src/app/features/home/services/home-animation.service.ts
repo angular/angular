@@ -491,8 +491,7 @@ export class HomeAnimation {
 
     this.canvas.update(time, deltaTime, frame, this.progress);
     // TODO: add support for class fields arrow function
-    // Using disable-next-line to avoid tslint errors - An arrow function is required for binding to the listener
-    // tslint:disable-next-line:semicolon
+    // An arrow function is required for binding to the listener
   };
 
   /**

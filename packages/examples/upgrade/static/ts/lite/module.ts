@@ -24,7 +24,6 @@ import {BrowserModule} from '@angular/platform-browser';
 // #docregion basic-how-to
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 // #enddocregion
-/* tslint:disable: no-duplicate-imports */
 // #docregion basic-how-to
 import {downgradeComponent, downgradeModule, UpgradeComponent} from '@angular/upgrade/static';
 
