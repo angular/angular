@@ -1,5 +1,3 @@
-// tslint:disable
-
 import {Directive, ElementRef, Input, NgZone, OnDestroy, OnInit, Renderer2} from '@angular/core';
 
 import {SplitComponent} from '../component/split.component';
