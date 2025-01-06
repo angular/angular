@@ -40,17 +40,17 @@ export function HeaderApi(props: {entry: DocEntryRenderable; showFullDescription
             {getEntryTypeDisplayName(entry.entryType)}
           </div>
           {entry.isDeprecated && (
-            <div className={HEADER_ENTRY_LABEL} data-mode={'full'} data-type="deprecated">
+            <div className={`${HEADER_ENTRY_LABEL} type-deprecated full`}>
               Deprecated
             </div>
           )}
           {entry.isDeveloperPreview && (
-            <div className={HEADER_ENTRY_LABEL} data-mode={'full'} data-type="developer_preview">
+            <div className={`${HEADER_ENTRY_LABEL} type-developer_preview full`}>
               <a href="/reference/releases#developer-preview">Developer preview</a>
             </div>
           )}
           {entry.isExperimental && (
-            <div className={HEADER_ENTRY_LABEL} data-mode={'full'} data-type="experimental">
+            <div className={`${HEADER_ENTRY_LABEL} type-experimental full`}>
               <a href="/reference/releases#experimental">Experimental</a>
             </div>
           )}
