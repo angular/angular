@@ -3078,11 +3078,9 @@ const DEFAULT_COMPONENT_ID = '1';
           exp2: any = false;
           event1: AnimationEvent | undefined;
           event2: AnimationEvent | undefined;
-          // tslint:disable:semicolon
           callback1 = (event: any) => {
             this.event1 = event;
           };
-          // tslint:disable:semicolon
           callback2 = (event: any) => {
             this.event2 = event;
           };

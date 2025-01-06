@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-/* tslint:disable:no-console  */
 urlParamsToForm();
 
 export function getIntParameter(name: string) {

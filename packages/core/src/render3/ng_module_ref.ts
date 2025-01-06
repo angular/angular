@@ -51,7 +51,6 @@ export const createNgModuleRef = createNgModule;
 export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements InternalNgModuleRef<T> {
   // tslint:disable-next-line:require-internal-with-underscore
   _bootstrapComponents: Type<any>[] = [];
-  // tslint:disable-next-line:require-internal-with-underscore
   private readonly _r3Injector: R3Injector;
   override instance!: T;
   destroyCbs: (() => void)[] | null = [];

@@ -220,7 +220,6 @@ export class CodeMirrorEditor {
     if (!this.currentFile().filename.endsWith('.ts')) return;
 
     this.tsVfsWorker.postMessage(request);
-    // tslint:disable-next-line:semicolon
   };
 
   private getVfsEnvFileSystemMap(): Map<string, string> {

@@ -250,7 +250,6 @@ export function withDomHydration(): EnvironmentProviders {
               'Make sure the `provideClientHydration()` is included into the list ' +
               'of providers in the server part of the application configuration.',
           );
-          // tslint:disable-next-line:no-console
           console.warn(message);
         }
       },

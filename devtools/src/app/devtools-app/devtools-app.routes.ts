@@ -26,7 +26,6 @@ export const DEVTOOL_ROUTES: Routes = [
             new IFrameMessageBus(
               'angular-devtools',
               'angular-devtools-backend',
-              // tslint:disable-next-line: no-non-null-assertion
               () => (document.querySelector('#sample-app') as HTMLIFrameElement).contentWindow!,
             ),
           );

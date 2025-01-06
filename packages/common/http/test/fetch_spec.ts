@@ -495,7 +495,6 @@ export class MockFetchFactory extends FetchFactory {
     this.clearWarningTimeout = () => clearTimeout(timeoutId);
 
     return this.promise;
-    // tslint:disable:semicolon
   };
 
   mockFlush(

@@ -193,7 +193,6 @@ function dispatchMouseEvent(
   } = {},
 ) {
   // createEvent/initMouseEvent is used to support IE11
-  // tslint:disable:deprecation
   const event = document.createEvent('MouseEvent');
   event.initMouseEvent(
     type,
@@ -239,7 +238,6 @@ function dispatchKeyboardEvent(
   } = {},
 ) {
   // createEvent/initKeyboardEvent is used to support IE11
-  // tslint:disable:deprecation
   const event = document.createEvent('KeyboardEvent');
   event.initKeyboardEvent(
     type,
