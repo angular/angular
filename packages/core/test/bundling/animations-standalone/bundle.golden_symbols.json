@@ -370,6 +370,7 @@
   "isContentQueryHost",
   "isCssClassMatching",
   "isCurrentTNodeParent",
+  "isDestroyed",
   "isElementNode",
   "isEnvironmentProviders",
   "isFunction",

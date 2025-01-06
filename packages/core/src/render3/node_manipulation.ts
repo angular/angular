@@ -6,11 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  consumerDestroy,
-  getActiveConsumer,
-  setActiveConsumer,
-} from '@angular/core/primitives/signals';
+import {consumerDestroy, setActiveConsumer} from '@angular/core/primitives/signals';
 
 import {NotificationSource} from '../change_detection/scheduling/zoneless_scheduling';
 import {hasInSkipHydrationBlockFlag} from '../hydration/skip_hydration';
@@ -55,8 +51,8 @@ import {
   TProjectionNode,
 } from './interfaces/node';
 import {Renderer} from './interfaces/renderer';
-import {RComment, RElement, RNode, RTemplate, RText} from './interfaces/renderer_dom';
-import {isLContainer, isLView} from './interfaces/type_checks';
+import {RComment, RElement, RNode, RText} from './interfaces/renderer_dom';
+import {isDestroyed, isLContainer, isLView} from './interfaces/type_checks';
 import {
   CHILD_HEAD,
   CLEANUP,
@@ -445,15 +441,17 @@ export function detachView(lContainer: LContainer, removeIndex: number): LView |
  * @param lView The view to be destroyed.
  */
 export function destroyLView(tView: TView, lView: LView) {
-  if (!(lView[FLAGS] & LViewFlags.Destroyed)) {
-    const renderer = lView[RENDERER];
-
-    if (renderer.destroyNode) {
-      applyView(tView, lView, renderer, WalkTNodeTreeAction.Destroy, null, null);
-    }
-
-    destroyViewTree(lView);
+  if (isDestroyed(lView)) {
+    return;
   }
+
+  const renderer = lView[RENDERER];
+
+  if (renderer.destroyNode) {
+    applyView(tView, lView, renderer, WalkTNodeTreeAction.Destroy, null, null);
+  }
+
+  destroyViewTree(lView);
 }
 
 /**
@@ -465,7 +463,7 @@ export function destroyLView(tView: TView, lView: LView) {
  * @param lView The LView to clean up
  */
 function cleanUpView(tView: TView, lView: LView): void {
-  if (lView[FLAGS] & LViewFlags.Destroyed) {
+  if (isDestroyed(lView)) {
     return;
   }
 

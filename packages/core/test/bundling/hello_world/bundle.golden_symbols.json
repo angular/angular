@@ -247,6 +247,7 @@
   "isAngularZoneProperty",
   "isApplicationBootstrapConfig",
   "isComponentDef",
+  "isDestroyed",
   "isEnvironmentProviders",
   "isFunction",
   "isInlineTemplate",

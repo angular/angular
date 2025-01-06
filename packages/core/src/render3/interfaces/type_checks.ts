@@ -57,5 +57,6 @@ export function hasI18n(lView: LView): boolean {
 }
 
 export function isDestroyed(lView: LView): boolean {
+  // Determines whether a given LView is marked as destroyed.
   return (lView[FLAGS] & LViewFlags.Destroyed) === LViewFlags.Destroyed;
 }

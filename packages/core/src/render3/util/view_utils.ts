@@ -19,7 +19,7 @@ import {assertLView, assertTNode, assertTNodeForLView} from '../assert';
 import {LContainer, TYPE} from '../interfaces/container';
 import {TConstants, TNode} from '../interfaces/node';
 import {RNode} from '../interfaces/renderer_dom';
-import {isLContainer, isLView} from '../interfaces/type_checks';
+import {isDestroyed, isLContainer, isLView} from '../interfaces/type_checks';
 import {
   DECLARATION_VIEW,
   ENVIRONMENT,
@@ -271,7 +271,7 @@ export function markAncestorsForTraversal(lView: LView) {
  * Stores a LView-specific destroy callback.
  */
 export function storeLViewOnDestroy(lView: LView, onDestroyCallback: () => void) {
-  if ((lView[FLAGS] & LViewFlags.Destroyed) === LViewFlags.Destroyed) {
+  if (isDestroyed(lView)) {
     throw new RuntimeError(
       RuntimeErrorCode.VIEW_ALREADY_DESTROYED,
       ngDevMode && 'View has already been destroyed.',
