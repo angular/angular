@@ -65,8 +65,8 @@ function dynamicImportOf<T>(type: T, timeout = 0): Promise<T> {
  * Helper function to await all pending dynamic imports
  * emulated using `dynamicImportOf` function.
  */
-function allPendingDynamicImports(timeout?: number) {
-  return dynamicImportOf(null, timeout ?? 10);
+function allPendingDynamicImports() {
+  return dynamicImportOf(null, 101);
 }
 
 describe('platform-server partial hydration integration', () => {
@@ -2364,12 +2364,10 @@ describe('platform-server partial hydration integration', () => {
         location = inject(Location);
       }
 
-      const dynamicImportTimeout = 5; // ms
-
       const deferDepsInterceptor = {
         intercept() {
           return () => {
-            return [dynamicImportOf(DeferredCmp, dynamicImportTimeout)];
+            return [dynamicImportOf(DeferredCmp, 100)];
           };
         },
       };
@@ -2399,12 +2397,10 @@ describe('platform-server partial hydration integration', () => {
 
       const routeLink = doc.getElementById('route-link')!;
       routeLink.click();
-      // Wait a bit longer than a timeout used to emulate a dynamic import.
-      await allPendingDynamicImports(dynamicImportTimeout * 2);
+      await allPendingDynamicImports();
       appRef.tick();
 
-      // Wait a bit longer than a timeout used to emulate a dynamic import.
-      await allPendingDynamicImports(dynamicImportTimeout * 2);
+      await allPendingDynamicImports();
       await appRef.whenStable();
 
       expect(location.path()).toBe('/other/thing/stuff');
