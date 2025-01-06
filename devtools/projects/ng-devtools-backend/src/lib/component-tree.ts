@@ -490,7 +490,6 @@ const getRootLViewsHelper = (element: Element, rootLViews = new Set<any>()): Set
     rootLViews.add(lView);
     return rootLViews;
   }
-  // tslint:disable-next-line: prefer-for-of
   for (let i = 0; i < element.children.length; i++) {
     getRootLViewsHelper(element.children[i], rootLViews);
   }

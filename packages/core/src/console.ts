@@ -16,7 +16,6 @@ export class Console {
   }
   // Note: for reporting errors use `DOM.logError()` as it is platform specific
   warn(message: string): void {
-    // tslint:disable-next-line:no-console
     console.warn(message);
   }
 }

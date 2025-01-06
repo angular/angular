@@ -110,7 +110,8 @@ export interface EventEmitter<T> extends Subject<T>, OutputRef<T> {
 }
 
 class EventEmitter_ extends Subject<any> implements OutputRef<any> {
-  __isAsync: boolean; // tslint:disable-line
+  // tslint:disable-next-line:require-internal-with-underscore
+  __isAsync: boolean;
   destroyRef: DestroyRef | undefined = undefined;
   private readonly pendingTasks: PendingTasksInternal | undefined = undefined;
 

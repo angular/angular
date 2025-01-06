@@ -132,7 +132,6 @@ export class InMemoryBackendConfig implements InMemoryBackendConfigArgs {
 /** Return information (UriInfo) about a URI  */
 export function parseUri(str: string): UriInfo {
   // Adapted from parseuri package - http://blog.stevenlevithan.com/archives/parseuri
-  // tslint:disable-next-line:max-line-length
   const URL_REGEX =
     /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/;
   const m = URL_REGEX.exec(str);

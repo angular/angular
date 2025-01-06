@@ -163,7 +163,6 @@ function provideZoneJsCompatibilityDetector(): Provider[] {
               'that uses a custom or a noop Zone.js implementation. ' +
               'This is not yet a fully supported configuration.',
           );
-          // tslint:disable-next-line:no-console
           console.warn(message);
         }
       },
