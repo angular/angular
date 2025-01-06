@@ -956,10 +956,6 @@ Blog post: https://blog.angular.dev/meet-angular-v19-7b29dfd05b84
   be marked dirty for their host bindings to refresh. Previously, the host
   bindings were refreshed for all root views without respecting the
   `OnPush` change detection strategy.
-- `OnPush` views at the root of the application need to
-  be marked dirty for their host bindings to refresh. Previously, the host
-  bindings were refreshed for all root views without respecting the
-  `OnPush` change detection strategy.
 - The `ComponentFixture` `autoDetect` feature will no
   longer refresh the component's host view when the component is `OnPush`
   and not marked dirty. This exposes existing issues in components which
