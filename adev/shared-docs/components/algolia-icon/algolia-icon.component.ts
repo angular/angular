@@ -11,7 +11,6 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 @Component({
   selector: 'docs-algolia-icon',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [],
   templateUrl: './algolia-icon.component.html',
 })
 export class AlgoliaIcon {}

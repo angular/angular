@@ -8,16 +8,15 @@
 
 import {ChangeDetectionStrategy, Component, computed, input} from '@angular/core';
 import {ApiItemType} from '../interfaces/api-item-type';
-import {ApiLabel, shortLabelsMap} from '../pipes/api-label.pipe';
+import {shortLabelsMap} from '../pipes/api-label.pipe';
 
 @Component({
   selector: 'docs-api-item-label',
-  template: `{{ label() }}`,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class]': `clazz()`,
   },
-  imports: [ApiLabel],
+  template: `{{ label() }}`,
 })
 export default class ApiItemLabel {
   readonly type = input.required<ApiItemType>();
