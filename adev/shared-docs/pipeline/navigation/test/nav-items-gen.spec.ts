@@ -1,19 +1,30 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
 import {generateNavItems} from '../nav-items-gen';
 import {NavigationItemGenerationStrategy} from '../types';
 import fs from 'fs';
 import readline from 'readline';
 
-const readlineMock = {
-  close: () => null,
-  on: (_: string, lineFn: (line: string) => void) => {
-    lineFn('Doc first line');
+const readlineInterfaceMock = {
+  close: () => {},
+  async *[Symbol.asyncIterator]() {
+    yield '<!-- Comment -->';
+    yield 'Some random text';
+    yield '## Heading';
+    yield 'Some text';
   },
 };
 
 describe('generateNavItems', () => {
   it('should test the default case', async () => {
     spyOn(fs, 'createReadStream').and.returnValue({destroy: () => null} as any);
-    spyOn(readline, 'createInterface').and.returnValue(readlineMock as any);
+    spyOn(readline, 'createInterface').and.returnValue(readlineInterfaceMock as any);
 
     const strategy: NavigationItemGenerationStrategy = {
       pathPrefix: 'page',
@@ -25,12 +36,12 @@ describe('generateNavItems', () => {
 
     expect(navItems).toEqual([
       {
-        label: 'home // Doc first line',
+        label: 'home // Heading',
         path: 'page/home',
         contentPath: 'content/directory/home',
       },
       {
-        label: 'about // Doc first line',
+        label: 'about // Heading',
         path: 'page/about',
         contentPath: 'content/directory/about',
       },

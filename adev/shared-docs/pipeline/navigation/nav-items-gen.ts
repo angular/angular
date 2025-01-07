@@ -1,10 +1,10 @@
-// /*!
-//  * @license
-//  * Copyright Google LLC All Rights Reserved.
-//  *
-//  * Use of this source code is governed by an MIT-style license that can be
-//  * found in the LICENSE file at https://angular.dev/license
-//  */
+/*!
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
 
 import fs from 'fs';
 import readline from 'readline';
@@ -30,7 +30,7 @@ export async function generateNavItems(
   for (const path of mdFilesPaths) {
     const fullPath = resolve(dirname(path), basename(path));
     const name = path.split('/').pop()?.replace('.md', '')!;
-    const firstLine = await getTextfileFirstLine(fullPath);
+    const firstLine = await getMdFileHeading(fullPath);
 
     navItems.push({
       label: labelGeneratorFn(name, firstLine),
@@ -42,18 +42,18 @@ export async function generateNavItems(
   return navItems;
 }
 
-/** Extract the first line of a text file optimally. */
-async function getTextfileFirstLine(filePath: string): Promise<string> {
+/** Extract the first heading from a Markdown file. */
+async function getMdFileHeading(filePath: string): Promise<string> {
   const readStream = fs.createReadStream(filePath);
   const rl = readline.createInterface({input: readStream});
 
-  const line = await new Promise<string>((resolve) =>
-    rl.on('line', (line) => {
+  for await (const line of rl) {
+    if (line.trim().startsWith('#')) {
       rl.close();
-      resolve(line);
-    }),
-  );
-  readStream.destroy();
+      readStream.destroy();
+      return line.replace(/^#+[ \t]+/, '');
+    }
+  }
 
-  return line;
+  return '';
 }

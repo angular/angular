@@ -1,16 +1,18 @@
-// /*!
-//  * @license
-//  * Copyright Google LLC All Rights Reserved.
-//  *
-//  * Use of this source code is governed by an MIT-style license that can be
-//  * found in the LICENSE file at https://angular.dev/license
-//  */
+/*!
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
 
 import {NavigationItemGenerationStrategy, Strategy} from './types';
 
+// Should point to the website content.
+// Update, if the location is updated or shared-docs is extracted from `adev/`.
 const CONTENT_FOLDER_PATH = 'adev/src/content/';
 
-// Using an object for type safety (i.e. make sure SUPPORTED_STRATEGIES includes all strategies).
+// Ensure that all Strategy-ies are part of SUPPORTED_STRATEGIES by using a key-typed object.
 const strategiesObj: {[key in Strategy]: null} = {errors: null, 'extended-diagnostics': null};
 const SUPPORTED_STRATEGIES = Object.keys(strategiesObj);
 
@@ -38,7 +40,7 @@ function errorsStrategy(packageDir: string): NavigationItemGenerationStrategy {
   return {
     pathPrefix: 'errors',
     contentPath: packageDir.replace(CONTENT_FOLDER_PATH, ''),
-    labelGeneratorFn: (fileName, firstLine) => firstLine.replace('#', fileName + ':'),
+    labelGeneratorFn: (fileName, firstLine) => fileName + ': ' + firstLine,
   };
 }
 
@@ -47,6 +49,6 @@ function extendedDiagnosticsStrategy(packageDir: string): NavigationItemGenerati
   return {
     pathPrefix: 'extended-diagnostics',
     contentPath: packageDir.replace(CONTENT_FOLDER_PATH, ''),
-    labelGeneratorFn: (fileName, firstLine) => firstLine.replace('#', fileName + ':'),
+    labelGeneratorFn: (fileName, firstLine) => fileName + ': ' + firstLine,
   };
 }
