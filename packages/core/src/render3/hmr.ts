@@ -124,8 +124,9 @@ function recreateMatchingLViews(def: ComponentDef<unknown>, rootLView: LView): v
  */
 function clearRendererCache(factory: RendererFactory, def: ComponentDef<unknown>) {
   // Cast to read a private field.
-  // NOTE: This must be kept synchronized with the renderer factory implementation in platform-browser.
-  (factory as {rendererByCompId?: Map<string, unknown>}).rendererByCompId?.delete(def.id);
+  // NOTE: This must be kept synchronized with the renderer factory implementation in
+  // platform-browser and platform-browser/animations.
+  (factory as {componentReplaced?: (id: string) => void}).componentReplaced?.(def.id);
 }
 
 /**
