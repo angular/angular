@@ -11,9 +11,9 @@ import {
   Inject,
   Injectable,
   InjectionToken,
+  Injector,
   NgModule,
   Optional,
-  Provider,
   ɵConsole as Console,
 } from '@angular/core';
 
@@ -178,7 +178,7 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
   constructor(
     @Inject(DOCUMENT) doc: any,
     @Inject(HAMMER_GESTURE_CONFIG) private _config: HammerGestureConfig,
-    private console: Console,
+    private _injector: Injector,
     @Optional() @Inject(HAMMER_LOADER) private loader?: HammerLoader | null,
   ) {
     super(doc);
@@ -191,7 +191,10 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
 
     if (!(window as any).Hammer && !this.loader) {
       if (typeof ngDevMode === 'undefined' || ngDevMode) {
-        this.console.warn(
+        // Get a `Console` through an injector to tree-shake the
+        // class when it is unused in production.
+        const _console = this._injector.get(Console);
+        _console.warn(
           `The "${eventName}" event cannot be bound because Hammer.JS is not ` +
             `loaded and no custom loader has been specified.`,
         );
@@ -223,9 +226,8 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
           // If Hammer isn't actually loaded when the custom loader resolves, give up.
           if (!(window as any).Hammer) {
             if (typeof ngDevMode === 'undefined' || ngDevMode) {
-              this.console.warn(
-                `The custom HAMMER_LOADER completed, but Hammer.JS is not present.`,
-              );
+              const _console = this._injector.get(Console);
+              _console.warn(`The custom HAMMER_LOADER completed, but Hammer.JS is not present.`);
             }
             deregister = () => {};
             return;
@@ -239,7 +241,8 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
           }
         }).catch(() => {
           if (typeof ngDevMode === 'undefined' || ngDevMode) {
-            this.console.warn(
+            const _console = this._injector.get(Console);
+            _console.warn(
               `The "${eventName}" event cannot be bound because the custom ` +
                 `Hammer.JS loader failed.`,
             );
@@ -297,7 +300,7 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
       provide: EVENT_MANAGER_PLUGINS,
       useClass: HammerGesturesPlugin,
       multi: true,
-      deps: [DOCUMENT, HAMMER_GESTURE_CONFIG, Console, [new Optional(), HAMMER_LOADER]],
+      deps: [DOCUMENT, HAMMER_GESTURE_CONFIG, Injector, [new Optional(), HAMMER_LOADER]],
     },
     {provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig, deps: []},
   ],
