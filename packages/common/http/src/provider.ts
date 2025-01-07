@@ -16,7 +16,7 @@ import {
 
 import {HttpBackend, HttpHandler} from './backend';
 import {HttpClient} from './client';
-import {FetchBackend} from './fetch';
+import {FETCH_BACKEND, FetchBackend} from './fetch';
 import {
   HTTP_INTERCEPTOR_FNS,
   HttpInterceptorFn,
@@ -128,7 +128,7 @@ export function provideHttpClient(
     {
       provide: HttpBackend,
       useFactory: () => {
-        return inject(FetchBackend, {optional: true}) ?? inject(HttpXhrBackend);
+        return inject(FETCH_BACKEND, {optional: true}) ?? inject(HttpXhrBackend);
       },
     },
     {
@@ -305,6 +305,7 @@ export function withRequestsMadeViaParent(): HttpFeature<HttpFeatureKind.Request
 export function withFetch(): HttpFeature<HttpFeatureKind.Fetch> {
   return makeHttpFeature(HttpFeatureKind.Fetch, [
     FetchBackend,
+    {provide: FETCH_BACKEND, useExisting: FetchBackend},
     {provide: HttpBackend, useExisting: FetchBackend},
   ]);
 }
