@@ -1,5 +1,5 @@
-load("//tools:defaults.bzl", "ng_module")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//tools:defaults.bzl", "ng_module")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -10,7 +10,6 @@ ng_module(
     ],
     assets = [
         ":icon.component.css",
-        "icon.component.html",
     ],
     visibility = [
         "//adev/shared-docs/components:__pkg__",

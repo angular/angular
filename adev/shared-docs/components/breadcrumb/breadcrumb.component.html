@@ -1,4 +1,4 @@
-@for (breadcrumb of breadcrumbItems(); track breadcrumb) {
+@for (breadcrumb of breadcrumbItems(); track $index) {
   <div class="docs-breadcrumb">
     @if (breadcrumb.path) {
       @if (breadcrumb.isExternal) {
