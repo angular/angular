@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, Injectable, NgZone} from '@angular/core';
+import {inject, Injectable, InjectionToken, NgZone} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 
 import {HttpBackend} from './backend';
@@ -38,6 +38,14 @@ function getResponseUrl(response: Response): string | null {
   const xRequestUrl = REQUEST_URL_HEADER.toLocaleLowerCase();
   return response.headers.get(xRequestUrl);
 }
+
+/**
+ * An internal injection token to reference `FetchBackend` implementation
+ * in a tree-shakable way.
+ */
+export const FETCH_BACKEND = new InjectionToken<FetchBackend>(
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'FETCH_BACKEND' : '',
+);
 
 /**
  * Uses `fetch` to send requests to a backend server.
