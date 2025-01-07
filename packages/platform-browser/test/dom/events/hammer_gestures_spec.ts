@@ -15,7 +15,6 @@ import {
 
 describe('HammerGesturesPlugin', () => {
   let plugin: HammerGesturesPlugin;
-  let fakeConsole: any;
 
   if (isNode) {
     // Jasmine will throw if there are no tests.
@@ -23,18 +22,15 @@ describe('HammerGesturesPlugin', () => {
     return;
   }
 
-  beforeEach(() => {
-    fakeConsole = {warn: jasmine.createSpy('console.warn')};
-  });
-
   describe('with no custom loader', () => {
     beforeEach(() => {
-      plugin = new HammerGesturesPlugin(document, new HammerGestureConfig(), fakeConsole);
+      plugin = new HammerGesturesPlugin(document, new HammerGestureConfig(), TestBed);
     });
 
     it('should warn user and do nothing when Hammer.js not loaded', () => {
+      const warnSpy = spyOn(console, 'warn');
       expect(plugin.supports('swipe')).toBe(false);
-      expect(fakeConsole.warn).toHaveBeenCalledWith(
+      expect(warnSpy).toHaveBeenCalledWith(
         `The "swipe" event cannot be bound because Hammer.JS is not ` +
           `loaded and no custom loader has been specified.`,
       );
@@ -90,7 +86,7 @@ describe('HammerGesturesPlugin', () => {
       const hammerConfig = new HammerGestureConfig();
       spyOn(hammerConfig, 'buildHammer').and.returnValue(fakeHammerInstance);
 
-      plugin = new HammerGesturesPlugin(document, hammerConfig, fakeConsole, loader);
+      plugin = new HammerGesturesPlugin(document, hammerConfig, TestBed, loader);
 
       // Use a fake EventManager that has access to the NgZone.
       plugin.manager = {getZone: () => ngZone} as EventManager;
@@ -114,8 +110,9 @@ describe('HammerGesturesPlugin', () => {
     });
 
     it('should not log a warning when HammerJS is not loaded', () => {
+      const warnSpy = spyOn(console, 'warn');
       plugin.addEventListener(someElement, 'swipe', () => {});
-      expect(fakeConsole.warn).not.toHaveBeenCalled();
+      expect(warnSpy).not.toHaveBeenCalled();
     });
 
     it('should defer registering an event until Hammer is loaded', fakeAsync(() => {
@@ -152,21 +149,25 @@ describe('HammerGesturesPlugin', () => {
     }));
 
     it('should log a warning when the loader fails', fakeAsync(() => {
+      const warnSpy = spyOn(console, 'warn');
+
       plugin.addEventListener(someElement, 'swipe', () => {});
       failLoader();
       tick();
 
-      expect(fakeConsole.warn).toHaveBeenCalledWith(
+      expect(warnSpy).toHaveBeenCalledWith(
         `The "swipe" event cannot be bound because the custom Hammer.JS loader failed.`,
       );
     }));
 
     it('should load a warning if the loader resolves and Hammer is not present', fakeAsync(() => {
+      const warnSpy = spyOn(console, 'warn');
+
       plugin.addEventListener(someElement, 'swipe', () => {});
       resolveLoader();
       tick();
 
-      expect(fakeConsole.warn).toHaveBeenCalledWith(
+      expect(warnSpy).toHaveBeenCalledWith(
         `The custom HAMMER_LOADER completed, but Hammer.JS is not present.`,
       );
     }));
