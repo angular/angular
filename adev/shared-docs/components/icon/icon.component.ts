@@ -18,24 +18,21 @@ import {
 
 @Component({
   selector: 'docs-icon',
-  templateUrl: './icon.component.html',
-  styleUrl: './icon.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '[class]': 'MATERIAL_SYMBOLS_OUTLINED',
+    'class': 'material-symbols-outlined',
     '[style.font-size.px]': 'fontSize()',
     'aria-hidden': 'true',
     'translate': 'no',
   },
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content />',
+  styleUrl: './icon.component.scss',
 })
 export class IconComponent {
-  fontSize = computed(() => {
-    return IconComponent.isFontLoaded() ? null : 0;
-  });
-
-  protected readonly MATERIAL_SYMBOLS_OUTLINED = 'material-symbols-outlined';
-
   private static isFontLoaded = signal(false);
+
+  protected readonly fontSize = computed(() => (IconComponent.isFontLoaded() ? null : 0));
+
   /** Share the same promise across different instances of the component */
   private static whenFontLoad?: Promise<FontFace[]> | undefined;
 
