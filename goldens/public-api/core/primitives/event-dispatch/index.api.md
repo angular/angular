@@ -30,11 +30,11 @@ export class EventContract implements UnrenamedEventContract {
     constructor(containerManager: EventContractContainerManager);
     addEvent(eventType: string, prefixedEventType?: string, passive?: boolean): void;
     cleanUp(): void;
-    ecrd(dispatcher: Dispatcher, restriction: Restriction): void;
+    ecrd(dispatcher: Dispatcher, restriction: typeof RESTRICTION): void;
     handler(eventType: string): EventHandler | undefined;
     // (undocumented)
     static MOUSE_SPECIAL_SUPPORT: boolean;
-    registerDispatcher(dispatcher: Dispatcher, restriction: Restriction): void;
+    registerDispatcher(dispatcher: Dispatcher, restriction: typeof RESTRICTION): void;
     replayEarlyEventInfos(earlyEventInfos: EventInfo[]): void;
     replayEarlyEvents(earlyJsactionData?: EarlyJsactionData | undefined): void;
 }
@@ -118,7 +118,7 @@ export const isCaptureEventType: (eventType: string) => boolean;
 export const isEarlyEventType: (eventType: string) => boolean;
 
 // @public
-export function registerAppScopedDispatcher(restriction: Restriction, appId: string, dispatcher: (eventInfo: EventInfo) => void, dataContainer?: EarlyJsactionDataContainer): void;
+export function registerAppScopedDispatcher(restriction: typeof RESTRICTION, appId: string, dispatcher: (eventInfo: EventInfo) => void, dataContainer?: EarlyJsactionDataContainer): void;
 
 // @public
 export function registerDispatcher(eventContract: UnrenamedEventContract, dispatcher: EventDispatcher): void;

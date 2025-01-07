@@ -7,9 +7,12 @@
  */
 
 /**
- * @fileoverview An enum to control who can call certain jsaction APIs.
+ * @fileoverview Provides a unique symbol used for internal access control to jsaction APIs.
+ *
+ * This avoids using an `enum` or `const enum` to reduce bundle size and avoid issues
+ * with single-file compilation. Using a plain `const` with a `unique symbol` ensures
+ * type safety without runtime overhead.
  */
-
-export enum Restriction {
-  I_AM_THE_JSACTION_FRAMEWORK,
-}
+export const RESTRICTION: unique symbol = /* @__PURE__ */ Symbol(
+  'core.primitives.event-dispatch.src.restriction.RESTRICTION',
+);

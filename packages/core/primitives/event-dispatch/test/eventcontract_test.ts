@@ -18,7 +18,7 @@ import {
 import {EventInfoWrapper} from '../src/event_info';
 import {EventType} from '../src/event_type';
 import {Dispatcher, EventContract} from '../src/eventcontract';
-import {Restriction} from '../src/restriction';
+import {RESTRICTION} from '../src/restriction';
 
 import {safeElement, testonlyHtml} from './html';
 
@@ -97,7 +97,7 @@ function createEventContract({
     }
   }
   if (dispatcher) {
-    eventContract.registerDispatcher(dispatcher, Restriction.I_AM_THE_JSACTION_FRAMEWORK);
+    eventContract.registerDispatcher(dispatcher, RESTRICTION);
   }
   return eventContract;
 }
@@ -248,7 +248,7 @@ describe('EventContract', () => {
     const clickEvent = dispatchMouseEvent(targetElement);
 
     const dispatcher = createDispatcherSpy();
-    eventContract.registerDispatcher(dispatcher, Restriction.I_AM_THE_JSACTION_FRAMEWORK);
+    eventContract.registerDispatcher(dispatcher, RESTRICTION);
 
     expect(dispatcher).toHaveBeenCalledTimes(1);
 

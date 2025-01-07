@@ -30,24 +30,20 @@
  * possible and thus its dependencies to a minimum.
  */
 
-import {
-  EarlyJsactionData,
-  EarlyJsactionDataContainer,
-  removeAllEventListeners,
-} from './earlyeventcontract';
+import {EarlyJsactionData, removeAllEventListeners} from './earlyeventcontract';
 import * as eventLib from './event';
 import {EventContractContainerManager} from './event_contract_container';
 import {MOUSE_SPECIAL_SUPPORT} from './event_contract_defines';
 import * as eventInfoLib from './event_info';
 import {MOUSE_SPECIAL_EVENT_TYPES} from './event_type';
-import {Restriction} from './restriction';
+import {RESTRICTION} from './restriction';
 
 /**
  * The API of an EventContract that is safe to call from any compilation unit.
  */
 export declare interface UnrenamedEventContract {
   // Alias for Jsction EventContract registerDispatcher.
-  ecrd(dispatcher: Dispatcher, restriction: Restriction): void;
+  ecrd(dispatcher: Dispatcher, restriction: typeof RESTRICTION): void;
 }
 
 /** A function that is called to handle events captured by the EventContract. */
@@ -271,7 +267,7 @@ export class EventContract implements UnrenamedEventContract {
    * @param dispatcher The dispatcher function.
    * @param restriction
    */
-  registerDispatcher(dispatcher: Dispatcher, restriction: Restriction) {
+  registerDispatcher(dispatcher: Dispatcher, restriction: typeof RESTRICTION) {
     this.ecrd(dispatcher, restriction);
   }
 
@@ -280,7 +276,7 @@ export class EventContract implements UnrenamedEventContract {
    * split the `EventContract` and `Dispatcher` code into different compilation
    * units.
    */
-  ecrd(dispatcher: Dispatcher, restriction: Restriction) {
+  ecrd(dispatcher: Dispatcher, restriction: typeof RESTRICTION) {
     this.dispatcher = dispatcher;
 
     if (this.queuedEventInfos?.length) {

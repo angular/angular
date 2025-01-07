@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Restriction} from './restriction';
 import {
   EarlyJsactionDataContainer,
   addEvents,
@@ -16,6 +15,7 @@ import {
   removeAllEventListeners,
 } from './earlyeventcontract';
 import {EventInfo} from './event_info';
+import {RESTRICTION} from './restriction';
 
 /**
  * Creates an `EarlyJsactionData`, adds events to it, and populates it on a nested object on
@@ -50,7 +50,7 @@ export function getAppScopedQueuedEventInfos(
  * window.
  */
 export function registerAppScopedDispatcher(
-  restriction: Restriction,
+  restriction: typeof RESTRICTION,
   appId: string,
   dispatcher: (eventInfo: EventInfo) => void,
   dataContainer: EarlyJsactionDataContainer = window,
