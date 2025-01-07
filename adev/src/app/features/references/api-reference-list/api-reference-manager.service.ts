@@ -10,7 +10,6 @@ import {Injectable, signal} from '@angular/core';
 // This file is generated at build-time, error is expected here.
 import API_MANIFEST_JSON from '../../../../../src/assets/api/manifest.json';
 import {getApiUrl} from '../helpers/manifest.helper';
-import {ApiItem} from '../interfaces/api-item';
 import {ApiItemsGroup} from '../interfaces/api-items-group';
 import {ApiManifest} from '../interfaces/api-manifest';
 

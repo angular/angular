@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, OnInit, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, computed} from '@angular/core';
 import {NavigationState} from '../../services/index';
 import {NavigationItem} from '../../interfaces/index';
 import {RouterLink} from '@angular/router';
@@ -18,31 +18,18 @@ import {RouterLink} from '@angular/router';
   styleUrls: ['./breadcrumb.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Breadcrumb implements OnInit {
+export class Breadcrumb {
   private readonly navigationState = inject(NavigationState);
 
-  breadcrumbItems = signal<NavigationItem[]>([]);
+  breadcrumbItems = computed(() => {
+    const breadcrumbs: NavigationItem[] = [];
+    let activeItem = this.navigationState.activeNavigationItem()?.parent;
 
-  ngOnInit(): void {
-    this.setBreadcrumbItemsBasedOnNavigationStructure();
-  }
+    while (activeItem != null) {
+      breadcrumbs.push(activeItem);
+      activeItem = activeItem.parent;
+    }
 
-  private setBreadcrumbItemsBasedOnNavigationStructure(): void {
-    let breadcrumbs: NavigationItem[] = [];
-
-    const traverse = (node: NavigationItem | null) => {
-      if (!node) {
-        return;
-      }
-
-      if (node.parent) {
-        breadcrumbs = [node.parent, ...breadcrumbs];
-        traverse(node.parent);
-      }
-    };
-
-    traverse(this.navigationState.activeNavigationItem());
-
-    this.breadcrumbItems.set(breadcrumbs);
-  }
+    return breadcrumbs.reverse();
+  });
 }
