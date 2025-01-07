@@ -33,9 +33,9 @@ export function bootstrapApplication(rootComponent: Type<unknown>, options?: App
 
 // @public
 export class BrowserModule {
-    constructor(providersAlreadyPresent: boolean | null);
+    constructor();
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<BrowserModule, [{ optional: true; skipSelf: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<BrowserModule, never>;
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<BrowserModule>;
     // (undocumented)
