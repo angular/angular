@@ -16,7 +16,6 @@ import {
   computed,
   ContentChildren,
   createComponent,
-  createEnvironmentInjector,
   destroyPlatform,
   Directive,
   effect,
@@ -37,8 +36,7 @@ import {
   ViewContainerRef,
 } from '@angular/core';
 import {SIGNAL} from '@angular/core/primitives/signals';
-import {takeUntilDestroyed, toObservable} from '@angular/core/rxjs-interop';
-import {createInjector} from '@angular/core/src/di/create_injector';
+import {toObservable} from '@angular/core/rxjs-interop';
 import {
   EffectNode,
   setUseMicrotaskEffectsByDefault,
@@ -46,7 +44,6 @@ import {
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
-import {filter, firstValueFrom, map} from 'rxjs';
 
 describe('reactivity', () => {
   let prev: boolean;
@@ -486,6 +483,53 @@ describe('reactivity', () => {
 
         (fix.componentInstance.injector as Injector & {destroy(): void}).destroy();
         expect(destroyed).toBeTrue();
+      });
+
+      it('should not run root effects after it has been destroyed', async () => {
+        let effectCounter = 0;
+        const counter = signal(1);
+        const effectRef = TestBed.runInInjectionContext(() =>
+          effect(
+            () => {
+              counter();
+              effectCounter++;
+            },
+            {injector: TestBed.inject(EnvironmentInjector)},
+          ),
+        );
+        expect(effectCounter).toBe(0);
+        effectRef.destroy();
+        TestBed.flushEffects();
+        expect(effectCounter).toBe(0);
+
+        counter.set(2);
+        TestBed.flushEffects();
+        expect(effectCounter).toBe(0);
+      });
+
+      it('should not run view effects after it has been destroyed', async () => {
+        let effectCounter = 0;
+
+        @Component({template: ''})
+        class TestCmp {
+          counter = signal(1);
+          effectRef = effect(() => {
+            this.counter();
+            effectCounter++;
+          });
+        }
+
+        const fixture = TestBed.createComponent(TestCmp);
+        fixture.componentInstance.effectRef.destroy();
+        fixture.detectChanges();
+        expect(effectCounter).toBe(0);
+
+        TestBed.flushEffects();
+        expect(effectCounter).toBe(0);
+
+        fixture.componentInstance.counter.set(2);
+        TestBed.flushEffects();
+        expect(effectCounter).toBe(0);
       });
     });
   });
