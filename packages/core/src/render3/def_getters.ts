@@ -50,6 +50,5 @@ export function getPipeDef<T>(type: any): PipeDef<T> | null {
  */
 export function isStandalone(type: Type<unknown>): boolean {
   const def = getComponentDef(type) || getDirectiveDef(type) || getPipeDef(type);
-  // TODO: standalone as default value (invert the condition)
-  return def !== null ? def.standalone : false;
+  return def !== null && def.standalone;
 }
