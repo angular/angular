@@ -667,7 +667,6 @@
   "init_resource",
   "init_resource2",
   "init_resource_loading",
-  "init_restriction",
   "init_root_effect_scheduler",
   "init_sanitization",
   "init_sanitizer",
