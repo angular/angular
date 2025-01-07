@@ -9,7 +9,6 @@
   "ApplicationModule",
   "ApplicationRef",
   "BROWSER_MODULE_PROVIDERS",
-  "BROWSER_MODULE_PROVIDERS_MARKER",
   "BehaviorSubject",
   "BrowserDomAdapter",
   "BrowserModule",

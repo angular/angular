@@ -13,25 +13,20 @@ import {
   ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID,
 } from '@angular/common';
 import {
-  APP_ID,
   ApplicationConfig as ApplicationConfigFromCore,
   ApplicationModule,
   ApplicationRef,
   createPlatformFactory,
   ErrorHandler,
-  Inject,
   InjectionToken,
-  ModuleWithProviders,
   NgModule,
   NgZone,
-  Optional,
   PLATFORM_ID,
   PLATFORM_INITIALIZER,
   platformCore,
   PlatformRef,
   Provider,
   RendererFactory2,
-  SkipSelf,
   StaticProvider,
   Testability,
   TestabilityRegistry,
@@ -42,6 +37,7 @@ import {
   ɵsetDocument,
   ɵTESTABILITY as TESTABILITY,
   ɵTESTABILITY_GETTER as TESTABILITY_GETTER,
+  inject,
 } from '@angular/core';
 
 import {BrowserDomAdapter} from './browser/browser_adapter';
@@ -264,18 +260,20 @@ const BROWSER_MODULE_PROVIDERS: Provider[] = [
   exports: [CommonModule, ApplicationModule],
 })
 export class BrowserModule {
-  constructor(
-    @Optional()
-    @SkipSelf()
-    @Inject(BROWSER_MODULE_PROVIDERS_MARKER)
-    providersAlreadyPresent: boolean | null,
-  ) {
-    if ((typeof ngDevMode === 'undefined' || ngDevMode) && providersAlreadyPresent) {
-      throw new RuntimeError(
-        RuntimeErrorCode.BROWSER_MODULE_ALREADY_LOADED,
-        `Providers from the \`BrowserModule\` have already been loaded. If you need access ` +
-          `to common directives such as NgIf and NgFor, import the \`CommonModule\` instead.`,
-      );
+  constructor() {
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      const providersAlreadyPresent = inject(BROWSER_MODULE_PROVIDERS_MARKER, {
+        optional: true,
+        skipSelf: true,
+      });
+
+      if (providersAlreadyPresent) {
+        throw new RuntimeError(
+          RuntimeErrorCode.BROWSER_MODULE_ALREADY_LOADED,
+          `Providers from the \`BrowserModule\` have already been loaded. If you need access ` +
+            `to common directives such as NgIf and NgFor, import the \`CommonModule\` instead.`,
+        );
+      }
     }
   }
 }
