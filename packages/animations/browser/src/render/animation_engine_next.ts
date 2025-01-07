@@ -61,8 +61,10 @@ export class AnimationEngine {
       if (errors.length) {
         throw triggerBuildFailed(name, errors);
       }
-      if (warnings.length) {
-        warnTriggerBuild(name, warnings);
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        if (warnings.length) {
+          warnTriggerBuild(name, warnings);
+        }
       }
       trigger = buildTrigger(name, ast, this._normalizer);
       this._triggerCache[cacheKey] = trigger;

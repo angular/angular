@@ -35,8 +35,10 @@ export class Animation {
     if (errors.length) {
       throw validationFailed(errors);
     }
-    if (warnings.length) {
-      warnValidation(warnings);
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      if (warnings.length) {
+        warnValidation(warnings);
+      }
     }
     this._animationAst = ast;
   }
