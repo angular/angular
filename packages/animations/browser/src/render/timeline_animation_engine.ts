@@ -58,8 +58,10 @@ export class TimelineAnimationEngine {
     if (errors.length) {
       throw registerFailed(errors);
     } else {
-      if (warnings.length) {
-        warnRegister(warnings);
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        if (warnings.length) {
+          warnRegister(warnings);
+        }
       }
       this._animations.set(id, ast);
     }
