@@ -1691,6 +1691,10 @@ export function setTestabilityGetter(getter: GetTestability): void;
 // @public
 export type Signal<T> = (() => T) & {
     [SIGNAL]: unknown;
+    readonly name: unknown;
+    readonly length: unknown;
+    readonly arguments: unknown;
+    readonly caller: unknown;
 };
 
 // @public

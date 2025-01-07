@@ -35,7 +35,16 @@ export interface SignalNode<T> extends ReactiveNode {
   equal: ValueEqualityFn<T>;
 }
 
-export type SignalBaseGetter<T> = (() => T) & {readonly [SIGNAL]: unknown};
+export type SignalBaseGetter<T> = (() => T) & {
+  readonly [SIGNAL]: unknown;
+
+  // Hide properties inherited from Function.
+
+  readonly name: unknown;
+  readonly length: unknown;
+  readonly arguments: unknown;
+  readonly caller: unknown;
+};
 
 // Note: Closure *requires* this to be an `interface` and not a type, which is why the
 // `SignalBaseGetter` type exists to provide the correct shape.

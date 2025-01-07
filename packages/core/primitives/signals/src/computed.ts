@@ -45,6 +45,13 @@ export interface ComputedNode<T> extends ReactiveNode {
 
 export type ComputedGetter<T> = (() => T) & {
   [SIGNAL]: ComputedNode<T>;
+
+  // Hide properties inherited from Function.
+
+  readonly name: unknown;
+  readonly length: unknown;
+  readonly arguments: unknown;
+  readonly caller: unknown;
 };
 
 /**

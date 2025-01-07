@@ -18,6 +18,13 @@ import {SIGNAL} from '@angular/core/primitives/signals';
  */
 export type Signal<T> = (() => T) & {
   [SIGNAL]: unknown;
+
+  // Hide properties inherited from Function.
+
+  readonly name: unknown;
+  readonly length: unknown;
+  readonly arguments: unknown;
+  readonly caller: unknown;
 };
 
 /**

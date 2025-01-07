@@ -58,6 +58,13 @@ interface LinkedSignalNode<S, D> extends ReactiveNode {
 
 export type LinkedSignalGetter<S, D> = (() => D) & {
   [SIGNAL]: LinkedSignalNode<S, D>;
+
+  // Hide properties inherited from Function.
+
+  readonly name: unknown;
+  readonly length: unknown;
+  readonly arguments: unknown;
+  readonly caller: unknown;
 };
 
 const identityFn = <T>(v: T) => v;
