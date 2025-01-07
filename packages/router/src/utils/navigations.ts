@@ -18,7 +18,7 @@ import {
   NavigationSkipped,
 } from '../events';
 
-enum NavigationResult {
+const enum NavigationResult {
   COMPLETE,
   FAILED,
   REDIRECTING,
