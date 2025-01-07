@@ -195,6 +195,14 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
   ngOnDestroy() {
     this.rendererByCompId.clear();
   }
+
+  /**
+   * Used during HMR to clear any cached data about a component.
+   * @param componentId ID of the component that is being replaced.
+   */
+  protected componentReplaced(componentId: string) {
+    this.rendererByCompId.delete(componentId);
+  }
 }
 
 class DefaultDomRenderer2 implements Renderer2 {
