@@ -26,10 +26,13 @@ import {InjectionToken} from '../di/injection_token';
  *
  * @developerPreview
  */
-export const REQUEST = new InjectionToken<Request | null>('REQUEST', {
-  providedIn: 'platform',
-  factory: () => null,
-});
+export const REQUEST = new InjectionToken<Request | null>(
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'REQUEST' : '',
+  {
+    providedIn: 'platform',
+    factory: () => null,
+  },
+);
 
 /**
  * Injection token for response initialization options.
@@ -49,10 +52,13 @@ export const REQUEST = new InjectionToken<Request | null>('REQUEST', {
  *
  * @developerPreview
  */
-export const RESPONSE_INIT = new InjectionToken<ResponseInit | null>('RESPONSE_INIT', {
-  providedIn: 'platform',
-  factory: () => null,
-});
+export const RESPONSE_INIT = new InjectionToken<ResponseInit | null>(
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'RESPONSE_INIT' : '',
+  {
+    providedIn: 'platform',
+    factory: () => null,
+  },
+);
 
 /**
  * Injection token for additional request context.
@@ -64,7 +70,10 @@ export const RESPONSE_INIT = new InjectionToken<ResponseInit | null>('RESPONSE_I
  *
  * @developerPreview
  */
-export const REQUEST_CONTEXT = new InjectionToken<unknown>('REQUEST_CONTEXT', {
-  providedIn: 'platform',
-  factory: () => null,
-});
+export const REQUEST_CONTEXT = new InjectionToken<unknown>(
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'REQUEST_CONTEXT' : '',
+  {
+    providedIn: 'platform',
+    factory: () => null,
+  },
+);
