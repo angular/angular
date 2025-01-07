@@ -45,7 +45,6 @@
   "InjectionToken",
   "Injector",
   "InputFlags",
-  "LContainerFlags",
   "LOCALE_ID2",
   "LifecycleHooksFeature",
   "NEW_LINE",
