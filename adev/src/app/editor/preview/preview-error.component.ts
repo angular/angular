@@ -16,7 +16,6 @@ import {ErrorType, NodeRuntimeState} from '../node-runtime-state.service';
   templateUrl: './preview-error.component.html',
   styleUrls: ['./preview-error.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [],
 })
 export class PreviewError {
   private readonly nodeRuntimeState = inject(NodeRuntimeState);
