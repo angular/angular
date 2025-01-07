@@ -135,7 +135,6 @@
   "NavigationCancellationCode",
   "NavigationEnd",
   "NavigationError",
-  "NavigationResult",
   "NavigationSkipped",
   "NavigationSkippedCode",
   "NavigationStart",
