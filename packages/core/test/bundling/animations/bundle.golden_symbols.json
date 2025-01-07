@@ -97,7 +97,6 @@
   "Injector",
   "InputFlags",
   "KeyEventsPlugin",
-  "LContainerFlags",
   "LEAVE_TOKEN_REGEX",
   "LOCALE_ID2",
   "LifecycleHooksFeature",
