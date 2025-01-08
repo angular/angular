@@ -6,4 +6,4 @@ Managing state transitions is one of the hardest parts of building applications.
 The Angular router is designed to solve these problems. Using the router, you can declaratively specify application state, manage state transitions while taking care of the URL, and load components on demand.
 
 ## Guide
-Read the dev guide [here](https://angular.io/guide/routing/common-router-tasks).
+Read the dev guide [here](https://angular.dev/guide/routing).
