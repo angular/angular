@@ -306,7 +306,7 @@ function main(args: string[]): void {
    * the module conditional exports and the ESM module type.
    */
   function updatePrimaryPackageJson(packageJson: Readonly<PackageJson>): PackageJson {
-    if (packageJson.type !== 'module') {
+    if (packageJson.type !== undefined && packageJson.type !== 'module') {
       throw Error(
         'The primary "package.json" file of the package sets the "type" field ' +
           'that is controlled by the packager. Please unset it or set `type` to `module`.',
