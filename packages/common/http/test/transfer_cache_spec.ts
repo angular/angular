@@ -88,6 +88,14 @@ describe('TransferCache', () => {
       return response;
     }
 
+    beforeEach(() => {
+      globalThis['ngServerMode'] = true;
+    });
+
+    afterEach(() => {
+      globalThis['ngServerMode'] = undefined;
+    });
+
     beforeEach(
       withBody('<test-app-http></test-app-http>', () => {
         TestBed.resetTestingModule();
@@ -323,6 +331,14 @@ describe('TransferCache', () => {
     });
 
     describe('caching in browser context', () => {
+      beforeEach(() => {
+        globalThis['ngServerMode'] = false;
+      });
+
+      afterEach(() => {
+        globalThis['ngServerMode'] = undefined;
+      });
+
       beforeEach(
         withBody('<test-app-http></test-app-http>', () => {
           TestBed.resetTestingModule();
