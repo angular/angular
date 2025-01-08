@@ -78,6 +78,13 @@ function isUrlSearchParams(value: any): value is URLSearchParams {
 }
 
 /**
+ * `X-Request-URL` is a custom HTTP header used in older browser versions,
+ * including Firefox (< 32), Chrome (< 37), Safari (< 8), and Internet Explorer,
+ * to include the full URL of the request in cross-origin requests.
+ */
+export const X_REQUEST_URL_HEADER = 'X-Request-URL';
+
+/**
  * An outgoing HTTP request with an optional typed body.
  *
  * `HttpRequest` represents an outgoing request, including URL, method,

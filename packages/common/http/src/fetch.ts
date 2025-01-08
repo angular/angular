@@ -11,7 +11,7 @@ import {Observable, Observer} from 'rxjs';
 
 import {HttpBackend} from './backend';
 import {HttpHeaders} from './headers';
-import {HttpRequest} from './request';
+import {HttpRequest, X_REQUEST_URL_HEADER} from './request';
 import {
   HTTP_STATUS_CODE_OK,
   HttpDownloadProgressEvent,
@@ -24,8 +24,6 @@ import {
 
 const XSSI_PREFIX = /^\)\]\}',?\n/;
 
-const REQUEST_URL_HEADER = `X-Request-URL`;
-
 /**
  * Determine an appropriate URL for the response, by checking either
  * response url or the X-Request-URL header.
@@ -35,7 +33,7 @@ function getResponseUrl(response: Response): string | null {
     return response.url;
   }
   // stored as lowercase in the map
-  const xRequestUrl = REQUEST_URL_HEADER.toLocaleLowerCase();
+  const xRequestUrl = X_REQUEST_URL_HEADER.toLocaleLowerCase();
   return response.headers.get(xRequestUrl);
 }
 
