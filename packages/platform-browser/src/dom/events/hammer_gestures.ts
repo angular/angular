@@ -68,7 +68,9 @@ const EVENT_NAMES = {
  * @ngModule HammerModule
  * @publicApi
  */
-export const HAMMER_GESTURE_CONFIG = new InjectionToken<HammerGestureConfig>('HammerGestureConfig');
+export const HAMMER_GESTURE_CONFIG = new InjectionToken<HammerGestureConfig>(
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'HammerGestureConfig' : '',
+);
 
 /**
  * Function that loads HammerJS, returning a promise that is resolved once HammerJs is loaded.
@@ -84,7 +86,9 @@ export type HammerLoader = () => Promise<void>;
  *
  * @publicApi
  */
-export const HAMMER_LOADER = new InjectionToken<HammerLoader>('HammerLoader');
+export const HAMMER_LOADER = new InjectionToken<HammerLoader>(
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'HammerLoader' : '',
+);
 
 export interface HammerInstance {
   on(eventName: string, callback?: Function): void;
