@@ -36,134 +36,144 @@ import {PRECONNECT_CHECK_BLOCKLIST} from '../../src/directives/ng_optimized_imag
 
 describe('Image directive', () => {
   describe('preload <link> element on a server', () => {
-    it('should create `<link>` element when the image priority attr is true', () => {
-      // Only run this test in a browser since the Node-based DOM mocks don't
-      // allow to override `HTMLImageElement.prototype.setAttribute` easily.
-      if (!isBrowser) return;
-
-      const src = 'preload1/img.png';
-
-      setupTestingModule({
-        extraProviders: [
-          {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
-          {
-            provide: IMAGE_LOADER,
-            useValue: (config: ImageLoaderConfig) =>
-              config.width
-                ? `https://angular.io/${config.src}?width=${config.width}`
-                : `https://angular.io/${config.src}`,
-          },
-        ],
+    describe('server', () => {
+      beforeEach(() => {
+        globalThis['ngServerMode'] = true;
       });
 
-      const template = `<img ngSrc="${src}" width="150" height="50" priority sizes="10vw" ngSrcset="100w">`;
-      TestBed.overrideComponent(TestComponent, {set: {template: template}});
-
-      const _document = TestBed.inject(DOCUMENT);
-      const _window = _document.defaultView!;
-      const setAttributeSpy = spyOn(
-        _window.HTMLLinkElement.prototype,
-        'setAttribute',
-      ).and.callThrough();
-
-      const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
-
-      const head = _document.head;
-
-      const rewrittenSrc = `https://angular.io/${src}`;
-
-      const preloadLink = head.querySelector(`link[href="${rewrittenSrc}"]`);
-
-      expect(preloadLink).toBeTruthy();
-
-      const [name, value] = setAttributeSpy.calls.argsFor(0);
-
-      expect(name).toEqual('as');
-      expect(value).toEqual('image');
-
-      expect(preloadLink!.getAttribute('rel')).toEqual('preload');
-      expect(preloadLink!.getAttribute('as')).toEqual('image');
-      expect(preloadLink!.getAttribute('imagesizes')).toEqual('10vw');
-      expect(preloadLink!.getAttribute('imagesrcset')).toEqual(`${rewrittenSrc}?width=100 100w`);
-      expect(preloadLink!.getAttribute('fetchpriority')).toEqual('high');
-
-      preloadLink!.remove();
-    });
-
-    it('should not create a preload `<link>` element when src is already preloaded.', () => {
-      // Only run this test in a browser since the Node-based DOM mocks don't
-      // allow to override `HTMLImageElement.prototype.setAttribute` easily.
-      if (!isBrowser) return;
-
-      const src = `preload2/img.png`;
-
-      const rewrittenSrc = `https://angular.io/${src}`;
-
-      setupTestingModule({
-        extraProviders: [
-          {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
-          {
-            provide: IMAGE_LOADER,
-            useValue: (config: ImageLoaderConfig) => `https://angular.io/${config.src}`,
-          },
-        ],
+      afterEach(() => {
+        globalThis['ngServerMode'] = undefined;
       });
 
-      const template = `<img ngSrc="${src}" width="150" height="50" priority><img ngSrc="${src}" width="150" height="50" priority>`;
-      TestBed.overrideComponent(TestComponent, {set: {template: template}});
+      it('should create `<link>` element when the image priority attr is true', () => {
+        // Only run this test in a browser since the Node-based DOM mocks don't
+        // allow to override `HTMLImageElement.prototype.setAttribute` easily.
+        if (!isBrowser) return;
 
-      const _document = TestBed.inject(DOCUMENT);
+        const src = 'preload1/img.png';
 
-      const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
+        setupTestingModule({
+          extraProviders: [
+            {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
+            {
+              provide: IMAGE_LOADER,
+              useValue: (config: ImageLoaderConfig) =>
+                config.width
+                  ? `https://angular.io/${config.src}?width=${config.width}`
+                  : `https://angular.io/${config.src}`,
+            },
+          ],
+        });
 
-      const head = _document.head;
+        const template = `<img ngSrc="${src}" width="150" height="50" priority sizes="10vw" ngSrcset="100w">`;
+        TestBed.overrideComponent(TestComponent, {set: {template: template}});
 
-      const preloadImages = TestBed.inject(PRELOADED_IMAGES);
+        const _document = TestBed.inject(DOCUMENT);
+        const _window = _document.defaultView!;
+        const setAttributeSpy = spyOn(
+          _window.HTMLLinkElement.prototype,
+          'setAttribute',
+        ).and.callThrough();
 
-      expect(preloadImages.has(rewrittenSrc)).toBeTruthy();
-
-      const preloadLinks = head.querySelectorAll(`link[href="${rewrittenSrc}"]`);
-
-      expect(preloadLinks.length).toEqual(1);
-
-      preloadLinks[0]!.remove();
-    });
-
-    it('should error when the number of preloaded images is larger than the limit', () => {
-      // Only run this test in a browser since the Node-based DOM mocks don't
-      // allow to override `HTMLImageElement.prototype.setAttribute` easily.
-      if (!isBrowser) return;
-
-      setupTestingModule({
-        extraProviders: [
-          {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
-          {
-            provide: IMAGE_LOADER,
-            useValue: (config: ImageLoaderConfig) => `https://angular.io/${config.src}`,
-          },
-        ],
-      });
-
-      const template = `
-                <img ngSrc="preloaderror2/img.png" width="150" height="50" priority>
-                <img ngSrc="preloaderror3/img.png" width="150" height="50" priority>
-                <img ngSrc="preloaderro4/img.png" width="150" height="50" priority>
-                <img ngSrc="preloaderror5/img.png" width="150" height="50" priority>
-                <img ngSrc="preloaderror6/img.png" width="150" height="50" priority>
-                <img ngSrc="preloaderror7/img.png" width="150" height="50" priority>
-                <img ngSrc="preloaderror8/img.png" width="150" height="50" priority>
-                <img ngSrc="preloaderror9/img.png" width="150" height="50" priority>
-                <img ngSrc="preloaderror10/img.png" width="150" height="50" priority>
-                `;
-
-      expect(() => {
-        const fixture = createTestComponent(template);
+        const fixture = TestBed.createComponent(TestComponent);
         fixture.detectChanges();
-      }).toThrowError(
-        'NG02961: The `NgOptimizedImage` directive has detected that more than 5 images were marked as priority. This might negatively affect an overall performance of the page. To fix this, remove the "priority" attribute from images with less priority.',
-      );
+
+        const head = _document.head;
+
+        const rewrittenSrc = `https://angular.io/${src}`;
+
+        const preloadLink = head.querySelector(`link[href="${rewrittenSrc}"]`);
+
+        expect(preloadLink).toBeTruthy();
+
+        const [name, value] = setAttributeSpy.calls.argsFor(0);
+
+        expect(name).toEqual('as');
+        expect(value).toEqual('image');
+
+        expect(preloadLink!.getAttribute('rel')).toEqual('preload');
+        expect(preloadLink!.getAttribute('as')).toEqual('image');
+        expect(preloadLink!.getAttribute('imagesizes')).toEqual('10vw');
+        expect(preloadLink!.getAttribute('imagesrcset')).toEqual(`${rewrittenSrc}?width=100 100w`);
+        expect(preloadLink!.getAttribute('fetchpriority')).toEqual('high');
+
+        preloadLink!.remove();
+      });
+
+      it('should not create a preload `<link>` element when src is already preloaded.', () => {
+        // Only run this test in a browser since the Node-based DOM mocks don't
+        // allow to override `HTMLImageElement.prototype.setAttribute` easily.
+        if (!isBrowser) return;
+
+        const src = `preload2/img.png`;
+
+        const rewrittenSrc = `https://angular.io/${src}`;
+
+        setupTestingModule({
+          extraProviders: [
+            {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
+            {
+              provide: IMAGE_LOADER,
+              useValue: (config: ImageLoaderConfig) => `https://angular.io/${config.src}`,
+            },
+          ],
+        });
+
+        const template = `<img ngSrc="${src}" width="150" height="50" priority><img ngSrc="${src}" width="150" height="50" priority>`;
+        TestBed.overrideComponent(TestComponent, {set: {template: template}});
+
+        const _document = TestBed.inject(DOCUMENT);
+
+        const fixture = TestBed.createComponent(TestComponent);
+        fixture.detectChanges();
+
+        const head = _document.head;
+
+        const preloadImages = TestBed.inject(PRELOADED_IMAGES);
+
+        expect(preloadImages.has(rewrittenSrc)).toBeTruthy();
+
+        const preloadLinks = head.querySelectorAll(`link[href="${rewrittenSrc}"]`);
+
+        expect(preloadLinks.length).toEqual(1);
+
+        preloadLinks[0]!.remove();
+      });
+
+      it('should error when the number of preloaded images is larger than the limit', () => {
+        // Only run this test in a browser since the Node-based DOM mocks don't
+        // allow to override `HTMLImageElement.prototype.setAttribute` easily.
+        if (!isBrowser) return;
+
+        setupTestingModule({
+          extraProviders: [
+            {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
+            {
+              provide: IMAGE_LOADER,
+              useValue: (config: ImageLoaderConfig) => `https://angular.io/${config.src}`,
+            },
+          ],
+        });
+
+        const template = `
+                  <img ngSrc="preloaderror2/img.png" width="150" height="50" priority>
+                  <img ngSrc="preloaderror3/img.png" width="150" height="50" priority>
+                  <img ngSrc="preloaderro4/img.png" width="150" height="50" priority>
+                  <img ngSrc="preloaderror5/img.png" width="150" height="50" priority>
+                  <img ngSrc="preloaderror6/img.png" width="150" height="50" priority>
+                  <img ngSrc="preloaderror7/img.png" width="150" height="50" priority>
+                  <img ngSrc="preloaderror8/img.png" width="150" height="50" priority>
+                  <img ngSrc="preloaderror9/img.png" width="150" height="50" priority>
+                  <img ngSrc="preloaderror10/img.png" width="150" height="50" priority>
+                  `;
+
+        expect(() => {
+          const fixture = createTestComponent(template);
+          fixture.detectChanges();
+        }).toThrowError(
+          'NG02961: The `NgOptimizedImage` directive has detected that more than 5 images were marked as priority. This might negatively affect an overall performance of the page. To fix this, remove the "priority" attribute from images with less priority.',
+        );
+      });
     });
 
     it('should not hit max preload limit when not on the server', () => {
@@ -878,6 +888,9 @@ describe('Image directive', () => {
     it(
       'should log a warning if the priority attribute is used too often',
       withHead('<link rel="preconnect" href="https://angular.io/">', async () => {
+        // This test is running both on server and in the browser.
+        globalThis['ngServerMode'] = !isBrowser;
+
         // We need to reset the count as previous test might have incremented it already
         resetImagePriorityCount();
 
@@ -922,6 +935,8 @@ describe('Image directive', () => {
           // The warning is only logged on browsers
           expect(consoleWarnSpy.calls.count()).toBe(0);
         }
+
+        globalThis['ngServerMode'] = undefined;
       }),
     );
   });
@@ -1341,36 +1356,46 @@ describe('Image directive', () => {
     });
 
     if (isBrowser) {
-      it('should throw if the placeholder height exceeds the threshold', () => {
-        setUpModuleNoLoader();
+      describe('browser', () => {
+        beforeEach(() => {
+          globalThis['ngServerMode'] = false;
+        });
 
-        const template = `<img ngSrc="path/img.png" width="100" height="100" style="width:1001px; height: 300px" placeholder="data:image/png;base64,${'a'.repeat(
-          100,
-        )}">`;
+        afterEach(() => {
+          globalThis['ngServerMode'] = undefined;
+        });
 
-        const consoleWarnSpy = spyOn(console, 'warn');
-        const fixture = createTestComponent(template);
-        fixture.detectChanges();
-        expect(consoleWarnSpy.calls.count()).toBe(1);
-        expect(consoleWarnSpy.calls.argsFor(0)[0]).toMatch(
-          new RegExp(`NG0${RuntimeErrorCode.PLACEHOLDER_DIMENSION_LIMIT_EXCEEDED}:`),
-        );
-      });
+        it('should throw if the placeholder height exceeds the threshold', () => {
+          setUpModuleNoLoader();
 
-      it('should throw if the placeholder width exceeds the threshold', () => {
-        setUpModuleNoLoader();
+          const template = `<img ngSrc="path/img.png" width="100" height="100" style="width:1001px; height: 300px" placeholder="data:image/png;base64,${'a'.repeat(
+            100,
+          )}">`;
 
-        const template = `<img ngSrc="path/img.png" width="100" height="100" style="height:1001px; width: 300px" placeholder="data:image/png;base64,${'a'.repeat(
-          100,
-        )}">`;
+          const consoleWarnSpy = spyOn(console, 'warn');
+          const fixture = createTestComponent(template);
+          fixture.detectChanges();
+          expect(consoleWarnSpy.calls.count()).toBe(1);
+          expect(consoleWarnSpy.calls.argsFor(0)[0]).toMatch(
+            new RegExp(`NG0${RuntimeErrorCode.PLACEHOLDER_DIMENSION_LIMIT_EXCEEDED}:`),
+          );
+        });
 
-        const consoleWarnSpy = spyOn(console, 'warn');
-        const fixture = createTestComponent(template);
-        fixture.detectChanges();
-        expect(consoleWarnSpy.calls.count()).toBe(1);
-        expect(consoleWarnSpy.calls.argsFor(0)[0]).toMatch(
-          new RegExp(`NG0${RuntimeErrorCode.PLACEHOLDER_DIMENSION_LIMIT_EXCEEDED}:`),
-        );
+        it('should throw if the placeholder width exceeds the threshold', () => {
+          setUpModuleNoLoader();
+
+          const template = `<img ngSrc="path/img.png" width="100" height="100" style="height:1001px; width: 300px" placeholder="data:image/png;base64,${'a'.repeat(
+            100,
+          )}">`;
+
+          const consoleWarnSpy = spyOn(console, 'warn');
+          const fixture = createTestComponent(template);
+          fixture.detectChanges();
+          expect(consoleWarnSpy.calls.count()).toBe(1);
+          expect(consoleWarnSpy.calls.argsFor(0)[0]).toMatch(
+            new RegExp(`NG0${RuntimeErrorCode.PLACEHOLDER_DIMENSION_LIMIT_EXCEEDED}:`),
+          );
+        });
       });
     }
   });
