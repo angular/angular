@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, PLATFORM_ID, ɵɵdefineInjectable} from '@angular/core';
+import {inject, ɵɵdefineInjectable} from '@angular/core';
 
 import {DOCUMENT} from './dom_tokens';
-import {isPlatformBrowser} from './platform_id';
 
 /**
  * Defines a scroll position manager. Implemented by `BrowserViewportScroller`.
@@ -24,9 +23,9 @@ export abstract class ViewportScroller {
     token: ViewportScroller,
     providedIn: 'root',
     factory: () =>
-      isPlatformBrowser(inject(PLATFORM_ID))
-        ? new BrowserViewportScroller(inject(DOCUMENT), window)
-        : new NullViewportScroller(),
+      typeof ngServerMode !== 'undefined' && ngServerMode
+        ? new NullViewportScroller()
+        : new BrowserViewportScroller(inject(DOCUMENT), window),
   });
 
   /**
