@@ -1,3 +1,26 @@
+<a name="19.0.6"></a>
+# 19.0.6 (2025-01-08)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [06a55e9817](https://github.com/angular/angular/commit/06a55e98173ff7bdd4e2ac1263309f9b935240f0) | fix | account for more expression types when determining HMR dependencies ([#59323](https://github.com/angular/angular/pull/59323)) |
+| [17fb20f85d](https://github.com/angular/angular/commit/17fb20f85db9f3c172c194c0436644f34b7176b1) | fix | preserve defer block dependencies during HMR when class metadata is disabled ([#59313](https://github.com/angular/angular/pull/59313)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [07afce81b8](https://github.com/angular/angular/commit/07afce81b8ce28d1b308ff25017a4d4993881f36) | fix | Ensure that a destroyed `effect` never run. ([#59415](https://github.com/angular/angular/pull/59415)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dbb8980d03](https://github.com/angular/angular/commit/dbb8980d03485ad1cf0e19503c4e770b1ba0767e) | fix | avoid circular DI error in async renderer ([#59271](https://github.com/angular/angular/pull/59271)) |
+| [6d00efde95](https://github.com/angular/angular/commit/6d00efde952971573359b32cab06d0a513600fe0) | fix | styles not replaced during HMR when using animations renderer ([#59393](https://github.com/angular/angular/pull/59393)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [144bccb687](https://github.com/angular/angular/commit/144bccb6872ece8fa1cf4954b5839054ccf20aa1) | fix | avoid component ID collisions with user code ([#59300](https://github.com/angular/angular/pull/59300)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.0.5"></a>
 # 19.0.5 (2024-12-18)
 ### core
