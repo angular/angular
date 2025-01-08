@@ -23,7 +23,10 @@ export const DEFAULT_PRELOADED_IMAGES_LIMIT = 5;
  * This Set tracks the original src passed into the `ngSrc` input not the src after it has been
  * run through the specified `IMAGE_LOADER`.
  */
-export const PRELOADED_IMAGES = new InjectionToken<Set<string>>('NG_OPTIMIZED_PRELOADED_IMAGES', {
-  providedIn: 'root',
-  factory: () => new Set<string>(),
-});
+export const PRELOADED_IMAGES = new InjectionToken<Set<string>>(
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'NG_OPTIMIZED_PRELOADED_IMAGES' : '',
+  {
+    providedIn: 'root',
+    factory: () => new Set<string>(),
+  },
+);
