@@ -53,6 +53,14 @@ describe('provideClientHydration', () => {
     override isStable = new BehaviorSubject<boolean>(false);
   }
 
+  beforeEach(() => {
+    globalThis['ngServerMode'] = true;
+  });
+
+  afterEach(() => {
+    globalThis['ngServerMode'] = undefined;
+  });
+
   describe('default', () => {
     beforeEach(
       withBody(
