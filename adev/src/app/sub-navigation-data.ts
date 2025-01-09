@@ -1464,6 +1464,11 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         path: 'reference/migrations/signal-queries',
         contentPath: 'reference/migrations/signal-queries',
       },
+      {
+        label: 'Clean up unused imports',
+        path: 'reference/migrations/cleanup-unused-imports',
+        contentPath: 'reference/migrations/cleanup-unused-imports',
+      },
     ],
   },
 ];
