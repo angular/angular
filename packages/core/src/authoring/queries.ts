@@ -12,7 +12,7 @@ import {
   createMultiResultQuerySignalFn,
   createSingleResultOptionalQuerySignalFn,
   createSingleResultRequiredQuerySignalFn,
-} from '../render3/query_reactive';
+} from '../render3/queries/query_reactive';
 import {Signal} from '../render3/reactivity/api';
 
 function viewChildFn<LocatorT, ReadT>(

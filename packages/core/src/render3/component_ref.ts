@@ -43,7 +43,6 @@ import {
   addToEndOfViewTree,
   createLView,
   createTView,
-  executeContentQueries,
   getInitialLViewFlagsFromDef,
   getOrCreateComponentTView,
   getOrCreateTNode,
@@ -91,6 +90,7 @@ import {ChainedInjector} from './chained_injector';
 import {unregisterLView} from './interfaces/lview_tracking';
 import {profiler} from './profiler';
 import {ProfilerEvent} from './profiler_types';
+import {executeContentQueries} from './queries/query_execution';
 
 export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
   /**
