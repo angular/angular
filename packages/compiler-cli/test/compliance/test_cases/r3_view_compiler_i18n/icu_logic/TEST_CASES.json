@@ -53,7 +53,7 @@
           "files": [
             {
               "generated": "bare_icu.js",
-              "expected": "bare_icu.pipeline.js"
+              "expected": "bare_icu.js"
             }
           ],
           "extraChecks": [

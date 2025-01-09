@@ -12,7 +12,7 @@
           "files": [
             {
               "generated": "local_ref_on_host.js",
-              "expected": "local_ref_on_host.pipeline.js"
+              "expected": "local_ref_on_host.js"
             }
           ]
         }
