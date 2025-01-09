@@ -89,7 +89,7 @@
           "failureMessage": "Incorrect attribute array",
           "files": [
             {
-              "expected": "exclude_bindings_from_consts_template.pipeline.js",
+              "expected": "exclude_bindings_from_consts_template.js",
               "generated": "exclude_bindings_from_consts.js"
             }
           ]
