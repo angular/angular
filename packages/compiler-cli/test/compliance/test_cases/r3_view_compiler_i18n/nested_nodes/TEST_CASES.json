@@ -151,7 +151,7 @@
           "files": [
             {
               "generated": "nested_elements_with_i18n_attributes.js",
-              "expected": "nested_elements_with_i18n_attributes_template.pipeline.js"
+              "expected": "nested_elements_with_i18n_attributes_template.js"
             }
           ],
           "extraChecks": [
@@ -171,7 +171,7 @@
           "files": [
             {
               "generated": "nested_templates.js",
-              "expected": "nested_templates.pipeline.js"
+              "expected": "nested_templates.js"
             }
           ],
           "extraChecks": [
@@ -191,7 +191,7 @@
           "files": [
             {
               "generated": "self_closing.js",
-              "expected": "self_closing_template.pipeline.js"
+              "expected": "self_closing_template.js"
             }
           ],
           "extraChecks": [
@@ -225,7 +225,7 @@
           "files": [
             {
               "generated": "directives.js",
-              "expected": "directives.pipeline.js"
+              "expected": "directives.js"
             }
           ],
           "extraChecks": [
@@ -245,7 +245,7 @@
           "files": [
             {
               "generated": "event_listeners.js",
-              "expected": "event_listeners_template.pipeline.js"
+              "expected": "event_listeners_template.js"
             }
           ],
           "extraChecks": [
@@ -296,7 +296,7 @@
           ],
           "files": [
             {
-              "expected": "last_elem_inside_i18n_block_template.pipeline.js",
+              "expected": "last_elem_inside_i18n_block_template.js",
               "generated": "last_elem_inside_i18n_block.js"
             }
           ]
