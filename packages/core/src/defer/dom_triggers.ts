@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {afterNextRender} from '../render3/after_render/hooks';
 import type {Injector} from '../di';
-import {AfterRenderRef} from '../render3/after_render/api';
-import {afterRender} from '../render3/after_render/hooks';
 import {assertLContainer, assertLView} from '../render3/assert';
 import {CONTAINER_HEADER_OFFSET} from '../render3/interfaces/container';
 import {TNode} from '../render3/interfaces/node';
@@ -281,11 +280,9 @@ export function registerDomTrigger(
 ) {
   const injector = initialLView[INJECTOR];
   const zone = injector.get(NgZone);
-  let poll: AfterRenderRef;
   function pollDomTrigger() {
     // If the initial view was destroyed, we don't need to do anything.
     if (isDestroyed(initialLView)) {
-      poll.destroy();
       return;
     }
 
@@ -297,7 +294,6 @@ export function registerDomTrigger(
       renderedState !== DeferBlockInternalState.Initial &&
       renderedState !== DeferBlockState.Placeholder
     ) {
-      poll.destroy();
       return;
     }
 
@@ -305,11 +301,9 @@ export function registerDomTrigger(
 
     // Keep polling until we resolve the trigger's LView.
     if (!triggerLView) {
-      // Keep polling.
+      afterNextRender({read: pollDomTrigger}, {injector});
       return;
     }
-
-    poll.destroy();
 
     // It's possible that the trigger's view was destroyed before we resolved the trigger element.
     if (isDestroyed(triggerLView)) {
@@ -345,5 +339,5 @@ export function registerDomTrigger(
   }
 
   // Begin polling for the trigger.
-  poll = afterRender({read: pollDomTrigger}, {injector});
+  afterNextRender({read: pollDomTrigger}, {injector});
 }

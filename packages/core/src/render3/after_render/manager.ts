@@ -6,19 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {TracingAction, TracingService, TracingSnapshot} from '../../application/tracing';
+import {AfterRenderPhase, AfterRenderRef} from './api';
+import {NgZone} from '../../zone';
+import {inject} from '../../di/injector_compatibility';
+import {ɵɵdefineInjectable} from '../../di/interface/defs';
+import {ErrorHandler} from '../../error_handler';
 import {
   ChangeDetectionScheduler,
   NotificationSource,
 } from '../../change_detection/scheduling/zoneless_scheduling';
-import {inject} from '../../di/injector_compatibility';
-import {ɵɵdefineInjectable} from '../../di/interface/defs';
-import {ErrorHandler} from '../../error_handler';
 import {type DestroyRef} from '../../linker/destroy_ref';
-import {NgZone} from '../../zone';
-import {AFTER_RENDER_SEQUENCES_TO_ADD, FLAGS, LView, LViewFlags} from '../interfaces/view';
-import {markAncestorsForTraversal} from '../util/view_utils';
-import {AfterRenderPhase, AfterRenderRef} from './api';
+import {TracingAction, TracingService, TracingSnapshot} from '../../application/tracing';
 
 export class AfterRenderManager {
   impl: AfterRenderImpl | null = null;
@@ -104,32 +102,20 @@ export class AfterRenderImpl {
       this.sequences.add(sequence);
     }
     if (this.deferredRegistrations.size > 0) {
-      this.scheduler.notify(NotificationSource.RenderHook);
+      this.scheduler.notify(NotificationSource.DeferredRenderHook);
     }
     this.deferredRegistrations.clear();
   }
 
   register(sequence: AfterRenderSequence): void {
-    const {view} = sequence;
-    if (view !== undefined) {
-      // Delay adding it to the manager, add it to the view instead.
-      (view[AFTER_RENDER_SEQUENCES_TO_ADD] ??= []).push(sequence);
-
-      // Mark the view for traversal to ensure we eventually schedule the afterNextRender.
-      markAncestorsForTraversal(view);
-      view[FLAGS] |= LViewFlags.HasChildViewsToRefresh;
-    } else if (!this.executing) {
-      this.addSequence(sequence);
+    if (!this.executing) {
+      this.sequences.add(sequence);
+      // Trigger an `ApplicationRef.tick()` if one is not already pending/running, because we have a
+      // new render hook that needs to run.
+      this.scheduler.notify(NotificationSource.RenderHook);
     } else {
       this.deferredRegistrations.add(sequence);
     }
-  }
-
-  addSequence(sequence: AfterRenderSequence): void {
-    this.sequences.add(sequence);
-    // Trigger an `ApplicationRef.tick()` if one is not already pending/running, because we have a
-    // new render hook that needs to run.
-    this.scheduler.notify(NotificationSource.RenderHook);
   }
 
   unregister(sequence: AfterRenderSequence): void {
@@ -186,7 +172,6 @@ export class AfterRenderSequence implements AfterRenderRef {
   constructor(
     readonly impl: AfterRenderImpl,
     readonly hooks: AfterRenderHooks,
-    readonly view: LView | undefined,
     public once: boolean,
     destroyRef: DestroyRef | null,
     public snapshot: TracingSnapshot | null = null,
@@ -209,9 +194,5 @@ export class AfterRenderSequence implements AfterRenderRef {
   destroy(): void {
     this.impl.unregister(this);
     this.unregisterOnDestroy?.();
-    const scheduled = this.view?.[AFTER_RENDER_SEQUENCES_TO_ADD];
-    if (scheduled) {
-      this.view[AFTER_RENDER_SEQUENCES_TO_ADD] = scheduled.filter((s) => s !== this);
-    }
   }
 }
