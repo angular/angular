@@ -8,6 +8,7 @@
 
 import {Location} from '@angular/common';
 import {
+  DestroyRef,
   EnvironmentInjector,
   inject,
   Injectable,
@@ -354,6 +355,7 @@ export class NavigationTransitions {
   readonly transitionAbortSubject = new Subject<Error>();
   private readonly configLoader = inject(RouterConfigLoader);
   private readonly environmentInjector = inject(EnvironmentInjector);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly urlSerializer = inject(UrlSerializer);
   private readonly rootContexts = inject(ChildrenOutletContexts);
   private readonly location = inject(Location);
@@ -381,11 +383,16 @@ export class NavigationTransitions {
   /** @internal */
   rootComponentType: Type<any> | null = null;
 
+  private destroyed = false;
+
   constructor() {
     const onLoadStart = (r: Route) => this.events.next(new RouteConfigLoadStart(r));
     const onLoadEnd = (r: Route) => this.events.next(new RouteConfigLoadEnd(r));
     this.configLoader.onLoadEndListener = onLoadEnd;
     this.configLoader.onLoadStartListener = onLoadStart;
+    this.destroyRef.onDestroy(() => {
+      this.destroyed = true;
+    });
   }
 
   complete() {
@@ -831,6 +838,14 @@ export class NavigationTransitions {
             }
           }),
           catchError((e) => {
+            // If the application is already destroyed, the catch block should not
+            // execute anything in practice because other resources have already
+            // been released and destroyed.
+            if (this.destroyed) {
+              overallTransitionState.resolve(false);
+              return EMPTY;
+            }
+
             errored = true;
             /* This error type is issued during Redirect, and is handled as a
              * cancellation rather than an error. */
