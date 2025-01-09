@@ -14,7 +14,7 @@
           ],
           "files": [
             {
-              "expected": "meaning_description_template.pipeline.js",
+              "expected": "meaning_description_template.js",
               "generated": "meaning_description.js"
             }
           ]
@@ -62,7 +62,7 @@
           ],
           "files": [
             {
-              "expected": "ng-template_interpolation_template.pipeline.js",
+              "expected": "ng-template_interpolation_template.js",
               "generated": "ng-template_interpolation.js"
             }
           ]
@@ -82,7 +82,7 @@
           ],
           "files": [
             {
-              "expected": "ng-template_interpolation_structural_template.pipeline.js",
+              "expected": "ng-template_interpolation_structural_template.js",
               "generated": "ng-template_interpolation_structural.js"
             }
           ]
@@ -144,7 +144,7 @@
           ],
           "files": [
             {
-              "expected": "static_attributes_structural_template.pipeline.js",
+              "expected": "static_attributes_structural_template.js",
               "generated": "static_attributes_structural.js"
             }
           ]
@@ -164,7 +164,7 @@
           ],
           "files": [
             {
-              "expected": "interpolation_basic_template.pipeline.js",
+              "expected": "interpolation_basic_template.js",
               "generated": "interpolation_basic.js"
             }
           ]
@@ -184,7 +184,7 @@
           ],
           "files": [
             {
-              "expected": "interpolation_custom_config_template.pipeline.js",
+              "expected": "interpolation_custom_config_template.js",
               "generated": "interpolation_custom_config.js"
             }
           ]
@@ -204,7 +204,7 @@
           ],
           "files": [
             {
-              "expected": "interpolation_nested_context_template.pipeline.js",
+              "expected": "interpolation_nested_context_template.js",
               "generated": "interpolation_nested_context.js"
             }
           ]
@@ -224,7 +224,7 @@
           ],
           "files": [
             {
-              "expected": "interpolation_complex_expressions_template.pipeline.js",
+              "expected": "interpolation_complex_expressions_template.js",
               "generated": "interpolation_complex_expressions.js"
             }
           ]
@@ -244,7 +244,7 @@
           ],
           "files": [
             {
-              "expected": "i18n_root_node_template.pipeline.js",
+              "expected": "i18n_root_node_template.js",
               "generated": "i18n_root_node.js"
             }
           ]

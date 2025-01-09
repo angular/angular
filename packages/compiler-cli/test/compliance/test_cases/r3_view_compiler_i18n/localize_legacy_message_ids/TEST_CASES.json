@@ -17,7 +17,7 @@
           "files": [
             {
               "generated": "legacy_enabled.js",
-              "expected": "legacy_enabled.pipeline.js"
+              "expected": "legacy_enabled.js"
             }
           ],
           "extraChecks": [
