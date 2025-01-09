@@ -36,9 +36,6 @@ export abstract class EffectScheduler {
    */
   abstract flush(): void;
 
-  /** Remove a scheduled effect */
-  abstract remove(e: SchedulableEffect): void;
-
   /** @nocollapse */
   static ɵprov = /** @pureOrBreakMyCode */ /* @__PURE__ */ ɵɵdefineInjectable({
     token: EffectScheduler,
@@ -57,17 +54,6 @@ export class ZoneAwareEffectScheduler implements EffectScheduler {
 
   schedule(handle: SchedulableEffect): void {
     this.enqueue(handle);
-  }
-
-  remove(handle: SchedulableEffect): void {
-    const zone = handle.zone as Zone | null;
-    const queue = this.queues.get(zone)!;
-    if (!queue.has(handle)) {
-      return;
-    }
-
-    queue.delete(handle);
-    this.queuedEffectCount--;
   }
 
   private enqueue(handle: SchedulableEffect): void {

@@ -312,7 +312,6 @@ export const ROOT_EFFECT_NODE: Omit<RootEffectNode, 'fn' | 'scheduler' | 'notifi
       consumerDestroy(this);
       this.onDestroyFn();
       this.maybeCleanup();
-      this.scheduler.remove(this);
     },
   }))();
 
