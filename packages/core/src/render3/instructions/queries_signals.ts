@@ -8,8 +8,8 @@
 
 import {ProviderToken} from '../../di/provider_token';
 import {QueryFlags} from '../interfaces/query';
-import {createContentQuery, createViewQuery} from '../query';
-import {bindQueryToSignal} from '../query_reactive';
+import {createContentQuery, createViewQuery} from '../queries/query';
+import {bindQueryToSignal} from '../queries/query_reactive';
 import {Signal} from '../reactivity/api';
 import {getCurrentQueryIndex, setCurrentQueryIndex} from '../state';
 

@@ -16,7 +16,7 @@ import {
   getQueryResults,
   getTQuery,
   loadQueryInternal,
-} from '../query';
+} from '../queries/query';
 import {getCurrentQueryIndex, getLView, getTView, setCurrentQueryIndex} from '../state';
 import {isCreationMode} from '../util/view_utils';
 

@@ -8,16 +8,16 @@
 
 import {ComputedNode, createComputed, SIGNAL} from '@angular/core/primitives/signals';
 
-import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {unwrapElementRef} from '../linker/element_ref';
-import {QueryList} from '../linker/query_list';
-import {EMPTY_ARRAY} from '../util/empty';
+import {RuntimeError, RuntimeErrorCode} from '../../errors';
+import {unwrapElementRef} from '../../linker/element_ref';
+import {QueryList} from '../../linker/query_list';
+import {EMPTY_ARRAY} from '../../util/empty';
 
-import {FLAGS, LView, LViewFlags} from './interfaces/view';
+import {FLAGS, LView, LViewFlags} from '../interfaces/view';
+import {Signal} from '../reactivity/api';
+import {signal, WritableSignal} from '../reactivity/signal';
+import {getLView} from '../state';
 import {getQueryResults, loadQueryInternal} from './query';
-import {Signal} from './reactivity/api';
-import {signal, WritableSignal} from './reactivity/signal';
-import {getLView} from './state';
 
 interface QuerySignalNode<T> extends ComputedNode<T | ReadonlyArray<T>> {
   _lView?: LView;

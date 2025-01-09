@@ -48,6 +48,7 @@ import {
   createElementNode,
   setupStaticAttributes,
 } from '../node_manipulation';
+import {executeContentQueries} from '../queries/query_execution';
 import {
   decreaseElementDepthCount,
   enterSkipHydrationBlock,
@@ -74,7 +75,6 @@ import {validateElementIsKnown} from './element_validation';
 import {setDirectiveInputsWhichShadowsStyling} from './property';
 import {
   createDirectivesInstances,
-  executeContentQueries,
   getOrCreateTNode,
   resolveDirectives,
   saveResolvedLocalsInData,
