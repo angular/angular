@@ -498,9 +498,7 @@ function detectChangesInView(lView: LView, mode: ChangeDetectionMode) {
   if (shouldRefreshView) {
     refreshView(tView, lView, tView.template, lView[CONTEXT]);
   } else if (flags & LViewFlags.HasChildViewsToRefresh) {
-    if (!isInCheckNoChangesPass) {
-      runEffectsInView(lView);
-    }
+    runEffectsInView(lView);
     detectChangesInEmbeddedViews(lView, ChangeDetectionMode.Targeted);
     const components = tView.components;
     if (components !== null) {
