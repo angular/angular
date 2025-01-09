@@ -861,11 +861,11 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
 
 // @public
 export class RouterModule {
-    constructor(guard: any);
+    constructor();
     static forChild(routes: Routes): ModuleWithProviders<RouterModule>;
     static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders<RouterModule>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<RouterModule, [{ optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<RouterModule, never>;
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<RouterModule>;
     // (undocumented)
