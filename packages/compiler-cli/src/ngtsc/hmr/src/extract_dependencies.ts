@@ -210,10 +210,7 @@ class PotentialTopLevelReadsVisitor extends o.RecursiveAstVisitor {
     }
 
     // Identifier referenced at the top level. Unlikely.
-    if (
-      ts.isSourceFile(parent) ||
-      (ts.isExpressionStatement(parent) && parent.expression === node)
-    ) {
+    if (ts.isSourceFile(parent)) {
       return true;
     }
 
@@ -225,6 +222,7 @@ class PotentialTopLevelReadsVisitor extends o.RecursiveAstVisitor {
 
     // Identifier used in a nested expression is only top-level if it's the actual expression.
     if (
+      ts.isExpressionStatement(parent) ||
       ts.isPropertyAccessExpression(parent) ||
       ts.isComputedPropertyName(parent) ||
       ts.isTemplateSpan(parent) ||
@@ -235,8 +233,6 @@ class PotentialTopLevelReadsVisitor extends o.RecursiveAstVisitor {
       ts.isIfStatement(parent) ||
       ts.isDoStatement(parent) ||
       ts.isWhileStatement(parent) ||
-      ts.isForInStatement(parent) ||
-      ts.isForOfStatement(parent) ||
       ts.isSwitchStatement(parent) ||
       ts.isCaseClause(parent) ||
       ts.isThrowStatement(parent)
@@ -249,9 +245,21 @@ class PotentialTopLevelReadsVisitor extends o.RecursiveAstVisitor {
       return parent.elements.includes(node);
     }
 
-    // Identifier in a property assignment is only top level if it's the initializer.
-    if (ts.isPropertyAssignment(parent)) {
+    // If the parent is an initialized node, the identifier is
+    // at the top level if it's the initializer itself.
+    if (
+      ts.isPropertyAssignment(parent) ||
+      ts.isParameter(parent) ||
+      ts.isBindingElement(parent) ||
+      ts.isPropertyDeclaration(parent) ||
+      ts.isEnumMember(parent)
+    ) {
       return parent.initializer === node;
+    }
+
+    // Identifier in a function is top level if it's either the name or the initializer.
+    if (ts.isVariableDeclaration(parent)) {
+      return parent.name === node || parent.initializer === node;
     }
 
     // Identifier in a declaration is only top level if it's the name.
@@ -259,7 +267,6 @@ class PotentialTopLevelReadsVisitor extends o.RecursiveAstVisitor {
     if (
       ts.isClassDeclaration(parent) ||
       ts.isFunctionDeclaration(parent) ||
-      ts.isVariableDeclaration(parent) ||
       ts.isShorthandPropertyAssignment(parent)
     ) {
       return parent.name === node;
@@ -271,6 +278,20 @@ class PotentialTopLevelReadsVisitor extends o.RecursiveAstVisitor {
 
     if (ts.isBinaryExpression(parent)) {
       return parent.left === node || parent.right === node;
+    }
+
+    if (ts.isForInStatement(parent) || ts.isForOfStatement(parent)) {
+      return parent.expression === node || parent.initializer === node;
+    }
+
+    if (ts.isForStatement(parent)) {
+      return (
+        parent.condition === node || parent.initializer === node || parent.incrementor === node
+      );
+    }
+
+    if (ts.isArrowFunction(parent)) {
+      return parent.body === node;
     }
 
     // It's unlikely that we'll run into imports/exports in this use case.
