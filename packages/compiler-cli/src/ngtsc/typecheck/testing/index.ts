@@ -33,8 +33,10 @@ import {globSync} from 'tinyglobby';
 import {
   absoluteFrom,
   AbsoluteFsPath,
+  getFileSystem,
   getSourceFileOrError,
   LogicalFileSystem,
+  NgtscCompilerHost,
 } from '../../file_system';
 import {TestFile} from '../../file_system/testing';
 import {
@@ -46,7 +48,7 @@ import {
   ReferenceEmitter,
   RelativePathStrategy,
 } from '../../imports';
-import {NOOP_INCREMENTAL_BUILD} from '../../incremental';
+import {NOOP_INCREMENTAL_BUILD, NoopIncrementalBuildStrategy} from '../../incremental';
 import {
   ClassPropertyMapping,
   CompoundMetadataReader,
@@ -97,6 +99,7 @@ import {TypeCheckShimGenerator} from '../src/shim';
 import {TcbGenericContextBehavior} from '../src/type_check_block';
 import {TypeCheckFile} from '../src/type_check_file';
 import {sfExtensionData} from '../../shims';
+import {freshCompilationTicket, NgCompiler, NgCompilerHost} from '../../core';
 
 export function typescriptLibDts(): TestFile {
   return {
@@ -1041,4 +1044,32 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
     id: TypeCheckId,
     node: TmplAstComponent | TmplAstDirective,
   ): void {}
+}
+
+export function createNgCompilerForFile(fileContent: string) {
+  const fs = getFileSystem();
+  fs.ensureDir(absoluteFrom('/node_modules/@angular/core'));
+  const FILE = absoluteFrom('/main.ts');
+
+  fs.writeFile(FILE, fileContent);
+
+  const options: ts.CompilerOptions = {
+    strictTemplates: true,
+    lib: ['dom', 'dom.iterable', 'esnext'],
+  };
+  const baseHost = new NgtscCompilerHost(getFileSystem(), options);
+  const host = NgCompilerHost.wrap(baseHost, [FILE], options, /* oldProgram */ null);
+  const program = ts.createProgram({host, options, rootNames: host.inputFiles});
+
+  const ticket = freshCompilationTicket(
+    program,
+    options,
+    new NoopIncrementalBuildStrategy(),
+    new TsCreateProgramDriver(program, host, options, []),
+    /* perfRecorder */ null,
+    /*enableTemplateTypeChecker*/ true,
+    /*usePoisonedData*/ false,
+  );
+  const compiler = NgCompiler.fromTicket(ticket, host);
+  return {compiler, sourceFile: program.getSourceFile(FILE)!};
 }
