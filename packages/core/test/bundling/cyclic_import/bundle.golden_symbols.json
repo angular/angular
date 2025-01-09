@@ -166,7 +166,6 @@
   "_testabilityGetter",
   "_wasLastNodeCreated",
   "activeConsumer",
-  "addAfterRenderSequencesForView",
   "addPropertyBinding",
   "addToEndOfViewTree",
   "allocExpando",

@@ -13,7 +13,6 @@ import {inject} from '../../di/injector_compatibility';
 import {DestroyRef} from '../../linker/destroy_ref';
 import {performanceMarkFeature} from '../../util/performance';
 import {assertNotInReactiveContext} from '../reactivity/asserts';
-import {ViewContext} from '../view_context';
 import {AfterRenderPhase, AfterRenderRef} from './api';
 import {
   AfterRenderHooks,
@@ -460,11 +459,9 @@ function afterRenderImpl(
 
   const hooks = options?.phase ?? AfterRenderPhase.MixedReadWrite;
   const destroyRef = options?.manualCleanup !== true ? injector.get(DestroyRef) : null;
-  const viewContext = injector.get(ViewContext, null, {optional: true});
   const sequence = new AfterRenderSequence(
     manager.impl,
     getHooks(callbackOrSpec, hooks),
-    viewContext?.view,
     once,
     destroyRef,
     tracing?.snapshot(null),
