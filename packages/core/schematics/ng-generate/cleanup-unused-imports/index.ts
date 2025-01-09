@@ -67,7 +67,7 @@ export function migrate(): Rule {
       for (const c of changes) {
         recorder
           .remove(c.data.position, c.data.end - c.data.position)
-          .insertLeft(c.data.position, c.data.toInsert);
+          .insertRight(c.data.position, c.data.toInsert);
       }
       tree.commitUpdate(recorder);
     }
