@@ -431,5 +431,76 @@ runInEachFileSystem(() => {
         'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, providers, Component) {',
       );
     });
+
+    it('should capture variable initializer dependencies', () => {
+      enableHmr();
+      env.write(
+        'test.ts',
+        `
+          import {Component, InjectionToken} from '@angular/core';
+
+          const token = new InjectionToken<number>('TEST');
+          const value = 123;
+
+          @Component({
+            template: '',
+            providers: [{
+              provide: token,
+              useFactory: () => {
+                const v = value;
+                return v;
+              }
+            }]
+          })
+          export class Cmp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      const hmrContents = env.driveHmr('test.ts', 'Cmp');
+
+      expect(jsContents).toContain(
+        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [token, value, Component]));',
+      );
+      expect(hmrContents).toContain(
+        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, token, value, Component) {',
+      );
+    });
+
+    it('should capture arrow function dependencies', () => {
+      enableHmr();
+      env.write(
+        'test.ts',
+        `
+          import {Component, InjectionToken} from '@angular/core';
+
+          const token = new InjectionToken<number>('TEST');
+          const value = 123;
+
+          @Component({
+            template: '',
+            providers: [{
+              provide: token,
+              useFactory: () => value
+            }]
+          })
+          export class Cmp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      const hmrContents = env.driveHmr('test.ts', 'Cmp');
+
+      expect(jsContents).toContain(
+        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [token, value, Component]));',
+      );
+      expect(hmrContents).toContain(
+        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, token, value, Component) {',
+      );
+    });
   });
 });
