@@ -19,7 +19,7 @@ import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {assertDefined, assertEqual} from '../../util/assert';
 import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags} from '../hooks';
 import {CONTAINER_HEADER_OFFSET, LContainerFlags, MOVED_VIEWS} from '../interfaces/container';
-import {ComponentTemplate, RenderFlags} from '../interfaces/definition';
+import {ComponentTemplate, HostBindingsFunction, RenderFlags} from '../interfaces/definition';
 import {
   CONTEXT,
   EFFECTS_TO_SCHEDULE,
@@ -47,8 +47,10 @@ import {
   isRefreshingViews,
   leaveView,
   setBindingIndex,
+  setBindingRootForHostBindings,
   setIsInCheckNoChangesMode,
   setIsRefreshingViews,
+  setSelectedIndex,
 } from '../state';
 import {getFirstLContainer, getNextLContainer} from '../util/view_traversal_utils';
 import {
@@ -61,17 +63,12 @@ import {
   viewAttachedToChangeDetector,
 } from '../util/view_utils';
 
-import {
-  executeTemplate,
-  executeViewQueryFn,
-  handleError,
-  processHostBindingOpCodes,
-  refreshContentQueries,
-} from './shared';
-import {runEffectsInView} from '../reactivity/view_effect_runner';
 import {isDestroyed} from '../interfaces/type_checks';
 import {ProfilerEvent} from '../profiler_types';
 import {profiler} from '../profiler';
+import {runEffectsInView} from '../reactivity/view_effect_runner';
+import {executeTemplate, handleError} from './shared';
+import {executeViewQueryFn, refreshContentQueries} from '../queries/query_execution';
 
 /**
  * The maximum number of times the change detection traversal will rerun before throwing an error.
@@ -518,5 +515,40 @@ function detectChangesInChildComponents(
 ): void {
   for (let i = 0; i < components.length; i++) {
     detectChangesInComponent(hostLView, components[i], mode);
+  }
+}
+
+/**
+ * Invoke `HostBindingsFunction`s for view.
+ *
+ * This methods executes `TView.hostBindingOpCodes`. It is used to execute the
+ * `HostBindingsFunction`s associated with the current `LView`.
+ *
+ * @param tView Current `TView`.
+ * @param lView Current `LView`.
+ */
+function processHostBindingOpCodes(tView: TView, lView: LView): void {
+  const hostBindingOpCodes = tView.hostBindingOpCodes;
+  if (hostBindingOpCodes === null) return;
+  try {
+    for (let i = 0; i < hostBindingOpCodes.length; i++) {
+      const opCode = hostBindingOpCodes[i] as number;
+      if (opCode < 0) {
+        // Negative numbers are element indexes.
+        setSelectedIndex(~opCode);
+      } else {
+        // Positive numbers are NumberTuple which store bindingRootIndex and directiveIndex.
+        const directiveIdx = opCode;
+        const bindingRootIndx = hostBindingOpCodes[++i] as number;
+        const hostBindingFn = hostBindingOpCodes[++i] as HostBindingsFunction<any>;
+        setBindingRootForHostBindings(bindingRootIndx, directiveIdx);
+        const context = lView[directiveIdx];
+        profiler(ProfilerEvent.HostBindingsUpdateStart, context);
+        hostBindingFn(RenderFlags.Update, context);
+        profiler(ProfilerEvent.HostBindingsUpdateEnd, context);
+      }
+    }
+  } finally {
+    setSelectedIndex(-1);
   }
 }

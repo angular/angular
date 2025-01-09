@@ -19,15 +19,16 @@ import {assertTNodeType} from '../node_assert';
 import {profiler} from '../profiler';
 import {ProfilerEvent} from '../profiler_types';
 import {getCurrentDirectiveDef, getCurrentTNode, getLView, getTView} from '../state';
-import {getComponentLViewByIndex, getNativeByTNode, unwrapRNode} from '../util/view_utils';
-
-import {markViewDirty} from './mark_view_dirty';
 import {
+  getComponentLViewByIndex,
+  getNativeByTNode,
   getOrCreateLViewCleanup,
   getOrCreateTViewCleanup,
-  handleError,
-  loadComponentRenderer,
-} from './shared';
+  unwrapRNode,
+} from '../util/view_utils';
+
+import {markViewDirty} from './mark_view_dirty';
+import {handleError, loadComponentRenderer} from './shared';
 
 /**
  * Contains a reference to a function that disables event replay feature

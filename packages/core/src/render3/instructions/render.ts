@@ -23,10 +23,11 @@ import {
 } from '../interfaces/view';
 import {profiler} from '../profiler';
 import {ProfilerEvent} from '../profiler_types';
+import {executeViewQueryFn, refreshContentQueries} from '../queries/query_execution';
 import {enterView, leaveView} from '../state';
 import {getComponentLViewByIndex, isCreationMode} from '../util/view_utils';
 
-import {executeTemplate, executeViewQueryFn, refreshContentQueries} from './shared';
+import {executeTemplate} from './shared';
 
 export function renderComponent(hostLView: LView, componentHostIdx: number) {
   ngDevMode && assertEqual(isCreationMode(hostLView), true, 'Should be run in creation mode');

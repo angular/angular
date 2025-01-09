@@ -24,6 +24,7 @@ import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
 import {appendChild, createCommentNode} from '../node_manipulation';
+import {executeContentQueries} from '../queries/query_execution';
 import {
   getBindingIndex,
   getCurrentTNode,
@@ -41,7 +42,6 @@ import {getConstant} from '../util/view_utils';
 
 import {
   createDirectivesInstances,
-  executeContentQueries,
   getOrCreateTNode,
   resolveDirectives,
   saveResolvedLocalsInData,

@@ -9,29 +9,29 @@
 // We are temporarily importing the existing viewEngine_from core so we can be sure we are
 // correctly implementing its interfaces for backwards compatibility.
 
-import {ProviderToken} from '../di/provider_token';
-import {createElementRef, ElementRef as ViewEngine_ElementRef} from '../linker/element_ref';
-import {QueryList} from '../linker/query_list';
-import {createTemplateRef, TemplateRef as ViewEngine_TemplateRef} from '../linker/template_ref';
-import {createContainerRef, ViewContainerRef} from '../linker/view_container_ref';
-import {assertDefined, assertIndexInRange, assertNumber, throwError} from '../util/assert';
-import {stringify} from '../util/stringify';
+import {ProviderToken} from '../../di/provider_token';
+import {createElementRef, ElementRef as ViewEngine_ElementRef} from '../../linker/element_ref';
+import {QueryList} from '../../linker/query_list';
+import {createTemplateRef, TemplateRef as ViewEngine_TemplateRef} from '../../linker/template_ref';
+import {createContainerRef, ViewContainerRef} from '../../linker/view_container_ref';
+import {assertDefined, assertIndexInRange, assertNumber, throwError} from '../../util/assert';
+import {stringify} from '../../util/stringify';
 
-import {assertFirstCreatePass, assertLContainer} from './assert';
-import {getNodeInjectable, locateDirectiveOrProvider} from './di';
-import {storeCleanupWithContext} from './instructions/shared';
-import {CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS} from './interfaces/container';
+import {assertFirstCreatePass, assertLContainer} from '../assert';
+import {getNodeInjectable, locateDirectiveOrProvider} from '../di';
+import {CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS} from '../interfaces/container';
 import {
   TContainerNode,
   TElementContainerNode,
   TElementNode,
   TNode,
   TNodeType,
-} from './interfaces/node';
-import {LQueries, LQuery, QueryFlags, TQueries, TQuery, TQueryMetadata} from './interfaces/query';
-import {DECLARATION_LCONTAINER, LView, PARENT, QUERIES, TVIEW, TView} from './interfaces/view';
-import {assertTNodeType} from './node_assert';
-import {getCurrentTNode, getLView, getTView} from './state';
+} from '../interfaces/node';
+import {LQueries, LQuery, QueryFlags, TQueries, TQuery, TQueryMetadata} from '../interfaces/query';
+import {DECLARATION_LCONTAINER, LView, PARENT, QUERIES, TVIEW, TView} from '../interfaces/view';
+import {assertTNodeType} from '../node_assert';
+import {getCurrentTNode, getLView, getTView} from '../state';
+import {storeCleanupWithContext} from '../util/view_utils';
 
 class LQuery_<T> implements LQuery<T> {
   matches: (T | null)[] | null = null;

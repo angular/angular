@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {setActiveConsumer} from '@angular/core/primitives/signals';
-
 import {Injector} from '../../di/injector';
 import {ErrorHandler} from '../../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
@@ -37,7 +35,6 @@ import {
 import {escapeCommentText} from '../../util/dom';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
 import {stringify} from '../../util/stringify';
-import {applyValueToInputField} from '../apply_value_input_field';
 import {
   assertFirstCreatePass,
   assertFirstUpdatePass,
@@ -57,7 +54,6 @@ import {
   ComponentTemplate,
   DirectiveDef,
   DirectiveDefListOrFactory,
-  HostBindingsFunction,
   HostDirectiveBindingMap,
   HostDirectiveDefs,
   PipeDefListOrFactory,
@@ -90,11 +86,10 @@ import {Renderer} from '../interfaces/renderer';
 import {RComment, RElement, RNode, RText} from '../interfaces/renderer_dom';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {TStylingRange} from '../interfaces/styling';
-import {isComponentDef, isComponentHost, isContentQueryHost} from '../interfaces/type_checks';
+import {isComponentDef, isComponentHost} from '../interfaces/type_checks';
 import {
   CHILD_HEAD,
   CHILD_TAIL,
-  CLEANUP,
   CONTEXT,
   DECLARATION_COMPONENT_VIEW,
   DECLARATION_VIEW,
@@ -120,7 +115,7 @@ import {
   TViewType,
 } from '../interfaces/view';
 import {assertPureTNodeType, assertTNodeType} from '../node_assert';
-import {clearElementContents, updateTextNode} from '../node_manipulation';
+import {clearElementContents} from '../node_manipulation';
 import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
 import {profiler} from '../profiler';
 import {ProfilerEvent} from '../profiler_types';
@@ -134,9 +129,7 @@ import {
   isInCheckNoChangesMode,
   isInI18nBlock,
   isInSkipHydrationBlock,
-  setBindingRootForHostBindings,
   setCurrentDirectiveIndex,
-  setCurrentQueryIndex,
   setCurrentTNode,
   setSelectedIndex,
 } from '../state';
@@ -146,7 +139,6 @@ import {INTERPOLATION_DELIMITER} from '../util/misc_utils';
 import {renderStringify} from '../util/stringify_utils';
 import {
   getComponentLViewByIndex,
-  getNativeByIndex,
   getNativeByTNode,
   resetPreOrderHookFlags,
   unwrapLView,
@@ -156,42 +148,6 @@ import {selectIndexInternal} from './advance';
 import {ɵɵdirectiveInject} from './di';
 import {handleUnknownPropertyError, isPropertyValid, matchingSchemas} from './element_validation';
 import {writeToDirectiveInput} from './write_to_directive_input';
-
-/**
- * Invoke `HostBindingsFunction`s for view.
- *
- * This methods executes `TView.hostBindingOpCodes`. It is used to execute the
- * `HostBindingsFunction`s associated with the current `LView`.
- *
- * @param tView Current `TView`.
- * @param lView Current `LView`.
- */
-export function processHostBindingOpCodes(tView: TView, lView: LView): void {
-  const hostBindingOpCodes = tView.hostBindingOpCodes;
-  if (hostBindingOpCodes === null) return;
-  try {
-    for (let i = 0; i < hostBindingOpCodes.length; i++) {
-      const opCode = hostBindingOpCodes[i] as number;
-      if (opCode < 0) {
-        // Negative numbers are element indexes.
-        setSelectedIndex(~opCode);
-      } else {
-        // Positive numbers are NumberTuple which store bindingRootIndex and directiveIndex.
-        const directiveIdx = opCode;
-        const bindingRootIndx = hostBindingOpCodes[++i] as number;
-        const hostBindingFn = hostBindingOpCodes[++i] as HostBindingsFunction<any>;
-        setBindingRootForHostBindings(bindingRootIndx, directiveIdx);
-        const context = lView[directiveIdx];
-
-        profiler(ProfilerEvent.HostBindingsUpdateStart, context);
-        hostBindingFn(RenderFlags.Update, context);
-        profiler(ProfilerEvent.HostBindingsUpdateEnd, context);
-      }
-    }
-  } finally {
-    setSelectedIndex(-1);
-  }
-}
 
 export function createLView<T>(
   parentLView: LView | null,
@@ -457,34 +413,6 @@ export function executeTemplate<T>(
   }
 }
 
-//////////////////////////
-//// Element
-//////////////////////////
-
-export function executeContentQueries(tView: TView, tNode: TNode, lView: LView) {
-  if (isContentQueryHost(tNode)) {
-    const prevConsumer = setActiveConsumer(null);
-    try {
-      const start = tNode.directiveStart;
-      const end = tNode.directiveEnd;
-      for (let directiveIndex = start; directiveIndex < end; directiveIndex++) {
-        const def = tView.data[directiveIndex] as DirectiveDef<any>;
-        if (def.contentQueries) {
-          const directiveInstance = lView[directiveIndex];
-          ngDevMode &&
-            assertDefined(
-              directiveIndex,
-              'Incorrect reference to a directive defining a content query',
-            );
-          def.contentQueries(RenderFlags.Create, directiveInstance, directiveIndex);
-        }
-      }
-    } finally {
-      setActiveConsumer(prevConsumer);
-    }
-  }
-}
-
 /**
  * Creates directive instances.
  */
@@ -714,43 +642,6 @@ export function applyRootElementTransformImpl(rootElement: HTMLElement) {
  */
 export function enableApplyRootElementTransformImpl() {
   _applyRootElementTransformImpl = applyRootElementTransformImpl;
-}
-
-/**
- * Saves context for this cleanup function in LView.cleanupInstances.
- *
- * On the first template pass, saves in TView:
- * - Cleanup function
- * - Index of context we just saved in LView.cleanupInstances
- */
-export function storeCleanupWithContext(
-  tView: TView,
-  lView: LView,
-  context: any,
-  cleanupFn: Function,
-): void {
-  const lCleanup = getOrCreateLViewCleanup(lView);
-
-  // Historically the `storeCleanupWithContext` was used to register both framework-level and
-  // user-defined cleanup callbacks, but over time those two types of cleanups were separated.
-  // This dev mode checks assures that user-level cleanup callbacks are _not_ stored in data
-  // structures reserved for framework-specific hooks.
-  ngDevMode &&
-    assertDefined(
-      context,
-      'Cleanup context is mandatory when registering framework-level destroy hooks',
-    );
-  lCleanup.push(context);
-
-  if (tView.firstCreatePass) {
-    getOrCreateTViewCleanup(tView).push(cleanupFn, lCleanup.length - 1);
-  } else {
-    // Make sure that no new framework-level cleanup functions are registered after the first
-    // template pass is done (and TView data structures are meant to fully constructed).
-    if (ngDevMode) {
-      Object.freeze(getOrCreateTViewCleanup(tView));
-    }
-  }
 }
 
 /**
@@ -1870,30 +1761,6 @@ export function createLContainer(
   return lContainer;
 }
 
-/** Refreshes all content queries declared by directives in a given view */
-export function refreshContentQueries(tView: TView, lView: LView): void {
-  const contentQueries = tView.contentQueries;
-  if (contentQueries !== null) {
-    const prevConsumer = setActiveConsumer(null);
-    try {
-      for (let i = 0; i < contentQueries.length; i += 2) {
-        const queryStartIdx = contentQueries[i];
-        const directiveDefIdx = contentQueries[i + 1];
-        if (directiveDefIdx !== -1) {
-          const directiveDef = tView.data[directiveDefIdx] as DirectiveDef<any>;
-          ngDevMode && assertDefined(directiveDef, 'DirectiveDef not found.');
-          ngDevMode &&
-            assertDefined(directiveDef.contentQueries, 'contentQueries function should be defined');
-          setCurrentQueryIndex(queryStartIdx);
-          directiveDef.contentQueries!(RenderFlags.Update, lView[directiveDefIdx], directiveDefIdx);
-        }
-      }
-    } finally {
-      setActiveConsumer(prevConsumer);
-    }
-  }
-}
-
 /**
  * Adds LView or LContainer to the end of the current view tree.
  *
@@ -1920,25 +1787,6 @@ export function addToEndOfViewTree<T extends LView | LContainer>(
   }
   lView[CHILD_TAIL] = lViewOrLContainer;
   return lViewOrLContainer;
-}
-
-///////////////////////////////
-//// Change detection
-///////////////////////////////
-
-export function executeViewQueryFn<T>(
-  flags: RenderFlags,
-  viewQueryFn: ViewQueriesFunction<T>,
-  component: T,
-): void {
-  ngDevMode && assertDefined(viewQueryFn, 'View queries function to execute must be defined.');
-  setCurrentQueryIndex(0);
-  const prevConsumer = setActiveConsumer(null);
-  try {
-    viewQueryFn(flags, component);
-  } finally {
-    setActiveConsumer(prevConsumer);
-  }
 }
 
 ///////////////////////////////
@@ -1988,15 +1836,6 @@ export function storePropertyBindingMetadata(
       tData[bindingIndex] = bindingMetadata;
     }
   }
-}
-
-export function getOrCreateLViewCleanup(view: LView): any[] {
-  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
-  return (view[CLEANUP] ??= []);
-}
-
-export function getOrCreateTViewCleanup(tView: TView): any[] {
-  return (tView.cleanup ??= []);
 }
 
 /**
@@ -2053,16 +1892,4 @@ export function setInputsForProperty(
 
     writeToDirectiveInput(def, instance, publicName, privateName, flags, value);
   }
-}
-
-/**
- * Updates a text binding at a given index in a given LView.
- */
-export function textBindingInternal(lView: LView, index: number, value: string): void {
-  ngDevMode && assertString(value, 'Value should be a string');
-  ngDevMode && assertNotSame(value, NO_CHANGE as any, 'value should not be NO_CHANGE');
-  ngDevMode && assertIndexInRange(lView, index);
-  const element = getNativeByIndex(index, lView) as any as RText;
-  ngDevMode && assertDefined(element, 'native element should exist');
-  updateTextNode(lView[RENDERER], element, value);
 }

@@ -651,6 +651,7 @@
   "init_queries2",
   "init_queries_signals",
   "init_query",
+  "init_query_execution",
   "init_query_list",
   "init_query_reactive",
   "init_r3_injector",
