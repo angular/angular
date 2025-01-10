@@ -7,6 +7,8 @@
 // @public
 export const enum RuntimeErrorCode {
     // (undocumented)
+    CANNOT_SPECIFY_BOTH_FROM_STRING_AND_FROM_OBJECT = 2805,
+    // (undocumented)
     HEADERS_ALTERED_BY_TRANSFER_CACHE = 2802,
     // (undocumented)
     HTTP_ORIGIN_MAP_CONTAINS_PATH = 2804,
