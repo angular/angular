@@ -24,7 +24,7 @@ describe('signal input migration', () => {
     host.sync.write(normalize(filePath), virtualFs.stringToFileBuffer(contents));
   }
 
-  function runMigration(options?: {path?: string}) {
+  function runMigration(options?: {bestEffortMode?: boolean}) {
     return runner.runSchematic('signal-input-migration', options, tree);
   }
 
@@ -93,5 +93,69 @@ describe('signal input migration', () => {
 
     const content = tree.readContent('/index.ts').replace(/\s+/g, ' ');
     expect(content).toContain('readonly name = input.required<string>()');
+  });
+
+  it('should report correct statistics', async () => {
+    writeFile(`node_modules/@tsconfig/strictest/tsconfig.json`, `{}`);
+    writeFile(
+      `tsconfig.json`,
+      JSON.stringify({
+        extends: `@tsconfig/strictest/tsconfig.json`,
+      }),
+    );
+    writeFile(
+      '/index.ts',
+      `
+      import {Input, Directive} from '@angular/core';
+
+      @Directive({})
+      export class SomeDirective {
+        @Input({required: true}) name = '';
+        @Input({required: true}) lastName = '';
+
+        someFn() {
+          this.lastName = 'other name';
+        }
+      }`,
+    );
+
+    const messages: string[] = [];
+    runner.logger.subscribe((m) => messages.push(m.message));
+
+    await runMigration();
+
+    expect(messages).toContain(`  -> Migrated 1/2 inputs.`);
+  });
+
+  it('should report correct statistics with best effort mode', async () => {
+    writeFile(`node_modules/@tsconfig/strictest/tsconfig.json`, `{}`);
+    writeFile(
+      `tsconfig.json`,
+      JSON.stringify({
+        extends: `@tsconfig/strictest/tsconfig.json`,
+      }),
+    );
+    writeFile(
+      '/index.ts',
+      `
+      import {Input, Directive} from '@angular/core';
+
+      @Directive({})
+      export class SomeDirective {
+        @Input({required: true}) name = '';
+        @Input({required: true}) lastName = '';
+
+        someFn() {
+          this.lastName = 'other name';
+        }
+      }`,
+    );
+
+    const messages: string[] = [];
+    runner.logger.subscribe((m) => messages.push(m.message));
+
+    await runMigration({bestEffortMode: true});
+
+    expect(messages).toContain(`  -> Migrated 2/2 inputs.`);
   });
 });

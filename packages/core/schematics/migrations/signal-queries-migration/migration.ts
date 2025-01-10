@@ -25,6 +25,7 @@ import {
   ClassFieldDescriptor,
   ClassIncompatibilityReason,
   FieldIncompatibilityReason,
+  nonIgnorableFieldIncompatibilities,
 } from '../signal-migration/src';
 import {checkIncompatiblePatterns} from '../signal-migration/src/passes/problematic_patterns/common_incompatible_patterns';
 import {migrateHostBindings} from '../signal-migration/src/passes/reference_migration/migrate_host_bindings';
@@ -614,6 +615,15 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
 
     for (const [id, info] of Object.entries(globalMetadata.problematicQueries)) {
       if (globalMetadata.knownQueryFields[id as ClassFieldUniqueKey] === undefined) {
+        continue;
+      }
+
+      // Do not count queries that were forcibly ignored via best effort mode.
+      if (
+        this.config.bestEffortMode &&
+        (info.fieldReason === null ||
+          !nonIgnorableFieldIncompatibilities.includes(info.fieldReason))
+      ) {
         continue;
       }
 
