@@ -44,10 +44,9 @@ import {
   createElementNode,
   createTextNode,
   nativeInsertBefore,
-  nativeParentNode,
   nativeRemoveNode,
   updateTextNode,
-} from '../node_manipulation';
+} from '../dom_node_manipulation';
 import {
   getBindingIndex,
   isInSkipHydrationBlock,
@@ -272,7 +271,7 @@ export function applyMutableOpCodes(
             // must insert into the root. (Only subsequent operations can insert into a dynamic
             // parent)
             rootIdx = parentIdx;
-            rootRNode = nativeParentNode(renderer, anchorRNode);
+            rootRNode = renderer.parentNode(anchorRNode);
           }
           let insertInFrontOf: RNode | null;
           let parentRNode: RElement | null;

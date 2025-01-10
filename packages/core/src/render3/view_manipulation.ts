@@ -36,7 +36,6 @@ import {
   detachView,
   getBeforeNodeForView,
   insertView,
-  nativeParentNode,
 } from './node_manipulation';
 
 export function createAndRenderEmbeddedLView<T>(
@@ -135,7 +134,7 @@ export function addLViewToLContainer(
   if (addToDOM) {
     const beforeNode = getBeforeNodeForView(index, lContainer);
     const renderer = lView[RENDERER];
-    const parentRNode = nativeParentNode(renderer, lContainer[NATIVE] as RElement | RComment);
+    const parentRNode = renderer.parentNode(lContainer[NATIVE] as RElement | RComment);
     if (parentRNode !== null) {
       addViewToDOM(tView, lContainer[T_HOST], renderer, lView, parentRNode, beforeNode);
     }

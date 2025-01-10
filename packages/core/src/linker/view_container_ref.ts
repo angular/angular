@@ -51,13 +51,8 @@ import {
   TVIEW,
 } from '../render3/interfaces/view';
 import {assertTNodeType} from '../render3/node_assert';
-import {
-  destroyLView,
-  detachView,
-  nativeInsertBefore,
-  nativeNextSibling,
-  nativeParentNode,
-} from '../render3/node_manipulation';
+import {destroyLView, detachView} from '../render3/node_manipulation';
+import {nativeInsertBefore} from '../render3/dom_node_manipulation';
 import {getCurrentTNode, getLView} from '../render3/state';
 import {
   getParentInjectorIndex,
@@ -723,12 +718,12 @@ function insertAnchorNode(hostLView: LView, hostTNode: TNode): RComment {
   const commentNode = renderer.createComment(ngDevMode ? 'container' : '');
 
   const hostNative = getNativeByTNode(hostTNode, hostLView)!;
-  const parentOfHostNative = nativeParentNode(renderer, hostNative);
+  const parentOfHostNative = renderer.parentNode(hostNative);
   nativeInsertBefore(
     renderer,
     parentOfHostNative!,
     commentNode,
-    nativeNextSibling(renderer, hostNative),
+    renderer.nextSibling(hostNative),
     false,
   );
   return commentNode;
