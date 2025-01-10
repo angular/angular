@@ -10659,6 +10659,12 @@ var managedLabels = createTypedObject(ManagedLabel)({
     name: "area: zones",
     commitCheck: (c) => c.scope === "zone.js",
     repositories: [ManagedRepositories.ANGULAR]
+  },
+  DETECTED_LOCALIZE_CHANGE: {
+    description: "Issues related to localization and internationalization",
+    name: "area: i18n",
+    commitCheck: (c) => c.scope === "localize",
+    repositories: [ManagedRepositories.ANGULAR]
   }
 });
 
