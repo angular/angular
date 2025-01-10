@@ -554,7 +554,7 @@ It confirms that the selected `DashboardHeroComponent` hero really does find its
 A *routing component* is a component that tells the `Router` to navigate to another component.
 The `DashboardComponent` is a *routing component* because the user can navigate to the `HeroDetailComponent` by clicking on one of the *hero buttons* on the dashboard.
 
-Angular provides test helpers to reduce boilerplate and more effectively test code which depends HttpClient. The `provideRouter` function can be used directly in the test module as well.
+Angular provides test helpers to reduce boilerplate and more effectively test code which depends `HttpClient`. The `provideRouter` function can be used directly in the test module as well.
 
 <docs-code header="app/dashboard/dashboard.component.spec.ts" path="adev/src/content/examples/testing/src/app/dashboard/dashboard.component.spec.ts" visibleRegion="router-harness"/>
 
