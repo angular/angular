@@ -1,0 +1,89 @@
+@use '@angular/material' as mat;
+
+h2 {
+  font-size: 0.875rem;
+}
+
+.select {
+  cursor: pointer;
+}
+
+:host {
+  display: block;
+  padding: 16px;
+}
+
+.filter {
+  display: flex;
+  gap: 0.5rem;
+
+  mat-form-field {
+    @include mat.form-field-density(-5);
+    @include mat.form-field-overrides(
+      (
+        container-text-size: 0.8rem,
+        outlined-label-text-size: 0.8rem,
+      )
+    );
+
+    &:first-child {
+      flex: 1;
+    }
+  }
+}
+
+table {
+  width: 100%;
+  --mat-table-row-item-label-text-size: 0.8rem;
+  --mat-table-header-container-height: 42px;
+  --mat-table-row-item-container-height: 42px;
+}
+
+.column-title {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+tr.example-detail-row {
+  height: 0;
+}
+
+.example-element-row td {
+  border-bottom-width: 0;
+  cursor: pointer;
+}
+
+.example-element-detail {
+  overflow: hidden;
+  display: flex;
+}
+
+.example-element-diagram {
+  min-width: 80px;
+  border: 2px solid black;
+  padding: 8px;
+  font-weight: lighter;
+  margin: 8px 0;
+  height: 104px;
+}
+
+.example-element-symbol {
+  font-weight: bold;
+  font-size: 40px;
+  line-height: normal;
+}
+
+.example-element-description {
+  padding: 16px;
+}
+
+.example-element-description-attribution {
+  opacity: 0.5;
+}
+
+:host-context(.dark-theme) {
+  .providers-title {
+    color: #ffffff;
+  }
+}
