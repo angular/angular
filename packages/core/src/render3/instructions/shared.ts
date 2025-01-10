@@ -115,7 +115,6 @@ import {
   TViewType,
 } from '../interfaces/view';
 import {assertPureTNodeType, assertTNodeType} from '../node_assert';
-import {clearElementContents} from '../node_manipulation';
 import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
 import {profiler} from '../profiler';
 import {ProfilerEvent} from '../profiler_types';
@@ -148,6 +147,7 @@ import {selectIndexInternal} from './advance';
 import {ɵɵdirectiveInject} from './di';
 import {handleUnknownPropertyError, isPropertyValid, matchingSchemas} from './element_validation';
 import {writeToDirectiveInput} from './write_to_directive_input';
+import {clearElementContents, updateTextNode} from '../dom_node_manipulation';
 
 export function createLView<T>(
   parentLView: LView | null,

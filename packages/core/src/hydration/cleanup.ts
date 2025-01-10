@@ -18,7 +18,7 @@ import {Renderer} from '../render3/interfaces/renderer';
 import {RNode} from '../render3/interfaces/renderer_dom';
 import {isLContainer, isLView} from '../render3/interfaces/type_checks';
 import {HEADER_OFFSET, HOST, LView, PARENT, RENDERER, TVIEW} from '../render3/interfaces/view';
-import {nativeRemoveNode} from '../render3/node_manipulation';
+import {nativeRemoveNode} from '../render3/dom_node_manipulation';
 
 import {validateSiblingNodeExists} from './error_handling';
 import {cleanupI18nHydrationData} from './i18n';
