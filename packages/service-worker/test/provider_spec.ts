@@ -19,6 +19,14 @@ const provideServiceWorkerApi = 'provideServiceWorker';
 const serviceWorkerModuleApi = 'ServiceWorkerModule';
 
 [provideServiceWorkerApi, serviceWorkerModuleApi].forEach((apiFnName: string) => {
+  beforeEach(() => {
+    globalThis['ngServerMode'] = false;
+  });
+
+  afterEach(() => {
+    globalThis['ngServerMode'] = undefined;
+  });
+
   describe(apiFnName, () => {
     // Skip environments that don't support the minimum APIs needed to run these SW tests.
     if (typeof navigator === 'undefined' || typeof navigator.serviceWorker === 'undefined') {
