@@ -100,7 +100,6 @@
   "NodeInjector",
   "NodeInjectorDestroyRef",
   "NodeInjectorFactory",
-  "NodeNavigationStep",
   "NoneEncapsulationDomRenderer",
   "NoopNgZone",
   "NullInjector",
