@@ -23,8 +23,9 @@ import {RComment} from '../interfaces/renderer_dom';
 import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
-import {appendChild, createCommentNode} from '../node_manipulation';
 import {executeContentQueries} from '../queries/query_execution';
+import {appendChild} from '../node_manipulation';
+import {createCommentNode} from '../dom_node_manipulation';
 import {
   getBindingIndex,
   getCurrentTNode,

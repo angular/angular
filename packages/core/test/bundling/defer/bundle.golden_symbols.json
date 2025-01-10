@@ -469,6 +469,7 @@
   "init_dispatcher",
   "init_document",
   "init_dom",
+  "init_dom_node_manipulation",
   "init_dom_triggers",
   "init_earlyeventcontract",
   "init_effect",

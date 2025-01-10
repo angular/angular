@@ -419,7 +419,6 @@
   "nativeAppendChild",
   "nativeAppendOrInsertBefore",
   "nativeInsertBefore",
-  "nativeParentNode",
   "nextBindingIndex",
   "nextNgElementId",
   "ngOnChangesSetInput",

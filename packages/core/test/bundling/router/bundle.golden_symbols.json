@@ -597,7 +597,6 @@
   "nativeAppendChild",
   "nativeAppendOrInsertBefore",
   "nativeInsertBefore",
-  "nativeParentNode",
   "navigationCancelingError",
   "nextBindingIndex",
   "nextNgElementId",

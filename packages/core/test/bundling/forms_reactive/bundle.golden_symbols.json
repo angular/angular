@@ -521,7 +521,6 @@
   "nativeAppendChild",
   "nativeAppendOrInsertBefore",
   "nativeInsertBefore",
-  "nativeParentNode",
   "nextNgElementId",
   "ngOnChangesSetInput",
   "ngZoneInstanceId",

@@ -34,7 +34,6 @@ import {
   TAttributes,
   TElementNode,
   TNode,
-  TNodeFlags,
   TNodeType,
 } from '../interfaces/node';
 import {Renderer} from '../interfaces/renderer';
@@ -42,13 +41,9 @@ import {RElement} from '../interfaces/renderer_dom';
 import {isComponentHost, isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
-import {
-  appendChild,
-  clearElementContents,
-  createElementNode,
-  setupStaticAttributes,
-} from '../node_manipulation';
 import {executeContentQueries} from '../queries/query_execution';
+import {appendChild, setupStaticAttributes} from '../node_manipulation';
+import {clearElementContents, createElementNode} from '../dom_node_manipulation';
 import {
   decreaseElementDepthCount,
   enterSkipHydrationBlock,

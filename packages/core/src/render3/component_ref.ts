@@ -75,7 +75,7 @@ import {
   TViewType,
 } from './interfaces/view';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
-import {createElementNode, setupStaticAttributes, writeDirectClass} from './node_manipulation';
+import {setupStaticAttributes, writeDirectClass} from './node_manipulation';
 import {
   extractAttrsAndClassesFromSelector,
   stringifyCSSSelectorList,
@@ -91,6 +91,7 @@ import {unregisterLView} from './interfaces/lview_tracking';
 import {profiler} from './profiler';
 import {ProfilerEvent} from './profiler_types';
 import {executeContentQueries} from './queries/query_execution';
+import {createElementNode} from './dom_node_manipulation';
 
 export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
   /**
