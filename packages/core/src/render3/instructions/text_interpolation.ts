@@ -8,7 +8,7 @@
 import {assertDefined, assertIndexInRange, assertNotSame, assertString} from '../../util/assert';
 import {RText} from '../interfaces/renderer_dom';
 import {LView, RENDERER} from '../interfaces/view';
-import {updateTextNode} from '../node_manipulation';
+import {updateTextNode} from '../dom_node_manipulation';
 import {getLView, getSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {getNativeByIndex} from '../util/view_utils';

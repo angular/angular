@@ -14,7 +14,8 @@ import {isTNodeShape, TNode, TNodeType} from '../render3/interfaces/node';
 import type {Renderer} from '../render3/interfaces/renderer';
 import type {RNode} from '../render3/interfaces/renderer_dom';
 import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView, TVIEW} from '../render3/interfaces/view';
-import {getFirstNativeNode, nativeRemoveNode} from '../render3/node_manipulation';
+import {getFirstNativeNode} from '../render3/node_manipulation';
+import {nativeRemoveNode} from '../render3/dom_node_manipulation';
 import {unwrapRNode} from '../render3/util/view_utils';
 import {assertDefined, assertNotEqual} from '../util/assert';
 

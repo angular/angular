@@ -21,7 +21,6 @@ import {
   assertNumber,
   assertString,
 } from '../util/assert';
-import {escapeCommentText} from '../util/dom';
 
 import {
   assertLContainer,
@@ -51,7 +50,7 @@ import {
   TProjectionNode,
 } from './interfaces/node';
 import {Renderer} from './interfaces/renderer';
-import {RComment, RElement, RNode, RText} from './interfaces/renderer_dom';
+import {RElement, RNode} from './interfaces/renderer_dom';
 import {isDestroyed, isLContainer, isLView} from './interfaces/type_checks';
 import {
   CHILD_HEAD,
@@ -88,7 +87,12 @@ import {
   unwrapRNode,
   updateAncestorTraversalFlagsOnAttach,
 } from './util/view_utils';
-import {EMPTY_ARRAY} from '../util/empty';
+import {
+  nativeAppendChild,
+  nativeAppendOrInsertBefore,
+  nativeInsertBefore,
+  nativeRemoveNode,
+} from './dom_node_manipulation';
 
 const enum WalkTNodeTreeAction {
   /** node create in the native environment. Run on initial creation. */
@@ -155,38 +159,6 @@ function applyToElementOrContainer(
       applyContainer(renderer, action, lContainer, parent, beforeNode);
     }
   }
-}
-
-export function createTextNode(renderer: Renderer, value: string): RText {
-  ngDevMode && ngDevMode.rendererCreateTextNode++;
-  ngDevMode && ngDevMode.rendererSetText++;
-  return renderer.createText(value);
-}
-
-export function updateTextNode(renderer: Renderer, rNode: RText, value: string): void {
-  ngDevMode && ngDevMode.rendererSetText++;
-  renderer.setValue(rNode, value);
-}
-
-export function createCommentNode(renderer: Renderer, value: string): RComment {
-  ngDevMode && ngDevMode.rendererCreateComment++;
-  return renderer.createComment(escapeCommentText(value));
-}
-
-/**
- * Creates a native element from a tag name, using a renderer.
- * @param renderer A renderer to use
- * @param name the tag name
- * @param namespace Optional namespace for element.
- * @returns the element created
- */
-export function createElementNode(
-  renderer: Renderer,
-  name: string,
-  namespace: string | null,
-): RElement {
-  ngDevMode && ngDevMode.rendererCreateElement++;
-  return renderer.createElement(name, namespace);
 }
 
 /**
@@ -686,55 +658,6 @@ export function getClosestRElement(
 }
 
 /**
- * Inserts a native node before another native node for a given parent.
- * This is a utility function that can be used when native nodes were determined.
- */
-export function nativeInsertBefore(
-  renderer: Renderer,
-  parent: RElement,
-  child: RNode,
-  beforeNode: RNode | null,
-  isMove: boolean,
-): void {
-  ngDevMode && ngDevMode.rendererInsertBefore++;
-  renderer.insertBefore(parent, child, beforeNode, isMove);
-}
-
-function nativeAppendChild(renderer: Renderer, parent: RElement, child: RNode): void {
-  ngDevMode && ngDevMode.rendererAppendChild++;
-  ngDevMode && assertDefined(parent, 'parent node must be defined');
-  renderer.appendChild(parent, child);
-}
-
-function nativeAppendOrInsertBefore(
-  renderer: Renderer,
-  parent: RElement,
-  child: RNode,
-  beforeNode: RNode | null,
-  isMove: boolean,
-) {
-  if (beforeNode !== null) {
-    nativeInsertBefore(renderer, parent, child, beforeNode, isMove);
-  } else {
-    nativeAppendChild(renderer, parent, child);
-  }
-}
-
-/**
- * Returns a native parent of a given native node.
- */
-export function nativeParentNode(renderer: Renderer, node: RNode): RElement | null {
-  return renderer.parentNode(node);
-}
-
-/**
- * Returns a native sibling of a given native node.
- */
-export function nativeNextSibling(renderer: Renderer, node: RNode): RNode | null {
-  return renderer.nextSibling(node);
-}
-
-/**
  * Find a node in front of which `currentTNode` should be inserted.
  *
  * This method determines the `RNode` in front of which we should insert the `currentRNode`. This
@@ -932,29 +855,6 @@ export function getBeforeNodeForView(
   }
 
   return lContainer[NATIVE];
-}
-
-/**
- * Removes a native node itself using a given renderer. To remove the node we are looking up its
- * parent from the native tree as not all platforms / browsers support the equivalent of
- * node.remove().
- *
- * @param renderer A renderer to be used
- * @param rNode The native node that should be removed
- * @param isHostElement A flag indicating if a node to be removed is a host of a component.
- */
-export function nativeRemoveNode(renderer: Renderer, rNode: RNode, isHostElement?: boolean): void {
-  ngDevMode && ngDevMode.rendererRemoveNode++;
-  renderer.removeChild(null, rNode, isHostElement);
-}
-
-/**
- * Clears the contents of a given RElement.
- *
- * @param rElement the native RElement to be cleared
- */
-export function clearElementContents(rElement: RElement): void {
-  rElement.textContent = '';
 }
 
 /**
@@ -1253,7 +1153,7 @@ export function applyStyling(
  * @param element The element which needs to be updated.
  * @param newValue The new class list to write.
  */
-export function writeDirectStyle(renderer: Renderer, element: RElement, newValue: string) {
+function writeDirectStyle(renderer: Renderer, element: RElement, newValue: string) {
   ngDevMode && assertString(newValue, "'newValue' should be a string");
   renderer.setAttribute(element, 'style', newValue);
   ngDevMode && ngDevMode.rendererSetStyle++;
