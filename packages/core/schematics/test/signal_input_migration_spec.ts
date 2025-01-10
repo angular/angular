@@ -70,7 +70,7 @@ describe('signal input migration', () => {
     expect(content).toContain('readonly name = input.required<string>()');
   });
 
-  fit('should work when extending tsconfig from node_modules', async () => {
+  it('should work when extending tsconfig from node_modules', async () => {
     writeFile(`node_modules/@tsconfig/strictest/tsconfig.json`, `{}`);
     writeFile(
       `tsconfig.json`,
