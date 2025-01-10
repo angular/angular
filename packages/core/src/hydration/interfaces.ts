@@ -19,11 +19,15 @@ export const REFERENCE_NODE_BODY = 'b';
 /**
  * Describes navigation steps that the runtime logic need to perform,
  * starting from a given (known) element.
+ * We're not using enum `NodeNavigationStep` because it produces more code overhead;
+ * thus, using plain `const` eliminates extra bytes. We can't use `const enum` due
+ * to single-file compilation restrictions.
  */
-export enum NodeNavigationStep {
-  FirstChild = 'f',
-  NextSibling = 'n',
-}
+
+export type NodeNavigationStep = 'f' | 'n';
+
+export const NODE_NAVIGATION_STEP_FIRST_CHILD = 'f';
+export const NODE_NAVIGATION_STEP_NEXT_SIBLING = 'n';
 
 /**
  * Keys within serialized view data structure to represent various
