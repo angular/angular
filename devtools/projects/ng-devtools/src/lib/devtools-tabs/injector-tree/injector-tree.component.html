@@ -11,10 +11,14 @@
   [disabled]="true"
 >
   <as-split-area size="50">
-    <mat-checkbox (change)="toggleHideInjectorsWithNoProviders()">
-      Hide injectors with no providers
-    </mat-checkbox>
-    <mat-checkbox (change)="toggleHideAngularInjectors()"> Hide framework injectors </mat-checkbox>
+    <div class="options">
+      <mat-checkbox (change)="toggleHideInjectorsWithNoProviders()">
+        Hide injectors with no providers
+      </mat-checkbox>
+      <mat-checkbox (change)="toggleHideAngularInjectors()">
+        Hide framework injectors
+      </mat-checkbox>
+    </div>
   </as-split-area>
   <as-split-area>
     <as-split unit="percent" direction="horizontal" [gutterSize]="9">
@@ -23,7 +27,7 @@
           <as-split-area size="35">
             <div class="injector-hierarchy">
               <h2>
-                Environment Hierarchy
+                <span>Environment Hierarchy</span>
                 <a
                   class="hierarchy-ref"
                   href="https://angular.dev/guide/di/hierarchical-dependency-injection#types-of-injector-hierarchies"
@@ -42,7 +46,7 @@
           <as-split-area size="65">
             <div class="injector-hierarchy">
               <h2>
-                Element Hierarchy
+                <span>Element Hierarchy</span>
                 <a
                   class="hierarchy-ref"
                   href="https://angular.dev/guide/di/hierarchical-dependency-injection#types-of-injector-hierarchies"

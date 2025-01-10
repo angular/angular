@@ -33,7 +33,7 @@ import {
   InjectorTreeVisualizer,
 } from '../dependency-injection/injector-tree-visualizer';
 
-import {InjectorProvidersComponent} from './injector-providers.component';
+import {InjectorProvidersComponent} from './injector-providers/injector-providers.component';
 import {
   filterOutAngularInjectors,
   filterOutInjectorsWithNoProviders,
