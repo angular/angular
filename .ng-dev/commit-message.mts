@@ -32,7 +32,6 @@ export const commitMessage: CommitMessageConfig = {
     'router',
     'service-worker',
     'upgrade',
-    've',
     'zone.js',
   ],
 };
