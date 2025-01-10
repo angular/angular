@@ -1,6 +1,6 @@
 # VSCode Configuration
 
-This folder contains opt-in [Workspace Settings](https://code.visualstudio.com/docs/getstarted/settings), [Tasks](https://code.visualstudio.com/docs/editor/tasks), [Launch Configurations](https://code.visualstudio.com/Docs/editor/debugging#_launch-configurations) and [Extension Recommendations](https://code.visualstudio.com/docs/editor/extension-gallery#_workspace-recommended-extensions) that the Angular team recommends using when working on this repository.
+This folder contains opt-in [Workspace Settings](https://code.visualstudio.com/docs/getstarted/settings), [Tasks](https://code.visualstudio.com/docs/editor/tasks), [Launch Configurations](https://code.visualstudio.com/Docs/editor/debugging#_launch-configurations), and [Extension Recommendations](https://code.visualstudio.com/docs/editor/extension-gallery#_workspace-recommended-extensions) that the Angular team recommends using when working on this repository.
 
 ## Usage
 
@@ -20,6 +20,6 @@ To see the recommended extensions select "Extensions: Show Recommended Extension
 
 ## Editing `.vscode/recommended-*.json` files
 
-If you wish to add extra configuration items please keep in mind any modifications you make here will be used by many users.
+If you wish to add extra configuration items, please keep in mind that any modifications you make here will be used by many users.
 
 Try to keep these settings/configurations to things that help facilitate the development process and avoid altering the user workflow whenever possible.
