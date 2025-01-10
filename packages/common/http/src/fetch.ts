@@ -11,7 +11,7 @@ import {Observable, Observer} from 'rxjs';
 
 import {HttpBackend} from './backend';
 import {HttpHeaders} from './headers';
-import {HttpRequest, X_REQUEST_URL_HEADER} from './request';
+import {ACCEPT_HEADER, HttpRequest, X_REQUEST_URL_HEADER} from './request';
 import {
   HTTP_STATUS_CODE_OK,
   HttpDownloadProgressEvent,
@@ -259,7 +259,7 @@ export class FetchBackend implements HttpBackend {
 
     // Add an Accept header if one isn't present already.
     if (!req.headers.has('Accept')) {
-      headers['Accept'] = 'application/json, text/plain, */*';
+      headers['Accept'] = ACCEPT_HEADER;
     }
 
     // Auto-detect the Content-Type header if one isn't present already.
