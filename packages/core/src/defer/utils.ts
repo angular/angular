@@ -14,8 +14,8 @@ import {getTNode} from '../render3/util/view_utils';
 import {assertEqual, throwError} from '../util/assert';
 
 import {
+  DEFER_DEPENDENCIES_LOADING_STATE_COMPLETE,
   DeferBlockState,
-  DeferDependenciesLoadingState,
   LDeferBlockDetails,
   LOADING_AFTER_SLOT,
   MINIMUM_SLOT,
@@ -148,7 +148,7 @@ export function getPrimaryBlockTNode(tView: TView, tDetails: TDeferBlockDetails)
 export function assertDeferredDependenciesLoaded(tDetails: TDeferBlockDetails) {
   assertEqual(
     tDetails.loadingState,
-    DeferDependenciesLoadingState.COMPLETE,
+    DEFER_DEPENDENCIES_LOADING_STATE_COMPLETE,
     'Expecting all deferred dependencies to be loaded.',
   );
 }

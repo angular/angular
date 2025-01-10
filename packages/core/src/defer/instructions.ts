@@ -33,7 +33,6 @@ import {
   DEFER_BLOCK_STATE,
   DeferBlockInternalState,
   DeferBlockState,
-  DeferDependenciesLoadingState,
   DependencyResolverFn,
   DeferBlockTrigger,
   LDeferBlockDetails,
@@ -41,6 +40,7 @@ import {
   TriggerType,
   SSR_UNIQUE_ID,
   TDeferDetailsFlags,
+  DEFER_DEPENDENCIES_LOADING_STATE_NOT_STARTED,
 } from './interfaces';
 import {onTimer} from './timer_scheduler';
 import {
@@ -116,7 +116,7 @@ export function ɵɵdefer(
       placeholderBlockConfig: null,
       loadingBlockConfig: null,
       dependencyResolverFn: dependencyResolverFn ?? null,
-      loadingState: DeferDependenciesLoadingState.NOT_STARTED,
+      loadingState: DEFER_DEPENDENCIES_LOADING_STATE_NOT_STARTED,
       loadingPromise: null,
       providers: null,
       hydrateTriggers: null,
@@ -241,7 +241,10 @@ export function ɵɵdeferPrefetchWhen(rawValue: unknown) {
       const tView = lView[TVIEW];
       const tNode = getSelectedTNode();
       const tDetails = getTDeferBlockDetails(tView, tNode);
-      if (value === true && tDetails.loadingState === DeferDependenciesLoadingState.NOT_STARTED) {
+      if (
+        value === true &&
+        tDetails.loadingState === DEFER_DEPENDENCIES_LOADING_STATE_NOT_STARTED
+      ) {
         // If loading has not been started yet, trigger it now.
         triggerPrefetching(tDetails, lView, tNode);
       }
@@ -420,7 +423,7 @@ export function ɵɵdeferPrefetchOnImmediate() {
   const tView = lView[TVIEW];
   const tDetails = getTDeferBlockDetails(tView, tNode);
 
-  if (tDetails.loadingState === DeferDependenciesLoadingState.NOT_STARTED) {
+  if (tDetails.loadingState === DEFER_DEPENDENCIES_LOADING_STATE_NOT_STARTED) {
     triggerResourceLoading(tDetails, lView, tNode);
   }
 }
@@ -573,7 +576,7 @@ export function ɵɵdeferPrefetchOnHover(triggerIndex: number, walkUpTimes?: num
   const tView = lView[TVIEW];
   const tDetails = getTDeferBlockDetails(tView, tNode);
 
-  if (tDetails.loadingState === DeferDependenciesLoadingState.NOT_STARTED) {
+  if (tDetails.loadingState === DEFER_DEPENDENCIES_LOADING_STATE_NOT_STARTED) {
     registerDomTrigger(
       lView,
       tNode,
@@ -670,7 +673,7 @@ export function ɵɵdeferPrefetchOnInteraction(triggerIndex: number, walkUpTimes
   const tView = lView[TVIEW];
   const tDetails = getTDeferBlockDetails(tView, tNode);
 
-  if (tDetails.loadingState === DeferDependenciesLoadingState.NOT_STARTED) {
+  if (tDetails.loadingState === DEFER_DEPENDENCIES_LOADING_STATE_NOT_STARTED) {
     registerDomTrigger(
       lView,
       tNode,
@@ -767,7 +770,7 @@ export function ɵɵdeferPrefetchOnViewport(triggerIndex: number, walkUpTimes?: 
   const tView = lView[TVIEW];
   const tDetails = getTDeferBlockDetails(tView, tNode);
 
-  if (tDetails.loadingState === DeferDependenciesLoadingState.NOT_STARTED) {
+  if (tDetails.loadingState === DEFER_DEPENDENCIES_LOADING_STATE_NOT_STARTED) {
     registerDomTrigger(
       lView,
       tNode,
