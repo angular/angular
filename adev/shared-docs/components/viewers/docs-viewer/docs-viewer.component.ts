@@ -265,9 +265,12 @@ export class DocViewer implements OnChanges {
   }
 
   private loadIcons(element: HTMLElement): void {
-    element.querySelectorAll('docs-icon').forEach((iconsPlaceholder) => {
-      this.renderComponent(IconComponent, iconsPlaceholder as HTMLElement);
-    });
+    // We need to make sure that we don't reload the icons in loadCopySourceCodeButtons
+    element
+      .querySelectorAll('docs-icon:not([docs-copy-source-code] docs-icon)')
+      .forEach((iconsPlaceholder) => {
+        this.renderComponent(IconComponent, iconsPlaceholder as HTMLElement);
+      });
   }
 
   /**
