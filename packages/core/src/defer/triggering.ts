@@ -35,6 +35,10 @@ import {
 import {onViewport} from './dom_triggers';
 import {onIdle} from './idle_scheduler';
 import {
+  DEFER_DEPENDENCIES_LOADING_STATE_COMPLETE,
+  DEFER_DEPENDENCIES_LOADING_STATE_FAILED,
+  DEFER_DEPENDENCIES_LOADING_STATE_IN_PROGRESS,
+  DEFER_DEPENDENCIES_LOADING_STATE_NOT_STARTED,
   DeferBlockBehavior,
   DeferBlockState,
   DeferBlockTrigger,
@@ -111,7 +115,7 @@ export function scheduleDelayedPrefetching(
   const tView = lView[TVIEW];
   const tDetails = getTDeferBlockDetails(tView, tNode);
 
-  if (tDetails.loadingState === DeferDependenciesLoadingState.NOT_STARTED) {
+  if (tDetails.loadingState === DEFER_DEPENDENCIES_LOADING_STATE_NOT_STARTED) {
     const lDetails = getLDeferBlockDetails(lView, tNode);
     const prefetch = () => triggerPrefetching(tDetails, lView, tNode);
     const cleanupFn = scheduleFn(prefetch, injector);
@@ -168,7 +172,7 @@ export function triggerResourceLoading(
   const injector = lView[INJECTOR];
   const tView = lView[TVIEW];
 
-  if (tDetails.loadingState !== DeferDependenciesLoadingState.NOT_STARTED) {
+  if (tDetails.loadingState !== DEFER_DEPENDENCIES_LOADING_STATE_NOT_STARTED) {
     // If the loading status is different from initial one, it means that
     // the loading of dependencies is in progress and there is nothing to do
     // in this function. All details can be obtained from the `tDetails` object.
@@ -179,7 +183,7 @@ export function triggerResourceLoading(
   const primaryBlockTNode = getPrimaryBlockTNode(tView, tDetails);
 
   // Switch from NOT_STARTED -> IN_PROGRESS state.
-  tDetails.loadingState = DeferDependenciesLoadingState.IN_PROGRESS;
+  tDetails.loadingState = DEFER_DEPENDENCIES_LOADING_STATE_IN_PROGRESS;
 
   // Prefetching is triggered, cleanup all registered prefetch triggers.
   invokeTriggerCleanupFns(TriggerType.Prefetch, lDetails);
@@ -207,7 +211,7 @@ export function triggerResourceLoading(
   if (!dependenciesFn) {
     tDetails.loadingPromise = Promise.resolve().then(() => {
       tDetails.loadingPromise = null;
-      tDetails.loadingState = DeferDependenciesLoadingState.COMPLETE;
+      tDetails.loadingState = DEFER_DEPENDENCIES_LOADING_STATE_COMPLETE;
       pendingTasks.remove(taskId);
     });
     return tDetails.loadingPromise;
@@ -243,7 +247,7 @@ export function triggerResourceLoading(
     pendingTasks.remove(taskId);
 
     if (failed) {
-      tDetails.loadingState = DeferDependenciesLoadingState.FAILED;
+      tDetails.loadingState = DEFER_DEPENDENCIES_LOADING_STATE_FAILED;
 
       if (tDetails.errorTmplIndex === null) {
         const templateLocation = ngDevMode ? getTemplateLocationDetails(lView) : '';
@@ -257,7 +261,7 @@ export function triggerResourceLoading(
         handleError(lView, error);
       }
     } else {
-      tDetails.loadingState = DeferDependenciesLoadingState.COMPLETE;
+      tDetails.loadingState = DEFER_DEPENDENCIES_LOADING_STATE_COMPLETE;
 
       // Update directive and pipe registries to add newly downloaded dependencies.
       const primaryBlockTView = primaryBlockTNode.tView!;
@@ -321,27 +325,27 @@ export function triggerDeferBlock(triggerType: TriggerType, lView: LView, tNode:
   invokeAllTriggerCleanupFns(lDetails);
 
   switch (tDetails.loadingState) {
-    case DeferDependenciesLoadingState.NOT_STARTED:
+    case DEFER_DEPENDENCIES_LOADING_STATE_NOT_STARTED:
       renderDeferBlockState(DeferBlockState.Loading, tNode, lContainer);
       triggerResourceLoading(tDetails, lView, tNode);
 
       // The `loadingState` might have changed to "loading".
       if (
         (tDetails.loadingState as DeferDependenciesLoadingState) ===
-        DeferDependenciesLoadingState.IN_PROGRESS
+        DEFER_DEPENDENCIES_LOADING_STATE_IN_PROGRESS
       ) {
         renderDeferStateAfterResourceLoading(tDetails, tNode, lContainer);
       }
       break;
-    case DeferDependenciesLoadingState.IN_PROGRESS:
+    case DEFER_DEPENDENCIES_LOADING_STATE_IN_PROGRESS:
       renderDeferBlockState(DeferBlockState.Loading, tNode, lContainer);
       renderDeferStateAfterResourceLoading(tDetails, tNode, lContainer);
       break;
-    case DeferDependenciesLoadingState.COMPLETE:
+    case DEFER_DEPENDENCIES_LOADING_STATE_COMPLETE:
       ngDevMode && assertDeferredDependenciesLoaded(tDetails);
       renderDeferBlockState(DeferBlockState.Complete, tNode, lContainer);
       break;
-    case DeferDependenciesLoadingState.FAILED:
+    case DEFER_DEPENDENCIES_LOADING_STATE_FAILED:
       renderDeferBlockState(DeferBlockState.Error, tNode, lContainer);
       break;
     default:

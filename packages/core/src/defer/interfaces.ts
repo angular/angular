@@ -50,20 +50,20 @@ export const enum TriggerType {
 
 /**
  * Describes the state of defer block dependency loading.
+ * We're not using enum `DeferDependenciesLoadingState` because it produces more code overhead;
+ * thus, using plain `const` eliminates extra bytes. We can't use `const enum` due
+ * to single-file compilation restrictions.
  */
-export enum DeferDependenciesLoadingState {
-  /** Initial state, dependency loading is not yet triggered */
-  NOT_STARTED,
+export type DeferDependenciesLoadingState = 0 | 1 | 2 | 3;
 
-  /** Dependency loading is in progress */
-  IN_PROGRESS,
-
-  /** Dependency loading has completed successfully */
-  COMPLETE,
-
-  /** Dependency loading has failed */
-  FAILED,
-}
+/** Initial state, dependency loading is not yet triggered */
+export const DEFER_DEPENDENCIES_LOADING_STATE_NOT_STARTED = 0;
+/** Dependency loading is in progress */
+export const DEFER_DEPENDENCIES_LOADING_STATE_IN_PROGRESS = 1;
+/** Dependency loading has completed successfully */
+export const DEFER_DEPENDENCIES_LOADING_STATE_COMPLETE = 2;
+/** Dependency loading has failed */
+export const DEFER_DEPENDENCIES_LOADING_STATE_FAILED = 3;
 
 /** Slot index where `minimum` parameter value is stored. */
 export const MINIMUM_SLOT = 0;
