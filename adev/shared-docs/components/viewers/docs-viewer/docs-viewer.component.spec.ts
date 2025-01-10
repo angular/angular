@@ -112,6 +112,13 @@ describe('DocViewer', () => {
 
     expect(exampleViewer).not.toBeNull();
     expect(exampleViewer.componentInstance.view()).toBe(CodeExampleViewMode.SNIPPET);
+
+    const checkIcon = fixture.debugElement.query(By.directive(IconComponent));
+    expect((checkIcon.nativeElement as HTMLElement).classList).toContain(
+      `material-symbols-outlined`,
+    );
+    expect((checkIcon.nativeElement as HTMLElement).classList).toContain(`docs-check`);
+    expect(checkIcon.nativeElement.innerHTML).toBe('check');
   });
 
   it('should display example viewer in multi file mode when user clicks expand', async () => {
