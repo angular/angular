@@ -601,7 +601,8 @@ export abstract class NgLocalization {
 }
 
 // @public
-export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
+export class NgOptimizedImage implements OnInit, OnChanges {
+    constructor();
     disableOptimizedSrcset: boolean;
     fill: boolean;
     height: number | undefined;
@@ -625,8 +626,6 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     static ngAcceptInputType_width: unknown;
     // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
-    // (undocumented)
-    ngOnDestroy(): void;
     // (undocumented)
     ngOnInit(): void;
     ngSrc: string;

@@ -16,7 +16,6 @@ import {
   NgZone,
   numberAttribute,
   OnChanges,
-  OnDestroy,
   OnInit,
   PLATFORM_ID,
   Renderer2,
@@ -31,6 +30,7 @@ import {
   ɵunwrapSafeValue as unwrapSafeValue,
   ChangeDetectorRef,
   ApplicationRef,
+  DestroyRef,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../../errors';
@@ -284,7 +284,7 @@ export interface ImagePlaceholderConfig {
     '[style.filter]': `placeholder && shouldBlurPlaceholder(placeholderConfig) ? "blur(${PLACEHOLDER_BLUR_AMOUNT}px)" : null`,
   },
 })
-export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
+export class NgOptimizedImage implements OnInit, OnChanges {
   private imageLoader = inject(IMAGE_LOADER);
   private config: ImageConfig = processConfig(inject(IMAGE_CONFIG));
   private renderer = inject(Renderer2);
@@ -293,8 +293,9 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   private readonly isServer = isPlatformServer(inject(PLATFORM_ID));
   private readonly preloadLinkCreator = inject(PreloadLinkCreator);
 
-  // a LCP image observer - should be injected only in the dev mode
-  private lcpObserver = ngDevMode ? this.injector.get(LCPImageObserver) : null;
+  // An LCP image observer should be injected only in development mode.
+  // Do not assign it to `null` to avoid having a redundant property in the production bundle.
+  private lcpObserver?: LCPImageObserver;
 
   /**
    * Calculate the rewritten `src` once and store it.
@@ -400,6 +401,21 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
    */
   @Input() srcset?: string;
 
+  constructor() {
+    if (ngDevMode) {
+      this.lcpObserver = this.injector.get(LCPImageObserver);
+
+      // Using `DestroyRef` to avoid having an empty `ngOnDestroy` method since this
+      // is only run in development mode.
+      const destroyRef = inject(DestroyRef);
+      destroyRef.onDestroy(() => {
+        if (!this.priority && this._renderedSrc !== null) {
+          this.lcpObserver!.unregisterImage(this._renderedSrc);
+        }
+      });
+    }
+  }
+
   /** @nodoc */
   ngOnInit() {
     performanceMarkFeature('NgOptimizedImage');
@@ -444,12 +460,9 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       assertNoNgSrcsetWithoutLoader(this, this.imageLoader);
       assertNoLoaderParamsWithoutLoader(this, this.imageLoader);
 
-      if (this.lcpObserver !== null) {
-        const ngZone = this.injector.get(NgZone);
-        ngZone.runOutsideAngular(() => {
-          this.lcpObserver!.registerImage(this.getRewrittenSrc(), this.ngSrc, this.priority);
-        });
-      }
+      ngZone.runOutsideAngular(() => {
+        this.lcpObserver!.registerImage(this.getRewrittenSrc(), this.ngSrc, this.priority);
+      });
 
       if (this.priority) {
         const checker = this.injector.get(PreconnectLinkChecker);
@@ -532,12 +545,15 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     if (changes['ngSrc'] && !changes['ngSrc'].isFirstChange()) {
       const oldSrc = this._renderedSrc;
       this.updateSrcAndSrcset(true);
-      const newSrc = this._renderedSrc;
-      if (this.lcpObserver !== null && oldSrc && newSrc && oldSrc !== newSrc) {
-        const ngZone = this.injector.get(NgZone);
-        ngZone.runOutsideAngular(() => {
-          this.lcpObserver?.updateImage(oldSrc, newSrc);
-        });
+
+      if (ngDevMode) {
+        const newSrc = this._renderedSrc;
+        if (oldSrc && newSrc && oldSrc !== newSrc) {
+          const ngZone = this.injector.get(NgZone);
+          ngZone.runOutsideAngular(() => {
+            this.lcpObserver!.updateImage(oldSrc, newSrc);
+          });
+        }
       }
     }
 
@@ -707,15 +723,6 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     const removeErrorListenerFn = this.renderer.listen(img, 'error', callback);
 
     callOnLoadIfImageIsLoaded(img, callback);
-  }
-
-  /** @nodoc */
-  ngOnDestroy() {
-    if (ngDevMode) {
-      if (!this.priority && this._renderedSrc !== null && this.lcpObserver !== null) {
-        this.lcpObserver.unregisterImage(this._renderedSrc);
-      }
-    }
   }
 
   private setHostAttribute(name: string, value: string): void {
