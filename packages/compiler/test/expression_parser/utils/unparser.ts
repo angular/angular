@@ -193,7 +193,7 @@ class Unparser implements AstVisitor {
     this._visit(ast.expression);
   }
 
-  visitTypeofExpresion(ast: TypeofExpression, context: any) {
+  visitTypeofExpression(ast: TypeofExpression, context: any) {
     this._expression += 'typeof ';
     this._visit(ast.expression);
   }

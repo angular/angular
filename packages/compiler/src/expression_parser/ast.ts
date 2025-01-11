@@ -382,7 +382,7 @@ export class TypeofExpression extends AST {
     super(span, sourceSpan);
   }
   override visit(visitor: AstVisitor, context: any = null): any {
-    return visitor.visitTypeofExpresion(this, context);
+    return visitor.visitTypeofExpression(this, context);
   }
 }
 
@@ -547,7 +547,7 @@ export interface AstVisitor {
   visitLiteralPrimitive(ast: LiteralPrimitive, context: any): any;
   visitPipe(ast: BindingPipe, context: any): any;
   visitPrefixNot(ast: PrefixNot, context: any): any;
-  visitTypeofExpresion(ast: TypeofExpression, context: any): any;
+  visitTypeofExpression(ast: TypeofExpression, context: any): any;
   visitNonNullAssert(ast: NonNullAssert, context: any): any;
   visitPropertyRead(ast: PropertyRead, context: any): any;
   visitPropertyWrite(ast: PropertyWrite, context: any): any;
@@ -615,7 +615,7 @@ export class RecursiveAstVisitor implements AstVisitor {
   visitPrefixNot(ast: PrefixNot, context: any): any {
     this.visit(ast.expression, context);
   }
-  visitTypeofExpresion(ast: TypeofExpression, context: any) {
+  visitTypeofExpression(ast: TypeofExpression, context: any) {
     this.visit(ast.expression, context);
   }
   visitNonNullAssert(ast: NonNullAssert, context: any): any {
@@ -732,7 +732,7 @@ export class AstTransformer implements AstVisitor {
     return new PrefixNot(ast.span, ast.sourceSpan, ast.expression.visit(this));
   }
 
-  visitTypeofExpresion(ast: TypeofExpression, context: any): AST {
+  visitTypeofExpression(ast: TypeofExpression, context: any): AST {
     return new TypeofExpression(ast.span, ast.sourceSpan, ast.expression.visit(this));
   }
 
@@ -912,7 +912,7 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
     return ast;
   }
 
-  visitTypeofExpresion(ast: TypeofExpression, context: any): AST {
+  visitTypeofExpression(ast: TypeofExpression, context: any): AST {
     const expression = ast.expression.visit(this);
     if (expression !== ast.expression) {
       return new TypeofExpression(ast.span, ast.sourceSpan, expression);
