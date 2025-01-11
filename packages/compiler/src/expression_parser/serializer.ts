@@ -136,7 +136,7 @@ class SerializeExpressionVisitor implements expr.AstVisitor {
       .join(', ')})`;
   }
 
-  visitTypeofExpresion(ast: expr.TypeofExpression, context: any) {
+  visitTypeofExpression(ast: expr.TypeofExpression, context: any) {
     return `typeof ${ast.expression.visit(this, context)}`;
   }
 
