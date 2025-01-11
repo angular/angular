@@ -113,8 +113,8 @@ class ASTValidator extends RecursiveAstVisitor {
     this.validate(ast, () => super.visitPrefixNot(ast, context));
   }
 
-  override visitTypeofExpresion(ast: TypeofExpression, context: any): any {
-    this.validate(ast, () => super.visitTypeofExpresion(ast, context));
+  override visitTypeofExpression(ast: TypeofExpression, context: any): any {
+    this.validate(ast, () => super.visitTypeofExpression(ast, context));
   }
 
   override visitPropertyRead(ast: PropertyRead, context: any): any {
