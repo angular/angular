@@ -15,27 +15,17 @@
  *
  * @returns The joined URL string.
  */
-export function joinWithSlash(start: string, end: string): string {
-  if (start.length == 0) {
-    return end;
-  }
-  if (end.length == 0) {
-    return start;
-  }
-  let slashes = 0;
+export function joinWithSlash(start: string, end: string) {
+  // If `start` is an empty string, return `end` as the result.
+  if (!start) return end;
+  // If `end` is an empty string, return `start` as the result.
+  if (!end) return start;
+  // If `start` ends with a slash, remove the leading slash from `end`.
   if (start.endsWith('/')) {
-    slashes++;
+    return end.startsWith('/') ? start + end.slice(1) : start + end;
   }
-  if (end.startsWith('/')) {
-    slashes++;
-  }
-  if (slashes == 2) {
-    return start + end.substring(1);
-  }
-  if (slashes == 1) {
-    return start + end;
-  }
-  return start + '/' + end;
+  // If `start` doesn't end with a slash, add one if `end` doesn't start with a slash.
+  return end.startsWith('/') ? start + end : `${start}/${end}`;
 }
 
 /**
