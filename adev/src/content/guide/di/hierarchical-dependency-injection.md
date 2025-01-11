@@ -789,7 +789,7 @@ In a logical tree, this same idea might look like this:
 Though `<app-child>` provides the sunflower <code>&#x1F33B;</code>, the application renders the red hibiscus <code>&#x1F33A;</code> because `@SkipSelf()` causes the current injector (`app-child`) to skip itself and look to its parent.
 
 If you now add `@Host()` (in addition to the `@SkipSelf()`), the result will be `null`.
-This is because `@Host()` limits the upper bound of the search to the `app-child` `<#VIEW>`.
+This is because `@Host()` limits the upper bound of the search to the `app-root` `<#VIEW>`.
 Here's the idea in the logical tree:
 
 <docs-code language="html">
