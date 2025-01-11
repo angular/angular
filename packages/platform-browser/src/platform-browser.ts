@@ -26,6 +26,8 @@ export {
   HammerGestureConfig,
   HammerLoader,
   HammerModule,
+  provideHammerLoader,
+  provideHammer,
 } from './dom/events/hammer_gestures';
 export {
   DomSanitizer,
