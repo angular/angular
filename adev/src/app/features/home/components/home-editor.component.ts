@@ -17,10 +17,10 @@ import {
   OnInit,
 } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {forkJoin} from 'rxjs';
+import {forkJoin, switchMap} from 'rxjs';
 
 import {injectAsync} from '../../../core/services/inject-async';
-import {EmbeddedEditor, EmbeddedTutorialManager} from '../../../editor';
+import {EmbeddedEditor, injectEmbeddedTutorialManager} from '../../../editor';
 
 @Component({
   selector: 'adev-code-editor',
@@ -32,7 +32,6 @@ import {EmbeddedEditor, EmbeddedTutorialManager} from '../../../editor';
 })
 export class CodeEditorComponent implements OnInit {
   private readonly cdRef = inject(ChangeDetectorRef);
-  private readonly embeddedTutorialManager = inject(EmbeddedTutorialManager);
   private readonly environmentInjector = inject(EnvironmentInjector);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -50,10 +49,17 @@ export class CodeEditorComponent implements OnInit {
       injectAsync(this.environmentInjector, () =>
         import('../../../editor/index').then((c) => c.NodeRuntimeSandbox),
       ),
-      this.embeddedTutorialManager.fetchAndSetTutorialFiles(this.tutorialFiles),
+      injectEmbeddedTutorialManager(this.environmentInjector),
     ])
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(([nodeRuntimeSandbox]) => {
+      .pipe(
+        switchMap(([nodeRuntimeSandbox, embeddedTutorialManager]) =>
+          embeddedTutorialManager
+            .fetchAndSetTutorialFiles(this.tutorialFiles)
+            .then(() => nodeRuntimeSandbox),
+        ),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((nodeRuntimeSandbox) => {
         this.cdRef.markForCheck();
         nodeRuntimeSandbox.init();
       });
