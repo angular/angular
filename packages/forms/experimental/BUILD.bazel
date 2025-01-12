@@ -9,6 +9,11 @@ ng_module(
             "*.ts",
             "src/**/*.ts",
         ],
+        exclude = [
+            # Exclude files that don't build
+            "src/custom-schemas/**",
+            "src/kirjs-idea1/**",
+        ],
     ),
     deps = [
         "//packages/core",
