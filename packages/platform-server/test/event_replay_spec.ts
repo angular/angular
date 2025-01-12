@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, destroyPlatform, ErrorHandler, PLATFORM_ID, Type} from '@angular/core';
+import {APP_ID, Component, destroyPlatform, ErrorHandler, PLATFORM_ID, Type} from '@angular/core';
 import {
   withEventReplay,
   bootstrapApplication,
@@ -140,6 +140,40 @@ describe('event replay', () => {
     });
     appRef.tick();
     expect(onClickSpy).toHaveBeenCalled();
+  });
+
+  it('should cleanup `window._ejsas[appId]` once app is destroyed', async () => {
+    @Component({
+      selector: 'app',
+      standalone: true,
+      template: `
+        <button id="btn" (click)="onClick()"></button>
+      `,
+    })
+    class AppComponent {
+      onClick() {}
+    }
+
+    const html = await ssr(AppComponent);
+    const ssrContents = getAppContents(html);
+    const doc = getDocument();
+
+    prepareEnvironment(doc, ssrContents);
+    resetTViewsFor(AppComponent);
+
+    const btn = doc.getElementById('btn')!;
+    btn.click();
+
+    const appRef = await hydrate(doc, AppComponent, {
+      hydrationFeatures: () => [withEventReplay()],
+    });
+    appRef.tick();
+    const appId = appRef.injector.get(APP_ID);
+
+    appRef.destroy();
+    // This ensure that `_ejsas` for the current application is cleaned up
+    // once the application is destroyed.
+    expect(window._ejsas![appId]).toBeUndefined();
   });
 
   it('should route to the appropriate component with content projection', async () => {
