@@ -190,7 +190,9 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
    * @nodoc
    */
   ngOnInit(): void {
-    this._checkParentType();
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      this._checkParentType();
+    }
     this.formDirective!.addFormArray(this);
   }
 
