@@ -231,7 +231,9 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   }
 
   private _setUpControl() {
-    this._checkParentType();
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      this._checkParentType();
+    }
     (this as Writable<this>).control = this.formDirective.addControl(this);
     this._added = true;
   }
