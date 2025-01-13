@@ -549,7 +549,6 @@
   "isNavigationCancelingError",
   "isNodeMatchingSelector",
   "isNodeMatchingSelectorList",
-  "isPlatformServer",
   "isPositive",
   "isPromise",
   "isPromise2",
