@@ -13,6 +13,7 @@ import {
   Component,
   DestroyRef,
   ElementRef,
+  EnvironmentInjector,
   OnDestroy,
   ViewChild,
   inject,
@@ -21,10 +22,9 @@ import {
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {MatTabGroup, MatTabsModule} from '@angular/material/tabs';
 import {Title} from '@angular/platform-browser';
-import {debounceTime, map} from 'rxjs';
+import {debounceTime, from, map, switchMap} from 'rxjs';
 
 import {TerminalType} from '../terminal/terminal-handler.service';
-import {EmbeddedTutorialManager} from '../embedded-tutorial-manager.service';
 
 import {CodeMirrorEditor} from './code-mirror-editor.service';
 import {DiagnosticWithLocation, DiagnosticsState} from './services/diagnostics-state.service';
@@ -34,6 +34,7 @@ import {ClickOutside, IconComponent} from '@angular/docs';
 import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
 import {IDXLauncher} from '../idx-launcher.service';
 import {MatTooltip} from '@angular/material/tooltip';
+import {injectEmbeddedTutorialManager} from '../inject-embedded-tutorial-manager';
 
 export const REQUIRED_FILES = new Set([
   'src/main.ts',
@@ -91,7 +92,7 @@ export class CodeEditor implements AfterViewInit, OnDestroy {
   private readonly idxLauncher = inject(IDXLauncher);
   private readonly title = inject(Title);
   private readonly location = inject(Location);
-  private readonly embeddedTutorialManager = inject(EmbeddedTutorialManager);
+  private readonly environmentInjector = inject(EnvironmentInjector);
 
   private readonly errors$ = this.diagnosticsState.diagnostics$.pipe(
     // Display errors one second after code update
@@ -142,7 +143,8 @@ export class CodeEditor implements AfterViewInit, OnDestroy {
   }
 
   async downloadCurrentCodeEditorState(): Promise<void> {
-    const name = this.embeddedTutorialManager.tutorialId();
+    const embeddedTutorialManager = await injectEmbeddedTutorialManager(this.environmentInjector);
+    const name = embeddedTutorialManager.tutorialId();
     await this.downloadManager.downloadCurrentStateOfTheSolution(name);
   }
 
@@ -236,8 +238,14 @@ export class CodeEditor implements AfterViewInit, OnDestroy {
   }
 
   private setSelectedTabOnTutorialChange() {
-    this.embeddedTutorialManager.tutorialChanged$
-      .pipe(takeUntilDestroyed(this.destroyRef))
+    // Using `from` to prevent injecting the embedded tutorial manager once the
+    // injector is destroyed (this may happen in unit tests when the test ends
+    // before `injectAsync` runs, causing an error).
+    from(injectEmbeddedTutorialManager(this.environmentInjector))
+      .pipe(
+        switchMap((embeddedTutorialManager) => embeddedTutorialManager.tutorialChanged$),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe(() => {
         // selected file on project change is always the first
         this.matTabGroup.selectedIndex = 0;
