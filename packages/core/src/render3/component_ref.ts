@@ -89,8 +89,6 @@ import {getComponentLViewByIndex, getNativeByTNode, getTNode} from './util/view_
 import {ViewRef} from './view_ref';
 import {ChainedInjector} from './chained_injector';
 import {unregisterLView} from './interfaces/lview_tracking';
-import {profiler} from './profiler';
-import {ProfilerEvent} from './profiler_types';
 
 export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
   /**
@@ -216,8 +214,6 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
     rootSelectorOrNode?: any,
     environmentInjector?: NgModuleRef<any> | EnvironmentInjector | undefined,
   ): AbstractComponentRef<T> {
-    profiler(ProfilerEvent.DynamicComponentStart);
-
     const prevConsumer = setActiveConsumer(null);
     try {
       // Check if the component is orphan
@@ -401,7 +397,6 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
         unregisterLView(rootLView);
         throw e;
       } finally {
-        profiler(ProfilerEvent.DynamicComponentEnd);
         leaveView();
       }
 

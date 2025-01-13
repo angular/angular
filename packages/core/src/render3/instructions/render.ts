@@ -21,8 +21,6 @@ import {
   TVIEW,
   TView,
 } from '../interfaces/view';
-import {profiler} from '../profiler';
-import {ProfilerEvent} from '../profiler_types';
 import {enterView, leaveView} from '../state';
 import {getComponentLViewByIndex, isCreationMode} from '../util/view_utils';
 
@@ -40,11 +38,7 @@ export function renderComponent(hostLView: LView, componentHostIdx: number) {
     componentView[HYDRATION] = retrieveHydrationInfo(hostRNode, componentView[INJECTOR]);
   }
 
-  profiler(ProfilerEvent.ComponentStart);
-
   renderView(componentTView, componentView, componentView[CONTEXT]);
-
-  profiler(ProfilerEvent.ComponentEnd, componentView[CONTEXT] as any as {});
 }
 
 /**
