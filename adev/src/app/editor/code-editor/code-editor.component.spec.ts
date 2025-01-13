@@ -148,6 +148,9 @@ describe('CodeEditor', () => {
     });
 
     it('should focused on a new tab when adding a new file', async () => {
+      // Wait until the asynchronous injection stuff is done.
+      await fixture.whenStable();
+
       const button = fixture.debugElement.query(By.css('button.adev-add-file')).nativeElement;
       button.click();
 
