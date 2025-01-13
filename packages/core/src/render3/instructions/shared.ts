@@ -182,10 +182,7 @@ export function processHostBindingOpCodes(tView: TView, lView: LView): void {
         const hostBindingFn = hostBindingOpCodes[++i] as HostBindingsFunction<any>;
         setBindingRootForHostBindings(bindingRootIndx, directiveIdx);
         const context = lView[directiveIdx];
-
-        profiler(ProfilerEvent.HostBindingsUpdateStart, context);
         hostBindingFn(RenderFlags.Update, context);
-        profiler(ProfilerEvent.HostBindingsUpdateEnd, context);
       }
     }
   } finally {
