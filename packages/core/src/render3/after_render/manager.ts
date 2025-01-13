@@ -17,8 +17,6 @@ import {
 } from '../../change_detection/scheduling/zoneless_scheduling';
 import {type DestroyRef} from '../../linker/destroy_ref';
 import {TracingAction, TracingService, TracingSnapshot} from '../../application/tracing';
-import {profiler} from '../profiler';
-import {ProfilerEvent} from '../profiler_types';
 
 export class AfterRenderManager {
   impl: AfterRenderImpl | null = null;
@@ -67,12 +65,6 @@ export class AfterRenderImpl {
    * might be scheduled.
    */
   execute(): void {
-    const hasSequencesToExecute = this.sequences.size > 0;
-
-    if (hasSequencesToExecute) {
-      profiler(ProfilerEvent.AfterRenderHooksStart);
-    }
-
     this.executing = true;
     for (const phase of AFTER_RENDER_PHASES) {
       for (const sequence of this.sequences) {
@@ -82,15 +74,10 @@ export class AfterRenderImpl {
 
         try {
           sequence.pipelinedValue = this.ngZone.runOutsideAngular(() =>
-            this.maybeTrace(() => {
-              const hookFn = sequence.hooks[phase]!;
-
-              profiler(ProfilerEvent.LifecycleHookStart, null, hookFn);
-              const value = hookFn(sequence.pipelinedValue);
-              profiler(ProfilerEvent.LifecycleHookEnd, null, hookFn);
-
-              return value;
-            }, sequence.snapshot),
+            this.maybeTrace(
+              () => sequence.hooks[phase]!(sequence.pipelinedValue),
+              sequence.snapshot,
+            ),
           );
         } catch (err) {
           sequence.erroredOrDestroyed = true;
@@ -118,10 +105,6 @@ export class AfterRenderImpl {
       this.scheduler.notify(NotificationSource.DeferredRenderHook);
     }
     this.deferredRegistrations.clear();
-
-    if (hasSequencesToExecute) {
-      profiler(ProfilerEvent.AfterRenderHooksEnd);
-    }
   }
 
   register(sequence: AfterRenderSequence): void {
