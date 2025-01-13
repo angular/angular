@@ -37,16 +37,7 @@ describe('cleanup unused imports schematic', () => {
     host = new TempScopedNodeJsSyncHost();
     tree = new UnitTestTree(new HostTree(host));
 
-    writeFile(
-      '/tsconfig.json',
-      JSON.stringify({
-        compilerOptions: {
-          lib: ['es2015'],
-          strictNullChecks: true,
-        },
-      }),
-    );
-
+    writeFile('/tsconfig.json', '{}');
     writeFile(
       '/angular.json',
       JSON.stringify({
@@ -252,5 +243,48 @@ describe('cleanup unused imports schematic', () => {
     await runMigration();
 
     expect(tree.readContent('comp.ts')).toBe(initialContent);
+  });
+
+  it('should handle a file that is present in multiple projects', async () => {
+    writeFile('/tsconfig-2.json', '{}');
+    writeFile(
+      '/angular.json',
+      JSON.stringify({
+        version: 1,
+        projects: {
+          a: {root: '', architect: {build: {options: {tsConfig: './tsconfig.json'}}}},
+          b: {root: '', architect: {build: {options: {tsConfig: './tsconfig-2.json'}}}},
+        },
+      }),
+    );
+
+    writeFile(
+      'comp.ts',
+      `
+        import {Component} from '@angular/core';
+        import {One, Two, Three} from './directives';
+
+        @Component({
+          imports: [Three, One, Two],
+          template: '<div one></div>',
+        })
+        export class Comp {}
+      `,
+    );
+
+    await runMigration();
+
+    expect(stripWhitespace(tree.readContent('comp.ts'))).toBe(
+      stripWhitespace(`
+        import {Component} from '@angular/core';
+        import {One} from './directives';
+
+        @Component({
+          imports: [One],
+          template: '<div one></div>',
+        })
+        export class Comp {}
+    `),
+    );
   });
 });
