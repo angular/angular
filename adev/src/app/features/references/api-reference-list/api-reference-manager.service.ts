@@ -28,17 +28,15 @@ export class ApiReferenceManager {
       groups.push({
         title: module.moduleLabel.replace('@angular/', ''),
         id: module.normalizedModuleName,
-        items: module.entries
-          .map((api) => {
-            const url = getApiUrl(module, api.name);
-            return {
-              itemType: api.type,
-              title: api.name,
-              isDeprecated: !!api.isDeprecated,
-              url,
-            };
-          })
-          .sort((a, b) => a.title.localeCompare(b.title)),
+        items: module.entries.map((api) => {
+          const url = getApiUrl(module, api.name);
+          return {
+            itemType: api.type,
+            title: api.name,
+            isDeprecated: !!api.isDeprecated,
+            url,
+          };
+        }),
       });
     }
 

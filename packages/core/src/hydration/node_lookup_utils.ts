@@ -29,6 +29,8 @@ import {
 } from './error_handling';
 import {
   DehydratedView,
+  NODE_NAVIGATION_STEP_FIRST_CHILD,
+  NODE_NAVIGATION_STEP_NEXT_SIBLING,
   NodeNavigationStep,
   NODES,
   REFERENCE_NODE_BODY,
@@ -198,7 +200,7 @@ function stringifyNavigationInstructions(instructions: (number | NodeNavigationS
     const step = instructions[i];
     const repeat = instructions[i + 1] as number;
     for (let r = 0; r < repeat; r++) {
-      container.push(step === NodeNavigationStep.FirstChild ? 'firstChild' : 'nextSibling');
+      container.push(step === NODE_NAVIGATION_STEP_FIRST_CHILD ? 'firstChild' : 'nextSibling');
     }
   }
   return container.join('.');
@@ -218,10 +220,10 @@ function navigateToNode(from: Node, instructions: (number | NodeNavigationStep)[
         throw nodeNotFoundAtPathError(from, stringifyNavigationInstructions(instructions));
       }
       switch (step) {
-        case NodeNavigationStep.FirstChild:
+        case NODE_NAVIGATION_STEP_FIRST_CHILD:
           node = node.firstChild!;
           break;
-        case NodeNavigationStep.NextSibling:
+        case NODE_NAVIGATION_STEP_NEXT_SIBLING:
           node = node.nextSibling!;
           break;
       }
@@ -279,7 +281,7 @@ export function navigateBetween(start: Node, finish: Node): NodeNavigationStep[]
       // First navigate to `finish`'s parent
       ...parentPath,
       // Then to its first child.
-      NodeNavigationStep.FirstChild,
+      NODE_NAVIGATION_STEP_FIRST_CHILD,
       // And finally from that node to `finish` (maybe a no-op if we're already there).
       ...childPath,
     ];
@@ -294,7 +296,7 @@ function navigateBetweenSiblings(start: Node, finish: Node): NodeNavigationStep[
   const nav: NodeNavigationStep[] = [];
   let node: Node | null = null;
   for (node = start; node != null && node !== finish; node = node.nextSibling) {
-    nav.push(NodeNavigationStep.NextSibling);
+    nav.push(NODE_NAVIGATION_STEP_NEXT_SIBLING);
   }
   // If the `node` becomes `null` or `undefined` at the end, that means that we
   // didn't find the `end` node, thus return `null` (which would trigger serialization

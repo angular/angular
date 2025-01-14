@@ -70,6 +70,8 @@ import {
 } from './shared';
 import {runEffectsInView} from '../reactivity/view_effect_runner';
 import {isDestroyed} from '../interfaces/type_checks';
+import {ProfilerEvent} from '../profiler_types';
+import {profiler} from '../profiler';
 
 /**
  * The maximum number of times the change detection traversal will rerun before throwing an error.
@@ -428,8 +430,12 @@ function detectChangesInComponent(
   mode: ChangeDetectionMode,
 ): void {
   ngDevMode && assertEqual(isCreationMode(hostLView), false, 'Should be run in update mode');
+  profiler(ProfilerEvent.ComponentStart);
+
   const componentView = getComponentLViewByIndex(componentHostIdx, hostLView);
   detectChangesInViewIfAttached(componentView, mode);
+
+  profiler(ProfilerEvent.ComponentEnd, componentView[CONTEXT] as any as {});
 }
 
 /**

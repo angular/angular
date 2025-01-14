@@ -33,7 +33,6 @@ ts_library(
         ":editor",
         "//adev/shared-docs/interfaces",
         "@npm//@types/node",
-        "@npm//fast-glob",
     ],
 )
 

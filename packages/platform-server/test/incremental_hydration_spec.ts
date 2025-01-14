@@ -222,7 +222,7 @@ describe('platform-server partial hydration integration', () => {
         const ssrContents = getAppContents(html);
 
         expect(ssrContents).toContain(
-          '"__nghDeferData__":{"d0":{"p":null,"r":1,"s":2},"d1":{"p":"d0","r":2,"s":2}}',
+          '"__nghDeferData__":{"d0":{"r":1,"s":2},"d1":{"r":2,"s":2,"p":"d0"}}',
         );
       });
 
@@ -285,8 +285,37 @@ describe('platform-server partial hydration integration', () => {
         const ssrContents = getAppContents(html);
 
         expect(ssrContents).toContain(
-          '"__nghDeferData__":{"d0":{"p":null,"r":1,"s":2},"d1":{"p":"d0","r":2,"s":2,"t":[2]}}',
+          '"__nghDeferData__":{"d0":{"r":1,"s":2},"d1":{"r":2,"s":2,"t":[2],"p":"d0"}}',
         );
+      });
+
+      it('should not include parent id in serialized data for top-level `@defer` blocks', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            @defer (on viewport; hydrate on interaction) {
+              Hello world!
+            } @placeholder {
+              <span>Placeholder</span>
+            }
+        `,
+        })
+        class SimpleComponent {}
+
+        const appId = 'custom-app-id';
+        const providers = [{provide: APP_ID, useValue: appId}];
+        const hydrationFeatures = () => [withIncrementalHydration()];
+
+        const html = await ssr(SimpleComponent, {
+          envProviders: providers,
+          hydrationFeatures,
+        });
+
+        const ssrContents = getAppContents(html);
+
+        // Assert that the serialized data doesn't contain the "p" field,
+        // which contains parent id (which is not needed for top-level blocks).
+        expect(ssrContents).toContain('"__nghDeferData__":{"d0":{"r":1,"s":2}}}');
       });
     });
 
@@ -347,7 +376,7 @@ describe('platform-server partial hydration integration', () => {
         expect(ssrContents).toContain('<p jsaction="click:;keydown:;" ngb="d1');
         // There is an extra annotation in the TransferState data.
         expect(ssrContents).toContain(
-          '"__nghDeferData__":{"d0":{"p":null,"r":1,"s":2},"d1":{"p":"d0","r":1,"s":2}}',
+          '"__nghDeferData__":{"d0":{"r":1,"s":2},"d1":{"r":1,"s":2,"p":"d0"}}',
         );
         // Outer defer block is rendered.
         expect(ssrContents).toContain('Main defer block rendered');
@@ -460,7 +489,7 @@ describe('platform-server partial hydration integration', () => {
         expect(ssrContents).toContain('<p jsaction="click:;keydown:;" ngb="d1');
         // There is an extra annotation in the TransferState data.
         expect(ssrContents).toContain(
-          '"__nghDeferData__":{"d0":{"p":null,"r":1,"s":2},"d1":{"p":"d0","r":1,"s":2}}',
+          '"__nghDeferData__":{"d0":{"r":1,"s":2},"d1":{"r":1,"s":2,"p":"d0"}}',
         );
         // Outer defer block is rendered.
         expect(ssrContents).toContain('Main defer block rendered');
@@ -569,7 +598,7 @@ describe('platform-server partial hydration integration', () => {
         // <p> is inside a nested defer block -> different namespace.
         // expect(ssrContents).toContain('<p jsaction="click:;" ngb="d1');
         // There is an extra annotation in the TransferState data.
-        expect(ssrContents).toContain('"__nghDeferData__":{"d0":{"p":null,"r":1,"s":2}}');
+        expect(ssrContents).toContain('"__nghDeferData__":{"d0":{"r":1,"s":2}}');
         // Outer defer block is rendered.
         expect(ssrContents).toContain('Main defer block rendered');
         // Inner defer block should only display placeholder.

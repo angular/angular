@@ -45,7 +45,7 @@ Note: In Angular v17 and later, `server.ts` is no longer used by `ng serve`. The
 
 The `server.ts` file configures a Node.js Express server and Angular server-side rendering. `CommonEngine` is used to render an Angular application.
 
-<docs-code path="adev/src/content/examples/ssr/server.ts" visibleLines="[31,45]"></docs-code>
+<docs-code path="adev/src/content/examples/ssr/server.ts" visibleLines="[33,47]"></docs-code>
 
 Angular CLI will scaffold an initial server implementation focused on server-side rendering your Angular application. This server can be extended to support other features such as API routes, redirects, static assets, and more. See [Express documentation](https://expressjs.com/) for more details.
 

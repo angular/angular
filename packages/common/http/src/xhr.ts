@@ -14,7 +14,7 @@ import {switchMap} from 'rxjs/operators';
 import {HttpBackend} from './backend';
 import {RuntimeErrorCode} from './errors';
 import {HttpHeaders} from './headers';
-import {HttpRequest, X_REQUEST_URL_HEADER} from './request';
+import {ACCEPT_HEADER, HttpRequest, X_REQUEST_URL_HEADER} from './request';
 import {
   HTTP_STATUS_CODE_NO_CONTENT,
   HTTP_STATUS_CODE_OK,
@@ -98,7 +98,7 @@ export class HttpXhrBackend implements HttpBackend {
 
           // Add an Accept header if one isn't present already.
           if (!req.headers.has('Accept')) {
-            xhr.setRequestHeader('Accept', 'application/json, text/plain, */*');
+            xhr.setRequestHeader('Accept', ACCEPT_HEADER);
           }
 
           // Auto-detect the Content-Type header if one isn't present already.

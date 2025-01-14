@@ -85,6 +85,27 @@ function isUrlSearchParams(value: any): value is URLSearchParams {
 export const X_REQUEST_URL_HEADER = 'X-Request-URL';
 
 /**
+ * `text/plain` is a content type used to indicate that the content being
+ * sent is plain text with no special formatting or structured data
+ * like HTML, XML, or JSON.
+ */
+export const TEXT_CONTENT_TYPE = 'text/plain';
+
+/**
+ * `application/json` is a content type used to indicate that the content
+ * being sent is in the JSON format.
+ */
+export const JSON_CONTENT_TYPE = 'application/json';
+
+/**
+ * `application/json, text/plain, *\/*` is a content negotiation string often seen in the
+ * Accept header of HTTP requests. It indicates the types of content the client is willing
+ * to accept from the server, with a preference for `application/json` and `text/plain`,
+ * but also accepting any other type (*\/*).
+ */
+export const ACCEPT_HEADER = `${JSON_CONTENT_TYPE}, ${TEXT_CONTENT_TYPE}, */*`;
+
+/**
  * An outgoing HTTP request with an optional typed body.
  *
  * `HttpRequest` represents an outgoing request, including URL, method,
@@ -420,7 +441,7 @@ export class HttpRequest<T> {
     // Technically, strings could be a form of JSON data, but it's safe enough
     // to assume they're plain strings.
     if (typeof this.body === 'string') {
-      return 'text/plain';
+      return TEXT_CONTENT_TYPE;
     }
     // `HttpUrlEncodedParams` has its own content-type.
     if (this.body instanceof HttpParams) {
@@ -432,7 +453,7 @@ export class HttpRequest<T> {
       typeof this.body === 'number' ||
       typeof this.body === 'boolean'
     ) {
-      return 'application/json';
+      return JSON_CONTENT_TYPE;
     }
     // No type could be inferred.
     return null;

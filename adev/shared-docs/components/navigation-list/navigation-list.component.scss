@@ -24,13 +24,13 @@
   }
 
   &::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
     background-color: var(--septenary-contrast);
+
     @include mq.for-tablet-landscape-down {
       background-color: var(--quinary-contrast);
     }
-
-    border-radius: 10px;
-    transition: background-color 0.3s ease;
   }
 
   &::-webkit-scrollbar-thumb:hover {
