@@ -303,9 +303,10 @@
     "@angular/core" "^13.0.0 || ^14.0.0-0"
     reflect-metadata "^0.1.13"
 
-"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#4c48faf6dd5765b85e4a9cb9fd84ad2fb813a93e":
-  version "0.0.0-2b88e32ff2651c2a8fbbe25c3e8b1c3696a4cc6b"
-  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#4c48faf6dd5765b85e4a9cb9fd84ad2fb813a93e"
+"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#1298ed34f97ed13cce3177ffd25ac3292385b196":
+  version "0.0.0-e8d26efbaea89c31f1580c61c968c8119f5247a6"
+  uid "1298ed34f97ed13cce3177ffd25ac3292385b196"
+  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#1298ed34f97ed13cce3177ffd25ac3292385b196"
   dependencies:
     "@angular/benchpress" "0.3.0"
     "@angular/build" "19.1.0-rc.0"
@@ -426,9 +427,10 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#34526428373727797ec4e28ef2ca2de795af5076":
-  version "0.0.0-2b88e32ff2651c2a8fbbe25c3e8b1c3696a4cc6b"
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#34526428373727797ec4e28ef2ca2de795af5076"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#744e5a754635c8e8e008f957aba8f9dd8011cc8f":
+  version "0.0.0-e8d26efbaea89c31f1580c61c968c8119f5247a6"
+  uid "744e5a754635c8e8e008f957aba8f9dd8011cc8f"
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#744e5a754635c8e8e008f957aba8f9dd8011cc8f"
   dependencies:
     "@google-cloud/spanner" "7.17.1"
     "@octokit/rest" "21.1.0"
@@ -6927,7 +6929,7 @@ cssesc@^3.0.0:
   resolved "https://registry.yarnpkg.com/cssesc/-/cssesc-3.0.0.tgz#37741919903b868565e1c09ea747445cd18983ee"
   integrity sha512-/Tb/JcjK111nNScGob5MNtsntNM1aCNUDipB/TkwZFhyDrrE47SOx/18wF2bbjgc3ZzCSKW1T5nt5EbFoAz/Vg==
 
-cssstyle@4.1.0, cssstyle@^4.1.0:
+cssstyle@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/cssstyle/-/cssstyle-4.1.0.tgz#161faee382af1bafadb6d3867a92a19bcb4aea70"
   integrity sha512-h66W1URKpBS5YMI/V8PyXvTMFT8SupJ1IzoIV8IeBC/ji8WVmrO8dGlTi+2dh6whmdk6BiKJLD/ZBkhWbcg6nA==
