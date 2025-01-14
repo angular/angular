@@ -11,7 +11,7 @@ import {Observable, Observer} from 'rxjs';
 
 import {HttpBackend} from './backend';
 import {HttpHeaders} from './headers';
-import {ACCEPT_HEADER, HttpRequest, X_REQUEST_URL_HEADER} from './request';
+import {ACCEPT_HEADER, CONTENT_TYPE_HEADER, HttpRequest, X_REQUEST_URL_HEADER} from './request';
 import {
   HTTP_STATUS_CODE_OK,
   HttpDownloadProgressEvent,
@@ -174,7 +174,7 @@ export class FetchBackend implements HttpBackend {
       // Combine all chunks.
       const chunksAll = this.concatChunks(chunks, receivedLength);
       try {
-        const contentType = response.headers.get('Content-Type') ?? '';
+        const contentType = response.headers.get(CONTENT_TYPE_HEADER) ?? '';
         body = this.parseBody(request, chunksAll, contentType);
       } catch (error) {
         // Body loading or parsing failed
@@ -263,11 +263,11 @@ export class FetchBackend implements HttpBackend {
     }
 
     // Auto-detect the Content-Type header if one isn't present already.
-    if (!req.headers.has('Content-Type')) {
+    if (!req.headers.has(CONTENT_TYPE_HEADER)) {
       const detectedType = req.detectContentTypeHeader();
       // Sometimes Content-Type detection fails.
       if (detectedType !== null) {
-        headers['Content-Type'] = detectedType;
+        headers[CONTENT_TYPE_HEADER] = detectedType;
       }
     }
 
