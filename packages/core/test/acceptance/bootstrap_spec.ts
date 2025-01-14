@@ -21,6 +21,7 @@ import {
   ViewEncapsulation,
   ɵNoopNgZone,
   ɵZONELESS_ENABLED,
+  ElementRef,
 } from '@angular/core';
 import {bootstrapApplication, BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -79,6 +80,31 @@ describe('bootstrap', () => {
 
       appRef.destroy();
       expect(document.body.textContent).toEqual('before||after');
+    }),
+  );
+
+  it(
+    'should preserve static class and styles on root component',
+    withBody('<test-cmp class="foo" style="height: 100%"></test-cmp>', async () => {
+      @Component({
+        selector: 'test-cmp',
+        standalone: true,
+        template: '(test)',
+        host: {
+          class: 'baar',
+          style: 'width: 100%;',
+        },
+      })
+      class TestCmp {
+        constructor(public element: ElementRef) {}
+      }
+      const appRef = await bootstrapApplication(TestCmp);
+      expect(appRef.components[0].instance.element.nativeElement.className).toBe('baar foo');
+      expect(appRef.components[0].instance.element.nativeElement.getAttribute('style')).toBe(
+        'width: 100%; height: 100%;',
+      );
+
+      appRef.destroy();
     }),
   );
 

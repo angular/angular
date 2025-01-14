@@ -57,6 +57,7 @@ import {ComponentDef, DirectiveDef, HostDirectiveDefs} from './interfaces/defini
 import {InputFlags} from './interfaces/input_flags';
 import {
   NodeInputBindings,
+  TAttributes,
   TContainerNode,
   TElementContainerNode,
   TElementNode,
@@ -89,6 +90,7 @@ import {getComponentLViewByIndex, getNativeByTNode, getTNode} from './util/view_
 import {ViewRef} from './view_ref';
 import {ChainedInjector} from './chained_injector';
 import {unregisterLView} from './interfaces/lview_tracking';
+import {AttributeMarker} from './interfaces/attribute_marker';
 
 export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
   /**
@@ -497,10 +499,29 @@ function createRootComponentTNode(lView: LView, rNode: RNode): TElementNode {
   ngDevMode && assertIndexInRange(lView, index);
   lView[index] = rNode;
 
+  let attr: TAttributes | null = null;
+  if (rNode && 'classList' in rNode && (rNode as any).classList?.length) {
+    attr = [AttributeMarker.Classes, ...(Array.from((rNode as any).classList) as string[])];
+  }
+  if (rNode && 'getAttribute' in rNode && (rNode as any).getAttribute('style')?.length) {
+    attr = attr?.length ? [...attr, AttributeMarker.Styles] : [AttributeMarker.Styles];
+    const styleAttribute = (rNode as any).getAttribute('style');
+
+    const styles: string[] = styleAttribute.split(';');
+
+    styles.forEach((style) => {
+      const [property, value] = style.split(':').map((s) => s.trim());
+
+      if (property && value) {
+        attr!.push(property, value);
+      }
+    });
+  }
+
   // '#host' is added here as we don't know the real host DOM name (we don't want to read it) and at
   // the same time we want to communicate the debug `TNode` that this is a special `TNode`
   // representing a host element.
-  return getOrCreateTNode(tView, index, TNodeType.Element, '#host', null);
+  return getOrCreateTNode(tView, index, TNodeType.Element, '#host', attr);
 }
 
 /**
@@ -568,7 +589,9 @@ function applyRootComponentStyling(
   for (const def of rootDirectives) {
     tNode.mergedAttrs = mergeHostAttrs(tNode.mergedAttrs, def.hostAttrs);
   }
-
+  if (tNode.attrs !== null) {
+    tNode.mergedAttrs = mergeHostAttrs(tNode.mergedAttrs, tNode.attrs);
+  }
   if (tNode.mergedAttrs !== null) {
     computeStaticStyling(tNode, tNode.mergedAttrs, true);
 
