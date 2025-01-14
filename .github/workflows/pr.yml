@@ -95,7 +95,7 @@ jobs:
       - name: Run CI tests for framework
         run: yarn tsx ./scripts/build/build-packages-dist.mts
       - name: Archive build artifacts
-        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
           name: pr-artifacts-${{ github.event.number }}
           path: dist/packages-dist/
