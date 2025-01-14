@@ -201,6 +201,9 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
    * @param componentId ID of the component that is being replaced.
    */
   protected componentReplaced(componentId: string) {
+    // Destroy the renderer so the styles get removed from the DOM, otherwise
+    // they may leak back into the component together with the new ones.
+    this.rendererByCompId.get(componentId)?.destroy();
     this.rendererByCompId.delete(componentId);
   }
 }
