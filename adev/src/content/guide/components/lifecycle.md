@@ -261,7 +261,7 @@ export class UserProfile {
       // Use the `Write` phase to write to a geometric property.
       write: () => {
         const padding = computePadding();
-        const changed = padding !== prevPadding;
+        const changed = padding !== this.prevPadding;
         if (changed) {
           nativeElement.style.padding = padding;
         }
