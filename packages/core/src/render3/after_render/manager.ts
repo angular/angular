@@ -84,11 +84,7 @@ export class AfterRenderImpl {
           sequence.pipelinedValue = this.ngZone.runOutsideAngular(() =>
             this.maybeTrace(() => {
               const hookFn = sequence.hooks[phase]!;
-
-              profiler(ProfilerEvent.LifecycleHookStart, null, hookFn);
               const value = hookFn(sequence.pipelinedValue);
-              profiler(ProfilerEvent.LifecycleHookEnd, null, hookFn);
-
               return value;
             }, sequence.snapshot),
           );
