@@ -12,7 +12,10 @@
       "type": "string",
       "format": "path",
       "description": "The path to create the service.",
-      "visible": false
+      "visible": false,
+      "$default": {
+        "$source": "workingDirectory"
+      }
     },
     "project": {
       "type": "string",

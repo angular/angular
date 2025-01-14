@@ -47,6 +47,8 @@ import {NgZone} from '../zone/ng_zone';
 import {ApplicationInitStatus} from './application_init';
 import {TracingAction, TracingService, TracingSnapshot} from './tracing';
 import {EffectScheduler} from '../render3/reactivity/root_effect_scheduler';
+import {ProfilerEvent} from '../render3/profiler_types';
+import {profiler} from '../render3/profiler';
 
 /**
  * A DI token that provides a set of callbacks to
@@ -531,6 +533,8 @@ export class ApplicationRef {
     componentOrFactory: ComponentFactory<C> | Type<C>,
     rootSelectorOrNode?: string | any,
   ): ComponentRef<C> {
+    profiler(ProfilerEvent.BootstrapComponentStart);
+
     (typeof ngDevMode === 'undefined' || ngDevMode) && warnIfDestroyed(this._destroyed);
     const isComponentFactory = componentOrFactory instanceof ComponentFactory;
     const initStatus = this._injector.get(ApplicationInitStatus);
@@ -576,6 +580,9 @@ export class ApplicationRef {
       const _console = this._injector.get(Console);
       _console.log(`Angular is running in development mode.`);
     }
+
+    profiler(ProfilerEvent.BootstrapComponentEnd, compRef);
+
     return compRef;
   }
 
@@ -598,6 +605,8 @@ export class ApplicationRef {
 
   /** @internal */
   _tick = (): void => {
+    profiler(ProfilerEvent.ChangeDetectionStart);
+
     if (this.tracingSnapshot !== null) {
       const snapshot = this.tracingSnapshot;
       this.tracingSnapshot = null;
@@ -622,7 +631,6 @@ export class ApplicationRef {
     try {
       this._runningTick = true;
       this.synchronize();
-
       if (typeof ngDevMode === 'undefined' || ngDevMode) {
         for (let view of this.allViews) {
           view.checkNoChanges();
@@ -635,6 +643,8 @@ export class ApplicationRef {
       this._runningTick = false;
       setActiveConsumer(prevConsumer);
       this.afterTick.next();
+
+      profiler(ProfilerEvent.ChangeDetectionEnd);
     }
   };
 
@@ -653,7 +663,9 @@ export class ApplicationRef {
 
     let runs = 0;
     while (this.dirtyFlags !== ApplicationRefDirtyFlags.None && runs++ < MAXIMUM_REFRESH_RERUNS) {
+      profiler(ProfilerEvent.ChangeDetectionSyncStart);
       this.synchronizeOnce();
+      profiler(ProfilerEvent.ChangeDetectionSyncEnd);
     }
 
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && runs >= MAXIMUM_REFRESH_RERUNS) {
