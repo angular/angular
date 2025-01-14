@@ -78,6 +78,13 @@ function isUrlSearchParams(value: any): value is URLSearchParams {
 }
 
 /**
+ * `Content-Type` is an HTTP header used to indicate the media type
+ * (also known as MIME type) of the resource being sent to the client
+ * or received from the server.
+ */
+export const CONTENT_TYPE_HEADER = 'Content-Type';
+
+/**
  * `X-Request-URL` is a custom HTTP header used in older browser versions,
  * including Firefox (< 32), Chrome (< 37), Safari (< 8), and Internet Explorer,
  * to include the full URL of the request in cross-origin requests.
