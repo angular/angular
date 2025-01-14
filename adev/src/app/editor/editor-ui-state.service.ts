@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DestroyRef, inject, Injectable, signal} from '@angular/core';
+import {EnvironmentInjector, inject, Injectable, signal} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {filter, map, Subject} from 'rxjs';
+import {filter, from, map, Subject, switchMap} from 'rxjs';
 
 import {TutorialMetadata, TutorialType} from '@angular/docs';
 
-import {EmbeddedTutorialManager} from './embedded-tutorial-manager.service';
+import {injectEmbeddedTutorialManager} from './inject-embedded-tutorial-manager';
 
 export interface EditorUiStateConfig {
   displayOnlyInteractiveTerminal: boolean;
@@ -23,8 +23,7 @@ export const DEFAULT_EDITOR_UI_STATE: EditorUiStateConfig = {
 
 @Injectable()
 export class EditorUiState {
-  private readonly embeddedTutorialManager = inject(EmbeddedTutorialManager);
-  private readonly destroyRef = inject(DestroyRef);
+  private readonly environmentInjector = inject(EnvironmentInjector);
 
   private readonly stateChanged = new Subject<void>();
 
@@ -41,11 +40,13 @@ export class EditorUiState {
   }
 
   private handleTutorialChange() {
-    this.embeddedTutorialManager.tutorialChanged$
+    from(injectEmbeddedTutorialManager(this.environmentInjector))
       .pipe(
-        map(() => this.embeddedTutorialManager.type()),
+        switchMap((embeddedTutorialManager) =>
+          embeddedTutorialManager.tutorialChanged$.pipe(map(() => embeddedTutorialManager.type())),
+        ),
         filter((tutorialType): tutorialType is TutorialMetadata['type'] => Boolean(tutorialType)),
-        takeUntilDestroyed(this.destroyRef),
+        takeUntilDestroyed(),
       )
       .subscribe((tutorialType) => {
         if (tutorialType === TutorialType.CLI) {
