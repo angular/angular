@@ -362,21 +362,21 @@ import {normalizeValidators} from '../src/validators';
         expect(Validators.maxLength(1)(new FormControl(value))).toEqual({
           'maxlength': {'requiredLength': 1, 'actualLength': 5},
         });
+      });
 
-        it('should trigger validation for an object that contains numeric length property', () => {
-          const value = {length: 5, someValue: [1, 2, 3, 4, 5]};
-          expect(Validators.maxLength(10)(new FormControl(value))).toBeNull();
-          expect(Validators.maxLength(1)(new FormControl(value))).toEqual({
-            'maxlength': {'requiredLength': 1, 'actualLength': 5},
-          });
+      it('should trigger validation for an object that contains numeric length property', () => {
+        const value = {length: 5, someValue: [1, 2, 3, 4, 5]};
+        expect(Validators.maxLength(10)(new FormControl(value))).toBeNull();
+        expect(Validators.maxLength(1)(new FormControl(value))).toEqual({
+          'maxlength': {'requiredLength': 1, 'actualLength': 5},
         });
+      });
 
-        it('should trigger validation for an object that contains numeric size property', () => {
-          const value = new Set([1, 2, 3, 4, 5]);
-          expect(Validators.maxLength(10)(new FormControl(value))).toBeNull();
-          expect(Validators.maxLength(1)(new FormControl(value))).toEqual({
-            'maxlength': {'requiredLength': 1, 'actualLength': 5},
-          });
+      it('should trigger validation for an object that contains numeric size property', () => {
+        const value = new Set([1, 2, 3, 4, 5]);
+        expect(Validators.maxLength(10)(new FormControl(value))).toBeNull();
+        expect(Validators.maxLength(1)(new FormControl(value))).toEqual({
+          'maxlength': {'requiredLength': 1, 'actualLength': 5},
         });
       });
 
