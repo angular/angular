@@ -9,7 +9,7 @@
 import {Events, MessageBus} from 'protocol';
 import {FrameManager} from './frame_manager';
 import {TestBed} from '@angular/core/testing';
-import {Frame} from './application-environment';
+import {Frame} from '../application-environment';
 
 describe('FrameManager', () => {
   let frameManager: FrameManager;

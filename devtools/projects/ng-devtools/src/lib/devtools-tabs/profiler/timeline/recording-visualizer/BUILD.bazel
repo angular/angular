@@ -45,7 +45,7 @@ ng_module(
         "execution-details.component.html",
     ] + _STYLE_LABELS,
     deps = [
-        "//devtools/projects/ng-devtools/src/lib:theme",
+        "//devtools/projects/ng-devtools/src/lib/application-services:theme",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/bargraph-formatter",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/flamegraph-formatter",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/tree-map-formatter",

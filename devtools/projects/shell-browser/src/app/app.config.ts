@@ -14,7 +14,7 @@ import {ChromeApplicationEnvironment} from './chrome-application-environment';
 import {ChromeApplicationOperations} from './chrome-application-operations';
 import {ZoneAwareChromeMessageBus} from './zone-aware-chrome-message-bus';
 import {Events, MessageBus, PriorityAwareMessageBus} from 'protocol';
-import {FrameManager} from '../../../ng-devtools/src/lib/frame_manager';
+import {FrameManager} from '../../../ng-devtools/src/lib/application-services/frame_manager';
 
 export const appConfig: ApplicationConfig = {
   providers: [

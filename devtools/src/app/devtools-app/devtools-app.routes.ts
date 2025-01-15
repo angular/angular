@@ -9,7 +9,7 @@
 import {Routes} from '@angular/router';
 
 import {AppDevToolsComponent} from './devtools-app.component';
-import {FrameManager} from '../../../projects/ng-devtools/src/lib/frame_manager';
+import {FrameManager} from '../../../projects/ng-devtools/src/lib/application-services/frame_manager';
 import {Events, MessageBus, PriorityAwareMessageBus} from 'protocol';
 import {IFrameMessageBus} from '../../iframe-message-bus';
 
