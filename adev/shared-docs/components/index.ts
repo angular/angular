@@ -16,3 +16,4 @@ export * from './text-field/text-field.component';
 export * from './icon/icon.component';
 export * from './search-dialog/search-dialog.component';
 export * from './top-level-banner/top-level-banner.component';
+export * from './algolia-icon/algolia-icon.component';

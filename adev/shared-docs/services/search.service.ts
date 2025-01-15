@@ -10,7 +10,7 @@ import {Injectable, afterNextRender, inject, signal} from '@angular/core';
 import {ENVIRONMENT} from '../providers/index';
 import {SearchResult} from '../interfaces/index';
 import {toObservable} from '@angular/core/rxjs-interop';
-import {debounceTime, filter, from, of, switchMap} from 'rxjs';
+import {debounceTime, filter, from, of, pairwise, switchMap} from 'rxjs';
 import {liteClient as algoliasearch} from 'algoliasearch/lite';
 import {NavigationEnd, Router} from '@angular/router';
 
@@ -124,8 +124,32 @@ export class Search {
   }
 
   private resetSearchQueryOnNavigationEnd(): void {
-    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
-      this.updateSearchQuery('');
-    });
+    this.router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        pairwise(), // Get the previous and current navigation events
+      )
+      .subscribe(([prev, current]: [NavigationEnd, NavigationEnd]) => {
+        const prevTree = this.router.parseUrl(prev.url);
+        const currentTree = this.router.parseUrl(current.url);
+
+        // Compare the primary route path
+        const prevPath = prevTree.root.children['primary']?.segments
+          .map((segment) => segment.path)
+          .join('/');
+        const currentPath = currentTree.root.children['primary']?.segments
+          .map((segment) => segment.path)
+          .join('/');
+
+        // If the path hasn't changed, but the query parameter has, we don't want to reset the search
+        if (
+          prevPath === currentPath &&
+          prevTree.queryParams['q'] !== currentTree.queryParams['q']
+        ) {
+          return;
+        }
+
+        this.updateSearchQuery('');
+      });
   }
 }

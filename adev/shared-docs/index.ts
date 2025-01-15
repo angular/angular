@@ -18,3 +18,4 @@ export * from './providers/index';
 export * from './services/index';
 export * from './utils/index';
 export * from './testing/index';
+export * from './pipes/index';

@@ -247,6 +247,10 @@ export const routes: Route[] = [
         redirectTo: DefaultPage.REFERENCE,
       },
       {
+        path: PagePrefix.SEARCH,
+        loadComponent: () => import('./features/search/search.component').then((m) => m.SearchPage),
+      },
+      {
         path: PagePrefix.PLAYGROUND,
         loadComponent: () => import('./features/playground/playground.component'),
         data: {...commonTutorialRouteData, label: 'Playground'},

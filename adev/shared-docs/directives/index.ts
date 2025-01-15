@@ -8,3 +8,4 @@
 
 export * from './click-outside/click-outside.directive';
 export * from './external-link/external-link.directive';
+export * from './search-item/search-item.directive';

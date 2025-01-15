@@ -18,6 +18,7 @@ export enum PagePrefix {
   REFERENCE = 'reference',
   TUTORIALS = 'tutorials',
   UPDATE = 'update-guide',
+  SEARCH = 'search',
 }
 
 // The enum with the default pages for each main tab
