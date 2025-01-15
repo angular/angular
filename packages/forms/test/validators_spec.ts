@@ -210,11 +210,13 @@ import {normalizeValidators} from '../src/validators';
         expect(Validators.required(new FormControl({id: 1, length: 0, width: 0}))).toBeNull();
       });
 
-      it('should error on an empty set',
-        () => expect(Validators.required(new FormControl(new Set()))).toEqual({'required': true}));
+      it('should error on an empty set', () => {
+        expect(Validators.required(new FormControl(new Set()))).toEqual({'required': true});
+      });
 
-      it('should not error on a non-empty set',
-        () => expect(Validators.required(new FormControl(new Set([1, 2])))).toBeNull());
+      it('should not error on a non-empty set', () => {
+        expect(Validators.required(new FormControl(new Set([1, 2])))).toBeNull();
+      });
 
       it('should not error on an object containing a size attribute that is zero', () => {
         expect(Validators.required(new FormControl({id: 1, size: 0, width: 0}))).toBeNull();
@@ -302,7 +304,7 @@ import {normalizeValidators} from '../src/validators';
         const value = new Set([1, 2, 3, 4, 5]);
         expect(Validators.minLength(1)(new FormControl(value))).toBeNull();
         expect(Validators.minLength(10)(new FormControl(value))).toEqual({
-          'minlength': {'requiredLength': 10, 'actualLength': 5}
+          'minlength': {'requiredLength': 10, 'actualLength': 5},
         });
       });
 
@@ -365,7 +367,7 @@ import {normalizeValidators} from '../src/validators';
           const value = {length: 5, someValue: [1, 2, 3, 4, 5]};
           expect(Validators.maxLength(10)(new FormControl(value))).toBeNull();
           expect(Validators.maxLength(1)(new FormControl(value))).toEqual({
-            'maxlength': {'requiredLength': 1, 'actualLength': 5}
+            'maxlength': {'requiredLength': 1, 'actualLength': 5},
           });
         });
 
@@ -373,7 +375,7 @@ import {normalizeValidators} from '../src/validators';
           const value = new Set([1, 2, 3, 4, 5]);
           expect(Validators.maxLength(10)(new FormControl(value))).toBeNull();
           expect(Validators.maxLength(1)(new FormControl(value))).toEqual({
-            'maxlength': {'requiredLength': 1, 'actualLength': 5}
+            'maxlength': {'requiredLength': 1, 'actualLength': 5},
           });
         });
       });

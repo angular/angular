@@ -33,7 +33,9 @@ function isEmptyInputValue(value: any): boolean {
    * For example, the object {id: 1, length: 0, width: 0} should not be returned as empty.
    */
   return (
-    value == null || ((typeof value === 'string' || Array.isArray(value)) && value.length === 0) || value instanceof Set && value.size === 0
+    value == null ||
+    ((typeof value === 'string' || Array.isArray(value)) && value.length === 0) ||
+    (value instanceof Set && value.size === 0)
   );
 }
 
@@ -43,7 +45,7 @@ function isEmptyInputValue(value: any): boolean {
  * Return null else.
  * @param value Either an array set or undefined.
  */
-function lengthOrSize(value: any): number|null {
+function lengthOrSize(value: any): number | null {
   // non-strict comparison is intentional, to check for both `null` and `undefined` values
   if (value == null) {
     return null;
@@ -539,9 +541,9 @@ export function minLengthValidator(minLength: number): ValidatorFn {
       return null;
     }
 
-    return _length < minLength ?
-      {'minlength': {'requiredLength': minLength, 'actualLength': _length}} :
-      null;
+    return _length < minLength
+      ? {'minlength': {'requiredLength': minLength, 'actualLength': _length}}
+      : null;
   };
 }
 
@@ -550,7 +552,7 @@ export function minLengthValidator(minLength: number): ValidatorFn {
  * to the provided maximum length. See `Validators.maxLength` for additional information.
  */
 export function maxLengthValidator(maxLength: number): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors|null => {
+  return (control: AbstractControl): ValidationErrors | null => {
     const _length = lengthOrSize(control.value);
     if (_length !== null && _length > maxLength) {
       return {'maxlength': {'requiredLength': maxLength, 'actualLength': _length}};
