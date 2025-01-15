@@ -1,3 +1,5 @@
+@use '../../../../../styles/theme' as theme;
+
 :host {
   width: 100%;
   display: block;
@@ -42,7 +44,7 @@
   }
 }
 
-:host-context(.dark-theme) {
+@include theme.dark-theme {
   .property-list {
     .name {
       color: #54c9bd !important;

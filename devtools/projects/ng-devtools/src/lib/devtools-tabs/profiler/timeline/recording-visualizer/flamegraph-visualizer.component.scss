@@ -1,3 +1,5 @@
+@use '../../../../../styles/theme' as theme;
+
 :host {
   width: 100%;
   height: 100%;
@@ -21,7 +23,7 @@
     }
   }
 
-  :host-context(.dark-theme) {
+  @include theme.dark-theme {
     .entry-statistics {
       span {
         color: #54c9bd;

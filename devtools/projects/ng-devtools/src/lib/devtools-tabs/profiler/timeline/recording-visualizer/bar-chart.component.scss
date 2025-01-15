@@ -1,3 +1,5 @@
+@use '../../../../../styles/theme' as theme;
+
 .bar {
   width: 0%;
   margin-bottom: 7px;
@@ -33,7 +35,7 @@
   display: block;
 }
 
-:host-context(.dark-theme) {
+@include theme.dark-theme {
   .bar span {
     color: #bcc5ce;
   }
