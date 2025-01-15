@@ -85,6 +85,12 @@ function isUrlSearchParams(value: any): value is URLSearchParams {
 export const CONTENT_TYPE_HEADER = 'Content-Type';
 
 /**
+ * The `Accept` header is an HTTP request header that indicates the media types
+ * (or content types) the client is willing to receive from the server.
+ */
+export const ACCEPT_HEADER = 'Accept';
+
+/**
  * `X-Request-URL` is a custom HTTP header used in older browser versions,
  * including Firefox (< 32), Chrome (< 37), Safari (< 8), and Internet Explorer,
  * to include the full URL of the request in cross-origin requests.
@@ -110,7 +116,7 @@ export const JSON_CONTENT_TYPE = 'application/json';
  * to accept from the server, with a preference for `application/json` and `text/plain`,
  * but also accepting any other type (*\/*).
  */
-export const ACCEPT_HEADER = `${JSON_CONTENT_TYPE}, ${TEXT_CONTENT_TYPE}, */*`;
+export const ACCEPT_HEADER_VALUE = `${JSON_CONTENT_TYPE}, ${TEXT_CONTENT_TYPE}, */*`;
 
 /**
  * An outgoing HTTP request with an optional typed body.
