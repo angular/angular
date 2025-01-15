@@ -19,6 +19,8 @@ but there are performance advantages of using a regular `Array`.
 You can optionally include an `@empty` section immediately after the `@for` block content. The
 content of the `@empty` block displays when there are no items.
 
+Angular's `@for` block does not support flow-modifying statements like JavaScript's `continue` or `break`.
+
 ### `track` and objects identity
 
 The value of the `track` expression determines a key used to associate array items with the views in
