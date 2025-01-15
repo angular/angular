@@ -1,3 +1,20 @@
+<a name="19.0.7"></a>
+# 19.0.7 (2025-01-15)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2b4b7c3ebf](https://github.com/angular/angular/commit/2b4b7c3ebfb2d4f4fd96fd2f1890b67c832505fd) | fix | handle more node types when extracting dependencies ([#59445](https://github.com/angular/angular/pull/59445)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f893d07232](https://github.com/angular/angular/commit/f893d0723262d699979d55e43e4ddbcf64a3fc13) | fix | destroy renderer when replacing styles during HMR ([#59514](https://github.com/angular/angular/pull/59514)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [eb2fcd1896](https://github.com/angular/angular/commit/eb2fcd1896e0b834b86fe79e8d806bdab24aabcc) | fix | incorrect stats when migrating queries with best effort mode ([#59463](https://github.com/angular/angular/pull/59463)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.1.0-rc.0"></a>
 # 19.1.0-rc.0 (2025-01-08)
 ### compiler
