@@ -16,7 +16,7 @@ export class ShippingMethodPicker {
     this.selectedOption.set(this.shippingOptions()[newOptionIndex]);
   }
 }
-``` 
+```
 
 In this example, the `selectedOption` defaults to the first option, but changes if the user selects another option. But `shippingOptions` is a signal— its value may change! If `shippingOptions` changes, `selectedOption` may contain a value that is no longer a valid option.
 
@@ -62,7 +62,7 @@ In the example above, `selectedOption` always updates back to the first option w
 @Component({/* ... */})
 export class ShippingMethodPicker {
   shippingOptions: Signal<ShippingMethod[]> = getShippingOptions();
-  
+
   selectedOption = linkedSignal<ShippingMethod[], ShippingMethod>({
     // `selectedOption` is set to the `computation` result whenever this `source` changes.
     source: this.shippingOptions,
@@ -70,7 +70,7 @@ export class ShippingMethodPicker {
       // If the newOptions contain the previously selected option, preserve that selection.
       // Otherwise, default to the first option.
       return newOptions.find(opt => opt.id === previous?.value?.id) ?? newOptions[0];
-    } 
+    }
   });
 
   changeShipping(newOptionIndex: number) {
@@ -87,21 +87,20 @@ The `computation` is a function that receives the new value of `source` and a `p
 
 ## Custom equality comparison
 
-`linkedSignal` updates to the result of the computation every time its linked state changes. By default, Angular uses referential equality to determine if the linked state has changed. You can alternatively provide a custom equality function.
+`linkedSignal`, as any other signal, can be configured with a custom equality function. This function is used by downstream dependencies to determine if that value of the `linkedSignal` (result of a computation) changed:
 
 ```typescript
 const activeUser = signal({id: 123, name: 'Morgan', isAdmin: true});
-const email = linkedSignal(() => ({id:`${activeUser().name}@example.com`}), {
+
+const activeUserEditCopy = linkedSignal(() => activeUser()), {
   // Consider the user as the same if it's the same `id`.
   equal: (a, b) => a.id === b.id,
 });
+
 // Or, if separating `source` and `computation`
-const alternateEmail = linkedSignal({
+const activeUserEditCopy = linkedSignal({
   source: activeUser,
-  computation: user => ({id:`${user.name}@example.com`}),
+  computation: user => user,
   equal: (a, b) => a.id === b.id,
 });
-// This update to `activeUser` does not cause `email` or `alternateEmail`
-// to update because the `id` is the same.
-activeUser.set({id: 123, name: 'Morgan', isAdmin: false});
 ```
