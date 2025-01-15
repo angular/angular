@@ -1,3 +1,5 @@
+@use '../../../../styles/theme' as theme;
+
 .element-header {
   display: flex;
   justify-content: space-between;
@@ -44,7 +46,7 @@
   }
 }
 
-:host-context(.dark-theme) {
+@include theme.dark-theme {
   .element-name {
     color: #ffffff;
   }

@@ -1,3 +1,5 @@
+@use '../../../../styles/theme' as theme;
+
 .visual-controls {
   display: flex;
   flex-direction: column;
@@ -65,7 +67,7 @@
   }
 }
 
-:host-context(.dark-theme) {
+@include theme.dark-theme {
   .details .value {
     color: #5cadd3;
   }

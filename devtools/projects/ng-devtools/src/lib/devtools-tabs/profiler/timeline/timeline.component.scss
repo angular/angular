@@ -1,3 +1,5 @@
+@use '../../../../styles/theme' as theme;
+
 :host {
   font-size: 11px;
   width: 100%;
@@ -27,7 +29,7 @@
   margin: 0 10px;
 }
 
-:host-context(.dark-theme) {
+@include theme.dark-theme {
   .info {
     color: #ffffff;
   }
