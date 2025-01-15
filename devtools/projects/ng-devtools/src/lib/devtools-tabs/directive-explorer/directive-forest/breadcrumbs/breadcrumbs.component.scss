@@ -1,3 +1,5 @@
+@use '../../../../../styles/theme' as theme;
+
 .mdc-card.breadcrumb-card {
   padding: 0;
   width: 100%;
@@ -51,7 +53,7 @@
   }
 }
 
-:host-context(.dark-theme) {
+@include theme.dark-theme {
   .mdc-card {
     &.breadcrumb-card {
       .scroll-button {

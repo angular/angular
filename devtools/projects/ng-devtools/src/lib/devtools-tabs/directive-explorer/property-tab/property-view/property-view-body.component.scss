@@ -1,3 +1,5 @@
+@use '../../../../../styles/theme' as theme;
+
 :host {
   ::ng-deep {
     mat-expansion-panel {
@@ -46,7 +48,7 @@
       }
     }
 
-    :host-context(.dark-theme) {
+    @include theme.dark-theme {
       .docs-link {
         color: #bcc5ce;
 

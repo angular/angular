@@ -1,3 +1,5 @@
+@use '../styles/theme' as theme;
+
 @keyframes pulse {
   0% {
     box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.2);
@@ -28,7 +30,7 @@
   display: block;
 }
 
-:host-context(.dark-theme) {
+@include theme.dark-theme {
   .devtools-wrapper {
     background: #202124;
   }
@@ -81,7 +83,7 @@
   }
 }
 
-:host-context(.dark-theme) {
+@include theme.dark-theme {
   .info-icon {
     border: solid 2px #bcc5ce;
   }
@@ -209,29 +211,31 @@
   }
 }
 
-:host-context(.dark-theme) ::ng-deep {
-  .legend {
-    background: #2f2c2c;
-  }
-
-  .link {
-    stroke: #bcc5ce;
-    fill: none;
-
-    &.highlighted {
-      stroke: #4da1ff;
+@include theme.dark-theme {
+  ::ng-deep {
+    .legend {
+      background: #2f2c2c;
     }
-  }
 
-  .arrow {
-    fill: white;
-  }
+    .link {
+      stroke: #bcc5ce;
+      fill: none;
 
-  .node-label {
-    color: #000;
-  }
-  .legend-router-tree {
-    fill: #ffffff !important;
+      &.highlighted {
+        stroke: #4da1ff;
+      }
+    }
+
+    .arrow {
+      fill: white;
+    }
+
+    .node-label {
+      color: #000;
+    }
+    .legend-router-tree {
+      fill: #ffffff !important;
+    }
   }
 }
 

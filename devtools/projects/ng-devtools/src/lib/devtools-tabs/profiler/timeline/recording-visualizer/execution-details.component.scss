@@ -1,3 +1,5 @@
+@use '../../../../../styles/theme' as theme;
+
 table {
   border-collapse: collapse;
   width: 100%;
@@ -11,7 +13,7 @@ td {
   border-bottom: 1px solid #ddd;
 }
 
-:host-context(.dark-theme) {
+@include theme.dark-theme {
   .name,
   .method,
   .value {

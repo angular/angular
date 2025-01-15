@@ -1,3 +1,5 @@
+@use '../../../../../styles/theme' as theme;
+
 :host {
   display: block;
   overflow: auto;
@@ -59,7 +61,7 @@ ul {
   padding-inline-start: 20px;
 }
 
-:host-context(.dark-theme) {
+@include theme.dark-theme {
   .entry-statistics {
     span {
       color: #5cadd3;

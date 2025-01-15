@@ -1,3 +1,5 @@
+@use '../../styles/theme' as theme;
+
 :host {
   position: relative;
   width: 100%;
@@ -118,7 +120,7 @@ mat-icon {
   font-size: 12px;
 }
 
-:host-context(.dark-theme) {
+@include theme.dark-theme {
   .frame-selector {
     background-color: #464646;
     color: #fff;
