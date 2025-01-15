@@ -43,7 +43,7 @@ function isEmptyInputValue(value: any): boolean {
  * Extract the length property in case it's an array.
  * Extract the size property in case it's a set.
  * Return null else.
- * @param value Either an array set or undefined.
+ * @param value Either an array, set or undefined.
  */
 function lengthOrSize(value: any): number | null {
   // non-strict comparison is intentional, to check for both `null` and `undefined` values
