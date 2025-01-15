@@ -50,6 +50,8 @@ A typical `@for` loop looks like:
 }
 ```
 
+Angular's `@for` block does not support flow-modifying statements like JavaScript's `continue` or `break`.
+
 ### Why is `track` in `@for` blocks important?
 
 The `track` expression allows Angular to maintain a relationship between your data and the DOM nodes on the page. This allows Angular to optimize performance by executing the minimum necessary DOM operations when the data changes.
