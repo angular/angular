@@ -10,7 +10,7 @@ ts_library(
         ],
     ),
     deps = [
-        "//devtools/projects/ng-devtools/src/lib:theme",
+        "//devtools/projects/ng-devtools/src/lib/application-services:theme",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter",
         "//devtools/projects/ng-devtools/src/lib/vendor/memo-decorator",
         "//devtools/projects/protocol",

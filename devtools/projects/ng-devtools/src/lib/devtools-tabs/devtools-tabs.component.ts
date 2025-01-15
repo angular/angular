@@ -15,8 +15,8 @@ import {MatTooltip} from '@angular/material/tooltip';
 import {Events, MessageBus, Route} from 'protocol';
 
 import {ApplicationEnvironment, Frame, TOP_LEVEL_FRAME_ID} from '../application-environment/index';
-import {FrameManager} from '../frame_manager';
-import {ThemeService} from '../theme-service';
+import {FrameManager} from '../application-services/frame_manager';
+import {ThemeService} from '../application-services/theme-service';
 
 import {DirectiveExplorerComponent} from './directive-explorer/directive-explorer.component';
 import {InjectorTreeComponent} from './injector-tree/injector-tree.component';

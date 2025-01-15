@@ -10,7 +10,7 @@ import {ChangeDetectionStrategy, Component, computed, inject, input, output} fro
 import {Color, RawData} from 'ngx-flamegraph/lib/utils';
 import {ProfilerFrame} from 'protocol';
 
-import {ThemeService} from '../../../../theme-service';
+import {ThemeService} from '../../../../application-services/theme-service';
 import {
   FlamegraphFormatter,
   FlamegraphNode,

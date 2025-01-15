@@ -31,7 +31,7 @@ import {
 
 import {SplitComponent} from '../../../lib/vendor/angular-split/public_api';
 import {ApplicationOperations} from '../../application-operations/index';
-import {FrameManager} from '../../frame_manager';
+import {FrameManager} from '../../application-services/frame_manager';
 
 import {BreadcrumbsComponent} from './directive-forest/breadcrumbs/breadcrumbs.component';
 import {FlatNode} from './directive-forest/component-data-source';

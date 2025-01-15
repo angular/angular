@@ -8,17 +8,17 @@
 
 import {animate, style, transition, trigger} from '@angular/animations';
 import {Platform} from '@angular/cdk/platform';
-import {DOCUMENT} from '@angular/common';
 import {Component, computed, inject, OnDestroy, OnInit, signal} from '@angular/core';
 import {Events, MessageBus} from 'protocol';
 import {interval} from 'rxjs';
 
-import {FrameManager} from './frame_manager';
-import {ThemeService} from './theme-service';
+import {FrameManager} from './application-services/frame_manager';
+import {ThemeService} from './application-services/theme-service';
 import {MatTooltip, MatTooltipModule} from '@angular/material/tooltip';
 import {DevToolsTabsComponent} from './devtools-tabs/devtools-tabs.component';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {Frame} from './application-environment';
+import {BrowserStylesService} from './application-services/browser-styles-service';
 
 const DETECT_ANGULAR_ATTEMPTS = 10;
 
@@ -74,13 +74,10 @@ export class DevToolsComponent implements OnInit, OnDestroy {
     return (majorVersion >= LAST_SUPPORTED_VERSION || majorVersion === 0) && this.ivy();
   });
 
-  private readonly _firefoxStyleName = 'firefox_styles.css';
-  private readonly _chromeStyleName = 'chrome_styles.css';
   private readonly _messageBus = inject<MessageBus<Events>>(MessageBus);
   private readonly _themeService = inject(ThemeService);
-  private readonly _platform = inject(Platform);
-  private readonly _document = inject(DOCUMENT);
   private readonly _frameManager = inject(FrameManager);
+  private readonly _browserStyles = inject(BrowserStylesService);
 
   private _interval$ = interval(500).subscribe((attempt) => {
     if (attempt === DETECT_ANGULAR_ATTEMPTS) {
@@ -95,6 +92,7 @@ export class DevToolsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this._themeService.initializeThemeWatcher();
+    this._browserStyles.initBrowserSpecificStyles();
 
     this._messageBus.once('ngAvailability', ({version, devMode, ivy, hydration}) => {
       this.angularStatus.set(version ? AngularStatus.EXISTS : AngularStatus.DOES_NOT_EXIST);
@@ -104,22 +102,6 @@ export class DevToolsComponent implements OnInit, OnDestroy {
       this._interval$.unsubscribe();
       this.hydration.set(hydration);
     });
-
-    const browserStyleName = this._platform.FIREFOX
-      ? this._firefoxStyleName
-      : this._chromeStyleName;
-    this._loadStyle(browserStyleName);
-  }
-
-  /** Add a style file in header based on fileName */
-  private _loadStyle(styleName: string) {
-    const head = this._document.getElementsByTagName('head')[0];
-
-    const style = this._document.createElement('link');
-    style.rel = 'stylesheet';
-    style.href = `./styles/${styleName}`;
-
-    head.appendChild(style);
   }
 
   ngOnDestroy(): void {
