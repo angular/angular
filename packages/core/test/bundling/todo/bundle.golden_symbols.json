@@ -193,6 +193,7 @@
   "_testabilityGetter",
   "_wasLastNodeCreated",
   "activeConsumer",
+  "addAfterRenderSequencesForView",
   "addPropertyBinding",
   "addToArray",
   "addToEndOfViewTree",

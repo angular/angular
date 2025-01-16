@@ -147,6 +147,7 @@
   "_platformInjector",
   "_wasLastNodeCreated",
   "activeConsumer",
+  "addAfterRenderSequencesForView",
   "addPropertyBinding",
   "allocExpando",
   "allocLFrame",

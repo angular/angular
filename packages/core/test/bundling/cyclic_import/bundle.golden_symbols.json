@@ -164,6 +164,7 @@
   "_testabilityGetter",
   "_wasLastNodeCreated",
   "activeConsumer",
+  "addAfterRenderSequencesForView",
   "addPropertyBinding",
   "allocExpando",
   "allocLFrame",
