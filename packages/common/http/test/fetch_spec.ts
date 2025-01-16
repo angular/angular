@@ -291,6 +291,23 @@ describe('FetchBackend', async () => {
     fetchMock.mockAbortEvent();
   });
 
+  describe('root injector is destroyed', () => {
+    it('aborts a request once root injector is destroyed', (done) => {
+      backend.handle(TEST_POST).subscribe({
+        error: (err: HttpErrorResponse) => {
+          expect(err instanceof HttpErrorResponse).toBe(true);
+          done();
+        },
+      });
+
+      // `resetTestingModule` would trigger a destroy of the root injector.
+      // We can't inject the `ApplicationRef` and invoke `destroy()`, because it would
+      // then attempt to `resetTestingModule()` and throw that injector has already
+      // been destroyed.
+      TestBed.resetTestingModule();
+    });
+  });
+
   describe('progress events', () => {
     it('are emitted for download progress', (done) => {
       backend

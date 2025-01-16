@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, Injectable, InjectionToken, NgZone} from '@angular/core';
+import {DestroyRef, inject, Injectable, InjectionToken, NgZone} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 
 import {HttpBackend} from './backend';
@@ -64,13 +64,37 @@ export class FetchBackend implements HttpBackend {
   private readonly fetchImpl =
     inject(FetchFactory, {optional: true})?.fetch ?? ((...args) => globalThis.fetch(...args));
   private readonly ngZone = inject(NgZone);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly aborters = new Set<AbortController>();
+
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      if (this.aborters.size === 0) {
+        return;
+      }
+
+      const aborters = Array.from(this.aborters.values());
+      this.aborters.clear();
+      // Abort any pending HTTP requests when the application is destroyed to
+      // prevent memory leaks and the execution of operations that should not
+      // occur once resources are released. For example, if an HTTP response is
+      // returned after the application is destroyed and someone calls `runInInjectionContext`,
+      // it would throw an error indicating that the injector has already been destroyed.
+      // This ensures a graceful cleanup, ensuring that no requests proceed once the
+      // root injector is destroyed.
+      for (const aborter of aborters) {
+        aborter.abort();
+      }
+    });
+  }
 
   handle(request: HttpRequest<any>): Observable<HttpEvent<any>> {
     return new Observable((observer) => {
       const aborter = new AbortController();
-      this.doRequest(request, aborter.signal, observer).then(noop, (error) =>
-        observer.error(new HttpErrorResponse({error})),
-      );
+      this.aborters.add(aborter);
+      this.doRequest(request, aborter.signal, observer)
+        .then(noop, (error) => observer.error(new HttpErrorResponse({error})))
+        .finally(() => this.aborters.delete(aborter));
       return () => aborter.abort();
     });
   }
