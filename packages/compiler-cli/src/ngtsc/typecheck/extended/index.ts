@@ -19,6 +19,7 @@ import {factory as suffixNotSupportedFactory} from './checks/suffix_not_supporte
 import {factory as textAttributeNotBindingFactory} from './checks/text_attribute_not_binding';
 import {factory as uninvokedFunctionInEventBindingFactory} from './checks/uninvoked_function_in_event_binding';
 import {factory as unusedLetDeclarationFactory} from './checks/unused_let_declaration';
+import {factory as skipHydrationNotStaticFactory} from './checks/skip_hydration_not_static';
 
 export {ExtendedTemplateCheckerImpl} from './src/extended_template_checker';
 
@@ -36,6 +37,7 @@ export const ALL_DIAGNOSTIC_FACTORIES: readonly TemplateCheckFactory<
   interpolatedSignalNotInvoked,
   uninvokedFunctionInEventBindingFactory,
   unusedLetDeclarationFactory,
+  skipHydrationNotStaticFactory,
 ];
 
 export const SUPPORTED_DIAGNOSTIC_NAMES = new Set<string>([
