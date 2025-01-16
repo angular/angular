@@ -1860,10 +1860,8 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         const recordedEvents: Event[] = [];
         router.events.forEach((e) => recordedEvents.push(e));
 
-        let e: any;
-        router.navigateByUrl('/invalid').catch((_) => (e = _));
+        router.navigateByUrl('/invalid');
         advance(fixture);
-        expect(e.message).toContain('Cannot match any routes');
 
         router.navigateByUrl('/user/fedor');
         advance(fixture);
@@ -2071,10 +2069,8 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
         // Try navigating to a component which throws an error during activation.
         ConditionalThrowingCmp.throwError = true;
-        expect(() => {
-          router.navigateByUrl('/throwing');
-          advance(fixture);
-        }).toThrow();
+        router.navigateByUrl('/throwing');
+        advance(fixture);
         expect(location.path()).toEqual('');
         expect(fixture.nativeElement.innerHTML).not.toContain('throwing');
 
@@ -2211,11 +2207,9 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
         router.resetConfig([{path: 'simple', component: SimpleCmp}]);
 
-        router.navigateByUrl('/invalid');
-        expect(() => advance(fixture)).toThrow();
-
-        router.navigateByUrl('/invalid2');
-        expect(() => advance(fixture)).toThrow();
+        const p = router.navigateByUrl('/invalid');
+        advance(fixture);
+        expectAsync(p).toBeResolvedTo(false);
       }),
     ));
 
@@ -2494,8 +2488,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
           const recordedEvents: any[] = [];
           router.events.subscribe((e) => e instanceof RouterEvent && recordedEvents.push(e));
 
-          let e: any = null;
-          router.navigateByUrl('/simple')!.catch((error) => (e = error));
+          router.navigateByUrl('/simple');
           advance(fixture);
 
           expectEvents(recordedEvents, [
@@ -2506,8 +2499,6 @@ for (const browserAPI of ['navigation', 'history'] as const) {
             [ResolveStart, '/simple'],
             [NavigationError, '/simple'],
           ]);
-
-          expect(e).toEqual('error');
         }),
       ));
 
@@ -2522,11 +2513,9 @@ for (const browserAPI of ['navigation', 'history'] as const) {
           const recordedEvents: any[] = [];
           router.events.subscribe((e) => e instanceof RouterEvent && recordedEvents.push(e));
 
-          let e: any = 'some value';
-          router.navigateByUrl('/simple').catch((error) => (e = error));
+          const p = router.navigateByUrl('/simple');
           advance(fixture);
-
-          expect(e).toEqual(null);
+          expectAsync(p).toBeResolvedTo(false);
         }),
       ));
 
@@ -2707,12 +2696,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         router.resetConfig([
           {path: 'throwing', resolve: {thrower: ThrowingResolver}, component: BlankCmp},
         ]);
-        try {
-          await router.navigateByUrl('/throwing');
-          fail('navigation should throw');
-        } catch (e: unknown) {
-          expect((e as Error).message).toEqual(errorMessage);
-        }
+        await router.navigateByUrl('/throwing');
 
         expect(caughtError).toBeDefined();
         expect(caughtError?.target).toBeDefined();
@@ -6753,10 +6737,15 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
           router.resetConfig([{path: 'lazy', loadChildren: () => LoadedModule}]);
 
-          let recordedError: any = null;
-          router.navigateByUrl('/lazy/loaded')!.catch((err) => (recordedError = err));
+          let recordedError: NavigationError | undefined;
+          router.events.subscribe((e) => {
+            if (e instanceof NavigationError) {
+              recordedError = e;
+            }
+          });
+          router.navigateByUrl('/lazy/loaded');
           advance(fixture);
-          expect(recordedError.message).toContain(`NG04007`);
+          expect(recordedError!.error.message).toContain(`NG04007`);
         }),
       ));
 
@@ -7075,11 +7064,16 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         const fixture = createRoot(router, RootCmp);
         router.resetConfig([{path: 'lazy', loadChildren: () => LoadedModule}]);
 
-        let recordedError: any = null;
-        router.navigateByUrl('/lazy/loaded').catch((err) => (recordedError = err));
+        let recordedError: NavigationError | undefined;
+        router.events.subscribe((e) => {
+          if (e instanceof NavigationError) {
+            recordedError = e;
+          }
+        });
+        router.navigateByUrl('/lazy/loaded');
         advance(fixture);
 
-        expect(recordedError.message).toContain(
+        expect(recordedError!.error.message).toContain(
           `Invalid configuration of route 'lazy/loaded'. One of the following must be provided: component, loadComponent, redirectTo, children or loadChildren`,
         );
       }));

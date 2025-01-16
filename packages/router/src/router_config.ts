@@ -113,11 +113,11 @@ export interface RouterConfigOptions {
   defaultQueryParamsHandling?: QueryParamsHandling;
 
   /**
-   * When `true`, the `Promise` will instead resolve with `false`, as it does with other failed
-   * navigations (for example, when guards are rejected).
-
-   * Otherwise the `Promise` returned by the Router's navigation with be rejected
+   * When `false` the `Promise` returned by the Router's navigation with be rejected
    * if an error occurs.
+   *
+   * Otherwise, the `Promise` will instead resolve with `false`, as it does with other failed
+   * navigations (for example, when guards are rejected).
    */
   resolveNavigationPromiseOnError?: boolean;
 }
