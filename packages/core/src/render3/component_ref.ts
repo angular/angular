@@ -26,7 +26,7 @@ import {
 import {ComponentFactoryResolver as AbstractComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {createElementRef, ElementRef} from '../linker/element_ref';
 import {NgModuleRef} from '../linker/ng_module_factory';
-import {Renderer2, RendererFactory2} from '../render/api';
+import {RendererFactory2} from '../render/api';
 import {Sanitizer} from '../sanitization/sanitizer';
 import {assertDefined, assertGreaterThan, assertIndexInRange} from '../util/assert';
 
@@ -56,13 +56,13 @@ import {ComponentDef, DirectiveDef, HostDirectiveDefs} from './interfaces/defini
 import {InputFlags} from './interfaces/input_flags';
 import {
   NodeInputBindings,
+  TAttributes,
   TContainerNode,
   TElementContainerNode,
   TElementNode,
   TNode,
   TNodeType,
 } from './interfaces/node';
-import {Renderer} from './interfaces/renderer';
 import {RElement, RNode} from './interfaces/renderer_dom';
 import {
   CONTEXT,
@@ -75,21 +75,24 @@ import {
   TViewType,
 } from './interfaces/view';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
-import {setupStaticAttributes, writeDirectClass} from './node_manipulation';
+
+import {createElementNode} from './dom_node_manipulation';
+import {setupStaticAttributes} from './node_manipulation';
 import {
   extractAttrsAndClassesFromSelector,
   stringifyCSSSelectorList,
 } from './node_selector_matcher';
 import {enterView, getCurrentTNode, getLView, leaveView} from './state';
 import {computeStaticStyling} from './styling/static_styling';
-import {mergeHostAttrs, setUpAttributes} from './util/attrs_utils';
+import {mergeHostAttrs} from './util/attrs_utils';
 import {debugStringifyTypeForError, stringifyForError} from './util/stringify_utils';
 import {getComponentLViewByIndex, getNativeByTNode, getTNode} from './util/view_utils';
 import {ViewRef} from './view_ref';
 import {ChainedInjector} from './chained_injector';
 import {unregisterLView} from './interfaces/lview_tracking';
 import {executeContentQueries} from './queries/query_execution';
-import {createElementNode} from './dom_node_manipulation';
+import {AttributeMarker} from './interfaces/attribute_marker';
+import {CssSelector} from './interfaces/projection';
 
 export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
   /**
@@ -156,6 +159,18 @@ function toRefArray<
 function getNamespace(elementName: string): string | null {
   const name = elementName.toLowerCase();
   return name === 'svg' ? SVG_NAMESPACE : name === 'math' ? MATH_ML_NAMESPACE : null;
+}
+
+// TODO(pk): change the extractAttrsAndClassesFromSelector so it returns TAttributes already?
+function getRootTAttributesFromSelector(selector: CssSelector) {
+  const {attrs, classes} = extractAttrsAndClassesFromSelector(selector);
+
+  const tAtts: TAttributes = attrs;
+  if (classes.length) {
+    tAtts.push(AttributeMarker.Classes, ...classes);
+  }
+
+  return tAtts;
 }
 
 /**
@@ -355,6 +370,26 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
         }
 
         const hostTNode = createRootComponentTNode(rootLView, hostRNode);
+        // If host dom element is created (instead of being provided as part of the dynamic component creation), also apply attributes and classes extracted from component selector.
+        const tAttributes = rootSelectorOrNode
+          ? ['ng-version', '0.0.0-PLACEHOLDER']
+          : // Extract attributes and classes from the first selector only to match VE behavior.
+            getRootTAttributesFromSelector(this.componentDef.selectors[0]);
+
+        for (const def of rootDirectives) {
+          hostTNode.mergedAttrs = mergeHostAttrs(hostTNode.mergedAttrs, def.hostAttrs);
+        }
+        hostTNode.mergedAttrs = mergeHostAttrs(hostTNode.mergedAttrs, tAttributes);
+
+        computeStaticStyling(hostTNode, hostTNode.mergedAttrs, true);
+
+        // TODO(crisbeto): in practice `hostRNode` should always be defined, but there are some
+        // tests where the renderer is mocked out and `undefined` is returned. We should update the
+        // tests so that this check can be removed.
+        if (hostRNode) {
+          setupStaticAttributes(hostRenderer, hostRNode, hostTNode);
+        }
+
         componentView = createRootComponentView(
           hostTNode,
           hostRNode,
@@ -362,20 +397,12 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
           rootDirectives,
           rootLView,
           environment,
-          hostRenderer,
         );
 
         tElementNode = getTNode(rootTView, HEADER_OFFSET) as TElementNode;
 
-        // TODO(crisbeto): in practice `hostRNode` should always be defined, but there are some
-        // tests where the renderer is mocked out and `undefined` is returned. We should update the
-        // tests so that this check can be removed.
-        if (hostRNode) {
-          setRootNodeAttributes(hostRenderer, rootComponentDef, hostRNode, rootSelectorOrNode);
-        }
-
         if (projectableNodes !== undefined) {
-          projectNodes(tElementNode, this.ngContentSelectors, projectableNodes);
+          projectNodes(hostTNode, this.ngContentSelectors, projectableNodes);
         }
 
         // TODO: should LifecycleHooksFeature and other host features be generated by the compiler
@@ -523,10 +550,8 @@ function createRootComponentView(
   rootDirectives: DirectiveDef<any>[],
   rootView: LView,
   environment: LViewEnvironment,
-  hostRenderer: Renderer,
 ): LView {
   const tView = rootView[TVIEW];
-  applyRootComponentStyling(rootDirectives, tNode, hostRNode, hostRenderer);
 
   // Hydration info is on the host element and needs to be retrieved
   // and passed to the component LView.
@@ -557,26 +582,6 @@ function createRootComponentView(
 
   // Store component view at node index, with node as the HOST
   return (rootView[tNode.index] = componentView);
-}
-
-/** Sets up the styling information on a root component. */
-function applyRootComponentStyling(
-  rootDirectives: DirectiveDef<any>[],
-  tNode: TElementNode,
-  rNode: RElement | null,
-  hostRenderer: Renderer,
-): void {
-  for (const def of rootDirectives) {
-    tNode.mergedAttrs = mergeHostAttrs(tNode.mergedAttrs, def.hostAttrs);
-  }
-
-  if (tNode.mergedAttrs !== null) {
-    computeStaticStyling(tNode, tNode.mergedAttrs, true);
-
-    if (rNode !== null) {
-      setupStaticAttributes(hostRenderer, rNode, tNode);
-    }
-  }
 }
 
 /**
@@ -633,30 +638,6 @@ function createRootComponent<T>(
   executeContentQueries(tView, rootTNode, rootLView);
 
   return component;
-}
-
-/** Sets the static attributes on a root component. */
-function setRootNodeAttributes(
-  hostRenderer: Renderer2,
-  componentDef: ComponentDef<unknown>,
-  hostRNode: RElement,
-  rootSelectorOrNode: any,
-) {
-  if (rootSelectorOrNode) {
-    // The placeholder will be replaced with the actual version at build time.
-    setUpAttributes(hostRenderer, hostRNode, ['ng-version', '0.0.0-PLACEHOLDER']);
-  } else {
-    // If host element is created as a part of this function call (i.e. `rootSelectorOrNode`
-    // is not defined), also apply attributes and classes extracted from component selector.
-    // Extract attributes and classes from the first selector only to match VE behavior.
-    const {attrs, classes} = extractAttrsAndClassesFromSelector(componentDef.selectors[0]);
-    if (attrs) {
-      setUpAttributes(hostRenderer, hostRNode, attrs);
-    }
-    if (classes && classes.length > 0) {
-      writeDirectClass(hostRenderer, hostRNode, classes.join(' '));
-    }
-  }
 }
 
 /** Projects the `projectableNodes` that were specified when creating a root component. */
