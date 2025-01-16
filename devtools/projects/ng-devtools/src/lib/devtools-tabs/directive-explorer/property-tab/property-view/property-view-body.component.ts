@@ -7,7 +7,14 @@
  */
 
 import {CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag} from '@angular/cdk/drag-drop';
-import {Component, computed, forwardRef, input, output} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  forwardRef,
+  input,
+  output,
+} from '@angular/core';
 import {DirectivePosition, SerializedInjectedService} from 'protocol';
 
 import {
@@ -26,6 +33,7 @@ import {MatExpansionModule} from '@angular/material/expansion';
   selector: 'ng-property-view-body',
   templateUrl: './property-view-body.component.html',
   styleUrls: ['./property-view-body.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatExpansionModule,
     CdkDropList,
@@ -106,6 +114,7 @@ export class PropertyViewBodyComponent {
 
 @Component({
   selector: 'ng-dependency-viewer',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <mat-accordion class="example-headers-align" multi>
       <mat-expansion-panel>
@@ -173,6 +182,7 @@ export class DependencyViewerComponent {
 
 @Component({
   selector: 'ng-injected-services',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: ` @for (dependency of dependencies(); track dependency.position[0]) {
     <ng-dependency-viewer [dependency]="dependency" />
     }`,

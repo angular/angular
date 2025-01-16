@@ -7,19 +7,28 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {afterNextRender, Component, effect, ElementRef, input, viewChild} from '@angular/core';
+import {
+  afterNextRender,
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  ElementRef,
+  input,
+  viewChild,
+} from '@angular/core';
 import {MatInputModule} from '@angular/material/input';
 import {Route} from 'protocol';
 import {RouterTreeVisualizer} from './router-tree-visualizer';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 
 const DEFAULT_FILTER = /.^/;
+
 @Component({
   selector: 'ng-router-tree',
   templateUrl: './router-tree.component.html',
   styleUrls: ['./router-tree.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, MatInputModule, MatCheckboxModule],
-  standalone: true,
 })
 export class RouterTreeComponent {
   private routerTreeSvgContainerRef = viewChild<ElementRef>('routerTreeSvgContainer');

@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {RecordingDialogComponent} from './recording-dialog.component';
 
 @Component({
   selector: 'ng-recording-modal',
   templateUrl: './recording-modal.component.html',
   styleUrls: ['./recording-modal.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RecordingDialogComponent],
 })
 export class RecordingModalComponent {}

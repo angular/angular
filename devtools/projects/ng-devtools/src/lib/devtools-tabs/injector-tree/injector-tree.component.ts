@@ -8,6 +8,7 @@
 
 import {
   afterNextRender,
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   inject,
@@ -46,6 +47,7 @@ import {
 
 @Component({
   selector: 'ng-injector-tree',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     SplitComponent,
     SplitAreaDirective,

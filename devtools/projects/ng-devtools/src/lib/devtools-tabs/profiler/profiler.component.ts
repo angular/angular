@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {Events, MessageBus, ProfilerFrame} from 'protocol';
 import {Subject} from 'rxjs';
@@ -28,6 +28,7 @@ const PROFILER_VERSION = 1;
   selector: 'ng-profiler',
   templateUrl: './profiler.component.html',
   styleUrls: ['./profiler.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatCard, MatIconButton, MatTooltip, MatIcon, TimelineComponent],
 })
 export class ProfilerComponent {

@@ -9,7 +9,15 @@
 import {animate, style, transition, trigger} from '@angular/animations';
 import {Platform} from '@angular/cdk/platform';
 import {DOCUMENT} from '@angular/common';
-import {Component, computed, inject, OnDestroy, OnInit, signal} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  OnDestroy,
+  OnInit,
+  signal,
+} from '@angular/core';
 import {Events, MessageBus} from 'protocol';
 import {interval} from 'rxjs';
 
@@ -46,6 +54,7 @@ const LAST_SUPPORTED_VERSION = 9;
   selector: 'ng-devtools',
   templateUrl: './devtools.component.html',
   styleUrls: ['./devtools.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('enterAnimation', [
       transition(':enter', [style({opacity: 0}), animate('200ms', style({opacity: 1}))]),

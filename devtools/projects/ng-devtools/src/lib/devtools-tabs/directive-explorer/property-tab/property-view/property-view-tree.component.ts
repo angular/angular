@@ -7,7 +7,7 @@
  */
 
 import {FlatTreeControl} from '@angular/cdk/tree';
-import {Component, input, output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
 
 import {FlatNode} from '../../property-resolver/element-property-resolver';
 import {PropertyDataSource} from '../../property-resolver/property-data-source';
@@ -20,6 +20,7 @@ import {MatTree, MatTreeNode, MatTreeNodeDef, MatTreeNodePadding} from '@angular
   selector: 'ng-property-view-tree',
   templateUrl: './property-view-tree.component.html',
   styleUrls: ['./property-view-tree.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatTree,
     MatTreeNode,

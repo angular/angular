@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, inject, input, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, input, signal} from '@angular/core';
 import {MatOption} from '@angular/material/core';
 import {MatFormField, MatLabel} from '@angular/material/form-field';
 import {MatIcon} from '@angular/material/icon';
@@ -20,6 +20,7 @@ import {Events, MessageBus, SerializedInjector, SerializedProviderRecord} from '
   selector: 'ng-injector-providers',
   templateUrl: './injector-providers.component.html',
   styleUrl: './injector-providers.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatTableModule,
     MatIcon,

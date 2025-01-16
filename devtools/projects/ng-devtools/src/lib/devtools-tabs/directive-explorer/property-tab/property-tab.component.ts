@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, input, output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
 import {DirectivePosition} from 'protocol';
 
 import {IndexedNode} from '../directive-forest/index-forest';
@@ -15,8 +15,9 @@ import {PropertyTabBodyComponent} from './property-view/property-tab-body.compon
 import {PropertyTabHeaderComponent} from './property-tab-header.component';
 
 @Component({
-  templateUrl: './property-tab.component.html',
   selector: 'ng-property-tab',
+  templateUrl: './property-tab.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [PropertyTabHeaderComponent, PropertyTabBodyComponent],
 })
 export class PropertyTabComponent {

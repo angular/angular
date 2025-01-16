@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, inject, input, output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, input, output} from '@angular/core';
 import {DirectivePosition} from 'protocol';
 
 import {ElementPropertyResolver, FlatNode} from '../../property-resolver/element-property-resolver';
@@ -17,6 +17,7 @@ import {PropertyViewHeaderComponent} from './property-view-header.component';
   selector: 'ng-property-view',
   templateUrl: './property-view.component.html',
   styleUrls: ['./property-view.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [PropertyViewHeaderComponent, PropertyViewBodyComponent],
 })
 export class PropertyViewComponent {

@@ -7,6 +7,7 @@
  */
 
 import {
+  ChangeDetectionStrategy,
   Component,
   computed,
   effect,
@@ -26,6 +27,7 @@ import {MatCard} from '@angular/material/card';
   selector: 'ng-breadcrumbs',
   templateUrl: './breadcrumbs.component.html',
   styleUrls: ['./breadcrumbs.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatCard, MatIcon, MatButton],
 })
 export class BreadcrumbsComponent {

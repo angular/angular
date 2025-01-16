@@ -15,6 +15,7 @@ import {
   output,
   signal,
   viewChild,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {ContainerType} from 'protocol';
@@ -36,9 +37,10 @@ const parseValue = (value: EditorResult): EditorResult => {
 };
 
 @Component({
-  templateUrl: './property-editor.component.html',
   selector: 'ng-property-editor',
+  templateUrl: './property-editor.component.html',
   styleUrls: ['./property-editor.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule],
 })
 export class PropertyEditorComponent {
