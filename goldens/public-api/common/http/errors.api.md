@@ -15,6 +15,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     HEADERS_ALTERED_BY_TRANSFER_CACHE = 2802,
     // (undocumented)
+    HTTP_CLIENT_MISSING_INJECTION_CONTEXT = 2823,
+    // (undocumented)
     HTTP_ORIGIN_MAP_CONTAINS_PATH = 2804,
     // (undocumented)
     HTTP_ORIGIN_MAP_USED_IN_CLIENT = 2803,

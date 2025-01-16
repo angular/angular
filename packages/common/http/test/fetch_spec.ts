@@ -438,6 +438,44 @@ describe('FetchBackend', async () => {
     fetchMock.mockFlush(HttpStatusCode.Ok, 'OK');
   });
 
+  describe('root injector is destroyed', () => {
+    it('aborts a request once root injector is destroyed', async () => {
+      const assertion = {
+        abortHappened: false,
+        error: <HttpErrorResponse | null>null,
+      };
+
+      const request = new HttpRequest('GET', '/test');
+      backend.handle(request).subscribe({
+        error: (error: HttpErrorResponse) => {
+          assertion.abortHappened = true;
+          assertion.error = error;
+        },
+      });
+
+      expect(assertion).toEqual({abortHappened: false, error: null});
+
+      // We still need to manually reject the promise because we are in a unit test environment.
+      // However, the unit test ensures that `abort()` is called on the abort controller
+      // when the root injector is destroyed.
+      // The `mockAbortEvent` is unrelated to abort controllers;
+      // it is only responsible for rejecting a promise.
+      fetchMock.mockAbortEvent();
+
+      // `resetTestingModule` triggers the destruction of the root injector.
+      // We cannot inject the `ApplicationRef` and invoke `destroy()` because
+      // it would attempt to call `resetTestingModule()` and throw an error
+      // indicating that the injector has already been destroyed.
+      TestBed.resetTestingModule();
+
+      // Wait until a promise is rejected.
+      await Promise.resolve();
+
+      expect(assertion.abortHappened).toEqual(true);
+      expect(assertion.error!.error).toBeInstanceOf(DOMException);
+    });
+  });
+
   describe('progress events', () => {
     it('are emitted for download progress', (done) => {
       backend
