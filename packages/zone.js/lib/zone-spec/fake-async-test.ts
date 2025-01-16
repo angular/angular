@@ -621,6 +621,13 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
     this.pendingTimers = [];
   }
 
+  discardPeriodicTasks() {
+    for (const timer of this.pendingPeriodicTimers) {
+      this._scheduler.removeScheduledFunctionWithId(timer);
+    }
+    this.pendingPeriodicTimers.length = 0;
+  }
+
   getTimerCount() {
     return this._scheduler.getTimerCount() + this._microtasks.length;
   }
@@ -942,9 +949,7 @@ export function flush(maxTurns?: number): number {
  * @experimental
  */
 export function discardPeriodicTasks(): void {
-  const zoneSpec = _getFakeAsyncZoneSpec();
-  const pendingTimers = zoneSpec.pendingPeriodicTimers;
-  zoneSpec.pendingPeriodicTimers.length = 0;
+  _getFakeAsyncZoneSpec().discardPeriodicTasks();
 }
 
 /**

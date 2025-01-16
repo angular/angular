@@ -241,6 +241,14 @@ describe('fake async', () => {
       clearInterval(id);
     }));
 
+    it('periodic timers should not run when discarded', fakeAsync(() => {
+      setInterval(() => {
+        fail('should never execute because we discard it');
+      }, 10);
+      discardPeriodicTasks();
+      tick(12);
+    }));
+
     it('should not run cancelled periodic timer', fakeAsync(() => {
       let ran = false;
       const id = setInterval(() => {
