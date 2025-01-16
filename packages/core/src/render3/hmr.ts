@@ -36,6 +36,7 @@ import {
   LViewFlags,
   NEXT,
   PARENT,
+  RENDERER,
   T_HOST,
   TVIEW,
 } from './interfaces/view';
@@ -156,11 +157,6 @@ function recreateLView(
     // Recreate the TView since the template might've changed.
     const newTView = getOrCreateComponentTView(newDef);
 
-    // Always force the creation of a new renderer to ensure state captured during construction
-    // stays consistent with the new component definition by clearing any old cached factories.
-    const rendererFactory = lView[ENVIRONMENT].rendererFactory;
-    clearRendererCache(rendererFactory, oldDef);
-
     // Create a new LView from the new TView, but reusing the existing TNode and DOM node.
     const newLView = createLView(
       parentLView,
@@ -170,7 +166,7 @@ function recreateLView(
       host,
       tNode,
       null,
-      rendererFactory.createRenderer(host, newDef),
+      null, // The renderer will be created a bit further down once the old one is destroyed.
       null,
       null,
       null,
@@ -182,6 +178,15 @@ function recreateLView(
 
     // Destroy the detached LView.
     destroyLView(lView[TVIEW], lView);
+
+    // Always force the creation of a new renderer to ensure state captured during construction
+    // stays consistent with the new component definition by clearing any old ached factories.
+    const rendererFactory = lView[ENVIRONMENT].rendererFactory;
+    clearRendererCache(rendererFactory, oldDef);
+
+    // Patch a brand-new renderer onto the new view only after the old
+    // view is destroyed so that the runtime doesn't try to reuse it.
+    newLView[RENDERER] = rendererFactory.createRenderer(host, newDef);
 
     // Remove the nodes associated with the destroyed LView. This removes the
     // descendants, but not the host which we want to stay in place.
