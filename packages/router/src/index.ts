@@ -7,7 +7,11 @@
  */
 
 export {createUrlTreeFromSnapshot} from './create_url_tree';
-export {RouterLink, RouterLinkWithHref} from './directives/router_link';
+export {
+  RouterLink,
+  RouterLinkWithHref,
+  CUSTOM_ELEMENT_ANCHOR_TAG_NAMES,
+} from './directives/router_link';
 export {RouterLinkActive} from './directives/router_link_active';
 export {RouterOutlet, ROUTER_OUTLET_DATA, RouterOutletContract} from './directives/router_outlet';
 export {
