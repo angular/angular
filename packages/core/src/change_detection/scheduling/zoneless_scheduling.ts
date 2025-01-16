@@ -33,7 +33,6 @@ export const enum NotificationSource {
   // but we should execute render hooks:
   // Render hooks are guaranteed to execute with the schedulers timing.
   RenderHook,
-  DeferredRenderHook,
   // Views might be created outside and manipulated in ways that
   // we cannot be aware of. When a view is attached, Angular now "knows"
   // about it and we now know that DOM might have changed (and we should
