@@ -1,3 +1,16 @@
+<a name="19.1.1"></a>
+# 19.1.1 (2025-01-16)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [357795cb96](https://github.com/angular/angular/commit/357795cb96a1cd138ec263c468c9de8ca8b2af9c) | fix | run HMR replacement in the zone ([#59562](https://github.com/angular/angular/pull/59562)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [eb0b1851f4](https://github.com/angular/angular/commit/eb0b1851f494adfe72f583763a44bd2528a5956c) | fix | roll back HMR fix ([#59557](https://github.com/angular/angular/pull/59557)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.1.0"></a>
 # 19.1.0 (2025-01-15)
 ### common
