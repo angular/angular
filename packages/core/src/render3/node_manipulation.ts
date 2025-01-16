@@ -1169,7 +1169,7 @@ function writeDirectStyle(renderer: Renderer, element: RElement, newValue: strin
  * @param element The element which needs to be updated.
  * @param newValue The new class list to write.
  */
-export function writeDirectClass(renderer: Renderer, element: RElement, newValue: string) {
+function writeDirectClass(renderer: Renderer, element: RElement, newValue: string) {
   ngDevMode && assertString(newValue, "'newValue' should be a string");
   if (newValue === '') {
     // There are tests in `google3` which expect `element.getAttribute('class')` to be `null`.
