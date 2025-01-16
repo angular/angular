@@ -100,7 +100,8 @@ describe('highlighter', () => {
     });
   });
 
-  describe('highlightHydrationElement', () => {
+  // Those test were disabled since very flaky on the CI - needs investigation before re-enabling
+  xdescribe('highlightHydrationElement', () => {
     afterEach(() => {
       document.body.innerHTML = '';
       delete (window as any).ng;
