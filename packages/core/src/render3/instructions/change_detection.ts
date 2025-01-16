@@ -17,6 +17,7 @@ import {
 
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {assertDefined, assertEqual} from '../../util/assert';
+import {addAfterRenderSequencesForView} from '../after_render/view';
 import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags} from '../hooks';
 import {CONTAINER_HEADER_OFFSET, LContainerFlags, MOVED_VIEWS} from '../interfaces/container';
 import {ComponentTemplate, HostBindingsFunction, RenderFlags} from '../interfaces/definition';
@@ -33,8 +34,8 @@ import {
   TView,
 } from '../interfaces/view';
 import {
-  getOrCreateTemporaryConsumer,
   getOrBorrowReactiveLViewConsumer,
+  getOrCreateTemporaryConsumer,
   maybeReturnReactiveLViewConsumer,
   ReactiveLViewConsumer,
   viewShouldHaveReactiveConsumer,
@@ -64,11 +65,11 @@ import {
 } from '../util/view_utils';
 
 import {isDestroyed} from '../interfaces/type_checks';
-import {ProfilerEvent} from '../profiler_types';
 import {profiler} from '../profiler';
+import {ProfilerEvent} from '../profiler_types';
+import {executeViewQueryFn, refreshContentQueries} from '../queries/query_execution';
 import {runEffectsInView} from '../reactivity/view_effect_runner';
 import {executeTemplate, handleError} from './shared';
-import {executeViewQueryFn, refreshContentQueries} from '../queries/query_execution';
 
 /**
  * The maximum number of times the change detection traversal will rerun before throwing an error.
@@ -354,6 +355,8 @@ export function refreshView<T>(
     // no changes cycle, the component would be not be dirty for the next update pass. This would
     // be different in production mode where the component dirty state is not reset.
     if (!isInCheckNoChangesPass) {
+      addAfterRenderSequencesForView(lView);
+
       lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
     }
   } catch (e) {
@@ -505,6 +508,9 @@ function detectChangesInView(lView: LView, mode: ChangeDetectionMode) {
     const components = tView.components;
     if (components !== null) {
       detectChangesInChildComponents(lView, components, ChangeDetectionMode.Targeted);
+    }
+    if (!isInCheckNoChangesPass) {
+      addAfterRenderSequencesForView(lView);
     }
   }
 }

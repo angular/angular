@@ -44,11 +44,11 @@ import {TESTABILITY} from '../testability/testability';
 import {isPromise} from '../util/lang';
 import {NgZone} from '../zone/ng_zone';
 
+import {profiler} from '../render3/profiler';
+import {ProfilerEvent} from '../render3/profiler_types';
+import {EffectScheduler} from '../render3/reactivity/root_effect_scheduler';
 import {ApplicationInitStatus} from './application_init';
 import {TracingAction, TracingService, TracingSnapshot} from './tracing';
-import {EffectScheduler} from '../render3/reactivity/root_effect_scheduler';
-import {ProfilerEvent} from '../render3/profiler_types';
-import {profiler} from '../render3/profiler';
 
 /**
  * A DI token that provides a set of callbacks to
@@ -322,13 +322,6 @@ export class ApplicationRef {
    * @internal
    */
   dirtyFlags = ApplicationRefDirtyFlags.None;
-
-  /**
-   * Like `dirtyFlags` but don't cause `tick()` to loop.
-   *
-   * @internal
-   */
-  deferredDirtyFlags = ApplicationRefDirtyFlags.None;
 
   /**
    * Most recent snapshot from the `TracingService`, if any.
@@ -657,10 +650,6 @@ export class ApplicationRef {
       this._rendererFactory = this._injector.get(RendererFactory2, null, {optional: true});
     }
 
-    // When beginning synchronization, all deferred dirtiness becomes active dirtiness.
-    this.dirtyFlags |= this.deferredDirtyFlags;
-    this.deferredDirtyFlags = ApplicationRefDirtyFlags.None;
-
     let runs = 0;
     while (this.dirtyFlags !== ApplicationRefDirtyFlags.None && runs++ < MAXIMUM_REFRESH_RERUNS) {
       profiler(ProfilerEvent.ChangeDetectionSyncStart);
@@ -683,10 +672,6 @@ export class ApplicationRef {
    * Perform a single synchronization pass.
    */
   private synchronizeOnce(): void {
-    // If we happened to loop, deferred dirtiness can be processed as active dirtiness again.
-    this.dirtyFlags |= this.deferredDirtyFlags;
-    this.deferredDirtyFlags = ApplicationRefDirtyFlags.None;
-
     // First, process any dirty root effects.
     if (this.dirtyFlags & ApplicationRefDirtyFlags.RootEffects) {
       this.dirtyFlags &= ~ApplicationRefDirtyFlags.RootEffects;
