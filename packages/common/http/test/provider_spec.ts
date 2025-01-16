@@ -33,7 +33,7 @@ import {
   Provider,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {EMPTY, Observable, from} from 'rxjs';
+import {EMPTY, Observable, finalize, from, mergeMap, timer} from 'rxjs';
 
 import {HttpInterceptorFn} from '../src/interceptor';
 import {
@@ -564,6 +564,42 @@ describe('provideHttpClient', () => {
       );
 
       globalThis['ngServerMode'] = undefined;
+    });
+  });
+
+  describe('root injector is destroyed', () => {
+    it('aborts a request once root injector is destroyed', () => {
+      const recorder: string[] = [];
+
+      const interceptorFn: HttpInterceptorFn = (req, next) => {
+        recorder.push('interceptorFn()');
+        return timer(3000).pipe(
+          mergeMap(() => next(req)),
+          finalize(() => recorder.push('interceptorFn finalize()')),
+        );
+      };
+
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([interceptorFn])),
+          provideHttpClientTesting(),
+        ],
+      });
+
+      TestBed.inject(HttpClient).get('/test', {responseType: 'text'}).subscribe();
+
+      expect(recorder).toEqual(['interceptorFn()']);
+
+      // `resetTestingModule` triggers the destruction of the root injector.
+      // We cannot inject the `ApplicationRef` and invoke `destroy()` because
+      // it would attempt to call `resetTestingModule()` and throw an error
+      // indicating that the injector has already been destroyed.
+      TestBed.resetTestingModule();
+
+      // Note: Prior to adding `takeUntil()` within `HttpClient`, it did not
+      // unsubscribe when the root injector was destroyed, and the recorder
+      // did not include a `finalize` function call.
+      expect(recorder).toEqual(['interceptorFn()', 'interceptorFn finalize()']);
     });
   });
 });
