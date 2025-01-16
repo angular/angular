@@ -16794,10 +16794,10 @@ undici@^5.25.4:
   dependencies:
     "@fastify/busboy" "^2.0.0"
 
-undici@^6.15.0:
-  version "6.21.0"
-  resolved "https://registry.yarnpkg.com/undici/-/undici-6.21.0.tgz#4b3d3afaef984e07b48e7620c34ed8a285ed4cd4"
-  integrity sha512-BUgJXc752Kou3oOIuU1i+yZZypyZRqNPW0vqoMPl8VaoalSfeR0D8/t4iAS3yirs79SSMTxTag+ZC86uswv+Cw==
+undici@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/undici/-/undici-7.0.0.tgz#3697f99304ea625d804ae087a635291a65affcbb"
+  integrity sha512-c4xi3kWnQJrb7h2q8aJYKvUzmz7boCgz1cUCC6OwdeM5Tr2P0hDuthr2iut4ggqsz+Cnh20U/LoTzbKIdDS/Nw==
 
 unicode-canonical-property-names-ecmascript@^2.0.0:
   version "2.0.1"
