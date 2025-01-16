@@ -15,6 +15,7 @@ import {
   inject,
   InjectionToken,
   Input,
+  NgZone,
   OnChanges,
   OnDestroy,
   OnInit,
@@ -32,6 +33,7 @@ import {compileComponent} from '@angular/core/src/render3/jit/directive';
 import {angularCoreEnv} from '@angular/core/src/render3/jit/environment';
 import {clearTranslations, loadTranslations} from '@angular/localize';
 import {computeMsgId} from '@angular/compiler';
+import {EVENT_MANAGER_PLUGINS} from '@angular/platform-browser';
 
 describe('hot module replacement', () => {
   it('should recreate a single usage of a basic component', () => {
@@ -1212,6 +1214,47 @@ describe('hot module replacement', () => {
       fixture.nativeElement.querySelector('button').click();
       fixture.detectChanges();
       expect(count).toBe(2);
+    });
+
+    it('should bind events inside the NgZone after a replacement', () => {
+      const calls: {name: string; inZone: boolean}[] = [];
+
+      @Component({template: `<button (click)="clicked()"></button>`})
+      class App {
+        clicked() {}
+      }
+
+      TestBed.configureTestingModule({
+        providers: [
+          {
+            // Note: TestBed brings things into the zone even if they aren't which makes this
+            // test hard to write. We have to intercept the listener being bound at the renderer
+            // level in order to get a true sense if it'll be bound inside or outside the zone.
+            // We do so with a custom event manager.
+            provide: EVENT_MANAGER_PLUGINS,
+            multi: true,
+            useValue: {
+              supports: () => true,
+              addEventListener: (_: unknown, name: string) => {
+                calls.push({name, inZone: NgZone.isInAngularZone()});
+                return () => {};
+              },
+            },
+          },
+        ],
+      });
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(calls).toEqual([{name: 'click', inZone: true}]);
+
+      replaceMetadata(App, {template: '<button class="foo" (click)="clicked()"></button>'});
+      fixture.detectChanges();
+
+      expect(calls).toEqual([
+        {name: 'click', inZone: true},
+        {name: 'click', inZone: true},
+      ]);
     });
   });
 
