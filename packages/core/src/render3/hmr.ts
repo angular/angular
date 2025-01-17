@@ -109,8 +109,13 @@ function recreateMatchingLViews(oldDef: ComponentDef<unknown>, rootLView: LView)
     const current = rootLView[i];
 
     if (isLContainer(current)) {
-      for (let i = CONTAINER_HEADER_OFFSET; i < current.length; i++) {
-        recreateMatchingLViews(oldDef, current[i]);
+      // The host can be an LView if a component is injecting `ViewContainerRef`.
+      if (isLView(current[HOST])) {
+        recreateMatchingLViews(oldDef, current[HOST]);
+      }
+
+      for (let j = CONTAINER_HEADER_OFFSET; j < current.length; j++) {
+        recreateMatchingLViews(oldDef, current[j]);
       }
     } else if (isLView(current)) {
       recreateMatchingLViews(oldDef, current);
