@@ -15,6 +15,7 @@ interface DocsDecorativeHeaderToken extends Tokens.Generic {
   type: 'docs-decorative-header';
   title: string;
   imgSrc: string;
+  gradientBackground?: boolean;
   body: string;
 }
 
@@ -25,6 +26,7 @@ const decorativeHeaderRule =
 
 const imgSrcRule = /imgSrc="([^"]*)"/;
 const titleRule = /title="([^"]*)"/;
+const gradientBackgroundRule = /gradientBackground="([^"]*)"/;
 
 export const docsDecorativeHeaderExtension = {
   name: 'docs-decorative-header',
@@ -41,12 +43,14 @@ export const docsDecorativeHeaderExtension = {
 
       const imgSrc = imgSrcRule.exec(attr);
       const title = titleRule.exec(attr);
+      const gradientBackground = gradientBackgroundRule.exec(attr);
 
       const token: DocsDecorativeHeaderToken = {
         type: 'docs-decorative-header',
         raw: match[0],
         title: title ? title[1] : '',
         imgSrc: imgSrc ? imgSrc[1] : '',
+        gradientBackground: gradientBackground ? gradientBackground[1] === 'true' : false,
         body: body ?? '',
       };
       return token;
@@ -54,26 +58,52 @@ export const docsDecorativeHeaderExtension = {
     return undefined;
   },
   renderer(this: RendererThis, token: DocsDecorativeHeaderToken) {
-    // We can assume that all illustrations are svg files
-    // We need to read svg content, instead of renering svg with `img`,
-    // cause we would like to use CSS variables to support dark and light mode.
-    const illustration = token.imgSrc ? loadWorkspaceRelativeFile(token.imgSrc) : '';
-
-    return `
-    <div class="docs-decorative-header-container">
-      <div class="docs-decorative-header">
-        <div class="docs-header-content">
-          <docs-breadcrumb></docs-breadcrumb>
-
-          ${getPageTitle(token.title, (this.parser.renderer as AdevDocsRenderer).context.markdownFilePath)}
-
-          <p>${token.body}</p>
-        </div>
-
-        <!-- illustration -->
-        ${illustration}
-      </div>
-    </div>
-    `;
+    return token.gradientBackground
+      ? getGradientDecorativeHeader(this, token)
+      : getStandardDecorativeHeader(this, token);
   },
 };
+
+function getStandardDecorativeHeader(renderer: RendererThis, token: DocsDecorativeHeaderToken) {
+  // We can assume that all illustrations are svg files
+  // We need to read svg content, instead of renering svg with `img`,
+  // cause we would like to use CSS variables to support dark and light mode.
+  const illustration = token.imgSrc ? loadWorkspaceRelativeFile(token.imgSrc) : '';
+
+  return `
+  <div class="docs-decorative-header-container">
+    <div class="docs-decorative-header">
+      <div class="docs-header-content">
+        <docs-breadcrumb></docs-breadcrumb>
+
+        ${getPageTitle(token.title)}
+
+        <p>${token.body}</p>
+      </div>
+
+      <!-- illustration -->
+      ${illustration}
+    </div>
+  </div>
+  `;
+}
+
+function getGradientDecorativeHeader(renderer: RendererThis, token: DocsDecorativeHeaderToken) {
+  // We can assume that all illustrations are svg files
+  // We need to read svg content, instead of renering svg with `img`,
+  // cause we would like to use CSS variables to support dark and light mode.
+  const illustration = token.imgSrc ? loadWorkspaceRelativeFile(token.imgSrc) : '';
+
+  return `
+  <div class="docs-decorative-header-container">
+    <div class="docs-decorative-gradient-header">
+      <div class="docs-header-content">
+        ${getPageTitle(token.title)}
+        <p>${token.body}</p>
+      </div>
+      <!-- illustration -->
+      ${illustration}
+    </div>
+  </div>
+  `;
+}
