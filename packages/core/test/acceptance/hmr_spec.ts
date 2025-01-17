@@ -26,6 +26,7 @@ import {
   ViewChild,
   ViewChildren,
   ViewContainerRef,
+  ViewEncapsulation,
   ɵNG_COMP_DEF,
   ɵɵreplaceMetadata,
 } from '@angular/core';
@@ -245,6 +246,65 @@ describe('hot module replacement', () => {
         <child-cmp>Replaced!</child-cmp>|
         <child-sub-cmp>Sub class</child-sub-cmp>
       `,
+    );
+  });
+
+  it('should replace a component using shadow DOM encapsulation', () => {
+    // Domino doesn't support shadow DOM.
+    if (isNode) {
+      return;
+    }
+
+    let instance!: ChildCmp;
+    const initialMetadata: Component = {
+      encapsulation: ViewEncapsulation.ShadowDom,
+      selector: 'child-cmp',
+      template: 'Hello <strong>{{state}}</strong>',
+      styles: `strong {color: red;}`,
+    };
+
+    @Component(initialMetadata)
+    class ChildCmp {
+      state = 0;
+
+      constructor() {
+        instance = this;
+      }
+    }
+
+    @Component({
+      standalone: true,
+      imports: [ChildCmp],
+      template: '<child-cmp/>',
+    })
+    class RootCmp {}
+
+    const fixture = TestBed.createComponent(RootCmp);
+    fixture.detectChanges();
+    const getShadowRoot = () => fixture.nativeElement.querySelector('child-cmp').shadowRoot;
+
+    markNodesAsCreatedInitially(getShadowRoot());
+    expectHTML(getShadowRoot(), `<style>strong {color: red;}</style>Hello <strong>0</strong>`);
+
+    instance.state = 1;
+    fixture.detectChanges();
+    expectHTML(getShadowRoot(), `<style>strong {color: red;}</style>Hello <strong>1</strong>`);
+
+    replaceMetadata(ChildCmp, {
+      ...initialMetadata,
+      template: `Changed <strong>{{state}}</strong>!`,
+      styles: `strong {background: pink;}`,
+    });
+    fixture.detectChanges();
+
+    verifyNodesWereRecreated([
+      fixture.nativeElement.querySelector('child-cmp'),
+      ...childrenOf(getShadowRoot()),
+    ]);
+
+    expectHTML(
+      getShadowRoot(),
+      `<style>strong {background: pink;}</style>Changed <strong>1</strong>!`,
     );
   });
 
@@ -2071,7 +2131,7 @@ describe('hot module replacement', () => {
   function expectHTML(element: HTMLElement, expectation: string) {
     const actual = element.innerHTML
       .replace(/<!--(\W|\w)*?-->/g, '')
-      .replace(/\sng-reflect-\S*="[^"]*"/g, '');
+      .replace(/\s(ng-reflect|_nghost|_ngcontent)-\S*="[^"]*"/g, '');
     expect(actual.replace(/\s/g, '') === expectation.replace(/\s/g, ''))
       .withContext(`HTML does not match expectation. Actual HTML:\n${actual}`)
       .toBe(true);
