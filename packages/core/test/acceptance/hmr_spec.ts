@@ -25,6 +25,7 @@ import {
   Type,
   ViewChild,
   ViewChildren,
+  ViewContainerRef,
   ɵNG_COMP_DEF,
   ɵɵreplaceMetadata,
 } from '@angular/core';
@@ -414,6 +415,58 @@ describe('hot module replacement', () => {
     recreatedNodes = childrenOf(...fixture.nativeElement.querySelectorAll('child-cmp'));
     verifyNodesRemainUntouched(fixture.nativeElement, recreatedNodes);
     verifyNodesWereRecreated(recreatedNodes);
+  });
+
+  it('should be able to replace a component that injects ViewContainerRef', () => {
+    const initialMetadata: Component = {
+      selector: 'child-cmp',
+      standalone: true,
+      template: 'Hello <strong>world</strong>',
+    };
+
+    @Component(initialMetadata)
+    class ChildCmp {
+      vcr = inject(ViewContainerRef);
+    }
+
+    @Component({
+      standalone: true,
+      imports: [ChildCmp],
+      template: '<child-cmp/>',
+    })
+    class RootCmp {}
+
+    const fixture = TestBed.createComponent(RootCmp);
+    fixture.detectChanges();
+    markNodesAsCreatedInitially(fixture.nativeElement);
+
+    expectHTML(
+      fixture.nativeElement,
+      `
+        <child-cmp>
+          Hello <strong>world</strong>
+        </child-cmp>
+      `,
+    );
+
+    replaceMetadata(ChildCmp, {
+      ...initialMetadata,
+      template: `Hello <i>Bob</i>!`,
+    });
+    fixture.detectChanges();
+
+    const recreatedNodes = childrenOf(...fixture.nativeElement.querySelectorAll('child-cmp'));
+    verifyNodesRemainUntouched(fixture.nativeElement, recreatedNodes);
+    verifyNodesWereRecreated(recreatedNodes);
+
+    expectHTML(
+      fixture.nativeElement,
+      `
+        <child-cmp>
+          Hello <i>Bob</i>!
+        </child-cmp>
+      `,
+    );
   });
 
   describe('queries', () => {
