@@ -34,6 +34,7 @@ import {angularCoreEnv} from '@angular/core/src/render3/jit/environment';
 import {clearTranslations, loadTranslations} from '@angular/localize';
 import {computeMsgId} from '@angular/compiler';
 import {EVENT_MANAGER_PLUGINS} from '@angular/platform-browser';
+import {ComponentDef} from '@angular/core/src/render3';
 
 describe('hot module replacement', () => {
   it('should recreate a single usage of a basic component', () => {
@@ -414,6 +415,44 @@ describe('hot module replacement', () => {
     recreatedNodes = childrenOf(...fixture.nativeElement.querySelectorAll('child-cmp'));
     verifyNodesRemainUntouched(fixture.nativeElement, recreatedNodes);
     verifyNodesWereRecreated(recreatedNodes);
+  });
+
+  it('should preserve the dependencies from the previous component definition', () => {
+    @Component({
+      selector: 'child',
+      template: 'hello',
+    })
+    class Child {}
+
+    @Component({
+      imports: [Child],
+      template: `<child/>`,
+    })
+    class RootCmp {}
+
+    TestBed.configureTestingModule({errorOnUnknownElements: true});
+    const fixture = TestBed.createComponent(RootCmp);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.innerHTML).toBe('<child>hello</child>');
+
+    replaceMetadata(
+      RootCmp,
+      {
+        template: `<child/>!`,
+      },
+      (def) => {
+        // Note: this simulates ngtsc returning a different set of dependencies based on the
+        // template. We can write a direct test for it, because it would involve running the
+        // CLI's dev server, triggering a user change and hitting ngtsc.
+        def.dependencies = [];
+        def.directiveDefs = [];
+        def.pipeDefs = [];
+      },
+    );
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.innerHTML).toBe('<child>hello</child>!');
   });
 
   describe('queries', () => {
@@ -1998,7 +2037,11 @@ describe('hot module replacement', () => {
   // during HMR operation. We do it for *testing* purposes only.
   const CREATED_INITIALLY_MARKER = '__ngCreatedInitially__';
 
-  function replaceMetadata(type: Type<unknown>, metadata: Component) {
+  function replaceMetadata(
+    type: Type<unknown>,
+    metadata: Component,
+    processMeta?: (def: ComponentDef<unknown>) => void,
+  ) {
     ɵɵreplaceMetadata(
       type,
       () => {
@@ -2009,6 +2052,7 @@ describe('hot module replacement', () => {
         // `setClassDebugInfo`.
         (type as any)[ɵNG_COMP_DEF] = null;
         compileComponent(type, metadata);
+        processMeta?.((type as any)[ɵNG_COMP_DEF]);
       },
       [angularCoreEnv],
       [],

@@ -101,7 +101,9 @@ function recreateMatchingLViews(oldDef: ComponentDef<unknown>, rootLView: LView)
   // produce false positives when using inheritance.
   if (tView === oldDef.tView) {
     ngDevMode && assertComponentDef(oldDef.type);
-    recreateLView(getComponentDef(oldDef.type)!, oldDef, rootLView);
+    const newDef = getComponentDef(oldDef.type)!;
+    copyMetadata(newDef, oldDef);
+    recreateLView(newDef, oldDef, rootLView);
     return;
   }
 
@@ -116,6 +118,25 @@ function recreateMatchingLViews(oldDef: ComponentDef<unknown>, rootLView: LView)
       recreateMatchingLViews(oldDef, current);
     }
   }
+}
+
+/**
+ * Copies over any metadata that should be preserve on a newly-patched
+ * component from the one being replaced.
+ * @param newDef New component definition.
+ * @param oldDef Component definition being replaced.
+ */
+function copyMetadata(newDef: ComponentDef<unknown>, oldDef: ComponentDef<unknown>): void {
+  // ngtsc produces a different set of dependencies depending on what is used in the template.
+  // This can cause the replacer function and the callback to be out of sync. Copy over the
+  // dependencies from the previous definition to the new one since the only way to actually
+  // change the dependencies is to make a TS change which will trigger a refresh. This isn't
+  // ideal and a more long-term solution would be to capture all dependencies like in
+  // https://github.com/angular/angular/pull/59591, however the aforementioned PR can be broken
+  // by bundlers that rename symbols during bundling.
+  newDef.dependencies = oldDef.dependencies;
+  newDef.directiveDefs = oldDef.directiveDefs;
+  newDef.pipeDefs = oldDef.pipeDefs;
 }
 
 /**
