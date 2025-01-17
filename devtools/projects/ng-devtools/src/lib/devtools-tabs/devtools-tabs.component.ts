@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, inject, input, output, signal} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
 import {MatSlideToggle} from '@angular/material/slide-toggle';
@@ -30,6 +38,7 @@ type Tabs = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree';
   selector: 'ng-devtools-tabs',
   templateUrl: './devtools-tabs.component.html',
   styleUrls: ['./devtools-tabs.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatTabNav,
     MatTabNavPanel,

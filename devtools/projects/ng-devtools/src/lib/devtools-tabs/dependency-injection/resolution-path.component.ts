@@ -8,6 +8,7 @@
 
 import {
   afterNextRender,
+  ChangeDetectionStrategy,
   Component,
   computed,
   effect,
@@ -22,6 +23,7 @@ import {InjectorTreeNode, InjectorTreeVisualizer} from './injector-tree-visualiz
 
 @Component({
   selector: 'ng-resolution-path',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section class="injector-graph">
       <svg #svgContainer>

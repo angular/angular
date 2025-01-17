@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, input, output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
 import {MatToolbar} from '@angular/material/toolbar';
@@ -15,6 +15,7 @@ import {MatToolbar} from '@angular/material/toolbar';
   selector: 'ng-property-view-header',
   templateUrl: './property-view-header.component.html',
   styleUrls: ['./property-view-header.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatToolbar, MatTooltip, MatIcon],
 })
 export class PropertyViewHeaderComponent {

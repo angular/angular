@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, input, model, output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, model, output} from '@angular/core';
 import {ProfilerFrame} from 'protocol';
 
 import {VisualizationMode} from './visualization-mode';
@@ -22,6 +22,7 @@ import {DecimalPipe} from '@angular/common';
   selector: 'ng-timeline-controls',
   templateUrl: './timeline-controls.component.html',
   styleUrls: ['./timeline-controls.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatFormField,
     MatLabel,

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, input, output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, input, output} from '@angular/core';
 import {DirectivePosition} from 'protocol';
 
 import {IndexedNode} from '../../directive-forest/index-forest';
@@ -14,9 +14,10 @@ import {FlatNode} from '../../property-resolver/element-property-resolver';
 import {PropertyViewComponent} from './property-view.component';
 
 @Component({
-  templateUrl: './property-tab-body.component.html',
   selector: 'ng-property-tab-body',
+  templateUrl: './property-tab-body.component.html',
   styleUrls: ['./property-tab-body.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [PropertyViewComponent],
 })
 export class PropertyTabBodyComponent {
