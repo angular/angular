@@ -572,6 +572,7 @@
   "init_let_declaration",
   "init_lift",
   "init_linked_signal",
+  "init_linked_signal2",
   "init_linker",
   "init_list_reconciliation",
   "init_listener",
