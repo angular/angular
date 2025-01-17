@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {createTNode} from '@angular/core/src/render3/instructions/shared';
-
+import {createTNode} from '../../src/render3/tnode_manipulation';
 import {AttributeMarker} from '../../src/render3/interfaces/attribute_marker';
 import {TAttributes, TNode, TNodeType} from '../../src/render3/interfaces/node';
 import {CssSelector, CssSelectorList, SelectorFlags} from '../../src/render3/interfaces/projection';

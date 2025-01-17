@@ -703,6 +703,7 @@
   "init_text_interpolation",
   "init_timeoutProvider",
   "init_timer_scheduler",
+  "init_tnode_manipulation",
   "init_tokens",
   "init_tokens2",
   "init_tokens3",
