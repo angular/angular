@@ -14,7 +14,7 @@ import {
   ResourceRef,
 } from '@angular/core';
 import {Observable, Subject} from 'rxjs';
-import {take, takeUntil} from 'rxjs/operators';
+import {finalize, take, takeUntil} from 'rxjs/operators';
 
 /**
  * Like `ResourceOptions` but uses an RxJS-based `loader`.
@@ -37,14 +37,23 @@ export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T |
     ...opts,
     loader: (params) => {
       const cancelled = new Subject<void>();
-      params.abortSignal.addEventListener('abort', () => cancelled.next());
+      const onAbort = () => cancelled.next();
+      params.abortSignal.addEventListener('abort', onAbort);
 
       // Note: this is identical to `firstValueFrom` which we can't use,
       // because at the time of writing, `core` still supports rxjs 6.x.
       return new Promise<T>((resolve, reject) => {
         opts
           .loader(params)
-          .pipe(take(1), takeUntil(cancelled))
+          .pipe(
+            take(1),
+            takeUntil(cancelled),
+            // This is necessary to remove an event listener when it is no
+            // longer needed, allowing objects to be garbage collected.
+            // Not all browser garbage collectors are smart enough to mark the
+            // abort signal as unused, as it may still have an event listener attached.
+            finalize(() => params.abortSignal.removeEventListener('abort', onAbort)),
+          )
           .subscribe({
             next: resolve,
             error: reject,
