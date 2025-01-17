@@ -13,13 +13,13 @@ import {
   throwError,
 } from '../../util/assert';
 import {assertTIcu, assertTNode} from '../assert';
-import {createTNodeAtIndex} from '../instructions/shared';
 import {IcuCreateOpCode, TIcu} from '../interfaces/i18n';
 import {TIcuContainerNode, TNode, TNodeType} from '../interfaces/node';
 import {LView, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
 import {setI18nHandling} from '../node_manipulation';
 import {getInsertInFrontOfRNodeWithI18n, processI18nInsertBefore} from '../node_manipulation_i18n';
+import {createTNodeAtIndex} from '../tnode_manipulation';
 
 import {addTNodeAndUpdateInsertBeforeIndex} from './i18n_insert_before_index';
 

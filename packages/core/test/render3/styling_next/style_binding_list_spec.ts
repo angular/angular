@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {createTNode} from '@angular/core/src/render3/instructions/shared';
 import {TNode, TNodeType} from '@angular/core/src/render3/interfaces/node';
 import {
   getTStylingRangeNext,
@@ -19,6 +18,7 @@ import {
 import {LView, TData} from '@angular/core/src/render3/interfaces/view';
 import {enterView, leaveView} from '@angular/core/src/render3/state';
 import {insertTStylingBinding} from '@angular/core/src/render3/styling/style_binding_list';
+import {createTNode} from '@angular/core/src/render3/tnode_manipulation';
 import {newArray} from '@angular/core/src/util/array_utils';
 
 describe('TNode styling linked list', () => {
