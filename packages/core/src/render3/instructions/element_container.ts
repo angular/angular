@@ -41,12 +41,8 @@ import {
 import {computeStaticStyling} from '../styling/static_styling';
 import {getConstant} from '../util/view_utils';
 
-import {
-  createDirectivesInstances,
-  getOrCreateTNode,
-  resolveDirectives,
-  saveResolvedLocalsInData,
-} from './shared';
+import {createDirectivesInstances, resolveDirectives, saveResolvedLocalsInData} from './shared';
+import {getOrCreateTNode} from '../tnode_manipulation';
 
 function elementContainerStartFirstCreatePass(
   index: number,

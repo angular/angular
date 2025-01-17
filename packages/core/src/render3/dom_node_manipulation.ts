@@ -9,7 +9,9 @@
 import {Renderer} from './interfaces/renderer';
 import {RComment, RElement, RNode, RText} from './interfaces/renderer_dom';
 import {escapeCommentText} from '../util/dom';
-import {assertDefined} from '../util/assert';
+import {assertDefined, assertString} from '../util/assert';
+import {setUpAttributes} from './util/attrs_utils';
+import {TNode} from './interfaces/node';
 
 export function createTextNode(renderer: Renderer, value: string): RText {
   ngDevMode && ngDevMode.rendererCreateTextNode++;
@@ -99,4 +101,58 @@ export function nativeRemoveNode(renderer: Renderer, rNode: RNode, isHostElement
  */
 export function clearElementContents(rElement: RElement): void {
   rElement.textContent = '';
+}
+
+/**
+ * Write `cssText` to `RElement`.
+ *
+ * This function does direct write without any reconciliation. Used for writing initial values, so
+ * that static styling values do not pull in the style parser.
+ *
+ * @param renderer Renderer to use
+ * @param element The element which needs to be updated.
+ * @param newValue The new class list to write.
+ */
+function writeDirectStyle(renderer: Renderer, element: RElement, newValue: string) {
+  ngDevMode && assertString(newValue, "'newValue' should be a string");
+  renderer.setAttribute(element, 'style', newValue);
+  ngDevMode && ngDevMode.rendererSetStyle++;
+}
+
+/**
+ * Write `className` to `RElement`.
+ *
+ * This function does direct write without any reconciliation. Used for writing initial values, so
+ * that static styling values do not pull in the style parser.
+ *
+ * @param renderer Renderer to use
+ * @param element The element which needs to be updated.
+ * @param newValue The new class list to write.
+ */
+function writeDirectClass(renderer: Renderer, element: RElement, newValue: string) {
+  ngDevMode && assertString(newValue, "'newValue' should be a string");
+  if (newValue === '') {
+    // There are tests in `google3` which expect `element.getAttribute('class')` to be `null`.
+    renderer.removeAttribute(element, 'class');
+  } else {
+    renderer.setAttribute(element, 'class', newValue);
+  }
+  ngDevMode && ngDevMode.rendererSetClassName++;
+}
+
+/** Sets up the static DOM attributes on an `RNode`. */
+export function setupStaticAttributes(renderer: Renderer, element: RElement, tNode: TNode) {
+  const {mergedAttrs, classes, styles} = tNode;
+
+  if (mergedAttrs !== null) {
+    setUpAttributes(renderer, element, mergedAttrs);
+  }
+
+  if (classes !== null) {
+    writeDirectClass(renderer, element, classes);
+  }
+
+  if (styles !== null) {
+    writeDirectStyle(renderer, element, styles);
+  }
 }

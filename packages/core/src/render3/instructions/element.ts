@@ -42,8 +42,12 @@ import {isComponentHost, isContentQueryHost, isDirectiveHost} from '../interface
 import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
 import {executeContentQueries} from '../queries/query_execution';
-import {appendChild, setupStaticAttributes} from '../node_manipulation';
-import {clearElementContents, createElementNode} from '../dom_node_manipulation';
+import {appendChild} from '../node_manipulation';
+import {
+  clearElementContents,
+  createElementNode,
+  setupStaticAttributes,
+} from '../dom_node_manipulation';
 import {
   decreaseElementDepthCount,
   enterSkipHydrationBlock,
@@ -68,12 +72,8 @@ import {getConstant} from '../util/view_utils';
 
 import {validateElementIsKnown} from './element_validation';
 import {setDirectiveInputsWhichShadowsStyling} from './property';
-import {
-  createDirectivesInstances,
-  getOrCreateTNode,
-  resolveDirectives,
-  saveResolvedLocalsInData,
-} from './shared';
+import {createDirectivesInstances, resolveDirectives, saveResolvedLocalsInData} from './shared';
+import {getOrCreateTNode} from '../tnode_manipulation';
 
 function elementStartFirstCreatePass(
   index: number,
