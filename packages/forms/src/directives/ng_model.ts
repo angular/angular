@@ -333,7 +333,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
   }
 
   private _checkForErrors(): void {
-    if (!this._isStandalone()) {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && !this._isStandalone()) {
       this._checkParentType();
     }
     this._checkName();
