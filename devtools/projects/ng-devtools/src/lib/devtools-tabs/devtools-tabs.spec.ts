@@ -14,12 +14,12 @@ import {Events, MessageBus} from 'protocol';
 import {Subject} from 'rxjs';
 
 import {ApplicationEnvironment} from '../application-environment';
-import {Theme, ThemeService} from '../theme-service';
+import {Theme, ThemeService} from '../application-services/theme-service';
 
 import {DevToolsTabsComponent} from './devtools-tabs.component';
 import {TabUpdate} from './tab-update/index';
 import {DirectiveExplorerComponent} from './directive-explorer/directive-explorer.component';
-import {FrameManager} from '../frame_manager';
+import {FrameManager} from '../application-services/frame_manager';
 
 @Component({
   selector: 'ng-directive-explorer',

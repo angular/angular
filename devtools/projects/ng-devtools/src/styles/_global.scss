@@ -1,3 +1,5 @@
+/* Global styles imported in the main styles.scss of the app wrapper (shell, demo apps). */
+
 @use 'sass:map';
 @use 'external/npm/node_modules/@angular/material/index' as mat;
 @include mat.all-component-typographies();
@@ -39,6 +41,7 @@ $dark-theme: map.deep-merge(
   )
 );
 
+/* Keep class name in sync with ThemeService */
 .light-theme {
   @include mat.all-component-themes($light-theme);
 
@@ -47,6 +50,7 @@ $dark-theme: map.deep-merge(
   }
 }
 
+/* Keep class name in sync with ThemeService */
 .dark-theme {
   color-scheme: dark;
   background: #202124;

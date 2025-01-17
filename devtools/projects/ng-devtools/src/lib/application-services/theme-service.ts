@@ -6,27 +6,33 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable, Renderer2, RendererFactory2, signal} from '@angular/core';
+import {inject, Injectable, Renderer2, RendererFactory2, signal} from '@angular/core';
+import {DOCUMENT} from '@angular/common';
 
 export type Theme = 'dark-theme' | 'light-theme';
+
+// Keep class names in sync with _theme.scss and _global.scss
+const DARK_THEME_CLASS = 'dark-theme';
+const LIGHT_THEME_CLASS = 'light-theme';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ThemeService {
-  private renderer: Renderer2;
+  private _doc = inject(DOCUMENT);
+  private _renderer: Renderer2;
   readonly currentTheme = signal<Theme>('light-theme');
 
   constructor(private _rendererFactory: RendererFactory2) {
-    this.renderer = this._rendererFactory.createRenderer(null, null);
+    this._renderer = this._rendererFactory.createRenderer(null, null);
     this.toggleDarkMode(this._prefersDarkMode);
   }
 
   toggleDarkMode(isDark: boolean): void {
-    const removeClass = isDark ? 'light-theme' : 'dark-theme';
-    const addClass = !isDark ? 'light-theme' : 'dark-theme';
-    this.renderer.removeClass(document.body, removeClass);
-    this.renderer.addClass(document.body, addClass);
+    const removeClass = isDark ? LIGHT_THEME_CLASS : DARK_THEME_CLASS;
+    const addClass = !isDark ? LIGHT_THEME_CLASS : DARK_THEME_CLASS;
+    this._renderer.removeClass(this._doc.body, removeClass);
+    this._renderer.addClass(this._doc.body, addClass);
     this.currentTheme.set(addClass);
   }
 
