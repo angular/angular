@@ -45,7 +45,6 @@ import {
   createTView,
   getInitialLViewFlagsFromDef,
   getOrCreateComponentTView,
-  getOrCreateTNode,
   initializeDirectives,
   invokeDirectivesHostBindings,
   locateHostElement,
@@ -76,8 +75,7 @@ import {
 } from './interfaces/view';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
 
-import {createElementNode} from './dom_node_manipulation';
-import {setupStaticAttributes} from './node_manipulation';
+import {createElementNode, setupStaticAttributes} from './dom_node_manipulation';
 import {
   extractAttrsAndClassesFromSelector,
   stringifyCSSSelectorList,
@@ -95,6 +93,7 @@ import {ProfilerEvent} from './profiler_types';
 import {executeContentQueries} from './queries/query_execution';
 import {AttributeMarker} from './interfaces/attribute_marker';
 import {CssSelector} from './interfaces/projection';
+import {getOrCreateTNode} from './tnode_manipulation';
 
 export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
   /**
@@ -343,6 +342,8 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
         hydrationInfo,
       );
 
+      rootLView[HEADER_OFFSET] = hostRNode;
+
       // rootView is the parent when bootstrapping
       // TODO(misko): it looks like we are entering view here but we don't really need to as
       // `renderView` does that. However as the code is written it is needed because
@@ -351,7 +352,6 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
       enterView(rootLView);
 
       let component: T;
-      let tElementNode: TElementNode;
       let componentView: LView | null = null;
 
       try {
@@ -373,12 +373,20 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
           rootDirectives = [rootComponentDef];
         }
 
-        const hostTNode = createRootComponentTNode(rootLView, hostRNode);
         // If host dom element is created (instead of being provided as part of the dynamic component creation), also apply attributes and classes extracted from component selector.
         const tAttributes = rootSelectorOrNode
           ? ['ng-version', '0.0.0-PLACEHOLDER']
           : // Extract attributes and classes from the first selector only to match VE behavior.
             getRootTAttributesFromSelector(this.componentDef.selectors[0]);
+
+        // TODO: this logic is shared with the element instruction first create pass
+        const hostTNode = getOrCreateTNode(
+          rootTView,
+          HEADER_OFFSET,
+          TNodeType.Element,
+          '#host',
+          tAttributes,
+        );
 
         for (const def of rootDirectives) {
           hostTNode.mergedAttrs = mergeHostAttrs(hostTNode.mergedAttrs, def.hostAttrs);
@@ -402,8 +410,6 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
           rootLView,
           environment,
         );
-
-        tElementNode = getTNode(rootTView, HEADER_OFFSET) as TElementNode;
 
         if (projectableNodes !== undefined) {
           projectNodes(hostTNode, this.ngContentSelectors, projectableNodes);
@@ -433,12 +439,13 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
         leaveView();
       }
 
+      const hostTNode = getTNode(rootTView, HEADER_OFFSET) as TElementNode;
       return new ComponentRef(
         this.componentType,
         component,
-        createElementRef(tElementNode, rootLView),
+        createElementRef(hostTNode, rootLView),
         rootLView,
-        tElementNode,
+        hostTNode,
       );
     } finally {
       setActiveConsumer(prevConsumer);
@@ -522,19 +529,6 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
 
 /** Represents a HostFeature function. */
 type HostFeature = <T>(component: T, componentDef: ComponentDef<T>) => void;
-
-/** Creates a TNode that can be used to instantiate a root component. */
-function createRootComponentTNode(lView: LView, rNode: RNode): TElementNode {
-  const tView = lView[TVIEW];
-  const index = HEADER_OFFSET;
-  ngDevMode && assertIndexInRange(lView, index);
-  lView[index] = rNode;
-
-  // '#host' is added here as we don't know the real host DOM name (we don't want to read it) and at
-  // the same time we want to communicate the debug `TNode` that this is a special `TNode`
-  // representing a host element.
-  return getOrCreateTNode(tView, index, TNodeType.Element, '#host', null);
-}
 
 /**
  * Creates the root component view and the root component node.

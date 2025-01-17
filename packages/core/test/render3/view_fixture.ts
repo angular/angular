@@ -12,7 +12,7 @@ import {stringifyElement} from '@angular/platform-browser/testing/src/browser_ut
 import {extractDirectiveDef} from '../../src/render3/definition';
 import {refreshView} from '../../src/render3/instructions/change_detection';
 import {renderView} from '../../src/render3/instructions/render';
-import {createLView, createTNode, createTView} from '../../src/render3/instructions/shared';
+import {createLView, createTView} from '../../src/render3/instructions/shared';
 import {
   DirectiveDef,
   DirectiveDefList,
@@ -34,6 +34,7 @@ import {enterView, leaveView, specOnlyIsInstructionStateEmpty} from '../../src/r
 import {noop} from '../../src/util/noop';
 
 import {getRendererFactory2} from './imported_renderer2';
+import {createTNode} from '@angular/core/src/render3/tnode_manipulation';
 
 /**
  * Fixture useful for testing operations which need `LView` / `TView`

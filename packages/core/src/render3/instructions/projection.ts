@@ -26,13 +26,13 @@ import {
   isSelectorInSelectorList,
 } from '../node_selector_matcher';
 import {getLView, getTView, isInSkipHydrationBlock, setCurrentTNodeAsNotParent} from '../state';
+import {getOrCreateTNode} from '../tnode_manipulation';
 import {
   addLViewToLContainer,
   createAndRenderEmbeddedLView,
   shouldAddViewToDom,
 } from '../view_manipulation';
 
-import {getOrCreateTNode} from './shared';
 import {declareTemplate} from './template';
 
 /**
