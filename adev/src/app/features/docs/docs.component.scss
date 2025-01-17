@@ -16,6 +16,10 @@
     display: flex;
     justify-content: center;
   }
+
+  &.overview {
+    padding-top: 0;
+  }
 }
 
 @keyframes fade-in {

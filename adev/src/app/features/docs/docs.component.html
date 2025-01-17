@@ -2,6 +2,7 @@
 @if (docContent) {
   <main docsViewer
     class="docs-viewer"
+    [class.overview]="isOverview()"
     [docContent]="docContent.contents"
     [hasToc]="true"></main>
 }

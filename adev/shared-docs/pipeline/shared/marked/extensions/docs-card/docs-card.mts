@@ -17,17 +17,19 @@ interface DocsCardToken extends Tokens.Generic {
   link?: string;
   href?: string;
   imgSrc?: string;
+  iconImgSrc?: string; // Need image since icons are custom
   tokens: Token[];
 }
 
 // Capture group 1: all attributes on the opening tag
 // Capture group 2: all content between the open and close tags
-const cardRule = /^[^<]*<docs-card\s([^>]*)>((?:.(?!\/docs-card))*)<\/docs-card>/s;
+const cardRule = /^[^<]*<docs-card(?:\s([^>]*))?>((?:.(?!\/docs-card))*)<\/docs-card>/s;
 
 const titleRule = /title="([^"]*)"/;
 const linkRule = /link="([^"]*)"/;
 const hrefRule = /href="([^"]*)"/;
 const imgSrcRule = /imgSrc="([^"]*)"/;
+const iconImgSrcRule = /iconImgSrc="([^"]*)"/;
 
 export const docsCardExtension = {
   name: 'docs-card',
@@ -39,11 +41,12 @@ export const docsCardExtension = {
     const match = cardRule.exec(src);
 
     if (match) {
-      const attr = match[1].trim();
+      const attr = match[1] ? match[1].trim() : '';
       const title = titleRule.exec(attr);
       const link = linkRule.exec(attr);
       const href = hrefRule.exec(attr);
       const imgSrc = imgSrcRule.exec(attr);
+      const iconImgSrc = iconImgSrcRule.exec(attr);
 
       const body = match[2].trim();
 
@@ -55,6 +58,7 @@ export const docsCardExtension = {
         href: href ? href[1] : undefined,
         link: link ? link[1] : undefined,
         imgSrc: imgSrc ? imgSrc[1] : undefined,
+        iconImgSrc: iconImgSrc ? iconImgSrc[1] : undefined,
         tokens: [],
       };
       this.lexer.blockTokens(token.body, token.tokens);
@@ -68,7 +72,23 @@ export const docsCardExtension = {
 };
 
 function getStandardCard(renderer: RendererThis, token: DocsCardToken) {
-  if (token.href) {
+  if (token.iconImgSrc && token.href) {
+    // We can assume that all icons are svg files since they are custom.
+    // We need to read svg content, instead of renering svg with `img`,
+    // cause we would like to use CSS variables to support dark and light mode.
+    const icon = loadWorkspaceRelativeFile(token.iconImgSrc);
+
+    return `
+    <a href="${token.href}" ${anchorTarget(token.href)} class="docs-card">
+      <div>
+        ${icon}
+        <h3>${token.title}</h3>
+        ${renderer.parser.parse(token.tokens)}
+      </div>
+      <span>${token.link ? token.link : 'Learn more'}</span>
+    </a>
+    `;
+  } else if (token.href) {
     return `
     <a href="${token.href}" ${anchorTarget(token.href)} class="docs-card">
       <div>
