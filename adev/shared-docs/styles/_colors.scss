@@ -11,10 +11,12 @@
   --bright-blue: oklch(51.01% 0.274 263.83); // #0546ff
   --indigo-blue: oklch(51.64% 0.229 281.65); // #5c44e4
   --electric-violet: oklch(53.18% 0.28 296.97); // #8514f5
+  --electric-violet-header: oklch(53.18% 0.28 296.97); // #8514f5
   --french-violet: oklch(47.66% 0.246 305.88); // #8001c6
   --vivid-pink: oklch(69.02% 0.277 332.77); // #f637e3
   --always-pink: oklch(69.02% 0.277 332.77); // #f637e3
   --hot-pink: oklch(59.91% 0.239 8.14); // #e90464
+  --hot-pink-header: oklch(59.91% 0.239 8.14); // #e90464
   --hot-red: oklch(61.42% 0.238 15.34); // #f11653
   --orange-red: oklch(63.32% 0.24 31.68); // #fa2c04
   --super-green: oklch(79.12% 0.257 155.13); // #00c572 // Used for success, merge additions, etc.
@@ -119,6 +121,24 @@
     var(--vivid-pink) 100%
   );
 
+  --pink-to-white-horizontal-gradient: linear-gradient(
+    90deg,
+    var(--vivid-pink) 0%,
+    var(--gray-200) 60%
+  );
+
+  --light-pink-to-light-purple-horizontal-gradient: linear-gradient(
+    90deg,
+    var(--light-pink) 0%,
+    var(--light-purple) 100%
+  );
+
+  --light-vivid-pink-to-light-electric-violet-horizontal-gradient: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--vivid-pink), white 90%),
+    color-mix(in srgb, var(--electric-violet), white 90%)
+  );
+
   --purple-to-light-purple-vertical-gradient: linear-gradient(
     0deg,
     var(--french-violet) 0%,
@@ -156,12 +176,29 @@
     var(--light-orange) 100%
   );
 
+  --white-to-light-blue-diagonal-gradient: linear-gradient(
+    132.83deg,
+    hsl(from color-mix(in srgb, var(--bright-blue), white 60%) h s l / 0) 45.38%,
+    hsl(from color-mix(in srgb, var(--bright-blue), white 60%) h s l / 0.3) 159.03%);
+
+  --white-to-light-pink-diagonal-gradient: linear-gradient(
+    135deg,
+    white 30%,
+    var(--light-pink) 100%
+  );
+
   // Radial Gradients
   --page-bg-radial-gradient: radial-gradient(circle, white 0%, white 100%);
   --soft-pink-radial-gradient: radial-gradient(
     circle at center bottom,
     var(--light-pink) 0%,
     white 80%
+  );
+
+  --hot-pink-to-electric-violet-radial-gradient: radial-gradient(
+    circle at 60% bottom,
+    var(--hot-pink-header) 20%,
+    var(--electric-violet-header) 100%
   );
 
   // ABSTRACTIONS            light    - dark
@@ -193,6 +230,8 @@
   // for the "unfilled" portion of the word that hasn't
   // been highlighted by the gradient
   --gray-unfilled: var(--gray-400);
+  --webgl-page-background: var(var(--page-background))
+  --webgl-gray-unfilled: var(--gray-400);
 }
 
 @mixin dark-mode-definitions() {
@@ -211,13 +250,20 @@
   --bright-blue: color-mix(in srgb, oklch(51.01% 0.274 263.83), var(--full-contrast) 60%);
   --indigo-blue: color-mix(in srgb, oklch(51.64% 0.229 281.65), var(--full-contrast) 70%);
   --electric-violet: color-mix(in srgb, oklch(53.18% 0.28 296.97), var(--full-contrast) 70%);
+  --electric-violet-header: color-mix(in srgb, oklch(53.18% 0.28 296.97), var(--full-contrast) 15%);
   --french-violet: color-mix(in srgb, oklch(47.66% 0.246 305.88), var(--full-contrast) 70%);
   --vivid-pink: color-mix(in srgb, oklch(69.02% 0.277 332.77), var(--full-contrast) 70%);
   // --always-pink we keep the same in light mode
   --hot-pink: color-mix(in srgb, oklch(59.91% 0.239 8.14), var(--full-contrast) 70%);
+  --hot-pink-header: color-mix(in srgb, oklch(59.91% 0.239 8.14), var(--full-contrast) 15%);
   --hot-red: color-mix(in srgb, oklch(61.42% 0.238 15.34), var(--full-contrast) 70%);
   --orange-red: color-mix(in srgb, oklch(63.32% 0.24 31.68), var(--full-contrast) 60%);
   --super-green: color-mix(in srgb, oklch(79.12% 0.257 155.13), var(--full-contrast) 70%);
+  --light-vivid-pink-to-light-electric-violet-horizontal-gradient:
+    linear-gradient(hsl(from var(--gray-1000) h s l / 0.9), hsl(from var(--gray-1000) h s l / 0.9)),
+    linear-gradient(hsl(from var(--full-contrast) h s l / 0.2), hsl(from var(--full-contrast) h s l / 0.2)),
+    var(--pink-to-purple-horizontal-gradient);
+  --white-to-light-pink-diagonal-gradient: color-mix(in srgb, var(--french-violet), var(--full-contrast) 60%);
 
   --deprecated-dark: oklch(30% 0.02 304.04); // Base color
   --deprecated-docs-bg: var(--deprecated-dark); // Alias specifically for deprecated docs
@@ -255,14 +301,23 @@
   );
 
   --page-bg-radial-gradient: radial-gradient(circle, black 0%, black 100%);
-  --soft-pink-radial-gradient: radial-gradient(
-    circle at center bottom,
-    var(--light-pink) 0%,
-    color-mix(in srgb, black, transparent 15%) 80%
+  --soft-pink-radial-gradient:
+    linear-gradient(119.77deg, 
+    hsl(from color-mix(in srgb, var(--french-violet), white 60%) h s l / 0) 24.32%,
+    hsl(from color-mix(in srgb, var(--french-violet), white 60%) h s l / 0.3) 116.25%);
+
+  // Use light values hot pink and electric violet since this gradient used for
+  // the decorative header which looks the same in both modes
+  --hot-pink-to-electric-violet-radial-gradient: radial-gradient(
+    circle at 60% bottom,
+    var(--hot-pink-header) 20%,
+    var(--electric-violet-header) 100%
   );
 
   // Home page - dark mode
   --gray-unfilled: var(--gray-700);
+  --webgl-page-background: var(--gray-1000);
+  --webgl-gray-unfilled: var(--gray-700);
 
   .docs-toggle {
     input {
