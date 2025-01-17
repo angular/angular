@@ -34,6 +34,7 @@ import {
   setCurrentTNode,
   wasLastNodeCreated,
 } from '../state';
+import {getOrCreateTNode} from '../tnode_manipulation';
 import {getConstant} from '../util/view_utils';
 
 import {
@@ -41,7 +42,6 @@ import {
   createDirectivesInstances,
   createLContainer,
   createTView,
-  getOrCreateTNode,
   resolveDirectives,
   saveResolvedLocalsInData,
 } from './shared';

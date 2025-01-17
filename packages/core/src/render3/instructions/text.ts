@@ -24,8 +24,7 @@ import {
   setCurrentTNode,
   wasLastNodeCreated,
 } from '../state';
-
-import {getOrCreateTNode} from './shared';
+import {getOrCreateTNode} from '../tnode_manipulation';
 
 /**
  * Create static text node
