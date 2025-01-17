@@ -5,6 +5,12 @@
 ```ts
 
 // @public
+export type ComputationFn<S, D> = (source: S, previous?: {
+    source: S;
+    value: D;
+}) => D;
+
+// @public
 export interface ComputedNode<T> extends ReactiveNode {
     computation: () => T;
     // (undocumented)
@@ -31,6 +37,9 @@ export function consumerPollProducersForChange(node: ReactiveNode): boolean;
 // @public
 export function createComputed<T>(computation: () => T): ComputedGetter<T>;
 
+// @public (undocumented)
+export function createLinkedSignal<S, D>(sourceFn: () => S, computationFn: ComputationFn<S, D>, equalityFn?: ValueEqualityFn<D>): LinkedSignalGetter<S, D>;
+
 // @public
 export function createSignal<T>(initialValue: T): SignalGetter<T>;
 
@@ -48,6 +57,28 @@ export function isInNotificationPhase(): boolean;
 
 // @public (undocumented)
 export function isReactive(value: unknown): value is Reactive;
+
+// @public (undocumented)
+export type LinkedSignalGetter<S, D> = (() => D) & {
+    [SIGNAL]: LinkedSignalNode<S, D>;
+};
+
+// @public (undocumented)
+export interface LinkedSignalNode<S, D> extends ReactiveNode {
+    computation: ComputationFn<S, D>;
+    // (undocumented)
+    equal: ValueEqualityFn<D>;
+    error: unknown;
+    source: () => S;
+    sourceValue: S;
+    value: D;
+}
+
+// @public (undocumented)
+export function linkedSignalSetFn<S, D>(node: LinkedSignalNode<S, D>, newValue: D): void;
+
+// @public (undocumented)
+export function linkedSignalUpdateFn<S, D>(node: LinkedSignalNode<S, D>, updater: (value: D) => D): void;
 
 // @public
 export function producerAccessed(node: ReactiveNode): void;
