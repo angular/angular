@@ -291,7 +291,7 @@ runInEachFileSystem(() => {
       expect(jsContents).toContain('i0.ɵɵdefer(1, 0, Cmp_Defer_1_DepsFn);');
 
       expect(hmrContents).toContain(
-        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, Component, Dep) {',
+        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, Dep, Component) {',
       );
       expect(hmrContents).toContain('const Cmp_Defer_1_DepsFn = () => [Dep];');
       expect(hmrContents).toContain('function Cmp_Defer_0_Template(rf, ctx) {');
@@ -501,6 +501,154 @@ runInEachFileSystem(() => {
       expect(hmrContents).toContain(
         'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, token, value, Component) {',
       );
+    });
+
+    it('should preserve eager standalone imports in HMR even if they are not used in the template', () => {
+      enableHmr({
+        // Disable class metadata since it can add noise to the test.
+        supportTestBed: false,
+        extendedDiagnostics: {
+          checks: {
+            // Disable the diagnostic that flags standalone imports since
+            // we need one to simulate the case we're looking for.
+            unusedStandaloneImports: 'suppress',
+          },
+        },
+      });
+
+      env.write(
+        'dep.ts',
+        `
+          import {Directive} from '@angular/core';
+
+          @Directive({selector: '[dep]'})
+          export class Dep {}
+        `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import {Dep} from './dep';
+
+          @Component({
+            selector: 'cmp',
+            template: '',
+            imports: [Dep],
+          })
+          export class Cmp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      const hmrContents = env.driveHmr('test.ts', 'Cmp');
+
+      expect(jsContents).toContain('dependencies: [Dep]');
+      expect(jsContents).toContain('ɵɵreplaceMetadata(Cmp, m.default, [i0], [Dep]));');
+      expect(hmrContents).toContain('function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, Dep) {');
+    });
+
+    it('should preserve eager module imports inside standalone component in HMR even if they are not used in the template', () => {
+      enableHmr({
+        // Disable class metadata since it can add noise to the test.
+        supportTestBed: false,
+      });
+
+      env.write(
+        'dep.ts',
+        `
+          import {NgModule, Directive} from '@angular/core';
+
+          @Directive({selector: '[dep]', standalone: false})
+          export class Dep {}
+
+          @NgModule({declarations: [Dep], exports: [Dep]})
+          export class DepModule {}
+        `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import {DepModule} from './dep';
+
+          @Component({
+            selector: 'cmp',
+            template: '',
+            imports: [DepModule],
+          })
+          export class Cmp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      const hmrContents = env.driveHmr('test.ts', 'Cmp');
+
+      expect(jsContents).toContain('dependencies: [DepModule, i1.Dep]');
+      expect(jsContents).toContain('ɵɵreplaceMetadata(Cmp, m.default, [i0, i1], [DepModule]));');
+      expect(hmrContents).toContain('function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, DepModule) {');
+    });
+
+    it('should preserve eager module imports inside non-standalone component in HMR even if they are not used in the template', () => {
+      enableHmr({
+        // Disable class metadata since it can add noise to the test.
+        supportTestBed: false,
+      });
+
+      env.write(
+        'dep.ts',
+        `
+          import {NgModule, Directive} from '@angular/core';
+
+          @Directive({selector: '[dep]', standalone: false})
+          export class Dep {}
+
+          @NgModule({declarations: [Dep], exports: [Dep]})
+          export class DepModule {}
+        `,
+      );
+
+      env.write(
+        'test-module.ts',
+        `
+        import {NgModule} from '@angular/core';
+        import {Cmp} from './test';
+        import {DepModule} from './dep';
+
+        @NgModule({imports: [DepModule], declarations: [Cmp], exports: [Cmp]})
+        export class CmpModule {}
+      `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import {DepModule} from './dep';
+
+          @Component({
+            selector: 'cmp',
+            template: '',
+            standalone: false,
+          })
+          export class Cmp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      const hmrContents = env.driveHmr('test.ts', 'Cmp');
+
+      expect(jsContents).toContain('dependencies: [i1.Dep]');
+      expect(jsContents).toContain('ɵɵreplaceMetadata(Cmp, m.default, [i0, i1], []));');
+      expect(hmrContents).toContain('function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces) {');
     });
   });
 });

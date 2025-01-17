@@ -1222,14 +1222,25 @@ export class ComponentDecoratorHandler
       // Register all Directives and Pipes used at the top level (outside
       // of any defer blocks), which would be eagerly referenced.
       const eagerlyUsed = new Set<ClassDeclaration>();
-      for (const dir of bound.getEagerlyUsedDirectives()) {
-        eagerlyUsed.add(dir.ref.node);
-      }
-      for (const name of bound.getEagerlyUsedPipes()) {
-        if (!pipes.has(name)) {
-          continue;
+
+      if (this.enableHmr) {
+        // In HMR we need to preserve all the dependencies, because they have to remain consistent
+        // with the initially-generated code no matter what the template looks like.
+        for (const dep of dependencies) {
+          if (dep.ref.node !== node) {
+            eagerlyUsed.add(dep.ref.node);
+          }
         }
-        eagerlyUsed.add(pipes.get(name)!.ref.node);
+      } else {
+        for (const dir of bound.getEagerlyUsedDirectives()) {
+          eagerlyUsed.add(dir.ref.node);
+        }
+        for (const name of bound.getEagerlyUsedPipes()) {
+          if (!pipes.has(name)) {
+            continue;
+          }
+          eagerlyUsed.add(pipes.get(name)!.ref.node);
+        }
       }
 
       // Set of Directives and Pipes used across the entire template,
