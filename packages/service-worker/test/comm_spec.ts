@@ -28,6 +28,14 @@ import {
 import {filter} from 'rxjs/operators';
 
 describe('ServiceWorker library', () => {
+  beforeEach(() => {
+    globalThis['ngServerMode'] = false;
+  });
+
+  afterEach(() => {
+    globalThis['ngServerMode'] = undefined;
+  });
+
   let mock: MockServiceWorkerContainer;
   let comm: NgswCommChannel;
 
@@ -62,21 +70,32 @@ describe('ServiceWorker library', () => {
   });
 
   describe('ngswCommChannelFactory', () => {
-    it('gives disabled NgswCommChannel for platform-server', () => {
-      TestBed.configureTestingModule({
-        providers: [
-          {provide: PLATFORM_ID, useValue: 'server'},
-          {provide: SwRegistrationOptions, useValue: {enabled: true}},
-          {
-            provide: NgswCommChannel,
-            useFactory: ngswCommChannelFactory,
-            deps: [SwRegistrationOptions, PLATFORM_ID],
-          },
-        ],
+    describe('server', () => {
+      beforeEach(() => {
+        globalThis['ngServerMode'] = true;
       });
 
-      expect(TestBed.inject(NgswCommChannel).isEnabled).toEqual(false);
+      afterEach(() => {
+        globalThis['ngServerMode'] = undefined;
+      });
+
+      it('gives disabled NgswCommChannel for platform-server', () => {
+        TestBed.configureTestingModule({
+          providers: [
+            {provide: PLATFORM_ID, useValue: 'server'},
+            {provide: SwRegistrationOptions, useValue: {enabled: true}},
+            {
+              provide: NgswCommChannel,
+              useFactory: ngswCommChannelFactory,
+              deps: [SwRegistrationOptions, PLATFORM_ID],
+            },
+          ],
+        });
+
+        expect(TestBed.inject(NgswCommChannel).isEnabled).toEqual(false);
+      });
     });
+
     it("gives disabled NgswCommChannel when 'enabled' option is false", () => {
       TestBed.configureTestingModule({
         providers: [
