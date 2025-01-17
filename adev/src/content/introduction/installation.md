@@ -1,3 +1,10 @@
+Import VERSION: You can also check the version programmatically by importing the VERSION constant from Angular core:
+javascript
+Verify
+Copy code
+import { VERSION } from '@angular/core';
+console.log(VERSION.full);
+------------------------------
 <docs-decorative-header title="Installation" imgSrc="adev/src/assets/images/what_is_angular.svg"> <!-- markdownlint-disable-line -->
 </docs-decorative-header>
 
