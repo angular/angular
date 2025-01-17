@@ -147,6 +147,35 @@ describe('linkedSignal', () => {
     expect(choice()).toBe(0);
   });
 
+  it('should not recompute downstream dependencies when computed value is equal to the currently set value', () => {
+    const source = signal(0);
+    const isEven = linkedSignal(() => source() % 2 === 0);
+
+    let updateCounter = 0;
+    const updateTracker = computed(() => {
+      isEven();
+      return updateCounter++;
+    });
+
+    updateTracker();
+    expect(updateCounter).toEqual(1);
+    expect(isEven()).toBeTrue();
+
+    isEven.set(false);
+    updateTracker();
+    expect(updateCounter).toEqual(2);
+
+    // Setting the source signal such that the linked value is the same
+    source.set(1);
+    updateTracker();
+    // downstream dependency should _not_ be recomputed
+    expect(updateCounter).toEqual(2);
+
+    source.set(4);
+    updateTracker();
+    expect(updateCounter).toEqual(3);
+  });
+
   it('should support shorthand version', () => {
     const options = signal(['apple', 'banana', 'fig']);
     const choice = linkedSignal(() => options()[0]);
