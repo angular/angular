@@ -8,20 +8,21 @@
 
 import {
   assertInInjectionContext,
-  ResourceOptions,
   resource,
   ResourceLoaderParams,
   ResourceRef,
+  Signal,
+  signal,
+  BaseResourceOptions,
 } from '@angular/core';
-import {Observable, Subject} from 'rxjs';
-import {take, takeUntil} from 'rxjs/operators';
+import {Observable, Subscription} from 'rxjs';
 
 /**
  * Like `ResourceOptions` but uses an RxJS-based `loader`.
  *
  * @experimental
  */
-export interface RxResourceOptions<T, R> extends Omit<ResourceOptions<T, R>, 'loader'> {
+export interface RxResourceOptions<T, R> extends BaseResourceOptions<T, R> {
   loader: (params: ResourceLoaderParams<R>) => Observable<T>;
 }
 
@@ -35,22 +36,37 @@ export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T |
   opts?.injector || assertInInjectionContext(rxResource);
   return resource<T, R>({
     ...opts,
-    loader: (params) => {
-      const cancelled = new Subject<void>();
-      params.abortSignal.addEventListener('abort', () => cancelled.next());
+    stream: (params) => {
+      let sub: Subscription;
 
-      // Note: this is identical to `firstValueFrom` which we can't use,
-      // because at the time of writing, `core` still supports rxjs 6.x.
-      return new Promise<T>((resolve, reject) => {
-        opts
-          .loader(params)
-          .pipe(take(1), takeUntil(cancelled))
-          .subscribe({
-            next: resolve,
-            error: reject,
-            complete: () => reject(new Error('Resource completed before producing a value')),
-          });
+      // Track the abort listener so it can be removed if the Observable completes (as a memory
+      // optimization).
+      const onAbort = () => sub.unsubscribe();
+      params.abortSignal.addEventListener('abort', onAbort);
+
+      // Start off stream as undefined.
+      const stream = signal<{value: T} | {error: unknown}>({value: undefined as T});
+      let resolve: ((value: Signal<{value: T} | {error: unknown}>) => void) | undefined;
+      const promise = new Promise<Signal<{value: T} | {error: unknown}>>((r) => (resolve = r));
+
+      function send(value: {value: T} | {error: unknown}): void {
+        stream.set(value);
+        resolve?.(stream);
+        resolve = undefined;
+      }
+
+      sub = opts.loader(params).subscribe({
+        next: (value) => send({value}),
+        error: (error) => send({error}),
+        complete: () => {
+          if (resolve) {
+            send({error: new Error('Resource completed before producing a value')});
+          }
+          params.abortSignal.removeEventListener('abort', onAbort);
+        },
       });
+
+      return promise;
     },
   });
 }

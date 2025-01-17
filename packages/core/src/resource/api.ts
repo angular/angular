@@ -161,11 +161,20 @@ export interface ResourceLoaderParams<R> {
 export type ResourceLoader<T, R> = (param: ResourceLoaderParams<R>) => PromiseLike<T>;
 
 /**
+ * Streaming loader for a `Resource`.
+ *
+ * @experimental
+ */
+export type ResourceStreamingLoader<T, R> = (
+  param: ResourceLoaderParams<R>,
+) => PromiseLike<Signal<{value: T} | {error: unknown}>>;
+
+/**
  * Options to the `resource` function, for creating a resource.
  *
  * @experimental
  */
-export interface ResourceOptions<T, R> {
+export interface BaseResourceOptions<T, R> {
   /**
    * A reactive function which determines the request to be made. Whenever the request changes, the
    * loader will be triggered to fetch a new value for the resource.
@@ -173,11 +182,6 @@ export interface ResourceOptions<T, R> {
    * If a request function isn't provided, the loader won't rerun unless the resource is reloaded.
    */
   request?: () => R;
-
-  /**
-   * Loading function which returns a `Promise` of the resource's value for a given request.
-   */
-  loader: ResourceLoader<T, R>;
 
   /**
    * Equality function used to compare the return value of the loader.
@@ -189,3 +193,33 @@ export interface ResourceOptions<T, R> {
    */
   injector?: Injector;
 }
+
+/**
+ * Options to the `resource` function, for creating a resource.
+ *
+ * @experimental
+ */
+export interface PromiseResourceOptions<T, R> extends BaseResourceOptions<T, R> {
+  /**
+   * Loading function which returns a `Promise` of the resource's value for a given request.
+   */
+  loader: ResourceLoader<T, R>;
+}
+
+/**
+ * Options to the `resource` function, for creating a resource.
+ *
+ * @experimental
+ */
+export interface StreamingResourceOptions<T, R> extends BaseResourceOptions<T, R> {
+  /**
+   * Loading function which returns a `Promise` of a signal of the resource's value for a given
+   * request, which can change over time as new values are received from a stream.
+   */
+  stream: ResourceStreamingLoader<T, R>;
+}
+
+/**
+ * @experimental
+ */
+export type ResourceOptions<T, R> = PromiseResourceOptions<T, R> | StreamingResourceOptions<T, R>;
