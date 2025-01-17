@@ -21,7 +21,7 @@ import ts from 'typescript';
 /**
  * Extracts the HMR metadata for a class declaration.
  * @param clazz Class being analyzed.
- * @param reflection Reflection host.
+ * @param reflectionHost Reflection host.
  * @param compilerHost Compiler host to use when resolving file names.
  * @param rootDirs Root directories configured by the user.
  * @param definition Analyzed component definition.
@@ -32,7 +32,7 @@ import ts from 'typescript';
  */
 export function extractHmrMetatadata(
   clazz: DeclarationNode,
-  reflection: ReflectionHost,
+  reflectionHost: ReflectionHost,
   compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
   rootDirs: readonly string[],
   definition: R3CompiledExpression,
@@ -41,7 +41,7 @@ export function extractHmrMetatadata(
   classMetadata: o.Statement | null,
   debugInfo: o.Statement | null,
 ): R3HmrMetadata | null {
-  if (!reflection.isClass(clazz)) {
+  if (!reflectionHost.isClass(clazz)) {
     return null;
   }
 
@@ -52,6 +52,7 @@ export function extractHmrMetatadata(
 
   const dependencies = extractHmrDependencies(
     clazz,
+    reflectionHost,
     definition,
     factory,
     deferBlockMetadata,

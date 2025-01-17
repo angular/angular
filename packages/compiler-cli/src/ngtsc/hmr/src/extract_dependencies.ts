@@ -13,13 +13,14 @@ import {
   R3HmrNamespaceDependency,
   outputAst as o,
 } from '@angular/compiler';
-import {DeclarationNode} from '../../reflection';
+import {DeclarationNode, ReflectionHost} from '../../reflection';
 import {CompileResult} from '../../transform';
 import ts from 'typescript';
 
 /**
  * Determines the file-level dependencies that the HMR initializer needs to capture and pass along.
- * @param sourceFile File in which the file is being compiled.
+ * @param node Node to be analyzed.
+ * @param reflectionHost Host used to resolve symbol declarations.
  * @param definition Compiled component definition.
  * @param factory Compiled component factory.
  * @param deferBlockMetadata Metadata about the defer blocks in the component.
@@ -28,15 +29,14 @@ import ts from 'typescript';
  */
 export function extractHmrDependencies(
   node: DeclarationNode,
+  reflectionHost: ReflectionHost,
   definition: R3CompiledExpression,
   factory: CompileResult,
   deferBlockMetadata: R3ComponentDeferMetadata,
   classMetadata: o.Statement | null,
   debugInfo: o.Statement | null,
 ): {local: string[]; external: R3HmrNamespaceDependency[]} {
-  const name = ts.isClassDeclaration(node) && node.name ? node.name.text : null;
-  const visitor = new PotentialTopLevelReadsVisitor();
-  const sourceFile = node.getSourceFile();
+  const visitor = new NamespaceReadAnalyzer();
 
   // Visit all of the compiled expressions to look for potential
   // local references that would have to be retained.
@@ -53,13 +53,10 @@ export function extractHmrDependencies(
     deferBlockMetadata.dependenciesFn?.visitExpression(visitor, null);
   }
 
-  // Filter out only the references to defined top-level symbols. This allows us to ignore local
-  // variables inside of functions. Note that we filter out the class name since it is always
-  // defined and it saves us having to repeat this logic wherever the locals are consumed.
-  const availableTopLevel = getTopLevelDeclarationNames(sourceFile);
-
   return {
-    local: Array.from(visitor.allReads).filter((r) => r !== name && availableTopLevel.has(r)),
+    // Note that we pass all of the top-level reads, even the ones that might not be used
+    // within the definition, because they may become used depending on the template.
+    local: getTopLevelDeclarationNames(node, reflectionHost),
     external: Array.from(visitor.namespaceReads, (name, index) => ({
       moduleName: name,
       assignedName: `ɵhmr${index}`,
@@ -69,13 +66,23 @@ export function extractHmrDependencies(
 
 /**
  * Gets the names of all top-level declarations within the file (imports, declared classes etc).
- * @param sourceFile File in which to search for locals.
+ * @param analysisNode Node that for which the analysis was initiated.
+ * @param reflectionHost Host used to resolve symbol declarations.
  */
-function getTopLevelDeclarationNames(sourceFile: ts.SourceFile): Set<string> {
+function getTopLevelDeclarationNames(
+  analysisNode: ts.Node,
+  reflectionHost: ReflectionHost,
+): string[] {
   const results = new Set<string>();
+  const sourceFile = analysisNode.getSourceFile();
 
   // Only look through the top-level statements.
   for (const node of sourceFile.statements) {
+    // Skip over the node that is being analyzed since it's not a dependency of itself.
+    if (node === analysisNode) {
+      continue;
+    }
+
     // Class, function and const enum declarations need to be captured since they correspond
     // to runtime code. Intentionally excludes interfaces and type declarations.
     if (
@@ -108,7 +115,7 @@ function getTopLevelDeclarationNames(sourceFile: ts.SourceFile): Set<string> {
       }
 
       // import foo from 'foo'
-      if (importClause.name) {
+      if (importClause.name && !isTypeOnlyReference(importClause.name, reflectionHost)) {
         results.add(importClause.name.text);
       }
 
@@ -121,7 +128,7 @@ function getTopLevelDeclarationNames(sourceFile: ts.SourceFile): Set<string> {
         } else {
           // import {foo} from 'foo';
           namedBindings.elements.forEach((el) => {
-            if (!el.isTypeOnly) {
+            if (!el.isTypeOnly && !isTypeOnlyReference(el.name, reflectionHost)) {
               results.add(el.name.text);
             }
           });
@@ -131,7 +138,33 @@ function getTopLevelDeclarationNames(sourceFile: ts.SourceFile): Set<string> {
     }
   }
 
-  return results;
+  return Array.from(results);
+}
+
+/**
+ * Determines if an identifier is pointing to a type-only declaration.
+ * @param identifier Identifier to check.
+ * @param reflectionHost Host to use when resolving the declaration.
+ */
+function isTypeOnlyReference(identifier: ts.Identifier, reflectionHost: ReflectionHost): boolean {
+  const node = reflectionHost.getDeclarationOfIdentifier(identifier)?.node ?? null;
+
+  if (node === null) {
+    return false;
+  }
+
+  // Interfaces and type aliases are always type-only. We're unlikely to
+  // encounter a type node here, but we check it just in case.
+  if (ts.isInterfaceDeclaration(node) || ts.isTypeAliasDeclaration(node) || ts.isTypeNode(node)) {
+    return true;
+  }
+
+  // Enums are type-only if they're `const`.
+  if (ts.isEnumDeclaration(node)) {
+    return !!ts.getModifiers(node)?.some((m) => m.kind === ts.SyntaxKind.ConstKeyword);
+  }
+
+  return false;
 }
 
 /**
@@ -151,13 +184,8 @@ function trackBindingName(node: ts.BindingName, results: Set<string>): void {
   }
 }
 
-/**
- * Visitor that will traverse an AST looking for potential top-level variable reads.
- * The reads are "potential", because the visitor doesn't account for local variables
- * inside functions.
- */
-class PotentialTopLevelReadsVisitor extends o.RecursiveAstVisitor {
-  readonly allReads = new Set<string>();
+/** Visitor that will traverse an AST looking for generated reads of namespaces. */
+class NamespaceReadAnalyzer extends o.RecursiveAstVisitor {
   readonly namespaceReads = new Set<string>();
 
   override visitExternalExpr(ast: o.ExternalExpr, context: any) {
@@ -165,149 +193,5 @@ class PotentialTopLevelReadsVisitor extends o.RecursiveAstVisitor {
       this.namespaceReads.add(ast.value.moduleName);
     }
     super.visitExternalExpr(ast, context);
-  }
-
-  override visitReadVarExpr(ast: o.ReadVarExpr, context: any) {
-    this.allReads.add(ast.name);
-    super.visitReadVarExpr(ast, context);
-  }
-
-  override visitWrappedNodeExpr(ast: o.WrappedNodeExpr<unknown>, context: any) {
-    if (this.isTypeScriptNode(ast.node)) {
-      this.addAllTopLevelIdentifiers(ast.node);
-    }
-
-    super.visitWrappedNodeExpr(ast, context);
-  }
-
-  /**
-   * Traverses a TypeScript AST and tracks all the top-level reads.
-   * @param node Node from which to start the traversal.
-   */
-  private addAllTopLevelIdentifiers = (node: ts.Node) => {
-    if (ts.isIdentifier(node) && this.isTopLevelIdentifierReference(node)) {
-      this.allReads.add(node.text);
-    } else {
-      ts.forEachChild(node, this.addAllTopLevelIdentifiers);
-    }
-  };
-
-  /**
-   * TypeScript identifiers are used both when referring to a variable (e.g. `console.log(foo)`)
-   * and for names (e.g. `{foo: 123}`). This function determines if the identifier is a top-level
-   * variable read, rather than a nested name.
-   * @param node Identifier to check.
-   */
-  private isTopLevelIdentifierReference(node: ts.Identifier): boolean {
-    const parent = node.parent;
-
-    // The parent might be undefined for a synthetic node or if `setParentNodes` is set to false
-    // when the SourceFile was created. We can account for such cases using the type checker, at
-    // the expense of performance. At the moment of writing, we're keeping it simple since the
-    // compiler sets `setParentNodes: true`.
-    if (!parent) {
-      return false;
-    }
-
-    // Identifier referenced at the top level. Unlikely.
-    if (ts.isSourceFile(parent)) {
-      return true;
-    }
-
-    // Identifier used inside a call is only top-level if it's an argument.
-    // This also covers decorators since their expression is usually a call.
-    if (ts.isCallExpression(parent)) {
-      return parent.expression === node || parent.arguments.includes(node);
-    }
-
-    // Identifier used in a nested expression is only top-level if it's the actual expression.
-    if (
-      ts.isExpressionStatement(parent) ||
-      ts.isPropertyAccessExpression(parent) ||
-      ts.isComputedPropertyName(parent) ||
-      ts.isTemplateSpan(parent) ||
-      ts.isSpreadAssignment(parent) ||
-      ts.isSpreadElement(parent) ||
-      ts.isAwaitExpression(parent) ||
-      ts.isNonNullExpression(parent) ||
-      ts.isIfStatement(parent) ||
-      ts.isDoStatement(parent) ||
-      ts.isWhileStatement(parent) ||
-      ts.isSwitchStatement(parent) ||
-      ts.isCaseClause(parent) ||
-      ts.isThrowStatement(parent)
-    ) {
-      return parent.expression === node;
-    }
-
-    // Identifier used in an array is only top-level if it's one of the elements.
-    if (ts.isArrayLiteralExpression(parent)) {
-      return parent.elements.includes(node);
-    }
-
-    // If the parent is an initialized node, the identifier is
-    // at the top level if it's the initializer itself.
-    if (
-      ts.isPropertyAssignment(parent) ||
-      ts.isParameter(parent) ||
-      ts.isBindingElement(parent) ||
-      ts.isPropertyDeclaration(parent) ||
-      ts.isEnumMember(parent)
-    ) {
-      return parent.initializer === node;
-    }
-
-    // Identifier in a function is top level if it's either the name or the initializer.
-    if (ts.isVariableDeclaration(parent)) {
-      return parent.name === node || parent.initializer === node;
-    }
-
-    // Identifier in a declaration is only top level if it's the name.
-    // In shorthand assignments the name is also the value.
-    if (
-      ts.isClassDeclaration(parent) ||
-      ts.isFunctionDeclaration(parent) ||
-      ts.isShorthandPropertyAssignment(parent)
-    ) {
-      return parent.name === node;
-    }
-
-    if (ts.isElementAccessExpression(parent)) {
-      return parent.expression === node || parent.argumentExpression === node;
-    }
-
-    if (ts.isBinaryExpression(parent)) {
-      return parent.left === node || parent.right === node;
-    }
-
-    if (ts.isForInStatement(parent) || ts.isForOfStatement(parent)) {
-      return parent.expression === node || parent.initializer === node;
-    }
-
-    if (ts.isForStatement(parent)) {
-      return (
-        parent.condition === node || parent.initializer === node || parent.incrementor === node
-      );
-    }
-
-    if (ts.isArrowFunction(parent)) {
-      return parent.body === node;
-    }
-
-    // It's unlikely that we'll run into imports/exports in this use case.
-    // We handle them since it's simple and for completeness' sake.
-    if (ts.isImportSpecifier(parent) || ts.isExportSpecifier(parent)) {
-      return (parent.propertyName || parent.name) === node;
-    }
-
-    // Otherwise it's not top-level.
-    return false;
-  }
-
-  /** Checks if a value is a TypeScript AST node. */
-  private isTypeScriptNode(value: any): value is ts.Node {
-    // If this is too permissive, we can also check for `getSourceFile`. This code runs
-    // on a narrow set of use cases so checking for `kind` should be enough.
-    return !!value && typeof value.kind === 'number';
   }
 }

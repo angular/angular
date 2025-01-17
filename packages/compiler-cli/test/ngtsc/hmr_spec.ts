@@ -110,7 +110,7 @@ runInEachFileSystem(() => {
       );
       expect(jsContents).toContain(
         ').then(m => m.default && i0.ɵɵreplaceMetadata(Cmp, m.default, [i0], ' +
-          '[Dep, transformValue, TOKEN, Component, Inject, ViewChild, Input]));',
+          '[Component, ViewChild, Input, Inject, Dep, transformValue, TOKEN]));',
       );
       expect(jsContents).toContain('Cmp_HmrLoad(Date.now());');
       expect(jsContents).toContain(
@@ -119,7 +119,7 @@ runInEachFileSystem(() => {
       );
 
       expect(hmrContents).toContain(
-        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, Dep, transformValue, TOKEN, Component, Inject, ViewChild, Input) {',
+        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, Component, ViewChild, Input, Inject, Dep, transformValue, TOKEN) {',
       );
       expect(hmrContents).toContain(`const ɵhmr0 = ɵɵnamespaces[0];`);
       expect(hmrContents).toContain('Cmp.ɵfac = function Cmp_Factory');
@@ -177,7 +177,7 @@ runInEachFileSystem(() => {
       );
       expect(jsContents).toContain(
         ').then(m => m.default && i0.ɵɵreplaceMetadata(Cmp, m.default, [i0, i1], ' +
-          '[DepModule, Component]));',
+          '[Component, ViewChild, Input, Inject, DepModule]));',
       );
       expect(jsContents).toContain('Cmp_HmrLoad(Date.now());');
       expect(jsContents).toContain(
@@ -186,7 +186,7 @@ runInEachFileSystem(() => {
       );
 
       expect(hmrContents).toContain(
-        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, DepModule, Component) {',
+        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, Component, ViewChild, Input, Inject, DepModule) {',
       );
       expect(hmrContents).toContain(`const ɵhmr0 = ɵɵnamespaces[0];`);
       expect(hmrContents).toContain(`const ɵhmr1 = ɵɵnamespaces[1];`);
@@ -340,11 +340,11 @@ runInEachFileSystem(() => {
       expect(jsContents).toContain('const Cmp_Defer_1_DepsFn = () => [Dep];');
       expect(jsContents).toContain('function Cmp_Defer_0_Template(rf, ctx) { if (rf & 1) {');
       expect(jsContents).toContain('i0.ɵɵdefer(1, 0, Cmp_Defer_1_DepsFn);');
-      expect(jsContents).toContain('ɵɵreplaceMetadata(Cmp, m.default, [i0], [Dep]));');
+      expect(jsContents).toContain('ɵɵreplaceMetadata(Cmp, m.default, [i0], [Component, Dep]));');
       expect(jsContents).not.toContain('setClassMetadata');
 
       expect(hmrContents).toContain(
-        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, Dep) {',
+        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, Component, Dep) {',
       );
       expect(hmrContents).toContain('const Cmp_Defer_1_DepsFn = () => [Dep];');
       expect(hmrContents).toContain('function Cmp_Defer_0_Template(rf, ctx) {');
@@ -425,10 +425,10 @@ runInEachFileSystem(() => {
       const hmrContents = env.driveHmr('test.ts', 'Cmp');
 
       expect(jsContents).toContain(
-        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [providers, Component]));',
+        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [Component, providers]));',
       );
       expect(hmrContents).toContain(
-        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, providers, Component) {',
+        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, Component, providers) {',
       );
     });
 
@@ -462,10 +462,10 @@ runInEachFileSystem(() => {
       const hmrContents = env.driveHmr('test.ts', 'Cmp');
 
       expect(jsContents).toContain(
-        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [token, value, Component]));',
+        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [Component, InjectionToken, token, value]));',
       );
       expect(hmrContents).toContain(
-        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, token, value, Component) {',
+        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, Component, InjectionToken, token, value) {',
       );
     });
 
@@ -496,10 +496,57 @@ runInEachFileSystem(() => {
       const hmrContents = env.driveHmr('test.ts', 'Cmp');
 
       expect(jsContents).toContain(
-        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [token, value, Component]));',
+        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [Component, InjectionToken, token, value]));',
       );
       expect(hmrContents).toContain(
-        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, token, value, Component) {',
+        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, Component, InjectionToken, token, value) {',
+      );
+    });
+
+    it('should not capture a plain import to a type-only dependency', () => {
+      enableHmr();
+
+      env.write(
+        'enums.ts',
+        `
+        export enum PlainEnum {
+          value = 1
+        }
+
+        export const enum ConstEnum {
+          value = 1
+        }
+      `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+          import {Component, OnInit, InjectionToken, Signal} from '@angular/core';
+          import {PlainEnum, ConstEnum} from './enums';
+
+          export const someToken = new InjectionToken<number>('token');
+
+          @Component({template: ''})
+          export class Cmp implements OnInit {
+            someSignal: Signal<unknown> = null!;
+            plainValue = PlainEnum.value;
+            constValue = ConstEnum.value;
+            ngOnInit() {}
+          }
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      const hmrContents = env.driveHmr('test.ts', 'Cmp');
+
+      expect(jsContents).toContain(
+        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [Component, InjectionToken, PlainEnum, someToken]));',
+      );
+      expect(hmrContents).toContain(
+        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, Component, InjectionToken, PlainEnum, someToken) {',
       );
     });
   });
