@@ -1822,6 +1822,9 @@ describe('platform-server partial hydration integration', () => {
 
   describe('client side navigation', () => {
     beforeEach(() => {
+      // This test emulates client-side behavior, set global server mode flag to `false`.
+      globalThis['ngServerMode'] = false;
+
       TestBed.configureTestingModule({
         providers: [
           {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
@@ -1830,32 +1833,28 @@ describe('platform-server partial hydration integration', () => {
       });
     });
 
+    afterEach(() => {
+      globalThis['ngServerMode'] = undefined;
+    });
+
     it('should not try to hydrate in CSR only cases', async () => {
       @Component({
         selector: 'app',
         template: `
-          <main (click)="fnA()">
-            @defer (hydrate when true) {
-              <article>
-                defer block rendered!
-                <span id="test" (click)="fnB()">{{value()}}</span>
-              </article>
-            } @placeholder {
-              <span>Outer block placeholder</span>
-            }
-          </main>
+          @defer (hydrate when true; on interaction) {
+            <p>Defer block rendered!</p>
+          } @placeholder {
+            <span>Outer block placeholder</span>
+          }
         `,
       })
-      class SimpleComponent {
-        value = signal('start');
-        fnA() {}
-        fnB() {
-          this.value.set('end');
-        }
-      }
+      class SimpleComponent {}
+
       const fixture = TestBed.createComponent(SimpleComponent);
       fixture.detectChanges();
 
+      // Verify that `hydrate when true` doesn't trigger rendering of the main
+      // content in client-only use-cases (expecting to see placeholder content).
       expect(fixture.nativeElement.innerHTML).toContain('Outer block placeholder');
     });
   });
