@@ -140,6 +140,10 @@ export function withEventReplay(): Provider[] {
                 // no elements are still captured in the global list and are not prevented
                 // from being garbage collected.
                 clearAppScopedEarlyEventContract(appId);
+                // Clean up the reference to the function set by the environment initializer,
+                // as the function closure may capture injected elements and prevent them
+                // from being properly garbage collected.
+                setStashFn(() => {});
               }
             });
 
