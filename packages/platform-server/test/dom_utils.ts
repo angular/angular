@@ -93,18 +93,20 @@ export function hydrate(
     hydrationFeatures?: () => HydrationFeature<HydrationFeatureKind>[];
   } = {},
 ) {
-  function _document(): any {
-    ɵsetDocument(doc);
-    global.document = doc; // needed for `DefaultDomRenderer2`
-    return doc;
-  }
-
   const {envProviders = [], hydrationFeatures = () => []} = options;
+
+  // Apply correct reference to the `document` object,
+  // which will be used by runtime.
+  ɵsetDocument(doc);
+
+  // Define `document` to make `DefaultDomRenderer2` work, since it
+  // references `document` directly to create style tags.
+  global.document = doc;
 
   const providers = [
     ...envProviders,
     {provide: PLATFORM_ID, useValue: 'browser'},
-    {provide: DOCUMENT, useFactory: _document, deps: []},
+    {provide: DOCUMENT, useFactory: () => doc},
     provideClientHydration(...hydrationFeatures()),
   ];
 
