@@ -44,6 +44,7 @@ import {assertTNodeType} from './node_assert';
 import {destroyLView, removeViewFromDOM} from './node_manipulation';
 import {RendererFactory} from './interfaces/renderer';
 import {NgZone} from '../zone';
+import {ViewEncapsulation} from '../metadata/view';
 
 /**
  * Replaces the metadata of a component type and re-renders all live instances of the component.
@@ -149,7 +150,7 @@ function recreateLView(
   lView: LView<unknown>,
 ): void {
   const instance = lView[CONTEXT];
-  const host = lView[HOST]!;
+  let host = lView[HOST]! as HTMLElement;
   // In theory the parent can also be an LContainer, but it appears like that's
   // only the case for embedded views which we won't be replacing here.
   const parentLView = lView[PARENT] as LView;
@@ -159,6 +160,16 @@ function recreateLView(
   ngDevMode && assertNotEqual(newDef, oldDef, 'Expected different component definition');
   const zone = lView[INJECTOR].get(NgZone, null);
   const recreate = () => {
+    // If we're recreating a component with shadow DOM encapsulation, it will have attached a
+    // shadow root. The browser will throw if we attempt to attach another one and there's no way
+    // to detach it. Our only option is to make a clone only of the root node, replace the node
+    // with the clone and use it for the newly-created LView.
+    if (oldDef.encapsulation === ViewEncapsulation.ShadowDom) {
+      const newHost = host.cloneNode(false) as HTMLElement;
+      host.replaceWith(newHost);
+      host = newHost;
+    }
+
     // Recreate the TView since the template might've changed.
     const newTView = getOrCreateComponentTView(newDef);
 
