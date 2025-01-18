@@ -290,6 +290,20 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should support template literals",
+      "inputFiles": [
+        "template_literals.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid template literal binding",
+          "files": [
+            "template_literals.js"
+          ]
+        }
+      ]
     }
   ]
 }

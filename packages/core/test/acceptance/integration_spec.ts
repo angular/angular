@@ -2715,6 +2715,26 @@ describe('acceptance integration tests', () => {
     expect(() => TestBed.createComponent(Comp).detectChanges()).not.toThrow();
   });
 
+  it('should support template literals in expressions', () => {
+    @Component({
+      standalone: true,
+      template: 'Message: {{`Hello, ${name} - ${value}`}}',
+    })
+    class TestComponent {
+      name = 'Frodo';
+      value = 0;
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Message: Hello, Frodo - 0');
+
+    fixture.componentInstance.value++;
+    fixture.componentInstance.name = 'Bilbo';
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Message: Hello, Bilbo - 1');
+  });
+
   describe('tView.firstUpdatePass', () => {
     function isFirstUpdatePass() {
       const lView = getLView();

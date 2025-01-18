@@ -1290,7 +1290,7 @@ export function transformExpressionsInExpression(
     }
   } else if (expr instanceof o.NotExpr) {
     expr.condition = transformExpressionsInExpression(expr.condition, transform, flags);
-  } else if (expr instanceof o.TaggedTemplateExpr) {
+  } else if (expr instanceof o.TaggedTemplateLiteralExpr) {
     expr.tag = transformExpressionsInExpression(expr.tag, transform, flags);
     expr.template.expressions = expr.template.expressions.map((e) =>
       transformExpressionsInExpression(e, transform, flags),
@@ -1305,6 +1305,10 @@ export function transformExpressionsInExpression(
     }
   } else if (expr instanceof o.WrappedNodeExpr) {
     // TODO: Do we need to transform any TS nodes nested inside of this expression?
+  } else if (expr instanceof o.TemplateLiteralExpr) {
+    for (let i = 0; i < expr.expressions.length; i++) {
+      expr.expressions[i] = transformExpressionsInExpression(expr.expressions[i], transform, flags);
+    }
   } else if (
     expr instanceof o.ReadVarExpr ||
     expr instanceof o.ExternalExpr ||

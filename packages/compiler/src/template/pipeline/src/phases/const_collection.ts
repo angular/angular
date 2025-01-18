@@ -197,7 +197,7 @@ class ElementAttributes {
         array.push(
           o.taggedTemplate(
             trustedValueFn,
-            new o.TemplateLiteral([new o.TemplateLiteralElement(value.value)], []),
+            new o.TemplateLiteralExpr([new o.TemplateLiteralElementExpr(value.value)], []),
             undefined,
             value.sourceSpan,
           ),

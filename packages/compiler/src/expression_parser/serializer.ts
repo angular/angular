@@ -143,6 +143,22 @@ class SerializeExpressionVisitor implements expr.AstVisitor {
   visitASTWithSource(ast: expr.ASTWithSource, context: any): string {
     return ast.ast.visit(this, context);
   }
+
+  visitTemplateLiteral(ast: expr.TemplateLiteral, context: any) {
+    let result = '';
+    for (let i = 0; i < ast.elements.length; i++) {
+      result += ast.elements[i].visit(this, context);
+      const expression = i < ast.expressions.length ? ast.expressions[i] : null;
+      if (expression !== null) {
+        result += '${' + expression.visit(this, context) + '}';
+      }
+    }
+    return '`' + result + '`';
+  }
+
+  visitTemplateLiteralElement(ast: expr.TemplateLiteralElement, context: any) {
+    return ast.text;
+  }
 }
 
 /** Zips the two input arrays into a single array of pairs of elements at the same index. */

@@ -33,6 +33,8 @@ import {
   SafePropertyRead,
   ThisReceiver,
   Unary,
+  TemplateLiteral,
+  TemplateLiteralElement,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -445,6 +447,32 @@ class AstTranslator implements AstVisitor {
     return node;
   }
 
+  visitTemplateLiteral(ast: TemplateLiteral): ts.TemplateLiteral {
+    const length = ast.elements.length;
+    const head = ast.elements[0];
+    let result: ts.TemplateLiteral;
+
+    if (length === 1) {
+      result = ts.factory.createNoSubstitutionTemplateLiteral(head.text);
+    } else {
+      const spans: ts.TemplateSpan[] = [];
+      for (let i = 1; i < length - 1; i++) {
+        const middle = ts.factory.createTemplateMiddle(ast.elements[i].text);
+        spans.push(ts.factory.createTemplateSpan(this.translate(ast.expressions[i - 1]), middle));
+      }
+      const resolvedExpression = this.translate(ast.expressions[length - 2]);
+      const templateTail = ts.factory.createTemplateTail(ast.elements[length - 1].text);
+      spans.push(ts.factory.createTemplateSpan(resolvedExpression, templateTail));
+      result = ts.factory.createTemplateExpression(ts.factory.createTemplateHead(head.text), spans);
+    }
+
+    return result;
+  }
+
+  visitTemplateLiteralElement(ast: TemplateLiteralElement, context: any) {
+    throw new Error('Method not implemented');
+  }
+
   private convertToSafeCall(
     ast: Call | SafeCall,
     expr: ts.Expression,
@@ -565,6 +593,12 @@ class VeSafeLhsInferenceBugDetector implements AstVisitor {
     return false;
   }
   visitSafeKeyedRead(ast: SafeKeyedRead): boolean {
+    return false;
+  }
+  visitTemplateLiteral(ast: TemplateLiteral, context: any) {
+    return false;
+  }
+  visitTemplateLiteralElement(ast: TemplateLiteralElement, context: any) {
     return false;
   }
 }

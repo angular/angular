@@ -218,6 +218,18 @@ export interface AstFactory<TStatement, TExpression> {
   createTaggedTemplate(tag: TExpression, template: TemplateLiteral<TExpression>): TExpression;
 
   /**
+   * Create an untagged template literal
+   *
+   * ```
+   * `str1${expr1}str2${expr2}str3`
+   * ```
+   *
+   * @param template the collection of strings and expressions that constitute an interpolated
+   *     template literal.
+   */
+  createTemplateLiteral(template: TemplateLiteral<TExpression>): TExpression;
+
+  /**
    * Create a throw statement (e.g. `throw expr;`).
    *
    * @param expression the expression to be thrown.

@@ -243,6 +243,14 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
     tag: ts.Expression,
     template: TemplateLiteral<ts.Expression>,
   ): ts.Expression {
+    return ts.factory.createTaggedTemplateExpression(
+      tag,
+      undefined,
+      this.createTemplateLiteral(template),
+    );
+  }
+
+  createTemplateLiteral(template: TemplateLiteral<ts.Expression>): ts.TemplateLiteral {
     let templateLiteral: ts.TemplateLiteral;
     const length = template.elements.length;
     const head = template.elements[0];
@@ -276,7 +284,7 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
     if (head.range !== null) {
       this.setSourceMapRange(templateLiteral, head.range);
     }
-    return ts.factory.createTaggedTemplateExpression(tag, undefined, templateLiteral);
+    return templateLiteral;
   }
 
   createThrowStatement = ts.factory.createThrowStatement;

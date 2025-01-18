@@ -429,6 +429,34 @@ export class SafeCall extends AST {
   }
 }
 
+export class TemplateLiteral extends AST {
+  constructor(
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    public elements: TemplateLiteralElement[],
+    public expressions: AST[],
+  ) {
+    super(span, sourceSpan);
+  }
+
+  override visit(visitor: AstVisitor, context?: any) {
+    return visitor.visitTemplateLiteral(this, context);
+  }
+}
+export class TemplateLiteralElement extends AST {
+  constructor(
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    public text: string,
+  ) {
+    super(span, sourceSpan);
+  }
+
+  override visit(visitor: AstVisitor, context?: any) {
+    return visitor.visitTemplateLiteralElement(this, context);
+  }
+}
+
 /**
  * Records the absolute position of a text span in a source file, where `start` and `end` are the
  * starting and ending byte offsets, respectively, of the text span in a source file.
@@ -555,6 +583,8 @@ export interface AstVisitor {
   visitSafeKeyedRead(ast: SafeKeyedRead, context: any): any;
   visitCall(ast: Call, context: any): any;
   visitSafeCall(ast: SafeCall, context: any): any;
+  visitTemplateLiteral(ast: TemplateLiteral, context: any): any;
+  visitTemplateLiteralElement(ast: TemplateLiteralElement, context: any): any;
   visitASTWithSource?(ast: ASTWithSource, context: any): any;
   /**
    * This function is optionally defined to allow classes that implement this
@@ -643,6 +673,19 @@ export class RecursiveAstVisitor implements AstVisitor {
     this.visit(ast.receiver, context);
     this.visitAll(ast.args, context);
   }
+  visitTemplateLiteral(ast: TemplateLiteral, context: any) {
+    // Iterate in the declaration order. Note that there will
+    // always be one expression less than the number of elements.
+    for (let i = 0; i < ast.elements.length; i++) {
+      this.visit(ast.elements[i], context);
+
+      const expression = i < ast.expressions.length ? ast.expressions[i] : null;
+      if (expression !== null) {
+        this.visit(expression, context);
+      }
+    }
+  }
+  visitTemplateLiteralElement(ast: TemplateLiteralElement, context: any) {}
   // This is not part of the AstVisitor interface, just a helper method
   visitAll(asts: AST[], context: any): any {
     for (const ast of asts) {
