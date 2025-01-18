@@ -168,7 +168,7 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * `min` property if the validation check fails, otherwise `null`.
    *
-   * @see {@link updateValueAndValidity()}
+   * @see @see [updateValueAndValidity()](/api/forms/AbstractControl#updateValueAndValidity)
    *
    */
   static min(min: number): ValidatorFn {
@@ -192,7 +192,7 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * `max` property if the validation check fails, otherwise `null`.
    *
-   * @see {@link updateValueAndValidity()}
+   * @see @see [updateValueAndValidity()](/api/forms/AbstractControl#updateValueAndValidity)
    *
    */
   static max(max: number): ValidatorFn {
@@ -216,7 +216,7 @@ export class Validators {
    * @returns An error map with the `required` property
    * if the validation check fails, otherwise `null`.
    *
-   * @see {@link updateValueAndValidity()}
+   * @see @see [updateValueAndValidity()](/api/forms/AbstractControl#updateValueAndValidity)
    *
    */
   static required(control: AbstractControl): ValidationErrors | null {
@@ -241,7 +241,7 @@ export class Validators {
    * @returns An error map that contains the `required` property
    * set to `true` if the validation check fails, otherwise `null`.
    *
-   * @see {@link updateValueAndValidity()}
+   * @see @see [updateValueAndValidity()](/api/forms/AbstractControl#updateValueAndValidity)
    *
    */
   static requiredTrue(control: AbstractControl): ValidationErrors | null {
@@ -281,7 +281,7 @@ export class Validators {
    * @returns An error map with the `email` property
    * if the validation check fails, otherwise `null`.
    *
-   * @see {@link updateValueAndValidity()}
+   * @see @see [updateValueAndValidity()](/api/forms/AbstractControl#updateValueAndValidity)
    *
    */
   static email(control: AbstractControl): ValidationErrors | null {
@@ -315,7 +315,7 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * `minlength` property if the validation check fails, otherwise `null`.
    *
-   * @see {@link updateValueAndValidity()}
+   * @see @see [updateValueAndValidity()](/api/forms/AbstractControl#updateValueAndValidity)
    *
    */
   static minLength(minLength: number): ValidatorFn {
@@ -346,7 +346,7 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * `maxlength` property if the validation check fails, otherwise `null`.
    *
-   * @see {@link updateValueAndValidity()}
+   * @see @see [updateValueAndValidity()](/api/forms/AbstractControl#updateValueAndValidity)
    *
    */
   static maxLength(maxLength: number): ValidatorFn {
@@ -399,7 +399,7 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * `pattern` property if the validation check fails, otherwise `null`.
    *
-   * @see {@link updateValueAndValidity()}
+   * @see @see [updateValueAndValidity()](/api/forms/AbstractControl#updateValueAndValidity)
    *
    */
   static pattern(pattern: string | RegExp): ValidatorFn {
@@ -410,7 +410,7 @@ export class Validators {
    * @description
    * Validator that performs no operation.
    *
-   * @see {@link updateValueAndValidity()}
+   * @see @see [updateValueAndValidity()](/api/forms/AbstractControl#updateValueAndValidity)
    *
    */
   static nullValidator(control: AbstractControl): ValidationErrors | null {
@@ -425,7 +425,7 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * merged error maps of the validators if the validation check fails, otherwise `null`.
    *
-   * @see {@link updateValueAndValidity()}
+   * @see @see [updateValueAndValidity()](/api/forms/AbstractControl#updateValueAndValidity)
    *
    */
   static compose(validators: null): null;
@@ -442,7 +442,7 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * merged error objects of the async validators if the validation check fails, otherwise `null`.
    *
-   * @see {@link updateValueAndValidity()}
+   * @see @see [updateValueAndValidity()](/api/forms/AbstractControl#updateValueAndValidity)
    *
    */
   static composeAsync(validators: (AsyncValidatorFn | null)[]): AsyncValidatorFn | null {
