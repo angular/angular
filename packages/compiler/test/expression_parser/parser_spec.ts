@@ -1043,6 +1043,16 @@ describe('parser', () => {
       checkInterpolation(`{{ 'foo' +\n 'bar' +\r 'baz' }}`, `{{ "foo" + "bar" + "baz" }}`);
     });
 
+    it('should parse object literals', () => {
+      checkInterpolation(`{{{foo:'bar'}}}`, `{{ {foo: "bar"} }}`);
+    });
+
+    it('should parse object with nested objects', () => {
+      checkInterpolation(`{{{foo:{bar:true}}}}`, `{{ {foo: {bar: true}} }}`);
+
+      checkInterpolation(`{{{foo:{bar:{baz:true}}}}}`, `{{ {foo: {bar: {baz: true}}} }}`);
+    });
+
     it('should support custom interpolation', () => {
       const parser = new Parser(new Lexer());
       const ast = parser.parseInterpolation('{% a %}', '', 0, null, {start: '{%', end: '%}'})!
