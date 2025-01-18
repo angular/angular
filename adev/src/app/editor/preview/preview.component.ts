@@ -6,13 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  inject,
-  computed,
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, computed} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {toSignal} from '@angular/core/rxjs-interop';
 
@@ -30,7 +24,6 @@ import {PreviewError} from './preview-error.component';
   imports: [PreviewError],
 })
 export class Preview {
-  private readonly changeDetectorRef = inject(ChangeDetectorRef);
   private readonly domSanitizer = inject(DomSanitizer);
   private readonly nodeRuntimeSandbox = inject(NodeRuntimeSandbox);
   private readonly nodeRuntimeState = inject(NodeRuntimeState);

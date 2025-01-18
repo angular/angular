@@ -7,8 +7,9 @@
  */
 
 import {EnvironmentInjector, Injectable, inject} from '@angular/core';
-import {injectAsync} from '../core/services/inject-async';
 import * as IDX from 'open-in-idx';
+
+import {injectNodeRuntimeSandbox} from './inject-node-runtime-sandbox';
 
 @Injectable({
   providedIn: 'root',
@@ -17,9 +18,7 @@ export class IDXLauncher {
   private readonly environmentInjector = inject(EnvironmentInjector);
 
   async openCurrentSolutionInIDX(): Promise<void> {
-    const nodeRuntimeSandbox = await injectAsync(this.environmentInjector, () =>
-      import('./node-runtime-sandbox.service').then((c) => c.NodeRuntimeSandbox),
-    );
+    const nodeRuntimeSandbox = await injectNodeRuntimeSandbox(this.environmentInjector);
 
     const runtimeFiles = await nodeRuntimeSandbox.getSolutionFiles();
     const workspaceFiles: Record<string, string> = {};
