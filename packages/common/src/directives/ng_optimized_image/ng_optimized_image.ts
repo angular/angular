@@ -17,7 +17,6 @@ import {
   numberAttribute,
   OnChanges,
   OnInit,
-  PLATFORM_ID,
   Renderer2,
   SimpleChanges,
   ɵformatRuntimeError as formatRuntimeError,
@@ -34,7 +33,6 @@ import {
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../../errors';
-import {isPlatformServer} from '../../platform_id';
 
 import {imgDirectiveDetails} from './error_helper';
 import {cloudinaryLoaderInfo} from './image_loaders/cloudinary_loader';
@@ -290,8 +288,6 @@ export class NgOptimizedImage implements OnInit, OnChanges {
   private renderer = inject(Renderer2);
   private imgElement: HTMLImageElement = inject(ElementRef).nativeElement;
   private injector = inject(Injector);
-  private readonly isServer = isPlatformServer(inject(PLATFORM_ID));
-  private readonly preloadLinkCreator = inject(PreloadLinkCreator);
 
   // An LCP image observer should be injected only in development mode.
   // Do not assign it to `null` to avoid having a redundant property in the production bundle.
@@ -468,7 +464,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
         const checker = this.injector.get(PreconnectLinkChecker);
         checker.assertPreconnect(this.getRewrittenSrc(), this.ngSrc);
 
-        if (!this.isServer) {
+        if (typeof ngServerMode !== 'undefined' && !ngServerMode) {
           const applicationRef = this.injector.get(ApplicationRef);
           assetPriorityCountBelowThreshold(applicationRef);
         }
@@ -517,8 +513,9 @@ export class NgOptimizedImage implements OnInit, OnChanges {
       }
     }
 
-    if (this.isServer && this.priority) {
-      this.preloadLinkCreator.createPreloadLinkTag(
+    if (typeof ngServerMode !== 'undefined' && ngServerMode && this.priority) {
+      const preloadLinkCreator = this.injector.get(PreloadLinkCreator);
+      preloadLinkCreator.createPreloadLinkTag(
         this.renderer,
         this.getRewrittenSrc(),
         rewrittenSrcset,
@@ -557,7 +554,12 @@ export class NgOptimizedImage implements OnInit, OnChanges {
       }
     }
 
-    if (ngDevMode && changes['placeholder']?.currentValue && !this.isServer) {
+    if (
+      ngDevMode &&
+      changes['placeholder']?.currentValue &&
+      typeof ngServerMode !== 'undefined' &&
+      !ngServerMode
+    ) {
       assertPlaceholderDimensions(this, this.imgElement);
     }
   }
