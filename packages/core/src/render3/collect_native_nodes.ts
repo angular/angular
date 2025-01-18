@@ -12,7 +12,14 @@ import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from './interfaces/containe
 import {TIcuContainerNode, TNode, TNodeType} from './interfaces/node';
 import {RNode} from './interfaces/renderer_dom';
 import {isLContainer} from './interfaces/type_checks';
-import {DECLARATION_COMPONENT_VIEW, HOST, LView, TVIEW, TView} from './interfaces/view';
+import {
+  DECLARATION_COMPONENT_VIEW,
+  FIRST_CHILD_KEY,
+  HOST,
+  LView,
+  TVIEW,
+  TView,
+} from './interfaces/view';
 import {assertTNodeType} from './node_assert';
 import {getProjectionNodes} from './node_manipulation';
 import {getLViewParent, unwrapRNode} from './util/view_utils';
@@ -80,7 +87,7 @@ export function collectNativeNodes(
 export function collectNativeNodesInLContainer(lContainer: LContainer, result: any[]) {
   for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
     const lViewInAContainer = lContainer[i];
-    const lViewFirstChildTNode = lViewInAContainer[TVIEW].firstChild;
+    const lViewFirstChildTNode = lViewInAContainer[TVIEW][FIRST_CHILD_KEY];
     if (lViewFirstChildTNode !== null) {
       collectNativeNodes(lViewInAContainer[TVIEW], lViewInAContainer, lViewFirstChildTNode, result);
     }

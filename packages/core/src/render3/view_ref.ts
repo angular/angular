@@ -22,6 +22,7 @@ import {isDestroyed, isLContainer, isRootView} from './interfaces/type_checks';
 import {
   CONTEXT,
   DECLARATION_LCONTAINER,
+  FIRST_CHILD_KEY,
   FLAGS,
   LView,
   LViewFlags,
@@ -55,7 +56,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
   get rootNodes(): any[] {
     const lView = this._lView;
     const tView = lView[TVIEW];
-    return collectNativeNodes(tView, lView, tView.firstChild, []);
+    return collectNativeNodes(tView, lView, tView[FIRST_CHILD_KEY], []);
   }
 
   constructor(

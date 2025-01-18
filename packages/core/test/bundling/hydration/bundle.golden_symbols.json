@@ -53,6 +53,7 @@
   "EventEmitter",
   "EventManager",
   "EventManagerPlugin",
+  "FIRST_CHILD_KEY",
   "GenericBrowserDomAdapter",
   "HEADERS",
   "HTTP_ROOT_INTERCEPTOR_FNS",

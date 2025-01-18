@@ -24,6 +24,7 @@ import {
 } from '../../src/render3/interfaces/definition';
 import {TConstants, TElementNode, TNodeType} from '../../src/render3/interfaces/node';
 import {
+  FIRST_CHILD_KEY,
   HEADER_OFFSET,
   LView,
   LViewFlags,
@@ -178,7 +179,7 @@ export class ViewFixture {
   }
 
   get html(): string {
-    return toHtml(this.host.firstChild as Element);
+    return toHtml(this.host[FIRST_CHILD_KEY] as Element);
   }
 
   /**

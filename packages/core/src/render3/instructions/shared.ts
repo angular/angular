@@ -95,6 +95,7 @@ import {
   DECLARATION_VIEW,
   EMBEDDED_VIEW_INJECTOR,
   ENVIRONMENT,
+  FIRST_CHILD_KEY,
   FLAGS,
   HEADER_OFFSET,
   HOST,
@@ -322,8 +323,8 @@ export function createTNodeAtIndex(
   // Assign a pointer to the first child node of a given view. The first node is not always the one
   // at index 0, in case of i18n, index 0 can be the instruction `i18nStart` and the first node has
   // the index 1 or more, so we can't just check node index.
-  if (tView.firstChild === null) {
-    tView.firstChild = tNode;
+  if (tView[FIRST_CHILD_KEY] === null) {
+    tView[FIRST_CHILD_KEY] = tNode;
   }
   if (currentTNode !== null) {
     if (isParent) {

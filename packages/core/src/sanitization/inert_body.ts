@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {FIRST_CHILD_KEY} from '../render3/interfaces/view';
 import {trustedHTMLFromString} from '../util/security/trusted_types';
 
 /**
@@ -51,7 +52,7 @@ class DOMParserHelper implements InertBodyHelper {
         // the `inertDocumentHelper` instead.
         return this.inertDocumentHelper.getInertBodyElement(html);
       }
-      body.firstChild?.remove();
+      body[FIRST_CHILD_KEY]?.remove();
       return body;
     } catch {
       return null;

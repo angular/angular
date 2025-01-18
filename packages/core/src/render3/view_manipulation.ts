@@ -21,6 +21,7 @@ import {TNode} from './interfaces/node';
 import {RComment, RElement} from './interfaces/renderer_dom';
 import {
   DECLARATION_LCONTAINER,
+  FIRST_CHILD_KEY,
   FLAGS,
   HYDRATION,
   LView,
@@ -115,7 +116,9 @@ export function shouldAddViewToDom(
   dehydratedView?: DehydratedContainerView | null,
 ): boolean {
   return (
-    !dehydratedView || dehydratedView.firstChild === null || hasInSkipHydrationBlockFlag(tNode)
+    !dehydratedView ||
+    dehydratedView[FIRST_CHILD_KEY] === null ||
+    hasInSkipHydrationBlockFlag(tNode)
   );
 }
 
@@ -144,8 +147,8 @@ export function addLViewToLContainer(
   // the dehydrated view. This indicates that the view was hydrated and
   // further attaching/detaching should work with this view as normal.
   const hydrationInfo = lView[HYDRATION];
-  if (hydrationInfo !== null && hydrationInfo.firstChild !== null) {
-    hydrationInfo.firstChild = null;
+  if (hydrationInfo !== null && hydrationInfo[FIRST_CHILD_KEY] !== null) {
+    hydrationInfo[FIRST_CHILD_KEY] = null;
   }
 }
 

@@ -24,7 +24,7 @@ import {assertLView} from '../assert';
 import {collectNativeNodes} from '../collect_native_nodes';
 import {getLContext} from '../context_discovery';
 import {CONTAINER_HEADER_OFFSET} from '../interfaces/container';
-import {INJECTOR, LView, TVIEW} from '../interfaces/view';
+import {FIRST_CHILD_KEY, INJECTOR, LView, TVIEW} from '../interfaces/view';
 import {getNativeByTNode} from './view_utils';
 
 /** Retrieved information about a `@defer` block. */
@@ -112,7 +112,7 @@ function findDeferBlocks(node: Node, lView: LView, results: DeferBlockData[]) {
       collectNativeNodes(
         renderedLView[TVIEW],
         renderedLView,
-        renderedLView[TVIEW].firstChild,
+        renderedLView[TVIEW][FIRST_CHILD_KEY],
         rootNodes,
       );
     }

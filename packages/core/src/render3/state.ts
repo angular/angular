@@ -22,6 +22,7 @@ import {TNode, TNodeType} from './interfaces/node';
 import {
   CONTEXT,
   DECLARATION_VIEW,
+  FIRST_CHILD_KEY,
   HEADER_OFFSET,
   LView,
   OpaqueViewState,
@@ -648,8 +649,8 @@ export function enterView(newView: LView): void {
   }
   const tView = newView[TVIEW];
   instructionState.lFrame = newLFrame;
-  ngDevMode && tView.firstChild && assertTNodeForTView(tView.firstChild, tView);
-  newLFrame.currentTNode = tView.firstChild!;
+  ngDevMode && tView[FIRST_CHILD_KEY] && assertTNodeForTView(tView[FIRST_CHILD_KEY], tView);
+  newLFrame.currentTNode = tView[FIRST_CHILD_KEY]!;
   newLFrame.lView = newView;
   newLFrame.tView = tView;
   newLFrame.contextLView = newView;

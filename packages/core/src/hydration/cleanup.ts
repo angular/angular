@@ -17,7 +17,15 @@ import {
 import {Renderer} from '../render3/interfaces/renderer';
 import {RNode} from '../render3/interfaces/renderer_dom';
 import {isLContainer, isLView} from '../render3/interfaces/type_checks';
-import {HEADER_OFFSET, HOST, LView, PARENT, RENDERER, TVIEW} from '../render3/interfaces/view';
+import {
+  FIRST_CHILD_KEY,
+  HEADER_OFFSET,
+  HOST,
+  LView,
+  PARENT,
+  RENDERER,
+  TVIEW,
+} from '../render3/interfaces/view';
 import {nativeRemoveNode} from '../render3/dom_node_manipulation';
 
 import {validateSiblingNodeExists} from './error_handling';
@@ -58,7 +66,7 @@ export function removeDehydratedViews(lContainer: LContainer) {
  */
 function removeDehydratedView(dehydratedView: DehydratedContainerView, renderer: Renderer) {
   let nodesRemoved = 0;
-  let currentRNode = dehydratedView.firstChild;
+  let currentRNode = dehydratedView[FIRST_CHILD_KEY];
   if (currentRNode) {
     const numNodes = dehydratedView.data[NUM_ROOT_NODES];
     while (nodesRemoved < numNodes) {

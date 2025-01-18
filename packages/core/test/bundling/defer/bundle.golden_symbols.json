@@ -72,6 +72,7 @@
   "EventEmitter",
   "EventManager",
   "EventManagerPlugin",
+  "FIRST_CHILD_KEY",
   "GenericBrowserDomAdapter",
   "HYDRATE_TRIGGER_CLEANUP_FNS",
   "INJECTOR",

@@ -42,6 +42,7 @@ import {
 import {RComment, RNode} from '../render3/interfaces/renderer_dom';
 import {isLContainer} from '../render3/interfaces/type_checks';
 import {
+  FIRST_CHILD_KEY,
   HEADER_OFFSET,
   HYDRATION,
   LView,
@@ -546,7 +547,7 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
 
     const componentDef = getComponentDef(componentFactory.componentType ?? {});
     const dehydratedView = findMatchingDehydratedView(this._lContainer, componentDef?.id ?? null);
-    const rNode = dehydratedView?.firstChild ?? null;
+    const rNode = dehydratedView?.[FIRST_CHILD_KEY] ?? null;
     const componentRef = componentFactory.create(
       contextInjector,
       projectableNodes,

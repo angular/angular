@@ -10,6 +10,7 @@ import {TNode, TNodeType} from '../render3/interfaces/node';
 import {RElement, RNode} from '../render3/interfaces/renderer_dom';
 import {
   DECLARATION_COMPONENT_VIEW,
+  FIRST_CHILD_KEY,
   HEADER_OFFSET,
   HOST,
   LView,
@@ -129,10 +130,10 @@ export function locateNextRNode<T extends RNode>(
     if (nodes?.[noOffsetIndex]) {
       // We know the exact location of the node.
       native = locateRNodeByPath(nodes[noOffsetIndex], lView);
-    } else if (tView.firstChild === tNode) {
+    } else if (tView[FIRST_CHILD_KEY] === tNode) {
       // We create a first node in this view, so we use a reference
       // to the first child in this DOM segment.
-      native = hydrationInfo.firstChild;
+      native = hydrationInfo[FIRST_CHILD_KEY];
     } else {
       // Locate a node based on a previous sibling or a parent node.
       const previousTNodeParent = tNode.prev === null;
@@ -149,7 +150,7 @@ export function locateNextRNode<T extends RNode>(
       } else {
         let previousRElement = getNativeByTNode(previousTNode, lView);
         if (previousTNodeParent) {
-          native = (previousRElement as RElement).firstChild;
+          native = (previousRElement as RElement)[FIRST_CHILD_KEY];
         } else {
           // If the previous node is an element, but it also has container info,
           // this means that we are processing a node like `<div #vcrTarget>`, which is
@@ -221,7 +222,7 @@ function navigateToNode(from: Node, instructions: (number | NodeNavigationStep)[
       }
       switch (step) {
         case NODE_NAVIGATION_STEP_FIRST_CHILD:
-          node = node.firstChild!;
+          node = node[FIRST_CHILD_KEY]!;
           break;
         case NODE_NAVIGATION_STEP_NEXT_SIBLING:
           node = node.nextSibling!;
@@ -274,7 +275,7 @@ export function navigateBetween(start: Node, finish: Node): NodeNavigationStep[]
     const parent = finish.parentElement!;
 
     const parentPath = navigateBetween(start, parent);
-    const childPath = navigateBetween(parent.firstChild!, finish);
+    const childPath = navigateBetween(parent[FIRST_CHILD_KEY]!, finish);
     if (!parentPath || !childPath) return null;
 
     return [

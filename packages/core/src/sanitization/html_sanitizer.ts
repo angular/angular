@@ -7,6 +7,7 @@
  */
 
 import {XSS_SECURITY_URL} from '../error_details_base_url';
+import {FIRST_CHILD_KEY} from '../render3/interfaces/view';
 import {TrustedHTML} from '../util/security/trusted_type_defs';
 import {trustedHTMLFromString} from '../util/security/trusted_types';
 
@@ -126,7 +127,7 @@ class SanitizingHtmlSerializer {
     // This cannot use a TreeWalker, as it has to run on Angular's various DOM adapters.
     // However this code never accesses properties off of `document` before deleting its contents
     // again, so it shouldn't be vulnerable to DOM clobbering.
-    let current: Node = el.firstChild!;
+    let current: Node = el[FIRST_CHILD_KEY]!;
     let traverseContent = true;
     let parentNodes = [];
     while (current) {
@@ -138,7 +139,7 @@ class SanitizingHtmlSerializer {
         // Strip non-element, non-text nodes.
         this.sanitizedSomething = true;
       }
-      if (traverseContent && current.firstChild) {
+      if (traverseContent && current[FIRST_CHILD_KEY]) {
         // Push current node to the parent stack before entering its content.
         parentNodes.push(current);
         current = getFirstChild(current)!;
@@ -245,7 +246,7 @@ function getNextSibling(node: Node): Node | null {
  * clobbering of the `firstChild` property happening.
  */
 function getFirstChild(node: Node): Node | null {
-  const firstChild = node.firstChild;
+  const firstChild = node[FIRST_CHILD_KEY];
   if (firstChild && isClobberedElement(node, firstChild)) {
     throw clobberedElementError(firstChild);
   }
@@ -334,8 +335,8 @@ export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): Trusted
     // In case anything goes wrong, clear out inertElement to reset the entire DOM structure.
     if (inertBodyElement) {
       const parent = getTemplateContent(inertBodyElement) || inertBodyElement;
-      while (parent.firstChild) {
-        parent.firstChild.remove();
+      while (parent[FIRST_CHILD_KEY]) {
+        parent[FIRST_CHILD_KEY].remove();
       }
     }
   }

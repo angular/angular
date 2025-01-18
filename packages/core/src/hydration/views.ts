@@ -8,6 +8,7 @@
 
 import {DEHYDRATED_VIEWS, LContainer} from '../render3/interfaces/container';
 import {RNode} from '../render3/interfaces/renderer_dom';
+import {FIRST_CHILD_KEY} from '../render3/interfaces/view';
 
 import {removeDehydratedViews} from './cleanup';
 import {
@@ -35,12 +36,12 @@ export function locateDehydratedViewsInContainer(
     for (let i = 0; i < (serializedView[MULTIPLIER] ?? 1); i++) {
       const view: DehydratedContainerView = {
         data: serializedView,
-        firstChild: null,
+        [FIRST_CHILD_KEY]: null,
       };
       if (serializedView[NUM_ROOT_NODES] > 0) {
         // Keep reference to the first node in this view,
         // so it can be accessed while invoking template instructions.
-        view.firstChild = currentRNode as HTMLElement;
+        view[FIRST_CHILD_KEY] = currentRNode as HTMLElement;
 
         // Move over to the next node after this view, which can
         // either be a first node of the next view or an anchor comment

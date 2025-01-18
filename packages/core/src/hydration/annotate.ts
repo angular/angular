@@ -33,6 +33,7 @@ import {
 } from '../render3/interfaces/type_checks';
 import {
   CONTEXT,
+  FIRST_CHILD_KEY,
   HEADER_OFFSET,
   HOST,
   INJECTOR,
@@ -378,7 +379,7 @@ function serializeLContainer(
         numRootNodes = 1;
       } else {
         template = getSsrId(childTView);
-        numRootNodes = calcNumRootNodes(childTView, childLView, childTView.firstChild);
+        numRootNodes = calcNumRootNodes(childTView, childLView, childTView[FIRST_CHILD_KEY]);
       }
 
       serializedView = {

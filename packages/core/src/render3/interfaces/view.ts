@@ -84,6 +84,13 @@ export interface OpaqueViewState {
   '__brand__': 'Brand for OpaqueViewState that nothing will match';
 }
 
+// This is extracted because `.firstChild` is a frequently used property name.
+// Extracting it into a constant can reduce the overall bundle size. This is because
+// minifiers often shorten variable names to single letters, so every usage of `firstChild`
+// will be replaced with something like `f`, which reduces the number of bytes compared
+// to repeatedly using the string `.firstChild`.
+export const FIRST_CHILD_KEY = 'firstChild';
+
 /**
  * `LView` stores all of the information needed to process the instructions as
  * they are invoked from the template. Each embedded view and component view has its

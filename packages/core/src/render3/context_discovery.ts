@@ -16,7 +16,7 @@ import {getLViewById, registerLView} from './interfaces/lview_tracking';
 import {TNode} from './interfaces/node';
 import {RElement, RNode} from './interfaces/renderer_dom';
 import {isLView} from './interfaces/type_checks';
-import {CONTEXT, HEADER_OFFSET, HOST, ID, LView, TVIEW} from './interfaces/view';
+import {CONTEXT, FIRST_CHILD_KEY, HEADER_OFFSET, HOST, ID, LView, TVIEW} from './interfaces/view';
 import {getComponentLViewByIndex, unwrapRNode} from './util/view_utils';
 
 /**
@@ -294,7 +294,7 @@ function findViaDirective(lView: LView, directiveInstance: {}): number {
   // element bound to the directive being search lives somewhere
   // in the view data. We loop through the nodes and check their
   // list of directives for the instance.
-  let tNode = lView[TVIEW].firstChild;
+  let tNode = lView[TVIEW][FIRST_CHILD_KEY];
   while (tNode) {
     const directiveIndexStart = tNode.directiveStart;
     const directiveIndexEnd = tNode.directiveEnd;

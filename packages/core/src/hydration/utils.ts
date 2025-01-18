@@ -13,7 +13,7 @@ import {LContainer} from '../render3/interfaces/container';
 import {getDocument} from '../render3/interfaces/document';
 import {RElement, RNode} from '../render3/interfaces/renderer_dom';
 import {isRootView} from '../render3/interfaces/type_checks';
-import {HEADER_OFFSET, LView, TVIEW, TViewType} from '../render3/interfaces/view';
+import {FIRST_CHILD_KEY, HEADER_OFFSET, LView, TVIEW, TViewType} from '../render3/interfaces/view';
 import {makeStateKey, TransferState} from '../transfer_state';
 import {assertDefined, assertEqual} from '../util/assert';
 import type {HydrationContext} from './annotate';
@@ -155,7 +155,7 @@ export function retrieveHydrationInfoImpl(
   }
   const dehydratedView: DehydratedView = {
     data,
-    firstChild: rNode.firstChild ?? null,
+    firstChild: rNode[FIRST_CHILD_KEY] ?? null,
   };
 
   if (isRootView) {
@@ -166,7 +166,7 @@ export function retrieveHydrationInfoImpl(
     // i.e. `<app-root /><#VIEW1><#VIEW2>...<!--container-->`. In this case, the current
     // node becomes the first child of this root view and the next sibling is the first
     // element in the DOM segment.
-    dehydratedView.firstChild = rNode;
+    dehydratedView[FIRST_CHILD_KEY] = rNode;
 
     // We use `0` here, since this is the slot (right after the HEADER_OFFSET)
     // where a component LView or an LContainer is located in a root LView.

@@ -14,6 +14,7 @@ import {TElementNode, TNode, TNodeFlags, TNodeType} from '../render3/interfaces/
 import {isComponentHost, isLContainer} from '../render3/interfaces/type_checks';
 import {
   DECLARATION_COMPONENT_VIEW,
+  FIRST_CHILD_KEY,
   LView,
   PARENT,
   T_HOST,
@@ -495,9 +496,9 @@ function _queryNodeChildren(
       // If the element is the host of a component, then all nodes in its view have to be processed.
       // Note: the component's content (tNode.child) will be processed from the insertion points.
       const componentView = getComponentLViewByIndex(tNode.index, lView);
-      if (componentView && componentView[TVIEW].firstChild) {
+      if (componentView && componentView[TVIEW][FIRST_CHILD_KEY]) {
         _queryNodeChildren(
-          componentView[TVIEW].firstChild!,
+          componentView[TVIEW][FIRST_CHILD_KEY]!,
           componentView,
           predicate,
           matches,
@@ -591,7 +592,7 @@ function _queryNodeChildrenInContainer(
 ) {
   for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
     const childView = lContainer[i] as LView;
-    const firstChild = childView[TVIEW].firstChild;
+    const firstChild = childView[TVIEW][FIRST_CHILD_KEY];
     if (firstChild) {
       _queryNodeChildren(firstChild, childView, predicate, matches, elementsOnly, rootNativeNode);
     }

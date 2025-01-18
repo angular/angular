@@ -60,6 +60,7 @@ import {
   DestroyHookData,
   EFFECTS,
   ENVIRONMENT,
+  FIRST_CHILD_KEY,
   FLAGS,
   HookData,
   HookFn,
@@ -848,7 +849,7 @@ export function getBeforeNodeForView(
   const nextViewIndex = CONTAINER_HEADER_OFFSET + viewIndexInContainer + 1;
   if (nextViewIndex < lContainer.length) {
     const lView = lContainer[nextViewIndex] as LView;
-    const firstTNodeOfView = lView[TVIEW].firstChild;
+    const firstTNodeOfView = lView[TVIEW][FIRST_CHILD_KEY];
     if (firstTNodeOfView !== null) {
       return getFirstNativeNode(lView, firstTNodeOfView);
     }
@@ -968,7 +969,7 @@ function applyView(
   parentRElement: RElement | null,
   beforeNode: RNode | null,
 ): void {
-  applyNodes(renderer, action, tView.firstChild, lView, parentRElement, beforeNode, false);
+  applyNodes(renderer, action, tView[FIRST_CHILD_KEY], lView, parentRElement, beforeNode, false);
 }
 
 /**
