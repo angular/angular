@@ -23,6 +23,7 @@ import {
   getListeners,
   getOwningComponent,
   getRootComponents,
+  getSignalGraphForComponent,
 } from './discovery_utils';
 import {
   getDependenciesFromInjectable,
@@ -79,6 +80,7 @@ const globalUtilsFunctions = {
   'getInjector': getInjector,
   'getRootComponents': getRootComponents,
   'getDirectives': getDirectives,
+  'getSignalGraphForComponent': getSignalGraphForComponent,
   'applyChanges': applyChanges,
   'isSignal': isSignal,
 };
