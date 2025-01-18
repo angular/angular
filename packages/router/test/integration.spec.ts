@@ -25,6 +25,7 @@ import {
   ViewChildren,
   ɵConsole as Console,
   ɵNoopNgZone as NoopNgZone,
+  DestroyRef,
 } from '@angular/core';
 import {ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
@@ -74,7 +75,7 @@ import {
   UrlTree,
 } from '@angular/router';
 import {RouterTestingHarness} from '@angular/router/testing';
-import {concat, EMPTY, firstValueFrom, Observable, Observer, of, Subscription} from 'rxjs';
+import {concat, EMPTY, firstValueFrom, Observable, Observer, of, Subject, Subscription} from 'rxjs';
 import {delay, filter, first, last, map, mapTo, takeWhile, tap} from 'rxjs/operators';
 
 import {
@@ -3619,6 +3620,49 @@ for (const browserAPI of ['navigation', 'history'] as const) {
     });
     describe('guards', () => {
       describe('CanActivate', () => {
+        describe('guard completes before emitting a value', () => {
+          @Injectable({providedIn: 'root'})
+          class CompletesBeforeEmitting {
+            private subject$ = new Subject<boolean>();
+
+            constructor(destroyRef: DestroyRef) {
+              destroyRef.onDestroy(() => this.subject$.complete());
+            }
+
+            // Note that this is a simple illustrative case of when an observable
+            // completes without emitting a value. In a real-world scenario, this
+            // might represent an HTTP request that never emits before the app is
+            // destroyed and then completes when the app is destroyed.
+            canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+              return this.subject$;
+            }
+          }
+
+          it('should not thrown an unhandled promise rejection', fakeAsync(
+            inject([Router], async (router: Router) => {
+              const fixture = createRoot(router, RootCmp);
+
+              const onUnhandledrejection = jasmine.createSpy();
+              window.addEventListener('unhandledrejection', onUnhandledrejection);
+
+              router.resetConfig([
+                {path: 'team/:id', component: TeamCmp, canActivate: [CompletesBeforeEmitting]},
+              ]);
+
+              router.navigateByUrl('/team/22');
+
+              // This was previously throwing an error `NG0205: Injector has already been destroyed`.
+              fixture.destroy();
+
+              // Wait until the event task is dispatched.
+              await new Promise((resolve) => setTimeout(resolve, 10));
+              window.removeEventListener('unhandledrejection', onUnhandledrejection);
+
+              expect(onUnhandledrejection).not.toHaveBeenCalled();
+            }),
+          ));
+        });
+
         describe('should not activate a route when CanActivate returns false', () => {
           beforeEach(() => {
             TestBed.configureTestingModule({
