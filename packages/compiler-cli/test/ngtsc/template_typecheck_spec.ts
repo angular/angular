@@ -581,6 +581,100 @@ runInEachFileSystem(() => {
       );
     });
 
+    // https://github.com/angular/angular/issues/57644
+    it('should infer the correct type argument when some inputs of the generic type are not bound', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write(
+        'test.ts',
+        `
+        import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
+
+        @Directive({selector: '[dir]', standalone: true})
+        export class Dir<T> {
+          @Input() a!: T;
+          @Input() b!: T;
+          @Output() out = new EventEmitter<T>();
+        }
+
+        @Component({
+          template: '<input dir [a]="\\'string\\'" (out)="check($event)"><input dir [a]="0" (out)="check($event)">',
+          standalone: true,
+          imports: [Dir],
+        })
+        export class FooCmp {
+          check(value: string): void {}
+        }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toEqual(
+        `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+      );
+    });
+
+    it('should fall back to the default type when no inputs reflects the type parameter', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write(
+        'test.ts',
+        `
+        import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
+
+        @Directive({selector: '[dir]', standalone: true})
+        export class Dir<T = string> {
+          @Output() out = new EventEmitter<T>();
+        }
+
+        @Component({
+          template: '<input dir (out)="check($event)">',
+          standalone: true,
+          imports: [Dir],
+        })
+        export class FooCmp {
+          check(value: number): void {}
+        }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toEqual(
+        `Argument of type 'string' is not assignable to parameter of type 'number'.`,
+      );
+    });
+
+    it('should fall back to the default type when an input that reflects the type parameter is unbound', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write(
+        'test.ts',
+        `
+        import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
+
+        @Directive({selector: '[dir]', standalone: true})
+        export class Dir<T = string> {
+          @Input() in: T;
+          @Output() out = new EventEmitter<T>();
+        }
+
+        @Component({
+          template: '<input dir (out)="check($event)">',
+          standalone: true,
+          imports: [Dir],
+        })
+        export class FooCmp {
+          check(value: number): void {}
+        }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toEqual(
+        `Argument of type 'string' is not assignable to parameter of type 'number'.`,
+      );
+    });
+
     it('should use the setter type when assigning using a two-way binding to an input with different getter and setter types', () => {
       env.tsconfig({strictTemplates: true, _checkTwoWayBoundEvents: true});
       env.write(
