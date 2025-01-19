@@ -134,9 +134,12 @@ class IvyTransformationVisitor extends Visitor {
   override visitClassDeclaration(
     node: ts.ClassDeclaration,
   ): VisitListEntryResult<ts.Statement, ts.ClassDeclaration> {
+    // Node might be modified since results were collected in the compilation phase.
+    const original = ts.getOriginalNode(node, ts.isClassDeclaration);
+
     // If this class is not registered in the map, it means that it doesn't have Angular decorators,
     // thus no further processing is required.
-    if (!this.classCompilationMap.has(node)) {
+    if (!this.classCompilationMap.has(original)) {
       return {node};
     }
 
@@ -151,9 +154,9 @@ class IvyTransformationVisitor extends Visitor {
 
     // Note: Class may be already transformed by e.g. Tsickle and
     // not have a direct reference to the source file.
-    const sourceFile = ts.getOriginalNode(node).getSourceFile();
+    const sourceFile = original.getSourceFile();
 
-    for (const field of this.classCompilationMap.get(node)!) {
+    for (const field of this.classCompilationMap.get(original)!) {
       // Type-only member.
       if (field.initializer === null) {
         continue;
