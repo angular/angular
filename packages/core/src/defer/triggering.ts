@@ -532,17 +532,6 @@ function shouldAttachRegularTrigger(lView: LView, tNode: TNode): boolean {
 }
 
 /**
- * Retrives a Defer Block's list of hydration triggers
- */
-export function getHydrateTriggers(
-  tView: TView,
-  tNode: TNode,
-): Map<DeferBlockTrigger, HydrateTriggerDetails | null> {
-  const tDetails = getTDeferBlockDetails(tView, tNode);
-  return (tDetails.hydrateTriggers ??= new Map());
-}
-
-/**
  * Loops through all defer block summaries and ensures all the blocks triggers are
  * properly initialized
  */
