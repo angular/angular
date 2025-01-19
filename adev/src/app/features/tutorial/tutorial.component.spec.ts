@@ -169,6 +169,10 @@ describe('Tutorial', () => {
     await fixture.whenStable();
     fixture.detectChanges();
 
+    // TODO: Why does this need a macrotask?
+    // Of note, this _doesn't_ work if it's just a microtask.
+    await new Promise((resolve) => setTimeout(resolve, 1));
+
     expect(component.revealAnswerButton.nativeElement.textContent?.trim()).toBe('Reset');
   });
 
