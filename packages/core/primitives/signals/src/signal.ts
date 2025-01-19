@@ -35,7 +35,21 @@ export interface SignalNode<T> extends ReactiveNode {
   equal: ValueEqualityFn<T>;
 }
 
-export type SignalBaseGetter<T> = (() => T) & {readonly [SIGNAL]: unknown};
+/**
+ * Symbol used to store the type of the Signal outside of a function type.
+ *
+ * Since TypeScript considers an intersection of two functions to be an overloaded function
+ * with both definitions allowed, we store the type of the Signal in a property, which is then
+ * referenced by the function call definition. This allows us to have proper type narrowing in
+ * cases like WritableResource#hasValue.
+ */
+export const ɵTYPE_MARKER = /* @__PURE__ */ Symbol('TYPE_MARKER');
+
+export interface SignalBaseGetter<T> {
+  (): this[typeof ɵTYPE_MARKER];
+  [ɵTYPE_MARKER]: T;
+  [SIGNAL]: unknown;
+}
 
 // Note: Closure *requires* this to be an `interface` and not a type, which is why the
 // `SignalBaseGetter` type exists to provide the correct shape.
