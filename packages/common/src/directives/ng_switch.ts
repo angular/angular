@@ -268,7 +268,3 @@ function throwNgSwitchProviderNotFoundError(attrName: string, directiveName: str
       `(matching "NgSwitch" directive)`,
   );
 }
-
-function stringifyValue(value: unknown): string {
-  return typeof value === 'string' ? `'${value}'` : String(value);
-}
