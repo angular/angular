@@ -45,6 +45,7 @@ export function isComponentDef<T>(def: DirectiveDef<T>): def is ComponentDef<T> 
 }
 
 export function isRootView(target: LView): boolean {
+  // Determines whether a given LView is marked as a root view.
   return (target[FLAGS] & LViewFlags.IsRoot) !== 0;
 }
 
