@@ -51,7 +51,7 @@ import {
 } from './interfaces/node';
 import {Renderer} from './interfaces/renderer';
 import {RElement, RNode} from './interfaces/renderer_dom';
-import {isDestroyed, isLContainer, isLView} from './interfaces/type_checks';
+import {isComponentHost, isDestroyed, isLContainer, isLView} from './interfaces/type_checks';
 import {
   CHILD_HEAD,
   CLEANUP,
@@ -632,11 +632,10 @@ export function getClosestRElement(
     return lView[HOST];
   } else {
     ngDevMode && assertTNodeType(parentTNode, TNodeType.AnyRNode | TNodeType.Container);
-    const {componentOffset} = parentTNode;
-    if (componentOffset > -1) {
+    if (isComponentHost(parentTNode)) {
       ngDevMode && assertTNodeForLView(parentTNode, lView);
       const {encapsulation} = tView.data[
-        parentTNode.directiveStart + componentOffset
+        parentTNode.directiveStart + parentTNode.componentOffset
       ] as ComponentDef<unknown>;
       // We've got a parent which is an element in the current view. We just need to verify if the
       // parent element is not a component. Component's content nodes are not inserted immediately
