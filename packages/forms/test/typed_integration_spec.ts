@@ -157,6 +157,16 @@ describe('Typed Class', () => {
       let ufc: UntypedFormControl;
       ufc = c;
     });
+
+    it('should infer value type correctly', () => {
+      function valueFn<T, U extends T, V>(ctrl: AbstractControl<T, U, V>) {
+        return ctrl.value;
+      }
+
+      const c = new FormControl<{foo: string}>({foo: ''});
+      let val: {foo: string} | null;
+      val = valueFn(c);
+    });
   });
 
   describe('FormGroup', () => {
@@ -675,6 +685,39 @@ describe('Typed Class', () => {
       });
       ufg = fg;
     });
+
+    it('should support ControlState as reset argument', () => {
+      const fg = new FormGroup({
+        name: new FormControl({foo: 'foo'}),
+      });
+      fg.reset({name: {foo: 'bar'}});
+
+      fg.reset({name: {value: {foo: 'bar'}, disabled: true}});
+    });
+
+    it('should infer value type correctly', () => {
+      function valueFn<T, U extends T, V>(ctrl: AbstractControl<T, U, V>) {
+        return ctrl.value;
+      }
+      const fg = new FormGroup({
+        name: new FormControl('bob'),
+      });
+
+      let val: Partial<{name: string | null}>;
+      val = valueFn(fg);
+    });
+
+    it('should reset inferred formGroup', () => {
+      function ctrlFn<T, U extends T, V>(ctrl: AbstractControl<T, U, V>) {
+        return ctrl;
+      }
+
+      const fg = new FormGroup({
+        name: new FormControl('bob'),
+      });
+      ctrlFn(fg).reset({name: 'matt'});
+      ctrlFn(fg).reset({name: {value: 'matt', disabled: true}});
+    });
   });
 
   describe('FormRecord', () => {
@@ -727,6 +770,16 @@ describe('Typed Class', () => {
       c.patchValue({c: 42});
       c.reset({c: 42, d: 0});
       c.removeControl('c');
+    });
+
+    it('should reset inferred formarray', () => {
+      function ctrlFn<T, U extends T, V>(ctrl: AbstractControl<T, U, V>) {
+        return ctrl;
+      }
+
+      let c = new FormRecord<FormControl<number>>({a: new FormControl(42, {nonNullable: true})});
+      ctrlFn(c).reset({a: 99});
+      ctrlFn(c).reset({a: {value: 99, disabled: true}});
     });
   });
 
@@ -902,6 +955,25 @@ describe('Typed Class', () => {
       let ufa: UntypedFormArray;
       const fa = new FormArray([new FormControl('bob')]);
       ufa = fa;
+    });
+
+    it('should infer value type correctly', () => {
+      function valueFn<T, U extends T, V>(ctrl: AbstractControl<T, U, V>) {
+        return ctrl.value;
+      }
+
+      const fa = new FormArray([new FormControl('bob')]);
+      let val: (string | null)[];
+      val = valueFn(fa);
+    });
+
+    it('should reset inferred formarray', () => {
+      function ctrlFn<T, U extends T, V>(ctrl: AbstractControl<T, U, V>) {
+        return ctrl;
+      }
+
+      const fa = new FormArray([new FormControl('bob')]);
+      ctrlFn(fa).reset(['jim', 'jam', 'joe']);
     });
   });
 
