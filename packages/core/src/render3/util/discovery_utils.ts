@@ -21,7 +21,8 @@ import {getComponentDef, getDirectiveDef} from '../def_getters';
 import {NodeInjector} from '../di';
 import {DirectiveDef} from '../interfaces/definition';
 import {TElementNode, TNode, TNodeProviderIndexes} from '../interfaces/node';
-import {CLEANUP, CONTEXT, FLAGS, LView, LViewFlags, TVIEW, TViewType} from '../interfaces/view';
+import {isRootView} from '../interfaces/type_checks';
+import {CLEANUP, CONTEXT, LView, TVIEW, TViewType} from '../interfaces/view';
 
 import {getRootContext} from './view_traversal_utils';
 import {getLViewParent, unwrapRNode} from './view_utils';
@@ -109,7 +110,7 @@ export function getOwningComponent<T>(elementOrDir: Element | {}): T | null {
   while (lView[TVIEW].type === TViewType.Embedded && (parent = getLViewParent(lView)!)) {
     lView = parent;
   }
-  return lView[FLAGS] & LViewFlags.IsRoot ? null : (lView[CONTEXT] as unknown as T);
+  return isRootView(lView) ? null : (lView[CONTEXT] as unknown as T);
 }
 
 /**

@@ -47,7 +47,7 @@ import {
   TNodeProviderIndexes,
   TNodeType,
 } from './interfaces/node';
-import {isComponentDef, isComponentHost} from './interfaces/type_checks';
+import {isComponentDef, isComponentHost, isRootView} from './interfaces/type_checks';
 import {
   DECLARATION_COMPONENT_VIEW,
   DECLARATION_VIEW,
@@ -958,7 +958,7 @@ function lookupTokenUsingEmbeddedInjector<T>(
     currentTNode !== null &&
     currentLView !== null &&
     currentLView[FLAGS] & LViewFlags.HasEmbeddedViewInjector &&
-    !(currentLView[FLAGS] & LViewFlags.IsRoot)
+    !isRootView(currentLView)
   ) {
     ngDevMode && assertTNodeForLView(currentTNode, currentLView);
 
