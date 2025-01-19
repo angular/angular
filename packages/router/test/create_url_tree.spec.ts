@@ -652,7 +652,13 @@ describe('createUrlTreeFromSnapshot', async () => {
 
       navigate() {
         this.router.navigateByUrl(
-          createUrlTreeFromSnapshot(this.route.snapshot, ['innerRoute'], null, null),
+          createUrlTreeFromSnapshot(
+            this.route.snapshot,
+            ['innerRoute'],
+            null,
+            null,
+            new DefaultUrlSerializer(),
+          ),
         );
       }
     }
@@ -694,7 +700,15 @@ describe('createUrlTreeFromSnapshot', async () => {
     class Guard {
       constructor(private readonly router: Router) {}
       canActivate(snapshot: ActivatedRouteSnapshot) {
-        this.router.navigateByUrl(createUrlTreeFromSnapshot(snapshot, ['../sibling'], null, null));
+        this.router.navigateByUrl(
+          createUrlTreeFromSnapshot(
+            snapshot,
+            ['../sibling'],
+            null,
+            null,
+            new DefaultUrlSerializer(),
+          ),
+        );
       }
     }
 
