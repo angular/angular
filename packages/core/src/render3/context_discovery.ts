@@ -15,7 +15,7 @@ import {LContext} from './interfaces/context';
 import {getLViewById, registerLView} from './interfaces/lview_tracking';
 import {TNode} from './interfaces/node';
 import {RElement, RNode} from './interfaces/renderer_dom';
-import {isLView} from './interfaces/type_checks';
+import {isComponentHost, isLView} from './interfaces/type_checks';
 import {CONTEXT, HEADER_OFFSET, HOST, ID, LView, TVIEW} from './interfaces/view';
 import {getComponentLViewByIndex, unwrapRNode} from './util/view_utils';
 
@@ -331,8 +331,7 @@ export function getDirectivesAtNodeIndex(nodeIndex: number, lView: LView): any[]
 
 export function getComponentAtNodeIndex(nodeIndex: number, lView: LView): {} | null {
   const tNode = lView[TVIEW].data[nodeIndex] as TNode;
-  const {directiveStart, componentOffset} = tNode;
-  return componentOffset > -1 ? lView[directiveStart + componentOffset] : null;
+  return isComponentHost(tNode) ? lView[tNode.directiveStart + tNode.componentOffset] : null;
 }
 
 /**
