@@ -483,7 +483,7 @@ export class R3Injector extends EnvironmentInjector {
           record.value = record.factory!();
         }
       }
-      if (typeof record.value === 'object' && record.value && hasOnDestroy(record.value)) {
+      if (hasOnDestroy(record.value)) {
         this._ngOnDestroyHooks.add(record.value);
       }
       return record.value as T;
@@ -646,7 +646,7 @@ function hasDeps(
 
 function hasOnDestroy(value: any): value is OnDestroy {
   return (
-    value !== null &&
+    value != null && // typeof null is 'object', this condition is necessary
     typeof value === 'object' &&
     typeof (value as OnDestroy).ngOnDestroy === 'function'
   );
