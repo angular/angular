@@ -22,18 +22,16 @@ import {CONTAINER_HEADER_OFFSET} from './interfaces/container';
 import {ComponentDef} from './interfaces/definition';
 import {getTrackedLViews} from './interfaces/lview_tracking';
 import {isTNodeShape, TElementNode, TNodeFlags, TNodeType} from './interfaces/node';
-import {isLContainer, isLView} from './interfaces/type_checks';
+import {isLContainer, isLView, isRootView} from './interfaces/type_checks';
 import {
   CHILD_HEAD,
   CHILD_TAIL,
   CONTEXT,
   ENVIRONMENT,
-  FLAGS,
   HEADER_OFFSET,
   HOST,
   INJECTOR,
   LView,
-  LViewFlags,
   NEXT,
   PARENT,
   RENDERER,
@@ -85,7 +83,7 @@ export function ɵɵreplaceMetadata(
     for (const root of trackedViews) {
       // Note: we have the additional check, because `IsRoot` can also indicate
       // a component created through something like `createComponent`.
-      if (root[FLAGS] & LViewFlags.IsRoot && root[PARENT] === null) {
+      if (isRootView(root) && root[PARENT] === null) {
         recreateMatchingLViews(newDef, oldDef, root);
       }
     }
