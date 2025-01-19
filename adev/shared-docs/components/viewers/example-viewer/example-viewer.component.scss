@@ -1,4 +1,6 @@
 :host {
+  contain: content;
+  content-visibility: auto;
   .docs-example-viewer-preview {
     .docs-dark-mode & {
       background: var(--gray-100);
