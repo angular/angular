@@ -6,7 +6,16 @@
   width: 100%;
   box-sizing: border-box;
   flex-direction: column;
+  align-items: center;
+  padding: var(--layout-padding);
 
+  & > *{
+    padding-inline: 0px;
+    @include mq.for-big-desktop-up{
+      width: var(--page-width);
+    }
+  }
+  
   h1 {
     font-size: 1.5rem;
   }
@@ -30,7 +39,7 @@
 // stylelint-disable-next-line
 ::ng-deep {
   .adev-header-and-tabs {
-    padding: var(--layout-padding) 0 1rem var(--layout-padding);
+    padding: 0px 0 1rem 0px;
     box-sizing: border-box;
     width: 100%;
     max-width: var(--page-width);
