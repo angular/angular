@@ -4,7 +4,7 @@ Forms are a big part of many apps because they enable your app to accept user in
 
 In Angular, there are two types of forms: template-driven and reactive. You'll learn about both over the next few activities.
 
-In this activity, you'll learn how to setup a form using a template-driven approach.
+In this activity, you'll learn how to set up a form using a template-driven approach.
 
 <hr>
 
