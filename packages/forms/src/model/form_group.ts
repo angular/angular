@@ -724,7 +724,25 @@ export const isFormGroup = (control: unknown): control is FormGroup => control i
  */
 export class FormRecord<TControl extends AbstractControl = AbstractControl> extends FormGroup<{
   [key: string]: TControl;
-}> {}
+}> {
+  /**
+   * Clear all controls from this record.
+   *
+   * This method also updates the value and validity of the control.
+   *
+   * @param options Specifies whether this FormGroup instance should emit events after a
+   *     control is removed.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges` observables emit events with the latest status and value when the controls are
+   * removed. When false, no events are emitted.
+   */
+  clear(options: {emitEvent?: boolean} = {}): void {
+    this._forEachChild((child) => child._registerOnCollectionChange(() => {}));
+    this.controls = {};
+    this.updateValueAndValidity({emitEvent: options.emitEvent});
+    this._onCollectionChange();
+  }
+}
 
 export interface FormRecord<TControl> {
   /**
@@ -747,6 +765,19 @@ export interface FormRecord<TControl> {
    * See `FormGroup#removeControl` for additional information.
    */
   removeControl(name: string, options?: {emitEvent?: boolean}): void;
+
+  /**
+   * Clear all controls from this record.
+   *
+   * This method also updates the value and validity of the control.
+   *
+   * @param options Specifies whether this FormGroup instance should emit events after a
+   *     control is removed.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges` observables emit events with the latest status and value when the controls are
+   * removed. When false, no events are emitted.
+   */
+  clear(options?: {emitEvent?: boolean}): void;
 
   /**
    * Replace an existing control.
