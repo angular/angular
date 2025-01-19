@@ -13,7 +13,7 @@ import {assertIndexInRange} from '../../util/assert';
 import {NodeOutputBindings, TNode, TNodeType} from '../interfaces/node';
 import {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
 import {RElement} from '../interfaces/renderer_dom';
-import {isDirectiveHost} from '../interfaces/type_checks';
+import {isComponentHost, isDirectiveHost} from '../interfaces/type_checks';
 import {CLEANUP, CONTEXT, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
 import {profiler} from '../profiler';
@@ -305,8 +305,7 @@ function wrapListener(
 
     // In order to be backwards compatible with View Engine, events on component host nodes
     // must also mark the component view itself dirty (i.e. the view that it owns).
-    const startView =
-      tNode.componentOffset > -1 ? getComponentLViewByIndex(tNode.index, lView) : lView;
+    const startView = isComponentHost(tNode) ? getComponentLViewByIndex(tNode.index, lView) : lView;
     markViewDirty(startView, NotificationSource.Listener);
 
     let result = executeListenerWithErrorHandling(lView, context, listenerFn, e);
