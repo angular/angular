@@ -49,9 +49,7 @@ export class TableOfContentsLoader {
     const updatedTopValues = new Map<string, number>();
 
     for (const heading of headings) {
-      const parentTop = heading.parentElement?.offsetTop ?? 0;
-      const top = Math.floor(parentTop + heading.offsetTop - this.toleranceThreshold);
-      updatedTopValues.set(heading.id, top);
+      updatedTopValues.set(heading.id, this.calculateTop(heading));
     }
 
     this.tableOfContentItems.update((oldItems) => {
