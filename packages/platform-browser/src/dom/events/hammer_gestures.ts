@@ -15,6 +15,9 @@ import {
   NgModule,
   Optional,
   ɵConsole as Console,
+  Provider,
+  makeEnvironmentProviders,
+  EnvironmentProviders,
 } from '@angular/core';
 
 import {EVENT_MANAGER_PLUGINS, EventManagerPlugin} from './event_manager';
@@ -283,6 +286,18 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
   }
 }
 
+const HAMMER_PROVIDERS: Provider[] = [
+  [
+    {
+      provide: EVENT_MANAGER_PLUGINS,
+      useClass: HammerGesturesPlugin,
+      multi: true,
+      deps: [DOCUMENT, HAMMER_GESTURE_CONFIG, Injector, [new Optional(), HAMMER_LOADER]],
+    },
+    {provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig, deps: []},
+  ],
+];
+
 /**
  * Adds support for HammerJS.
  *
@@ -295,14 +310,49 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
  * @publicApi
  */
 @NgModule({
-  providers: [
-    {
-      provide: EVENT_MANAGER_PLUGINS,
-      useClass: HammerGesturesPlugin,
-      multi: true,
-      deps: [DOCUMENT, HAMMER_GESTURE_CONFIG, Injector, [new Optional(), HAMMER_LOADER]],
-    },
-    {provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig, deps: []},
-  ],
+  providers: [HAMMER_PROVIDERS],
 })
 export class HammerModule {}
+
+/**
+ * Sets up the Hammer loader provider, which is necessary to lazy-load HammerJS when
+ * the event is being set up on the element.
+ *
+ * @usageNotes
+ *
+ * A basic example of providing the Hammer loader when `bootstrapApplication` is used:
+ * ```ts
+ * bootstrapApplication(AppComponent, {
+ *   providers: [provideHammerLoader(() => import('hammer.js'))]
+ * });
+ * ```
+ *
+ * @publicApi
+ */
+export function provideHammerLoader(loader: HammerLoader): EnvironmentProviders {
+  return makeEnvironmentProviders([{provide: HAMMER_LOADER, useValue: loader}]);
+}
+
+/**
+ * Adds support for HammerJS.
+ *
+ * Add this function to the providers when bootstrapping the application,
+ * so Angular can work with HammerJS to detect gesture events.
+ *
+ * @usageNotes
+ *
+ * A basic example of providing the Hammer when `bootstrapApplication` is used:
+ * ```ts
+ * bootstrapApplication(AppComponent, {
+ *   providers: [
+ *     provideHammerLoader(() => import('hammer.js')),
+ *     provideHammer()
+ *   ]
+ * });
+ * ```
+ *
+ * @publicApi
+ */
+export function provideHammer(): EnvironmentProviders {
+  return makeEnvironmentProviders(HAMMER_PROVIDERS);
+}
