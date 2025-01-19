@@ -24,8 +24,8 @@ import {Type} from '../interface/type';
 import {CompilerOptions} from '../linker';
 import {NgModuleFactory, NgModuleRef} from '../linker/ng_module_factory';
 import {createNgModuleRefWithProviders} from '../render3/ng_module_ref';
-import {getNgZone, NgZone} from '../zone/ng_zone';
-import {bootstrap} from './bootstrap';
+import {getNgZone} from '../zone/ng_zone';
+import {bootstrap, setModuleBootstrapImpl} from './bootstrap';
 import {PLATFORM_DESTROY_LISTENERS} from './platform_destroy_listeners';
 
 /**
@@ -79,6 +79,7 @@ export class PlatformRef {
       allAppProviders,
     );
 
+    setModuleBootstrapImpl();
     return bootstrap({
       moduleRef,
       allPlatformModules: this._modules,
@@ -109,6 +110,7 @@ export class PlatformRef {
       | Array<CompilerOptions & BootstrapOptions> = [],
   ): Promise<NgModuleRef<M>> {
     const options = optionsReducer({}, compilerOptions);
+    setModuleBootstrapImpl();
     return compileNgModuleFactory(this.injector, options, moduleType).then((moduleFactory) =>
       this.bootstrapModuleFactory(moduleFactory, options),
     );

@@ -172,7 +172,7 @@ export function bootstrap<M>(
           }
           return appRef;
         } else {
-          moduleDoBootstrap(config.moduleRef, config.allPlatformModules);
+          moduleBootstrapImpl?.(config.moduleRef, config.allPlatformModules);
           return config.moduleRef;
         }
       });
@@ -180,7 +180,20 @@ export function bootstrap<M>(
   });
 }
 
-function moduleDoBootstrap(
+/**
+ * Having a separate symbol for the module boostrap implementation allows us to
+ * tree shake the module based boostrap implementation in standalone apps.
+ */
+let moduleBootstrapImpl: undefined | typeof _moduleDoBootstrap;
+
+/**
+ * Set the implementation of the module based bootstrap.
+ */
+export function setModuleBootstrapImpl() {
+  moduleBootstrapImpl = _moduleDoBootstrap;
+}
+
+function _moduleDoBootstrap(
   moduleRef: InternalNgModuleRef<any>,
   allPlatformModules: NgModuleRef<unknown>[],
 ): void {
