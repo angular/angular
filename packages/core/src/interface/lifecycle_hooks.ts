@@ -125,9 +125,12 @@ export interface OnDestroy {
 
 /**
  * @description
- * A lifecycle hook that is called after Angular has fully initialized
- * all content of a directive. It will run only once when the projected content is initialized.
+ * A lifecycle hook that is called after Angular has fully initialized all projected content of a directive.
+ * A projected content is fully initialized when it is ready to be picked up for first change detection cycle.
+ * For that, Angular executes all lifecycle hooks required before first change detection cycle on the projected content.
+ * It will run only once during directive lifecycle.
  * Define an `ngAfterContentInit()` method to handle any additional initialization tasks.
+ *
  *
  * @see {@link OnInit}
  * @see {@link AfterViewInit}
@@ -146,7 +149,7 @@ export interface AfterContentInit {
    * A callback method that is invoked immediately after
    * Angular has completed initialization of all of the directive's
    * content.
-   * It is invoked only once when the directive is instantiated.
+   * It is invoked only once after all projected contents are fully initialized.
    */
   ngAfterContentInit(): void;
 }
