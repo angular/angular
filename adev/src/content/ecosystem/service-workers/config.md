@@ -318,7 +318,7 @@ If not specified, the default value depends on the data group's configured strat
 | Groups with the `performance` strategy | The default value is `false` and the service worker doesn't cache opaque responses. These groups would continue to return a cached response until `maxAge` expires, even if the error was due to a temporary network or server issue. Therefore, it would be problematic for the service worker to cache an error response. |
 
 <docs-callout title="Comment on opaque responses">
-  
+
 In case you are not familiar, an [opaque response](https://fetch.spec.whatwg.org#concept-filtered-response-opaque) is a special type of response returned when requesting a resource that is on a different origin which doesn't return CORS headers.
 One of the characteristics of an opaque response is that the service worker is not allowed to read its status, meaning it can't check if the request was successful or not.
 See [Introduction to `fetch()`](https://developers.google.com/web/updates/2015/03/introduction-to-fetch#response_types) for more details.
@@ -366,9 +366,9 @@ If the field is omitted, it defaults to:
 
 [
   '/**',           // Include all URLs.
-  '!/**/*.*',      // Exclude URLs to files.
-  '!/**/****',     // Exclude URLs containing `**` in the last segment.
-  '!/**/****/**',  // Exclude URLs containing `**` in any other segment.
+  '!/**/*.*',      // Exclude URLs to files (containing a file extension in the last segment).
+  '!/**/*__*',     // Exclude URLs containing `__` in the last segment.
+  '!/**/*__*/**',  // Exclude URLs containing `__` in any other segment.
 ]
 
 </docs-code>
