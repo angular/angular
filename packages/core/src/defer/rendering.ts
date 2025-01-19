@@ -32,11 +32,12 @@ import {assertDefined} from '../util/assert';
 
 import {
   DEFER_BLOCK_STATE,
+  DEFER_DEPENDENCIES_LOADING_STATE_COMPLETE,
+  DEFER_DEPENDENCIES_LOADING_STATE_FAILED,
   DeferBlockConfig,
   DeferBlockDependencyInterceptor,
   DeferBlockInternalState,
   DeferBlockState,
-  DeferDependenciesLoadingState,
   DeferredLoadingBlockConfig,
   DeferredPlaceholderBlockConfig,
   LDeferBlockDetails,
@@ -435,12 +436,12 @@ export function renderDeferStateAfterResourceLoading(
     assertDefined(tDetails.loadingPromise, 'Expected loading Promise to exist on this defer block');
 
   tDetails.loadingPromise!.then(() => {
-    if (tDetails.loadingState === DeferDependenciesLoadingState.COMPLETE) {
+    if (tDetails.loadingState === DEFER_DEPENDENCIES_LOADING_STATE_COMPLETE) {
       ngDevMode && assertDeferredDependenciesLoaded(tDetails);
 
       // Everything is loaded, show the primary block content
       renderDeferBlockState(DeferBlockState.Complete, tNode, lContainer);
-    } else if (tDetails.loadingState === DeferDependenciesLoadingState.FAILED) {
+    } else if (tDetails.loadingState === DEFER_DEPENDENCIES_LOADING_STATE_FAILED) {
       renderDeferBlockState(DeferBlockState.Error, tNode, lContainer);
     }
   });
