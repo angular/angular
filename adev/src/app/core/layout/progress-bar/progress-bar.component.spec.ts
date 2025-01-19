@@ -8,17 +8,16 @@
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {PROGRESS_BAR_DELAY, ProgressBarComponent} from './progress-bar.component';
+import {ProgressBarComponent} from './progress-bar.component';
 import {RouterTestingHarness, RouterTestingModule} from '@angular/router/testing';
+import {Event, NavigationEnd, NavigationStart, Router} from '@angular/router';
 
 describe('ProgressBarComponent', () => {
   let component: ProgressBarComponent;
   let fixture: ComponentFixture<ProgressBarComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [ProgressBarComponent, RouterTestingModule],
-    }).compileComponents();
+    await TestBed.configureTestingModule({imports: [ProgressBarComponent]});
 
     fixture = TestBed.createComponent(ProgressBarComponent);
     component = fixture.componentInstance;
@@ -29,10 +28,17 @@ describe('ProgressBarComponent', () => {
     const progressBar = component.progressBar();
     const progressBarCompleteSpy = spyOn(progressBar, 'complete');
 
+    const events: Event[] = [];
+    const router = TestBed.inject(Router);
+    router.events.subscribe((e) => events.push(e));
+
     const harness = await RouterTestingHarness.create();
     await harness.navigateByUrl('/');
 
-    await new Promise((resolve) => setTimeout(resolve, PROGRESS_BAR_DELAY));
+    // This is to investigate the flakiness of the test.
+    expect(events).toContain(jasmine.any(NavigationStart));
+    expect(events).toContain(jasmine.any(NavigationEnd));
+
     expect(progressBarCompleteSpy).toHaveBeenCalled();
   });
 });
