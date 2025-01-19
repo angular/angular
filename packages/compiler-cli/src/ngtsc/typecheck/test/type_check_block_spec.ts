@@ -69,6 +69,11 @@ describe('type check blocks', () => {
     );
   });
 
+  it('should handle typeof expressions', () => {
+    expect(tcb(`{{'bar' in {bar: 'bar'} }}`)).toContain(`(("bar") in ({ "bar": "bar" }))`);
+    expect(tcb(`{{!('bar' in {bar: 'bar'}) }}`)).toContain(`!(("bar") in ({ "bar": "bar" }))`);
+  });
+
   it('should handle attribute values for directive inputs', () => {
     const TEMPLATE = `<div dir inputA="value"></div>`;
     const DIRECTIVES: TestDeclaration[] = [

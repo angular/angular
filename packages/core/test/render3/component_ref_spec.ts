@@ -318,16 +318,16 @@ describe('ComponentFactory', () => {
     it('should allow setting inputs on the ComponentRef', () => {
       const inputChangesLog: string[] = [];
 
-      @Component({template: `{{in}}`, standalone: false})
+      @Component({template: `{{input}}`, standalone: false})
       class DynamicCmp implements OnChanges {
         ngOnChanges(changes: SimpleChanges): void {
-          const inChange = changes['in'];
+          const inChange = changes['input'];
           inputChangesLog.push(
             `${inChange.previousValue}:${inChange.currentValue}:${inChange.firstChange}`,
           );
         }
 
-        @Input() in: string | undefined;
+        @Input() input: string | undefined;
       }
 
       const fixture = TestBed.createComponent(DynamicCmp);
@@ -336,21 +336,21 @@ describe('ComponentFactory', () => {
       expect(fixture.nativeElement.textContent).toBe('');
       expect(inputChangesLog).toEqual([]);
 
-      fixture.componentRef.setInput('in', 'first');
+      fixture.componentRef.setInput('input', 'first');
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toBe('first');
       expect(inputChangesLog).toEqual(['undefined:first:true']);
 
-      fixture.componentRef.setInput('in', 'second');
+      fixture.componentRef.setInput('input', 'second');
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toBe('second');
       expect(inputChangesLog).toEqual(['undefined:first:true', 'first:second:false']);
     });
 
     it('should allow setting mapped inputs on the ComponentRef', () => {
-      @Component({template: `{{in}}`, standalone: false})
+      @Component({template: `{{input}}`, standalone: false})
       class DynamicCmp {
-        @Input('publicName') in: string | undefined;
+        @Input('publicName') input: string | undefined;
       }
 
       const fixture = TestBed.createComponent(DynamicCmp);
@@ -362,7 +362,7 @@ describe('ComponentFactory', () => {
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toBe('in value');
 
-      fixture.componentRef.setInput('in', 'should not change');
+      fixture.componentRef.setInput('input', 'should not change');
       fixture.detectChanges();
       // The value doesn't change, since `in` is an internal name of the input.
       expect(fixture.nativeElement.textContent).toBe('in value');
@@ -385,12 +385,12 @@ describe('ComponentFactory', () => {
 
     it('should mark components for check when setting an input on a ComponentRef', () => {
       @Component({
-        template: `{{in}}`,
+        template: `{{input}}`,
         changeDetection: ChangeDetectionStrategy.OnPush,
         standalone: false,
       })
       class DynamicCmp {
-        @Input() in: string | undefined;
+        @Input() input: string | undefined;
       }
 
       const fixture = TestBed.createComponent(DynamicCmp);
@@ -398,7 +398,7 @@ describe('ComponentFactory', () => {
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toBe('');
 
-      fixture.componentRef.setInput('in', 'pushed');
+      fixture.componentRef.setInput('input', 'pushed');
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toBe('pushed');
     });
@@ -406,22 +406,22 @@ describe('ComponentFactory', () => {
     it('should not set input if value is the same as the previous', () => {
       let log: string[] = [];
       @Component({
-        template: `{{in}}`,
+        template: `{{input}}`,
         standalone: true,
       })
       class DynamicCmp {
         @Input()
-        set in(v: string) {
+        set input(v: string) {
           log.push(v);
         }
       }
 
       const fixture = TestBed.createComponent(DynamicCmp);
-      fixture.componentRef.setInput('in', '1');
+      fixture.componentRef.setInput('input', '1');
       fixture.detectChanges();
-      fixture.componentRef.setInput('in', '1');
+      fixture.componentRef.setInput('input', '1');
       fixture.detectChanges();
-      fixture.componentRef.setInput('in', '2');
+      fixture.componentRef.setInput('input', '2');
       fixture.detectChanges();
       expect(log).toEqual(['1', '2']);
     });

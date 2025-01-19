@@ -807,6 +807,25 @@ runInEachFileSystem(() => {
       expect(diags[0].messageText).toContain(`This comparison appears to be unintentional`);
     });
 
+    it('should error on non valid in binary expressions', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+
+        @Component({
+          template: \` {{'foo' in 'foobar'}} \`,
+        })
+        class TestCmp {
+        }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toContain(`Type 'string' is not assignable to type 'object'`);
+    });
+
     describe('strictInputTypes', () => {
       beforeEach(() => {
         env.write(
