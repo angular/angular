@@ -549,6 +549,38 @@ runInEachFileSystem(() => {
       );
     });
 
+    it('should capture conditional expression dependencies', () => {
+      enableHmr();
+      env.write(
+        'test.ts',
+        `
+          import {Component, InjectionToken} from '@angular/core';
+
+          const providersA: any[] = [];
+          const providersB: any[] = [];
+          const condition = true;
+
+          @Component({
+            template: '',
+            providers: [condition ? providersA : providersB]
+          })
+          export class Cmp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      const hmrContents = env.driveHmr('test.ts', 'Cmp');
+
+      expect(jsContents).toContain(
+        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [condition, providersA, providersB, Component]));',
+      );
+      expect(hmrContents).toContain(
+        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, condition, providersA, providersB, Component) {',
+      );
+    });
+
     it('should capture parenthesized dependencies', () => {
       enableHmr();
       env.write(
