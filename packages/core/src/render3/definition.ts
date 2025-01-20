@@ -750,7 +750,13 @@ function getComponentId<T>(componentDef: ComponentDef<T>): string {
 
   const compId = 'c' + hash;
 
-  if (typeof ngDevMode === 'undefined' || ngDevMode) {
+  if (
+    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+    // Skip the check on the server since we can't guarantee the same component instance between
+    // requests. Note that we can't use DI to check if we're on the server, because the component
+    // hasn't been instantiated yet.
+    (typeof ngServerMode === 'undefined' || !ngServerMode)
+  ) {
     if (GENERATED_COMP_IDS.has(compId)) {
       const previousCompDefType = GENERATED_COMP_IDS.get(compId)!;
       if (previousCompDefType !== componentDef.type) {
