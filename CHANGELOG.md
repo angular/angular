@@ -1,3 +1,26 @@
+<a name="19.1.2"></a>
+# 19.1.2 (2025-01-20)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8dcd889987](https://github.com/angular/angular/commit/8dcd88998700a94115a542462e6ae6beedbfbd9d) | fix | update `@ng/component` URL to be relative ([#59620](https://github.com/angular/angular/pull/59620)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [95a05bb202](https://github.com/angular/angular/commit/95a05bb2021acab02df3468212adf023d331a688) | fix | disable tree shaking during HMR ([#59595](https://github.com/angular/angular/pull/59595)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a4eb74c79c](https://github.com/angular/angular/commit/a4eb74c79cca802d8179118cf4d53c73285baadb) | fix | animation sometimes renderer not being destroyed during HMR ([#59574](https://github.com/angular/angular/pull/59574)) |
+| [906413aba3](https://github.com/angular/angular/commit/906413aba31459e6499420ed14519d1280e182ad) | fix | change `Resource` to use explicit `undefined` in its typings ([#59024](https://github.com/angular/angular/pull/59024)) |
+| [4eb541837c](https://github.com/angular/angular/commit/4eb541837cf28ce1950d782213291165a2436410) | fix | cleanup `_ejsa` when app is destroyed ([#59492](https://github.com/angular/angular/pull/59492)) |
+| [5497102769](https://github.com/angular/angular/commit/549710276969ec4cf8c1e3d2f19d1fe9f755976e) | fix | cleanup stash listener when app is destroyed ([#59598](https://github.com/angular/angular/pull/59598)) |
+| [266a8f2f2e](https://github.com/angular/angular/commit/266a8f2f2ebf9f5e310ba5de695be5072790e1e5) | fix | handle shadow DOM encapsulated component with HMR ([#59597](https://github.com/angular/angular/pull/59597)) |
+| [6f7716268a](https://github.com/angular/angular/commit/6f7716268afa5146f2b2d0dbbea146defa9acfef) | fix | HMR not matching component that injects ViewContainerRef ([#59596](https://github.com/angular/angular/pull/59596)) |
+| [d12a186d53](https://github.com/angular/angular/commit/d12a186d531b41e6a16f84446a1d54eaed010fc4) | fix | treat exceptions in `equal` as part of computation ([#55818](https://github.com/angular/angular/pull/55818)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.1.1"></a>
 # 19.1.1 (2025-01-16)
 ### core
