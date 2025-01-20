@@ -28,7 +28,7 @@ import {createElementRef, ElementRef} from '../linker/element_ref';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {RendererFactory2} from '../render/api';
 import {Sanitizer} from '../sanitization/sanitizer';
-import {assertDefined, assertGreaterThan, assertIndexInRange} from '../util/assert';
+import {assertDefined, assertGreaterThan} from '../util/assert';
 
 import {assertComponentType, assertNoDuplicateDirectives} from './assert';
 import {attachPatchData} from './context_discovery';
@@ -40,11 +40,9 @@ import {reportUnknownPropertyError} from './instructions/element_validation';
 import {markViewDirty} from './instructions/mark_view_dirty';
 import {renderView} from './instructions/render';
 import {
-  addToEndOfViewTree,
+  createComponentLView,
   createLView,
   createTView,
-  getInitialLViewFlagsFromDef,
-  getOrCreateComponentTView,
   initializeDirectives,
   invokeDirectivesHostBindings,
   locateHostElement,
@@ -62,11 +60,10 @@ import {
   TNode,
   TNodeType,
 } from './interfaces/node';
-import {RElement, RNode} from './interfaces/renderer_dom';
+import {RNode} from './interfaces/renderer_dom';
 import {
   CONTEXT,
   HEADER_OFFSET,
-  INJECTOR,
   LView,
   LViewEnvironment,
   LViewFlags,
@@ -388,6 +385,8 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
           tAttributes,
         );
 
+        markAsComponentHost(rootTView, hostTNode, rootDirectives.length - 1);
+
         for (const def of rootDirectives) {
           hostTNode.mergedAttrs = mergeHostAttrs(hostTNode.mergedAttrs, def.hostAttrs);
         }
@@ -402,14 +401,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
           setupStaticAttributes(hostRenderer, hostRNode, hostTNode);
         }
 
-        componentView = createRootComponentView(
-          hostTNode,
-          hostRNode,
-          rootComponentDef,
-          rootDirectives,
-          rootLView,
-          environment,
-        );
+        componentView = createComponentLView(rootLView, hostTNode, rootComponentDef);
 
         if (projectableNodes !== undefined) {
           projectNodes(hostTNode, this.ngContentSelectors, projectableNodes);
@@ -529,59 +521,6 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
 
 /** Represents a HostFeature function. */
 type HostFeature = <T>(component: T, componentDef: ComponentDef<T>) => void;
-
-/**
- * Creates the root component view and the root component node.
- *
- * @param hostRNode Render host element.
- * @param rootComponentDef ComponentDef
- * @param rootView The parent view where the host node is stored
- * @param rendererFactory Factory to be used for creating child renderers.
- * @param hostRenderer The current renderer
- * @param sanitizer The sanitizer, if provided
- *
- * @returns Component view created
- */
-function createRootComponentView(
-  tNode: TElementNode,
-  hostRNode: RElement | null,
-  rootComponentDef: ComponentDef<any>,
-  rootDirectives: DirectiveDef<any>[],
-  rootView: LView,
-  environment: LViewEnvironment,
-): LView {
-  const tView = rootView[TVIEW];
-
-  // Hydration info is on the host element and needs to be retrieved
-  // and passed to the component LView.
-  let hydrationInfo: DehydratedView | null = null;
-  if (hostRNode !== null) {
-    hydrationInfo = retrieveHydrationInfo(hostRNode, rootView[INJECTOR]);
-  }
-  const viewRenderer = environment.rendererFactory.createRenderer(hostRNode, rootComponentDef);
-  const componentView = createLView(
-    rootView,
-    getOrCreateComponentTView(rootComponentDef),
-    null,
-    getInitialLViewFlagsFromDef(rootComponentDef),
-    rootView[tNode.index],
-    tNode,
-    environment,
-    viewRenderer,
-    null,
-    null,
-    hydrationInfo,
-  );
-
-  if (tView.firstCreatePass) {
-    markAsComponentHost(tView, tNode, rootDirectives.length - 1);
-  }
-
-  addToEndOfViewTree(rootView, componentView);
-
-  // Store component view at node index, with node as the HOST
-  return (rootView[tNode.index] = componentView);
-}
 
 /**
  * Creates a root component and sets it up with features and host bindings.Shared by

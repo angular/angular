@@ -1005,7 +1005,7 @@ function instantiateAllDirectives(
   // since it is used to inject some special symbols like `ChangeDetectorRef`.
   if (isComponentHost(tNode)) {
     ngDevMode && assertTNodeType(tNode, TNodeType.AnyRNode);
-    addComponentLogic(
+    createComponentLView(
       lView,
       tNode as TElementNode,
       tView.data[start + tNode.componentOffset] as ComponentDef<unknown>,
@@ -1274,7 +1274,11 @@ export function getInitialLViewFlagsFromDef(def: ComponentDef<unknown>): LViewFl
   return flags;
 }
 
-function addComponentLogic<T>(lView: LView, hostTNode: TElementNode, def: ComponentDef<T>): void {
+export function createComponentLView<T>(
+  lView: LView,
+  hostTNode: TElementNode,
+  def: ComponentDef<T>,
+): LView {
   const native = getNativeByTNode(hostTNode, lView) as RElement;
   const tView = getOrCreateComponentTView(def);
 
@@ -1300,7 +1304,7 @@ function addComponentLogic<T>(lView: LView, hostTNode: TElementNode, def: Compon
 
   // Component view will always be created before any injected LContainers,
   // so this is a regular element, wrap it with the component view
-  lView[hostTNode.index] = componentView;
+  return (lView[hostTNode.index] = componentView);
 }
 
 export function elementAttributeInternal(
