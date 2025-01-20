@@ -616,6 +616,43 @@ runInEachFileSystem(() => {
       );
     });
 
+    it('should capture new expression dependencies', () => {
+      enableHmr();
+      env.write(
+        'test.ts',
+        `
+          import {Component, InjectionToken, Optional} from '@angular/core';
+          const token = new InjectionToken<number>('TEST');
+          const dep = new InjectionToken<number>('TEST-DEP');
+          const value = 5;
+          @Component({
+            template: '',
+            providers: [{
+              provide: token,
+              useFactory: () => {
+                const v = value;
+                return v;
+              },
+              deps: [[new Optional(), dep]]
+            }]
+          })
+          export class Cmp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      const hmrContents = env.driveHmr('test.ts', 'Cmp');
+
+      expect(jsContents).toContain(
+        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [token, value, Optional, dep, Component]));',
+      );
+      expect(hmrContents).toContain(
+        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, token, value, Optional, dep, Component) {',
+      );
+    });
+
     it('should preserve eager standalone imports in HMR even if they are not used in the template', () => {
       enableHmr({
         // Disable class metadata since it can add noise to the test.

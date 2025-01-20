@@ -245,7 +245,8 @@ class PotentialTopLevelReadsVisitor extends o.RecursiveAstVisitor {
       ts.isWhileStatement(parent) ||
       ts.isSwitchStatement(parent) ||
       ts.isCaseClause(parent) ||
-      ts.isThrowStatement(parent)
+      ts.isThrowStatement(parent) ||
+      ts.isNewExpression(parent)
     ) {
       return parent.expression === node;
     }
