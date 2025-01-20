@@ -82,6 +82,7 @@ export class DirectiveForestComponent {
   readonly itemHeight = 18;
 
   private _initialized = false;
+  private _forestRoot: FlatNode | null = null;
   private resizeObserver: ResizeObserver;
 
   private _tabUpdate = inject(TabUpdate);
@@ -111,7 +112,8 @@ export class DirectiveForestComponent {
       const result = this.updateForestResult();
       const changed =
         result.movedItems.length || result.newItems.length || result.removedItems.length;
-      if (this.currentSelectedElement() && changed) {
+
+      if (changed) {
         this._reselectNodeOnUpdate();
       }
     });
@@ -196,6 +198,8 @@ export class DirectiveForestComponent {
     );
     if (nodeThatStillExists) {
       this.select(nodeThatStillExists);
+    } else if (this._forestRoot) {
+      this.select(this._forestRoot);
     } else {
       this.clearSelectedNode();
     }
@@ -207,6 +211,8 @@ export class DirectiveForestComponent {
     removedItems: FlatNode[];
   } {
     const result = this.dataSource.update(forest, this.showCommentNodes());
+    this._forestRoot = this.dataSource.data[0];
+
     if (!this._initialized && forest && forest.length) {
       this.treeControl.expandAll();
       this._initialized = true;
