@@ -221,7 +221,7 @@
     "preact-render-to-string": "^6.2.1",
     "prettier": "^3.0.0",
     "semver": "^7.3.5",
-    "shiki": "^1.11.1",
+    "shiki": "^2.0.0",
     "tmp": "^0.2.3",
     "ts-node": "^10.9.1",
     "tsec": "0.2.8",
