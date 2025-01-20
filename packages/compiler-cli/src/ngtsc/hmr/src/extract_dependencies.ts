@@ -310,6 +310,10 @@ class PotentialTopLevelReadsVisitor extends o.RecursiveAstVisitor {
       return (parent.propertyName || parent.name) === node;
     }
 
+    if (ts.isConditionalExpression(parent)) {
+      return parent.condition === node || parent.whenFalse === node || parent.whenTrue === node;
+    }
+
     // Otherwise it's not top-level.
     return false;
   }
