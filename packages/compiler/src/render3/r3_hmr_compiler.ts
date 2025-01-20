@@ -54,7 +54,7 @@ export interface R3HmrNamespaceDependency {
  */
 export function compileHmrInitializer(meta: R3HmrMetadata): o.Expression {
   const id = encodeURIComponent(`${meta.filePath}@${meta.className}`);
-  const urlPartial = `/@ng/component?c=${id}&t=`;
+  const urlPartial = `./@ng/component?c=${id}&t=`;
   const moduleName = 'm';
   const dataName = 'd';
   const timestampName = 't';
