@@ -29,6 +29,7 @@ import {
   ViewEncapsulation,
   ɵNG_COMP_DEF,
   ɵɵreplaceMetadata,
+  ɵɵsetComponentScope,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {compileComponent} from '@angular/core/src/render3/jit/directive';
@@ -36,6 +37,7 @@ import {angularCoreEnv} from '@angular/core/src/render3/jit/environment';
 import {clearTranslations, loadTranslations} from '@angular/localize';
 import {computeMsgId} from '@angular/compiler';
 import {EVENT_MANAGER_PLUGINS} from '@angular/platform-browser';
+import {ComponentType} from '@angular/core/src/render3';
 
 describe('hot module replacement', () => {
   it('should recreate a single usage of a basic component', () => {
@@ -527,6 +529,36 @@ describe('hot module replacement', () => {
         </child-cmp>
       `,
     );
+  });
+
+  it('should carry over dependencies defined by setComponentScope', () => {
+    // In some cases the AoT compiler produces a `setComponentScope` for non-standalone
+    // components. We simulate it here by declaring two components that are not standalone
+    // and manually calling `setComponentScope`.
+    @Component({selector: 'child-cmp', template: 'hello', standalone: false})
+    class ChildCmp {}
+
+    @Component({template: 'Initial <child-cmp/>', standalone: false})
+    class RootCmp {}
+
+    ɵɵsetComponentScope(RootCmp as ComponentType<RootCmp>, [ChildCmp], []);
+
+    const fixture = TestBed.createComponent(RootCmp);
+    fixture.detectChanges();
+    markNodesAsCreatedInitially(fixture.nativeElement);
+    expectHTML(fixture.nativeElement, 'Initial <child-cmp>hello</child-cmp>');
+
+    replaceMetadata(RootCmp, {
+      standalone: false,
+      template: 'Changed <child-cmp/>',
+    });
+    fixture.detectChanges();
+
+    const recreatedNodes = childrenOf(fixture.nativeElement);
+    verifyNodesRemainUntouched(fixture.nativeElement, recreatedNodes);
+    verifyNodesWereRecreated(recreatedNodes);
+
+    expectHTML(fixture.nativeElement, 'Changed <child-cmp>hello</child-cmp>');
   });
 
   describe('queries', () => {

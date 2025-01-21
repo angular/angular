@@ -7,7 +7,7 @@
  */
 
 import {Type} from '../interface/type';
-import {assertDefined, assertNotEqual} from '../util/assert';
+import {assertDefined, assertEqual, assertNotEqual} from '../util/assert';
 import {assertLView} from './assert';
 import {getComponentDef} from './def_getters';
 import {assertComponentDef} from './errors';
@@ -45,6 +45,7 @@ import {destroyLView, removeViewFromDOM} from './node_manipulation';
 import {RendererFactory} from './interfaces/renderer';
 import {NgZone} from '../zone';
 import {ViewEncapsulation} from '../metadata/view';
+import {NG_COMP_DEF} from './fields';
 
 /**
  * Replaces the metadata of a component type and re-renders all live instances of the component.
@@ -61,7 +62,7 @@ export function ɵɵreplaceMetadata(
   locals: unknown[],
 ) {
   ngDevMode && assertComponentDef(type);
-  const oldDef = getComponentDef(type)!;
+  const currentDef = getComponentDef(type)!;
 
   // The reason `applyMetadata` is a callback that is invoked (almost) immediately is because
   // the compiler usually produces more code than just the component definition, e.g. there
@@ -69,6 +70,13 @@ export function ɵɵreplaceMetadata(
   // calls. The callback allows us to keep them isolate from the rest of the app and to invoke
   // them at the right time.
   applyMetadata.apply(null, [type, namespaces, ...locals]);
+
+  const {newDef, oldDef} = mergeWithExistingDefinition(currentDef, getComponentDef(type)!);
+
+  // TODO(crisbeto): the `applyMetadata` call above will replace the definition on the type.
+  // Ideally we should adjust the compiler output so the metadata is returned, however that'll
+  // require some internal changes. We re-add the metadata here manually.
+  (type as any)[NG_COMP_DEF] = newDef;
 
   // If a `tView` hasn't been created yet, it means that this component hasn't been instantianted
   // before. In this case there's nothing left for us to do aside from patching it in.
@@ -78,10 +86,42 @@ export function ɵɵreplaceMetadata(
       // Note: we have the additional check, because `IsRoot` can also indicate
       // a component created through something like `createComponent`.
       if (root[FLAGS] & LViewFlags.IsRoot && root[PARENT] === null) {
-        recreateMatchingLViews(oldDef, root);
+        recreateMatchingLViews(newDef, oldDef, root);
       }
     }
   }
+}
+
+/**
+ * Merges two component definitions while preseving the original one in place.
+ * @param currentDef Definition that should receive the new metadata.
+ * @param newDef Source of the new metadata.
+ */
+function mergeWithExistingDefinition(
+  currentDef: ComponentDef<unknown>,
+  newDef: ComponentDef<unknown>,
+) {
+  // Clone the current definition since we reference its original data further
+  // down in the replacement process (e.g. when destroying the renderer).
+  const clone = {...currentDef};
+
+  // Assign the new metadata in place while preserving the object literal. It's important to
+  // Keep the object in place, because there can be references to it, for example in the
+  // `directiveDefs` of another definition.
+  const replacement = Object.assign(currentDef, newDef, {
+    // We need to keep the existing directive and pipe defs, because they can get patched on
+    // by a call to `setComponentScope` from a module file. That call won't make it into the
+    // HMR replacement function, because it lives in an entirely different file.
+    directiveDefs: clone.directiveDefs,
+    pipeDefs: clone.pipeDefs,
+
+    // Preserve the old `setInput` function, because it has some state.
+    // This is fine, because the component instance is preserved as well.
+    setInput: clone.setInput,
+  });
+
+  ngDevMode && assertEqual(replacement, currentDef, 'Expected definition to be merged in place');
+  return {newDef: replacement, oldDef: clone};
 }
 
 /**
@@ -89,7 +129,11 @@ export function ɵɵreplaceMetadata(
  * @param oldDef Component definition to search for.
  * @param rootLView View from which to start the search.
  */
-function recreateMatchingLViews(oldDef: ComponentDef<unknown>, rootLView: LView): void {
+function recreateMatchingLViews(
+  newDef: ComponentDef<unknown>,
+  oldDef: ComponentDef<unknown>,
+  rootLView: LView,
+): void {
   ngDevMode &&
     assertDefined(
       oldDef.tView,
@@ -102,7 +146,7 @@ function recreateMatchingLViews(oldDef: ComponentDef<unknown>, rootLView: LView)
   // produce false positives when using inheritance.
   if (tView === oldDef.tView) {
     ngDevMode && assertComponentDef(oldDef.type);
-    recreateLView(getComponentDef(oldDef.type)!, oldDef, rootLView);
+    recreateLView(newDef, oldDef, rootLView);
     return;
   }
 
@@ -112,14 +156,14 @@ function recreateMatchingLViews(oldDef: ComponentDef<unknown>, rootLView: LView)
     if (isLContainer(current)) {
       // The host can be an LView if a component is injecting `ViewContainerRef`.
       if (isLView(current[HOST])) {
-        recreateMatchingLViews(oldDef, current[HOST]);
+        recreateMatchingLViews(newDef, oldDef, current[HOST]);
       }
 
       for (let j = CONTAINER_HEADER_OFFSET; j < current.length; j++) {
-        recreateMatchingLViews(oldDef, current[j]);
+        recreateMatchingLViews(newDef, oldDef, current[j]);
       }
     } else if (isLView(current)) {
-      recreateMatchingLViews(oldDef, current);
+      recreateMatchingLViews(newDef, oldDef, current);
     }
   }
 }
