@@ -992,11 +992,11 @@ export interface InputFunction {
     <T>(): InputSignal<T | undefined>;
     <T>(initialValue: T, opts?: InputOptionsWithoutTransform<T>): InputSignal<T>;
     <T>(initialValue: undefined, opts: InputOptionsWithoutTransform<T>): InputSignal<T | undefined>;
-    <T, TransformT>(initialValue: T, opts: InputOptionsWithTransform<T, TransformT>): InputSignalWithTransform<T, TransformT>;
-    <T, TransformT>(initialValue: undefined, opts: InputOptionsWithTransform<T | undefined, TransformT>): InputSignalWithTransform<T | undefined, TransformT>;
+    <T, TransformT = T>(initialValue: T, opts: InputOptionsWithTransform<T, TransformT>): InputSignalWithTransform<T, TransformT>;
+    <T, TransformT = T>(initialValue: undefined, opts: InputOptionsWithTransform<T | undefined, TransformT>): InputSignalWithTransform<T | undefined, TransformT>;
     required: {
         <T>(opts?: InputOptionsWithoutTransform<T>): InputSignal<T>;
-        <T, TransformT>(opts: InputOptionsWithTransform<T, TransformT>): InputSignalWithTransform<T, TransformT>;
+        <T, TransformT = T>(opts: InputOptionsWithTransform<T, TransformT>): InputSignalWithTransform<T, TransformT>;
     };
 }
 

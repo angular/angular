@@ -60,7 +60,7 @@ export interface InputFunction {
    * The input accepts values of type `TransformT` and the given
    * transform function will transform the value to type `T`.
    */
-  <T, TransformT>(
+  <T, TransformT = T>(
     initialValue: T,
     opts: InputOptionsWithTransform<T, TransformT>,
   ): InputSignalWithTransform<T, TransformT>;
@@ -70,7 +70,7 @@ export interface InputFunction {
    *
    * The input accepts values of type `TransformT` and the given
    * transform function will transform the value to type `T|undefined`.
-   */ <T, TransformT>(
+   */ <T, TransformT = T>(
     initialValue: undefined,
     opts: InputOptionsWithTransform<T | undefined, TransformT>,
   ): InputSignalWithTransform<T | undefined, TransformT>;
@@ -92,7 +92,7 @@ export interface InputFunction {
      * The input accepts values of type `TransformT` and the given
      * transform function will transform the value to type `T`.
      */
-    <T, TransformT>(
+    <T, TransformT = T>(
       opts: InputOptionsWithTransform<T, TransformT>,
     ): InputSignalWithTransform<T, TransformT>;
   };
