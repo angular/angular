@@ -68,9 +68,7 @@ If no other option is available, you can specify `identity`. This tells Angular 
 The `@for` block replaces `*ngFor` for iteration, and has several differences compared to its
 structural directive `NgFor` predecessor:
 
-* The `@for` block requires a tracking expression to uniquely identify items in the collection.
-  While `NgFor` requires a `trackBy` _method_, however, the `@for` block simplifies tracking by
-  accepting a `track` _expression_.
+* The `@for` block requires a tracking expression to uniquely identify items in the collection and simplifies tracking by accepting a `track` _expression_. While `NgFor` uses a `trackBy` _method_, if not provided `NgFor` defaults to tracking items by identity.
 * You can specify content to show when the collection is empty with the `@empty` block.
 * The `@for` block uses an optimized algorithm for determining a minimal number of DOM operations
   necessary after a collection is modified. While `NgFor` allowed developers to provide a custom
@@ -86,9 +84,6 @@ the `trackBy` function:
   {{ item.name }}
 }
 ```
-
-With `NgFor`, loops over immutable data without `trackBy` are the most common cause of performance
-bugs across Angular applications.
 
 ### Contextual variables in `@for` blocks
 
