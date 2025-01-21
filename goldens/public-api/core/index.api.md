@@ -186,6 +186,7 @@ export interface AttributeDecorator {
 
 // @public
 export interface BaseResourceOptions<T, R> {
+    defaultValue?: NoInfer<T>;
     equal?: ValueEqualityFn<T>;
     injector?: Injector;
     request?: () => R;
@@ -1603,6 +1604,11 @@ export interface Resource<T> {
     readonly status: Signal<ResourceStatus>;
     readonly value: Signal<T>;
 }
+
+// @public
+export function resource<T, R>(options: ResourceOptions<T, R> & {
+    defaultValue: NoInfer<T>;
+}): ResourceRef<T>;
 
 // @public
 export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | undefined>;
