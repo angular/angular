@@ -196,10 +196,11 @@ class PotentialTopLevelReadsVisitor extends o.RecursiveAstVisitor {
    * TypeScript identifiers are used both when referring to a variable (e.g. `console.log(foo)`)
    * and for names (e.g. `{foo: 123}`). This function determines if the identifier is a top-level
    * variable read, rather than a nested name.
-   * @param node Identifier to check.
+   * @param identifier Identifier to check.
    */
-  private isTopLevelIdentifierReference(node: ts.Identifier): boolean {
-    const parent = node.parent;
+  private isTopLevelIdentifierReference(identifier: ts.Identifier): boolean {
+    let node = identifier as ts.Expression;
+    let parent = node.parent;
 
     // The parent might be undefined for a synthetic node or if `setParentNodes` is set to false
     // when the SourceFile was created. We can account for such cases using the type checker, at
@@ -207,6 +208,15 @@ class PotentialTopLevelReadsVisitor extends o.RecursiveAstVisitor {
     // compiler sets `setParentNodes: true`.
     if (!parent) {
       return false;
+    }
+
+    // Unwrap parenthesized identifiers, but use the closest parenthesized expression
+    // as the reference node so that we can check cases like `{prop: ((value))}`.
+    if (ts.isParenthesizedExpression(parent) && parent.expression === node) {
+      while (parent && ts.isParenthesizedExpression(parent)) {
+        node = parent;
+        parent = parent.parent;
+      }
     }
 
     // Identifier referenced at the top level. Unlikely.
