@@ -325,7 +325,6 @@
 
 "@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#29bf247ccf86684a4279df8181235345d4830d01":
   version "0.0.0-49cc304dc933473935c724aef1c8004446927c46"
-  uid "29bf247ccf86684a4279df8181235345d4830d01"
   resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#29bf247ccf86684a4279df8181235345d4830d01"
   dependencies:
     "@angular/benchpress" "0.3.0"
@@ -482,7 +481,6 @@
 
 "@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#abf82c69f968d1e1b94a84390ff3799a99a5afc4":
   version "0.0.0-49cc304dc933473935c724aef1c8004446927c46"
-  uid abf82c69f968d1e1b94a84390ff3799a99a5afc4
   resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#abf82c69f968d1e1b94a84390ff3799a99a5afc4"
   dependencies:
     "@google-cloud/spanner" "7.16.0"
@@ -7967,8 +7965,7 @@ domhandler@^5.0.2, domhandler@^5.0.3:
     domelementtype "^2.3.0"
 
 "domino@https://github.com/angular/domino.git#8f228f8862540c6ccd14f76b5a1d9bb5458618af":
-  version "2.1.6+git"
-  uid "8f228f8862540c6ccd14f76b5a1d9bb5458618af"
+  version "2.1.6"
   resolved "https://github.com/angular/domino.git#8f228f8862540c6ccd14f76b5a1d9bb5458618af"
 
 dompurify@^3.2.1:
@@ -18165,6 +18162,11 @@ zod@3.23.8:
   version "3.23.8"
   resolved "https://registry.yarnpkg.com/zod/-/zod-3.23.8.tgz#e37b957b5d52079769fb8097099b592f0ef4067d"
   integrity sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==
+
+zod@3.24.1:
+  version "3.24.1"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-3.24.1.tgz#27445c912738c8ad1e9de1bea0359fa44d9d35ee"
+  integrity sha512-muH7gBL9sI1nciMZV67X5fTKKBLtwpZ5VBp1vsOQzj1MhrBZ4wlVCm3gedKZWLp0Oyel8sIGfeiz54Su+OVT+A==
 
 zwitch@^2.0.4:
   version "2.0.4"

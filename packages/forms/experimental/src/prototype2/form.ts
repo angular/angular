@@ -1,18 +1,30 @@
 import {computed, type Signal, type WritableSignal} from '@angular/core';
 import {SIGNAL} from '@angular/core/primitives/signals';
-import {FormLogic} from './logic';
+import {INTERNAL} from './internal';
+import {FormLogic, type FormValidationError} from './logic';
 import {createOnAccessProxy} from './proxy';
-import {
-  addLogic,
-  isFormSchema,
-  type FormLogicSchema,
-  type FormSchema,
-  type FormValidationError,
-} from './schema';
-
-const LOGIC = Symbol('LOGIC');
+import {ruleInternal, type FormChildRule, type FormRule, type FormSchema} from './schema';
+import {getTypeErrorTree, mergeTypeErrorTree, type TypeValidationErrorTree} from './type-validator';
 
 export type Writable<T> = {-readonly [P in keyof T]: T[P]};
+
+export type Keys<T> = keyof T &
+  (any[] extends T
+    ? T extends Record<PropertyKey, unknown>
+      ? keyof T
+      : number
+    : T extends readonly unknown[]
+      ? Exclude<keyof T, keyof unknown[]>
+      : T extends Record<PropertyKey, unknown>
+        ? keyof T
+        : never);
+
+export type Form<T> = FormNode<T> &
+  (T extends Record<PropertyKey, unknown>
+    ? {readonly [K in Keys<T>]: Form<T[K]>}
+    : T extends readonly unknown[]
+      ? readonly Form<T[Keys<T>]>[]
+      : unknown);
 
 export type FormField<T> = WritableSignal<T> & {
   readonly valid: Signal<boolean>;
@@ -20,10 +32,16 @@ export type FormField<T> = WritableSignal<T> & {
   readonly errors: Signal<readonly FormValidationError[]>;
 };
 
-export type Form<T> = {
+export type FormNode<T> = {
   $: FormField<T>;
-  [LOGIC]: FormLogic<T>;
-} & (T extends Record<PropertyKey, unknown> ? {[K in keyof T]: Form<T[K]>} : {});
+  [INTERNAL]: {
+    logic: FormLogic<T>;
+    childRules: FormChildRule<T>[];
+    typeErrorTree?: TypeValidationErrorTree;
+  };
+};
+
+export type FormBacking<T> = {data: WritableSignal<T>; schema?: FormSchema<T>};
 
 export type FormDataType<T> =
   T extends Form<infer U> ? U : T extends FormSchema<infer U> ? U : never;
@@ -34,66 +52,70 @@ export function form<T>(data: WritableSignal<T>, schema?: FormSchema<T>): Form<T
   return makeForm(clonedData, schema);
 }
 
-export function logic<T>(form: Form<T>, schema: Partial<FormLogicSchema<T>> | FormSchema<T>) {
-  if (isFormSchema(schema)) {
-    addLogic(schema as FormSchema<T>, form);
-    for (const property of Object.keys(schema)) {
-      const childForm = form[property as keyof Form<T>] as Form<T[keyof T]>;
-      const childSchema = schema[property as keyof typeof schema] as FormSchema<T[keyof T]>;
-      logic(childForm, childSchema);
-    }
-  } else {
-    form[LOGIC].add(schema as Partial<FormLogicSchema<T>>);
-  }
-}
-
-function makeForm<T, K extends keyof T>(
-  data: WritableSignal<T>,
-  schema?: FormSchema<T>,
-  parentDisabled?: Signal<boolean | {reason: string}>,
-  parentProperty?: K,
-): Form<T> {
-  // Tear off the child data and schema from the parent if needed.
-  if (parentProperty !== undefined) {
-    const childData = computed(() => data()[parentProperty]) as WritableSignal<T>;
-    childData.set = (value) => data.update((old) => ({...old, [parentProperty]: value}));
-    childData.update = (fn) =>
-      data.update((old) => ({...old, [parentProperty]: fn(old[parentProperty] as T)}));
-    const childSchema =
-      schema === undefined || !(parentProperty in schema)
-        ? undefined
-        : (schema[parentProperty as keyof FormSchema<T>] as FormSchema<T>);
-    return makeForm(childData, childSchema, parentDisabled);
-  }
-  // Set up the proxy
-  const $ = data as unknown as Writable<FormField<T>>;
-  const formProxy = createOnAccessProxy(
-    {$, [LOGIC]: new FormLogic()},
-    (_, property) => makeForm(data, schema, $.disabled, property as keyof T) as Form<T>,
-  );
-  // Add logic from the schema
-  addLogic(schema, formProxy);
-  const logic = formProxy[LOGIC];
-  // Tack on statuses
-  $.errors = computed(() => logic.validate?.(data) ?? [], {equal: errorsEquality});
-  $.valid = computed(() => {
-    if ($.errors().length > 0) {
-      return false;
-    }
-    const value = data();
-    if (isObject(value)) {
-      for (const key of Object.keys(value)) {
-        if (!(formProxy[key as keyof Form<T>] as Form<unknown>).$.valid()) {
-          return false;
+function makeForm<T>(data: WritableSignal<T>, schema?: FormSchema<T>): Form<T> {
+  return createOnAccessProxy<T, FormBacking<T>, FormNode<T>>(
+    {data, schema},
+    {
+      wrap: ({data, schema}, parent, propertyInParent) => ({
+        $: data as FormField<T>,
+        [INTERNAL]: {
+          logic: new FormLogic(),
+          childRules: [] as FormChildRule<T>[],
+          typeErrorTree: mergeTypeErrorTree(
+            parent?.[INTERNAL].typeErrorTree?.property(propertyInParent!),
+            getTypeErrorTree(schema?.[INTERNAL].typeValidator, data),
+          ),
+        },
+      }),
+      descend: ({data, schema}, property) => {
+        // Descend into the specified properyt on both the data and the schema.
+        const childData = computed(() => data()[property]) as WritableSignal<T[keyof T]>;
+        childData.set = (value) => data.update((old) => ({...old, [property]: value}));
+        childData.update = (fn) => data.update((old) => ({...old, [property]: fn(old[property])}));
+        const childSchema =
+          schema !== undefined && schema[INTERNAL].hasProperty(property)
+            ? schema[INTERNAL].getProperty(property)
+            : undefined;
+        return {data: childData, schema: childSchema};
+      },
+      configure: (form, {data, schema}, parent, propertyInParent) => {
+        // Add any child rules from the parent. They apply to all properties on the parent.
+        for (let newRule of parent?.[INTERNAL].childRules ?? []) {
+          newRule = typeof newRule === 'function' ? newRule(propertyInParent as Keys<T>) : newRule;
+          ruleInternal(form as Form<T>, newRule as FormRule<T>);
         }
-      }
-    }
-    return true;
-  });
-  $.disabled = computed(() => parentDisabled?.() || (logic.disabled(data) ?? false), {
-    equal: booleanReasonEquality,
-  });
-  return formProxy;
+        // Add the logic from our schema.
+        for (const instantiateLogic of schema?.[INTERNAL].logic ?? []) {
+          instantiateLogic(form as Form<T>);
+        }
+        // Compute the field states.
+        const logic = form[INTERNAL].logic;
+        const $ = form.$ as Writable<FormField<T>>;
+        // TODO: consult the type errors tree here to determine errors
+        $.errors = computed(
+          () => [...(form[INTERNAL].typeErrorTree?.own() ?? []), ...(logic.validate?.(data) ?? [])],
+          {equal: errorsEquality},
+        );
+        $.valid = computed(() => {
+          if ($.errors().length > 0) {
+            return false;
+          }
+          const value = data();
+          if (isObjectOrArray(value)) {
+            for (const key of Object.keys(value)) {
+              if (!((form as Form<T>)[key as keyof Form<T>] as Form<T[keyof T]>).$.valid()) {
+                return false;
+              }
+            }
+          }
+          return true;
+        });
+        $.disabled = computed(() => parent?.$.disabled() || (logic.disabled(data) ?? false), {
+          equal: booleanReasonEquality,
+        });
+      },
+    },
+  ) as Form<T>;
 }
 
 function errorsEquality(a: FormValidationError[], b: FormValidationError[]) {
@@ -104,6 +126,6 @@ function booleanReasonEquality(a: boolean | {reason: string}, b: boolean | {reas
   return a === b || (typeof a === 'object' && typeof b === 'object' && a.reason === b.reason);
 }
 
-function isObject(value: unknown): value is Record<PropertyKey, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
+function isObjectOrArray(value: unknown): value is Record<PropertyKey, unknown> {
+  return typeof value === 'object' && value !== null;
 }
