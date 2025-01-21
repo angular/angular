@@ -106,7 +106,7 @@ runInEachFileSystem(() => {
       expect(jsContents).toContain(`import * as i0 from "@angular/core";`);
       expect(jsContents).toContain('function Cmp_HmrLoad(t) {');
       expect(jsContents).toContain(
-        'import(/* @vite-ignore */\nnew URL("./@ng/component?c=test.ts%40Cmp&t=" + encodeURIComponent(t), import.meta.url).href)',
+        'import(/* @vite-ignore */\n"./@ng/component?c=test.ts%40Cmp&t=" + encodeURIComponent(t))',
       );
       expect(jsContents).toContain(
         ').then(m => m.default && i0.ɵɵreplaceMetadata(Cmp, m.default, [i0], ' +
@@ -173,7 +173,7 @@ runInEachFileSystem(() => {
       expect(jsContents).toContain(`import * as i1 from "./dep";`);
       expect(jsContents).toContain('function Cmp_HmrLoad(t) {');
       expect(jsContents).toContain(
-        'import(/* @vite-ignore */\nnew URL("./@ng/component?c=test.ts%40Cmp&t=" + encodeURIComponent(t), import.meta.url).href)',
+        'import(/* @vite-ignore */\n"./@ng/component?c=test.ts%40Cmp&t=" + encodeURIComponent(t))',
       );
       expect(jsContents).toContain(
         ').then(m => m.default && i0.ɵɵreplaceMetadata(Cmp, m.default, [i0, i1], ' +

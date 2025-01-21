@@ -80,14 +80,8 @@ export function compileHmrInitializer(meta: R3HmrMetadata): o.Expression {
     .literal(urlPartial)
     .plus(o.variable('encodeURIComponent').callFn([o.variable(timestampName)]));
 
-  // import.meta.url
-  const urlBase = o.variable('import').prop('meta').prop('url');
-
-  // new URL(urlValue, urlBase).href
-  const urlHref = new o.InstantiateExpr(o.variable('URL'), [urlValue, urlBase]).prop('href');
-
   // function Cmp_HmrLoad(t) {
-  //   import(/* @vite-ignore */ urlHref).then((m) => m.default && replaceMetadata(...));
+  //   import(/* @vite-ignore */ urlValue).then((m) => m.default && replaceMetadata(...));
   // }
   const importCallback = new o.DeclareFunctionStmt(
     importCallbackName,
@@ -96,7 +90,7 @@ export function compileHmrInitializer(meta: R3HmrMetadata): o.Expression {
       // The vite-ignore special comment is required to prevent Vite from generating a superfluous
       // warning for each usage within the development code. If Vite provides a method to
       // programmatically avoid this warning in the future, this added comment can be removed here.
-      new o.DynamicImportExpr(urlHref, null, '@vite-ignore')
+      new o.DynamicImportExpr(urlValue, null, '@vite-ignore')
         .prop('then')
         .callFn([replaceCallback])
         .toStmt(),
