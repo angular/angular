@@ -40,13 +40,28 @@ import {DestroyRef} from '../linker/destroy_ref';
  *
  * @experimental
  */
+export function resource<T, R>(
+  options: ResourceOptions<T, R> & {defaultValue: NoInfer<T>},
+): ResourceRef<T>;
+
+/**
+ * Constructs a `Resource` that projects a reactive request to an asynchronous operation defined by
+ * a loader function, which exposes the result of the loading operation via signals.
+ *
+ * Note that `resource` is intended for _read_ operations, not operations which perform mutations.
+ * `resource` will cancel in-progress loads via the `AbortSignal` when destroyed or when a new
+ * request object becomes available, which could prematurely abort mutations.
+ *
+ * @experimental
+ */
+export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | undefined>;
 export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | undefined> {
   options?.injector || assertInInjectionContext(resource);
   const request = (options.request ?? (() => null)) as () => R;
   return new ResourceImpl<T | undefined, R>(
     request,
     getLoader(options),
-    undefined,
+    options.defaultValue,
     options.equal ? wrapEqualityFn(options.equal) : undefined,
     options.injector ?? inject(Injector),
   );
