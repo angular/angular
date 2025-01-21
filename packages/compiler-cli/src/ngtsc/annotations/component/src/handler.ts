@@ -1229,6 +1229,11 @@ export class ComponentDecoratorHandler
         for (const dep of dependencies) {
           if (dep.ref.node !== node) {
             eagerlyUsed.add(dep.ref.node);
+          } else {
+            const used = bound.getEagerlyUsedDirectives();
+            if (used.some((current) => current.ref.node === node)) {
+              eagerlyUsed.add(node);
+            }
           }
         }
       } else {

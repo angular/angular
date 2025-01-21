@@ -405,6 +405,52 @@ runInEachFileSystem(() => {
       expect(hmrContents).toBe(null);
     });
 
+    it('should capture self-referencing component during HMR', () => {
+      enableHmr();
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({selector: 'cmp', template: '<cmp/>',})
+          export class Cmp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      const hmrContents = env.driveHmr('test.ts', 'Cmp');
+      expect(jsContents).toContain('dependencies: [Cmp]');
+      expect(jsContents).toContain('ɵɵreplaceMetadata(Cmp, m.default, [i0], [Component]));');
+      expect(hmrContents).toContain(
+        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, Component) {',
+      );
+    });
+
+    it('should capture component in its own dependencies if it is not used in the template', () => {
+      enableHmr();
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({selector: 'cmp', template: ''})
+          export class Cmp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      const hmrContents = env.driveHmr('test.ts', 'Cmp');
+      expect(jsContents).not.toContain('dependencies');
+      expect(jsContents).toContain('ɵɵreplaceMetadata(Cmp, m.default, [i0], [Component]));');
+      expect(hmrContents).toContain(
+        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, Component) {',
+      );
+    });
+
     it('should capture shorthand property assignment dependencies', () => {
       enableHmr();
       env.write(
