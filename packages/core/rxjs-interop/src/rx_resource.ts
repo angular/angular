@@ -28,10 +28,21 @@ export interface RxResourceOptions<T, R> extends BaseResourceOptions<T, R> {
 
 /**
  * Like `resource` but uses an RxJS based `loader` which maps the request to an `Observable` of the
- * resource's value. Like `firstValueFrom`, only the first emission of the Observable is considered.
+ * resource's value.
  *
  * @experimental
  */
+export function rxResource<T, R>(
+  opts: RxResourceOptions<T, R> & {defaultValue: NoInfer<T>},
+): ResourceRef<T>;
+
+/**
+ * Like `resource` but uses an RxJS based `loader` which maps the request to an `Observable` of the
+ * resource's value.
+ *
+ * @experimental
+ */
+export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T | undefined>;
 export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T | undefined> {
   opts?.injector || assertInInjectionContext(rxResource);
   return resource<T, R>({

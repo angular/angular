@@ -161,6 +161,34 @@ describe('resource', () => {
     expect(echoResource.error()).toEqual(Error('KO'));
   });
 
+  it('should return a default value if provided', async () => {
+    const DEFAULT: string[] = [];
+    const request = signal(0);
+    const res = resource({
+      request,
+      loader: async ({request}) => {
+        if (request === 2) {
+          throw new Error('err');
+        }
+        return ['data'];
+      },
+      defaultValue: DEFAULT,
+      injector: TestBed.inject(Injector),
+    });
+    expect(res.value()).toBe(DEFAULT);
+
+    await TestBed.inject(ApplicationRef).whenStable();
+    expect(res.value()).not.toBe(DEFAULT);
+
+    request.set(1);
+    expect(res.value()).toBe(DEFAULT);
+
+    request.set(2);
+    await TestBed.inject(ApplicationRef).whenStable();
+    expect(res.error()).not.toBeUndefined();
+    expect(res.value()).toBe(DEFAULT);
+  });
+
   it('should _not_ load if the request resolves to undefined', () => {
     const counter = signal(0);
     const backend = new MockEchoBackend();

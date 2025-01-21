@@ -184,6 +184,12 @@ export interface BaseResourceOptions<T, R> {
   request?: () => R;
 
   /**
+   * The value which will be returned from the resource when a server value is unavailable, such as
+   * when the resource is still loading, or in an error state.
+   */
+  defaultValue?: NoInfer<T>;
+
+  /**
    * Equality function used to compare the return value of the loader.
    */
   equal?: ValueEqualityFn<T>;
