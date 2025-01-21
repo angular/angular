@@ -365,7 +365,6 @@
 
 "@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#75a2aee57f2d3bf783f74fcf4338228a3a69d0e6":
   version "0.0.0-5293c189424a61f7255d8171e3d653f983404851"
-  uid "75a2aee57f2d3bf783f74fcf4338228a3a69d0e6"
   resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#75a2aee57f2d3bf783f74fcf4338228a3a69d0e6"
   dependencies:
     "@google-cloud/spanner" "8.0.0"
@@ -16810,6 +16809,11 @@ zod-to-json-schema@^3.22.4, zod-to-json-schema@^3.24.1, zod-to-json-schema@^3.24
   version "3.24.6"
   resolved "https://registry.yarnpkg.com/zod-to-json-schema/-/zod-to-json-schema-3.24.6.tgz#5920f020c4d2647edfbb954fa036082b92c9e12d"
   integrity sha512-h/z3PKvcTcTetyjl1fkj79MHNEjm+HpD6NXheWjzOekY7kV+lwDYnHw+ivHkijnCSMz1yJaWBD9vu/Fcmk+vEg==
+
+zod@3.24.1:
+  version "3.24.1"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-3.24.1.tgz#27445c912738c8ad1e9de1bea0359fa44d9d35ee"
+  integrity sha512-muH7gBL9sI1nciMZV67X5fTKKBLtwpZ5VBp1vsOQzj1MhrBZ4wlVCm3gedKZWLp0Oyel8sIGfeiz54Su+OVT+A==
 
 zod@3.25.76:
   version "3.25.76"

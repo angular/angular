@@ -1,25 +1,10 @@
 import {type Signal} from '@angular/core';
-import {type Form} from './form';
-import {createOnAccessProxy} from './proxy';
+import {type Form, type Keys} from './form';
+import {INTERNAL} from './internal';
+import {type FormValidationError} from './logic';
+import {type TypeValidator} from './type-validator';
 
-export const ADD_LOGIC_FNS = Symbol('ADD_LOGIC_FNS');
-
-// Schema for a form.
-export type FormSchema<T> = {
-  [ADD_LOGIC_FNS]: ((from: Form<T>) => void)[];
-} & (T extends Record<PropertyKey, unknown> ? {[K in keyof T]: FormSchema<T[K]>} : {});
-
-export function schema<T>(base: FormSchema<T>, definition: (root: Form<T>) => void): FormSchema<T>;
-export function schema<T>(definition: (root: Form<T>) => void): FormSchema<T>;
-export function schema<T>(
-  ...args: [...([FormSchema<T>] | []), (root: Form<T>) => void]
-): FormSchema<T> {
-  const base = typeof args[0] === 'function' ? undefined : args[0];
-  const definition = args[args.length - 1] as (root: Form<T>) => void;
-  const root = makeSchema(base);
-  root[ADD_LOGIC_FNS].push((form: Form<T>) => definition(form));
-  return root;
-}
+let isInSchemaContext = false;
 
 export type ValidateResult = FormValidationError[] | FormValidationError | string | null;
 
@@ -30,29 +15,131 @@ export type FormLogicSchema<T> = {
   readonly disabled: (value: Signal<T>) => DisabledResult;
 };
 
-export class FormValidationError {
-  constructor(readonly message: string) {}
+export type FormRule<T> = Partial<FormLogicSchema<T>> | FormSchema<T>;
 
-  equals(other: FormValidationError) {
-    return this.constructor === other.constructor && this.message === other.message;
+export type FormChildRule<T> = FormRule<T[Keys<T>]> | ((key: Keys<T>) => FormRule<T[Keys<T>]>);
+
+export class FormSchema<T> {
+  private properties = {} as T extends Record<PropertyKey, unknown>
+    ? {[K in Keys<T>]: FormSchema<T[K]>}
+    : {};
+
+  constructor(
+    private typeValidator?: TypeValidator<T>,
+    private base?: FormSchema<T>,
+  ) {
+    this[INTERNAL].typeValidator = typeValidator;
+    this[INTERNAL].logic = [...(base?.[INTERNAL].logic ?? [])];
+  }
+
+  extend(definition: (root: Form<T>) => void) {
+    const s = new FormSchema(this.typeValidator, this);
+    s[INTERNAL].addLogic(definition);
+    return s;
+  }
+
+  [INTERNAL] = {
+    typeValidator: undefined as TypeValidator<T> | undefined,
+
+    logic: [] as ((from: Form<T>) => void)[],
+
+    addLogic: (definition?: (root: Form<T>) => void) => {
+      if (definition === undefined) {
+        return;
+      }
+      this[INTERNAL].logic.push((f) => {
+        isInSchemaContext = true;
+        definition(f);
+        isInSchemaContext = false;
+      });
+    },
+
+    getProperty: <K extends keyof T>(property: K): FormSchema<T[K]> => {
+      // Retreive the cached schema for the given property.
+      const ownProperties = this.properties as unknown as Record<K, FormSchema<T[K]>>;
+      if (ownProperties.hasOwnProperty(property)) {
+        return ownProperties[property];
+      }
+      // If there was no cached schema, create a new one, cache it, and return it.
+      const childSchema = new FormSchema(
+        undefined,
+        this.base !== undefined && this.base.properties.hasOwnProperty(property)
+          ? (this.base.properties as unknown as Record<K, FormSchema<T[K]>>)[property]
+          : undefined,
+      );
+      ownProperties[property] = childSchema;
+      return childSchema;
+    },
+
+    hasProperty: (property: keyof T) => this.properties.hasOwnProperty(property),
+
+    propertyKeys: () => Object.keys(this.properties) as (keyof T)[],
+  };
+}
+
+export function schema<T>(): FormSchema<T>;
+export function schema<T>(typeValidator: TypeValidator<T>): FormSchema<T>;
+export function schema<T>(definition: (root: Form<T>) => void): FormSchema<T>;
+export function schema<T>(
+  typeValidator: TypeValidator<T>,
+  definition: (root: Form<T>) => void,
+): FormSchema<T>;
+export function schema<T>(
+  typeValidatorOrDefinition?: TypeValidator<T> | ((root: Form<T>) => void),
+  definition?: (root: Form<T>) => void,
+): FormSchema<T> {
+  const typeValidator: TypeValidator<T> | undefined =
+    typeof typeValidatorOrDefinition === 'function' ? undefined : typeValidatorOrDefinition;
+  definition =
+    typeof typeValidatorOrDefinition === 'function' ? typeValidatorOrDefinition : definition;
+  const s = new FormSchema<T>(typeValidator);
+  s[INTERNAL].addLogic(definition);
+  return s;
+}
+
+export function rule<T>(form: Form<T>, newRule: FormRule<T>) {
+  checkSchemaContext('rule');
+  ruleInternal(form, newRule);
+}
+
+export function each<T>(form: Form<T>, newRule: FormChildRule<T>) {
+  checkSchemaContext('each');
+  eachInternal(form, newRule);
+}
+
+export function ruleInternal<T>(form: Form<T>, newRule: FormRule<T>) {
+  if (newRule instanceof FormSchema) {
+    // If the rule is itself a full schema, run the schema's logic instantiation functions.
+    for (const instantiateLogic of newRule[INTERNAL].logic) {
+      instantiateLogic(form);
+    }
+    // Then apply any child schemas as rules to their respective child forms.
+    for (const property of newRule[INTERNAL].propertyKeys()) {
+      const childForm = form[property as keyof Form<T>] as Form<T[keyof T]>;
+      const childRule = newRule[INTERNAL].getProperty(property);
+      ruleInternal(childForm, childRule);
+    }
+  } else {
+    form[INTERNAL].logic.add(newRule);
   }
 }
 
-export function addLogic<T>(schema: FormSchema<T> | undefined, form: Form<T>) {
-  for (const fn of schema?.[ADD_LOGIC_FNS] ?? []) {
-    fn(form);
+function eachInternal<T>(form: Form<T>, newRule: FormChildRule<T>) {
+  // Add the child rule to the form so the form ca add it to new child forms that it creates.
+  form[INTERNAL].childRules.push(newRule);
+  // Then apply the rule to all existing child forms.
+  // TODO: why doesn't `Object.keys` work here? probably nuking some well-known symbol on the proxy.
+  for (const property of Reflect.ownKeys(form)) {
+    const childForm = form[property as keyof Form<T>] as Form<T[Keys<T>]>;
+    if (typeof newRule === 'function') {
+      newRule = newRule(property as Keys<T>);
+    }
+    ruleInternal(childForm, newRule);
   }
 }
 
-export function isFormSchema(value: unknown): value is FormSchema<unknown> {
-  return typeof value === 'object' && !!(value as FormSchema<unknown>)[ADD_LOGIC_FNS];
-}
-
-// Makes a new `FormSchema`, optionally based on an existing schema.
-function makeSchema<T>(base?: FormSchema<T>): FormSchema<T> {
-  return createOnAccessProxy({[ADD_LOGIC_FNS]: [...(base?.[ADD_LOGIC_FNS] ?? [])]}, (_, key) => {
-    const property = key as keyof FormSchema<T>;
-    const childSchema = base === undefined || !(property in base) ? undefined : base[property];
-    return makeSchema(childSchema as FormSchema<T[keyof T]>) as FormSchema<T>;
-  });
+function checkSchemaContext(name: string) {
+  if (!isInSchemaContext) {
+    throw Error(`\`${name}\` can only be called inside \`schema\``);
+  }
 }

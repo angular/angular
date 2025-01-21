@@ -1,27 +1,65 @@
-const PROPERTIES = Symbol('PROPERTIES');
+export const PROXY_TREE = Symbol('PROXY_TREE');
 
-export function createOnAccessProxy<B, W>(
+export type ProxyTreeMeta<T, B extends Object, W> = {
+  [PROXY_TREE]: {
+    backing: B;
+    parent: ProxyWrapped<unknown, B, W> | undefined;
+    propertyInParent: PropertyKey | undefined;
+    properties: Record<keyof T, ProxyWrapped<T[keyof T], B, W>>;
+  };
+};
+
+export type ProxyWrapped<T, B extends Object, W> = W &
+  ProxyTreeMeta<T, B, W> &
+  (T extends Record<PropertyKey, unknown>
+    ? {readonly [K in keyof T]: ProxyWrapped<T[K], B, W>}
+    : T extends readonly unknown[]
+      ? readonly ProxyWrapped<T[number], B, W>[]
+      : {});
+
+export function createOnAccessProxy<T, B extends Object, W>(
   backing: B,
-  wrap: (backing: B, property: PropertyKey) => W,
-): W {
-  return new Proxy(
-    {...backing, [PROPERTIES]: {} as Record<keyof B, W>},
+  callbacks: {
+    wrap: (backing: B, parent?: ProxyWrapped<unknown, B, W>, propertyInParent?: PropertyKey) => W;
+    descend?: (backing: B, property: keyof T) => unknown;
+    configure?: (
+      wrapped: ProxyWrapped<T, B, W>,
+      backing: B,
+      parent?: ProxyWrapped<unknown, B, W>,
+      propertyInParent?: PropertyKey,
+    ) => void;
+  },
+  parent?: ProxyWrapped<unknown, B, W>,
+  propertyInParent?: PropertyKey,
+): ProxyWrapped<T, B, W> {
+  const {wrap, descend, configure} = {
+    descend: (backing: B, property: keyof B) => backing[property],
+    configure: () => {},
+    ...callbacks,
+  };
+  const wrapped = new Proxy(
     {
-      get(target, key) {
-        const property = key as keyof B;
-        if (target.hasOwnProperty(property)) {
-          return target[property];
+      ...wrap(backing, parent, propertyInParent),
+      [PROXY_TREE]: {backing, parent, propertyInParent, properties: {}},
+    } as W & ProxyTreeMeta<T, B, W>,
+    {
+      get(target, key, receiver) {
+        if (target.hasOwnProperty(key)) {
+          return Reflect.get(target, key, receiver);
         }
-        let wrappedChild = target[PROPERTIES][property] ?? wrap(backing[property] as B, property);
-        target[PROPERTIES][property] = wrappedChild;
+        const property = key as keyof T;
+        const backingChild = descend(backing, property as never);
+        const wrappedChild =
+          target[PROXY_TREE].properties[property] ??
+          createOnAccessProxy(backingChild as unknown as B, callbacks, wrapped, property);
+        target[PROXY_TREE].properties[property] = wrappedChild;
         return wrappedChild;
       },
-      has(target, key) {
-        return target[PROPERTIES].hasOwnProperty(key);
-      },
       ownKeys(target) {
-        return Reflect.ownKeys(target[PROPERTIES]);
+        return Reflect.ownKeys(target[PROXY_TREE].properties);
       },
     },
-  ) as W;
+  ) as ProxyWrapped<T, B, W>;
+  configure(wrapped, backing, parent, propertyInParent);
+  return wrapped;
 }
