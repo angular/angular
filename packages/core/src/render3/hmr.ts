@@ -266,9 +266,31 @@ function recreateLView(
 
   // The callback isn't guaranteed to be inside the Zone so we need to bring it in ourselves.
   if (zone === null) {
-    recreate();
+    executeWithRefreshFallback(recreate);
   } else {
-    zone.run(recreate);
+    zone.run(() => executeWithRefreshFallback(recreate));
+  }
+}
+
+/** Runs an HMR-related function and falls back to refreshing the page if it fails. */
+function executeWithRefreshFallback(callback: () => void) {
+  try {
+    callback();
+  } catch (e) {
+    const error = e as {message?: string};
+    const meta = import.meta as {
+      hot?: {send?: (name: string, data: {text: string; kind?: string}) => void};
+    };
+
+    // If we're able to send a message back to the server, forward the error to
+    // it and refresh the page so the user isn't left in a broken state.
+    if (error.message && meta && meta.hot?.send) {
+      meta.hot.send('angular:log', {text: error.message, kind: 'text'});
+      // Give the message some time to go out.
+      setTimeout(() => location.reload(), 500);
+    } else {
+      throw error;
+    }
   }
 }
 
