@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {findMatchingDehydratedView} from '../../hydration/views';
+import {isDetachedByI18n} from '../../i18n/utils';
 import {newArray} from '../../util/array_utils';
 import {assertLContainer, assertTNode} from '../assert';
 import {ComponentTemplate} from '../interfaces/definition';
-import {TAttributes, TElementNode, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
+import {TAttributes, TElementNode, TNode, TNodeType} from '../interfaces/node';
 import {ProjectionSlots} from '../interfaces/projection';
 import {
   DECLARATION_COMPONENT_VIEW,
@@ -200,10 +201,7 @@ export function ɵɵprojection(
 
   if (isEmpty && fallbackIndex !== null) {
     insertFallbackContent(lView, tView, fallbackIndex);
-  } else if (
-    isNodeCreationMode &&
-    (tProjectionNode.flags & TNodeFlags.isDetached) !== TNodeFlags.isDetached
-  ) {
+  } else if (isNodeCreationMode && !isDetachedByI18n(tProjectionNode)) {
     // re-distribution of projectable nodes is stored on a component's view level
     applyProjection(tView, lView, tProjectionNode);
   }

@@ -389,6 +389,7 @@
   "isCssClassMatching",
   "isCurrentTNodeParent",
   "isDestroyed",
+  "isDetachedByI18n",
   "isElementNode",
   "isEnvironmentProviders",
   "isFunction",
