@@ -272,21 +272,9 @@ export function executeTemplate<T>(
 /**
  * Creates directive instances.
  */
-export function createDirectivesInstancesInInstruction(
-  tView: TView,
-  lView: LView,
-  tNode: TDirectiveHostNode,
-) {
-  if (!getBindingsEnabled()) return;
-  attachPatchData(getNativeByTNode(tNode, lView), lView);
-  createDirectivesInstances(tView, lView, tNode);
-}
-
-/**
- * Creates directive instances.
- */
 export function createDirectivesInstances(tView: TView, lView: LView, tNode: TDirectiveHostNode) {
-  instantiateAllDirectives(tView, lView, tNode);
+  if (!getBindingsEnabled()) return;
+  instantiateAllDirectives(tView, lView, tNode, getNativeByTNode(tNode, lView));
   if ((tNode.flags & TNodeFlags.hasHostBindings) === TNodeFlags.hasHostBindings) {
     invokeDirectivesHostBindings(tView, lView, tNode);
   }
@@ -1004,7 +992,12 @@ function lastSelectedElementIdx(hostBindingOpCodes: HostBindingOpCodes): number 
 /**
  * Instantiate all the directives that were previously resolved on the current node.
  */
-function instantiateAllDirectives(tView: TView, lView: LView, tNode: TDirectiveHostNode) {
+function instantiateAllDirectives(
+  tView: TView,
+  lView: LView,
+  tNode: TDirectiveHostNode,
+  native: RNode,
+) {
   const start = tNode.directiveStart;
   const end = tNode.directiveEnd;
 
@@ -1012,7 +1005,7 @@ function instantiateAllDirectives(tView: TView, lView: LView, tNode: TDirectiveH
   // since it is used to inject some special symbols like `ChangeDetectorRef`.
   if (isComponentHost(tNode)) {
     ngDevMode && assertTNodeType(tNode, TNodeType.AnyRNode);
-    createComponentLView(
+    addComponentLogic(
       lView,
       tNode as TElementNode,
       tView.data[start + tNode.componentOffset] as ComponentDef<unknown>,
@@ -1022,6 +1015,8 @@ function instantiateAllDirectives(tView: TView, lView: LView, tNode: TDirectiveH
   if (!tView.firstCreatePass) {
     getOrCreateNodeInjectorForNode(tNode, lView);
   }
+
+  attachPatchData(native, lView);
 
   const initialInputs = tNode.initialInputs;
   for (let i = start; i < end; i++) {
@@ -1279,11 +1274,7 @@ export function getInitialLViewFlagsFromDef(def: ComponentDef<unknown>): LViewFl
   return flags;
 }
 
-export function createComponentLView<T>(
-  lView: LView,
-  hostTNode: TElementNode,
-  def: ComponentDef<T>,
-): LView {
+function addComponentLogic<T>(lView: LView, hostTNode: TElementNode, def: ComponentDef<T>): void {
   const native = getNativeByTNode(hostTNode, lView) as RElement;
   const tView = getOrCreateComponentTView(def);
 
@@ -1309,7 +1300,7 @@ export function createComponentLView<T>(
 
   // Component view will always be created before any injected LContainers,
   // so this is a regular element, wrap it with the component view
-  return (lView[hostTNode.index] = componentView);
+  lView[hostTNode.index] = componentView;
 }
 
 export function elementAttributeInternal(
