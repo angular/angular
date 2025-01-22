@@ -269,7 +269,7 @@ class ResourceImpl<T, R> extends BaseWritableResource<T> implements ResourceRef<
   private async loadEffect(): Promise<void> {
     // Capture the previous status before any state transitions. Note that this is `untracked` since
     // we do not want the effect to depend on the state of the resource, only on the request.
-    const {status: previousStatus} = untracked(this.state);
+    const {status: currentStatus, previousStatus} = untracked(this.state);
 
     const {request, reload: reloadCounter} = this.extendedRequest();
     // Subscribe side-effectfully to `reloadCounter`, although we don't actually care about its
@@ -280,8 +280,8 @@ class ResourceImpl<T, R> extends BaseWritableResource<T> implements ResourceRef<
       // Nothing to load (and we should already be in a non-loading state).
       return;
     } else if (
-      previousStatus !== ResourceStatus.Loading &&
-      previousStatus !== ResourceStatus.Reloading
+      currentStatus !== ResourceStatus.Loading &&
+      currentStatus !== ResourceStatus.Reloading
     ) {
       // We might've transitioned into a loading state, but has since been overwritten (likely via
       // `.set`).
@@ -310,15 +310,15 @@ class ResourceImpl<T, R> extends BaseWritableResource<T> implements ResourceRef<
       // The actual loading is run through `untracked` - only the request side of `resource` is
       // reactive. This avoids any confusion with signals tracking or not tracking depending on
       // which side of the `await` they are.
-      const stream = await untracked(() =>
-        this.loaderFn({
+      const stream = await untracked(() => {
+        return this.loaderFn({
           request: request as Exclude<R, undefined>,
           abortSignal,
           previous: {
             status: previousStatus,
           },
-        }),
-      );
+        });
+      });
 
       if (abortSignal.aborted) {
         return;

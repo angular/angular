@@ -107,6 +107,25 @@ describe('resource', () => {
     expect(echoResource.error()).toBe(undefined);
   });
 
+  it('should report idle status as the previous status on first run', async () => {
+    let prevStatus: ResourceStatus | undefined;
+    resource({
+      loader: async ({previous}) => {
+        // Ensure the loader only runs once.
+        expect(prevStatus).toBeUndefined();
+
+        prevStatus = previous.status;
+        return true;
+      },
+      injector: TestBed.inject(Injector),
+    });
+
+    TestBed.flushEffects();
+    await flushMicrotasks();
+
+    expect(prevStatus).toBe(ResourceStatus.Idle);
+  });
+
   it('should expose errors thrown during resource loading', async () => {
     const backend = new MockEchoBackend();
     const requestParam = {};
