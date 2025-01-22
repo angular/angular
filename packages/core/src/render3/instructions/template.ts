@@ -39,7 +39,7 @@ import {getConstant} from '../util/view_utils';
 
 import {
   addToEndOfViewTree,
-  createDirectivesInstancesInInstruction,
+  createDirectivesInstances,
   createLContainer,
   createTView,
   resolveDirectives,
@@ -154,7 +154,7 @@ export function declareTemplate(
   populateDehydratedViewsInLContainer(lContainer, tNode, declarationLView);
 
   if (isDirectiveHost(tNode)) {
-    createDirectivesInstancesInInstruction(declarationTView, declarationLView, tNode);
+    createDirectivesInstances(declarationTView, declarationLView, tNode);
   }
 
   if (localRefsIndex != null) {
