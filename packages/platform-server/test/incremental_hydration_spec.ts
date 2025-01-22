@@ -38,7 +38,7 @@ import {
   withEventReplay,
   withIncrementalHydration,
 } from '@angular/platform-browser';
-import {TestBed} from '@angular/core/testing';
+import {fakeAsync, TestBed} from '@angular/core/testing';
 import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
 import {DEHYDRATED_BLOCK_REGISTRY} from '@angular/core/src/defer/registry';
 import {JSACTION_BLOCK_ELEMENT_MAP} from '@angular/core/src/hydration/tokens';
@@ -1329,7 +1329,7 @@ describe('platform-server partial hydration integration', () => {
       });
 
       describe('timer', () => {
-        it('top level timer', async () => {
+        it('top level timer', fakeAsync(async () => {
           @Component({
             selector: 'app',
             template: `
@@ -1399,9 +1399,9 @@ describe('platform-server partial hydration integration', () => {
           appRef.tick();
 
           expect(appHostNode.outerHTML).toContain('<span id="test">end</span>');
-        });
+        }));
 
-        it('nested timer', async () => {
+        it('nested timer', fakeAsync(async () => {
           @Component({
             selector: 'app',
             template: `
@@ -1487,7 +1487,7 @@ describe('platform-server partial hydration integration', () => {
           appRef.tick();
 
           expect(appHostNode.outerHTML).toContain('<span id="test">end</span>');
-        });
+        }));
       });
 
       it('when', async () => {
