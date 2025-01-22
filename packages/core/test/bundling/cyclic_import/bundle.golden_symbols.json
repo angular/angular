@@ -311,6 +311,7 @@
   "isCssClassMatching",
   "isCurrentTNodeParent",
   "isDestroyed",
+  "isDetachedByI18n",
   "isEnvironmentProviders",
   "isFunction",
   "isInlineTemplate",
