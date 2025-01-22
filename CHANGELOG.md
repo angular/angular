@@ -1,3 +1,32 @@
+<a name="19.1.3"></a>
+# 19.1.3 (2025-01-22)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ecfb74d287](https://github.com/angular/angular/commit/ecfb74d287bec7bec37d0b476b321b047bef2c43) | fix | handle :host-context with comma-separated child selector ([#59276](https://github.com/angular/angular/pull/59276)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [53160e504d](https://github.com/angular/angular/commit/53160e504df44b05f59cacd9afeb40a0e627b744) | fix | extract parenthesized dependencies during HMR ([#59644](https://github.com/angular/angular/pull/59644)) |
+| [39690969af](https://github.com/angular/angular/commit/39690969af14914df0c9b5a009b2df920f5c03e7) | fix | handle conditional expressions when extracting dependencies ([#59637](https://github.com/angular/angular/pull/59637)) |
+| [78af7a5059](https://github.com/angular/angular/commit/78af7a5059cc3e03704ba63f8512351a40470557) | fix | handle new expressions when extracting dependencies ([#59637](https://github.com/angular/angular/pull/59637)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [408af24ff3](https://github.com/angular/angular/commit/408af24ff3490926e9992cb4f1f71914d71ad6ad) | fix | capture self-referencing component during HMR ([#59644](https://github.com/angular/angular/pull/59644)) |
+| [d7575c201c](https://github.com/angular/angular/commit/d7575c201cfd61010952b3a633eec03e32f58220) | fix | replace metadata in place during HMR ([#59644](https://github.com/angular/angular/pull/59644)) |
+| [26f6d4c485](https://github.com/angular/angular/commit/26f6d4c485b566d7bc127c78cc163c376d0fe6b5) | fix | skip component ID collision warning during SSR ([#59625](https://github.com/angular/angular/pull/59625)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a62c84bc18](https://github.com/angular/angular/commit/a62c84bc188d41ea24cf0eca14ac18c4b917ccd0) | fix | avoid applying the same replacements twice when cleaning up unused imports ([#59656](https://github.com/angular/angular/pull/59656)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b2b3816cb1](https://github.com/angular/angular/commit/b2b3816cb1c5c573dc9368f05fd2971671d7159f) | fix | clear renderer cache during HMR when using async animations ([#59644](https://github.com/angular/angular/pull/59644)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.1.2"></a>
 # 19.1.2 (2025-01-20)
 ### compiler
