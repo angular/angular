@@ -41,11 +41,7 @@ import {
 import {computeStaticStyling} from '../styling/static_styling';
 import {getConstant} from '../util/view_utils';
 
-import {
-  createDirectivesInstancesInInstruction,
-  resolveDirectives,
-  saveResolvedLocalsInData,
-} from './shared';
+import {createDirectivesInstances, resolveDirectives, saveResolvedLocalsInData} from './shared';
 import {getOrCreateTNode} from '../tnode_manipulation';
 
 function elementContainerStartFirstCreatePass(
@@ -123,7 +119,7 @@ export function ɵɵelementContainerStart(
   attachPatchData(comment, lView);
 
   if (isDirectiveHost(tNode)) {
-    createDirectivesInstancesInInstruction(tView, lView, tNode);
+    createDirectivesInstances(tView, lView, tNode);
     executeContentQueries(tView, tNode, lView);
   }
 

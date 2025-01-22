@@ -72,11 +72,7 @@ import {getConstant} from '../util/view_utils';
 
 import {validateElementIsKnown} from './element_validation';
 import {setDirectiveInputsWhichShadowsStyling} from './property';
-import {
-  createDirectivesInstancesInInstruction,
-  resolveDirectives,
-  saveResolvedLocalsInData,
-} from './shared';
+import {createDirectivesInstances, resolveDirectives, saveResolvedLocalsInData} from './shared';
 import {getOrCreateTNode} from '../tnode_manipulation';
 
 function elementStartFirstCreatePass(
@@ -176,7 +172,7 @@ export function ɵɵelementStart(
   increaseElementDepthCount();
 
   if (hasDirectives) {
-    createDirectivesInstancesInInstruction(tView, lView, tNode);
+    createDirectivesInstances(tView, lView, tNode);
     executeContentQueries(tView, tNode, lView);
   }
   if (localRefsIndex !== null) {
