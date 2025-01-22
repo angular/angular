@@ -1,3 +1,20 @@
+<a name="19.2.0-next.0"></a>
+# 19.2.0-next.0 (2025-01-22)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fe8a68329b](https://github.com/angular/angular/commit/fe8a68329b50363f914a728579392f3fc68670a6) | feat | support untagged template literals in expressions ([#59230](https://github.com/angular/angular/pull/59230)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ed705a856a](https://github.com/angular/angular/commit/ed705a856a164f91d33e2173b4f371329d07c472) | feat | detect missing structural directive imports ([#59443](https://github.com/angular/angular/pull/59443)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [bc2ad7bfd3](https://github.com/angular/angular/commit/bc2ad7bfd37a61992b550943de5da0eab2eec98b) | feat | support streaming resources ([#59573](https://github.com/angular/angular/pull/59573)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.1.3"></a>
 # 19.1.3 (2025-01-22)
 ### compiler
