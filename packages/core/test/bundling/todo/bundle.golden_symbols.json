@@ -372,6 +372,7 @@
   "isCssClassMatching",
   "isCurrentTNodeParent",
   "isDestroyed",
+  "isDetachedByI18n",
   "isDirectiveHost",
   "isEnvironmentProviders",
   "isFunction",

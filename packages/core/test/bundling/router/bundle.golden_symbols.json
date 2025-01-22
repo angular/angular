@@ -531,6 +531,7 @@
   "isCssClassMatching",
   "isCurrentTNodeParent",
   "isDestroyed",
+  "isDetachedByI18n",
   "isDirectiveHost",
   "isEmptyError",
   "isEnvironmentProviders",
