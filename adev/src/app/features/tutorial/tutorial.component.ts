@@ -8,11 +8,12 @@
 
 import {isPlatformBrowser, NgComponentOutlet, NgTemplateOutlet} from '@angular/common';
 import {
-  AfterViewInit,
+  afterNextRender,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   computed,
+  DestroyRef,
   ElementRef,
   EnvironmentInjector,
   inject,
@@ -35,7 +36,9 @@ import {
   TutorialNavigationItem,
 } from '@angular/docs';
 import {ActivatedRoute, RouterLink} from '@angular/router';
+import {from} from 'rxjs';
 import {filter} from 'rxjs/operators';
+
 import {PagePrefix} from '../../core/enums/pages';
 import {injectAsync} from '../../core/services/inject-async';
 import {
@@ -68,7 +71,7 @@ const INTRODUCTION_LABEL = 'Introduction';
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [SplitResizerHandler],
 })
-export default class Tutorial implements AfterViewInit {
+export default class Tutorial {
   @ViewChild('content') content!: ElementRef<HTMLDivElement>;
   @ViewChild('editor') editor: ElementRef<HTMLDivElement> | undefined;
   @ViewChild('resizer') resizer!: ElementRef<HTMLDivElement>;
@@ -80,9 +83,9 @@ export default class Tutorial implements AfterViewInit {
   private readonly elementRef = inject(ElementRef<unknown>);
   private readonly embeddedTutorialManager = inject(EmbeddedTutorialManager);
   private readonly nodeRuntimeState = inject(NodeRuntimeState);
-  private readonly platformId = inject(PLATFORM_ID);
   private readonly route = inject(ActivatedRoute);
   private readonly splitResizerHandler = inject(SplitResizerHandler);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   readonly documentContent = signal<string | null>(null);
   readonly localTutorialZipUrl = signal<string | undefined>(undefined);
@@ -118,17 +121,18 @@ export default class Tutorial implements AfterViewInit {
         this.documentContent.set(docContent);
         this.setTutorialData(data as TutorialNavigationItem);
       });
-  }
 
-  async ngAfterViewInit(): Promise<void> {
-    if (isPlatformBrowser(this.platformId)) {
+    const destroyRef = inject(DestroyRef);
+    afterNextRender(() => {
       this.splitResizerHandler.init(this.elementRef, this.content, this.resizer, this.editor);
 
-      this.loadEmbeddedEditorComponent().then((editorComponent) => {
-        this.embeddedEditorComponent = editorComponent;
-        this.changeDetectorRef.markForCheck();
-      });
-    }
+      from(this.loadEmbeddedEditorComponent())
+        .pipe(takeUntilDestroyed(destroyRef))
+        .subscribe((editorComponent) => {
+          this.embeddedEditorComponent = editorComponent;
+          this.changeDetectorRef.markForCheck();
+        });
+    });
   }
 
   toggleNavigationDropdown($event: MouseEvent): void {
@@ -191,7 +195,7 @@ export default class Tutorial implements AfterViewInit {
 
     if (routeData.type === TutorialType.LOCAL) {
       this.setLocalTutorialData(routeData);
-    } else if (routeData.type === TutorialType.EDITOR && isPlatformBrowser(this.platformId)) {
+    } else if (routeData.type === TutorialType.EDITOR && this.isBrowser) {
       await this.setEditorTutorialData(
         tutorialNavigationItem.path.replace(`${PagePrefix.TUTORIALS}/`, ''),
       );
