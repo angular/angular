@@ -350,7 +350,6 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
       let componentView: LView | null = null;
 
       try {
-        // TODO(pk): this is a good refactoring since it shows how to instantiate a TNOde with a set of known directive defs
         const rootComponentDef = this.componentDef;
         let rootDirectives: DirectiveDef<unknown>[];
         let hostDirectiveDefs: HostDirectiveDefs | null = null;
@@ -394,7 +393,6 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
           null,
           hostDirectiveDefs,
         );
-        registerPostOrderHooks(rootTView, hostTNode);
 
         for (const def of rootDirectives) {
           hostTNode.mergedAttrs = mergeHostAttrs(hostTNode.mergedAttrs, def.hostAttrs);
@@ -418,6 +416,9 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
         // TODO(pk): this logic is similar to the instruction code where a node can have directives
         createDirectivesInstances(rootTView, rootLView, hostTNode);
         executeContentQueries(rootTView, hostTNode, rootLView);
+
+        // TODO(pk): code / logic duplication with the elementEnd and similar instructions
+        registerPostOrderHooks(rootTView, hostTNode);
 
         componentView = getComponentLViewByIndex(hostTNode.index, rootLView);
 
@@ -525,10 +526,6 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
     this.hostView.onDestroy(callback);
   }
 }
-
-// TODO: remove?
-/** Represents a HostFeature function. */
-type HostFeature = <T>(component: T, componentDef: ComponentDef<T>) => void;
 
 /** Projects the `projectableNodes` that were specified when creating a root component. */
 function projectNodes(
