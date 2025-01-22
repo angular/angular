@@ -92,6 +92,7 @@ import {
   nativeInsertBefore,
   nativeRemoveNode,
 } from './dom_node_manipulation';
+import {isDetachedByI18n} from '../i18n/utils';
 
 const enum WalkTNodeTreeAction {
   /** node create in the native environment. Run on initial creation. */
@@ -890,7 +891,7 @@ function applyNodes(
         tNode.flags |= TNodeFlags.isProjected;
       }
     }
-    if ((tNode.flags & TNodeFlags.isDetached) !== TNodeFlags.isDetached) {
+    if (!isDetachedByI18n(tNode)) {
       if (tNodeType & TNodeType.ElementContainer) {
         applyNodes(renderer, action, tNode.child, lView, parentRElement, beforeNode, false);
         applyToElementOrContainer(action, renderer, parentRElement, rawSlotValue, beforeNode);

@@ -276,6 +276,7 @@
   "isComponentDef",
   "isComponentHost",
   "isDestroyed",
+  "isDetachedByI18n",
   "isEnvironmentProviders",
   "isFunction",
   "isInlineTemplate",
