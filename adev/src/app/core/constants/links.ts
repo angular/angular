@@ -11,3 +11,4 @@ export const X = 'https://x.com/angular';
 export const MEDIUM = 'https://blog.angular.dev';
 export const YOUTUBE = 'https://www.youtube.com/angular';
 export const DISCORD = 'https://discord.gg/angular';
+export const BLUESKY = 'https://bsky.app/profile/angular.dev';
