@@ -517,22 +517,3 @@ function projectNodes(
     projection.push(nodesforSlot != null && nodesforSlot.length ? Array.from(nodesforSlot) : null);
   }
 }
-
-/**
- * Used to enable lifecycle hooks on the root component.
- *
- * Include this feature when calling `renderComponent` if the root component
- * you are rendering has lifecycle hooks defined. Otherwise, the hooks won't
- * be called properly.
- *
- * Example:
- *
- * ```ts
- * renderComponent(AppComponent, {hostFeatures: [LifecycleHooksFeature]});
- * ```
- */
-export function LifecycleHooksFeature(): void {
-  const tNode = getCurrentTNode()!;
-  ngDevMode && assertDefined(tNode, 'TNode is required');
-  registerPostOrderHooks(getLView()[TVIEW], tNode);
-}
