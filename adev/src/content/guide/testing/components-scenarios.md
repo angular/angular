@@ -83,7 +83,7 @@ The first test shows the benefit of automatic change detection.
 
 The second and third test reveal an important limitation.
 The Angular testing environment does not run change detection synchronously when updates happen inside the test case that changed the component's `title`.
-The test must call `await fixture.whenStable` to wait for another of change detection.
+The test must call `await fixture.whenStable` to wait for another round of change detection.
 
 HELPFUL: Angular does not know about direct updates to values that are not signals. The easiest way to ensure that
 change detection will be scheduled is to use signals for values read in the template.
