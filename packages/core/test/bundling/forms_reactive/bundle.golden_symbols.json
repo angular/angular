@@ -568,6 +568,7 @@
   "resetPreOrderHookFlags",
   "resolveDirectives",
   "resolveForwardRef",
+  "resolveHostDirectives",
   "resolveProvider",
   "runEffectsInView",
   "runInInjectionContext",

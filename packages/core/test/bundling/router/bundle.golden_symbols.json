@@ -648,6 +648,7 @@
   "requiresRefreshOrTraversal",
   "resetPreOrderHookFlags",
   "resolveForwardRef",
+  "resolveHostDirectives",
   "rootRoute",
   "routes",
   "runEffectsInView",
