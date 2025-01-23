@@ -61,7 +61,7 @@ const myComponentHarness = await loader.getHarness(MyComponent);
 
 Harness loader instances correspond to a specific DOM element and are used to create component harness instances for elements under that specific element.
 
-To get `ComponentHarness` for the first instance of the element, use the `getHarness()` method. You get all `ComponentHarness` instances, use the `getAllHarnesses()` method.
+To get `ComponentHarness` for the first instance of the element, use the `getHarness()` method. To get all `ComponentHarness` instances, use the `getAllHarnesses()` method.
 
 <docs-code language="typescript">
 // Get harness for first instance of the element
