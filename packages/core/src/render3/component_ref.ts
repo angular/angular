@@ -30,7 +30,7 @@ import {RendererFactory2} from '../render/api';
 import {Sanitizer} from '../sanitization/sanitizer';
 import {assertDefined} from '../util/assert';
 
-import {assertComponentType, assertNoDuplicateDirectives} from './assert';
+import {assertComponentType} from './assert';
 import {attachPatchData} from './context_discovery';
 import {getComponentDef} from './def_getters';
 import {depsTracker} from './deps_tracker/deps_tracker';
@@ -45,10 +45,10 @@ import {
   createTView,
   initializeDirectives,
   locateHostElement,
-  markAsComponentHost,
+  resolveHostDirectives,
   setInputsForProperty,
 } from './instructions/shared';
-import {ComponentDef, DirectiveDef, HostDirectiveDefs} from './interfaces/definition';
+import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {InputFlags} from './interfaces/input_flags';
 import {
   NodeInputBindings,
@@ -350,24 +350,6 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
       let componentView: LView | null = null;
 
       try {
-        const rootComponentDef = this.componentDef;
-        let rootDirectives: DirectiveDef<unknown>[];
-        let hostDirectiveDefs: HostDirectiveDefs | null = null;
-
-        if (rootComponentDef.findHostDirectiveDefs) {
-          rootDirectives = [];
-          hostDirectiveDefs = new Map();
-          rootComponentDef.findHostDirectiveDefs(
-            rootComponentDef,
-            rootDirectives,
-            hostDirectiveDefs,
-          );
-          rootDirectives.push(rootComponentDef);
-          ngDevMode && assertNoDuplicateDirectives(rootDirectives);
-        } else {
-          rootDirectives = [rootComponentDef];
-        }
-
         // If host dom element is created (instead of being provided as part of the dynamic component creation), also apply attributes and classes extracted from component selector.
         const tAttributes = rootSelectorOrNode
           ? ['ng-version', '0.0.0-PLACEHOLDER']
@@ -383,18 +365,12 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
           tAttributes,
         );
 
-        // TODO(pk): partial code duplication with resolveDirectives and other existing logic
-        markAsComponentHost(rootTView, hostTNode, rootDirectives.length - 1);
-        initializeDirectives(
-          rootTView,
-          rootLView,
-          hostTNode,
-          rootDirectives,
-          null,
-          hostDirectiveDefs,
-        );
+        const [directiveDefs, hostDirectiveDefs] = resolveHostDirectives(rootTView, hostTNode, [
+          this.componentDef,
+        ]);
+        initializeDirectives(rootTView, rootLView, hostTNode, directiveDefs, {}, hostDirectiveDefs);
 
-        for (const def of rootDirectives) {
+        for (const def of directiveDefs) {
           hostTNode.mergedAttrs = mergeHostAttrs(hostTNode.mergedAttrs, def.hostAttrs);
         }
         hostTNode.mergedAttrs = mergeHostAttrs(hostTNode.mergedAttrs, tAttributes);
