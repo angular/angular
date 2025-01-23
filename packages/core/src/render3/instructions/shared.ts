@@ -1279,7 +1279,7 @@ export function getInitialLViewFlagsFromDef(def: ComponentDef<unknown>): LViewFl
   return flags;
 }
 
-export function createComponentLView<T>(
+function createComponentLView<T>(
   lView: LView,
   hostTNode: TElementNode,
   def: ComponentDef<T>,

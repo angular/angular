@@ -52,7 +52,6 @@ import {ComponentDef, DirectiveDef, HostDirectiveDefs} from './interfaces/defini
 import {InputFlags} from './interfaces/input_flags';
 import {
   NodeInputBindings,
-  TAttributes,
   TContainerNode,
   TElementContainerNode,
   TElementNode,
@@ -73,9 +72,7 @@ import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
 
 import {ChainedInjector} from './chained_injector';
 import {createElementNode, setupStaticAttributes} from './dom_node_manipulation';
-import {AttributeMarker} from './interfaces/attribute_marker';
 import {unregisterLView} from './interfaces/lview_tracking';
-import {CssSelector} from './interfaces/projection';
 import {
   extractAttrsAndClassesFromSelector,
   stringifyCSSSelectorList,
@@ -157,18 +154,6 @@ function getNamespace(elementName: string): string | null {
   return name === 'svg' ? SVG_NAMESPACE : name === 'math' ? MATH_ML_NAMESPACE : null;
 }
 
-// TODO(pk): change the extractAttrsAndClassesFromSelector so it returns TAttributes already?
-function getRootTAttributesFromSelector(selector: CssSelector) {
-  const {attrs, classes} = extractAttrsAndClassesFromSelector(selector);
-
-  const tAtts: TAttributes = attrs;
-  if (classes.length) {
-    tAtts.push(AttributeMarker.Classes, ...classes);
-  }
-
-  return tAtts;
-}
-
 /**
  * ComponentFactory interface implementation.
  */
@@ -214,9 +199,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
     super();
     this.componentType = componentDef.type;
     this.selector = stringifyCSSSelectorList(componentDef.selectors);
-    this.ngContentSelectors = componentDef.ngContentSelectors
-      ? componentDef.ngContentSelectors
-      : [];
+    this.ngContentSelectors = componentDef.ngContentSelectors ?? [];
     this.isBoundToModule = !!ngModule;
   }
 
@@ -369,7 +352,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
         const tAttributes = rootSelectorOrNode
           ? ['ng-version', '0.0.0-PLACEHOLDER']
           : // Extract attributes and classes from the first selector only to match VE behavior.
-            getRootTAttributesFromSelector(this.componentDef.selectors[0]);
+            extractAttrsAndClassesFromSelector(this.componentDef.selectors[0]);
 
         // TODO: this logic is shared with the element instruction first create pass
         const hostTNode = getOrCreateTNode(
