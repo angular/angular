@@ -7,8 +7,6 @@
  */
 
 import {ɵɵdefineInjectable} from '../../di/interface/defs';
-import {PendingTasksInternal} from '../../pending_tasks';
-import {inject} from '../../di/injector_compatibility';
 
 /**
  * Abstraction that encompasses any kind of effect that can be scheduled.
