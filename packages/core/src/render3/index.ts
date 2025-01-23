@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {LifecycleHooksFeature} from './component_ref';
 import {ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdefineNgModule, ɵɵdefinePipe} from './definition';
 import {ɵɵCopyDefinitionFeature} from './features/copy_definition_feature';
 import {ɵɵHostDirectivesFeature} from './features/host_directives_feature';
@@ -235,7 +234,6 @@ export {
   getDirectives,
   getHostElement,
   getRenderedText,
-  LifecycleHooksFeature,
   PipeDef,
   ɵɵComponentDeclaration,
   ɵɵCopyDefinitionFeature,
