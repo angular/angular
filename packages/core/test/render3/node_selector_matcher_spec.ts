@@ -741,8 +741,13 @@ describe('extractAttrsAndClassesFromSelector', () => {
   cases.forEach(([selector, attrs, classes]) => {
     it(`should process ${JSON.stringify(selector)} selector`, () => {
       const extracted = extractAttrsAndClassesFromSelector(selector);
-      expect(extracted.attrs).toEqual(attrs as string[]);
-      expect(extracted.classes).toEqual(classes as string[]);
+      const cssClassMarker = extracted.indexOf(AttributeMarker.Classes);
+
+      const extractedAttrs = cssClassMarker > -1 ? extracted.slice(0, cssClassMarker) : extracted;
+      const extractedClasses = cssClassMarker > -1 ? extracted.slice(cssClassMarker + 1) : [];
+
+      expect(extractedAttrs).toEqual(attrs as string[]);
+      expect(extractedClasses).toEqual(classes as string[]);
     });
   });
 });
