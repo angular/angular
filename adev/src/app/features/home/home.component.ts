@@ -6,21 +6,21 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT, isPlatformBrowser} from '@angular/common';
+import {DOCUMENT} from '@angular/common';
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   ElementRef,
   Injector,
-  OnDestroy,
-  OnInit,
-  PLATFORM_ID,
   ViewChild,
+  afterNextRender,
   inject,
 } from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {WINDOW, shouldReduceMotion, isIos} from '@angular/docs';
 import {ActivatedRoute, RouterLink} from '@angular/router';
+import {from} from 'rxjs';
 
 import {injectAsync} from '../../core/services/inject-async';
 
@@ -38,14 +38,14 @@ export const TUTORIALS_HOMEPAGE_DIRECTORY = 'homepage';
   styleUrls: ['./home.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class Home implements OnInit, AfterViewInit, OnDestroy {
+export default class Home {
   @ViewChild('home') home!: ElementRef<HTMLDivElement>;
 
   private readonly document = inject(DOCUMENT);
   private readonly injector = inject(Injector);
-  private readonly platformId = inject(PLATFORM_ID);
   private readonly window = inject(WINDOW);
   private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly tutorialFiles = TUTORIALS_HOMEPAGE_DIRECTORY;
   protected readonly isUwu = 'uwu' in this.activatedRoute.snapshot.queryParams;
@@ -53,19 +53,12 @@ export default class Home implements OnInit, AfterViewInit, OnDestroy {
   private homeAnimation?: HomeAnimation;
   private intersectionObserver: IntersectionObserver | undefined;
 
-  ctaLink = 'tutorials/learn-angular';
-  ctaIosLink = 'overview';
+  readonly ctaLink = isIos ? 'overview' : 'tutorials/learn-angular';
 
-  ngOnInit(): void {
-    if (isIos) {
-      this.ctaLink = this.ctaIosLink;
-    }
-  }
+  constructor() {
+    afterNextRender(() => {
+      this.element = this.home.nativeElement;
 
-  ngAfterViewInit() {
-    this.element = this.home.nativeElement;
-
-    if (isPlatformBrowser(this.platformId)) {
       // Always scroll to top on home page (even for navigating back)
       this.window.scrollTo({top: 0, left: 0, behavior: 'instant'});
 
@@ -76,18 +69,13 @@ export default class Home implements OnInit, AfterViewInit, OnDestroy {
       if (this.isWebGLAvailable() && !shouldReduceMotion() && !this.isUwu) {
         this.loadHomeAnimation();
       }
-    }
-  }
+    });
 
-  ngOnDestroy(): void {
-    if (isPlatformBrowser(this.platformId)) {
+    this.destroyRef.onDestroy(() => {
       // Stop observing and disconnect
       this.intersectionObserver?.disconnect();
-
-      if (this.homeAnimation) {
-        this.homeAnimation.destroy();
-      }
-    }
+      this.homeAnimation?.destroy();
+    });
   }
 
   private initIntersectionObserver(): void {
@@ -102,9 +90,7 @@ export default class Home implements OnInit, AfterViewInit, OnDestroy {
       this.headerTop(headerEntry);
 
       // Disable animation at end of page
-      if (this.homeAnimation) {
-        this.homeAnimation.disableEnd(footerEntry);
-      }
+      this.homeAnimation?.disableEnd(footerEntry);
     });
 
     // Start observing
@@ -124,12 +110,17 @@ export default class Home implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private async loadHomeAnimation() {
-    this.homeAnimation = await injectAsync(this.injector, () =>
-      import('./services/home-animation.service').then((c) => c.HomeAnimation),
-    );
-
-    await this.homeAnimation.init(this.element);
+  private loadHomeAnimation() {
+    from(
+      injectAsync(this.injector, () =>
+        import('./services/home-animation.service').then((c) => c.HomeAnimation),
+      ),
+    )
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((homeAnimation) => {
+        this.homeAnimation = homeAnimation;
+        this.homeAnimation.init(this.element);
+      });
   }
 
   private isWebGLAvailable() {
