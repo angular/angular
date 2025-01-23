@@ -22,6 +22,7 @@ If you're starting a new project, you'll most likely want to create a local proj
 - **Node.js** - v[^18.19.1 or newer](/reference/versions)
 - **Text editor** - We recommend [Visual Studio Code](https://code.visualstudio.com/)
 - **Terminal** - Required for running Angular CLI commands
+- **Development Tool** - To improve your development workflow, we recommend the [Angular Language Service](/tools/language-service)
 
 ### Instructions
 
