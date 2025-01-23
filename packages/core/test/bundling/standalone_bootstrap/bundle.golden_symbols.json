@@ -299,6 +299,7 @@
   "makeRecord",
   "map",
   "markAncestorsForTraversal",
+  "markAsComponentHost",
   "markViewDirty",
   "markViewForRefresh",
   "markedFeatures",
