@@ -57,7 +57,7 @@ const REMOVE_STYLES_ON_COMPONENT_DESTROY_DEFAULT = true;
 
 /**
  * A DI token that indicates whether styles
- * of destroyed components should be removed from DOM.
+ * of destroyed components should be disabled.
  *
  * By default, the value is set to `true`.
  * @publicApi
@@ -139,7 +139,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
     private readonly eventManager: EventManager,
     private readonly sharedStylesHost: SharedStylesHost,
     @Inject(APP_ID) private readonly appId: string,
-    @Inject(REMOVE_STYLES_ON_COMPONENT_DESTROY) private removeStylesOnCompDestroy: boolean,
+    @Inject(REMOVE_STYLES_ON_COMPONENT_DESTROY) private disableStylesOnCompDestroy: boolean,
     @Inject(DOCUMENT) private readonly doc: Document,
     readonly ngZone: NgZone,
     @Inject(CSP_NONCE) private readonly nonce: string | null = null,
@@ -186,7 +186,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
       const ngZone = this.ngZone;
       const eventManager = this.eventManager;
       const sharedStylesHost = this.sharedStylesHost;
-      const removeStylesOnCompDestroy = this.removeStylesOnCompDestroy;
+      const disableStylesOnCompDestroy = this.disableStylesOnCompDestroy;
       const tracingService = this.tracingService;
 
       switch (type.encapsulation) {
@@ -196,7 +196,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             sharedStylesHost,
             type,
             this.appId,
-            removeStylesOnCompDestroy,
+            disableStylesOnCompDestroy,
             doc,
             ngZone,
             tracingService,
@@ -229,7 +229,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             eventManager,
             sharedStylesHost,
             type,
-            removeStylesOnCompDestroy,
+            disableStylesOnCompDestroy,
             doc,
             ngZone,
             tracingService,
@@ -577,14 +577,14 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
 }
 
 class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
-  private readonly styles: string[];
+  protected styles: string[];
   private readonly styleUrls?: string[];
 
   constructor(
     eventManager: EventManager,
     private readonly sharedStylesHost: SharedStylesHost,
     component: RendererType2,
-    private removeStylesOnCompDestroy: boolean,
+    private disableStylesOnCompDestroy: boolean,
     doc: Document,
     ngZone: NgZone,
     tracingService: TracingService<TracingSnapshot> | null,
@@ -598,7 +598,7 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
       styles = addBaseHrefToCssSourceMap(baseHref, styles);
     }
 
-    this.styles = compId ? shimStylesContent(compId, styles) : styles;
+    this.styles = styles;
     this.styleUrls = component.getExternalStyles?.(compId);
   }
 
@@ -607,11 +607,11 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
   }
 
   override destroy(): void {
-    if (!this.removeStylesOnCompDestroy) {
+    if (!this.disableStylesOnCompDestroy) {
       return;
     }
     if (allLeavingAnimations.size === 0) {
-      this.sharedStylesHost.removeStyles(this.styles, this.styleUrls);
+      this.sharedStylesHost.disableStyles(this.styles, this.styleUrls);
     }
   }
 }
@@ -625,7 +625,7 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
     sharedStylesHost: SharedStylesHost,
     component: RendererType2,
     appId: string,
-    removeStylesOnCompDestroy: boolean,
+    disableStylesOnCompDestroy: boolean,
     doc: Document,
     ngZone: NgZone,
     tracingService: TracingService<TracingSnapshot> | null,
@@ -635,12 +635,13 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
       eventManager,
       sharedStylesHost,
       component,
-      removeStylesOnCompDestroy,
+      disableStylesOnCompDestroy,
       doc,
       ngZone,
       tracingService,
       compId,
     );
+    this.styles = shimStylesContent(compId, component.styles);
     this.contentAttr = shimContentAttribute(compId);
     this.hostAttr = shimHostAttribute(compId);
   }
