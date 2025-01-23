@@ -418,14 +418,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
         leaveView();
       }
 
-      const hostTNode = getTNode(rootTView, HEADER_OFFSET) as TElementNode;
-      return new ComponentRef(
-        this.componentType,
-        componentView[CONTEXT] as T,
-        createElementRef(hostTNode, rootLView),
-        rootLView,
-        hostTNode,
-      );
+      return new ComponentRef(this.componentType, rootLView);
     } finally {
       setActiveConsumer(prevConsumer);
     }
@@ -445,17 +438,18 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
   override hostView: ViewRef<T>;
   override changeDetectorRef: ChangeDetectorRef;
   override componentType: Type<T>;
+  override location: ElementRef;
   private previousInputValues: Map<string, unknown> | null = null;
+  private _tNode: TElementNode | TContainerNode | TElementContainerNode;
 
   constructor(
     componentType: Type<T>,
-    instance: T,
-    public location: ElementRef,
     private _rootLView: LView,
-    private _tNode: TElementNode | TContainerNode | TElementContainerNode,
   ) {
     super();
-    this.instance = instance;
+    this._tNode = getTNode(_rootLView[TVIEW], HEADER_OFFSET) as TElementNode;
+    this.location = createElementRef(this._tNode, _rootLView);
+    this.instance = getComponentLViewByIndex(this._tNode.index, _rootLView)[CONTEXT] as T;
     this.hostView = this.changeDetectorRef = new ViewRef<T>(
       _rootLView,
       undefined /* _cdRefInjectingView */,
