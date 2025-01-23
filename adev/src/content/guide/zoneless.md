@@ -123,6 +123,17 @@ scheduled change detection. Tests should ensure these notifications
 are happening and allow Angular to handle when to synchronize
 state rather than manually forcing it to happen in the test.
 
+For existing test suites, using `fixture.detectChanges()` is a common pattern
+and it is likely not worth the effort of converting these to
+`await fixture.whenStable()`. `TestBed` will still enforce that the
+fixture's component is `OnPush` compatible and will throw `ExpressionChangedAfterItHasBeenCheckedError`
+if it finds that template values were updated without a
+change notification (i.e. `fixture.componentInstance.someValue = 'newValue';`).
+If the component is used in production, this issue should be addressed by updating
+the component to use signals for state or call `ChangeDetectorRef.markForCheck()`.
+If the component is only used as a test wrapper and never used in an application,
+it is acceptable to use `fixture.changeDetectorRef.markForCheck()`.
+
 ### Debug-mode check to ensure updates are detected
 
 Angular also provides an additional tool to help verify that an application is making
