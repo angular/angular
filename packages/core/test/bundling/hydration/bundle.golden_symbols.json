@@ -357,6 +357,7 @@
   "makeEnvironmentProviders",
   "makeRecord",
   "markAncestorsForTraversal",
+  "markAsComponentHost",
   "markViewDirty",
   "markViewForRefresh",
   "markedFeatures",
