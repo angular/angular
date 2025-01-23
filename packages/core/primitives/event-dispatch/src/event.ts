@@ -418,7 +418,8 @@ export function createMouseSpecialEvent(e: Event, target: Element): Event {
   // this event into a pseudo-real mouseenter/mouseleave event by adjusting
   // its type.
   //
-  const copy: {-readonly [P in keyof Event]?: Event[P]} = {};
+  const copy: {-readonly[P in keyof Event]?: Event[P]}&
+      {'_originalEvent'?: Event} = {};
   for (const property in e) {
     if (property === 'srcElement' || property === 'target') {
       continue;
@@ -444,6 +445,7 @@ export function createMouseSpecialEvent(e: Event, target: Element): Event {
   }
   copy['target'] = copy['srcElement'] = target;
   copy['bubbles'] = false;
+  copy['_originalEvent'] = e;
   return copy as Event;
 }
 
