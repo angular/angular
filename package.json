@@ -49,7 +49,7 @@
   "// 1": "dependencies are used locally and by bazel",
   "dependencies": {
     "@angular/build": "18.1.0-next.1",
-    "@angular-devkit/build-angular": "18.1.0-next.1",
+    "@angular-devkit/build-angular": "19.0.0",
     "@angular-devkit/core": "18.1.0-next.1",
     "@angular-devkit/schematics": "18.1.0-next.1",
     "@angular/cdk": "18.1.0-next.1",
@@ -193,7 +193,7 @@
     "cldrjs": "0.5.5",
     "conventional-changelog": "^6.0.0",
     "fast-glob": "3.3.2",
-    "firebase-tools": "^13.0.0",
+    "firebase-tools": "^13.29.2",
     "gsap": "^3.12.3",
     "gulp": "^5.0.0",
     "gulp-conventional-changelog": "^5.0.0",
@@ -216,7 +216,7 @@
     "tslint-eslint-rules": "5.4.0",
     "tslint-no-toplevel-property-access": "0.0.2",
     "typed-graphqlify": "^3.1.1",
-    "undici": "^6.15.0",
+    "undici": "^6.21.1",
     "vrsource-tslint-rules": "6.0.0"
   },
   "// 3": "Ensure that transitive dependencies on `https-proxy-agent` are at minimum v5 as older versions patch NodeJS directly, breaking tools like webdriver which is used by the karma-sauce-launcher as an example.",
