@@ -25,7 +25,7 @@ Additional testing environments require custom bindings. See the [adding harness
 
 ### Using the loader from `TestbedHarnessEnvironment` for unit tests
 
-For unit tests you can create a harness loader from [TestbedHarnessEnvironment](https://material.angular.io/cdk/test-harnesses/api#TestbedHarnessEnvironment). This environment uses a [component fixture](api/core/testing/ComponentFixture) created by Angular's `TestBed`.
+For unit tests you can create a harness loader from [TestbedHarnessEnvironment](https://material.angular.io/cdk/testing/api#TestbedHarnessEnvironment). This environment uses a [component fixture](api/core/testing/ComponentFixture) created by Angular's `TestBed`.
 
 To create a harness loader rooted at the fixture's root element, use the `loader()` method:
 
@@ -149,7 +149,7 @@ For more details refer to the specific harness documentation since additional fi
 
 ## Using test harness APIs
 
-While every harness defines an API specific to its corresponding component, they all share a common base class, [ComponentHarness](https://material.angular.io/cdk/test-harnesses/api#ComponentHarness). This base class defines a static property, `hostSelector`, that matches the harness class to instances of the component in the DOM.
+While every harness defines an API specific to its corresponding component, they all share a common base class, [ComponentHarness](https://material.angular.io/cdk/testing/api#ComponentHarness). This base class defines a static property, `hostSelector`, that matches the harness class to instances of the component in the DOM.
 
 Beyond that, the API of any given harness is specific to its corresponding component; refer to the component's documentation to learn how to use a specific harness.
 
