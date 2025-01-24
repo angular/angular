@@ -116,6 +116,11 @@ function mergeWithExistingDefinition(
     // Preserve the old `setInput` function, because it has some state.
     // This is fine, because the component instance is preserved as well.
     setInput: clone.setInput,
+
+    // Externally this is redundant since we redeclare the definition using the original type.
+    // Internally we may receive a definition with an alternate, but identical, type so we have
+    // to ensure that the original one is preserved.
+    type: clone.type,
   });
 
   ngDevMode && assertEqual(replacement, currentDef, 'Expected definition to be merged in place');
