@@ -133,6 +133,8 @@ export interface WritableResource<T> extends Resource<T> {
  * @experimental
  */
 export interface ResourceRef<T> extends WritableResource<T> {
+  hasValue(): this is ResourceRef<Exclude<T, undefined>>;
+
   /**
    * Manually destroy the resource, which cancels pending requests and returns it to `idle` state.
    */

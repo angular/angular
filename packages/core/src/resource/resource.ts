@@ -103,7 +103,7 @@ abstract class BaseWritableResource<T> implements WritableResource<T> {
     () => this.status() === ResourceStatus.Loading || this.status() === ResourceStatus.Reloading,
   );
 
-  hasValue(): this is WritableResource<Exclude<T, undefined>> {
+  hasValue(): this is ResourceRef<Exclude<T, undefined>> {
     return this.value() !== undefined;
   }
 

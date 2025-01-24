@@ -1634,6 +1634,8 @@ export type ResourceOptions<T, R> = PromiseResourceOptions<T, R> | StreamingReso
 // @public
 export interface ResourceRef<T> extends WritableResource<T> {
     destroy(): void;
+    // (undocumented)
+    hasValue(): this is ResourceRef<Exclude<T, undefined>>;
 }
 
 // @public
