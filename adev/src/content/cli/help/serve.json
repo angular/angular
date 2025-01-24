@@ -11,7 +11,7 @@
     {
       "name": "allowed-hosts",
       "type": "array",
-      "description": "List of hosts that are allowed to access the dev server. This option has no effect when using the 'application' or other esbuild-based builders."
+      "description": "List of hosts that are allowed to access the dev server."
     },
     {
       "name": "build-target",
@@ -30,7 +30,7 @@
       "name": "disable-host-check",
       "type": "boolean",
       "default": false,
-      "description": "Don't verify connected clients are part of allowed hosts. This option has no effect when using the 'application' or other esbuild-based builders."
+      "description": "Don't verify connected clients are part of allowed hosts."
     },
     {
       "name": "force-esbuild",
