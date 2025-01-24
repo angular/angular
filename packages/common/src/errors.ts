@@ -15,6 +15,9 @@ export const enum RuntimeErrorCode {
   PARENT_NG_SWITCH_NOT_FOUND = 2000,
   EQUALITY_NG_SWITCH_DIFFERENCE = 2001,
 
+  // NgIf errors
+  NG_IF_NOT_A_TEMPLATE_REF = 2020,
+
   // Pipe errors
   INVALID_PIPE_ARGUMENT = 2100,
 

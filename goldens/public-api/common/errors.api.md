@@ -25,6 +25,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     NG_FOR_MISSING_DIFFER = -2200,
     // (undocumented)
+    NG_IF_NOT_A_TEMPLATE_REF = 2020,
+    // (undocumented)
     OVERSIZED_IMAGE = 2960,
     // (undocumented)
     OVERSIZED_PLACEHOLDER = 2965,
