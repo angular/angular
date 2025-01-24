@@ -179,7 +179,10 @@ export class $locationShim {
       }
     });
 
-    // update browser
+    // Synchronize the browser's URL and state with the application.
+    // Note: There is no need to save the `$watch` return value (deregister listener)
+    // into a variable because `$scope.$$watchers` is automatically cleaned up when
+    // the root scope is destroyed.
     $rootScope.$watch(() => {
       if (this.initializing || this.updateBrowser) {
         this.updateBrowser = false;
@@ -243,6 +246,14 @@ export class $locationShim {
         }
       }
       this.$$replace = false;
+    });
+
+    $rootScope.$on('$destroy', () => {
+      // Complete the subject to release all active observers when the root
+      // scope is destroyed. Before this change, we subscribed to the `urlChanges`
+      // subject, and the subscriber captured `this`, leading to a memory leak
+      // after the root scope was destroyed.
+      this.urlChanges.complete();
     });
   }
 
