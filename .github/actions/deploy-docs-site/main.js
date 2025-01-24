@@ -26604,7 +26604,7 @@ async function getResponseData(response) {
     return response.text().catch(() => "");
   }
   const mimetype = (0, import_fast_content_type_parse.safeParse)(contentType);
-  if (mimetype.type === "application/json") {
+  if (isJSONResponse(mimetype)) {
     let text = "";
     try {
       text = await response.text();
@@ -26617,6 +26617,9 @@ async function getResponseData(response) {
   } else {
     return response.arrayBuffer().catch(() => new ArrayBuffer(0));
   }
+}
+function isJSONResponse(mimetype) {
+  return mimetype.type === "application/json" || mimetype.type === "application/scim+json";
 }
 function toErrorMessage(data) {
   if (typeof data === "string") {
@@ -27142,7 +27145,7 @@ async function getResponseData2(response) {
     return response.text().catch(() => "");
   }
   const mimetype = (0, import_fast_content_type_parse2.safeParse)(contentType);
-  if (mimetype.type === "application/json") {
+  if (isJSONResponse2(mimetype)) {
     let text = "";
     try {
       text = await response.text();
@@ -27155,6 +27158,9 @@ async function getResponseData2(response) {
   } else {
     return response.arrayBuffer().catch(() => new ArrayBuffer(0));
   }
+}
+function isJSONResponse2(mimetype) {
+  return mimetype.type === "application/json" || mimetype.type === "application/scim+json";
 }
 function toErrorMessage2(data) {
   if (typeof data === "string") {
