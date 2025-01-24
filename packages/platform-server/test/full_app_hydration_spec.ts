@@ -7895,6 +7895,38 @@ describe('platform-server full application hydration integration', () => {
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
         expect(clientRootNode.textContent).toContain('Main:  Slot: 2');
       });
+
+      it('should handle a let declaration whose value looks like an internal data structure', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          template: `
+            @let notAnLView = [0, {}, 0, 0, 0, 0, 1];
+
+            @if (true) {
+              Value is: {{ notAnLView }}
+            }
+          `,
+        })
+        class SimpleComponent {}
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+        expect(ssrContents).toContain('Value is: 0,[object Object],0,0,0,0,1');
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        expect(clientRootNode.textContent).toContain('Value is: 0,[object Object],0,0,0,0,1');
+      });
     });
 
     describe('zoneless', () => {

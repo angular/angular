@@ -31,7 +31,14 @@ export function ɵɵdeclareLet(index: number): typeof ɵɵdeclareLet {
   const adjustedIndex = index + HEADER_OFFSET;
   const tNode = getOrCreateTNode(tView, adjustedIndex, TNodeType.LetDeclaration, null, null);
   setCurrentTNode(tNode, false);
-  store(tView, lView, adjustedIndex, UNINITIALIZED_LET);
+
+  // Since we store the value directly on the LView, a specifically crafted value can look like
+  // an internal data structure (e.g. LView is just a specific array). Wrap the in an array to
+  // disambiguate it. The wrapper doesn't really matter (e.g. array versus an object literal).
+  // We currently use an array, because:
+  // 1. There are some minor performance benefits to using an array (see PERF_NOTES.md)
+  // 2. It is easily serializable in case we want to move it somewhere, as opposed to a class.
+  store(tView, lView, adjustedIndex, [UNINITIALIZED_LET]);
   return ɵɵdeclareLet;
 }
 
@@ -43,10 +50,11 @@ export function ɵɵdeclareLet(index: number): typeof ɵɵdeclareLet {
  */
 export function ɵɵstoreLet<T>(value: T): T {
   performanceMarkFeature('NgLet');
-  const tView = getTView();
   const lView = getLView();
   const index = getSelectedIndex();
-  store(tView, lView, index, value);
+  const container = load<[T]>(lView, index);
+  ngDevMode && assertLetContainer(container);
+  container[0] = value;
   return value;
 }
 
@@ -59,7 +67,9 @@ export function ɵɵstoreLet<T>(value: T): T {
  */
 export function ɵɵreadContextLet<T>(index: number): T {
   const contextLView = getContextLView();
-  const value = load<T>(contextLView, HEADER_OFFSET + index);
+  const container = load<[T]>(contextLView, HEADER_OFFSET + index);
+  ngDevMode && assertLetContainer(container);
+  const value = container[0];
 
   if (value === UNINITIALIZED_LET) {
     throw new RuntimeError(
@@ -69,4 +79,11 @@ export function ɵɵreadContextLet<T>(index: number): T {
   }
 
   return value;
+}
+
+/** Asserts that a value is a container for the value of an `@let` declaration. */
+function assertLetContainer(value: unknown) {
+  if (!Array.isArray(value) || value.length !== 1) {
+    throw new Error('ASSERTION ERROR: invalid @let declaration container');
+  }
 }
