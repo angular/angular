@@ -26,7 +26,7 @@ The [Component Dev Kit (CDK)](https://material.angular.io/cdk/categories) is a s
 
 Every test environment must define a `TestElement` implementation. The `TestElement` interface serves as an environment-agnostic representation of a DOM element. It enables harnesses to interact with DOM elements regardless of the underlying environment. Because some environments don't support interacting with DOM elements synchronously (e.g. WebDriver), all `TestElement` methods are asynchronous, returning a `Promise` with the result of the operation.
 
-`TestElement` offers a number of methods to interact with the underlying DOM such as `blur()`, `click()`, `getAttribute()`, and more. See the [TestElement API reference page](https://material.angular.io/cdk/test-harnesses/api#TestElement) for the full list of methods.
+`TestElement` offers a number of methods to interact with the underlying DOM such as `blur()`, `click()`, `getAttribute()`, and more. See the [TestElement API reference page](https://material.angular.io/cdk/testing/api#TestElement) for the full list of methods.
 
 The `TestElement` interface consists largely of methods that resemble methods available on `HTMLElement`. Similar methods exist in most test environments, which makes implementing the methods fairly straightforward. However, one important difference to note when implementing the `sendKeys` method, is that the key codes in the `TestKey` enum likely differ from the key codes used in the test environment. Environment authors should maintain a mapping from `TestKey` codes to the codes used in the particular testing environment.
 
@@ -55,5 +55,5 @@ The [`TestbedHarnessEnvironment`](https://github.com/angular/components/blob/mai
 ## Handling auto change detection
 In order to support the `manualChangeDetection` and parallel APIs, your environment should install a handler for the auto change detection status.
 
-When your environment wants to start handling the auto change detection status it can call `handleAutoChangeDetectionStatus(handler)`. The handler function will receive a `AutoChangeDetectionStatus` which has two properties `isDisabled` and `onDetectChangesNow()`. See the [AutoChangeDetectionStatus API reference page](https://material.angular.io/cdk/test-harnesses/api#AutoChangeDetectionStatus) for more information.
+When your environment wants to start handling the auto change detection status it can call `handleAutoChangeDetectionStatus(handler)`. The handler function will receive a `AutoChangeDetectionStatus` which has two properties `isDisabled` and `onDetectChangesNow()`. See the [AutoChangeDetectionStatus API reference page](https://material.angular.io/cdk/testing/api#AutoChangeDetectionStatus) for more information.
 If your environment wants to stop handling auto change detection status it can call `stopHandlingAutoChangeDetectionStatus()`.
