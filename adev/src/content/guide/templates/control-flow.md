@@ -65,19 +65,15 @@ For static collections that never change, you can use `$index` to tell Angular t
 If no other option is available, you can specify `identity`. This tells Angular to track the item by its reference identity using the triple-equals operator (`===`). Avoid this option whenever possible as it can lead to significantly slower rendering updates, as Angular has no way to map which data item corresponds to which DOM nodes.
 
 ### Comparing built-in control flow to `NgFor`
-The `@for` block replaces `*ngFor` for iteration, and has several differences compared to its
-structural directive `NgFor` predecessor:
+The `@for` block replaces `NgFor` structural directive for iteration. It has several differences compared to its predecessor:
 
-* The `@for` block requires a tracking expression to uniquely identify items in the collection and simplifies tracking by accepting a `track` _expression_. While `NgFor` uses a `trackBy` _method_, if not provided `NgFor` defaults to tracking items by identity.
-* You can specify content to show when the collection is empty with the `@empty` block.
-* The `@for` block uses an optimized algorithm for determining a minimal number of DOM operations
+* The `@for` block requires a tracking expression to uniquely identify items in the collection and simplifies tracking by accepting a `track` _expression_. `NgFor` uses an optional `trackBy` _method_, that defaultd to tracking items by identity if none is provided.
+* You can specify the content to show when the collection is empty with an `@empty` block.
+* The `@for` block utilizes an optimized reconciliation algorithm to minimize the number of DOM operations.
   necessary after a collection is modified. While `NgFor` allowed developers to provide a custom
   `IterableDiffer` implementation, the `@for` block does not support custom differs.
 
-The `track` setting replaces `NgFor`'s concept of a `trackBy` function. Because `@for` is built-in,
-we can provide a better experience than passing a `trackBy` function, and directly use an expression
-representing the key instead. Migrating from `trackBy` to `track` is possible by invoking
-the `trackBy` function:
+The `track` setting serves as a replacement for NgFor's `trackBy` function. Since `@for` is a built-in feature, it allows for an improved experience by using an expression to represent the key directly, instead of passing a `trackBy` function. Transitioning from trackBy to track can be done by invoking the trackBy function:
 
 ```html
 @for (item of items; track itemId($index, item)) {
