@@ -450,6 +450,7 @@
   "resetPreOrderHookFlags",
   "resolveDirectives",
   "resolveForwardRef",
+  "resolveHostDirectives",
   "runEffectsInView",
   "runInInjectionContext",
   "saveNameToExportMap",

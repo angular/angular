@@ -467,6 +467,7 @@
   "requiresRefreshOrTraversal",
   "resetPreOrderHookFlags",
   "resolveForwardRef",
+  "resolveHostDirectives",
   "resolveTiming",
   "resolveTimingValue",
   "roundOffset",

@@ -558,6 +558,7 @@
   "resetPreOrderHookFlags",
   "resolveDirectives",
   "resolveForwardRef",
+  "resolveHostDirectives",
   "resolveProvider",
   "resolvedPromise",
   "resolvedPromise2",

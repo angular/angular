@@ -377,6 +377,7 @@
   "requiresRefreshOrTraversal",
   "resetPreOrderHookFlags",
   "resolveForwardRef",
+  "resolveHostDirectives",
   "runEffectsInView",
   "runInInjectionContext",
   "saveNameToExportMap",
