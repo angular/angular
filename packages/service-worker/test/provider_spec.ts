@@ -100,8 +100,7 @@ async function waitForReadyToRegister() {
 
         await configTestBed({enabled: true, scope: 'foo'});
         expect(consoleErrorSpy).toHaveBeenCalledWith(
-          'Service worker registration failed with:',
-          'no reason',
+          'NG05604: Service worker registration failed with: no reason',
         );
       });
     });
@@ -361,7 +360,7 @@ async function waitForReadyToRegister() {
 
         it('throws an error with unknown strategy', () => {
           expect(() => configTestBedWithMockedStability('registerYesterday')).toThrowError(
-            'Unknown ServiceWorker registration strategy: registerYesterday',
+            'NG05600: Unknown ServiceWorker registration strategy: registerYesterday',
           );
           expect(swRegisterSpy).not.toHaveBeenCalled();
         });
