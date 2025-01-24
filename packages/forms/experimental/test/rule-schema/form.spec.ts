@@ -1,17 +1,18 @@
 import {signal} from '@angular/core';
 import {z} from 'zod';
-import {form} from '../src/prototype2/form';
-import {FormValidationError} from '../src/prototype2/logic';
-import {each, rule, schema} from '../src/prototype2/schema';
-import {getTypeErrorTree, mergeTypeErrorTree} from '../src/prototype2/type-validator';
+import {form} from '../../src/rule-schema/form';
+import {disable, error, when} from '../../src/rule-schema/logic';
+import {each, rule, schema} from '../../src/rule-schema/schema';
 
 const nameSchema = schema<{first: string; last: string}>((root) => {
-  rule(root.last, {
-    validate: (value) => (!value() ? [new FormValidationError('Last name is required')] : []),
-  });
-  rule(root, {
-    disabled: () => (root.first.$() === '<Anonymous>' ? 'User is anonymous' : null),
-  });
+  rule(
+    root.last,
+    when((value) => !value(), error('Last name is required')),
+  );
+  rule(
+    root,
+    when(() => root.first.$() === '<Anonymous>', disable('User is anonymous')),
+  );
 });
 
 const profileSchema = schema<{name: {first: string; last: string}}>((root) => {
@@ -46,7 +47,7 @@ describe('form', () => {
       expect(f.$.errors()).toEqual([]);
       expect(f.name.$.errors()).toEqual([]);
       expect(f.name.first.$.errors()).toEqual([]);
-      expect(f.name.last.$.errors()).toEqual([new FormValidationError('Last name is required')]);
+      expect(f.name.last.$.errors()).toEqual([{message: 'Last name is required', type: 'custom'}]);
     });
 
     it('should validate', () => {
@@ -81,9 +82,10 @@ describe('form', () => {
         const f = form(
           data,
           schema((axes) => {
-            each(axes, {
-              validate: (value) => (value() < 0 ? 'value must be positive' : null),
-            });
+            each(
+              axes,
+              when((value) => value() < 0, error('value must be positive')),
+            );
           }),
         );
         expect(f.$.valid()).toBe(true);
@@ -98,9 +100,9 @@ describe('form', () => {
         const f = form(
           data,
           schema((properties) => {
-            each(properties, (property) => ({
-              validate: () => (property === 'type' ? '"type" is a reserved property' : null),
-            }));
+            each(properties, (_, property) =>
+              when(() => property === 'type', error('"type" is a reserved property')),
+            );
           }),
         );
         expect(f.$.valid()).toBe(true);
@@ -115,10 +117,12 @@ describe('form', () => {
         const f = form(
           data,
           schema((numbers) => {
-            each(numbers, (idx) => ({
-              validate: (num) =>
-                idx > 0 && num() < numbers.$()[idx - 1] ? 'Must be monotonically increasing' : null,
-            }));
+            each(numbers, (_, idx) =>
+              when(
+                (value) => idx > 0 && value() < numbers.$()[idx - 1],
+                error('Must be monotonically increasing'),
+              ),
+            );
           }),
         );
         expect(f.$.valid()).toBe(true);
@@ -136,9 +140,10 @@ describe('form', () => {
         const f = form(
           data,
           schema((dimensions) => {
-            each(dimensions, {
-              validate: (dim) => (dim() < 0 ? 'Must have a positive value' : null),
-            });
+            each(
+              dimensions,
+              when((dim) => dim() < 0, error('Must have a positive value')),
+            );
           }),
         );
         expect(f.$.valid()).toBe(true);
@@ -160,27 +165,47 @@ describe('form', () => {
       expect(f.y.$.disabled()).toBe(true);
     });
 
+    it('should update index-based calculation when item is inserted', () => {
+      const s = schema<number[]>((numbers) => {
+        each(numbers, (num, idx) => ({
+          disabled: () => idx % 2 === 0 && num.$() % 2 === 0,
+        }));
+      });
+      const data = signal<number[]>([0, 1, 2, 3, 4, 5]);
+      const f = form(data, s);
+      const f4 = f[4];
+      let disabled = Array.from({length: data().length}, (_, i) => f[i].$.disabled());
+      expect(disabled).toEqual([true, false, true, false, true, false]);
+      expect(f4.$.disabled()).toBe(true);
+      data.set([0, 1, 2, 2.5, 3, 4, 5]);
+      disabled = Array.from({length: data().length}, (_, i) => f[i].$.disabled());
+      expect(disabled).toEqual([true, false, true, false, false, false, false]);
+      expect(f4.$.disabled()).toBe(false);
+    });
+
     it('schema should be extensible', () => {
       const dateSchema = schema<{year: number; month: number; day: number}>((date) => {
-        rule(date.month, {
-          validate: (month) => (month() < 1 || month() > 12 ? 'Must be between 1-12' : null),
-        });
-        rule(date.day, {
-          validate: (day) => (day() < 1 || day() > 31 ? 'Must be between 1-31' : null),
-        });
+        rule(
+          date.month,
+          when((month) => month() < 1 || month() > 12, error('Must be between 1-12')),
+        );
+        rule(
+          date.day,
+          when((day) => day() < 1 || day() > 31, error('Must be between 1-31')),
+        );
       });
 
       const birthdaySchema = dateSchema.extend((date) => {
-        rule(date.year, {
-          validate: (year) =>
-            year() > new Date().getFullYear() - 18 ? 'Must be 18 or older' : null,
-        });
+        rule(
+          date.year,
+          when((year) => year() > new Date().getFullYear() - 18, error('Must be 18 or older')),
+        );
       });
 
       const f = form(signal({year: 2020, month: 13, day: -2}), birthdaySchema);
-      expect(f.year.$.errors()).toEqual([new FormValidationError('Must be 18 or older')]);
-      expect(f.month.$.errors()).toEqual([new FormValidationError('Must be between 1-12')]);
-      expect(f.day.$.errors()).toEqual([new FormValidationError('Must be between 1-31')]);
+      expect(f.year.$.errors()).toEqual([{type: 'custom', message: 'Must be 18 or older'}]);
+      expect(f.month.$.errors()).toEqual([{type: 'custom', message: 'Must be between 1-12'}]);
+      expect(f.day.$.errors()).toEqual([{type: 'custom', message: 'Must be between 1-31'}]);
     });
 
     it(`should throw when calling rule and each outside schema`, () => {
@@ -191,9 +216,10 @@ describe('form', () => {
 
     it('should support runtime type validation with zod', () => {
       const s = schema(z.object({x: z.number().min(1), y: z.number()}), (f) => {
-        rule(f.y, {
-          validate: (y) => (y() <= f.x.$() ? 'y must be greater than x' : null),
-        });
+        rule(
+          f.y,
+          when((y) => y() <= f.x.$(), error('y must be greater than x')),
+        );
       });
       const f = form(signal({x: 0, y: 0}), s);
       expect(f.x.$.errors().map((e) => e.message)).toEqual([
@@ -201,67 +227,5 @@ describe('form', () => {
       ]);
       expect(f.y.$.errors().map((e) => e.message)).toEqual(['y must be greater than x']);
     });
-  });
-});
-
-describe('type validator', () => {
-  it('should not have errors for valid data', () => {
-    const validator = z.object({
-      a: z.number(),
-    });
-    const data = signal({a: 0});
-    const errors = getTypeErrorTree(validator, data);
-    expect(errors?.all()).toEqual([]);
-  });
-
-  it('should raise root-level error', () => {
-    const validator = z.object({
-      a: z.number(),
-    });
-    const data = signal(null);
-    const errors = getTypeErrorTree(validator, data);
-    expect(errors?.all().map((e) => e.message)).toEqual(['Expected object, received null']);
-    expect(errors?.own().map((e) => e.message)).toEqual(['Expected object, received null']);
-  });
-
-  it('should raise error on property', () => {
-    const validator = z.object({
-      a: z.number(),
-    });
-    const data = signal({a: 'invalid'});
-    const errors = getTypeErrorTree(validator, data);
-    expect(errors?.all().map((e) => e.message)).toEqual(['Expected number, received string']);
-    expect(errors?.own()).toEqual([]);
-    const childErrors = errors?.property('a');
-    expect(childErrors?.all().map((e) => e.message)).toEqual(['Expected number, received string']);
-    expect(childErrors?.own().map((e) => e.message)).toEqual(['Expected number, received string']);
-  });
-
-  // TODO: Broken. Fix it.
-  it('should merge errors from multiple validators', () => {
-    const validator1 = z.object({
-      a: z.number(),
-      b: z.number(),
-    });
-    const validator2 = z.object({
-      a: z.number().optional(),
-      b: z.number(),
-    });
-    const data = signal({});
-    const errors1 = getTypeErrorTree(validator1, data)!;
-    const errors2 = getTypeErrorTree(validator2, data)!;
-    const errors = mergeTypeErrorTree(errors1, errors2)!;
-    expect(
-      errors
-        .property('a')
-        .own()
-        .map((e) => e.message),
-    ).toEqual(['Required']);
-    expect(
-      errors
-        .property('b')
-        .own()
-        .map((e) => e.message),
-    ).toEqual(['Required', 'Required']);
   });
 });

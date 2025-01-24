@@ -12,7 +12,7 @@ export type ProxyTreeMeta<T, B extends Object, W> = {
 export type ProxyWrapped<T, B extends Object, W> = W &
   ProxyTreeMeta<T, B, W> &
   (T extends Record<PropertyKey, unknown>
-    ? {readonly [K in keyof T]: ProxyWrapped<T[K], B, W>}
+    ? { readonly [K in keyof T]: ProxyWrapped<T[K], B, W> }
     : T extends readonly unknown[]
       ? readonly ProxyWrapped<T[number], B, W>[]
       : {});
@@ -32,7 +32,7 @@ export function createOnAccessProxy<T, B extends Object, W>(
   parent?: ProxyWrapped<unknown, B, W>,
   propertyInParent?: PropertyKey,
 ): ProxyWrapped<T, B, W> {
-  const {wrap, descend, configure} = {
+  const { wrap, descend, configure } = {
     descend: (backing: B, property: keyof B) => backing[property],
     configure: () => {},
     ...callbacks,
@@ -40,7 +40,7 @@ export function createOnAccessProxy<T, B extends Object, W>(
   const wrapped = new Proxy(
     {
       ...wrap(backing, parent, propertyInParent),
-      [PROXY_TREE]: {backing, parent, propertyInParent, properties: {}},
+      [PROXY_TREE]: { backing, parent, propertyInParent, properties: {} },
     } as W & ProxyTreeMeta<T, B, W>,
     {
       get(target, key, receiver) {
