@@ -156,6 +156,7 @@
   },
   "// 2": "devDependencies are not used under Bazel. Many can be removed after test.sh is deleted.",
   "devDependencies": {
+    "@babel/plugin-proposal-async-generator-functions": "7.20.7",
     "@actions/core": "^1.10.0",
     "@actions/github": "^6.0.0",
     "@angular-devkit/architect-cli": "0.1902.0-next.0",
