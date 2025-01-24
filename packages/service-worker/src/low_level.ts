@@ -6,8 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ɵRuntimeError as RuntimeError} from '@angular/core';
 import {concat, ConnectableObservable, defer, fromEvent, Observable, of, throwError} from 'rxjs';
 import {filter, map, publish, switchMap, take, tap} from 'rxjs/operators';
+
+import {RuntimeErrorCode} from './errors';
 
 export const ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not supported by this browser';
 
@@ -121,8 +124,8 @@ type OperationCompletedEvent =
       error: string;
     };
 
-function errorObservable(message: string): Observable<any> {
-  return defer(() => throwError(new Error(message)));
+function errorObservable(error: Error): Observable<any> {
+  return defer(() => throwError(error));
 }
 
 /**
@@ -137,7 +140,15 @@ export class NgswCommChannel {
 
   constructor(private serviceWorker: ServiceWorkerContainer | undefined) {
     if (!serviceWorker) {
-      this.worker = this.events = this.registration = errorObservable(ERR_SW_NOT_SUPPORTED);
+      this.worker =
+        this.events =
+        this.registration =
+          errorObservable(
+            new RuntimeError(
+              RuntimeErrorCode.SERVICE_WORKER_DISABLED_OR_NOT_SUPPORTED_BY_THIS_BROWSER,
+              (typeof ngDevMode === 'undefined' || ngDevMode) && ERR_SW_NOT_SUPPORTED,
+            ),
+          );
     } else {
       const controllerChangeEvents = fromEvent(serviceWorker, 'controllerchange');
       const controllerChanges = controllerChangeEvents.pipe(map(() => serviceWorker.controller));
