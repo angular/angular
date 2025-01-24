@@ -1,9 +1,8 @@
-import {computed, Signal} from '@angular/core';
-import {FormValidationError} from './logic';
+import { computed, Signal } from '@angular/core';
 
 // Aligns with `ZodType<T>`
 export interface TypeValidator<T> {
-  safeParse: (value: unknown) => {data?: T; error?: TypeValidationRootError};
+  safeParse: (value: unknown) => { data?: T; error?: TypeValidationRootError };
 }
 
 // Aligns with `ZodError`
@@ -17,13 +16,11 @@ export interface TypeValidationIssue {
   path: (string | number)[];
 }
 
-export class TypeValidationError<
-  I extends TypeValidationIssue = TypeValidationIssue,
-> extends FormValidationError {
-  constructor(readonly issue: I) {
-    super(issue.message);
-  }
-}
+export type TypeValidationError<I extends TypeValidationIssue = TypeValidationIssue> = {
+  type: 'type-error';
+  message: string;
+  issue: I;
+};
 
 export interface TypeValidationErrorTree {
   all: Signal<TypeValidationError[]>;
@@ -58,7 +55,11 @@ export function mergeTypeErrorTree(
 }
 
 function runValidator<T>(validator: TypeValidator<T>, value: T): TypeValidationError[] {
-  return (validator.safeParse(value).error?.errors ?? []).map((e) => new TypeValidationError(e));
+  return (validator.safeParse(value).error?.errors ?? []).map((e) => ({
+    type: 'type-error',
+    message: e.message,
+    issue: e,
+  }));
 }
 
 function getTypeErrorTreeForPath(

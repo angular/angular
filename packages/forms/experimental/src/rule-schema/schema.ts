@@ -1,27 +1,26 @@
-import {type Signal} from '@angular/core';
-import {type Form, type Keys} from './form';
-import {INTERNAL} from './internal';
-import {type FormValidationError} from './logic';
-import {type TypeValidator} from './type-validator';
+import { type Form, type Keys } from './form';
+import { INTERNAL } from './internal';
+import { FormLogic } from './logic';
+import { type TypeValidator } from './type-validator';
 
 let isInSchemaContext = false;
 
-export type ValidateResult = FormValidationError[] | FormValidationError | string | null;
+export type FormRule<T> =
+  | Partial<FormLogic<T>>
+  | FormSchema<T>
+  | ((form: Form<T>) => Partial<FormLogic<T>> | FormSchema<T>);
 
-export type DisabledResult = boolean | string | null;
-
-export type FormLogicSchema<T> = {
-  readonly validate: (value: Signal<T>) => ValidateResult;
-  readonly disabled: (value: Signal<T>) => DisabledResult;
-};
-
-export type FormRule<T> = Partial<FormLogicSchema<T>> | FormSchema<T>;
-
-export type FormChildRule<T> = FormRule<T[Keys<T>]> | ((key: Keys<T>) => FormRule<T[Keys<T>]>);
+export type FormEachRule<T> =
+  | Partial<FormLogic<T[Keys<T>]>>
+  | FormSchema<T[Keys<T>]>
+  | ((
+      form: Form<T[Keys<T>]>,
+      key: Keys<T>,
+    ) => Partial<FormLogic<T[Keys<T>]>> | FormSchema<T[Keys<T>]>);
 
 export class FormSchema<T> {
   private properties = {} as T extends Record<PropertyKey, unknown>
-    ? {[K in Keys<T>]: FormSchema<T[K]>}
+    ? { [K in Keys<T>]: FormSchema<T[K]> }
     : {};
 
   constructor(
@@ -97,18 +96,24 @@ export function schema<T>(
   return s;
 }
 
-export function rule<T>(form: Form<T>, newRule: FormRule<T>) {
+export function rule<T>(form: Form<T>, newRule: FormRule<T> | FormRule<T>[]) {
   checkSchemaContext('rule');
   ruleInternal(form, newRule);
 }
 
-export function each<T>(form: Form<T>, newRule: FormChildRule<T>) {
+export function each<T>(form: Form<T>, newRule: FormEachRule<T> | FormEachRule<T>[]) {
   checkSchemaContext('each');
   eachInternal(form, newRule);
 }
 
-export function ruleInternal<T>(form: Form<T>, newRule: FormRule<T>) {
-  if (newRule instanceof FormSchema) {
+export function ruleInternal<T>(form: Form<T>, newRule: FormRule<T> | FormRule<T>[]) {
+  if (Array.isArray(newRule)) {
+    for (const r of newRule) {
+      ruleInternal(form, r);
+    }
+  } else if (typeof newRule === 'function') {
+    newRule = newRule(form);
+  } else if (newRule instanceof FormSchema) {
     // If the rule is itself a full schema, run the schema's logic instantiation functions.
     for (const instantiateLogic of newRule[INTERNAL].logic) {
       instantiateLogic(form);
@@ -124,17 +129,23 @@ export function ruleInternal<T>(form: Form<T>, newRule: FormRule<T>) {
   }
 }
 
-function eachInternal<T>(form: Form<T>, newRule: FormChildRule<T>) {
-  // Add the child rule to the form so the form ca add it to new child forms that it creates.
-  form[INTERNAL].childRules.push(newRule);
-  // Then apply the rule to all existing child forms.
-  // TODO: why doesn't `Object.keys` work here? probably nuking some well-known symbol on the proxy.
-  for (const property of Reflect.ownKeys(form)) {
-    const childForm = form[property as keyof Form<T>] as Form<T[Keys<T>]>;
-    if (typeof newRule === 'function') {
-      newRule = newRule(property as Keys<T>);
+function eachInternal<T>(form: Form<T>, newRule: FormEachRule<T> | FormEachRule<T>[]) {
+  if (Array.isArray(newRule)) {
+    for (const r of newRule) {
+      eachInternal(form, r);
     }
-    ruleInternal(childForm, newRule);
+  } else {
+    // Add the child rule to the form so the form ca add it to new child forms that it creates.
+    form[INTERNAL].childRules.push(newRule);
+    // Then apply the rule to all existing child forms.
+    // TODO: why doesn't `Object.keys` work here? probably nuking some well-known symbol on the proxy.
+    for (const property of Reflect.ownKeys(form)) {
+      const childForm = form[property as keyof Form<T>] as Form<T[Keys<T>]>;
+      if (typeof newRule === 'function') {
+        newRule = newRule(childForm, property as Keys<T>);
+      }
+      ruleInternal(childForm, newRule);
+    }
   }
 }
 
