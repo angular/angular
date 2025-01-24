@@ -418,8 +418,7 @@ export function createMouseSpecialEvent(e: Event, target: Element): Event {
   // this event into a pseudo-real mouseenter/mouseleave event by adjusting
   // its type.
   //
-  const copy: {-readonly[P in keyof Event]?: Event[P]}&
-      {'_originalEvent'?: Event} = {};
+  const copy: {-readonly [P in keyof Event]?: Event[P]} & {'_originalEvent'?: Event} = {};
   for (const property in e) {
     if (property === 'srcElement' || property === 'target') {
       continue;
