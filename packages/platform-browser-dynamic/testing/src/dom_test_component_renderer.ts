@@ -22,7 +22,9 @@ export class DOMTestComponentRenderer extends TestComponentRenderer {
   override insertRootElement(rootElId: string) {
     this.removeAllRootElementsImpl();
     const rootElement = getDOM().getDefaultDocument().createElement('div');
-    rootElement.setAttribute('id', rootElId);
+    // This verbose attribute name is chosen to minimize the chances
+    // of collision with a host binding of the tested component
+    rootElement.setAttribute('data-ng-test-id', rootElId);
     this._doc.body.appendChild(rootElement);
   }
 
@@ -38,7 +40,7 @@ export class DOMTestComponentRenderer extends TestComponentRenderer {
   }
 
   private removeAllRootElementsImpl() {
-    const oldRoots = this._doc.querySelectorAll('[id^=root]');
+    const oldRoots = this._doc.querySelectorAll('[data-ng-test-id^=root]');
     for (let i = 0; i < oldRoots.length; i++) {
       getDOM().remove(oldRoots[i]);
     }
