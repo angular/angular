@@ -2856,7 +2856,7 @@ describe('ViewContainerRef', () => {
       return {
         insertRootElement(rootElementId: string) {
           const rootEl = document.createElement('div');
-          rootEl.id = rootElementId;
+          rootEl.setAttribute('data-ng-test-id', rootElementId);
 
           containerEl = document.createElement('div');
           document.body.appendChild(containerEl);

@@ -653,7 +653,7 @@ export class TestBedImpl implements TestBed {
       const componentRef = componentFactory.create(
         Injector.NULL,
         [],
-        `#${rootElId}`,
+        `[data-ng-test-id=${rootElId}]`,
         this.testModuleRef,
       ) as ComponentRef<T>;
       return this.runInInjectionContext(() => new ComponentFixture(componentRef));
