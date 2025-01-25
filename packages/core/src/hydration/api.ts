@@ -156,12 +156,12 @@ function printHydrationStats(injector: Injector) {
 /**
  * Returns a Promise that is resolved when an application becomes stable.
  */
-function whenStableWithTimeout(appRef: ApplicationRef, injector: Injector): Promise<void> {
+function whenStableWithTimeout(appRef: ApplicationRef): Promise<void> {
   const whenStablePromise = appRef.whenStable();
   if (typeof ngDevMode !== 'undefined' && ngDevMode) {
     const timeoutTime = APPLICATION_IS_STABLE_TIMEOUT;
-    const console = injector.get(Console);
-    const ngZone = injector.get(NgZone);
+    const console = appRef.injector.get(Console);
+    const ngZone = appRef.injector.get(NgZone);
 
     // The following call should not and does not prevent the app to become stable
     // We cannot use RxJS timer here because the app would remain unstable.
@@ -274,7 +274,7 @@ export function withDomHydration(): EnvironmentProviders {
         useFactory: () => {
           if (inject(IS_HYDRATION_DOM_REUSE_ENABLED)) {
             const appRef = inject(ApplicationRef);
-            const injector = inject(Injector);
+
             return () => {
               // Wait until an app becomes stable and cleanup all views that
               // were not claimed during the application bootstrap process.
@@ -283,11 +283,21 @@ export function withDomHydration(): EnvironmentProviders {
               //
               // Note: the cleanup task *MUST* be scheduled within the Angular zone in Zone apps
               // to ensure that change detection is properly run afterward.
-              whenStableWithTimeout(appRef, injector).then(() => {
+              whenStableWithTimeout(appRef).then(() => {
+                // Note: we have to check whether the application is destroyed before
+                // performing other operations with the `injector`.
+                // The application may be destroyed **before** it becomes stable, so when
+                // the `whenStableWithTimeout` resolves, the injector might already be in
+                // a destroyed state. Thus, calling `injector.get` would throw an error
+                // indicating that the injector has already been destroyed.
+                if (appRef.destroyed) {
+                  return;
+                }
+
                 cleanupDehydratedViews(appRef);
                 if (typeof ngDevMode !== 'undefined' && ngDevMode) {
-                  countBlocksSkippedByHydration(injector);
-                  printHydrationStats(injector);
+                  countBlocksSkippedByHydration(appRef.injector);
+                  printHydrationStats(appRef.injector);
                 }
               });
             };
