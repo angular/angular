@@ -7071,8 +7071,6 @@ describe('platform-server full application hydration integration', () => {
 
         expect(logs).toEqual([
           'isStable=false',
-          'isStable=true',
-          'isStable=false',
           // In the end, the application became stable while being destroyed.
           'isStable=true',
         ]);

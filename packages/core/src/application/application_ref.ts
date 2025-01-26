@@ -11,7 +11,7 @@ import '../util/ng_jit_mode';
 import '../util/ng_server_mode';
 
 import {setActiveConsumer, setThrowInvalidWriteToSignalError} from '../../primitives/signals';
-import {Observable, Subject, Subscription} from 'rxjs';
+import {type Observable, Subject, type Subscription} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {ZONELESS_ENABLED} from '../change_detection/scheduling/zoneless_scheduling';
@@ -22,7 +22,7 @@ import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
 import {EnvironmentInjector, type R3Injector} from '../di/r3_injector';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
-import {ErrorHandler, INTERNAL_APPLICATION_ERROR_HANDLER} from '../error_handler';
+import {INTERNAL_APPLICATION_ERROR_HANDLER} from '../error_handler';
 import {Type} from '../interface/type';
 import {ComponentFactory, ComponentRef} from '../linker/component_factory';
 import {ComponentFactoryResolver} from '../linker/component_factory_resolver';
@@ -334,12 +334,15 @@ export class ApplicationRef {
    */
   public readonly components: ComponentRef<any>[] = [];
 
+  private internalPendingTask = inject(PendingTasksInternal);
+
   /**
    * Returns an Observable that indicates when the application is stable or unstable.
    */
-  public readonly isStable: Observable<boolean> = inject(PendingTasksInternal).hasPendingTasks.pipe(
-    map((pending) => !pending),
-  );
+  public get isStable(): Observable<boolean> {
+    // This is a getter because it might be invoked after the application has been destroyed.
+    return this.internalPendingTask.hasPendingTasksObservable.pipe(map((pending) => !pending));
+  }
 
   constructor() {
     // Inject the tracing service to initialize it.
