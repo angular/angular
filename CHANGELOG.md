@@ -320,8 +320,8 @@ Blog post: https://blog.angular.dev/meet-angular-v19-7b29dfd05b84
   catch the errors:
 
   * Instead of waiting for automatic change detection to happen, trigger
-    it synchronously and expect the error. For example, a jasmine test
-    could write `expect(() => TestBed.inject(ApplicationRef).tick()).toThrow()`
+    it synchronously and expect the error. For example, a jasmine test.
+    could write `expect(() => TestBed.inject(ApplicationRef).tick()).toThrow()`.
   * `TestBed` will reject any outstanding `ComponentFixture.whenStable` promises. A jasmine test,
   for example, could write `expectAsync(fixture.whenStable()).toBeRejected()`.
 
@@ -1991,7 +1991,7 @@ Live long and prosper 🖖🏻
   check. The added warning message should help pin-pointing NgSwitch
   usages where adjustments are needed.
 ### core
-- Angular now requires `zone.js` version `~0.14.0`
+- Angular now requires `zone.js` version `~0.14.0`.
 - Versions of TypeScript older than 5.2 are no longer supported.
 - The  `mutate` method was removed from the `WritableSignal` interface and completely
   dropped from the public API surface. As an alternative, please use the `update` method and
@@ -2776,7 +2776,7 @@ Live long and prosper 🖖🏻
   });
   ```
 - The `ReflectiveInjector` and related symbols were removed. Please update the code to avoid references to the `ReflectiveInjector` symbol. Use `Injector.create` as a replacement to create an injector instead.
-- Node.js v14 support has been removed
+- Node.js v14 support has been removed.
 
   Node.js v14 is planned to be End-of-Life on 2023-04-30. Angular will stop supporting Node.js v14 in Angular v16. Angular v16 will continue to officially support Node.js versions v16 and v18.
 ### platform-browser
@@ -2787,12 +2787,12 @@ Live long and prosper 🖖🏻
   **NOTE:** this does not effect users using the Angular CLI.
 - `renderApplication` method no longer accepts a root component as first argument. Instead, provide a bootstrapping function that returns a `Promise<ApplicationRef>`.
 
-  Before
+  Before:
   ```ts
   const output: string = await renderApplication(RootComponent, options);
   ```
 
-  Now
+  Now:
   ```ts
   const bootstrap = () => bootstrapApplication(RootComponent, appConfig);
   const output: string = await renderApplication(bootstrap, options);
