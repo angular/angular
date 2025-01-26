@@ -38,10 +38,13 @@ export function joinWithSlash(start: string, end: string) {
  * @returns The URL string, modified if needed.
  */
 export function stripTrailingSlash(url: string): string {
-  const match = url.match(/#|\?|$/);
-  const pathEndIdx = (match && match.index) || url.length;
-  const droppedSlashIdx = pathEndIdx - (url[pathEndIdx - 1] === '/' ? 1 : 0);
-  return url.slice(0, droppedSlashIdx) + url.slice(pathEndIdx);
+  // Find the index of the first occurrence of `#`, `?`, or the end of the string.
+  // This marks the start of the query string, fragment, or the end of the URL path.
+  const pathEndIdx = url.search(/#|\?|$/);
+  // Check if the character before `pathEndIdx` is a trailing slash.
+  // If it is, remove the trailing slash and return the modified URL.
+  // Otherwise, return the URL as is.
+  return url[pathEndIdx - 1] === '/' ? url.slice(0, pathEndIdx - 1) + url.slice(pathEndIdx) : url;
 }
 
 /**
@@ -52,5 +55,5 @@ export function stripTrailingSlash(url: string): string {
  * @returns The normalized URL parameters string.
  */
 export function normalizeQueryParams(params: string): string {
-  return params && params[0] !== '?' ? '?' + params : params;
+  return params && params[0] !== '?' ? `?${params}` : params;
 }
