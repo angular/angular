@@ -52,6 +52,12 @@ export class PendingTasksInternal implements OnDestroy {
     if (this._hasPendingTasks) {
       this.hasPendingTasks.next(false);
     }
+    // We call `unsubscribe()` to release observers, as users may forget to
+    // unsubscribe manually when subscribing to `isStable`. We do not call
+    // `complete()` because it is unsafe; if someone subscribes using the `first`
+    // operator and the observable completes before emitting a value,
+    // RxJS will throw an error.
+    this.hasPendingTasks.unsubscribe();
   }
 
   /** @nocollapse */
