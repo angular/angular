@@ -122,7 +122,7 @@ function applicationRefIsStable(applicationRef: ApplicationRef) {
 function hasPendingTasks(pendingTasks: PendingTasksInternal): Promise<boolean> {
   return of(EMPTY)
     .pipe(
-      withLatestFrom(pendingTasks.hasPendingTasks),
+      withLatestFrom(pendingTasks.hasPendingTasksObservable),
       map(([_, hasPendingTasks]) => hasPendingTasks),
     )
     .toPromise() as Promise<boolean>;

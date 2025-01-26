@@ -420,8 +420,6 @@ describe('event replay', () => {
 
     expect(logs).toEqual([
       'isStable=false',
-      'isStable=true',
-      'isStable=false',
       // In the end, the application became stable while being destroyed.
       'isStable=true',
     ]);
