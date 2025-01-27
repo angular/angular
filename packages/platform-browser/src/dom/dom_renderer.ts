@@ -44,6 +44,7 @@ export const NAMESPACE_URIS: {[ns: string]: string} = {
 
 const COMPONENT_REGEX = /%COMP%/g;
 const SOURCEMAP_URL_REGEXP = /\/\*#\s*sourceMappingURL=(.+?)\s*\*\//;
+const PROTOCOL_REGEXP = /^https?:/;
 
 export const COMPONENT_VARIABLE = '%COMP%';
 export const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
@@ -112,13 +113,17 @@ export function addBaseHrefToCssSourceMap(baseHref: string, styles: string[]): s
     }
 
     return cssContent.replace(SOURCEMAP_URL_REGEXP, (_, sourceMapUrl) => {
-      if (sourceMapUrl.startsWith('data:')) {
+      if (
+        sourceMapUrl[0] === '/' ||
+        sourceMapUrl.startsWith('data:') ||
+        PROTOCOL_REGEXP.test(sourceMapUrl)
+      ) {
         return `/*# sourceMappingURL=${sourceMapUrl} */`;
       }
 
-      const {pathname: resolvedSourceMapUrl} = new URL('./' + sourceMapUrl, absoluteBaseHrefUrl);
+      const {pathname: resolvedSourceMapUrl} = new URL(sourceMapUrl, absoluteBaseHrefUrl);
 
-      return `/*# sourceMappingURL=${resolvedSourceMapUrl.replace(/\/\//g, '/')} */`;
+      return `/*# sourceMappingURL=${resolvedSourceMapUrl} */`;
     });
   });
 }

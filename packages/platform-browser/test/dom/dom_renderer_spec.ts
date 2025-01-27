@@ -314,21 +314,27 @@ describe('addBaseHrefToCssSourceMap', () => {
   });
 
   it('should handle baseHref with a trailing slash correctly', () => {
-    const styles = ['/*# sourceMappingURL=/style.css */'];
+    const styles = ['/*# sourceMappingURL=style.css */'];
     const result = addBaseHrefToCssSourceMap('/base/', styles);
     expect(result).toEqual(['/*# sourceMappingURL=/base/style.css */']);
   });
 
   it('should handle baseHref without a trailing slash correctly', () => {
-    const styles = ['/*# sourceMappingURL=/style.css */'];
+    const styles = ['/*# sourceMappingURL=style.css */'];
     const result = addBaseHrefToCssSourceMap('/base', styles);
     expect(result).toEqual(['/*# sourceMappingURL=/style.css */']);
   });
 
   it('should not duplicate slashes in the final URL', () => {
-    const styles = ['/*# sourceMappingURL=/style.css */'];
+    const styles = ['/*# sourceMappingURL=./style.css */'];
     const result = addBaseHrefToCssSourceMap('/base/', styles);
     expect(result).toEqual(['/*# sourceMappingURL=/base/style.css */']);
+  });
+
+  it('should not add base href to sourceMappingURL that is absolute', () => {
+    const styles = ['/*# sourceMappingURL=http://example.com/style.css */'];
+    const result = addBaseHrefToCssSourceMap('/base/', styles);
+    expect(result).toEqual(['/*# sourceMappingURL=http://example.com/style.css */']);
   });
 
   it('should process multiple styles and handle each case correctly', () => {
@@ -336,7 +342,7 @@ describe('addBaseHrefToCssSourceMap', () => {
       '/*# sourceMappingURL=style1.css */',
       '/*# sourceMappingURL=data:application/json;base64,xyz */',
       'h1 { font-size: 2rem; }',
-      '/*# sourceMappingURL=/style2.css */',
+      '/*# sourceMappingURL=style2.css */',
     ];
     const result = addBaseHrefToCssSourceMap('/base/', styles);
     expect(result).toEqual([
