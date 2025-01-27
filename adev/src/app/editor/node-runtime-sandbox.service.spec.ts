@@ -300,4 +300,18 @@ describe('NodeRuntimeSandbox', () => {
       expect(deleteFileSpy).toHaveBeenCalledWith(fileToDelete);
     }
   });
+
+  it('should not have any filePath starting with "/" in solutions files', async () => {
+    service['webContainerPromise'] = Promise.resolve(
+      new FakeWebContainer() as unknown as WebContainer,
+    );
+    setValuesToInitializeProject();
+
+    await service.init();
+
+    const files = await service.getSolutionFiles();
+
+    expect(files.length).toBe(1);
+    expect(files[0].path).toBe('fake-file');
+  });
 });
