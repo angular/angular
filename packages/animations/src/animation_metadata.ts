@@ -403,7 +403,7 @@ export interface AnimationSequenceMetadata extends AnimationMetadata {
 
 /**
  * Encapsulates an animation group.
- * Instantiated and returned by the `{@link animations/group group()}` function.
+ * Instantiated and returned by the `group()` function.
  *
  * @publicApi
  */
