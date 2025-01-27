@@ -53,6 +53,19 @@ export function removeDehydratedViews(lContainer: LContainer) {
   lContainer[DEHYDRATED_VIEWS] = retainedViews;
 }
 
+export function removeDehydratedViewList(
+  views: DehydratedContainerView[] | null,
+  lContainer: LContainer,
+) {
+  if (views === null) return;
+  const parentLView = lContainer[PARENT];
+  const renderer = parentLView[RENDERER];
+  for (const view of views) {
+    removeDehydratedView(view, renderer);
+    ngDevMode && ngDevMode.dehydratedViewsRemoved++;
+  }
+}
+
 /**
  * Helper function to remove all nodes from a dehydrated view.
  */
