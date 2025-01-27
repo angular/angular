@@ -603,6 +603,15 @@ describe('resource', () => {
     stream.set({error: 'fail'});
     expect(res.value()).toBe(undefined);
   });
+
+  it('should not accept both stream and loader', () => {
+    // @ts-expect-error
+    const r = resource({
+      stream: () => Promise.resolve(signal({value: 3})),
+      loader: () => Promise.resolve(3),
+      injector: TestBed.inject(Injector),
+    });
+  });
 });
 
 function flushMicrotasks(): Promise<void> {

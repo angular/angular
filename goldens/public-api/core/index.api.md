@@ -1447,6 +1447,7 @@ export type Predicate<T> = (value: T) => boolean;
 // @public
 export interface PromiseResourceOptions<T, R> extends BaseResourceOptions<T, R> {
     loader: ResourceLoader<T, R>;
+    stream?: never;
 }
 
 // @public
@@ -1769,6 +1770,7 @@ export type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvi
 
 // @public
 export interface StreamingResourceOptions<T, R> extends BaseResourceOptions<T, R> {
+    loader?: never;
     stream: ResourceStreamingLoader<T, R>;
 }
 

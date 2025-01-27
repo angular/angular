@@ -210,6 +210,11 @@ export interface PromiseResourceOptions<T, R> extends BaseResourceOptions<T, R> 
    * Loading function which returns a `Promise` of the resource's value for a given request.
    */
   loader: ResourceLoader<T, R>;
+
+  /**
+   * loader and stream properties are mutually exclusive.
+   */
+  stream?: never;
 }
 
 /**
@@ -223,6 +228,11 @@ export interface StreamingResourceOptions<T, R> extends BaseResourceOptions<T, R
    * request, which can change over time as new values are received from a stream.
    */
   stream: ResourceStreamingLoader<T, R>;
+
+  /**
+   * loader and stream properties are mutually exclusive.
+   */
+  loader?: never;
 }
 
 /**
