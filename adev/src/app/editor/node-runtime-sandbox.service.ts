@@ -146,7 +146,7 @@ export class NodeRuntimeSandbox {
     const excludeFolders = ['node_modules', '.angular', 'dist'];
 
     return await checkFilesInDirectory(
-      '/',
+      '',
       webContainer.fs,
       (path?: string) => !!path && !excludeFolders.includes(path),
     );

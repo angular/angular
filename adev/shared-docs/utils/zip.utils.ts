@@ -14,9 +14,6 @@ import {zip, strToU8} from 'fflate';
 export async function generateZip(files: FileAndContent[]): Promise<Uint8Array> {
   const filesObj: Record<string, Uint8Array> = {};
   files.forEach(({path, content}) => {
-    if (path.startsWith('/')) {
-      path = path.slice(1);
-    }
     filesObj[path] = typeof content === 'string' ? strToU8(content) : content;
   });
 
