@@ -41,7 +41,7 @@ interface FileSystemAPI {
 export const checkFilesInDirectory = async (
   dir: string,
   fs: FileSystemAPI,
-  filterFoldersPredicate: (path?: string) => boolean = () => true,
+  filterFromRootPredicate: ((path: string) => boolean) | null,
   files: FileAndContent[] = [],
 ) => {
   const entries = (await fs.readdir(dir, {withFileTypes: true})) ?? [];
@@ -49,11 +49,15 @@ export const checkFilesInDirectory = async (
   for (const entry of entries) {
     const fullPath = normalizePath(`${dir}/${entry.name}`);
 
+    if (filterFromRootPredicate && !filterFromRootPredicate?.(entry.name)) {
+      continue;
+    }
+
     if (entry.isFile()) {
       const content = await fs.readFile(fullPath, 'utf-8');
       files.push({content, path: fullPath});
-    } else if (entry.isDirectory() && filterFoldersPredicate(entry.name)) {
-      await checkFilesInDirectory(fullPath, fs, filterFoldersPredicate, files);
+    } else if (entry.isDirectory()) {
+      await checkFilesInDirectory(fullPath, fs, null, files);
     }
   }
 
