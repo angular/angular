@@ -149,7 +149,10 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
 
   /** @nodoc */
   ngOnChanges(changes: SimpleChanges): void {
-    this._checkFormPresent();
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && !this.form) {
+      throw missingFormException();
+    }
+
     if (changes.hasOwnProperty('form')) {
       this._updateValidators();
       this._updateDomValue();
@@ -403,12 +406,6 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
     setUpValidators(this.form, this);
     if (this._oldForm) {
       cleanUpValidators(this._oldForm, this);
-    }
-  }
-
-  private _checkFormPresent() {
-    if (!this.form && (typeof ngDevMode === 'undefined' || ngDevMode)) {
-      throw missingFormException();
     }
   }
 }
