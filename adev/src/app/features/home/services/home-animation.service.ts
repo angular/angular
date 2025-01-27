@@ -12,7 +12,7 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {RESIZE_EVENT_DELAY, WEBGL_LOADED_DELAY, WINDOW} from '@angular/docs';
 import {gsap} from 'gsap';
 import {ScrollTrigger} from 'gsap/ScrollTrigger';
-import {fromEvent} from 'rxjs';
+import {from, fromEvent} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
 import {ThemeManager} from '../../../core/services/theme-manager.service';
 import {Canvas} from '../components/canvas';
@@ -80,7 +80,7 @@ export class HomeAnimation {
   /**
    * Initialize CSS styles, GSAP, the WebGL canvas and animations.
    */
-  async init(element: HTMLDivElement): Promise<void> {
+  init(element: HTMLDivElement): void {
     this.element = element;
 
     // CSS styles needed for the animation
@@ -93,32 +93,40 @@ export class HomeAnimation {
       ignoreMobileResize: true,
     });
 
-    await this.initCanvas();
-    this.getViews();
+    // Wrap `initCanvas` in an observable to prevent executing any code,
+    // such as `getViews()`, if the view is destroyed before the canvas becomes ready.
+    from(this.initCanvas())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.getViews();
 
-    // Call theme and resize handlers once before setting the animations
-    this.onTheme();
-    this.onResize();
-    this.setAnimations();
+        // Call theme and resize handlers once before setting the animations
+        this.onTheme();
+        this.onResize();
+        this.setAnimations();
 
-    // Call update handler once before starting the animation
-    this.onUpdate(0, 0, 0, 0);
-    this.enable();
+        // Call update handler once before starting the animation
+        this.onUpdate(0, 0, 0, 0);
+        this.enable();
 
-    // Workaround for the flash of white before the programs are ready
-    setTimeout(() => {
-      // Show the canvas
-      this.element.classList.add(LOADED_CLASS_NAME);
-    }, WEBGL_LOADED_DELAY);
+        // Workaround for the flash of white before the programs are ready
+        const timeoutId = setTimeout(() => {
+          // Show the canvas
+          this.element.classList.add(LOADED_CLASS_NAME);
+        }, WEBGL_LOADED_DELAY);
+
+        // If the view is destroyed before the timer fires, we clean up the handle.
+        // This will be a no-op if the timer has already fired.
+        this.destroyRef.onDestroy(() => clearTimeout(timeoutId));
+      });
   }
 
   /**
    * Initialize the canvas controller.
    */
-  private async initCanvas(): Promise<void> {
+  private initCanvas(): Promise<void[]> {
     this.canvas = new Canvas(this.document.querySelector(CANVAS)!, this.document, this.window);
-
-    await this.canvas.ready();
+    return this.canvas.ready();
   }
 
   /**
