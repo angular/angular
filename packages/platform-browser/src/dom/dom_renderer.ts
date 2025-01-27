@@ -104,18 +104,22 @@ export function addBaseHrefToCssSourceMap(baseHref: string, styles: string[]): s
     return styles;
   }
 
-  const normalizedBaseHref = baseHref.at(-1) === '/' ? baseHref : baseHref + '/';
+  const absoluteBaseHrefUrl = new URL(baseHref, 'http://localhost');
 
   return styles.map((cssContent) => {
     if (!cssContent.includes('sourceMappingURL=')) {
       return cssContent;
     }
 
-    return cssContent.replace(SOURCEMAP_URL_REGEXP, (_, sourceMapUrl) =>
-      sourceMapUrl.startsWith('data:')
-        ? `/*# sourceMappingURL=${sourceMapUrl} */`
-        : `/*# sourceMappingURL=${normalizedBaseHref}${sourceMapUrl.replace(/^\//, '')} */`,
-    );
+    return cssContent.replace(SOURCEMAP_URL_REGEXP, (_, sourceMapUrl) => {
+      if (sourceMapUrl.startsWith('data:')) {
+        return `/*# sourceMappingURL=${sourceMapUrl} */`;
+      }
+
+      const {pathname: resolvedSourceMapUrl} = new URL('./' + sourceMapUrl, absoluteBaseHrefUrl);
+
+      return `/*# sourceMappingURL=${resolvedSourceMapUrl.replace(/\/\//g, '/')} */`;
+    });
   });
 }
 

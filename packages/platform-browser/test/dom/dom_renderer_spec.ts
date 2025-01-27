@@ -295,12 +295,6 @@ describe('addBaseHrefToCssSourceMap', () => {
     expect(result).toEqual(styles);
   });
 
-  it('should append a trailing slash to baseHref if it does not already have one', () => {
-    const styles = ['/*# sourceMappingURL=style.css */'];
-    const result = addBaseHrefToCssSourceMap('/base', styles);
-    expect(result).toEqual(['/*# sourceMappingURL=/base/style.css */']);
-  });
-
   it('should skip styles that do not contain a sourceMappingURL', () => {
     const styles = ['body { color: red; }', 'h1 { font-size: 2rem; }'];
     const result = addBaseHrefToCssSourceMap('/base/', styles);
@@ -328,7 +322,7 @@ describe('addBaseHrefToCssSourceMap', () => {
   it('should handle baseHref without a trailing slash correctly', () => {
     const styles = ['/*# sourceMappingURL=/style.css */'];
     const result = addBaseHrefToCssSourceMap('/base', styles);
-    expect(result).toEqual(['/*# sourceMappingURL=/base/style.css */']);
+    expect(result).toEqual(['/*# sourceMappingURL=/style.css */']);
   });
 
   it('should not duplicate slashes in the final URL', () => {
