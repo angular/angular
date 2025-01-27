@@ -144,12 +144,16 @@ class FakeFileSystemAPI implements FileSystemAPI {
   ): Promise<DirEnt<string>[]>;
   readdir(
     path: unknown,
-    options?: unknown,
+    options?: {encoding?: string | null | undefined; withFileTypes?: boolean} | string | null,
   ):
     | Promise<Uint8Array[]>
     | Promise<string[]>
     | Promise<DirEnt<Uint8Array>[]>
     | Promise<DirEnt<string>[]> {
+    if (typeof options === 'object' && options?.withFileTypes === true) {
+      return Promise.resolve([{name: 'fake-file', isFile: () => true, isDirectory: () => false}]);
+    }
+
     return Promise.resolve(['/fake-dirname']);
   }
 
