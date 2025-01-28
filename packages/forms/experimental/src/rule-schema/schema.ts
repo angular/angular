@@ -1,26 +1,25 @@
-import { type Form, type Keys } from './form';
-import { INTERNAL } from './internal';
-import { FormLogic } from './logic';
-import { type TypeValidator } from './type-validator';
+import {type Form, type Keys} from './form';
+import {INTERNAL} from './internal';
+import {FormLogicDefinition} from './logic';
+import {type TypeValidator} from './type-validator';
 
 let isInSchemaContext = false;
 
-export type FormRule<T> =
-  | Partial<FormLogic<T>>
-  | FormSchema<T>
-  | ((form: Form<T>) => Partial<FormLogic<T>> | FormSchema<T>);
+export type FormRule<T> = (form: Form<T>) => void;
 
-export type FormEachRule<T> =
-  | Partial<FormLogic<T[Keys<T>]>>
-  | FormSchema<T[Keys<T>]>
-  | ((
-      form: Form<T[Keys<T>]>,
-      key: Keys<T>,
-    ) => Partial<FormLogic<T[Keys<T>]>> | FormSchema<T[Keys<T>]>);
+export type FormEachRule<T> = (form: Form<T[Keys<T>]>, key: Keys<T>) => void;
+
+export type FormRuleDefinition<T> =
+  | Partial<FormLogicDefinition<T>>
+  | ((form: Form<T>) => Partial<FormLogicDefinition<T>>);
+
+export type FormEachRuleArg<T> =
+  | Partial<FormLogicDefinition<T[Keys<T>]>>
+  | ((form: Form<T[Keys<T>]>, key: Keys<T>) => Partial<FormLogicDefinition<T[Keys<T>]>>);
 
 export class FormSchema<T> {
   private properties = {} as T extends Record<PropertyKey, unknown>
-    ? { [K in Keys<T>]: FormSchema<T[K]> }
+    ? {[K in Keys<T>]: FormSchema<T[K]>}
     : {};
 
   constructor(
@@ -28,28 +27,28 @@ export class FormSchema<T> {
     private base?: FormSchema<T>,
   ) {
     this[INTERNAL].typeValidator = typeValidator;
-    this[INTERNAL].logic = [...(base?.[INTERNAL].logic ?? [])];
+    this[INTERNAL].rules = [...(base?.[INTERNAL].rules ?? [])];
   }
 
-  extend(definition: (root: Form<T>) => void) {
+  extend(ruleFn: FormRule<T>) {
     const s = new FormSchema(this.typeValidator, this);
-    s[INTERNAL].addLogic(definition);
+    s[INTERNAL].addRule(ruleFn);
     return s;
   }
 
   [INTERNAL] = {
     typeValidator: undefined as TypeValidator<T> | undefined,
 
-    logic: [] as ((from: Form<T>) => void)[],
+    rules: [] as FormRule<T>[],
 
-    addLogic: (definition?: (root: Form<T>) => void) => {
-      if (definition === undefined) {
+    addRule: (ruleFn?: FormRule<T>) => {
+      if (ruleFn === undefined) {
         return;
       }
-      this[INTERNAL].logic.push((f) => {
-        isInSchemaContext = true;
-        definition(f);
-        isInSchemaContext = false;
+      this[INTERNAL].rules.push((f) => {
+        //isInSchemaContext = true;
+        ruleFn(f);
+        //isInSchemaContext = false;
       });
     },
 
@@ -78,74 +77,85 @@ export class FormSchema<T> {
 
 export function schema<T>(): FormSchema<T>;
 export function schema<T>(typeValidator: TypeValidator<T>): FormSchema<T>;
-export function schema<T>(definition: (root: Form<T>) => void): FormSchema<T>;
+export function schema<T>(ruleFn: FormRule<T>): FormSchema<T>;
+export function schema<T>(typeValidator: TypeValidator<T>, ruleFn: FormRule<T>): FormSchema<T>;
 export function schema<T>(
-  typeValidator: TypeValidator<T>,
-  definition: (root: Form<T>) => void,
-): FormSchema<T>;
-export function schema<T>(
-  typeValidatorOrDefinition?: TypeValidator<T> | ((root: Form<T>) => void),
-  definition?: (root: Form<T>) => void,
+  typeValidatorOrDefinition?: TypeValidator<T> | FormRule<T>,
+  ruleFn?: FormRule<T>,
 ): FormSchema<T> {
   const typeValidator: TypeValidator<T> | undefined =
     typeof typeValidatorOrDefinition === 'function' ? undefined : typeValidatorOrDefinition;
-  definition =
-    typeof typeValidatorOrDefinition === 'function' ? typeValidatorOrDefinition : definition;
+  ruleFn = typeof typeValidatorOrDefinition === 'function' ? typeValidatorOrDefinition : ruleFn;
   const s = new FormSchema<T>(typeValidator);
-  s[INTERNAL].addLogic(definition);
+  s[INTERNAL].addRule(ruleFn);
   return s;
 }
 
-export function rule<T>(form: Form<T>, newRule: FormRule<T> | FormRule<T>[]) {
+export function include<T>(form: Form<T>, schema: FormSchema<T>) {
+  checkSchemaContext('include');
+  includeInternal(form, schema);
+}
+
+export function rule<T>(
+  form: Form<T>,
+  definition: FormRuleDefinition<T> | FormRuleDefinition<T>[],
+) {
   checkSchemaContext('rule');
-  ruleInternal(form, newRule);
+  ruleInternal(form, definition);
 }
 
-export function each<T>(form: Form<T>, newRule: FormEachRule<T> | FormEachRule<T>[]) {
+export function each<T>(form: Form<T>, ruleFn: FormEachRule<T>) {
   checkSchemaContext('each');
-  eachInternal(form, newRule);
+  eachInternal(form, (...args) => {
+    //isInSchemaContext = true;
+    ruleFn(...args);
+  });
 }
 
-export function ruleInternal<T>(form: Form<T>, newRule: FormRule<T> | FormRule<T>[]) {
-  if (Array.isArray(newRule)) {
-    for (const r of newRule) {
-      ruleInternal(form, r);
-    }
-  } else if (typeof newRule === 'function') {
-    newRule = newRule(form);
-  } else if (newRule instanceof FormSchema) {
-    // If the rule is itself a full schema, run the schema's logic instantiation functions.
-    for (const instantiateLogic of newRule[INTERNAL].logic) {
-      instantiateLogic(form);
-    }
-    // Then apply any child schemas as rules to their respective child forms.
-    for (const property of newRule[INTERNAL].propertyKeys()) {
-      const childForm = form[property as keyof Form<T>] as Form<T[keyof T]>;
-      const childRule = newRule[INTERNAL].getProperty(property);
-      ruleInternal(childForm, childRule);
-    }
-  } else {
-    form[INTERNAL].logic.add(newRule);
+export function runInSchemaContext(fn: () => unknown) {
+  const origIsInSchemaContext = isInSchemaContext;
+  isInSchemaContext = true;
+  try {
+    return fn();
+  } finally {
+    isInSchemaContext = origIsInSchemaContext;
   }
 }
 
-function eachInternal<T>(form: Form<T>, newRule: FormEachRule<T> | FormEachRule<T>[]) {
-  if (Array.isArray(newRule)) {
-    for (const r of newRule) {
-      eachInternal(form, r);
-    }
-  } else {
-    // Add the child rule to the form so the form ca add it to new child forms that it creates.
-    form[INTERNAL].childRules.push(newRule);
-    // Then apply the rule to all existing child forms.
-    // TODO: why doesn't `Object.keys` work here? probably nuking some well-known symbol on the proxy.
-    for (const property of Reflect.ownKeys(form)) {
-      const childForm = form[property as keyof Form<T>] as Form<T[Keys<T>]>;
-      if (typeof newRule === 'function') {
-        newRule = newRule(childForm, property as Keys<T>);
-      }
-      ruleInternal(childForm, newRule);
-    }
+function includeInternal<T>(
+  form: Form<T>,
+  schema: FormSchema<T> | ((form: Form<T>) => FormSchema<T>),
+) {
+  schema = typeof schema === 'function' ? schema(form) : schema;
+  // Run the schema's rule functions.
+  for (const ruleFn of schema[INTERNAL].rules) {
+    ruleFn(form);
+  }
+  // Then apply any child schemas as rules to their respective child forms.
+  for (const property of schema[INTERNAL].propertyKeys()) {
+    const childForm = form[property as keyof Form<T>] as Form<T[keyof T]>;
+    const childSchema = schema[INTERNAL].getProperty(property);
+    includeInternal(childForm, childSchema);
+  }
+}
+
+function ruleInternal<T>(
+  form: Form<T>,
+  definition: FormRuleDefinition<T> | FormRuleDefinition<T>[],
+) {
+  for (const def of Array.isArray(definition) ? definition : [definition]) {
+    form[INTERNAL].logic.add(typeof def === 'function' ? def(form) : def);
+  }
+}
+
+function eachInternal<T>(form: Form<T>, ruleFn: FormEachRule<T>) {
+  // Add the child rule to the form so the form ca add it to new child forms that it creates.
+  form[INTERNAL].childRules.push(ruleFn);
+  // Then apply the rule to all existing child forms.
+  // TODO: why doesn't `Object.keys` work here? probably nuking some well-known symbol on the proxy.
+  for (const property of Reflect.ownKeys(form)) {
+    const childForm = form[property as keyof Form<T>] as Form<T[Keys<T>]>;
+    ruleFn(childForm, property as Keys<T>);
   }
 }
 
