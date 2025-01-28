@@ -47,6 +47,7 @@ ts_library(
         "//packages/localize",
         "//packages/localize/init",
         "//packages/platform-browser",
+        "//packages/platform-browser/animations",
         "//packages/platform-server",
         "//packages/private/testing",
         "//packages/router",
