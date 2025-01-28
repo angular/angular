@@ -71,20 +71,31 @@ const SHARED_ANIMATION_PROVIDERS: Provider[] = [
 
 /**
  * Separate providers from the actual module so that we can do a local modification in Google3 to
- * include them in the BrowserModule.
- */
-export const BROWSER_ANIMATIONS_PROVIDERS: Provider[] = [
-  {provide: AnimationDriver, useFactory: () => new WebAnimationsDriver()},
-  {provide: ANIMATION_MODULE_TYPE, useValue: 'BrowserAnimations'},
-  ...SHARED_ANIMATION_PROVIDERS,
-];
-
-/**
- * Separate providers from the actual module so that we can do a local modification in Google3 to
  * include them in the BrowserTestingModule.
  */
 export const BROWSER_NOOP_ANIMATIONS_PROVIDERS: Provider[] = [
   {provide: AnimationDriver, useClass: NoopAnimationDriver},
   {provide: ANIMATION_MODULE_TYPE, useValue: 'NoopAnimations'},
+  ...SHARED_ANIMATION_PROVIDERS,
+];
+
+/**
+ * Separate providers from the actual module so that we can do a local modification in Google3 to
+ * include them in the BrowserModule.
+ */
+export const BROWSER_ANIMATIONS_PROVIDERS: Provider[] = [
+  // Note: the `ngServerMode` happen inside factories to give the variable time to initialize.
+  {
+    provide: AnimationDriver,
+    useFactory: () =>
+      typeof ngServerMode !== 'undefined' && ngServerMode
+        ? new NoopAnimationDriver()
+        : new WebAnimationsDriver(),
+  },
+  {
+    provide: ANIMATION_MODULE_TYPE,
+    useFactory: () =>
+      typeof ngServerMode !== 'undefined' && ngServerMode ? 'NoopAnimations' : 'BrowserAnimations',
+  },
   ...SHARED_ANIMATION_PROVIDERS,
 ];
