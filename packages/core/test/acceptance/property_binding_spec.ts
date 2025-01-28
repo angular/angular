@@ -10,6 +10,7 @@ import {CommonModule} from '@angular/common';
 import {Component, Directive, EventEmitter, Input, Output, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By, DomSanitizer, SafeUrl} from '@angular/platform-browser';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('property bindings', () => {
   it('should support bindings to properties', () => {
@@ -689,7 +690,10 @@ describe('property bindings', () => {
     })
     class App {}
 
-    TestBed.configureTestingModule({declarations: [App, MyDir, MyComp]});
+    TestBed.configureTestingModule({
+      declarations: [App, MyDir, MyComp],
+      imports: [NoopAnimationsModule],
+    });
 
     expect(() => {
       const fixture = TestBed.createComponent(App);
