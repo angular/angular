@@ -221,7 +221,11 @@ class ResourceImpl<T, R> extends BaseWritableResource<T> implements ResourceRef<
     }
 
     const current = untracked(this.value);
-    if (this.equal ? this.equal(current, value) : current === value) {
+
+    if (
+      untracked(this.status) === ResourceStatus.Local &&
+      (this.equal ? this.equal(current, value) : current === value)
+    ) {
       return;
     }
 
