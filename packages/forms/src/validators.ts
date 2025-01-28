@@ -25,35 +25,26 @@ import type {
 import {RuntimeErrorCode} from './errors';
 import type {AbstractControl} from './model/abstract_model';
 
-function isEmptyInputValue(value: any): boolean {
-  /**
-   * Check if the object is a string or array before evaluating the length attribute.
-   * Check if the object is a set before evaluating the size attribute.
-   * This avoids falsely rejecting objects that contain a custom length or size attribute.
-   * For example, the object {id: 1, length: 0, width: 0} should not be returned as empty.
-   */
-  return (
-    value == null ||
-    ((typeof value === 'string' || Array.isArray(value)) && value.length === 0) ||
-    (value instanceof Set && value.size === 0)
-  );
+function isEmptyInputValue(value: unknown): boolean {
+  return value == null || lengthOrSize(value) === 0;
 }
 
 /**
- * Extract the length property in case it's an array.
+ * Extract the length property in case it's an array or a string.
  * Extract the size property in case it's a set.
  * Return null else.
  * @param value Either an array, set or undefined.
  */
-function lengthOrSize(value: any): number | null {
+function lengthOrSize(value: unknown): number | null {
   // non-strict comparison is intentional, to check for both `null` and `undefined` values
   if (value == null) {
     return null;
-  } else if (typeof value.length === 'number') {
+  } else if (Array.isArray(value) || typeof value === 'string') {
     return value.length;
-  } else if (typeof value.size === 'number') {
+  } else if (value instanceof Set) {
     return value.size;
   }
+
   return null;
 }
 
@@ -474,7 +465,7 @@ export class Validators {
  */
 export function minValidator(min: number): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
-    if (isEmptyInputValue(control.value) || isEmptyInputValue(min)) {
+    if (control.value == null || min == null) {
       return null; // don't validate empty values to allow optional controls
     }
     const value = parseFloat(control.value);
@@ -490,7 +481,7 @@ export function minValidator(min: number): ValidatorFn {
  */
 export function maxValidator(max: number): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
-    if (isEmptyInputValue(control.value) || isEmptyInputValue(max)) {
+    if (control.value == null || max == null) {
       return null; // don't validate empty values to allow optional controls
     }
     const value = parseFloat(control.value);
@@ -531,11 +522,14 @@ export function emailValidator(control: AbstractControl): ValidationErrors | nul
 /**
  * Validator that requires the number of items in the control's value to be greater than or equal
  * to the provided minimum length. See `Validators.minLength` for additional information.
+ *
+ * The minLengthValidator respects every length property in an object, regardless of whether it's an array.
+ * For example, the object {id: 1, length: 0, width: 0} should be validated.
  */
 export function minLengthValidator(minLength: number): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
-    const length = lengthOrSize(control.value);
-    if (isEmptyInputValue(control.value) || !length) {
+    const length = control.value?.length ?? lengthOrSize(control.value);
+    if (length === null || length === 0) {
       // don't validate empty values to allow optional controls
       // don't validate values without `length` or `size` property
       return null;
@@ -550,10 +544,13 @@ export function minLengthValidator(minLength: number): ValidatorFn {
 /**
  * Validator that requires the number of items in the control's value to be less than or equal
  * to the provided maximum length. See `Validators.maxLength` for additional information.
+ *
+ * The maxLengthValidator respects every length property in an object, regardless of whether it's an array.
+ * For example, the object {id: 1, length: 0, width: 0} should be validated.
  */
 export function maxLengthValidator(maxLength: number): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
-    const length = lengthOrSize(control.value);
+    const length = control.value?.length ?? lengthOrSize(control.value);
     if (length !== null && length > maxLength) {
       return {'maxlength': {'requiredLength': maxLength, 'actualLength': length}};
     }

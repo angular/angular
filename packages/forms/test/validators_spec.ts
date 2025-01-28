@@ -258,6 +258,10 @@ import {normalizeValidators} from '../src/validators';
         expect(Validators.minLength(2)(new FormControl(undefined))).toBeNull();
       });
 
+      it('should not error on empty array', () => {
+        expect(Validators.minLength(2)(new FormControl([]))).toBeNull();
+      });
+
       it('should not error on valid strings', () => {
         expect(Validators.minLength(2)(new FormControl('aa'))).toBeNull();
       });
@@ -306,6 +310,11 @@ import {normalizeValidators} from '../src/validators';
         expect(Validators.minLength(10)(new FormControl(value))).toEqual({
           'minlength': {'requiredLength': 10, 'actualLength': 5},
         });
+      });
+
+      it('should not error on empty set', () => {
+        const value = new Set();
+        expect(Validators.minLength(1)(new FormControl(value))).toBeNull();
       });
 
       it('should return null when passing a boolean', () => {
