@@ -1,8 +1,8 @@
 import {signal} from '@angular/core';
 import {z} from 'zod';
 import {form} from '../../src/rule-schema/form';
-import {disable, error, when} from '../../src/rule-schema/logic';
-import {each, rule, schema} from '../../src/rule-schema/schema';
+import {disable, error, metadata, when} from '../../src/rule-schema/logic';
+import {each, include, rule, schema} from '../../src/rule-schema/schema';
 
 const nameSchema = schema<{first: string; last: string}>((root) => {
   rule(
@@ -16,7 +16,7 @@ const nameSchema = schema<{first: string; last: string}>((root) => {
 });
 
 const profileSchema = schema<{name: {first: string; last: string}}>((root) => {
-  rule(root.name, nameSchema);
+  include(root.name, nameSchema);
 });
 
 describe('form', () => {
@@ -33,6 +33,24 @@ describe('form', () => {
       const f = form(signal({name: {first: 'John', last: 'Doe'}}));
       f.name.first.$.set('Jane');
       expect(f.$()).toEqual({name: {first: 'Jane', last: 'Doe'}});
+    });
+
+    it('should mark tocuhed', () => {
+      const f = form(signal({name: {first: 'John', last: 'Doe'}}));
+      expect(f.$.touched()).toBe(false);
+      expect(f.name.first.$.touched()).toBe(false);
+      f.name.first.$.markTouched();
+      expect(f.$.touched()).toBe(true);
+      expect(f.name.first.$.touched()).toBe(true);
+    });
+
+    it('should mark dirty', () => {
+      const f = form(signal({name: {first: 'John', last: 'Doe'}}));
+      expect(f.$.dirty()).toBe(false);
+      expect(f.name.first.$.dirty()).toBe(false);
+      f.name.first.$.markDirty();
+      expect(f.$.dirty()).toBe(true);
+      expect(f.name.first.$.dirty()).toBe(true);
     });
   });
 
@@ -82,10 +100,12 @@ describe('form', () => {
         const f = form(
           data,
           schema((axes) => {
-            each(
-              axes,
-              when((value) => value() < 0, error('value must be positive')),
-            );
+            each(axes, (axis) => {
+              rule(
+                axis,
+                when((value) => value() < 0, error('value must be positive')),
+              );
+            });
           }),
         );
         expect(f.$.valid()).toBe(true);
@@ -100,9 +120,12 @@ describe('form', () => {
         const f = form(
           data,
           schema((properties) => {
-            each(properties, (_, property) =>
-              when(() => property === 'type', error('"type" is a reserved property')),
-            );
+            each(properties, (property, name) => {
+              rule(
+                property,
+                when(() => name === 'type', error('"type" is a reserved property')),
+              );
+            });
           }),
         );
         expect(f.$.valid()).toBe(true);
@@ -117,12 +140,15 @@ describe('form', () => {
         const f = form(
           data,
           schema((numbers) => {
-            each(numbers, (_, idx) =>
-              when(
-                (value) => idx > 0 && value() < numbers.$()[idx - 1],
-                error('Must be monotonically increasing'),
-              ),
-            );
+            each(numbers, (num, idx) => {
+              rule(
+                num,
+                when(
+                  (value) => idx > 0 && value() < numbers.$()[idx - 1],
+                  error('Must be monotonically increasing'),
+                ),
+              );
+            });
           }),
         );
         expect(f.$.valid()).toBe(true);
@@ -140,10 +166,12 @@ describe('form', () => {
         const f = form(
           data,
           schema((dimensions) => {
-            each(
-              dimensions,
-              when((dim) => dim() < 0, error('Must have a positive value')),
-            );
+            each(dimensions, (dimension) => {
+              rule(
+                dimension,
+                when((value) => value() < 0, error('Must have a positive value')),
+              );
+            });
           }),
         );
         expect(f.$.valid()).toBe(true);
@@ -156,9 +184,11 @@ describe('form', () => {
 
     it('should correctly order rule and each', () => {
       const s = schema<{x: number; y: number}>((coord) => {
-        rule(coord.x, {disabled: () => true});
-        each(coord, {disabled: () => false});
-        rule(coord.y, {disabled: () => true});
+        rule(coord.x, disable());
+        each(coord, (axis) => {
+          rule(axis, disable(false));
+        });
+        rule(coord.y, disable());
       });
       const f = form(signal({x: 0, y: 0}), s);
       expect(f.x.$.disabled()).toBe(false);
@@ -167,9 +197,12 @@ describe('form', () => {
 
     it('should update index-based calculation when item is inserted', () => {
       const s = schema<number[]>((numbers) => {
-        each(numbers, (num, idx) => ({
-          disabled: () => idx % 2 === 0 && num.$() % 2 === 0,
-        }));
+        each(numbers, (num, idx) => {
+          rule(
+            num,
+            when(() => idx % 2 === 0 && num.$() % 2 === 0, disable()),
+          );
+        });
       });
       const data = signal<number[]>([0, 1, 2, 3, 4, 5]);
       const f = form(data, s);
@@ -211,7 +244,7 @@ describe('form', () => {
     it(`should throw when calling rule and each outside schema`, () => {
       const f = form(signal({}));
       expect(() => rule(f, {})).toThrowError('`rule` can only be called inside `schema`');
-      expect(() => each(f, {})).toThrowError('`each` can only be called inside `schema`');
+      expect(() => each(f, () => {})).toThrowError('`each` can only be called inside `schema`');
     });
 
     it('should support runtime type validation with zod', () => {
@@ -226,6 +259,19 @@ describe('form', () => {
         'Number must be greater than or equal to 1',
       ]);
       expect(f.y.$.errors().map((e) => e.message)).toEqual(['y must be greater than x']);
+    });
+
+    it('should add metadata', () => {
+      const s = schema<{x: number; y: number}>((coord) => {
+        rule(coord, [
+          metadata('label', (value) => `(${value().x}, ${value().y})`),
+          when((value) => value().x === 0 && value().y === 0, metadata('origin', true)),
+        ]);
+      });
+      const f = form(signal({x: 0, y: 0}), s);
+      expect(f.$.metadata()).toEqual({label: '(0, 0)', origin: true});
+      f.x.$.set(1);
+      expect(f.$.metadata()).toEqual({label: '(1, 0)'});
     });
   });
 });
