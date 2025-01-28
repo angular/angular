@@ -39,7 +39,7 @@ adding a review comment that starts with `TESTED=` and then put a reason why the
 tested. The `requires: TGP` label is automatically added to PRs that affect files
 matching `separateFilePatterns` in [`.ng-dev/google-sync-config.json`](https://github.com/angular/angular/blob/main/.ng-dev/google-sync-config.json).
 
-An example of specfying a `TESTED=` comment:
+An example of specifying a `TESTED=` comment:
 ```
 TESTED=docs only update and does not need a TGP
 ```
