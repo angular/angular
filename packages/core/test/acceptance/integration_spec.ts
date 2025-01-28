@@ -38,6 +38,7 @@ import {getLView} from '@angular/core/src/render3/state';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {expectPerfCounters} from '@angular/private/testing';
 
 describe('acceptance integration tests', () => {
@@ -2889,6 +2890,7 @@ describe('acceptance integration tests', () => {
 
       TestBed.configureTestingModule({
         declarations: [Cmp, AnimationComp],
+        imports: [NoopAnimationsModule],
         providers: [{provide: AnimationDriver, useClass: MockAnimationDriver}],
       });
       const fixture = TestBed.createComponent(Cmp);
@@ -2979,6 +2981,7 @@ describe('acceptance integration tests', () => {
 
       TestBed.configureTestingModule({
         declarations: [Cmp, InnerComp],
+        imports: [NoopAnimationsModule],
         providers: [{provide: AnimationDriver, useClass: MockAnimationDriver}],
       });
       const fixture = TestBed.createComponent(Cmp);
