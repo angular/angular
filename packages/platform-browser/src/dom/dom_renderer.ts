@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT, isPlatformServer, ɵgetDOM as getDOM} from '@angular/common';
+import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
 import {
   APP_ID,
   CSP_NONCE,
@@ -102,7 +102,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
     @Optional()
     private readonly tracingService: TracingService<TracingSnapshot> | null = null,
   ) {
-    this.platformIsServer = isPlatformServer(platformId);
+    this.platformIsServer = typeof ngServerMode !== 'undefined' && ngServerMode;
     this.defaultRenderer = new DefaultDomRenderer2(
       eventManager,
       doc,
@@ -117,7 +117,11 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
       return this.defaultRenderer;
     }
 
-    if (this.platformIsServer && type.encapsulation === ViewEncapsulation.ShadowDom) {
+    if (
+      typeof ngServerMode !== 'undefined' &&
+      ngServerMode &&
+      type.encapsulation === ViewEncapsulation.ShadowDom
+    ) {
       // Domino does not support shadow DOM.
       type = {...type, encapsulation: ViewEncapsulation.Emulated};
     }
@@ -144,7 +148,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
       const eventManager = this.eventManager;
       const sharedStylesHost = this.sharedStylesHost;
       const removeStylesOnCompDestroy = this.removeStylesOnCompDestroy;
-      const platformIsServer = this.platformIsServer;
+      const platformIsServer = typeof ngServerMode !== 'undefined' && ngServerMode;
 
       switch (type.encapsulation) {
         case ViewEncapsulation.Emulated:
@@ -405,9 +409,10 @@ class DefaultDomRenderer2 implements Renderer2 {
 
       // Run the event handler inside the ngZone because event handlers are not patched
       // by Zone on the server. This is required only for tests.
-      const allowDefaultBehavior = this.platformIsServer
-        ? this.ngZone.runGuarded(() => eventHandler(event))
-        : eventHandler(event);
+      const allowDefaultBehavior =
+        typeof ngServerMode !== 'undefined' && ngServerMode
+          ? this.ngZone.runGuarded(() => eventHandler(event))
+          : eventHandler(event);
       if (allowDefaultBehavior === false) {
         event.preventDefault();
       }

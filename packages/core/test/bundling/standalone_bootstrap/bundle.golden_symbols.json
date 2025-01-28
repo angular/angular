@@ -282,7 +282,6 @@
   "isInlineTemplate",
   "isLContainer",
   "isLView",
-  "isPlatformServer",
   "isPositive",
   "isPromise",
   "isRefreshingViews",
