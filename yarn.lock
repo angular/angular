@@ -325,7 +325,6 @@
 
 "@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#ce04ec6cf7604014191821a637e60964a1a3bb4a":
   version "0.0.0-2670abf637fa155971cdd1f7e570a7f234922a65"
-  uid ce04ec6cf7604014191821a637e60964a1a3bb4a
   resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#ce04ec6cf7604014191821a637e60964a1a3bb4a"
   dependencies:
     "@angular/benchpress" "0.3.0"
@@ -483,7 +482,6 @@
 
 "@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#2a80accff0f6515819a6c6e77eeca9d6936cd7b9":
   version "0.0.0-2670abf637fa155971cdd1f7e570a7f234922a65"
-  uid "2a80accff0f6515819a6c6e77eeca9d6936cd7b9"
   resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#2a80accff0f6515819a6c6e77eeca9d6936cd7b9"
   dependencies:
     "@google-cloud/spanner" "7.17.1"
@@ -1390,7 +1388,7 @@
   resolved "https://registry.yarnpkg.com/@bazel/esbuild/-/esbuild-5.8.1.tgz#74668d33bfb29652cbe8e2852aa8dca5e0839e73"
   integrity sha512-8k4LL8P3ivCnFeBOcjiFxL8U+M5VtEGuOyIqm2hfEiP8xDWsZLS7YQ7KhshKJy7Elh2dlK9oGgMtl0D/x9kxxg==
 
-"@bazel/ibazel@^0.16.0":
+"@bazel/ibazel@0.16.2":
   version "0.16.2"
   resolved "https://registry.yarnpkg.com/@bazel/ibazel/-/ibazel-0.16.2.tgz#05dd7f06659759fda30f87b15534f1e42f1201bb"
   integrity sha512-KgqAWMH0emL6f3xH6nqyTryoBMqlJ627LBIe9PT1PRRQPz2FtHib3FIHJPukp1slzF3hJYZvdiVwgPnHbaSOOA==
