@@ -622,6 +622,59 @@ describe('resource', () => {
     stream.set({error: 'fail'});
     expect(res.value()).toBe(undefined);
   });
+
+  it('should interrupt pending request if the same value is set', async () => {
+    const counter = signal(0);
+    const backend = new MockEchoBackend<{counter: number} | null>();
+    const aborted: ({counter: number} | null)[] = [];
+    const echoResource = resource<{counter: number} | null, {counter: number} | null>({
+      request: () => ({counter: counter()}),
+      loader: ({request, abortSignal}) => {
+        abortSignal.addEventListener('abort', () => backend.abort(request));
+        return backend.fetch(request).catch((reason) => {
+          if (reason === 'aborted') {
+            aborted.push(request);
+          }
+          throw new Error(reason);
+        });
+      },
+      injector: TestBed.inject(Injector),
+    });
+
+    // Start the initial load.
+    TestBed.flushEffects();
+    await Promise.resolve();
+    expect(echoResource.status()).toBe(ResourceStatus.Loading);
+    expect(echoResource.value()).toBe(undefined);
+    expect(echoResource.error()).toBe(undefined);
+    expect(aborted).toEqual([]);
+
+    // Interrupt by setting a value before the request has resolved.
+    echoResource.set(null);
+    TestBed.flushEffects();
+    await backend.flush();
+    expect(echoResource.status()).toBe(ResourceStatus.Local);
+    expect(echoResource.value()).toBe(null);
+    expect(echoResource.error()).toBe(undefined);
+    expect(aborted).toEqual([{counter: 0}]);
+
+    // Reload the resource to trigger another request.
+    echoResource.reload();
+    TestBed.flushEffects();
+    await Promise.resolve();
+    expect(echoResource.status()).toBe(ResourceStatus.Reloading);
+    expect(echoResource.value()).toBe(null);
+    expect(echoResource.error()).toBe(undefined);
+    expect(aborted).toEqual([{counter: 0}]);
+
+    // Interrupt the reload with the same value as before.
+    echoResource.set(null);
+    await backend.flush();
+    expect(echoResource.status()).toBe(ResourceStatus.Local);
+    expect(echoResource.value()).toBe(null);
+    expect(echoResource.error()).toBe(undefined);
+    expect(aborted).toEqual([{counter: 0}, {counter: 0}]);
+  });
 });
 
 function flushMicrotasks(): Promise<void> {
