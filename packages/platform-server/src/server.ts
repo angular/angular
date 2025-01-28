@@ -35,7 +35,6 @@ import {
   EVENT_MANAGER_PLUGINS,
   ɵBrowserDomAdapter as BrowserDomAdapter,
 } from '@angular/platform-browser';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 import {DominoAdapter, parseDocument} from './domino_adapter';
 import {SERVER_HTTP_PROVIDERS} from './http';
@@ -90,7 +89,6 @@ export const PLATFORM_SERVER_PROVIDERS: Provider[] = [
  */
 @NgModule({
   exports: [BrowserModule],
-  imports: [NoopAnimationsModule],
   providers: PLATFORM_SERVER_PROVIDERS,
 })
 export class ServerModule {}

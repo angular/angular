@@ -11,7 +11,6 @@ import {
   BrowserDynamicTestingModule,
   ɵplatformCoreDynamicTesting as platformCoreDynamicTesting,
 } from '@angular/platform-browser-dynamic/testing';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {
   ɵINTERNAL_SERVER_PLATFORM_PROVIDERS as INTERNAL_SERVER_PLATFORM_PROVIDERS,
   ɵSERVER_RENDER_PROVIDERS as SERVER_RENDER_PROVIDERS,
@@ -35,7 +34,6 @@ export const platformServerTesting = createPlatformFactory(
  */
 @NgModule({
   exports: [BrowserDynamicTestingModule],
-  imports: [NoopAnimationsModule],
   providers: SERVER_RENDER_PROVIDERS,
 })
 export class ServerTestingModule {}
