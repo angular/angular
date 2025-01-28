@@ -165,7 +165,7 @@
     "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#2a80accff0f6515819a6c6e77eeca9d6936cd7b9",
     "@bazel/bazelisk": "^1.7.5",
     "@bazel/buildifier": "^8.0.0",
-    "@bazel/ibazel": "^0.16.0",
+    "@bazel/ibazel": "0.16.2",
     "@codemirror/autocomplete": "^6.11.1",
     "@codemirror/commands": "^6.3.2",
     "@codemirror/lang-angular": "^0.1.2",
