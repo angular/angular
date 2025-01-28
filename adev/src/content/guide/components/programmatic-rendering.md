@@ -117,10 +117,11 @@ JavaScript [dynamic import](https://developer.mozilla.org/docs/Web/JavaScript/Re
   `
 })
 export class AdminSettings {
-  advancedSettings: {new(): AdminSettings} | undefined;
+  advancedSettings: {new(): AdvancedSettings} | undefined;
 
   async loadAdvanced() {
-    this.advancedSettings = await import('path/to/advanced_settings.js');
+    const { AdvancedSettings } = await import('path/to/advanced_settings.js');
+    this.advancedSettings = AdvancedSettings;
   }
 }
 ```
