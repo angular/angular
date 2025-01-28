@@ -13,12 +13,13 @@ import {Events, MessageBus} from 'protocol';
 import {interval} from 'rxjs';
 
 import {FrameManager} from './application-services/frame_manager';
-import {ThemeService} from './application-services/theme-service';
+import {ThemeService} from './application-services/theme_service';
 import {MatTooltip, MatTooltipModule} from '@angular/material/tooltip';
 import {DevToolsTabsComponent} from './devtools-tabs/devtools-tabs.component';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {Frame} from './application-environment';
-import {BrowserStylesService} from './application-services/browser-styles-service';
+import {BrowserStylesService} from './application-services/browser_styles_service';
+import {WINDOW_PROVIDER} from './application-providers/window_provider';
 
 const DETECT_ANGULAR_ATTEMPTS = 10;
 
@@ -53,6 +54,7 @@ const LAST_SUPPORTED_VERSION = 9;
     ]),
   ],
   imports: [DevToolsTabsComponent, MatTooltip, MatProgressSpinnerModule, MatTooltipModule],
+  providers: [WINDOW_PROVIDER, ThemeService],
 })
 export class DevToolsComponent implements OnInit, OnDestroy {
   readonly AngularStatus = AngularStatus;

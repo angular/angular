@@ -34,43 +34,41 @@ const BROWSER_STYLES: {[key in Browser]: string} = {
   providedIn: 'root',
 })
 export class BrowserStylesService {
-  private readonly _doc = inject(DOCUMENT);
-  private readonly _rendererFactory = inject(RendererFactory2);
-  private readonly _renderer = this._rendererFactory.createRenderer(null, null);
-  private readonly _platform = inject(Platform);
+  private readonly doc = inject(DOCUMENT);
+  private readonly rendererFactory = inject(RendererFactory2);
+  private readonly renderer = this.rendererFactory.createRenderer(null, null);
+  private readonly platform = inject(Platform);
 
-  private _browser: Browser = 'unknown';
+  private readonly browser = this.detectBrowser();
 
   initBrowserSpecificStyles() {
-    this._browser = this._detectBrowser();
-
-    this._addBrowserUiClass();
-    this._loadBrowserStyle();
+    this.addBrowserUiClass();
+    this.loadBrowserStyle();
   }
 
   /** Add the browser class to the document body */
-  private _addBrowserUiClass() {
-    const browserClass = BROWSER_CLASS_NAME[this._browser];
-    this._renderer.addClass(this._doc.body, browserClass);
+  private addBrowserUiClass() {
+    const browserClass = BROWSER_CLASS_NAME[this.browser];
+    this.renderer.addClass(this.doc.body, browserClass);
   }
 
   /** Load browser-specific styles */
-  private _loadBrowserStyle() {
-    const fileName = BROWSER_STYLES[this._browser];
-    const head = this._doc.getElementsByTagName('head')[0];
+  private loadBrowserStyle() {
+    const fileName = BROWSER_STYLES[this.browser];
+    const head = this.doc.getElementsByTagName('head')[0];
 
-    const style = this._renderer.createElement('link');
+    const style = this.renderer.createElement('link');
     style.rel = 'stylesheet';
     style.href = `./styles/${fileName}`;
 
     head.appendChild(style);
   }
 
-  private _detectBrowser(): Browser {
-    if (this._platform.BLINK) {
+  private detectBrowser(): Browser {
+    if (this.platform.BLINK) {
       return 'chrome';
     }
-    if (this._platform.FIREFOX) {
+    if (this.platform.FIREFOX) {
       return 'firefox';
     }
     return 'unknown';

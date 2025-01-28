@@ -23,6 +23,7 @@ ng_module(
         ":devtools_component_styles",
     ],
     deps = [
+        "//devtools/projects/ng-devtools/src/lib/application-providers:window",
         "//devtools/projects/ng-devtools/src/lib/application-services:browser_styles",
         "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
         "//devtools/projects/ng-devtools/src/lib/application-services:theme",

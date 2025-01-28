@@ -14,7 +14,7 @@ import {Events, MessageBus} from 'protocol';
 import {Subject} from 'rxjs';
 
 import {ApplicationEnvironment} from '../application-environment';
-import {Theme, ThemeService} from '../application-services/theme-service';
+import {Theme, ThemeService} from '../application-services/theme_service';
 
 import {DevToolsTabsComponent} from './devtools-tabs.component';
 import {TabUpdate} from './tab-update/index';

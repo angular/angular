@@ -8,7 +8,7 @@
 
 import {ElementProfile, ProfilerFrame} from 'protocol';
 
-import {Theme} from '../../../../../application-services/theme-service';
+import {Theme} from '../../../../../application-services/theme_service';
 import {RecordFormatter} from '../record-formatter';
 
 export interface FlamegraphNode {

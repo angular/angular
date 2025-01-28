@@ -8,6 +8,7 @@
 
 import {inject, Injectable, Renderer2, RendererFactory2, signal} from '@angular/core';
 import {DOCUMENT} from '@angular/common';
+import {WINDOW} from '../application-providers/window_provider';
 
 export type Theme = 'dark-theme' | 'light-theme';
 
@@ -15,34 +16,33 @@ export type Theme = 'dark-theme' | 'light-theme';
 const DARK_THEME_CLASS = 'dark-theme';
 const LIGHT_THEME_CLASS = 'light-theme';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class ThemeService {
-  private _doc = inject(DOCUMENT);
-  private _renderer: Renderer2;
-  readonly currentTheme = signal<Theme>('light-theme');
+  private win = inject(WINDOW);
+  private doc = inject(DOCUMENT);
+  private renderer: Renderer2;
+  readonly currentTheme = signal<Theme>(LIGHT_THEME_CLASS);
 
   constructor(private _rendererFactory: RendererFactory2) {
-    this._renderer = this._rendererFactory.createRenderer(null, null);
-    this.toggleDarkMode(this._prefersDarkMode);
+    this.renderer = this._rendererFactory.createRenderer(null, null);
+    this.toggleDarkMode(this.prefersDarkMode);
+  }
+
+  private get prefersDarkMode(): boolean {
+    return this.win.matchMedia && this.win.matchMedia('(prefers-color-scheme: dark)').matches;
   }
 
   toggleDarkMode(isDark: boolean): void {
     const removeClass = isDark ? LIGHT_THEME_CLASS : DARK_THEME_CLASS;
     const addClass = !isDark ? LIGHT_THEME_CLASS : DARK_THEME_CLASS;
-    this._renderer.removeClass(this._doc.body, removeClass);
-    this._renderer.addClass(this._doc.body, addClass);
+    this.renderer.removeClass(this.doc.body, removeClass);
+    this.renderer.addClass(this.doc.body, addClass);
     this.currentTheme.set(addClass);
   }
 
   initializeThemeWatcher(): void {
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-      this.toggleDarkMode(this._prefersDarkMode);
+    this.win.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      this.toggleDarkMode(this.prefersDarkMode);
     });
-  }
-
-  private get _prefersDarkMode(): boolean {
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   }
 }
