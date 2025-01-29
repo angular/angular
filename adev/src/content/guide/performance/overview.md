@@ -7,5 +7,5 @@ One of the top priorities of any developer is ensuring that their application is
 | Guides Types                              | Description                                                                                                |
 | :---------------------------------------- | :--------------------------------------------------------------------------------------------------------- |
 | [Server-side rendering](/guide/ssr)             | Learn how to leverage rendering pages on the server to improve load times.                                 |
-| [Build-time prerendering](/guide/prerendering)  | Also known as static-side generation (SSG), is an alternate rendering method to improve load times.           |
+| [Build-time prerendering](/guide/prerendering)  | Also known as static-site generation (SSG), is an alternate rendering method to improve load times.           |
 | [Hydration](/guide/hydration)                   | A process to improve application performance by restoring its state after server-side rendering and reusing existing DOM structure as much as possible. |
