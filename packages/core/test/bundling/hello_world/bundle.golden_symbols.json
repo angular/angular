@@ -198,6 +198,7 @@
   "getDeclarationTNode",
   "getFactoryDef",
   "getFirstLContainer",
+  "getInitialLViewFlagsFromDef",
   "getInjectImplementation",
   "getInjectableDef",
   "getInjectorDef",
