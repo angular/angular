@@ -65,28 +65,31 @@ export const serverRoutes: ServerRoute[] = [
 ];
 ```
 
-You can add this config to your application using the [`provideServerRoutesConfig`](api/ssr/provideServerRoutesConfig 'API reference') function.
+You can add this config to your application using the [`provideServerRouting`](api/ssr/provideServerRouting 'API reference') function.
 
 ```typescript
-import { provideServerRoutesConfig } from '@angular/ssr';
+import { provideServerRouting } from '@angular/ssr';
 import { serverRoutes } from './app.routes.server';
 
 // app.config.server.ts
 const serverConfig: ApplicationConfig = {
   providers: [
     provideServerRendering(),
-    provideServerRoutesConfig(serverRoutes),
+    provideServerRouting(serverRoutes),
     // ... other providers ...
   ]
 };
 ```
 
-When using the [App shell pattern](ecosystem/service-workers/app-shell), you must specify the route to be used as the app shell for client-side rendered routes. To do this, provide an options object with the `appShellRoute` property to [`provideServerRoutesConfig`](api/ssr/provideServerRoutesConfig 'API reference'):
+When using the [App shell pattern](ecosystem/service-workers/app-shell), you must specify the route to be used as the app shell for client-side rendered routes. To do this, provide an options object with the `appShellRoute` property to [`provideServerRouting`](api/ssr/provideServerRouting 'API reference'):
 
 ```typescript
+import { provideServerRouting, withAppShell } from '@angular/ssr';
+import { AppShellComponent } from './app-shell/app-shell.component';
+
 const serverConfig: ApplicationConfig = {
   providers: [
-    provideServerRoutesConfig(serverRoutes, { appShellRoute: 'shell' }),
+    provideServerRouting(serverRoutes, withAppShell(AppShellComponent)),
     // ... other providers ...
   ]
 };
