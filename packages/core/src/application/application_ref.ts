@@ -43,11 +43,11 @@ import {ViewRef as InternalViewRef} from '../render3/view_ref';
 import {TESTABILITY} from '../testability/testability';
 import {NgZone} from '../zone/ng_zone';
 
+import {profiler} from '../render3/profiler';
+import {ProfilerEvent} from '../render3/profiler_types';
+import {EffectScheduler} from '../render3/reactivity/root_effect_scheduler';
 import {ApplicationInitStatus} from './application_init';
 import {TracingAction, TracingService, TracingSnapshot} from './tracing';
-import {EffectScheduler} from '../render3/reactivity/root_effect_scheduler';
-import {ProfilerEvent} from '../render3/profiler_types';
-import {profiler} from '../render3/profiler';
 
 /**
  * A DI token that provides a set of callbacks to
@@ -580,21 +580,20 @@ export class ApplicationRef {
   }
 
   /** @internal */
-  _tick = (): void => {
+  _tick(): void {
     profiler(ProfilerEvent.ChangeDetectionStart);
 
     if (this.tracingSnapshot !== null) {
-      const snapshot = this.tracingSnapshot;
-      this.tracingSnapshot = null;
-
-      // Ensure we always run `_tick()` in the context of the most recent snapshot,
+      // Ensure we always run `tickImpl()` in the context of the most recent snapshot,
       // if one exists. Snapshots may be reference counted by the implementation so
       // we want to ensure that if we request a snapshot that we use it.
-      snapshot.run(TracingAction.CHANGE_DETECTION, this._tick);
-      snapshot.dispose();
-      return;
+      this.tracingSnapshot.run(TracingAction.CHANGE_DETECTION, this.tickImpl);
+    } else {
+      this.tickImpl();
     }
+  }
 
+  private tickImpl = (): void => {
     (typeof ngDevMode === 'undefined' || ngDevMode) && warnIfDestroyed(this._destroyed);
     if (this._runningTick) {
       throw new RuntimeError(
@@ -617,6 +616,8 @@ export class ApplicationRef {
       this.internalErrorHandler(e);
     } finally {
       this._runningTick = false;
+      this.tracingSnapshot?.dispose();
+      this.tracingSnapshot = null;
       setActiveConsumer(prevConsumer);
       this.afterTick.next();
 
