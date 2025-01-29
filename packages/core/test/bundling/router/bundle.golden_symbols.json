@@ -443,6 +443,7 @@
   "getFirstNativeNode",
   "getIdxOfMatchingSelector",
   "getInherited",
+  "getInitialLViewFlagsFromDef",
   "getInjectImplementation",
   "getInjectableDef",
   "getInjectorDef",
