@@ -41,7 +41,6 @@ import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from '../render
 import {requiresRefreshOrTraversal} from '../render3/util/view_utils';
 import {ViewRef as InternalViewRef} from '../render3/view_ref';
 import {TESTABILITY} from '../testability/testability';
-import {isPromise} from '../util/lang';
 import {NgZone} from '../zone/ng_zone';
 
 import {ApplicationInitStatus} from './application_init';
@@ -177,29 +176,6 @@ export interface BootstrapOptions {
 
 /** Maximum number of times ApplicationRef will refresh all attached views in a single tick. */
 const MAXIMUM_REFRESH_RERUNS = 10;
-
-export function _callAndReportToErrorHandler(
-  errorHandler: ErrorHandler,
-  ngZone: NgZone,
-  callback: () => any,
-): any {
-  try {
-    const result = callback();
-    if (isPromise(result)) {
-      return result.catch((e: any) => {
-        ngZone.runOutsideAngular(() => errorHandler.handleError(e));
-        // rethrow as the exception handler might not do it
-        throw e;
-      });
-    }
-
-    return result;
-  } catch (e) {
-    ngZone.runOutsideAngular(() => errorHandler.handleError(e));
-    // rethrow as the exception handler might not do it
-    throw e;
-  }
-}
 
 export function optionsReducer<T extends Object>(dst: T, objs: T | T[]): T {
   if (Array.isArray(objs)) {
