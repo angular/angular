@@ -235,11 +235,15 @@ export class Parser {
       interpolatedTokens,
       interpolationConfig,
     );
-    if (expressions.length === 0) return null;
+
+    // Allow parsing to continue if there are errors so we produce an AST that captures them.
+    if (expressions.length === 0 && this.errors.length === 0) {
+      return null;
+    }
 
     const expressionNodes: AST[] = [];
 
-    for (let i = 0; i < expressions.length; ++i) {
+    for (let i = 0; i < expressions.length; i++) {
       const expressionText = expressions[i].text;
       const sourceToLex = this._stripComments(expressionText);
       const tokens = this._lexer.tokenize(sourceToLex);
@@ -345,7 +349,7 @@ export class Parser {
         // parse from starting {{ to ending }} while ignoring content inside quotes.
         const fullStart = i;
         const exprStart = fullStart + interpStart.length;
-        const exprEnd = this._getInterpolationEndIndex(input, interpEnd, exprStart);
+        const exprEnd = this._getInterpolationEndIndex(input, interpEnd, exprStart, location);
         if (exprEnd === -1) {
           // Could not find the end of the interpolation; do not parse an expression.
           // Instead we should extend the content on the last raw string.
@@ -431,13 +435,13 @@ export class Parser {
     let startIndex = -1;
     let endIndex = -1;
 
-    for (const charIndex of this._forEachUnquotedChar(input, 0)) {
+    for (const charIndex of this._forEachUnquotedChar(input, 0, location)) {
       if (startIndex === -1) {
         if (input.startsWith(start)) {
           startIndex = charIndex;
         }
       } else {
-        endIndex = this._getInterpolationEndIndex(input, end, charIndex);
+        endIndex = this._getInterpolationEndIndex(input, end, charIndex, location);
         if (endIndex > -1) {
           break;
         }
@@ -458,8 +462,13 @@ export class Parser {
    * Finds the index of the end of an interpolation expression
    * while ignoring comments and quoted content.
    */
-  private _getInterpolationEndIndex(input: string, expressionEnd: string, start: number): number {
-    for (const charIndex of this._forEachUnquotedChar(input, start)) {
+  private _getInterpolationEndIndex(
+    input: string,
+    expressionEnd: string,
+    start: number,
+    location: string,
+  ): number {
+    for (const charIndex of this._forEachUnquotedChar(input, start, location)) {
       if (input.startsWith(expressionEnd, charIndex)) {
         return charIndex;
       }
@@ -479,9 +488,12 @@ export class Parser {
    * @param input String to loop through.
    * @param start Index within the string at which to start.
    */
-  private *_forEachUnquotedChar(input: string, start: number) {
+  private *_forEachUnquotedChar(input: string, start: number, location: string) {
     let currentQuote: string | null = null;
+    let currentQuoteIndex: number | null = null;
     let escapeCount = 0;
+    let isInComment = false;
+
     for (let i = start; i < input.length; i++) {
       const char = input[i];
       // Skip the characters inside quotes. Note that we only care about the outer-most
@@ -489,13 +501,28 @@ export class Parser {
       if (
         chars.isQuote(input.charCodeAt(i)) &&
         (currentQuote === null || currentQuote === char) &&
-        escapeCount % 2 === 0
+        escapeCount % 2 === 0 &&
+        !isInComment
       ) {
         currentQuote = currentQuote === null ? char : null;
+        currentQuoteIndex = currentQuote === null ? null : i + 1;
+      } else if (!isInComment && escapeCount % 2 === 0 && char === '/' && input[i + 1] === '/') {
+        isInComment = true;
+        i++;
       } else if (currentQuote === null) {
         yield i;
       }
       escapeCount = char === '\\' ? escapeCount + 1 : 0;
+    }
+
+    if (currentQuote !== null && currentQuoteIndex !== null) {
+      this._reportError(
+        'Unterminated quote',
+        input,
+        // + 1 since columns start from 1
+        `at column ${currentQuoteIndex + 1} in`,
+        location,
+      );
     }
   }
 }

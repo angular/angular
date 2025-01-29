@@ -251,6 +251,19 @@ describe('R3 template transform', () => {
     it('should parse bound text nodes', () => {
       expectFromHtml('{{a}}').toEqual([['BoundText', '{{ a }}']]);
     });
+
+    it('should parse bound text with a comment containing an unterminated quote', () => {
+      expectFromHtml(`{{ a // It's a letter }}`).toEqual([['BoundText', '{{ a }}']]);
+    });
+
+    it('should throw error for unterminated quote in interpolation', () => {
+      expect(() => parse(`{{ 123 + '123 }}`)).toThrowError(/Unterminated quote at column 11 in/);
+      expect(() => parse(`{{ " }}`)).toThrowError(/Unterminated quote at column 5 in/);
+      expect(() => parse(`{{ ' // It's a comment }}`)).toThrowError(
+        /Unterminated quote at column 5 in/,
+      );
+      expect(() => parse('{{ foo || ` }}')).toThrowError(/Unterminated quote at column 12 in/);
+    });
   });
 
   describe('Bound attributes', () => {
@@ -325,6 +338,13 @@ describe('R3 template transform', () => {
       expectFromHtml('<div [style.someStyle]="v"></div>').toEqual([
         ['Element', 'div'],
         ['BoundAttribute', BindingType.Style, 'someStyle', 'v'],
+      ]);
+    });
+
+    it('should parse a bound attribute containing an unterminate quote', () => {
+      expectFromHtml(`<div [attr.foo]="123 // It's a number"></div>`).toEqual([
+        ['Element', 'div'],
+        ['BoundAttribute', BindingType.Attribute, 'foo', '123'],
       ]);
     });
   });
