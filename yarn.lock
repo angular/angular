@@ -497,10 +497,10 @@
     which "^5.0.0"
     yaml "2.7.0"
 
-"@angular/ssr@19.2.0-next.0":
-  version "19.2.0-next.0"
-  resolved "https://registry.yarnpkg.com/@angular/ssr/-/ssr-19.2.0-next.0.tgz#a914cf4d1c23b2b7be933d292fb8fa25536be08c"
-  integrity sha512-SwQrpyzPBddWGzqwa4rVHXObacoIKFrMLNIj13eFi6+eoRgDUdfigH51E27vydulDcNygrj1pZRLVHNRRpmacA==
+"@angular/ssr@19.2.0-next.1":
+  version "19.2.0-next.1"
+  resolved "https://registry.yarnpkg.com/@angular/ssr/-/ssr-19.2.0-next.1.tgz#69434df6c0aa2e38b8135d06532e15424e21335b"
+  integrity sha512-AdsiSxOXbq6Lk3zbe+0919RXEnNfol0PWcOhGMgr1y0u/YV6akEplLAVFWyrNxVcXl8Dk0BNXgnx1Stjlk9NUw==
   dependencies:
     tslib "^2.3.0"
 
