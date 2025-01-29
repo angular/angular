@@ -327,6 +327,7 @@
   "getDirectiveDef",
   "getFactoryDef",
   "getFirstLContainer",
+  "getInitialLViewFlagsFromDef",
   "getInjectImplementation",
   "getInjectableDef",
   "getInjectorDef",
