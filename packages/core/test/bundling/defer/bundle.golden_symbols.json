@@ -309,6 +309,7 @@
   "getFactoryDef",
   "getFirstLContainer",
   "getFirstNativeNode",
+  "getInitialLViewFlagsFromDef",
   "getInjectImplementation",
   "getInjectableDef",
   "getInjectorDef",
