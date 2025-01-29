@@ -1,3 +1,42 @@
+<a name="19.2.0-next.1"></a>
+# 19.2.0-next.1 (2025-01-29)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [168516462a9](https://github.com/angular/angular/commit/168516462a9673b158fcaa38b8ce17bf684a8ac9) | feat | support default value in `resource()` ([#59655](https://github.com/angular/angular/pull/59655)) |
+| [6c92d653493](https://github.com/angular/angular/commit/6c92d653493404a5f13aa59cde390bcbed973fb6) | fix | add `hasValue` narrowing to `ResourceRef` ([#59708](https://github.com/angular/angular/pull/59708)) |
+| [96e602ebe9c](https://github.com/angular/angular/commit/96e602ebe9cdf7355befad22c11f9f91e0436e01) | fix | cancel in-progress request when same value is assigned ([#59280](https://github.com/angular/angular/pull/59280)) |
+| [cf9054248d1](https://github.com/angular/angular/commit/cf9054248d1b8b5658c5f8b582cea71535f081c2) | fix | check whether application is destroyed before printing hydration stats ([#59716](https://github.com/angular/angular/pull/59716)) |
+| [82876242e55](https://github.com/angular/angular/commit/82876242e557abbced793cff06c4d68c4721e6d2) | fix | ensure type is preserved during HMR ([#59700](https://github.com/angular/angular/pull/59700)) |
+| [127fc0dc847](https://github.com/angular/angular/commit/127fc0dc847a4e8b62be36cdd980a067c4da974f) | fix | fix `resource()`'s `previous.state` ([#59708](https://github.com/angular/angular/pull/59708)) |
+| [f862ace1819](https://github.com/angular/angular/commit/f862ace18191d7fda3b12fc3c6486c035a6b431d) | fix | fixes test timer-based test flakiness in CI ([#59674](https://github.com/angular/angular/pull/59674)) |
+### elements
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0c1ecb453c8](https://github.com/angular/angular/commit/0c1ecb453c8b01447fb5a9f38fdfe9936a60abe5) | fix | not setting initial value on signal-based input ([#59773](https://github.com/angular/angular/pull/59773)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e6cb411e439](https://github.com/angular/angular/commit/e6cb411e4393a4b1f5852d3d7c5b9622504399b1) | fix | automatically disable animations on the server ([#59762](https://github.com/angular/angular/pull/59762)) |
+| [6b09716754b](https://github.com/angular/angular/commit/6b09716754b979c98489a2710eda977e51fe92d0) | fix | prepend `baseHref` to `sourceMappingURL` in CSS content ([#59730](https://github.com/angular/angular/pull/59730)) |
+| [fd7ee47bf70](https://github.com/angular/angular/commit/fd7ee47bf702029e481ad40362684f0a01ef2ec0) | fix | Update pseudoevent created by createMouseSpecialEvent to populate `_originalEvent` property ([#59690](https://github.com/angular/angular/pull/59690)) |
+| [65cf061feb4](https://github.com/angular/angular/commit/65cf061feb402e1532cd06d0fda5d2b7749ac421) | fix | Update pseudoevent created by createMouseSpecialEvent to populate `_originalEvent` property ([#59690](https://github.com/angular/angular/pull/59690)) |
+| [af9d74710c4](https://github.com/angular/angular/commit/af9d74710c460b0aaeaf3226533e9e544025523c) | fix | Update pseudoevent created by createMouseSpecialEvent to populate `_originalEvent` property ([#59690](https://github.com/angular/angular/pull/59690)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fc5d187da5e](https://github.com/angular/angular/commit/fc5d187da5e8895d60caa35b7b59e234998eddf0) | fix | decouple server from animations module ([#59762](https://github.com/angular/angular/pull/59762)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c7b6e1107c6](https://github.com/angular/angular/commit/c7b6e1107c6fcc7ed1dbb7c7b8698b09bfa8f1cc) | fix | prevent error handling when injector is destroyed ([#59457](https://github.com/angular/angular/pull/59457)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e2987a1d4ab](https://github.com/angular/angular/commit/e2987a1d4ab09b1abf1f42597c40f2055db116e1) | fix | add missing `rxjs` peer dependency ([#59747](https://github.com/angular/angular/pull/59747)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.1.4"></a>
 # 19.1.4 (2025-01-29)
 ### core
