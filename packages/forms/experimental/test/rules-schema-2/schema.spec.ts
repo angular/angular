@@ -91,14 +91,19 @@ describe('rules schema', () => {
   });
 
   describe('arrays', () => {
-    xit('should support basic arrays', () => {
+    fit('should support basic arrays', () => {
       interface Data {
         data: number[];
       }
 
       const s = schema<Data>((df) => {
         each(df.data, (sf) => {
-          rule(sf, [validate((field) => field.value() < 3)]);
+          rule(sf, [
+            validate((field) => {
+              console.log('validate field value', field.value(), field.value() < 3);
+              return field.value() < 3;
+            }),
+          ]);
         });
       });
 
@@ -115,6 +120,9 @@ describe('rules schema', () => {
         data: [1, 2, 3],
       });
 
+      expect(f.data[0].$.valid()).toBeTrue();
+      expect(f.data[1].$.valid()).toBeTrue();
+      expect(f.data[2].$.valid()).toBeFalse();
       // Fails, we don't react to data changing.
       expect(f.$.valid()).toBeFalse();
     });

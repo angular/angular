@@ -55,6 +55,22 @@ describe('form', () => {
   });
 
   describe('with schema', () => {
+    xit('should allow rule on field that does not exist', () => {
+      const s = schema<number[]>((f) => {
+        rule(f[38], disable());
+      });
+      const data = signal([]);
+      const f = form(data, s);
+      expect(f.$.disabled()).toBe(false);
+
+      // {{ <input [field]="f[38]"> }}
+      // @for (field of f) {...}
+      expect(f.length).toBe(0);
+      expect(f[38].$).toBe(undefined as any);
+      data.set(Array.from({length: 100}));
+      expect(f[38].$.disabled()).toBe(true);
+    });
+
     it('should raise errors', () => {
       const f = form(signal({name: {first: 'John', last: 'Doe'}}), profileSchema);
       expect(f.$.errors()).toEqual([]);
