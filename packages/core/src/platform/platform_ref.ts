@@ -7,11 +7,7 @@
  */
 
 import {compileNgModuleFactory} from '../application/application_ngmodule_factory_compiler';
-import {
-  _callAndReportToErrorHandler,
-  BootstrapOptions,
-  optionsReducer,
-} from '../application/application_ref';
+import {BootstrapOptions, optionsReducer} from '../application/application_ref';
 import {
   getNgZoneOptions,
   internalProvideZoneChangeDetection,

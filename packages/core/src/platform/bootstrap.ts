@@ -20,11 +20,12 @@ import {setLocaleId} from '../render3/i18n/i18n_locale_id';
 import {NgZone} from '../zone/ng_zone';
 
 import {ApplicationInitStatus} from '../application/application_init';
-import {_callAndReportToErrorHandler, ApplicationRef, remove} from '../application/application_ref';
+import {ApplicationRef, remove} from '../application/application_ref';
 import {PROVIDED_ZONELESS} from '../change_detection/scheduling/zoneless_scheduling';
 import {InjectionToken, Injector} from '../di';
 import {InternalNgModuleRef, NgModuleRef} from '../linker/ng_module_factory';
 import {stringify} from '../util/stringify';
+import {isPromise} from '../util/lang';
 
 /**
  * InjectionToken to control root component bootstrap behavior.
@@ -199,4 +200,27 @@ function moduleDoBootstrap(
     );
   }
   allPlatformModules.push(moduleRef);
+}
+
+function _callAndReportToErrorHandler(
+  errorHandler: ErrorHandler,
+  ngZone: NgZone,
+  callback: () => any,
+): any {
+  try {
+    const result = callback();
+    if (isPromise(result)) {
+      return result.catch((e: any) => {
+        ngZone.runOutsideAngular(() => errorHandler.handleError(e));
+        // rethrow as the exception handler might not do it
+        throw e;
+      });
+    }
+
+    return result;
+  } catch (e) {
+    ngZone.runOutsideAngular(() => errorHandler.handleError(e));
+    // rethrow as the exception handler might not do it
+    throw e;
+  }
 }

@@ -15,7 +15,7 @@ import {assertStandaloneComponentType} from '../render3/errors';
 import {EnvironmentNgModuleRefAdapter} from '../render3/ng_module_ref';
 import {NgZone} from '../zone/ng_zone';
 
-import {_callAndReportToErrorHandler, ApplicationRef} from './application_ref';
+import {ApplicationRef} from './application_ref';
 import {ChangeDetectionScheduler} from '../change_detection/scheduling/zoneless_scheduling';
 import {ChangeDetectionSchedulerImpl} from '../change_detection/scheduling/zoneless_scheduling_impl';
 import {bootstrap} from '../platform/bootstrap';
