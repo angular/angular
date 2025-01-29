@@ -68,14 +68,20 @@ Then upload it:
 1.  Set up Google Authenticator with the 2FA QR code.
     *   You can find the QR code [on Valentine as well](http://valentine/#/show/1651792043556329)
 
-The Firefox publishing process is slightly more involved than Chrome. In particular, they
-require extension source code with instructions to build and run it. Since DevTools exists in
-a monorepo with critical build tooling existing outside the `devtools/` directory, we need to
-upload the entire monorepo. Package it without dependencies and generated files with the
+The Firefox publishing process is slightly more involved than Chrome.
+
+Mozilla asks for a changelog, which needs to be authored manually. You can search for recent
+`devtools` commits to see what has landed since the last release.
+
+https://github.com/search?q=repo%3Aangular%2Fangular+devtools&type=commits&s=committer-date&o=desc
+
+Mozilla also requires extension source code with instructions to build and run it. Since DevTools
+exists in a monorepo with critical build tooling existing outside the `devtools/` directory, we
+need to upload the entire monorepo. Package it without dependencies and generated files with the
 following command and upload it.
 
 ```shell
-zip -r ~/angular-source.zip * -x ".git/*" -x "node_modules/*" -x "**/node_modules/*" -x "dist/"
+rm -rf dist/ && zip -r ~/angular-source.zip * -x ".git/*" -x "node_modules/*" -x "**/node_modules/*"
 ```
 
 Suggested note to reviewer:
