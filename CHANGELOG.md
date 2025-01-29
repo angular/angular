@@ -1,3 +1,33 @@
+<a name="19.1.4"></a>
+# 19.1.4 (2025-01-29)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [544b9ee7ca0](https://github.com/angular/angular/commit/544b9ee7ca00925e62b7c74cf7930777a10aaf76) | fix | check whether application is destroyed before printing hydration stats ([#59716](https://github.com/angular/angular/pull/59716)) |
+| [d6e78c072dc](https://github.com/angular/angular/commit/d6e78c072dcb5b0b6efc2b098fdb911ccddf6e81) | fix | ensure type is preserved during HMR ([#59700](https://github.com/angular/angular/pull/59700)) |
+| [c2436702df9](https://github.com/angular/angular/commit/c2436702df980bbf2db0fe3bee4c72860edb4e63) | fix | fixes test timer-based test flakiness in CI ([#59674](https://github.com/angular/angular/pull/59674)) |
+### elements
+| Commit | Type | Description |
+| -- | -- | -- |
+| [44180645992](https://github.com/angular/angular/commit/44180645992f7d9018ccb2d7663530b3cffde36b) | fix | not setting initial value on signal-based input ([#59773](https://github.com/angular/angular/pull/59773)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1828a840620](https://github.com/angular/angular/commit/1828a8406201827e52549c8afa487bf6364a70c3) | fix | prepend `baseHref` to `sourceMappingURL` in CSS content ([#59730](https://github.com/angular/angular/pull/59730)) |
+| [1c84cbca30e](https://github.com/angular/angular/commit/1c84cbca30e6606e6df3f40346989d9434d89bc6) | fix | Update pseudoevent created by createMouseSpecialEvent to populate `_originalEvent` property ([#59690](https://github.com/angular/angular/pull/59690)) |
+| [12256574626](https://github.com/angular/angular/commit/12256574626f04f5fe2b41e805f7bdc93d62df0a) | fix | Update pseudoevent created by createMouseSpecialEvent to populate `_originalEvent` property ([#59690](https://github.com/angular/angular/pull/59690)) |
+| [3f4d5f636aa](https://github.com/angular/angular/commit/3f4d5f636aac90cabe32ff6c4d75180ced99eb97) | fix | Update pseudoevent created by createMouseSpecialEvent to populate `_originalEvent` property ([#59690](https://github.com/angular/angular/pull/59690)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e3da35ec749](https://github.com/angular/angular/commit/e3da35ec749395239731158f89e29d47e7a9ef36) | fix | prevent error handling when injector is destroyed ([#59457](https://github.com/angular/angular/pull/59457)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [522acbf3d7e](https://github.com/angular/angular/commit/522acbf3d7ed502e7802117776acda3529a9a2b4) | fix | add missing `rxjs` peer dependency ([#59747](https://github.com/angular/angular/pull/59747)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.1.3"></a>
 # 19.1.3 (2025-01-22)
 ### compiler
