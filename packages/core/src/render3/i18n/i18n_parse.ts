@@ -26,7 +26,7 @@ import {
 } from '../../util/assert';
 import {CharCode} from '../../util/char_code';
 import {loadIcuContainerVisitor} from '../instructions/i18n_icu_container_visitor';
-import {allocExpando} from '../instructions/shared';
+
 import {getDocument} from '../interfaces/document';
 import {
   ELEMENT_MARKER,
@@ -69,6 +69,7 @@ import {
   setTNodeInsertBeforeIndex,
 } from './i18n_util';
 import {createTNodeAtIndex} from '../tnode_manipulation';
+import {allocExpando} from '../view/construction';
 
 const BINDING_REGEXP = /�(\d+):?\d*�/gi;
 const ICU_REGEXP = /({\s*�\d+:?\d*�\s*,\s*\S{6}\s*,[\s\S]*})/gi;

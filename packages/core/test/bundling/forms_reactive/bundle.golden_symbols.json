@@ -345,6 +345,7 @@
   "extractDirectiveDef",
   "fillProperties",
   "findAttrIndexInNode",
+  "findDirectiveDefMatches",
   "findStylingValue",
   "forEachSingleProvider",
   "forkJoin",
