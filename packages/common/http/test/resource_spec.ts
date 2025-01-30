@@ -19,6 +19,14 @@ import {HttpTestingController, provideHttpClientTesting} from '../testing';
 
 describe('httpResource', () => {
   beforeEach(() => {
+    globalThis['ngServerMode'] = isNode;
+  });
+
+  afterEach(() => {
+    globalThis['ngServerMode'] = undefined;
+  });
+
+  beforeEach(() => {
     TestBed.configureTestingModule({providers: [provideHttpClient(), provideHttpClientTesting()]});
   });
 
