@@ -800,5 +800,92 @@ runInEachFileSystem(() => {
       expect(jsContents).toContain('ɵɵreplaceMetadata(Cmp, m.default, [i0, i1], []));');
       expect(hmrContents).toContain('function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces) {');
     });
+
+    it('should pass const enums defined in the same file as an object literal', () => {
+      enableHmr();
+      env.write(
+        'test.ts',
+        `
+          import {Component, InjectionToken} from '@angular/core';
+
+          const token = new InjectionToken<number>('TEST');
+
+          const numberThree = 3;
+
+          export const enum Foo {
+            one,
+            two = '2',
+            three = numberThree
+          }
+
+          @Component({
+            template: '',
+            providers: [{
+              provide: token,
+              useValue: Foo.three
+            }]
+          })
+          export class Cmp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      const hmrContents = env.driveHmr('test.ts', 'Cmp');
+      expect(jsContents).toContain(
+        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [token, { one: 0, two: "2", three: 3 }, Component]));',
+      );
+      expect(hmrContents).toContain(
+        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, token, Foo, Component) {',
+      );
+    });
+
+    it('should pass const enum defined in other file as an object literal', () => {
+      enableHmr();
+
+      env.write(
+        'deps.ts',
+        `
+        const numberThree = 3;
+
+        export const enum Foo {
+          one,
+          two = '2',
+          three = numberThree
+        }
+      `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+          import {Component, InjectionToken} from '@angular/core';
+          import {Foo} from './deps';
+
+          const token = new InjectionToken<number>('TEST');
+
+          @Component({
+            template: '',
+            providers: [{
+              provide: token,
+              useValue: Foo.three
+            }]
+          })
+          export class Cmp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      const hmrContents = env.driveHmr('test.ts', 'Cmp');
+      expect(jsContents).toContain(
+        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [token, { one: 0, two: "2", three: 3 }, Component]));',
+      );
+      expect(hmrContents).toContain(
+        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, token, Foo, Component) {',
+      );
+    });
   });
 });
