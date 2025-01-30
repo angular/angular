@@ -36,7 +36,7 @@ Puppeteer
 
 </docs-code>
 
-If you don't find the test runner you would like you use from the list above, you can add manually add a package using `ng add`.
+If you don't find the test runner you would like to use from the list above, you can manually add a package using `ng add`.
 
 ## Running E2E Tests
 
