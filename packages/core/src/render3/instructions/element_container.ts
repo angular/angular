@@ -28,6 +28,7 @@ import {appendChild} from '../node_manipulation';
 import {createCommentNode} from '../dom_node_manipulation';
 import {
   getBindingIndex,
+  getBindingsEnabled,
   getCurrentTNode,
   getLView,
   getTView,
@@ -39,14 +40,16 @@ import {
   wasLastNodeCreated,
 } from '../state';
 import {computeStaticStyling} from '../styling/static_styling';
+import {mergeHostAttrs} from '../util/attrs_utils';
 import {getConstant} from '../util/view_utils';
 
 import {
   createDirectivesInstancesInInstruction,
-  resolveDirectives,
+  findDirectiveDefMatches,
   saveResolvedLocalsInData,
 } from './shared';
 import {getOrCreateTNode} from '../tnode_manipulation';
+import {resolveDirectives} from '../view/directives';
 
 function elementContainerStartFirstCreatePass(
   index: number,
@@ -68,7 +71,12 @@ function elementContainerStartFirstCreatePass(
   }
 
   const localRefs = getConstant<string[]>(tViewConsts, localRefsIndex);
-  resolveDirectives(tView, lView, tNode, localRefs);
+  if (getBindingsEnabled()) {
+    resolveDirectives(tView, lView, tNode, localRefs, findDirectiveDefMatches);
+  }
+
+  // Merge the template attrs last so that they have the highest priority.
+  tNode.mergedAttrs = mergeHostAttrs(tNode.mergedAttrs, tNode.attrs);
 
   if (tView.queries !== null) {
     tView.queries.elementStart(tView, tNode);

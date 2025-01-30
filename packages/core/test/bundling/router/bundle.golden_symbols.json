@@ -409,6 +409,7 @@
   "filter",
   "finalize",
   "findAttrIndexInNode",
+  "findDirectiveDefMatches",
   "findNode",
   "findPath",
   "first",

@@ -282,6 +282,7 @@
   "extractDefListOrFactory",
   "extractDirectiveDef",
   "findAttrIndexInNode",
+  "findDirectiveDefMatches",
   "findStylingValue",
   "forEachSingleProvider",
   "forwardRef",
