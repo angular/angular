@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ɵRuntimeError as RuntimeError} from '@angular/core';
+import {
+  ɵRuntimeError as RuntimeError,
+  ɵformatRuntimeError as formatRuntimeError,
+} from '@angular/core';
 
 import {
   FormatWidth,
@@ -92,11 +95,22 @@ export function formatDate(
       // year for a few days around Jan 1 most years.  Unless "w" is also
       // present (e.g. a date like "2024-W52") this is likely a mistake.  Users
       // probably meant "y" instead.
-      throw new RuntimeError(
-        RuntimeErrorCode.SUSPICIOUS_DATE_FORMAT,
-        `Suspicious use of week-based year "Y" in date pattern ${format}\n` +
-          `Did you mean to use "y" instead?`,
-      );
+      if (/^Y+$/.test(format)) {
+        // NOTE: allow "YYYY" with just a warning, since it's used in tests.
+        console.error(
+          formatRuntimeError(
+            RuntimeErrorCode.SUSPICIOUS_DATE_FORMAT,
+            `Suspicious use of week-based year "Y" in date pattern ${format}\n` +
+              `Did you mean to use "y" instead?`,
+          ),
+        );
+      } else {
+        throw new RuntimeError(
+          RuntimeErrorCode.SUSPICIOUS_DATE_FORMAT,
+          `Suspicious use of week-based year "Y" in date pattern ${format}\n` +
+            `Did you mean to use "y" instead?`,
+        );
+      }
     }
     if (format.includes('D') && format.includes('M')) {
       // "D" indicates "day of year", which counts days from earlier months of

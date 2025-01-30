@@ -106,10 +106,10 @@ describe('Format date', () => {
         yy: '15',
         yyy: '2015',
         yyyy: '2015',
-        Y_w: '2015_25',
-        YY_w: '15_25',
-        YYY_w: '2015_25',
-        YYYY_w: '2015_25',
+        Y: '2015',
+        YY: '15',
+        YYY: '2015',
+        YYYY: '2015',
         M: '6',
         MM: '06',
         MMM: 'Jun',
@@ -174,10 +174,10 @@ describe('Format date', () => {
         yy: '15',
         yyy: '2015',
         yyyy: '2015',
-        Y_w: '2015_1',
-        YY_w: '15_1',
-        YYY_w: '2015_1',
-        YYYY_w: '2015_1',
+        Y: '2015',
+        YY: '15',
+        YYY: '2015',
+        YYYY: '2015',
         M: '1',
         MM: '01',
         MMM: 'Jan',
@@ -245,6 +245,14 @@ describe('Format date', () => {
         BBBB: 'at night',
         BBBBB: 'at night',
       };
+
+      // Suppress console warnings for 'YYYY' patterns.
+      const consoleError = console.error;
+      spyOn(console, 'error').and.callFake((...args: unknown[]) => {
+        if (!/Suspicious use of week-based year/.test(String(args))) {
+          consoleError(...args);
+        }
+      });
 
       Object.keys(dateFixtures).forEach((pattern: string) => {
         expectDateFormatAs(date, pattern, dateFixtures[pattern]);
@@ -461,6 +469,18 @@ describe('Format date', () => {
       expect(formatDate('2010-01-04', `YYYY 'W'ww`, 'en')).toEqual('2010 W01');
       expect(formatDate('0049-01-01', `YYYY 'W'ww`, 'en')).toEqual('0048 W53');
       expect(formatDate('0049-01-04', `YYYY 'W'ww`, 'en')).toEqual('0049 W01');
+    });
+
+    it('should throw an error when using YYYY incorrectly', () => {
+      expect(() => formatDate('2013-12-31', `YYYY/MM/dd`, ɵDEFAULT_LOCALE_ID)).toThrowError(
+        /.*Suspicious use of week-based year "Y".*/,
+      );
+    });
+
+    it('should throw an error when using DD incorrectly', () => {
+      expect(() => formatDate('2013-12-31', `yyyy/MM/DD`, ɵDEFAULT_LOCALE_ID)).toThrowError(
+        /.*Suspicious use of day-of-year "D".*/,
+      );
     });
 
     // https://github.com/angular/angular/issues/53813
