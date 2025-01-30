@@ -1659,6 +1659,7 @@ export class ComponentDecoratorHandler
       ? extractHmrMetatadata(
           node,
           this.reflector,
+          this.evaluator,
           this.compilerHost,
           this.rootDirs,
           def,
@@ -1725,6 +1726,7 @@ export class ComponentDecoratorHandler
       ? extractHmrMetatadata(
           node,
           this.reflector,
+          this.evaluator,
           this.compilerHost,
           this.rootDirs,
           def,
@@ -1787,6 +1789,7 @@ export class ComponentDecoratorHandler
       ? extractHmrMetatadata(
           node,
           this.reflector,
+          this.evaluator,
           this.compilerHost,
           this.rootDirs,
           def,
@@ -1843,6 +1846,7 @@ export class ComponentDecoratorHandler
       ? extractHmrMetatadata(
           node,
           this.reflector,
+          this.evaluator,
           this.compilerHost,
           this.rootDirs,
           def,
