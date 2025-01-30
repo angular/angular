@@ -41,9 +41,7 @@ import {
   createLView,
   createTView,
   getInitialLViewFlagsFromDef,
-  initializeDirectives,
   locateHostElement,
-  resolveHostDirectives,
   setInputsForProperty,
 } from './instructions/shared';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
@@ -86,6 +84,7 @@ import {mergeHostAttrs} from './util/attrs_utils';
 import {debugStringifyTypeForError, stringifyForError} from './util/stringify_utils';
 import {getComponentLViewByIndex, getTNode} from './util/view_utils';
 import {ViewRef} from './view_ref';
+import {initializeDirectives, resolveHostDirectives} from './view/directives';
 
 export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
   /**
@@ -317,6 +316,9 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
         null,
       );
 
+      // ---- up to here it is kind of OK
+
+      // starting from here it is _mostly_ the existing elementStart / elementEnd infra duplicated
       const hostElement = rootSelectorOrNode
         ? locateHostElement(
             hostRenderer,
@@ -325,6 +327,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
             rootViewInjector,
           )
         : createHostElement(this.componentDef, hostRenderer);
+
       rootLView[HEADER_OFFSET] = hostElement;
 
       // rootView is the parent when bootstrapping
