@@ -9,6 +9,7 @@ ts_library(
     ]),
     deps = [
         "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/partial_evaluator",
         "//packages/compiler-cli/src/ngtsc/reflection",
         "//packages/compiler-cli/src/ngtsc/transform",
         "//packages/compiler-cli/src/ngtsc/translator",

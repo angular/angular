@@ -17,6 +17,7 @@ import {getProjectRelativePath} from '../../util/src/path';
 import {CompileResult} from '../../transform';
 import {extractHmrDependencies} from './extract_dependencies';
 import ts from 'typescript';
+import {PartialEvaluator} from '../../partial_evaluator';
 
 /**
  * Extracts the HMR metadata for a class declaration.
@@ -33,6 +34,7 @@ import ts from 'typescript';
 export function extractHmrMetatadata(
   clazz: DeclarationNode,
   reflection: ReflectionHost,
+  evaluator: PartialEvaluator,
   compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
   rootDirs: readonly string[],
   definition: R3CompiledExpression,
@@ -57,6 +59,8 @@ export function extractHmrMetatadata(
     deferBlockMetadata,
     classMetadata,
     debugInfo,
+    reflection,
+    evaluator,
   );
   const meta: R3HmrMetadata = {
     type: new o.WrappedNodeExpr(clazz.name),
