@@ -52,6 +52,7 @@ import {
   decreaseElementDepthCount,
   enterSkipHydrationBlock,
   getBindingIndex,
+  getBindingsEnabled,
   getCurrentTNode,
   getElementDepthCount,
   getLView,
@@ -68,16 +69,18 @@ import {
   wasLastNodeCreated,
 } from '../state';
 import {computeStaticStyling} from '../styling/static_styling';
+import {mergeHostAttrs} from '../util/attrs_utils';
 import {getConstant} from '../util/view_utils';
 
 import {validateElementIsKnown} from './element_validation';
 import {setDirectiveInputsWhichShadowsStyling} from './property';
 import {
   createDirectivesInstancesInInstruction,
-  resolveDirectives,
+  findDirectiveDefMatches,
   saveResolvedLocalsInData,
 } from './shared';
 import {getOrCreateTNode} from '../tnode_manipulation';
+import {resolveDirectives} from '../view/directives';
 
 function elementStartFirstCreatePass(
   index: number,
@@ -94,7 +97,18 @@ function elementStartFirstCreatePass(
   const attrs = getConstant<TAttributes>(tViewConsts, attrsIndex);
   const tNode = getOrCreateTNode(tView, index, TNodeType.Element, name, attrs);
 
-  resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
+  if (getBindingsEnabled()) {
+    resolveDirectives(
+      tView,
+      lView,
+      tNode,
+      getConstant<string[]>(tViewConsts, localRefsIndex),
+      findDirectiveDefMatches,
+    );
+  }
+
+  // Merge the template attrs last so that they have the highest priority.
+  tNode.mergedAttrs = mergeHostAttrs(tNode.mergedAttrs, tNode.attrs);
 
   if (tNode.attrs !== null) {
     computeStaticStyling(tNode, tNode.attrs, false);

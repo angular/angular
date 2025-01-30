@@ -239,6 +239,7 @@
   "extractDefListOrFactory",
   "extractDirectiveDef",
   "findAttrIndexInNode",
+  "findDirectiveDefMatches",
   "forEachSingleProvider",
   "forwardRef",
   "freeConsumers",

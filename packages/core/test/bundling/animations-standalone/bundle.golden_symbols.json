@@ -290,6 +290,7 @@
   "extractStyleParams",
   "filterNonAnimatableStyles",
   "findAttrIndexInNode",
+  "findDirectiveDefMatches",
   "forEachSingleProvider",
   "forwardRef",
   "freeConsumers",

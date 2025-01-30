@@ -41,9 +41,7 @@ import {
   createLView,
   createTView,
   getInitialLViewFlagsFromDef,
-  initializeDirectives,
   locateHostElement,
-  resolveHostDirectives,
   setInputsForProperty,
 } from './instructions/shared';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
@@ -86,6 +84,7 @@ import {getOrCreateTNode} from './tnode_manipulation';
 import {mergeHostAttrs} from './util/attrs_utils';
 import {debugStringifyTypeForError, stringifyForError} from './util/stringify_utils';
 import {getComponentLViewByIndex, getTNode} from './util/view_utils';
+import {initializeDirectives, resolveHostDirectives} from './view/directives';
 import {ViewRef} from './view_ref';
 
 export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
