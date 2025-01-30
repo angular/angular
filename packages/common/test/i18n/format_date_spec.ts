@@ -106,10 +106,10 @@ describe('Format date', () => {
         yy: '15',
         yyy: '2015',
         yyyy: '2015',
-        Y: '2015',
-        YY: '15',
-        YYY: '2015',
-        YYYY: '2015',
+        Y_w: '2015_25',
+        YY_w: '15_25',
+        YYY_w: '2015_25',
+        YYYY_w: '2015_25',
         M: '6',
         MM: '06',
         MMM: 'Jun',
@@ -174,10 +174,10 @@ describe('Format date', () => {
         yy: '15',
         yyy: '2015',
         yyyy: '2015',
-        Y: '2015',
-        YY: '15',
-        YYY: '2015',
-        YYYY: '2015',
+        Y_w: '2015_1',
+        YY_w: '15_1',
+        YYY_w: '2015_1',
+        YYYY_w: '2015_1',
         M: '1',
         MM: '01',
         MMM: 'Jan',
@@ -450,17 +450,17 @@ describe('Format date', () => {
 
     // https://github.com/angular/angular/issues/38739
     it('should return correct ISO 8601 week-numbering year for dates close to year end/beginning', () => {
-      expect(formatDate('2013-12-27', 'YYYY', 'en')).toEqual('2013');
-      expect(formatDate('2013-12-29', 'YYYY', 'en')).toEqual('2013');
-      expect(formatDate('2013-12-31', 'YYYY', 'en')).toEqual('2014');
+      expect(formatDate('2013-12-27', `YYYY 'W'ww`, 'en')).toEqual('2013 W52');
+      expect(formatDate('2013-12-29', `YYYY 'W'ww`, 'en')).toEqual('2013 W52');
+      expect(formatDate('2013-12-31', `YYYY 'W'ww`, 'en')).toEqual('2014 W01');
 
       // Dec. 31st is a Sunday, last day of the last week of 2023
-      expect(formatDate('2023-12-31', 'YYYY', 'en')).toEqual('2023');
+      expect(formatDate('2023-12-31', `YYYY 'W'ww`, 'en')).toEqual('2023 W52');
 
-      expect(formatDate('2010-01-02', 'YYYY', 'en')).toEqual('2009');
-      expect(formatDate('2010-01-04', 'YYYY', 'en')).toEqual('2010');
-      expect(formatDate('0049-01-01', 'YYYY', 'en')).toEqual('0048');
-      expect(formatDate('0049-01-04', 'YYYY', 'en')).toEqual('0049');
+      expect(formatDate('2010-01-02', `YYYY 'W'ww`, 'en')).toEqual('2009 W53');
+      expect(formatDate('2010-01-04', `YYYY 'W'ww`, 'en')).toEqual('2010 W01');
+      expect(formatDate('0049-01-01', `YYYY 'W'ww`, 'en')).toEqual('0048 W53');
+      expect(formatDate('0049-01-04', `YYYY 'W'ww`, 'en')).toEqual('0049 W01');
     });
 
     // https://github.com/angular/angular/issues/53813
@@ -480,11 +480,11 @@ describe('Format date', () => {
 
     // https://github.com/angular/angular/issues/40377
     it('should format date with year between 0 and 99 correctly', () => {
-      expect(formatDate('0098-01-11', 'YYYY', ɵDEFAULT_LOCALE_ID)).toEqual('0098');
-      expect(formatDate('0099-01-11', 'YYYY', ɵDEFAULT_LOCALE_ID)).toEqual('0099');
-      expect(formatDate('0100-01-11', 'YYYY', ɵDEFAULT_LOCALE_ID)).toEqual('0100');
-      expect(formatDate('0001-01-11', 'YYYY', ɵDEFAULT_LOCALE_ID)).toEqual('0001');
-      expect(formatDate('0000-01-11', 'YYYY', ɵDEFAULT_LOCALE_ID)).toEqual('0000');
+      expect(formatDate('0098-01-11', `YYYY 'W'ww`, ɵDEFAULT_LOCALE_ID)).toEqual('0098 W02');
+      expect(formatDate('0099-01-11', `YYYY 'W'ww`, ɵDEFAULT_LOCALE_ID)).toEqual('0099 W02');
+      expect(formatDate('0100-01-11', `YYYY 'W'ww`, ɵDEFAULT_LOCALE_ID)).toEqual('0100 W02');
+      expect(formatDate('0001-01-11', `YYYY 'W'ww`, ɵDEFAULT_LOCALE_ID)).toEqual('0001 W02');
+      expect(formatDate('0000-01-11', `YYYY 'W'ww`, ɵDEFAULT_LOCALE_ID)).toEqual('0000 W02');
     });
 
     // https://github.com/angular/angular/issues/26922
