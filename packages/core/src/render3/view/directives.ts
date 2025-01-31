@@ -47,6 +47,11 @@ import {NO_CHANGE} from '../tokens';
 import {mergeHostAttrs} from '../util/attrs_utils';
 import {allocExpando} from './construction';
 
+export type DirectiveMatcherStrategy = (
+  tView: TView,
+  tNode: TElementNode | TContainerNode | TElementContainerNode,
+) => DirectiveDef<unknown>[] | null;
+
 /**
  * Resolve the matched directives on a node.
  */
@@ -55,10 +60,7 @@ export function resolveDirectives(
   lView: LView,
   tNode: TElementNode | TContainerNode | TElementContainerNode,
   localRefs: string[] | null,
-  directiveMatcher: (
-    tView: TView,
-    tNode: TElementNode | TContainerNode | TElementContainerNode,
-  ) => DirectiveDef<unknown>[] | null,
+  directiveMatcher: DirectiveMatcherStrategy,
 ): void {
   // Please make sure to have explicit type for `exportsMap`. Inferred type triggers bug in
   // tsickle.

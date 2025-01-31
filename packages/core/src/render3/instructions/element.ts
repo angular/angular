@@ -25,29 +25,22 @@ import {
 } from '../../hydration/utils';
 import {isDetachedByI18n} from '../../i18n/utils';
 import {assertDefined, assertEqual, assertIndexInRange} from '../../util/assert';
-import {assertFirstCreatePass, assertHasParent} from '../assert';
+import {assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
-import {registerPostOrderHooks} from '../hooks';
-import {
-  hasClassInput,
-  hasStyleInput,
-  TAttributes,
-  TElementNode,
-  TNode,
-  TNodeType,
-} from '../interfaces/node';
-import {Renderer} from '../interfaces/renderer';
-import {RElement} from '../interfaces/renderer_dom';
-import {isComponentHost, isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
-import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
-import {assertTNodeType} from '../node_assert';
-import {executeContentQueries} from '../queries/query_execution';
-import {appendChild} from '../node_manipulation';
 import {
   clearElementContents,
   createElementNode,
   setupStaticAttributes,
 } from '../dom_node_manipulation';
+import {registerPostOrderHooks} from '../hooks';
+import {hasClassInput, hasStyleInput, TElementNode, TNode, TNodeType} from '../interfaces/node';
+import {Renderer} from '../interfaces/renderer';
+import {RElement} from '../interfaces/renderer_dom';
+import {isComponentHost, isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
+import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
+import {assertTNodeType} from '../node_assert';
+import {appendChild} from '../node_manipulation';
+import {executeContentQueries} from '../queries/query_execution';
 import {
   decreaseElementDepthCount,
   enterSkipHydrationBlock,
@@ -68,9 +61,7 @@ import {
   setCurrentTNodeAsNotParent,
   wasLastNodeCreated,
 } from '../state';
-import {computeStaticStyling} from '../styling/static_styling';
-import {mergeHostAttrs} from '../util/attrs_utils';
-import {getConstant} from '../util/view_utils';
+import {elementStartFirstCreatePass} from '../view/elements';
 
 import {validateElementIsKnown} from './element_validation';
 import {setDirectiveInputsWhichShadowsStyling} from './property';
@@ -79,51 +70,6 @@ import {
   findDirectiveDefMatches,
   saveResolvedLocalsInData,
 } from './shared';
-import {getOrCreateTNode} from '../tnode_manipulation';
-import {resolveDirectives} from '../view/directives';
-
-function elementStartFirstCreatePass(
-  index: number,
-  tView: TView,
-  lView: LView,
-  name: string,
-  attrsIndex?: number | null,
-  localRefsIndex?: number,
-): TElementNode {
-  ngDevMode && assertFirstCreatePass(tView);
-  ngDevMode && ngDevMode.firstCreatePass++;
-
-  const tViewConsts = tView.consts;
-  const attrs = getConstant<TAttributes>(tViewConsts, attrsIndex);
-  const tNode = getOrCreateTNode(tView, index, TNodeType.Element, name, attrs);
-
-  if (getBindingsEnabled()) {
-    resolveDirectives(
-      tView,
-      lView,
-      tNode,
-      getConstant<string[]>(tViewConsts, localRefsIndex),
-      findDirectiveDefMatches,
-    );
-  }
-
-  // Merge the template attrs last so that they have the highest priority.
-  tNode.mergedAttrs = mergeHostAttrs(tNode.mergedAttrs, tNode.attrs);
-
-  if (tNode.attrs !== null) {
-    computeStaticStyling(tNode, tNode.attrs, false);
-  }
-
-  if (tNode.mergedAttrs !== null) {
-    computeStaticStyling(tNode, tNode.mergedAttrs, true);
-  }
-
-  if (tView.queries !== null) {
-    tView.queries.elementStart(tView, tNode);
-  }
-
-  return tNode;
-}
 
 /**
  * Create DOM element. The instruction must later be followed by `elementEnd()` call.
@@ -160,7 +106,16 @@ export function ɵɵelementStart(
 
   const renderer = lView[RENDERER];
   const tNode = tView.firstCreatePass
-    ? elementStartFirstCreatePass(adjustedIndex, tView, lView, name, attrsIndex, localRefsIndex)
+    ? elementStartFirstCreatePass(
+        adjustedIndex,
+        tView,
+        lView,
+        name,
+        findDirectiveDefMatches,
+        getBindingsEnabled(),
+        attrsIndex,
+        localRefsIndex,
+      )
     : (tView.data[adjustedIndex] as TElementNode);
 
   const native = _locateOrCreateElementNode(tView, lView, tNode, renderer, name, index);
