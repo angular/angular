@@ -317,6 +317,7 @@
   "detectChangesInViewIfRequired",
   "detectChangesInternal",
   "diPublicInInjector",
+  "elementEndFirstCreatePass",
   "elementPropertyInternal",
   "elementStartFirstCreatePass",
   "enterDI",

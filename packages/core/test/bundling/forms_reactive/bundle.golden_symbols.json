@@ -329,6 +329,7 @@
   "detectChangesInViewIfRequired",
   "detectChangesInternal",
   "diPublicInInjector",
+  "elementEndFirstCreatePass",
   "elementStartFirstCreatePass",
   "enterDI",
   "enterView",

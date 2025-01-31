@@ -249,6 +249,7 @@
   "isApplicationBootstrapConfig",
   "isComponentDef",
   "isComponentHost",
+  "isContentQueryHost",
   "isDestroyed",
   "isDetachedByI18n",
   "isEnvironmentProviders",
