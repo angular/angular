@@ -52,7 +52,6 @@ import {
   TElementContainerNode,
   TElementNode,
   TNode,
-  TNodeType,
 } from './interfaces/node';
 import {RElement, RNode} from './interfaces/renderer_dom';
 import {
@@ -78,12 +77,9 @@ import {
 
 import {executeContentQueries} from './queries/query_execution';
 import {enterView, leaveView} from './state';
-import {computeStaticStyling} from './styling/static_styling';
-import {getOrCreateTNode} from './tnode_manipulation';
-import {mergeHostAttrs} from './util/attrs_utils';
 import {debugStringifyTypeForError, stringifyForError} from './util/stringify_utils';
 import {getComponentLViewByIndex, getTNode} from './util/view_utils';
-import {initializeDirectives, resolveHostDirectives} from './view/directives';
+import {elementStartFirstCreatePass} from './view/elements';
 import {ViewRef} from './view_ref';
 
 export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
@@ -278,6 +274,10 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
       const cmpDef = this.componentDef;
       ngDevMode && verifyNotAnOrphanComponent(cmpDef);
 
+      const tAttributes = rootSelectorOrNode
+        ? ['ng-version', '0.0.0-PLACEHOLDER']
+        : // Extract attributes and classes from the first selector only to match VE behavior.
+          extractAttrsAndClassesFromSelector(this.componentDef.selectors[0]);
       // Create the root view. Uses empty TView and ContentTemplate.
       const rootTView = createTView(
         TViewType.Root,
@@ -289,7 +289,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
         null,
         null,
         null,
-        null,
+        [tAttributes],
         null,
       );
 
@@ -336,28 +336,15 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
       let componentView: LView | null = null;
 
       try {
-        // If host dom element is created (instead of being provided as part of the dynamic component creation), also apply attributes and classes extracted from component selector.
-        const tAttributes = rootSelectorOrNode
-          ? ['ng-version', '0.0.0-PLACEHOLDER']
-          : // Extract attributes and classes from the first selector only to match VE behavior.
-            extractAttrsAndClassesFromSelector(cmpDef.selectors[0]);
-
-        // TODO: this logic is shared with the element instruction first create pass - minus directive matching
-        const hostTNode = getOrCreateTNode(
-          rootTView,
+        const hostTNode = elementStartFirstCreatePass(
           HEADER_OFFSET,
-          TNodeType.Element,
+          rootTView,
+          rootLView,
           '#host',
-          tAttributes,
+          () => [this.componentDef],
+          true,
+          0,
         );
-
-        const [directiveDefs, hostDirectiveDefs] = resolveHostDirectives(rootTView, hostTNode, [
-          cmpDef,
-        ]);
-        initializeDirectives(rootTView, rootLView, hostTNode, directiveDefs, {}, hostDirectiveDefs);
-        hostTNode.mergedAttrs = mergeHostAttrs(hostTNode.mergedAttrs, tAttributes);
-
-        computeStaticStyling(hostTNode, hostTNode.mergedAttrs, true);
 
         // TODO(crisbeto): in practice `hostRNode` should always be defined, but there are some
         // tests where the renderer is mocked out and `undefined` is returned. We should update the
