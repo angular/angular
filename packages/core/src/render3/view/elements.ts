@@ -7,7 +7,9 @@
  */
 
 import {assertFirstCreatePass} from '../assert';
-import {TAttributes, TNodeType, type TElementNode} from '../interfaces/node';
+import {registerPostOrderHooks} from '../hooks';
+import {TAttributes, TNode, TNodeType, type TElementNode} from '../interfaces/node';
+import {isContentQueryHost} from '../interfaces/type_checks';
 import type {LView, TView} from '../interfaces/view';
 import {computeStaticStyling} from '../styling/static_styling';
 import {getOrCreateTNode} from '../tnode_manipulation';
@@ -58,4 +60,12 @@ export function elementStartFirstCreatePass(
   }
 
   return tNode;
+}
+
+export function elementEndFirstCreatePass(tView: TView, tNode: TNode) {
+  ngDevMode && assertFirstCreatePass(tView);
+  registerPostOrderHooks(tView, tNode);
+  if (isContentQueryHost(tNode)) {
+    tView.queries!.elementEnd(tNode);
+  }
 }
