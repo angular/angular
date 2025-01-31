@@ -62,6 +62,11 @@ export function extractHmrMetatadata(
     reflection,
     evaluator,
   );
+
+  if (dependencies === null) {
+    return null;
+  }
+
   const meta: R3HmrMetadata = {
     type: new o.WrappedNodeExpr(clazz.name),
     className: clazz.name.text,
