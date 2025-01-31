@@ -325,6 +325,7 @@
   "isAsyncIterable",
   "isComponentDef",
   "isComponentHost",
+  "isContentQueryHost",
   "isDestroyed",
   "isDetachedByI18n",
   "isDisconnectedNode",

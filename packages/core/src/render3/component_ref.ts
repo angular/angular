@@ -79,7 +79,7 @@ import {executeContentQueries} from './queries/query_execution';
 import {enterView, leaveView} from './state';
 import {debugStringifyTypeForError, stringifyForError} from './util/stringify_utils';
 import {getComponentLViewByIndex, getTNode} from './util/view_utils';
-import {elementStartFirstCreatePass} from './view/elements';
+import {elementEndFirstCreatePass, elementStartFirstCreatePass} from './view/elements';
 import {ViewRef} from './view_ref';
 
 export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
@@ -346,6 +346,8 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
           0,
         );
 
+        // ---- element instruction
+
         // TODO(crisbeto): in practice `hostRNode` should always be defined, but there are some
         // tests where the renderer is mocked out and `undefined` is returned. We should update the
         // tests so that this check can be removed.
@@ -358,8 +360,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
         createDirectivesInstances(rootTView, rootLView, hostTNode);
         executeContentQueries(rootTView, hostTNode, rootLView);
 
-        // TODO(pk): code / logic duplication with the elementEnd and similar instructions
-        registerPostOrderHooks(rootTView, hostTNode);
+        elementEndFirstCreatePass(rootTView, hostTNode);
 
         if (projectableNodes !== undefined) {
           projectNodes(hostTNode, this.ngContentSelectors, projectableNodes);
