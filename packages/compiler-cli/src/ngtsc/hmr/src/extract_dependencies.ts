@@ -39,7 +39,7 @@ export function extractHmrDependencies(
 ): {
   local: {name: string; runtimeRepresentation: o.Expression}[];
   external: R3HmrNamespaceDependency[];
-} {
+} | null {
   const name = ts.isClassDeclaration(node) && node.name ? node.name.text : null;
   const visitor = new PotentialTopLevelReadsVisitor();
   const sourceFile = node.getSourceFile();
@@ -70,10 +70,13 @@ export function extractHmrDependencies(
     const readName = readNode instanceof o.ReadVarExpr ? readNode.name : readNode.text;
 
     if (readName !== name && !seenLocals.has(readName) && availableTopLevel.has(readName)) {
-      local.push({
-        name: readName,
-        runtimeRepresentation: getRuntimeRepresentation(readNode, reflection, evaluator),
-      });
+      const runtimeRepresentation = getRuntimeRepresentation(readNode, reflection, evaluator);
+
+      if (runtimeRepresentation === null) {
+        return null;
+      }
+
+      local.push({name: readName, runtimeRepresentation});
       seenLocals.add(readName);
     }
   }
@@ -94,7 +97,7 @@ function getRuntimeRepresentation(
   node: o.ReadVarExpr | ts.Identifier,
   reflection: ReflectionHost,
   evaluator: PartialEvaluator,
-): o.Expression {
+): o.Expression | null {
   if (node instanceof o.ReadVarExpr) {
     return o.variable(node.name);
   }
@@ -120,6 +123,11 @@ function getRuntimeRepresentation(
             quoted: false,
             value: o.literal(value.resolved),
           });
+        } else {
+          // TS is pretty restrictive about what values can be in a const enum so our evaluator
+          // should be able to handle them, however if we happen to hit such a case, we return null
+          // so the HMR update can be invalidated.
+          return null;
         }
       }
 
