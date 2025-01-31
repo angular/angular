@@ -61,7 +61,7 @@ import {
   setCurrentTNodeAsNotParent,
   wasLastNodeCreated,
 } from '../state';
-import {elementStartFirstCreatePass} from '../view/elements';
+import {elementEndFirstCreatePass, elementStartFirstCreatePass} from '../view/elements';
 
 import {validateElementIsKnown} from './element_validation';
 import {setDirectiveInputsWhichShadowsStyling} from './property';
@@ -182,10 +182,7 @@ export function ɵɵelementEnd(): typeof ɵɵelementEnd {
 
   const tView = getTView();
   if (tView.firstCreatePass) {
-    registerPostOrderHooks(tView, currentTNode);
-    if (isContentQueryHost(currentTNode)) {
-      tView.queries!.elementEnd(currentTNode);
-    }
+    elementEndFirstCreatePass(tView, tNode);
   }
 
   if (tNode.classesWithoutHost != null && hasClassInput(tNode)) {
