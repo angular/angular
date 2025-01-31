@@ -37,21 +37,12 @@ import {
 } from '@angular/core';
 import {SIGNAL} from '@angular/core/primitives/signals';
 import {toObservable} from '@angular/core/rxjs-interop';
-import {
-  EffectNode,
-  setUseMicrotaskEffectsByDefault,
-} from '@angular/core/src/render3/reactivity/effect';
+import {EffectNode} from '@angular/core/src/render3/reactivity/effect';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
 
 describe('reactivity', () => {
-  let prev: boolean;
-  beforeEach(() => {
-    prev = setUseMicrotaskEffectsByDefault(false);
-  });
-  afterEach(() => setUseMicrotaskEffectsByDefault(prev));
-
   describe('effects', () => {
     beforeEach(destroyPlatform);
     afterEach(destroyPlatform);
