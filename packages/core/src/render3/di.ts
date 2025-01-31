@@ -31,7 +31,6 @@ import {registerPreOrderHooks} from './hooks';
 import {AttributeMarker} from './interfaces/attribute_marker';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {
-  isFactory,
   NO_PARENT_INJECTOR,
   NodeInjectorFactory,
   NodeInjectorOffset,
@@ -729,7 +728,7 @@ export function getNodeInjectable(
 ): any {
   let value = lView[index];
   const tData = tView.data;
-  if (isFactory(value)) {
+  if (value instanceof NodeInjectorFactory) {
     const factory: NodeInjectorFactory = value;
     if (factory.resolving) {
       throwCyclicDependencyError(stringifyForError(tData[index]));
