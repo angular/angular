@@ -16,10 +16,10 @@ import {
   signal,
 } from '@angular/core';
 import {RESIZE_EVENT_DELAY} from '../constants/index';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {auditTime, debounceTime, fromEvent, startWith} from 'rxjs';
 import {WINDOW} from '../providers/index';
 import {TableOfContentsLoader} from './table-of-contents-loader.service';
+import {takeUntilDestroyed} from './rxjs-interop';
 
 export const SCROLL_EVENT_DELAY = 20;
 

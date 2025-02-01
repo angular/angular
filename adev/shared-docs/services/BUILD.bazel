@@ -31,7 +31,6 @@ ng_module(
         "//adev/shared-docs/utils",
         "//packages/common",
         "//packages/core",
-        "//packages/core/rxjs-interop",
         "//packages/router",
         "@npm//algoliasearch",
         "@npm//rxjs",
