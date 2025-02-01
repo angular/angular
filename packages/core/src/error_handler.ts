@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, InjectionToken} from './di';
+import {EnvironmentProviders, inject, InjectionToken, makeEnvironmentProviders} from './di';
 import {NgZone} from './zone';
 
 /**
@@ -68,3 +68,46 @@ export const INTERNAL_APPLICATION_ERROR_HANDLER = new InjectionToken<(e: any) =>
     },
   },
 );
+
+/**
+ * @description
+ * The provided function provides a hook for centralized exception handling.
+ *
+ * You can, for example, create a function that logs a custom error message
+ * or sends error details to an external API, and provide that function using `provideErrorHandler()`.
+ *
+ * Note that the provided initializer is run in the injection context.
+ *
+ *
+ * @see {@link ErrorHandler}
+ *
+ * @usageNotes
+ * The following example illustrates how to configure an exception handling function using
+ * `provideErrorHandler()`
+ * ```ts
+ * bootstrapApplication(App, {
+ *   providers: [
+ *     provideErrorHandler((error) => {
+ *       const http = inject(HttpClient);
+ *       return firstValueFrom(
+ *         http
+ *           .post("https://someUrl.com/api/error", {error})
+ *       );
+ *     }),
+ *   ],
+ * });
+ * ```
+ *
+ */
+export function provideErrorHandler(
+  errorHandlerFn: (error) => void
+): EnvironmentProviders {
+  return makeEnvironmentProviders([
+    {
+      provide: ErrorHandler,
+      useValue: {
+        handleError: errorHandlerFn
+      },
+    },
+  ]);
+}
