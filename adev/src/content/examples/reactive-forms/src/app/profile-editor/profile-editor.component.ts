@@ -14,9 +14,9 @@ import {JsonPipe} from '@angular/common';
   imports: [ReactiveFormsModule, JsonPipe],
 })
 export class ProfileEditorComponent {
+  // #docregion required-validator, aliases
   private formBuilder = inject(FormBuilder);
 
-  // #docregion required-validator, aliases
   profileForm = this.formBuilder.group({
     firstName: ['', Validators.required],
     lastName: [''],

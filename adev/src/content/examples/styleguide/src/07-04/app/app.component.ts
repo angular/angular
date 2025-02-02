@@ -1,5 +1,5 @@
 // #docregion
-import {Component, OnInit} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 
 import {HeroArena, HeroService, Hero} from './heroes';
 
@@ -9,12 +9,12 @@ import {HeroArena, HeroService, Hero} from './heroes';
   providers: [HeroArena, HeroService],
   standalone: false,
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   heroes: Hero[] = [];
 
-  constructor(private heroArena: HeroArena) {}
+  private heroArena = inject(HeroArena);
 
-  ngOnInit() {
+  constructor() {
     this.heroArena.getParticipants().subscribe((heroes) => (this.heroes = heroes));
   }
 }

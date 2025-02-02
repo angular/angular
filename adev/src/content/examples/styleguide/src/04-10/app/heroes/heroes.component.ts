@@ -1,5 +1,5 @@
 // #docregion
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 
 import {FilterTextService} from '../shared/filter-text/filter-text.service';
 
@@ -18,7 +18,7 @@ export class HeroesComponent {
 
   filteredHeroes = this.heroes;
 
-  constructor(private filterService: FilterTextService) {}
+  private filterService = inject(FilterTextService);
 
   filterChanged(searchText: string) {
     this.filteredHeroes = this.filterService.filter(searchText, ['id', 'name'], this.heroes);

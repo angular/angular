@@ -146,8 +146,8 @@ of `DestroyRef`.
   /* ... */
 })
 export class UserProfile {
-  constructor(private destroyRef: DestroyRef) {
-    destroyRef.onDestroy(() => {
+  constructor() {
+    inject(DestroyRef).onDestroy(() => {
       console.log('UserProfile destruction');
     });
   }
@@ -254,7 +254,8 @@ export class UserProfile {
   private prevPadding = 0;
   private elementHeight = 0;
 
-  constructor(elementRef: ElementRef) {
+  constructor() {
+    private elementRef = inject(ElementRef);
     const nativeElement = elementRef.nativeElement;
 
     afterNextRender({

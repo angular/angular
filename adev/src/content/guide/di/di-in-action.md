@@ -20,7 +20,7 @@ export const BROWSER_STORAGE = new InjectionToken<Storage>('Browser Storage', {
   providedIn: 'root'
 })
 export class BrowserStorageService {
-  constructor(@Inject(BROWSER_STORAGE) public storage: Storage) {}
+  public storage = inject(BROWSER_STORAGE);
 
   get(key: string) {
     return this.storage.getItem(key);
@@ -33,7 +33,7 @@ export class BrowserStorageService {
 </docs-code>
 
 The `factory` function returns the `localStorage` property that is attached to the browser's window object.
-The `Inject` decorator is applied to the `storage` constructor parameter and specifies a custom provider of the dependency.
+The `inject` function initializes the `storage` property with an instance of the token.
 
 This custom provider can now be overridden during testing with a mock API of `localStorage` instead of interacting with real browser APIs.
 
@@ -51,7 +51,7 @@ import { Directive, ElementRef } from '@angular/core';
   selector: '[appHighlight]'
 })
 export class HighlightDirective {
-  constructor(private element: ElementRef) {}
+  private element = inject(ElementRef)
 
   update() {
     this.element.nativeElement.style.color = 'red';

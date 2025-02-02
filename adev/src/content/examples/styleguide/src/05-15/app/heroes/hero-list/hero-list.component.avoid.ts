@@ -1,7 +1,7 @@
 // #docregion
 /* avoid */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 
 import {Observable} from 'rxjs';
@@ -15,11 +15,13 @@ const heroesUrl = 'http://angular.io';
   selector: 'toh-hero-list',
   template: `...`,
 })
-export class HeroListComponent implements OnInit {
-  heroes: Hero[];
+export class HeroListComponent {
+  heroes: Hero[] = [];
 
-  constructor(private http: HttpClient) {
-    this.heroes = [];
+  private http = inject(HttpClient);
+
+  constructor() {
+    this.getHeroes();
   }
 
   getHeroes() {
@@ -31,9 +33,6 @@ export class HeroListComponent implements OnInit {
         finalize(() => this.hideSpinner()),
       )
       .subscribe((heroes: Hero[]) => (this.heroes = heroes));
-  }
-  ngOnInit() {
-    this.getHeroes();
   }
 
   private catchBadResponse(err: any, source: Observable<any>) {

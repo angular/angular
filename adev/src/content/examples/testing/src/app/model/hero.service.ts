@@ -1,5 +1,5 @@
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {catchError, map, tap} from 'rxjs/operators';
 
@@ -13,7 +13,7 @@ const httpOptions = {
 export class HeroService {
   readonly heroesUrl = 'api/heroes'; // URL to web api
 
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   /** GET heroes from the server */
   getHeroes(): Observable<Hero[]> {

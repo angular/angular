@@ -72,7 +72,7 @@ export class OuterContainer {}
   `,
 })
 export class InnerItem {
-  constructor(private viewContainer: ViewContainerRef) {}
+  private viewContainer = inject(ViewContainerRef);
 
   loadContent() {
     this.viewContainer.createComponent(LeafContent);
