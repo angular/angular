@@ -1,6 +1,6 @@
 // #docregion
-import {Component, inject} from '@angular/core';
-import {FormControl, FormGroup, Validators, ReactiveFormsModule} from '@angular/forms';
+import {Component, inject, OnInit} from '@angular/core';
+import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {forbiddenNameValidator} from '../shared/forbidden-name.directive';
 import {unambiguousRoleValidator} from '../shared/unambiguous-role.directive';
 import {UniqueRoleValidator} from '../shared/role.directive';
@@ -12,7 +12,7 @@ import {UniqueRoleValidator} from '../shared/role.directive';
   imports: [ReactiveFormsModule],
 })
 export class ActorFormReactiveComponent {
-  roleValidator = inject(UniqueRoleValidator);
+  private roleValidator = inject(UniqueRoleValidator);
 
   skills = ['Method Acting', 'Singing', 'Dancing', 'Swordfighting'];
 

@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {Observable} from 'rxjs';
 
 import {Hero, HeroService} from './shared';
@@ -12,11 +12,9 @@ import {AsyncPipe, NgFor, NgIf, UpperCasePipe} from '@angular/common';
   imports: [NgFor, NgIf, AsyncPipe, UpperCasePipe],
 })
 export class HeroesComponent {
-  heroes: Observable<Hero[]>;
   selectedHero!: Hero;
 
-  constructor(private heroService: HeroService) {
-    this.heroes = this.heroService.getHeroes();
-  }
+  private heroService = inject(HeroService);
+  heroes: Observable<Hero[]> = this.heroService.getHeroes();
 }
 // #enddocregion example
