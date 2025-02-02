@@ -100,7 +100,7 @@ export const INTERNAL_APPLICATION_ERROR_HANDLER = new InjectionToken<(e: any) =>
  *
  */
 export function provideErrorHandler(
-  errorHandlerFn: (error) => void
+  errorHandlerFn: (error:any) => void
 ): EnvironmentProviders {
   return makeEnvironmentProviders([
     {
