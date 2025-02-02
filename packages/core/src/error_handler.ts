@@ -87,7 +87,7 @@ export const INTERNAL_APPLICATION_ERROR_HANDLER = new InjectionToken<(e: any) =>
  * ```ts
  * bootstrapApplication(App, {
  *   providers: [
- *     provideErrorHandler((error) => {
+ *     provideErrorHandler((error:any) => {
  *       const http = inject(HttpClient);
  *       return firstValueFrom(
  *         http
