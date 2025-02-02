@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 
 import {Hero, HeroService} from './heroes';
 
@@ -11,7 +11,7 @@ import {Hero, HeroService} from './heroes';
 export class AppComponent implements OnInit {
   heroes: Hero[] = [];
 
-  constructor(private heroService: HeroService) {}
+  private heroService = inject(HeroService);
 
   ngOnInit() {
     this.heroService.getHeroes().subscribe((heroes) => (this.heroes = heroes));

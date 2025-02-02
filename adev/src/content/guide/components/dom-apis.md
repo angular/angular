@@ -9,7 +9,8 @@ component's host element:
 ```ts
 @Component({...})
 export class ProfilePhoto {
-  constructor(elementRef: ElementRef) {
+  constructor() {
+    const elementRef = inject(ElementRef);
     console.log(elementRef.nativeElement);
   }
 }
@@ -24,7 +25,8 @@ callback** that runs when Angular has finished rendering the page.
 ```ts
 @Component({...})
 export class ProfilePhoto {
-  constructor(elementRef: ElementRef) {
+  constructor() {
+    const elementRef = inject(ElementRef);
     afterRender(() => {
       // Focus the first input element in this component.
       elementRef.nativeElement.querySelector('input')?.focus();

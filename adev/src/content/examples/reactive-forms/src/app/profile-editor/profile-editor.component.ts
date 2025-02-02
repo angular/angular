@@ -1,5 +1,5 @@
 // #docplaster
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
 // #docregion validator-imports
 import {Validators} from '@angular/forms';
@@ -14,6 +14,8 @@ import {FormArray} from '@angular/forms';
 })
 export class ProfileEditorComponent {
   // #docregion required-validator, aliases
+  private formBuilder = inject(FormBuilder);
+
   profileForm = this.formBuilder.group({
     firstName: ['', Validators.required],
     lastName: [''],
@@ -35,7 +37,6 @@ export class ProfileEditorComponent {
   }
 
   // #enddocregion aliases-getter
-  constructor(private formBuilder: FormBuilder) {}
 
   updateProfile() {
     this.profileForm.patchValue({

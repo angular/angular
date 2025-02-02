@@ -1,5 +1,5 @@
 // #docregion
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, inject, Input, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormGroup, ReactiveFormsModule} from '@angular/forms';
 
@@ -14,16 +14,12 @@ import {QuestionControlService} from './question-control.service';
   providers: [QuestionControlService],
   imports: [CommonModule, DynamicFormQuestionComponent, ReactiveFormsModule],
 })
-export class DynamicFormComponent implements OnInit {
+export class DynamicFormComponent {
   @Input() questions: QuestionBase<string>[] | null = [];
-  form!: FormGroup;
   payLoad = '';
 
-  constructor(private qcs: QuestionControlService) {}
-
-  ngOnInit() {
-    this.form = this.qcs.toFormGroup(this.questions as QuestionBase<string>[]);
-  }
+  private qcs = inject(QuestionControlService);
+  form = this.qcs.toFormGroup(this.questions as QuestionBase<string>[]);
 
   onSubmit() {
     this.payLoad = JSON.stringify(this.form.getRawValue());

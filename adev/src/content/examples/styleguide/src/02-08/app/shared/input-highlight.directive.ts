@@ -1,5 +1,5 @@
 // #docregion
-import {Directive, ElementRef} from '@angular/core';
+import {Directive, ElementRef, inject} from '@angular/core';
 
 // eslint-disable-next-line @angular-eslint/directive-selector
 @Directive({
@@ -8,7 +8,8 @@ import {Directive, ElementRef} from '@angular/core';
 })
 /** Highlight the attached input text element in blue */
 export class InputHighlightDirective {
-  constructor(el: ElementRef) {
-    el.nativeElement.style.backgroundColor = 'powderblue';
+  private el = inject(ElementRef);
+  constructor() {
+    this.el.nativeElement.style.backgroundColor = 'powderblue';
   }
 }

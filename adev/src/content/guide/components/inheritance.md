@@ -67,8 +67,7 @@ and their own.
 
 ### Forwarding injected dependencies
 
-If a base class relies on dependency injection, the child class must explicitly pass these
-dependencies to `super`.
+If a base class injects dependencies as constructor parameters, the child class must explicitly class these dependencies to `super`.
 
 ```ts
 @Component({ ... })

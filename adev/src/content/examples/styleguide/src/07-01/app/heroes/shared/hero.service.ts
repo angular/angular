@@ -1,5 +1,5 @@
 // #docregion
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 
 import {Hero} from './hero.model';
@@ -7,7 +7,7 @@ import {Hero} from './hero.model';
 @Injectable()
 // #docregion example
 export class HeroService {
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   getHeroes() {
     return this.http.get<Hero[]>('api/heroes');
