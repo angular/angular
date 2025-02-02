@@ -1,5 +1,5 @@
 // #docregion
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {AsyncPipe} from '@angular/common';
 
 import {DynamicFormComponent} from './dynamic-form.component';
@@ -20,9 +20,5 @@ import {Observable} from 'rxjs';
   imports: [AsyncPipe, DynamicFormComponent],
 })
 export class AppComponent {
-  questions$: Observable<QuestionBase<any>[]>;
-
-  constructor(service: QuestionService) {
-    this.questions$ = service.getQuestions();
-  }
+  questions$: Observable<QuestionBase<string>[]> = inject(QuestionService).getQuestions();
 }

@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {FlowerService} from '../flower.service';
 
 @Component({
@@ -7,5 +7,5 @@ import {FlowerService} from '../flower.service';
   styleUrls: ['./host-child.component.css'],
 })
 export class HostChildComponent {
-  constructor(public flower: FlowerService) {}
+  public flower = inject(FlowerService);
 }

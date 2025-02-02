@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {SwUpdate} from '@angular/service-worker';
 
 @Component({
@@ -9,7 +9,7 @@ export class AppComponent {
   title = 'Service Workers';
   updateCheckText = '';
 
-  constructor(private update: SwUpdate) {}
+  private update = inject(SwUpdate);
 
   updateCheck(): void {
     this.update

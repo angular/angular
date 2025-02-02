@@ -7,6 +7,7 @@ import {
   EventEmitter,
   HostBinding,
   HostListener,
+  inject,
   Injectable,
   Input,
   OnChanges,
@@ -58,7 +59,7 @@ export class ValueService {
 // #docregion MasterService
 @Injectable()
 export class MasterService {
-  constructor(private valueService: ValueService) {}
+  public valueService = inject(ValueService);
   getValue() {
     return this.valueService.getValue();
   }
@@ -88,11 +89,6 @@ export class ReversePipe implements PipeTransform {
 export class BankAccountComponent {
   @Input() bank = '';
   @Input('account') id = '';
-
-  // Removed on 12/02/2016 when ceased public discussion of the `Renderer`. Revive in future?
-  // constructor(private renderer: Renderer, private el: ElementRef ) {
-  //   renderer.setElementProperty(el.nativeElement, 'customProperty', true);
-  // }
 }
 
 /** A component with attributes, styles, classes, and property setting */
@@ -106,8 +102,7 @@ export class BankAccountComponent {
       [style.color]="color"
       [class.closed]="isClosed"
       [class.open]="!isClosed"
-    >
-    </bank-account>
+    />
   `,
   imports: [BankAccountComponent],
 })
@@ -260,7 +255,7 @@ export class MyIfComponent {
   providers: [ValueService],
 })
 export class TestProvidersComponent {
-  constructor(public valueService: ValueService) {}
+  public valueService = inject(ValueService);
 }
 
 @Component({
@@ -269,23 +264,17 @@ export class TestProvidersComponent {
   viewProviders: [ValueService],
 })
 export class TestViewProvidersComponent {
-  constructor(public valueService: ValueService) {}
+  public valueService = inject(ValueService);
 }
 
 @Component({
   selector: 'external-template-comp',
   templateUrl: './demo-external-template.html',
 })
-export class ExternalTemplateComponent implements OnInit {
-  serviceValue = '';
+export class ExternalTemplateComponent {
+  private service = inject(ValueService, {optional: true});
 
-  constructor(@Optional() private service?: ValueService) {}
-
-  ngOnInit() {
-    if (this.service) {
-      this.serviceValue = this.service.getValue();
-    }
-  }
+  serviceValue = this.service?.getValue() ?? '';
 }
 
 @Component({

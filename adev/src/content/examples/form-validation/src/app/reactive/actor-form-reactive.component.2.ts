@@ -1,7 +1,7 @@
 // #docplaster
 // #docregion
 import {Component, inject} from '@angular/core';
-import {FormControl, FormGroup, Validators, ReactiveFormsModule} from '@angular/forms';
+import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {forbiddenNameValidator} from '../shared/forbidden-name.directive';
 import {UniqueRoleValidator} from '../shared/role.directive';
 
