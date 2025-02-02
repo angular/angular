@@ -268,7 +268,7 @@ The following code creates the validator class, `UniqueRoleValidator`, which imp
 
 <docs-code path="adev/src/content/examples/form-validation/src/app/shared/role.directive.ts" visibleRegion="async-validator"/>
 
-The constructor injects the `ActorsService`, which defines the following interface.
+The `actorsService` property is initialized with an instace of the `ActorsService` token, which defines the following interface.
 
 <docs-code language="typescript">
 interface ActorsService {
@@ -295,7 +295,7 @@ The `pending` flag is set to `false`, and the form validity is updated.
 
 ### Adding async validators to reactive forms
 
-To use an async validator in reactive forms, begin by injecting the validator into the constructor of the component class.
+To use an async validator in reactive forms, begin by injecting the validator into a property of the component class.
 
 <docs-code path="adev/src/content/examples/form-validation/src/app/reactive/actor-form-reactive.component.2.ts" visibleRegion="async-validator-inject"/>
 

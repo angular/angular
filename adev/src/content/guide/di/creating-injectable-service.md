@@ -100,14 +100,14 @@ For clarity and maintainability, it is recommended that you define components an
 
 ## Injecting services
 
-To inject a service as a dependency into a component, you can use the component's `constructor()` and supply a constructor argument with the dependency type.
+To inject a service as a dependency into a component, you can use the `inject` function as a property initiliazer or invoke the function inside the constructor.
 
-The following example specifies the `HeroService` in the `HeroListComponent` constructor.
+The following example specifies a `HeroListComponent` property initilized by injecting `HeroService`.
 The type of `heroService` is `HeroService`.
-Angular recognizes the `HeroService` type as a dependency, since that class was previously annotated with the `@Injectable` decorator:
 
-<docs-code header="src/app/heroes/hero-list.component (constructor signature)" language="typescript">
-  constructor(heroService: HeroService)
+
+<docs-code header="src/app/heroes/hero-list.component (property initialization)" language="typescript">
+  public heroService = inject(HeroService);
 </docs-code>
 
 ## Injecting services in other services
@@ -125,7 +125,7 @@ import { Logger } from '../logger.service';
   providedIn: 'root',
 })
 export class HeroService {
-  constructor(private logger: Logger) {}
+  private logger = inject(Logger);
 
   getHeroes() {
     this.logger.log('Getting heroes.');

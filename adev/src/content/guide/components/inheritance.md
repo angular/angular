@@ -67,7 +67,7 @@ and their own.
 
 ### Forwarding injected dependencies
 
-If a base class relies on dependency injection, the child class must explicitly pass these
+If a base class relies on constructor dependency injection, the child class must explicitly pass these
 dependencies to `super`.
 
 ```ts
@@ -79,6 +79,7 @@ export class ListboxBase {
 @Component({ ... })
 export class CustomListbox extends ListboxBase {
   constructor(element: ElementRef) {
+    const elementRef = inject(ElementRef);
     super(element);
   }
 }

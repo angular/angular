@@ -6,5 +6,5 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root'
 })
 export class <%= classify(name) %>Service {
-  constructor(private http: HttpClient) { }
+  private http = inject(HttpClient);
 }
