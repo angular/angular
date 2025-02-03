@@ -13,10 +13,18 @@ import {RouterLink, RouterLinkActive} from '@angular/router';
 import {IconComponent} from '../icon/icon.component';
 import {IsActiveNavigationItem} from '../../pipes/is-active-navigation-item.pipe';
 import {NgTemplateOutlet} from '@angular/common';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 @Component({
   selector: 'docs-navigation-list',
-  imports: [RouterLink, RouterLinkActive, IconComponent, IsActiveNavigationItem, NgTemplateOutlet],
+  imports: [
+    RouterLink,
+    RouterLinkActive,
+    IconComponent,
+    IsActiveNavigationItem,
+    NgTemplateOutlet,
+    MatTooltipModule,
+  ],
   templateUrl: './navigation-list.component.html',
   styleUrls: ['./navigation-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
