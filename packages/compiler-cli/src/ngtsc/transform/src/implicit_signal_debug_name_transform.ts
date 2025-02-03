@@ -49,23 +49,44 @@ function insertDebugNameIntoCallExpression(
     ts.factory.createPropertyAssignment('debugName', ts.factory.createStringLiteral(debugName)),
   );
 
-  const devModeArgs: (ts.Expression | ts.Identifier)[] = [];
-  // if conf  ig position is not 0 and there are no arguments before the config object
+  let transformedArgs: (ts.Expression | ts.Identifier)[] = [];
+
+  // if config position is not 0 and there are no arguments before the config object
   // we need to add undefined identifiers to the arg list
   for (let i = 0; i < configPosition; i++) {
     if (nodeArgs[i] === undefined) {
-      devModeArgs.push(ts.factory.createIdentifier('undefined'));
+      transformedArgs.push(ts.factory.createIdentifier('undefined'));
     } else {
-      devModeArgs.push(nodeArgs[i]);
+      transformedArgs.push(
+        ts.factory.createIdentifier('x'),
+      );
     }
   }
-  devModeArgs.push(ts.factory.createObjectLiteralExpression(properties));
-  const devModeCase = ts.factory.createArrayLiteralExpression(devModeArgs);
+  
+  // Create non dev mode case of ternary
+  let nonDevModeCase
+  // if existingArgument has properties, we need to merge them with the new properties
+  if (existingArgument.properties.length > 0) {
+    // `[x, {foo: 'bar' }]`
+    nonDevModeCase = ts.factory.createArrayLiteralExpression(
+      [...transformedArgs, ts.factory.createObjectLiteralExpression(existingArgument.properties)]
+    );
+  } else {
+    // if existingArgument is empty, we simply add the new properties
+    // `[x]`
+    nonDevModeCase = ts.factory.createArrayLiteralExpression(
+      transformedArgs
+    );
+  }
 
-  const nonDevModeCase = ts.factory.createArrayLiteralExpression(callExpression.arguments);
+  // Push debugName into the transformedArgs
+  transformedArgs.push(ts.factory.createObjectLiteralExpression(properties));
+  // Create dev mode case of ternary with debugName
+  // `[x, { debugName: 'myDebugName', foo: 'bar' }]`
+  const devModeCase = ts.factory.createArrayLiteralExpression(transformedArgs);
 
   // Create conditional to tree shake `debugName` on `ngDevMode`.
-  // `(ngDevMode ? [{ debugName: 'myDebugName', foo: 'bar' }] : [{foo: 'bar'}])`
+  // `(ngDevMode ? [x, { debugName: 'myDebugName', foo: 'bar' }] : [x, {foo: 'bar'}])`
   const conditionalExpression = ts.factory.createParenthesizedExpression(
     ts.factory.createConditionalExpression(
       ts.factory.createIdentifier('ngDevMode'),
@@ -76,14 +97,64 @@ function insertDebugNameIntoCallExpression(
     ),
   );
 
-  // `...(ngDevMode ? [{ debugName: 'myDebugName', foo: 'bar' }] : [{foo: 'bar'}])`
+  // `...(ngDevMode ? [x, { debugName: 'myDebugName', foo: 'bar' }] : [x, {foo: 'bar'}])`
   const spreadElement = ts.factory.createSpreadElement(conditionalExpression);
-  return ts.factory.updateCallExpression(
+  const spreadExpression = ts.factory.updateCallExpression(
     callExpression,
     callExpression.expression,
     callExpression.typeArguments,
     ts.factory.createNodeArray([spreadElement]),
   );
+
+  // input: const mySignal = signal(123, { equals: () => false });
+  // output:
+  // const mySignal = () => {
+  //  const x = 123;
+  //  return signal(...(ngDevMode ? [x, { debugName: 'mySignal', equals: () => false }] : [x, {equals: () => false}]))
+  // }
+  const block = [];
+  if (callExpression.arguments.length !== 0) {
+    block.push(
+      ts.factory.createVariableStatement(
+        undefined,
+        ts.factory.createVariableDeclarationList(
+          [
+            ts.factory.createVariableDeclaration(
+              'x',
+              undefined,
+              undefined,
+              callExpression.arguments[0],
+            ),
+          ],
+          ts.NodeFlags.Const,
+        ),
+      )
+    );
+  }
+
+  block.push(
+    ts.factory.createReturnStatement(
+      spreadExpression
+    )
+  )
+
+  const iife = ts.factory.updateCallExpression(
+    callExpression,
+    ts.factory.createParenthesizedExpression(
+      ts.factory.createArrowFunction(
+        undefined,
+        undefined,
+        [],
+        undefined,
+        ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+        ts.factory.createBlock(block),
+      ),
+    ),
+    undefined,
+    [],
+  );
+
+  return iife;
 }
 
 /**
@@ -333,6 +404,7 @@ function transformPropertyAssignment(
     ),
   );
 }
+
 
 function transformPropertyDeclaration(
   program: ts.Program,
