@@ -87,6 +87,7 @@ export default class PlaygroundComponent implements AfterViewInit {
   async changeTemplate(template: PlaygroundTemplate): Promise<void> {
     this.selectedTemplate = template;
     await this.loadTemplate(template.path);
+    await this.nodeRuntimeSandbox!.reset();
   }
 
   private async loadTemplate(tutorialPath: string) {
