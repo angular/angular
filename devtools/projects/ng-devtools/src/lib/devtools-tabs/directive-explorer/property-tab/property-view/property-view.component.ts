@@ -20,13 +20,15 @@ import {PropertyViewHeaderComponent} from './property-view-header.component';
   imports: [PropertyViewHeaderComponent, PropertyViewBodyComponent],
 })
 export class PropertyViewComponent {
-  readonly directive = input.required<string>();
+  readonly directive = input.required<{name: string}>();
   readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
   readonly viewSource = output<void>();
 
   private _nestedProps = inject(ElementPropertyResolver);
 
-  readonly controller = computed(() => this._nestedProps.getDirectiveController(this.directive()));
+  readonly controller = computed(() =>
+    this._nestedProps.getDirectiveController(this.directive().name),
+  );
 
   readonly directiveInputControls = computed(() => this.controller()?.directiveInputControls);
 
