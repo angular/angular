@@ -330,9 +330,7 @@ You can also provide a custom title strategy by extending the `TitleStrategy`.
 ```ts
 @Injectable({ providedIn: 'root' })
 export class TemplatePageTitleStrategy extends TitleStrategy {
-  constructor(private readonly title: Title) {
-    super();
-  }
+  private readonly title = inject(Title);
 
   override updateTitle(routerState: RouterStateSnapshot) {
     const title = this.buildTitle(routerState);

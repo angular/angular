@@ -26,7 +26,8 @@ import { Component, NgZone, OnInit } from '@angular/core';
 
 @Component(...)
 class AppComponent implements OnInit {
-  constructor(private ngZone: NgZone) {}
+  private ngZone = inject(NgZone);
+
   ngOnInit() {
     this.ngZone.runOutsideAngular(() => setInterval(pollForUpdates), 500);
   }
@@ -43,8 +44,7 @@ import * as Plotly from 'plotly.js-dist-min';
 
 @Component(...)
 class AppComponent implements OnInit {
-
-  constructor(private ngZone: NgZone) {}
+  private ngZone = inject(NgZone);
 
   ngOnInit() {
     this.ngZone.runOutsideAngular(() => {
@@ -66,9 +66,9 @@ import * as Plotly from 'plotly.js-dist-min';
 
 @Component(...)
 class AppComponent implements OnInit {
-  plotlyClick = output<Plotly.PlotMouseEvent>();
+  private ngZone = inject(NgZone);
 
-  constructor(private ngZone: NgZone) {}
+  plotlyClick = output<Plotly.PlotMouseEvent>();
 
   ngOnInit() {
     this.ngZone.runOutsideAngular(() => {
@@ -98,9 +98,9 @@ import * as Plotly from 'plotly.js-dist-min';
 
 @Component(...)
 class AppComponent implements OnInit {
-  plotlyClick = output<Plotly.PlotMouseEvent>();
+  private ngZone = inject(NgZone);
 
-  constructor(private ngZone: NgZone) {}
+  plotlyClick = output<Plotly.PlotMouseEvent>();
 
   ngOnInit() {
     this.ngZone.runOutsideAngular(() => {

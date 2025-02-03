@@ -22,10 +22,14 @@ class HeroService {}
 The next step is to make it available in the DI by providing it.
 A dependency can be provided in multiple places:
 
-* [**Preferred**: At the application root level using `providedIn`.](#preferred-at-the-application-root-level-using-providedin)
-* [At the Component level.](#at-the-component-level)
-* [At the application root level using `ApplicationConfig`.](#at-the-application-root-level-using-applicationconfig)
-* [`NgModule` based applications.](#ngmodule-based-applications)
+- [Understanding dependency injection](#understanding-dependency-injection)
+  - [Providing a dependency](#providing-a-dependency)
+    - [**Preferred**: At the application root level using `providedIn`](#preferred-at-the-application-root-level-using-providedin)
+    - [At the Component level](#at-the-component-level)
+    - [At the application root level using `ApplicationConfig`](#at-the-application-root-level-using-applicationconfig)
+    - [`NgModule` based applications](#ngmodule-based-applications)
+  - [Injecting/consuming a dependency](#injectingconsuming-a-dependency)
+  - [What's next](#whats-next)
 
 ### **Preferred**: At the application root level using `providedIn`
 
@@ -96,12 +100,12 @@ Note: Declaring a service using `providers` causes the service to be included in
 
 ## Injecting/consuming a dependency
 
-The most common way to inject a dependency is to declare it in a class constructor. When Angular creates a new instance of a component, directive, or pipe class, it determines which services or other dependencies that class needs by looking at the constructor parameter types. For example, if the `HeroListComponent` needs the `HeroService`, the constructor can look like this:
+The most common way to inject a dependency is to declare a property an initilize it with the `inject` function. When Angular creates a new instance of a component, directive, or pipe class, it initilizes the properties by injecting the demanded instance. For example, if the `HeroListComponent` needs the `HeroService`, the class looks like this:
 
 <docs-code language="typescript" highlight="[3]">
 @Component({ … })
 class HeroListComponent {
-  constructor(private service: HeroService) {}
+  private service = inject(HeroService);
 }
 </docs-code>
 
@@ -127,9 +131,9 @@ serviceC[Service C]
 serviceD[Service D]
 end
 direction TB
-componentConstructor["Component <br> constructor(HeroService)"]
-heroService-->componentConstructor
-style componentConstructor text-align: left
+componentProperty["Component <br> heroService = inject(HeroService)"]
+heroService-->componentProperty
+style componentProperty text-align: left
 ```
 
 ## What's next
