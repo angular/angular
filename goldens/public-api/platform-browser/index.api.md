@@ -160,6 +160,9 @@ export enum HydrationFeatureKind {
 }
 
 // @public
+export const ISOLATED_SHADOW_DOM: InjectionToken<boolean>;
+
+// @public
 export class Meta {
     constructor(_doc: any);
     addTag(tag: MetaDefinition, forceCreation?: boolean): HTMLMetaElement | null;

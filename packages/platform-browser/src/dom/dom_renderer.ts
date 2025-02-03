@@ -56,6 +56,11 @@ export const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
 const REMOVE_STYLES_ON_COMPONENT_DESTROY_DEFAULT = true;
 
 /**
+ * The default value for the `ISOLATED_SHADOW_DOM` DI token.
+ */
+const ISOLATED_SHADOW_DOM_DEFAULT = false;
+
+/**
  * A DI token that indicates whether styles
  * of destroyed components should be removed from DOM.
  *
@@ -67,6 +72,22 @@ export const REMOVE_STYLES_ON_COMPONENT_DESTROY = new InjectionToken<boolean>(
   {
     providedIn: 'root',
     factory: () => REMOVE_STYLES_ON_COMPONENT_DESTROY_DEFAULT,
+  },
+);
+
+/**
+ * A [DI token](guide/glossary#di-token "DI token definition") that indicates whether the style
+ * of components that are using ShadowDom as encapsulation must remain isolated from other
+ * components instances styles and/or global styles.
+ *
+ * By default, the value is set to `false`.
+ * @publicApi
+ */
+export const ISOLATED_SHADOW_DOM = new InjectionToken<boolean>(
+  ngDevMode ? 'IsolatedShadowDom' : '',
+  {
+    providedIn: 'root',
+    factory: () => ISOLATED_SHADOW_DOM_DEFAULT,
   },
 );
 
@@ -142,6 +163,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
     private readonly sharedStylesHost: SharedStylesHost,
     @Inject(APP_ID) private readonly appId: string,
     @Inject(REMOVE_STYLES_ON_COMPONENT_DESTROY) private removeStylesOnCompDestroy: boolean,
+    @Inject(ISOLATED_SHADOW_DOM) private readonly isolatedShadowDom: boolean,
     @Inject(DOCUMENT) private readonly doc: Document,
     @Inject(PLATFORM_ID) readonly platformId: Object,
     readonly ngZone: NgZone,
@@ -212,7 +234,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
         case ViewEncapsulation.ShadowDom:
           return new ShadowDomRenderer(
             eventManager,
-            sharedStylesHost,
+            this.isolatedShadowDom ? null : sharedStylesHost,
             element,
             type,
             doc,
@@ -491,7 +513,7 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
 
   constructor(
     eventManager: EventManager,
-    private sharedStylesHost: SharedStylesHost,
+    private sharedStylesHost: SharedStylesHost | null,
     private hostEl: any,
     component: RendererType2,
     doc: Document,
@@ -502,7 +524,7 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
   ) {
     super(eventManager, doc, ngZone, platformIsServer, tracingService);
     this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
-    this.sharedStylesHost.addHost(this.shadowRoot);
+    this.sharedStylesHost?.addHost(this.shadowRoot);
     let styles = component.styles;
     if (ngDevMode) {
       // We only do this in development, as for production users should not add CSS sourcemaps to components.
@@ -559,7 +581,7 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
   }
 
   override destroy() {
-    this.sharedStylesHost.removeHost(this.shadowRoot);
+    this.sharedStylesHost?.removeHost(this.shadowRoot);
   }
 }
 
