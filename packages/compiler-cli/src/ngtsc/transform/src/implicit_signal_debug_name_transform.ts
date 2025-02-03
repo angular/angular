@@ -12,7 +12,9 @@ function insertDebugNameIntoCallExpression(
   callExpression: ts.CallExpression,
   debugName: string,
 ): ts.CallExpression {
-  const configPosition = getConfigArgPosition(callExpression.expression);
+  const signalExpressionIsRequired = isRequiredSignalFunction(callExpression.expression);
+  const configPosition = signalExpressionIsRequired ? 0 : 1;
+
   const nodeArgs = Array.from(callExpression.arguments);
   let existingArgument = nodeArgs[configPosition];
 
@@ -49,40 +51,42 @@ function insertDebugNameIntoCallExpression(
     ts.factory.createPropertyAssignment('debugName', ts.factory.createStringLiteral(debugName)),
   );
 
-  const devModeArgs: (ts.Expression | ts.Identifier)[] = [];
-  // if conf  ig position is not 0 and there are no arguments before the config object
-  // we need to add undefined identifiers to the arg list
-  for (let i = 0; i < configPosition; i++) {
-    if (nodeArgs[i] === undefined) {
-      devModeArgs.push(ts.factory.createIdentifier('undefined'));
-    } else {
-      devModeArgs.push(nodeArgs[i]);
-    }
+  const transformedConfigProperties = ts.factory.createObjectLiteralExpression(properties);
+  const ngDevModeIdentifier = ts.factory.createIdentifier('ngDevMode');
+
+  let transformedSignalArgs: ts.NodeArray<ts.Expression>;
+  if (signalExpressionIsRequired) {
+    // signal function called with `.required`
+    // in this case the config parameter is the first arg
+    const conditionalSpreadElement = ts.factory.createSpreadElement(
+      ts.factory.createParenthesizedExpression(
+        ts.factory.createConditionalExpression(
+          ngDevModeIdentifier,
+        /* question token */ undefined,
+          ts.factory.createArrayLiteralExpression([transformedConfigProperties, ...nodeArgs.slice(configPosition + 1)]), // dev mode case
+        /* colon token */ undefined,
+          ts.factory.createArrayLiteralExpression(nodeArgs), // Non dev mode case
+        )));
+    transformedSignalArgs = ts.factory.createNodeArray([conditionalSpreadElement])
+  } else {
+    // non required signal invocation case
+    const conditionalSpreadElement = ts.factory.createSpreadElement(
+      ts.factory.createParenthesizedExpression(
+        ts.factory.createConditionalExpression(
+          ngDevModeIdentifier,
+        /* question token */ undefined,
+          ts.factory.createArrayLiteralExpression([transformedConfigProperties, ...nodeArgs.slice(configPosition + 1)]), // dev mode case
+        /* colon token */ undefined,
+          ts.factory.createArrayLiteralExpression([...nodeArgs.slice(configPosition)]), // Non dev mode case
+        )));
+    transformedSignalArgs = ts.factory.createNodeArray([nodeArgs[0], conditionalSpreadElement])
   }
-  devModeArgs.push(ts.factory.createObjectLiteralExpression(properties));
-  const devModeCase = ts.factory.createArrayLiteralExpression(devModeArgs);
 
-  const nonDevModeCase = ts.factory.createArrayLiteralExpression(callExpression.arguments);
-
-  // Create conditional to tree shake `debugName` on `ngDevMode`.
-  // `(ngDevMode ? [{ debugName: 'myDebugName', foo: 'bar' }] : [{foo: 'bar'}])`
-  const conditionalExpression = ts.factory.createParenthesizedExpression(
-    ts.factory.createConditionalExpression(
-      ts.factory.createIdentifier('ngDevMode'),
-      /* question token */ undefined,
-      devModeCase,
-      /* colon token */ undefined,
-      nonDevModeCase,
-    ),
-  );
-
-  // `...(ngDevMode ? [{ debugName: 'myDebugName', foo: 'bar' }] : [{foo: 'bar'}])`
-  const spreadElement = ts.factory.createSpreadElement(conditionalExpression);
   return ts.factory.updateCallExpression(
     callExpression,
     callExpression.expression,
     callExpression.typeArguments,
-    ts.factory.createNodeArray([spreadElement]),
+    transformedSignalArgs,
   );
 }
 
@@ -261,7 +265,7 @@ function isSignalFunction(expression: ts.Identifier): boolean {
   return signalFunctions.has(text);
 }
 
-function getConfigArgPosition(expression: ts.Expression): number {
+function isRequiredSignalFunction(expression: ts.Expression): boolean {
   // Check for a property access expression that uses the 'required' property
   if (
     ts.isPropertyAccessExpression(expression) &&
@@ -270,12 +274,12 @@ function getConfigArgPosition(expression: ts.Expression): number {
   ) {
     const accessName = expression.name.text;
     if (accessName === 'required') {
-      return 0;
+      return true;
     }
   }
 
   // All signal functions have a config object as the second argument
-  return 1;
+  return false;
 }
 
 function transformVariableDeclaration(
