@@ -9,8 +9,6 @@
 import {untracked, WritableSignal} from '@angular/core';
 import {SIGNAL} from '@angular/core/primitives/signals';
 
-const RESOLVE = Symbol('RESOLVE');
-
 export function deepSignal<S, K extends keyof S>(
   source: WritableSignal<S>,
   prop: K,

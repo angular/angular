@@ -1,6 +1,6 @@
 import {computed, linkedSignal, signal, Signal, untracked, WritableSignal} from '@angular/core';
-import {FormField, FormNode} from './types';
 import {deepSignal} from './deep_signal';
+import {FormField, FormNode} from './types';
 
 const DISABLED_NEVER = computed(() => false);
 const VALID_ALWAYS = computed(() => true);
@@ -39,8 +39,7 @@ export class FormFieldImpl<T> implements FormField<T> {
 
     // We might still be invalid if any children are.
     for (const [key, child] of this.childMap()) {
-      console.log('checking child', key);
-      if (!child.valid()) {
+      if (child !== undefined && !child.valid()) {
         return false;
       }
     }
@@ -52,9 +51,6 @@ export class FormFieldImpl<T> implements FormField<T> {
   locallyDisabled = DISABLED_NEVER;
   locallyValid = VALID_ALWAYS;
 
-  // Probably should be a `computed` of the value()
-  // readonly childMap = signal(new Map<PropertyKey, FormField<unknown>>(), {equal: () => false});
-
   // What is childMap?
   //
   // Field of a particular value
@@ -62,7 +58,7 @@ export class FormFieldImpl<T> implements FormField<T> {
   //   the value can change, which affects the set of child fields
   //     things can be added or removed at any time
 
-  childMap = linkedSignal<T, Map<PropertyKey, FormField<unknown>>>({
+  childMap = linkedSignal<T, Map<PropertyKey, FormField<unknown> | undefined>>({
     source: () => this.value(),
     computation: (value, previous) => {
       const map = previous?.value ?? new Map<PropertyKey, FormField<unknown>>();
@@ -71,7 +67,10 @@ export class FormFieldImpl<T> implements FormField<T> {
         return map;
       }
 
-      // TODO: what if value changes shape?
+      // Clear all fields when the value switches between primitive, object, and array type.
+      if (typeof value !== typeof previous || Array.isArray(value) !== Array.isArray(previous)) {
+        map.clear();
+      }
 
       // Delete all the fields that no longer exist.
       for (const key of map.keys()) {
@@ -83,12 +82,7 @@ export class FormFieldImpl<T> implements FormField<T> {
       // Add all keys that are missing fields.
       for (const key of Object.keys(value as any)) {
         if (!map.has(key)) {
-          // TODO: could this be lazy?
-          const childValue = deepSignal(this.value, key as keyof T);
-          const childField = new FormFieldImpl<unknown>(childValue, this);
-          this._onChild?.(childField);
-          map.set(key, childField);
-          console.log('create child field', key);
+          map.set(key, undefined);
         }
       }
 
@@ -99,7 +93,7 @@ export class FormFieldImpl<T> implements FormField<T> {
 
   getChild(key: PropertyKey): FormField<unknown> {
     const childMap = untracked(this.childMap);
-    if (!childMap.has(key)) {
+    if (childMap.get(key) === undefined) {
       const childValue = deepSignal(this.value, key as keyof T);
       const child = new FormFieldImpl<unknown>(childValue, this);
       childMap.set(key, child);
@@ -111,7 +105,9 @@ export class FormFieldImpl<T> implements FormField<T> {
   setOnChild(onChild: (child: FormField<unknown>) => void): void {
     this._onChild = onChild;
     for (const child of untracked(this.childMap).values()) {
-      onChild(child);
+      if (child !== undefined) {
+        onChild(child);
+      }
     }
   }
 }
@@ -130,9 +126,3 @@ const FORM_NODE_HANDLER: ProxyHandler<FormNode<unknown>> = {
 export function formNode<T>(root: FormField<T>): FormNode<T> {
   return new Proxy(root as unknown as FormNode<T>, FORM_NODE_HANDLER as ProxyHandler<FormNode<T>>);
 }
-
-// {addresses: []}
-// each(f.addreses, () => {
-//
-// })
-// rule(f.addresses[0])
