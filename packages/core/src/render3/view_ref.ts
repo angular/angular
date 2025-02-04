@@ -29,19 +29,14 @@ import {
   REACTIVE_TEMPLATE_CONSUMER,
   TVIEW,
 } from './interfaces/view';
-import {
-  destroyLView,
-  detachMovedView,
-  detachView,
-  detachViewFromDOM,
-  trackMovedView,
-} from './node_manipulation';
+import {destroyLView, detachMovedView, detachViewFromDOM} from './node_manipulation';
 import {CheckNoChangesMode} from './state';
 import {
   markViewForRefresh,
   storeLViewOnDestroy,
   updateAncestorTraversalFlagsOnAttach,
 } from './util/view_utils';
+import {detachView, trackMovedView} from './view/container';
 
 // Needed due to tsickle downleveling where multiple `implements` with classes creates
 // multiple @extends in Closure annotations, which is illegal. This workaround fixes

@@ -22,12 +22,7 @@ import {TContainerNode, TNode} from '../render3/interfaces/node';
 import {isDestroyed} from '../render3/interfaces/type_checks';
 import {HEADER_OFFSET, INJECTOR, LView, PARENT, TVIEW, TView} from '../render3/interfaces/view';
 import {getConstant, getTNode} from '../render3/util/view_utils';
-import {
-  addLViewToLContainer,
-  createAndRenderEmbeddedLView,
-  removeLViewFromLContainer,
-  shouldAddViewToDom,
-} from '../render3/view_manipulation';
+import {createAndRenderEmbeddedLView, shouldAddViewToDom} from '../render3/view_manipulation';
 import {assertDefined} from '../util/assert';
 
 import {
@@ -56,6 +51,7 @@ import {
   getTDeferBlockDetails,
   getTemplateIndexForState,
 } from './utils';
+import {addLViewToLContainer, removeLViewFromLContainer} from '../render3/view/container';
 
 /**
  * **INTERNAL**, avoid referencing it in application code.

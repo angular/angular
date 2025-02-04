@@ -32,15 +32,11 @@ import {attachPatchData} from './context_discovery';
 import {getComponentDef} from './def_getters';
 import {depsTracker} from './deps_tracker/deps_tracker';
 import {NodeInjector} from './di';
-import {registerPostOrderHooks} from './hooks';
 import {reportUnknownPropertyError} from './instructions/element_validation';
 import {markViewDirty} from './instructions/mark_view_dirty';
 import {renderView} from './instructions/render';
 import {
   createDirectivesInstances,
-  createLView,
-  createTView,
-  getInitialLViewFlagsFromDef,
   locateHostElement,
   setInputsForProperty,
 } from './instructions/shared';
@@ -81,6 +77,7 @@ import {debugStringifyTypeForError, stringifyForError} from './util/stringify_ut
 import {getComponentLViewByIndex, getTNode} from './util/view_utils';
 import {elementEndFirstCreatePass, elementStartFirstCreatePass} from './view/elements';
 import {ViewRef} from './view_ref';
+import {createLView, createTView, getInitialLViewFlagsFromDef} from './view/construction';
 
 export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
   /**

@@ -13,11 +13,6 @@ import {getComponentDef} from './def_getters';
 import {assertComponentDef} from './errors';
 import {refreshView} from './instructions/change_detection';
 import {renderView} from './instructions/render';
-import {
-  createLView,
-  getInitialLViewFlagsFromDef,
-  getOrCreateComponentTView,
-} from './instructions/shared';
 import {CONTAINER_HEADER_OFFSET} from './interfaces/container';
 import {ComponentDef} from './interfaces/definition';
 import {getTrackedLViews} from './interfaces/lview_tracking';
@@ -44,6 +39,11 @@ import {RendererFactory} from './interfaces/renderer';
 import {NgZone} from '../zone';
 import {ViewEncapsulation} from '../metadata/view';
 import {NG_COMP_DEF} from './fields';
+import {
+  createLView,
+  getInitialLViewFlagsFromDef,
+  getOrCreateComponentTView,
+} from './view/construction';
 
 /** Represents `import.meta` plus some information that's not in the built-in types. */
 type ImportMetaExtended = ImportMeta & {
