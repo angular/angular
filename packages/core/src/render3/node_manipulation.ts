@@ -12,32 +12,30 @@ import {NotificationSource} from '../change_detection/scheduling/zoneless_schedu
 import {hasInSkipHydrationBlockFlag} from '../hydration/skip_hydration';
 import {ViewEncapsulation} from '../metadata/view';
 import {RendererStyleFlags2} from '../render/api_flags';
-import {addToArray, removeFromArray} from '../util/array_utils';
 import {
   assertDefined,
   assertEqual,
   assertFunction,
   assertNotReactive,
   assertNumber,
-  assertString,
 } from '../util/assert';
 
+import {isDetachedByI18n} from '../i18n/utils';
 import {
   assertLContainer,
-  assertLView,
   assertParentView,
   assertProjectionSlots,
   assertTNodeForLView,
 } from './assert';
 import {attachPatchData} from './context_discovery';
-import {icuContainerIterate} from './i18n/i18n_tree_shaking';
 import {
-  CONTAINER_HEADER_OFFSET,
-  LContainer,
-  LContainerFlags,
-  MOVED_VIEWS,
-  NATIVE,
-} from './interfaces/container';
+  nativeAppendChild,
+  nativeAppendOrInsertBefore,
+  nativeInsertBefore,
+  nativeRemoveNode,
+} from './dom_node_manipulation';
+import {icuContainerIterate} from './i18n/i18n_tree_shaking';
+import {CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS, NATIVE} from './interfaces/container';
 import {ComponentDef} from './interfaces/definition';
 import {NodeInjectorFactory} from './interfaces/injector';
 import {unregisterLView} from './interfaces/lview_tracking';
@@ -80,19 +78,7 @@ import {
 import {assertTNodeType} from './node_assert';
 import {profiler} from './profiler';
 import {ProfilerEvent} from './profiler_types';
-import {
-  getLViewParent,
-  getNativeByTNode,
-  unwrapRNode,
-  updateAncestorTraversalFlagsOnAttach,
-} from './util/view_utils';
-import {
-  nativeAppendChild,
-  nativeAppendOrInsertBefore,
-  nativeInsertBefore,
-  nativeRemoveNode,
-} from './dom_node_manipulation';
-import {isDetachedByI18n} from '../i18n/utils';
+import {getLViewParent, getNativeByTNode, unwrapRNode} from './util/view_utils';
 
 const enum WalkTNodeTreeAction {
   /** node create in the native environment. Run on initial creation. */
@@ -270,87 +256,6 @@ export function destroyViewTree(rootView: LView): void {
   }
 }
 
-/**
- * Inserts a view into a container.
- *
- * This adds the view to the container's array of active views in the correct
- * position. It also adds the view's elements to the DOM if the container isn't a
- * root node of another view (in that case, the view's elements will be added when
- * the container's parent view is added later).
- *
- * @param tView The `TView' of the `LView` to insert
- * @param lView The view to insert
- * @param lContainer The container into which the view should be inserted
- * @param index Which index in the container to insert the child view into
- */
-export function insertView(tView: TView, lView: LView, lContainer: LContainer, index: number) {
-  ngDevMode && assertLView(lView);
-  ngDevMode && assertLContainer(lContainer);
-  const indexInContainer = CONTAINER_HEADER_OFFSET + index;
-  const containerLength = lContainer.length;
-
-  if (index > 0) {
-    // This is a new view, we need to add it to the children.
-    lContainer[indexInContainer - 1][NEXT] = lView;
-  }
-  if (index < containerLength - CONTAINER_HEADER_OFFSET) {
-    lView[NEXT] = lContainer[indexInContainer];
-    addToArray(lContainer, CONTAINER_HEADER_OFFSET + index, lView);
-  } else {
-    lContainer.push(lView);
-    lView[NEXT] = null;
-  }
-
-  lView[PARENT] = lContainer;
-
-  // track views where declaration and insertion points are different
-  const declarationLContainer = lView[DECLARATION_LCONTAINER];
-  if (declarationLContainer !== null && lContainer !== declarationLContainer) {
-    trackMovedView(declarationLContainer, lView);
-  }
-
-  // notify query that a new view has been added
-  const lQueries = lView[QUERIES];
-  if (lQueries !== null) {
-    lQueries.insertView(tView);
-  }
-
-  updateAncestorTraversalFlagsOnAttach(lView);
-  // Sets the attached flag
-  lView[FLAGS] |= LViewFlags.Attached;
-}
-
-/**
- * Track views created from the declaration container (TemplateRef) and inserted into a
- * different LContainer or attached directly to ApplicationRef.
- */
-export function trackMovedView(declarationContainer: LContainer, lView: LView) {
-  ngDevMode && assertDefined(lView, 'LView required');
-  ngDevMode && assertLContainer(declarationContainer);
-  const movedViews = declarationContainer[MOVED_VIEWS];
-  const parent = lView[PARENT]!;
-  ngDevMode && assertDefined(parent, 'missing parent');
-  if (isLView(parent)) {
-    declarationContainer[FLAGS] |= LContainerFlags.HasTransplantedViews;
-  } else {
-    const insertedComponentLView = parent[PARENT]![DECLARATION_COMPONENT_VIEW];
-    ngDevMode && assertDefined(insertedComponentLView, 'Missing insertedComponentLView');
-    const declaredComponentLView = lView[DECLARATION_COMPONENT_VIEW];
-    ngDevMode && assertDefined(declaredComponentLView, 'Missing declaredComponentLView');
-    if (declaredComponentLView !== insertedComponentLView) {
-      // At this point the declaration-component is not same as insertion-component; this means that
-      // this is a transplanted view. Mark the declared lView as having transplanted views so that
-      // those views can participate in CD.
-      declarationContainer[FLAGS] |= LContainerFlags.HasTransplantedViews;
-    }
-  }
-  if (movedViews === null) {
-    declarationContainer[MOVED_VIEWS] = [lView];
-  } else {
-    movedViews.push(lView);
-  }
-}
-
 export function detachMovedView(declarationContainer: LContainer, lView: LView) {
   ngDevMode && assertLContainer(declarationContainer);
   ngDevMode &&
@@ -361,48 +266,6 @@ export function detachMovedView(declarationContainer: LContainer, lView: LView) 
   const movedViews = declarationContainer[MOVED_VIEWS]!;
   const declarationViewIndex = movedViews.indexOf(lView);
   movedViews.splice(declarationViewIndex, 1);
-}
-
-/**
- * Detaches a view from a container.
- *
- * This method removes the view from the container's array of active views. It also
- * removes the view's elements from the DOM.
- *
- * @param lContainer The container from which to detach a view
- * @param removeIndex The index of the view to detach
- * @returns Detached LView instance.
- */
-export function detachView(lContainer: LContainer, removeIndex: number): LView | undefined {
-  if (lContainer.length <= CONTAINER_HEADER_OFFSET) return;
-
-  const indexInContainer = CONTAINER_HEADER_OFFSET + removeIndex;
-  const viewToDetach = lContainer[indexInContainer];
-
-  if (viewToDetach) {
-    const declarationLContainer = viewToDetach[DECLARATION_LCONTAINER];
-    if (declarationLContainer !== null && declarationLContainer !== lContainer) {
-      detachMovedView(declarationLContainer, viewToDetach);
-    }
-
-    if (removeIndex > 0) {
-      lContainer[indexInContainer - 1][NEXT] = viewToDetach[NEXT] as LView;
-    }
-    const removedLView = removeFromArray(lContainer, CONTAINER_HEADER_OFFSET + removeIndex);
-    removeViewFromDOM(viewToDetach[TVIEW], viewToDetach);
-
-    // notify query that a view has been removed
-    const lQueries = removedLView[QUERIES];
-    if (lQueries !== null) {
-      lQueries.detachView(removedLView[TVIEW]);
-    }
-
-    viewToDetach[PARENT] = null;
-    viewToDetach[NEXT] = null;
-    // Unsets the attached flag
-    viewToDetach[FLAGS] &= ~LViewFlags.Attached;
-  }
-  return viewToDetach;
 }
 
 /**
