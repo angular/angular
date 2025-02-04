@@ -47,6 +47,7 @@ export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T |
   opts?.injector || assertInInjectionContext(rxResource);
   return resource<T, R>({
     ...opts,
+    loader: undefined,
     stream: (params) => {
       let sub: Subscription;
 
