@@ -158,6 +158,7 @@
   "consumerPollProducersForChange",
   "context",
   "convertToBitFlags",
+  "createDirectivesInstances",
   "createElementRef",
   "createErrorClass",
   "createInjector",
