@@ -169,7 +169,7 @@ export type ResourceLoader<T, R> = (param: ResourceLoaderParams<R>) => PromiseLi
  */
 export type ResourceStreamingLoader<T, R> = (
   param: ResourceLoaderParams<R>,
-) => PromiseLike<Signal<{value: T} | {error: unknown}>>;
+) => PromiseLike<Signal<ResourceStreamItem<T>>>;
 
 /**
  * Options to the `resource` function, for creating a resource.
@@ -212,6 +212,11 @@ export interface PromiseResourceOptions<T, R> extends BaseResourceOptions<T, R> 
    * Loading function which returns a `Promise` of the resource's value for a given request.
    */
   loader: ResourceLoader<T, R>;
+
+  /**
+   * Cannot specify `stream` and `loader` at the same time.
+   */
+  stream?: never;
 }
 
 /**
@@ -225,9 +230,19 @@ export interface StreamingResourceOptions<T, R> extends BaseResourceOptions<T, R
    * request, which can change over time as new values are received from a stream.
    */
   stream: ResourceStreamingLoader<T, R>;
+
+  /**
+   * Cannot specify `stream` and `loader` at the same time.
+   */
+  loader?: never;
 }
 
 /**
  * @experimental
  */
 export type ResourceOptions<T, R> = PromiseResourceOptions<T, R> | StreamingResourceOptions<T, R>;
+
+/**
+ * @experimental
+ */
+export type ResourceStreamItem<T> = {value: T} | {error: unknown};
