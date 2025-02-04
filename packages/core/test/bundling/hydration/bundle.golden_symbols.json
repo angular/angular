@@ -211,6 +211,7 @@
   "consumerPollProducersForChange",
   "context",
   "convertToBitFlags",
+  "createDirectivesInstances",
   "createElementNode",
   "createElementRef",
   "createErrorClass",

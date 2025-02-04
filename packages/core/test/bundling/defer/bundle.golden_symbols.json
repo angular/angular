@@ -433,6 +433,7 @@
   "init_constants",
   "init_construction",
   "init_container",
+  "init_container2",
   "init_context",
   "init_context_discovery",
   "init_contextual",
