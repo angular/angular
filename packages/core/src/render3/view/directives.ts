@@ -66,7 +66,7 @@ export function resolveDirectives(
   // tsickle.
   ngDevMode && assertFirstCreatePass(tView);
 
-  const exportsMap: {[key: string]: number} | null = localRefs === null ? null : {'': -1};
+  const exportsMap: Record<string, number> | null = localRefs === null ? null : {'': -1};
   const matchedDirectiveDefs = directiveMatcher(tView, tNode);
 
   if (matchedDirectiveDefs !== null) {
@@ -77,30 +77,30 @@ export function resolveDirectives(
     );
     initializeDirectives(tView, lView, tNode, directiveDefs, exportsMap, hostDirectiveDefs);
   }
-  if (exportsMap) cacheMatchingLocalNames(tNode, localRefs, exportsMap);
+  if (exportsMap !== null && localRefs !== null) {
+    cacheMatchingLocalNames(tNode, localRefs, exportsMap);
+  }
 }
 
 /** Caches local names and their matching directive indices for query and template lookups. */
 function cacheMatchingLocalNames(
   tNode: TNode,
-  localRefs: string[] | null,
+  localRefs: string[],
   exportsMap: {[key: string]: number},
 ): void {
-  if (localRefs) {
-    const localNames: (string | number)[] = (tNode.localNames = []);
+  const localNames: (string | number)[] = (tNode.localNames = []);
 
-    // Local names must be stored in tNode in the same order that localRefs are defined
-    // in the template to ensure the data is loaded in the same slots as their refs
-    // in the template (for template queries).
-    for (let i = 0; i < localRefs.length; i += 2) {
-      const index = exportsMap[localRefs[i + 1]];
-      if (index == null)
-        throw new RuntimeError(
-          RuntimeErrorCode.EXPORT_NOT_FOUND,
-          ngDevMode && `Export of name '${localRefs[i + 1]}' not found!`,
-        );
-      localNames.push(localRefs[i], index);
-    }
+  // Local names must be stored in tNode in the same order that localRefs are defined
+  // in the template to ensure the data is loaded in the same slots as their refs
+  // in the template (for template queries).
+  for (let i = 0; i < localRefs.length; i += 2) {
+    const index = exportsMap[localRefs[i + 1]];
+    if (index == null)
+      throw new RuntimeError(
+        RuntimeErrorCode.EXPORT_NOT_FOUND,
+        ngDevMode && `Export of name '${localRefs[i + 1]}' not found!`,
+      );
+    localNames.push(localRefs[i], index);
   }
 }
 
@@ -281,8 +281,6 @@ function initializeInputAndOutputAliases(
     );
     // Do not use unbound attributes as inputs to structural directives, since structural
     // directive inputs can only be set using microsyntax (e.g. `<div *dir="exp">`).
-    // TODO(FW-1930): microsyntax expressions may also contain unbound/static attributes, which
-    // should be set for inline templates.
     const initialInputs =
       inputsStore !== null && tNodeAttrs !== null && !isInlineTemplate(tNode)
         ? generateInitialInputs(inputsStore, directiveIndex, tNodeAttrs)

@@ -23,7 +23,7 @@ export function allocExpando(
   tView: TView,
   lView: LView,
   numSlotsToAlloc: number,
-  initialValue: any,
+  initialValue: unknown,
 ): number {
   if (numSlotsToAlloc === 0) return -1;
   if (ngDevMode) {
