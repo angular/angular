@@ -1,5 +1,5 @@
 import {signal} from '@angular/core';
-import {schema, rule, validate, disable, form, mount, each} from '../../src/rules-schema-2/api';
+import {disable, each, form, mount, rule, schema, validate} from '../../src/rules-schema-2/api';
 
 describe('rules schema', () => {
   describe('disabled', () => {
@@ -91,7 +91,7 @@ describe('rules schema', () => {
   });
 
   describe('arrays', () => {
-    fit('should support basic arrays', () => {
+    it('should support basic arrays', () => {
       interface Data {
         data: number[];
       }
@@ -123,7 +123,6 @@ describe('rules schema', () => {
       expect(f.data[0].$.valid()).toBeTrue();
       expect(f.data[1].$.valid()).toBeTrue();
       expect(f.data[2].$.valid()).toBeFalse();
-      // Fails, we don't react to data changing.
       expect(f.$.valid()).toBeFalse();
     });
   });
