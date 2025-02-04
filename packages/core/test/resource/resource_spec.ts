@@ -180,6 +180,50 @@ describe('resource', () => {
     expect(echoResource.error()).toEqual(Error('KO'));
   });
 
+  it('should respond to a request that changes while loading', async () => {
+    const appRef = TestBed.inject(ApplicationRef);
+
+    const request = signal(0);
+    let resolve: Array<() => void> = [];
+    const res = resource({
+      request,
+      loader: async ({request}) => {
+        const p = Promise.withResolvers<number>();
+        resolve.push(() => p.resolve(request));
+        return p.promise;
+      },
+      injector: TestBed.inject(Injector),
+    });
+
+    // Start the load by running the effect inside the resource.
+    appRef.tick();
+
+    // We should have a pending load.
+    expect(resolve.length).toBe(1);
+
+    // Change the request.
+    request.set(1);
+
+    // Resolve the first load.
+    resolve[0]();
+    await flushMicrotasks();
+
+    // The resource should still be loading. Ticking (triggering the 2nd effect)
+    // should not change the loading status.
+    expect(res.status()).toBe(ResourceStatus.Loading);
+    appRef.tick();
+    expect(res.status()).toBe(ResourceStatus.Loading);
+    expect(resolve.length).toBe(2);
+
+    // Resolve the second load.
+    resolve[1]?.();
+    await flushMicrotasks();
+
+    // We should see the resolved value.
+    expect(res.status()).toBe(ResourceStatus.Resolved);
+    expect(res.value()).toBe(1);
+  });
+
   it('should return a default value if provided', async () => {
     const DEFAULT: string[] = [];
     const request = signal(0);

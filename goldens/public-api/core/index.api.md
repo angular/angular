@@ -1447,6 +1447,7 @@ export type Predicate<T> = (value: T) => boolean;
 // @public
 export interface PromiseResourceOptions<T, R> extends BaseResourceOptions<T, R> {
     loader: ResourceLoader<T, R>;
+    stream?: never;
 }
 
 // @public
@@ -1649,11 +1650,14 @@ export enum ResourceStatus {
 }
 
 // @public
-export type ResourceStreamingLoader<T, R> = (param: ResourceLoaderParams<R>) => PromiseLike<Signal<{
+export type ResourceStreamingLoader<T, R> = (param: ResourceLoaderParams<R>) => PromiseLike<Signal<ResourceStreamItem<T>>>;
+
+// @public (undocumented)
+export type ResourceStreamItem<T> = {
     value: T;
 } | {
     error: unknown;
-}>>;
+};
 
 // @public
 export const RESPONSE_INIT: InjectionToken<ResponseInit | null>;
@@ -1771,6 +1775,7 @@ export type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvi
 
 // @public
 export interface StreamingResourceOptions<T, R> extends BaseResourceOptions<T, R> {
+    loader?: never;
     stream: ResourceStreamingLoader<T, R>;
 }
 
