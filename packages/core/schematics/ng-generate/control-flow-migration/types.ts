@@ -390,6 +390,7 @@ export class CommonCollector extends RecursiveVisitor {
         this.count++;
       }
     }
+    super.visitBlock(ast, null);
   }
 
   override visitText(ast: Text) {
