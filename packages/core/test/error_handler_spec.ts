@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ErrorHandler} from '../src/error_handler';
+import {ErrorHandler, provideErrorHandler} from '../src/error_handler';
+import {bootstrapApplication} from '@angular/platform-browser';
+import {withBody} from '@angular/private/testing';
+import {destroyPlatform, Component} from '../public_api';
 
 class MockConsole {
   res: any[][] = [];
@@ -38,4 +41,37 @@ describe('ErrorHandler', () => {
     expect(errorToString(null)).toBe('ERROR#null');
     expect(errorToString(undefined)).toBe('ERROR#undefined');
   });
+
+  it(
+    'should register a error handler function',
+    withBody('<test-app/>', async () => {
+      destroyPlatform();
+
+      const logger = new MockConsole();
+
+      @Component({
+        selector: 'test-app',
+        template: '',
+      })
+      class TestHostCmp {
+        constructor() {
+          throw new Error('message!');
+        }
+      }
+
+      try {
+        await bootstrapApplication(TestHostCmp, {
+          providers: [provideErrorHandler((e: any) => logger.error(e))],
+        });
+
+        fail('Expected to throw');
+      } catch (e: unknown) {}
+
+      const error = logger.res[0][0];
+      expect(error).toBeInstanceOf(Error);
+      expect((error as Error).message).toContain('message!');
+
+      destroyPlatform();
+    }),
+  );
 });
