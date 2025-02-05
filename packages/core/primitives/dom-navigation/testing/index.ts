@@ -6,4 +6,4 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-export {ɵFakeNavigation as FakeNavigation} from '@angular/core/testing';
+export * from './fake_navigation';
