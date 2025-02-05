@@ -10,6 +10,7 @@ import {
   Attribute,
   Block,
   Element,
+  LetDeclaration,
   ParseTreeResult,
   RecursiveVisitor,
   Text,
@@ -397,6 +398,13 @@ export class CommonCollector extends RecursiveVisitor {
     if (this.hasPipes(ast.value)) {
       this.count++;
     }
+  }
+
+  override visitLetDeclaration(decl: LetDeclaration): void {
+    if (this.hasPipes(decl.value)) {
+      this.count++;
+    }
+    super.visitLetDeclaration(decl, null);
   }
 
   private hasDirectives(input: string): boolean {
