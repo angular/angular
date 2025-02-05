@@ -11,7 +11,10 @@ import {
   FakeNavigateEvent,
   FakeNavigation,
   FakeNavigationCurrentEntryChangeEvent,
-} from '../../testing/src/navigation/fake_navigation';
+} from '../fake_navigation';
+import {ensureDocument} from '@angular/private/testing';
+
+ensureDocument();
 
 interface Locals {
   navigation: FakeNavigation;

@@ -19,7 +19,7 @@ import {
   NavigationResult,
   NavigationTransition,
   NavigationUpdateCurrentEntryOptions,
-} from './navigation_types';
+} from '@angular/core/primitives/dom-navigation';
 
 /**
  * This class wraps the platform Navigation API which allows server-specific and test

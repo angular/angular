@@ -7,20 +7,20 @@
  */
 
 import {
-  NavigateEvent,
-  Navigation,
-  NavigationCurrentEntryChangeEvent,
-  NavigationDestination,
-  NavigationHistoryEntry,
-  NavigationInterceptOptions,
   NavigationNavigateOptions,
+  NavigationTypeString,
   NavigationOptions,
+  NavigateEvent,
+  NavigationCurrentEntryChangeEvent,
+  NavigationTransition,
+  NavigationUpdateCurrentEntryOptions,
   NavigationReloadOptions,
   NavigationResult,
-  NavigationTransition,
-  NavigationTypeString,
-  NavigationUpdateCurrentEntryOptions,
-} from './navigation_types';
+  NavigationHistoryEntry,
+  NavigationInterceptOptions,
+  NavigationDestination,
+  Navigation,
+} from '@angular/core/primitives/dom-navigation';
 
 /**
  * Fake implementation of user agent history and navigation behavior. This is a
@@ -108,10 +108,10 @@ export class FakeNavigation implements Navigation {
   /**
    * Sets the initial entry.
    */
-  private setInitialEntryForTesting(
+  setInitialEntryForTesting(
     url: `http${string}`,
     options: {historyState: unknown; state?: unknown} = {historyState: null},
-  ) {
+  ): void {
     if (!this.canSetInitialEntry) {
       throw new Error(
         'setInitialEntryForTesting can only be called before any ' + 'navigation has occurred',
@@ -137,7 +137,7 @@ export class FakeNavigation implements Navigation {
    * Sets whether to emulate traversals as synchronous rather than
    * asynchronous.
    */
-  setSynchronousTraversalsForTesting(synchronousTraversals: boolean) {
+  setSynchronousTraversalsForTesting(synchronousTraversals: boolean): void {
     this.synchronousTraversals = synchronousTraversals;
   }
 
@@ -389,7 +389,7 @@ export class FakeNavigation implements Navigation {
     type: string,
     callback: EventListenerOrEventListenerObject,
     options?: AddEventListenerOptions | boolean,
-  ) {
+  ): void {
     this.eventTarget.addEventListener(type, callback, options);
   }
 
@@ -398,7 +398,7 @@ export class FakeNavigation implements Navigation {
     type: string,
     callback: EventListenerOrEventListenerObject,
     options?: EventListenerOptions | boolean,
-  ) {
+  ): void {
     this.eventTarget.removeEventListener(type, callback, options);
   }
 
@@ -408,7 +408,7 @@ export class FakeNavigation implements Navigation {
   }
 
   /** Cleans up resources. */
-  dispose() {
+  dispose(): void {
     // Recreate eventTarget to release current listeners.
     // `document.createElement` because NodeJS `EventTarget` is incompatible with Domino's `Event`.
     this.eventTarget = this.window.document.createElement('div');
@@ -416,7 +416,7 @@ export class FakeNavigation implements Navigation {
   }
 
   /** Returns whether this fake is disposed. */
-  isDisposed() {
+  isDisposed(): boolean {
     return this.disposed;
   }
 
@@ -533,38 +533,50 @@ export class FakeNavigation implements Navigation {
     return undefined;
   }
 
-  set onnavigate(_handler: ((this: Navigation, ev: NavigateEvent) => any) | null) {
+  set onnavigate(
+    // tslint:disable-next-line:no-any
+    _handler: ((this: Navigation, ev: NavigateEvent) => any) | null,
+  ) {
     throw new Error('unimplemented');
   }
 
+  // tslint:disable-next-line:no-any
   get onnavigate(): ((this: Navigation, ev: NavigateEvent) => any) | null {
     throw new Error('unimplemented');
   }
 
   set oncurrententrychange(
-    _handler: ((this: Navigation, ev: NavigationCurrentEntryChangeEvent) => any) | null,
+    _handler: // tslint:disable-next-line:no-any
+    ((this: Navigation, ev: NavigationCurrentEntryChangeEvent) => any) | null,
   ) {
     throw new Error('unimplemented');
   }
 
-  get oncurrententrychange():
-    | ((this: Navigation, ev: NavigationCurrentEntryChangeEvent) => any)
-    | null {
+  get oncurrententrychange(): // tslint:disable-next-line:no-any
+  ((this: Navigation, ev: NavigationCurrentEntryChangeEvent) => any) | null {
     throw new Error('unimplemented');
   }
 
-  set onnavigatesuccess(_handler: ((this: Navigation, ev: Event) => any) | null) {
+  set onnavigatesuccess(
+    // tslint:disable-next-line:no-any
+    _handler: ((this: Navigation, ev: Event) => any) | null,
+  ) {
     throw new Error('unimplemented');
   }
 
+  // tslint:disable-next-line:no-any
   get onnavigatesuccess(): ((this: Navigation, ev: Event) => any) | null {
     throw new Error('unimplemented');
   }
 
-  set onnavigateerror(_handler: ((this: Navigation, ev: ErrorEvent) => any) | null) {
+  set onnavigateerror(
+    // tslint:disable-next-line:no-any
+    _handler: ((this: Navigation, ev: ErrorEvent) => any) | null,
+  ) {
     throw new Error('unimplemented');
   }
 
+  // tslint:disable-next-line:no-any
   get onnavigateerror(): ((this: Navigation, ev: ErrorEvent) => any) | null {
     throw new Error('unimplemented');
   }
@@ -595,7 +607,7 @@ interface FakeNavigationResult extends NavigationResult {
  * Fake equivalent of `NavigationHistoryEntry`.
  */
 export class FakeNavigationHistoryEntry implements NavigationHistoryEntry {
-  readonly sameDocument;
+  readonly sameDocument: boolean;
 
   readonly id: string;
   readonly key: string;
@@ -603,6 +615,7 @@ export class FakeNavigationHistoryEntry implements NavigationHistoryEntry {
   private readonly state: unknown;
   private readonly historyState: unknown;
 
+  // tslint:disable-next-line:no-any
   ondispose: ((this: NavigationHistoryEntry, ev: Event) => any) | null = null;
 
   constructor(
@@ -633,19 +646,21 @@ export class FakeNavigationHistoryEntry implements NavigationHistoryEntry {
 
   getState(): unknown {
     // Budget copy.
-    return this.state ? JSON.parse(JSON.stringify(this.state)) : this.state;
+    return this.state ? (JSON.parse(JSON.stringify(this.state)) as unknown) : this.state;
   }
 
   getHistoryState(): unknown {
     // Budget copy.
-    return this.historyState ? JSON.parse(JSON.stringify(this.historyState)) : this.historyState;
+    return this.historyState
+      ? (JSON.parse(JSON.stringify(this.historyState)) as unknown)
+      : this.historyState;
   }
 
   addEventListener(
     type: string,
     callback: EventListenerOrEventListenerObject,
     options?: AddEventListenerOptions | boolean,
-  ) {
+  ): void {
     throw new Error('unimplemented');
   }
 
@@ -653,7 +668,7 @@ export class FakeNavigationHistoryEntry implements NavigationHistoryEntry {
     type: string,
     callback: EventListenerOrEventListenerObject,
     options?: EventListenerOptions | boolean,
-  ) {
+  ): void {
     throw new Error('unimplemented');
   }
 
@@ -759,13 +774,11 @@ function createFakeNavigateEvent({
     if (options?.commit) {
       event.commitOption = options.commit;
     }
-    if (options?.focusReset !== undefined || options?.scroll !== undefined) {
-      throw new Error('unimplemented');
-    }
+    // TODO: handle focus reset and scroll?
   };
 
   event.scroll = function (this: InternalFakeNavigateEvent): void {
-    throw new Error('unimplemented');
+    // TODO: handle scroll?
   };
 
   event.commit = function (this: InternalFakeNavigateEvent, internal = false) {
