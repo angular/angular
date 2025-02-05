@@ -2157,6 +2157,7 @@ describe('hot module replacement', () => {
       },
       [angularCoreEnv],
       [],
+      '',
     );
   }
 

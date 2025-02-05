@@ -51,6 +51,8 @@ import {NG_COMP_DEF} from './fields';
  * @param applyMetadata Callback that will apply a new set of metadata on the `type` when invoked.
  * @param environment Syntehtic namespace imports that need to be passed along to the callback.
  * @param locals Local symbols from the source location that have to be exposed to the callback.
+ * @param id ID to the class being replaced. **Not** the same as the component definition ID.
+ *  Optional since the ID might not be available internally.
  * @codeGenApi
  */
 export function ɵɵreplaceMetadata(
@@ -58,6 +60,7 @@ export function ɵɵreplaceMetadata(
   applyMetadata: (...args: [Type<unknown>, unknown[], ...unknown[]]) => void,
   namespaces: unknown[],
   locals: unknown[],
+  id: string | null = null,
 ) {
   ngDevMode && assertComponentDef(type);
   const currentDef = getComponentDef(type)!;
