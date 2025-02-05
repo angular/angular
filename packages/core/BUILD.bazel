@@ -30,6 +30,7 @@ ng_module(
     ),
     deps = [
         "//packages:types",
+        "//packages/core/primitives/dom-navigation",
         "//packages/core/primitives/event-dispatch",
         "//packages/core/primitives/signals",
         "//packages/core/src/compiler",
