@@ -1,3 +1,24 @@
+<a name="19.2.0-next.2"></a>
+# 19.2.0-next.2 (2025-02-06)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a97136052f9](https://github.com/angular/angular/commit/a97136052f9cfdb696a3b335ed7a1b9fb994d408) | fix | gracefully fall back if const enum cannot be passed through ([#59815](https://github.com/angular/angular/pull/59815)) |
+| [bae94b82fda](https://github.com/angular/angular/commit/bae94b82fda1669a6aafad975a3a0eb6f2743039) | fix | handle const enums used inside HMR data ([#59815](https://github.com/angular/angular/pull/59815)) |
+| [03bcd30e348](https://github.com/angular/angular/commit/03bcd30e3487443983d450a5dfea2d68d551bbd3) | fix | handle enum members without initializers in partial evaluator ([#59815](https://github.com/angular/angular/pull/59815)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [146ab9a76e6](https://github.com/angular/angular/commit/146ab9a76e6b4d8db7d08d34e2571ba5207f8756) | feat | support TypeScript 5.8 ([#59830](https://github.com/angular/angular/pull/59830)) |
+| [b592b1b0516](https://github.com/angular/angular/commit/b592b1b0516786c52c7d0638c4e7545b0de8a545) | fix | fix race condition in resource() ([#59851](https://github.com/angular/angular/pull/59851)) |
+| [a299e02e914](https://github.com/angular/angular/commit/a299e02e9141cdc4d74185deb58308fa010bb36e) | fix | preserve tracing snapshot until tick finishes ([#59796](https://github.com/angular/angular/pull/59796)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fa0c3e32108](https://github.com/angular/angular/commit/fa0c3e3210885a36e5c9e9eb76e821032f5cd215) | feat | support type set in form validators ([#45793](https://github.com/angular/angular/pull/45793)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.1.5"></a>
 # 19.1.5 (2025-02-06)
 ### compiler-cli
