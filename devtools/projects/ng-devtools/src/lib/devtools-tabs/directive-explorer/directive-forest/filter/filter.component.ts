@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, input, output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatCard} from '@angular/material/card';
 
@@ -14,6 +14,7 @@ import {MatCard} from '@angular/material/card';
   selector: 'ng-filter',
   templateUrl: './filter.component.html',
   styleUrls: ['./filter.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatCard, MatIcon],
 })
 export class FilterComponent {

@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, effect, input, output, signal} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import {ProfilerFrame} from 'protocol';
 import {Observable} from 'rxjs';
 
@@ -25,6 +33,7 @@ const MAX_HEIGHT = 50;
   selector: 'ng-recording-timeline',
   templateUrl: './timeline.component.html',
   styleUrls: ['./timeline.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RecordingModalComponent,
     TimelineControlsComponent,

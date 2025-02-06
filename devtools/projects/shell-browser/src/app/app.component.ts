@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectorRef, Component, inject, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit} from '@angular/core';
 import {DevToolsComponent} from 'ng-devtools';
 import {Events, MessageBus} from 'protocol';
 
@@ -14,6 +14,7 @@ import {Events, MessageBus} from 'protocol';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [DevToolsComponent],
 })
 export class AppComponent implements OnInit {

@@ -16,6 +16,7 @@ import {
   output,
   signal,
   viewChild,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import {
   ComponentExplorerView,
@@ -67,6 +68,7 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
   selector: 'ng-directive-explorer',
   templateUrl: './directive-explorer.component.html',
   styleUrls: ['./directive-explorer.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {
       provide: ElementPropertyResolver,
