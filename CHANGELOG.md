@@ -1,3 +1,14 @@
+<a name="19.1.5"></a>
+# 19.1.5 (2025-02-06)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d7b5c597ffc](https://github.com/angular/angular/commit/d7b5c597ffcb6469ae3f08a97e7790599d569cc4) | fix | gracefully fall back if const enum cannot be passed through ([#59815](https://github.com/angular/angular/pull/59815)) |
+| [53a4668b58b](https://github.com/angular/angular/commit/53a4668b58b645e41baddc5b67d52ede21c8e945) | fix | handle const enums used inside HMR data ([#59815](https://github.com/angular/angular/pull/59815)) |
+| [976125e0b4c](https://github.com/angular/angular/commit/976125e0b4cf4e7fb4621a7203e3f43b009885f0) | fix | handle enum members without initializers in partial evaluator ([#59815](https://github.com/angular/angular/pull/59815)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.2.0-next.1"></a>
 # 19.2.0-next.1 (2025-01-29)
 ### core
