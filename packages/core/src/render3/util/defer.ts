@@ -119,7 +119,7 @@ function findDeferBlocks(node: Node, lView: LView, results: DeferBlockData[]) {
 
     const data: DeferBlockData = {
       state: stringifyState(lDetails[DEFER_BLOCK_STATE]),
-      incrementalHydrationState: inferHydrationState(tDetails, lDetails, registry),
+      incrementalHydrationState: inferHydrationState(lDetails, registry),
       hasErrorBlock: tDetails.errorTmplIndex !== null,
       loadingBlock: {
         exists: tDetails.loadingTmplIndex !== null,
@@ -173,16 +173,10 @@ function stringifyState(state: DeferBlockState | DeferBlockInternalState): Defer
  * @param registry Registry coordinating the hydration of defer blocks.
  */
 function inferHydrationState(
-  tDetails: TDeferBlockDetails,
   lDetails: LDeferBlockDetails,
   registry: DehydratedBlockRegistry | null,
 ): DeferBlockData['incrementalHydrationState'] {
-  if (
-    registry === null ||
-    lDetails[SSR_UNIQUE_ID] === null ||
-    tDetails.hydrateTriggers === null ||
-    tDetails.hydrateTriggers.has(DeferBlockTrigger.Never)
-  ) {
+  if (registry === null || lDetails[SSR_UNIQUE_ID] === null) {
     return 'not-configured';
   }
   return registry.has(lDetails[SSR_UNIQUE_ID]) ? 'dehydrated' : 'hydrated';
