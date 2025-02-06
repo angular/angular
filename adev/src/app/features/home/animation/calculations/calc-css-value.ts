@@ -102,6 +102,7 @@ function calculateNextColorValue(
 ): ColorValue {
   const nextColor: (string | number)[] = [srcValue.value[0]];
 
+  // Skip the first element since it represents the type.
   for (let i = 1; i < targetValue.value.length; i++) {
     const srcChannel = srcValue.value[i] as number;
     const targetChannel = targetValue.value[i] as number;

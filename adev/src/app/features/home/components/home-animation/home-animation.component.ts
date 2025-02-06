@@ -1,3 +1,11 @@
+/*!
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
 import {
   afterNextRender,
   ChangeDetectionStrategy,
@@ -8,10 +16,11 @@ import {
   input,
   OnDestroy,
   output,
+  signal,
   viewChildren,
 } from '@angular/core';
 import {RouterLink} from '@angular/router';
-import {WINDOW, isIos} from '@angular/docs';
+import {WINDOW, isIos, shouldReduceMotion} from '@angular/docs';
 
 import {Animation, AnimationCreatorService, AnimationLayerDirective} from '../../animation';
 import {AnimationScrollHandler} from '../../animation/plugins/animation-scroll-handler';
@@ -60,23 +69,37 @@ export class HomeAnimationComponent implements OnDestroy {
   private animation?: Animation;
 
   readonly animationLayers = viewChildren(AnimationLayerDirective);
+
   readonly ctaLink = isIos ? 'overview' : 'tutorials/learn-angular';
+
   readonly isUwu = input.required<boolean>();
   readonly ready = output<boolean>();
 
-  meteorFieldData: MeteorFieldData;
-  meteors: number[];
+  readonly reducedMotion = signal<boolean>(shouldReduceMotion());
+  readonly meteorFieldData = signal<MeteorFieldData | null>(null);
+  readonly meteors = signal<number[]>([]);
 
   constructor() {
+    if (!this.reducedMotion()) {
+      this.initAnimation();
+    } else {
+      this.ready.emit(true);
+    }
+  }
+
+  ngOnDestroy() {
+    this.animation?.dispose();
+  }
+
+  private initAnimation() {
     // Limitation: Meteor dimensions won't change on page resize
     const meteorDimensions = this.calculateMeteorDimensions();
+    const data = this.calculateMeteorFieldData(meteorDimensions);
     this.setCssVariables(meteorDimensions);
-    this.meteorFieldData = this.calculateMeteorFieldData(meteorDimensions);
+    this.meteorFieldData.set(data);
 
     // Generate a meteor field. The number represents the type [1, 3]
-    this.meteors = new Array(this.meteorFieldData.count)
-      .fill(1)
-      .map(() => Math.round(Math.random() * 2 + 1));
+    this.meteors.set(new Array(data.count).fill(1).map(() => Math.round(Math.random() * 2 + 1)));
 
     afterNextRender({
       read: () => {
@@ -84,16 +107,12 @@ export class HomeAnimationComponent implements OnDestroy {
           .createAnimation(this.animationLayers(), {
             timestep: ANIM_TIMESTEP,
           })
-          .define(generateHomeAnimationDefinition(this.isUwu(), this.meteors.length))
+          .define(generateHomeAnimationDefinition(this.isUwu(), this.meteors().length))
           .addPlugin(new AnimationScrollHandler(this.elementRef, this.injector));
 
         this.ready.emit(true);
       },
     });
-  }
-
-  ngOnDestroy() {
-    this.animation?.dispose();
   }
 
   /** Calculte the dimensions and sizes of a meteor – width, height, tail, tilt angle, etc. */

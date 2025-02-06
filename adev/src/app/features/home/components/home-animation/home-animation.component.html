@@ -1,4 +1,4 @@
-<div class="animation">
+<div class="animation" [class.reduced-motion]="reducedMotion()">
   <!-- Banners and buttons  -->
   <div adevAnimationLayer layerId="banners" class="banners-layer layer">
     <a
@@ -106,19 +106,21 @@
   </div>
 
   <!-- Meteor field -->
-  <div adevAnimationLayer layerId="meteor-field" class="meteor-field-layer layer">
-    <div
-      class="field"
-      [style.width]="meteorFieldData.width + 'px'"
-      [style.height]="meteorFieldData.height + 'px'"
-      [style.marginLeft]="meteorFieldData.marginLeft + 'px'"
-      [style.marginTop]="meteorFieldData.marginTop + 'px'"
-    >
-      @for (type of meteors; track $index) {
-        <div [class]="['meteor', 'type-' + type, 'mt-' + ($index + 1)]"></div>
-      }
+  @if (meteorFieldData(); as meteorFieldData) {
+    <div adevAnimationLayer layerId="meteor-field" class="meteor-field-layer layer">
+      <div
+        class="field"
+        [style.width]="meteorFieldData.width + 'px'"
+        [style.height]="meteorFieldData.height + 'px'"
+        [style.marginLeft]="meteorFieldData.marginLeft + 'px'"
+        [style.marginTop]="meteorFieldData.marginTop + 'px'"
+      >
+        @for (type of meteors(); track $index) {
+          <div [class]="['meteor', 'type-' + type, 'mt-' + ($index + 1)]"></div>
+        }
+      </div>
     </div>
-  </div>
+  }
 
   <!-- Loved by millions -->
   <div adevAnimationLayer layerId="loved-by-millions" class="loved-by-millions-layer layer">

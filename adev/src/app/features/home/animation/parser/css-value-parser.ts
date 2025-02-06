@@ -42,6 +42,7 @@ const colorValuesHandler: ParserHandler = (tokens) => {
       // Handle standard syntax: #ffffff
       if (token.length === 7) {
         let channelBuffer = '';
+        // Skip the first element since it represents the type.
         for (let i = 1; i < token.length; i++) {
           channelBuffer += token[i];
           if (channelBuffer.length === 2) {

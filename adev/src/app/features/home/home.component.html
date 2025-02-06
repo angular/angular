@@ -6,16 +6,9 @@
   <div class="spacer"></div>
 }
 
-<!-- Since the new animation uses a different layout compared to the old WebGL one,
- we need to specify the scroll height of "Loved by millions" and "Build for everyone"
- titles manually. Any change to the scroll height of the animation should result in
- an update of these values. -->
-<div #lovedByMillions class="marker" style="top:2700px"></div>
-<div #buildForEveryone class="marker" style="top:4000px"></div>
-
 <div class="adev-editor-scroll-container">
   <div class="adev-code-editor">
-    @defer (on viewport(buildForEveryone); prefetch on viewport(lovedByMillions)) {
+    @defer (when showEditor(); prefetch when prefetchEditor()) {
       <adev-code-editor [tutorialFiles]="tutorialFiles" />
     } @loading {
       <img alt="Code editor" />

@@ -66,7 +66,7 @@ The class name should be of an element within the layer. Accessing the layer dir
 const DEFINITION: AnimationDefinition = [
   // Changes the color of the circle from black to white.
   {
-    selector: `layer-1 >> circle`,
+    selector: `layer-1 >> .circle`,
     timeframe: [3, 5], // Starts at the 3rd and ends at the 5th second.
     from: {
       'background-color': '#000',
