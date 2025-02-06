@@ -122,6 +122,7 @@
   "_isRefreshingViews",
   "_platformInjector",
   "activeConsumer",
+  "addAfterRenderSequencesForView",
   "addPropertyBinding",
   "allocExpando",
   "allocLFrame",

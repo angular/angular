@@ -13,6 +13,7 @@ import {ProviderToken} from '../../di/provider_token';
 import {DehydratedView} from '../../hydration/interfaces';
 import {SchemaMetadata} from '../../metadata/schema';
 import {Sanitizer} from '../../sanitization/sanitizer';
+import type {AfterRenderSequence} from '../after_render/manager';
 import type {ReactiveLViewConsumer} from '../reactive_lview_consumer';
 import type {ViewEffectNode} from '../reactivity/effect';
 
@@ -67,6 +68,7 @@ export const ON_DESTROY_HOOKS = 21;
 export const EFFECTS_TO_SCHEDULE = 22;
 export const EFFECTS = 23;
 export const REACTIVE_TEMPLATE_CONSUMER = 24;
+export const AFTER_RENDER_SEQUENCES_TO_ADD = 25;
 
 /**
  * Size of LView's header. Necessary to adjust for it when setting slots.
@@ -75,7 +77,7 @@ export const REACTIVE_TEMPLATE_CONSUMER = 24;
  * instruction index into `LView` index. All other indexes should be in the `LView` index space and
  * there should be no need to refer to `HEADER_OFFSET` anywhere else.
  */
-export const HEADER_OFFSET = 25;
+export const HEADER_OFFSET = 26;
 
 // This interface replaces the real LView interface if it is an arg or a
 // return value of a public instruction. This ensures we don't need to expose
@@ -362,6 +364,9 @@ export interface LView<T = unknown> extends Array<any> {
    * if any signals were read.
    */
   [REACTIVE_TEMPLATE_CONSUMER]: ReactiveLViewConsumer | null;
+
+  // AfterRenderSequences that need to be scheduled
+  [AFTER_RENDER_SEQUENCES_TO_ADD]: AfterRenderSequence[] | null;
 }
 
 /**

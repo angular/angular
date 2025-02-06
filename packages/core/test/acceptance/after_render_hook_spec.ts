@@ -8,8 +8,10 @@
 
 import {PLATFORM_BROWSER_ID, PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
 import {
+  AfterRenderPhase,
   AfterRenderRef,
   ApplicationRef,
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ErrorHandler,
@@ -25,15 +27,14 @@ import {
   effect,
   inject,
   signal,
-  AfterRenderPhase,
 } from '@angular/core';
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {TestBed} from '@angular/core/testing';
 
+import {setUseMicrotaskEffectsByDefault} from '@angular/core/src/render3/reactivity/effect';
 import {firstValueFrom} from 'rxjs';
 import {filter} from 'rxjs/operators';
 import {EnvironmentInjector, Injectable} from '../../src/di';
-import {setUseMicrotaskEffectsByDefault} from '@angular/core/src/render3/reactivity/effect';
 
 function createAndAttachComponent<T>(component: Type<T>) {
   const componentRef = createComponent(component, {
@@ -163,28 +164,28 @@ describe('after render hooks', () => {
         const viewContainerRef = compInstance.viewContainerRef;
         const dynamicCompRef = viewContainerRef.createComponent(DynamicComp);
         expect(dynamicCompRef.instance.afterRenderCount).toBe(0);
-        expect(compInstance.afterRenderCount).toBe(1);
+        expect(compInstance.afterRenderCount).toBe(0);
 
         // Running change detection at the dynamicCompRef level
         dynamicCompRef.changeDetectorRef.detectChanges();
         expect(dynamicCompRef.instance.afterRenderCount).toBe(0);
-        expect(compInstance.afterRenderCount).toBe(1);
+        expect(compInstance.afterRenderCount).toBe(0);
 
         // Running change detection at the compInstance level
         compInstance.changeDetectorRef.detectChanges();
         expect(dynamicCompRef.instance.afterRenderCount).toBe(0);
-        expect(compInstance.afterRenderCount).toBe(1);
+        expect(compInstance.afterRenderCount).toBe(0);
 
         // Running change detection at the Application level
         fixture.detectChanges();
         expect(dynamicCompRef.instance.afterRenderCount).toBe(1);
-        expect(compInstance.afterRenderCount).toBe(2);
+        expect(compInstance.afterRenderCount).toBe(1);
 
         // Running change detection after removing view.
         viewContainerRef.remove();
         fixture.detectChanges();
         expect(dynamicCompRef.instance.afterRenderCount).toBe(1);
-        expect(compInstance.afterRenderCount).toBe(3);
+        expect(compInstance.afterRenderCount).toBe(2);
       });
 
       it('should run all hooks after outer change detection', () => {
@@ -231,7 +232,7 @@ describe('after render hooks', () => {
         expect(log).toEqual([]);
 
         TestBed.inject(ApplicationRef).tick();
-        expect(log).toEqual(['pre-cd', 'post-cd', 'parent-comp', 'child-comp']);
+        expect(log).toEqual(['pre-cd', 'post-cd', 'child-comp', 'parent-comp']);
       });
 
       it('should run hooks once after tick even if there are multiple root views', () => {
@@ -294,56 +295,6 @@ describe('after render hooks', () => {
 
         TestBed.inject(ApplicationRef).tick();
         expect(afterRenderCount).toBe(2);
-      });
-
-      it('should defer nested hooks to the next cycle', () => {
-        let outerHookCount = 0;
-        let innerHookCount = 0;
-
-        @Component({
-          selector: 'comp',
-          standalone: false,
-        })
-        class Comp {
-          injector = inject(Injector);
-
-          constructor() {
-            afterRender(() => {
-              outerHookCount++;
-              afterNextRender(
-                () => {
-                  innerHookCount++;
-                },
-                {injector: this.injector},
-              );
-            });
-          }
-        }
-
-        TestBed.configureTestingModule({
-          declarations: [Comp],
-          ...COMMON_CONFIGURATION,
-        });
-        createAndAttachComponent(Comp);
-
-        // It hasn't run at all
-        expect(outerHookCount).toBe(0);
-        expect(innerHookCount).toBe(0);
-
-        // Running change detection (first time)
-        TestBed.inject(ApplicationRef).tick();
-        expect(outerHookCount).toBe(1);
-        expect(innerHookCount).toBe(0);
-
-        // Running change detection (second time)
-        TestBed.inject(ApplicationRef).tick();
-        expect(outerHookCount).toBe(2);
-        expect(innerHookCount).toBe(1);
-
-        // Running change detection (third time)
-        TestBed.inject(ApplicationRef).tick();
-        expect(outerHookCount).toBe(3);
-        expect(innerHookCount).toBe(2);
       });
 
       it('should run outside of the Angular zone', () => {
@@ -973,7 +924,7 @@ describe('after render hooks', () => {
         expect(log).toEqual([]);
 
         TestBed.inject(ApplicationRef).tick();
-        expect(log).toEqual(['pre-cd', 'post-cd', 'parent-comp', 'child-comp']);
+        expect(log).toEqual(['pre-cd', 'post-cd', 'child-comp', 'parent-comp']);
       });
 
       it('should unsubscribe when calling destroy', () => {
@@ -1043,24 +994,24 @@ describe('after render hooks', () => {
         );
       });
 
-      it('should defer nested hooks to the next cycle', () => {
-        let outerHookCount = 0;
-        let innerHookCount = 0;
-
+      it('should process inner hook within same tick with CD in between', () => {
         @Component({
           selector: 'comp',
           standalone: false,
+          template: `{{outerHookCount()}}:{{innerHookCount}}`,
+          changeDetection: ChangeDetectionStrategy.OnPush,
         })
         class Comp {
           injector = inject(Injector);
+          outerHookCount = signal(0);
+          innerHookCount = 0;
 
           constructor() {
             afterNextRender(() => {
-              outerHookCount++;
-
+              this.outerHookCount.update((v) => v + 1);
               afterNextRender(
                 () => {
-                  innerHookCount++;
+                  this.innerHookCount++;
                 },
                 {injector: this.injector},
               );
@@ -1072,26 +1023,77 @@ describe('after render hooks', () => {
           declarations: [Comp],
           ...COMMON_CONFIGURATION,
         });
-        createAndAttachComponent(Comp);
+        const ref = createAndAttachComponent(Comp);
+        const instance = ref.instance;
 
         // It hasn't run at all
-        expect(outerHookCount).toBe(0);
-        expect(innerHookCount).toBe(0);
+        expect(instance.outerHookCount()).toBe(0);
+        expect(instance.innerHookCount).toBe(0);
 
         // Running change detection (first time)
         TestBed.inject(ApplicationRef).tick();
-        expect(outerHookCount).toBe(1);
-        expect(innerHookCount).toBe(0);
+        expect(instance.outerHookCount()).toBe(1);
+        expect(instance.innerHookCount).toBe(1);
+
+        // In between the inner and outer hook, CD should have run for the component.
+        expect(ref.location.nativeElement.innerHTML).toEqual('1:0');
 
         // Running change detection (second time)
         TestBed.inject(ApplicationRef).tick();
-        expect(outerHookCount).toBe(1);
-        expect(innerHookCount).toBe(1);
+        expect(instance.outerHookCount()).toBe(1);
+        expect(instance.innerHookCount).toBe(1);
+      });
 
-        // Running change detection (third time)
+      it('should defer view-associated hook until after view is rendered', () => {
+        const log: string[] = [];
+
+        @Component({
+          selector: 'inner',
+          standalone: false,
+          changeDetection: ChangeDetectionStrategy.OnPush,
+        })
+        class Inner {
+          constructor() {
+            afterNextRender(() => {
+              log.push('comp hook');
+            });
+          }
+        }
+
+        @Component({
+          selector: 'outer',
+          standalone: false,
+          template: '<inner></inner>',
+          changeDetection: ChangeDetectionStrategy.OnPush,
+        })
+        class Outer {
+          changeDetectorRef = inject(ChangeDetectorRef);
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [Inner, Outer],
+          ...COMMON_CONFIGURATION,
+        });
+
+        const ref = createAndAttachComponent(Outer);
+        ref.instance.changeDetectorRef.detach();
+
+        const appRef = TestBed.inject(ApplicationRef);
+        afterNextRender(
+          () => {
+            log.push('env hook');
+          },
+          {injector: appRef.injector},
+        );
+
+        // Initial change detection with component detached.
         TestBed.inject(ApplicationRef).tick();
-        expect(outerHookCount).toBe(1);
-        expect(innerHookCount).toBe(1);
+        expect(log).toEqual(['env hook']);
+
+        // Re-attach component and run change detection.
+        ref.instance.changeDetectorRef.reattach();
+        TestBed.inject(ApplicationRef).tick();
+        expect(log).toEqual(['env hook', 'comp hook']);
       });
 
       it('should run outside of the Angular zone', () => {
