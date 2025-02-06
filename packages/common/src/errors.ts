@@ -21,6 +21,9 @@ export const enum RuntimeErrorCode {
   // NgForOf errors
   NG_FOR_MISSING_DIFFER = -2200,
 
+  // I18n errors
+  SUSPICIOUS_DATE_FORMAT = 2300,
+
   // Keep 2800 - 2900 for Http Errors.
 
   // Image directive errors
