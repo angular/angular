@@ -17,7 +17,7 @@ export type AliasImportDeclaration = ts.ImportSpecifier | ts.NamespaceImport | t
  * that as public API: https://github.com/microsoft/TypeScript/issues/17516.
  */
 interface TransformationContextWithResolver extends ts.TransformationContext {
-  getEmitResolver: () => EmitResolver;
+  getEmitResolver: () => EmitResolver | undefined;
 }
 
 const patchedReferencedAliasesSymbol = Symbol('patchedReferencedAliases');
@@ -68,7 +68,8 @@ interface EmitResolver {
  *
  * The set that is returned by this function is meant to be filled with import declaration nodes
  * that have been referenced in a value-position by the transform, such the installed patch can
- * ensure that those import declarations are not elided.
+ * ensure that those import declarations are not elided. If `null` is returned then the transform
+ * operates in an isolated context.
  *
  * See below. Note that this uses sourcegraph as the TypeScript checker file doesn't display on
  * Github.
@@ -76,13 +77,18 @@ interface EmitResolver {
  */
 export function loadIsReferencedAliasDeclarationPatch(
   context: ts.TransformationContext,
-): Set<ts.Declaration> {
+): Set<ts.Declaration> | null {
   // If the `getEmitResolver` method is not available, TS most likely changed the
   // internal structure of the transformation context. We will abort gracefully.
   if (!isTransformationContextWithEmitResolver(context)) {
     throwIncompatibleTransformationContextError();
   }
   const emitResolver = context.getEmitResolver();
+  if (emitResolver === undefined) {
+    // In isolated `ts.transform` operations no emit resolver is present, return null as `isReferencedAliasDeclaration`
+    // will never be invoked.
+    return null;
+  }
 
   // The emit resolver may have been patched already, in which case we return the set of referenced
   // aliases that was created when the patch was first applied.
