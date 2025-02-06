@@ -144,7 +144,7 @@ export function setAlternateWeakRefImpl(impl: unknown): void;
 export function setPostSignalSetFn(fn: (() => void) | null): (() => void) | null;
 
 // @public (undocumented)
-export function setThrowInvalidWriteToSignalError(fn: () => never): void;
+export function setThrowInvalidWriteToSignalError(fn: <T>(node: SignalNode<T>) => never): void;
 
 // @public
 export const SIGNAL: unique symbol;
