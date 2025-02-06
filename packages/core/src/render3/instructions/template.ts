@@ -38,13 +38,12 @@ import {
 import {getOrCreateTNode} from '../tnode_manipulation';
 import {mergeHostAttrs} from '../util/attrs_utils';
 import {getConstant} from '../util/view_utils';
+import {addToEndOfViewTree, createTView} from '../view/construction';
+import {createLContainer} from '../view/container';
 import {resolveDirectives} from '../view/directives';
 
 import {
-  addToEndOfViewTree,
   createDirectivesInstancesInInstruction,
-  createLContainer,
-  createTView,
   findDirectiveDefMatches,
   saveResolvedLocalsInData,
 } from './shared';
