@@ -26,8 +26,20 @@ h2 {
       )
     );
 
-    &:first-child {
+    &.token-search {
       flex: 1;
+    }
+
+    &.type-filter {
+      width: 10rem;
+    }
+
+    mat-select {
+      @include mat.select-overrides(
+        (
+          trigger-text-size: 0.8rem,
+        )
+      );
     }
   }
 }
@@ -43,6 +55,14 @@ table {
   margin: 0;
   font-size: 0.8rem;
   font-weight: bold;
+}
+
+.token-cell {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+  max-width: 0;
 }
 
 tr.example-detail-row {
@@ -82,8 +102,18 @@ tr.example-detail-row {
   opacity: 0.5;
 }
 
+.no-providers-label {
+  font-size: 0.8rem;
+  padding: 0.5rem 0;
+  text-align: center;
+}
+
 :host-context(.dark-theme) {
   .providers-title {
     color: #ffffff;
+  }
+
+  .no-providers-label {
+    color: #bcc5ce;
   }
 }
