@@ -28,7 +28,6 @@ import {
   ɵPendingTasksInternal as PendingTasks,
   output,
 } from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {TOC_SKIP_CONTENT_MARKER, NavigationState} from '../../../services/index';
 import {TableOfContents} from '../../table-of-contents/table-of-contents.component';
 import {IconComponent} from '../../icon/icon.component';
@@ -40,6 +39,7 @@ import {fromEvent} from 'rxjs';
 import {Breadcrumb} from '../../breadcrumb/breadcrumb.component';
 import {CopySourceCodeButton} from '../../copy-source-code-button/copy-source-code-button.component';
 import {ExampleViewer} from '../example-viewer/example-viewer.component';
+import {takeUntilDestroyed} from '../../../services/rxjs-interop';
 
 /// <reference types="@types/dom-view-transitions" />
 
