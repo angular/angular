@@ -1390,6 +1390,8 @@ describe('reactive forms integration tests', () => {
       expect(fcEvents.length).toBe(0);
       fc.markAsTouched({emitEvent: false});
       expect(fcEvents.length).toBe(0);
+      fc.markAllAsDirty({emitEvent: false});
+      expect(fcEvents.length).toBe(0);
       fc.markAllAsTouched({emitEvent: false});
       expect(fcEvents.length).toBe(0);
       fc.markAsUntouched({emitEvent: false});

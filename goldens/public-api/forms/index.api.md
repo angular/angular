@@ -50,6 +50,9 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     hasError(errorCode: string, path?: Array<string | number> | string): boolean;
     hasValidator(validator: ValidatorFn): boolean;
     get invalid(): boolean;
+    markAllAsDirty(opts?: {
+        emitEvent?: boolean;
+    }): void;
     markAllAsTouched(opts?: {
         emitEvent?: boolean;
     }): void;
