@@ -100,26 +100,57 @@ describe('ExampleViewer', () => {
     expect(component.tabs()![2].name).toBe('another-example.ts');
   });
 
-  it('should expandable be false when none of the example files have defined visibleLinesRange ', waitForAsync(async () => {
+  it('should expand button not appear when there is no hidden line', waitForAsync(async () => {
     component.metadata = getMetadata();
     await component.renderExample();
-    expect(component.expandable()).toBeFalse();
+    const button = fixture.debugElement.query(By.css('button[aria-label="Expand code example"]'));
+    expect(button).toBeNull();
   }));
 
-  it('should expandable be true when at least one example file has defined visibleLinesRange ', waitForAsync(async () => {
+  it('should have line with hidden line class when expand button is present', waitForAsync(async  () => {
+    const expectedCodeSnippetContent =
+    'typescript code<br/>' + '<div class="line">hidden line</div>';
+
     component.metadata = getMetadata({
       files: [
-        {name: 'example.ts', content: 'typescript file'},
         {
-          name: 'example.html',
-          content: 'html file',
-          visibleLinesRange: '[1, 2]',
+          name: 'example.ts',
+          content: `<pre><code>${expectedCodeSnippetContent}</code></pre>`,
+          visibleLinesRange: '[1]',
         },
-        {name: 'another-example.ts', content: 'css file'},
       ],
     });
+
     await component.renderExample();
-    expect(component.expandable()).toBeTrue();
+    fixture.detectChanges();
+
+    const hiddenLine = fixture.debugElement.query(By.css('div[class="line hidden"]'));
+    expect(hiddenLine).toBeTruthy();
+  }));
+
+  it('should have no more line with hidden line class when expand button is clicked', waitForAsync(async () => {
+    const expectedCodeSnippetContent =
+    'typescript code<br/>' + '<div class="line">hidden line</div>';
+
+    component.metadata = getMetadata({
+      files: [
+        {
+          name: 'example.ts',
+          content: `<pre><code>${expectedCodeSnippetContent}</code></pre>`,
+          visibleLinesRange: '[1]',
+        },
+      ],
+    });
+
+    await component.renderExample();
+    fixture.detectChanges();
+
+    const expandButton = fixture.debugElement.query(By.css('button[aria-label="Expand code example"]'));
+    expandButton.nativeElement.click();
+    fixture.detectChanges();
+
+    const hiddenLine = fixture.debugElement.query(By.css('div[class="line hidden"]'));
+    expect(hiddenLine).toBeNull();
   }));
 
   it('should set exampleComponent when metadata contains path and preview is true', waitForAsync(async () => {
