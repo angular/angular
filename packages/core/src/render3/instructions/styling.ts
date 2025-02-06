@@ -692,7 +692,7 @@ export function toStylingKeyValueArray(
     stringParser(styleKeyValueArray, unwrappedValue);
   } else {
     ngDevMode &&
-      throwError('Unsupported styling type ' + typeof unwrappedValue + ': ' + unwrappedValue);
+      throwError('Unsupported styling type: ' + typeof unwrappedValue + ' (' + unwrappedValue + ')');
   }
   return styleKeyValueArray;
 }
