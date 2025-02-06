@@ -351,5 +351,47 @@ $transition: 200ms linear;
         }
       }
     }
+
+    &.reduced-motion {
+      position: relative;
+
+      .banners-layer {
+        height: 100vh;
+
+        @include mq.for-phone-only {
+          .adev-banner {
+            top: 6rem;
+          }
+        }
+
+        @include mq.for-tablet-landscape-up {
+          .adev-banner {
+            left: var(--layout-padding);
+          }
+        }
+      }
+
+      .logo-layer {
+        position: relative;
+        height: 100vh;
+
+        @include mq.for-tablet-landscape-down {
+          margin-top: -75px;
+        }
+      }
+
+      .works-at-any-scale-layer,
+      .loved-by-millions-layer,
+      .build-for-everyone-layer {
+        position: relative;
+        height: 120vh;
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      .build-for-everyone-layer > .title {
+        background-position-x: 0;
+      }
+    }
   }
 }
