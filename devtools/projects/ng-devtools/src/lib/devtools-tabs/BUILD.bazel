@@ -1,7 +1,7 @@
-load("//devtools/tools:ng_module.bzl", "ng_module")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//devtools/tools:typescript.bzl", "ts_test_library")
 load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
+load("//devtools/tools:ng_module.bzl", "ng_module")
+load("//devtools/tools:typescript.bzl", "ts_test_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -20,9 +20,9 @@ ng_module(
         ":devtools_tabs_component_styles",
     ],
     deps = [
-        "//devtools/projects/ng-devtools/src/lib:frame_manager",
-        "//devtools/projects/ng-devtools/src/lib:theme",
         "//devtools/projects/ng-devtools/src/lib/application-environment",
+        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
+        "//devtools/projects/ng-devtools/src/lib/application-services:theme",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/injector-tree:injector_tree",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler",
@@ -43,9 +43,9 @@ ts_test_library(
     srcs = ["devtools-tabs.spec.ts"],
     deps = [
         ":devtools-tabs",
-        "//devtools/projects/ng-devtools/src/lib:frame_manager",
-        "//devtools/projects/ng-devtools/src/lib:theme",
         "//devtools/projects/ng-devtools/src/lib/application-environment",
+        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
+        "//devtools/projects/ng-devtools/src/lib/application-services:theme",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tab-update",
         "//devtools/projects/protocol",
