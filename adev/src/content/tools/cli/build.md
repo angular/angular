@@ -153,3 +153,9 @@ Avoid expanding this list to more browsers. Even if your application code more b
 You should only ever _reduce_ the set of browsers or versions in this list.
 
 HELPFUL: Use [browsersl.ist](https://browsersl.ist) to display compatible browsers for a `browserslist` query.
+
+## Configuring Tailwind
+
+Angular supports [Tailwind](https://tailwindcss.com/), a utility-first CSS framework.
+
+Follow the [Tailwind documentation](https://tailwindcss.com/docs/installation/framework-guides/angular) for integrating with Angular CLI.
