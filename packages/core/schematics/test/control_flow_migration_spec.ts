@@ -6479,6 +6479,72 @@ describe('control flow migration', () => {
 
       expect(actual).toBe(expected);
     });
+
+    it('should not remove common module if symbols are used inside new control flow', async () => {
+      writeFile(
+        '/comp.ts',
+        [
+          `import {CommonModule} from '@angular/common';`,
+          `import {Component} from '@angular/core';\n`,
+          `@Component({`,
+          `  imports: [CommonModule],`,
+          `  template: \`@if (toggle) {<div>{{ d | date }}</div>} <span *ngIf="toggle">hi</span>\``,
+          `})`,
+          `class Comp {`,
+          `  toggle = false;`,
+          `}`,
+        ].join('\n'),
+      );
+
+      await runMigration();
+      const actual = tree.readContent('/comp.ts');
+      const expected = [
+        `import {CommonModule} from '@angular/common';`,
+        `import {Component} from '@angular/core';\n`,
+        `@Component({`,
+        `  imports: [CommonModule],`,
+        `  template: \`@if (toggle) {<div>{{ d | date }}</div>} @if (toggle) {<span>hi</span>}\``,
+        `})`,
+        `class Comp {`,
+        `  toggle = false;`,
+        `}`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
+    it('should not remove common module if symbols are used inside @let', async () => {
+      writeFile(
+        '/comp.ts',
+        [
+          `import {CommonModule} from '@angular/common';`,
+          `import {Component} from '@angular/core';\n`,
+          `@Component({`,
+          `  imports: [CommonModule],`,
+          `  template: \`@let foo = 123 | date; <span *ngIf="foo">{{foo}}</span>\``,
+          `})`,
+          `class Comp {`,
+          `  toggle = false;`,
+          `}`,
+        ].join('\n'),
+      );
+
+      await runMigration();
+      const actual = tree.readContent('/comp.ts');
+      const expected = [
+        `import {CommonModule} from '@angular/common';`,
+        `import {Component} from '@angular/core';\n`,
+        `@Component({`,
+        `  imports: [CommonModule],`,
+        `  template: \`@let foo = 123 | date; @if (foo) {<span>{{foo}}</span>}\``,
+        `})`,
+        `class Comp {`,
+        `  toggle = false;`,
+        `}`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
   });
 
   describe('no migration needed', () => {
