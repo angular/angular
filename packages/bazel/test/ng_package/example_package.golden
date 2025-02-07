@@ -70,7 +70,7 @@ License: MIT
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -120,7 +120,7 @@ Hello
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -149,7 +149,7 @@ export { A11yModule };
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -190,7 +190,7 @@ export { MyService };
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -220,7 +220,7 @@ export { SecondaryModule, a };
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -249,7 +249,7 @@ export { MyModule };
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -275,7 +275,7 @@ export { }
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -331,7 +331,7 @@ export { }
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
