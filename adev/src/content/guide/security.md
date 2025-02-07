@@ -25,13 +25,13 @@ These are some best practices to ensure that your Angular application is secure.
 
 ## Preventing cross-site scripting (XSS)
 
-[Cross-site scripting (XSS)](https://www.wikipedia.org/wiki/Cross-site_scripting) enables attackers to inject malicious code into web pages.
+[Cross-site scripting (XSS)](https://en.wikipedia.org/wiki/Cross-site_scripting) enables attackers to inject malicious code into web pages.
 Such code can then, for example, steal user and login data, or perform actions that impersonate the user.
 This is one of the most common attacks on the web.
 
 To block XSS attacks, you must prevent malicious code from entering the Document Object Model (DOM).
 For example, if attackers can trick you into inserting a `<script>` tag in the DOM, they can run arbitrary code on your website.
-The attack isn't limited to `<script>` tags —many elements and properties in the DOM allow code execution, for example, `<img alt="" onerror="..." />` and `<a href="javascript:...">`.
+The attack isn't limited to `<script>` tags —many elements and properties in the DOM allow code execution, for example, `<img alt="" onerror="...">` and `<a href="javascript:...">`.
 If attacker-controlled data enters the DOM, expect security vulnerabilities.
 
 ### Angular's cross-site scripting security model
@@ -42,7 +42,7 @@ If a value was already sanitized outside of Angular and is considered safe, comm
 
 Unlike values to be used for rendering, Angular templates are considered trusted by default, and should be treated as executable code.
 Never create templates by concatenating user input and template syntax.
-Doing this would enable attackers to [inject arbitrary code](https://www.wikipedia.org/wiki/Code_injection) into your application.
+Doing this would enable attackers to [inject arbitrary code](https://en.wikipedia.org/wiki/Code_injection) into your application.
 To prevent these vulnerabilities, always use the default [Ahead-Of-Time (AOT) template compiler](#use-the-aot-template-compiler) in production deployments.
 
 An extra layer of protection can be provided through the use of Content security policy and Trusted Types.
@@ -190,7 +190,7 @@ As your project grows, you may need to expand your CSP settings to accommodate e
 ### Enforcing Trusted Types
 
 It is recommended that you use [Trusted Types](https://w3c.github.io/trusted-types/dist/spec/) as a way to help secure your applications from cross-site scripting attacks.
-Trusted Types is a [web platform](https://www.wikipedia.org/wiki/Web_platform) feature that can help you prevent cross-site scripting attacks by enforcing safer coding practices.
+Trusted Types is a [web platform](https://en.wikipedia.org/wiki/Web_platform) feature that can help you prevent cross-site scripting attacks by enforcing safer coding practices.
 Trusted Types can also help simplify the auditing of application code.
 
 <docs-callout title="Trusted types">
@@ -306,7 +306,7 @@ The malicious code on `evil.com` can't.
 
 ### `HttpClient` XSRF/CSRF security
 
-`HttpClient` supports a [common mechanism](https://www.wikipedia.org/wiki/Cross-site_request_forgery#Cookie-to-header_token) used to prevent XSRF attacks. When performing HTTP requests, an interceptor reads a token from a cookie, by default `XSRF-TOKEN`, and sets it as an HTTP header, `X-XSRF-TOKEN`. Because only code that runs on your domain could read the cookie, the backend can be certain that the HTTP request came from your client application and not an attacker.
+`HttpClient` supports a [common mechanism](https://en.wikipedia.org/wiki/Cross-site_request_forgery#Cookie-to-header_token) used to prevent XSRF attacks. When performing HTTP requests, an interceptor reads a token from a cookie, by default `XSRF-TOKEN`, and sets it as an HTTP header, `X-XSRF-TOKEN`. Because only code that runs on your domain could read the cookie, the backend can be certain that the HTTP request came from your client application and not an attacker.
 
 By default, an interceptor sends this header on all mutating requests (such as `POST`) to relative URLs, but not on GET/HEAD requests or on requests with an absolute URL.
 
