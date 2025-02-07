@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, isSignal, signal} from '@angular/core';
+import {computed, input, isSignal, model, runInInjectionContext, signal} from '@angular/core';
+import {createInputSignal} from '@angular/core/src/authoring/input/input_signal';
+import {isInputSignal, isModelSignal} from '@angular/core/src/render3/reactivity/api';
+import {TestBed} from '@angular/core/testing';
 
 describe('isSignal', () => {
   it('should return true for writable signal', () => {
@@ -32,5 +35,29 @@ describe('isSignal', () => {
   it('should return false for function', () => {
     const fn = () => {};
     expect(isSignal(fn)).toBe(false);
+  });
+});
+
+describe('isInputSignal', () => {
+  it('should return true for input signal', () => {
+    const inputSignal = TestBed.runInInjectionContext(() => input('Angular'));
+    expect(isInputSignal(inputSignal)).toBe(true);
+  });
+
+  it('should return false for signal', () => {
+    const writableSignal = signal('Angular');
+    expect(isInputSignal(writableSignal)).toBe(false);
+  });
+});
+
+describe('isModelSignal', () => {
+  it('should return true for model signal', () => {
+    const modelSignal = TestBed.runInInjectionContext(() => model('Angular'));
+    expect(isModelSignal(modelSignal)).toBe(true);
+  });
+
+  it('should return false for input signal', () => {
+    const inputSignal = createInputSignal('Angular');
+    expect(isModelSignal(inputSignal)).toBe(false);
   });
 });

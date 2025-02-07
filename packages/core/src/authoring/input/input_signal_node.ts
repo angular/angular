@@ -44,6 +44,7 @@ export const INPUT_SIGNAL_NODE: InputSignalNode<unknown, unknown> = /* @__PURE__
   return {
     ...SIGNAL_NODE,
     transformFn: undefined,
+    kind: 'input',
 
     applyValueToInputSignal<T, TransformT>(node: InputSignalNode<T, TransformT>, value: T) {
       signalSetFn(node, value);
