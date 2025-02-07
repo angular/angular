@@ -54,7 +54,7 @@ License: MIT
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -68,7 +68,7 @@ export { VERSION };
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -98,7 +98,7 @@ export { PortalModule, a };
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -114,7 +114,7 @@ export { dispatchFakeEvent };
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -157,7 +157,7 @@ export { }
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -179,7 +179,7 @@ export { }
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
