@@ -14971,10 +14971,10 @@ sass@1.83.4:
   optionalDependencies:
     "@parcel/watcher" "^2.4.1"
 
-saucelabs@8.0.0, saucelabs@^1.5.0, saucelabs@^4.6.3:
-  version "8.0.0"
-  resolved "https://registry.yarnpkg.com/saucelabs/-/saucelabs-8.0.0.tgz#63084768ce5950107db988797e4db8d52297d725"
-  integrity sha512-Rj9m4OCniYk+c4MFuZGqvz64RPX6oRzMqt0bTr9T27IXGnA7Ic7Ms/VHgPtRcJFP6H3sQ169WOzazPZcW4BIAg==
+saucelabs@9.0.2, saucelabs@^1.5.0, saucelabs@^4.6.3:
+  version "9.0.2"
+  resolved "https://registry.yarnpkg.com/saucelabs/-/saucelabs-9.0.2.tgz#99f6170f3d789fcb0be2f270f7d37a9d7cdf5187"
+  integrity sha512-37QGEOgp9BP1re6S06qpNcBZ0Hw+ZSkZkDepbXHT9VjYoRQwRzUoLtKqE4yyVeK7dzcQXQapmTGF1kp1jO2VDw==
   dependencies:
     change-case "^4.1.2"
     compressing "^1.10.0"
