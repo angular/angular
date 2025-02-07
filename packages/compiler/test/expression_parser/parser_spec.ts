@@ -103,6 +103,11 @@ describe('parser', () => {
       checkAction('(!(typeof {} === "number"))', '!typeof {} === "number"');
     });
 
+    it('should parse void expression', () => {
+      checkAction(`void 0`);
+      checkAction('(!(void 0))', '!void 0');
+    });
+
     it('should parse grouped expressions', () => {
       checkAction('(1 + 2) * 3', '1 + 2 * 3');
     });

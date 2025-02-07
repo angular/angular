@@ -330,6 +330,10 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     ctx.print(expr, 'typeof ');
     expr.expr.visitExpression(this, ctx);
   }
+  visitVoidExpr(expr: o.VoidExpr, ctx: EmitterVisitorContext): any {
+    ctx.print(expr, 'void ');
+    expr.expr.visitExpression(this, ctx);
+  }
   visitReadVarExpr(ast: o.ReadVarExpr, ctx: EmitterVisitorContext): any {
     ctx.print(ast, ast.name);
     return null;

@@ -8,22 +8,22 @@ Angular supports a subset of [literal values](https://developer.mozilla.org/en-U
 
 ### Supported value literals
 
-| Literal type     | Example values                  |
-| ---------------- | ------------------------------- |
-| String           | `'Hello'`, `"World"`            |
-| Boolean          | `true`, `false`                 |
-| Number           | `123`, `3.14`                   |
-| Object           | `{name: 'Alice'}`               |
-| Array            | `['Onion', 'Cheese', 'Garlic']` |
-| null             | `null`                          |
-| Template string  | `` `Hello ${name}` ``           |
+| Literal type    | Example values                  |
+| --------------- | ------------------------------- |
+| String          | `'Hello'`, `"World"`            |
+| Boolean         | `true`, `false`                 |
+| Number          | `123`, `3.14`                   |
+| Object          | `{name: 'Alice'}`               |
+| Array           | `['Onion', 'Cheese', 'Garlic']` |
+| null            | `null`                          |
+| Template string | `` `Hello ${name}` ``           |
 
 ### Unsupported literals
 
-| Literal type             | Example value             |
-| ------------------------ | ------------------------- |
-| RegExp                   | `/\d+/`                   |
-| Tagged template string   | `` tag`Hello ${name}` ``  |
+| Literal type           | Example value            |
+| ---------------------- | ------------------------ |
+| RegExp                 | `/\d+/`                  |
+| Tagged template string | `` tag`Hello ${name}` `` |
 
 ## Globals
 
@@ -58,11 +58,13 @@ Angular supports the following operators from standard JavaScript.
 | And (Logical)         | `&&`                                     |
 | Or (Logical)          | `\|\|`                                   |
 | Not (Logical)         | `!`                                      |
-| Nullish Coalescing    | `const foo = null ?? 'default'`          |
+| Nullish Coalescing    | `possiblyNullValue ?? 'default'`         |
 | Comparison Operators  | `<`, `<=`, `>`, `>=`, `==`, `===`, `!==` |
-| Unary Negation        | `const y = -x`                           |
-| Unary Plus            | `const x = +y`                           |
-| Property Accessor     | `person['name'] = 'Mirabel'`             |
+| Unary Negation        | `-x`                                     |
+| Unary Plus            | `+y`                                     |
+| Property Accessor     | `person['name']`                         |
+| typeof                | `typeof 42`                              |
+| void                  | `void 1`                                 |
 
 Angular expressions additionally also support the following non-standard operators:
 
@@ -83,8 +85,6 @@ Angular expressions additionally also support the following non-standard operato
 | Object destructuring  | `const { name } = person`         |
 | Array destructuring   | `const [firstItem] = items`       |
 | Comma operator        | `x = (x++, x)`                    |
-| typeof                | `typeof 42`                       |
-| void                  | `void 1`                          |
 | in                    | `'model' in car`                  |
 | instanceof            | `car instanceof Automobile`       |
 | new                   | `new Car()`                       |

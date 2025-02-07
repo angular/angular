@@ -140,6 +140,10 @@ class SerializeExpressionVisitor implements expr.AstVisitor {
     return `typeof ${ast.expression.visit(this, context)}`;
   }
 
+  visitVoidExpression(ast: expr.VoidExpression, context: any) {
+    return `void ${ast.expression.visit(this, context)}`;
+  }
+
   visitASTWithSource(ast: expr.ASTWithSource, context: any): string {
     return ast.ast.visit(this, context);
   }
