@@ -239,10 +239,18 @@ export function createSwitchBlock(
       continue;
     }
 
-    const expression =
-      node.name === 'case' ? parseBlockParameterToBinding(node.parameters[0], bindingParser) : null;
+    let expressions: ASTWithSource[] | null;
+
+    if (node.name === 'case') {
+      expressions = node.parameters.map((param) =>
+        parseBlockParameterToBinding(param, bindingParser),
+      );
+    } else {
+      expressions = null;
+    }
+
     const ast = new t.SwitchBlockCase(
-      expression,
+      expressions,
       html.visitAll(visitor, node.children, node.children),
       node.sourceSpan,
       node.startSourceSpan,
@@ -251,7 +259,7 @@ export function createSwitchBlock(
       node.i18n,
     );
 
-    if (expression === null) {
+    if (expressions === null) {
       defaultCase = ast;
     } else {
       cases.push(ast);
@@ -542,9 +550,9 @@ function validateSwitchBlock(ast: html.Block): ParseError[] {
         errors.push(new ParseError(node.startSourceSpan, '@default block cannot have parameters'));
       }
       hasDefault = true;
-    } else if (node.name === 'case' && node.parameters.length !== 1) {
+    } else if (node.name === 'case' && node.parameters.length === 0) {
       errors.push(
-        new ParseError(node.startSourceSpan, '@case block must have exactly one parameter'),
+        new ParseError(node.startSourceSpan, '@case block must have at least one parameter'),
       );
     }
   }
