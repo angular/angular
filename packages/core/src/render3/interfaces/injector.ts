@@ -287,7 +287,3 @@ export class NodeInjectorFactory {
     this.injectImpl = injectImplementation;
   }
 }
-
-export function isFactory(obj: any): obj is NodeInjectorFactory {
-  return obj instanceof NodeInjectorFactory;
-}
