@@ -235,6 +235,19 @@ function findMatchingDehydratedViewForDeferBlock(
   );
 }
 
+function clearMatchingDehydratedViewInDeferBlock(
+  lContainer: LContainer,
+  lDetails: LDeferBlockDetails,
+): void {
+  const ix =
+    lContainer[DEHYDRATED_VIEWS]?.findIndex(
+      (view: any) => view.data[SERIALIZED_DEFER_BLOCK_STATE] === lDetails[DEFER_BLOCK_STATE],
+    ) ?? -1;
+  if (ix > -1) {
+    lContainer[DEHYDRATED_VIEWS]?.splice(ix, 1);
+  }
+}
+
 /**
  * Applies changes to the DOM to reflect a given state.
  */
@@ -278,9 +291,6 @@ function applyDeferBlockState(
       }
     }
     const dehydratedView = findMatchingDehydratedViewForDeferBlock(lContainer, lDetails);
-    // Erase dehydrated view info, so that it's not removed later
-    // by post-hydration cleanup process.
-    lContainer[DEHYDRATED_VIEWS] = null;
 
     const embeddedLView = createAndRenderEmbeddedLView(hostLView, activeBlockTNode, null, {
       injector,
@@ -294,11 +304,12 @@ function applyDeferBlockState(
     );
     markViewDirty(embeddedLView, NotificationSource.DeferBlockStateUpdate);
 
-    // TODO(incremental-hydration):
-    // - what if we had some views in `lContainer[DEHYDRATED_VIEWS]`, but
-    //   we didn't find a view that matches the expected state?
-    // - for example, handle a situation when a block was in the "completed" state
-    //   on the server, but the loading failing on the client. How do we reconcile and cleanup?
+    // Erase dehydrated view info, so that it's not removed later
+    // by post-hydration cleanup process. This clears only the dehydrated view
+    // that was found for this render, which in most cases will be the only
+    // view. In the case that there was control flow that changed, there
+    // may be more than one.
+    clearMatchingDehydratedViewInDeferBlock(lContainer, lDetails);
 
     if (
       (newState === DeferBlockState.Complete || newState === DeferBlockState.Error) &&
