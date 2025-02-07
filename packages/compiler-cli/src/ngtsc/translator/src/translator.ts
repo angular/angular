@@ -447,6 +447,10 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
     return this.factory.createTypeOfExpression(ast.expr.visitExpression(this, context));
   }
 
+  visitVoidExpr(ast: o.VoidExpr, context: Context): TExpression {
+    return this.factory.createVoidExpression(ast.expr.visitExpression(this, context));
+  }
+
   visitUnaryOperatorExpr(ast: o.UnaryOperatorExpr, context: Context): TExpression {
     if (!UNARY_OPERATORS.has(ast.operator)) {
       throw new Error(`Unknown unary operator: ${o.UnaryOperator[ast.operator]}`);

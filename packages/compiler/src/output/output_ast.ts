@@ -363,6 +363,32 @@ export class TypeofExpr extends Expression {
   }
 }
 
+export class VoidExpr extends Expression {
+  constructor(
+    public expr: Expression,
+    type?: Type | null,
+    sourceSpan?: ParseSourceSpan | null,
+  ) {
+    super(type, sourceSpan);
+  }
+
+  override visitExpression(visitor: ExpressionVisitor, context: any) {
+    return visitor.visitVoidExpr(this, context);
+  }
+
+  override isEquivalent(e: Expression): boolean {
+    return e instanceof VoidExpr && e.expr.isEquivalent(this.expr);
+  }
+
+  override isConstant(): boolean {
+    return this.expr.isConstant();
+  }
+
+  override clone(): VoidExpr {
+    return new VoidExpr(this.expr.clone());
+  }
+}
+
 export class WrappedNodeExpr<T> extends Expression {
   constructor(
     public node: T,
@@ -1434,6 +1460,7 @@ export interface ExpressionVisitor {
   visitCommaExpr(ast: CommaExpr, context: any): any;
   visitWrappedNodeExpr(ast: WrappedNodeExpr<any>, context: any): any;
   visitTypeofExpr(ast: TypeofExpr, context: any): any;
+  visitVoidExpr(ast: VoidExpr, context: any): any;
   visitArrowFunctionExpr(ast: ArrowFunctionExpr, context: any): any;
 }
 
@@ -1639,6 +1666,9 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
     return ast;
   }
   visitTypeofExpr(ast: TypeofExpr, context: any): any {
+    return this.visitExpression(ast, context);
+  }
+  visitVoidExpr(ast: VoidExpr, context: any) {
     return this.visitExpression(ast, context);
   }
   visitReadVarExpr(ast: ReadVarExpr, context: any): any {

@@ -1164,6 +1164,12 @@ function convertAst(
     );
   } else if (ast instanceof e.TypeofExpression) {
     return o.typeofExpr(convertAst(ast.expression, job, baseSourceSpan));
+  } else if (ast instanceof e.VoidExpression) {
+    return new o.VoidExpr(
+      convertAst(ast.expression, job, baseSourceSpan),
+      undefined,
+      convertSourceSpan(ast.span, baseSourceSpan),
+    );
   } else if (ast instanceof e.TemplateLiteral) {
     return new o.TemplateLiteralExpr(
       ast.elements.map((el) => {
