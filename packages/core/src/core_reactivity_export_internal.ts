@@ -8,7 +8,13 @@
 
 export {SIGNAL as ɵSIGNAL} from '@angular/core/primitives/signals';
 
-export {isSignal, Signal, ValueEqualityFn} from './render3/reactivity/api';
+export {
+  isSignal,
+  isInputSignal,
+  isModelSignal,
+  Signal,
+  ValueEqualityFn,
+} from './render3/reactivity/api';
 export {computed, CreateComputedOptions} from './render3/reactivity/computed';
 export {
   CreateSignalOptions,
