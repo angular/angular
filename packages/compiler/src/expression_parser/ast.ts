@@ -386,6 +386,19 @@ export class TypeofExpression extends AST {
   }
 }
 
+export class VoidExpression extends AST {
+  constructor(
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    public expression: AST,
+  ) {
+    super(span, sourceSpan);
+  }
+  override visit(visitor: AstVisitor, context: any = null): any {
+    return visitor.visitVoidExpression(this, context);
+  }
+}
+
 export class NonNullAssert extends AST {
   constructor(
     span: ParseSpan,
@@ -576,6 +589,7 @@ export interface AstVisitor {
   visitPipe(ast: BindingPipe, context: any): any;
   visitPrefixNot(ast: PrefixNot, context: any): any;
   visitTypeofExpression(ast: TypeofExpression, context: any): any;
+  visitVoidExpression(ast: TypeofExpression, context: any): any;
   visitNonNullAssert(ast: NonNullAssert, context: any): any;
   visitPropertyRead(ast: PropertyRead, context: any): any;
   visitPropertyWrite(ast: PropertyWrite, context: any): any;
@@ -646,6 +660,9 @@ export class RecursiveAstVisitor implements AstVisitor {
     this.visit(ast.expression, context);
   }
   visitTypeofExpression(ast: TypeofExpression, context: any) {
+    this.visit(ast.expression, context);
+  }
+  visitVoidExpression(ast: VoidExpression, context: any) {
     this.visit(ast.expression, context);
   }
   visitNonNullAssert(ast: NonNullAssert, context: any): any {

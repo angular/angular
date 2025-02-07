@@ -198,6 +198,12 @@ describe('lexer', () => {
       expect(tokens[0].isKeywordTypeof()).toBe(true);
     });
 
+    it('should tokenize void', () => {
+      const tokens: Token[] = lex('void');
+      expectKeywordToken(tokens[0], 0, 4, 'void');
+      expect(tokens[0].isKeywordVoid()).toBe(true);
+    });
+
     it('should ignore whitespace', () => {
       const tokens: Token[] = lex('a \t \n \r b');
       expectIdentifierToken(tokens[0], 0, 1, 'a');

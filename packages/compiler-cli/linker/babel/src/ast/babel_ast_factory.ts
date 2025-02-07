@@ -184,6 +184,10 @@ export class BabelAstFactory implements AstFactory<t.Statement, t.Expression> {
     return t.unaryExpression('typeof', expression);
   }
 
+  createVoidExpression(expression: t.Expression): t.Expression {
+    return t.unaryExpression('void', expression);
+  }
+
   createUnaryExpression = t.unaryExpression;
 
   createVariableDeclaration(

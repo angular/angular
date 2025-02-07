@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {leadingComment} from '@angular/compiler';
-import {template, types as t} from '@babel/core';
+import {types as t, template} from '@babel/core';
 import _generate from '@babel/generator';
 
 import {BabelAstFactory} from '../../src/ast/babel_ast_factory';
@@ -345,6 +345,14 @@ describe('BabelAstFactory', () => {
       const expr = expression.ast`42`;
       const typeofExpr = factory.createTypeOfExpression(expr);
       expect(generate(typeofExpr).code).toEqual('typeof 42');
+    });
+  });
+
+  describe('createVoidExpression()', () => {
+    it('should create a void expression node', () => {
+      const expr = expression.ast`42`;
+      const voidExpr = factory.createVoidExpression(expr);
+      expect(generate(voidExpr).code).toEqual('void 42');
     });
   });
 

@@ -604,6 +604,19 @@ describe('quick info', () => {
         });
       });
 
+      it('should work with void operator', () => {
+        expectQuickInfo({
+          templateOverride: `<div (click)="void myC¦lick($event)"></div>`,
+          expectedSpanText: 'myClick',
+          expectedDisplayString: '(method) AppCmp.myClick(event: any): void',
+        });
+        expectQuickInfo({
+          templateOverride: `<div (click)="void myClick($e¦vent)"></div>`,
+          expectedSpanText: '$event',
+          expectedDisplayString: '(parameter) $event: MouseEvent',
+        });
+      });
+
       it('should provide documentation', () => {
         const template = project.openFile('app.html');
         template.contents = `<div>{{title}}</div>`;

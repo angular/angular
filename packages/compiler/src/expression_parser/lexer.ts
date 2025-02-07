@@ -37,6 +37,7 @@ const KEYWORDS = [
   'else',
   'this',
   'typeof',
+  'void',
 ];
 
 export class Lexer {
@@ -112,6 +113,10 @@ export class Token {
 
   isKeywordTypeof(): boolean {
     return this.type === TokenType.Keyword && this.strValue === 'typeof';
+  }
+
+  isKeywordVoid(): boolean {
+    return this.type === TokenType.Keyword && this.strValue === 'void';
   }
 
   isError(): boolean {
