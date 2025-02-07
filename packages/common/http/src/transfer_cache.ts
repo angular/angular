@@ -328,7 +328,6 @@ export function withHttpTransferCache(cacheOptions: HttpTransferCacheOptions): P
       provide: HTTP_ROOT_INTERCEPTOR_FNS,
       useValue: transferCacheInterceptorFn,
       multi: true,
-      deps: [TransferState, CACHE_OPTIONS],
     },
     {
       provide: APP_BOOTSTRAP_LISTENER,
