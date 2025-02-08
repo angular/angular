@@ -1,23 +1,9 @@
 {
-  "syncedFilePatterns": [
-    "LICENSE",
-    "modules/benchmarks/**",
-    "packages/**"
-  ],
-  "separateFilePatterns": [
-    "packages/core/primitives/**"
-  ],
+  "syncedFilePatterns": ["LICENSE", "modules/benchmarks/**", "packages/**"],
+  "separateFilePatterns": ["packages/core/primitives/**"],
   "alwaysExternalFilePatterns": [
     "packages/*",
-    "packages/bazel/*",
-    "packages/bazel/src/*",
-    "packages/bazel/src/api-extractor/**",
-    "packages/bazel/src/builders/**",
-    "packages/bazel/src/ng_module/**",
-    "packages/bazel/src/ng_package/**",
-    "packages/bazel/src/protractor/**",
-    "packages/bazel/src/schematics/**",
-    "packages/bazel/src/types_bundle/**",
+    "packages/bazel/**",
     "packages/compiler-cli/linker/**",
     "packages/compiler-cli/src/ngtsc/sourcemaps/**",
     "packages/compiler-cli/src/ngtsc/testing/**",
@@ -26,12 +12,14 @@
     "packages/compiler-cli/private/tooling.ts",
     "packages/compiler-cli/private/babel.d.ts",
     "packages/compiler-cli/src/bin/**",
+    "packages/core/schematics/utils/tsurge/helpers/angular_devkit/**",
     "packages/docs/**",
     "packages/elements/schematics/**",
     "packages/examples/**",
     "packages/localize/**",
     "packages/private/**",
     "packages/service-worker/**",
+    "packages/ssr/BUILD.bazel",
     "packages/common/locales/generate-locales-tool/**",
     "packages/common/locales/index.bzl",
     "packages/http/**",

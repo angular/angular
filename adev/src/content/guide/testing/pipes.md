@@ -1,6 +1,6 @@
 # Testing Pipes
 
-You can test [pipes](guide/pipes) without the Angular testing utilities.
+You can test [pipes](guide/templates/pipes) without the Angular testing utilities.
 
 ## Testing the `TitleCasePipe`
 

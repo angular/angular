@@ -75,7 +75,7 @@ yarn_install(
         "//:.yarnrc",
         "//:tools/npm-patches/@bazel+jasmine+5.8.1.patch",
         "//tools:postinstall-patches.js",
-        "//tools/esm-interop:patches/npm/@angular+build-tooling+0.0.0-239d56b71911f9fa1eeefb6e4505dbe7b0cd81a7.patch",
+        "//tools/esm-interop:patches/npm/@angular+build-tooling+0.0.0-d30a56c19bafaac67cf44e605ed8c2c0e45b0a51.patch",
         "//tools/esm-interop:patches/npm/@bazel+concatjs+5.8.1.patch",
         "//tools/esm-interop:patches/npm/@bazel+esbuild+5.7.1.patch",
         "//tools/esm-interop:patches/npm/@bazel+protractor+5.7.1.patch",
@@ -143,10 +143,10 @@ cldr_xml_data_repository(
 # sass rules
 http_archive(
     name = "io_bazel_rules_sass",
-    sha256 = "47c50aa960ddf875a2a2dd7efd1c839e5f8598725c00014680122b0e48d0ec7f",
-    strip_prefix = "rules_sass-b222c61b3d3879ec45b66062b2c706a72f3d80bb",
+    sha256 = "1d840af29fe9b6dd1d3cebb31ca143450ab8d4036bff76f958c7873a770a46ba",
+    strip_prefix = "rules_sass-adeaf81181b25f15a2d1d1081630506cd6bd0045",
     urls = [
-        "https://github.com/bazelbuild/rules_sass/archive/b222c61b3d3879ec45b66062b2c706a72f3d80bb.zip",
+        "https://github.com/bazelbuild/rules_sass/archive/adeaf81181b25f15a2d1d1081630506cd6bd0045.zip",
     ],
 )
 
@@ -180,4 +180,16 @@ http_archive(
     sha256 = "28277ce81ef9ab84f5b87b526258920a8ead44789a5034346e872629bbf38089",
     strip_prefix = "sc-4.8.2-osx",
     url = "https://saucelabs.com/downloads/sc-4.8.2-osx.zip",
+)
+
+yarn_install(
+    name = "npm_ts_versions",
+    data = [
+        YARN_LABEL,
+        "//:.yarnrc",
+    ],
+    exports_directories_only = False,
+    package_json = "//packages/core/schematics/migrations/signal-migration/test/ts-versions:package.json",
+    yarn = YARN_LABEL,
+    yarn_lock = "//packages/core/schematics/migrations/signal-migration/test/ts-versions:yarn.lock",
 )

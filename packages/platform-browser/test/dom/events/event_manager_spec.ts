@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ɵgetDOM as getDOM} from '@angular/common';
@@ -325,7 +325,7 @@ import {TestBed} from '@angular/core/testing';
       expect(timeoutId).not.toBe(null);
 
       // cleanup the DOM by removing the test element we attached earlier.
-      doc.body.removeChild(element);
+      element.remove();
       timeoutId && clearTimeout(timeoutId);
     });
 

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {RendererStyleFlags2, RendererType2} from '@angular/core';
@@ -41,12 +41,12 @@ class MockRenderer implements Renderer {
   insertBefore(parent: Node, newChild: Node, refChild: Node | null): void {
     parent.insertBefore(newChild, refChild);
   }
-  removeChild(parent: RElement, oldChild: Node): void {
-    parent.removeChild(oldChild);
+  removeChild(_parent: RElement | null, oldChild: RElement): void {
+    oldChild.remove();
   }
   selectRootElement(selectorOrNode: string | any): RElement {
     return typeof selectorOrNode === 'string'
-      ? document.querySelector(selectorOrNode)
+      ? document.querySelector<HTMLElement>(selectorOrNode)!
       : selectorOrNode;
   }
   parentNode(node: Node): RElement | null {

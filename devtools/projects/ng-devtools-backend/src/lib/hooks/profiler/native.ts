@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ɵProfilerEvent} from '@angular/core';
@@ -43,7 +43,7 @@ export class NgProfiler extends Profiler {
 
   private _initialize(): void {
     ngDebugClient().ɵsetProfiler(
-      (event: ɵProfilerEvent, instanceOrLView: {} | null, hookOrListener: any) =>
+      (event: ɵProfilerEvent, instanceOrLView: {} | null = null, hookOrListener: any) =>
         this._callbacks.forEach((cb) => cb(event, instanceOrLView, hookOrListener)),
     );
   }
@@ -72,6 +72,96 @@ export class NgProfiler extends Profiler {
       const id = this._tracker.getDirectiveId(directive);
       this._onDestroy(directive, getDirectiveHostElement(directive), id, isComponent, position);
     });
+  }
+
+  [ɵProfilerEvent.BootstrapApplicationStart](_directive: any, _hookOrListener: any): void {
+    // todo: implement
+    return;
+  }
+
+  [ɵProfilerEvent.BootstrapApplicationEnd](_directive: any, _hookOrListener: any): void {
+    // todo: implement
+    return;
+  }
+
+  [ɵProfilerEvent.BootstrapComponentStart](_directive: any, _hookOrListener: any): void {
+    // todo: implement
+    return;
+  }
+
+  [ɵProfilerEvent.BootstrapComponentEnd](_directive: any, _hookOrListener: any): void {
+    // todo: implement
+    return;
+  }
+
+  [ɵProfilerEvent.ChangeDetectionStart](_directive: any, _hookOrListener: any): void {
+    // todo: implement
+    return;
+  }
+
+  [ɵProfilerEvent.ChangeDetectionEnd](_directive: any, _hookOrListener: any): void {
+    // todo: implement
+    return;
+  }
+
+  [ɵProfilerEvent.ChangeDetectionSyncStart](_directive: any, _hookOrListener: any): void {
+    // todo: implement
+    return;
+  }
+
+  [ɵProfilerEvent.ChangeDetectionSyncEnd](_directive: any, _hookOrListener: any): void {
+    // todo: implement
+    return;
+  }
+
+  [ɵProfilerEvent.AfterRenderHooksStart](_directive: any, _hookOrListener: any): void {
+    // todo: implement
+    return;
+  }
+
+  [ɵProfilerEvent.AfterRenderHooksEnd](_directive: any, _hookOrListener: any): void {
+    // todo: implement
+    return;
+  }
+
+  [ɵProfilerEvent.ComponentStart](_directive: any, _hookOrListener: any): void {
+    // todo: implement
+    return;
+  }
+
+  [ɵProfilerEvent.ComponentEnd](_directive: any, _hookOrListener: any): void {
+    // todo: implement
+    return;
+  }
+
+  [ɵProfilerEvent.DeferBlockStateStart](_directive: any, _hookOrListener: any): void {
+    // todo: implement
+    return;
+  }
+
+  [ɵProfilerEvent.DeferBlockStateEnd](_directive: any, _hookOrListener: any): void {
+    // todo: implement
+    return;
+  }
+
+  [ɵProfilerEvent.DynamicComponentStart](_directive: any, _hookOrListener: any): void {
+    // todo: implement
+    return;
+  }
+
+  [ɵProfilerEvent.DynamicComponentEnd](_directive: any, _hookOrListener: any): void {
+    // todo: implement
+    return;
+  }
+
+  [ɵProfilerEvent.HostBindingsUpdateStart](_directive: any, _hookOrListener: any): void {
+    // todo: implement
+    return;
+  }
+
+  [ɵProfilerEvent.HostBindingsUpdateEnd](_directive: any, _hookOrListener: any): void {
+    // todo: implement
+    return;
   }
 
   [ɵProfilerEvent.TemplateCreateStart](_directive: any, _hookOrListener: any): void {

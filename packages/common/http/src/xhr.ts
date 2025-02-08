@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {XhrFactory} from '@angular/common';
@@ -14,7 +14,13 @@ import {switchMap} from 'rxjs/operators';
 import {HttpBackend} from './backend';
 import {RuntimeErrorCode} from './errors';
 import {HttpHeaders} from './headers';
-import {HttpRequest} from './request';
+import {
+  ACCEPT_HEADER,
+  ACCEPT_HEADER_VALUE,
+  CONTENT_TYPE_HEADER,
+  HttpRequest,
+  X_REQUEST_URL_HEADER,
+} from './request';
 import {
   HTTP_STATUS_CODE_NO_CONTENT,
   HTTP_STATUS_CODE_OK,
@@ -30,6 +36,8 @@ import {
 
 const XSSI_PREFIX = /^\)\]\}',?\n/;
 
+const X_REQUEST_URL_REGEXP = RegExp(`^${X_REQUEST_URL_HEADER}:`, 'm');
+
 /**
  * Determine an appropriate URL for the response, by checking either
  * XMLHttpRequest.responseURL or the X-Request-URL header.
@@ -38,8 +46,8 @@ function getResponseUrl(xhr: any): string | null {
   if ('responseURL' in xhr && xhr.responseURL) {
     return xhr.responseURL;
   }
-  if (/^X-Request-URL:/m.test(xhr.getAllResponseHeaders())) {
-    return xhr.getResponseHeader('X-Request-URL');
+  if (X_REQUEST_URL_REGEXP.test(xhr.getAllResponseHeaders())) {
+    return xhr.getResponseHeader(X_REQUEST_URL_HEADER);
   }
   return null;
 }
@@ -95,16 +103,16 @@ export class HttpXhrBackend implements HttpBackend {
           req.headers.forEach((name, values) => xhr.setRequestHeader(name, values.join(',')));
 
           // Add an Accept header if one isn't present already.
-          if (!req.headers.has('Accept')) {
-            xhr.setRequestHeader('Accept', 'application/json, text/plain, */*');
+          if (!req.headers.has(ACCEPT_HEADER)) {
+            xhr.setRequestHeader(ACCEPT_HEADER, ACCEPT_HEADER_VALUE);
           }
 
           // Auto-detect the Content-Type header if one isn't present already.
-          if (!req.headers.has('Content-Type')) {
+          if (!req.headers.has(CONTENT_TYPE_HEADER)) {
             const detectedType = req.detectContentTypeHeader();
             // Sometimes Content-Type detection fails.
             if (detectedType !== null) {
-              xhr.setRequestHeader('Content-Type', detectedType);
+              xhr.setRequestHeader(CONTENT_TYPE_HEADER, detectedType);
             }
           }
 

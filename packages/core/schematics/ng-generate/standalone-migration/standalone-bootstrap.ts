@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {NgtscProgram} from '@angular/compiler-cli';
@@ -16,7 +16,7 @@ import {getAngularDecorators} from '../../utils/ng_decorators';
 import {closestNode} from '../../utils/typescript/nodes';
 
 import {
-  ComponentImportsRemapper,
+  DeclarationImportsRemapper,
   convertNgModuleDeclarationToStandalone,
   extractDeclarationsFromModule,
   findTestObjectsToMigrate,
@@ -59,7 +59,7 @@ export function toStandaloneBootstrap(
   printer: ts.Printer,
   importRemapper?: ImportRemapper,
   referenceLookupExcludedFiles?: RegExp,
-  componentImportRemapper?: ComponentImportsRemapper,
+  declarationImportRemapper?: DeclarationImportsRemapper,
 ) {
   const tracker = new ChangeTracker(printer, importRemapper);
   const typeChecker = program.getTsProgram().getTypeChecker();
@@ -121,7 +121,7 @@ export function toStandaloneBootstrap(
       allDeclarations,
       tracker,
       templateTypeChecker,
-      componentImportRemapper,
+      declarationImportRemapper,
     );
   }
 
@@ -670,7 +670,7 @@ function addNodesToCopy(
       const symbolName = importSpecifier.propertyName
         ? importSpecifier.propertyName.text
         : importSpecifier.name.text;
-      const alias = importSpecifier.propertyName ? importSpecifier.name.text : null;
+      const alias = importSpecifier.propertyName ? importSpecifier.name.text : undefined;
       tracker.addImport(targetFile, symbolName, moduleName, alias);
       continue;
     }

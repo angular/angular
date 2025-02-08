@@ -40,7 +40,6 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
       type: Component,
       args: [{
         template: …,
-        standalone: true,
         imports: [EagerDep, LazyDep, LoadingDep]…
       }]
     }], null, null);

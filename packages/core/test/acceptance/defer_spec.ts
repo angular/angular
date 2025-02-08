@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {CommonModule, ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
@@ -35,7 +35,7 @@ import {
   ElementRef,
   ViewChild,
 } from '@angular/core';
-import {getComponentDef} from '@angular/core/src/render3/definition';
+import {getComponentDef} from '@angular/core/src/render3/def_getters';
 import {
   ComponentFixture,
   DeferBlockBehavior,
@@ -3027,8 +3027,9 @@ describe('@defer', () => {
       fixture.detectChanges();
       flush();
 
-      expect(spy).toHaveBeenCalledTimes(2);
+      expect(spy).toHaveBeenCalledTimes(3);
       expect(spy).toHaveBeenCalledWith('mouseenter', jasmine.any(Function), jasmine.any(Object));
+      expect(spy).toHaveBeenCalledWith('mouseover', jasmine.any(Function), jasmine.any(Object));
       expect(spy).toHaveBeenCalledWith('focusin', jasmine.any(Function), jasmine.any(Object));
     }));
 
@@ -3062,8 +3063,9 @@ describe('@defer', () => {
       fixture.componentInstance.renderBlock = false;
       fixture.detectChanges();
 
-      expect(spy).toHaveBeenCalledTimes(2);
+      expect(spy).toHaveBeenCalledTimes(3);
       expect(spy).toHaveBeenCalledWith('mouseenter', jasmine.any(Function), jasmine.any(Object));
+      expect(spy).toHaveBeenCalledWith('mouseover', jasmine.any(Function), jasmine.any(Object));
       expect(spy).toHaveBeenCalledWith('focusin', jasmine.any(Function), jasmine.any(Object));
     }));
 
@@ -3098,8 +3100,9 @@ describe('@defer', () => {
       fixture.componentInstance.renderBlock = false;
       fixture.detectChanges();
 
-      expect(spy).toHaveBeenCalledTimes(2);
+      expect(spy).toHaveBeenCalledTimes(3);
       expect(spy).toHaveBeenCalledWith('mouseenter', jasmine.any(Function), jasmine.any(Object));
+      expect(spy).toHaveBeenCalledWith('mouseover', jasmine.any(Function), jasmine.any(Object));
       expect(spy).toHaveBeenCalledWith('focusin', jasmine.any(Function), jasmine.any(Object));
     }));
 
@@ -4021,9 +4024,14 @@ describe('@defer', () => {
       fixture.detectChanges();
 
       // Verify that trigger element is cleaned up.
-      expect(triggerSpy).toHaveBeenCalledTimes(2);
+      expect(triggerSpy).toHaveBeenCalledTimes(3);
       expect(triggerSpy).toHaveBeenCalledWith(
         'mouseenter',
+        jasmine.any(Function),
+        jasmine.any(Object),
+      );
+      expect(triggerSpy).toHaveBeenCalledWith(
+        'mouseover',
         jasmine.any(Function),
         jasmine.any(Object),
       );
@@ -4034,9 +4042,14 @@ describe('@defer', () => {
       );
 
       // Verify that prefetch trigger element is cleaned up.
-      expect(prefetchSpy).toHaveBeenCalledTimes(2);
+      expect(prefetchSpy).toHaveBeenCalledTimes(3);
       expect(prefetchSpy).toHaveBeenCalledWith(
         'mouseenter',
+        jasmine.any(Function),
+        jasmine.any(Object),
+      );
+      expect(prefetchSpy).toHaveBeenCalledWith(
+        'mouseover',
         jasmine.any(Function),
         jasmine.any(Object),
       );
@@ -4146,7 +4159,7 @@ describe('@defer', () => {
           standalone: true,
           imports: [Lazy],
           template: `
-          @defer {
+          @defer (on immediate) {
             <lazy />
           }
         `,
@@ -4230,6 +4243,7 @@ describe('@defer', () => {
       @Component({
         selector: 'chart',
         template: 'Service:{{ svc.id }}|TokenA:{{ tokenA }}',
+        standalone: false,
       })
       class Chart {
         svc = inject(Service);

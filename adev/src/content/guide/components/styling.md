@@ -4,7 +4,7 @@ Tip: This guide assumes you've already read the [Essentials Guide](essentials). 
 
 Components can optionally include CSS styles that apply to that component's DOM:
 
-<docs-code language="ts" highlight="[4]">
+<docs-code language="angular-ts" highlight="[4]">
 @Component({
   selector: 'profile-photo',
   template: `<img src="profile-photo.jpg" alt="Your profile photo">`,
@@ -15,7 +15,7 @@ export class ProfilePhoto { }
 
 You can also choose to write your styles in separate files:
 
-<docs-code language="ts" highlight="[4]">
+<docs-code language="angular-ts" highlight="[4]">
 @Component({
   selector: 'profile-photo',
   templateUrl: 'profile-photo.html',
@@ -39,7 +39,7 @@ Every component has a **view encapsulation** setting that determines how the fra
 component's styles. There are three view encapsulation modes: `Emulated`, `ShadowDom`, and `None`.
 You can specify the mode in the `@Component` decorator:
 
-<docs-code language="ts" highlight="[3]">
+<docs-code language="angular-ts" highlight="[3]">
 @Component({
   ...,
   encapsulation: ViewEncapsulation.None,

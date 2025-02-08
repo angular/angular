@@ -3,13 +3,13 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {NodeJSFileSystem, setFileSystem} from './src/ngtsc/file_system';
 
 export {VERSION} from './src/version';
 
-export * from './src/transformers/jit_transforms';
+export * from './src/ngtsc/transform/jit';
 export * from './src/transformers/api';
 export * from './src/transformers/entry_points';
 
@@ -42,6 +42,6 @@ export * from './src/ngtsc/docs/src/entities';
 export * from './src/ngtsc/docs';
 
 // Exposed for usage in 1P Angular plugin.
-export {isLocalCompilationDiagnostics} from './src/ngtsc/diagnostics';
+export {isLocalCompilationDiagnostics, ErrorCode, ngErrorCode} from './src/ngtsc/diagnostics';
 
 setFileSystem(new NodeJSFileSystem());

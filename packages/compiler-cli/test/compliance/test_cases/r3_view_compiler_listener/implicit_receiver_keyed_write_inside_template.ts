@@ -1,12 +1,13 @@
 import {Component, NgModule} from '@angular/core';
 
 @Component({
-  selector: 'my-component',
-  template: `
+    selector: 'my-component',
+    template: `
     <ng-template #template>
       <button (click)="this['mes' + 'sage'] = 'hello'">Click me</button>
     </ng-template>
-  `
+  `,
+    standalone: false
 })
 export class MyComponent {
   message = '';

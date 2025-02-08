@@ -3,17 +3,16 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Injectable} from '../di/injectable';
 import {InjectionToken} from '../di/injection_token';
 import {StaticProvider} from '../di/interface/provider';
-import {MissingTranslationStrategy} from '../i18n/tokens';
 import {Type} from '../interface/type';
 import {ViewEncapsulation} from '../metadata/view';
 import {ComponentFactory as ComponentFactoryR3} from '../render3/component_ref';
-import {getComponentDef, getNgModuleDef} from '../render3/definition';
+import {getComponentDef, getNgModuleDef} from '../render3/def_getters';
 import {NgModuleFactory as NgModuleFactoryR3} from '../render3/ng_module_ref';
 import {maybeUnwrapFn} from '../render3/util/misc_utils';
 
@@ -67,7 +66,7 @@ export class Compiler {
   }
 
   /**
-   * Same as {@link #compileModuleSync} but also creates ComponentFactories for all components.
+   * Same as {@link Compiler#compileModuleSync compileModuleSync} but also creates ComponentFactories for all components.
    */
   compileModuleAndAllComponentsSync<T>(moduleType: Type<T>): ModuleWithComponentFactories<T> {
     const ngModuleFactory = this.compileModuleSync(moduleType);
@@ -84,7 +83,7 @@ export class Compiler {
   }
 
   /**
-   * Same as {@link #compileModuleAsync} but also creates ComponentFactories for all components.
+   * Same as {@link Compiler#compileModuleAsync compileModuleAsync} but also creates ComponentFactories for all components.
    */
   compileModuleAndAllComponentsAsync<T>(
     moduleType: Type<T>,

@@ -5,7 +5,6 @@ import {HighlightDirective} from '../shared/highlight.directive';
 import {TwainComponent} from '../twain/twain.component';
 
 @Component({
-  standalone: true,
   template: `
     <h2 highlight="skyblue">About</h2>
     <h3>Quote of the day:</h3>

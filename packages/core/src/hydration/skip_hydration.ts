@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {TNode, TNodeFlags} from '../render3/interfaces/node';
@@ -69,4 +69,17 @@ export function isInSkipHydrationBlock(tNode: TNode): boolean {
     currentTNode = currentTNode.parent;
   }
   return false;
+}
+
+/**
+ * Check if an i18n block is in a skip hydration section by looking at a parent TNode
+ * to determine if this TNode is in a skip hydration section or the TNode has
+ * the `ngSkipHydration` attribute.
+ */
+export function isI18nInSkipHydrationBlock(parentTNode: TNode): boolean {
+  return (
+    hasInSkipHydrationBlockFlag(parentTNode) ||
+    hasSkipHydrationAttrOnTNode(parentTNode) ||
+    isInSkipHydrationBlock(parentTNode)
+  );
 }

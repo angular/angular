@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 let _DOM: DomAdapter = null!;
@@ -16,7 +16,6 @@ export function setRootDomAdapter(adapter: DomAdapter) {
   _DOM ??= adapter;
 }
 
-/* tslint:disable:requireParameterType */
 /**
  * Provides DOM operations in an environment-agnostic way.
  *
@@ -41,7 +40,7 @@ export abstract class DomAdapter {
   abstract isShadowRoot(node: any): boolean;
 
   // Used by KeyEventsPlugin
-  abstract onAndCancel(el: any, evt: any, listener: any): Function;
+  abstract onAndCancel(el: any, evt: any, listener: any, options?: any): Function;
 
   // Used by PlatformLocation and ServerEventManagerPlugin
   abstract getGlobalEventTarget(doc: Document, target: string): any;

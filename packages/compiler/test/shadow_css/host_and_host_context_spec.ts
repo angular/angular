@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {shim} from './utils';
@@ -83,6 +83,21 @@ describe('ShadowCss, :host and :host-context', () => {
       expect(shim(':host(:not(p)):before {}', 'contenta', 'a-host')).toEqualCss(
         '[a-host]:not(p):before {}',
       );
+      expect(shim(':host:not(:host.foo) {}', 'contenta', 'a-host')).toEqualCss(
+        '[a-host]:not([a-host].foo) {}',
+      );
+      expect(shim(':host:not(.foo:host) {}', 'contenta', 'a-host')).toEqualCss(
+        '[a-host]:not(.foo[a-host]) {}',
+      );
+      expect(shim(':host:not(:host.foo, :host.bar) {}', 'contenta', 'a-host')).toEqualCss(
+        '[a-host]:not([a-host].foo, .bar[a-host]) {}',
+      );
+      expect(shim(':host:not(:host.foo, .bar :host) {}', 'contenta', 'a-host')).toEqualCss(
+        '[a-host]:not([a-host].foo, .bar [a-host]) {}',
+      );
+      expect(shim(':host:not(.foo, .bar) {}', 'contenta', 'a-host')).toEqualCss(
+        '[a-host]:not(.foo, .bar) {}',
+      );
     });
 
     // see b/63672152
@@ -104,9 +119,56 @@ describe('ShadowCss, :host and :host-context', () => {
         'cmp [a-host] child {}',
       );
     });
+
+    it('should support newlines in the same selector and content ', () => {
+      const selector = `.foo:not(
+        :host) {
+          background-color:
+            green;
+      }`;
+      expect(shim(selector, 'contenta', 'a-host')).toEqualCss(
+        '.foo[contenta]:not( [a-host]) { background-color:green;}',
+      );
+    });
   });
 
   describe(':host-context', () => {
+    it('should transform :host-context with pseudo selectors', () => {
+      expect(
+        shim(':host-context(backdrop:not(.borderless)) .backdrop {}', 'contenta', 'hosta'),
+      ).toEqualCss(
+        'backdrop:not(.borderless)[hosta] .backdrop[contenta], backdrop:not(.borderless) [hosta] .backdrop[contenta] {}',
+      );
+      expect(shim(':where(:host-context(backdrop)) {}', 'contenta', 'hosta')).toEqualCss(
+        ':where(backdrop[hosta]), :where(backdrop [hosta]) {}',
+      );
+      expect(shim(':where(:host-context(outer1)) :host(bar) {}', 'contenta', 'hosta')).toEqualCss(
+        ':where(outer1) bar[hosta] {}',
+      );
+      expect(
+        shim(':where(:host-context(.one)) :where(:host-context(.two)) {}', 'contenta', 'a-host'),
+      ).toEqualCss(
+        ':where(.one.two[a-host]), ' + // `one` and `two` both on the host
+          ':where(.one.two [a-host]), ' + // `one` and `two` are both on the same ancestor
+          ':where(.one .two[a-host]), ' + // `one` is an ancestor and `two` is on the host
+          ':where(.one .two [a-host]), ' + // `one` and `two` are both ancestors (in that order)
+          ':where(.two .one[a-host]), ' + // `two` is an ancestor and `one` is on the host
+          ':where(.two .one [a-host])' + // `two` and `one` are both ancestors (in that order)
+          ' {}',
+      );
+      expect(
+        shim(':where(:host-context(backdrop)) .foo ~ .bar {}', 'contenta', 'hosta'),
+      ).toEqualCss(
+        ':where(backdrop[hosta]) .foo[contenta] ~ .bar[contenta], :where(backdrop [hosta]) .foo[contenta] ~ .bar[contenta] {}',
+      );
+      expect(shim(':where(:host-context(backdrop)) :host {}', 'contenta', 'hosta')).toEqualCss(
+        ':where(backdrop) [hosta] {}',
+      );
+      expect(shim('div:where(:host-context(backdrop)) :host {}', 'contenta', 'hosta')).toEqualCss(
+        'div:where(backdrop) [hosta] {}',
+      );
+    });
+
     it('should handle tag selector', () => {
       expect(shim(':host-context(div) {}', 'contenta', 'a-host')).toEqualCss(
         'div[a-host], div [a-host] {}',
@@ -195,12 +257,41 @@ describe('ShadowCss, :host and :host-context', () => {
           '{}',
       );
     });
+
+    it('should handle :host-context with comma-separated child selector', () => {
+      expect(shim(':host-context(.foo) a:not(.a, .b) {}', 'contenta', 'a-host')).toEqualCss(
+        '.foo[a-host] a[contenta]:not(.a, .b), .foo [a-host] a[contenta]:not(.a, .b) {}',
+      );
+      expect(
+        shim(
+          ':host-context(.foo) a:not([a], .b), .bar, :host-context(.baz) a:not([c], .d) {}',
+          'contenta',
+          'a-host',
+        ),
+      ).toEqualCss(
+        '.foo[a-host] a[contenta]:not([a], .b), .foo [a-host] a[contenta]:not([a], .b), ' +
+          '.bar[contenta], .baz[a-host] a[contenta]:not([c], .d), ' +
+          '.baz [a-host] a[contenta]:not([c], .d) {}',
+      );
+    });
   });
 
   describe(':host-context and :host combination selector', () => {
     it('should handle selectors on the same element', () => {
       expect(shim(':host-context(div):host(.x) > .y {}', 'contenta', 'a-host')).toEqualCss(
         'div.x[a-host] > .y[contenta] {}',
+      );
+    });
+
+    it('should handle no selector :host', () => {
+      // The second selector below should have a `[a-host]` attribute selector
+      // attached to `.one`, current `:host-context` unwrapping logic doesn't
+      // work correctly on prefixed selectors, see #58345.
+      expect(shim(':host:host-context(.one) {}', 'contenta', 'a-host')).toEqualCss(
+        '.one[a-host][a-host], .one [a-host] {}',
+      );
+      expect(shim(':host-context(.one) :host {}', 'contenta', 'a-host')).toEqualCss(
+        '.one [a-host] {}',
       );
     });
 

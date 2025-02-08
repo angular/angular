@@ -11,7 +11,7 @@ import {DOCUMENT} from '@angular/common';
 import {DestroyRef, ElementRef, Injectable, inject, signal} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {fromEvent, combineLatest} from 'rxjs';
-import {map, filter} from 'rxjs/operators';
+import {map, filter, finalize} from 'rxjs/operators';
 
 interface ResizingData {
   isProgress: boolean;
@@ -148,6 +148,7 @@ export class SplitResizerHandler {
             !!origin && (keyEvent.key === 'ArrowLeft' || keyEvent.key === 'ArrowRight'),
         ),
         takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.focusMonitor.stopMonitoring(this.resizer)),
       )
       .subscribe(([_, keyEvent]) => {
         const shift = keyEvent.key === 'ArrowLeft' ? -1 : 1;

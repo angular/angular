@@ -3,11 +3,11 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /**
- * Custom resolution plugin for Webpack's `resolve-enhanced` package that is used by
+ * Custom resolution plugin for webpack's `resolve-enhanced` package that is used by
  * Madge for resolving imports. The plugin extends the resolution by leveraging the
  * runfile resolution and module mappings handled in the module info aspect.
  */

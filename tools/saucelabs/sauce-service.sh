@@ -72,7 +72,7 @@ readonly SAUCE_READY_FILE="${TMP_DIR}/sauce-connect.lock"
 readonly SAUCE_PARAMS_JSON_FILE="${TMP_DIR}/sauce-connect-params.json"
 
 # Amount of seconds we wait for sauceconnect to establish a tunnel instance. In order to not
-# acquire CircleCI instances for too long if sauceconnect fails, we need a connect timeout.
+# acquire CI instances for too long if sauceconnect fails, we need a connect timeout.
 readonly SAUCE_READY_FILE_TIMEOUT=120
 
 readonly SERVICE_LOCK_FILE="${TMP_DIR}/service.lock"

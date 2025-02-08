@@ -3,12 +3,12 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ComponentRef, EnvironmentInjector, Injectable} from '@angular/core';
 
-import {RouterOutletContract} from './directives/router_outlet';
+import type {RouterOutletContract} from './directives/router_outlet';
 import {ActivatedRoute} from './router_state';
 import {getClosestRouteInjector} from './utils/config';
 
@@ -20,15 +20,15 @@ import {getClosestRouteInjector} from './utils/config';
 export class OutletContext {
   outlet: RouterOutletContract | null = null;
   route: ActivatedRoute | null = null;
-  children = new ChildrenOutletContexts(this.rootInjector);
+  children: ChildrenOutletContexts;
   attachRef: ComponentRef<any> | null = null;
   get injector(): EnvironmentInjector {
     return getClosestRouteInjector(this.route?.snapshot) ?? this.rootInjector;
   }
-  // TODO(atscott): Only here to avoid a "breaking" change in a patch/minor. Remove in v19.
-  set injector(_: EnvironmentInjector) {}
 
-  constructor(private readonly rootInjector: EnvironmentInjector) {}
+  constructor(private readonly rootInjector: EnvironmentInjector) {
+    this.children = new ChildrenOutletContexts(this.rootInjector);
+  }
 }
 
 /**

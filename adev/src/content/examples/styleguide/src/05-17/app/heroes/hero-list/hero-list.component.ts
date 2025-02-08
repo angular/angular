@@ -7,7 +7,6 @@ import {NgFor} from '@angular/common';
 
 // #docregion example
 @Component({
-  standalone: true,
   selector: 'toh-hero-list',
   template: `
     <section>

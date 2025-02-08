@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {assertInInjectionContext} from '../../di';
@@ -40,7 +40,7 @@ export function inputRequiredFunction<ReadT, WriteT = ReadT>(
  * The function exposes an API for also declaring required inputs via the
  * `input.required` function.
  *
- * @developerPreview
+ * @publicAPI
  * @docsPrivate Ignored because `input` is the canonical API entry.
  */
 export interface InputFunction {
@@ -51,6 +51,8 @@ export interface InputFunction {
   <T>(): InputSignal<T | undefined>;
   /** Declares an input of type `T` with an explicit initial value. */
   <T>(initialValue: T, opts?: InputOptionsWithoutTransform<T>): InputSignal<T>;
+  /** Declares an input of type `T|undefined` without an initial value, but with input options */
+  <T>(initialValue: undefined, opts: InputOptionsWithoutTransform<T>): InputSignal<T | undefined>;
   /**
    * Declares an input of type `T` with an initial value and a transform
    * function.
@@ -62,6 +64,16 @@ export interface InputFunction {
     initialValue: T,
     opts: InputOptionsWithTransform<T, TransformT>,
   ): InputSignalWithTransform<T, TransformT>;
+  /**
+   * Declares an input of type `T|undefined` without an initial value and with a transform
+   * function.
+   *
+   * The input accepts values of type `TransformT` and the given
+   * transform function will transform the value to type `T|undefined`.
+   */ <T, TransformT>(
+    initialValue: undefined,
+    opts: InputOptionsWithTransform<T | undefined, TransformT>,
+  ): InputSignalWithTransform<T | undefined, TransformT>;
 
   /**
    * Initializes a required input.
@@ -69,7 +81,7 @@ export interface InputFunction {
    * Consumers of your directive/component need to bind to this
    * input. If unset, a compile time error will be reported.
    *
-   * @developerPreview
+   * @publicAPI
    */
   required: {
     /** Declares a required input of type `T`. */
@@ -106,7 +118,7 @@ export interface InputFunction {
  * @usageNotes
  * To use signal-based inputs, import `input` from `@angular/core`.
  *
- * ```
+ * ```ts
  * import {input} from '@angular/core`;
  * ```
  *
@@ -131,7 +143,7 @@ export interface InputFunction {
  * <span>{{firstName()}}</span>
  * ```
  *
- * @developerPreview
+ * @publicAPI
  * @initializerApiFunction
  */
 export const input: InputFunction = (() => {

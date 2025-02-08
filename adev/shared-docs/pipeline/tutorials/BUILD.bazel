@@ -1,0 +1,52 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "editor",
+    srcs = glob(
+        [
+            "*.ts",
+        ],
+        exclude = [
+            "playground.ts",
+            "tutorial.ts",
+        ],
+    ),
+    deps = [
+        "//adev/shared-docs/interfaces",
+        "@npm//@types/node",
+        "@npm//@webcontainer/api",
+        "@npm//fast-glob",
+    ],
+)
+
+ts_library(
+    name = "playground",
+    srcs = [
+        "playground.ts",
+    ],
+    visibility = [
+        "//adev/shared-docs:__subpackages__",
+    ],
+    deps = [
+        ":editor",
+        "//adev/shared-docs/interfaces",
+        "@npm//@types/node",
+    ],
+)
+
+ts_library(
+    name = "tutorials",
+    srcs = [
+        "tutorial.ts",
+    ],
+    visibility = [
+        "//adev/shared-docs:__subpackages__",
+    ],
+    deps = [
+        ":editor",
+        "//adev/shared-docs/interfaces",
+        "@npm//@types/node",
+    ],
+)

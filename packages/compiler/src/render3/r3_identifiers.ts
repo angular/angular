@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as o from '../output/output_ast';
@@ -252,6 +252,32 @@ export class Identifiers {
     name: 'ɵɵdeferPrefetchOnViewport',
     moduleName: CORE,
   };
+  static deferHydrateWhen: o.ExternalReference = {name: 'ɵɵdeferHydrateWhen', moduleName: CORE};
+  static deferHydrateNever: o.ExternalReference = {name: 'ɵɵdeferHydrateNever', moduleName: CORE};
+  static deferHydrateOnIdle: o.ExternalReference = {
+    name: 'ɵɵdeferHydrateOnIdle',
+    moduleName: CORE,
+  };
+  static deferHydrateOnImmediate: o.ExternalReference = {
+    name: 'ɵɵdeferHydrateOnImmediate',
+    moduleName: CORE,
+  };
+  static deferHydrateOnTimer: o.ExternalReference = {
+    name: 'ɵɵdeferHydrateOnTimer',
+    moduleName: CORE,
+  };
+  static deferHydrateOnHover: o.ExternalReference = {
+    name: 'ɵɵdeferHydrateOnHover',
+    moduleName: CORE,
+  };
+  static deferHydrateOnInteraction: o.ExternalReference = {
+    name: 'ɵɵdeferHydrateOnInteraction',
+    moduleName: CORE,
+  };
+  static deferHydrateOnViewport: o.ExternalReference = {
+    name: 'ɵɵdeferHydrateOnViewport',
+    moduleName: CORE,
+  };
   static deferEnableTimerScheduling: o.ExternalReference = {
     name: 'ɵɵdeferEnableTimerScheduling',
     moduleName: CORE,
@@ -384,6 +410,8 @@ export class Identifiers {
   static forwardRef: o.ExternalReference = {name: 'forwardRef', moduleName: CORE};
   static resolveForwardRef: o.ExternalReference = {name: 'resolveForwardRef', moduleName: CORE};
 
+  static replaceMetadata: o.ExternalReference = {name: 'ɵɵreplaceMetadata', moduleName: CORE};
+
   static ɵɵdefineInjectable: o.ExternalReference = {name: 'ɵɵdefineInjectable', moduleName: CORE};
   static declareInjectable: o.ExternalReference = {name: 'ɵɵngDeclareInjectable', moduleName: CORE};
   static InjectableDeclaration: o.ExternalReference = {
@@ -499,6 +527,11 @@ export class Identifiers {
   static storeLet: o.ExternalReference = {name: 'ɵɵstoreLet', moduleName: CORE};
   static readContextLet: o.ExternalReference = {name: 'ɵɵreadContextLet', moduleName: CORE};
 
+  static attachSourceLocations: o.ExternalReference = {
+    name: 'ɵɵattachSourceLocations',
+    moduleName: CORE,
+  };
+
   static NgOnChangesFeature: o.ExternalReference = {name: 'ɵɵNgOnChangesFeature', moduleName: CORE};
 
   static InheritDefinitionFeature: o.ExternalReference = {
@@ -511,8 +544,6 @@ export class Identifiers {
     moduleName: CORE,
   };
 
-  static StandaloneFeature: o.ExternalReference = {name: 'ɵɵStandaloneFeature', moduleName: CORE};
-
   static ProvidersFeature: o.ExternalReference = {name: 'ɵɵProvidersFeature', moduleName: CORE};
 
   static HostDirectivesFeature: o.ExternalReference = {
@@ -522,6 +553,11 @@ export class Identifiers {
 
   static InputTransformsFeatureFeature: o.ExternalReference = {
     name: 'ɵɵInputTransformsFeature',
+    moduleName: CORE,
+  };
+
+  static ExternalStylesFeature: o.ExternalReference = {
+    name: 'ɵɵExternalStylesFeature',
     moduleName: CORE,
   };
 

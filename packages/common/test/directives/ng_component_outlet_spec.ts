@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {CommonModule} from '@angular/common';
@@ -284,7 +284,6 @@ describe('insert/remove', () => {
 
   it('should be available as a standalone directive', () => {
     @Component({
-      standalone: true,
       template: 'Hello World',
     })
     class HelloWorldComp {}
@@ -293,7 +292,6 @@ describe('insert/remove', () => {
       selector: 'test-component',
       imports: [NgComponentOutlet],
       template: ` <ng-container *ngComponentOutlet="component"></ng-container> `,
-      standalone: true,
     })
     class TestComponent {
       component = HelloWorldComp;
@@ -303,6 +301,19 @@ describe('insert/remove', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('Hello World');
+  });
+
+  it('should be able to get the current component instance', () => {
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    const outlet = fixture.componentInstance.ngComponentOutlet!;
+
+    expect(outlet.componentInstance).toBeNull();
+
+    fixture.componentInstance.currentComponent = InjectedComponent;
+    fixture.detectChanges();
+
+    expect(outlet.componentInstance).toBeInstanceOf(InjectedComponent);
   });
 });
 
@@ -379,12 +390,20 @@ describe('inputs', () => {
 });
 
 const TEST_TOKEN = new InjectionToken('TestToken');
-@Component({selector: 'injected-component', template: 'foo'})
+@Component({
+  selector: 'injected-component',
+  template: 'foo',
+  standalone: false,
+})
 class InjectedComponent {
   constructor(@Optional() @Inject(TEST_TOKEN) public testToken: any) {}
 }
 
-@Component({selector: 'injected-component-again', template: 'bar'})
+@Component({
+  selector: 'injected-component-again',
+  template: 'bar',
+  standalone: false,
+})
 class InjectedComponentAgain {}
 
 const TEST_CMP_TEMPLATE = `<ng-template *ngComponentOutlet="
@@ -395,7 +414,11 @@ const TEST_CMP_TEMPLATE = `<ng-template *ngComponentOutlet="
       ngModule: ngModule;
       ngModuleFactory: ngModuleFactory;
     "></ng-template>`;
-@Component({selector: 'test-cmp', template: TEST_CMP_TEMPLATE})
+@Component({
+  selector: 'test-cmp',
+  template: TEST_CMP_TEMPLATE,
+  standalone: false,
+})
 class TestComponent {
   currentComponent: Type<unknown> | null = null;
   injector?: Injector;
@@ -426,10 +449,18 @@ class TestComponent {
 })
 export class TestModule {}
 
-@Component({selector: 'module-2-injected-component', template: 'baz'})
+@Component({
+  selector: 'module-2-injected-component',
+  template: 'baz',
+  standalone: false,
+})
 class Module2InjectedComponent {}
 
-@Component({selector: 'module-2-injected-component-2', template: 'baz2'})
+@Component({
+  selector: 'module-2-injected-component-2',
+  template: 'baz2',
+  standalone: false,
+})
 class Module2InjectedComponent2 {}
 
 @NgModule({
@@ -439,7 +470,11 @@ class Module2InjectedComponent2 {}
 })
 export class TestModule2 {}
 
-@Component({selector: 'module-3-injected-component', template: 'bat'})
+@Component({
+  selector: 'module-3-injected-component',
+  template: 'bat',
+  standalone: false,
+})
 class Module3InjectedComponent {}
 
 @NgModule({
@@ -451,7 +486,6 @@ export class TestModule3 {}
 
 @Component({
   selector: 'cmp-with-inputs',
-  standalone: true,
   template: `foo: {{ foo }}, bar: {{ bar }}, baz: {{ baz }}`,
 })
 class ComponentWithInputs {
@@ -462,7 +496,6 @@ class ComponentWithInputs {
 
 @Component({
   selector: 'another-cmp-with-inputs',
-  standalone: true,
   template: `[ANOTHER] foo: {{ foo }}, bar: {{ bar }}, baz: {{ baz }}`,
 })
 class AnotherComponentWithInputs {
@@ -473,7 +506,6 @@ class AnotherComponentWithInputs {
 
 @Component({
   selector: 'test-cmp',
-  standalone: true,
   imports: [NgComponentOutlet],
   template: `<ng-template *ngComponentOutlet="currentComponent; inputs: inputs"></ng-template>`,
 })

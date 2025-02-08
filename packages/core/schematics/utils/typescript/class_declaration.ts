@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import ts from 'typescript';
@@ -30,6 +30,23 @@ export function findParentClassDeclaration(node: ts.Node): ts.ClassDeclaration |
     node = node.parent;
   }
   return node;
+}
+
+/**
+ * Finds the class declaration that is being referred to by a node.
+ * @param reference Node referring to a class declaration.
+ * @param typeChecker
+ */
+export function findClassDeclaration(
+  reference: ts.Node,
+  typeChecker: ts.TypeChecker,
+): ts.ClassDeclaration | null {
+  return (
+    typeChecker
+      .getTypeAtLocation(reference)
+      .getSymbol()
+      ?.declarations?.find(ts.isClassDeclaration) || null
+  );
 }
 
 /** Checks whether the given class declaration has an explicit constructor or not. */

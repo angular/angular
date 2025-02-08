@@ -4,6 +4,7 @@ const _c1 = ["[card-title]", "[card-content]"];
 const _c2 = ["*"];
 // ...
 selectors: [["card"]],
+standalone: false,
 ngContentSelectors: _c1,
 decls: 3,
 vars: 0,
@@ -17,6 +18,7 @@ template: function Card_Template(rf, ctx) {
 }
 // ...
 selectors: [["card-with-title"]],
+standalone: false,
 ngContentSelectors: _c2,
 decls: 4,
 vars: 0,
@@ -33,6 +35,7 @@ template: function CardWithTitle_Template(rf, ctx) {
 }
 // ...
 selectors: [["app"]],
+standalone: false,
 decls: 2,
 vars: 0,
 template: function App_Template(rf, ctx) {

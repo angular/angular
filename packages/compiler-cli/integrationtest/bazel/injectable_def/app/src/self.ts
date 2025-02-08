@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Component, Injectable, NgModule, Optional, Self} from '@angular/core';
@@ -18,6 +18,7 @@ export class NormalService {
 @Component({
   selector: 'self-app',
   template: '{{found}}',
+  standalone: false,
 })
 export class AppComponent {
   found: boolean;

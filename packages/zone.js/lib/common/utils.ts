@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 /**
  * Suppress closure compiler errors about unknown 'Zone' variable
@@ -566,4 +566,12 @@ export function isIEOrEdge() {
     }
   } catch (error) {}
   return ieOrEdge;
+}
+
+export function isFunction(value: unknown): value is Function {
+  return typeof value === 'function';
+}
+
+export function isNumber(value: unknown): value is number {
+  return typeof value === 'number';
 }

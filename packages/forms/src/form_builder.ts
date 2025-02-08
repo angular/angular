@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {inject, Injectable} from '@angular/core';
@@ -52,6 +52,15 @@ type PermissiveControlConfig<T> = Array<T | FormControlState<T> | ValidatorConfi
 interface PermissiveAbstractControlOptions extends Omit<AbstractControlOptions, 'updateOn'> {
   updateOn?: string;
 }
+
+// Note: these two types have been extracted into type aliases to work around a .d.ts generation
+// issue in TypeScript 5.7. See: https://github.com/Microsoft/TypeScript/issues/60506. The types
+// have to be exported for the workaround to work.
+/** A map of nullable form controls. */
+export type ɵNullableFormControls<T> = {[K in keyof T]: ɵElement<T[K], null>};
+
+/** A map of non-nullable form controls. */
+export type ɵNonNullableFormControls<T> = {[K in keyof T]: ɵElement<T[K], never>};
 
 /**
  * ControlConfig<T> is a tuple containing a value of type T, plus optional validators and async
@@ -197,7 +206,7 @@ export class FormBuilder {
   group<T extends {}>(
     controls: T,
     options?: AbstractControlOptions | null,
-  ): FormGroup<{[K in keyof T]: ɵElement<T[K], null>}>;
+  ): FormGroup<ɵNullableFormControls<T>>;
 
   /**
    * @description
@@ -316,8 +325,7 @@ export class FormBuilder {
    *
    * The following example returns a control with an initial value in a disabled state.
    *
-   * <code-example path="forms/ts/formBuilder/form_builder_example.ts" region="disabled-control">
-   * </code-example>
+   * {@example forms/ts/formBuilder/form_builder_example.ts region='disabled-control'}
    */
   control<T>(
     formState: T | FormControlState<T>,
@@ -418,7 +426,7 @@ export abstract class NonNullableFormBuilder {
   abstract group<T extends {}>(
     controls: T,
     options?: AbstractControlOptions | null,
-  ): FormGroup<{[K in keyof T]: ɵElement<T[K], never>}>;
+  ): FormGroup<ɵNonNullableFormControls<T>>;
 
   /**
    * Similar to `FormBuilder#record`, except any implicitly constructed `FormControl`

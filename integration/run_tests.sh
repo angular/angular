@@ -2,7 +2,6 @@
 
 set -u -e -o pipefail
 
-# see https://circleci.com/docs/2.0/env-vars/#circleci-built-in-environment-variables
 CI=${CI:-false}
 
 cd "$(dirname "$0")"

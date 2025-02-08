@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import ts from 'typescript';
@@ -49,7 +49,8 @@ runInEachFileSystem(() => {
         @Component({
           selector: 'my-comp',
           template: '',
-          hostDirectives: [DirectiveA, DirectiveB]
+          hostDirectives: [DirectiveA, DirectiveB],
+          standalone: false,
         })
         export class MyComp {}
       `,
@@ -97,6 +98,7 @@ runInEachFileSystem(() => {
             inputs: ['value', 'color: colorAlias'],
             outputs: ['opened', 'closed: closedAlias'],
           }],
+          standalone: false,
         })
         export class MyComp {}
       `,
@@ -146,6 +148,7 @@ runInEachFileSystem(() => {
             inputs: ['valueAlias', 'colorAlias: customColorAlias'],
             outputs: ['openedAlias', 'closedAlias: customClosedAlias'],
           }],
+          standalone: false,
         })
         export class MyComp {}
       `,
@@ -198,6 +201,7 @@ runInEachFileSystem(() => {
           selector: 'my-comp',
           template: '',
           hostDirectives: [DirectiveC],
+          standalone: false,
         })
         export class MyComp {
         }
@@ -209,17 +213,17 @@ runInEachFileSystem(() => {
       const jsContents = env.getContents('test.js');
       const dtsContents = env.getContents('test.d.ts');
 
-      expect(jsContents).toContain('ɵɵdefineDirective({ type: DirectiveA, standalone: true });');
+      expect(jsContents).toContain('ɵɵdefineDirective({ type: DirectiveA });');
       expect(jsContents).toContain(
-        'ɵɵdefineDirective({ type: DirectiveB, standalone: true, ' +
+        'ɵɵdefineDirective({ type: DirectiveB, ' +
           'features: [i0.ɵɵHostDirectivesFeature([DirectiveA])] });',
       );
       expect(jsContents).toContain(
-        'ɵɵdefineDirective({ type: DirectiveC, standalone: true, ' +
+        'ɵɵdefineDirective({ type: DirectiveC, ' +
           'features: [i0.ɵɵHostDirectivesFeature([DirectiveB])] });',
       );
       expect(jsContents).toContain(
-        'ɵɵdefineComponent({ type: MyComp, selectors: [["my-comp"]],' +
+        'ɵɵdefineComponent({ type: MyComp, selectors: [["my-comp"]], standalone: false,' +
           ' features: [i0.ɵɵHostDirectivesFeature([DirectiveC])]',
       );
 
@@ -252,7 +256,8 @@ runInEachFileSystem(() => {
         @Component({
           selector: 'my-component',
           template: '',
-          hostDirectives: [forwardRef(() => DirectiveB)]
+          hostDirectives: [forwardRef(() => DirectiveB)],
+          standalone: false,
         })
         export class MyComponent {
         }
@@ -264,7 +269,7 @@ runInEachFileSystem(() => {
         export class DirectiveB {
         }
 
-        @Directive({standalone: true})
+        @Directive({})
         export class DirectiveA {
           @Input() value: any;
         }
@@ -283,8 +288,7 @@ runInEachFileSystem(() => {
         'features: [i0.ɵɵHostDirectivesFeature(function () { return [{ directive: DirectiveA, inputs: ["value", "value"] }]; })]',
       );
       expect(jsContents).toContain(
-        'ɵɵdefineDirective({ type: DirectiveA, ' +
-          'inputs: { value: "value" }, standalone: true });',
+        'ɵɵdefineDirective({ type: DirectiveA, ' + 'inputs: { value: "value" } });',
       );
 
       expect(dtsContents).toContain(
@@ -352,7 +356,8 @@ runInEachFileSystem(() => {
               inputs: ['input: inputAlias'],
               outputs: ['output: outputAlias']
             }
-          ]
+          ],
+          standalone: false,
         })
         export class MyComp {}
       `,
@@ -402,7 +407,8 @@ runInEachFileSystem(() => {
 
         @Component({
           template: '',
-          hostDirectives: [{directive: ExternalDir, inputs: ['input: inputAlias'], outputs: ['output: outputAlias']}]
+          hostDirectives: [{directive: ExternalDir, inputs: ['input: inputAlias'], outputs: ['output: outputAlias']}],
+          standalone: false,
         })
         export class MyComp {}
       `,
@@ -452,7 +458,8 @@ runInEachFileSystem(() => {
 
         @Component({
           template: '',
-          hostDirectives: [ExternalDir]
+          hostDirectives: [ExternalDir],
+          standalone: false,
         })
         export class MyComp {}
       `,
@@ -548,11 +555,14 @@ runInEachFileSystem(() => {
           `
           import {Directive, Component, NgModule} from '@angular/core';
 
-          @Directive()
+          @Directive({
+            standalone: false
+          })
           export class HostDir {}
 
           @Directive({
             hostDirectives: [HostDir],
+            standalone: false,
           })
           export class Dir {}
         `,
@@ -675,6 +685,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir-b]',
+            standalone: false,
           })
           export class HostDirB {}
 
@@ -689,6 +700,7 @@ runInEachFileSystem(() => {
             selector: '[dir]',
             template: '',
             hostDirectives: [HostDirA],
+            standalone: false,
           })
           export class Host {}
         `,
@@ -717,7 +729,8 @@ runInEachFileSystem(() => {
             hostDirectives: [{
               directive: HostDir,
               outputs: ['doesNotExist'],
-            }]
+            }],
+            standalone: false,
           })
           class Dir {}
         `,
@@ -745,7 +758,8 @@ runInEachFileSystem(() => {
             hostDirectives: [{
               directive: HostDir,
               outputs: ['foo'],
-            }]
+            }],
+            standalone: false,
           })
           class Dir {}
         `,
@@ -773,7 +787,8 @@ runInEachFileSystem(() => {
             hostDirectives: [{
               directive: HostDir,
               inputs: ['doesNotExist'],
-            }]
+            }],
+            standalone: false,
           })
           class Dir {}
         `,
@@ -799,6 +814,7 @@ runInEachFileSystem(() => {
           @Directive({
             selector: '[dir]',
             hostDirectives: [{directive: HostDir, inputs: ['foo']}],
+            standalone: false,
           })
           class Dir {}
         `,
@@ -824,7 +840,8 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
-            hostDirectives: [{directive: HostDir, inputs: ['colorAlias: buttonColor']}]
+            hostDirectives: [{directive: HostDir, inputs: ['colorAlias: buttonColor']}],
+            standalone: false,
           })
           class Dir {}
         `,

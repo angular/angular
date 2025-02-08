@@ -3,7 +3,7 @@ import {fakeAsync, ComponentFixture, TestBed, tick, waitForAsync} from '@angular
 
 import {asyncData, asyncError} from '../../testing';
 
-import {of, throwError} from 'rxjs';
+import {Subject, defer, of, throwError} from 'rxjs';
 import {last} from 'rxjs/operators';
 
 import {TwainComponent} from './twain.component';
@@ -25,21 +25,21 @@ describe('TwainComponent', () => {
 
   // #docregion setup
   beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [TwainComponent],
+      providers: [TwainService],
+    });
     testQuote = 'Test Quote';
 
     // #docregion spy
     // Create a fake TwainService object with a `getQuote()` spy
-    const twainService = jasmine.createSpyObj('TwainService', ['getQuote']);
+    const twainService = TestBed.inject(TwainService);
     // Make the spy return a synchronous Observable with the test data
-    getQuoteSpy = twainService.getQuote.and.returnValue(of(testQuote));
+    getQuoteSpy = spyOn(twainService, 'getQuote').and.returnValue(of(testQuote));
     // #enddocregion spy
 
-    TestBed.configureTestingModule({
-      imports: [TwainComponent],
-      providers: [{provide: TwainService, useValue: twainService}],
-    });
-
     fixture = TestBed.createComponent(TwainComponent);
+    fixture.autoDetectChanges();
     component = fixture.componentInstance;
     quoteEl = fixture.nativeElement.querySelector('.twain');
   });
@@ -54,8 +54,8 @@ describe('TwainComponent', () => {
 
     // The quote would not be immediately available if the service were truly async.
     // #docregion sync-test
-    it('should show quote after component initialized', () => {
-      fixture.detectChanges(); // onInit()
+    it('should show quote after component initialized', async () => {
+      await fixture.whenStable(); // onInit()
 
       // sync spy result shows testQuote immediately after init
       expect(quoteEl.textContent).toBe(testQuote);
@@ -67,12 +67,20 @@ describe('TwainComponent', () => {
     // Use `fakeAsync` because the component error calls `setTimeout`
     // #docregion error-test
     it('should display error when TwainService fails', fakeAsync(() => {
-      // tell spy to return an error observable
-      getQuoteSpy.and.returnValue(throwError(() => new Error('TwainService test failure')));
+      // tell spy to return an error observable after a timeout
+      getQuoteSpy.and.returnValue(
+        defer(() => {
+          return new Promise((resolve, reject) => {
+            setTimeout(() => {
+              reject('TwainService test failure');
+            });
+          });
+        }),
+      );
       fixture.detectChanges(); // onInit()
       // sync spy errors immediately after init
 
-      tick(); // flush the component's setTimeout()
+      tick(); // flush the setTimeout()
 
       fixture.detectChanges(); // update errorMessage within setTimeout()
 
@@ -120,46 +128,18 @@ describe('TwainComponent', () => {
     }));
     // #enddocregion fake-async-test
 
-    // #docregion waitForAsync-test
-    it('should show quote after getQuote (waitForAsync)', waitForAsync(() => {
+    // #docregion async-test
+    it('should show quote after getQuote (async)', async () => {
       fixture.detectChanges(); // ngOnInit()
       expect(quoteEl.textContent).withContext('should show placeholder').toBe('...');
 
-      fixture.whenStable().then(() => {
-        // wait for async getQuote
-        fixture.detectChanges(); // update view with quote
-        expect(quoteEl.textContent).toBe(testQuote);
-        expect(errorMessage()).withContext('should not show error').toBeNull();
-      });
-    }));
-    // #enddocregion waitForAsync-test
-
-    // #docregion quote-done-test
-    it('should show last quote (quote done)', (done: DoneFn) => {
-      fixture.detectChanges();
-
-      component.quote.pipe(last()).subscribe(() => {
-        fixture.detectChanges(); // update view with quote
-        expect(quoteEl.textContent).toBe(testQuote);
-        expect(errorMessage()).withContext('should not show error').toBeNull();
-        done();
-      });
+      await fixture.whenStable();
+      // wait for async getQuote
+      fixture.detectChanges(); // update view with quote
+      expect(quoteEl.textContent).toBe(testQuote);
+      expect(errorMessage()).withContext('should not show error').toBeNull();
     });
-    // #enddocregion quote-done-test
-
-    // #docregion spy-done-test
-    it('should show quote after getQuote (spy done)', (done: DoneFn) => {
-      fixture.detectChanges();
-
-      // the spy's most recent call returns the observable with the test quote
-      getQuoteSpy.calls.mostRecent().returnValue.subscribe(() => {
-        fixture.detectChanges(); // update view with quote
-        expect(quoteEl.textContent).toBe(testQuote);
-        expect(errorMessage()).withContext('should not show error').toBeNull();
-        done();
-      });
-    });
-    // #enddocregion spy-done-test
+    // #enddocregion async-test
 
     it('should display error when TwainService fails', fakeAsync(() => {
       // tell spy to return an async error observable

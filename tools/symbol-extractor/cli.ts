@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {runfiles} from '@bazel/runfiles';
@@ -39,7 +39,7 @@ function main(argv: [string, string, string] | [string, string]): boolean {
     console.error('Updated gold file:', goldenFilePath);
     passed = true;
   } else {
-    passed = symbolExtractor.compareAndPrintError(goldenFilePath, goldenContent);
+    passed = symbolExtractor.compareAndPrintError(goldenContent);
     if (!passed) {
       console.error(`TEST FAILED!`);
       console.error(`  To update the golden file run: `);

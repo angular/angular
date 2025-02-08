@@ -10,7 +10,6 @@ import {TrigonometryDirective} from './trigonometry.directive';
 import {Hero, heroes} from './hero';
 
 @Component({
-  standalone: true,
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],

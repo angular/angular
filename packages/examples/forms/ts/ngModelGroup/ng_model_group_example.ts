@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /* tslint:disable:no-console  */
@@ -29,6 +29,7 @@ import {NgForm} from '@angular/forms';
 
     <button (click)="setValue()">Set value</button>
   `,
+  standalone: false,
 })
 export class NgModelGroupComp {
   name = {first: 'Nancy', middle: 'J', last: 'Drew'};

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {EventEmitter, output} from '@angular/core';
@@ -47,6 +47,30 @@ describe('outputToObservable()', () => {
 
     expect(completed).toBe(true);
     expect(subscription.closed).toBe(true);
+  });
+
+  it('should complete EventEmitter upon directive destroy', () => {
+    const eventEmitter = TestBed.runInInjectionContext(() => new EventEmitter<number>());
+    const observable = outputToObservable(eventEmitter);
+
+    let completed = false;
+    const subscription = observable.subscribe({
+      complete: () => (completed = true),
+    });
+
+    eventEmitter.next(1);
+    eventEmitter.next(2);
+
+    expect(completed).toBe(false);
+    expect(subscription.closed).toBe(false);
+    expect(eventEmitter.observed).toBe(true);
+
+    // destroy `EnvironmentInjector`.
+    TestBed.resetTestingModule();
+
+    expect(completed).toBe(true);
+    expect(subscription.closed).toBe(true);
+    expect(eventEmitter.observed).toBe(false);
   });
 
   describe('with `outputFromObservable()` as source', () => {

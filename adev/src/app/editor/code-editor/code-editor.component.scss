@@ -74,7 +74,7 @@
 
 .adev-tabs-and-plus {
   display: flex;
-  width: calc(100% - 2.875rem);
+  width: calc(100% - 2.875rem * 2);
   min-height: 48px;
 }
 
@@ -122,9 +122,20 @@
   // adjust height for terminal tabs
   // so that scroll bar & content do not render under tabs
   height: calc(100% - 49px);
+  transition: height 0.3s ease;
 
   &-hidden {
     display: none;
+  }
+
+  // If error box are displayed, move inline-errors-box
+  // to bottom of the editor and adjust height
+  // so that scroll bar & content do not render under tabs
+  &:has(~ .adev-inline-errors-box) ~ .adev-inline-errors-box {
+      bottom: auto;
+  }
+  &:has(~ .adev-inline-errors-box) {
+    height: min(75% - 49px);
   }
 }
 
@@ -137,6 +148,8 @@
   background-color: color-mix(in srgb, var(--bright-blue), var(--page-background) 90%);
   border: 1px solid color-mix(in srgb, var(--bright-blue), var(--page-background) 70%);
   border-radius: 0.25rem;
+  overflow: auto;
+  max-height: 25%;
 
   button {
     position: absolute;
@@ -162,7 +175,6 @@
     margin: 0;
     margin-inline: 1.25rem;
     color: var(--tertiary-contrast);
-    max-height: 200px;
     overflow: auto;
   }
 }
@@ -183,6 +195,37 @@
   &:hover {
     docs-icon {
       color: var(--primary-contrast);
+    }
+  }
+}
+
+.adev-editor-dropdown {
+  border: 1px solid var(--senary-contrast);
+  border-radius: 0.25rem;
+  padding: 0;
+  transform: translateY(-0.7rem);
+
+  button {
+    background: var(--page-background);
+    font-size: 0.875rem;
+    width: 100%;
+    text-align: left;
+    padding-block: 0.5rem;
+    color: var(--quaternary-contrast);
+    transition: color 0.3s ease, background 0.3s ease;
+    font-weight: 400;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &:hover {
+      background: var(--senary-contrast);
+      color: var(--primary-contrast);
+    }
+    .icon {
+      margin: initial;
+      padding: initial;
+      width: auto;
     }
   }
 }

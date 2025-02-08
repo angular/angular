@@ -5,6 +5,7 @@ import {Component} from '@angular/core';
   template: `
     Favorite Color: <input type="text" [(ngModel)]="favoriteColor">
   `,
+  standalone: false,
 })
 export class FavoriteColorComponent {
   favoriteColor = '';

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -71,7 +71,12 @@ const formControlBinding: Provider = {
  * @ngModule ReactiveFormsModule
  * @publicApi
  */
-@Directive({selector: '[formControl]', providers: [formControlBinding], exportAs: 'ngForm'})
+@Directive({
+  selector: '[formControl]',
+  providers: [formControlBinding],
+  exportAs: 'ngForm',
+  standalone: false,
+})
 export class FormControlDirective extends NgControl implements OnChanges, OnDestroy {
   /**
    * Internal reference to the view model value.

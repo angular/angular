@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {registerLocaleData} from '@angular/common';
@@ -41,6 +41,7 @@ registerLocaleData(localeFr);
       {{ fixedTimezone | date: 'yyyy-MM-dd HH:mm a z' : '+0900' }}
     </p>
   </div>`,
+  standalone: false,
 })
 export class DatePipeComponent {
   today = Date.now();
@@ -61,6 +62,7 @@ export class DatePipeComponent {
     <!--output '2010-09-03 12:05 PM'-->
     <p>The custom date is {{ today | date: 'yyyy-MM-dd HH:mm a' }}</p>
   </div>`,
+  standalone: false,
 })
 export class DeprecatedDatePipeComponent {
   today = Date.now();

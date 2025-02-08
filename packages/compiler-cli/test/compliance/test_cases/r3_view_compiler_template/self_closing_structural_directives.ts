@@ -1,12 +1,13 @@
 import {Component} from '@angular/core';
 
-@Component({selector: 'other-component', standalone: true, template: ''})
-export class OtherComponent {
-}
+@Component({
+  selector: 'other-component',
+  template: '',
+})
+export class OtherComponent {}
 
 @Component({
   selector: 'my-component',
-  standalone: true,
   imports: [OtherComponent],
   template: `
   <div i18n>
@@ -18,5 +19,4 @@ export class OtherComponent {
   </div>
 `,
 })
-export class MyComponent {
-}
+export class MyComponent {}

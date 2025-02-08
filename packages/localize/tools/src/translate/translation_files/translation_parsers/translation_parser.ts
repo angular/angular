@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {MessageId, ɵParsedTranslation} from '@angular/localize';
 
@@ -50,7 +50,7 @@ export interface ParsedTranslationBundle {
  *
  * Example usage:
  *
- * ```
+ * ```ts
  * const parser: TranslationParser = getParser();
  * const analysis = parser.analyze(filePath, content);
  * if (analysis.canParse) {

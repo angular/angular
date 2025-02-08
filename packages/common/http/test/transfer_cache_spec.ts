@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {DOCUMENT} from '@angular/common';
@@ -46,7 +46,11 @@ type RequestBody =
   | null;
 
 describe('TransferCache', () => {
-  @Component({selector: 'test-app-http', template: 'hello'})
+  @Component({
+    selector: 'test-app-http',
+    template: 'hello',
+    standalone: false,
+  })
   class SomeComponent {}
 
   describe('withHttpTransferCache', () => {
@@ -83,6 +87,14 @@ describe('TransferCache', () => {
       TestBed.inject(HttpTestingController).expectNone(url);
       return response;
     }
+
+    beforeEach(() => {
+      globalThis['ngServerMode'] = true;
+    });
+
+    afterEach(() => {
+      globalThis['ngServerMode'] = undefined;
+    });
 
     beforeEach(
       withBody('<test-app-http></test-app-http>', () => {
@@ -319,6 +331,14 @@ describe('TransferCache', () => {
     });
 
     describe('caching in browser context', () => {
+      beforeEach(() => {
+        globalThis['ngServerMode'] = false;
+      });
+
+      afterEach(() => {
+        globalThis['ngServerMode'] = undefined;
+      });
+
       beforeEach(
         withBody('<test-app-http></test-app-http>', () => {
           TestBed.resetTestingModule();

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {LContainer, TYPE} from './container';
@@ -45,6 +45,7 @@ export function isComponentDef<T>(def: DirectiveDef<T>): def is ComponentDef<T> 
 }
 
 export function isRootView(target: LView): boolean {
+  // Determines whether a given LView is marked as a root view.
   return (target[FLAGS] & LViewFlags.IsRoot) !== 0;
 }
 
@@ -57,5 +58,6 @@ export function hasI18n(lView: LView): boolean {
 }
 
 export function isDestroyed(lView: LView): boolean {
+  // Determines whether a given LView is marked as destroyed.
   return (lView[FLAGS] & LViewFlags.Destroyed) === LViewFlags.Destroyed;
 }

@@ -10,7 +10,6 @@ import {Hero} from '../hero';
 import {HeroService} from '../hero.service';
 
 @Component({
-  standalone: true,
   selector: 'app-hero-search',
   templateUrl: './hero-search.component.html',
   imports: [AsyncPipe, NgFor, RouterLink],

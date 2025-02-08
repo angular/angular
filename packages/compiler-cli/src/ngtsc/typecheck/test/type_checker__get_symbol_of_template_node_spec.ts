@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -758,7 +758,7 @@ runInEachFileSystem(() => {
 
       it('should get a symbol for function on a component used in an input binding', () => {
         const fileName = absoluteFrom('/main.ts');
-        const templateString = `<div [inputA]="helloWorld"></div>`;
+        const templateString = `<div [inputA]="helloWorld" [nestedFunction]="nested.helloWorld1()"></div>`;
         const {templateTypeChecker, program} = setup([
           {
             fileName,
@@ -766,6 +766,7 @@ runInEachFileSystem(() => {
             source: `
             export class Cmp {
               helloWorld() { return ''; }
+              nested = { helloWorld1() { return ''; } };
             }`,
           },
         ]);
@@ -777,6 +778,13 @@ runInEachFileSystem(() => {
         assertExpressionSymbol(symbol);
         expect(program.getTypeChecker().symbolToString(symbol.tsSymbol!)).toEqual('helloWorld');
         expect(program.getTypeChecker().typeToString(symbol.tsType)).toEqual('() => string');
+
+        const nestedSymbol = templateTypeChecker.getSymbolOfNode(nodes[0].inputs[1].value, cmp)!;
+        assertExpressionSymbol(nestedSymbol);
+        expect(program.getTypeChecker().symbolToString(nestedSymbol.tsSymbol!)).toEqual(
+          'helloWorld1',
+        );
+        expect(program.getTypeChecker().typeToString(nestedSymbol.tsType)).toEqual('string');
       });
 
       it('should get a symbol for binary expressions', () => {
@@ -1118,8 +1126,15 @@ runInEachFileSystem(() => {
         const {templateTypeChecker, program} = setup([
           {
             fileName,
-            templates: {'Cmp': '<div [input]="toString(123)"></div>'},
-            source: `export class Cmp { toString(v: any): string { return String(v); } }`,
+            templates: {
+              'Cmp': '<div [input]="toString(123)" [nestedFunction]="nested.toString(123)"></div>',
+            },
+            source: `
+              export class Cmp {
+                toString(v: any): string { return String(v); }
+                nested = { toString(v: any): string { return String(v); } };
+              }
+            `,
           },
         ]);
         const sf = getSourceFileOrError(program, fileName);
@@ -1128,8 +1143,16 @@ runInEachFileSystem(() => {
         const callSymbol = templateTypeChecker.getSymbolOfNode(node.inputs[0].value, cmp)!;
         assertExpressionSymbol(callSymbol);
         // Note that the symbol returned is for the return value of the Call.
-        expect(callSymbol.tsSymbol).toBeNull();
+        expect(callSymbol.tsSymbol).toBeTruthy();
+        expect(callSymbol.tsSymbol?.getName()).toEqual('toString');
         expect(program.getTypeChecker().typeToString(callSymbol.tsType)).toBe('string');
+
+        const nestedCallSymbol = templateTypeChecker.getSymbolOfNode(node.inputs[1].value, cmp)!;
+        assertExpressionSymbol(nestedCallSymbol);
+        // Note that the symbol returned is for the return value of the Call.
+        expect(nestedCallSymbol.tsSymbol).toBeTruthy();
+        expect(nestedCallSymbol.tsSymbol?.getName()).toEqual('toString');
+        expect(program.getTypeChecker().typeToString(nestedCallSymbol.tsType)).toBe('string');
       });
 
       it('should get a symbol for SafeCall expressions', () => {

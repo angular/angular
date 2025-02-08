@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as core from '../../../../core';
@@ -197,7 +197,7 @@ class ElementAttributes {
         array.push(
           o.taggedTemplate(
             trustedValueFn,
-            new o.TemplateLiteral([new o.TemplateLiteralElement(value.value)], []),
+            new o.TemplateLiteralExpr([new o.TemplateLiteralElementExpr(value.value)], []),
             undefined,
             value.sourceSpan,
           ),

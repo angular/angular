@@ -3,7 +3,6 @@ import {bootstrapApplication} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   template: `
     <h2>Cookie recipe</h2>
 

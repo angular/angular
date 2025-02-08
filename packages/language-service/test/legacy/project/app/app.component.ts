@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Component} from '@angular/core';
@@ -25,6 +25,7 @@ export interface Hero {
     <h1>{{title}}</h1>
     <h2>{{hero.name}} details!</h2>
   `,
+  standalone: false,
 })
 export class AppComponent {
   /** This is the title of the `AppComponent` Component. */

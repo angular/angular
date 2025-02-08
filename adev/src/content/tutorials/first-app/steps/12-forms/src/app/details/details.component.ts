@@ -6,7 +6,6 @@ import {HousingLocation} from '../housinglocation';
 
 @Component({
   selector: 'app-details',
-  standalone: true,
   imports: [CommonModule],
   template: `
     <article>

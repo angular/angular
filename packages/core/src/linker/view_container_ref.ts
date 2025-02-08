@@ -3,14 +3,14 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Injector} from '../di/injector';
 import {EnvironmentInjector} from '../di/r3_injector';
 import {validateMatchingNode} from '../hydration/error_handling';
 import {CONTAINERS} from '../hydration/interfaces';
-import {hasInSkipHydrationBlockFlag, isInSkipHydrationBlock} from '../hydration/skip_hydration';
+import {isInSkipHydrationBlock} from '../hydration/skip_hydration';
 import {
   getSegmentHead,
   isDisconnectedNode,
@@ -20,9 +20,9 @@ import {findMatchingDehydratedView, locateDehydratedViewsInContainer} from '../h
 import {isType, Type} from '../interface/type';
 import {assertNodeInjector} from '../render3/assert';
 import {ComponentFactory as R3ComponentFactory} from '../render3/component_ref';
-import {getComponentDef} from '../render3/definition';
+import {getComponentDef} from '../render3/def_getters';
 import {getParentInjectorLocation, NodeInjector} from '../render3/di';
-import {addToViewTree, createLContainer} from '../render3/instructions/shared';
+import {addToEndOfViewTree, createLContainer} from '../render3/instructions/shared';
 import {
   CONTAINER_HEADER_OFFSET,
   DEHYDRATED_VIEWS,
@@ -51,13 +51,8 @@ import {
   TVIEW,
 } from '../render3/interfaces/view';
 import {assertTNodeType} from '../render3/node_assert';
-import {
-  destroyLView,
-  detachView,
-  nativeInsertBefore,
-  nativeNextSibling,
-  nativeParentNode,
-} from '../render3/node_manipulation';
+import {destroyLView, detachView} from '../render3/node_manipulation';
+import {nativeInsertBefore} from '../render3/dom_node_manipulation';
 import {getCurrentTNode, getLView} from '../render3/state';
 import {
   getParentInjectorIndex,
@@ -101,7 +96,7 @@ import {EmbeddedViewRef, ViewRef} from './view_ref';
  * Note: the example uses standalone components, but the function can also be used for
  * non-standalone components (declared in an NgModule) as well.
  *
- * ```typescript
+ * ```angular-ts
  * @Component({
  *   standalone: true,
  *   selector: 'dynamic',
@@ -703,7 +698,7 @@ export function createContainerRef(
     // `_locateOrCreateAnchorNode`).
     lContainer = createLContainer(slotValue, hostLView, null!, hostTNode);
     hostLView[hostTNode.index] = lContainer;
-    addToViewTree(hostLView, lContainer);
+    addToEndOfViewTree(hostLView, lContainer);
   }
   _locateOrCreateAnchorNode(lContainer, hostLView, hostTNode, slotValue);
 
@@ -723,12 +718,12 @@ function insertAnchorNode(hostLView: LView, hostTNode: TNode): RComment {
   const commentNode = renderer.createComment(ngDevMode ? 'container' : '');
 
   const hostNative = getNativeByTNode(hostTNode, hostLView)!;
-  const parentOfHostNative = nativeParentNode(renderer, hostNative);
+  const parentOfHostNative = renderer.parentNode(hostNative);
   nativeInsertBefore(
     renderer,
     parentOfHostNative!,
     commentNode,
-    nativeNextSibling(renderer, hostNative),
+    renderer.nextSibling(hostNative),
     false,
   );
   return commentNode;

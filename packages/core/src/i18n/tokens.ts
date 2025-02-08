@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {InjectionToken} from '../di/injection_token';
@@ -55,7 +55,7 @@ export function getGlobalLocale(): string {
  * @usageNotes
  * ### Example
  *
- * ```typescript
+ * ```ts
  * import { LOCALE_ID } from '@angular/core';
  * import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
  * import { AppModule } from './app/app.module';
@@ -80,7 +80,7 @@ export const LOCALE_ID: InjectionToken<string> = new InjectionToken(ngDevMode ? 
  *
  * See the [i18n guide](guide/i18n/locale-id) for more information.
  *
- * <div class="alert is-helpful">
+ * <div class="docs-alert docs-alert-helpful">
  *
  * **Deprecation notice:**
  *
@@ -100,7 +100,7 @@ export const LOCALE_ID: InjectionToken<string> = new InjectionToken(ngDevMode ? 
  * @usageNotes
  * ### Example
  *
- * ```typescript
+ * ```ts
  * import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
  * import { AppModule } from './app/app.module';
  *
@@ -128,7 +128,7 @@ export const DEFAULT_CURRENCY_CODE = new InjectionToken<string>(
  * @usageNotes
  * ### Example
  *
- * ```typescript
+ * ```ts
  * import { TRANSLATIONS } from '@angular/core';
  * import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
  * import { AppModule } from './app/app.module';
@@ -154,7 +154,7 @@ export const TRANSLATIONS = new InjectionToken<string>(ngDevMode ? 'Translations
  * @usageNotes
  * ### Example
  *
- * ```typescript
+ * ```ts
  * import { TRANSLATIONS_FORMAT } from '@angular/core';
  * import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
  * import { AppModule } from './app/app.module';
@@ -181,7 +181,7 @@ export const TRANSLATIONS_FORMAT = new InjectionToken<string>(
  *
  * @usageNotes
  * ### Example
- * ```typescript
+ * ```ts
  * import { MissingTranslationStrategy } from '@angular/core';
  * import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
  * import { AppModule } from './app/app.module';

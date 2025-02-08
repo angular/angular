@@ -2,7 +2,6 @@ import {Component} from '@angular/core';
 import {StatusSliderComponent} from './status-slider.component';
 
 @Component({
-  standalone: true,
   selector: 'app-status-slider-page',
   template: `
     <section>

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Component} from '@angular/core';
@@ -17,6 +17,7 @@ import {Observable, Observer} from 'rxjs';
     <button (click)="clicked()">{{ arrived ? 'Reset' : 'Resolve' }}</button>
     <span>Wait for it... {{ greeting | async }}</span>
   </div>`,
+  standalone: false,
 })
 export class AsyncPromisePipeComponent {
   greeting: Promise<string> | null = null;
@@ -50,6 +51,7 @@ export class AsyncPromisePipeComponent {
 @Component({
   selector: 'async-observable-pipe',
   template: '<div><code>observable|async</code>: Time: {{ time | async }}</div>',
+  standalone: false,
 })
 export class AsyncObservablePipeComponent {
   time = new Observable<string>((observer: Observer<string>) => {

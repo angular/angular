@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -16,9 +16,7 @@ import {
   NgZone,
   numberAttribute,
   OnChanges,
-  OnDestroy,
   OnInit,
-  PLATFORM_ID,
   Renderer2,
   SimpleChanges,
   ɵformatRuntimeError as formatRuntimeError,
@@ -31,11 +29,10 @@ import {
   ɵunwrapSafeValue as unwrapSafeValue,
   ChangeDetectorRef,
   ApplicationRef,
-  ɵwhenStable as whenStable,
+  DestroyRef,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../../errors';
-import {isPlatformServer} from '../../platform_id';
 
 import {imgDirectiveDetails} from './error_helper';
 import {cloudinaryLoaderInfo} from './image_loaders/cloudinary_loader';
@@ -203,7 +200,7 @@ export interface ImagePlaceholderConfig {
  *
  * Step 1: import the `NgOptimizedImage` directive.
  *
- * ```typescript
+ * ```ts
  * import { NgOptimizedImage } from '@angular/common';
  *
  * // Include it into the necessary NgModule
@@ -214,7 +211,6 @@ export interface ImagePlaceholderConfig {
  *
  * // ... or a standalone Component
  * @Component({
- *   standalone: true
  *   imports: [NgOptimizedImage],
  * })
  * class MyStandaloneComponent {}
@@ -229,7 +225,7 @@ export interface ImagePlaceholderConfig {
  * To use an existing loader for a **third-party image service**: add the provider factory for your
  * chosen service to the `providers` array. In the example below, the Imgix loader is used:
  *
- * ```typescript
+ * ```ts
  * import {provideImgixLoader} from '@angular/common';
  *
  * // Call the function and add the result to the `providers` array:
@@ -250,7 +246,7 @@ export interface ImagePlaceholderConfig {
  * To use a **custom loader**: provide your loader function as a value for the `IMAGE_LOADER` DI
  * token.
  *
- * ```typescript
+ * ```ts
  * import {IMAGE_LOADER, ImageLoaderConfig} from '@angular/common';
  *
  * // Configure the loader using the `IMAGE_LOADER` token.
@@ -258,7 +254,7 @@ export interface ImagePlaceholderConfig {
  *   {
  *      provide: IMAGE_LOADER,
  *      useValue: (config: ImageLoaderConfig) => {
- *        return `https://example.com/${config.src}-${config.width}.jpg}`;
+ *        return `https://example.com/${config.src}-${config.width}.jpg`;
  *      }
  *   },
  * ],
@@ -266,14 +262,13 @@ export interface ImagePlaceholderConfig {
  *
  * Step 3: update `<img>` tags in templates to use `ngSrc` instead of `src`.
  *
- * ```
+ * ```html
  * <img ngSrc="logo.png" width="200" height="100">
  * ```
  *
  * @publicApi
  */
 @Directive({
-  standalone: true,
   selector: 'img[ngSrc]',
   host: {
     '[style.position]': 'fill ? "absolute" : null',
@@ -287,17 +282,16 @@ export interface ImagePlaceholderConfig {
     '[style.filter]': `placeholder && shouldBlurPlaceholder(placeholderConfig) ? "blur(${PLACEHOLDER_BLUR_AMOUNT}px)" : null`,
   },
 })
-export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
+export class NgOptimizedImage implements OnInit, OnChanges {
   private imageLoader = inject(IMAGE_LOADER);
   private config: ImageConfig = processConfig(inject(IMAGE_CONFIG));
   private renderer = inject(Renderer2);
   private imgElement: HTMLImageElement = inject(ElementRef).nativeElement;
   private injector = inject(Injector);
-  private readonly isServer = isPlatformServer(inject(PLATFORM_ID));
-  private readonly preloadLinkCreator = inject(PreloadLinkCreator);
 
-  // a LCP image observer - should be injected only in the dev mode
-  private lcpObserver = ngDevMode ? this.injector.get(LCPImageObserver) : null;
+  // An LCP image observer should be injected only in development mode.
+  // Do not assign it to `null` to avoid having a redundant property in the production bundle.
+  private lcpObserver?: LCPImageObserver;
 
   /**
    * Calculate the rewritten `src` once and store it.
@@ -320,7 +314,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
    * descriptors to generate the final `srcset` property of the image.
    *
    * Example:
-   * ```
+   * ```html
    * <img ngSrc="hello.jpg" ngSrcset="100w, 200w" />  =>
    * <img src="path/hello.jpg" srcset="path/hello.jpg?w=100 100w, path/hello.jpg?w=200 200w" />
    * ```
@@ -403,6 +397,21 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
    */
   @Input() srcset?: string;
 
+  constructor() {
+    if (ngDevMode) {
+      this.lcpObserver = this.injector.get(LCPImageObserver);
+
+      // Using `DestroyRef` to avoid having an empty `ngOnDestroy` method since this
+      // is only run in development mode.
+      const destroyRef = inject(DestroyRef);
+      destroyRef.onDestroy(() => {
+        if (!this.priority && this._renderedSrc !== null) {
+          this.lcpObserver!.unregisterImage(this._renderedSrc);
+        }
+      });
+    }
+  }
+
   /** @nodoc */
   ngOnInit() {
     performanceMarkFeature('NgOptimizedImage');
@@ -447,18 +456,15 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       assertNoNgSrcsetWithoutLoader(this, this.imageLoader);
       assertNoLoaderParamsWithoutLoader(this, this.imageLoader);
 
-      if (this.lcpObserver !== null) {
-        const ngZone = this.injector.get(NgZone);
-        ngZone.runOutsideAngular(() => {
-          this.lcpObserver!.registerImage(this.getRewrittenSrc(), this.ngSrc, this.priority);
-        });
-      }
+      ngZone.runOutsideAngular(() => {
+        this.lcpObserver!.registerImage(this.getRewrittenSrc(), this.ngSrc, this.priority);
+      });
 
       if (this.priority) {
         const checker = this.injector.get(PreconnectLinkChecker);
         checker.assertPreconnect(this.getRewrittenSrc(), this.ngSrc);
 
-        if (!this.isServer) {
+        if (typeof ngServerMode !== 'undefined' && !ngServerMode) {
           const applicationRef = this.injector.get(ApplicationRef);
           assetPriorityCountBelowThreshold(applicationRef);
         }
@@ -492,10 +498,24 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     const rewrittenSrcset = this.updateSrcAndSrcset();
 
     if (this.sizes) {
-      this.setHostAttribute('sizes', this.sizes);
+      if (this.getLoadingBehavior() === 'lazy') {
+        this.setHostAttribute('sizes', 'auto, ' + this.sizes);
+      } else {
+        this.setHostAttribute('sizes', this.sizes);
+      }
+    } else {
+      if (
+        this.ngSrcset &&
+        VALID_WIDTH_DESCRIPTOR_SRCSET.test(this.ngSrcset) &&
+        this.getLoadingBehavior() === 'lazy'
+      ) {
+        this.setHostAttribute('sizes', 'auto, 100vw');
+      }
     }
-    if (this.isServer && this.priority) {
-      this.preloadLinkCreator.createPreloadLinkTag(
+
+    if (typeof ngServerMode !== 'undefined' && ngServerMode && this.priority) {
+      const preloadLinkCreator = this.injector.get(PreloadLinkCreator);
+      preloadLinkCreator.createPreloadLinkTag(
         this.renderer,
         this.getRewrittenSrc(),
         rewrittenSrcset,
@@ -522,16 +542,24 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     if (changes['ngSrc'] && !changes['ngSrc'].isFirstChange()) {
       const oldSrc = this._renderedSrc;
       this.updateSrcAndSrcset(true);
-      const newSrc = this._renderedSrc;
-      if (this.lcpObserver !== null && oldSrc && newSrc && oldSrc !== newSrc) {
-        const ngZone = this.injector.get(NgZone);
-        ngZone.runOutsideAngular(() => {
-          this.lcpObserver?.updateImage(oldSrc, newSrc);
-        });
+
+      if (ngDevMode) {
+        const newSrc = this._renderedSrc;
+        if (oldSrc && newSrc && oldSrc !== newSrc) {
+          const ngZone = this.injector.get(NgZone);
+          ngZone.runOutsideAngular(() => {
+            this.lcpObserver!.updateImage(oldSrc, newSrc);
+          });
+        }
       }
     }
 
-    if (ngDevMode && changes['placeholder']?.currentValue && !this.isServer) {
+    if (
+      ngDevMode &&
+      changes['placeholder']?.currentValue &&
+      typeof ngServerMode !== 'undefined' &&
+      !ngServerMode
+    ) {
       assertPlaceholderDimensions(this, this.imgElement);
     }
   }
@@ -695,15 +723,8 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
 
     const removeLoadListenerFn = this.renderer.listen(img, 'load', callback);
     const removeErrorListenerFn = this.renderer.listen(img, 'error', callback);
-  }
 
-  /** @nodoc */
-  ngOnDestroy() {
-    if (ngDevMode) {
-      if (!this.priority && this._renderedSrc !== null && this.lcpObserver !== null) {
-        this.lcpObserver.unregisterImage(this._renderedSrc);
-      }
-    }
+    callOnLoadIfImageIsLoaded(img, callback);
   }
 
   private setHostAttribute(name: string, value: string): void {
@@ -959,7 +980,7 @@ function postInitInputChangeError(dir: NgOptimizedImage, inputName: string): {} 
     `${imgDirectiveDetails(dir.ngSrc)} \`${inputName}\` was updated after initialization. ` +
       `The NgOptimizedImage directive will not react to this input change. ${reason} ` +
       `To fix this, either switch \`${inputName}\` to a static value ` +
-      `or wrap the image element in an *ngIf that is gated on the necessary value.`,
+      `or wrap the image element in an @if that is gated on the necessary value.`,
   );
 }
 
@@ -1012,7 +1033,7 @@ function assertNoImageDistortion(
   img: HTMLImageElement,
   renderer: Renderer2,
 ) {
-  const removeLoadListenerFn = renderer.listen(img, 'load', () => {
+  const callback = () => {
     removeLoadListenerFn();
     removeErrorListenerFn();
     const computedStyle = window.getComputedStyle(img);
@@ -1105,7 +1126,9 @@ function assertNoImageDistortion(
         );
       }
     }
-  });
+  };
+
+  const removeLoadListenerFn = renderer.listen(img, 'load', callback);
 
   // We only listen to the `error` event to remove the `load` event listener because it will not be
   // fired if the image fails to load. This is done to prevent memory leaks in development mode
@@ -1115,6 +1138,8 @@ function assertNoImageDistortion(
     removeLoadListenerFn();
     removeErrorListenerFn();
   });
+
+  callOnLoadIfImageIsLoaded(img, callback);
 }
 
 /**
@@ -1160,7 +1185,7 @@ function assertNonZeroRenderedHeight(
   img: HTMLImageElement,
   renderer: Renderer2,
 ) {
-  const removeLoadListenerFn = renderer.listen(img, 'load', () => {
+  const callback = () => {
     removeLoadListenerFn();
     removeErrorListenerFn();
     const renderedHeight = img.clientHeight;
@@ -1176,13 +1201,17 @@ function assertNonZeroRenderedHeight(
         ),
       );
     }
-  });
+  };
+
+  const removeLoadListenerFn = renderer.listen(img, 'load', callback);
 
   // See comments in the `assertNoImageDistortion`.
   const removeErrorListenerFn = renderer.listen(img, 'error', () => {
     removeLoadListenerFn();
     removeErrorListenerFn();
   });
+
+  callOnLoadIfImageIsLoaded(img, callback);
 }
 
 /**
@@ -1287,7 +1316,7 @@ function assertNoLoaderParamsWithoutLoader(dir: NgOptimizedImage, imageLoader: I
 async function assetPriorityCountBelowThreshold(appRef: ApplicationRef) {
   if (IMGS_WITH_PRIORITY_ATTR_COUNT === 0) {
     IMGS_WITH_PRIORITY_ATTR_COUNT++;
-    await whenStable(appRef);
+    await appRef.whenStable();
     if (IMGS_WITH_PRIORITY_ATTR_COUNT > PRIORITY_COUNT_THRESHOLD) {
       console.warn(
         formatRuntimeError(
@@ -1322,6 +1351,22 @@ function assertPlaceholderDimensions(dir: NgOptimizedImage, imgElement: HTMLImag
           `To fix this, use a smaller image as a placeholder.`,
       ),
     );
+  }
+}
+
+function callOnLoadIfImageIsLoaded(img: HTMLImageElement, callback: VoidFunction): void {
+  // https://html.spec.whatwg.org/multipage/embedded-content.html#dom-img-complete
+  // The spec defines that `complete` is truthy once its request state is fully available.
+  // The image may already be available if it’s loaded from the browser cache.
+  // In that case, the `load` event will not fire at all, meaning that all setup
+  // callbacks listening for the `load` event will not be invoked.
+  // In Safari, there is a known behavior where the `complete` property of an
+  // `HTMLImageElement` may sometimes return `true` even when the image is not fully loaded.
+  // Checking both `img.complete` and `img.naturalWidth` is the most reliable way to
+  // determine if an image has been fully loaded, especially in browsers where the
+  // `complete` property may return `true` prematurely.
+  if (img.complete && img.naturalWidth) {
+    callback();
   }
 }
 

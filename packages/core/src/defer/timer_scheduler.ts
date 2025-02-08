@@ -3,11 +3,10 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ɵɵdefineInjectable} from '../di';
-import {INJECTOR, LView} from '../render3/interfaces/view';
+import {Injector, ɵɵdefineInjectable} from '../di';
 import {arrayInsert2, arraySplice} from '../util/array_utils';
 
 /**
@@ -15,7 +14,8 @@ import {arrayInsert2, arraySplice} from '../util/array_utils';
  * Invoking the returned function schedules a trigger.
  */
 export function onTimer(delay: number) {
-  return (callback: VoidFunction, lView: LView) => scheduleTimerTrigger(delay, callback, lView);
+  return (callback: VoidFunction, injector: Injector) =>
+    scheduleTimerTrigger(delay, callback, injector);
 }
 
 /**
@@ -23,10 +23,9 @@ export function onTimer(delay: number) {
  *
  * @param delay A number of ms to wait until firing a callback.
  * @param callback A function to be invoked after a timeout.
- * @param lView LView that hosts an instance of a defer block.
+ * @param injector injector for the app.
  */
-export function scheduleTimerTrigger(delay: number, callback: VoidFunction, lView: LView) {
-  const injector = lView[INJECTOR]!;
+export function scheduleTimerTrigger(delay: number, callback: VoidFunction, injector: Injector) {
   const scheduler = injector.get(TimerScheduler);
   const cleanupFn = () => scheduler.remove(callback);
   scheduler.add(delay, callback);
@@ -218,7 +217,7 @@ export class TimerScheduler {
   }
 
   /** @nocollapse */
-  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
+  static ɵprov = /** @pureOrBreakMyCode */ /* @__PURE__ */ ɵɵdefineInjectable({
     token: TimerScheduler,
     providedIn: 'root',
     factory: () => new TimerScheduler(),

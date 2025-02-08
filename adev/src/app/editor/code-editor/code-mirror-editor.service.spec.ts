@@ -7,7 +7,7 @@
  */
 
 import {signal} from '@angular/core';
-import {TestBed, fakeAsync, tick} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {EditorState} from '@codemirror/state';
 import type {FileSystemTree} from '@webcontainer/api';
@@ -142,17 +142,19 @@ describe('CodeMirrorEditor', () => {
     expect(service.currentFile().content).toBe(newContent);
   });
 
-  it('should write the changed file content to the sandbox filesystem', fakeAsync(() => {
+  it('should write the changed file content to the sandbox filesystem', () => {
+    jasmine.clock().install();
+    jasmine.clock().mockDate();
     const newContent = 'new content';
 
     const nodeRuntimeSandboxSpy = spyOn(fakeNodeRuntimeSandbox, 'writeFile');
 
     dispatchDocumentChange(newContent);
-
-    tick(EDITOR_CONTENT_CHANGE_DELAY_MILLIES);
+    jasmine.clock().tick(EDITOR_CONTENT_CHANGE_DELAY_MILLIES);
 
     expect(nodeRuntimeSandboxSpy).toHaveBeenCalledWith(service.currentFile().filename, newContent);
-  }));
+    jasmine.clock().uninstall();
+  });
 
   it('should add created file to code editor', async () => {
     const newFile = 'new-component.component.ts';

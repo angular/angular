@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as chars from '../chars';
@@ -35,6 +35,42 @@ enum OnTriggerType {
   IMMEDIATE = 'immediate',
   HOVER = 'hover',
   VIEWPORT = 'viewport',
+  NEVER = 'never',
+}
+
+/** Function that validates the structure of a reference-based trigger. */
+type ReferenceTriggerValidator = (
+  type: OnTriggerType,
+  parameters: string[],
+  placeholder: t.DeferredBlockPlaceholder | null,
+) => void;
+
+/** Parses a `when` deferred trigger. */
+export function parseNeverTrigger(
+  {expression, sourceSpan}: html.BlockParameter,
+  triggers: t.DeferredBlockTriggers,
+  errors: ParseError[],
+): void {
+  const neverIndex = expression.indexOf('never');
+  const neverSourceSpan = new ParseSourceSpan(
+    sourceSpan.start.moveBy(neverIndex),
+    sourceSpan.start.moveBy(neverIndex + 'never'.length),
+  );
+  const prefetchSpan = getPrefetchSpan(expression, sourceSpan);
+  const hydrateSpan = getHydrateSpan(expression, sourceSpan);
+
+  // This is here just to be safe, we shouldn't enter this function
+  // in the first place if a block doesn't have the "on" keyword.
+  if (neverIndex === -1) {
+    errors.push(new ParseError(sourceSpan, `Could not find "never" keyword in expression`));
+  } else {
+    trackTrigger(
+      'never',
+      triggers,
+      errors,
+      new t.NeverDeferredTrigger(neverSourceSpan, sourceSpan, prefetchSpan, null, hydrateSpan),
+    );
+  }
 }
 
 /** Parses a `when` deferred trigger. */
@@ -50,6 +86,7 @@ export function parseWhenTrigger(
     sourceSpan.start.moveBy(whenIndex + 'when'.length),
   );
   const prefetchSpan = getPrefetchSpan(expression, sourceSpan);
+  const hydrateSpan = getHydrateSpan(expression, sourceSpan);
 
   // This is here just to be safe, we shouldn't enter this function
   // in the first place if a block doesn't have the "when" keyword.
@@ -67,7 +104,7 @@ export function parseWhenTrigger(
       'when',
       triggers,
       errors,
-      new t.BoundDeferredTrigger(parsed, sourceSpan, prefetchSpan, whenSourceSpan),
+      new t.BoundDeferredTrigger(parsed, sourceSpan, prefetchSpan, whenSourceSpan, hydrateSpan),
     );
   }
 }
@@ -85,6 +122,7 @@ export function parseOnTrigger(
     sourceSpan.start.moveBy(onIndex + 'on'.length),
   );
   const prefetchSpan = getPrefetchSpan(expression, sourceSpan);
+  const hydrateSpan = getHydrateSpan(expression, sourceSpan);
 
   // This is here just to be safe, we shouldn't enter this function
   // in the first place if a block doesn't have the "on" keyword.
@@ -98,9 +136,13 @@ export function parseOnTrigger(
       sourceSpan,
       triggers,
       errors,
+      expression.startsWith('hydrate')
+        ? validateHydrateReferenceBasedTrigger
+        : validatePlainReferenceBasedTrigger,
       placeholder,
       prefetchSpan,
       onSourceSpan,
+      hydrateSpan,
     );
     parser.parse();
   }
@@ -113,6 +155,13 @@ function getPrefetchSpan(expression: string, sourceSpan: ParseSourceSpan) {
   return new ParseSourceSpan(sourceSpan.start, sourceSpan.start.moveBy('prefetch'.length));
 }
 
+function getHydrateSpan(expression: string, sourceSpan: ParseSourceSpan) {
+  if (!expression.startsWith('hydrate')) {
+    return null;
+  }
+  return new ParseSourceSpan(sourceSpan.start, sourceSpan.start.moveBy('hydrate'.length));
+}
+
 class OnTriggerParser {
   private index = 0;
   private tokens: Token[];
@@ -123,9 +172,11 @@ class OnTriggerParser {
     private span: ParseSourceSpan,
     private triggers: t.DeferredBlockTriggers,
     private errors: ParseError[],
+    private validator: ReferenceTriggerValidator,
     private placeholder: t.DeferredBlockPlaceholder | null,
     private prefetchSpan: ParseSourceSpan | null,
     private onSourceSpan: ParseSourceSpan,
+    private hydrateSpan: ParseSourceSpan | null,
   ) {
     this.tokens = new Lexer().tokenize(expression.slice(start));
   }
@@ -193,6 +244,7 @@ class OnTriggerParser {
     const isFirstTrigger = identifier.index === 0;
     const onSourceSpan = isFirstTrigger ? this.onSourceSpan : null;
     const prefetchSourceSpan = isFirstTrigger ? this.prefetchSpan : null;
+    const hydrateSourceSpan = isFirstTrigger ? this.hydrateSpan : null;
     const sourceSpan = new ParseSourceSpan(
       isFirstTrigger ? this.span.start : triggerNameStartSpan,
       endSpan,
@@ -203,7 +255,14 @@ class OnTriggerParser {
         case OnTriggerType.IDLE:
           this.trackTrigger(
             'idle',
-            createIdleTrigger(parameters, nameSpan, sourceSpan, prefetchSourceSpan, onSourceSpan),
+            createIdleTrigger(
+              parameters,
+              nameSpan,
+              sourceSpan,
+              prefetchSourceSpan,
+              onSourceSpan,
+              hydrateSourceSpan,
+            ),
           );
           break;
 
@@ -216,6 +275,7 @@ class OnTriggerParser {
               sourceSpan,
               this.prefetchSpan,
               this.onSourceSpan,
+              this.hydrateSpan,
             ),
           );
           break;
@@ -229,7 +289,9 @@ class OnTriggerParser {
               sourceSpan,
               this.prefetchSpan,
               this.onSourceSpan,
+              this.hydrateSpan,
               this.placeholder,
+              this.validator,
             ),
           );
           break;
@@ -243,6 +305,7 @@ class OnTriggerParser {
               sourceSpan,
               this.prefetchSpan,
               this.onSourceSpan,
+              this.hydrateSpan,
             ),
           );
           break;
@@ -256,7 +319,9 @@ class OnTriggerParser {
               sourceSpan,
               this.prefetchSpan,
               this.onSourceSpan,
+              this.hydrateSpan,
               this.placeholder,
+              this.validator,
             ),
           );
           break;
@@ -270,7 +335,9 @@ class OnTriggerParser {
               sourceSpan,
               this.prefetchSpan,
               this.onSourceSpan,
+              this.hydrateSpan,
               this.placeholder,
+              this.validator,
             ),
           );
           break;
@@ -395,12 +462,13 @@ function createIdleTrigger(
   sourceSpan: ParseSourceSpan,
   prefetchSpan: ParseSourceSpan | null,
   onSourceSpan: ParseSourceSpan | null,
+  hydrateSpan: ParseSourceSpan | null,
 ): t.IdleDeferredTrigger {
   if (parameters.length > 0) {
     throw new Error(`"${OnTriggerType.IDLE}" trigger cannot have parameters`);
   }
 
-  return new t.IdleDeferredTrigger(nameSpan, sourceSpan, prefetchSpan, onSourceSpan);
+  return new t.IdleDeferredTrigger(nameSpan, sourceSpan, prefetchSpan, onSourceSpan, hydrateSpan);
 }
 
 function createTimerTrigger(
@@ -409,6 +477,7 @@ function createTimerTrigger(
   sourceSpan: ParseSourceSpan,
   prefetchSpan: ParseSourceSpan | null,
   onSourceSpan: ParseSourceSpan | null,
+  hydrateSpan: ParseSourceSpan | null,
 ) {
   if (parameters.length !== 1) {
     throw new Error(`"${OnTriggerType.TIMER}" trigger must have exactly one parameter`);
@@ -420,7 +489,14 @@ function createTimerTrigger(
     throw new Error(`Could not parse time value of trigger "${OnTriggerType.TIMER}"`);
   }
 
-  return new t.TimerDeferredTrigger(delay, nameSpan, sourceSpan, prefetchSpan, onSourceSpan);
+  return new t.TimerDeferredTrigger(
+    delay,
+    nameSpan,
+    sourceSpan,
+    prefetchSpan,
+    onSourceSpan,
+    hydrateSpan,
+  );
 }
 
 function createImmediateTrigger(
@@ -429,12 +505,19 @@ function createImmediateTrigger(
   sourceSpan: ParseSourceSpan,
   prefetchSpan: ParseSourceSpan | null,
   onSourceSpan: ParseSourceSpan | null,
+  hydrateSpan: ParseSourceSpan | null,
 ): t.ImmediateDeferredTrigger {
   if (parameters.length > 0) {
     throw new Error(`"${OnTriggerType.IMMEDIATE}" trigger cannot have parameters`);
   }
 
-  return new t.ImmediateDeferredTrigger(nameSpan, sourceSpan, prefetchSpan, onSourceSpan);
+  return new t.ImmediateDeferredTrigger(
+    nameSpan,
+    sourceSpan,
+    prefetchSpan,
+    onSourceSpan,
+    hydrateSpan,
+  );
 }
 
 function createHoverTrigger(
@@ -443,15 +526,18 @@ function createHoverTrigger(
   sourceSpan: ParseSourceSpan,
   prefetchSpan: ParseSourceSpan | null,
   onSourceSpan: ParseSourceSpan | null,
+  hydrateSpan: ParseSourceSpan | null,
   placeholder: t.DeferredBlockPlaceholder | null,
+  validator: ReferenceTriggerValidator,
 ): t.HoverDeferredTrigger {
-  validateReferenceBasedTrigger(OnTriggerType.HOVER, parameters, placeholder);
+  validator(OnTriggerType.HOVER, parameters, placeholder);
   return new t.HoverDeferredTrigger(
     parameters[0] ?? null,
     nameSpan,
     sourceSpan,
     prefetchSpan,
     onSourceSpan,
+    hydrateSpan,
   );
 }
 
@@ -461,15 +547,18 @@ function createInteractionTrigger(
   sourceSpan: ParseSourceSpan,
   prefetchSpan: ParseSourceSpan | null,
   onSourceSpan: ParseSourceSpan | null,
+  hydrateSpan: ParseSourceSpan | null,
   placeholder: t.DeferredBlockPlaceholder | null,
+  validator: ReferenceTriggerValidator,
 ): t.InteractionDeferredTrigger {
-  validateReferenceBasedTrigger(OnTriggerType.INTERACTION, parameters, placeholder);
+  validator(OnTriggerType.INTERACTION, parameters, placeholder);
   return new t.InteractionDeferredTrigger(
     parameters[0] ?? null,
     nameSpan,
     sourceSpan,
     prefetchSpan,
     onSourceSpan,
+    hydrateSpan,
   );
 }
 
@@ -479,19 +568,28 @@ function createViewportTrigger(
   sourceSpan: ParseSourceSpan,
   prefetchSpan: ParseSourceSpan | null,
   onSourceSpan: ParseSourceSpan | null,
+  hydrateSpan: ParseSourceSpan | null,
   placeholder: t.DeferredBlockPlaceholder | null,
+  validator: ReferenceTriggerValidator,
 ): t.ViewportDeferredTrigger {
-  validateReferenceBasedTrigger(OnTriggerType.VIEWPORT, parameters, placeholder);
+  validator(OnTriggerType.VIEWPORT, parameters, placeholder);
   return new t.ViewportDeferredTrigger(
     parameters[0] ?? null,
     nameSpan,
     sourceSpan,
     prefetchSpan,
     onSourceSpan,
+    hydrateSpan,
   );
 }
 
-function validateReferenceBasedTrigger(
+/**
+ * Checks whether the structure of a non-hydrate reference-based trigger is valid.
+ * @param type Type of the trigger being validated.
+ * @param parameters Parameters of the trigger.
+ * @param placeholder Placeholder of the defer block.
+ */
+function validatePlainReferenceBasedTrigger(
   type: OnTriggerType,
   parameters: string[],
   placeholder: t.DeferredBlockPlaceholder | null,
@@ -513,6 +611,17 @@ function validateReferenceBasedTrigger(
           `@placeholder block with exactly one root element node`,
       );
     }
+  }
+}
+
+/**
+ * Checks whether the structure of a hydrate trigger is valid.
+ * @param type Type of the trigger being validated.
+ * @param parameters Parameters of the trigger.
+ */
+function validateHydrateReferenceBasedTrigger(type: OnTriggerType, parameters: string[]) {
+  if (parameters.length > 0) {
+    throw new Error(`Hydration trigger "${type}" cannot have parameters`);
   }
 }
 

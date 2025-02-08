@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /** @fileoverview provides adapters for communicating with the ng compiler */
@@ -171,6 +171,15 @@ export class LSParseConfigHost implements ConfigurationHost {
         throw new Error(`LanguageServiceFS#lstat#isSymbolicLink not implemented`);
       },
     };
+  }
+  readdir(path: AbsoluteFsPath): PathSegment[] {
+    return this.serverHost.readDirectory(
+      path,
+      undefined,
+      undefined,
+      undefined,
+      /* depth */ 1,
+    ) as PathSegment[];
   }
   pwd(): AbsoluteFsPath {
     return this.serverHost.getCurrentDirectory() as AbsoluteFsPath;

@@ -10,7 +10,6 @@ import {Pipe, PipeTransform} from '@angular/core';
  */
 // #docregion pipe-class
 @Pipe({
-  standalone: true,
   name: 'exponentialStrength',
 })
 export class ExponentialStrengthPipe implements PipeTransform {

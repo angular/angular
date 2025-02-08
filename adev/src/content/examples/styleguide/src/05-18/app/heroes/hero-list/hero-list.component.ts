@@ -13,6 +13,7 @@ import {Hero} from '../shared/hero.model';
       Average power: {{avgPower}}
     </section>
   `,
+  standalone: false,
 })
 export class HeroListComponent {
   heroes: Hero[] = [];

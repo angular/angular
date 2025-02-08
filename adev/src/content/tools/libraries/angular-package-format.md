@@ -12,7 +12,7 @@ You can find the versions of the specification prior to v13 in this [google doc]
 
 ## Why specify a package format?
 
-In today's JavaScript landscape, developers consume packages in many different ways, using many different toolchains \(Webpack, rollup, esbuild, etc.\).
+In today's JavaScript landscape, developers consume packages in many different ways, using many different toolchains \(webpack, Rollup, esbuild, etc.\).
 These tools may understand and require different inputs - some tools may be able to process the latest ES language version, while others may benefit from directly consuming an older ES version.
 
 The Angular distribution format supports all of the commonly used development tools and workflows, and adds emphasis on optimizations that result either in smaller application payload size or faster development iteration cycle \(build time\).
@@ -26,21 +26,16 @@ The following example shows a simplified version of the `@angular/core` package'
 
 ```markdown
 node_modules/@angular/core
-├── README.md  
-├── package.json  
-├── index.d.ts  
-├── esm2022  
-│   ├── core.mjs
-│   ├── index.mjs
-│   ├── public_api.mjs
-│   └── testing  
-├── fesm2022  
+├── README.md
+├── package.json
+├── index.d.ts
+├── fesm2022
 │   ├── core.mjs
 │   ├── core.mjs.map
 │   ├── testing.mjs
 │   └── testing.mjs.map
-└── testing  
-    └── index.d.ts  
+└── testing
+    └── index.d.ts
 ```
 
 This table describes the file layout under `node_modules/@angular/core` annotated to describe the purpose of files and directories:
@@ -50,8 +45,6 @@ This table describes the file layout under `node_modules/@angular/core` annotate
 | `README.md`                                                                                                                                               | Package README, used by npmjs web UI.                                                                                                                                                                          |
 | `package.json`                                                                                                                                            | Primary `package.json`, describing the package itself as well as all available entrypoints and code formats. This file contains the "exports" mapping used by runtimes and tools to perform module resolution. |
 | `index.d.ts`                                                                                                                                               | Bundled `.d.ts` for the primary entrypoint `@angular/core`.                                                                                                                                                    |
-| `esm2022/` <br /> &nbsp;&nbsp;─ `core.mjs` <br /> &nbsp;&nbsp;─ `index.mjs` <br /> &nbsp;&nbsp;─ `public_api.mjs`                                         | Tree of `@angular/core` sources in unflattened ES2022 format.                                                                                                                                                  |
-| `esm2022/testing/`                                                                                                                                        | Tree of the `@angular/core/testing` entrypoint in unflattened ES2022 format.                                                                                                                                   |
 | `fesm2022/` <br /> &nbsp;&nbsp;─ `core.mjs` <br /> &nbsp;&nbsp;─ `core.mjs.map` <br /> &nbsp;&nbsp;─ `testing.mjs` <br /> &nbsp;&nbsp;─ `testing.mjs.map` | Code for all entrypoints in flattened \(FESM\) ES2022 format, along with source maps.                                                                                                                           |
 | `testing/`                                                                                                                                                | Directory representing the "testing" entrypoint.                                                                                                                                                               |
 | `testing/index.d.ts`                                                                                                                                    | Bundled `.d.ts` for the `@angular/core/testing` entrypoint.                                                                                                                                                     |
@@ -96,14 +89,10 @@ The `"exports"` field has the following structure:
   },
   ".": {
     "types": "./core.d.ts",
-    "esm": "./esm2022/core.mjs",
-    "esm2022": "./esm2022/core.mjs",
     "default": "./fesm2022/core.mjs"
   },
   "./testing": {
     "types": "./testing/testing.d.ts",
-    "esm": "./esm2022/testing/testing.mjs",
-    "esm2022": "./esm2022/testing/testing.mjs",
     "default": "./fesm2022/testing.mjs"
   }
 }
@@ -116,8 +105,6 @@ For each entrypoint, the available formats are:
 | Formats                   | Details |
 |:---                       |:---     |
 | Typings \(`.d.ts` files\) | `.d.ts` files are used by TypeScript when depending on a given package.                                                                                                           |
-| `es2022`                  | ES2022 code flattened into a single source file.                                                                                                                                  |
-| `esm2022`                 | ES2022 code in unflattened source files \(this format is included for experimentation - see [this discussion of defaults](#note-about-the-defaults-in-packagejson) for details\). |
 | `default`               | ES2022 code flattened into a single source.
 
 Tooling that is aware of these keys may preferentially select a desirable code format from `"exports"`.
@@ -263,21 +250,13 @@ To generate a flattened ES Module index file, use the following configuration op
 
 Once the index file \(for example, `my-ui-lib.js`\) is generated by ngc, bundlers and optimizers like Rollup can be used to produce the flattened ESM file.
 
-#### Note about the defaults in package.json
-
-As of webpack v4, the flattening of ES modules optimization should not be necessary for webpack users. It should be possible to get better code-splitting without flattening of modules in webpack.
-In practice, size regressions can still be seen when using unflattened modules as input for webpack v4.
-This is why `module` and `es2022` package.json entries still point to FESM files.
-This issue is being investigated. It is expected to switch the `module` and `es2022` package.json entry points to unflattened files after the size regression issue is resolved.
-The APF currently includes unflattened ESM2022 code for the purpose of validating such a future change.
-
 ### "sideEffects" flag
 
 By default, EcmaScript Modules are side-effectful: importing from a module ensures that any code at the top level of that module should run.
 This is often undesirable, as most side-effectful code in typical modules is not truly side-effectful, but instead only affects specific symbols.
 If those symbols are not imported and used, it's often desirable to remove them in an optimization process known as tree-shaking, and the side-effectful code can prevent this.
 
-Build tools such as Webpack support a flag which allows packages to declare that they do not depend on side-effectful code at the top level of their modules, giving the tools more freedom to tree-shake code from the package.
+Build tools such as webpack support a flag which allows packages to declare that they do not depend on side-effectful code at the top level of their modules, giving the tools more freedom to tree-shake code from the package.
 The end result of these optimizations should be smaller bundle size and better code distribution in bundle chunks after code-splitting.
 This optimization can break your code if it contains non-local side-effects - this is however not common in Angular applications and it's usually a sign of bad design.
 The recommendation is for all packages to claim the side-effect free status by setting the `sideEffects` property to `false`, and that developers follow the [Angular Style Guide](/style-guide) which naturally results in code without non-local side-effects.
@@ -360,7 +339,7 @@ Because of this, the Angular team often uses the language level specifier as a s
 
 ### Bundle
 
-An artifact in the form of a single JS file, produced by a build tool \(for example, [Webpack](https://webpack.js.org) or [Rollup](https://rollupjs.org)\) that contains symbols originating in one or more modules.
+An artifact in the form of a single JS file, produced by a build tool \(for example, [webpack](https://webpack.js.org) or [Rollup](https://rollupjs.org)\) that contains symbols originating in one or more modules.
 Bundles are a browser-specific workaround that reduce network strain that would be caused if browsers were to start downloading hundreds if not tens of thousands of files.
 Node.js typically doesn't use bundles.
 Common bundle formats are UMD and System.register.

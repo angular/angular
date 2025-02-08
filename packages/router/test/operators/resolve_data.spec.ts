@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Component} from '@angular/core';
@@ -121,7 +121,10 @@ describe('resolveData operator', () => {
   });
 
   it('should have correct data when parent resolver runs but data is not inherited', async () => {
-    @Component({template: ''})
+    @Component({
+      template: '',
+      standalone: false,
+    })
     class Empty {}
 
     TestBed.configureTestingModule({
@@ -150,7 +153,10 @@ describe('resolveData operator', () => {
   });
 
   it('should have static title when there is a resolver', async () => {
-    @Component({template: ''})
+    @Component({
+      template: '',
+      standalone: false,
+    })
     class Empty {}
 
     TestBed.configureTestingModule({
@@ -180,7 +186,10 @@ describe('resolveData operator', () => {
   });
 
   it('should inherit resolved data from parent of parent route', async () => {
-    @Component({template: ''})
+    @Component({
+      template: '',
+      standalone: false,
+    })
     class Empty {}
 
     TestBed.configureTestingModule({

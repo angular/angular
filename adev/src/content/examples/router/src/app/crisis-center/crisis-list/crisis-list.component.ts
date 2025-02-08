@@ -10,6 +10,7 @@ import {switchMap} from 'rxjs/operators';
   selector: 'app-crisis-list',
   templateUrl: './crisis-list.component.html',
   styleUrls: ['./crisis-list.component.css'],
+  standalone: false,
 })
 export class CrisisListComponent implements OnInit {
   crises$?: Observable<Crisis[]>;

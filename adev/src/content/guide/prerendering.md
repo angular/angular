@@ -16,7 +16,7 @@ ng add @angular/ssr
 
 </docs-code>
 
-<div class="alert is-helpful">
+<div class="docs-alert docs-alert-helpful">
 
 To create an application with prerendering capabilities from the beginning use the [`ng new --ssr`](tools/cli/setup-local) command.
 

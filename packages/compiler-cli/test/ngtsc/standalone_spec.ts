@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import ts from 'typescript';
@@ -198,6 +198,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'module-cmp',
             template: '<standalone-cmp></standalone-cmp>',
+            standalone: false,
           })
           export class ModuleCmp {}
 
@@ -253,6 +254,7 @@ runInEachFileSystem(() => {
                 selector: 'test-cmp',
                 template: '<div dir></div>',
                 imports: [TestDir],
+                standalone: false,
               })
               export class TestCmp {}
             `,
@@ -306,6 +308,7 @@ runInEachFileSystem(() => {
                 selector: 'test-cmp',
                 template: '<div></div>',
                 schemas: [NO_ERRORS_SCHEMA],
+                standalone: false,
               })
               export class TestCmp {}
             `,
@@ -327,6 +330,7 @@ runInEachFileSystem(() => {
 
               @Directive({
                 selector: '[dir]',
+                standalone: false,
               })
               export class TestDir {}
 
@@ -411,6 +415,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class TestDir {}
 
@@ -527,6 +532,7 @@ runInEachFileSystem(() => {
 
             @Directive({
               selector: '[dir]',
+              standalone: false,
             })
             export class TestDir {}
 
@@ -565,6 +571,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'not-standalone',
             template: '',
+            standalone: false,
           })
           export class NotStandaloneCmp {
             @Input() value!: string;
@@ -615,11 +622,12 @@ runInEachFileSystem(() => {
           export class DepCmp {}
 
           @Component({
-            // missing standalone: true, would ordinarily cause template type-checking errors
+            // standalone: false, would ordinarily cause template type-checking errors
             // as well as an error about imports on a non-standalone component.
             imports: [DepCmp],
             selector: 'test-cmp',
             template: '<dep-cmp></dep-cmp>',
+            standalone: false,
           })
           export class TestCmp {}
         `,
@@ -727,6 +735,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'test-cmp',
             template: '<st-cmp></st-cmp>',
+            standalone: false,
           })
           export class TestCmp {}
 
@@ -756,6 +765,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'test-cmp',
             template: '<div st-dir></div>',
+            standalone: false,
           })
           export class TestCmp {}
 
@@ -789,6 +799,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'test-cmp',
             template: '{{data | stpipe}}',
+            standalone: false,
           })
           export class TestCmp {
             data = 'test';
@@ -840,6 +851,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class TestDir {}
 
@@ -1127,7 +1139,7 @@ runInEachFileSystem(() => {
                 standalone: true,
                 selector: 'standalone-cmp',
                 imports: [DepCmp],
-                template: '',
+                template: '<dep-cmp/>',
               })
               export class StandaloneCmp {}
 
@@ -1206,6 +1218,81 @@ runInEachFileSystem(() => {
         const jsCode = env.getContents('test.js');
         expect(jsCode).toContain('i0.ɵɵdefineInjector({});');
       });
+    });
+  });
+
+  describe('strictStandalone flag', () => {
+    let env!: NgtscTestEnvironment;
+
+    beforeEach(() => {
+      env = NgtscTestEnvironment.setup(testFiles);
+      env.tsconfig({strictTemplates: true, strictStandalone: true});
+    });
+
+    it('should not allow a non-standalone component', () => {
+      env.write(
+        'app.ts',
+        `
+        import {Component} from '@angular/core';
+        
+        @Component({standalone: false, template: ''})
+        export class TestCmp {}
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.NON_STANDALONE_NOT_ALLOWED));
+      expect(diags[0].messageText).toContain('component');
+    });
+
+    it('should not allow a non-standalone directive', () => {
+      env.write(
+        'app.ts',
+        `
+        import {Directive} from '@angular/core';
+        
+        @Directive({standalone: false})
+        export class TestDir {}
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.NON_STANDALONE_NOT_ALLOWED));
+      expect(diags[0].messageText).toContain('directive');
+    });
+
+    it('should allow a no-arg directive', () => {
+      env.write(
+        'app.ts',
+        `
+        import {Directive} from '@angular/core';
+        
+        @Directive()
+        export class TestDir {}
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
+    it('should not allow a non-standalone pipe', () => {
+      env.write(
+        'app.ts',
+        `
+        import {Pipe} from '@angular/core';
+        
+        @Pipe({name: 'test', standalone: false})
+        export class TestPipe {}
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.NON_STANDALONE_NOT_ALLOWED));
+      expect(diags[0].messageText).toContain('pipe');
     });
   });
 });

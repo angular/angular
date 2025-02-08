@@ -10,50 +10,47 @@ export const Attribute: {
 };
 
 // @public
-export function bootstrapEarlyEventContract(field: string, container: HTMLElement, appId: string, eventTypes?: string[], captureEventTypes?: string[], earlyJsactionTracker?: EventContractTracker<EarlyJsactionDataContainer>): void;
+export function bootstrapAppScopedEarlyEventContract(container: HTMLElement, appId: string, bubbleEventTypes: string[], captureEventTypes: string[], dataContainer?: EarlyJsactionDataContainer): void;
+
+// @public
+export function clearAppScopedEarlyEventContract(appId: string, dataContainer?: EarlyJsactionDataContainer): void;
 
 // @public (undocumented)
 export interface EarlyJsactionDataContainer {
     // (undocumented)
     _ejsa?: EarlyJsactionData;
+    // (undocumented)
+    _ejsas?: {
+        [appId: string]: EarlyJsactionData | undefined;
+    };
 }
 
 // @public
 export class EventContract implements UnrenamedEventContract {
-    constructor(containerManager: EventContractContainerManager, useActionResolver?: false | undefined);
-    // (undocumented)
-    static A11Y_CLICK_SUPPORT: boolean;
-    addA11yClickSupport(): void;
-    addEvent(eventType: string, prefixedEventType?: string): void;
+    constructor(containerManager: EventContractContainerManager);
+    addEvent(eventType: string, prefixedEventType?: string, passive?: boolean): void;
     cleanUp(): void;
     ecrd(dispatcher: Dispatcher, restriction: Restriction): void;
-    exportAddA11yClickSupport(): void;
     handler(eventType: string): EventHandler | undefined;
     // (undocumented)
     static MOUSE_SPECIAL_SUPPORT: boolean;
     registerDispatcher(dispatcher: Dispatcher, restriction: Restriction): void;
-    replayEarlyEvents(earlyJsactionContainer?: EarlyJsactionDataContainer): void;
+    replayEarlyEventInfos(earlyEventInfos: eventInfoLib.EventInfo[]): void;
+    replayEarlyEvents(earlyJsactionData?: EarlyJsactionData | undefined): void;
 }
 
 // @public
 export class EventContractContainer implements EventContractContainerManager {
     constructor(element: Element);
-    addEventListener(eventType: string, getHandler: (element: Element) => (event: Event) => void): void;
+    addEventListener(eventType: string, getHandler: (element: Element) => (event: Event) => void, passive?: boolean): void;
     cleanUp(): void;
     // (undocumented)
     readonly element: Element;
 }
 
-// @public (undocumented)
-export type EventContractTracker<T> = {
-    [key: string]: {
-        [appId: string]: T;
-    };
-};
-
 // @public
 export class EventDispatcher {
-    constructor(dispatchDelegate: (event: Event, actionName: string) => void);
+    constructor(dispatchDelegate: (event: Event, actionName: string) => void, clickModSupport?: boolean);
     dispatch(eventInfo: EventInfo): void;
 }
 
@@ -107,19 +104,27 @@ export const EventPhase: {
 };
 
 // @public
-export const isCaptureEvent: (eventType: string) => boolean;
+export function getActionCache(element: Element): {
+    [key: string]: string | undefined;
+};
 
 // @public
-export const isSupportedEvent: (eventType: string) => boolean;
+export function getAppScopedQueuedEventInfos(appId: string, dataContainer?: EarlyJsactionDataContainer): EventInfo[];
+
+// @public
+export const isCaptureEventType: (eventType: string) => boolean;
+
+// @public
+export const isEarlyEventType: (eventType: string) => boolean;
+
+// @public
+export function registerAppScopedDispatcher(restriction: Restriction, appId: string, dispatcher: (eventInfo: EventInfo) => void, dataContainer?: EarlyJsactionDataContainer): void;
 
 // @public
 export function registerDispatcher(eventContract: UnrenamedEventContract, dispatcher: EventDispatcher): void;
 
-// @public (undocumented)
-export function registerEventType(element: Element, eventType: string, action: string): void;
-
-// @public (undocumented)
-export function unregisterEventType(element: Element, eventType: string): void;
+// @public
+export function removeAllAppScopedEventListeners(appId: string, dataContainer?: EarlyJsactionDataContainer): void;
 
 // (No @packageDocumentation comment for this package)
 

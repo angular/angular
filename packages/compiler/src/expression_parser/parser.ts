@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as chars from '../chars';
@@ -37,6 +37,7 @@ import {
   ParserError,
   ParseSpan,
   PrefixNot,
+  TypeofExpression,
   PropertyRead,
   PropertyWrite,
   RecursiveAstVisitor,
@@ -48,8 +49,10 @@ import {
   ThisReceiver,
   Unary,
   VariableBinding,
+  TemplateLiteral,
+  TemplateLiteralElement,
 } from './ast';
-import {EOF, Lexer, Token, TokenType} from './lexer';
+import {EOF, Lexer, StringTokenKind, Token, TokenType} from './lexer';
 
 export interface InterpolationPiece {
   text: string;
@@ -175,7 +178,7 @@ export class Parser {
    * parsing errors in case the given expression is invalid.
    *
    * For example,
-   * ```
+   * ```html
    *   <div *ngFor="let item of items">
    *         ^      ^ absoluteValueOffset for `templateValue`
    *         absoluteKeyOffset for `templateKey`
@@ -186,7 +189,7 @@ export class Parser {
    * 3. ngForOf -> items
    *
    * This is apparent from the de-sugared template:
-   * ```
+   * ```html
    *   <ng-template ngFor let-item [ngForOf]="items">
    * ```
    *
@@ -960,6 +963,11 @@ class _ParseAST {
           result = this.parsePrefix();
           return new PrefixNot(this.span(start), this.sourceSpan(start), result);
       }
+    } else if (this.next.isKeywordTypeof()) {
+      this.advance();
+      const start = this.inputIndex;
+      let result = this.parsePrefix();
+      return new TypeofExpression(this.span(start), this.sourceSpan(start), result);
     }
     return this.parseCallChain();
   }
@@ -1031,7 +1039,11 @@ class _ParseAST {
       const value = this.next.toNumber();
       this.advance();
       return new LiteralPrimitive(this.span(start), this.sourceSpan(start), value);
-    } else if (this.next.isString()) {
+    } else if (this.next.isTemplateLiteralEnd()) {
+      return this.parseNoInterpolationTemplateLiteral(start);
+    } else if (this.next.isTemplateLiteralPart()) {
+      return this.parseTemplateLiteral();
+    } else if (this.next.isString() && this.next.kind === StringTokenKind.Plain) {
       const literalValue = this.next.toString();
       this.advance();
       return new LiteralPrimitive(this.span(start), this.sourceSpan(start), literalValue);
@@ -1209,7 +1221,7 @@ class _ParseAST {
    * parsing errors in case the given expression is invalid.
    *
    * For example,
-   * ```
+   * ```html
    *   <div *ngFor="let item of items; index as i; trackBy: func">
    * ```
    * contains five bindings:
@@ -1392,6 +1404,55 @@ class _ParseAST {
     this.consumeStatementTerminator();
     const sourceSpan = new AbsoluteSourceSpan(spanStart, this.currentAbsoluteOffset);
     return new VariableBinding(sourceSpan, key, value);
+  }
+
+  private parseNoInterpolationTemplateLiteral(start: number): AST {
+    const text = this.next.strValue;
+    this.advance();
+    const span = this.span(start);
+    const sourceSpan = this.sourceSpan(start);
+    return new TemplateLiteral(
+      span,
+      sourceSpan,
+      [new TemplateLiteralElement(span, sourceSpan, text)],
+      [],
+    );
+  }
+
+  private parseTemplateLiteral(): AST {
+    const start = this.inputIndex;
+    const elements: TemplateLiteralElement[] = [];
+    const expressions: AST[] = [];
+
+    while (this.next !== EOF) {
+      const token = this.next;
+
+      if (token.isTemplateLiteralPart() || token.isTemplateLiteralEnd()) {
+        elements.push(
+          new TemplateLiteralElement(
+            this.span(this.inputIndex),
+            this.sourceSpan(this.inputIndex),
+            token.strValue,
+          ),
+        );
+        this.advance();
+        if (token.isTemplateLiteralEnd()) {
+          break;
+        }
+      } else if (token.isTemplateLiteralInterpolationStart()) {
+        this.advance();
+        const expression = this.parsePipe();
+        if (expression instanceof EmptyExpr) {
+          this.error('Template literal interpolation cannot be empty');
+        } else {
+          expressions.push(expression);
+        }
+      } else {
+        this.advance();
+      }
+    }
+
+    return new TemplateLiteral(this.span(start), this.sourceSpan(start), elements, expressions);
   }
 
   /**

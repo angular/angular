@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {InjectionToken, InjectOptions, Injector, Type, ViewEncapsulation} from '@angular/core';
@@ -203,14 +203,21 @@ export interface UpdatedStateData {
 }
 
 export interface Route {
-  name: string;
-  hash: string | null;
-  path: string;
-  specificity: string | null;
-  handler: string;
-  data: any;
+  name?: string;
+  hash?: string | null;
+  specificity?: string | null;
+  handler?: string;
+  pathMatch?: 'prefix' | 'full';
+  canActivateGuards?: string[] | null;
+  providers?: string[] | null;
+  title?: string;
   children?: Array<Route>;
+  data?: any;
+  path: string;
+  component: string;
+  isActive: boolean;
   isAux: boolean;
+  isLazy: boolean;
 }
 
 export interface AngularDetection {

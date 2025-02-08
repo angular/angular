@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {NgLocalization} from '@angular/common';
@@ -21,6 +21,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 @Component({
   selector: 'i18n-cmp',
   template: '',
+  standalone: false,
 })
 export class I18nComponent {
   count?: number;

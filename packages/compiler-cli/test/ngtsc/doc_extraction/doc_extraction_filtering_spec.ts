@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {DocEntry} from '@angular/compiler-cli/src/ngtsc/docs';
@@ -44,6 +44,31 @@ runInEachFileSystem(() => {
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(0);
+    });
+
+    it('should extract the type declaration if the value declaration is private', () => {
+      env.write(
+        'index.ts',
+        `
+       /**
+        * Documented 
+        */ 
+       export interface FormControl<T> {
+          name: string;
+       }
+       export interface ɵFormControlCtor {
+        new (): FormControl<any>;
+       }
+       export const FormControl: ɵFormControlCtor = class FormControl<TValue = any> {
+       
+       }
+      `,
+      );
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+      expect(docs[0].name).toBe('FormControl');
+      expect(docs[0].rawComment).toMatch(/Documented/);
     });
   });
 });

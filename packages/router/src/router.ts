@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Location} from '@angular/common';
@@ -12,7 +12,7 @@ import {
   Injectable,
   Type,
   ɵConsole as Console,
-  ɵPendingTasks as PendingTasks,
+  ɵPendingTasksInternal as PendingTasks,
   ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 import {Observable, Subject, Subscription, SubscriptionLike} from 'rxjs';
@@ -58,10 +58,6 @@ import {validateConfig} from './utils/config';
 import {afterNextNavigation} from './utils/navigations';
 import {standardizeConfig} from './components/empty_outlet';
 
-function defaultErrorHandler(error: any): never {
-  throw error;
-}
-
 /**
  * The equivalent `IsActiveMatchOptions` options for `Router.isActive` is called with `true`
  * (exact = true).
@@ -87,9 +83,11 @@ export const subsetMatchOptions: IsActiveMatchOptions = {
 /**
  * @description
  *
- * A service that provides navigation among views and URL manipulation capabilities.
+ * A service that facilitates navigation among views and URL manipulation capabilities.
+ * This service is provided in the root scope and configured with [provideRouter](api/router/provideRouter).
  *
  * @see {@link Route}
+ * @see {@link provideRouter}
  * @see [Routing and Navigation Guide](guide/routing/common-router-tasks).
  *
  * @ngModule RouterModule
@@ -139,15 +137,6 @@ export class Router {
   get routerState() {
     return this.stateManager.getRouterState();
   }
-
-  /**
-   * A handler for navigation errors in this NgModule.
-   *
-   * @deprecated Subscribe to the `Router` events and watch for `NavigationError` instead.
-   *   `provideRouter` has the `withNavigationErrorHandler` feature to make this easier.
-   * @see {@link withNavigationErrorHandler}
-   */
-  errorHandler: (error: any) => any = this.options.errorHandler || defaultErrorHandler;
 
   /**
    * True if at least one navigation event has occurred,
@@ -366,7 +355,7 @@ export class Router {
    *
    * @usageNotes
    *
-   * ```
+   * ```ts
    * router.resetConfig([
    *  { path: 'team/:id', component: TeamCmp, children: [
    *    { path: 'simple', component: SimpleCmp },
@@ -388,6 +377,12 @@ export class Router {
 
   /** Disposes of the router. */
   dispose(): void {
+    // We call `unsubscribe()` to release observers, as users may forget to
+    // unsubscribe manually when subscribing to `router.events`. We do not call
+    // `complete()` because it is unsafe; if someone subscribes using the `first`
+    // operator and the observable completes before emitting a value,
+    // RxJS will throw an error.
+    this._events.unsubscribe();
     this.navigationTransitions.complete();
     if (this.nonRouterCurrentEntryChangeSubscription) {
       this.nonRouterCurrentEntryChangeSubscription.unsubscribe();
@@ -450,7 +445,7 @@ export class Router {
       navigationExtras;
     const f = preserveFragment ? this.currentUrlTree.fragment : fragment;
     let q: Params | null = null;
-    switch (queryParamsHandling) {
+    switch (queryParamsHandling ?? this.options.defaultQueryParamsHandling) {
       case 'merge':
         q = {...this.currentUrlTree.queryParams, ...queryParams};
         break;
@@ -503,7 +498,7 @@ export class Router {
    *
    * The following calls request navigation to an absolute path.
    *
-   * ```
+   * ```ts
    * router.navigateByUrl("/team/33/user/11");
    *
    * // Navigate without updating the URL
@@ -545,7 +540,7 @@ export class Router {
    *
    * The following calls request navigation to a dynamic route path relative to the current URL.
    *
-   * ```
+   * ```ts
    * router.navigate(['team', 33, 'user', 11], {relativeTo: route});
    *
    * // Navigate without updating the URL, overriding the default behavior

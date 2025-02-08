@@ -1,3 +1,12 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
+//tslint:disable:no-console
 import {execSync} from 'node:child_process';
 import {readFile, writeFile, readdir, mkdtemp, realpath, copyFile, unlink} from 'node:fs/promises';
 import {tmpdir} from 'node:os';

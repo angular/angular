@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Type} from '../interface/type';
@@ -14,7 +14,7 @@ import {noSideEffects} from './closure';
  * An interface implemented by all Angular type decorators, which allows them to be used as
  * decorators as well as Angular syntax.
  *
- * ```
+ * ```ts
  * @ng.Component({...})
  * class MyClass {...}
  * ```

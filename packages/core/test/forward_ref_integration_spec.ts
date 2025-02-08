@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {CommonModule} from '@angular/common';
@@ -54,12 +54,14 @@ class Module {}
   selector: 'app',
   viewProviders: [forwardRef(() => Frame)],
   template: `<door><lock></lock></door>`,
+  standalone: false,
 })
 class App {}
 
 @Component({
   selector: 'door',
   template: `{{frame.name}}(<span *ngFor="let lock of locks">{{lock.name}}</span>)`,
+  standalone: false,
 })
 class Door {
   @ContentChildren(forwardRef(() => Lock)) locks!: QueryList<Lock>;
@@ -70,7 +72,10 @@ class Door {
   }
 }
 
-@Directive({selector: 'lock'})
+@Directive({
+  selector: 'lock',
+  standalone: false,
+})
 class Lock {
   name: string = 'lock';
 }

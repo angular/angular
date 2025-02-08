@@ -1,6 +1,6 @@
 # Format data based on locale
 
-Angular provides the following built-in data transformation [pipes](guide/pipes).
+Angular provides the following built-in data transformation [pipes](guide/templates/pipes).
 The data transformation pipes use the [`LOCALE_ID`][ApiCoreLocaleId] token to format data based on rules of each locale.
 
 | Data transformation pipe                   | Details |

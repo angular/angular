@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -48,7 +48,7 @@ export interface TemplateTypeChecker {
   /**
    * Retrieve the template in use for the given component.
    */
-  getTemplate(component: ts.ClassDeclaration): TmplAstNode[] | null;
+  getTemplate(component: ts.ClassDeclaration, optimizeFor?: OptimizeFor): TmplAstNode[] | null;
 
   /**
    * Get all `ts.Diagnostic`s currently available for the given `ts.SourceFile`.
@@ -169,7 +169,7 @@ export interface TemplateTypeChecker {
    */
   getPotentialImportsFor(
     toImport: Reference<ClassDeclaration>,
-    inComponent: ts.ClassDeclaration,
+    inContext: ts.Node,
     importMode: PotentialImportMode,
   ): ReadonlyArray<PotentialImport>;
 

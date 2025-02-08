@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Component, Injector, NgModule} from '@angular/core';
@@ -12,6 +12,7 @@ import {Lib1Module, Service} from 'lib1_built/module';
 @Component({
   selector: 'lib2-cmp',
   template: '{{instance1}}:{{instance2}}',
+  standalone: false,
 })
 export class Lib2Cmp {
   instance1: number = -1;

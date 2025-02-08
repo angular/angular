@@ -1,9 +1,10 @@
 import {Component, NgModule} from '@angular/core';
 
 @Component({
-  selector: 'my-component',
-  template: `
-    <a title="Hello {{name}}"></a>`
+    selector: 'my-component',
+    template: `
+    <a title="Hello {{name}}"></a>`,
+    standalone: false
 })
 export class MyComponent {
   name = 'World';

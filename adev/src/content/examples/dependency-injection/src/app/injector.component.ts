@@ -9,7 +9,6 @@ import {heroServiceProvider} from './heroes/hero.service.provider';
 import {Logger} from './logger.service';
 
 @Component({
-  standalone: true,
   selector: 'app-injectors',
   template: `
   <h2>Other Injections</h2>

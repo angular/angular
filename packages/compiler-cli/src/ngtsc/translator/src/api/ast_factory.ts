@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /**
@@ -20,7 +20,7 @@ export interface AstFactory<TStatement, TExpression> {
    * @param statement the statement where the comments are to be attached.
    * @param leadingComments the comments to attach.
    */
-  attachComments(statement: TStatement, leadingComments: LeadingComment[]): void;
+  attachComments(statement: TStatement | TExpression, leadingComments: LeadingComment[]): void;
 
   /**
    * Create a literal array expression (e.g. `[expr1, expr2]`).
@@ -136,7 +136,7 @@ export interface AstFactory<TStatement, TExpression> {
    *
    * @param url the URL that should by used in the dynamic import
    */
-  createDynamicImport(url: string): TExpression;
+  createDynamicImport(url: string | TExpression): TExpression;
 
   /**
    * Create an identifier.
@@ -216,6 +216,18 @@ export interface AstFactory<TStatement, TExpression> {
    *     template literal.
    */
   createTaggedTemplate(tag: TExpression, template: TemplateLiteral<TExpression>): TExpression;
+
+  /**
+   * Create an untagged template literal
+   *
+   * ```
+   * `str1${expr1}str2${expr2}str3`
+   * ```
+   *
+   * @param template the collection of strings and expressions that constitute an interpolated
+   *     template literal.
+   */
+  createTemplateLiteral(template: TemplateLiteral<TExpression>): TExpression;
 
   /**
    * Create a throw statement (e.g. `throw expr;`).

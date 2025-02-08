@@ -3,10 +3,10 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, Input} from '@angular/core';
+import {Component, input} from '@angular/core';
 
 @Component({
   selector: 'app-zippy',
@@ -14,6 +14,6 @@ import {Component, Input} from '@angular/core';
   styleUrls: ['./zippy.component.scss'],
 })
 export class ZippyComponent {
-  @Input() title!: string;
+  readonly title = input<string>('title');
   visible = false;
 }

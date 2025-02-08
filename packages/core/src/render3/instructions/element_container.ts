@@ -3,12 +3,13 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {validateMatchingNode, validateNodeExists} from '../../hydration/error_handling';
 import {locateNextRNode, siblingAfter} from '../../hydration/node_lookup_utils';
 import {
   getNgContainerSize,
+  isDisconnectedNode,
   markRNodeAsClaimedByHydration,
   setSegmentHead,
 } from '../../hydration/utils';
@@ -22,9 +23,12 @@ import {RComment} from '../interfaces/renderer_dom';
 import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
-import {appendChild, createCommentNode} from '../node_manipulation';
+import {executeContentQueries} from '../queries/query_execution';
+import {appendChild} from '../node_manipulation';
+import {createCommentNode} from '../dom_node_manipulation';
 import {
   getBindingIndex,
+  getBindingsEnabled,
   getCurrentTNode,
   getLView,
   getTView,
@@ -36,15 +40,16 @@ import {
   wasLastNodeCreated,
 } from '../state';
 import {computeStaticStyling} from '../styling/static_styling';
+import {mergeHostAttrs} from '../util/attrs_utils';
 import {getConstant} from '../util/view_utils';
 
 import {
-  createDirectivesInstances,
-  executeContentQueries,
-  getOrCreateTNode,
-  resolveDirectives,
+  createDirectivesInstancesInInstruction,
+  findDirectiveDefMatches,
   saveResolvedLocalsInData,
 } from './shared';
+import {getOrCreateTNode} from '../tnode_manipulation';
+import {resolveDirectives} from '../view/directives';
 
 function elementContainerStartFirstCreatePass(
   index: number,
@@ -66,7 +71,12 @@ function elementContainerStartFirstCreatePass(
   }
 
   const localRefs = getConstant<string[]>(tViewConsts, localRefsIndex);
-  resolveDirectives(tView, lView, tNode, localRefs);
+  if (getBindingsEnabled()) {
+    resolveDirectives(tView, lView, tNode, localRefs, findDirectiveDefMatches);
+  }
+
+  // Merge the template attrs last so that they have the highest priority.
+  tNode.mergedAttrs = mergeHostAttrs(tNode.mergedAttrs, tNode.attrs);
 
   if (tView.queries !== null) {
     tView.queries.elementStart(tView, tNode);
@@ -121,7 +131,7 @@ export function ɵɵelementContainerStart(
   attachPatchData(comment, lView);
 
   if (isDirectiveHost(tNode)) {
-    createDirectivesInstances(tView, lView, tNode);
+    createDirectivesInstancesInInstruction(tView, lView, tNode);
     executeContentQueries(tView, tNode, lView);
   }
 
@@ -204,7 +214,11 @@ function locateOrCreateElementContainerNode(
 ): RComment {
   let comment: RComment;
   const hydrationInfo = lView[HYDRATION];
-  const isNodeCreationMode = !hydrationInfo || isInSkipHydrationBlock() || isDetachedByI18n(tNode);
+  const isNodeCreationMode =
+    !hydrationInfo ||
+    isInSkipHydrationBlock() ||
+    isDisconnectedNode(hydrationInfo, index) ||
+    isDetachedByI18n(tNode);
 
   lastNodeWasCreated(isNodeCreationMode);
 

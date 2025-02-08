@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ConstantPool, Expression, Statement, Type} from '@angular/compiler';
@@ -214,6 +214,15 @@ export interface DecoratorHandler<D, A, S extends SemanticSymbol | null, R> {
     analysis: Readonly<A>,
     resolution: Readonly<R>,
   ): CompileResult | CompileResult[];
+
+  /**
+   * Generates the function that will update a class' metadata at runtime during HMR.
+   */
+  compileHmrUpdateDeclaration?(
+    node: ClassDeclaration,
+    analysis: Readonly<A>,
+    resolution: Readonly<R>,
+  ): ts.FunctionDeclaration | null;
 
   /**
    * Generates code based on each individual source file without using its

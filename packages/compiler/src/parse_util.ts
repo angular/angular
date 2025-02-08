@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import * as chars from './chars';
 import {stringify} from './util';
@@ -150,9 +150,17 @@ export enum ParseErrorLevel {
 
 export class ParseError {
   constructor(
-    public span: ParseSourceSpan,
-    public msg: string,
-    public level: ParseErrorLevel = ParseErrorLevel.ERROR,
+    /** Location of the error. */
+    readonly span: ParseSourceSpan,
+    /** Error message. */
+    readonly msg: string,
+    /** Severity level of the error. */
+    readonly level: ParseErrorLevel = ParseErrorLevel.ERROR,
+    /**
+     * Error that caused the error to be surfaced. For example, an error in a sub-expression that
+     * couldn't be parsed. Not guaranteed to be defined, but can be used to provide more context.
+     */
+    readonly relatedError?: unknown,
   ) {}
 
   contextualMessage(): string {

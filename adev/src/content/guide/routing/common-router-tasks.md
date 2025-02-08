@@ -93,7 +93,7 @@ const routes: Routes = [
 
 Now that you have defined your routes, add them to your application. First, add links to the two components. Assign the anchor tag that you want to add the route to the `routerLink` attribute. Set the value of the attribute to the component to show when a user clicks on each link. Next, update your component template to include `<router-outlet>`. This element informs Angular to update the application view with the component for the selected route.
 
-```html
+```angular-html
 <h1>Angular Router App</h1>
 <nav>
   <ul>
@@ -102,7 +102,7 @@ Now that you have defined your routes, add them to your application. First, add 
   </ul>
 </nav>
 <!-- The routed views render in the <router-outlet>-->
-<router-outlet></router-outlet>
+<router-outlet />
 ```
 
 You also need to add the `RouterLink`, `RouterLinkActive`, and `RouterOutlet` to the `imports` array of `AppComponent`.
@@ -110,8 +110,7 @@ You also need to add the `RouterLink`, `RouterLinkActive`, and `RouterOutlet` to
 ```ts
 @Component({
   selector: 'app-root',
-  standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
@@ -186,7 +185,7 @@ To set up a wildcard route, add the following code to your `routes` definition.
 
 <docs-code>
 
-{ path: '\*\*', component: <component-name> }
+{ path: '**', component: <component-name> }
 
 </docs-code>
 
@@ -260,7 +259,7 @@ This means you're adding a second `<router-outlet>` to your app, because it is i
 In this example, there are two additional child components, `child-a`, and `child-b`.
 Here, `FirstComponent` has its own `<nav>` and a second `<router-outlet>` in addition to the one in `AppComponent`.
 
-```html
+```angular-html
 <h2>First Component</h2>
 
 <nav>
@@ -270,7 +269,7 @@ Here, `FirstComponent` has its own `<nav>` and a second `<router-outlet>` in add
   </ul>
 </nav>
 
-<router-outlet></router-outlet>
+<router-outlet />
 ```
 
 A child route is like any other route, in that it needs both a `path` and a `component`.
@@ -329,7 +328,7 @@ HELPFUL: The `title` property follows the same rules as static route `data` and 
 You can also provide a custom title strategy by extending the `TitleStrategy`.
 
 ```ts
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class TemplatePageTitleStrategy extends TitleStrategy {
   constructor(private readonly title: Title) {
     super();
@@ -346,7 +345,7 @@ export class TemplatePageTitleStrategy extends TitleStrategy {
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
-    {provide: TitleStrategy, useClass: TemplatePageTitleStrategy},
+    { provide: TitleStrategy, useClass: TemplatePageTitleStrategy },
   ]
 };
 ```
@@ -358,7 +357,7 @@ The following example shows a relative route to another component, `second-compo
 `FirstComponent` and `SecondComponent` are at the same level in the tree, however, the link to `SecondComponent` is situated within the `FirstComponent`, meaning that the router has to go up a level and then into the second directory to find the `SecondComponent`.
 Rather than writing out the whole path to get to `SecondComponent`, use the `../` notation to go up a level.
 
-```html
+```angular-html
 <h2>First Component</h2>
 
 <nav>
@@ -366,7 +365,7 @@ Rather than writing out the whole path to get to `SecondComponent`, use the `../
     <li><a routerLink="../second-component">Relative Route to second component</a></li>
   </ul>
 </nav>
-<router-outlet></router-outlet>
+<router-outlet />
 ```
 
 In addition to `../`, use `./` or no leading slash to specify the current level.
@@ -392,21 +391,34 @@ The `goToItems()` method interprets the destination URI as relative to the activ
 ## Accessing query parameters and fragments
 
 Sometimes, a feature of your application requires accessing a part of a route, such as a query parameter or a fragment.
-The Tour of Heroes application at this stage in the tutorial uses a list view in which you can click on a hero to see details.
-The router uses an `id` to show the correct hero's details.
+In this example, the route contains an `id` parameter we can use to target a specific hero page.
+
+```ts
+import { ApplicationConfig } from "@angular/core";
+import { Routes } from '@angular/router';
+import { HeroListComponent } from './hero-list.component';
+
+export const routes: Routes = [
+  { path: 'hero/:id', component: HeroDetailComponent }
+];
+
+export const appConfig: ApplicationConfig = {
+  providers: [provideRouter(routes)],
+};
+```
 
 First, import the following members in the component you want to navigate from.
 
 ```ts
+import { inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { Observable, switchMap } from 'rxjs';
 ```
 
 Next inject the activated route service:
 
 ```ts
-constructor(private route: ActivatedRoute) {}
+private readonly route = inject(ActivatedRoute);
 ```
 
 Configure the class so that you have an observable, `heroes$`, a `selectedId` to hold the `id` number of the hero, and the heroes in the `ngOnInit()`, add the following code to get the `id` of the selected hero.
@@ -437,11 +449,10 @@ import { Observable } from 'rxjs';
 Inject `ActivatedRoute` and `Router` in the constructor of the component class so they are available to this component:
 
 ```ts
-hero$: Observable<Hero>;
+private readonly route = inject(ActivatedRoute);
+private readonly router = inject(Router);
 
-constructor(
-  private route: ActivatedRoute,
-  private router: Router  ) {}
+hero$: Observable<Hero>;
 
 ngOnInit() {
   const heroId = this.route.snapshot.paramMap.get('id');
@@ -460,6 +471,20 @@ gotoItems(hero: Hero) {
 
 You can configure your routes to lazy load modules, which means that Angular only loads modules as needed, rather than loading all modules when the application launches.
 Additionally, preload parts of your application in the background to improve the user experience.
+
+Any route can lazily load its routed, standalone component by using `loadComponent:`
+
+<docs-code header="Lazy loading a standalone component" language="typescript">
+
+const routes: Routes = [
+  {
+    path: 'lazy',
+    loadComponent: () => import('./lazy.component').then(c => c.LazyComponent)
+  }
+];
+</docs-code>
+This works as long as the loaded component is standalone.
+
 
 For more information on lazy loading and preloading see the dedicated guide [Lazy loading](guide/ngmodules/lazy-loading).
 
@@ -490,10 +515,11 @@ The following example uses `canActivateFn` to guard the route.
 
 ```ts
 export const yourGuardFunction: CanActivateFn = (
-    next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot) => {
-      // your  logic goes here
-  }
+  next: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot
+) => {
+  // your  logic goes here
+}
 ```
 
 In your routing module, use the appropriate property in your `routes` configuration.
@@ -516,13 +542,13 @@ A link parameters array holds the following ingredients for router navigation:
 
 Bind the `RouterLink` directive to such an array like this:
 
-```html
+```angular-html
 <a [routerLink]="['/heroes']">Heroes</a>
 ```
 
 The following is a two-element array when specifying a route parameter:
 
-```html
+```angular-html
 <a [routerLink]="['/hero', hero.id]">
   <span class="badge">{{ hero.id }}</span>{{ hero.name }}
 </a>
@@ -530,7 +556,7 @@ The following is a two-element array when specifying a route parameter:
 
 Provide optional route parameters in an object, as in `{ foo: 'foo' }`:
 
-```html
+```angular-html
 <a [routerLink]="['/crisis-center', { foo: 'foo' }]">Crisis Center</a>
 ```
 
@@ -539,7 +565,7 @@ However, with a child router, such as in the crisis center, you create new link 
 
 The following minimal `RouterLink` example builds upon a specified default child route for the crisis center.
 
-```html
+```angular-html
 <a [routerLink]="['/crisis-center']">Crisis Center</a>
 ```
 
@@ -552,7 +578,7 @@ Review the following:
 
 Consider the following router link that navigates from the root of the application down to the Dragon Crisis:
 
-```html
+```angular-html
 <a [routerLink]="['/crisis-center', 1]">Dragon Crisis</a>
 ```
 
@@ -565,16 +591,19 @@ Consider the following router link that navigates from the root of the applicati
 
 You could also redefine the `AppComponent` template with Crisis Center routes exclusively:
 
-```ts
-template: `
-  <h1 class="title">Angular Router</h1>
-  <nav>
-    <a [routerLink]="['/crisis-center']">Crisis Center</a>
-    <a [routerLink]="['/crisis-center/1', { foo: 'foo' }]">Dragon Crisis</a>
-    <a [routerLink]="['/crisis-center/2']">Shark Crisis</a>
-  </nav>
-  <router-outlet></router-outlet>
-`
+```angular-ts
+@Component({
+  template: `
+    <h1 class="title">Angular Router</h1>
+    <nav>
+      <a [routerLink]="['/crisis-center']">Crisis Center</a>
+      <a [routerLink]="['/crisis-center/1', { foo: 'foo' }]">Dragon Crisis</a>
+      <a [routerLink]="['/crisis-center/2']">Shark Crisis</a>
+    </nav>
+    <router-outlet />
+  `
+})
+export class AppComponent {}
 ```
 
 In summary, you can write applications with one, two or more levels of routing.
@@ -589,7 +618,7 @@ The router can compose a "natural" URL that is indistinguishable from one that w
 
 Here's the Crisis Center URL in this "HTML5 pushState" style:
 
-```http
+```text
 localhost:3002/crisis-center
 ```
 
@@ -597,7 +626,7 @@ Older browsers send page requests to the server when the location URL changes un
 Routers can take advantage of this exception by composing in-application route URLs with hashes.
 Here's a "hash URL" that routes to the Crisis Center.
 
-```http
+```text
 localhost:3002/src/#/crisis-center
 ```
 
@@ -660,7 +689,7 @@ While the router uses the [HTML5 pushState](https://developer.mozilla.org/docs/W
 
 The preferred way to configure the strategy is to add a [`<base href>` element](https://developer.mozilla.org/docs/Web/HTML/Element/base 'base href') tag in the `<head>` of the `index.html`.
 
-```html
+```angular-html
 <base href="/">
 ```
 

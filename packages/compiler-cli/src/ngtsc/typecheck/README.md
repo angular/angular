@@ -16,7 +16,6 @@ This algorithm relies extensively on TypeScript's ability to rapidly type check 
 
 To understand and check the types of various operations and structures within templates, the `typecheck` system maps them to TypeScript code, encoding them in such a way as to express the intent of the operation within the type system.
 
-
 TCBs are not ever emitted, nor are they referenced from any other code (they're unused code as far as TypeScript is concerned). Their _runtime_ effect is therefore unimportant. What matters is that they express to TypeScript the type relationships of directives, bindings, and other entities in the template. Type errors within TCBs translate directly to type errors in the original template.
 
 ### Theory
@@ -140,7 +139,7 @@ declare function ctor1<T>(inputs: {ngForOf?: Iterable<T>}): NgFor<T>;
 
 This type constructor can then be used to infer the instance type of a usage of `NgFor` based on provided bindings. For example, the template:
 
-```html=
+```html
 <div *ngFor="let user of users">...</div>
 ```
 
@@ -186,10 +185,10 @@ function tcb(this: SomeCmp): void {
 
   // _t2 is the context type for the embedded views created by the NgFor structural directive.
   var _t2: any;
-  
+
   // _t3 is the let-user variable within the embedded view.
   var _t3 = _t2.$implicit;
-  
+
   // Represents the `{{user.name}}` interpolation within the embedded view.
   '' + _t3.name;
 }
@@ -205,7 +204,7 @@ To solve this problem, the template type-checking engine allows structural direc
 @Directive({selector: '[ngFor]'})
 export class NgFor<T> {
   @Input() ngForOf!: Iterable<T>;
-  
+
   static ngTemplateContextGuard<T>(dir: NgFor<T>, ctx: any): ctx is NgForContext<T> {
     return true; // implementation is not important
   }
@@ -227,12 +226,12 @@ function tcb(this: SomeCmp): void {
 
   // _t2 is the context type for the embedded views created by the NgFor structural directive.
   var _t2: any;
-  
+
   if (NgFor.ngTemplateContextGuard(_t1, _t2)) {
     // NgFor's ngTemplateContextGuard has narrowed the type of _t2
     // based on the type of _t1 (the NgFor directive itself).
     // Within this `if` block, _t2 is now of type NgForContext<User>.
-    
+
     // _t3 is the let-user variable within the embedded view.
     // Because _t2 is narrowed, _t3 is now of type User.
     var _t3 = _t2.$implicit;
@@ -261,10 +260,10 @@ Obviously, if `user` is potentially `null`, then this `NgIf` is intended to only
 function tcb(this: SomeCmp): void {
   // Type of the NgIf directive instance.
   var _t1: NgIf;
-  
+
   // Binding *ngIf="user != null".
   _t1.ngIf = this.user !== null;
-  
+
   // Nested template interpolation `{{user.name}}`
   '' + this.user.name;
 }
@@ -278,7 +277,7 @@ Similarly to `ngTemplateContextGuard`, the template type checking engine allows 
 @Directive({selector: '[ngIf]'})
 export class NgIf {
   @Input() ngIf!: boolean;
-  
+
   static ngTemplateGuard_ngIf: 'binding';
 }
 ```
@@ -289,16 +288,16 @@ The presence and type of this static property tells the template type-checking e
 function tcb(this: SomeCmp): void {
   // Type of the NgIf directive instance.
   var _t1: NgIf;
-  
+
   // Binding *ngIf="user != null".
   _t1.ngIf = this.user !== null;
-  
+
   // Guard generated due to the `ngTemplateGuard_ngIf` declaration by the NgIf directive.
   if (user !== null) {
     // Nested template interpolation `{{user.name}}`.
     // `this.user` here is appropriately narrowed to be non-nullable.
     '' + this.user.name;
-  } 
+  }
 }
 ```
 
@@ -360,7 +359,6 @@ var t1 = document.createElement('input');
 
 This ordering resolves the forward reference from the original template.
 
-
 ##### Tracking of `TcbOp`s
 
 In practice, a `TcbOp` queue is maintained as an array, where each element begins as a `TcbOp` and is later replaced with the resulting `ts.Expression` once the operation is executed. As `TcbOp`s are generated for various template structures, the index of these operations is recorded. Future dependencies on those operations can then be satisfied by looking in the queue at the appropriate index. The contents will either be a `TcbOp` which has yet to be executed, or the result of the required operation.
@@ -412,7 +410,7 @@ function tcb(this: SomeCmp): void {
   // Generated to break the cycle for `ref` - infers a placeholder
   // type for the component without using any of its input bindings.
   var t1 = ctor1(null!);
-  
+
   // Infer the real type of the component using the `t1` placeholder
   // type for `ref`.
   var t2 = ctor1({in: t1.value});
@@ -479,11 +477,11 @@ TypeScript unfortunately cannot consume sourcemaps, only produce them. Therefore
 
 Not all template errors will be caught by TypeScript from generated TCB code. The template type checking engine may also detect errors during the creation of the TCB itself. Several classes of errors are caught this way:
 
-* DOM schema errors, like elements that don't exist or attributes that aren't correct.
-* Missing pipes.
-* Missing `#ref` targets.
-* Duplicate `let-variable`s.
-* Attempts to write to a `let-variable`.
+- DOM schema errors, like elements that don't exist or attributes that aren't correct.
+- Missing pipes.
+- Missing `#ref` targets.
+- Duplicate `let-variable`s.
+- Attempts to write to a `let-variable`.
 
 These errors manifest as "generation diagnostics", diagnostics which are produced during TCB generation, before TCB code is fed to TypeScript. They're ultimately reported together with any converted TCB diagnostics, but are tracked separately by the type checking system.
 
@@ -534,7 +532,7 @@ interface PrivateInterface {
 @Directive({selector: '[dir]'})
 export class MyDir<T extends PrivateInterface> {
   @Input() value: T;
-  
+
   static ngTypeCtor<T extends PrivateInterface>(inputs: {value?: T}): MyDir<T> { return null!; }
 }
 ```
@@ -578,7 +576,6 @@ Each TCB is therefore generated in the context of an `Environment`, which loosel
 
 During TCB generation, the `Environment` is used to obtain references to imported types, type constructors, and other shared structures.
 
-
 #### `TypeCheckingConfig`
 
 `Environment` also carries the `TypeCheckingConfig`, an options interface which controls the specifics of TCB generation. Through the `TypeCheckingConfig`, a consumer can enable or disable various kinds of strictness checks and other TCB operations.
@@ -587,9 +584,9 @@ During TCB generation, the `Environment` is used to obtain references to importe
 
 The main interface used by consumers to interact with the template type checking system is the `TemplateTypeChecker`. Methods on this interface allow for various operations related to TCBs, such as:
 
-* Generation of diagnostics.
-* Retrieving `Symbol`s (the template equivalent to TypeScript's `ts.Symbol`) for template nodes.
-* Retrieving TCB locations suitable for autocompletion operations.
+- Generation of diagnostics.
+- Retrieving `Symbol`s (the template equivalent to TypeScript's `ts.Symbol`) for template nodes.
+- Retrieving TCB locations suitable for autocompletion operations.
 
 ### Symbols
 

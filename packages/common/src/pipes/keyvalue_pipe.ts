@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -39,6 +39,7 @@ export interface KeyValue<K, V> {
  * The output array will be ordered by keys.
  * By default the comparator will be by Unicode point value.
  * You can optionally pass a compareFn if your keys are complex types.
+ * Passing `null` as the compareFn will use natural ordering of the input.
  *
  * @usageNotes
  * ### Examples
@@ -53,14 +54,14 @@ export interface KeyValue<K, V> {
 @Pipe({
   name: 'keyvalue',
   pure: false,
-  standalone: true,
 })
 export class KeyValuePipe implements PipeTransform {
   constructor(private readonly differs: KeyValueDiffers) {}
 
   private differ!: KeyValueDiffer<any, any>;
   private keyValues: Array<KeyValue<any, any>> = [];
-  private compareFn: (a: KeyValue<any, any>, b: KeyValue<any, any>) => number = defaultComparator;
+  private compareFn: ((a: KeyValue<any, any>, b: KeyValue<any, any>) => number) | null =
+    defaultComparator;
 
   /*
    * NOTE: when the `input` value is a simple Record<K, V> object, the keys are extracted with
@@ -69,35 +70,35 @@ export class KeyValuePipe implements PipeTransform {
    */
   transform<K, V>(
     input: ReadonlyMap<K, V>,
-    compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number,
+    compareFn?: ((a: KeyValue<K, V>, b: KeyValue<K, V>) => number) | null,
   ): Array<KeyValue<K, V>>;
   transform<K extends number, V>(
     input: Record<K, V>,
-    compareFn?: (a: KeyValue<string, V>, b: KeyValue<string, V>) => number,
+    compareFn?: ((a: KeyValue<string, V>, b: KeyValue<string, V>) => number) | null,
   ): Array<KeyValue<string, V>>;
   transform<K extends string, V>(
     input: Record<K, V> | ReadonlyMap<K, V>,
-    compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number,
+    compareFn?: ((a: KeyValue<K, V>, b: KeyValue<K, V>) => number) | null,
   ): Array<KeyValue<K, V>>;
   transform(
     input: null | undefined,
-    compareFn?: (a: KeyValue<unknown, unknown>, b: KeyValue<unknown, unknown>) => number,
+    compareFn?: ((a: KeyValue<unknown, unknown>, b: KeyValue<unknown, unknown>) => number) | null,
   ): null;
   transform<K, V>(
     input: ReadonlyMap<K, V> | null | undefined,
-    compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number,
+    compareFn?: ((a: KeyValue<K, V>, b: KeyValue<K, V>) => number) | null,
   ): Array<KeyValue<K, V>> | null;
   transform<K extends number, V>(
     input: Record<K, V> | null | undefined,
-    compareFn?: (a: KeyValue<string, V>, b: KeyValue<string, V>) => number,
+    compareFn?: ((a: KeyValue<string, V>, b: KeyValue<string, V>) => number) | null,
   ): Array<KeyValue<string, V>> | null;
   transform<K extends string, V>(
     input: Record<K, V> | ReadonlyMap<K, V> | null | undefined,
-    compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number,
+    compareFn?: ((a: KeyValue<K, V>, b: KeyValue<K, V>) => number) | null,
   ): Array<KeyValue<K, V>> | null;
   transform<K, V>(
     input: undefined | null | {[key: string]: V; [key: number]: V} | ReadonlyMap<K, V>,
-    compareFn: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number = defaultComparator,
+    compareFn: ((a: KeyValue<K, V>, b: KeyValue<K, V>) => number) | null = defaultComparator,
   ): Array<KeyValue<K, V>> | null {
     if (!input || (!(input instanceof Map) && typeof input !== 'object')) {
       return null;
@@ -116,7 +117,9 @@ export class KeyValuePipe implements PipeTransform {
       });
     }
     if (differChanges || compareFnChanged) {
-      this.keyValues.sort(compareFn);
+      if (compareFn) {
+        this.keyValues.sort(compareFn);
+      }
       this.compareFn = compareFn;
     }
     return this.keyValues;
@@ -129,25 +132,26 @@ export function defaultComparator<K, V>(
 ): number {
   const a = keyValueA.key;
   const b = keyValueB.key;
-  // if same exit with 0;
+  // If both keys are the same, return 0 (no sorting needed).
   if (a === b) return 0;
-  // make sure that undefined are at the end of the sort.
-  if (a === undefined) return 1;
-  if (b === undefined) return -1;
-  // make sure that nulls are at the end of the sort.
-  if (a === null) return 1;
-  if (b === null) return -1;
+  // If one of the keys is `null` or `undefined`, place it at the end of the sort.
+  if (a == null) return 1; // `a` comes after `b`.
+  if (b == null) return -1; // `b` comes after `a`.
+  // If both keys are strings, compare them lexicographically.
   if (typeof a == 'string' && typeof b == 'string') {
     return a < b ? -1 : 1;
   }
+  // If both keys are numbers, sort them numerically.
   if (typeof a == 'number' && typeof b == 'number') {
     return a - b;
   }
+  // If both keys are booleans, sort `false` before `true`.
   if (typeof a == 'boolean' && typeof b == 'boolean') {
     return a < b ? -1 : 1;
   }
-  // `a` and `b` are of different types. Compare their string values.
+  // Fallback case: if keys are of different types, compare their string representations.
   const aString = String(a);
   const bString = String(b);
+  // Compare the string representations lexicographically.
   return aString == bString ? 0 : aString < bString ? -1 : 1;
 }

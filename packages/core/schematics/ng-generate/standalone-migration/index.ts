@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Rule, SchematicsException, Tree} from '@angular-devkit/schematics';
@@ -32,7 +32,7 @@ interface Options {
   mode: MigrationMode;
 }
 
-export default function (options: Options): Rule {
+export function migrate(options: Options): Rule {
   return async (tree, context) => {
     const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
@@ -132,6 +132,7 @@ function standaloneMigration(
       printer,
       undefined,
       referenceLookupExcludedFiles,
+      knownInternalAliasRemapper,
     );
     pendingChanges = result.pendingChanges;
     filesToRemove = result.filesToRemove;

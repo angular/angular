@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {KeyValueArray} from '../../util/array_utils';
 import {TStylingRange} from '../interfaces/styling';
@@ -120,6 +120,10 @@ export function isTNodeShape(value: unknown): value is TNode {
       typeof (value as TNode).insertBeforeIndex === 'number' ||
       Array.isArray((value as TNode).insertBeforeIndex))
   );
+}
+
+export function isLetDeclaration(tNode: TNode): boolean {
+  return !!(tNode.type & TNodeType.LetDeclaration);
 }
 
 /**
@@ -240,7 +244,7 @@ export interface TNode {
    * such a case the value stores an array of text nodes to insert.
    *
    * Example:
-   * ```
+   * ```html
    * <div i18n>
    *   Hello <span>World</span>!
    * </div>
@@ -253,7 +257,7 @@ export interface TNode {
    * `<span>` itself.
    *
    * Pseudo code:
-   * ```
+   * ```ts
    *   if (insertBeforeIndex === null) {
    *     // append as normal
    *   } else if (Array.isArray(insertBeforeIndex)) {
@@ -486,12 +490,12 @@ export interface TNode {
    *
    * For easier discussion assume this example:
    * `<parent>`'s view definition:
-   * ```
+   * ```html
    * <child id="c1">content1</child>
    * <child id="c2"><span>content2</span></child>
    * ```
    * `<child>`'s view definition:
-   * ```
+   * ```html
    * <ng-content id="cont1"></ng-content>
    * ```
    *
@@ -554,7 +558,7 @@ export interface TNode {
    * styling than the instruction.
    *
    * Imagine:
-   * ```
+   * ```angular-ts
    * <div style="color: highest;" my-dir>
    *
    * @Directive({
@@ -849,11 +853,11 @@ export type LocalRefExtractor = (tNode: TNodeWithLocalRefs, currentView: LView) 
 /**
  * Returns `true` if the `TNode` has a directive which has `@Input()` for `class` binding.
  *
- * ```
+ * ```html
  * <div my-dir [class]="exp"></div>
  * ```
  * and
- * ```
+ * ```ts
  * @Directive({
  * })
  * class MyDirective {
@@ -874,11 +878,11 @@ export function hasClassInput(tNode: TNode) {
 /**
  * Returns `true` if the `TNode` has a directive which has `@Input()` for `style` binding.
  *
- * ```
+ * ```html
  * <div my-dir [style]="exp"></div>
  * ```
  * and
- * ```
+ * ```ts
  * @Directive({
  * })
  * class MyDirective {

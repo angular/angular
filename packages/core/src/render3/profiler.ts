@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {type Profiler} from './profiler_types';
@@ -33,7 +33,7 @@ export const setProfiler = (profiler: Profiler | null) => {
  *  execution context
  * @returns
  */
-export const profiler: Profiler = function (event, instance, hookOrListener) {
+export const profiler: Profiler = function (event, instance = null, hookOrListener) {
   if (profilerCallback != null /* both `null` and `undefined` */) {
     profilerCallback(event, instance, hookOrListener);
   }

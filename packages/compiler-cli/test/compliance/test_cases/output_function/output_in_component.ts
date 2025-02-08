@@ -2,7 +2,6 @@ import {Component, EventEmitter, output} from '@angular/core';
 import {outputFromObservable} from '@angular/core/rxjs-interop';
 
 @Component({
-  standalone: true,
   template: 'Works',
 })
 export class TestComp {

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {runInEachFileSystem} from '../../file_system/testing';
@@ -31,7 +31,10 @@ runInEachFileSystem(() => {
         outputs: {'valueChange': {type: 'OutputEmitterRef<string>'}},
         template: `<div dir [(value)]="bla">`,
         component: `bla = true;`,
-        expected: [`TestComponent.html(1, 12): Type 'boolean' is not assignable to type 'string'.`],
+        expected: [
+          `TestComponent.html(1, 12): Type 'boolean' is not assignable to type 'string'.`,
+          `TestComponent.html(1, 10): Type 'string' is not assignable to type 'boolean'.`,
+        ],
       },
       {
         id: 'two way data binding, valid',

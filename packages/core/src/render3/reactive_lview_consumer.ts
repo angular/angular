@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {REACTIVE_NODE, ReactiveNode} from '@angular/core/primitives/signals';
@@ -48,9 +48,10 @@ export function maybeReturnReactiveLViewConsumer(consumer: ReactiveLViewConsumer
   freeConsumers.push(consumer);
 }
 
-const REACTIVE_LVIEW_CONSUMER_NODE: Omit<ReactiveLViewConsumer, 'lView'> = {
+export const REACTIVE_LVIEW_CONSUMER_NODE: Omit<ReactiveLViewConsumer, 'lView'> = {
   ...REACTIVE_NODE,
   consumerIsAlwaysLive: true,
+  kind: 'template',
   consumerMarkedDirty: (node: ReactiveLViewConsumer) => {
     markAncestorsForTraversal(node.lView!);
   },
@@ -77,9 +78,10 @@ export function getOrCreateTemporaryConsumer(lView: LView): ReactiveLViewConsume
   return consumer;
 }
 
-const TEMPORARY_CONSUMER_NODE = {
+export const TEMPORARY_CONSUMER_NODE = {
   ...REACTIVE_NODE,
   consumerIsAlwaysLive: true,
+  kind: 'template',
   consumerMarkedDirty: (node: ReactiveLViewConsumer) => {
     let parent = getLViewParent(node.lView!);
     while (parent && !viewShouldHaveReactiveConsumer(parent[TVIEW])) {

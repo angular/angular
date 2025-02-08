@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 // This module specifier is intentionally a relative path to allow bundling the code directly
 // into the package.
@@ -113,14 +113,14 @@ export interface MessageMetadata {
  *
  * For example:
  *
- * ```
+ * ```ts
  * const name = 'Jo Bloggs';
  * $localize`Hello ${name}:title@@ID:!`;
  * ```
  *
  * May be parsed into:
  *
- * ```
+ * ```ts
  * {
  *   id: '6998194507597730591',
  *   substitutions: { title: 'Jo Bloggs' },

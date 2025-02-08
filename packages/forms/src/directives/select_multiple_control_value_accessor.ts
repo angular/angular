@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -75,7 +75,7 @@ abstract class HTMLCollection {
  * const countryControl = new FormControl();
  * ```
  *
- * ```
+ * ```html
  * <select multiple name="countries" [formControl]="countryControl">
  *   <option *ngFor="let country of countries" [ngValue]="country">
  *     {{ country.name }}
@@ -97,6 +97,7 @@ abstract class HTMLCollection {
     'select[multiple][formControlName],select[multiple][formControl],select[multiple][ngModel]',
   host: {'(change)': 'onChange($event.target)', '(blur)': 'onTouched()'},
   providers: [SELECT_MULTIPLE_VALUE_ACCESSOR],
+  standalone: false,
 })
 export class SelectMultipleControlValueAccessor
   extends BuiltInControlValueAccessor
@@ -220,7 +221,10 @@ export class SelectMultipleControlValueAccessor
  * @ngModule FormsModule
  * @publicApi
  */
-@Directive({selector: 'option'})
+@Directive({
+  selector: 'option',
+  standalone: false,
+})
 export class ɵNgSelectMultipleOption implements OnDestroy {
   // TODO(issue/24571): remove '!'.
   id!: string;

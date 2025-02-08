@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {DestroyRef} from '../../linker/destroy_ref';
@@ -15,7 +15,7 @@ import {DestroyRef} from '../../linker/destroy_ref';
  * Note: Angular will automatically clean up subscriptions
  * when the directive/component of the output is destroyed.
  *
- * @developerPreview
+ * @publicAPI
  */
 export interface OutputRefSubscription {
   unsubscribe(): void;
@@ -24,7 +24,7 @@ export interface OutputRefSubscription {
 /**
  * A reference to an Angular output.
  *
- * @developerPreview
+ * @publicAPI
  */
 export interface OutputRef<T> {
   /**

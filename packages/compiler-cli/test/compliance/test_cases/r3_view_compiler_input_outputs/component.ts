@@ -1,6 +1,9 @@
 import {Component, Input, NgModule, Output} from '@angular/core';
 
-@Component({selector: 'my-component', template: ''})
+@Component({
+    selector: 'my-component', template: '',
+    standalone: false
+})
 export class MyComponent {
   @Input() componentInput: any;
   @Input('renamedComponentInput') originalComponentInput: any;

@@ -3,7 +3,6 @@
 import {Component} from '@angular/core';
 
 @Component({
-  standalone: true,
   selector: 'app-banner',
   template: '<p>banner works!</p>',
   styles: [],

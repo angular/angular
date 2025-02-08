@@ -18,7 +18,7 @@ Route parameters enable you to include dynamic information as a part of your rou
 
 <docs-workflow>
 
-<docs-step title="Create a new service for your app">
+<docs-step title="Using `routerLink` for dynamic navigation">
 In lesson 10, you added a second route to `src/app/routes.ts` which includes a special segment that identifies the route parameter, `id`:
 
 <docs-code language="javascript">

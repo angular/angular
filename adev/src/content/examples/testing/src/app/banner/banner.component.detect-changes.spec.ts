@@ -15,7 +15,6 @@ describe('BannerComponent (AutoChangeDetect)', () => {
   beforeEach(() => {
     // #docregion auto-detect
     TestBed.configureTestingModule({
-      imports: [BannerComponent],
       providers: [{provide: ComponentFixtureAutoDetect, useValue: true}],
     });
     // #enddocregion auto-detect
@@ -30,15 +29,18 @@ describe('BannerComponent (AutoChangeDetect)', () => {
     expect(h1.textContent).toContain(comp.title);
   });
 
-  it('should still see original title after comp.title change', () => {
+  it('should still see original title after comp.title change', async () => {
     const oldTitle = comp.title;
-    comp.title = 'Test Title';
-    // Displayed title is old because Angular didn't hear the change :(
+    const newTitle = 'Test Title';
+    comp.title.set(newTitle);
+    // Displayed title is old because Angular didn't yet run change detection
     expect(h1.textContent).toContain(oldTitle);
+    await fixture.whenStable();
+    expect(h1.textContent).toContain(newTitle);
   });
 
   it('should display updated title after detectChanges', () => {
-    comp.title = 'Test Title';
+    comp.title.set('Test Title');
     fixture.detectChanges(); // detect changes explicitly
     expect(h1.textContent).toContain(comp.title);
   });

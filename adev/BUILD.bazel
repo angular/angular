@@ -1,4 +1,5 @@
 load("@npm//@angular/build-tooling/bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
+load("@npm//@angular/build-tooling/bazel/http-server:index.bzl", "http_server")
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
 load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
 load("@npm//@angular-devkit/architect-cli:index.bzl", "architect", "architect_test")
@@ -6,6 +7,10 @@ load("@bazel_skylib//lib:collections.bzl", "collections")
 load("//adev/tools/local_deps:index.bzl", "ensure_local_package_deps", "link_local_packages")
 
 package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "tsconfig.json",
+])
 
 # All source and configuration files required to build the docs app
 APPLICATION_FILES = [
@@ -17,18 +22,15 @@ APPLICATION_FILES = [
     ["src/**/*"],
     exclude = [
         "src/**/*.spec.ts",
-        # Temporarily exclude generated sources produced by the non-bazel
-        # build until the whole project is built by bazel and this directory
-        # isn't needed.
-        "src/generated/**/*",
     ],
 )
 
 TEST_FILES = APPLICATION_FILES + [
     "karma.conf.js",
+    "test-main.ts",
     "tsconfig.spec.json",
 ] + glob(
-    ["**/*.spec.ts"],
+    ["src/**/*.spec.ts"],
 )
 
 APPLICATION_ASSETS = [
@@ -42,6 +44,7 @@ APPLICATION_ASSETS = [
 ]
 
 APPLICATION_DEPS = [
+    "@npm//@angular/docs",
     "@npm//@angular/build",
     "@npm//@angular-devkit/build-angular",
     "@npm//@angular/animations",
@@ -50,12 +53,12 @@ APPLICATION_DEPS = [
     "@npm//@angular/compiler",
     "@npm//@angular/compiler-cli",
     "@npm//@angular/core",
-    "@npm//@angular/docs",
     "@npm//@angular/forms",
     "@npm//@angular/material",
     "@npm//@angular/platform-browser",
     "@npm//@angular/platform-server",
     "@npm//@angular/router",
+    "@npm//@angular/ssr",
     "@npm//gsap",
     "@npm//marked",
     "@npm//ngx-progressbar",
@@ -78,6 +81,9 @@ APPLICATION_DEPS = [
     "@npm//@lezer/highlight",
     "@npm//@lezer/javascript",
     "@npm//@lezer/common",
+    "@npm//@stackblitz/sdk",
+    "@npm//open-in-idx",
+    "@npm//@webcontainer/api",
     "@npm//@xterm/xterm",
     "@npm//@xterm/addon-fit",
     "@npm//algoliasearch",
@@ -109,39 +115,52 @@ copy_to_bin(
 )
 
 bool_flag(
-    name = "fast_build_mode",
+    name = "full_build_adev",
     build_setting_default = False,
 )
 
 config_setting(
-    name = "fast",
+    name = "prod_build",
     flag_values = {
-        ":fast_build_mode": "true",
+        ":full_build_adev": "true",
     },
 )
 
 config_setting(
-    name = "full",
+    name = "dev_build",
     flag_values = {
-        ":fast_build_mode": "false",
+        ":full_build_adev": "false",
     },
 )
 
+config_based_architect_env = select({
+    ":dev_build": {
+        "NG_BUILD_PARTIAL_SSR": "1",
+    },
+    ":prod_build": {
+        "NG_BUILD_OPTIMIZE_CHUNKS": "1",
+    },
+})
+
 config_based_architect_flags = select({
-    ":fast": ["--no-prerender"],
-    ":full": ["--prerender"],
+    ":dev_build": [
+        "angular-dev:build:development",
+    ],
+    ":prod_build": [
+        "angular-dev:build:production",
+    ],
 })
 
 architect(
     name = "build",
-    args = [
-        "angular-dev:build",
+    args = config_based_architect_flags + [
         "--output-path=build",
-    ] + config_based_architect_flags,
+    ],
     chdir = "$(RULEDIR)",
     data = ensure_local_package_deps(APPLICATION_DEPS) + APPLICATION_ASSETS + [
         ":application_files_bin",
     ],
+    env = config_based_architect_env,
     # Network is required to inline fonts.
     exec_properties = ENABLE_NETWORK,
     output_dir = True,
@@ -150,21 +169,14 @@ architect(
     ],
 )
 
-architect(
+http_server(
     name = "serve",
-    args = [
-        "angular-dev:serve",
-        "--poll=1000",
-        "--live-reload",
-        "--watch",
+    additional_root_paths = [
+        "angular/adev/build/browser",
     ],
-    chdir = package_name(),
-    data = ensure_local_package_deps(APPLICATION_DEPS) + APPLICATION_ASSETS + [
-        ":application_files_bin",
-    ],
-    tags = [
-        "no-remote-exec",
-    ],
+    enable_dev_ui = True,
+    relax_cors = True,
+    deps = [":build"],
 )
 
 architect_test(

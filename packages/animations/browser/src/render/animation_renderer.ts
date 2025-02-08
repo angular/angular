@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {AnimationTriggerMetadata} from '@angular/animations';
 import type {NgZone, Renderer2, RendererFactory2, RendererType2} from '@angular/core';
@@ -29,15 +29,8 @@ export class AnimationRendererFactory implements RendererFactory2 {
     private engine: AnimationEngine,
     private _zone: NgZone,
   ) {
-    engine.onRemovalComplete = (element: any, delegate: Renderer2) => {
-      // Note: if a component element has a leave animation, and a host leave animation,
-      // the view engine will call `removeChild` for the parent
-      // component renderer as well as for the child component renderer.
-      // Therefore, we need to check if we already removed the element.
-      const parentNode = delegate?.parentNode(element);
-      if (parentNode) {
-        delegate.removeChild(parentNode, element);
-      }
+    engine.onRemovalComplete = (element: any, delegate: Renderer2 | null) => {
+      delegate?.removeChild(null, element);
     };
   }
 
@@ -138,5 +131,15 @@ export class AnimationRendererFactory implements RendererFactory2 {
 
   whenRenderingDone(): Promise<any> {
     return this.engine.whenRenderingDone();
+  }
+
+  /**
+   * Used during HMR to clear any cached data about a component.
+   * @param componentId ID of the component that is being replaced.
+   */
+  protected componentReplaced(componentId: string) {
+    // Flush the engine since the renderer destruction waits for animations to be done.
+    this.engine.flush();
+    (this.delegate as {componentReplaced?: (id: string) => void}).componentReplaced?.(componentId);
   }
 }

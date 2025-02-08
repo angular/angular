@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {validateMatchingNode} from '../../hydration/error_handling';
 import {locateNextRNode} from '../../hydration/node_lookup_utils';
@@ -12,8 +12,9 @@ import {isDetachedByI18n} from '../../i18n/utils';
 import {assertEqual, assertIndexInRange} from '../../util/assert';
 import {TElementNode, TNode, TNodeType} from '../interfaces/node';
 import {RText} from '../interfaces/renderer_dom';
-import {HEADER_OFFSET, HYDRATION, LView, RENDERER, T_HOST, TView} from '../interfaces/view';
-import {appendChild, createTextNode} from '../node_manipulation';
+import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
+import {appendChild} from '../node_manipulation';
+import {createTextNode} from '../dom_node_manipulation';
 import {
   getBindingIndex,
   getLView,
@@ -23,8 +24,7 @@ import {
   setCurrentTNode,
   wasLastNodeCreated,
 } from '../state';
-
-import {getOrCreateTNode} from './shared';
+import {getOrCreateTNode} from '../tnode_manipulation';
 
 /**
  * Create static text node

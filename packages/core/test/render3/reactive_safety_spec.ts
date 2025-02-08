@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -26,6 +26,7 @@ import {
 } from '@angular/core';
 import {getActiveConsumer} from '@angular/core/primitives/signals';
 import {createInjector} from '@angular/core/src/di/create_injector';
+import {setUseMicrotaskEffectsByDefault} from '@angular/core/src/render3/reactivity/effect';
 import {TestBed} from '@angular/core/testing';
 
 /*
@@ -34,6 +35,12 @@ import {TestBed} from '@angular/core/testing';
  */
 
 describe('reactive safety', () => {
+  let prev: boolean;
+  beforeEach(() => {
+    prev = setUseMicrotaskEffectsByDefault(false);
+  });
+  afterEach(() => setUseMicrotaskEffectsByDefault(prev));
+
   describe('view creation', () => {
     it('should be safe to call ViewContainerRef.createEmbeddedView', () => {
       @Component({

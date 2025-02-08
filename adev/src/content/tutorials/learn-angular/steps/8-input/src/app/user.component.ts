@@ -5,6 +5,5 @@ import {Component, Input} from '@angular/core';
   template: `
     <p>The user's name is</p>
   `,
-  standalone: true,
 })
 export class UserComponent {}

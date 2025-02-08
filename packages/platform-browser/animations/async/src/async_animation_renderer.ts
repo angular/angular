@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -24,6 +24,9 @@ import {
   ɵChangeDetectionScheduler as ChangeDetectionScheduler,
   ɵNotificationSource as NotificationSource,
   ɵRuntimeError as RuntimeError,
+  InjectionToken,
+  type ListenerOptions,
+  Injector,
 } from '@angular/core';
 import {ɵRuntimeErrorCode as RuntimeErrorCode} from '@angular/platform-browser';
 
@@ -32,7 +35,11 @@ const ANIMATION_PREFIX = '@';
 @Injectable()
 export class AsyncAnimationRendererFactory implements OnDestroy, RendererFactory2 {
   private _rendererFactoryPromise: Promise<AnimationRendererFactory> | null = null;
-  private readonly scheduler = inject(ChangeDetectionScheduler, {optional: true});
+  private scheduler: ChangeDetectionScheduler | null = null;
+  private readonly injector = inject(Injector);
+  private readonly loadingSchedulerFn = inject(ɵASYNC_ANIMATION_LOADING_SCHEDULER_FN, {
+    optional: true,
+  });
   private _engine?: AnimationEngine;
 
   /**
@@ -68,9 +75,16 @@ export class AsyncAnimationRendererFactory implements OnDestroy, RendererFactory
     // Note on the `.then(m => m)` part below: Closure compiler optimizations in g3 require
     // `.then` to be present for a dynamic import (or an import should be `await`ed) to detect
     // the set of imported symbols.
-    const moduleImpl = this.moduleImpl ?? import('@angular/animations/browser').then((m) => m);
+    const loadFn = () => this.moduleImpl ?? import('@angular/animations/browser').then((m) => m);
 
-    return moduleImpl
+    let moduleImplPromise: typeof this.moduleImpl;
+    if (this.loadingSchedulerFn) {
+      moduleImplPromise = this.loadingSchedulerFn(loadFn);
+    } else {
+      moduleImplPromise = loadFn();
+    }
+
+    return moduleImplPromise
       .catch((e) => {
         throw new RuntimeError(
           RuntimeErrorCode.ANIMATION_RENDERER_ASYNC_LOADING_FAILURE,
@@ -131,6 +145,7 @@ export class AsyncAnimationRendererFactory implements OnDestroy, RendererFactory
           rendererType,
         );
         dynamicRenderer.use(animationRenderer);
+        this.scheduler ??= this.injector.get(ChangeDetectionScheduler, null, {optional: true});
         this.scheduler?.notify(NotificationSource.AsyncAnimationsLoaded);
       })
       .catch((e) => {
@@ -151,6 +166,16 @@ export class AsyncAnimationRendererFactory implements OnDestroy, RendererFactory
 
   whenRenderingDone?(): Promise<any> {
     return this.delegate.whenRenderingDone?.() ?? Promise.resolve();
+  }
+
+  /**
+   * Used during HMR to clear any cached data about a component.
+   * @param componentId ID of the component that is being replaced.
+   */
+  protected componentReplaced(componentId: string) {
+    // Flush the engine since the renderer destruction waits for animations to be done.
+    this._engine?.flush();
+    (this.delegate as {componentReplaced?: (id: string) => void}).componentReplaced?.(componentId);
   }
 }
 
@@ -266,13 +291,20 @@ export class DynamicDelegationRenderer implements Renderer2 {
     this.delegate.setValue(node, value);
   }
 
-  listen(target: any, eventName: string, callback: (event: any) => boolean | void): () => void {
+  listen(
+    target: any,
+    eventName: string,
+    callback: (event: any) => boolean | void,
+    options?: ListenerOptions,
+  ): () => void {
     // We need to keep track of animation events registred by the default renderer
     // So we can also register them against the animation renderer
     if (this.shouldReplay(eventName)) {
-      this.replay!.push((renderer: Renderer2) => renderer.listen(target, eventName, callback));
+      this.replay!.push((renderer: Renderer2) =>
+        renderer.listen(target, eventName, callback, options),
+      );
     }
-    return this.delegate.listen(target, eventName, callback);
+    return this.delegate.listen(target, eventName, callback, options);
   }
 
   private shouldReplay(propOrEventName: string): boolean {
@@ -280,3 +312,12 @@ export class DynamicDelegationRenderer implements Renderer2 {
     return this.replay !== null && propOrEventName.startsWith(ANIMATION_PREFIX);
   }
 }
+
+/**
+ * Provides a custom scheduler function for the async loading of the animation package.
+ *
+ * Private token for investigation purposes
+ */
+export const ɵASYNC_ANIMATION_LOADING_SCHEDULER_FN = new InjectionToken<<T>(loadFn: () => T) => T>(
+  ngDevMode ? 'async_animation_loading_scheduler_fn' : '',
+);

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Generator, processNavigationUrls} from '../src/generator';
@@ -58,6 +58,7 @@ describe('Generator', () => {
         'http://example.com/included',
         '!http://example.com/excluded',
       ],
+      applicationMaxAge: '1d',
     });
 
     expect(config).toEqual({
@@ -100,6 +101,7 @@ describe('Generator', () => {
           maxAge: 259200000,
           timeoutMs: 60000,
           version: 1,
+          refreshAheadMs: undefined,
           cacheOpaqueResponses: undefined,
           cacheQueryOptions: {ignoreVary: true},
         },
@@ -114,6 +116,7 @@ describe('Generator', () => {
         {positive: false, regex: '^http:\\/\\/example\\.com\\/excluded$'},
       ],
       navigationRequestStrategy: 'performance',
+      applicationMaxAge: 86400000,
       hashTable: {
         '/test/foo/test.html': '18f6f8eb7b1c23d2bb61bff028b83d867a9e4643',
         '/test/index.html': 'a54d88e06612d820bc3be72877c74f257b561b19',
@@ -207,6 +210,7 @@ describe('Generator', () => {
         {positive: false, regex: '^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$'},
       ],
       navigationRequestStrategy: 'performance',
+      applicationMaxAge: undefined,
     });
   });
 
@@ -233,6 +237,7 @@ describe('Generator', () => {
         {positive: false, regex: '^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$'},
       ],
       navigationRequestStrategy: 'performance',
+      applicationMaxAge: undefined,
       hashTable: {},
     });
   });
@@ -351,6 +356,7 @@ describe('Generator', () => {
           maxSize: 100,
           maxAge: 259200000,
           timeoutMs: undefined,
+          refreshAheadMs: undefined,
           version: 1,
           cacheOpaqueResponses: undefined,
           cacheQueryOptions: {ignoreVary: true},
@@ -362,6 +368,7 @@ describe('Generator', () => {
           maxSize: 100,
           maxAge: 259200000,
           timeoutMs: undefined,
+          refreshAheadMs: undefined,
           version: 1,
           cacheOpaqueResponses: false,
           cacheQueryOptions: {ignoreVary: true},
@@ -373,6 +380,7 @@ describe('Generator', () => {
           maxSize: 100,
           maxAge: 259200000,
           timeoutMs: undefined,
+          refreshAheadMs: undefined,
           version: 1,
           cacheOpaqueResponses: true,
           cacheQueryOptions: {ignoreVary: true},
@@ -384,6 +392,7 @@ describe('Generator', () => {
           maxSize: 100,
           maxAge: 259200000,
           timeoutMs: undefined,
+          refreshAheadMs: undefined,
           version: 1,
           cacheOpaqueResponses: undefined,
           cacheQueryOptions: {ignoreVary: true},
@@ -395,6 +404,7 @@ describe('Generator', () => {
           maxSize: 100,
           maxAge: 259200000,
           timeoutMs: undefined,
+          refreshAheadMs: undefined,
           version: 1,
           cacheOpaqueResponses: false,
           cacheQueryOptions: {ignoreVary: true},
@@ -406,6 +416,7 @@ describe('Generator', () => {
           maxSize: 100,
           maxAge: 259200000,
           timeoutMs: undefined,
+          refreshAheadMs: undefined,
           version: 1,
           cacheOpaqueResponses: true,
           cacheQueryOptions: {ignoreVary: true},
@@ -418,6 +429,7 @@ describe('Generator', () => {
         {positive: false, regex: '^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$'},
       ],
       navigationRequestStrategy: 'performance',
+      applicationMaxAge: undefined,
       hashTable: {},
     });
   });
@@ -448,6 +460,7 @@ describe('Generator', () => {
             maxSize: 100,
             strategy: 'performance',
             timeout: '1m',
+            refreshAhead: '1h',
           },
           cacheQueryOptions: {ignoreSearch: false},
         },
@@ -477,6 +490,7 @@ describe('Generator', () => {
           maxSize: 100,
           maxAge: 259200000,
           timeoutMs: 60000,
+          refreshAheadMs: 3600000,
           version: 1,
           cacheOpaqueResponses: undefined,
           cacheQueryOptions: {ignoreSearch: false, ignoreVary: true},
@@ -489,6 +503,7 @@ describe('Generator', () => {
         {positive: false, regex: '^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$'},
       ],
       navigationRequestStrategy: 'performance',
+      applicationMaxAge: undefined,
       hashTable: {
         '/index.html': 'a54d88e06612d820bc3be72877c74f257b561b19',
         '/main.js': '41347a66676cdc0516934c76d9d13010df420f2c',

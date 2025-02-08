@@ -1,144 +1,157 @@
 # Route transition animations
 
-Routing enables users to navigate between different routes in an application.
+When a user navigates from one route to another, the Angular Router maps the URL path to the relevant component and displays its view. Animating this route transition can greatly enhance the user experience. The Router has support for the View Transitions API when navigating between routes in Chrome/Chromium browsers.
 
-## Enable routing transition animation
+HELPFUL: The Router's native View Transitions integraiton is currently in [developer preview](/reference/releases#developer-preview). Native View Transitions are also a relatively new feature so there may be limited support in some browsers.
 
-When a user navigates from one route to another, the Angular router maps the URL path to a relevant component and displays its view.
-Animating this route transition can greatly enhance the user experience.
+## How View Transitions work
 
-The Angular router comes with high-level animation functions that let you animate the transitions between views when a route changes.
-To produce an animation sequence when switching between routes, you need to define nested animation sequences.
-Start with the top-level component that hosts the view, and nest animations in the components that host the embedded views.
+The native browser method that’s used for view transitions is `document.startViewTransition`. When `startViewTransition()` is called, the browser captures the current state of the page which includes taking a screenshot. The method takes a callback that updates the DOM and this function can be asynchronous. The new state is captured and the transition begins in the next animation frame when the promise returned by the callback resolves.
 
-To enable routing transition animation, do the following:
-
-1. Create a routing configuration that defines the possible routes. For NgModule based applications, this will include creating a `RouterModule` and adding it to the main `AppModule`.
-1. Add a router outlet to tell the Angular router where to place the activated components in the DOM.
-1. Define the animation.
-
-Illustrate a router transition animation by navigating between two routes, *Home* and *About* associated with the `HomeComponent` and `AboutComponent` views respectively.
-Both of these component views are children of the top-most view, hosted by `AppComponent`.
-Implement a router transition animation that slides in the new view to the right and slides out the old view when navigating between the two routes.
-
-<img alt="Animations in action" width="440" src="assets/images/guide/animations/route-animation.gif">
-
-## Route configuration
-
-To begin, configure a set of routes. This route configuration tells the router how to navigate.
-
-Create a `Routes` array to define a set of routes. Add the routes to the `provideRouter` function in the providers array of the `bootstrapApplication` function call in `main.ts`.
+Here’s an example of the startViewTransition api:
 
 ```ts
-bootstrapApplication(AppComponent, {
-  providers: [
-    provideRouter(appRoutes),
-  ]
+document.startViewTransition(async () => {
+  await updateTheDOMSomehow();
 });
 ```
 
-Note: For `NgModule` based applications:
-Use the `RouterModule.forRoot` method to define a set of routes.
-Also, add `RouterModule` to the `imports` array of the main module, `AppModule`.
+If you’re curious to read more about the details of the browser API, the [Chrome Explainer](https://developer.chrome.com/docs/web-platform/view-transitions) is an invaluable resource.
 
-Use the `RouterModule.forRoot` method in the root module, `AppModule`, to register top-level application routes and providers.
-For feature modules, call the `RouterModule.forChild` method instead.
+## How the Router uses view transitions
 
-The following configuration defines the possible routes for the application.
+Several things happen after navigation starts in the router: route matching, loading lazy routes and components, executing guards and resolvers to name a few. Once these have completed successfully, the new routes are ready to be activated. This route activation is the DOM update that we want to perform as part of the view transition.
 
-<docs-code header="src/app/app.routes.ts" path="adev/src/content/examples/animations/src/app/app.routes.ts" visibleRegion="route-animation-data"/>
+When the view transition feature is enabled, navigation “pauses” and a call is made to the browser’s `startViewTransition` method. Once the `startViewTransition` callback executes (this happens asynchronously, as outlined in the spec here), navigation “resumes”. The remaining steps for the router navigation include updating the browser URL and activating or deactivating the matched routes (the DOM update).
 
-The `home` and `about` paths are associated with the `HomeComponent` and `AboutComponent` views.
-The route configuration tells the Angular router to instantiate the `HomeComponent` and `AboutComponent` views when the navigation matches the corresponding path.
+Finally, the callback passed to `startViewTransition` returns a Promise that resolves once Angular has finished rendering. As described above, this indicates to the browser that the new DOM state should be captured and the transition should begin.
 
-The `data` property of each route defines the key animation-specific configuration associated with a route.
-The `data` property value is passed into `AppComponent` when the route changes.
+View transitions are a [progressive enhancement](https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement). If the browser does not support the API, the Router will perform the DOM updates without calling `startViewTransition` and the navigation will not be animated.
 
-HELPFUL: The `data` property names that you use can be arbitrary.
-For example, the name *animation* used in the preceding example is an arbitrary choice.
+## Enabling View Transitions in the Router
 
-## Router outlet
+To enable this feature, simply add `withViewTransitions` to the `provideRouter` or set `enableViewTransitions: true` in `RouterModule.forRoot`:
 
-After configuring the routes, add a `<router-outlet>` inside the root `AppComponent` template.
-The `<router-outlet>` directive tells the Angular router where to render the views when matched with a route.
+```ts
+// Standalone bootstrap
+bootstrapApplication(MyApp, {providers: [
+  provideRouter(ROUTES, withViewTransitions()),
+]});
 
-The `ChildrenOutletContexts` holds information about outlets and activated routes.
-The `data` property of each `Route` can be used to animate routing transitions.
+// NgModule bootstrap
+@NgModule({
+  imports: [RouterModule.forRoot(routes, {enableViewTransitions: true})]
+})
+export class AppRouting {}
+```
 
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/animations/src/app/app.component.html" visibleRegion="route-animations-outlet"/>
+[Try the “count” example on StackBlitz](https://stackblitz.com/edit/stackblitz-starters-2dnvtm?file=src%2Fmain.ts)
 
-`AppComponent` defines a method that can detect when a view changes.
-The method assigns an animation state value to the animation trigger \(`@routeAnimation`\) based on the route configuration `data` property value.
-Here's an example of an `AppComponent` method that detects when a route change happens.
+This example uses the counter application from the Chrome explainer and replaces the direct call to startViewTransition when the counter increments with a router navigation.
 
-<docs-code header="src/app/app.component.ts" path="adev/src/content/examples/animations/src/app/app.component.ts" visibleRegion="get-route-animations-data"/>
+## Using CSS to customize transitions
 
-The `getRouteAnimationData()` method takes the value of the outlet. It returns a string that represents the state of the animation based on the custom data of the current active route.
-Use this data to control which transition to run for each route.
+View transitions can be customized with CSS. We can also instruct the browser to create separate elements for the transition by setting a view-transition-name. We can expand the first example by adding view-transition-name: count to the .count style in the Counter component. Then, in the global styles, we can define a custom animation for this view transition:
 
-## Animation definition
+```css
+/* Custom transition */
+@keyframes rotate-out {
+ to {
+   transform: rotate(90deg);
+ }
+}
+@keyframes rotate-in {
+ from {
+   transform: rotate(-90deg);
+ }
+}
+::view-transition-old(count),
+::view-transition-new(count) {
+ animation-duration: 200ms;
+ animation-name: -ua-view-transition-fade-in, rotate-in;
+}
+::view-transition-old(count) {
+ animation-name: -ua-view-transition-fade-out, rotate-out;
+}
+```
 
-Animations can be defined directly inside your components.
-For this example you are defining the animations in a separate file, which allows re-use of animations.
+It is important that the view transition animations are defined in a global style file. They cannot be defined in the component styles because the default view encapsulation will scope the styles to the component.
 
-The following code snippet defines a reusable animation named `slideInAnimation`.
+[Try the updated “count” example on StackBlitz](https://stackblitz.com/edit/stackblitz-starters-fwn4i7?file=src%2Fmain.ts)
 
-<docs-code header="src/app/animations.ts" path="adev/src/content/examples/animations/src/app/animations.ts" visibleRegion="route-animations"/>
+## Controlling transitions with onViewTransitionCreated
 
-The animation definition performs the following tasks:
+The `withViewTransitions` router feature can also be called with an options object that includes an `onViewTransitionCreated` callback. This callback is run in an [injection context](/guide/di/dependency-injection-context#run-within-an-injection-context) and receives a [ViewTransitionInfo](/api/router/ViewTransitionInfo) object that includes the `ViewTransition` returned from `startViewTransition`, as well as the `ActivatedRouteSnapshot` that the navigation is transitioning from and the new one that it is transitioning to.
 
-* Defines two transitions \(a single `trigger` can define multiple states and transitions\)
-* Adjusts the styles of the host and child views to control their relative positions during the transition
-* Uses `query()` to determine which child view is entering and which is leaving the host view
+This callback can be used for any number of customizations. For example, you might want to skip transitions under certain conditions. We use this on the new angular.dev docs site:
 
-A route change activates the animation trigger, and a transition matching the state change is applied.
+```ts
+withViewTransitions({
+ onViewTransitionCreated: ({transition}) => {
+   const router = inject(Router);
+   const targetUrl = router.getCurrentNavigation()!.finalUrl!;
+   // Skip the transition if the only thing 
+   // changing is the fragment and queryParams
+   const config = { 
+     paths: 'exact', 
+     matrixParams: 'exact',
+     fragment: 'ignored',
+     queryParams: 'ignored',
+   };
 
-HELPFUL: The transition states must match the `data` property value defined in the route configuration.
+   if (router.isActive(targetUrl, config)) {
+     transition.skipTransition();
+   }
+ },
+}),
+```
 
-Make the animation definition available in your application by adding the reusable animation \(`slideInAnimation`\) to the `animations` metadata of the `AppComponent`.
+In this code snippet, we create a `UrlTree` from the `ActivatedRouteSnapshot` the navigation is going to. We then check with the Router to see if this `UrlTree` is already active, ignoring any differences in the fragment or query parameters. If it is already active, we call skipTransition which will skip the animation portion of the view transition. This is the case when clicking on an anchor link that will only scroll to another location in the same document.
 
-<docs-code header="src/app/app.component.ts" path="adev/src/content/examples/animations/src/app/app.component.ts" visibleRegion="define"/>
+## Examples from the Chrome explainer adapted to Angular
 
-### Style the host and child components
+We’ve recreated some of the great examples from the Chrome Team in Angular for you to explore.
 
-During a transition, a new view is inserted directly after the old one and both elements appear on screen at the same time.
-To prevent this behavior, update the host view to use relative positioning.
-Then, update the removed and inserted child views to use absolute positioning.
-Adding these styles to the views animates the containers in place and prevents one view from affecting the position of the other on the page.
+### Transitioning elements don’t need to be the same DOM element
 
-<docs-code header="src/app/animations.ts (excerpt)" path="adev/src/content/examples/animations/src/app/animations.ts" visibleRegion="style-view"/>
+* [Chrome Explainer](https://developer.chrome.com/docs/web-platform/view-transitions/same-document#transitioning_elements_dont_need_to_be_the_same_dom_element)
+* [Angular Example on StackBlitz](https://stackblitz.com/edit/stackblitz-starters-dh8npr?file=src%2Fmain.ts)
 
-### Query the view containers
+### Custom entry and exit animations
 
-Use the `query()` method to find and animate elements within the current host component.
-The `query(":enter")` statement returns the view that is being inserted, and `query(":leave")` returns the view that is being removed.
+* [Chrome Explainer](https://developer.chrome.com/docs/web-platform/view-transitions/same-document#custom_entry_and_exit_transitions)
+* [Angular Example on StackBlitz](https://stackblitz.com/edit/stackblitz-starters-8kly3o)
 
-Assume that you are routing from the *Home => About*.
+### Async DOM updates and waiting for content
 
-<docs-code header="src/app/animations.ts (excerpt)" path="adev/src/content/examples/animations/src/app/animations.ts" visibleRegion="query"/>
+* [Chrome Explainer](https://developer.chrome.com/docs/web-platform/view-transitions/same-document#async_dom_updates_and_waiting_for_content)
 
-The animation code does the following after styling the views:
+> During this time, the page is frozen, so delays here should be kept to a minimum…in some cases it’s better to avoid the delay altogether, and use the content you already have.
 
-1. `query(':enter', style({ left: '-100%' }))` matches the view that is added and hides the newly added view by positioning it to the far left.
-1. Calls `animateChild()` on the view that is leaving, to run its child animations.
-1. Uses [`group()`](api/animations/group) function to make the inner animations run in parallel.
-1. Within the [`group()`](api/animations/group) function:
-    1. Queries the view that is removed and animates it to slide far to the right.
-    1. Slides in the new view by animating the view with an easing function and duration.
+The view transition feature in the Angular router does not provide a way to delay the animation. For the moment, our stance is that it’s always better to use the content you have rather than making the page non-interactive for any additional amount of time.
 
-        This animation results in the `about` view sliding in from the left.
+### Handle multiple view transition styles with view transition types
 
-1. Calls the `animateChild()` method on the new view to run its child animations after the main animation completes.
+* [Chrome Explainer](https://developer.chrome.com/docs/web-platform/view-transitions/same-document#view-transition-types)
+* [Angular Example on StackBlitz](https://stackblitz.com/edit/stackblitz-starters-vxzcam)
 
-You now have a basic routable animation that animates routing from one view to another.
+### Handle multiple view transition styles with a class name on the view transition root (deprecated)
 
-## More on Angular animations
+* [Chrome Explainer](https://developer.chrome.com/docs/web-platform/view-transitions/same-document#changing-on-navigation-type)
+* [Angular Example on StackBlitz](https://stackblitz.com/edit/stackblitz-starters-nmnzzg?file=src%2Fmain.ts)
 
-You might also be interested in the following:
+### Transitioning without freezing other animations
 
-<docs-pill-row>
-  <docs-pill href="guide/animations" title="Introduction to Angular animations"/>
-  <docs-pill href="guide/animations/transition-and-triggers" title="Transition and triggers"/>
-  <docs-pill href="guide/animations/complex-sequences" title="Complex animation sequences"/>
-  <docs-pill href="guide/animations/reusable-animations" title="Reusable animations"/>
-</docs-pill-row>
+* [Chrome Explainer](https://developer.chrome.com/docs/web-platform/view-transitions/same-document#transitioning-without-freezing)
+* [Angular Example on StackBlitz](https://stackblitz.com/edit/stackblitz-starters-76kgww)
+
+### Animating with Javascript
+
+* [Chrome Explainer](https://developer.chrome.com/docs/web-platform/view-transitions/same-document#animating-with-javascript)
+* [Angular Example on StackBlitz](https://stackblitz.com/edit/stackblitz-starters-cklnkm)
+
+## Native View Transitions Alternative
+
+Animating the transition between routes can also be done with the `@angular/animations` package. 
+The animation [triggers and transitions](/guide/animations/transition-and-triggers)
+can be derived from the router state, such as the current URL or `ActivatedRoute`.

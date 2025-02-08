@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -19,7 +19,8 @@ import {
   ɵannotateForHydration as annotateForHydration,
   ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED,
   ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER,
-  ɵwhenStable as whenStable,
+  ɵstartMeasuring as startMeasuring,
+  ɵstopMeasuring as stopMeasuring,
 } from '@angular/core';
 
 import {PlatformState} from './platform_state';
@@ -30,7 +31,7 @@ import {createScript} from './transfer_state';
 /**
  * Event dispatch (JSAction) script is inlined into the HTML by the build
  * process to avoid extra blocking request on a page. The script looks like this:
- * ```
+ * ```html
  * <script type="text/javascript" id="ng-event-dispatch-contract">...</script>
  * ```
  * This const represents the "id" attribute value.
@@ -49,10 +50,16 @@ interface PlatformOptions {
  */
 function createServerPlatform(options: PlatformOptions): PlatformRef {
   const extraProviders = options.platformProviders ?? [];
-  return platformServer([
+  const measuringLabel = 'createServerPlatform';
+  startMeasuring(measuringLabel);
+
+  const platform = platformServer([
     {provide: INITIAL_CONFIG, useValue: {document: options.document, url: options.url}},
     extraProviders,
   ]);
+
+  stopMeasuring(measuringLabel);
+  return platform;
 }
 
 /**
@@ -75,6 +82,8 @@ function removeEventDispatchScript(doc: Document) {
  * Annotate nodes for hydration and remove event dispatch script when not needed.
  */
 function prepareForHydration(platformState: PlatformState, applicationRef: ApplicationRef): void {
+  const measuringLabel = 'prepareForHydration';
+  startMeasuring(measuringLabel);
   const environmentInjector = applicationRef.injector;
   const doc = platformState.getDocument();
 
@@ -101,6 +110,7 @@ function prepareForHydration(platformState: PlatformState, applicationRef: Appli
     // (which was injected by the build process) from the HTML.
     removeEventDispatchScript(doc);
   }
+  stopMeasuring(measuringLabel);
 }
 
 /**
@@ -139,13 +149,21 @@ function insertEventRecordScript(
   eventTypesToReplay: {regular: Set<string>; capture: Set<string>},
   nonce: string | null,
 ): void {
+  const measuringLabel = 'insertEventRecordScript';
+  startMeasuring(measuringLabel);
   const {regular, capture} = eventTypesToReplay;
   const eventDispatchScript = findEventDispatchScript(doc);
+
+  // Note: this is only true when build with the CLI tooling, which inserts the script in the HTML
   if (eventDispatchScript) {
     // This is defined in packages/core/primitives/event-dispatch/contract_binary.ts
-    const replayScriptContents = `window.__jsaction_bootstrap('ngContracts', document.body, ${JSON.stringify(
-      appId,
-    )}, ${JSON.stringify(Array.from(regular))}${capture.size ? ',' + JSON.stringify(Array.from(capture)) : ''});`;
+    const replayScriptContents =
+      `window.__jsaction_bootstrap(` +
+      `document.body,` +
+      `"${appId}",` +
+      `${JSON.stringify(Array.from(regular))},` +
+      `${JSON.stringify(Array.from(capture))}` +
+      `);`;
 
     const replayScript = createScript(doc, replayScriptContents, nonce);
 
@@ -153,11 +171,17 @@ function insertEventRecordScript(
     // relies on `__jsaction_bootstrap` to be defined in the global scope.
     eventDispatchScript.after(replayScript);
   }
+  stopMeasuring(measuringLabel);
 }
 
 async function _render(platformRef: PlatformRef, applicationRef: ApplicationRef): Promise<string> {
+  const measuringLabel = 'whenStable';
+  startMeasuring(measuringLabel);
+
   // Block until application is stable.
-  await whenStable(applicationRef);
+  await applicationRef.whenStable();
+
+  stopMeasuring(measuringLabel);
 
   const platformState = platformRef.injector.get(PlatformState);
   prepareForHydration(platformState, applicationRef);
@@ -189,18 +213,21 @@ async function _render(platformRef: PlatformRef, applicationRef: ApplicationRef)
   }
 
   appendServerContextInfo(applicationRef);
-  const output = platformState.renderToString();
 
-  // Destroy the application in a macrotask, this allows pending promises to be settled and errors
-  // to be surfaced to the users.
-  await new Promise<void>((resolve) => {
+  return platformState.renderToString();
+}
+
+/**
+ * Destroy the application in a macrotask, this allows pending promises to be settled and errors
+ * to be surfaced to the users.
+ */
+function asyncDestroyPlatform(platformRef: PlatformRef): Promise<void> {
+  return new Promise<void>((resolve) => {
     setTimeout(() => {
       platformRef.destroy();
       resolve();
     }, 0);
   });
-
-  return output;
 }
 
 /**
@@ -243,15 +270,19 @@ export async function renderModule<T>(
 ): Promise<string> {
   const {document, url, extraProviders: platformProviders} = options;
   const platformRef = createServerPlatform({document, url, platformProviders});
-  const moduleRef = await platformRef.bootstrapModule(moduleType);
-  const applicationRef = moduleRef.injector.get(ApplicationRef);
-  return _render(platformRef, applicationRef);
+  try {
+    const moduleRef = await platformRef.bootstrapModule(moduleType);
+    const applicationRef = moduleRef.injector.get(ApplicationRef);
+    return await _render(platformRef, applicationRef);
+  } finally {
+    await asyncDestroyPlatform(platformRef);
+  }
 }
 
 /**
  * Bootstraps an instance of an Angular application and renders it to a string.
 
- * ```typescript
+ * ```ts
  * const bootstrap = () => bootstrapApplication(RootComponent, appConfig);
  * const output: string = await renderApplication(bootstrap);
  * ```
@@ -272,7 +303,23 @@ export async function renderApplication<T>(
   bootstrap: () => Promise<ApplicationRef>,
   options: {document?: string | Document; url?: string; platformProviders?: Provider[]},
 ): Promise<string> {
+  const renderAppLabel = 'renderApplication';
+  const bootstrapLabel = 'bootstrap';
+  const _renderLabel = '_render';
+
+  startMeasuring(renderAppLabel);
   const platformRef = createServerPlatform(options);
-  const applicationRef = await bootstrap();
-  return _render(platformRef, applicationRef);
+  try {
+    startMeasuring(bootstrapLabel);
+    const applicationRef = await bootstrap();
+    stopMeasuring(bootstrapLabel);
+
+    startMeasuring(_renderLabel);
+    const rendered = await _render(platformRef, applicationRef);
+    stopMeasuring(_renderLabel);
+    return rendered;
+  } finally {
+    await asyncDestroyPlatform(platformRef);
+    stopMeasuring(renderAppLabel);
+  }
 }

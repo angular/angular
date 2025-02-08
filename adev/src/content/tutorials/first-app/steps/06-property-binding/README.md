@@ -45,5 +45,5 @@ Summary: In this lesson, you added a new property binding and passed in a refere
 For more information about the topics covered in this lesson, visit:
 
 <docs-pill-row>
-  <docs-pill href="guide/templates/property-binding" title="Property binding"/>
+  <docs-pill href="/guide/templates/property-binding" title="Property binding"/>
 </docs-pill-row>

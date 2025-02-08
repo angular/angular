@@ -1,0 +1,40 @@
+:host {
+  position: fixed;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  z-index: var(--z-index-cookie-consent);
+  opacity: 0;
+  visibility: hidden;
+  animation: 1s linear forwards 0.5s fadeIn;
+}
+
+.docs-cookies-popup {
+  padding: 1rem;
+  background-color: var(--page-background);
+  border: 1px solid var(--senary-contrast);
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  max-width: 265px;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+
+  > div {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    width: 100%;
+    margin-block-start: 1rem;
+  }
+
+  p {
+    margin-block: 0;
+    color: var(--primary-contrast);
+  }
+}
+
+@keyframes fadeIn {
+  100% {
+    opacity: 100%;
+    visibility: visible;
+  }
+}

@@ -119,6 +119,10 @@
                 "type": "string",
                 "description": "This duration string specifies the network timeout. The network timeout is how long the Angular service worker will wait for the network to respond before using a cached response, if configured to do so. 'timeout' is a duration string, using the following unit suffixes: d= days, h= hours, m= minutes, s= seconds, u= milliseconds. For example, the string '5s30u' will translate to five seconds and 30 milliseconds of network timeout."
               },
+              "refreshAhead": {
+                "type": "string",
+                "description": "This duration string specifies the time ahead of the expiration of a cached resource when the Angular service worker should proactively attempt to refresh the resource from the network. The `refreshAhead` duration is an optional configuration that determines how much time before the expiration of a cached response the service worker should initiate a request to refresh the resource from the network."
+              },
               "strategy": {
                 "enum": [
                   "freshness",
@@ -173,6 +177,10 @@
       ],
       "default": "performance",
       "description": "The Angular service worker can use two request strategies for navigation requests. 'performance', the default, skips navigation requests. The other strategy, 'freshness', forces all navigation requests through the network."
+    },
+    "applicationMaxAge": {
+      "type": "string",
+      "description": "Indicates how long the entire application is allowed to remain in the cache before being considered invalid and bypassed. 'maxAge' is a duration string, using the following unit suffixes: d= days, h= hours, m= minutes, s= seconds, u= milliseconds. For example, the string '3d12h' will cache content for up to three and a half days."
     }
   },
   "required": [

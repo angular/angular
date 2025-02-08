@@ -3,35 +3,36 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {AST, TmplAstNode} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {MetaKind, PipeMeta} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {PerfPhase} from '@angular/compiler-cli/src/ngtsc/perf';
-import {SymbolKind} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {SymbolKind, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 
 import {
   convertToTemplateDocumentSpan,
-  createLocationKey,
   FilePosition,
   getParentClassMeta,
   getRenameTextAndSpanAtPosition,
   getTargetDetailsAtTemplatePosition,
   TemplateLocationDetails,
 } from './references_and_rename_utils';
-import {collectMemberMethods, findTightestNode} from './ts_utils';
+import {collectMemberMethods, findTightestNode} from './utils/ts_utils';
 import {getTemplateInfoAtPosition, TemplateInfo} from './utils';
 
 export class ReferencesBuilder {
-  private readonly ttc = this.compiler.getTemplateTypeChecker();
+  private readonly ttc: TemplateTypeChecker;
 
   constructor(
     private readonly tsLS: ts.LanguageService,
     private readonly compiler: NgCompiler,
-  ) {}
+  ) {
+    this.ttc = this.compiler.getTemplateTypeChecker();
+  }
 
   getReferencesAtPosition(filePath: string, position: number): ts.ReferenceEntry[] | undefined {
     this.ttc.generateAllTypeCheckBlocks();
@@ -162,12 +163,14 @@ function isDirectRenameContext(
 }
 
 export class RenameBuilder {
-  private readonly ttc = this.compiler.getTemplateTypeChecker();
+  private readonly ttc: TemplateTypeChecker;
 
   constructor(
     private readonly tsLS: ts.LanguageService,
     private readonly compiler: NgCompiler,
-  ) {}
+  ) {
+    this.ttc = this.compiler.getTemplateTypeChecker();
+  }
 
   getRenameInfo(
     filePath: string,

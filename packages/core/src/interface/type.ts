@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /**
@@ -38,27 +38,23 @@ export interface Type<T> extends Function {
   new (...args: any[]): T;
 }
 
-export type Mutable<T extends {[x: string]: any}, K extends string> = {
-  [P in K]: T[P];
-};
-
 /**
  * Returns a writable type version of type.
  *
  * USAGE:
  * Given:
- * ```
+ * ```ts
  * interface Person {readonly name: string}
  * ```
  *
  * We would like to get a read/write version of `Person`.
- * ```
+ * ```ts
  * const WritablePerson = Writable<Person>;
  * ```
  *
  * The result is that you can do:
  *
- * ```
+ * ```ts
  * const readonlyPerson: Person = {name: 'Marry'};
  * readonlyPerson.name = 'John'; // TypeError
  * (readonlyPerson as WritablePerson).name = 'John'; // OK

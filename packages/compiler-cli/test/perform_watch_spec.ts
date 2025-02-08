@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as fs from 'fs';
@@ -233,7 +233,7 @@ function createModuleAndCompSource(prefix: string, template: string = prefix + '
   return `
     import {Component, NgModule} from '@angular/core';
 
-    @Component({selector: '${prefix}', ${templateEntry}})
+    @Component({selector: '${prefix}', ${templateEntry}, standalone: false})
     export class ${prefix}Comp {}
 
     @NgModule({declarations: [${prefix}Comp]})

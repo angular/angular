@@ -1,21 +1,22 @@
 <div class="editor" (click)="onClick()">
   <span class="state-container">
-    @switch (currentPropertyState) {
+    @switch (currentPropertyState()) {
       @case (readState) {
         <span>
-            @switch(containerType) {
-              @case('WritableSignal') { 
-                <span class="editable">Signal({{valueToSubmit}})</span> 
-              }
-              @default { 
-                <span class="editable">{{ valueToSubmit }}</span> 
-              }
+          @switch (containerType()) {
+            @case ('WritableSignal') {
+              <span class="editable">Signal({{valueToSubmit()}})</span>
             }
+            @default {
+              <span class="editable">{{ valueToSubmit() }}</span>
+            }
+          }
         </span>
       }
       @case (writeState) {
         <span>
           <input
+            #inputEl
             matInput
             type="text"
             class="editor-input editable"
@@ -24,7 +25,7 @@
             (keydown.enter)="accept()"
             (keydown.escape)="reject()"
             (blur)="onBlur()"
-            />
+          />
         </span>
       }
     }

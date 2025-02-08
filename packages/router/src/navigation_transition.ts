@@ -3,11 +3,12 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Location} from '@angular/common';
 import {
+  DestroyRef,
   EnvironmentInjector,
   inject,
   Injectable,
@@ -81,7 +82,7 @@ import {
   RouterState,
   RouterStateSnapshot,
 } from './router_state';
-import {Params} from './shared';
+import type {Params} from './shared';
 import {UrlHandlingStrategy} from './url_handling_strategy';
 import {isUrlTree, UrlSerializer, UrlTree} from './url_tree';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
@@ -124,7 +125,7 @@ export interface UrlCreationOptions {
    * The following `go()` function navigates to the `list` route by
    * interpreting the destination URI as relative to the activated `child`  route
    *
-   * ```
+   * ```ts
    *  @Component({...})
    *  class ChildComponent {
    *    constructor(private router: Router, private route: ActivatedRoute) {}
@@ -328,10 +329,6 @@ export interface NavigationTransition {
  */
 interface InternalRouterInterface {
   config: Routes;
-  // All of these are public API of router interface and can change during runtime because they are
-  // writeable. Ideally, these would be removed and the values retrieved instead from the values
-  // available in DI.
-  errorHandler: (error: any) => any;
   navigated: boolean;
   routeReuseStrategy: RouteReuseStrategy;
   onSameUrlNavigation: 'reload' | 'ignore';
@@ -358,6 +355,7 @@ export class NavigationTransitions {
   readonly transitionAbortSubject = new Subject<Error>();
   private readonly configLoader = inject(RouterConfigLoader);
   private readonly environmentInjector = inject(EnvironmentInjector);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly urlSerializer = inject(UrlSerializer);
   private readonly rootContexts = inject(ChildrenOutletContexts);
   private readonly location = inject(Location);
@@ -385,11 +383,16 @@ export class NavigationTransitions {
   /** @internal */
   rootComponentType: Type<any> | null = null;
 
+  private destroyed = false;
+
   constructor() {
     const onLoadStart = (r: Route) => this.events.next(new RouteConfigLoadStart(r));
     const onLoadEnd = (r: Route) => this.events.next(new RouteConfigLoadEnd(r));
     this.configLoader.onLoadEndListener = onLoadEnd;
     this.configLoader.onLoadStartListener = onLoadStart;
+    this.destroyRef.onDestroy(() => {
+      this.destroyed = true;
+    });
   }
 
   complete() {
@@ -835,6 +838,14 @@ export class NavigationTransitions {
             }
           }),
           catchError((e) => {
+            // If the application is already destroyed, the catch block should not
+            // execute anything in practice because other resources have already
+            // been released and destroyed.
+            if (this.destroyed) {
+              overallTransitionState.resolve(false);
+              return EMPTY;
+            }
+
             errored = true;
             /* This error type is issued during Redirect, and is handled as a
              * cancellation rather than an error. */
@@ -893,10 +904,7 @@ export class NavigationTransitions {
                   );
                 } else {
                   this.events.next(navigationError);
-                  // TODO(atscott): remove deprecation on errorHandler in RouterModule.forRoot and change behavior to provide NAVIGATION_ERROR_HANDLER
-                  // Note: Still remove public `Router.errorHandler` property, as this is supposed to be configured in DI.
-                  const errorHandlerResult = router.errorHandler(e);
-                  overallTransitionState.resolve(!!errorHandlerResult);
+                  throw e;
                 }
               } catch (ee) {
                 // TODO(atscott): consider flipping the default behavior of

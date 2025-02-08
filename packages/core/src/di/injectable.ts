@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Type} from '../interface/type';
@@ -56,7 +56,7 @@ export interface InjectableDecorator {
    * The following example shows how a service class is properly
    *  marked so that a supporting service can be injected upon creation.
    *
-   * <code-example path="core/di/ts/metadata_spec.ts" region="Injectable"></code-example>
+   * {@example core/di/ts/metadata_spec.ts region='Injectable'}
    *
    */
   (): TypeDecorator;

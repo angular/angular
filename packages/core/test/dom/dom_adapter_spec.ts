@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ɵgetDOM as getDOM} from '@angular/common';
@@ -49,7 +49,7 @@ describe('dom adapter', () => {
         headEl.appendChild(baseEl);
 
         const baseHref = getDOM().getBaseHref(defaultDoc);
-        headEl.removeChild(baseEl);
+        baseEl.remove();
         getDOM().resetBaseElement();
 
         expect(baseHref).toEqual('/drop/bass/connon/');
@@ -62,7 +62,7 @@ describe('dom adapter', () => {
         headEl.appendChild(baseEl);
 
         const baseHref = getDOM().getBaseHref(defaultDoc)!;
-        headEl.removeChild(baseEl);
+        baseEl.remove();
         getDOM().resetBaseElement();
 
         expect(baseHref.endsWith('/base')).toBe(true);

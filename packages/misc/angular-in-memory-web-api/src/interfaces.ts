@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {HttpHeaders} from '@angular/common/http';
@@ -132,7 +132,6 @@ export class InMemoryBackendConfig implements InMemoryBackendConfigArgs {
 /** Return information (UriInfo) about a URI  */
 export function parseUri(str: string): UriInfo {
   // Adapted from parseuri package - http://blog.stevenlevithan.com/archives/parseuri
-  // tslint:disable-next-line:max-line-length
   const URL_REGEX =
     /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/;
   const m = URL_REGEX.exec(str);

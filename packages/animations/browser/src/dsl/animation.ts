@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {
   AnimationMetadata,
@@ -35,8 +35,10 @@ export class Animation {
     if (errors.length) {
       throw validationFailed(errors);
     }
-    if (warnings.length) {
-      warnValidation(warnings);
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      if (warnings.length) {
+        warnValidation(warnings);
+      }
     }
     this._animationAst = ast;
   }

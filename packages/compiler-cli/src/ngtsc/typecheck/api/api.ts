@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -40,6 +40,8 @@ export interface TypeCheckableDirectiveMeta extends DirectiveMeta, DirectiveType
   hostDirectives: HostDirectiveMeta[] | null;
   decorator: ts.Decorator | null;
   isExplicitlyDeferred: boolean;
+  imports: Reference<ClassDeclaration>[] | null;
+  rawImports: ts.Expression | null;
 }
 
 export type TemplateId = string & {__brand: 'TemplateId'};
@@ -295,6 +297,11 @@ export interface TypeCheckingConfig {
   controlFlowPreventingContentProjection: 'error' | 'warning' | 'suppress';
 
   /**
+   * Whether to check if `@Component.imports` contains unused symbols.
+   */
+  unusedStandaloneImports: 'error' | 'warning' | 'suppress';
+
+  /**
    * Whether to use any generic types of the context component.
    *
    * If this is `true`, then if the context component has generic types, those will be mirrored in
@@ -350,6 +357,11 @@ export interface TypeCheckingConfig {
    * Whether to descend into the bodies of control flow blocks (`@if`, `@switch` and `@for`).
    */
   checkControlFlowBodies: boolean;
+
+  /**
+   * Whether the event side of a two-way binding should be type checked.
+   */
+  checkTwoWayBoundEvents: boolean;
 }
 
 export type TemplateSourceMapping =

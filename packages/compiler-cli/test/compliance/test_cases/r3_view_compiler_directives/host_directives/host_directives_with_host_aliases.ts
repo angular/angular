@@ -1,6 +1,6 @@
 import {Component, Directive, EventEmitter, Input, Output} from '@angular/core';
 
-@Directive({standalone: true})
+@Directive({})
 export class HostDir {
   @Input('valueAlias') value: number;
   @Input('colorAlias') color: string;
@@ -9,13 +9,14 @@ export class HostDir {
 }
 
 @Component({
-  selector: 'my-component',
-  template: '',
-  hostDirectives: [{
-    directive: HostDir,
-    inputs: ['valueAlias', 'colorAlias: customColorAlias'],
-    outputs: ['openedAlias', 'closedAlias: customClosedAlias'],
-  }],
+    selector: 'my-component',
+    template: '',
+    hostDirectives: [{
+            directive: HostDir,
+            inputs: ['valueAlias', 'colorAlias: customColorAlias'],
+            outputs: ['openedAlias', 'closedAlias: customClosedAlias'],
+        }],
+    standalone: false
 })
 export class MyComponent {
 }

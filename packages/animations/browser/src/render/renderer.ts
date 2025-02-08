@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 const ANIMATION_PREFIX = '@';
@@ -14,6 +14,7 @@ import {
   RendererFactory2,
   RendererStyleFlags2,
   ɵAnimationRendererType as AnimationRendererType,
+  type ListenerOptions,
 } from '@angular/core';
 import type {AnimationEngine} from './animation_engine_next';
 
@@ -78,7 +79,13 @@ export class BaseAnimationRenderer implements Renderer2 {
   }
 
   removeChild(parent: any, oldChild: any, isHostElement?: boolean): void {
-    this.engine.onRemove(this.namespaceId, oldChild, this.delegate);
+    // Prior to the changes in #57203, this method wasn't being called at all by `core` if the child
+    // doesn't have a parent. There appears to be some animation-specific downstream logic that
+    // depends on the null check happening before the animation engine. This check keeps the old
+    // behavior while allowing `core` to not have to check for the parent element anymore.
+    if (this.parentNode(oldChild)) {
+      this.engine.onRemove(this.namespaceId, oldChild, this.delegate);
+    }
   }
 
   selectRootElement(selectorOrNode: any, preserveContent?: boolean) {
@@ -129,8 +136,13 @@ export class BaseAnimationRenderer implements Renderer2 {
     this.delegate.setValue(node, value);
   }
 
-  listen(target: any, eventName: string, callback: (event: any) => boolean | void): () => void {
-    return this.delegate.listen(target, eventName, callback);
+  listen(
+    target: any,
+    eventName: string,
+    callback: (event: any) => boolean | void,
+    options?: ListenerOptions,
+  ): () => void {
+    return this.delegate.listen(target, eventName, callback, options);
   }
 
   protected disableAnimations(element: any, value: boolean) {
@@ -167,6 +179,7 @@ export class AnimationRenderer extends BaseAnimationRenderer implements Renderer
     target: 'window' | 'document' | 'body' | any,
     eventName: string,
     callback: (event: any) => any,
+    options?: ListenerOptions,
   ): () => void {
     if (eventName.charAt(0) == ANIMATION_PREFIX) {
       const element = resolveElementFromTarget(target);
@@ -182,7 +195,7 @@ export class AnimationRenderer extends BaseAnimationRenderer implements Renderer
         this.factory.scheduleListenerCallback(countId, callback, event);
       });
     }
-    return this.delegate.listen(target, eventName, callback);
+    return this.delegate.listen(target, eventName, callback, options);
   }
 }
 

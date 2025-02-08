@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {InjectFlags} from '../di/interface/injector';
@@ -176,7 +176,7 @@ interface InstructionState {
    * directives on children of that element.
    *
    * Example:
-   * ```
+   * ```html
    * <my-comp my-directive>
    *   Should match component / directive.
    * </my-comp>
@@ -193,7 +193,7 @@ interface InstructionState {
    * Stores the root TNode that has the 'ngSkipHydration' attribute on it for later reference.
    *
    * Example:
-   * ```
+   * ```html
    * <my-comp ngSkipHydration>
    *   Should reference this root node
    * </my-comp>
@@ -277,7 +277,7 @@ export function isSkipHydrationRootTNode(tNode: TNode): boolean {
  * Enables directive matching on elements.
  *
  *  * Example:
- * ```
+ * ```html
  * <my-comp my-directive>
  *   Should match component / directive.
  * </my-comp>
@@ -308,7 +308,7 @@ export function enterSkipHydrationBlock(tNode: TNode): void {
  * Disables directive matching on element.
  *
  *  * Example:
- * ```
+ * ```html
  * <my-comp my-directive>
  *   Should match component / directive.
  * </my-comp>
@@ -434,8 +434,10 @@ export function isRefreshingViews(): boolean {
   return _isRefreshingViews;
 }
 
-export function setIsRefreshingViews(mode: boolean): void {
+export function setIsRefreshingViews(mode: boolean): boolean {
+  const prev = _isRefreshingViews;
   _isRefreshingViews = mode;
+  return prev;
 }
 
 // top level variables should not be exported for performance reasons (PERF_NOTES.md)

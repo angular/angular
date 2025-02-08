@@ -1,10 +1,11 @@
 import {Component, Directive, forwardRef, NgModule, QueryList, ViewChild, ViewChildren} from '@angular/core';
 
 @Component({
-  selector: 'view-query-component',
-  template: `
+    selector: 'view-query-component',
+    template: `
     <div someDir></div>
-  `
+  `,
+    standalone: false
 })
 export class ViewQueryComponent {
   @ViewChild(forwardRef(() => SomeDirective)) someDir!: SomeDirective;
@@ -12,17 +13,19 @@ export class ViewQueryComponent {
 }
 
 @Component({
-  selector: 'my-app',
-  template: `
+    selector: 'my-app',
+    template: `
     <view-query-component></view-query-component>
-  `
+  `,
+    standalone: false
 })
 export class MyApp {
 }
 
 
 @Directive({
-  selector: '[someDir]',
+    selector: '[someDir]',
+    standalone: false
 })
 export class SomeDirective {
 }

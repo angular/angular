@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {isPlatformServer} from '@angular/common';
@@ -16,7 +16,7 @@ import {
   runInInjectionContext,
   ɵConsole as Console,
   ɵformatRuntimeError as formatRuntimeError,
-  ɵPendingTasks as PendingTasks,
+  ɵPendingTasksInternal as PendingTasks,
 } from '@angular/core';
 import {Observable} from 'rxjs';
 import {finalize} from 'rxjs/operators';
@@ -107,7 +107,7 @@ export type HttpHandlerFn = (req: HttpRequest<unknown>) => Observable<HttpEvent<
  *
  * @usageNotes
  * Here is a noop interceptor that passes the request through without modifying it:
- * ```typescript
+ * ```ts
  * export const noopInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, next:
  * HttpHandlerFn) => {
  *   return next(modifiedReq);
@@ -118,7 +118,7 @@ export type HttpHandlerFn = (req: HttpRequest<unknown>) => Observable<HttpEvent<
  * `next()` handler function.
  *
  * Here is a basic interceptor that adds a bearer token to the headers
- * ```typescript
+ * ```ts
  * export const authenticationInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, next:
  * HttpHandlerFn) => {
  *    const userToken = 'MY_TOKEN'; const modifiedReq = req.clone({
@@ -276,7 +276,14 @@ export class HttpInterceptorHandler extends HttpHandler {
     // a warning otherwise.
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && !fetchBackendWarningDisplayed) {
       const isServer = isPlatformServer(injector.get(PLATFORM_ID));
-      if (isServer && !(this.backend instanceof FetchBackend)) {
+
+      // This flag is necessary because provideHttpClientTesting() overrides the backend
+      // even if `withFetch()` is used within the test. When the testing HTTP backend is provided,
+      // no HTTP calls are actually performed during the test, so producing a warning would be
+      // misleading.
+      const isTestingBackend = (this.backend as any).isTestingBackend;
+
+      if (isServer && !(this.backend instanceof FetchBackend) && !isTestingBackend) {
         fetchBackendWarningDisplayed = true;
         injector
           .get(Console)

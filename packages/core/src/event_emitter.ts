@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {setActiveConsumer} from '@angular/core/primitives/signals';
@@ -13,7 +13,7 @@ import {OutputRef} from './authoring/output/output_ref';
 import {isInInjectionContext} from './di/contextual';
 import {inject} from './di/injector_compatibility';
 import {DestroyRef} from './linker/destroy_ref';
-import {PendingTasks} from './pending_tasks';
+import {PendingTasksInternal} from './pending_tasks';
 
 /**
  * Use in components with the `@Output` directive to emit custom events
@@ -30,7 +30,7 @@ import {PendingTasks} from './pending_tasks';
  * that create event emitters. When the title is clicked, the emitter
  * emits an open or close event to toggle the current visibility state.
  *
- * ```html
+ * ```angular-ts
  * @Component({
  *   selector: 'zippy',
  *   template: `
@@ -110,9 +110,10 @@ export interface EventEmitter<T> extends Subject<T>, OutputRef<T> {
 }
 
 class EventEmitter_ extends Subject<any> implements OutputRef<any> {
-  __isAsync: boolean; // tslint:disable-line
+  // tslint:disable-next-line:require-internal-with-underscore
+  __isAsync: boolean;
   destroyRef: DestroyRef | undefined = undefined;
-  private readonly pendingTasks: PendingTasks | undefined = undefined;
+  private readonly pendingTasks: PendingTasksInternal | undefined = undefined;
 
   constructor(isAsync: boolean = false) {
     super();
@@ -121,8 +122,11 @@ class EventEmitter_ extends Subject<any> implements OutputRef<any> {
     // Attempt to retrieve a `DestroyRef` and `PendingTasks` optionally.
     // For backwards compatibility reasons, this cannot be required.
     if (isInInjectionContext()) {
+      // `DestroyRef` is optional because it is not available in all contexts.
+      // But it is useful to properly complete the `EventEmitter` if used with `outputToObservable`
+      // when the component/directive is destroyed. (See `outputToObservable` for more details.)
       this.destroyRef = inject(DestroyRef, {optional: true}) ?? undefined;
-      this.pendingTasks = inject(PendingTasks, {optional: true}) ?? undefined;
+      this.pendingTasks = inject(PendingTasksInternal, {optional: true}) ?? undefined;
     }
   }
 

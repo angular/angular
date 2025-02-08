@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {producerAccessed, SIGNAL, signalSetFn} from '@angular/core/primitives/signals';
@@ -25,7 +25,7 @@ import {OutputEmitterRef} from '../output/output_emitter_ref';
 import {OutputRef} from '../output/output_ref';
 
 /**
- * @developerPreview
+ * @publicAPI
  *
  * Options for model signals.
  */
@@ -35,6 +35,11 @@ export interface ModelOptions {
    * name as the input, but suffixed with `Change`. By default, the class field name is used.
    */
   alias?: string;
+
+  /**
+   * A debug name for the model signal. Used in Angular DevTools to identify the signal.
+   */
+  debugName?: string;
 }
 
 /**
@@ -43,7 +48,7 @@ export interface ModelOptions {
  * A model signal is a writeable signal that can be exposed as an output.
  * Whenever its value is updated, it emits to the output.
  *
- * @developerPreview
+ * @publicAPI
  */
 export interface ModelSignal<T> extends WritableSignal<T>, InputSignal<T>, OutputRef<T> {
   [SIGNAL]: InputSignalNode<T, T>;
@@ -56,7 +61,7 @@ export interface ModelSignal<T> extends WritableSignal<T>, InputSignal<T>, Outpu
  *   Can be set to {@link REQUIRED_UNSET_VALUE} for required model signals.
  * @param options Additional options for the model.
  */
-export function createModelSignal<T>(initialValue: T): ModelSignal<T> {
+export function createModelSignal<T>(initialValue: T, opts?: ModelOptions): ModelSignal<T> {
   const node: InputSignalNode<T, T> = Object.create(INPUT_SIGNAL_NODE);
   const emitterRef = new OutputEmitterRef<T>();
 
@@ -89,6 +94,7 @@ export function createModelSignal<T>(initialValue: T): ModelSignal<T> {
 
   if (ngDevMode) {
     getter.toString = () => `[Model Signal: ${getter()}]`;
+    node.debugName = opts?.debugName;
   }
 
   return getter as typeof getter &

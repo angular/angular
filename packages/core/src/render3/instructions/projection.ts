@@ -3,13 +3,14 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {findMatchingDehydratedView} from '../../hydration/views';
+import {isDetachedByI18n} from '../../i18n/utils';
 import {newArray} from '../../util/array_utils';
 import {assertLContainer, assertTNode} from '../assert';
 import {ComponentTemplate} from '../interfaces/definition';
-import {TAttributes, TElementNode, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
+import {TAttributes, TElementNode, TNode, TNodeType} from '../interfaces/node';
 import {ProjectionSlots} from '../interfaces/projection';
 import {
   DECLARATION_COMPONENT_VIEW,
@@ -26,13 +27,13 @@ import {
   isSelectorInSelectorList,
 } from '../node_selector_matcher';
 import {getLView, getTView, isInSkipHydrationBlock, setCurrentTNodeAsNotParent} from '../state';
+import {getOrCreateTNode} from '../tnode_manipulation';
 import {
   addLViewToLContainer,
   createAndRenderEmbeddedLView,
   shouldAddViewToDom,
 } from '../view_manipulation';
 
-import {getOrCreateTNode} from './shared';
 import {declareTemplate} from './template';
 
 /**
@@ -200,10 +201,7 @@ export function ɵɵprojection(
 
   if (isEmpty && fallbackIndex !== null) {
     insertFallbackContent(lView, tView, fallbackIndex);
-  } else if (
-    isNodeCreationMode &&
-    (tProjectionNode.flags & TNodeFlags.isDetached) !== TNodeFlags.isDetached
-  ) {
+  } else if (isNodeCreationMode && !isDetachedByI18n(tProjectionNode)) {
     // re-distribution of projectable nodes is stored on a component's view level
     applyProjection(tView, lView, tProjectionNode);
   }

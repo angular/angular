@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 // #docplaster
 import {
@@ -55,6 +55,7 @@ export class TextFormatter {
       >
     </div>
     <button (click)="addHero.emit()">Add Hero</button>`,
+  standalone: false,
 })
 export class Ng2HeroesComponent {
   @Input() heroes!: Hero[];
@@ -94,12 +95,15 @@ export class HeroesService {
 
 // #docregion ng1-hero-wrapper
 // This Angular directive will act as an interface to the "upgraded" AngularJS component
-@Directive({selector: 'ng1-hero'})
+@Directive({
+  selector: 'ng1-hero',
+  standalone: false,
+})
 export class Ng1HeroComponentWrapper extends UpgradeComponent {
   // The names of the input and output properties here must match the names of the
   // `<` and `&` bindings in the AngularJS component that is being wrapped
   @Input() hero!: Hero;
-  @Output() onRemove!: EventEmitter<void>;
+  @Output() onRemove: EventEmitter<void> = new EventEmitter();
 
   constructor(elementRef: ElementRef, injector: Injector) {
     // We must pass the name of the directive as used by AngularJS to the super

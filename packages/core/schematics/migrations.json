@@ -1,19 +1,20 @@
 {
   "schematics": {
-    "invalid-two-way-bindings": {
-      "version": "18.0.0",
-      "description": "Updates two-way bindings that have an invalid expression to use the longform expression instead.",
-      "factory": "./migrations/invalid-two-way-bindings/bundle"
+    "explicit-standalone-flag": {
+      "version": "19.0.0",
+      "description": "Updates non-standalone Directives, Component and Pipes to 'standalone:false' and removes 'standalone:true' from those who are standalone",
+      "factory": "./bundles/explicit-standalone-flag#migrate"
     },
-    "migration-http-providers": {
-      "version": "18.0.0",
-      "description": "Replace deprecated HTTP related modules with provider functions",
-      "factory": "./migrations/http-providers/bundle"
+    "pending-tasks": {
+      "version": "19.0.0",
+      "description": "Updates ExperimentalPendingTasks to PendingTasks",
+      "factory": "./bundles/pending-tasks#migrate"
     },
-    "migration-after-render-phase": {
-      "version": "18.1.0",
-      "description": "Updates calls to afterRender with an explicit phase to the new API",
-      "factory": "./migrations/after-render-phase/bundle"
+    "provide-initializer": {
+      "version": "19.0.0",
+      "description": "Replaces `APP_INITIALIZER`, `ENVIRONMENT_INITIALIZER` & `PLATFORM_INITIALIZER` respectively with `provideAppInitializer`, `provideEnvironmentInitializer` & `providePlatformInitializer`.",
+      "factory": "./bundles/provide-initializer#migrate",
+      "optional": true
     }
   }
 }

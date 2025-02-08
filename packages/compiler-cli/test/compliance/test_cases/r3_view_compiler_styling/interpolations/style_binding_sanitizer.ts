@@ -1,11 +1,12 @@
 import {Component} from '@angular/core';
 
 @Component({
-  template: `
+    template: `
     <div style.background="url({{ myUrl1 }})"
          style.borderImage="url({{ myUrl2 }}) {{ myRepeat }} auto"
          style.boxShadow="{{ myBoxX }} {{ myBoxY }} {{ myBoxWidth }} black"></div>
-  `
+  `,
+    standalone: false
 })
 export class MyComponent {
   myUrl1 = '...';

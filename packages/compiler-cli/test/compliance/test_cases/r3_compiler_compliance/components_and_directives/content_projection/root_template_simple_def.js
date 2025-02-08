@@ -1,6 +1,7 @@
 SimpleComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: SimpleComponent,
   selectors: [["simple"]],
+  standalone: false,
   ngContentSelectors: $c0$,
   decls: 2,
   vars: 0,

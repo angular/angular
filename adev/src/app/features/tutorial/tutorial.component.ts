@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule, isPlatformBrowser, NgIf} from '@angular/common';
+import {isPlatformBrowser, NgComponentOutlet, NgTemplateOutlet} from '@angular/common';
 import {
-  AfterViewInit,
+  afterNextRender,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   computed,
+  DestroyRef,
   ElementRef,
   EnvironmentInjector,
   inject,
@@ -22,6 +23,7 @@ import {
   Type,
   ViewChild,
 } from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {
   ClickOutside,
   DocContent,
@@ -29,27 +31,37 @@ import {
   IconComponent,
   NavigationItem,
   NavigationList,
+  TutorialType,
+  TutorialNavigationData,
+  TutorialNavigationItem,
 } from '@angular/docs';
 import {ActivatedRoute, RouterLink} from '@angular/router';
+import {from} from 'rxjs';
 import {filter} from 'rxjs/operators';
+
 import {PagePrefix} from '../../core/enums/pages';
-import {injectAsync} from '../../core/services/inject-async';
 import {
   EmbeddedTutorialManager,
   LoadingStep,
   NodeRuntimeState,
   EmbeddedEditor,
+  injectNodeRuntimeSandbox,
 } from '../../editor/index';
 import {SplitResizerHandler} from './split-resizer-handler.service';
-import {TutorialType} from '@angular/docs';
-import {TutorialNavigationData, TutorialNavigationItem} from '@angular/docs';
 
 const INTRODUCTION_LABEL = 'Introduction';
 
 @Component({
   selector: 'adev-tutorial',
-  standalone: true,
-  imports: [CommonModule, DocViewer, NavigationList, ClickOutside, NgIf, RouterLink, IconComponent],
+  imports: [
+    NgComponentOutlet,
+    NgTemplateOutlet,
+    DocViewer,
+    NavigationList,
+    ClickOutside,
+    RouterLink,
+    IconComponent,
+  ],
   templateUrl: './tutorial.component.html',
   styleUrls: [
     './tutorial.component.scss',
@@ -59,7 +71,7 @@ const INTRODUCTION_LABEL = 'Introduction';
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [SplitResizerHandler],
 })
-export default class Tutorial implements AfterViewInit {
+export default class Tutorial {
   @ViewChild('content') content!: ElementRef<HTMLDivElement>;
   @ViewChild('editor') editor: ElementRef<HTMLDivElement> | undefined;
   @ViewChild('resizer') resizer!: ElementRef<HTMLDivElement>;
@@ -71,9 +83,9 @@ export default class Tutorial implements AfterViewInit {
   private readonly elementRef = inject(ElementRef<unknown>);
   private readonly embeddedTutorialManager = inject(EmbeddedTutorialManager);
   private readonly nodeRuntimeState = inject(NodeRuntimeState);
-  private readonly platformId = inject(PLATFORM_ID);
   private readonly route = inject(ActivatedRoute);
   private readonly splitResizerHandler = inject(SplitResizerHandler);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   readonly documentContent = signal<string | null>(null);
   readonly localTutorialZipUrl = signal<string | undefined>(undefined);
@@ -102,23 +114,25 @@ export default class Tutorial implements AfterViewInit {
         filter(() =>
           Boolean(this.route?.routeConfig?.path?.startsWith(`${PagePrefix.TUTORIALS}/`)),
         ),
+        takeUntilDestroyed(),
       )
       .subscribe((data) => {
         const docContent = (data['docContent'] as DocContent | undefined)?.contents ?? null;
         this.documentContent.set(docContent);
         this.setTutorialData(data as TutorialNavigationItem);
       });
-  }
 
-  async ngAfterViewInit(): Promise<void> {
-    if (isPlatformBrowser(this.platformId)) {
+    const destroyRef = inject(DestroyRef);
+    afterNextRender(() => {
       this.splitResizerHandler.init(this.elementRef, this.content, this.resizer, this.editor);
 
-      this.loadEmbeddedEditorComponent().then((editorComponent) => {
-        this.embeddedEditorComponent = editorComponent;
-        this.changeDetectorRef.markForCheck();
-      });
-    }
+      from(this.loadEmbeddedEditorComponent())
+        .pipe(takeUntilDestroyed(destroyRef))
+        .subscribe((editorComponent) => {
+          this.embeddedEditorComponent = editorComponent;
+          this.changeDetectorRef.markForCheck();
+        });
+    });
   }
 
   toggleNavigationDropdown($event: MouseEvent): void {
@@ -137,13 +151,11 @@ export default class Tutorial implements AfterViewInit {
 
     this.embeddedTutorialManager.revealAnswer();
 
-    const nodeRuntimeSandbox = await injectAsync(this.environmentInjector, () =>
-      import('../../editor/index').then((s) => s.NodeRuntimeSandbox),
-    );
+    const nodeRuntimeSandbox = await injectNodeRuntimeSandbox(this.environmentInjector);
 
     await Promise.all(
       Object.entries(this.embeddedTutorialManager.answerFiles()).map(([path, contents]) =>
-        nodeRuntimeSandbox.writeFile(path, contents as string | Buffer),
+        nodeRuntimeSandbox.writeFile(path, contents as string | Uint8Array),
       ),
     );
 
@@ -155,13 +167,11 @@ export default class Tutorial implements AfterViewInit {
 
     this.embeddedTutorialManager.resetRevealAnswer();
 
-    const nodeRuntimeSandbox = await injectAsync(this.environmentInjector, () =>
-      import('../../editor/index').then((s) => s.NodeRuntimeSandbox),
-    );
+    const nodeRuntimeSandbox = await injectNodeRuntimeSandbox(this.environmentInjector);
 
     await Promise.all(
       Object.entries(this.embeddedTutorialManager.tutorialFiles()).map(([path, contents]) =>
-        nodeRuntimeSandbox.writeFile(path, contents as string | Buffer),
+        nodeRuntimeSandbox.writeFile(path, contents as string | Uint8Array),
       ),
     );
 
@@ -181,7 +191,7 @@ export default class Tutorial implements AfterViewInit {
 
     if (routeData.type === TutorialType.LOCAL) {
       this.setLocalTutorialData(routeData);
-    } else if (routeData.type === TutorialType.EDITOR && isPlatformBrowser(this.platformId)) {
+    } else if (routeData.type === TutorialType.EDITOR && this.isBrowser) {
       await this.setEditorTutorialData(
         tutorialNavigationItem.path.replace(`${PagePrefix.TUTORIALS}/`, ''),
       );
@@ -244,9 +254,7 @@ export default class Tutorial implements AfterViewInit {
   }
 
   private async loadEmbeddedEditor() {
-    const nodeRuntimeSandbox = await injectAsync(this.environmentInjector, () =>
-      import('../../editor/index').then((s) => s.NodeRuntimeSandbox),
-    );
+    const nodeRuntimeSandbox = await injectNodeRuntimeSandbox(this.environmentInjector);
 
     this.canRevealAnswer = computed(() => this.nodeRuntimeState.loadingStep() > LoadingStep.BOOT);
 

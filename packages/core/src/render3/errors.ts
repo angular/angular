@@ -3,13 +3,13 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
 
-import {getComponentDef} from './definition';
+import {getComponentDef} from './def_getters';
 import {getDeclarationComponentDef} from './instructions/element_validation';
 import {TNode} from './interfaces/node';
 import {LView, TVIEW} from './interfaces/view';
@@ -72,7 +72,9 @@ export function throwErrorIfNoChangesMode(
   const hostComponentDef = getDeclarationComponentDef(lView);
   const componentClassName = hostComponentDef?.type?.name;
   const field = propName ? ` for '${propName}'` : '';
-  let msg = `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value${field}: '${formatValue(oldValue)}'. Current value: '${formatValue(currValue)}'.${
+  let msg = `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value${field}: '${formatValue(
+    oldValue,
+  )}'. Current value: '${formatValue(currValue)}'.${
     componentClassName ? ` Expression location: ${componentClassName} component` : ''
   }`;
   if (creationMode) {

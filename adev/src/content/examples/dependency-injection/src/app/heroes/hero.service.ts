@@ -18,7 +18,7 @@ export class HeroService {
   ) {}
 
   getHeroes() {
-    const auth = this.isAuthorized ? 'authorized ' : 'unauthorized';
+    const auth = this.isAuthorized ? 'authorized' : 'unauthorized';
     this.logger.log(`Getting heroes for ${auth} user.`);
     return HEROES.filter((hero) => this.isAuthorized || !hero.isSecret);
   }

@@ -21,11 +21,11 @@ describe('ApiItemLabel', () => {
     });
     fixture = TestBed.createComponent(ApiItemLabel);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should by default display short label for Class', () => {
-    component.type = ApiItemType.CLASS;
+    fixture.componentRef.setInput('type', ApiItemType.CLASS);
+    fixture.componentRef.setInput('mode', 'short');
     fixture.detectChanges();
 
     const label = fixture.nativeElement.innerText;
@@ -33,19 +33,8 @@ describe('ApiItemLabel', () => {
     expect(label).toBe('C');
   });
 
-  it('should display full label for Class when labelMode equals full', () => {
-    component.type = ApiItemType.CLASS;
-    component.mode = 'full';
-    fixture.detectChanges();
-
-    const label = fixture.nativeElement.innerText;
-
-    expect(label).toBe('Class');
-  });
-
-  it('should display short label for Class when labelMode equals short', () => {
-    component.type = ApiItemType.CLASS;
-    component.mode = 'short';
+  it('should display short label for Class', () => {
+    fixture.componentRef.setInput('type', ApiItemType.CLASS);
     fixture.detectChanges();
 
     const label = fixture.nativeElement.innerText;

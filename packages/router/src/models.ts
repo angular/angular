@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -16,25 +16,25 @@ import {
 } from '@angular/core';
 import {Observable} from 'rxjs';
 
-import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
-import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
+import type {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
+import type {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 
 /**
  * How to handle a navigation request to the current URL. One of:
  *
- * - `'ignore'` :  The router ignores the request it is the same as the current state.
+ * - `'ignore'` : The router ignores the request if it is the same as the current state.
  * - `'reload'` : The router processes the URL even if it is not different from the current state.
- * One example of when you might want this option is if a `canMatch` guard depends on
+ * One example of when you might want to use this option is if a `canMatch` guard depends on the
  * application state and initially rejects navigation to a route. After fixing the state, you want
- * to re-navigate to the same URL so the route with the `canMatch` guard can activate.
+ * to re-navigate to the same URL so that the route with the `canMatch` guard can activate.
  *
- * Note that this only configures whether the Route reprocesses the URL and triggers related
- * action and events like redirects, guards, and resolvers. By default, the router re-uses a
+ * Note that this only configures whether or not the Route reprocesses the URL and triggers related
+ * actions and events like redirects, guards, and resolvers. By default, the router re-uses a
  * component instance when it re-navigates to the same component type without visiting a different
  * component first. This behavior is configured by the `RouteReuseStrategy`. In order to reload
  * routed components on same url navigation, you need to set `onSameUrlNavigation` to `'reload'`
  * _and_ provide a `RouteReuseStrategy` which returns `false` for `shouldReuseRoute`. Additionally,
- * resolvers and most guards for routes do not run unless the path or path params changed
+ * resolvers and most guards for routes do not run unless the path or path params have changed
  * (configured by `runGuardsAndResolvers`).
  *
  * @publicApi
@@ -47,7 +47,7 @@ export type OnSameUrlNavigation = 'reload' | 'ignore';
 
 /**
  * The `InjectionToken` and `@Injectable` classes for guards and resolvers are deprecated in favor
- * of plain JavaScript functions instead.. Dependency injection can still be achieved using the
+ * of plain JavaScript functions instead. Dependency injection can still be achieved using the
  * [`inject`](api/core/inject) function from `@angular/core` and an injectable class can be used as
  * a functional guard using [`inject`](api/core/inject): `canActivate: [() =>
  * inject(myGuard).canActivate()]`.
@@ -155,7 +155,7 @@ export type UrlMatchResult = {
  *
  * The following example implementation matches HTML files.
  *
- * ```
+ * ```ts
  * export function htmlFiles(url: UrlSegment[]) {
  *   return url.length === 1 && url[0].path.endsWith('.html') ? ({consumed: url}) : null;
  * }
@@ -226,14 +226,14 @@ export interface DefaultExport<T> {
  *
  * For example:
  *
- * ```
+ * ```ts
  * [{
  *   path: 'lazy',
  *   loadChildren: () => import('./lazy-route/lazy.module').then(mod => mod.LazyModule),
  * }];
  * ```
  * or
- * ```
+ * ```ts
  * [{
  *   path: 'lazy',
  *   loadChildren: () => import('./lazy-route/lazy.routes').then(mod => mod.ROUTES),
@@ -241,7 +241,7 @@ export interface DefaultExport<T> {
  * ```
  *
  * If the lazy-loaded routes are exported via a `default` export, the `.then` can be omitted:
- * ```
+ * ```ts
  * [{
  *   path: 'lazy',
  *   loadChildren: () => import('./lazy-route/lazy.routes'),
@@ -275,13 +275,14 @@ export type LoadChildren = LoadChildrenCallback;
  * One of:
  * - `"merge"` : Merge new parameters with current parameters.
  * - `"preserve"` : Preserve current parameters.
- * - `""` : Replace current parameters with new parameters. This is the default behavior.
+ * - `"replace"` : Replace current parameters with new parameters. This is the default behavior.
+ * - `""` : For legacy reasons, the same as `'replace'`.
  *
  * @see {@link UrlCreationOptions#queryParamsHandling}
  * @see {@link RouterLink}
  * @publicApi
  */
-export type QueryParamsHandling = 'merge' | 'preserve' | '';
+export type QueryParamsHandling = 'merge' | 'preserve' | 'replace' | '';
 
 /**
  * The type for the function that can be used to handle redirects when the path matches a `Route` config.
@@ -350,7 +351,7 @@ export type RunGuardsAndResolvers =
  * `/team/11/user/bob`, the router creates the 'Team' component
  * with the 'User' child component in it.
  *
- * ```
+ * ```ts
  * [{
  *   path: 'team/:id',
  *  component: Team,
@@ -367,7 +368,7 @@ export type RunGuardsAndResolvers =
  * When navigating to `/team/11(aux:chat/jim)`, the router creates the 'Team' component next to
  * the 'Chat' component. The 'Chat' component is placed into the 'aux' outlet.
  *
- * ```
+ * ```ts
  * [{
  *   path: 'team/:id',
  *   component: Team
@@ -383,7 +384,7 @@ export type RunGuardsAndResolvers =
  * The following route uses wild-card notation to specify a component
  * that is always instantiated regardless of where you navigate to.
  *
- * ```
+ * ```ts
  * [{
  *   path: '**',
  *   component: WildcardComponent
@@ -399,7 +400,7 @@ export type RunGuardsAndResolvers =
  * '/team/11/legacy/user/jim' to '/team/11/user/jim', and then instantiates
  * the Team component with the User child component in it.
  *
- * ```
+ * ```ts
  * [{
  *   path: 'team/:id',
  *   component: Team,
@@ -425,7 +426,7 @@ export type RunGuardsAndResolvers =
  * In the following configuration, when navigating to
  * `/team/11`, the router instantiates the 'AllUsers' component.
  *
- * ```
+ * ```ts
  * [{
  *   path: 'team/:id',
  *   component: Team,
@@ -445,7 +446,7 @@ export type RunGuardsAndResolvers =
  *
  * Note that an empty path route inherits its parent's parameters and data.
  *
- * ```
+ * ```ts
  * [{
  *   path: 'team/:id',
  *   component: Team,
@@ -466,7 +467,7 @@ export type RunGuardsAndResolvers =
  * checks URL elements from the left to see if the URL matches a specified path.
  * For example, '/team/11/user' matches 'team/:id'.
  *
- * ```
+ * ```ts
  * [{
  *   path: '',
  *   pathMatch: 'prefix', //default
@@ -486,7 +487,7 @@ export type RunGuardsAndResolvers =
  * In the following example, supplying the 'full' `pathMatch` strategy ensures
  * that the router applies the redirect if and only if navigating to '/'.
  *
- * ```
+ * ```ts
  * [{
  *   path: '',
  *   pathMatch: 'full',
@@ -509,7 +510,7 @@ export type RunGuardsAndResolvers =
  * the main child and aux child components next to each other.
  * For this to work, the application component must have the primary and aux outlets defined.
  *
- * ```
+ * ```ts
  * [{
  *    path: 'parent/:id',
  *    children: [
@@ -527,7 +528,7 @@ export type RunGuardsAndResolvers =
  * With this configuration, navigating to '/parent/10' creates
  * the main child and aux components.
  *
- * ```
+ * ```ts
  * [{
  *    path: 'parent/:id',
  *    children: [
@@ -547,7 +548,7 @@ export type RunGuardsAndResolvers =
  * Given the following example route, the router will lazy load
  * the associated module on demand using the browser native import system.
  *
- * ```
+ * ```ts
  * [{
  *   path: 'lazy',
  *   loadChildren: () => import('./lazy-route/lazy.module').then(mod => mod.LazyModule),
@@ -762,7 +763,7 @@ export interface LoadedRouterConfig {
  * The following example implements a `CanActivate` function that checks whether the
  * current user has permission to activate the requested route.
  *
- * ```
+ * ```ts
  * class UserToken {}
  * class Permissions {
  *   canActivate(): boolean {
@@ -786,7 +787,7 @@ export interface LoadedRouterConfig {
  * Here, the defined guard function is provided as part of the `Route` object
  * in the router configuration:
  *
- * ```
+ * ```ts
  * @NgModule({
  *   imports: [
  *     RouterModule.forRoot([
@@ -876,7 +877,7 @@ export type CanActivateFn = (
  * The following example implements a `CanActivateChild` function that checks whether the
  * current user has permission to activate the requested child route.
  *
- * ```
+ * ```ts
  * class UserToken {}
  * class Permissions {
  *   canActivate(user: UserToken, id: string): boolean {
@@ -900,7 +901,7 @@ export type CanActivateFn = (
  * Here, the defined guard function is provided as part of the `Route` object
  * in the router configuration:
  *
- * ```
+ * ```ts
  * @NgModule({
  *   imports: [
  *     RouterModule.forRoot([
@@ -961,7 +962,7 @@ export type CanActivateChildFn = (
  * The following example implements a `CanDeactivate` function that checks whether the
  * current user has permission to deactivate the requested route.
  *
- * ```
+ * ```ts
  * class UserToken {}
  * class Permissions {
  *   canDeactivate(user: UserToken, id: string): boolean {
@@ -973,8 +974,7 @@ export type CanActivateChildFn = (
  * Here, the defined guard function is provided as part of the `Route` object
  * in the router configuration:
  *
- * ```
- *
+ * ```ts
  * @Injectable()
  * class CanDeactivateTeam implements CanDeactivate<TeamComponent> {
  *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
@@ -1049,7 +1049,7 @@ export type CanDeactivateFn<T> = (
  * current user has permission to access the users page.
  *
  *
- * ```
+ * ```ts
  * class UserToken {}
  * class Permissions {
  *   canAccess(user: UserToken, route: Route, segments: UrlSegment[]): boolean {
@@ -1070,8 +1070,7 @@ export type CanDeactivateFn<T> = (
  * Here, the defined guard function is provided as part of the `Route` object
  * in the router configuration:
  *
- * ```
- *
+ * ```ts
  * @NgModule({
  *   imports: [
  *     RouterModule.forRoot([
@@ -1114,6 +1113,9 @@ export interface CanMatch {
  *
  * {@example router/route_functional_guards.ts region="CanMatchFn"}
  *
+ * @param route The route configuration.
+ * @param segments The URL segments that have not been consumed by previous parent route evaluations.
+ *
  * @publicApi
  * @see {@link Route}
  */
@@ -1130,7 +1132,7 @@ export type CanMatchFn = (route: Route, segments: UrlSegment[]) => MaybeAsync<Gu
  * The following example implements a `resolve()` method that retrieves the data
  * needed to activate the requested route.
  *
- * ```
+ * ```ts
  * @Injectable({ providedIn: 'root' })
  * export class HeroResolver implements Resolve<Hero> {
  *   constructor(private service: HeroService) {}
@@ -1147,8 +1149,7 @@ export type CanMatchFn = (route: Route, segments: UrlSegment[]) => MaybeAsync<Gu
  * Here, the defined `resolve()` function is provided as part of the `Route` object
  * in the router configuration:
  *
- * ```
-
+ * ```ts
  * @NgModule({
  *   imports: [
  *     RouterModule.forRoot([
@@ -1168,7 +1169,7 @@ export type CanMatchFn = (route: Route, segments: UrlSegment[]) => MaybeAsync<Gu
  *
  * And you can access to your resolved data from `HeroComponent`:
  *
- * ```
+ * ```ts
  * @Component({
  *  selector: "app-hero",
  *  templateUrl: "hero.component.html",
@@ -1192,7 +1193,7 @@ export type CanMatchFn = (route: Route, segments: UrlSegment[]) => MaybeAsync<Gu
  * all guards have run and succeeded.
  * For example, consider the following route configuration:
  *
- * ```
+ * ```ts
  * {
  *  path: 'base'
  *  canActivate: [BaseGuard],
@@ -1213,7 +1214,10 @@ export type CanMatchFn = (route: Route, segments: UrlSegment[]) => MaybeAsync<Gu
  * @see {@link ResolveFn}
  */
 export interface Resolve<T> {
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<T>;
+  resolve(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot,
+  ): MaybeAsync<T | RedirectCommand>;
 }
 
 /**
@@ -1298,7 +1302,7 @@ export interface Resolve<T> {
  * all guards have run and succeeded.
  * For example, consider the following route configuration:
  *
- * ```
+ * ```ts
  * {
  *  path: 'base'
  *  canActivate: [baseGuard],
@@ -1335,7 +1339,7 @@ export type ResolveFn<T> = (
  * current user has permission to load requested child routes.
  *
  *
- * ```
+ * ```ts
  * class UserToken {}
  * class Permissions {
  *   canLoadChildren(user: UserToken, id: string, segments: UrlSegment[]): boolean {
@@ -1356,8 +1360,7 @@ export type ResolveFn<T> = (
  * Here, the defined guard function is provided as part of the `Route` object
  * in the router configuration:
  *
- * ```
- *
+ * ```ts
  * @NgModule({
  *   imports: [
  *     RouterModule.forRoot([
@@ -1490,7 +1493,7 @@ export interface NavigationBehaviorOptions {
    * This feature is useful for redirects, such as redirecting to an error page, without changing
    * the value that will be displayed in the browser's address bar.
    *
-   * ```
+   * ```ts
    * const canActivate: CanActivateFn = (route: ActivatedRouteSnapshot) => {
    *   const userService = inject(UserService);
    *   const router = inject(Router);

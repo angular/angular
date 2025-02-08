@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {EnvironmentInjector, ProviderToken, runInInjectionContext} from '@angular/core';
@@ -29,10 +29,10 @@ import {
   CanMatchFn,
   Route,
 } from '../models';
-import {navigationCancelingError, redirectingNavigationError} from '../navigation_canceling_error';
-import {NavigationTransition} from '../navigation_transition';
-import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../router_state';
-import {isUrlTree, UrlSegment, UrlSerializer, UrlTree} from '../url_tree';
+import {redirectingNavigationError} from '../navigation_canceling_error';
+import type {NavigationTransition} from '../navigation_transition';
+import type {ActivatedRouteSnapshot, RouterStateSnapshot} from '../router_state';
+import {UrlSegment, UrlSerializer} from '../url_tree';
 import {wrapIntoObservable} from '../utils/collection';
 import {getClosestRouteInjector} from '../utils/config';
 import {

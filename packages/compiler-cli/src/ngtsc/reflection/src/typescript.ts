@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import ts from 'typescript';
@@ -31,9 +31,15 @@ import {isNamedClassDeclaration} from './util';
  */
 
 export class TypeScriptReflectionHost implements ReflectionHost {
+  /**
+   * @param skipPrivateValueDeclarationTypes Avoids using a value declaration that is considered private (using a ɵ-prefix),
+   * instead using the first available declaration. This is needed for the {@link FormControl} API of
+   * which the type declaration documents the type and the value declaration corresponds with an implementation detail.
+   */
   constructor(
     protected checker: ts.TypeChecker,
     private readonly isLocalCompilation = false,
+    private readonly skipPrivateValueDeclarationTypes = false,
   ) {}
 
   getDecoratorsOfDeclaration(declaration: DeclarationNode): Decorator[] | null {
@@ -313,13 +319,13 @@ export class TypeScriptReflectionHost implements ReflectionHost {
    *
    * For example, if the identifier is the `Directive` part of a qualified type chain like:
    *
-   * ```
+   * ```ts
    * core.Directive
    * ```
    *
    * then it might be that `core` is a namespace import such as:
    *
-   * ```
+   * ```ts
    * import * as core from 'tslib';
    * ```
    *
@@ -398,9 +404,12 @@ export class TypeScriptReflectionHost implements ReflectionHost {
       symbol = this.checker.getAliasedSymbol(symbol);
     }
 
-    // Look at the resolved Symbol's declarations and pick one of them to return. Value declarations
-    // are given precedence over type declarations.
-    if (symbol.valueDeclaration !== undefined) {
+    // Look at the resolved Symbol's declarations and pick one of them to return.
+    // Value declarations are given precedence over type declarations if not specified otherwise
+    if (
+      symbol.valueDeclaration !== undefined &&
+      (!this.skipPrivateValueDeclarationTypes || !isPrivateSymbol(this.checker, symbol))
+    ) {
       return {
         node: symbol.valueDeclaration,
         viaModule: this._viaModule(symbol.valueDeclaration, originalId, importInfo),
@@ -533,13 +542,30 @@ export function reflectIdentifierOfDeclaration(decl: ts.Declaration): ts.Identif
   return null;
 }
 
+export class TypeEntityToDeclarationError extends Error {
+  constructor(message: string) {
+    super(message);
+
+    // Extending `Error` ends up breaking some internal tests. This appears to be a known issue
+    // when extending errors in TS and the workaround is to explicitly set the prototype.
+    // https://stackoverflow.com/questions/41102060/typescript-extending-error-class
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
+}
+
+/**
+ * @throws {TypeEntityToDeclarationError} if the type cannot be converted
+ *   to a declaration.
+ */
 export function reflectTypeEntityToDeclaration(
   type: ts.EntityName,
   checker: ts.TypeChecker,
 ): {node: ts.Declaration; from: string | null} {
   let realSymbol = checker.getSymbolAtLocation(type);
   if (realSymbol === undefined) {
-    throw new Error(`Cannot resolve type entity ${type.getText()} to symbol`);
+    throw new TypeEntityToDeclarationError(
+      `Cannot resolve type entity ${type.getText()} to symbol`,
+    );
   }
   while (realSymbol.flags & ts.SymbolFlags.Alias) {
     realSymbol = checker.getAliasedSymbol(realSymbol);
@@ -551,12 +577,14 @@ export function reflectTypeEntityToDeclaration(
   } else if (realSymbol.declarations !== undefined && realSymbol.declarations.length === 1) {
     node = realSymbol.declarations[0];
   } else {
-    throw new Error(`Cannot resolve type entity symbol to declaration`);
+    throw new TypeEntityToDeclarationError(`Cannot resolve type entity symbol to declaration`);
   }
 
   if (ts.isQualifiedName(type)) {
     if (!ts.isIdentifier(type.left)) {
-      throw new Error(`Cannot handle qualified name with non-identifier lhs`);
+      throw new TypeEntityToDeclarationError(
+        `Cannot handle qualified name with non-identifier lhs`,
+      );
     }
     const symbol = checker.getSymbolAtLocation(type.left);
     if (
@@ -564,20 +592,20 @@ export function reflectTypeEntityToDeclaration(
       symbol.declarations === undefined ||
       symbol.declarations.length !== 1
     ) {
-      throw new Error(`Cannot resolve qualified type entity lhs to symbol`);
+      throw new TypeEntityToDeclarationError(`Cannot resolve qualified type entity lhs to symbol`);
     }
     const decl = symbol.declarations[0];
     if (ts.isNamespaceImport(decl)) {
       const clause = decl.parent!;
       const importDecl = clause.parent!;
       if (!ts.isStringLiteral(importDecl.moduleSpecifier)) {
-        throw new Error(`Module specifier is not a string`);
+        throw new TypeEntityToDeclarationError(`Module specifier is not a string`);
       }
       return {node, from: importDecl.moduleSpecifier.text};
     } else if (ts.isModuleDeclaration(decl)) {
       return {node, from: null};
     } else {
-      throw new Error(`Unknown import type?`);
+      throw new TypeEntityToDeclarationError(`Unknown import type?`);
     }
   } else {
     return {node, from: null};
@@ -760,6 +788,15 @@ function propertyNameToString(node: ts.PropertyName): string | null {
   } else {
     return null;
   }
+}
+
+/** Determines whether a given symbol represents a private API (symbols with names that start with `ɵ`) */
+function isPrivateSymbol(typeChecker: ts.TypeChecker, symbol: ts.Symbol) {
+  if (symbol.valueDeclaration !== undefined) {
+    const symbolType = typeChecker.getTypeOfSymbolAtLocation(symbol, symbol.valueDeclaration);
+    return symbolType?.symbol?.name.startsWith('ɵ') === true;
+  }
+  return false;
 }
 
 /**

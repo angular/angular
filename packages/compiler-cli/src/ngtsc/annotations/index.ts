@@ -3,19 +3,21 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /// <reference types="node" />
 
 export {
   forwardRefResolver,
+  findAngularDecorator,
   getAngularDecorators,
   isAngularDecorator,
   NoopReferencesRegistry,
   ReferencesRegistry,
   ResourceLoader,
   ResourceLoaderContext,
+  JitDeclarationRegistry,
 } from './common';
 export {ComponentDecoratorHandler} from './component';
 export {

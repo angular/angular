@@ -2,7 +2,6 @@ import {Component, Directive} from '@angular/core';
 
 @Directive({
   selector: 'lazy-dep',
-  standalone: true,
 })
 export class LazyDep {
 }
@@ -18,7 +17,6 @@ export class LazyDep {
       }
     </div>
   `,
-  standalone: true,
   imports: [LazyDep],
 })
 export class MyApp {

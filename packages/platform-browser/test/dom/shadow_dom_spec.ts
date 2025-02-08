@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Component, NgModule, ViewEncapsulation} from '@angular/core';
@@ -86,6 +86,7 @@ describe('ShadowDOM Support', () => {
   selector: 'shadow-comp',
   template: 'Hello World',
   encapsulation: ViewEncapsulation.ShadowDom,
+  standalone: false,
 })
 class ShadowComponent {}
 
@@ -94,6 +95,7 @@ class ShadowComponent {}
   template: '<div class="red"></div>',
   encapsulation: ViewEncapsulation.ShadowDom,
   styles: [`:host { background: black; } .red { background: red; }`],
+  standalone: false,
 })
 class StyledShadowComponent {}
 
@@ -101,6 +103,7 @@ class StyledShadowComponent {}
   selector: 'shadow-slot-comp',
   template: '<slot></slot>',
   encapsulation: ViewEncapsulation.ShadowDom,
+  standalone: false,
 })
 class ShadowSlotComponent {}
 
@@ -109,6 +112,7 @@ class ShadowSlotComponent {}
   template:
     '<header><slot name="header"></slot></header><article><slot name="article"></slot></article>',
   encapsulation: ViewEncapsulation.ShadowDom,
+  standalone: false,
 })
 class ShadowSlotsComponent {}
 

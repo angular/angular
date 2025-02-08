@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Component, EventEmitter, forwardRef, Input, NgModule, Output} from '@angular/core';
@@ -52,6 +52,7 @@ ng1module.directive('ng1User', function () {
     <div class="content"><ng-content></ng-content></div>
   </div>`,
   styles: styles,
+  standalone: false,
 })
 export class Pane {
   @Input() title: string;
@@ -70,6 +71,7 @@ export class Pane {
     </pane>
   </div>`,
   styles: styles,
+  standalone: false,
 })
 export class UpgradeApp {
   @Input() user: string;

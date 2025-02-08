@@ -1,0 +1,1502 @@
+@@@@@@ any_test.ts @@@@@@
+
+// tslint:disable
+
+import {DebugElement, input} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+
+function it(msg: string, fn: () => void) {}
+const harness = {
+  query<T>(v: T): DebugElement {
+    return null!;
+  },
+};
+
+class SubDir {
+  readonly name = input('John');
+  readonly name2 = input('');
+}
+
+class MyComp {
+  readonly hello = input('');
+}
+
+it('should work', () => {
+  const fixture = TestBed.createComponent(MyComp);
+  // `.componentInstance` is using `any` :O
+  const sub = fixture.debugElement.query(By.directive(SubDir)).componentInstance;
+
+  expect(sub.name()).toBe('John');
+});
+
+it('should work2', () => {
+  const fixture = TestBed.createComponent(MyComp);
+  // `.componentInstance` is using `any` :O
+  const sub = harness.query(SubDir).componentInstance;
+
+  expect(sub.name2()).toBe('John');
+});
+@@@@@@ base_class.ts @@@@@@
+
+// tslint:disable
+
+import {Directive, Input, input} from '@angular/core';
+
+class BaseNonAngular {
+  disabled: string = '';
+}
+
+@Directive()
+class Sub implements BaseNonAngular {
+  // should not be migrated because of the interface.
+  // TODO: Skipped for migration because:
+  //  This input overrides a field from a superclass, while the superclass field
+  //  is not migrated.
+  @Input() disabled = '';
+}
+
+class BaseWithAngular {
+  readonly disabled = input<string>('');
+}
+
+@Directive()
+class Sub2 extends BaseWithAngular {
+  readonly disabled = input('');
+}
+
+interface BaseNonAngularInterface {
+  disabled: string;
+}
+
+@Directive()
+class Sub3 implements BaseNonAngularInterface {
+  // should not be migrated because of the interface.
+  // TODO: Skipped for migration because:
+  //  This input overrides a field from a superclass, while the superclass field
+  //  is not migrated.
+  @Input() disabled = '';
+}
+@@@@@@ both_input_imports.ts @@@@@@
+
+// tslint:disable
+
+import {input, Input} from '@angular/core';
+
+class BothInputImported {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
+  @Input() decoratorInput = true;
+  signalInput = input<boolean>();
+
+  readonly thisCanBeMigrated = input(true);
+
+  __makeDecoratorInputNonMigratable() {
+    this.decoratorInput = false;
+  }
+}
+@@@@@@ catalyst_async_test.ts @@@@@@
+
+import { UnwrapSignalInputs } from "google3/javascript/angular2/testing/catalyst/async";
+// tslint:disable
+
+import {input} from '@angular/core';
+
+// google3/javascript/angular2/testing/catalyst/async
+// ^^ this allows the advisor to even consider this file.
+
+function it(msg: string, fn: () => void) {}
+function bootstrapTemplate(tmpl: string, inputs: unknown) {}
+
+class MyComp {
+  readonly hello = input('');
+}
+
+it('should work', () => {
+  const inputs = {
+    hello: 'test',
+  } as Partial<UnwrapSignalInputs<MyComp>>;
+  bootstrapTemplate('<my-comp [hello]="hello">', inputs);
+});
+@@@@@@ catalyst_test.ts @@@@@@
+
+import { UnwrapSignalInputs } from "google3/javascript/angular2/testing/catalyst/fake_async";
+// tslint:disable
+
+import {input} from '@angular/core';
+
+// google3/javascript/angular2/testing/catalyst/fake_async
+// ^^ this allows the advisor to even consider this file.
+
+function it(msg: string, fn: () => void) {}
+function bootstrapTemplate(tmpl: string, inputs: unknown) {}
+
+class MyComp {
+  readonly hello = input('');
+}
+
+it('should work', () => {
+  const inputs = {
+    hello: 'test',
+  } as Partial<UnwrapSignalInputs<MyComp>>;
+  bootstrapTemplate('<my-comp [hello]="hello">', inputs);
+});
+@@@@@@ catalyst_test_partial.ts @@@@@@
+
+// tslint:disable
+
+import {Component, Input, input} from '@angular/core';
+
+// @ts-ignore
+import {UnwrapSignalInputs} from 'google3/javascript/angular2/testing/catalyst/fake_async';
+
+function renderComponent(inputs: Partial<UnwrapSignalInputs<TestableSecondaryRangePicker>> = {}) {}
+
+@Component({
+  standalone: false,
+  jit: true,
+  template: '<bla [(ngModel)]="incompatible">',
+})
+class TestableSecondaryRangePicker {
+  readonly bla = input(true);
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
+  @Input() incompatible = true;
+}
+@@@@@@ constructor_initializations.ts @@@@@@
+
+// tslint:disable
+
+import {Input, Directive} from '@angular/core';
+
+@Directive()
+export class MyComp {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
+  @Input() firstName: string;
+
+  constructor() {
+    // TODO: Consider initializations inside the constructor.
+    // Those are not migrated right now though, as they are writes.
+    this.firstName = 'Initial value';
+  }
+}
+@@@@@@ cross_references.ts @@@@@@
+
+// tslint:disable
+
+import {Component, input} from '@angular/core';
+
+@Component({
+  template: `
+    {{label()}}
+  `,
+})
+class Group {
+  readonly label = input.required<string>();
+}
+
+@Component({
+  template: `
+    @if (true) {
+      {{group.label()}}
+    }
+
+    {{group.label()}}
+  `,
+})
+class Option {
+  constructor(public group: Group) {}
+}
+@@@@@@ derived_class.ts @@@@@@
+
+// tslint:disable
+
+import {Input, Directive} from '@angular/core';
+
+@Directive()
+class Base {
+  // TODO: Skipped for migration because:
+  //  The input cannot be migrated because the field is overridden by a subclass.
+  @Input() bla = true;
+}
+
+class Derived extends Base {
+  override bla = false;
+}
+
+// overridden in separate file
+@Directive()
+export class Base2 {
+  // TODO: Skipped for migration because:
+  //  The input cannot be migrated because the field is overridden by a subclass.
+  @Input() bla = true;
+}
+
+// overridden in separate file
+@Directive()
+export class Base3 {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
+  @Input() bla = true;
+
+  click() {
+    this.bla = false;
+  }
+}
+@@@@@@ derived_class_meta_input_alias.ts @@@@@@
+
+// tslint:disable
+
+import {Input, Directive} from '@angular/core';
+
+@Directive()
+class Base {
+  // should not be migrated.
+  // TODO: Skipped for migration because:
+  //  The input cannot be migrated because the field is overridden by a subclass.
+  @Input() bla = true;
+}
+
+@Directive({
+  inputs: [{name: 'bla', alias: 'matDerivedBla'}],
+})
+class Derived extends Base {}
+@@@@@@ derived_class_second_separate.ts @@@@@@
+
+// tslint:disable
+
+import {Input} from '@angular/core';
+import {DerivedExternalWithInput} from './derived_class_separate_file';
+
+class Derived extends DerivedExternalWithInput {
+  // this should be incompatible, because the final superclass
+  // within its own batch unit, detected a write that should
+  // propagate to this input.
+  // TODO: Skipped for migration because:
+  //  This input is inherited from a superclass, but the parent cannot be migrated.
+  @Input() override bla = false;
+}
+@@@@@@ derived_class_separate_file.ts @@@@@@
+
+// tslint:disable
+
+import {Input} from '@angular/core';
+import {Base2, Base3} from './derived_class';
+
+class DerivedExternal extends Base2 {
+  override bla = false;
+}
+
+export class DerivedExternalWithInput extends Base3 {
+  // TODO: Skipped for migration because:
+  //  This input is inherited from a superclass, but the parent cannot be migrated.
+  @Input() override bla = true;
+}
+@@@@@@ different_instantiations_of_reference.ts @@@@@@
+
+// tslint:disable
+
+import {Directive, Component, input} from '@angular/core';
+
+// Material form field test case
+
+let nextUniqueId = 0;
+
+@Directive()
+export class MatHint {
+  align: string = '';
+  readonly id = input(`mat-hint-${nextUniqueId++}`);
+}
+
+@Component({
+  template: ``,
+})
+export class MatFormFieldTest {
+  private declare _hintChildren: MatHint[];
+  private _control = true;
+  private _somethingElse = false;
+
+  private _syncDescribedByIds() {
+    if (this._control) {
+      let ids: string[] = [];
+
+      const startHint = this._hintChildren
+        ? this._hintChildren.find((hint) => hint.align === 'start')
+        : null;
+      const endHint = this._hintChildren
+        ? this._hintChildren.find((hint) => hint.align === 'end')
+        : null;
+
+      if (startHint) {
+        ids.push(startHint.id());
+      } else if (this._somethingElse) {
+        ids.push(`val:${this._somethingElse}`);
+      }
+
+      if (endHint) {
+        // Same input reference `MatHint#id`, but different instantiation!
+        // Should not be shared!.
+        ids.push(endHint.id());
+      }
+    }
+  }
+}
+@@@@@@ existing_signal_import.ts @@@@@@
+
+// tslint:disable
+
+import {input} from '@angular/core';
+
+class ExistingSignalImport {
+  signalInput = input<boolean>();
+  readonly thisCanBeMigrated = input(true);
+}
+@@@@@@ external_templates.html @@@@@@
+
+<span>{{test()}}</span>
+@@@@@@ external_templates.ts @@@@@@
+
+// tslint:disable
+
+import {Component, input} from '@angular/core';
+
+@Component({
+  templateUrl: './external_templates.html',
+  selector: 'with-template',
+})
+export class WithTemplate {
+  readonly test = input(true);
+}
+@@@@@@ flow_cases.ts @@@@@@
+
+// tslint:disable
+
+import {input} from '@angular/core';
+
+class Test {
+  readonly maxCellsPerRow = input(5);
+  readonly maxCellsPerRow2 = input(5);
+
+  private test(arr: string[]) {
+    const maxCellsPerRow = this.maxCellsPerRow();
+    for (let i = 0; i < arr.length; i += maxCellsPerRow) {
+      console.log(maxCellsPerRow);
+    }
+  }
+
+  private readonly maxCellsPerRowValue = this.maxCellsPerRow();
+  protected readonly test2 = this.maxCellsPerRowValue ? this.maxCellsPerRowValue === 3 : false;
+  protected readonly test3 = this.maxCellsPerRow2() === 3 ? true : false;
+}
+@@@@@@ getters.ts @@@@@@
+
+// tslint:disable
+
+import {Directive, Input} from '@angular/core';
+
+@Directive({})
+export class WithGetters {
+  // TODO: Skipped for migration because:
+  //  Accessor inputs cannot be migrated as they are too complex.
+  @Input()
+  get disabled() {
+    return this._disabled;
+  }
+  set disabled(value: boolean | string) {
+    this._disabled = typeof value === 'string' ? value === '' : !!value;
+  }
+
+  private _disabled: boolean = false;
+
+  bla() {
+    console.log(this._disabled);
+  }
+}
+@@@@@@ host_bindings.ts @@@@@@
+
+// tslint:disable
+
+import {Component, Input, HostBinding, input} from '@angular/core';
+
+@Component({
+  template: '',
+  host: {
+    '[id]': 'id()',
+    '[nested]': 'nested.id()',
+    '[receiverNarrowing]': 'receiverNarrowing ? receiverNarrowing.id()',
+    // normal narrowing is irrelevant as we don't type check host bindings.
+  },
+})
+class HostBindingTestCmp {
+  readonly id = input('works');
+
+  // for testing nested expressions.
+  nested = this;
+
+  declare receiverNarrowing: this | undefined;
+
+  // TODO: Skipped for migration because:
+  //  This input is used in combination with `@HostBinding` and migrating would
+  //  break.
+  @HostBinding('[attr.bla]')
+  @Input()
+  myInput = 'initial';
+}
+
+const SHARED = {
+  '(click)': 'id()',
+  '(mousedown)': 'id2()',
+};
+
+@Component({
+  template: '',
+  host: SHARED,
+})
+class HostBindingsShared {
+  readonly id = input(false);
+}
+
+@Component({
+  template: '',
+  host: SHARED,
+})
+class HostBindingsShared2 {
+  readonly id = input(false);
+  readonly id2 = input(false);
+}
+@@@@@@ identifier_collisions.ts @@@@@@
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
+// tslint:disable
+
+import {Component, input} from '@angular/core';
+
+const complex = 'some global variable';
+
+@Component({template: ''})
+class MyComp {
+  readonly name = input<string | null>(null);
+  readonly complex = input<string | null>(null);
+
+  valid() {
+    const name = this.name();
+    if (name) {
+      name.charAt(0);
+    }
+  }
+
+  // Input read cannot be stored in a variable: `name`.
+  simpleLocalCollision() {
+    const name = 'some other name';
+    const nameValue = this.name();
+    if (nameValue) {
+      nameValue.charAt(0);
+    }
+  }
+
+  // `this.complex` should conflict with the file-level `complex` variable,
+  // and result in a suffix variable.
+  complexParentCollision() {
+    const complexValue = this.complex();
+    if (complexValue) {
+      complexValue.charAt(0);
+    }
+  }
+
+  nestedShadowing() {
+    const nameValue = this.name();
+    if (nameValue) {
+      nameValue.charAt(0);
+    }
+
+    function nested() {
+      const name = '';
+    }
+  }
+}
+@@@@@@ imports.ts @@@@@@
+
+// tslint:disable
+// prettier-ignore
+
+import {
+  Directive,
+  input
+} from '@angular/core';
+
+@Directive()
+export class TestCmp {
+  readonly disabled = input(false);
+}
+@@@@@@ index.ts @@@@@@
+
+// tslint:disable
+
+import {Component, Input, input} from '@angular/core';
+
+interface Vehicle {}
+interface Car extends Vehicle {
+  __car: true;
+}
+interface Audi extends Car {
+  __audi: true;
+}
+
+@Component({
+  selector: 'app-component',
+  templateUrl: './template.html',
+})
+export class AppComponent {
+  readonly input = input<string | null>(null);
+  readonly bla = input.required<boolean, string | boolean>({ transform: disabledTransform });
+  readonly narrowableMultipleTimes = input<Vehicle | null>(null);
+  readonly withUndefinedInput = input<string>();
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
+  @Input() incompatible: string | null = null;
+
+  private _bla: any;
+  // TODO: Skipped for migration because:
+  //  Accessor inputs cannot be migrated as they are too complex.
+  @Input()
+  set ngSwitch(newValue: any) {
+    this._bla = newValue;
+    if (newValue === 0) {
+      console.log('test');
+    }
+  }
+
+  someControlFlowCase() {
+    const input = this.input();
+    if (input) {
+      input.charAt(0);
+    }
+  }
+
+  moreComplexControlFlowCase() {
+    const input = this.input();
+    if (!input) {
+      return;
+    }
+
+    this.doSomething();
+
+    (() => {
+      // might be a different input value now?!
+      // No! it can't because we don't allow writes to "input"!!.
+      console.log(input.substring(0));
+    })();
+  }
+
+  doSomething() {
+    this.incompatible = 'some other value';
+  }
+
+  vsd() {
+    const input = this.input();
+    const narrowableMultipleTimes = this.narrowableMultipleTimes();
+    if (!input && narrowableMultipleTimes !== null) {
+      return narrowableMultipleTimes;
+    }
+    return input ? 'eager' : 'lazy';
+  }
+
+  allTheSameNoNarrowing() {
+    const input = this.input();
+    console.log(input);
+    console.log(input);
+  }
+
+  test() {
+    if (this.narrowableMultipleTimes()) {
+      console.log();
+
+      const x = () => {
+        // @ts-expect-error
+        if (isCar(this.narrowableMultipleTimes())) {
+        }
+      };
+
+      console.log();
+      console.log();
+      x();
+      x();
+    }
+  }
+
+  extremeNarrowingNested() {
+    const narrowableMultipleTimes = this.narrowableMultipleTimes();
+    if (narrowableMultipleTimes && isCar(narrowableMultipleTimes)) {
+      narrowableMultipleTimes.__car;
+
+      let car = narrowableMultipleTimes;
+      let ctx = this;
+
+      function nestedFn() {
+        if (isAudi(car)) {
+          console.log(car.__audi);
+        }
+        const narrowableMultipleTimesValue = ctx.narrowableMultipleTimes();
+        if (!isCar(narrowableMultipleTimesValue!) || !isAudi(narrowableMultipleTimesValue)) {
+          return;
+        }
+
+        narrowableMultipleTimesValue.__audi;
+      }
+
+      // iife
+      (() => {
+        if (isAudi(narrowableMultipleTimes)) {
+          narrowableMultipleTimes.__audi;
+        }
+      })();
+    }
+  }
+}
+
+function disabledTransform(bla: string | boolean): boolean {
+  return true;
+}
+
+function isCar(v: Vehicle): v is Car {
+  return true;
+}
+
+function isAudi(v: Car): v is Audi {
+  return true;
+}
+
+const x: AppComponent = null!;
+x.incompatible = null;
+@@@@@@ index_access_input.ts @@@@@@
+
+// tslint:disable
+
+import {Component, input} from '@angular/core';
+
+@Component({template: ''})
+class IndexAccessInput {
+  readonly items = input<string[]>([]);
+
+  bla() {
+    const {items: itemsInput} = this;
+    const items = itemsInput();
+
+    items[0].charAt(0);
+  }
+}
+@@@@@@ index_spec.ts @@@@@@
+
+// tslint:disable
+
+import {NgIf} from '@angular/common';
+import {Component, input} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
+
+import {AppComponent} from '.';
+
+describe('bla', () => {
+  it('should work', () => {
+    @Component({
+      template: `
+        <app-component #ref />
+        {{ref.input.ok}}
+        `,
+    })
+    class TestCmp {}
+    TestBed.configureTestingModule({
+      imports: [AppComponent],
+    });
+    const fixture = TestBed.createComponent(TestCmp);
+    fixture.detectChanges();
+  });
+
+  it('', () => {
+    it('', () => {
+      // Define `Ng2Component`
+      @Component({
+        selector: 'ng2',
+        standalone: true,
+        template: '<div *ngIf="show()"><ng1A></ng1A> | <ng1B></ng1B></div>',
+        imports: [NgIf],
+      })
+      class Ng2Component {
+        show = input<boolean>(false);
+      }
+    });
+  });
+});
+@@@@@@ inline_template.ts @@@@@@
+
+// tslint:disable
+
+import {Component, input} from '@angular/core';
+
+@Component({
+  template: `
+    <div *someTemplateDir [style.ok]="justify()">
+    </div>
+  `,
+})
+export class InlineTmpl {
+  readonly justify = input<'start' | 'end'>('end');
+}
+@@@@@@ jit_true_component_external_tmpl.html @@@@@@
+
+{{test()}}
+@@@@@@ jit_true_components.ts @@@@@@
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
+// tslint:disable
+
+import {Component, input} from '@angular/core';
+
+@Component({
+  jit: true,
+  template: '{{test()}}',
+})
+class JitTrueComponent {
+  readonly test = input(true);
+}
+
+@Component({
+  jit: true,
+  templateUrl: './jit_true_component_external_tmpl.html',
+})
+class JitTrueComponentExternalTmpl {
+  readonly test = input(true);
+}
+@@@@@@ loop_labels.ts @@@@@@
+
+// tslint:disable
+
+import {input} from '@angular/core';
+
+class MyTestCmp {
+  readonly someInput = input.required<boolean | string>();
+
+  tmpValue = false;
+
+  test() {
+    for (let i = 0, cell = null; i < Number.MIN_SAFE_INTEGER; i++) {
+      this.tmpValue = !!this.someInput();
+      this.tmpValue = !this.someInput();
+    }
+  }
+
+  test2() {
+    const someInput = this.someInput();
+    while (isBla(someInput)) {
+      this.tmpValue = someInput.includes('someText');
+    }
+  }
+}
+
+function isBla(value: any): value is string {
+  return true;
+}
+@@@@@@ manual_instantiations.ts @@@@@@
+
+// tslint:disable
+
+import {ManualInstantiation} from './manual_instantiations_external';
+
+new ManualInstantiation();
+@@@@@@ manual_instantiations_external.ts @@@@@@
+
+// tslint:disable
+
+import {Component, Input} from '@angular/core';
+
+@Component({})
+export class ManualInstantiation {
+  // TODO: Skipped for migration because:
+  //  Class of this input is manually instantiated. This is discouraged and prevents
+  //  migration.
+  @Input() bla: string = '';
+}
+@@@@@@ modifier_tests.ts @@@@@@
+
+// tslint:disable
+
+import {Component, input} from '@angular/core';
+
+function CustomDecorator() {
+  return (a: any, b: any) => {};
+}
+
+@Component({template: ''})
+class ModifierScenarios {
+  readonly alreadyReadonly = input(true);
+  protected readonly ImProtected = input(true);
+  protected readonly ImProtectedAndReadonly = input(true);
+  @CustomDecorator()
+protected readonly usingCustomDecorator = input(true);
+}
+@@@@@@ mutate.ts @@@@@@
+
+// tslint:disable
+
+import {input} from '@angular/core';
+
+export class TestCmp {
+  readonly shared = input<{
+    x: string;
+}>({ x: '' });
+
+  bla() {
+    const shared = this.shared();
+    shared.x = this.doSmth(shared);
+
+    this.doSmth(shared);
+  }
+
+  doSmth(v: typeof this.shared()): string {
+    return v.x;
+  }
+}
+@@@@@@ narrowing.ts @@@@@@
+
+// tslint:disable
+
+import {Directive, input} from '@angular/core';
+
+@Directive()
+export class Narrowing {
+  readonly name = input<string>();
+
+  narrowingArrowFn() {
+    [this].map((x) => {
+      const name = x.name();
+      return name && name.charAt(0);
+    });
+  }
+
+  narrowingArrowFnMultiLineWrapped() {
+    [this].map(
+      (x) => {
+      const name = x.name();
+      return name &&
+        name.includes(
+          'A super long string to ensure this is wrapped and we can test formatting.',
+        );
+    },
+    );
+  }
+
+  narrowingObjectExpansion() {
+    [this].map(({name: nameInput}) => {
+      const name = nameInput();
+      return name && name.charAt(0);
+    });
+  }
+
+  narrowingNormalThenObjectExpansion() {
+    const name = this.name();
+    if (name) {
+      const {charAt} = name;
+      charAt(0);
+    }
+  }
+}
+@@@@@@ nested_template_prop_access.ts @@@@@@
+
+// tslint:disable
+
+import {Component, input} from '@angular/core';
+
+interface Config {
+  bla?: string;
+}
+
+@Component({
+  template: `
+    <span [id]="config().bla">
+      Test
+    </span>
+  `,
+})
+export class NestedTemplatePropAccess {
+  readonly config = input<Config>({});
+}
+@@@@@@ non_null_assertions.ts @@@@@@
+
+// tslint:disable
+
+import {Directive, input} from '@angular/core';
+
+@Directive()
+export class NonNullAssertions {
+  // We can't remove `undefined` from the type here. It's unclear
+  // whether it was just used as a workaround for required inputs, or
+  // it was actually meant to be part of the type.
+  readonly name = input.required<string | undefined>();
+
+  click() {
+    this.name()!.charAt(0);
+  }
+}
+@@@@@@ object_expansion.ts @@@@@@
+
+// tslint:disable
+
+import {Component, input} from '@angular/core';
+
+@Component({})
+export class ObjectExpansion {
+  readonly bla = input<string>('');
+
+  expansion() {
+    const {bla: blaInput} = this;
+    const bla = blaInput();
+
+    bla.charAt(0);
+  }
+
+  deeperExpansion() {
+    const {
+      bla,
+    } = this;
+    const {charAt} = bla();
+    charAt(0);
+  }
+
+  expansionAsParameter({bla: blaInput} = this) {
+    const bla = blaInput();
+    bla.charAt(0);
+  }
+}
+@@@@@@ optimize_test.ts @@@@@@
+
+// tslint:disable
+
+import {AppComponent} from './index';
+
+function assertValidLoadingInput(dir: AppComponent) {
+  const withUndefinedInput = dir.withUndefinedInput();
+  if (withUndefinedInput && dir.narrowableMultipleTimes()) {
+    throw new Error(``);
+  }
+  const validInputs = ['auto', 'eager', 'lazy'];
+  if (typeof withUndefinedInput === 'string' && !validInputs.includes(withUndefinedInput)) {
+    throw new Error();
+  }
+}
+@@@@@@ optional_inputs.ts @@@@@@
+
+// tslint:disable
+
+import {Directive, input} from '@angular/core';
+
+@Directive()
+class OptionalInput {
+  readonly bla = input<string>();
+  readonly isLegacyHttpOnly = input<boolean | undefined>(false);
+}
+@@@@@@ problematic_type_reference.ts @@@@@@
+
+// tslint:disable
+
+import {Component, Directive, QueryList, Input} from '@angular/core';
+
+@Component({
+  template: `
+    {{label}}
+  `,
+})
+class Group {
+  // TODO: Skipped for migration because:
+  //  Class of this input is referenced in the signature of another class.
+  @Input() label!: string;
+}
+
+@Directive()
+class Base {
+  _items = new QueryList<{
+    label: string;
+  }>();
+}
+
+@Directive({})
+class Option extends Base {
+  _items = new QueryList<Group>();
+}
+@@@@@@ required-no-explicit-type-extra.ts @@@@@@
+
+// tslint:disable
+
+import {ComponentMirror} from '@angular/core';
+
+export const COMPLEX_VAR = {
+  x: null! as ComponentMirror<never>,
+};
+@@@@@@ required-no-explicit-type.ts @@@@@@
+
+// tslint:disable
+
+import {input} from '@angular/core';
+import {COMPLEX_VAR} from './required-no-explicit-type-extra';
+
+export const CONST = {field: true};
+
+export class RequiredNoExplicitType {
+  readonly someInputNumber = input.required<number>();
+  readonly someInput = input.required<boolean>();
+  readonly withConstInitialVal = input.required<typeof CONST>();
+
+  // typing this explicitly now would require same imports as from the `-extra` file.
+  readonly complexVal = input.required<typeof COMPLEX_VAR>();
+}
+@@@@@@ required.ts @@@@@@
+
+// tslint:disable
+
+import {input} from '@angular/core';
+
+class Required {
+  readonly simpleInput = input.required<string>();
+}
+@@@@@@ safe_property_reads.ts @@@@@@
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
+// tslint:disable
+
+import {Component, input} from '@angular/core';
+
+@Component({
+  template: `
+    {{bla?.myInput()}}
+  `,
+})
+class WithSafePropertyReads {
+  readonly myInput = input(0);
+
+  bla: this | undefined = this;
+}
+@@@@@@ scope_sharing.ts @@@@@@
+
+// tslint:disable
+
+import {input} from '@angular/core';
+
+export class TestCmp {
+  readonly shared = input(false);
+
+  bla() {
+    const shared = this.shared();
+    if (TestCmp.arguments) {
+      this.someFn(shared);
+    } else {
+      shared.valueOf();
+    }
+
+    this.someFn(shared);
+  }
+
+  someFn(bla: boolean): asserts bla is true {}
+}
+@@@@@@ shared_incompatible_scopes.ts @@@@@@
+
+// tslint:disable
+
+import {Directive, Component, input} from '@angular/core';
+
+@Directive()
+class SomeDir {
+  readonly bla = input.required<RegExp>();
+}
+
+@Component({
+  template: ``,
+})
+export class ScopeMismatchTest {
+  eachScopeRedeclared() {
+    const regexs: RegExp[] = [];
+
+    if (global.console) {
+      const dir: SomeDir = null!;
+      regexs.push(dir.bla());
+    }
+
+    const dir: SomeDir = null!;
+    regexs.push(dir.bla());
+  }
+
+  nestedButSharedLocal() {
+    const regexs: RegExp[] = [];
+    const dir: SomeDir = null!;
+
+    const bla = dir.bla();
+    if (global.console) {
+      regexs.push(bla);
+    }
+
+    regexs.push(bla);
+  }
+
+  dir: SomeDir = null!;
+  nestedButSharedInClassInstance() {
+    const regexs: RegExp[] = [];
+
+    const bla = this.dir.bla();
+    if (global.console) {
+      regexs.push(bla);
+    }
+
+    regexs.push(bla);
+  }
+}
+@@@@@@ spy_on.ts @@@@@@
+
+// tslint:disable
+
+import {Input} from '@angular/core';
+
+class MyComp {
+  // TODO: Skipped for migration because:
+  //  A jasmine `spyOn` call spies on this field. This breaks with signals.
+  @Input() myInput = () => {};
+}
+
+spyOn<MyComp>(new MyComp(), 'myInput').and.returnValue();
+@@@@@@ template.html @@@@@@
+
+<span class="mat-mdc-optgroup-label" role="presentation">
+  <span class="mdc-list-item__primary-text">{{ input() }} <ng-content></ng-content></span>
+</span>
+
+<ng-content select="mat-option, ng-container"></ng-content>
+@@@@@@ template_concat_string.ts @@@@@@
+
+// tslint:disable
+
+import {Component, input} from '@angular/core';
+
+@Component({
+  template: '<h3>' + '{{bla}}' + '</h3>',
+})
+export class WithConcatTemplate {
+  readonly bla = input(true);
+}
+@@@@@@ template_ng_if.ts @@@@@@
+
+// tslint:disable
+
+import {Component, Input, input} from '@angular/core';
+
+@Component({
+  template: `
+    @if (first) {
+      {{first}}
+    }
+
+    <ng-template [ngIf]="second">
+      {{second}}
+    </ng-template>
+
+    <div *ngIf="third">
+      {{third}}
+    </div>
+
+    <div *ngIf="fourth()">
+      {{notTheInput}}
+    </div>
+
+    @if (fifth()) {
+      {{notTheInput}}
+    }
+  `,
+})
+export class MyComp {
+  // TODO: Skipped for migration because:
+  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
+  //  and migrating would break narrowing currently.
+  @Input() first = true;
+  // TODO: Skipped for migration because:
+  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
+  //  and migrating would break narrowing currently.
+  @Input() second = false;
+  // TODO: Skipped for migration because:
+  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
+  //  and migrating would break narrowing currently.
+  @Input() third = true;
+  readonly fourth = input(true);
+  readonly fifth = input(true);
+}
+@@@@@@ template_object_shorthand.ts @@@@@@
+
+// tslint:disable
+
+import {Component, input} from '@angular/core';
+
+@Component({
+  template: `
+    <div [bla]="{myInput: myInput()}">
+    </div>
+  `,
+  host: {
+    '[style]': '{myInput: myInput()}',
+  },
+})
+export class TemplateObjectShorthand {
+  readonly myInput = input(true);
+}
+@@@@@@ template_writes.ts @@@@@@
+
+// tslint:disable
+
+import {Component, Input, input} from '@angular/core';
+
+@Component({
+  template: `
+    <input [(ngModel)]="inputA" />
+    <div (click)="inputB = false">
+    </div>
+  `,
+  host: {
+    '(click)': 'inputC = true',
+  },
+})
+class TwoWayBinding {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
+  @Input() inputA = '';
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
+  @Input() inputB = true;
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
+  @Input() inputC = false;
+  readonly inputD = input(false);
+}
+@@@@@@ temporary_variables.ts @@@@@@
+
+// tslint:disable
+
+import {Directive, input} from '@angular/core';
+
+export class OtherCmp {
+  readonly name = input(false);
+}
+
+@Directive()
+export class MyComp {
+  readonly name = input('');
+  other: OtherCmp = null!;
+
+  readonly scroller = input({ fn: () => { }, other: (x?: any) => { } });
+
+  click() {
+    const name = this.name();
+    if (name) {
+      console.error(name);
+    }
+
+    const nameValue = this.other.name();
+    if (nameValue) {
+      console.error(nameValue);
+    }
+  }
+
+  onOverlayAnimationStart() {
+    if (global) {
+      console.log('some statements');
+      console.log('some statements');
+
+      const scroller = this.scroller();
+      if (window) {
+        scroller?.fn();
+        scroller.other();
+      }
+      if (window) {
+        scroller?.other(true as any);
+      }
+    }
+  }
+}
+@@@@@@ ternary_narrowing.ts @@@@@@
+
+// tslint:disable
+
+import {Component, Input, input} from '@angular/core';
+
+@Component({
+  template: `
+    {{ narrowed ? narrowed.substring(0, 1) : 'Empty' }}
+    {{ justChecked() ? 'true' : 'false' }}
+
+    {{ other?.safeRead ? other.safeRead : 'Empty' }}
+    {{ other?.safeRead2 ? other?.safeRead2 : 'Empty' }}
+  `,
+})
+export class TernaryNarrowing {
+  // TODO: Skipped for migration because:
+  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
+  //  and migrating would break narrowing currently.
+  @Input() narrowed: string | undefined = undefined;
+  readonly justChecked = input(true);
+
+  other?: OtherComponent;
+}
+
+@Component({template: ''})
+export class OtherComponent {
+  // TODO: Skipped for migration because:
+  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
+  //  and migrating would break narrowing currently.
+  @Input() safeRead: string = '';
+  // TODO: Skipped for migration because:
+  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
+  //  and migrating would break narrowing currently.
+  @Input() safeRead2: string = '';
+}
+@@@@@@ transform_functions.ts @@@@@@
+
+// tslint:disable
+
+import {Input, input} from '@angular/core';
+import {COMPLEX_VAR} from './required-no-explicit-type-extra';
+
+function x(v: string | undefined): string | undefined {
+  return v;
+}
+
+export class TransformFunctions {
+  // We can check this, and expect `as any` due to transform incompatibility.
+  // TODO: Notes from signal input migration:
+  //  Input type is incompatible with transform. The migration added an `any`
+  //  cast. This worked previously because Angular was unable to check transforms.
+  readonly withExplicitTypeWorks = input.required<{
+    ok: true;
+}, string | undefined>({ transform: ((v: string | undefined) => '') as any });
+
+  // This will be a synthetic type because we add `undefined` to `boolean`.
+  readonly synthetic1 = input.required<boolean | undefined, string | undefined>({ transform: x });
+  // Synthetic as we infer a full type from the initial value. Cannot be checked.
+  // TODO: Skipped for migration because:
+  //  Input is required, but the migration cannot determine a good type for the
+  //  input.
+  @Input({required: true, transform: (v: string | undefined) => ''}) synthetic2 = {
+    infer: COMPLEX_VAR,
+  };
+}
+@@@@@@ transform_incompatible_types.ts @@@@@@
+
+// tslint:disable
+
+import {Directive, input} from '@angular/core';
+
+// see: button-base Material.
+
+@Directive()
+class TransformIncompatibleTypes {
+  // @ts-ignore Simulate `--strictPropertyInitialization=false`.
+  // TODO: Notes from signal input migration:
+  //  Input type is incompatible with transform. The migration added an `any`
+  //  cast. This worked previously because Angular was unable to check transforms.
+  readonly disabled = input<boolean, unknown>(undefined, { transform: ((v: unknown) => (v === null ? undefined : !!v)) as any });
+}
+@@@@@@ with_getters.ts @@@@@@
+
+// tslint:disable
+
+import {Input, input} from '@angular/core';
+
+export class WithSettersAndGetters {
+  // TODO: Skipped for migration because:
+  //  Accessor inputs cannot be migrated as they are too complex.
+  @Input()
+  set onlySetter(newValue: any) {
+    this._bla = newValue;
+    if (newValue === 0) {
+      console.log('test');
+    }
+  }
+  private _bla: any;
+
+  // TODO: Skipped for migration because:
+  //  Accessor inputs cannot be migrated as they are too complex.
+  @Input()
+  get accessor(): string {
+    return '';
+  }
+  set accessor(newValue: string) {
+    this._accessor = newValue;
+  }
+  private _accessor: string = '';
+
+  readonly simpleInput = input.required<string>();
+}
+@@@@@@ with_getters_reference.ts @@@@@@
+
+// tslint:disable
+
+import {WithSettersAndGetters} from './with_getters';
+
+class WithGettersExternalRef {
+  instance: WithSettersAndGetters = null!;
+
+  test() {
+    if (this.instance.accessor) {
+      console.log(this.instance.accessor);
+    }
+  }
+}
+@@@@@@ with_jsdoc.ts @@@@@@
+
+// tslint:disable
+
+import {input} from '@angular/core';
+
+class WithJsdoc {
+  /**
+   * Works
+   */
+  readonly simpleInput = input.required<string>();
+
+  readonly withCommentInside = input</* intended */ boolean>();
+}
+@@@@@@ writing_to_inputs.ts @@@@@@
+
+// tslint:disable
+
+import {Input, input} from '@angular/core';
+
+export class TestCmp {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
+  @Input() testParenthesisInput = false;
+  readonly notMutated = input(true);
+
+  testParenthesis() {
+    // prettier-ignore
+    ((this.testParenthesisInput)) = true;
+  }
+
+  testNotMutated() {
+    let fixture: boolean;
+    fixture = this.notMutated();
+  }
+}

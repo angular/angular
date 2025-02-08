@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {producerAccessed, SIGNAL} from '@angular/core/primitives/signals';
@@ -14,7 +14,7 @@ import {Signal} from '../../render3/reactivity/api';
 import {INPUT_SIGNAL_NODE, InputSignalNode, REQUIRED_UNSET_VALUE} from './input_signal_node';
 
 /**
- * @developerPreview
+ * @publicAPI
  *
  * Options for signal inputs.
  */
@@ -32,12 +32,17 @@ export interface InputOptions<T, TransformT> {
    * handle such string values and convert them to `boolean`. See: {@link booleanAttribute}.
    */
   transform?: (v: TransformT) => T;
+
+  /**
+   * A debug name for the input signal. Used in Angular DevTools to identify the signal.
+   */
+  debugName?: string;
 }
 
 /**
  * Signal input options without the transform option.
  *
- * @developerPreview
+ * @publicAPI
  */
 export type InputOptionsWithoutTransform<T> =
   // Note: We still keep a notion of `transform` for auto-completion.
@@ -45,7 +50,7 @@ export type InputOptionsWithoutTransform<T> =
 /**
  * Signal input options with the transform option required.
  *
- * @developerPreview
+ * @publicAPI
  */
 export type InputOptionsWithTransform<T, TransformT> = Required<
   Pick<InputOptions<T, TransformT>, 'transform'>
@@ -77,7 +82,7 @@ export const ɵINPUT_SIGNAL_BRAND_WRITE_TYPE = /* @__PURE__ */ Symbol();
  *
  * @see {@link InputSignal} for additional information.
  *
- * @developerPreview
+ * @publicAPI
  */
 export interface InputSignalWithTransform<T, TransformT> extends Signal<T> {
   [SIGNAL]: InputSignalNode<T, TransformT>;
@@ -94,7 +99,7 @@ export interface InputSignalWithTransform<T, TransformT> extends Signal<T> {
  *
  * @see {@link InputOptionsWithTransform} for inputs with transforms.
  *
- * @developerPreview
+ * @publicAPI
  */
 export interface InputSignal<T> extends InputSignalWithTransform<T, T> {}
 
@@ -135,6 +140,7 @@ export function createInputSignal<T, TransformT>(
 
   if (ngDevMode) {
     inputValueFn.toString = () => `[Input Signal: ${inputValueFn()}]`;
+    node.debugName = options?.debugName;
   }
 
   return inputValueFn as InputSignalWithTransform<T, TransformT>;

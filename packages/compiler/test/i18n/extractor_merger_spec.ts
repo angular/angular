@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {DEFAULT_INTERPOLATION_CONFIG, HtmlParser} from '@angular/compiler';
@@ -98,6 +98,10 @@ describe('Extractor', () => {
 
     it('should not create a message for empty elements', () => {
       expect(extract('<div i18n="m|d"></div>')).toEqual([]);
+    });
+
+    it('should not create a message for placeholder-only elements', () => {
+      expect(extract('<div i18n="m|d">{{ foo }}</div>')).toEqual([]);
     });
 
     it('should ignore implicit elements in translatable elements', () => {
@@ -406,6 +410,10 @@ describe('Extractor', () => {
     it('should not create a message for empty attributes', () => {
       expect(extract('<div i18n-title="m|d" title></div>')).toEqual([]);
     });
+
+    it('should not create a message for placeholder-only attributes', () => {
+      expect(extract('<div i18n-title="m|d" title="{{ foo }}"></div>')).toEqual([]);
+    });
   });
 
   describe('implicit elements', () => {
@@ -525,6 +533,7 @@ describe('Merger', () => {
         DEFAULT_INTERPOLATION_CONFIG,
         [],
         {},
+        /* preserveSignificantWhitespace */ true,
       ).messages;
 
       expect(messages.length).toEqual(1);
@@ -601,6 +610,7 @@ describe('Merger', () => {
         DEFAULT_INTERPOLATION_CONFIG,
         [],
         {},
+        /* preserveSignificantWhitespace */ true,
       ).messages;
 
       expect(messages.length).toEqual(1);
@@ -668,6 +678,7 @@ function fakeTranslate(
     DEFAULT_INTERPOLATION_CONFIG,
     implicitTags,
     implicitAttrs,
+    /* preserveSignificantWhitespace */ true,
   ).messages;
 
   const i18nMsgMap: {[id: string]: i18n.Node[]} = {};
@@ -727,6 +738,7 @@ function extract(
     DEFAULT_INTERPOLATION_CONFIG,
     implicitTags,
     implicitAttrs,
+    /* preserveSignificantWhitespace */ true,
   );
 
   if (result.errors.length > 0) {
@@ -751,6 +763,7 @@ function extractErrors(
     DEFAULT_INTERPOLATION_CONFIG,
     implicitTags,
     implicitAttrs,
+    /* preserveSignificantWhitespace */ true,
   ).errors;
 
   return errors.map((e): [string, string] => [e.msg, e.span.toString()]);

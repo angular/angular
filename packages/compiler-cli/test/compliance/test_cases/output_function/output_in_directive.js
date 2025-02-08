@@ -6,6 +6,6 @@ TestDir.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
         c: "cPublic",
         d: "d",
         e: "e"
-    },
+    }
     …
   });

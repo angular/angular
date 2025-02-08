@@ -103,7 +103,7 @@ export async function setupRedirect(deployment: Deployment) {
 }
 
 function firebase(cmd: string, cwd?: string) {
-  spawnSync('npx', `-y firebase-tools@latest ${cmd}`.split(' '), {
+  spawnSync('npx', `-y firebase-tools@13.15.1 ${cmd}`.split(' '), {
     cwd,
     encoding: 'utf-8',
     shell: true,

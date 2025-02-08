@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {HttpEvent, HttpEventType, HttpRequest, HttpResponse} from '@angular/common/http';
@@ -12,11 +12,14 @@ import {Observable, of, Subject} from 'rxjs';
 import {catchError, retry, scan, skip, take, toArray} from 'rxjs/operators';
 
 import {
+  HttpClient,
   HttpDownloadProgressEvent,
   HttpErrorResponse,
   HttpHeaderResponse,
   HttpParams,
   HttpStatusCode,
+  provideHttpClient,
+  withFetch,
 } from '../public_api';
 import {FetchBackend, FetchFactory} from '../src/fetch';
 
@@ -416,6 +419,43 @@ describe('FetchBackend', async () => {
       fetchMock.mockFlush(0, 'CORS 0 status');
     });
   });
+
+  describe('dynamic global fetch', () => {
+    beforeEach(() => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [provideHttpClient(withFetch())],
+      });
+    });
+
+    it('should use the current implementation of the global fetch', async () => {
+      const originalFetch = globalThis.fetch;
+
+      try {
+        const fakeFetch = jasmine
+          .createSpy('', () => Promise.resolve(new Response(JSON.stringify({foo: 'bar'}))))
+          .and.callThrough();
+        globalThis.fetch = fakeFetch;
+
+        const client = TestBed.inject(HttpClient);
+        expect(fakeFetch).not.toHaveBeenCalled();
+        let response = await client.get<unknown>('').toPromise();
+        expect(fakeFetch).toHaveBeenCalled();
+        expect(response).toEqual({foo: 'bar'});
+
+        // We dynamicaly change the implementation of fetch
+        const fakeFetch2 = jasmine
+          .createSpy('', () => Promise.resolve(new Response(JSON.stringify({foo: 'baz'}))))
+          .and.callThrough();
+        globalThis.fetch = fakeFetch2;
+        response = await client.get<unknown>('').toPromise();
+        expect(response).toEqual({foo: 'baz'});
+      } finally {
+        // We need to restore the original fetch implementation, else the tests might become flaky
+        globalThis.fetch = originalFetch;
+      }
+    });
+  });
 });
 
 export class MockFetchFactory extends FetchFactory {
@@ -455,7 +495,6 @@ export class MockFetchFactory extends FetchFactory {
     this.clearWarningTimeout = () => clearTimeout(timeoutId);
 
     return this.promise;
-    // tslint:disable:semicolon
   };
 
   mockFlush(

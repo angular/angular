@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ConstantPool} from '@angular/compiler';
@@ -722,6 +722,34 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
 
     // Return the instruction to the transformer so the fields will be added.
     return res.length > 0 ? res : null;
+  }
+
+  compileHmrUpdateCallback(clazz: DeclarationNode): ts.FunctionDeclaration | null {
+    const original = ts.getOriginalNode(clazz) as typeof clazz;
+
+    if (
+      !this.reflector.isClass(clazz) ||
+      !this.reflector.isClass(original) ||
+      !this.classes.has(original)
+    ) {
+      return null;
+    }
+
+    const record = this.classes.get(original)!;
+
+    for (const trait of record.traits) {
+      // Cannot compile a trait that is not resolved, or had any errors in its declaration.
+      if (
+        trait.state === TraitState.Resolved &&
+        trait.handler.compileHmrUpdateDeclaration !== undefined &&
+        !containsErrors(trait.analysisDiagnostics) &&
+        !containsErrors(trait.resolveDiagnostics)
+      ) {
+        return trait.handler.compileHmrUpdateDeclaration(clazz, trait.analysis, trait.resolution!);
+      }
+    }
+
+    return null;
   }
 
   decoratorsFor(node: ts.Declaration): ts.Decorator[] {

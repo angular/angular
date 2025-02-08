@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {assertDomNode, assertNumber, assertNumberInRange} from '../../util/assert';
@@ -74,7 +74,7 @@ export function loadIcuContainerVisitor() {
    * to determine which root belong to the ICU.
    *
    * Example of usage.
-   * ```
+   * ```ts
    * const nextRNode = icuContainerIteratorStart(tIcuContainerNode, lView);
    * let rNode: RNode|null;
    * while(rNode = nextRNode()) {

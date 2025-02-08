@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -251,7 +251,7 @@ describe('toSignal()', () => {
         const counter$ = new Subject<{value: number}>();
         const counter = toSignal(counter$, {
           initialValue: {value: 0},
-          equals: (a, b) => a.value === b.value,
+          equal: (a, b) => a.value === b.value,
         });
 
         let updates = 0;
@@ -274,6 +274,30 @@ describe('toSignal()', () => {
         expect(updates).toBe(3);
       }),
     );
+
+    it(
+      'should update when values are reference equal but equality function says otherwise',
+      test(() => {
+        const numsSet = new Set<number>();
+        const nums$ = new BehaviorSubject<Set<number>>(numsSet);
+        const nums = toSignal(nums$, {
+          requireSync: true,
+          equal: () => false,
+        });
+
+        let updates = 0;
+        const tracker = computed(() => {
+          updates++;
+          return Array.from(nums()!.values());
+        });
+
+        expect(tracker()).toEqual([]);
+        numsSet.add(1);
+        nums$.next(numsSet); // same value as before
+        expect(tracker()).toEqual([1]);
+        expect(updates).toBe(2);
+      }),
+    );
   });
 
   describe('in a @Component', () => {
@@ -281,6 +305,7 @@ describe('toSignal()', () => {
       @Component({
         template: '{{counter()}}',
         changeDetection: ChangeDetectionStrategy.OnPush,
+        standalone: false,
       })
       class TestCmp {
         // Component creation should not run inside the template effect/consumer,

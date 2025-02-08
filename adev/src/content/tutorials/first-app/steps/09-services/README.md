@@ -105,6 +105,6 @@ For more information about the topics covered in this lesson, visit:
 <docs-pill-row>
   <docs-pill href="guide/di/creating-injectable-service" title="Creating an injectable service"/>
   <docs-pill href="guide/di" title="Dependency injection in Angular"/>
-  <docs-pill href="cli/generate#service" title="ng generate service"/>
+  <docs-pill href="cli/generate/service" title="ng generate service"/>
   <docs-pill href="cli/generate" title="ng generate"/>
 </docs-pill-row>

@@ -8,5 +8,6 @@ HostBindingDir.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
         let $tmp0$;
         $r3$.ɵɵhostProperty("id", ($tmp0$ = ctx.getData()) == null ? null : $tmp0$.id);
       }
-    }
+    },
+   standalone: false
   });

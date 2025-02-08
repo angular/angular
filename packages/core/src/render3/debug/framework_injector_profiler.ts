@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Injector} from '../../di/injector';
@@ -11,10 +11,11 @@ import {EnvironmentInjector} from '../../di/r3_injector';
 import {Type} from '../../interface/type';
 import {assertDefined, throwError} from '../../util/assert';
 import {assertTNode, assertTNodeForLView} from '../assert';
-import {getComponentDef} from '../definition';
+import {getComponentDef} from '../def_getters';
 import {getNodeInjectorLView, getNodeInjectorTNode, NodeInjector} from '../di';
 import {TNode} from '../interfaces/node';
 import {LView} from '../interfaces/view';
+import {EffectRef} from '../reactivity/effect';
 
 import {
   InjectedService,
@@ -67,6 +68,7 @@ class DIDebugData {
     WeakMap<Type<unknown>, InjectedService[]>
   >();
   resolverToProviders = new WeakMap<Injector | TNode, ProviderRecord[]>();
+  resolverToEffects = new WeakMap<Injector | LView, EffectRef[]>();
   standaloneInjectorToComponent = new WeakMap<Injector, Type<unknown>>();
 
   reset() {
@@ -113,7 +115,24 @@ function handleInjectorProfilerEvent(injectorProfilerEvent: InjectorProfilerEven
     handleInstanceCreatedByInjectorEvent(context, injectorProfilerEvent.instance);
   } else if (type === InjectorProfilerEventType.ProviderConfigured) {
     handleProviderConfiguredEvent(context, injectorProfilerEvent.providerRecord);
+  } else if (type === InjectorProfilerEventType.EffectCreated) {
+    handleEffectCreatedEvent(context, injectorProfilerEvent.effect);
   }
+}
+
+function handleEffectCreatedEvent(context: InjectorProfilerContext, effect: EffectRef): void {
+  const diResolver = getDIResolver(context.injector);
+  if (diResolver === null) {
+    throwError('An EffectCreated event must be run within an injection context.');
+  }
+
+  const {resolverToEffects} = frameworkDIDebugData;
+
+  if (!resolverToEffects.has(diResolver)) {
+    resolverToEffects.set(diResolver, []);
+  }
+
+  resolverToEffects.get(diResolver)!.push(effect);
 }
 
 /**

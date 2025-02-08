@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -37,7 +37,7 @@ export abstract class PreloadingStrategy {
  *
  * Provides a preloading strategy that preloads all modules as quickly as possible.
  *
- * ```
+ * ```ts
  * RouterModule.forRoot(ROUTES, {preloadingStrategy: PreloadAllModules})
  * ```
  *

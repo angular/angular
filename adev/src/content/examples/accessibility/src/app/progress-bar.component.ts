@@ -6,7 +6,6 @@ import {Component, Input} from '@angular/core';
  * Example progressbar component.
  */
 @Component({
-  standalone: true,
   selector: 'app-example-progressbar',
   template: '<div class="bar" [style.width.%]="value"></div>',
   styleUrls: ['./progress-bar.component.css'],

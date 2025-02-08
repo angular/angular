@@ -452,7 +452,6 @@ describe('demo (with TestBed):', () => {
     it("injected provider should not be same as component's provider", () => {
       // TestComponent is parent of TestProvidersComponent
       @Component({
-        standalone: true,
         template: '<my-service-comp></my-service-comp>',
         imports: [TestProvidersComponent],
       })
@@ -704,21 +703,18 @@ describe('demo (with TestBed):', () => {
 ////////// Fakes ///////////
 
 @Component({
-  standalone: true,
   selector: 'child-1',
   template: 'Fake Child',
 })
 class FakeChildComponent {}
 
 @Component({
-  standalone: true,
   selector: 'grandchild-1',
   template: 'Fake Grandchild',
 })
 class FakeGrandchildComponent {}
 
 @Component({
-  standalone: true,
   selector: 'child-1',
   imports: [FakeGrandchildComponent],
   template: 'Fake Child(<grandchild-1></grandchild-1>)',

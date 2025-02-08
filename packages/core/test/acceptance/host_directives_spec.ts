@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -14,7 +14,6 @@ import {
   Directive,
   ElementRef,
   EventEmitter,
-  forwardRef,
   inject,
   Inject,
   InjectionToken,
@@ -26,6 +25,8 @@ import {
   Type,
   ViewChild,
   ViewContainerRef,
+  ɵɵdefineDirective,
+  ɵɵHostDirectivesFeature,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -50,6 +51,7 @@ describe('host directives', () => {
       selector: '[dir]',
       host: {'host-attr': '', 'class': 'dir', 'style': 'width: 50px'},
       hostDirectives: [HostDir],
+      standalone: false,
     })
     class Dir {
       constructor() {
@@ -57,7 +59,10 @@ describe('host directives', () => {
       }
     }
 
-    @Component({template: '<div dir></div>'})
+    @Component({
+      template: '<div dir></div>',
+      standalone: false,
+    })
     class App {}
 
     TestBed.configureTestingModule({declarations: [App, Dir]});
@@ -74,20 +79,25 @@ describe('host directives', () => {
   it('should apply a host directive referenced through a forwardRef', () => {
     const logs: string[] = [];
 
-    @Directive({
-      selector: '[dir]',
-      hostDirectives: [forwardRef(() => HostDir), {directive: forwardRef(() => OtherHostDir)}],
-    })
+    // This directive was "compiled" manually, because our tests are JIT-compiled and the JIT
+    // compiler doesn't produce the callback-based variant of the `ɵɵHostDirectivesFeature`.
+    // This represents the following metadata:
+    // @Directive({
+    //   selector: '[dir]',
+    //   hostDirectives: [forwardRef(() => HostDir), {directive: forwardRef(() => OtherHostDir)}],
+    //   standalone: false,
+    // })
     class Dir {
+      static ɵfac = () => new Dir();
+      static ɵdir = ɵɵdefineDirective({
+        type: Dir,
+        selectors: [['', 'dir', '']],
+        standalone: false,
+        features: [ɵɵHostDirectivesFeature(() => [HostDir, {directive: OtherHostDir}])],
+      });
+
       constructor() {
         logs.push('Dir');
-      }
-    }
-
-    @Directive({standalone: true})
-    class HostDir {
-      constructor() {
-        logs.push('HostDir');
       }
     }
 
@@ -98,7 +108,17 @@ describe('host directives', () => {
       }
     }
 
-    @Component({template: '<div dir></div>'})
+    @Directive({standalone: true})
+    class HostDir {
+      constructor() {
+        logs.push('HostDir');
+      }
+    }
+
+    @Component({
+      template: '<div dir></div>',
+      standalone: false,
+    })
     class App {}
 
     TestBed.configureTestingModule({declarations: [App, Dir]});
@@ -106,6 +126,59 @@ describe('host directives', () => {
     fixture.detectChanges();
 
     expect(logs).toEqual(['HostDir', 'OtherHostDir', 'Dir']);
+  });
+
+  it('should apply a directive that references host directives through a forwardRef and is injected by its host directives', () => {
+    // This directive was "compiled" manually, because our tests are JIT-compiled and the JIT
+    // compiler doesn't produce the callback-based variant of the `ɵɵHostDirectivesFeature`.
+    // This represents the following metadata:
+    // @Directive({
+    //   selector: '[dir]',
+    //   hostDirectives: [forwardRef(() => HostDir), {directive: forwardRef(() => OtherHostDir)}],
+    //   standalone: false,
+    //   host: {'one': 'override', 'two': 'override'}
+    // })
+    class Dir {
+      static ɵfac = () => new Dir();
+      static ɵdir = ɵɵdefineDirective({
+        type: Dir,
+        selectors: [['', 'dir', '']],
+        standalone: false,
+        hostAttrs: ['one', 'override', 'two', 'override'],
+        features: [ɵɵHostDirectivesFeature(() => [HostDir, {directive: OtherHostDir}])],
+      });
+    }
+
+    @Directive({standalone: true, host: {'one': 'base'}})
+    class OtherHostDir {
+      constructor() {
+        inject(Dir);
+      }
+    }
+
+    @Directive({standalone: true, host: {'two': 'base'}})
+    class HostDir {
+      constructor() {
+        inject(Dir);
+      }
+    }
+
+    @Component({
+      template: '<div dir></div>',
+      standalone: false,
+    })
+    class App {}
+
+    TestBed.configureTestingModule({declarations: [App, Dir]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    // Note: we can't use the constructor call order here to determine the initialization order,
+    // because the act of injecting `Dir` will cause it to be created earlier than its host bindings
+    // will be invoked. Instead we check that the host bindings apply in the right order.
+    const host = fixture.nativeElement.querySelector('[dir]');
+    expect(host.getAttribute('one')).toBe('override');
+    expect(host.getAttribute('two')).toBe('override');
   });
 
   it('should apply a chain of host directives', () => {
@@ -195,6 +268,7 @@ describe('host directives', () => {
       template: '',
       hostDirectives: [Chain1, Chain2, Chain3],
       providers: [{provide: token, useValue: 'host value'}],
+      standalone: false,
     })
     class MyComp {
       constructor() {
@@ -212,6 +286,7 @@ describe('host directives', () => {
     @Directive({
       selector: '[selector-matched-dir]',
       hostDirectives: [SelectorMatchedHostDir],
+      standalone: false,
     })
     class SelectorMatchedDir {
       constructor() {
@@ -219,7 +294,10 @@ describe('host directives', () => {
       }
     }
 
-    @Component({template: '<my-comp selector-matched-dir></my-comp>'})
+    @Component({
+      template: '<my-comp selector-matched-dir></my-comp>',
+      standalone: false,
+    })
     class App {}
 
     TestBed.configureTestingModule({declarations: [App, MyComp, SelectorMatchedDir]});
@@ -263,14 +341,21 @@ describe('host directives', () => {
       }
     }
 
-    @Directive({selector: '[dir]', hostDirectives: [FirstHostDir]})
+    @Directive({
+      selector: '[dir]',
+      hostDirectives: [FirstHostDir],
+      standalone: false,
+    })
     class Host {
       constructor() {
         hostInstance = this;
       }
     }
 
-    @Component({template: '<div dir></div>'})
+    @Component({
+      template: '<div dir></div>',
+      standalone: false,
+    })
     class App {
       @ViewChild(FirstHostDir) firstHost!: FirstHostDir;
       @ViewChild(SecondHostDir) secondHost!: SecondHostDir;
@@ -299,7 +384,11 @@ describe('host directives', () => {
       name = 'FirstHost';
     }
 
-    @Directive({selector: '[dir]', hostDirectives: [FirstHostDir]})
+    @Directive({
+      selector: '[dir]',
+      hostDirectives: [FirstHostDir],
+      standalone: false,
+    })
     class Host {}
 
     @Component({
@@ -309,6 +398,7 @@ describe('host directives', () => {
           #firstHost="firstHost"
           #secondHost="secondHost">{{firstHost.name}} | {{secondHost.name}}</div>
       `,
+      standalone: false,
     })
     class App {}
 
@@ -379,7 +469,11 @@ describe('host directives', () => {
       }
     }
 
-    @Directive({selector: '[dir]', hostDirectives: [HostDir_1, HostDir_2]})
+    @Directive({
+      selector: '[dir]',
+      hostDirectives: [HostDir_1, HostDir_2],
+      standalone: false,
+    })
     class Dir extends Parent {
       constructor() {
         super();
@@ -387,7 +481,10 @@ describe('host directives', () => {
       }
     }
 
-    @Component({template: '<div dir></div>'})
+    @Component({
+      template: '<div dir></div>',
+      standalone: false,
+    })
     class App {}
 
     TestBed.configureTestingModule({declarations: [App, Dir]});
@@ -441,7 +538,11 @@ describe('host directives', () => {
         }
       }
 
-      @Directive({selector: '[dir]', hostDirectives: [HostDir, OtherHostDir]})
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [HostDir, OtherHostDir],
+        standalone: false,
+      })
       class Dir implements OnInit, AfterViewInit, AfterViewChecked {
         ngOnInit() {
           logs.push('Dir - ngOnInit');
@@ -456,7 +557,10 @@ describe('host directives', () => {
         }
       }
 
-      @Component({template: '<div dir></div>'})
+      @Component({
+        template: '<div dir></div>',
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({declarations: [App, Dir]});
@@ -509,6 +613,7 @@ describe('host directives', () => {
       @Component({
         selector: 'child',
         hostDirectives: [ChildHostDir, OtherChildHostDir],
+        standalone: false,
       })
       class Child extends LogsLifecycles {
         override name = 'Child';
@@ -528,17 +633,24 @@ describe('host directives', () => {
         selector: 'parent',
         hostDirectives: [ParentHostDir, OtherParentHostDir],
         template: '<child plain-dir="PlainDir on child"></child>',
+        standalone: false,
       })
       class Parent extends LogsLifecycles {
         override name = 'Parent';
       }
 
-      @Directive({selector: '[plain-dir]'})
+      @Directive({
+        selector: '[plain-dir]',
+        standalone: false,
+      })
       class PlainDir extends LogsLifecycles {
         @Input('plain-dir') override name = '';
       }
 
-      @Component({template: '<parent plain-dir="PlainDir on parent"></parent>'})
+      @Component({
+        template: '<parent plain-dir="PlainDir on parent"></parent>',
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({declarations: [App, Parent, Child, PlainDir]});
@@ -595,18 +707,23 @@ describe('host directives', () => {
           {directive: HostDir, inputs: ['someInput']},
           {directive: OtherHostDir, inputs: ['someInput']},
         ],
+        standalone: false,
       })
       class HostComp extends LogsLifecycles {
         override name = 'HostComp';
       }
 
-      @Directive({selector: '[plain-dir]'})
+      @Directive({
+        selector: '[plain-dir]',
+        standalone: false,
+      })
       class PlainDir extends LogsLifecycles {
         override name = 'PlainDir';
       }
 
       @Component({
         template: '<host-comp plain-dir="PlainDir" [someInput]="inputValue"></host-comp>',
+        standalone: false,
       })
       class App {
         inputValue = 'hello';
@@ -661,6 +778,7 @@ describe('host directives', () => {
         selector: '[dir]',
         host: {'host-attr': 'true', '(click)': 'handleClick()'},
         hostDirectives: [HostDir, OtherHostDir],
+        standalone: false,
       })
       class Dir {
         handleClick() {
@@ -668,7 +786,10 @@ describe('host directives', () => {
         }
       }
 
-      @Component({template: '<button dir></button>'})
+      @Component({
+        template: '<button dir></button>',
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({declarations: [App, Dir]});
@@ -694,10 +815,18 @@ describe('host directives', () => {
       @Directive({standalone: true, host: {'id': 'other-host-dir'}})
       class OtherHostDir {}
 
-      @Directive({selector: '[dir]', host: {'id': 'host'}, hostDirectives: [HostDir, OtherHostDir]})
+      @Directive({
+        selector: '[dir]',
+        host: {'id': 'host'},
+        hostDirectives: [HostDir, OtherHostDir],
+        standalone: false,
+      })
       class Dir {}
 
-      @Component({template: '<div dir></div>'})
+      @Component({
+        template: '<div dir></div>',
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({declarations: [App, Dir]});
@@ -728,7 +857,11 @@ describe('host directives', () => {
         }
       }
 
-      @Directive({selector: '[dir]', hostDirectives: [FirstHostDir]})
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [FirstHostDir],
+        standalone: false,
+      })
       class Host {
         firstHostDir = inject(FirstHostDir);
         secondHostDir = inject(SecondHostDir);
@@ -738,7 +871,10 @@ describe('host directives', () => {
         }
       }
 
-      @Component({template: '<div dir></div>'})
+      @Component({
+        template: '<div dir></div>',
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({declarations: [App, Host]});
@@ -756,7 +892,11 @@ describe('host directives', () => {
     it('should be able to inject a host directive into a child component', () => {
       let hostDirectiveInstance!: HostDir;
 
-      @Component({selector: 'child', template: ''})
+      @Component({
+        selector: 'child',
+        template: '',
+        standalone: false,
+      })
       class Child {
         hostDir = inject(HostDir);
       }
@@ -772,12 +912,16 @@ describe('host directives', () => {
         selector: 'host',
         template: '<child></child>',
         hostDirectives: [HostDir],
+        standalone: false,
       })
       class Host {
         @ViewChild(Child) child!: Child;
       }
 
-      @Component({template: '<host></host>'})
+      @Component({
+        template: '<host></host>',
+        standalone: false,
+      })
       class App {
         @ViewChild(Host) host!: Host;
       }
@@ -814,14 +958,21 @@ describe('host directives', () => {
         }
       }
 
-      @Directive({selector: '[dir]', hostDirectives: [FirstHostDir]})
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [FirstHostDir],
+        standalone: false,
+      })
       class Host {
         constructor() {
           hostInstance = this;
         }
       }
 
-      @Component({template: '<div dir></div>'})
+      @Component({
+        template: '<div dir></div>',
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({declarations: [App, Host]});
@@ -868,6 +1019,7 @@ describe('host directives', () => {
         selector: '[dir]',
         hostDirectives: [FirstHostDir],
         providers: [{provide: token, useValue: 'HostDir'}],
+        standalone: false,
       })
       class Host {
         tokenValue = inject(token);
@@ -877,7 +1029,10 @@ describe('host directives', () => {
         }
       }
 
-      @Component({template: '<div dir></div>'})
+      @Component({
+        template: '<div dir></div>',
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({declarations: [App, Host]});
@@ -907,13 +1062,20 @@ describe('host directives', () => {
       })
       class FirstHostDir {}
 
-      @Directive({selector: '[dir]', hostDirectives: [FirstHostDir]})
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [FirstHostDir],
+        standalone: false,
+      })
       class Host {
         firstTokenValue = inject(firstToken);
         secondTokenValue = inject(secondToken);
       }
 
-      @Component({template: '<div dir></div>'})
+      @Component({
+        template: '<div dir></div>',
+        standalone: false,
+      })
       class App {
         @ViewChild(Host) host!: Host;
       }
@@ -938,17 +1100,24 @@ describe('host directives', () => {
         hostDirectives: [HostDir],
         providers: [{provide: token, useValue: 'host'}],
         template: '<span child></span>',
+        standalone: false,
       })
       class Host {}
 
-      @Directive({selector: '[child]'})
+      @Directive({
+        selector: '[child]',
+        standalone: false,
+      })
       class Child {
         constructor() {
           tokenValue = inject(token);
         }
       }
 
-      @Component({template: '<host></host>'})
+      @Component({
+        template: '<host></host>',
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({declarations: [App, Host, Child]});
@@ -974,10 +1143,14 @@ describe('host directives', () => {
         hostDirectives: [HostDir],
         viewProviders: [{provide: token, useValue: 'host'}],
         template: '',
+        standalone: false,
       })
       class Host {}
 
-      @Component({template: '<host></host>'})
+      @Component({
+        template: '<host></host>',
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({declarations: [App, Host]});
@@ -993,12 +1166,19 @@ describe('host directives', () => {
         host = inject(Host);
       }
 
-      @Directive({selector: '[dir]', hostDirectives: [HostDir]})
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [HostDir],
+        standalone: false,
+      })
       class Host {
         hostDir = inject(HostDir);
       }
 
-      @Component({template: '<div dir></div>'})
+      @Component({
+        template: '<div dir></div>',
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({declarations: [App, Host]});
@@ -1015,12 +1195,20 @@ describe('host directives', () => {
         changeDetectorRef = inject(ChangeDetectorRef) as InternalChangeDetectorRef;
       }
 
-      @Component({selector: 'my-comp', hostDirectives: [HostDir], template: ''})
+      @Component({
+        selector: 'my-comp',
+        hostDirectives: [HostDir],
+        template: '',
+        standalone: false,
+      })
       class Comp {
         changeDetectorRef = inject(ChangeDetectorRef) as InternalChangeDetectorRef;
       }
 
-      @Component({template: '<my-comp></my-comp>'})
+      @Component({
+        template: '<my-comp></my-comp>',
+        standalone: false,
+      })
       class App {
         @ViewChild(HostDir) hostDir!: HostDir;
         @ViewChild(Comp) comp!: Comp;
@@ -1059,10 +1247,17 @@ describe('host directives', () => {
         }
       }
 
-      @Directive({selector: '[dir]', hostDirectives: [HostDir]})
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [HostDir],
+        standalone: false,
+      })
       class Dir {}
 
-      @Component({template: '<button dir (hasBeenClicked)="spy()"></button>'})
+      @Component({
+        template: '<button dir (hasBeenClicked)="spy()"></button>',
+        standalone: false,
+      })
       class App {
         spy = jasmine.createSpy('click spy');
       }
@@ -1092,10 +1287,14 @@ describe('host directives', () => {
             outputs: ['hasBeenClicked'],
           },
         ],
+        standalone: false,
       })
       class Dir {}
 
-      @Component({template: '<button dir (hasBeenClicked)="spy($event)"></button>'})
+      @Component({
+        template: '<button dir (hasBeenClicked)="spy($event)"></button>',
+        standalone: false,
+      })
       class App {
         spy = jasmine.createSpy('click spy');
       }
@@ -1119,12 +1318,14 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, outputs: ['hasBeenClicked: wasClicked']}],
+        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: `
           <button dir (wasClicked)="validSpy($event)" (hasBeenClicked)="invalidSpy($event)"></button>`,
+        standalone: false,
       })
       class App {
         validSpy = jasmine.createSpy('valid spy');
@@ -1151,6 +1352,7 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, outputs: ['wasClicked: clickOccurred']}],
+        standalone: false,
       })
       class Dir {}
 
@@ -1160,6 +1362,7 @@ describe('host directives', () => {
             dir
             (clickOccurred)="validSpy($event)"
             (hasBeenClicked)="invalidSpy($event)"></button>`,
+        standalone: false,
       })
       class App {
         validSpy = jasmine.createSpy('valid spy');
@@ -1187,12 +1390,16 @@ describe('host directives', () => {
         selector: '[dir]',
         hostDirectives: [HostDir],
         host: {'(click)': 'hasBeenClicked.emit("Dir")'},
+        standalone: false,
       })
       class Dir {
         @Output() hasBeenClicked = new EventEmitter<string>();
       }
 
-      @Component({template: '<button dir (hasBeenClicked)="spy($event)"></button>'})
+      @Component({
+        template: '<button dir (hasBeenClicked)="spy($event)"></button>',
+        standalone: false,
+      })
       class App {
         spy = jasmine.createSpy('click spy');
       }
@@ -1217,12 +1424,16 @@ describe('host directives', () => {
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, outputs: ['hasBeenClicked']}],
         host: {'(click)': 'hasBeenClicked.emit("Dir")'},
+        standalone: false,
       })
       class Dir {
         @Output() hasBeenClicked = new EventEmitter<string>();
       }
 
-      @Component({template: '<button dir (hasBeenClicked)="spy($event)"></button>'})
+      @Component({
+        template: '<button dir (hasBeenClicked)="spy($event)"></button>',
+        standalone: false,
+      })
       class App {
         spy = jasmine.createSpy('click spy');
       }
@@ -1249,12 +1460,16 @@ describe('host directives', () => {
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, outputs: ['hasBeenClicked: wasClicked']}],
         host: {'(click)': 'wasClicked.emit("Dir")'},
+        standalone: false,
       })
       class Dir {
         @Output() wasClicked = new EventEmitter<string>();
       }
 
-      @Component({template: '<button dir (wasClicked)="spy($event)"></button>'})
+      @Component({
+        template: '<button dir (wasClicked)="spy($event)"></button>',
+        standalone: false,
+      })
       class App {
         spy = jasmine.createSpy('click spy');
       }
@@ -1280,10 +1495,14 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, outputs: ['hasBeenClicked', 'hasBeenClicked']}],
+        standalone: false,
       })
       class Dir {}
 
-      @Component({template: '<button dir (hasBeenClicked)="spy($event)"></button>'})
+      @Component({
+        template: '<button dir (hasBeenClicked)="spy($event)"></button>',
+        standalone: false,
+      })
       class App {
         spy = jasmine.createSpy('click spy');
       }
@@ -1299,7 +1518,10 @@ describe('host directives', () => {
     });
 
     it('should emit to an inherited output of a host directive', () => {
-      @Directive({host: {'(click)': 'hasBeenClicked.emit("hello")'}})
+      @Directive({
+        host: {'(click)': 'hasBeenClicked.emit("hello")'},
+        standalone: false,
+      })
       class ParentDir {
         @Output() hasBeenClicked = new EventEmitter<string>();
       }
@@ -1310,10 +1532,14 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, outputs: ['hasBeenClicked']}],
+        standalone: false,
       })
       class Dir {}
 
-      @Component({template: '<button dir (hasBeenClicked)="spy($event)"></button>'})
+      @Component({
+        template: '<button dir (hasBeenClicked)="spy($event)"></button>',
+        standalone: false,
+      })
       class App {
         spy = jasmine.createSpy('click spy');
       }
@@ -1345,10 +1571,14 @@ describe('host directives', () => {
           {directive: ExposedHostDir, outputs: ['hasBeenClicked']},
           UnExposedHostDir,
         ],
+        standalone: false,
       })
       class Dir {}
 
-      @Component({template: '<button dir (hasBeenClicked)="spy($event)"></button>'})
+      @Component({
+        template: '<button dir (hasBeenClicked)="spy($event)"></button>',
+        standalone: false,
+      })
       class App {
         spy = jasmine.createSpy('click spy');
       }
@@ -1387,10 +1617,14 @@ describe('host directives', () => {
           {directive: FirstHostDir, outputs: ['firstHasBeenClicked: wasClicked']},
           {directive: SecondHostDir, outputs: ['secondHasBeenClicked: wasClicked']},
         ],
+        standalone: false,
       })
       class Dir {}
 
-      @Component({template: '<button dir (wasClicked)="spy($event)"></button>'})
+      @Component({
+        template: '<button dir (wasClicked)="spy($event)"></button>',
+        standalone: false,
+      })
       class App {
         spy = jasmine.createSpy('click spy');
       }
@@ -1420,13 +1654,20 @@ describe('host directives', () => {
             outputs: ['hasBeenClicked'],
           },
         ],
+        standalone: false,
       })
       class Parent {}
 
-      @Directive({selector: '[dir]'})
+      @Directive({
+        selector: '[dir]',
+        standalone: false,
+      })
       class Dir extends Parent {}
 
-      @Component({template: '<button dir (hasBeenClicked)="spy($event)"></button>'})
+      @Component({
+        template: '<button dir (hasBeenClicked)="spy($event)"></button>',
+        standalone: false,
+      })
       class App {
         spy = jasmine.createSpy('click spy');
       }
@@ -1449,10 +1690,17 @@ describe('host directives', () => {
         @Input() color?: string;
       }
 
-      @Directive({selector: '[dir]', hostDirectives: [HostDir]})
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [HostDir],
+        standalone: false,
+      })
       class Dir {}
 
-      @Component({template: '<button dir [color]="color"></button>'})
+      @Component({
+        template: '<button dir [color]="color"></button>',
+        standalone: false,
+      })
       class App {
         color = 'red';
       }
@@ -1471,10 +1719,17 @@ describe('host directives', () => {
         @Input() color?: string;
       }
 
-      @Directive({selector: '[dir]', hostDirectives: [{directive: HostDir, inputs: ['color']}]})
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [{directive: HostDir, inputs: ['color']}],
+        standalone: false,
+      })
       class Dir {}
 
-      @Component({template: '<button dir [color]="color"></button>'})
+      @Component({
+        template: '<button dir [color]="color"></button>',
+        standalone: false,
+      })
       class App {
         @ViewChild(HostDir) hostDir!: HostDir;
         color = 'red';
@@ -1499,10 +1754,14 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['color: buttonColor']}],
+        standalone: false,
       })
       class Dir {}
 
-      @Component({template: '<button dir [buttonColor]="color"></button>'})
+      @Component({
+        template: '<button dir [buttonColor]="color"></button>',
+        standalone: false,
+      })
       class App {
         @ViewChild(HostDir) hostDir!: HostDir;
         color = 'red';
@@ -1527,10 +1786,14 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['colorAlias: buttonColor']}],
+        standalone: false,
       })
       class Dir {}
 
-      @Component({template: '<button dir [buttonColor]="color"></button>'})
+      @Component({
+        template: '<button dir [buttonColor]="color"></button>',
+        standalone: false,
+      })
       class App {
         @ViewChild(HostDir) hostDir!: HostDir;
         color = 'red';
@@ -1555,12 +1818,16 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [HostDir],
+        standalone: false,
       })
       class Dir {
         @Input() color?: string;
       }
 
-      @Component({template: '<button dir [color]="color"></button>'})
+      @Component({
+        template: '<button dir [color]="color"></button>',
+        standalone: false,
+      })
       class App {
         @ViewChild(Dir) dir!: Dir;
         @ViewChild(HostDir) hostDir!: HostDir;
@@ -1588,12 +1855,19 @@ describe('host directives', () => {
         @Input() color?: string;
       }
 
-      @Directive({selector: '[dir]', hostDirectives: [{directive: HostDir, inputs: ['color']}]})
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [{directive: HostDir, inputs: ['color']}],
+        standalone: false,
+      })
       class Dir {
         @Input() color?: string;
       }
 
-      @Component({template: '<button dir [color]="color"></button>'})
+      @Component({
+        template: '<button dir [color]="color"></button>',
+        standalone: false,
+      })
       class App {
         @ViewChild(Dir) dir!: Dir;
         @ViewChild(HostDir) hostDir!: HostDir;
@@ -1624,12 +1898,16 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['color: buttonColor']}],
+        standalone: false,
       })
       class Dir {
         @Input() buttonColor?: string;
       }
 
-      @Component({template: '<button dir [buttonColor]="color"></button>'})
+      @Component({
+        template: '<button dir [buttonColor]="color"></button>',
+        standalone: false,
+      })
       class App {
         @ViewChild(Dir) dir!: Dir;
         @ViewChild(HostDir) hostDir!: HostDir;
@@ -1663,10 +1941,14 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['color']}],
+        standalone: false,
       })
       class Dir {}
 
-      @Component({template: '<button dir [color]="color"></button>'})
+      @Component({
+        template: '<button dir [color]="color"></button>',
+        standalone: false,
+      })
       class App {
         @ViewChild(HostDir) hostDir!: HostDir;
         color = 'red';
@@ -1698,10 +1980,14 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: ExposedHostDir, inputs: ['color']}, UnExposedHostDir],
+        standalone: false,
       })
       class Dir {}
 
-      @Component({template: '<button dir [color]="color"></button>'})
+      @Component({
+        template: '<button dir [color]="color"></button>',
+        standalone: false,
+      })
       class App {
         @ViewChild(ExposedHostDir) exposedHostDir!: ExposedHostDir;
         @ViewChild(UnExposedHostDir) unExposedHostDir!: UnExposedHostDir;
@@ -1740,10 +2026,14 @@ describe('host directives', () => {
           {directive: FirstHostDir, inputs: ['firstColor: buttonColor']},
           {directive: SecondHostDir, inputs: ['secondColor: buttonColor']},
         ],
+        standalone: false,
       })
       class Dir {}
 
-      @Component({template: '<button dir [buttonColor]="color"></button>'})
+      @Component({
+        template: '<button dir [buttonColor]="color"></button>',
+        standalone: false,
+      })
       class App {
         @ViewChild(FirstHostDir) firstHostDir!: FirstHostDir;
         @ViewChild(SecondHostDir) secondHostDir!: SecondHostDir;
@@ -1771,10 +2061,17 @@ describe('host directives', () => {
         @Input() color?: string;
       }
 
-      @Directive({selector: '[dir]', hostDirectives: [HostDir]})
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [HostDir],
+        standalone: false,
+      })
       class Dir {}
 
-      @Component({template: '<button dir color="red"></button>'})
+      @Component({
+        template: '<button dir color="red"></button>',
+        standalone: false,
+      })
       class App {
         @ViewChild(HostDir) hostDir!: HostDir;
       }
@@ -1792,10 +2089,17 @@ describe('host directives', () => {
         @Input() color?: string;
       }
 
-      @Directive({selector: '[dir]', hostDirectives: [{directive: HostDir, inputs: ['color']}]})
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [{directive: HostDir, inputs: ['color']}],
+        standalone: false,
+      })
       class Dir {}
 
-      @Component({template: '<button dir color="red"></button>'})
+      @Component({
+        template: '<button dir color="red"></button>',
+        standalone: false,
+      })
       class App {
         @ViewChild(HostDir) hostDir!: HostDir;
       }
@@ -1815,10 +2119,14 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['color: buttonColor']}],
+        standalone: false,
       })
       class Dir {}
 
-      @Component({template: '<button dir buttonColor="red"></button>'})
+      @Component({
+        template: '<button dir buttonColor="red"></button>',
+        standalone: false,
+      })
       class App {
         @ViewChild(HostDir) hostDir!: HostDir;
       }
@@ -1838,10 +2146,14 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['colorAlias: buttonColor']}],
+        standalone: false,
       })
       class Dir {}
 
-      @Component({template: '<button dir buttonColor="red"></button>'})
+      @Component({
+        template: '<button dir buttonColor="red"></button>',
+        standalone: false,
+      })
       class App {
         @ViewChild(HostDir) hostDir!: HostDir;
       }
@@ -1866,10 +2178,14 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: ExposedHostDir, inputs: ['color']}, UnExposedHostDir],
+        standalone: false,
       })
       class Dir {}
 
-      @Component({template: '<button dir color="red"></button>'})
+      @Component({
+        template: '<button dir color="red"></button>',
+        standalone: false,
+      })
       class App {
         @ViewChild(ExposedHostDir) exposedHostDir!: ExposedHostDir;
         @ViewChild(UnExposedHostDir) unExposedHostDir!: UnExposedHostDir;
@@ -1900,10 +2216,14 @@ describe('host directives', () => {
           {directive: FirstHostDir, inputs: ['firstColor: buttonColor']},
           {directive: SecondHostDir, inputs: ['secondColor: buttonColor']},
         ],
+        standalone: false,
       })
       class Dir {}
 
-      @Component({template: '<button dir buttonColor="red"></button>'})
+      @Component({
+        template: '<button dir buttonColor="red"></button>',
+        standalone: false,
+      })
       class App {
         @ViewChild(FirstHostDir) firstHostDir!: FirstHostDir;
         @ViewChild(SecondHostDir) secondHostDir!: SecondHostDir;
@@ -1969,13 +2289,22 @@ describe('host directives', () => {
         @Input() color?: string;
       }
 
-      @Directive({hostDirectives: [{directive: HostDir, inputs: ['color']}]})
+      @Directive({
+        hostDirectives: [{directive: HostDir, inputs: ['color']}],
+        standalone: false,
+      })
       class Parent {}
 
-      @Directive({selector: '[dir]'})
+      @Directive({
+        selector: '[dir]',
+        standalone: false,
+      })
       class Dir extends Parent {}
 
-      @Component({template: '<button dir [color]="color"></button>'})
+      @Component({
+        template: '<button dir [color]="color"></button>',
+        standalone: false,
+      })
       class App {
         @ViewChild(HostDir) hostDir!: HostDir;
         color = 'red';
@@ -2021,10 +2350,14 @@ describe('host directives', () => {
           {directive: FirstHostDir, inputs: ['color']},
           {directive: SecondHostDir, inputs: ['color']},
         ],
+        standalone: false,
       })
       class Dir {}
 
-      @Component({template: '<button dir [color]="color"></button>'})
+      @Component({
+        template: '<button dir [color]="color"></button>',
+        standalone: false,
+      })
       class App {
         color = 'red';
       }
@@ -2104,10 +2437,14 @@ describe('host directives', () => {
           {directive: FirstHostDir, inputs: ['firstAlias: buttonColor']},
           {directive: SecondHostDir, inputs: ['secondAlias: buttonColor']},
         ],
+        standalone: false,
       })
       class Dir {}
 
-      @Component({template: '<button dir [buttonColor]="color"></button>'})
+      @Component({
+        template: '<button dir [buttonColor]="color"></button>',
+        standalone: false,
+      })
       class App {
         color = 'red';
       }
@@ -2184,10 +2521,14 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [FirstHostDir, {directive: SecondHostDir, inputs: ['color']}],
+        standalone: false,
       })
       class Dir {}
 
-      @Component({template: '<button dir [color]="color"></button>'})
+      @Component({
+        template: '<button dir [color]="color"></button>',
+        standalone: false,
+      })
       class App {
         color = 'red';
       }
@@ -2237,10 +2578,14 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['colorAlias: buttonColor']}],
+        standalone: false,
       })
       class Dir {}
 
-      @Component({template: '<button dir buttonColor="red"></button>'})
+      @Component({
+        template: '<button dir buttonColor="red"></button>',
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({declarations: [App, Dir]});
@@ -2279,7 +2624,10 @@ describe('host directives', () => {
         }
       }
 
-      @Directive({selector: '[plain-dir]'})
+      @Directive({
+        selector: '[plain-dir]',
+        standalone: false,
+      })
       class PlainDir {
         constructor() {
           plainDirInstance = this;
@@ -2290,10 +2638,14 @@ describe('host directives', () => {
         selector: 'comp',
         template: '',
         hostDirectives: [HostDir, OtherHostDir],
+        standalone: false,
       })
       class Comp {}
 
-      @Component({template: '<comp plain-dir></comp>'})
+      @Component({
+        template: '<comp plain-dir></comp>',
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({declarations: [App, Comp, PlainDir]});
@@ -2321,6 +2673,7 @@ describe('host directives', () => {
         selector: 'comp',
         template: '',
         hostDirectives: [HostDir],
+        standalone: false,
       })
       class Comp {
         constructor() {
@@ -2328,7 +2681,10 @@ describe('host directives', () => {
         }
       }
 
-      @Component({template: '<comp></comp>'})
+      @Component({
+        template: '<comp></comp>',
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({declarations: [App, Comp]});
@@ -2350,6 +2706,7 @@ describe('host directives', () => {
         selector: 'comp',
         template: '',
         hostDirectives: [HostDir],
+        standalone: false,
       })
       class Comp {
         constructor() {
@@ -2357,7 +2714,10 @@ describe('host directives', () => {
         }
       }
 
-      @Component({template: '<comp></comp>'})
+      @Component({
+        template: '<comp></comp>',
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({declarations: [App, Comp]});
@@ -2377,12 +2737,16 @@ describe('host directives', () => {
         selector: 'comp',
         template: '',
         hostDirectives: [HostDir],
+        standalone: false,
       })
       class Comp {
         constructor(public elementRef: ElementRef<HTMLElement>) {}
       }
 
-      @Component({template: '<comp></comp>'})
+      @Component({
+        template: '<comp></comp>',
+        standalone: false,
+      })
       class App {
         @ViewChild(Comp) compInstance!: Comp;
       }
@@ -2399,7 +2763,10 @@ describe('host directives', () => {
 
   describe('root component with host directives', () => {
     function createRootComponent<T>(componentType: Type<T>) {
-      @Component({template: '<ng-container #insertionPoint></ng-container>'})
+      @Component({
+        template: '<ng-container #insertionPoint></ng-container>',
+        standalone: false,
+      })
       class App {
         @ViewChild('insertionPoint', {read: ViewContainerRef}) insertionPoint!: ViewContainerRef;
       }
@@ -2434,6 +2801,7 @@ describe('host directives', () => {
         host: {'host-attr': '', 'class': 'dir', 'style': 'width: 50px'},
         hostDirectives: [HostDir],
         template: '',
+        standalone: false,
       })
       class HostComp {
         constructor() {
@@ -2483,7 +2851,11 @@ describe('host directives', () => {
         }
       }
 
-      @Component({template: '', hostDirectives: [HostDir, OtherHostDir]})
+      @Component({
+        template: '',
+        hostDirectives: [HostDir, OtherHostDir],
+        standalone: false,
+      })
       class HostComp implements OnInit, AfterViewInit, AfterViewChecked {
         ngOnInit() {
           logs.push('HostComp - ngOnInit');
@@ -2544,6 +2916,7 @@ describe('host directives', () => {
             '[attr.shadowed-attr]': 'value',
           },
           hostDirectives: [HostDir, OtherHostDir],
+          standalone: false,
         })
         class HostComp {
           value = 'host';
@@ -2591,6 +2964,7 @@ describe('host directives', () => {
           selector: 'host-comp',
           host: {'(click)': 'handleClick()'},
           hostDirectives: [HostDir, OtherHostDir],
+          standalone: false,
         })
         class HostComp {
           handleClick() {
@@ -2617,6 +2991,7 @@ describe('host directives', () => {
           template: '',
           host: {'id': 'host'},
           hostDirectives: [HostDir, OtherHostDir],
+          standalone: false,
         })
         class HostComp {}
 
@@ -2639,7 +3014,11 @@ describe('host directives', () => {
           }
         }
 
-        @Component({hostDirectives: [HostDir], template: ''})
+        @Component({
+          hostDirectives: [HostDir],
+          template: '',
+          standalone: false,
+        })
         class HostComp {}
 
         const {ref} = createRootComponent(HostComp);
@@ -2658,7 +3037,11 @@ describe('host directives', () => {
           }
         }
 
-        @Component({hostDirectives: [HostDir], template: ''})
+        @Component({
+          hostDirectives: [HostDir],
+          template: '',
+          standalone: false,
+        })
         class HostComp {
           hostDir = inject(HostDir);
         }
@@ -2700,6 +3083,7 @@ describe('host directives', () => {
           template: '',
           hostDirectives: [FirstHostDir],
           providers: [{provide: token, useValue: 'HostDir'}],
+          standalone: false,
         })
         class HostComp {
           tokenValue = inject(token);
@@ -2734,7 +3118,11 @@ describe('host directives', () => {
         })
         class FirstHostDir {}
 
-        @Component({template: '', hostDirectives: [FirstHostDir]})
+        @Component({
+          template: '',
+          hostDirectives: [FirstHostDir],
+          standalone: false,
+        })
         class HostComp {
           firstTokenValue = inject(firstToken);
           secondTokenValue = inject(secondToken);
@@ -2781,6 +3169,7 @@ describe('host directives', () => {
               inputs: ['color'],
             },
           ],
+          standalone: false,
         })
         class HostComp {
           @Input() color?: string;
@@ -2820,6 +3209,7 @@ describe('host directives', () => {
               inputs: ['color'],
             },
           ],
+          standalone: false,
         })
         class HostComp {
           color?: string; // Note: intentionally not marked as @Input.
@@ -2850,7 +3240,8 @@ describe('host directives', () => {
 
         @Component({
           selector: 'host-comp',
-          hostDirectives: [HostDir], // Note: `color` input has intentionally not been exposed.
+          hostDirectives: [HostDir],
+          standalone: false,
         })
         class HostComp {
           @Input() color?: string;
@@ -2888,6 +3279,7 @@ describe('host directives', () => {
               inputs: ['alias: customAlias'],
             },
           ],
+          standalone: false,
         })
         class HostComp {}
 
@@ -2925,6 +3317,7 @@ describe('host directives', () => {
         @Component({
           selector: 'host-comp',
           hostDirectives: [{directive: HostDir, inputs: ['alias: customAlias']}],
+          standalone: false,
         })
         class HostComp {}
 
@@ -2972,6 +3365,7 @@ describe('host directives', () => {
 
       @Component({
         hostDirectives: [Dir],
+        standalone: false,
       })
       class HostComp {}
 
@@ -2985,10 +3379,17 @@ describe('host directives', () => {
     it('should throw an error if the metadata of a host directive cannot be resolved', () => {
       class HostDir {}
 
-      @Directive({selector: '[dir]', hostDirectives: [HostDir]})
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [HostDir],
+        standalone: false,
+      })
       class Dir {}
 
-      @Component({template: '<div dir></div>'})
+      @Component({
+        template: '<div dir></div>',
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({declarations: [App, Dir]});
@@ -3003,10 +3404,17 @@ describe('host directives', () => {
       @Directive({standalone: false})
       class HostDir {}
 
-      @Directive({selector: '[dir]', hostDirectives: [HostDir]})
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [HostDir],
+        standalone: false,
+      })
       class Dir {}
 
-      @Component({template: '<div dir></div>'})
+      @Component({
+        template: '<div dir></div>',
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({declarations: [App, Dir]});
@@ -3058,13 +3466,19 @@ describe('host directives', () => {
       // Note: the definition order in `imports` seems to affect the
       // directive matching order so we test both scenarios.
       expect(() => {
-        @Component({...baseAppMetadata, imports: [Comp, HostDir]})
+        @Component({
+          ...baseAppMetadata,
+          imports: [Comp, HostDir],
+        })
         class App {}
         TestBed.createComponent(App);
       }).toThrowError(expectedError);
 
       expect(() => {
-        @Component({...baseAppMetadata, imports: [HostDir, Comp]})
+        @Component({
+          ...baseAppMetadata,
+          imports: [HostDir, Comp],
+        })
         class App {}
         TestBed.createComponent(App);
       }).toThrowError(expectedError);
@@ -3080,10 +3494,14 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [HostDir, DuplicateHostDir],
+        standalone: false,
       })
       class Dir {}
 
-      @Component({template: '<div dir></div>'})
+      @Component({
+        template: '<div dir></div>',
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({declarations: [App, Dir]});
@@ -3097,10 +3515,17 @@ describe('host directives', () => {
       @Component({standalone: true, template: '', selector: 'host-comp'})
       class HostComp {}
 
-      @Directive({selector: '[dir]', hostDirectives: [HostComp]})
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [HostComp],
+        standalone: false,
+      })
       class Dir {}
 
-      @Component({template: '<div dir></div>'})
+      @Component({
+        template: '<div dir></div>',
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({declarations: [App, Dir]});
@@ -3124,10 +3549,14 @@ describe('host directives', () => {
             outputs: ['doesNotExist'],
           },
         ],
+        standalone: false,
       })
       class Dir {}
 
-      @Component({template: '<div dir></div>'})
+      @Component({
+        template: '<div dir></div>',
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({declarations: [App, Dir]});
@@ -3151,10 +3580,14 @@ describe('host directives', () => {
             outputs: ['foo'],
           },
         ],
+        standalone: false,
       })
       class Dir {}
 
-      @Component({template: '<div dir></div>'})
+      @Component({
+        template: '<div dir></div>',
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({declarations: [App, Dir]});
@@ -3178,10 +3611,14 @@ describe('host directives', () => {
             inputs: ['doesNotExist'],
           },
         ],
+        standalone: false,
       })
       class Dir {}
 
-      @Component({template: '<div dir></div>'})
+      @Component({
+        template: '<div dir></div>',
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({declarations: [App, Dir]});
@@ -3200,10 +3637,14 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['foo']}],
+        standalone: false,
       })
       class Dir {}
 
-      @Component({template: '<div dir></div>'})
+      @Component({
+        template: '<div dir></div>',
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({declarations: [App, Dir]});
@@ -3223,10 +3664,15 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['colorAlias: buttonColor']}],
+        standalone: false,
       })
       class Dir {}
 
-      @Component({imports: [Dir, HostDir], template: '<button dir buttonColor="red"></button>'})
+      @Component({
+        imports: [Dir, HostDir],
+        template: '<button dir buttonColor="red"></button>',
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({declarations: [App, Dir]});
@@ -3250,12 +3696,14 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['colorAlias: buttonColorAlias']}],
+        standalone: false,
       })
       class Dir {}
 
       @Component({
         imports: [Dir, HostDir],
         template: '<button dir buttonColorAlias="red"></button>',
+        standalone: false,
       })
       class App {}
 
@@ -3279,10 +3727,15 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['color: buttonColor']}],
+        standalone: false,
       })
       class Dir {}
 
-      @Component({imports: [Dir, HostDir], template: '<button dir buttonColor="red"></button>'})
+      @Component({
+        imports: [Dir, HostDir],
+        template: '<button dir buttonColor="red"></button>',
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({declarations: [App, Dir]});
@@ -3303,12 +3756,14 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, outputs: ['clickedAlias: tappedAlias']}],
+        standalone: false,
       })
       class Dir {}
 
       @Component({
         imports: [Dir, HostDir],
         template: '<button dir (tappedAlias)="handleTap()"></button>',
+        standalone: false,
       })
       class App {
         handleTap() {}
@@ -3334,12 +3789,14 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, outputs: ['clicked: wasClicked']}],
+        standalone: false,
       })
       class Dir {}
 
       @Component({
         imports: [Dir, HostDir],
         template: '<button dir (wasClicked)="handleClick()"></button>',
+        standalone: false,
       })
       class App {
         handleClick() {}
@@ -3418,10 +3875,17 @@ describe('host directives', () => {
       @Directive({standalone: true})
       class Parent extends Grandparent {}
 
-      @Directive({selector: '[dir]', hostDirectives: [HostDir]})
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [HostDir],
+        standalone: false,
+      })
       class Dir extends Parent {}
 
-      @Component({template: '<div dir></div>'})
+      @Component({
+        template: '<div dir></div>',
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({declarations: [App, Dir]});

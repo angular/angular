@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
@@ -11,8 +11,8 @@ import {performanceMarkFeature} from '../../util/performance';
 import {TNodeType} from '../interfaces/node';
 import {HEADER_OFFSET} from '../interfaces/view';
 import {getContextLView, getLView, getSelectedIndex, getTView, setCurrentTNode} from '../state';
+import {getOrCreateTNode} from '../tnode_manipulation';
 import {load} from '../util/view_utils';
-import {getOrCreateTNode} from './shared';
 import {store} from './storage';
 
 /** Object that indicates the value of a `@let` declaration that hasn't been initialized yet. */

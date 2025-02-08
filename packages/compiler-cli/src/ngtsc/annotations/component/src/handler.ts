@@ -3,13 +3,14 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
   AnimationTriggerNames,
   BoundTarget,
   compileClassDebugInfo,
+  compileHmrInitializer,
   compileComponentClassMetadata,
   compileComponentDeclareClassMetadata,
   compileComponentFromMetadata,
@@ -77,6 +78,7 @@ import {
   MetaKind,
   NgModuleMeta,
   PipeMeta,
+  Resource,
   ResourceRegistry,
 } from '../../../metadata';
 import {PartialEvaluator} from '../../../partial_evaluator';
@@ -160,7 +162,7 @@ import {
 import {
   _extractTemplateStyleUrls,
   extractComponentStyleUrls,
-  extractStyleResources,
+  extractInlineStyleResources,
   extractTemplate,
   makeResourceNotFoundError,
   ParsedTemplateWithSource,
@@ -177,6 +179,9 @@ import {
   validateAndFlattenComponentImports,
 } from './util';
 import {getTemplateDiagnostics} from '../../../typecheck';
+import {JitDeclarationRegistry} from '../../common/src/jit_declaration_registry';
+import {extractHmrMetatadata, getHmrUpdateDeclaration} from '../../../hmr';
+import {getProjectRelativePath} from '../../../util/src/path';
 
 const EMPTY_ARRAY: any[] = [];
 
@@ -217,7 +222,7 @@ export class ComponentDecoratorHandler
     private metaRegistry: MetadataRegistry,
     private metaReader: MetadataReader,
     private scopeReader: ComponentScopeReader,
-    private dtsScopeReader: DtsModuleScopeResolver,
+    private compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
     private scopeRegistry: LocalModuleScopeRegistry,
     private typeCheckScopeRegistry: TypeCheckScopeRegistry,
     private resourceRegistry: ResourceRegistry,
@@ -248,7 +253,13 @@ export class ComponentDecoratorHandler
     private readonly forbidOrphanRendering: boolean,
     private readonly enableBlockSyntax: boolean,
     private readonly enableLetSyntax: boolean,
+    private readonly externalRuntimeStyles: boolean,
     private readonly localCompilationExtraImportsTracker: LocalCompilationExtraImportsTracker | null,
+    private readonly jitDeclarationRegistry: JitDeclarationRegistry,
+    private readonly i18nPreserveSignificantWhitespace: boolean,
+    private readonly strictStandalone: boolean,
+    private readonly enableHmr: boolean,
+    private readonly implicitStandaloneValue: boolean,
   ) {
     this.extractTemplateOptions = {
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
@@ -256,7 +267,13 @@ export class ComponentDecoratorHandler
       usePoisonedData: this.usePoisonedData,
       enableBlockSyntax: this.enableBlockSyntax,
       enableLetSyntax: this.enableLetSyntax,
+      preserveSignificantWhitespace: this.i18nPreserveSignificantWhitespace,
     };
+
+    // Dependencies can't be deferred during HMR, because the HMR update module can't have
+    // dynamic imports and its dependencies need to be passed in directly. If dependencies
+    // are deferred, their imports will be deleted so we may lose the reference to them.
+    this.canDeferDeps = !enableHmr;
   }
 
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
@@ -270,12 +287,16 @@ export class ComponentDecoratorHandler
   private preanalyzeTemplateCache = new Map<DeclarationNode, ParsedTemplateWithSource>();
   private preanalyzeStylesCache = new Map<DeclarationNode, string[] | null>();
 
+  /** Whether generated code for a component can defer its dependencies. */
+  private readonly canDeferDeps: boolean;
+
   private extractTemplateOptions: {
     enableI18nLegacyMessageIdFormat: boolean;
     i18nNormalizeLineEndingsInICUs: boolean;
     usePoisonedData: boolean;
     enableBlockSyntax: boolean;
     enableLetSyntax: boolean;
+    preserveSignificantWhitespace?: boolean;
   };
 
   readonly precedence = HandlerPrecedence.PRIMARY;
@@ -324,7 +345,11 @@ export class ComponentDecoratorHandler
     const resolveStyleUrl = (styleUrl: string): Promise<void> | undefined => {
       try {
         const resourceUrl = this.resourceLoader.resolve(styleUrl, containingFile);
-        return this.resourceLoader.preload(resourceUrl, {type: 'style', containingFile});
+        return this.resourceLoader.preload(resourceUrl, {
+          type: 'style',
+          containingFile,
+          className: node.name.text,
+        });
       } catch {
         // Don't worry about failures to preload. We can handle this problem during analysis by
         // producing a diagnostic.
@@ -345,44 +370,75 @@ export class ComponentDecoratorHandler
       this.defaultPreserveWhitespaces,
       this.extractTemplateOptions,
       this.compilationMode,
-    ).then((template: ParsedTemplateWithSource | null): Promise<void> | undefined => {
-      if (template === null) {
-        return undefined;
-      }
+    ).then(
+      (template): {templateUrl?: string; templateStyles: string[]; templateStyleUrls: string[]} => {
+        if (template === null) {
+          return {templateStyles: [], templateStyleUrls: []};
+        }
 
-      return Promise.all(template.styleUrls.map((styleUrl) => resolveStyleUrl(styleUrl))).then(
-        () => undefined,
-      );
-    });
+        let templateUrl;
+        if (template.sourceMapping.type === 'external') {
+          templateUrl = template.sourceMapping.templateUrl;
+        }
+
+        return {
+          templateUrl,
+          templateStyles: template.styles,
+          templateStyleUrls: template.styleUrls,
+        };
+      },
+    );
 
     // Extract all the styleUrls in the decorator.
     const componentStyleUrls = extractComponentStyleUrls(this.evaluator, component);
 
-    // Extract inline styles, process, and cache for use in synchronous analyze phase
-    let inlineStyles;
-    if (component.has('styles')) {
-      const litStyles = parseDirectiveStyles(component, this.evaluator, this.compilationMode);
-      if (litStyles === null) {
-        this.preanalyzeStylesCache.set(node, null);
-      } else {
-        inlineStyles = Promise.all(
-          litStyles.map((style) =>
-            this.resourceLoader.preprocessInline(style, {type: 'style', containingFile}),
+    return templateAndTemplateStyleResources.then(async (templateInfo) => {
+      // Extract inline styles, process, and cache for use in synchronous analyze phase
+      let styles: string[] | null = null;
+      // Order plus className allows inline styles to be identified per component by a preprocessor
+      let orderOffset = 0;
+      const rawStyles = parseDirectiveStyles(component, this.evaluator, this.compilationMode);
+      if (rawStyles?.length) {
+        styles = await Promise.all(
+          rawStyles.map((style) =>
+            this.resourceLoader.preprocessInline(style, {
+              type: 'style',
+              containingFile,
+              order: orderOffset++,
+              className: node.name.text,
+            }),
           ),
-        ).then((styles) => {
-          this.preanalyzeStylesCache.set(node, styles);
-        });
+        );
       }
-    } else {
-      this.preanalyzeStylesCache.set(node, null);
-    }
+      if (templateInfo.templateStyles) {
+        styles ??= [];
+        styles.push(
+          ...(await Promise.all(
+            templateInfo.templateStyles.map((style) =>
+              this.resourceLoader.preprocessInline(style, {
+                type: 'style',
+                containingFile: templateInfo.templateUrl ?? containingFile,
+                order: orderOffset++,
+                className: node.name.text,
+              }),
+            ),
+          )),
+        );
+      }
 
-    // Wait for both the template and all styleUrl resources to resolve.
-    return Promise.all([
-      templateAndTemplateStyleResources,
-      inlineStyles,
-      ...componentStyleUrls.map((styleUrl) => resolveStyleUrl(styleUrl.url)),
-    ]).then(() => undefined);
+      this.preanalyzeStylesCache.set(node, styles);
+
+      if (this.externalRuntimeStyles) {
+        // No preanalysis required for style URLs with external runtime styles
+        return;
+      }
+
+      // Wait for both the template and all styleUrl resources to resolve.
+      await Promise.all([
+        ...componentStyleUrls.map((styleUrl) => resolveStyleUrl(styleUrl.url)),
+        ...templateInfo.templateStyleUrls.map((url) => resolveStyleUrl(url)),
+      ]);
+    });
   }
 
   analyze(
@@ -409,11 +465,14 @@ export class ComponentDecoratorHandler
       this.annotateForClosureCompiler,
       this.compilationMode,
       this.elementSchemaRegistry.getDefaultComponentElementName(),
+      this.strictStandalone,
+      this.implicitStandaloneValue,
     );
-    if (directiveResult === undefined) {
-      // `extractDirectiveMetadata` returns undefined when the @Directive has `jit: true`. In this
-      // case, compilation of the decorator is skipped. Returning an empty object signifies
-      // that no analysis was produced.
+    // `extractDirectiveMetadata` returns `jitForced = true` when the `@Component` has
+    // set `jit: true`. In this case, compilation of the decorator is skipped. Returning
+    // an empty object signifies that no analysis was produced.
+    if (directiveResult.jitForced) {
+      this.jitDeclarationRegistry.jitDeclarations.add(node);
       return {};
     }
 
@@ -626,6 +685,7 @@ export class ComponentDecoratorHandler
           usePoisonedData: this.usePoisonedData,
           enableBlockSyntax: this.enableBlockSyntax,
           enableLetSyntax: this.enableLetSyntax,
+          preserveSignificantWhitespace: this.i18nPreserveSignificantWhitespace,
         },
         this.compilationMode,
       );
@@ -655,13 +715,19 @@ export class ComponentDecoratorHandler
           path: absoluteFrom(template.declaration.resolvedTemplateUrl),
           expression: template.sourceMapping.node,
         };
+    const relativeTemplatePath = getProjectRelativePath(
+      templateResource.path ?? ts.getOriginalNode(node).getSourceFile().fileName,
+      this.rootDirs,
+      this.compilerHost,
+    );
 
     // Figure out the set of styles. The ordering here is important: external resources (styleUrls)
     // precede inline styles, and styles defined in the template override styles defined in the
     // component.
     let styles: string[] = [];
+    const externalStyles: string[] = [];
 
-    const styleResources = extractStyleResources(this.resourceLoader, component, containingFile);
+    const styleResources = extractInlineStyleResources(component);
     const styleUrls: StyleUrlMeta[] = [
       ...extractComponentStyleUrls(this.evaluator, component),
       ..._extractTemplateStyleUrls(template),
@@ -670,6 +736,21 @@ export class ComponentDecoratorHandler
     for (const styleUrl of styleUrls) {
       try {
         const resourceUrl = this.resourceLoader.resolve(styleUrl.url, containingFile);
+        if (this.externalRuntimeStyles) {
+          // External runtime styles are not considered disk-based and may not actually exist on disk
+          externalStyles.push(resourceUrl);
+          continue;
+        }
+        if (
+          styleUrl.source === ResourceTypeForDiagnostics.StylesheetFromDecorator &&
+          ts.isStringLiteralLike(styleUrl.expression)
+        ) {
+          // Only string literal values from the decorator are considered style resources
+          styleResources.add({
+            path: absoluteFrom(resourceUrl),
+            expression: styleUrl.expression,
+          });
+        }
         const resourceStr = this.resourceLoader.load(resourceUrl);
         styles.push(resourceStr);
         if (this.depTracker !== null) {
@@ -691,11 +772,7 @@ export class ComponentDecoratorHandler
             ? ResourceTypeForDiagnostics.StylesheetFromDecorator
             : ResourceTypeForDiagnostics.StylesheetFromTemplate;
         diagnostics.push(
-          makeResourceNotFoundError(
-            styleUrl.url,
-            styleUrl.nodeForError,
-            resourceType,
-          ).toDiagnostic(),
+          makeResourceNotFoundError(styleUrl.url, styleUrl.expression, resourceType).toDiagnostic(),
         );
       }
     }
@@ -721,8 +798,13 @@ export class ComponentDecoratorHandler
     if (this.preanalyzeStylesCache.has(node)) {
       inlineStyles = this.preanalyzeStylesCache.get(node)!;
       this.preanalyzeStylesCache.delete(node);
-      if (inlineStyles !== null) {
-        styles.push(...inlineStyles);
+      if (inlineStyles?.length) {
+        if (this.externalRuntimeStyles) {
+          // When external runtime styles is enabled, a list of URLs is provided
+          externalStyles.push(...inlineStyles);
+        } else {
+          styles.push(...inlineStyles);
+        }
       }
     } else {
       // Preprocessing is only supported asynchronously
@@ -740,9 +822,10 @@ export class ComponentDecoratorHandler
           styles.push(...litStyles);
         }
       }
-    }
-    if (template.styles.length > 0) {
-      styles.push(...template.styles);
+
+      if (template.styles.length > 0) {
+        styles.push(...template.styles);
+      }
     }
 
     // Collect all explicitly deferred symbols from the `@Component.deferredImports` field
@@ -772,6 +855,7 @@ export class ComponentDecoratorHandler
       analysis: {
         baseClass: readBaseClass(node, this.reflector, this.evaluator),
         inputs,
+        inputFieldNamesFromMetadataArray: directiveResult.inputFieldNamesFromMetadataArray,
         outputs,
         hostDirectives,
         rawHostDirectives,
@@ -782,7 +866,7 @@ export class ComponentDecoratorHandler
           changeDetection,
           interpolation: template.interpolationConfig ?? DEFAULT_INTERPOLATION_CONFIG,
           styles,
-
+          externalStyles,
           // These will be replaced during the compilation step, after all `NgModule`s have been
           // analyzed and the full compilation scope for the component can be realized.
           animations,
@@ -790,6 +874,7 @@ export class ComponentDecoratorHandler
           i18nUseExternalIds: this.i18nUseExternalIds,
           relativeContextFilePath,
           rawImports: rawImports !== null ? new o.WrappedNodeExpr(rawImports) : undefined,
+          relativeTemplatePath,
         },
         typeCheckMeta: extractDirectiveTypeCheckMeta(node, inputs, this.reflector),
         classMetadata: this.includeClassMetadata
@@ -804,6 +889,7 @@ export class ComponentDecoratorHandler
         classDebugInfo: extractClassDebugInfo(
           node,
           this.reflector,
+          this.compilerHost,
           this.rootDirs,
           /* forbidOrphanRenderering */ this.forbidOrphanRendering,
         ),
@@ -858,6 +944,7 @@ export class ComponentDecoratorHandler
       selector: analysis.meta.selector,
       exportAs: analysis.meta.exportAs,
       inputs: analysis.inputs,
+      inputFieldNamesFromMetadataArray: analysis.inputFieldNamesFromMetadataArray,
       outputs: analysis.outputs,
       queries: analysis.meta.queries.map((query) => query.propertyName),
       isComponent: true,
@@ -869,6 +956,7 @@ export class ComponentDecoratorHandler
       isStandalone: analysis.meta.isStandalone,
       isSignal: analysis.meta.isSignal,
       imports: analysis.resolvedImports,
+      rawImports: analysis.rawImports,
       deferredImports: analysis.resolvedDeferredImports,
       animationTriggerNames: analysis.animationTriggerNames,
       schemas: analysis.schemas,
@@ -1134,14 +1222,30 @@ export class ComponentDecoratorHandler
       // Register all Directives and Pipes used at the top level (outside
       // of any defer blocks), which would be eagerly referenced.
       const eagerlyUsed = new Set<ClassDeclaration>();
-      for (const dir of bound.getEagerlyUsedDirectives()) {
-        eagerlyUsed.add(dir.ref.node);
-      }
-      for (const name of bound.getEagerlyUsedPipes()) {
-        if (!pipes.has(name)) {
-          continue;
+
+      if (this.enableHmr) {
+        // In HMR we need to preserve all the dependencies, because they have to remain consistent
+        // with the initially-generated code no matter what the template looks like.
+        for (const dep of dependencies) {
+          if (dep.ref.node !== node) {
+            eagerlyUsed.add(dep.ref.node);
+          } else {
+            const used = bound.getEagerlyUsedDirectives();
+            if (used.some((current) => current.ref.node === node)) {
+              eagerlyUsed.add(node);
+            }
+          }
         }
-        eagerlyUsed.add(pipes.get(name)!.ref.node);
+      } else {
+        for (const dir of bound.getEagerlyUsedDirectives()) {
+          eagerlyUsed.add(dir.ref.node);
+        }
+        for (const name of bound.getEagerlyUsedPipes()) {
+          if (!pipes.has(name)) {
+            continue;
+          }
+          eagerlyUsed.add(pipes.get(name)!.ref.node);
+        }
       }
 
       // Set of Directives and Pipes used across the entire template,
@@ -1526,15 +1630,20 @@ export class ComponentDecoratorHandler
       return [];
     }
 
-    const perComponentDeferredDeps = this.resolveAllDeferredDependencies(resolution);
+    const perComponentDeferredDeps = this.canDeferDeps
+      ? this.resolveAllDeferredDependencies(resolution)
+      : null;
+    const defer = this.compileDeferBlocks(resolution);
     const meta: R3ComponentMetadata<R3TemplateDependency> = {
       ...analysis.meta,
       ...resolution,
-      defer: this.compileDeferBlocks(resolution),
+      defer,
     };
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
 
-    removeDeferrableTypesFromComponentDecorator(analysis, perComponentDeferredDeps);
+    if (perComponentDeferredDeps !== null) {
+      removeDeferrableTypesFromComponentDecorator(analysis, perComponentDeferredDeps);
+    }
 
     const def = compileComponentFromMetadata(meta, pool, makeBindingParser());
     const inputTransformFields = compileInputTransformFields(analysis.inputs);
@@ -1546,7 +1655,24 @@ export class ComponentDecoratorHandler
       analysis.classDebugInfo !== null
         ? compileClassDebugInfo(analysis.classDebugInfo).toStmt()
         : null;
-    const deferrableImports = this.deferredSymbolTracker.getDeferrableImportDecls();
+    const hmrMeta = this.enableHmr
+      ? extractHmrMetatadata(
+          node,
+          this.reflector,
+          this.evaluator,
+          this.compilerHost,
+          this.rootDirs,
+          def,
+          fac,
+          defer,
+          classMetadata,
+          debugInfo,
+        )
+      : null;
+    const hmrInitializer = hmrMeta ? compileHmrInitializer(hmrMeta).toStmt() : null;
+    const deferrableImports = this.canDeferDeps
+      ? this.deferredSymbolTracker.getDeferrableImportDecls()
+      : null;
     return compileResults(
       fac,
       def,
@@ -1555,6 +1681,7 @@ export class ComponentDecoratorHandler
       inputTransformFields,
       deferrableImports,
       debugInfo,
+      hmrInitializer,
     );
   }
 
@@ -1576,11 +1703,14 @@ export class ComponentDecoratorHandler
           : null,
     };
 
-    const perComponentDeferredDeps = this.resolveAllDeferredDependencies(resolution);
+    const perComponentDeferredDeps = this.canDeferDeps
+      ? this.resolveAllDeferredDependencies(resolution)
+      : null;
+    const defer = this.compileDeferBlocks(resolution);
     const meta: R3ComponentMetadata<R3TemplateDependencyMetadata> = {
       ...analysis.meta,
       ...resolution,
-      defer: this.compileDeferBlocks(resolution),
+      defer,
     };
     const fac = compileDeclareFactory(toFactoryMetadata(meta, FactoryTarget.Component));
     const inputTransformFields = compileInputTransformFields(analysis.inputs);
@@ -1592,8 +1722,34 @@ export class ComponentDecoratorHandler
             perComponentDeferredDeps,
           ).toStmt()
         : null;
-    const deferrableImports = this.deferredSymbolTracker.getDeferrableImportDecls();
-    return compileResults(fac, def, classMetadata, 'ɵcmp', inputTransformFields, deferrableImports);
+    const hmrMeta = this.enableHmr
+      ? extractHmrMetatadata(
+          node,
+          this.reflector,
+          this.evaluator,
+          this.compilerHost,
+          this.rootDirs,
+          def,
+          fac,
+          defer,
+          classMetadata,
+          null,
+        )
+      : null;
+    const hmrInitializer = hmrMeta ? compileHmrInitializer(hmrMeta).toStmt() : null;
+    const deferrableImports = this.canDeferDeps
+      ? this.deferredSymbolTracker.getDeferrableImportDecls()
+      : null;
+    return compileResults(
+      fac,
+      def,
+      classMetadata,
+      'ɵcmp',
+      inputTransformFields,
+      deferrableImports,
+      null,
+      hmrInitializer,
+    );
   }
 
   compileLocal(
@@ -1605,16 +1761,17 @@ export class ComponentDecoratorHandler
     // In the local compilation mode we can only rely on the information available
     // within the `@Component.deferredImports` array, because in this mode compiler
     // doesn't have information on which dependencies belong to which defer blocks.
-    const deferrableTypes = analysis.explicitlyDeferredTypes;
+    const deferrableTypes = this.canDeferDeps ? analysis.explicitlyDeferredTypes : null;
 
+    const defer = this.compileDeferBlocks(resolution);
     const meta = {
       ...analysis.meta,
       ...resolution,
-      defer: this.compileDeferBlocks(resolution),
+      defer,
     } as R3ComponentMetadata<R3TemplateDependency>;
 
-    if (analysis.explicitlyDeferredTypes !== null) {
-      removeDeferrableTypesFromComponentDecorator(analysis, analysis.explicitlyDeferredTypes);
+    if (deferrableTypes !== null) {
+      removeDeferrableTypesFromComponentDecorator(analysis, deferrableTypes);
     }
 
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
@@ -1628,7 +1785,24 @@ export class ComponentDecoratorHandler
       analysis.classDebugInfo !== null
         ? compileClassDebugInfo(analysis.classDebugInfo).toStmt()
         : null;
-    const deferrableImports = this.deferredSymbolTracker.getDeferrableImportDecls();
+    const hmrMeta = this.enableHmr
+      ? extractHmrMetatadata(
+          node,
+          this.reflector,
+          this.evaluator,
+          this.compilerHost,
+          this.rootDirs,
+          def,
+          fac,
+          defer,
+          classMetadata,
+          debugInfo,
+        )
+      : null;
+    const hmrInitializer = hmrMeta ? compileHmrInitializer(hmrMeta).toStmt() : null;
+    const deferrableImports = this.canDeferDeps
+      ? this.deferredSymbolTracker.getDeferrableImportDecls()
+      : null;
     return compileResults(
       fac,
       def,
@@ -1637,7 +1811,55 @@ export class ComponentDecoratorHandler
       inputTransformFields,
       deferrableImports,
       debugInfo,
+      hmrInitializer,
     );
+  }
+
+  compileHmrUpdateDeclaration(
+    node: ClassDeclaration,
+    analysis: Readonly<ComponentAnalysisData>,
+    resolution: Readonly<ComponentResolutionData>,
+  ): ts.FunctionDeclaration | null {
+    if (analysis.template.errors !== null && analysis.template.errors.length > 0) {
+      return null;
+    }
+
+    // Create a brand-new constant pool since there shouldn't be any constant sharing.
+    const pool = new ConstantPool();
+    const defer = this.compileDeferBlocks(resolution);
+    const meta: R3ComponentMetadata<R3TemplateDependency> = {
+      ...analysis.meta,
+      ...resolution,
+      defer,
+    };
+    const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
+    const def = compileComponentFromMetadata(meta, pool, makeBindingParser());
+    const classMetadata =
+      analysis.classMetadata !== null
+        ? compileComponentClassMetadata(analysis.classMetadata, null).toStmt()
+        : null;
+    const debugInfo =
+      analysis.classDebugInfo !== null
+        ? compileClassDebugInfo(analysis.classDebugInfo).toStmt()
+        : null;
+    const hmrMeta = this.enableHmr
+      ? extractHmrMetatadata(
+          node,
+          this.reflector,
+          this.evaluator,
+          this.compilerHost,
+          this.rootDirs,
+          def,
+          fac,
+          defer,
+          classMetadata,
+          debugInfo,
+        )
+      : null;
+    const res = compileResults(fac, def, classMetadata, 'ɵcmp', null, null, debugInfo, null);
+    return hmrMeta === null || res.length === 0
+      ? null
+      : getHmrUpdateDeclaration(res, pool.statements, hmrMeta, node.getSourceFile());
   }
 
   /**

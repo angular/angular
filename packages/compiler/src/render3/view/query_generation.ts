@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ConstantPool} from '../../constant_pool';
@@ -131,7 +131,7 @@ const queryAdvancePlaceholder = Symbol('queryAdvancePlaceholder');
  *
  *   --> will turn into
  *
- * ```
+ * ```ts
  *   bla();
  *   queryAdvance(2);
  *   bla();

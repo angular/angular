@@ -12,6 +12,7 @@ TEST_DEPS = [
     "//packages/core/rxjs-interop",
     "//packages/core/testing",
     "//packages/platform-browser",
+    "//packages/core/primitives/signals",
     "@npm//rxjs",
 ]
 
@@ -24,7 +25,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/imports",
         "//packages/compiler-cli/src/ngtsc/partial_evaluator",
         "//packages/compiler-cli/src/ngtsc/reflection",
-        "//packages/compiler-cli/src/transformers/jit_transforms",
+        "//packages/compiler-cli/src/ngtsc/transform/jit",
         "@npm//typescript",
     ],
 )

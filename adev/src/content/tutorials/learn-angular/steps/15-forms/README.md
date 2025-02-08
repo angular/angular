@@ -4,7 +4,7 @@ Forms are a big part of many apps because they enable your app to accept user in
 
 In Angular, there are two types of forms: template-driven and reactive. You'll learn about both over the next few activities.
 
-In this activity, you'll learn how to setup a form using a template-driven approach.
+In this activity, you'll learn how to set up a form using a template-driven approach.
 
 <hr>
 
@@ -14,7 +14,7 @@ In this activity, you'll learn how to setup a form using a template-driven appro
 
 In `user.component.ts`, update the template by adding a text input with the `id` set to `framework`, type set to `text`.
 
-```html
+```angular-html
 <label for="framework">
   Favorite Framework:
   <input id="framework" type="text" />
@@ -35,7 +35,6 @@ import {FormsModule} from '@angular/forms';
 
 @Component({
   ...
-  standalone: true,
   imports: [FormsModule],
 })
 export class UserComponent {}

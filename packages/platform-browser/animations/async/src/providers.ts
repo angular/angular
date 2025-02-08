@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {DOCUMENT} from '@angular/common';
@@ -34,7 +34,7 @@ import {AsyncAnimationRendererFactory} from './async_animation_renderer';
  * is no need to import the `BrowserAnimationsModule` NgModule at all, just add
  * providers returned by this function to the `providers` list as show below.
  *
- * ```typescript
+ * ```ts
  * bootstrapApplication(RootComponent, {
  *   providers: [
  *     provideAnimationsAsync()
@@ -50,6 +50,12 @@ export function provideAnimationsAsync(
   type: 'animations' | 'noop' = 'animations',
 ): EnvironmentProviders {
   performanceMarkFeature('NgAsyncAnimations');
+
+  // Animations don't work on the server so we switch them over to no-op automatically.
+  if (typeof ngServerMode !== 'undefined' && ngServerMode) {
+    type = 'noop';
+  }
+
   return makeEnvironmentProviders([
     {
       provide: RendererFactory2,

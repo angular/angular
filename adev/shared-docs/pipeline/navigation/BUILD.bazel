@@ -1,0 +1,36 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "lib",
+    srcs = glob(
+        [
+            "*.ts",
+        ],
+        exclude = [
+            "index.ts",
+        ],
+    ),
+    deps = [
+        "//adev/shared-docs/interfaces",
+        "@npm//@types/node",
+        "@npm//@webcontainer/api",
+        "@npm//fast-glob",
+    ],
+)
+
+ts_library(
+    name = "navigation",
+    srcs = [
+        "index.ts",
+    ],
+    visibility = [
+        "//adev/shared-docs:__subpackages__",
+    ],
+    deps = [
+        ":lib",
+        "//adev/shared-docs/interfaces",
+        "@npm//@types/node",
+    ],
+)

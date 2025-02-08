@@ -27,7 +27,7 @@ We will produce two compiler entry-points, `ngtsc` and `ngcc`.
 
 `ngcc` (which stands for Angular compatibility compiler) is designed to process code coming from NPM and produce the equivalent Ivy version, as if the code was compiled with `ngtsc`. It will operate given a `node_modules` directory and a set of packages to compile, and will produce an equivalent directory from which the Ivy equivalents of those modules can be read. `ngcc` is a separate script entry point to `@angular/compiler-cli`.
 
-`ngcc` can also be run as part of a code loader (e.g. for Webpack) to transpile packages being read from `node_modules` on-demand.
+`ngcc` can also be run as part of a code loader (e.g. for webpack) to transpile packages being read from `node_modules` on-demand.
 
 ## Detailed Design
 
@@ -307,7 +307,7 @@ The types of directives can be found using a selector scope as described for ref
 When `ngtsc` starts running, it first parses the `tsconfig.json` file and then creates a `ts.Program`. Several things need to happen before the transforms described above can run:
 
 * Metadata must be collected for input source files which contain decorators.
-* Resource files listed in `@Component` decorators must be resolved asynchronously. The CLI, for example, may wish to run Webpack to produce the `.css` input to the `styleUrls` property of an `@Component`.
+* Resource files listed in `@Component` decorators must be resolved asynchronously. The CLI, for example, may wish to run webpack to produce the `.css` input to the `styleUrls` property of an `@Component`.
 * Diagnostics must be run, which creates the `TypeChecker` and touches every node in the program (a decently expensive operation).
 
 Because resource loading is asynchronous (and in particular, may actually be concurrent via subprocesses), it's desirable to kick off as much resource loading as possible before doing anything expensive.
@@ -428,7 +428,7 @@ ngcc_node_modules
 
 #### Operation as a loader
 
-`ngcc` can be called as a standalone entrypoint, but it can also be integrated into the dependency loading operation of a bundler such as Rollup or Webpack. In this mode, the `ngcc` API can be used to read a file originally in `node_modules`. If the file is from a package which has not yet been converted, `ngcc` will convert the package and its dependencies before returning the file's contents.
+`ngcc` can be called as a standalone entrypoint, but it can also be integrated into the dependency loading operation of a bundler such as Rollup or webpack. In this mode, the `ngcc` API can be used to read a file originally in `node_modules`. If the file is from a package which has not yet been converted, `ngcc` will convert the package and its dependencies before returning the file's contents.
 
 In this mode, the on-disk `ngcc_node_modules` directory functions as a cache. If the file being requested has previously been converted, its contents will be read from `ngcc_node_modules`.
 
@@ -460,7 +460,7 @@ Similarly, the `.d.ts` files will be parsed by the TS parser, and the informatio
 
 ##### Module systems
 
-The Angular Package Format includes more than one copy of a package's code. At minimum, it includes one ESM5 (ES5 code in ES Modules) entrypoint, one ES2015 entrypoint, and one UMD entrypoint. Some libraries _not_ following the package format may still work in the Angular CLI, if they export code that can be loaded by Webpack.
+The Angular Package Format includes more than one copy of a package's code. At minimum, it includes one ESM5 (ES5 code in ES Modules) entrypoint, one ES2015 entrypoint, and one UMD entrypoint. Some libraries _not_ following the package format may still work in the Angular CLI, if they export code that can be loaded by webpack.
 
 Thus, `ngcc` will have two approaches for dealing with packages on NPM.
 

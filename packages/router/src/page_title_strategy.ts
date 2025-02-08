@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {inject, Injectable} from '@angular/core';
@@ -18,7 +18,7 @@ import {PRIMARY_OUTLET, RouteTitleKey} from './shared';
  * The built-in implementation traverses the router state snapshot and finds the deepest primary
  * outlet with `title` property. Given the `Routes` below, navigating to
  * `/base/child(popup:aux)` would result in the document title being set to "child".
- * ```
+ * ```ts
  * [
  *   {path: 'base', title: 'base', children: [
  *     {path: 'child', title: 'child'},

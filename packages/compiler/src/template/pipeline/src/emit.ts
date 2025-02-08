@@ -4,7 +4,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as o from '../../../../src/output/output_ast';
@@ -83,6 +83,7 @@ import {wrapI18nIcus} from './phases/wrap_icus';
 import {optimizeStoreLet} from './phases/store_let_optimization';
 import {removeIllegalLetReferences} from './phases/remove_illegal_let_references';
 import {generateLocalLetReferences} from './phases/generate_local_let_references';
+import {attachSourceLocations} from './phases/attach_source_locations';
 
 type Phase =
   | {
@@ -159,6 +160,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: mergeNextContextExpressions},
   {kind: Kind.Tmpl, fn: generateNgContainerOps},
   {kind: Kind.Tmpl, fn: collapseEmptyInstructions},
+  {kind: Kind.Tmpl, fn: attachSourceLocations},
   {kind: Kind.Tmpl, fn: disableBindings},
   {kind: Kind.Both, fn: extractPureFunctions},
   {kind: Kind.Both, fn: reify},

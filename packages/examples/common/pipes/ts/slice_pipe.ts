@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Component} from '@angular/core';
@@ -19,6 +19,7 @@ import {Component} from '@angular/core';
     <p>{{ str }}[-100]: '{{ str | slice: -100 }}' - output is expected to be 'abcdefghij'</p>
     <p>{{ str }}[100]: '{{ str | slice: 100 }}' - output is expected to be ''</p>
   </div>`,
+  standalone: false,
 })
 export class SlicePipeStringComponent {
   str: string = 'abcdefghij';
@@ -31,6 +32,7 @@ export class SlicePipeStringComponent {
   template: `<ul>
     <li *ngFor="let i of collection | slice: 1 : 3">{{ i }}</li>
   </ul>`,
+  standalone: false,
 })
 export class SlicePipeListComponent {
   collection: string[] = ['a', 'b', 'c', 'd'];

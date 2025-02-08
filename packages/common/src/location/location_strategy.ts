@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Inject, inject, Injectable, InjectionToken, OnDestroy, Optional} from '@angular/core';
@@ -22,7 +22,7 @@ import {joinWithSlash, normalizeQueryParams} from './util';
  * interact with application route state.
  *
  * For instance, `HashLocationStrategy` produces URLs like
- * <code class="no-auto-link">http://example.com#/foo</code>,
+ * <code class="no-auto-link">http://example.com/#/foo</code>,
  * and `PathLocationStrategy` produces
  * <code class="no-auto-link">http://example.com/foo</code> as an equivalent URL.
  *
@@ -57,7 +57,7 @@ export abstract class LocationStrategy {
  * The following example shows how to use this token to configure the root app injector
  * with a base href value, so that the DI framework can supply the dependency anywhere in the app.
  *
- * ```typescript
+ * ```ts
  * import {NgModule} from '@angular/core';
  * import {APP_BASE_HREF} from '@angular/common';
  *

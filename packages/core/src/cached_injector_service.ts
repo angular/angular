@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ɵɵdefineInjectable as defineInjectable} from './di/interface/defs';
@@ -51,7 +51,7 @@ export class CachedInjectorService implements OnDestroy {
   }
 
   /** @nocollapse */
-  static ɵprov = /** @pureOrBreakMyCode */ defineInjectable({
+  static ɵprov = /** @pureOrBreakMyCode */ /* @__PURE__ */ defineInjectable({
     token: CachedInjectorService,
     providedIn: 'environment',
     factory: () => new CachedInjectorService(),

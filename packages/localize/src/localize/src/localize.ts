@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {findEndOfBlock} from '../../utils';
@@ -28,7 +28,7 @@ export interface LocalizeFn {
    *
    * The compile-time translation inliner is able to replace the following code:
    *
-   * ```
+   * ```ts
    * typeof $localize !== "undefined" && $localize.locale
    * ```
    *
@@ -141,7 +141,6 @@ export interface TranslateFn {
  * @param expressions a collection of the values of each placeholder in the template string.
  * @returns the translated string, with the `messageParts` and `expressions` interleaved together.
  *
- * @globalApi
  * @publicApi
  */
 export const $localize: LocalizeFn = function (

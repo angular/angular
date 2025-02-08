@@ -1,4 +1,3 @@
-
 @switch (data.status) {
   @case ('ERROR') {
     <h1 mat-dialog-title>Error</h1>
@@ -16,14 +15,16 @@
     <h1 mat-dialog-title>Warning</h1>
     <div mat-dialog-content>
       <p>
-        The file you are attempting to upload was recorded in a different format than the one supported by your current
-        Angular DevTools version
+        The file you are attempting to upload was recorded in a different format than the one
+        supported by your current Angular DevTools version
       </p>
       <p>
-        Current format version: <span class="version profiler-version">{{ data.profilerVersion }}</span>
+        Current format version:
+        <span class="version profiler-version">{{ data.profilerVersion }}</span>
       </p>
       <p>
-        Format version of uploaded file: <span class="version imported-version">{{ data.importedVersion }}</span>
+        Format version of uploaded file:
+        <span class="version imported-version">{{ data.importedVersion }}</span>
       </p>
       <p>Files recorded in older versions may no longer be compatible. Do you wish to continue?</p>
     </div>

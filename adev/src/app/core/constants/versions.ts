@@ -10,6 +10,10 @@ export const VERSIONS_CONFIG = {
   aDevVersionsLinkPattern: 'https://{{prefix}}{{version}}angular.dev',
   aioVersions: [
     {
+      version: 'v18',
+      url: 'https://v18.angular.dev/overview',
+    },
+    {
       version: 'v17',
       url: 'https://v17.angular.io/docs',
     },

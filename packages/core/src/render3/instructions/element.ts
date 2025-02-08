@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -25,33 +25,27 @@ import {
 } from '../../hydration/utils';
 import {isDetachedByI18n} from '../../i18n/utils';
 import {assertDefined, assertEqual, assertIndexInRange} from '../../util/assert';
-import {assertFirstCreatePass, assertHasParent} from '../assert';
+import {assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
-import {registerPostOrderHooks} from '../hooks';
 import {
-  hasClassInput,
-  hasStyleInput,
-  TAttributes,
-  TElementNode,
-  TNode,
-  TNodeFlags,
-  TNodeType,
-} from '../interfaces/node';
+  clearElementContents,
+  createElementNode,
+  setupStaticAttributes,
+} from '../dom_node_manipulation';
+import {registerPostOrderHooks} from '../hooks';
+import {hasClassInput, hasStyleInput, TElementNode, TNode, TNodeType} from '../interfaces/node';
 import {Renderer} from '../interfaces/renderer';
 import {RElement} from '../interfaces/renderer_dom';
 import {isComponentHost, isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
-import {
-  appendChild,
-  clearElementContents,
-  createElementNode,
-  setupStaticAttributes,
-} from '../node_manipulation';
+import {appendChild} from '../node_manipulation';
+import {executeContentQueries} from '../queries/query_execution';
 import {
   decreaseElementDepthCount,
   enterSkipHydrationBlock,
   getBindingIndex,
+  getBindingsEnabled,
   getCurrentTNode,
   getElementDepthCount,
   getLView,
@@ -67,50 +61,15 @@ import {
   setCurrentTNodeAsNotParent,
   wasLastNodeCreated,
 } from '../state';
-import {computeStaticStyling} from '../styling/static_styling';
-import {getConstant} from '../util/view_utils';
+import {elementEndFirstCreatePass, elementStartFirstCreatePass} from '../view/elements';
 
 import {validateElementIsKnown} from './element_validation';
 import {setDirectiveInputsWhichShadowsStyling} from './property';
 import {
-  createDirectivesInstances,
-  executeContentQueries,
-  getOrCreateTNode,
-  resolveDirectives,
+  createDirectivesInstancesInInstruction,
+  findDirectiveDefMatches,
   saveResolvedLocalsInData,
 } from './shared';
-
-function elementStartFirstCreatePass(
-  index: number,
-  tView: TView,
-  lView: LView,
-  name: string,
-  attrsIndex?: number | null,
-  localRefsIndex?: number,
-): TElementNode {
-  ngDevMode && assertFirstCreatePass(tView);
-  ngDevMode && ngDevMode.firstCreatePass++;
-
-  const tViewConsts = tView.consts;
-  const attrs = getConstant<TAttributes>(tViewConsts, attrsIndex);
-  const tNode = getOrCreateTNode(tView, index, TNodeType.Element, name, attrs);
-
-  resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
-
-  if (tNode.attrs !== null) {
-    computeStaticStyling(tNode, tNode.attrs, false);
-  }
-
-  if (tNode.mergedAttrs !== null) {
-    computeStaticStyling(tNode, tNode.mergedAttrs, true);
-  }
-
-  if (tView.queries !== null) {
-    tView.queries.elementStart(tView, tNode);
-  }
-
-  return tNode;
-}
 
 /**
  * Create DOM element. The instruction must later be followed by `elementEnd()` call.
@@ -147,7 +106,16 @@ export function ɵɵelementStart(
 
   const renderer = lView[RENDERER];
   const tNode = tView.firstCreatePass
-    ? elementStartFirstCreatePass(adjustedIndex, tView, lView, name, attrsIndex, localRefsIndex)
+    ? elementStartFirstCreatePass(
+        adjustedIndex,
+        tView,
+        lView,
+        name,
+        findDirectiveDefMatches,
+        getBindingsEnabled(),
+        attrsIndex,
+        localRefsIndex,
+      )
     : (tView.data[adjustedIndex] as TElementNode);
 
   const native = _locateOrCreateElementNode(tView, lView, tNode, renderer, name, index);
@@ -177,7 +145,7 @@ export function ɵɵelementStart(
   increaseElementDepthCount();
 
   if (hasDirectives) {
-    createDirectivesInstances(tView, lView, tNode);
+    createDirectivesInstancesInInstruction(tView, lView, tNode);
     executeContentQueries(tView, tNode, lView);
   }
   if (localRefsIndex !== null) {
@@ -214,10 +182,7 @@ export function ɵɵelementEnd(): typeof ɵɵelementEnd {
 
   const tView = getTView();
   if (tView.firstCreatePass) {
-    registerPostOrderHooks(tView, currentTNode);
-    if (isContentQueryHost(currentTNode)) {
-      tView.queries!.elementEnd(currentTNode);
-    }
+    elementEndFirstCreatePass(tView, tNode);
   }
 
   if (tNode.classesWithoutHost != null && hasClassInput(tNode)) {

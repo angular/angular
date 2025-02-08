@@ -3,10 +3,12 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ApplicationRef} from '../application/application_ref';
+import {DehydratedDeferBlock} from '../defer/interfaces';
+import {DehydratedBlockRegistry} from '../defer/registry';
 import {
   CONTAINER_HEADER_OFFSET,
   DEHYDRATED_VIEWS,
@@ -15,21 +17,12 @@ import {
 import {Renderer} from '../render3/interfaces/renderer';
 import {RNode} from '../render3/interfaces/renderer_dom';
 import {isLContainer, isLView} from '../render3/interfaces/type_checks';
-import {
-  HEADER_OFFSET,
-  HOST,
-  HYDRATION,
-  LView,
-  PARENT,
-  RENDERER,
-  TVIEW,
-} from '../render3/interfaces/view';
-import {nativeRemoveNode} from '../render3/node_manipulation';
-import {EMPTY_ARRAY} from '../util/empty';
+import {HEADER_OFFSET, HOST, LView, PARENT, RENDERER, TVIEW} from '../render3/interfaces/view';
+import {nativeRemoveNode} from '../render3/dom_node_manipulation';
 
 import {validateSiblingNodeExists} from './error_handling';
 import {cleanupI18nHydrationData} from './i18n';
-import {DehydratedContainerView, NUM_ROOT_NODES} from './interfaces';
+import {DEFER_BLOCK_ID, DehydratedContainerView, NUM_ROOT_NODES} from './interfaces';
 import {getLNodeForHydration} from './utils';
 
 /**
@@ -41,15 +34,23 @@ export function removeDehydratedViews(lContainer: LContainer) {
   const views = lContainer[DEHYDRATED_VIEWS] ?? [];
   const parentLView = lContainer[PARENT];
   const renderer = parentLView[RENDERER];
+  const retainedViews = [];
   for (const view of views) {
-    removeDehydratedView(view, renderer);
-    ngDevMode && ngDevMode.dehydratedViewsRemoved++;
+    // Do not clean up contents of `@defer` blocks.
+    // The cleanup for this content would happen once a given block
+    // is triggered and hydrated.
+    if (view.data[DEFER_BLOCK_ID] !== undefined) {
+      retainedViews.push(view);
+    } else {
+      removeDehydratedView(view, renderer);
+      ngDevMode && ngDevMode.dehydratedViewsRemoved++;
+    }
   }
-  // Reset the value to an empty array to indicate that no
+  // Reset the value to an array to indicate that no
   // further processing of dehydrated views is needed for
   // this view container (i.e. do not trigger the lookup process
   // once again in case a `ViewContainerRef` is created later).
-  lContainer[DEHYDRATED_VIEWS] = EMPTY_ARRAY;
+  lContainer[DEHYDRATED_VIEWS] = retainedViews;
 }
 
 /**
@@ -74,8 +75,17 @@ function removeDehydratedView(dehydratedView: DehydratedContainerView, renderer:
  * Walks over all views within this LContainer invokes dehydrated views
  * cleanup function for each one.
  */
-function cleanupLContainer(lContainer: LContainer) {
+export function cleanupLContainer(lContainer: LContainer) {
   removeDehydratedViews(lContainer);
+
+  // The host could be an LView if this container is on a component node.
+  // In this case, descend into host LView for further cleanup. See also
+  // LContainer[HOST] docs for additional information.
+  const hostLView = lContainer[HOST];
+  if (isLView(hostLView)) {
+    cleanupLView(hostLView);
+  }
+
   for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
     cleanupLView(lContainer[i] as LView);
   }
@@ -114,14 +124,28 @@ export function cleanupDehydratedViews(appRef: ApplicationRef) {
       if (isLView(lNode)) {
         cleanupLView(lNode);
       } else {
-        // Cleanup in the root component view
-        const componentLView = lNode[HOST] as LView<unknown>;
-        cleanupLView(componentLView);
-
         // Cleanup in all views within this view container
         cleanupLContainer(lNode);
       }
       ngDevMode && ngDevMode.dehydratedViewsCleanupRuns++;
     }
+  }
+}
+
+/**
+ * post hydration cleanup handling for defer blocks that were incrementally
+ * hydrated. This removes all the jsaction attributes, timers, observers,
+ * dehydrated views and containers
+ */
+export function cleanupHydratedDeferBlocks(
+  deferBlock: DehydratedDeferBlock | null,
+  hydratedBlocks: string[],
+  registry: DehydratedBlockRegistry,
+  appRef: ApplicationRef,
+): void {
+  if (deferBlock !== null) {
+    registry.cleanup(hydratedBlocks);
+    cleanupLContainer(deferBlock.lContainer);
+    cleanupDehydratedViews(appRef);
   }
 }

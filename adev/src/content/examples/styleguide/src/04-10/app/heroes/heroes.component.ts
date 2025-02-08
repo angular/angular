@@ -6,6 +6,7 @@ import {FilterTextService} from '../shared/filter-text/filter-text.service';
 @Component({
   selector: 'toh-heroes',
   templateUrl: './heroes.component.html',
+  standalone: false,
 })
 export class HeroesComponent {
   heroes = [

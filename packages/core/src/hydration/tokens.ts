@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {InjectionToken} from '../di/injection_token';
@@ -51,8 +51,20 @@ export const IS_EVENT_REPLAY_ENABLED = new InjectionToken<boolean>(
 export const EVENT_REPLAY_ENABLED_DEFAULT = false;
 
 /**
- * Internal token that indicates whether global event delegation support is enabled.
+ * Internal token that indicates whether incremental hydration support
+ * is enabled.
  */
-export const IS_GLOBAL_EVENT_DELEGATION_ENABLED = new InjectionToken<boolean>(
-  typeof ngDevMode === 'undefined' || !!ngDevMode ? 'IS_GLOBAL_EVENT_DELEGATION_ENABLED' : '',
+export const IS_INCREMENTAL_HYDRATION_ENABLED = new InjectionToken<boolean>(
+  typeof ngDevMode === 'undefined' || !!ngDevMode ? 'IS_INCREMENTAL_HYDRATION_ENABLED' : '',
+);
+
+/**
+ * A map of DOM elements with `jsaction` attributes grouped by action names.
+ */
+export const JSACTION_BLOCK_ELEMENT_MAP = new InjectionToken<Map<string, Set<Element>>>(
+  ngDevMode ? 'JSACTION_BLOCK_ELEMENT_MAP' : '',
+  {
+    providedIn: 'root',
+    factory: () => new Map<string, Set<Element>>(),
+  },
 );

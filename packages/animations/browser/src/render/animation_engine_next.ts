@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {AnimationMetadata, AnimationPlayer, AnimationTriggerMetadata} from '@angular/animations';
 
@@ -61,8 +61,10 @@ export class AnimationEngine {
       if (errors.length) {
         throw triggerBuildFailed(name, errors);
       }
-      if (warnings.length) {
-        warnTriggerBuild(name, warnings);
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        if (warnings.length) {
+          warnTriggerBuild(name, warnings);
+        }
       }
       trigger = buildTrigger(name, ast, this._normalizer);
       this._triggerCache[cacheKey] = trigger;

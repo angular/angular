@@ -9,7 +9,6 @@ import {QuestionBase} from './question-base';
 import {Observable} from 'rxjs';
 
 @Component({
-  standalone: true,
   selector: 'app-root',
   template: `
     <div>

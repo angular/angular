@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {DirectiveMeta as T2DirectiveMeta, Expression, SchemaMetadata} from '@angular/compiler';
@@ -24,6 +24,12 @@ export interface NgModuleMeta {
   imports: Reference<ClassDeclaration>[];
   exports: Reference<ClassDeclaration>[];
   schemas: SchemaMetadata[];
+
+  /**
+   * Whether the module had some issue being analyzed.
+   * This means it likely does not have complete and reliable metadata.
+   */
+  isPoisoned: boolean;
 
   /**
    * The raw `ts.Expression` which gave rise to `declarations`, if one exists.
@@ -200,6 +206,12 @@ export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
   inputs: ClassPropertyMapping<InputMapping>;
 
   /**
+   * List of input fields that were defined in the class decorator
+   * metadata. Null for directives extracted from `.d.ts`
+   */
+  inputFieldNamesFromMetadataArray: Set<string> | null;
+
+  /**
    * A mapping of output field names to the property names.
    */
   outputs: ClassPropertyMapping;
@@ -237,6 +249,11 @@ export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
    * For standalone components, the list of imported types.
    */
   imports: Reference<ClassDeclaration>[] | null;
+
+  /**
+   * Node declaring the `imports` of a standalone component. Used to produce diagnostics.
+   */
+  rawImports: ts.Expression | null;
 
   /**
    * For standalone components, the list of imported types that can be used

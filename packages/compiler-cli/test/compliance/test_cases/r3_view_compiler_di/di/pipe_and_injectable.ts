@@ -5,7 +5,10 @@ class Service {
 }
 
 @Injectable()
-@Pipe({name: 'myPipe'})
+@Pipe({
+    name: 'myPipe',
+    standalone: false
+})
 export class MyPipe implements PipeTransform {
   constructor(service: Service) {}
   transform(value: any, ...args: any[]) {
@@ -13,7 +16,10 @@ export class MyPipe implements PipeTransform {
   }
 }
 
-@Pipe({name: 'myOtherPipe'})
+@Pipe({
+    name: 'myOtherPipe',
+    standalone: false
+})
 @Injectable()
 export class MyOtherPipe implements PipeTransform {
   constructor(service: Service) {}
@@ -22,7 +28,10 @@ export class MyOtherPipe implements PipeTransform {
   }
 }
 
-@Component({selector: 'my-app', template: '{{0 | myPipe | myOtherPipe}}'})
+@Component({
+    selector: 'my-app', template: '{{0 | myPipe | myOtherPipe}}',
+    standalone: false
+})
 export class MyApp {
 }
 

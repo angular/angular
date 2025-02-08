@@ -3,10 +3,10 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DocEntry, EntryType} from '@angular/compiler-cli';
+import {DocEntry, DocEntryWithSourceInfo, EntryType} from '@angular/compiler-cli';
 import {readFileSync, writeFileSync} from 'fs';
 import {basename} from 'path';
 
@@ -15,20 +15,25 @@ function main() {
   const rawParamLines = readFileSync(paramFilePath, {encoding: 'utf8'}).split('\n');
   const [srcs, outputFileExecRootRelativePath] = rawParamLines;
 
-  const entries: DocEntry[] = srcs.split(',').map((sourceFilePath) => {
+  const developerPreview = [{'name': 'developerPreview', 'comment': ''}];
+
+  const entries: DocEntry[] = srcs.split(',').map((sourceFilePath): DocEntryWithSourceInfo => {
     const fileContent = readFileSync(sourceFilePath, {encoding: 'utf8'});
+    const isDeveloperPreview = fileContent.includes('developerPreview');
+
+    const filteredContent = fileContent.replace(/^@developerPreview/, '');
 
     return {
       name: `@${basename(sourceFilePath, '.md')}`,
       entryType: EntryType.Block,
-      description: fileContent,
-      rawComment: fileContent,
+      description: filteredContent,
+      rawComment: filteredContent,
       source: {
         filePath: '/' + sourceFilePath,
         startLine: 0,
         endLine: 0,
       },
-      jsdocTags: [],
+      jsdocTags: isDeveloperPreview ? developerPreview : [],
     };
   });
 
@@ -36,6 +41,8 @@ function main() {
     outputFileExecRootRelativePath,
     JSON.stringify({
       moduleName: '@angular/core',
+      normalizedModuleName: 'angular_core',
+      moduleLabel: 'core',
       entries,
     }),
     {encoding: 'utf8'},

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Component, Injectable, INJECTOR, NgModule} from '@angular/core';
@@ -197,6 +197,7 @@ describe('ngInjectableDef Bazel Integration', () => {
       selector: 'test-cmp',
       template: 'test',
       providers: [{provide: 'foo', useValue: 'bar'}],
+      standalone: false,
     })
     class TestCmp {}
 

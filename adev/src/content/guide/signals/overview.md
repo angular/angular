@@ -2,7 +2,7 @@
 Angular Signals is a system that granularly tracks how and where your state is used throughout an application, allowing the framework to optimize rendering updates.
 </docs-decorative-header>
 
-Tip: Check out Angular's [Essentials](essentials/managing-dynamic-data) before diving into this comprehensive guide.
+Tip: Check out Angular's [Essentials](essentials/signals) before diving into this comprehensive guide.
 
 ## What are signals?
 
@@ -119,8 +119,6 @@ Effects are rarely needed in most application code, but may be useful in specifi
 <docs-callout critical title="When not to use effects">
 Avoid using effects for propagation of state changes. This can result in `ExpressionChangedAfterItHasBeenChecked` errors, infinite circular updates, or unnecessary change detection cycles.
 
-Because of these risks, Angular by default prevents you from setting signals in effects. It can be enabled if absolutely necessary by setting the `allowSignalWrites` flag when you create an effect.
-
 Instead, use `computed` signals to model state that depends on other state.
 </docs-callout>
 
@@ -154,7 +152,7 @@ export class EffectiveCounterComponent {
 }
 ```
 
-To create an effect outside of the constructor, you can pass an `Injector` to `effect` via its options:
+To create an effect outside the constructor, you can pass an `Injector` to `effect` via its options:
 
 ```ts
 @Component({...})
@@ -195,7 +193,7 @@ data.set(['test']);
 
 Equality functions can be provided to both writable and computed signals.
 
-HELPFUL: By default, signals use referential equality (`===` comparison).
+HELPFUL: By default, signals use referential equality ([`Object.is()`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object/is) comparison).
 
 ### Reading without tracking dependencies
 
@@ -249,3 +247,7 @@ effect((onCleanup) => {
   });
 });
 ```
+
+## Using signals with RxJS
+
+See [RxJS interop with Angular signals](ecosystem/rxjs-interop) for details on interoperability between signals and RxJS.

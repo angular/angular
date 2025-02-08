@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import chalk from 'chalk';
@@ -59,11 +59,7 @@ export class SaucelabsDaemon {
   /** Map that contains test ids with their claimed browser. */
   private _runningTests = new Map<number, RemoteBrowser>();
 
-  /** Server used for communication with the Karma launcher. */
-  private _server = new IpcServer(this);
-
-  /** Base selenium capabilities that will be added to each browser. */
-  private _baseCapabilities = {...defaultCapabilities, ...this._userCapabilities};
+  private _baseCapabilities;
 
   /** Id of the keep alive interval that ensures no remote browsers time out. */
   private _keepAliveIntervalId: NodeJS.Timeout | null = null;
@@ -85,6 +81,9 @@ export class SaucelabsDaemon {
   ) {
     // Starts the keep alive loop for all active browsers, running every 15 seconds.
     this._keepAliveIntervalId = setInterval(() => this._keepAliveBrowsers(), 15_000);
+
+    /** Base selenium capabilities that will be added to each browser. */
+    this._baseCapabilities = {...defaultCapabilities, ...this._userCapabilities};
   }
 
   /**

@@ -4,7 +4,6 @@ import {Component, EventEmitter} from '@angular/core';
 /* avoid */
 
 @Component({
-  standalone: true,
   selector: 'toh-hero-button',
   template: `<button type="button"></button>`,
   inputs: ['label'],

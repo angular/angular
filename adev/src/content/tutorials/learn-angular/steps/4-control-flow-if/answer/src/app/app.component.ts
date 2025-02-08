@@ -9,7 +9,6 @@ import {Component} from '@angular/core';
     <span>No, the server is not running</span>
     }
   `,
-  standalone: true,
 })
 export class AppComponent {
   isServerRunning = true;

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ResourceLoader} from '@angular/compiler';
@@ -98,7 +98,11 @@ if (isBrowser) {
       describe('should fail when an ResourceLoader fails', () => {
         // TODO(alxhub): figure out why this is failing on saucelabs
         xit('should fail with an error from a promise', async () => {
-          @Component({selector: 'bad-template-comp', templateUrl: 'non-existent.html'})
+          @Component({
+            selector: 'bad-template-comp',
+            templateUrl: 'non-existent.html',
+            standalone: false,
+          })
           class BadTemplateUrl {}
 
           TestBed.configureTestingModule({declarations: [BadTemplateUrl]});
@@ -115,6 +119,7 @@ if (isBrowser) {
         @Component({
           selector: 'external-template-comp',
           templateUrl: '/base/angular/packages/platform-browser/test/static_assets/test.html',
+          standalone: false,
         })
         class ExternalTemplateComp {}
 

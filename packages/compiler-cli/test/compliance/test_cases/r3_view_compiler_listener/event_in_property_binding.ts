@@ -1,11 +1,17 @@
 import {Component, Directive, Input, NgModule} from '@angular/core';
 
-@Directive({selector: 'div'})
+@Directive({
+    selector: 'div',
+    standalone: false
+})
 export class DivDir {
   @Input() event!: any;
 }
 
-@Component({template: '<div [event]="$event"></div>'})
+@Component({
+    template: '<div [event]="$event"></div>',
+    standalone: false
+})
 class Comp {
   $event = 1;
 }

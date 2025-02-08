@@ -1,8 +1,8 @@
 import {Component, NgModule} from '@angular/core';
 
 @Component({
-  selector: 'my-component',
-  template: `
+    selector: 'my-component',
+    template: `
   <div i18n>{count, plural,
     =0 {zero}
     =2 {{{count}} {name, select,
@@ -11,7 +11,8 @@ import {Component, NgModule} from '@angular/core';
           other {animals}} !}
     other {other - {{count}}}
   }</div>
-`
+`,
+    standalone: false
 })
 export class MyComponent {
   count = 0;

@@ -3,11 +3,11 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Route, UrlMatchResult} from './models';
-import {UrlSegment, UrlSegmentGroup} from './url_tree';
+import type {Route, UrlMatchResult} from './models';
+import type {UrlSegment, UrlSegmentGroup} from './url_tree';
 
 /**
  * The primary routing outlet.

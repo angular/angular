@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as o from '../../../../output/output_ast';
@@ -263,12 +263,14 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
             op.placeholderConfig,
             timerScheduling,
             op.sourceSpan,
+            op.flags,
           ),
         );
         break;
       case ir.OpKind.DeferOn:
         let args: number[] = [];
         switch (op.trigger.kind) {
+          case ir.DeferTriggerKind.Never:
           case ir.DeferTriggerKind.Idle:
           case ir.DeferTriggerKind.Immediate:
             break;
@@ -278,14 +280,19 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
           case ir.DeferTriggerKind.Interaction:
           case ir.DeferTriggerKind.Hover:
           case ir.DeferTriggerKind.Viewport:
-            if (op.trigger.targetSlot?.slot == null || op.trigger.targetSlotViewSteps === null) {
-              throw new Error(
-                `Slot or view steps not set in trigger reification for trigger kind ${op.trigger.kind}`,
-              );
-            }
-            args = [op.trigger.targetSlot.slot];
-            if (op.trigger.targetSlotViewSteps !== 0) {
-              args.push(op.trigger.targetSlotViewSteps);
+            // `hydrate` triggers don't support targets.
+            if (op.modifier === ir.DeferOpModifierKind.HYDRATE) {
+              args = [];
+            } else {
+              if (op.trigger.targetSlot?.slot == null || op.trigger.targetSlotViewSteps === null) {
+                throw new Error(
+                  `Slot or view steps not set in trigger reification for trigger kind ${op.trigger.kind}`,
+                );
+              }
+              args = [op.trigger.targetSlot.slot];
+              if (op.trigger.targetSlotViewSteps !== 0) {
+                args.push(op.trigger.targetSlotViewSteps);
+              }
             }
             break;
           default:
@@ -295,7 +302,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
               }`,
             );
         }
-        ir.OpList.replace(op, ng.deferOn(op.trigger.kind, args, op.prefetch, op.sourceSpan));
+        ir.OpList.replace(op, ng.deferOn(op.trigger.kind, args, op.modifier, op.sourceSpan));
         break;
       case ir.OpKind.ProjectionDef:
         ir.OpList.replace<ir.CreateOp>(op, ng.projectionDef(op.def));
@@ -394,6 +401,23 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
             op.wholeSourceSpan,
           ),
         );
+        break;
+      case ir.OpKind.SourceLocation:
+        const locationsLiteral = o.literalArr(
+          op.locations.map(({targetSlot, offset, line, column}) => {
+            if (targetSlot.slot === null) {
+              throw new Error('No slot was assigned for source location');
+            }
+            return o.literalArr([
+              o.literal(targetSlot.slot),
+              o.literal(offset),
+              o.literal(line),
+              o.literal(column),
+            ]);
+          }),
+        );
+
+        ir.OpList.replace(op, ng.attachSourceLocation(op.templatePath, locationsLiteral));
         break;
       case ir.OpKind.Statement:
         // Pass statement operations directly through.
@@ -538,7 +562,7 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
         ir.OpList.replace(op, ng.repeater(op.collection, op.sourceSpan));
         break;
       case ir.OpKind.DeferWhen:
-        ir.OpList.replace(op, ng.deferWhen(op.prefetch, op.expr, op.sourceSpan));
+        ir.OpList.replace(op, ng.deferWhen(op.modifier, op.expr, op.sourceSpan));
         break;
       case ir.OpKind.StoreLet:
         throw new Error(`AssertionError: unexpected storeLet ${op.declaredName}`);

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 // The formatter and CI disagree on how this import statement should be formatted. Both try to keep
@@ -39,14 +39,10 @@ import {
   ɵsetUnknownElementStrictMode as setUnknownElementStrictMode,
   ɵsetUnknownPropertyStrictMode as setUnknownPropertyStrictMode,
   ɵstringify as stringify,
-  ɵZONELESS_ENABLED as ZONELESS_ENABLED,
+  ɵMicrotaskEffectScheduler as MicrotaskEffectScheduler,
 } from '@angular/core';
 
-import {
-  ComponentFixture,
-  PseudoApplicationComponentFixture,
-  ScheduledComponentFixture,
-} from './component_fixture';
+import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
 import {
   ComponentFixtureNoNgZone,
@@ -699,14 +695,7 @@ export class TestBedImpl implements TestBed {
         `#${rootElId}`,
         this.testModuleRef,
       ) as ComponentRef<T>;
-      return this.runInInjectionContext(() => {
-        const isZoneless = this.inject(ZONELESS_ENABLED);
-        const fixture = isZoneless
-          ? new ScheduledComponentFixture(componentRef)
-          : new PseudoApplicationComponentFixture(componentRef);
-        fixture.initialize();
-        return fixture;
-      });
+      return this.runInInjectionContext(() => new ComponentFixture(componentRef));
     };
     const noNgZone = this.inject(ComponentFixtureNoNgZone, false);
     const ngZone = noNgZone ? null : this.inject(NgZone, null);
@@ -867,6 +856,7 @@ export class TestBedImpl implements TestBed {
    * @developerPreview
    */
   flushEffects(): void {
+    this.inject(MicrotaskEffectScheduler).flush();
     this.inject(EffectScheduler).flush();
   }
 }
@@ -890,7 +880,7 @@ export const TestBed: TestBedStatic = TestBedImpl;
  *
  * Example:
  *
- * ```
+ * ```ts
  * beforeEach(inject([Dependency, AClass], (dep, object) => {
  *   // some code that uses `dep` and `object`
  *   // ...

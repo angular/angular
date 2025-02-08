@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import ts from 'typescript';
@@ -76,16 +76,36 @@ export class DtsMetadataReader implements MetadataReader {
 
     // Read the ModuleData out of the type arguments.
     const [_, declarationMetadata, importMetadata, exportMetadata] = ngModuleDef.type.typeArguments;
+
+    const declarations = extractReferencesFromType(
+      this.checker,
+      declarationMetadata,
+      ref.bestGuessOwningModule,
+    );
+    const exports = extractReferencesFromType(
+      this.checker,
+      exportMetadata,
+      ref.bestGuessOwningModule,
+    );
+    const imports = extractReferencesFromType(
+      this.checker,
+      importMetadata,
+      ref.bestGuessOwningModule,
+    );
+
+    // The module is considered poisoned if it's exports couldn't be
+    // resolved completely. This would make the module not necessarily
+    // usable for scope computation relying on this module; so we propagate
+    // this "incompleteness" information to the caller.
+    const isPoisoned = exports.isIncomplete;
+
     return {
       kind: MetaKind.NgModule,
       ref,
-      declarations: extractReferencesFromType(
-        this.checker,
-        declarationMetadata,
-        ref.bestGuessOwningModule,
-      ),
-      exports: extractReferencesFromType(this.checker, exportMetadata, ref.bestGuessOwningModule),
-      imports: extractReferencesFromType(this.checker, importMetadata, ref.bestGuessOwningModule),
+      declarations: declarations.result,
+      isPoisoned,
+      exports: exports.result,
+      imports: imports.result,
       schemas: [],
       rawDeclarations: null,
       rawImports: null,
@@ -139,6 +159,8 @@ export class DtsMetadataReader implements MetadataReader {
     const ngContentSelectors =
       def.type.typeArguments.length > 6 ? readStringArrayType(def.type.typeArguments[6]) : null;
 
+    // Note: the default value is still `false` here, because only legacy .d.ts files written before
+    // we had so many arguments use this default.
     const isStandalone =
       def.type.typeArguments.length > 7 && (readBooleanType(def.type.typeArguments[7]) ?? false);
 
@@ -154,6 +176,11 @@ export class DtsMetadataReader implements MetadataReader {
     const isSignal =
       def.type.typeArguments.length > 9 && (readBooleanType(def.type.typeArguments[9]) ?? false);
 
+    // At this point in time, the `.d.ts` may not be fully extractable when
+    // trying to resolve host directive types to their declarations.
+    // If this cannot be done completely, the metadata is incomplete and "poisoned".
+    const isPoisoned = hostDirectives !== null && hostDirectives?.isIncomplete;
+
     return {
       kind: MetaKind.Directive,
       matchSource: MatchSource.Selector,
@@ -164,19 +191,24 @@ export class DtsMetadataReader implements MetadataReader {
       exportAs: readStringArrayType(def.type.typeArguments[2]),
       inputs,
       outputs,
-      hostDirectives,
+      hostDirectives: hostDirectives?.result ?? null,
       queries: readStringArrayType(def.type.typeArguments[5]),
       ...extractDirectiveTypeCheckMeta(clazz, inputs, this.reflector),
       baseClass: readBaseClass(clazz, this.checker, this.reflector),
-      isPoisoned: false,
+      isPoisoned,
       isStructural,
       animationTriggerNames: null,
       ngContentSelectors,
       isStandalone,
       isSignal,
+      // We do not transfer information about inputs from class metadata
+      // via `.d.ts` declarations. This is fine because this metadata is
+      // currently only used for classes defined in source files. E.g. in migrations.
+      inputFieldNamesFromMetadataArray: null,
       // Imports are tracked in metadata only for template type-checking purposes,
       // so standalone components from .d.ts files don't have any.
       imports: null,
+      rawImports: null,
       deferredImports: null,
       // The same goes for schemas.
       schemas: null,
@@ -323,12 +355,13 @@ function readHostDirectivesType(
   checker: ts.TypeChecker,
   type: ts.TypeNode,
   bestGuessOwningModule: OwningModule | null,
-): HostDirectiveMeta[] | null {
+): {result: HostDirectiveMeta[]; isIncomplete: boolean} | null {
   if (!ts.isTupleTypeNode(type) || type.elements.length === 0) {
     return null;
   }
 
   const result: HostDirectiveMeta[] = [];
+  let isIncomplete = false;
 
   for (const hostDirectiveType of type.elements) {
     const {directive, inputs, outputs} = readMapType(hostDirectiveType, (type) => type);
@@ -338,8 +371,14 @@ function readHostDirectivesType(
         throw new Error(`Expected TypeQueryNode: ${nodeDebugInfo(directive)}`);
       }
 
+      const ref = extraReferenceFromTypeQuery(checker, directive, type, bestGuessOwningModule);
+      if (ref === null) {
+        isIncomplete = true;
+        continue;
+      }
+
       result.push({
-        directive: extraReferenceFromTypeQuery(checker, directive, type, bestGuessOwningModule),
+        directive: ref,
         isForwardReference: false,
         inputs: readMapType(inputs, readStringType),
         outputs: readMapType(outputs, readStringType),
@@ -347,5 +386,5 @@ function readHostDirectivesType(
     }
   }
 
-  return result.length > 0 ? result : null;
+  return result.length > 0 ? {result, isIncomplete} : null;
 }

@@ -7,5 +7,6 @@ hostBindings: function MyComponent_HostBindings(rf, ctx) {
     $r3$.ɵɵclassProp("bar", ctx.myBarClass)("foo", ctx.myFooClass);
   }
 },
+standalone: false,
 decls: 0,
 vars: 0,

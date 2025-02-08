@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import ts from 'typescript';
@@ -16,7 +16,7 @@ import {isDeclaration} from '../../util/src/typescript';
 
 import {ArrayConcatBuiltinFn, ArraySliceBuiltinFn, StringConcatBuiltinFn} from './builtin';
 import {DynamicValue} from './dynamic';
-import {ForeignFunctionResolver} from './interface';
+import type {ForeignFunctionResolver} from './interface';
 import {
   EnumValue,
   KnownFn,
@@ -314,10 +314,10 @@ export class StaticInterpreter {
   private visitEnumDeclaration(node: ts.EnumDeclaration, context: Context): ResolvedValue {
     const enumRef = this.getReference(node, context);
     const map = new Map<string, EnumValue>();
-    node.members.forEach((member) => {
+    node.members.forEach((member, index) => {
       const name = this.stringNameFromPropertyName(member.name, context);
       if (name !== undefined) {
-        const resolved = member.initializer && this.visit(member.initializer, context);
+        const resolved = member.initializer ? this.visit(member.initializer, context) : index;
         map.set(name, new EnumValue(enumRef, name, resolved));
       }
     });

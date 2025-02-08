@@ -3,10 +3,11 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {RendererStyleFlags2, RendererType2} from '../../render/api_flags';
+import type {ListenerOptions} from '../../render/api';
 import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../../util/security/trusted_type_defs';
 
 import {RComment, RElement, RNode, RText} from './renderer_dom';
@@ -43,7 +44,7 @@ export interface Renderer {
   destroyNode?: ((node: RNode) => void) | null;
   appendChild(parent: RElement, newChild: RNode): void;
   insertBefore(parent: RNode, newChild: RNode, refChild: RNode | null, isMove?: boolean): void;
-  removeChild(parent: RElement, oldChild: RNode, isHostElement?: boolean): void;
+  removeChild(parent: RElement | null, oldChild: RNode, isHostElement?: boolean): void;
   selectRootElement(selectorOrNode: string | any, preserveContent?: boolean): RElement;
 
   parentNode(node: RNode): RElement | null;
@@ -68,6 +69,7 @@ export interface Renderer {
     target: GlobalTargetName | RNode,
     eventName: string,
     callback: (event: any) => boolean | void,
+    options?: ListenerOptions,
   ): () => void;
 }
 

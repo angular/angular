@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -46,8 +46,8 @@ import {
 } from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
-import {FormControlName} from './form_control_name';
-import {FormArrayName, FormGroupName} from './form_group_name';
+import type {FormControlName} from './form_control_name';
+import type {FormArrayName, FormGroupName} from './form_group_name';
 import {FormResetEvent, FormSubmittedEvent} from '../../model/abstract_model';
 
 const formDirectiveProvider: Provider = {
@@ -84,6 +84,7 @@ const formDirectiveProvider: Provider = {
   providers: [formDirectiveProvider],
   host: {'(submit)': 'onSubmit($event)', '(reset)': 'onReset()'},
   exportAs: 'ngForm',
+  standalone: false,
 })
 export class FormGroupDirective extends ControlContainer implements Form, OnChanges, OnDestroy {
   /**

@@ -3,10 +3,15 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
+import {assertDefined, assertIndexInRange, assertNotSame, assertString} from '../../util/assert';
+import {RText} from '../interfaces/renderer_dom';
+import {LView, RENDERER} from '../interfaces/view';
+import {updateTextNode} from '../dom_node_manipulation';
 import {getLView, getSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
+import {getNativeByIndex} from '../util/view_utils';
 
 import {
   interpolation1,
@@ -19,7 +24,6 @@ import {
   interpolation8,
   interpolationV,
 } from './interpolation';
-import {textBindingInternal} from './shared';
 
 /**
  *
@@ -448,4 +452,16 @@ export function ɵɵtextInterpolateV(values: any[]): typeof ɵɵtextInterpolateV
     textBindingInternal(lView, getSelectedIndex(), interpolated as string);
   }
   return ɵɵtextInterpolateV;
+}
+
+/**
+ * Updates a text binding at a given index in a given LView.
+ */
+function textBindingInternal(lView: LView, index: number, value: string): void {
+  ngDevMode && assertString(value, 'Value should be a string');
+  ngDevMode && assertNotSame(value, NO_CHANGE as any, 'value should not be NO_CHANGE');
+  ngDevMode && assertIndexInRange(lView, index);
+  const element = getNativeByIndex(index, lView) as any as RText;
+  ngDevMode && assertDefined(element, 'native element should exist');
+  updateTextNode(lView[RENDERER], element, value);
 }

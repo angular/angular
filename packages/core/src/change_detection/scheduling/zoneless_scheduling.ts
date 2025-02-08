@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {InjectionToken} from '../../di/injection_token';
@@ -26,10 +26,14 @@ export const enum NotificationSource {
   // above.
   Listener,
 
+  // Custom elements do sometimes require checking directly.
+  CustomElement,
+
   // The following notifications do not require views to be refreshed
   // but we should execute render hooks:
   // Render hooks are guaranteed to execute with the schedulers timing.
-  NewRenderHook,
+  RenderHook,
+  DeferredRenderHook,
   // Views might be created outside and manipulated in ways that
   // we cannot be aware of. When a view is attached, Angular now "knows"
   // about it and we now know that DOM might have changed (and we should
@@ -43,6 +47,13 @@ export const enum NotificationSource {
   ViewDetachedFromDOM,
   // Applying animations might result in new DOM state and should rerun render hooks
   AsyncAnimationsLoaded,
+  // The scheduler is notified when a pending task is removed via the public API.
+  // This allows us to make stability async, delayed until the next application tick.
+  PendingTaskRemoved,
+  // An `effect()` outside of the view tree became dirty and might need to run.
+  RootEffect,
+  // An `effect()` within the view tree became dirty.
+  ViewEffect,
 }
 
 /**
@@ -67,4 +78,9 @@ export const PROVIDED_ZONELESS = new InjectionToken<boolean>(
 
 export const ZONELESS_SCHEDULER_DISABLED = new InjectionToken<boolean>(
   typeof ngDevMode === 'undefined' || ngDevMode ? 'scheduler disabled' : '',
+);
+
+// TODO(atscott): Remove in v19. Scheduler should be done with runOutsideAngular.
+export const SCHEDULE_IN_ROOT_ZONE = new InjectionToken<boolean>(
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'run changes outside zone in root' : '',
 );

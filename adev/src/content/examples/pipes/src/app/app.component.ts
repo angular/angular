@@ -10,7 +10,6 @@ import {JsonPipeComponent} from './json-pipe.component';
 import {PowerBoosterComponent} from './power-booster.component';
 
 @Component({
-  standalone: true,
   selector: 'app-root',
   templateUrl: './app.component.html',
   imports: [

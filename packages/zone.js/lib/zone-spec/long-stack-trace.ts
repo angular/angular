@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 /**
  * @fileoverview
@@ -70,7 +70,9 @@ export function patchLongStackTrace(Zone: ZoneType): void {
       for (let i = 0; i < frames.length; i++) {
         const traceFrames: LongStackTrace = frames[i];
         const lastTime = traceFrames.timestamp;
-        let separator = `____________________Elapsed ${timestamp - lastTime.getTime()} ms; At: ${lastTime}`;
+        let separator = `____________________Elapsed ${
+          timestamp - lastTime.getTime()
+        } ms; At: ${lastTime}`;
         separator = separator.replace(/[^\w\d]/g, '_');
         longTrace.push(sepTemplate.replace(SEP_TAG, separator));
         addErrorStack(longTrace, traceFrames.error);

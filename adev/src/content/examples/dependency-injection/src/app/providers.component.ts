@@ -14,7 +14,6 @@ import {UserService} from './user.service';
 const template = '{{log}}';
 
 @Component({
-  standalone: true,
   selector: 'provider-1',
   template,
   // #docregion providers-logger
@@ -32,7 +31,6 @@ export class Provider1Component {
 //////////////////////////////////////////
 
 @Component({
-  standalone: true,
   selector: 'provider-3',
   template,
   providers:
@@ -52,7 +50,6 @@ export class Provider3Component {
 export class BetterLogger extends Logger {}
 
 @Component({
-  standalone: true,
   selector: 'provider-4',
   template,
   providers:
@@ -85,7 +82,6 @@ export class EvenBetterLogger extends Logger {
 // #enddocregion EvenBetterLogger
 
 @Component({
-  standalone: true,
   selector: 'provider-5',
   template,
   providers:
@@ -113,7 +109,6 @@ export class OldLogger {
 }
 
 @Component({
-  standalone: true,
   selector: 'provider-6a',
   template,
   providers: [
@@ -136,7 +131,6 @@ export class Provider6aComponent {
 }
 
 @Component({
-  standalone: true,
   selector: 'provider-6b',
   template,
   providers:
@@ -170,7 +164,6 @@ export const SilentLogger = {
 };
 
 @Component({
-  standalone: true,
   selector: 'provider-7',
   template,
   providers: [{provide: Logger, useValue: SilentLogger}],
@@ -186,7 +179,6 @@ export class Provider7Component {
 /////////////////
 
 @Component({
-  standalone: true,
   selector: 'provider-8',
   template,
   providers: [heroServiceProvider, Logger, UserService],
@@ -201,7 +193,6 @@ export class Provider8Component {
 /////////////////
 
 @Component({
-  standalone: true,
   selector: 'provider-9',
   template,
   /*
@@ -237,7 +228,6 @@ import {Optional} from '@angular/core';
 const someMessage = 'Hello from the injected logger';
 
 @Component({
-  standalone: true,
   selector: 'provider-10',
   template,
   providers: [{provide: Logger, useValue: null}],
@@ -258,7 +248,6 @@ export class Provider10Component implements OnInit {
 /////////////////
 
 @Component({
-  standalone: true,
   selector: 'app-providers',
   template: `
   <h2>Provider variations</h2>

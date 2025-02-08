@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {assertIndexInDeclRange} from '../render3/assert';
@@ -165,4 +165,32 @@ export function isTDeferBlockDetails(value: unknown): value is TDeferBlockDetail
     typeof value === 'object' &&
     typeof (value as TDeferBlockDetails).primaryTmplIndex === 'number'
   );
+}
+
+/**
+ * Whether a given TNode represents a defer block.
+ */
+export function isDeferBlock(tView: TView, tNode: TNode): boolean {
+  let tDetails: TDeferBlockDetails | null = null;
+  const slotIndex = getDeferBlockDataIndex(tNode.index);
+  // Check if a slot index is in the reasonable range.
+  // Note: we do `-1` on the right border, since defer block details are stored
+  // in the `n+1` slot, see `getDeferBlockDataIndex` for more info.
+  if (HEADER_OFFSET < slotIndex && slotIndex < tView.bindingStartIndex) {
+    tDetails = getTDeferBlockDetails(tView, tNode);
+  }
+  return !!tDetails && isTDeferBlockDetails(tDetails);
+}
+
+/**
+ * Tracks debugging information about a trigger.
+ * @param tView TView in which the trigger is declared.
+ * @param tNode TNode on which the trigger is declared.
+ * @param textRepresentation Text representation of the trigger to be used for debugging purposes.
+ */
+export function trackTriggerForDebugging(tView: TView, tNode: TNode, textRepresentation: string) {
+  const tDetails = getTDeferBlockDetails(tView, tNode);
+  tDetails.debug ??= {};
+  tDetails.debug.triggers ??= new Set();
+  tDetails.debug.triggers.add(textRepresentation);
 }

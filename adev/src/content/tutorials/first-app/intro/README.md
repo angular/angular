@@ -66,6 +66,7 @@ You are free to use any tool you prefer to build apps with Angular. We recommend
 
 1. [Visual Studio Code](https://code.visualstudio.com/)
 2. As an optional, but recommended step you can further improve your developer experience by installing the [Angular Language Service](https://marketplace.visualstudio.com/items?itemName=Angular.ng-template)
+3. [WebStorm](https://www.jetbrains.com/webstorm/)
 </docs-step>
 
 </docs-workflow>

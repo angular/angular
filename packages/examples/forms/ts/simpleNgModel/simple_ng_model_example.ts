@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 // #docregion Component
@@ -19,6 +19,7 @@ import {Component} from '@angular/core';
 
     <button (click)="setValue()">Set value</button>
   `,
+  standalone: false,
 })
 export class SimpleNgModelComp {
   name: string = '';

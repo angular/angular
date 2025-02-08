@@ -3,10 +3,9 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
-// tslint:disable-next-line:deprecation
 import {DefaultIterableDiffer} from '@angular/core';
 
 export interface MovedRecord {
@@ -56,7 +55,6 @@ export const diff = <T>(
       (a[record.currentIndex] as any)[prop] = (b[record.currentIndex] as any)[prop];
     });
     if (!alreadySet[record.previousIndex]) {
-      // tslint:disable-next-line: no-non-null-assertion
       a[record.previousIndex] = null!;
     }
     alreadySet[record.currentIndex] = true;
@@ -79,7 +77,6 @@ export const diff = <T>(
       return;
     }
     if (record.currentIndex === null && !alreadySet[record.previousIndex]) {
-      // tslint:disable-next-line: no-non-null-assertion
       a[record.previousIndex] = null!;
     }
     removedItems.push(record.item);

@@ -4,6 +4,7 @@ const $c1$ = ["*", "[spacer]", "*"];
 Cmp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: Cmp,
   selectors: [["ng-component"]],
+  standalone: false,
   ngContentSelectors: $c1$,
   decls: 3,
   vars: 0,

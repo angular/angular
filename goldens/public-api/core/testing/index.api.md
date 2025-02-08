@@ -28,9 +28,9 @@ import { ɵDeferBlockDetails } from '@angular/core';
 export const __core_private_testing_placeholder__ = "";
 
 // @public
-export abstract class ComponentFixture<T> {
+export class ComponentFixture<T> {
     constructor(componentRef: ComponentRef<T>);
-    abstract autoDetectChanges(autoDetect?: boolean): void;
+    autoDetectChanges(autoDetect?: boolean): void;
     changeDetectorRef: ChangeDetectorRef;
     checkNoChanges(): void;
     componentInstance: T;
@@ -38,7 +38,7 @@ export abstract class ComponentFixture<T> {
     componentRef: ComponentRef<T>;
     debugElement: DebugElement;
     destroy(): void;
-    abstract detectChanges(checkNoChanges?: boolean): void;
+    detectChanges(checkNoChanges?: boolean): void;
     elementRef: ElementRef;
     getDeferBlocks(): Promise<DeferBlockFixture[]>;
     isStable(): boolean;
@@ -70,7 +70,9 @@ export { DeferBlockState }
 export function discardPeriodicTasks(): void;
 
 // @public
-export function fakeAsync(fn: Function): (...args: any[]) => any;
+export function fakeAsync(fn: Function, options?: {
+    flush?: boolean;
+}): (...args: any[]) => any;
 
 // @public
 export function flush(maxTurns?: number): number;
@@ -214,6 +216,7 @@ export interface TestModuleMetadata {
     imports?: any[];
     // (undocumented)
     providers?: any[];
+    rethrowApplicationErrors?: boolean;
     // (undocumented)
     schemas?: Array<SchemaMetadata | any[]>;
     // (undocumented)

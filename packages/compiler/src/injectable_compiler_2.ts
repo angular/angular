@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as o from './output/output_ast';
@@ -17,8 +17,6 @@ import {
 import {Identifiers} from './render3/r3_identifiers';
 import {
   convertFromMaybeForwardRefExpression,
-  ForwardRefHandling,
-  generateForwardRef,
   MaybeForwardRefExpression,
   R3CompiledExpression,
   R3Reference,
@@ -187,8 +185,6 @@ function delegateToFactory(
 }
 
 function createFactoryFunction(type: o.Expression): o.ArrowFunctionExpr {
-  return o.arrowFn(
-    [new o.FnParam('t', o.DYNAMIC_TYPE)],
-    type.prop('ɵfac').callFn([o.variable('t')]),
-  );
+  const t = new o.FnParam('__ngFactoryType__', o.DYNAMIC_TYPE);
+  return o.arrowFn([t], type.prop('ɵfac').callFn([o.variable(t.name)]));
 }

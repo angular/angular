@@ -54,7 +54,7 @@ In the **Explorer** pane of your IDE:
 1. Open the `src` directory to see these files.
     1. In the file explorer, find the Angular app files (`/src`).
         1. `index.html` is the app's top level HTML template.
-        1. `style.css` is the app's top level style sheet.
+        1. `styles.css` is the app's top level style sheet.
         1. `main.ts` is where the app starts running.
         1. `favicon.ico` is the app's icon, just as you would find in any web site.
     1. In the file explorer, find the Angular app's component files (`/app`).

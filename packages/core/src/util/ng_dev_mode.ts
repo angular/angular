@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {global} from './global';
@@ -54,6 +54,7 @@ declare global {
     dehydratedViewsRemoved: number;
     dehydratedViewsCleanupRuns: number;
     componentsSkippedHydration: number;
+    deferBlocksWithIncrementalHydration: number;
   }
 }
 
@@ -88,6 +89,7 @@ export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
     dehydratedViewsRemoved: 0,
     dehydratedViewsCleanupRuns: 0,
     componentsSkippedHydration: 0,
+    deferBlocksWithIncrementalHydration: 0,
   };
 
   // Make sure to refer to ngDevMode as ['ngDevMode'] for closure.

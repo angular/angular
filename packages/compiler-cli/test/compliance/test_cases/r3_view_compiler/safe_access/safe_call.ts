@@ -1,12 +1,13 @@
 import {Component, NgModule} from '@angular/core';
 
 @Component({
-  template: `
+    template: `
     <span [title]="'Your last name is ' + (person.getLastName?.() ?? 'unknown')">
       Hello, {{ person.getName?.() }}!
       You are a Balrog: {{ person.getSpecies?.()?.()?.()?.()?.() || 'unknown' }}
     </span>
-`
+`,
+    standalone: false
 })
 export class MyApp {
   person: {

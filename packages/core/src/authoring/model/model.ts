@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {assertInInjectionContext} from '../../di';
@@ -11,16 +11,19 @@ import {REQUIRED_UNSET_VALUE} from '../input/input_signal_node';
 
 import {createModelSignal, ModelOptions, ModelSignal} from './model_signal';
 
-export function modelFunction<T>(initialValue?: T): ModelSignal<T | undefined> {
+export function modelFunction<T>(
+  initialValue?: T,
+  opts?: ModelOptions,
+): ModelSignal<T | undefined> {
   ngDevMode && assertInInjectionContext(model);
 
-  return createModelSignal(initialValue);
+  return createModelSignal(initialValue, opts);
 }
 
-export function modelRequiredFunction<T>(): ModelSignal<T> {
+export function modelRequiredFunction<T>(opts?: ModelOptions): ModelSignal<T> {
   ngDevMode && assertInInjectionContext(model);
 
-  return createModelSignal(REQUIRED_UNSET_VALUE as T);
+  return createModelSignal(REQUIRED_UNSET_VALUE as T, opts);
 }
 
 /**
@@ -31,7 +34,7 @@ export function modelRequiredFunction<T>(): ModelSignal<T> {
  * The function exposes an API for also declaring required models via the
  * `model.required` function.
  *
- * @developerPreview
+ * @publicAPI
  * @docsPrivate Ignored because `model` is the canonical API entry.
  */
 export interface ModelFunction {
@@ -65,7 +68,7 @@ export interface ModelFunction {
  *
  * To use `model()`, import the function from `@angular/core`.
  *
- * ```
+ * ```ts
  * import {model} from '@angular/core`;
  * ```
  *
@@ -98,7 +101,7 @@ export interface ModelFunction {
  * }
  * ```
  *
- * @developerPreview
+ * @publicAPI
  * @initializerApiFunction
  */
 export const model: ModelFunction = (() => {

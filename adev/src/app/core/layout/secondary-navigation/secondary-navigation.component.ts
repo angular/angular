@@ -33,7 +33,7 @@ import {distinctUntilChanged, filter, map, skip, startWith} from 'rxjs/operators
 import {SUB_NAVIGATION_DATA} from '../../../sub-navigation-data';
 import {PagePrefix} from '../../enums/pages';
 import {ActivatedRouteSnapshot, NavigationEnd, Router, RouterStateSnapshot} from '@angular/router';
-import {NgFor, NgIf, isPlatformBrowser} from '@angular/common';
+import {isPlatformBrowser} from '@angular/common';
 import {trigger, transition, style, animate} from '@angular/animations';
 import {PRIMARY_NAV_ID, SECONDARY_NAV_ID} from '../../constants/element-ids';
 
@@ -41,8 +41,7 @@ export const ANIMATION_DURATION = 500;
 
 @Component({
   selector: 'adev-secondary-navigation',
-  standalone: true,
-  imports: [NavigationList, NgIf, NgFor, ClickOutside],
+  imports: [NavigationList, ClickOutside],
   templateUrl: './secondary-navigation.component.html',
   styleUrls: ['./secondary-navigation.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -63,7 +62,6 @@ export class SecondaryNavigation implements OnInit {
   private readonly navigationState = inject(NavigationState);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly router = inject(Router);
-  private readonly window = inject(WINDOW);
 
   readonly isSecondaryNavVisible = this.navigationState.isMobileNavVisible;
   readonly primaryActiveRouteItem = this.navigationState.primaryActiveRouteItem;
@@ -84,10 +82,10 @@ export class SecondaryNavigation implements OnInit {
 
   private readonly routeMap: Record<string, NavigationItem[]> = {
     [PagePrefix.REFERENCE]: getNavigationItemsTree(SUB_NAVIGATION_DATA.reference, (tree) =>
-      markExternalLinks(tree, this.window.origin),
+      markExternalLinks(tree),
     ),
     [PagePrefix.DOCS]: getNavigationItemsTree(SUB_NAVIGATION_DATA.docs, (tree) =>
-      markExternalLinks(tree, this.window.origin),
+      markExternalLinks(tree),
     ),
   };
 

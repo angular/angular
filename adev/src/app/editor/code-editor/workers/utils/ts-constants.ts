@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {FormatCodeSettings, UserPreferences} from 'typescript';
+import ts from 'typescript';
 
 // redeclare TypeScript's SemicolonPreference to avoid build errors on importing it
 enum SemicolonPreference {
@@ -15,7 +15,7 @@ enum SemicolonPreference {
   Remove = 'remove',
 }
 
-export const USER_PREFERENCES: UserPreferences = {
+export const USER_PREFERENCES: ts.UserPreferences = {
   includeCompletionsForModuleExports: true,
   includeCompletionsForImportStatements: true,
   includeCompletionsWithSnippetText: true,
@@ -33,7 +33,7 @@ export const USER_PREFERENCES: UserPreferences = {
   provideRefactorNotApplicableReason: true,
 };
 
-export const FORMAT_CODE_SETTINGS: FormatCodeSettings = {
+export const FORMAT_CODE_SETTINGS: ts.FormatCodeSettings = {
   insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis: false,
   insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets: false,
   insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces: false,

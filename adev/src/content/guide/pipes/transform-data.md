@@ -19,7 +19,6 @@ import { Pipe } from '@angular/core';
 
 @Pipe({
   name: 'greet',
-  standalone: true,
 })
 export class GreetPipe {}
 ```
@@ -35,7 +34,6 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'greet',
-  standalone: true,
 })
 export class GreetPipe implements PipeTransform {
   transform(value: string, param1: boolean, param2: boolean): string {

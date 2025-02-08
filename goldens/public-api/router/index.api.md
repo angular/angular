@@ -15,6 +15,7 @@ import { EventEmitter } from '@angular/core';
 import * as i0 from '@angular/core';
 import { InjectionToken } from '@angular/core';
 import { Injector } from '@angular/core';
+import { InputSignal } from '@angular/core';
 import { LocationStrategy } from '@angular/common';
 import { ModuleWithProviders } from '@angular/core';
 import { NgModuleFactory } from '@angular/core';
@@ -27,6 +28,7 @@ import { ProviderToken } from '@angular/core';
 import { QueryList } from '@angular/core';
 import { Renderer2 } from '@angular/core';
 import { RouterState as RouterState_2 } from '@angular/router';
+import { Signal } from '@angular/core';
 import { SimpleChanges } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Type } from '@angular/core';
@@ -200,6 +202,9 @@ export class ChildrenOutletContexts {
 }
 
 // @public
+export type ComponentInputBindingFeature = RouterFeature<RouterFeatureKind.ComponentInputBindingFeature>;
+
+// @public
 export function convertToParamMap(params: Params): ParamMap;
 
 // @public
@@ -298,8 +303,7 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
     bindToComponentInputs?: boolean;
     enableTracing?: boolean;
     enableViewTransitions?: boolean;
-    // @deprecated
-    errorHandler?: (error: any) => any;
+    errorHandler?: (error: any) => RedirectCommand | any;
     initialNavigation?: InitialNavigation;
     preloadingStrategy?: any;
     scrollOffset?: [number, number] | (() => [number, number]);
@@ -538,7 +542,6 @@ export class OutletContext {
     children: ChildrenOutletContexts;
     // (undocumented)
     get injector(): EnvironmentInjector;
-    set injector(_: EnvironmentInjector);
     // (undocumented)
     outlet: RouterOutletContract | null;
     // (undocumented)
@@ -587,7 +590,7 @@ export function provideRouter(routes: Routes, ...features: RouterFeatures[]): En
 export function provideRoutes(routes: Routes): Provider[];
 
 // @public
-export type QueryParamsHandling = 'merge' | 'preserve' | '';
+export type QueryParamsHandling = 'merge' | 'preserve' | 'replace' | '';
 
 // @public
 export class RedirectCommand {
@@ -604,7 +607,7 @@ export type RedirectFunction = (redirectData: Pick<ActivatedRouteSnapshot, 'rout
 // @public
 export interface Resolve<T> {
     // (undocumented)
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<T>;
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<T | RedirectCommand>;
 }
 
 // @public
@@ -705,8 +708,6 @@ export class Router {
     config: Routes;
     createUrlTree(commands: any[], navigationExtras?: UrlCreationOptions): UrlTree;
     dispose(): void;
-    // @deprecated
-    errorHandler: (error: any) => any;
     get events(): Observable<Event_2>;
     getCurrentNavigation(): Navigation | null;
     initialNavigation(): void;
@@ -742,8 +743,12 @@ export const ROUTER_CONFIGURATION: InjectionToken<ExtraOptions>;
 export const ROUTER_INITIALIZER: InjectionToken<(compRef: ComponentRef<any>) => void>;
 
 // @public
+export const ROUTER_OUTLET_DATA: InjectionToken<Signal<unknown>>;
+
+// @public
 export interface RouterConfigOptions {
     canceledNavigationResolution?: 'replace' | 'computed';
+    defaultQueryParamsHandling?: QueryParamsHandling;
     onSameUrlNavigation?: OnSameUrlNavigation;
     paramsInheritanceStrategy?: 'emptyOnly' | 'always';
     resolveNavigationPromiseOnError?: boolean;
@@ -856,11 +861,11 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
 
 // @public
 export class RouterModule {
-    constructor(guard: any);
+    constructor();
     static forChild(routes: Routes): ModuleWithProviders<RouterModule>;
     static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders<RouterModule>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<RouterModule, [{ optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<RouterModule, never>;
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<RouterModule>;
     // (undocumented)
@@ -896,10 +901,11 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     ngOnDestroy(): void;
     // (undocumented)
     ngOnInit(): void;
+    readonly routerOutletData: InputSignal<unknown>;
     // (undocumented)
     readonly supportsBindingToComponentInputs = true;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterOutlet, "router-outlet", ["outlet"], { "name": { "alias": "name"; "required": false; }; }, { "activateEvents": "activate"; "deactivateEvents": "deactivate"; "attachEvents": "attach"; "detachEvents": "detach"; }, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterOutlet, "router-outlet", ["outlet"], { "name": { "alias": "name"; "required": false; }; "routerOutletData": { "alias": "routerOutletData"; "required": false; "isSignal": true; }; }, { "activateEvents": "activate"; "deactivateEvents": "deactivate"; "attachEvents": "attach"; "detachEvents": "detach"; }, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<RouterOutlet, never>;
 }

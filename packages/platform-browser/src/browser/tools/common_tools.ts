@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ApplicationRef, ComponentRef} from '@angular/core';
@@ -39,7 +39,7 @@ export class AngularProfiler {
    * `record` (boolean) - causes the profiler to record a CPU profile while
    * it exercises the change detector. Example:
    *
-   * ```
+   * ```ts
    * ng.profiler.timeChangeDetection({record: true})
    * ```
    */

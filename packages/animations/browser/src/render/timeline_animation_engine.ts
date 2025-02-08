@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {
   AnimationMetadata,
@@ -58,8 +58,10 @@ export class TimelineAnimationEngine {
     if (errors.length) {
       throw registerFailed(errors);
     } else {
-      if (warnings.length) {
-        warnRegister(warnings);
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        if (warnings.length) {
+          warnRegister(warnings);
+        }
       }
       this._animations.set(id, ast);
     }

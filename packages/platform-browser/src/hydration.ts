@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {HttpTransferCacheOptions, ɵwithHttpTransferCache} from '@angular/common/http';
@@ -19,6 +19,8 @@ import {
   ɵwithDomHydration as withDomHydration,
   ɵwithEventReplay,
   ɵwithI18nSupport,
+  ɵZONELESS_ENABLED as ZONELESS_ENABLED,
+  ɵwithIncrementalHydration,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from './errors';
@@ -34,6 +36,7 @@ export enum HydrationFeatureKind {
   HttpTransferCacheOptions,
   I18nSupport,
   EventReplay,
+  IncrementalHydration,
 }
 
 /**
@@ -70,9 +73,9 @@ export function withNoHttpTransferCache(): HydrationFeature<HydrationFeatureKind
 }
 
 /**
- * The function accepts a an object, which allows to configure cache parameters,
+ * The function accepts an object, which allows to configure cache parameters,
  * such as which headers should be included (no headers are included by default),
- * wether POST requests should be cached or a callback function to determine if a
+ * whether POST requests should be cached or a callback function to determine if a
  * particular request should be cached.
  *
  * @publicApi
@@ -106,17 +109,36 @@ export function withI18nSupport(): HydrationFeature<HydrationFeatureKind.I18nSup
  *
  * Basic example of how you can enable event replay in your application when
  * `bootstrapApplication` function is used:
- * ```
+ * ```ts
  * bootstrapApplication(AppComponent, {
  *   providers: [provideClientHydration(withEventReplay())]
  * });
  * ```
- * @developerPreview
  * @publicApi
  * @see {@link provideClientHydration}
  */
 export function withEventReplay(): HydrationFeature<HydrationFeatureKind.EventReplay> {
   return hydrationFeature(HydrationFeatureKind.EventReplay, ɵwithEventReplay());
+}
+
+/**
+ * Enables support for incremental hydration using the `hydrate` trigger syntax.
+ *
+ * @usageNotes
+ *
+ * Basic example of how you can enable incremental hydration in your application when
+ * the `bootstrapApplication` function is used:
+ * ```ts
+ * bootstrapApplication(AppComponent, {
+ *   providers: [provideClientHydration(withIncrementalHydration())]
+ * });
+ * ```
+ * @experimental
+ * @publicApi
+ * @see {@link provideClientHydration}
+ */
+export function withIncrementalHydration(): HydrationFeature<HydrationFeatureKind.IncrementalHydration> {
+  return hydrationFeature(HydrationFeatureKind.IncrementalHydration, ɵwithIncrementalHydration());
 }
 
 /**
@@ -130,9 +152,10 @@ function provideZoneJsCompatibilityDetector(): Provider[] {
       provide: ENVIRONMENT_INITIALIZER,
       useValue: () => {
         const ngZone = inject(NgZone);
+        const isZoneless = inject(ZONELESS_ENABLED);
         // Checking `ngZone instanceof NgZone` would be insufficient here,
         // because custom implementations might use NgZone as a base class.
-        if (ngZone.constructor !== NgZone) {
+        if (!isZoneless && ngZone.constructor !== NgZone) {
           const console = inject(Console);
           const message = formatRuntimeError(
             RuntimeErrorCode.UNSUPPORTED_ZONEJS_INSTANCE,
@@ -140,7 +163,6 @@ function provideZoneJsCompatibilityDetector(): Provider[] {
               'that uses a custom or a noop Zone.js implementation. ' +
               'This is not yet a fully supported configuration.',
           );
-          // tslint:disable-next-line:no-console
           console.warn(message);
         }
       },
@@ -160,15 +182,18 @@ function provideZoneJsCompatibilityDetector(): Provider[] {
  * transferring this cache to the client to avoid extra HTTP requests. Learn more about data caching
  * [here](guide/ssr#caching-data-when-using-httpclient).
  *
- * These functions allow you to disable some of the default features or configure features
+ * These functions allow you to disable some of the default features or enable new ones:
+ *
  * * {@link withNoHttpTransferCache} to disable HTTP transfer cache
  * * {@link withHttpTransferCacheOptions} to configure some HTTP transfer cache options
+ * * {@link withI18nSupport} to enable hydration support for i18n blocks
+ * * {@link withEventReplay} to enable support for replaying user events
  *
  * @usageNotes
  *
  * Basic example of how you can enable hydration in your application when
  * `bootstrapApplication` function is used:
- * ```
+ * ```ts
  * bootstrapApplication(AppComponent, {
  *   providers: [provideClientHydration()]
  * });
@@ -176,7 +201,7 @@ function provideZoneJsCompatibilityDetector(): Provider[] {
  *
  * Alternatively if you are using NgModules, you would add `provideClientHydration`
  * to your root app module's provider list.
- * ```
+ * ```ts
  * @NgModule({
  *   declarations: [RootCmp],
  *   bootstrap: [RootCmp],
@@ -187,6 +212,8 @@ function provideZoneJsCompatibilityDetector(): Provider[] {
  *
  * @see {@link withNoHttpTransferCache}
  * @see {@link withHttpTransferCacheOptions}
+ * @see {@link withI18nSupport}
+ * @see {@link withEventReplay}
  *
  * @param features Optional features to configure additional router behaviors.
  * @returns A set of providers to enable hydration.

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -50,9 +50,12 @@ class InterpolatedSignalCheck extends TemplateCheckWithVisitor<ErrorCode.INTERPO
     }
     // bound properties like `[prop]="mySignal"`
     else if (node instanceof TmplAstBoundAttribute) {
-      const symbol = ctx.templateTypeChecker.getSymbolOfNode(node, component);
       // we skip the check if the node is an input binding
-      if (symbol !== null && symbol.kind === SymbolKind.Input) {
+      const usedDirectives = ctx.templateTypeChecker.getUsedDirectives(component);
+      if (
+        usedDirectives !== null &&
+        usedDirectives.some((dir) => dir.inputs.getByBindingPropertyName(node.name) !== null)
+      ) {
         return [];
       }
       // otherwise, we check if the node is
@@ -117,9 +120,9 @@ function buildDiagnosticForSignal(
       symbolOfReceiver.tcbLocation,
     )!;
 
-    const errorString = `${(node.receiver as PropertyRead).name} is a function and should be invoked: ${
+    const errorString = `${
       (node.receiver as PropertyRead).name
-    }()`;
+    } is a function and should be invoked: ${(node.receiver as PropertyRead).name}()`;
     const diagnostic = ctx.makeTemplateDiagnostic(templateMapping.span, errorString);
     return [diagnostic];
   }

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {LifecycleProfile} from 'protocol';
@@ -34,7 +34,19 @@ const endMark = (nodeName: string, method: Method) => {
     if (performance.getEntriesByName(start).length > 0) {
       // tslint:disable-next-line:ban
       performance.mark(end);
-      performance.measure(name, start, end);
+
+      const measureOptions = {
+        start,
+        end,
+        detail: {
+          devtools: {
+            dataType: 'track-entry',
+            color: 'primary',
+            track: '🅰️ Angular DevTools',
+          },
+        },
+      };
+      performance.measure(name, measureOptions);
     }
     performance.clearMarks(start);
     performance.clearMarks(end);

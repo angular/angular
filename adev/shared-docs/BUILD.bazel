@@ -1,0 +1,49 @@
+load("//tools:defaults.bzl", "ng_module", "ng_package")
+
+package(default_visibility = ["//visibility:private"])
+
+ng_module(
+    name = "docs",
+    srcs = [
+        "index.ts",
+    ],
+    module_name = "@angular/docs",
+    deps = [
+        "//adev/shared-docs/components",
+        "//adev/shared-docs/constants",
+        "//adev/shared-docs/directives",
+        "//adev/shared-docs/interfaces",
+        "//adev/shared-docs/pipes",
+        "//adev/shared-docs/providers",
+        "//adev/shared-docs/services",
+        "//adev/shared-docs/testing",
+        "//adev/shared-docs/utils",
+    ],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = [
+        "package.json",
+        "//adev/shared-docs/icons",
+        "//adev/shared-docs/pipeline:BUILD.bazel",
+        "//adev/shared-docs/pipeline:_guides.bzl",
+        "//adev/shared-docs/pipeline:_playground.bzl",
+        "//adev/shared-docs/pipeline:_stackblitz.bzl",
+        "//adev/shared-docs/pipeline:_tutorial.bzl",
+        "//adev/shared-docs/pipeline:guides.mjs",
+        "//adev/shared-docs/pipeline:guides-no-mermaid.mjs",
+        "//adev/shared-docs/pipeline:playground.mjs",
+        "//adev/shared-docs/pipeline:stackblitz.mjs",
+        "//adev/shared-docs/pipeline:tutorial.mjs",
+        "//adev/shared-docs/pipeline/examples/template:files",
+        "//adev/shared-docs/pipeline/tutorials/common:files",
+        "//adev/shared-docs/styles",
+    ],
+    visibility = [
+        "//adev:__pkg__",
+    ],
+    deps = [
+        ":docs",
+    ],
+)

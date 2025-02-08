@@ -3,13 +3,13 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ProviderToken} from '../../di/provider_token';
 import {QueryFlags} from '../interfaces/query';
-import {createContentQuery, createViewQuery} from '../query';
-import {bindQueryToSignal} from '../query_reactive';
+import {createContentQuery, createViewQuery} from '../queries/query';
+import {bindQueryToSignal} from '../queries/query_reactive';
 import {Signal} from '../reactivity/api';
 import {getCurrentQueryIndex, setCurrentQueryIndex} from '../state';
 

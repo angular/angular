@@ -6,7 +6,7 @@ Every component defines
 a [CSS selector](https://developer.mozilla.org/docs/Web/CSS/CSS_selectors) that determines how
 the component is used:
 
-<docs-code language="ts" highlight="[2]">
+<docs-code language="angular-ts" highlight="[2]">
 @Component({
   selector: 'profile-photo',
   ...
@@ -16,7 +16,7 @@ export class ProfilePhoto { }
 
 You use a component by creating a matching HTML element in the templates of _other_ components:
 
-<docs-code language="ts" highlight="[3]">
+<docs-code language="angular-ts" highlight="[3]">
 @Component({
   template: `
     <profile-photo />
@@ -63,7 +63,7 @@ You can append this pseudo-class to any other selector to narrow which elements 
 selector matches. For example, you could define a `[dropzone]` attribute selector and prevent
 matching `textarea` elements:
 
-<docs-code language="ts" highlight="[2]">
+<docs-code language="angular-ts" highlight="[2]">
 @Component({
   selector: '[dropzone]:not(textarea)',
   ...
@@ -78,7 +78,7 @@ Angular does not support any other pseudo-classes or pseudo-elements in componen
 You can combine multiple selectors by concatenating them. For example, you can match `<button>`
 elements that specify `type="reset"`:
 
-<docs-code language="ts" highlight="[2]">
+<docs-code language="angular-ts" highlight="[2]">
 @Component({
   selector: 'button[type="reset"]',
   ...
@@ -88,7 +88,7 @@ export class ResetButton { }
 
 You can also define multiple selectors with a comma-separated list:
 
-<docs-code language="ts" highlight="[2]">
+<docs-code language="angular-ts" highlight="[2]">
 @Component({
   selector: 'drop-zone, [dropzone]',
   ...
@@ -127,7 +127,7 @@ You should consider an attribute selector when you want to create a component on
 element. For example, if you want to create a custom button component, you can take advantage of the
 standard `<button>` element by using an attribute selector:
 
-<docs-code language="ts" highlight="[2]">
+<docs-code language="angular-ts" highlight="[2]">
 @Component({
   selector: 'button[yt-upload]',
    ...

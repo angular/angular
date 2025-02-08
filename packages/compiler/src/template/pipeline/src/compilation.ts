@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ConstantPool} from '../../../constant_pool';
@@ -73,6 +73,8 @@ export class ComponentCompilationJob extends CompilationJob {
     readonly i18nUseExternalIds: boolean,
     readonly deferMeta: R3ComponentDeferMetadata,
     readonly allDeferrableDepsFn: o.ReadVarExpr | null,
+    readonly relativeTemplatePath: string | null,
+    readonly enableDebugLocations: boolean,
   ) {
     super(componentName, pool, compatibility);
     this.root = new ViewCompilationUnit(this, this.allocateXrefId(), null);

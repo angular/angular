@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 
@@ -110,7 +110,9 @@ function runExtraChecks(
     }
     if (!fn(generated, ...args)) {
       throw new Error(
-        `Extra check ${fnName}(${args.map((arg) => JSON.stringify(arg)).join(',')}) in ${testPath} failed for generated code:\n\n${generated}`,
+        `Extra check ${fnName}(${args
+          .map((arg) => JSON.stringify(arg))
+          .join(',')}) in ${testPath} failed for generated code:\n\n${generated}`,
       );
     }
   }

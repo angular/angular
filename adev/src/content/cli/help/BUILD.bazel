@@ -1,4 +1,4 @@
-load("@npm//@angular/build-tooling/bazel/api-gen/rendering:render_api_to_html.bzl", "render_api_to_html")
+load("//adev/shared-docs/pipeline/api-gen/rendering:render_api_to_html.bzl", "render_api_to_html")
 
 package(default_visibility = ["//visibility:public"])
 

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {DOCUMENT} from '@angular/common';
@@ -25,6 +25,7 @@ describe('ApplicationRef bootstrap', () => {
   @Component({
     selector: 'hello-world',
     template: '<div>Hello {{ name }}</div>',
+    standalone: false,
   })
   class HelloWorldComponent implements OnInit, DoCheck {
     log: string[] = [];

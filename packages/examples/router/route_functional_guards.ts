@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Component, inject, Injectable} from '@angular/core';
@@ -22,10 +22,16 @@ import {
   UrlSegment,
 } from '@angular/router';
 
-@Component({template: ''})
+@Component({
+  template: '',
+  standalone: false,
+})
 export class App {}
 
-@Component({template: ''})
+@Component({
+  template: '',
+  standalone: false,
+})
 export class TeamComponent {}
 
 // #docregion CanActivateFn
@@ -87,7 +93,10 @@ bootstrapApplication(App, {
 // #enddocregion
 
 // #docregion CanDeactivateFn
-@Component({template: ''})
+@Component({
+  template: '',
+  standalone: false,
+})
 export class UserComponent {
   hasUnsavedChanges = true;
 }
@@ -124,7 +133,10 @@ bootstrapApplication(App, {
 // #enddocregion
 
 // #docregion ResolveDataUse
-@Component({template: ''})
+@Component({
+  template: '',
+  standalone: false,
+})
 export class HeroDetailComponent {
   constructor(private activatedRoute: ActivatedRoute) {}
 

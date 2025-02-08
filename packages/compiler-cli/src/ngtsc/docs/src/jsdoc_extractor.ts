@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import ts from 'typescript';
@@ -15,7 +15,7 @@ import {JsDocTagEntry} from './entities';
  * decorators in JsDoc blocks so that they're not parsed as JsDoc tags.
  */
 const decoratorExpression =
-  /@(?=(Injectable|Component|Directive|Pipe|NgModule|Input|Output|HostBinding|HostListener|Inject|Optional|Self|Host|SkipSelf))/g;
+  /@(?=(Injectable|Component|Directive|Pipe|NgModule|Input|Output|HostBinding|HostListener|Inject|Optional|Self|Host|SkipSelf|ViewChild|ViewChildren|ContentChild|ContentChildren))/g;
 
 /** Gets the set of JsDoc tags applied to a node. */
 export function extractJsDocTags(node: ts.HasJSDoc): JsDocTagEntry[] {
@@ -45,7 +45,7 @@ export function extractJsDocDescription(node: ts.HasJSDoc): string {
 
   const comment = commentOrTag?.comment ?? '';
   const description =
-    typeof comment === 'string' ? comment : ts.getTextOfJSDocComment(comment) ?? '';
+    typeof comment === 'string' ? comment : (ts.getTextOfJSDocComment(comment) ?? '');
 
   return unescapeAngularDecorators(description);
 }

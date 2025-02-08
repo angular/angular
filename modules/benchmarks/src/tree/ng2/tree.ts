@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Component, NgModule} from '@angular/core';
@@ -20,6 +20,7 @@ let trustedGreyColor: SafeStyle;
   template: `<span [style.backgroundColor]="bgColor"> {{ data.value }} </span
     ><tree *ngIf="data.right != null" [data]="data.right"></tree
     ><tree *ngIf="data.left != null" [data]="data.left"></tree>`,
+  standalone: false,
 })
 export class TreeComponent {
   data: TreeNode = emptyTree;

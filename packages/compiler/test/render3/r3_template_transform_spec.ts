@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {BindingType, ParsedEventType} from '../../src/expression_parser/ast';
@@ -137,6 +137,8 @@ class R3AstHumanizer implements t.Visitor<void> {
       this.result.push(['InteractionDeferredTrigger', trigger.reference]);
     } else if (trigger instanceof t.ViewportDeferredTrigger) {
       this.result.push(['ViewportDeferredTrigger', trigger.reference]);
+    } else if (trigger instanceof t.NeverDeferredTrigger) {
+      this.result.push(['NeverDeferredTrigger']);
     } else {
       throw new Error('Unknown trigger');
     }
@@ -489,6 +491,14 @@ describe('R3 template transform', () => {
       ]);
     });
 
+    it('should parse $any in a two-way binding', () => {
+      expectFromHtml('<div [(prop)]="$any(v)"></div>').toEqual([
+        ['Element', 'div'],
+        ['BoundAttribute', BindingType.TwoWay, 'prop', '$any(v)'],
+        ['BoundEvent', ParsedEventType.TwoWay, 'propChange', null, '$any(v)'],
+      ]);
+    });
+
     it('should parse bound events and properties via bindon-', () => {
       expectFromHtml('<div bindon-prop="v"></div>').toEqual([
         ['Element', 'div'],
@@ -551,6 +561,9 @@ describe('R3 template transform', () => {
         '!a',
         '!!a',
         'a ? b : c',
+        '$any(a || b)',
+        'this.$any(a)',
+        '$any(a, b)',
       ];
 
       for (const expression of unsupportedExpressions) {
@@ -1019,16 +1032,58 @@ describe('R3 template transform', () => {
       ]);
     });
 
+    it('should parse the hydrate-specific `never` trigger', () => {
+      const html = '@defer (on idle; hydrate never){hello}';
+
+      expectFromHtml(html).toEqual([
+        ['DeferredBlock'],
+        ['NeverDeferredTrigger'],
+        ['IdleDeferredTrigger'],
+        ['Text', 'hello'],
+      ]);
+    });
+
+    it('should parse a deferred block with hydrate triggers', () => {
+      const html =
+        '@defer (on idle; hydrate on viewport, hover, timer(500); hydrate when shouldHydrate()){hello}';
+
+      expectFromHtml(html).toEqual([
+        ['DeferredBlock'],
+        ['ViewportDeferredTrigger', null],
+        ['HoverDeferredTrigger', null],
+        ['TimerDeferredTrigger', 500],
+        ['BoundDeferredTrigger', 'shouldHydrate()'],
+        ['IdleDeferredTrigger'],
+        ['Text', 'hello'],
+      ]);
+    });
+
+    it('should allow arbitrary number of spaces after the `hydrate` keyword', () => {
+      const html =
+        '@defer (on idle; hydrate         on viewport, hover; hydrate    when shouldHydrate()){hello}';
+
+      expectFromHtml(html).toEqual([
+        ['DeferredBlock'],
+        ['ViewportDeferredTrigger', null],
+        ['HoverDeferredTrigger', null],
+        ['BoundDeferredTrigger', 'shouldHydrate()'],
+        ['IdleDeferredTrigger'],
+        ['Text', 'hello'],
+      ]);
+    });
+
     it('should parse a complete example', () => {
       expectFromHtml(
         '@defer (when isVisible() && foo; on hover(button), timer(10s), idle, immediate, ' +
           'interaction(button), viewport(container); prefetch on immediate; ' +
-          'prefetch when isDataLoaded()){<calendar-cmp [date]="current"/>}' +
-          '@loading (minimum 1s; after 100ms){Loading...}' +
+          'prefetch when isDataLoaded(); hydrate when shouldHydrate(); hydrate on viewport){' +
+          '<calendar-cmp [date]="current"/>}@loading (minimum 1s; after 100ms){Loading...}' +
           '@placeholder (minimum 500){Placeholder content!}' +
           '@error {Loading failed :(}',
       ).toEqual([
         ['DeferredBlock'],
+        ['BoundDeferredTrigger', 'shouldHydrate()'],
+        ['ViewportDeferredTrigger', null],
         ['BoundDeferredTrigger', 'isVisible() && foo'],
         ['HoverDeferredTrigger', 'button'],
         ['TimerDeferredTrigger', 10000],
@@ -1052,10 +1107,11 @@ describe('R3 template transform', () => {
     it('should treat blocks as plain text inside ngNonBindable', () => {
       expectFromHtml(
         '<div ngNonBindable>' +
-          '@defer (when isVisible() && foo; on hover, timer(10s); ' +
-          'prefetch on immediate; prefetch when isDataLoaded()){<calendar-cmp [date]="current"/>}' +
-          '@loading {Loading...}' +
-          '@placeholder {Placeholder content!}' +
+          '@defer (when isVisible() && foo; on hover(button), timer(10s), idle, immediate, ' +
+          'interaction(button), viewport(container); prefetch on immediate; ' +
+          'prefetch when isDataLoaded(); hydrate when shouldHydrate(); hydrate on viewport){' +
+          '<calendar-cmp [date]="current"/>}@loading (minimum 1s; after 100ms){Loading...}' +
+          '@placeholder (minimum 500){Placeholder content!}' +
           '@error {Loading failed :(}' +
           '</div>',
       ).toEqual([
@@ -1063,15 +1119,17 @@ describe('R3 template transform', () => {
         ['TextAttribute', 'ngNonBindable', ''],
         [
           'Text',
-          '@defer (when isVisible() && foo; on hover, timer(10s); prefetch on immediate; prefetch when isDataLoaded()){',
+          '@defer (when isVisible() && foo; on hover(button), timer(10s), idle, immediate, ' +
+            'interaction(button), viewport(container); prefetch on immediate; ' +
+            'prefetch when isDataLoaded(); hydrate when shouldHydrate(); hydrate on viewport){',
         ],
         ['Element', 'calendar-cmp'],
         ['TextAttribute', '[date]', 'current'],
         ['Text', '}'],
-        ['Text', '@loading {'],
+        ['Text', '@loading (minimum 1s; after 100ms){'],
         ['Text', 'Loading...'],
         ['Text', '}'],
-        ['Text', '@placeholder {'],
+        ['Text', '@placeholder (minimum 500){'],
         ['Text', 'Placeholder content!'],
         ['Text', '}'],
         ['Text', '@error {'],
@@ -1338,6 +1396,79 @@ describe('R3 template transform', () => {
           parse('@defer (on viewport) {hello} @placeholder {<div></div><span></span>}'),
         ).toThrowError(
           /"viewport" trigger with no parameters can only be placed on an @defer that has a @placeholder block with exactly one root element node/,
+        );
+      });
+
+      it('should report parameter passed to hydrate trigger with reference-based equivalent', () => {
+        expect(() =>
+          parse('@defer (on interaction(button); hydrate on interaction(button)) {hello}'),
+        ).toThrowError(/Hydration trigger "interaction" cannot have parameters/);
+      });
+
+      it('should not report missing reference on hydrate trigger', () => {
+        expect(() => parse('@defer (on immediate; hydrate on viewport) {hello}')).not.toThrow();
+      });
+
+      it('should report if reference-based trigger has no reference and there is no placeholder block but a hydrate trigger exists', () => {
+        expect(() => parse('@defer (on viewport; hydrate on immediate) {hello}')).toThrowError(
+          /"viewport" trigger with no parameters can only be placed on an @defer that has a @placeholder block/,
+        );
+      });
+
+      it('should report if reference-based trigger has no reference and there is no placeholder block but a hydrate trigger exists and it is also viewport', () => {
+        expect(() => parse('@defer (on viewport; hydrate on viewport) {hello}')).toThrowError(
+          /"viewport" trigger with no parameters can only be placed on an @defer that has a @placeholder block/,
+        );
+      });
+
+      it('should report never trigger used without `hydrate`', () => {
+        expect(() => parse('@defer (on immediate; never) {hello}')).toThrowError(
+          /Unrecognized trigger/,
+        );
+        expect(() => parse('@defer (on immediate; prefetch never) {hello}')).toThrowError(
+          /Unrecognized trigger/,
+        );
+      });
+
+      it('should report `hydrate never` used with additonal characters', () => {
+        expect(() => parse('@defer (hydrate never, and thank you) {hello}')).toThrowError(
+          /Unrecognized trigger/,
+        );
+      });
+
+      it('should not report an error when `hydrate never` is used with additonal blocks', () => {
+        expect(() => parse('@defer (hydrate never; on idle;) {hello}')).not.toThrowError(
+          /Unrecognized trigger/,
+        );
+      });
+
+      it('should not report an error when `hydrate never` is used with spaces', () => {
+        expect(() => parse('@defer(hydrate never ; on idle ;) {hello}')).not.toThrowError(
+          /Unrecognized trigger/,
+        );
+      });
+
+      it('should not report an error when `hydrate never` is used after another block', () => {
+        expect(() =>
+          parse(`@defer(
+        on idle;
+        hydrate never) {hello}`),
+        ).not.toThrowError(/Unrecognized trigger/);
+      });
+
+      it('should report when `hydrate never` is used together with another `hydrate` trigger', () => {
+        // Extra trigger after `hydrate never`.
+        expect(() =>
+          parse('@defer (hydrate never; hydrate when shouldHydrate()) {hello}'),
+        ).toThrowError(
+          /Cannot specify additional `hydrate` triggers if `hydrate never` is present/,
+        );
+
+        // Extra trigger before `hydrate never`.
+        expect(() =>
+          parse('@defer (hydrate when shouldHydrate(); hydrate never) {hello}'),
+        ).toThrowError(
+          /Cannot specify additional `hydrate` triggers if `hydrate never` is present/,
         );
       });
     });
@@ -1859,7 +1990,7 @@ describe('R3 template transform', () => {
 
       it('should report unrecognized for loop parameters', () => {
         expect(() => parse(`@for (a of b; foo bar) {hello}`)).toThrowError(
-          /Unrecognized @for loop paramater "foo bar"/,
+          /Unrecognized @for loop parameter "foo bar"/,
         );
       });
 
@@ -2137,7 +2268,7 @@ describe('R3 template transform', () => {
           parse(`
           @if (foo; bar) {hello}
         `),
-        ).toThrowError(/Unrecognized conditional paramater "bar"/);
+        ).toThrowError(/Unrecognized conditional parameter "bar"/);
       });
 
       it('should report an unknown parameter in an else if block', () => {
@@ -2145,7 +2276,7 @@ describe('R3 template transform', () => {
           parse(`
           @if (foo) {hello} @else if (bar; baz) {goodbye}
         `),
-        ).toThrowError(/Unrecognized conditional paramater "baz"/);
+        ).toThrowError(/Unrecognized conditional parameter "baz"/);
       });
 
       it('should report an if block that has multiple `as` expressions', () => {

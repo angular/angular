@@ -32,6 +32,13 @@ export class TerminalHandler {
     },
   } as const;
 
+  constructor() {
+    // Load fitAddon for each terminal instance
+    for (const {instance, fitAddon} of Object.values(this.terminals)) {
+      instance.loadAddon(fitAddon);
+    }
+  }
+
   get readonlyTerminalInstance(): Terminal {
     return this.terminals[TerminalType.READONLY].instance;
   }

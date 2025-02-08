@@ -3,10 +3,10 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, inject, signal} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {Events, MessageBus, ProfilerFrame} from 'protocol';
 import {Subject} from 'rxjs';
@@ -28,21 +28,20 @@ const PROFILER_VERSION = 1;
   selector: 'ng-profiler',
   templateUrl: './profiler.component.html',
   styleUrls: ['./profiler.component.scss'],
-  standalone: true,
   imports: [MatCard, MatIconButton, MatTooltip, MatIcon, TimelineComponent],
 })
-export class ProfilerComponent implements OnInit {
-  state: State = 'idle';
+export class ProfilerComponent {
+  readonly state = signal<State>('idle');
   stream = new Subject<ProfilerFrame[]>();
 
   // We collect this buffer so we can have it available for export.
   private _buffer: ProfilerFrame[] = [];
 
-  constructor(
-    private _fileApiService: FileApiService,
-    private _messageBus: MessageBus<Events>,
-    public dialog: MatDialog,
-  ) {
+  private _fileApiService = inject(FileApiService);
+  private _messageBus = inject<MessageBus<Events>>(MessageBus);
+  public dialog = inject(MatDialog);
+
+  constructor() {
     this._fileApiService.uploadedData.subscribe((importedFile) => {
       if (importedFile.error) {
         console.error('Could not process uploaded file');
@@ -67,31 +66,18 @@ export class ProfilerComponent implements OnInit {
 
         processDataDialog.afterClosed().subscribe((result) => {
           if (result) {
-            this.state = 'visualizing';
+            this.state.set('visualizing');
             this._buffer = importedFile.buffer;
             setTimeout(() => this.stream.next(importedFile.buffer));
           }
         });
       } else {
-        this.state = 'visualizing';
+        this.state.set('visualizing');
         this._buffer = importedFile.buffer;
         setTimeout(() => this.stream.next(importedFile.buffer));
       }
     });
-  }
 
-  startRecording(): void {
-    this.state = 'recording';
-    this._messageBus.emit('startProfiling');
-  }
-
-  stopRecording(): void {
-    this.state = 'visualizing';
-    this._messageBus.emit('stopProfiling');
-    this.stream.complete();
-  }
-
-  ngOnInit(): void {
     this._messageBus.on('profilerResults', (remainingRecords) => {
       if (remainingRecords.duration > 0 && remainingRecords.source) {
         this.stream.next([remainingRecords]);
@@ -103,6 +89,17 @@ export class ProfilerComponent implements OnInit {
       this.stream.next([chunkOfRecords]);
       this._buffer.push(chunkOfRecords);
     });
+  }
+
+  startRecording(): void {
+    this.state.set('recording');
+    this._messageBus.emit('startProfiling');
+  }
+
+  stopRecording(): void {
+    this.state.set('visualizing');
+    this._messageBus.emit('stopProfiling');
+    this.stream.complete();
   }
 
   exportProfilerResults(): void {
@@ -119,7 +116,7 @@ export class ProfilerComponent implements OnInit {
 
   discardRecording(): void {
     this.stream = new Subject<ProfilerFrame[]>();
-    this.state = 'idle';
+    this.state.set('idle');
     this._buffer = [];
   }
 }

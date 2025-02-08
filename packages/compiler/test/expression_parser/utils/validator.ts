@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -22,6 +22,7 @@ import {
   LiteralPrimitive,
   ParseSpan,
   PrefixNot,
+  TypeofExpression,
   PropertyRead,
   PropertyWrite,
   RecursiveAstVisitor,
@@ -29,6 +30,8 @@ import {
   SafeKeyedRead,
   SafePropertyRead,
   Unary,
+  TemplateLiteral,
+  TemplateLiteralElement,
 } from '../../../src/expression_parser/ast';
 
 import {unparse} from './unparser';
@@ -112,6 +115,10 @@ class ASTValidator extends RecursiveAstVisitor {
     this.validate(ast, () => super.visitPrefixNot(ast, context));
   }
 
+  override visitTypeofExpression(ast: TypeofExpression, context: any): any {
+    this.validate(ast, () => super.visitTypeofExpression(ast, context));
+  }
+
   override visitPropertyRead(ast: PropertyRead, context: any): any {
     this.validate(ast, () => super.visitPropertyRead(ast, context));
   }
@@ -134,6 +141,14 @@ class ASTValidator extends RecursiveAstVisitor {
 
   override visitSafeCall(ast: SafeCall, context: any): any {
     this.validate(ast, () => super.visitSafeCall(ast, context));
+  }
+
+  override visitTemplateLiteral(ast: TemplateLiteral, context: any): any {
+    this.validate(ast, () => super.visitTemplateLiteral(ast, context));
+  }
+
+  override visitTemplateLiteralElement(ast: TemplateLiteralElement, context: any): any {
+    this.validate(ast, () => super.visitTemplateLiteralElement(ast, context));
   }
 }
 

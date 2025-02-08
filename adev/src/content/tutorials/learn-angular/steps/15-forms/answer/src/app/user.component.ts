@@ -11,7 +11,6 @@ import {FormsModule} from '@angular/forms';
       <input id="framework" type="text" [(ngModel)]="favoriteFramework" />
     </label>
   `,
-  standalone: true,
   imports: [FormsModule],
 })
 export class UserComponent {

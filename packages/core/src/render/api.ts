@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {isLView} from '../render3/interfaces/type_checks';
@@ -217,12 +217,14 @@ export abstract class Renderer2 {
    * DOM element.
    * @param eventName The event to listen for.
    * @param callback A handler function to invoke when the event occurs.
+   * @param options Options that configure how the event listener is bound.
    * @returns An "unlisten" function for disposing of this handler.
    */
   abstract listen(
     target: 'window' | 'document' | 'body' | any,
     eventName: string,
     callback: (event: any) => boolean | void,
+    options?: ListenerOptions,
   ): () => void;
 
   /**
@@ -251,4 +253,14 @@ export function injectRenderer2(): Renderer2 {
 export const enum AnimationRendererType {
   Regular = 0,
   Delegated = 1,
+}
+
+/**
+ * Options that can be used to configure an event listener.
+ * @publicApi
+ */
+export interface ListenerOptions {
+  capture?: boolean;
+  once?: boolean;
+  passive?: boolean;
 }

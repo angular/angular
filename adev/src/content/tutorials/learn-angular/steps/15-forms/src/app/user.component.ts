@@ -7,7 +7,6 @@ import {Component} from '@angular/core';
     <p>{{ username }}'s favorite framework: {{ favoriteFramework }}</p>
     <label for="framework">Favorite Framework:</label>
   `,
-  standalone: true,
   imports: [],
 })
 export class UserComponent {

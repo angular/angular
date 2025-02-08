@@ -9,6 +9,7 @@ import {Hero} from '../hero';
   selector: 'app-hero-list',
   templateUrl: './hero-list.component.1.html',
   styleUrls: ['./hero-list.component.css'],
+  standalone: false,
 })
 export class HeroListComponent implements OnInit {
   heroes$!: Observable<Hero[]>;

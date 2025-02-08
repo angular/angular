@@ -2,7 +2,6 @@ import {Directive, EventEmitter, output} from '@angular/core';
 import {outputFromObservable} from '@angular/core/rxjs-interop';
 
 @Directive({
-  standalone: true,
 })
 export class TestDir {
   a = output();

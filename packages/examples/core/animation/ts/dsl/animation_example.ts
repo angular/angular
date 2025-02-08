@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {animate, state, style, transition, trigger} from '@angular/animations';
@@ -39,6 +39,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
     <hr />
     <div class="toggle-container" [@openClose]="stateExpression">Look at this box</div>
   `,
+  standalone: false,
 })
 export class MyExpandoCmp {
   // TODO(issue/24571): remove '!'.

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {types as t} from '@babel/core';
 
@@ -27,7 +27,7 @@ export class BabelAstFactory implements AstFactory<t.Statement, t.Expression> {
     private sourceUrl: string,
   ) {}
 
-  attachComments(statement: t.Statement, leadingComments: LeadingComment[]): void {
+  attachComments(statement: t.Statement | t.Expression, leadingComments: LeadingComment[]): void {
     // We must process the comments in reverse because `t.addComment()` will add new ones in front.
     for (let i = leadingComments.length - 1; i >= 0; i--) {
       const comment = leadingComments[i];
@@ -119,8 +119,12 @@ export class BabelAstFactory implements AstFactory<t.Statement, t.Expression> {
 
   createIfStatement = t.ifStatement;
 
-  createDynamicImport(url: string): t.Expression {
-    return this.createCallExpression(t.import(), [t.stringLiteral(url)], false /* pure */);
+  createDynamicImport(url: string | t.Expression): t.Expression {
+    return this.createCallExpression(
+      t.import(),
+      [typeof url === 'string' ? t.stringLiteral(url) : url],
+      false /* pure */,
+    );
   }
 
   createLiteral(value: string | number | boolean | null | undefined): t.Expression {
@@ -161,13 +165,17 @@ export class BabelAstFactory implements AstFactory<t.Statement, t.Expression> {
   createReturnStatement = t.returnStatement;
 
   createTaggedTemplate(tag: t.Expression, template: TemplateLiteral<t.Expression>): t.Expression {
+    return t.taggedTemplateExpression(tag, this.createTemplateLiteral(template));
+  }
+
+  createTemplateLiteral(template: TemplateLiteral<t.Expression>): t.TemplateLiteral {
     const elements = template.elements.map((element, i) =>
       this.setSourceMapRange(
         t.templateElement(element, i === template.elements.length - 1),
         element.range,
       ),
     );
-    return t.taggedTemplateExpression(tag, t.templateLiteral(elements, template.expressions));
+    return t.templateLiteral(elements, template.expressions);
   }
 
   createThrowStatement = t.throwStatement;

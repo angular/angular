@@ -20,12 +20,26 @@ bootstrapApplication(MyApp, {providers: [
   provideExperimentalZonelessChangeDetection(),
 ]});
 
-// NgModule bootstrap requires the provider and `ngZone: 'noop'`
-platformBrowser().bootstrapModule(AppModule, {ngZone: 'noop'});
+// NgModule bootstrap
+platformBrowser().bootstrapModule(AppModule);
 @NgModule({
   providers: [provideExperimentalZonelessChangeDetection()]
 })
 export class AppModule {}
+```
+
+## Removing ZoneJS
+
+Zoneless applications should remove ZoneJS entirely from the build to reduce bundle size. ZoneJS is typically
+loaded via the `polyfills` option in `angular.json`, both in the `build` and `test` targets. Remove `zone.js`
+and `zone.js/testing` from both to remove it from the build. Projects which use an explicit `polyfills.ts` file
+should remove `import 'zone.js';` and `import 'zone.js/testing';` from the file.
+
+After removing ZoneJS from the build, there is no longer a need for a `zone.js` dependency either and the
+package can be removed entirely:
+
+```shell
+npm uninstall zone.js
 ```
 
 ## Requirements for Zoneless compatibility
@@ -42,10 +56,10 @@ These notifications include:
 ### `OnPush`-compatible components
 
 One way to ensure that a component is using the correct notification mechanisms from above is to
-use [ChangeDetectionStrategy.OnPush](../best-practices/skipping-subtrees#using-onpush).
+use [ChangeDetectionStrategy.OnPush](/best-practices/skipping-subtrees#using-onpush).
 
 The `OnPush` change detection strategy is not required, but it is a recommended step towards zoneless compatibility for application components. It is not always possible for library components to use `ChangeDetectionStrategy.OnPush`.
-When a library component is a host for user-components which might use `ChangeDetectionStratey.Default`, it cannot use `OnPush` because that would prevent the child component from being refreshed if it is not `OnPush` compatible and relies on ZoneJS to trigger change detection. Components can use the `Default` strategy as long as they notify Angular when change detection needs to run (calling `markForCheck`, using signals, `AsyncPipe`, etc.).
+When a library component is a host for user-components which might use `ChangeDetectionStrategy.Default`, it cannot use `OnPush` because that would prevent the child component from being refreshed if it is not `OnPush` compatible and relies on ZoneJS to trigger change detection. Components can use the `Default` strategy as long as they notify Angular when change detection needs to run (calling `markForCheck`, using signals, `AsyncPipe`, etc.).
 
 ### Remove `NgZone.onMicrotaskEmpty`, `NgZone.onUnstable`, `NgZone.isStable`, or `NgZone.onStable`
 
@@ -67,15 +81,15 @@ Zoneless applications. In fact, removing these calls can lead to performance reg
 are used in applications that still rely on ZoneJS.
 </docs-callout>
 
-### `ExperimentalPendingTasks` for Server Side Rendering (SSR)
+### `PendingTasks` for Server Side Rendering (SSR)
 
 If you are using SSR with Angular, you may know that it relies on ZoneJS to help determine when the application
 is "stable" and can be serialized. If there are asynchronous tasks that should prevent serialization, an application
-not using ZoneJS will need to make Angular aware of these with the `ExperimentalPendingTasks` service. Serialization
+not using ZoneJS will need to make Angular aware of these with the `PendingTasks` service. Serialization
 will wait for the first moment that all pending tasks have been removed.
 
 ```typescript
-const taskService = inject(ExperimentalPendingTasks);
+const taskService = inject(PendingTasks);
 const taskCleanup = taskService.add();
 await doSomeWorkThatNeedsToBeRendered();
 taskCleanup();
@@ -102,7 +116,7 @@ await fixture.whenStable();
 ```
 
 To ensure tests have the most similar behavior to production code,
-avoid using `fixture.detectChanges()` when possibe. This forces
+avoid using `fixture.detectChanges()` when possible. This forces
 change detection to run when Angular might otherwise have not
 scheduled change detection. Tests should ensure these notifications
 are happening and allow Angular to handle when to synchronize

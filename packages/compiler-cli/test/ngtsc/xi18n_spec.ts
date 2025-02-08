@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
@@ -260,6 +260,7 @@ function writeTestCode(env: NgtscTestEnvironment): void {
     @Component({
       selector: 'basic',
       templateUrl: './basic.html',
+      standalone: false,
     })
     export class BasicCmp1 {}`,
   );
@@ -273,11 +274,13 @@ function writeTestCode(env: NgtscTestEnvironment): void {
       selector: 'basic2',
       template: \`<div title="translate me" i18n-title="meaning|desc"></div>
       <p id="welcomeMessage">${welcomeMessage}</p>\`,
+      standalone: false,
     })
     export class BasicCmp2 {}
     @Component({
       selector: 'basic4',
       template: \`<p id="welcomeMessage">${welcomeMessage}</p>\`,
+      standalone: false,
     })
     export class BasicCmp4 {}`,
   );
@@ -290,6 +293,7 @@ function writeTestCode(env: NgtscTestEnvironment): void {
     @Component({
       selector: 'basic3',
       templateUrl: './basic.html',
+      standalone: false,
     })
     export class BasicCmp3 {}`,
   );
@@ -309,6 +313,7 @@ function writeTestCode(env: NgtscTestEnvironment): void {
     @Component({
       selector: 'placeholders',
       templateUrl: './placeholders.html',
+      standalone: false,
     })
     export class PlaceholderCmp { name = 'whatever'; }`,
   );
@@ -331,6 +336,7 @@ function writeTestCode(env: NgtscTestEnvironment): void {
     @Component({
       selector: 'icu',
       templateUrl: './icu.html',
+      standalone: false,
     })
     export class IcuCmp { count = 3; }`,
   );

@@ -8,6 +8,7 @@ import {Hero, HeroService} from './shared';
   template: `
       <pre>{{heroes | json}}</pre>
     `,
+  standalone: false,
 })
 export class HeroesComponent implements OnInit {
   heroes: Hero[] = [];

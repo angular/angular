@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {CommonModule} from '@angular/common';
@@ -28,6 +28,7 @@ import {BenchmarkableExpandingRowModule} from './benchmarkable_expanding_row_mod
     <benchmark-area>
       <benchmarkable-expanding-row></benchmarkable-expanding-row>
     </benchmark-area>`,
+  standalone: false,
 })
 export class InitializationRoot implements AfterViewInit {
   @ViewChild(BenchmarkableExpandingRow, {static: true}) expandingRow!: BenchmarkableExpandingRow;

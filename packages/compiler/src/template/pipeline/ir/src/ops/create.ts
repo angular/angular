@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {SecurityContext} from '../../../../../core';
@@ -12,11 +12,13 @@ import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
 import {
   BindingKind,
+  DeferOpModifierKind,
   DeferTriggerKind,
   I18nContextKind,
   I18nParamValueFlags,
   Namespace,
   OpKind,
+  TDeferDetailsFlags,
   TemplateKind,
 } from '../enums';
 import {SlotHandle} from '../handle';
@@ -68,7 +70,8 @@ export type CreateOp =
   | IcuPlaceholderOp
   | I18nContextOp
   | I18nAttributesOp
-  | DeclareLetOp;
+  | DeclareLetOp
+  | SourceLocationOp;
 
 /**
  * An operation representing the creation of an element or container.
@@ -940,6 +943,13 @@ export interface DeferOp extends Op<CreateOp>, ConsumesSlotOpTrait {
    */
   resolverFn: o.Expression | null;
 
+  /**
+   * Specifies defer block flags, which should be used for all
+   * instances of a given defer block (the flags that should be
+   * placed into the `TDeferDetails` at runtime).
+   */
+  flags: TDeferDetailsFlags | null;
+
   sourceSpan: ParseSourceSpan;
 }
 
@@ -970,6 +980,7 @@ export function createDeferOp(
     errorSlot: null,
     ownResolverFn,
     resolverFn,
+    flags: null,
     sourceSpan,
     ...NEW_OP,
     ...TRAIT_CONSUMES_SLOT,
@@ -1010,6 +1021,10 @@ interface DeferImmediateTrigger extends DeferTriggerBase {
   kind: DeferTriggerKind.Immediate;
 }
 
+interface DeferNeverTrigger extends DeferTriggerBase {
+  kind: DeferTriggerKind.Never;
+}
+
 interface DeferHoverTrigger extends DeferTriggerWithTargetBase {
   kind: DeferTriggerKind.Hover;
 }
@@ -1037,7 +1052,8 @@ export type DeferTrigger =
   | DeferTimerTrigger
   | DeferHoverTrigger
   | DeferInteractionTrigger
-  | DeferViewportTrigger;
+  | DeferViewportTrigger
+  | DeferNeverTrigger;
 
 export interface DeferOnOp extends Op<CreateOp> {
   kind: OpKind.DeferOn;
@@ -1050,9 +1066,9 @@ export interface DeferOnOp extends Op<CreateOp> {
   trigger: DeferTrigger;
 
   /**
-   * Whether to emit the prefetch version of the instruction.
+   * Modifier set on the trigger by the user (e.g. `hydrate`, `prefetch` etc).
    */
-  prefetch: boolean;
+  modifier: DeferOpModifierKind;
 
   sourceSpan: ParseSourceSpan;
 }
@@ -1060,14 +1076,14 @@ export interface DeferOnOp extends Op<CreateOp> {
 export function createDeferOnOp(
   defer: XrefId,
   trigger: DeferTrigger,
-  prefetch: boolean,
+  modifier: DeferOpModifierKind,
   sourceSpan: ParseSourceSpan,
 ): DeferOnOp {
   return {
     kind: OpKind.DeferOn,
     defer,
     trigger,
-    prefetch,
+    modifier,
     sourceSpan,
     ...NEW_OP,
   };
@@ -1535,6 +1551,36 @@ export function createI18nAttributesOp(
     i18nAttributesConfig: null,
     ...NEW_OP,
     ...TRAIT_CONSUMES_SLOT,
+  };
+}
+
+/** Describes a location at which an element is defined within a template. */
+export interface ElementSourceLocation {
+  targetSlot: SlotHandle;
+  offset: number;
+  line: number;
+  column: number;
+}
+
+/**
+ * Op that attaches the location at which each element is defined within the source template.
+ */
+export interface SourceLocationOp extends Op<CreateOp> {
+  kind: OpKind.SourceLocation;
+  templatePath: string;
+  locations: ElementSourceLocation[];
+}
+
+/** Create a `SourceLocationOp`. */
+export function createSourceLocationOp(
+  templatePath: string,
+  locations: ElementSourceLocation[],
+): SourceLocationOp {
+  return {
+    kind: OpKind.SourceLocation,
+    templatePath,
+    locations,
+    ...NEW_OP,
   };
 }
 

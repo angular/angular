@@ -3,40 +3,35 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {FormsModule} from '@angular/forms';
 import {MatDialogModule} from '@angular/material/dialog';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {RouterModule} from '@angular/router';
+import {provideRouter, RouterLink, RouterOutlet} from '@angular/router';
 
 import {AppTodoComponent} from './app-todo.component';
-import {DialogComponent} from './dialog.component';
 
 @NgModule({
   declarations: [AppTodoComponent],
-  imports: [
-    MatDialogModule,
-    MatFormFieldModule,
-    FormsModule,
-    MatInputModule,
-    CommonModule,
-    RouterModule.forChild([
+  imports: [MatDialogModule, RouterLink, RouterOutlet],
+  providers: [
+    provideRouter([
       {
         path: 'todos',
         component: AppTodoComponent,
         children: [
           {
             path: 'app',
-            loadChildren: () => import('./home/home.module').then((m) => m.HomeModule),
+            loadChildren: () => import('./home/home.routes').then((m) => m.HOME_ROUTES),
           },
           {
             path: 'about',
-            loadChildren: () => import('./about/about.module').then((m) => m.AboutModule),
+            loadChildren: () => import('./about/about.routes').then((m) => m.ABOUT_ROUTES),
+          },
+          {
+            path: 'routes',
+            loadChildren: () => import('./routes/routes.module').then((m) => m.RoutesModule),
           },
           {
             path: '**',
@@ -49,7 +44,6 @@ import {DialogComponent} from './dialog.component';
         redirectTo: 'todos',
       },
     ]),
-    DialogComponent,
   ],
   exports: [AppTodoComponent],
   bootstrap: [AppTodoComponent],

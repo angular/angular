@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {SecurityContext} from '../../../../../core';
@@ -12,6 +12,7 @@ import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
 import {
   BindingKind,
+  DeferOpModifierKind,
   I18nExpressionFor,
   I18nParamResolutionTime,
   OpKind,
@@ -773,9 +774,9 @@ export interface DeferWhenOp extends Op<UpdateOp>, DependsOnSlotContextOpTrait, 
   expr: o.Expression;
 
   /**
-   * Whether to emit the prefetch version of the instruction.
+   * Modifier set on the trigger by the user (e.g. `hydrate`, `prefetch` etc).
    */
-  prefetch: boolean;
+  modifier: DeferOpModifierKind;
 
   sourceSpan: ParseSourceSpan;
 }
@@ -783,14 +784,14 @@ export interface DeferWhenOp extends Op<UpdateOp>, DependsOnSlotContextOpTrait, 
 export function createDeferWhenOp(
   target: XrefId,
   expr: o.Expression,
-  prefetch: boolean,
+  modifier: DeferOpModifierKind,
   sourceSpan: ParseSourceSpan,
 ): DeferWhenOp {
   return {
     kind: OpKind.DeferWhen,
     target,
     expr,
-    prefetch,
+    modifier,
     sourceSpan,
     ...NEW_OP,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,

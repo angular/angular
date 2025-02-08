@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {
   Directive,
@@ -22,22 +22,25 @@ import {
  *
  * @usageNotes
  *
- * Set the font of the containing element to the result of an expression.
- *
- * ```
- * <some-element [ngStyle]="{'font-style': styleExp}">...</some-element>
- * ```
- *
  * Set the width of the containing element to a pixel value returned by an expression.
  *
- * ```
+ * ```html
  * <some-element [ngStyle]="{'max-width.px': widthExp}">...</some-element>
  * ```
  *
  * Set a collection of style values using an expression that returns key-value pairs.
  *
- * ```
+ * ```html
  * <some-element [ngStyle]="objExp">...</some-element>
+ * ```
+ *
+ * For more simple use cases you can use the [style bindings](/guide/templates/binding#css-class-and-style-property-bindings) directly.
+ * It doesn't require importing a directive.
+ *
+ * Set the font of the containing element to the result of an expression.
+ *
+ * ```html
+ * <some-element [style]="{'font-style': styleExp}">...</some-element>
  * ```
  *
  * @description
@@ -51,11 +54,12 @@ import {
  * is assigned to the given style property.
  * If the result of evaluation is null, the corresponding style is removed.
  *
+ * @see [Style bindings](/guide/templates/binding#css-class-and-style-property-bindings)
+ *
  * @publicApi
  */
 @Directive({
   selector: '[ngStyle]',
-  standalone: true,
 })
 export class NgStyle implements DoCheck {
   private _ngStyle: {[key: string]: string} | null | undefined = null;

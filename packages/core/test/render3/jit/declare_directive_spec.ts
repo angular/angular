@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ElementRef, forwardRef, ɵɵngDeclareDirective} from '@angular/core';
@@ -20,6 +20,7 @@ import {functionContaining} from './matcher';
 describe('directive declaration jit compilation', () => {
   it('should compile a minimal directive declaration', () => {
     const def = ɵɵngDeclareDirective({
+      version: '18.0.0',
       type: TestClass,
     }) as DirectiveDef<TestClass>;
 
@@ -28,6 +29,7 @@ describe('directive declaration jit compilation', () => {
 
   it('should compile a selector', () => {
     const def = ɵɵngDeclareDirective({
+      version: '18.0.0',
       type: TestClass,
       selector: '[dir], test',
     }) as DirectiveDef<TestClass>;
@@ -39,6 +41,7 @@ describe('directive declaration jit compilation', () => {
 
   it('should compile inputs and outputs', () => {
     const def = ɵɵngDeclareDirective({
+      version: '18.0.0',
       type: TestClass,
       inputs: {
         minifiedProperty: 'property',
@@ -66,6 +69,7 @@ describe('directive declaration jit compilation', () => {
 
   it('should compile exportAs', () => {
     const def = ɵɵngDeclareDirective({
+      version: '18.0.0',
       type: TestClass,
       exportAs: ['a', 'b'],
     }) as DirectiveDef<TestClass>;
@@ -77,6 +81,7 @@ describe('directive declaration jit compilation', () => {
 
   it('should compile providers', () => {
     const def = ɵɵngDeclareDirective({
+      version: '18.0.0',
       type: TestClass,
       providers: [{provide: 'token', useValue: 123}],
     }) as DirectiveDef<TestClass>;
@@ -89,6 +94,7 @@ describe('directive declaration jit compilation', () => {
 
   it('should compile content queries', () => {
     const def = ɵɵngDeclareDirective({
+      version: '18.0.0',
       type: TestClass,
       queries: [
         {
@@ -125,6 +131,7 @@ describe('directive declaration jit compilation', () => {
 
   it('should compile content queries with forwardRefs', () => {
     const def = ɵɵngDeclareDirective({
+      version: '18.0.0',
       type: TestClass,
       queries: [
         {
@@ -146,6 +153,7 @@ describe('directive declaration jit compilation', () => {
 
   it('should compile view queries', () => {
     const def = ɵɵngDeclareDirective({
+      version: '18.0.0',
       type: TestClass,
       viewQueries: [
         {
@@ -182,6 +190,7 @@ describe('directive declaration jit compilation', () => {
 
   it('should compile view queries with forwardRefs', () => {
     const def = ɵɵngDeclareDirective({
+      version: '18.0.0',
       type: TestClass,
       viewQueries: [
         {
@@ -203,6 +212,7 @@ describe('directive declaration jit compilation', () => {
 
   it('should compile host bindings', () => {
     const def = ɵɵngDeclareDirective({
+      version: '18.0.0',
       type: TestClass,
       host: {
         attributes: {
@@ -242,6 +252,7 @@ describe('directive declaration jit compilation', () => {
 
   it('should compile directives with inheritance', () => {
     const def = ɵɵngDeclareDirective({
+      version: '18.0.0',
       type: TestClass,
       usesInheritance: true,
     }) as DirectiveDef<TestClass>;
@@ -253,12 +264,77 @@ describe('directive declaration jit compilation', () => {
 
   it('should compile directives with onChanges lifecycle hook', () => {
     const def = ɵɵngDeclareDirective({
+      version: '18.0.0',
       type: TestClass,
       usesOnChanges: true,
     }) as DirectiveDef<TestClass>;
 
     expectDirectiveDef(def, {
       features: [ɵɵNgOnChangesFeature],
+    });
+  });
+
+  it('should compile host directives', () => {
+    class One {}
+    class Two {}
+
+    const def = ɵɵngDeclareDirective({
+      version: '18.0.0',
+      type: TestClass,
+      hostDirectives: [
+        {
+          directive: One,
+          inputs: ['firstInput', 'firstInput', 'secondInput', 'secondInputAlias'],
+          outputs: ['firstOutput', 'firstOutput', 'secondOutput', 'secondOutputAlias'],
+        },
+        {
+          directive: Two,
+        },
+      ],
+    }) as DirectiveDef<TestClass>;
+
+    expectDirectiveDef(def, {
+      features: [jasmine.any(Function)],
+      hostDirectives: [
+        {
+          directive: One,
+          inputs: {
+            'firstInput': 'firstInput',
+            'secondInput': 'secondInputAlias',
+          },
+          outputs: {
+            'firstOutput': 'firstOutput',
+            'secondOutput': 'secondOutputAlias',
+          },
+        },
+        {
+          directive: Two,
+          inputs: {},
+          outputs: {},
+        },
+      ],
+    });
+  });
+
+  it('should declare a 0.0.0 directive as standalone', () => {
+    const def = ɵɵngDeclareDirective({
+      version: '0.0.0-PLACEHOLDER',
+      type: TestClass,
+    }) as DirectiveDef<TestClass>;
+
+    expectDirectiveDef(def, {
+      standalone: true,
+    });
+  });
+
+  it('should declare a v19+ directive as standalone', () => {
+    const def = ɵɵngDeclareDirective({
+      version: '19.0.0',
+      type: TestClass,
+    }) as DirectiveDef<TestClass>;
+
+    expectDirectiveDef(def, {
+      standalone: true,
     });
   });
 });
@@ -278,6 +354,8 @@ type DirectiveDefExpectations = jasmine.Expected<
     | 'viewQuery'
     | 'exportAs'
     | 'providersResolver'
+    | 'hostDirectives'
+    | 'standalone'
   >
 >;
 
@@ -303,6 +381,8 @@ function expectDirectiveDef(
     viewQuery: null,
     exportAs: null,
     providersResolver: null,
+    hostDirectives: null,
+    standalone: false,
     ...expected,
   };
 
@@ -321,6 +401,8 @@ function expectDirectiveDef(
   expect(actual.providersResolver)
     .withContext('providersResolver')
     .toEqual(expectation.providersResolver);
+  expect(actual.hostDirectives).withContext('hostDirectives').toEqual(expectation.hostDirectives);
+  expect(actual.standalone).withContext('standalone').toEqual(expectation.standalone);
 }
 
 class TestClass {}

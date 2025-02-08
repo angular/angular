@@ -16,6 +16,7 @@ interface Hero {
       <pre>{{heroes | json}}</pre>
     `,
   styleUrls: ['../app.component.css'],
+  standalone: false,
 })
 export class AppComponent implements OnInit {
   title = 'Tour of Heroes';

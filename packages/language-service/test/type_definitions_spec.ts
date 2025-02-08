@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
@@ -26,7 +26,10 @@ describe('type definitions', () => {
         import {Component, NgModule} from '@angular/core';
         import {CommonModule} from '@angular/common';
 
-        @Component({templateUrl: 'app.html'})
+        @Component({
+          templateUrl: 'app.html',
+          standalone: false,
+        })
         export class AppCmp {}
 
         @NgModule({declarations: [AppCmp], imports: [CommonModule]})
@@ -179,7 +182,7 @@ describe('type definitions', () => {
         })
         export class AppCmp {
           noop() {}
-          value = 'hello';
+          value = 'hello' as string | undefined;
         }
       `,
       'app.html': `Will be overridden`,

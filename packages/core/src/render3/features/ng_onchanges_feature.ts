@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {InputSignalNode} from '../../authoring/input/input_signal_node';
@@ -26,7 +26,7 @@ import {DirectiveDef, DirectiveDefFeature} from '../interfaces/definition';
  *
  * Example usage:
  *
- * ```
+ * ```ts
  * static ɵcmp = defineComponent({
  *   ...
  *   inputs: {name: 'publicName'},
@@ -36,9 +36,16 @@ import {DirectiveDef, DirectiveDefFeature} from '../interfaces/definition';
  *
  * @codeGenApi
  */
-export function ɵɵNgOnChangesFeature<T>(): DirectiveDefFeature {
-  return NgOnChangesFeatureImpl;
-}
+export const ɵɵNgOnChangesFeature: () => DirectiveDefFeature = /* @__PURE__ */ (() => {
+  const ɵɵNgOnChangesFeatureImpl = () => NgOnChangesFeatureImpl;
+
+  // This option ensures that the ngOnChanges lifecycle hook will be inherited
+  // from superclasses (in InheritDefinitionFeature).
+  /** @nocollapse */
+  ɵɵNgOnChangesFeatureImpl.ngInherit = true;
+
+  return ɵɵNgOnChangesFeatureImpl;
+})();
 
 export function NgOnChangesFeatureImpl<T>(definition: DirectiveDef<T>) {
   if (definition.type.prototype.ngOnChanges) {
@@ -46,12 +53,6 @@ export function NgOnChangesFeatureImpl<T>(definition: DirectiveDef<T>) {
   }
   return rememberChangeHistoryAndInvokeOnChangesHook;
 }
-
-// This option ensures that the ngOnChanges lifecycle hook will be inherited
-// from superclasses (in InheritDefinitionFeature).
-/** @nocollapse */
-// tslint:disable-next-line:no-toplevel-property-access
-(ɵɵNgOnChangesFeature as DirectiveDefFeature).ngInherit = true;
 
 /**
  * This is a synthetic lifecycle hook which gets inserted into `TView.preOrderHooks` to simulate

@@ -1,6 +1,6 @@
 // #docplaster
 // #docregion form-builder
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 // #docregion form-builder-imports
 import {FormBuilder} from '@angular/forms';
 // #enddocregion form-builder-imports, form-builder
@@ -13,8 +13,12 @@ import {FormArray} from '@angular/forms';
   selector: 'app-profile-editor',
   templateUrl: './profile-editor.component.html',
   styleUrls: ['./profile-editor.component.css'],
+  standalone: false,
 })
 export class ProfileEditorComponent {
+  // #docregion inject-form-builder
+  private formBuilder = inject(FormBuilder);
+  // #enddocregion inject-form-builder
   // #docregion formgroup-compare
   profileForm = this.formBuilder.group({
     firstName: [''],
@@ -33,11 +37,6 @@ export class ProfileEditorComponent {
   get aliases() {
     return this.profileForm.get('aliases') as FormArray;
   }
-
-  // #docregion inject-form-builder, form-builder
-
-  constructor(private formBuilder: FormBuilder) {}
-  // #enddocregion inject-form-builder, form-builder
 
   updateProfile() {
     this.profileForm.patchValue({

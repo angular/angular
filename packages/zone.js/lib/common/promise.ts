@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {ZoneType} from '../zone-impl';
 
@@ -83,7 +83,7 @@ export function patchPromise(Zone: ZoneType): void {
     }
 
     function isThenable(value: any): boolean {
-      return value && value.then;
+      return value && typeof value.then === 'function';
     }
 
     function forwardResolution(value: any): any {

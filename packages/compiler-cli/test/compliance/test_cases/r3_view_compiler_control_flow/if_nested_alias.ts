@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 
 @Component({
-  template: `
+    template: `
     @if (value(); as root) {
       Root: {{value()}}/{{root}}
 
@@ -14,6 +14,7 @@ import {Component} from '@angular/core';
       }
     }
   `,
+    standalone: false
 })
 export class MyApp {
   value = () => 1;

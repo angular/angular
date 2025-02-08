@@ -1,7 +1,7 @@
 import {Component, NgModule} from '@angular/core';
 
 @Component({
-  template: `
+    template: `
     <ng-content select="[id=toMainBefore]"></ng-content>
     <ng-template>
       <ng-content select="[id=toTemplate]"></ng-content>
@@ -14,6 +14,7 @@ import {Component, NgModule} from '@angular/core';
     </ng-template>
     <ng-content select="[id=toMainAfter]"></ng-content>
   `,
+    standalone: false
 })
 class Cmp {
 }

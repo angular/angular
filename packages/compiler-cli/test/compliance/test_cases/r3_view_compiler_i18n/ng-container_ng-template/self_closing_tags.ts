@@ -1,8 +1,8 @@
 import {Component, NgModule} from '@angular/core';
 
 @Component({
-  selector: 'my-component',
-  template: `
+    selector: 'my-component',
+    template: `
   <ng-container i18n>
     <img src="logo.png" title="Logo" /> is my logo #1
   </ng-container>
@@ -10,6 +10,7 @@ import {Component, NgModule} from '@angular/core';
     <img src="logo.png" title="Logo" /> is my logo #2
   </ng-template>
 `,
+    standalone: false
 })
 export class MyComponent {
 }

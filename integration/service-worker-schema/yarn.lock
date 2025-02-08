@@ -3,17 +3,17 @@
 
 
 "@angular/common@file:../../dist/packages-dist/common":
-  version "18.1.0-next.1"
+  version "19.0.0-next.1"
   dependencies:
     tslib "^2.3.0"
 
 "@angular/core@file:../../dist/packages-dist/core":
-  version "18.1.0-next.1"
+  version "19.0.0-next.1"
   dependencies:
     tslib "^2.3.0"
 
 "@angular/service-worker@file:../../dist/packages-dist/service-worker":
-  version "18.1.0-next.1"
+  version "19.0.0-next.1"
   dependencies:
     tslib "^2.3.0"
 
@@ -23,12 +23,10 @@
     tslib "^2.1.0"
 
 tslib@^2.1.0, tslib@^2.3.0:
-  version "2.6.3"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.6.3.tgz#0438f810ad7a9edcde7a241c3d80db693c8cbfe0"
-  integrity sha512-xNvxJEOUiWPGhUuUdQgAJPKOOJfGnIyKySOc09XkKsgdUV/3E2zvwZYdejjmRgPCgcym1juLH3226yA7sEFJKQ==
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.7.0.tgz#d9b40c5c40ab59e8738f297df3087bf1a2690c01"
+  integrity sha512-gLXCKdN1/j47AiHiOkJN69hJmcbGTHI0ImLmbYLHykhgeN0jVGola9yVjFgzCUklsZQMW55o+dW7IXv3RCXDzA==
 
 "zone.js@file:../../dist/zone.js-dist/archive/zone.js.tgz":
-  version "0.13.0"
-  resolved "file:../../dist/zone.js-dist/archive/zone.js.tgz#5cce033086dceb2d71222afdb4d901b217852fa8"
-  dependencies:
-    tslib "^2.3.0"
+  version "0.15.0"
+  resolved "file:../../dist/zone.js-dist/archive/zone.js.tgz#4922d47f03b1f9023146e166774e44738a589214"

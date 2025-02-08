@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import * as o from '@angular/compiler';
 
@@ -182,18 +182,19 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
     );
   }
 
-  visitTaggedTemplateExpr(ast: o.TaggedTemplateExpr, context: Context): TExpression {
+  visitTaggedTemplateLiteralExpr(ast: o.TaggedTemplateLiteralExpr, context: Context): TExpression {
     return this.setSourceMapRange(
-      this.createTaggedTemplateExpression(ast.tag.visitExpression(this, context), {
-        elements: ast.template.elements.map((e) =>
-          createTemplateElement({
-            cooked: e.text,
-            raw: e.rawText,
-            range: e.sourceSpan ?? ast.sourceSpan,
-          }),
-        ),
-        expressions: ast.template.expressions.map((e) => e.visitExpression(this, context)),
-      }),
+      this.createTaggedTemplateExpression(
+        ast.tag.visitExpression(this, context),
+        this.getTemplateLiteralFromAst(ast.template, context),
+      ),
+      ast.sourceSpan,
+    );
+  }
+
+  visitTemplateLiteralExpr(ast: o.TemplateLiteralExpr, context: Context): TExpression {
+    return this.setSourceMapRange(
+      this.factory.createTemplateLiteral(this.getTemplateLiteralFromAst(ast, context)),
       ast.sourceSpan,
     );
   }
@@ -356,7 +357,15 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
   }
 
   visitDynamicImportExpr(ast: o.DynamicImportExpr, context: any) {
-    return this.factory.createDynamicImport(ast.url);
+    const urlExpression =
+      typeof ast.url === 'string'
+        ? this.factory.createLiteral(ast.url)
+        : ast.url.visitExpression(this, context);
+    if (ast.urlComment) {
+      this.factory.attachComments(urlExpression, [o.leadingComment(ast.urlComment, true)]);
+    }
+
+    return this.factory.createDynamicImport(urlExpression);
   }
 
   visitNotExpr(ast: o.NotExpr, context: Context): TExpression {
@@ -425,6 +434,10 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
     throw new Error('Method not implemented.');
   }
 
+  visitTemplateLiteralElementExpr(ast: o.TemplateLiteralElementExpr, context: any) {
+    throw new Error('Method not implemented');
+  }
+
   visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, _context: Context): any {
     this.recordWrappedNode(ast);
     return ast.node;
@@ -465,6 +478,22 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
       this.factory.attachComments(statement, leadingComments);
     }
     return statement;
+  }
+
+  private getTemplateLiteralFromAst(
+    ast: o.TemplateLiteralExpr,
+    context: Context,
+  ): TemplateLiteral<TExpression> {
+    return {
+      elements: ast.elements.map((e) =>
+        createTemplateElement({
+          cooked: e.text,
+          raw: e.rawText,
+          range: e.sourceSpan ?? ast.sourceSpan,
+        }),
+      ),
+      expressions: ast.expressions.map((e) => e.visitExpression(this, context)),
+    };
   }
 }
 

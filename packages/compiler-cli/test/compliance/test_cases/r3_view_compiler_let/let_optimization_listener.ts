@@ -10,7 +10,6 @@ import {Component} from '@angular/core';
     {{value}}
     <button (click)="callback(three)"></button>
   `,
-  standalone: true,
 })
 export class MyApp {
   value = 0;

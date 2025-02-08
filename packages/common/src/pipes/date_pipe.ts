@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Inject, InjectionToken, LOCALE_ID, Optional, Pipe, PipeTransform} from '@angular/core';
@@ -41,14 +41,14 @@ export const DATE_PIPE_DEFAULT_TIMEZONE = new InjectionToken<string>(
  * For example:
  *
  * Override the default date format by providing a value using the token:
- * ```typescript
+ * ```ts
  * providers: [
  *   {provide: DATE_PIPE_DEFAULT_OPTIONS, useValue: {dateFormat: 'shortDate'}}
  * ]
  * ```
  *
  * Override the default timezone by providing a value using the token:
- * ```typescript
+ * ```ts
  * providers: [
  *   {provide: DATE_PIPE_DEFAULT_OPTIONS, useValue: {timezone: '-1200'}}
  * ]
@@ -199,7 +199,7 @@ export const DATE_PIPE_DEFAULT_OPTIONS = new InjectionToken<DatePipeConfig>(
  *
  * The following component uses a date pipe to display the current date in different formats.
  *
- * ```
+ * ```angular-ts
  * @Component({
  *  selector: 'date-pipe',
  *  template: `<div>
@@ -218,7 +218,6 @@ export const DATE_PIPE_DEFAULT_OPTIONS = new InjectionToken<DatePipeConfig>(
  */
 @Pipe({
   name: 'date',
-  standalone: true,
 })
 export class DatePipe implements PipeTransform {
   constructor(
@@ -234,10 +233,10 @@ export class DatePipe implements PipeTransform {
    * custom format string.  When not provided, the `DatePipe` looks for the value using the
    * `DATE_PIPE_DEFAULT_OPTIONS` injection token (and reads the `dateFormat` property).
    * If the token is not configured, the `mediumDate` is used as a value.
-   * @param timezone A timezone offset (such as `'+0430'`), or a standard UTC/GMT, or continental US
-   * timezone abbreviation. When not provided, the `DatePipe` looks for the value using the
-   * `DATE_PIPE_DEFAULT_OPTIONS` injection token (and reads the `timezone` property). If the token
-   * is not configured, the end-user's local system timezone is used as a value.
+   * @param timezone A timezone offset (such as `'+0430'`). When not provided, the `DatePipe`
+   * looks for the value using the `DATE_PIPE_DEFAULT_OPTIONS` injection token (and reads
+   * the `timezone` property). If the token is not configured, the end-user's local system
+   * timezone is used as a value.
    * @param locale A locale code for the locale format rules to use.
    * When not supplied, uses the value of `LOCALE_ID`, which is `en-US` by default.
    * See [Setting your app locale](guide/i18n/locale-id).

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ZoneType} from '../zone-impl';
@@ -131,6 +131,7 @@ export function patchJest(Zone: ZoneType): void {
       };
       context[methodName].each = wrapTestFactoryInZone((originalJestFn as any).each);
       context[methodName].todo = (originalJestFn as any).todo;
+      context[methodName].failing = (originalJestFn as any).failing;
     });
 
     context.it.only = context.fit;

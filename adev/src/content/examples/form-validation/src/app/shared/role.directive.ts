@@ -33,6 +33,7 @@ export class UniqueRoleValidator implements AsyncValidator {
       multi: true,
     },
   ],
+  standalone: false,
 })
 export class UniqueRoleValidatorDirective implements AsyncValidator {
   constructor(private validator: UniqueRoleValidator) {}

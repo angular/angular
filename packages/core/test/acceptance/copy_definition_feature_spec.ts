@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -45,6 +45,7 @@ describe('CopyDefinitionFeature', () => {
       static override ɵcmp = defineComponent({
         type: ChildComponent,
         selectors: [['some-cmp']],
+        standalone: false,
         features: [InheritDefinitionFeature, CopyDefinitionFeature],
         decls: 0,
         vars: 0,
@@ -65,6 +66,7 @@ describe('CopyDefinitionFeature', () => {
     @Component({
       selector: 'test-cmp',
       template: '<some-cmp name="Success!"></some-cmp>',
+      standalone: false,
     })
     class TestCmp {}
 

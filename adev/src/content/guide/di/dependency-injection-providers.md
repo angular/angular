@@ -110,7 +110,7 @@ class HeroService {
     private isAuthorized: boolean) { }
 
   getHeroes() {
-    const auth = this.isAuthorized ? 'authorized ' : 'unauthorized';
+    const auth = this.isAuthorized ? 'authorized' : 'unauthorized';
     this.logger.log(`Getting heroes for ${auth} user.`);
     return HEROES.filter(hero => this.isAuthorized || !hero.isSecret);
   }
@@ -161,6 +161,10 @@ The following example defines a token, `APP_CONFIG`. of the type `InjectionToken
 <docs-code header="src/app/app.config.ts" language="typescript" highlight="[3]">
 import { InjectionToken } from '@angular/core';
 
+export interface AppConfig {
+  title: string;
+}
+
 export const APP_CONFIG = new InjectionToken<AppConfig>('app.config description');
 </docs-code>
 
@@ -169,6 +173,10 @@ The optional type parameter, `<AppConfig>`, and the token description, `app.conf
 Next, register the dependency provider in the component using the `InjectionToken` object of `APP_CONFIG`:
 
 <docs-code header="src/app/app.component.ts" language="typescript">
+const MY_APP_CONFIG_VARIABLE: AppConfig = {
+  title: 'Hello',
+};
+
 providers: [{ provide: APP_CONFIG, useValue: MY_APP_CONFIG_VARIABLE }]
 </docs-code>
 

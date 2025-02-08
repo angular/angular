@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ɵRuntimeError as RuntimeError} from '@angular/core';
@@ -31,7 +31,7 @@ import {last, shallowEqual} from './utils/collection';
  *
  * @usageNotes
  *
- * ```
+ * ```ts
  * // create /team/33/user/11
  * createUrlTreeFromSnapshot(snapshot, ['/team', 33, 'user', 11]);
  *

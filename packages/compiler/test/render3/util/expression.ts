@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {AbsoluteSourceSpan} from '@angular/compiler';
@@ -87,6 +87,10 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
     this.recordAst(ast);
     super.visitPrefixNot(ast, null);
   }
+  override visitTypeofExpression(ast: e.TypeofExpression) {
+    this.recordAst(ast);
+    super.visitTypeofExpression(ast, null);
+  }
   override visitPropertyRead(ast: e.PropertyRead) {
     this.recordAst(ast);
     super.visitPropertyRead(ast, null);
@@ -110,6 +114,14 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
   override visitSafeCall(ast: e.SafeCall) {
     this.recordAst(ast);
     super.visitSafeCall(ast, null);
+  }
+  override visitTemplateLiteral(ast: e.TemplateLiteral, context: any): void {
+    this.recordAst(ast);
+    super.visitTemplateLiteral(ast, null);
+  }
+  override visitTemplateLiteralElement(ast: e.TemplateLiteralElement, context: any): void {
+    this.recordAst(ast);
+    super.visitTemplateLiteralElement(ast, null);
   }
 
   visitTemplate(ast: t.Template) {

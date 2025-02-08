@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /**
@@ -168,6 +168,16 @@ export enum PerfPhase {
    * Time spent by the Angular Language Service to fix all detected same type errors.
    */
   LsCodeFixesAll,
+
+  /**
+   * Time spent computing possible Angular refactorings.
+   */
+  LSComputeApplicableRefactorings,
+
+  /**
+   * Time spent computing changes for applying a given refactoring.
+   */
+  LSApplyRefactoring,
 }
 
 /**

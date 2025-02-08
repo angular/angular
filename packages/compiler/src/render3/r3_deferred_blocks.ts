@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as html from '../ml_parser/ast';
@@ -14,6 +14,7 @@ import * as t from './r3_ast';
 import {
   getTriggerParametersStart,
   parseDeferredTime,
+  parseNeverTrigger,
   parseOnTrigger,
   parseWhenTrigger,
 } from './r3_deferred_triggers';
@@ -23,6 +24,15 @@ const PREFETCH_WHEN_PATTERN = /^prefetch\s+when\s/;
 
 /** Pattern to identify a `prefetch on` trigger. */
 const PREFETCH_ON_PATTERN = /^prefetch\s+on\s/;
+
+/** Pattern to identify a `hydrate when` trigger. */
+const HYDRATE_WHEN_PATTERN = /^hydrate\s+when\s/;
+
+/** Pattern to identify a `hydrate on` trigger. */
+const HYDRATE_ON_PATTERN = /^hydrate\s+on\s/;
+
+/** Pattern to identify a `hydrate never` trigger. */
+const HYDRATE_NEVER_PATTERN = /^hydrate\s+never(\s*)$/;
 
 /** Pattern to identify a `minimum` parameter in a block. */
 const MINIMUM_PARAMETER_PATTERN = /^minimum\s/;
@@ -53,8 +63,8 @@ export function createDeferredBlock(
 ): {node: t.DeferredBlock; errors: ParseError[]} {
   const errors: ParseError[] = [];
   const {placeholder, loading, error} = parseConnectedBlocks(connectedBlocks, errors, visitor);
-  const {triggers, prefetchTriggers} = parsePrimaryTriggers(
-    ast.parameters,
+  const {triggers, prefetchTriggers, hydrateTriggers} = parsePrimaryTriggers(
+    ast,
     bindingParser,
     errors,
     placeholder,
@@ -78,6 +88,7 @@ export function createDeferredBlock(
     html.visitAll(visitor, ast.children, ast.children),
     triggers,
     prefetchTriggers,
+    hydrateTriggers,
     placeholder,
     loading,
     error,
@@ -253,15 +264,16 @@ function parseErrorBlock(ast: html.Block, visitor: html.Visitor): t.DeferredBloc
 }
 
 function parsePrimaryTriggers(
-  params: html.BlockParameter[],
+  ast: html.Block,
   bindingParser: BindingParser,
   errors: ParseError[],
   placeholder: t.DeferredBlockPlaceholder | null,
 ) {
   const triggers: t.DeferredBlockTriggers = {};
   const prefetchTriggers: t.DeferredBlockTriggers = {};
+  const hydrateTriggers: t.DeferredBlockTriggers = {};
 
-  for (const param of params) {
+  for (const param of ast.parameters) {
     // The lexer ignores the leading spaces so we can assume
     // that the expression starts with a keyword.
     if (WHEN_PARAMETER_PATTERN.test(param.expression)) {
@@ -272,10 +284,25 @@ function parsePrimaryTriggers(
       parseWhenTrigger(param, bindingParser, prefetchTriggers, errors);
     } else if (PREFETCH_ON_PATTERN.test(param.expression)) {
       parseOnTrigger(param, prefetchTriggers, errors, placeholder);
+    } else if (HYDRATE_WHEN_PATTERN.test(param.expression)) {
+      parseWhenTrigger(param, bindingParser, hydrateTriggers, errors);
+    } else if (HYDRATE_ON_PATTERN.test(param.expression)) {
+      parseOnTrigger(param, hydrateTriggers, errors, placeholder);
+    } else if (HYDRATE_NEVER_PATTERN.test(param.expression)) {
+      parseNeverTrigger(param, hydrateTriggers, errors);
     } else {
       errors.push(new ParseError(param.sourceSpan, 'Unrecognized trigger'));
     }
   }
 
-  return {triggers, prefetchTriggers};
+  if (hydrateTriggers.never && Object.keys(hydrateTriggers).length > 1) {
+    errors.push(
+      new ParseError(
+        ast.startSourceSpan,
+        'Cannot specify additional `hydrate` triggers if `hydrate never` is present',
+      ),
+    );
+  }
+
+  return {triggers, prefetchTriggers, hydrateTriggers};
 }

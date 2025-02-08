@@ -52,7 +52,7 @@ A brief guide for setting up a loader can be found in the [Configuring an Image 
 <docs-step title="Enable the directive">
 To activate the `NgOptimizedImage` directive, replace your image's `src` attribute with `ngSrc`.
 
-<docs-code language="typescript">
+<docs-code language="angular-html">
 
 <img ngSrc="cat.jpg">
 
@@ -63,7 +63,7 @@ If you're using a [built-in third-party loader](#built-in-loaders), make sure to
 <docs-step title="Mark images as `priority`">
 Always mark the [LCP image](https://web.dev/lcp/#what-elements-are-considered) on your page as `priority` to prioritize its loading.
 
-<docs-code language="typescript">
+<docs-code language="angular-html">
 
 <img ngSrc="cat.jpg" width="400" height="200" priority>
 
@@ -80,7 +80,7 @@ Angular displays a warning during development if the LCP element is an image tha
 <docs-step title="Include Width and Height">
 In order to prevent [image-related layout shifts](https://web.dev/css-web-vitals/#images-and-layout-shifts), NgOptimizedImage requires that you specify a height and width for your image, as follows:
 
-<docs-code language="typescript">
+<docs-code language="angular-html">
 
 <img ngSrc="cat.jpg" width="400" height="200">
 
@@ -100,7 +100,7 @@ In cases where you want to have an image fill a containing element, you can use 
 
 When you add the `fill` attribute to your image, you do not need and should not include a `width` and `height`, as in this example:
 
-<docs-code language="typescript">
+<docs-code language="angular-html">
 
 <img ngSrc="cat.jpg" fill>
 
@@ -133,7 +133,7 @@ You can adjust how the background image fills the container as described in the 
 
 NgOptimizedImage can display an automatic low-resolution placeholder for your image if you're using a CDN or image host that provides automatic image resizing. Take advantage of this feature by adding the `placeholder` attribute to your image:
 
-<docs-code format="typescript" language="typescript">
+<docs-code format="typescript" language="angular-html">
 
 <img ngSrc="cat.jpg" width="400" height="200" placeholder>
 
@@ -160,9 +160,14 @@ If you want sharp edges around your blurred placeholder, you can wrap your image
 
 You can also specify a placeholder using a base64 [data URL](https://developer.mozilla.org/docs/Web/HTTP/Basics_of_HTTP/Data_URLs) without an image loader. The data url format is `data:image/[imagetype];[data]`, where `[imagetype]` is the image format, just as `png`, and `[data]` is a base64 encoding of the image. That encoding can be done using the command line or in JavaScript. For specific commands, see [the MDN documentation](https://developer.mozilla.org/docs/Web/HTTP/Basics_of_HTTP/Data_URLs#encoding_data_into_base64_format). An example of a data URL placeholder with truncated data is shown below:
 
-<docs-code format="typescript" language="typescript">
+<docs-code language="angular-html">
 
-<img ngSrc="cat.jpg" width="400" height="200" placeholder="data:image/png;base64,iVBORw0K...">
+<img 
+  ngSrc="cat.jpg" 
+  width="400" 
+  height="200" 
+  placeholder="data:image/png;base64,iVBORw0K..."
+/>
 
 </docs-code>
 
@@ -172,9 +177,15 @@ However, large data URLs  increase the size of your Angular bundles and slow dow
 
 By default, NgOptimizedImage applies a CSS blur effect to image placeholders. To render a placeholder without blur, provide a `placeholderConfig` argument with an object that includes the `blur` property, set to false. For example:
 
-<docs-code format="typescript" language="typescript">
+<docs-code language="angular-html">
 
-<img ngSrc="cat.jpg" width="400" height="200" placeholder [placeholderConfig]="{blur: false}">
+<img 
+  ngSrc="cat.jpg" 
+  width="400" 
+  height="200" 
+  placeholder 
+  [placeholderConfig]="{blur: false}"
+/>
 
 </docs-code>
 
@@ -224,7 +235,10 @@ Defining a [`srcset` attribute](https://developer.mozilla.org/docs/Web/API/HTMLI
 
 If your image should be "fixed" in size  (i.e. the same size across devices, except for [pixel density](https://web.dev/codelab-density-descriptors/)), there is no need to set a `sizes` attribute. A `srcset` can be generated automatically from the image's width and height attributes with no further input required.
 
-Example srcset generated: `<img ... srcset="image-400w.jpg 1x, image-800w.jpg 2x">`
+Example srcset generated: 
+```angular-html
+<img ... srcset="image-400w.jpg 1x, image-800w.jpg 2x">
+```
 
 #### Responsive images
 
@@ -233,6 +247,8 @@ If your image should be responsive (i.e. grow and shrink according to viewport s
 If you haven't used `sizes` before, a good place to start is to set it based on viewport width. For example, if your CSS causes the image to fill 100% of viewport width, set `sizes` to `100vw` and the browser will select the image in the `srcset` that is closest to the viewport width (after accounting for pixel density). If your image is only likely to take up half the screen (ex: in a sidebar), set `sizes` to `50vw` to ensure the browser selects a smaller image. And so on.
 
 If you find that the above does not cover your desired image behavior, see the documentation on [advanced sizes values](#advanced-sizes-values).
+
+Note that `NgOptimizedImage` automatically prepends `"auto"` to the provided `sizes` value. This is an optimization that increases the accuracy of srcset selection on browsers which support `sizes="auto"`, and is ignored by browsers which do not.
 
 By default, the responsive breakpoints are:
 
@@ -253,7 +269,7 @@ providers: [
 
 If you would like to manually define a `srcset` attribute, you can provide your own using the `ngSrcset` attribute:
 
-<docs-code language="html">
+<docs-code language="angular-html">
 
 <img ngSrc="hero.jpg" ngSrcset="100w, 200w, 300w">
 
@@ -261,7 +277,7 @@ If you would like to manually define a `srcset` attribute, you can provide your 
 
 If the `ngSrcset` attribute is present, `NgOptimizedImage` generates and sets the `srcset` based on the sizes included. Do not include image file names in `ngSrcset` - the directive infers this information from `ngSrc`. The directive supports both width descriptors (e.g. `100w`) and density descriptors (e.g. `1x`).
 
-<docs-code language="html">
+<docs-code language="angular-html">
 
 <img ngSrc="hero.jpg" ngSrcset="100w, 200w, 300w" sizes="50vw">
 
@@ -271,7 +287,7 @@ If the `ngSrcset` attribute is present, `NgOptimizedImage` generates and sets th
 
 To disable srcset generation for a single image, you can add the `disableOptimizedSrcset` attribute on the image:
 
-<docs-code language="html">
+<docs-code language="angular-html">
 
 <img ngSrc="about.jpg" disableOptimizedSrcset>
 
@@ -281,7 +297,7 @@ To disable srcset generation for a single image, you can add the `disableOptimiz
 
 By default, `NgOptimizedImage` sets `loading=lazy` for all images that are not marked `priority`. You can disable this behavior for non-priority images by setting the `loading` attribute. This attribute accepts values: `eager`, `auto`, and `lazy`. [See the documentation for the standard image `loading` attribute for details](https://developer.mozilla.org/docs/Web/API/HTMLImageElement/loading#value).
 
-<docs-code language="html">
+<docs-code language="angular-html">
 
 <img ngSrc="cat.jpg" width="400" height="200" loading="eager">
 
@@ -291,7 +307,7 @@ By default, `NgOptimizedImage` sets `loading=lazy` for all images that are not m
 
 You may want to have images displayed at varying widths on differently-sized screens. A common example of this pattern is a grid- or column-based layout that renders a single column on mobile devices, and two columns on larger devices. You can capture this behavior in the `sizes` attribute, using a "media query" syntax, such as the following:
 
-<docs-code language="html">
+<docs-code language="angular-html">
 
 <img ngSrc="cat.jpg" width="400" height="200" sizes="(max-width: 768px) 100vw, 50vw">
 
@@ -388,7 +404,7 @@ const myCustomLoader = (config: ImageLoaderConfig) => {
 
 Note that in the above example, we've invented the 'roundedCorners' property name to control a feature of our custom loader. We could then use this feature when creating an image, as follows:
 
-<docs-code language="html">
+<docs-code language="angular-html">
 
 <img ngSrc="profile.jpg" width="300" height="300" [loaderParams]="{roundedCorners: true}">
 
@@ -433,3 +449,17 @@ For maintenance reasons, we don't currently plan to support additional built-in 
 No, but this is on our roadmap, so stay tuned. 
 
 If you're waiting on this feature, please upvote the Github issue [here](https://github.com/angular/angular/issues/56594).
+
+### How do I find my LCP image with Chrome DevTools?
+
+1. Using the performance tab of the Chrome DevTools, click on the "start profiling and reload page" button on the top left. It looks like a page refresh icon.
+
+2. This will trigger a profiling snapshot of your Angular application. 
+
+3. Once the profiling result is available, select "LCP" in the timings section.
+
+4. A summary entry should appear in the panel at the bottom. You can find the LCP element in the row for "related node".  Clicking on it will reveal the element in the Elements panel. 
+
+<img alt="LCP in the Chrome DevTools" src="assets/images/guide/image-optimization/devtools-lcp.png">
+
+NOTE: This only identifies the LCP element within the viewport of the page you are testing. It is also recommended to use mobile emulation to identify the LCP element for smaller screens.

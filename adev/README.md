@@ -2,11 +2,11 @@
 
 This site is built with Angular.
 
-The content is written primarly in Markdown format located in `src/content`. For simple edits, you can directly edit the file on GitHub and generate a Pull Request.
+The content is written primarily in Markdown format located in `src/content`. For simple edits, you can directly edit the file on GitHub and generate a Pull Request.
 
 ## Local Development
 
-For local development, [yarn](https://yarnpkg.com/) is the preferred package manager. You can setup a local environment with the following commands
+For local development, [yarn](https://yarnpkg.com/) is the preferred package manager. You can set up a local environment with the following commands
 :
 
 ```bash
@@ -36,7 +36,7 @@ And if you're new, check out one of our issues labeled as <kbd>[help wanted](htt
 
 ### Code of Conduct
 
-Help us keep Angular open and inclusive. Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md).
+Help us keep Angular open and inclusive. Please read and follow our [Code of Conduct](/CODE_OF_CONDUCT.md).
 
 ## FAQs
 

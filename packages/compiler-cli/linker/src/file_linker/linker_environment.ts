@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
@@ -15,10 +15,8 @@ import {DEFAULT_LINKER_OPTIONS, LinkerOptions} from './linker_options';
 import {Translator} from './translator';
 
 export class LinkerEnvironment<TStatement, TExpression> {
-  readonly translator = new Translator<TStatement, TExpression>(this.factory);
-  readonly sourceFileLoader = this.options.sourceMapping
-    ? new SourceFileLoader(this.fileSystem, this.logger, {})
-    : null;
+  readonly translator: Translator<TStatement, TExpression>;
+  readonly sourceFileLoader: SourceFileLoader | null;
 
   private constructor(
     readonly fileSystem: ReadonlyFileSystem,
@@ -26,7 +24,12 @@ export class LinkerEnvironment<TStatement, TExpression> {
     readonly host: AstHost<TExpression>,
     readonly factory: AstFactory<TStatement, TExpression>,
     readonly options: LinkerOptions,
-  ) {}
+  ) {
+    this.translator = new Translator<TStatement, TExpression>(this.factory);
+    this.sourceFileLoader = this.options.sourceMapping
+      ? new SourceFileLoader(this.fileSystem, this.logger, {})
+      : null;
+  }
 
   static create<TStatement, TExpression>(
     fileSystem: ReadonlyFileSystem,

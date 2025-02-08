@@ -3,11 +3,10 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-import {spawn} from 'child_process';
 import ts from 'typescript';
 
 import {FixIdForCodeFixesAll} from '../src/codefixes/utils';
@@ -325,6 +324,7 @@ describe('code fixes', () => {
          @Component({
            selector: 'foo',
            template: '<bar></bar>',
+           standalone: false,
          })
          export class FooComponent {}
          @NgModule({
@@ -356,7 +356,7 @@ describe('code fixes', () => {
       const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
       actionChangesMatch(actionChanges, `Import BarComponent from './bar' on FooModule`, [
         [``, `import { BarComponent } from "./bar";`],
-        [`imp`, `imports: [BarComponent]`],
+        [`imports: []`, `imports: [BarComponent]`],
       ]);
     });
 
@@ -526,7 +526,7 @@ describe('code fixes', () => {
       ]);
       const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
       actionChangesMatch(actionChanges, `Import BarComponent from './bar' on FooComponent`, [
-        [`{te`, `BarComponent, { test }`],
+        [`{test}`, `BarComponent, { test }`],
         [``, `, imports: [BarComponent]`],
       ]);
     });
@@ -570,6 +570,168 @@ describe('code fixes', () => {
       ]);
     });
   });
+
+  describe('unused standalone imports', () => {
+    it('should fix single diagnostic about individual imports that are not used', () => {
+      const files = {
+        'app.ts': `
+         import {Component, Directive} from '@angular/core';
+
+         @Directive({selector: '[used]', standalone: true})
+         export class UsedDirective {}
+
+         @Directive({selector: '[unused]', standalone: true})
+         export class UnusedDirective {}
+
+         @Component({
+           template: '<span used></span>',
+           standalone: true,
+           imports: [UnusedDirective, UsedDirective],
+         })
+         export class AppComponent {}
+       `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+      const fixFile = project.openFile('app.ts');
+      fixFile.moveCursorToText('Unused¦Directive,');
+
+      const diags = project.getDiagnosticsForFile('app.ts');
+      const codeActions = project.getCodeFixesAtPosition('app.ts', fixFile.cursor, fixFile.cursor, [
+        diags[0].code,
+      ]);
+      const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
+
+      actionChangesMatch(actionChanges, 'Remove unused import UnusedDirective', [
+        ['[UnusedDirective, UsedDirective]', '[UsedDirective]'],
+      ]);
+    });
+
+    it('should fix single diagnostic about all imports that are not used', () => {
+      const files = {
+        'app.ts': `
+         import {Component, Directive, Pipe} from '@angular/core';
+
+         @Directive({selector: '[unused]', standalone: true})
+         export class UnusedDirective {}
+
+         @Pipe({name: 'unused', standalone: true})
+         export class UnusedPipe {}
+
+         @Component({
+           template: '',
+           standalone: true,
+           imports: [UnusedDirective, UnusedPipe],
+         })
+         export class AppComponent {}
+       `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+      const fixFile = project.openFile('app.ts');
+      fixFile.moveCursorToText('impo¦rts:');
+
+      const diags = project.getDiagnosticsForFile('app.ts');
+      const codeActions = project.getCodeFixesAtPosition('app.ts', fixFile.cursor, fixFile.cursor, [
+        diags[0].code,
+      ]);
+      const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
+
+      actionChangesMatch(actionChanges, 'Remove all unused imports', [
+        ['[UnusedDirective, UnusedPipe]', '[]'],
+      ]);
+    });
+
+    it('should fix all imports arrays where some imports are not used', () => {
+      const files = {
+        'app.ts': `
+         import {Component, Directive, Pipe} from '@angular/core';
+
+         @Directive({selector: '[used]', standalone: true})
+         export class UsedDirective {}
+
+         @Directive({selector: '[unused]', standalone: true})
+         export class UnusedDirective {}
+
+         @Pipe({name: 'unused', standalone: true})
+         export class UnusedPipe {}
+
+         @Component({
+          selector: 'used-cmp',
+          standalone: true,
+          template: '',
+         })
+         export class UsedComponent {}
+
+         @Component({
+           template: \`
+            <section>
+              <div></div>
+              <span used></span>
+              <div>
+                <used-cmp/>
+              </div>
+            </section>
+           \`,
+           standalone: true,
+           imports: [UnusedDirective, UsedDirective, UnusedPipe, UsedComponent],
+         })
+         export class AppComponent {}
+       `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+      const appFile = project.openFile('app.ts');
+
+      const fixesAllActions = project.getCombinedCodeFix(
+        'app.ts',
+        FixIdForCodeFixesAll.FIX_UNUSED_STANDALONE_IMPORTS,
+      );
+      expectIncludeReplacementTextForFileTextChange({
+        fileTextChanges: fixesAllActions.changes,
+        content: appFile.contents,
+        text: '[UnusedDirective, UsedDirective, UnusedPipe, UsedComponent]',
+        newText: '[UsedDirective, UsedComponent]',
+        fileName: 'app.ts',
+      });
+    });
+
+    it('should fix all imports arrays where all imports are not used', () => {
+      const files = {
+        'app.ts': `
+         import {Component, Directive, Pipe} from '@angular/core';
+
+         @Directive({selector: '[unused]', standalone: true})
+         export class UnusedDirective {}
+
+         @Pipe({name: 'unused', standalone: true})
+         export class UnusedPipe {}
+
+         @Component({
+           template: '',
+           standalone: true,
+           imports: [UnusedDirective, UnusedPipe],
+         })
+         export class AppComponent {}
+       `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+      const appFile = project.openFile('app.ts');
+
+      const fixesAllActions = project.getCombinedCodeFix(
+        'app.ts',
+        FixIdForCodeFixesAll.FIX_UNUSED_STANDALONE_IMPORTS,
+      );
+      expectIncludeReplacementTextForFileTextChange({
+        fileTextChanges: fixesAllActions.changes,
+        content: appFile.contents,
+        text: '[UnusedDirective, UnusedPipe]',
+        newText: '[]',
+        fileName: 'app.ts',
+      });
+    });
+  });
 });
 
 type ActionChanges = {
@@ -604,7 +766,7 @@ function allChangesForCodeActions(
   for (const action of codeActions) {
     const actionChanges = action.changes.flatMap((change) => {
       return change.textChanges.map((tc) => {
-        const oldText = collapse(fileContents.slice(tc.span.start, tc.span.start + spawn.length));
+        const oldText = collapse(fileContents.slice(tc.span.start, tc.span.start + tc.span.length));
         const newText = collapse(tc.newText);
         return [oldText, newText] as const;
       });

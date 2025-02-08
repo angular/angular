@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Component, importProvidersFrom} from '@angular/core';
@@ -18,6 +18,7 @@ import {
 } from './e2e/image-distortion/image-distortion';
 import {ImagePerfWarningsLazyComponent} from './e2e/image-perf-warnings-lazy/image-perf-warnings-lazy';
 import {ImagePerfWarningsOversizedComponent} from './e2e/image-perf-warnings-oversized/image-perf-warnings-oversized';
+import {SvgNoOversizedPerfWarningsComponent} from './e2e/image-perf-warnings-oversized/svg-no-perf-oversized-warnings';
 import {LcpCheckComponent} from './e2e/lcp-check/lcp-check';
 import {
   OversizedImageComponentFailing,
@@ -43,6 +44,7 @@ const ROUTES = [
   {path: 'e2e/lcp-check', component: LcpCheckComponent},
   {path: 'e2e/image-perf-warnings-lazy', component: ImagePerfWarningsLazyComponent},
   {path: 'e2e/image-perf-warnings-oversized', component: ImagePerfWarningsOversizedComponent},
+  {path: 'e2e/svg-no-perf-oversized-warnings', component: SvgNoOversizedPerfWarningsComponent},
   {path: 'e2e/preconnect-check', component: PreconnectCheckComponent},
   {path: 'e2e/image-distortion-passing', component: ImageDistortionPassingComponent},
   {path: 'e2e/image-distortion-failing', component: ImageDistortionFailingComponent},

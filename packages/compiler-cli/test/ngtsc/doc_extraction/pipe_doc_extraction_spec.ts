@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {DocEntry} from '@angular/compiler-cli/src/ngtsc/docs';
@@ -55,7 +55,10 @@ runInEachFileSystem(() => {
         'index.ts',
         `
         import {Pipe, NgModule} from '@angular/core';
-        @Pipe({name: 'shorten'})
+        @Pipe({
+          name: 'shorten',
+          standalone: false, 
+        })
         export class ShortenPipe {
           transform(value: string): string { return ''; }
         }

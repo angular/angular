@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {CssSelector, SchemaMetadata, SelectorMatcher} from '@angular/compiler';
@@ -130,9 +130,9 @@ export class TypeCheckScopeRegistry {
       } else if (meta.kind === MetaKind.Pipe) {
         if (!ts.isClassDeclaration(meta.ref.node)) {
           throw new Error(
-            `Unexpected non-class declaration ${
-              ts.SyntaxKind[meta.ref.node.kind]
-            } for pipe ${meta.ref.debugName}`,
+            `Unexpected non-class declaration ${ts.SyntaxKind[meta.ref.node.kind]} for pipe ${
+              meta.ref.debugName
+            }`,
           );
         }
         pipes.set(meta.name, meta);

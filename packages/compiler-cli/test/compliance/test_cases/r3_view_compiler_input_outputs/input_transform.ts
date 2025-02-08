@@ -4,7 +4,10 @@ function toNumber(value: number|string) {
   return value ? 1 : 0;
 }
 
-@Directive({selector: '[my-directive]'})
+@Directive({
+    selector: '[my-directive]',
+    standalone: false
+})
 export class MyDirective {
   @Input({transform: toNumber}) functionDeclarationInput: any;
 

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -31,27 +31,27 @@ import {
  *
  * Simple form with shorthand syntax:
  *
- * ```
+ * ```html
  * <div *ngIf="condition">Content to render when condition is true.</div>
  * ```
  *
  * Simple form with expanded syntax:
  *
- * ```
+ * ```html
  * <ng-template [ngIf]="condition"><div>Content to render when condition is
  * true.</div></ng-template>
  * ```
  *
  * Form with an "else" block:
  *
- * ```
+ * ```html
  * <div *ngIf="condition; else elseBlock">Content to render when condition is true.</div>
  * <ng-template #elseBlock>Content to render when condition is false.</ng-template>
  * ```
  *
  * Shorthand form with "then" and "else" blocks:
  *
- * ```
+ * ```html
  * <div *ngIf="condition; then thenBlock else elseBlock"></div>
  * <ng-template #thenBlock>Content to render when condition is true.</ng-template>
  * <ng-template #elseBlock>Content to render when condition is false.</ng-template>
@@ -59,7 +59,7 @@ import {
  *
  * Form with storing the value locally:
  *
- * ```
+ * ```html
  * <div *ngIf="condition as value; else elseBlock">{{value}}</div>
  * <ng-template #elseBlock>Content to render when value is null.</ng-template>
  * ```
@@ -116,7 +116,7 @@ import {
  * for the "then" and "else" clauses. For example, consider the following shorthand statement,
  * that is meant to show a loading page while waiting for data to be loaded.
  *
- * ```
+ * ```html
  * <div class="hero-list" *ngIf="heroes else loading">
  *  ...
  * </div>
@@ -135,7 +135,7 @@ import {
  * The anchor element containing the template for the "then" clause becomes
  * the content of this unlabeled `<ng-template>` tag.
  *
- * ```
+ * ```html
  * <ng-template [ngIf]="heroes" [ngIfElse]="loading">
  *  <div class="hero-list">
  *   ...
@@ -156,7 +156,6 @@ import {
  */
 @Directive({
   selector: '[ngIf]',
-  standalone: true,
 })
 export class NgIf<T = unknown> {
   private _context: NgIfContext<T> = new NgIfContext<T>();

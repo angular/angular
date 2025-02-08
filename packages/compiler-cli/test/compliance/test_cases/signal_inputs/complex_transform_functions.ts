@@ -7,7 +7,6 @@ const toBoolean = (v: string|boolean) => v === true || v !== '';
 const complexTransform = <T>(defaultVal: T) => (v: string) => v || defaultVal;
 
 @Directive({
-  standalone: true,
 })
 export class TestDir {
   name = input.required<boolean, string|boolean>({

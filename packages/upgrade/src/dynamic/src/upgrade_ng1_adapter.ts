@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -36,6 +36,7 @@ import {
   UpgradeHelper,
 } from '../../common/src/upgrade_helper';
 import {isFunction, strictEquals} from '../../common/src/util';
+import {trustedHTMLFromLegacyTemplate} from '../../common/src/security/trusted_types';
 
 const CAMEL_CASE = /([A-Z])/g;
 const INITIAL_VALUE = {
@@ -75,6 +76,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
       selector: selector,
       inputs: this.inputsRename,
       outputs: this.outputsRename,
+      standalone: false,
     })
     class MyClass
       extends UpgradeNg1ComponentAdapter
@@ -230,7 +232,7 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
   ngOnInit() {
     // Collect contents, insert and compile template
     const attachChildNodes: ILinkFn | undefined = this.helper.prepareTransclusion();
-    const linkFn = this.helper.compileTemplate(this.template);
+    const linkFn = this.helper.compileTemplate(trustedHTMLFromLegacyTemplate(this.template));
 
     // Instantiate controller (if not already done so)
     const controllerType = this.directive.controller;

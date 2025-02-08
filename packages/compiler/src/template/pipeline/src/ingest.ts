@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ConstantPool} from '../../../constant_pool';
@@ -58,6 +58,8 @@ export function ingestComponent(
   i18nUseExternalIds: boolean,
   deferMeta: R3ComponentDeferMetadata,
   allDeferrableDepsFn: o.ReadVarExpr | null,
+  relativeTemplatePath: string | null,
+  enableDebugLocations: boolean,
 ): ComponentCompilationJob {
   const job = new ComponentCompilationJob(
     componentName,
@@ -67,6 +69,8 @@ export function ingestComponent(
     i18nUseExternalIds,
     deferMeta,
     allDeferrableDepsFn,
+    relativeTemplatePath,
+    enableDebugLocations,
   );
   ingestNodes(job.root, template);
   return job;
@@ -665,116 +669,176 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
   deferOp.placeholderMinimumTime = deferBlock.placeholder?.minimumTime ?? null;
   deferOp.loadingMinimumTime = deferBlock.loading?.minimumTime ?? null;
   deferOp.loadingAfterTime = deferBlock.loading?.afterTime ?? null;
+  deferOp.flags = calcDeferBlockFlags(deferBlock);
   unit.create.push(deferOp);
 
   // Configure all defer `on` conditions.
   // TODO: refactor prefetch triggers to use a separate op type, with a shared superclass. This will
   // make it easier to refactor prefetch behavior in the future.
-  let prefetch = false;
-  let deferOnOps: ir.DeferOnOp[] = [];
-  let deferWhenOps: ir.DeferWhenOp[] = [];
-  for (const triggers of [deferBlock.triggers, deferBlock.prefetchTriggers]) {
-    if (triggers.idle !== undefined) {
-      const deferOnOp = ir.createDeferOnOp(
+  const deferOnOps: ir.DeferOnOp[] = [];
+  const deferWhenOps: ir.DeferWhenOp[] = [];
+
+  // Ingest the hydrate triggers first since they set up all the other triggers during SSR.
+  ingestDeferTriggers(
+    ir.DeferOpModifierKind.HYDRATE,
+    deferBlock.hydrateTriggers,
+    deferOnOps,
+    deferWhenOps,
+    unit,
+    deferXref,
+  );
+
+  ingestDeferTriggers(
+    ir.DeferOpModifierKind.NONE,
+    deferBlock.triggers,
+    deferOnOps,
+    deferWhenOps,
+    unit,
+    deferXref,
+  );
+
+  ingestDeferTriggers(
+    ir.DeferOpModifierKind.PREFETCH,
+    deferBlock.prefetchTriggers,
+    deferOnOps,
+    deferWhenOps,
+    unit,
+    deferXref,
+  );
+
+  // If no (non-prefetching or hydrating) defer triggers were provided, default to `idle`.
+  const hasConcreteTrigger =
+    deferOnOps.some((op) => op.modifier === ir.DeferOpModifierKind.NONE) ||
+    deferWhenOps.some((op) => op.modifier === ir.DeferOpModifierKind.NONE);
+
+  if (!hasConcreteTrigger) {
+    deferOnOps.push(
+      ir.createDeferOnOp(
         deferXref,
         {kind: ir.DeferTriggerKind.Idle},
-        prefetch,
-        triggers.idle.sourceSpan,
-      );
-      deferOnOps.push(deferOnOp);
-    }
-    if (triggers.immediate !== undefined) {
-      const deferOnOp = ir.createDeferOnOp(
-        deferXref,
-        {kind: ir.DeferTriggerKind.Immediate},
-        prefetch,
-        triggers.immediate.sourceSpan,
-      );
-      deferOnOps.push(deferOnOp);
-    }
-    if (triggers.timer !== undefined) {
-      const deferOnOp = ir.createDeferOnOp(
-        deferXref,
-        {kind: ir.DeferTriggerKind.Timer, delay: triggers.timer.delay},
-        prefetch,
-        triggers.timer.sourceSpan,
-      );
-      deferOnOps.push(deferOnOp);
-    }
-    if (triggers.hover !== undefined) {
-      const deferOnOp = ir.createDeferOnOp(
-        deferXref,
-        {
-          kind: ir.DeferTriggerKind.Hover,
-          targetName: triggers.hover.reference,
-          targetXref: null,
-          targetSlot: null,
-          targetView: null,
-          targetSlotViewSteps: null,
-        },
-        prefetch,
-        triggers.hover.sourceSpan,
-      );
-      deferOnOps.push(deferOnOp);
-    }
-    if (triggers.interaction !== undefined) {
-      const deferOnOp = ir.createDeferOnOp(
-        deferXref,
-        {
-          kind: ir.DeferTriggerKind.Interaction,
-          targetName: triggers.interaction.reference,
-          targetXref: null,
-          targetSlot: null,
-          targetView: null,
-          targetSlotViewSteps: null,
-        },
-        prefetch,
-        triggers.interaction.sourceSpan,
-      );
-      deferOnOps.push(deferOnOp);
-    }
-    if (triggers.viewport !== undefined) {
-      const deferOnOp = ir.createDeferOnOp(
-        deferXref,
-        {
-          kind: ir.DeferTriggerKind.Viewport,
-          targetName: triggers.viewport.reference,
-          targetXref: null,
-          targetSlot: null,
-          targetView: null,
-          targetSlotViewSteps: null,
-        },
-        prefetch,
-        triggers.viewport.sourceSpan,
-      );
-      deferOnOps.push(deferOnOp);
-    }
-    if (triggers.when !== undefined) {
-      if (triggers.when.value instanceof e.Interpolation) {
-        // TemplateDefinitionBuilder supports this case, but it's very strange to me. What would it
-        // even mean?
-        throw new Error(`Unexpected interpolation in defer block when trigger`);
-      }
-      const deferOnOp = ir.createDeferWhenOp(
-        deferXref,
-        convertAst(triggers.when.value, unit.job, triggers.when.sourceSpan),
-        prefetch,
-        triggers.when.sourceSpan,
-      );
-      deferWhenOps.push(deferOnOp);
-    }
-
-    // If no (non-prefetching) defer triggers were provided, default to `idle`.
-    if (deferOnOps.length === 0 && deferWhenOps.length === 0) {
-      deferOnOps.push(
-        ir.createDeferOnOp(deferXref, {kind: ir.DeferTriggerKind.Idle}, false, null!),
-      );
-    }
-    prefetch = true;
+        ir.DeferOpModifierKind.NONE,
+        null!,
+      ),
+    );
   }
 
   unit.create.push(deferOnOps);
   unit.update.push(deferWhenOps);
+}
+
+function calcDeferBlockFlags(deferBlockDetails: t.DeferredBlock): ir.TDeferDetailsFlags | null {
+  if (Object.keys(deferBlockDetails.hydrateTriggers).length > 0) {
+    return ir.TDeferDetailsFlags.HasHydrateTriggers;
+  }
+  return null;
+}
+
+function ingestDeferTriggers(
+  modifier: ir.DeferOpModifierKind,
+  triggers: Readonly<t.DeferredBlockTriggers>,
+  onOps: ir.DeferOnOp[],
+  whenOps: ir.DeferWhenOp[],
+  unit: ViewCompilationUnit,
+  deferXref: ir.XrefId,
+) {
+  if (triggers.idle !== undefined) {
+    const deferOnOp = ir.createDeferOnOp(
+      deferXref,
+      {kind: ir.DeferTriggerKind.Idle},
+      modifier,
+      triggers.idle.sourceSpan,
+    );
+    onOps.push(deferOnOp);
+  }
+  if (triggers.immediate !== undefined) {
+    const deferOnOp = ir.createDeferOnOp(
+      deferXref,
+      {kind: ir.DeferTriggerKind.Immediate},
+      modifier,
+      triggers.immediate.sourceSpan,
+    );
+    onOps.push(deferOnOp);
+  }
+  if (triggers.timer !== undefined) {
+    const deferOnOp = ir.createDeferOnOp(
+      deferXref,
+      {kind: ir.DeferTriggerKind.Timer, delay: triggers.timer.delay},
+      modifier,
+      triggers.timer.sourceSpan,
+    );
+    onOps.push(deferOnOp);
+  }
+  if (triggers.hover !== undefined) {
+    const deferOnOp = ir.createDeferOnOp(
+      deferXref,
+      {
+        kind: ir.DeferTriggerKind.Hover,
+        targetName: triggers.hover.reference,
+        targetXref: null,
+        targetSlot: null,
+        targetView: null,
+        targetSlotViewSteps: null,
+      },
+      modifier,
+      triggers.hover.sourceSpan,
+    );
+    onOps.push(deferOnOp);
+  }
+  if (triggers.interaction !== undefined) {
+    const deferOnOp = ir.createDeferOnOp(
+      deferXref,
+      {
+        kind: ir.DeferTriggerKind.Interaction,
+        targetName: triggers.interaction.reference,
+        targetXref: null,
+        targetSlot: null,
+        targetView: null,
+        targetSlotViewSteps: null,
+      },
+      modifier,
+      triggers.interaction.sourceSpan,
+    );
+    onOps.push(deferOnOp);
+  }
+  if (triggers.viewport !== undefined) {
+    const deferOnOp = ir.createDeferOnOp(
+      deferXref,
+      {
+        kind: ir.DeferTriggerKind.Viewport,
+        targetName: triggers.viewport.reference,
+        targetXref: null,
+        targetSlot: null,
+        targetView: null,
+        targetSlotViewSteps: null,
+      },
+      modifier,
+      triggers.viewport.sourceSpan,
+    );
+    onOps.push(deferOnOp);
+  }
+  if (triggers.never !== undefined) {
+    const deferOnOp = ir.createDeferOnOp(
+      deferXref,
+      {kind: ir.DeferTriggerKind.Never},
+      modifier,
+      triggers.never.sourceSpan,
+    );
+    onOps.push(deferOnOp);
+  }
+  if (triggers.when !== undefined) {
+    if (triggers.when.value instanceof e.Interpolation) {
+      // TemplateDefinitionBuilder supports this case, but it's very strange to me. What would it
+      // even mean?
+      throw new Error(`Unexpected interpolation in defer block when trigger`);
+    }
+    const deferOnOp = ir.createDeferWhenOp(
+      deferXref,
+      convertAst(triggers.when.value, unit.job, triggers.when.sourceSpan),
+      modifier,
+      triggers.when.sourceSpan,
+    );
+    whenOps.push(deferOnOp);
+  }
 }
 
 function ingestIcu(unit: ViewCompilationUnit, icu: t.Icu) {
@@ -951,30 +1015,10 @@ function convertAst(
   if (ast instanceof e.ASTWithSource) {
     return convertAst(ast.ast, job, baseSourceSpan);
   } else if (ast instanceof e.PropertyRead) {
-    const isThisReceiver = ast.receiver instanceof e.ThisReceiver;
     // Whether this is an implicit receiver, *excluding* explicit reads of `this`.
     const isImplicitReceiver =
       ast.receiver instanceof e.ImplicitReceiver && !(ast.receiver instanceof e.ThisReceiver);
-    // Whether the  name of the read is a node that should be never retain its explicit this
-    // receiver.
-    const isSpecialNode = ast.name === '$any' || ast.name === '$event';
-    // TODO: The most sensible condition here would be simply `isImplicitReceiver`, to convert only
-    // actual implicit `this` reads, and not explicit ones. However, TemplateDefinitionBuilder (and
-    // the Typecheck block!) both have the same bug, in which they also consider explicit `this`
-    // reads to be implicit. This causes problems when the explicit `this` read is inside a
-    // template with a context that also provides the variable name being read:
-    // ```
-    // <ng-template let-a>{{this.a}}</ng-template>
-    // ```
-    // The whole point of the explicit `this` was to access the class property, but TDB and the
-    // current TCB treat the read as implicit, and give you the context property instead!
-    //
-    // For now, we emulate this old behavior by aggressively converting explicit reads to to
-    // implicit reads, except for the special cases that TDB and the current TCB protect. However,
-    // it would be an improvement to fix this.
-    //
-    // See also the corresponding comment for the TCB, in `type_check_block.ts`.
-    if (isImplicitReceiver || (isThisReceiver && !isSpecialNode)) {
+    if (isImplicitReceiver) {
       return new ir.LexicalReadExpr(ast.name);
     } else {
       return new o.ReadPropExpr(
@@ -1116,6 +1160,19 @@ function convertAst(
   } else if (ast instanceof e.PrefixNot) {
     return o.not(
       convertAst(ast.expression, job, baseSourceSpan),
+      convertSourceSpan(ast.span, baseSourceSpan),
+    );
+  } else if (ast instanceof e.TypeofExpression) {
+    return o.typeofExpr(convertAst(ast.expression, job, baseSourceSpan));
+  } else if (ast instanceof e.TemplateLiteral) {
+    return new o.TemplateLiteralExpr(
+      ast.elements.map((el) => {
+        return new o.TemplateLiteralElementExpr(
+          el.text,
+          convertSourceSpan(el.span, baseSourceSpan),
+        );
+      }),
+      ast.expressions.map((expr) => convertAst(expr, job, baseSourceSpan)),
       convertSourceSpan(ast.span, baseSourceSpan),
     );
   } else {
@@ -1700,7 +1757,7 @@ function convertSourceSpan(
  *    workaround, because it'll include an additional text node as the first child. We can work
  *    around it here, but in a discussion it was decided not to, because the user explicitly opted
  *    into preserving the whitespace and we would have to drop it from the generated code.
- *    The diagnostic mentioned point #1 will flag such cases to users.
+ *    The diagnostic mentioned point in #1 will flag such cases to users.
  *
  * @returns Tag name to be used for the control flow template.
  */
@@ -1712,8 +1769,9 @@ function ingestControlFlowInsertionPoint(
   let root: t.Element | t.Template | null = null;
 
   for (const child of node.children) {
-    // Skip over comment nodes.
-    if (child instanceof t.Comment) {
+    // Skip over comment nodes and @let declarations since
+    // it doesn't matter where they end up in the DOM.
+    if (child instanceof t.Comment || child instanceof t.LetDeclaration) {
       continue;
     }
 
@@ -1725,6 +1783,8 @@ function ingestControlFlowInsertionPoint(
     // Root nodes can only elements or templates with a tag name (e.g. `<div *foo></div>`).
     if (child instanceof t.Element || (child instanceof t.Template && child.tagName !== null)) {
       root = child;
+    } else {
+      return null;
     }
   }
 

@@ -1,4 +1,3 @@
-// tslint:disable
 import {ElementRef} from '@angular/core';
 
 import {

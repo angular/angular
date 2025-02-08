@@ -26,6 +26,7 @@ import {Component} from '@angular/core';
 
   `,
   styles: [],
+  standalone: false,
 })
 export class AppComponent {
   title = $localize`ng-add-localize`;

@@ -3,12 +3,12 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Directive, HostListener} from '@angular/core';
 
-@Directive({selector: '[appTooltip]', standalone: true})
+@Directive({selector: '[appTooltip]'})
 export class TooltipDirective {
   visible = false;
   nested = {

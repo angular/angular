@@ -11,8 +11,7 @@ import {BehaviorSubject, of as observableOf} from 'rxjs';
 
 import {signal} from '@angular/core';
 import {WebContainer} from '@webcontainer/api';
-import {TutorialType} from '@angular/docs';
-import {FakeWebContainer, FakeWebContainerProcess} from '@angular/docs/testing';
+import {FakeWebContainer, FakeWebContainerProcess, TutorialType} from '@angular/docs';
 import {AlertManager} from './alert-manager.service';
 import {EmbeddedTutorialManager} from './embedded-tutorial-manager.service';
 import {LoadingStep} from './enums/loading-steps';
@@ -60,7 +59,9 @@ describe('NodeRuntimeSandbox', () => {
 
   const setValuesToInitializeAngularCLI = () => {
     service['embeddedTutorialManager'].type.set(TutorialType.CLI);
-    service['webContainerPromise'] = Promise.resolve(new FakeWebContainer());
+    service['webContainerPromise'] = Promise.resolve(
+      new FakeWebContainer() as unknown as WebContainer,
+    );
   };
 
   const setValuesToInitializeProject = () => {
@@ -75,7 +76,7 @@ describe('NodeRuntimeSandbox', () => {
     } as any;
 
     service['webContainerPromise'] = Promise.resolve(
-      new FakeWebContainer({spawn: fakeSpawnProcess}),
+      new FakeWebContainer({spawn: fakeSpawnProcess}) as unknown as WebContainer,
     );
   };
 
@@ -91,7 +92,7 @@ describe('NodeRuntimeSandbox', () => {
     } as any;
 
     service['webContainerPromise'] = Promise.resolve(
-      new FakeWebContainer({spawn: fakeSpawnProcess}),
+      new FakeWebContainer({spawn: fakeSpawnProcess}) as unknown as WebContainer,
     );
   };
 
@@ -140,7 +141,9 @@ describe('NodeRuntimeSandbox', () => {
   it('should set error message when install dependencies resolve exitCode not equal to 0', async () => {
     const EXPECTED_ERROR = 'Installation failed';
 
-    service['webContainerPromise'] = Promise.resolve(new FakeWebContainer());
+    service['webContainerPromise'] = Promise.resolve(
+      new FakeWebContainer() as unknown as WebContainer,
+    );
 
     const fakeSpawn = new FakeWebContainerProcess();
     fakeSpawn.exit = Promise.resolve(10);
@@ -167,7 +170,7 @@ describe('NodeRuntimeSandbox', () => {
     setValuesToInitializeProject();
 
     const fakeWebContainer = new FakeWebContainer();
-    service['webContainerPromise'] = Promise.resolve(fakeWebContainer);
+    service['webContainerPromise'] = Promise.resolve(fakeWebContainer as unknown as WebContainer);
     const writeFileSpy = spyOn(fakeWebContainer.fs, 'writeFile');
 
     const path = 'path';
@@ -181,7 +184,7 @@ describe('NodeRuntimeSandbox', () => {
     setValuesToInitializeProject();
 
     const fakeWebContainer = new FakeWebContainer();
-    service['webContainerPromise'] = Promise.resolve(fakeWebContainer);
+    service['webContainerPromise'] = Promise.resolve(fakeWebContainer as unknown as WebContainer);
     const renameFileSpy = spyOn(fakeWebContainer.fs, 'rename');
 
     const oldPath = 'oldPath';
@@ -202,7 +205,9 @@ describe('NodeRuntimeSandbox', () => {
   });
 
   it('should initialize a project based on the tutorial config', async () => {
-    service['webContainerPromise'] = Promise.resolve(new FakeWebContainer());
+    service['webContainerPromise'] = Promise.resolve(
+      new FakeWebContainer() as unknown as WebContainer,
+    );
     setValuesToInitializeProject();
 
     const initProjectSpy = spyOn(service, 'initProject' as any);
@@ -241,7 +246,9 @@ describe('NodeRuntimeSandbox', () => {
   });
 
   it("should set the error state when an out of memory message is received from the web container's output", async () => {
-    service['webContainerPromise'] = Promise.resolve(new FakeWebContainer());
+    service['webContainerPromise'] = Promise.resolve(
+      new FakeWebContainer() as unknown as WebContainer,
+    );
     setValuesToCatchOutOfMemoryError();
 
     await service.init();
@@ -266,7 +273,9 @@ describe('NodeRuntimeSandbox', () => {
   });
 
   it('should delete files on project change', async () => {
-    service['webContainerPromise'] = Promise.resolve(new FakeWebContainer());
+    service['webContainerPromise'] = Promise.resolve(
+      new FakeWebContainer() as unknown as WebContainer,
+    );
     setValuesToInitializeProject();
 
     await service.init();
@@ -290,5 +299,19 @@ describe('NodeRuntimeSandbox', () => {
     for (const fileToDelete of allFilesToDelete) {
       expect(deleteFileSpy).toHaveBeenCalledWith(fileToDelete);
     }
+  });
+
+  it('should not have any filePath starting with "/" in solutions files', async () => {
+    service['webContainerPromise'] = Promise.resolve(
+      new FakeWebContainer() as unknown as WebContainer,
+    );
+    setValuesToInitializeProject();
+
+    await service.init();
+
+    const files = await service.getSolutionFiles();
+
+    expect(files.length).toBe(1);
+    expect(files[0].path).toBe('fake-file');
   });
 });

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ComponentFactory, ComponentFactoryResolver, Injector, NgZone, Type} from '@angular/core';
@@ -105,6 +105,8 @@ export function downgradeComponent(info: {
     $injector: IInjectorService,
     $parse: IParseService,
   ): IDirective {
+    const unsafelyOverwriteSignalInputs =
+      (info as {unsafelyOverwriteSignalInputs?: boolean}).unsafelyOverwriteSignalInputs ?? false;
     // When using `downgradeModule()`, we need to handle certain things specially. For example:
     // - We always need to attach the component view to the `ApplicationRef` for it to be
     //   dirty-checked.
@@ -216,6 +218,7 @@ export function downgradeComponent(info: {
             $parse,
             componentFactory,
             wrapCallback,
+            unsafelyOverwriteSignalInputs,
           );
 
           const projectableNodes = facade.compileContents();

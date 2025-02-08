@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -11,11 +11,19 @@ import {
   publishSignalConfiguration,
 } from '../application/application_ref';
 import {PLATFORM_INITIALIZER} from '../application/application_tokens';
-import {InjectionToken, Injector, StaticProvider} from '../di';
+import {
+  EnvironmentProviders,
+  InjectionToken,
+  Injector,
+  makeEnvironmentProviders,
+  runInInjectionContext,
+  StaticProvider,
+} from '../di';
 import {INJECTOR_SCOPE} from '../di/scope';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 
-import {PLATFORM_DESTROY_LISTENERS, PlatformRef} from './platform_ref';
+import {PlatformRef} from './platform_ref';
+import {PLATFORM_DESTROY_LISTENERS} from './platform_destroy_listeners';
 
 let _platformInjector: Injector | null = null;
 
@@ -162,7 +170,32 @@ export function createOrReusePlatformInjector(providers: StaticProvider[] = []):
   return injector;
 }
 
+/**
+ * @description
+ * This function is used to provide initialization functions that will be executed upon
+ * initialization of the platform injector.
+ *
+ * Note that the provided initializer is run in the injection context.
+ *
+ * Previously, this was achieved using the `PLATFORM_INITIALIZER` token which is now deprecated.
+ *
+ * @see {@link PLATFORM_INITIALIZER}
+ *
+ * @publicApi
+ */
+export function providePlatformInitializer(initializerFn: () => void): EnvironmentProviders {
+  return makeEnvironmentProviders([
+    {
+      provide: PLATFORM_INITIALIZER,
+      useValue: initializerFn,
+      multi: true,
+    },
+  ]);
+}
+
 function runPlatformInitializers(injector: Injector): void {
   const inits = injector.get(PLATFORM_INITIALIZER, null);
-  inits?.forEach((init) => init());
+  runInInjectionContext(injector, () => {
+    inits?.forEach((init) => init());
+  });
 }

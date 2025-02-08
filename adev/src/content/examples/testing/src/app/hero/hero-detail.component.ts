@@ -9,7 +9,6 @@ import {HeroDetailService} from './hero-detail.service';
 
 // #docregion prototype
 @Component({
-  standalone: true,
   selector: 'app-hero-detail',
   templateUrl: './hero-detail.component.html',
   styleUrls: ['./hero-detail.component.css'],

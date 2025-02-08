@@ -1,1 +1,1 @@
-ChildComponent.ɵfac = function ChildComponent_Factory(t) { return new (t || ChildComponent)(); };
+ChildComponent.ɵfac = function ChildComponent_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || ChildComponent)(); };

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 !(function () {
@@ -13,14 +13,14 @@
    *Copyright Google Inc. All Rights Reserved.
    *
    *Use of this source code is governed by an MIT-style license that can be
-   *found in the LICENSE file at https://angular.io/license
+   *found in the LICENSE file at https://angular.dev/license
    */
   /**
    *@license
    *Copyright Google Inc. All Rights Reserved.
    *
    *Use of this source code is governed by an MIT-style license that can be
-   *found in the LICENSE file at https://angular.io/license
+   *found in the LICENSE file at https://angular.dev/license
    */
   var ChangeDetectionStrategy, ChangeDetectorStatus, ViewEncapsulation;
   Object;
@@ -31,7 +31,7 @@
    * Copyright Google LLC All Rights Reserved.
    *
    * Use of this source code is governed by an MIT-style license that can be
-   * found in the LICENSE file at https://angular.io/license
+   * found in the LICENSE file at https://angular.dev/license
    */
   Object;
   ViewEncapsulation || (ViewEncapsulation = {});
@@ -40,14 +40,14 @@
    *Copyright Google Inc. All Rights Reserved.
    *
    *Use of this source code is governed by an MIT-style license that can be
-   *found in the LICENSE file at https://angular.io/license
+   *found in the LICENSE file at https://angular.dev/license
    */
   /**
    * @license
    * Copyright Google LLC All Rights Reserved.
    *
    * Use of this source code is governed by an MIT-style license that can be
-   * found in the LICENSE file at https://angular.io/license
+   * found in the LICENSE file at https://angular.dev/license
    */ 'undefined' != typeof window && window,
     'undefined' != typeof self &&
       'undefined' != typeof WorkerGlobalScope &&
@@ -59,7 +59,7 @@
    *Copyright Google Inc. All Rights Reserved.
    *
    *Use of this source code is governed by an MIT-style license that can be
-   *found in the LICENSE file at https://angular.io/license
+   *found in the LICENSE file at https://angular.dev/license
    */
   String;
   /**
@@ -67,7 +67,7 @@
    *Copyright Google Inc. All Rights Reserved.
    *
    *Use of this source code is governed by an MIT-style license that can be
-   *found in the LICENSE file at https://angular.io/license
+   *found in the LICENSE file at https://angular.dev/license
    */
   Function;
   var __window$1 = 'undefined' != typeof window && window,
@@ -170,28 +170,28 @@
          * Copyright Google LLC All Rights Reserved.
          *
          * Use of this source code is governed by an MIT-style license that can be
-         * found in the LICENSE file at https://angular.io/license
+         * found in the LICENSE file at https://angular.dev/license
          */
         /**
          * @license
          * Copyright Google LLC All Rights Reserved.
          *
          * Use of this source code is governed by an MIT-style license that can be
-         * found in the LICENSE file at https://angular.io/license
+         * found in the LICENSE file at https://angular.dev/license
          */
         /**
          * @license
          * Copyright Google LLC All Rights Reserved.
          *
          * Use of this source code is governed by an MIT-style license that can be
-         * found in the LICENSE file at https://angular.io/license
+         * found in the LICENSE file at https://angular.dev/license
          */
         /**
          * @license
          * Copyright Google LLC All Rights Reserved.
          *
          * Use of this source code is governed by an MIT-style license that can be
-         * found in the LICENSE file at https://angular.io/license
+         * found in the LICENSE file at https://angular.dev/license
          */
         data,
         hooksToCall,
@@ -208,14 +208,14 @@
    *Copyright Google Inc. All Rights Reserved.
    *
    *Use of this source code is governed by an MIT-style license that can be
-   *found in the LICENSE file at https://angular.io/license
+   *found in the LICENSE file at https://angular.dev/license
    */
   /**
    * @license
    * Copyright Google LLC All Rights Reserved.
    *
    * Use of this source code is governed by an MIT-style license that can be
-   * found in the LICENSE file at https://angular.io/license
+   * found in the LICENSE file at https://angular.dev/license
    */
   function getNextLNodeWithProjection(node) {
     var pNextOrParent = node.pNextOrParent;
@@ -258,7 +258,7 @@
    *Copyright Google Inc. All Rights Reserved.
    *
    *Use of this source code is governed by an MIT-style license that can be
-   *found in the LICENSE file at https://angular.io/license
+   *found in the LICENSE file at https://angular.dev/license
    */
   var renderer,
     rendererFactory,
@@ -472,35 +472,35 @@
    *Copyright Google Inc. All Rights Reserved.
    *
    *Use of this source code is governed by an MIT-style license that can be
-   *found in the LICENSE file at https://angular.io/license
+   *found in the LICENSE file at https://angular.dev/license
    */
   /**
    *@license
    *Copyright Google Inc. All Rights Reserved.
    *
    *Use of this source code is governed by an MIT-style license that can be
-   *found in the LICENSE file at https://angular.io/license
+   *found in the LICENSE file at https://angular.dev/license
    */
   /**
    *@license
    *Copyright Google Inc. All Rights Reserved.
    *
    *Use of this source code is governed by an MIT-style license that can be
-   *found in the LICENSE file at https://angular.io/license
+   *found in the LICENSE file at https://angular.dev/license
    */
   /**
    *@license
    *Copyright Google Inc. All Rights Reserved.
    *
    *Use of this source code is governed by an MIT-style license that can be
-   *found in the LICENSE file at https://angular.io/license
+   *found in the LICENSE file at https://angular.dev/license
    */
   /**
    * @license
    * Copyright Google LLC All Rights Reserved.
    *
    * Use of this source code is governed by an MIT-style license that can be
-   * found in the LICENSE file at https://angular.io/license
+   * found in the LICENSE file at https://angular.dev/license
    */
   Object;
   /**
@@ -508,7 +508,7 @@
    * Copyright Google LLC All Rights Reserved.
    *
    * Use of this source code is governed by an MIT-style license that can be
-   * found in the LICENSE file at https://angular.io/license
+   * found in the LICENSE file at https://angular.dev/license
    */
   !(
     /**
@@ -516,7 +516,7 @@
      * Copyright Google LLC All Rights Reserved.
      *
      * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
+     * found in the LICENSE file at https://angular.dev/license
      */
     (function (componentType, opts) {
       void 0 === opts && (opts = {});
@@ -599,7 +599,7 @@
                * Copyright Google LLC All Rights Reserved.
                *
                * Use of this source code is governed by an MIT-style license that can be
-               * found in the LICENSE file at https://angular.io/license
+               * found in the LICENSE file at https://angular.dev/license
                */
               (function (index, onInit, doCheck, tView) {
                 if (!0 === tView.firstCreatePass) {
@@ -630,14 +630,14 @@
          * Copyright Google LLC All Rights Reserved.
          *
          * Use of this source code is governed by an MIT-style license that can be
-         * found in the LICENSE file at https://angular.io/license
+         * found in the LICENSE file at https://angular.dev/license
          */
         /**
          * @license
          * Copyright Google LLC All Rights Reserved.
          *
          * Use of this source code is governed by an MIT-style license that can be
-         * found in the LICENSE file at https://angular.io/license
+         * found in the LICENSE file at https://angular.dev/license
          */
         component,
       );
@@ -752,14 +752,14 @@
                    * Copyright Google LLC All Rights Reserved.
                    *
                    * Use of this source code is governed by an MIT-style license that can be
-                   * found in the LICENSE file at https://angular.io/license
+                   * found in the LICENSE file at https://angular.dev/license
                    */
                   /**
                    * @license
                    * Copyright Google LLC All Rights Reserved.
                    *
                    * Use of this source code is governed by an MIT-style license that can be
-                   * found in the LICENSE file at https://angular.io/license
+                   * found in the LICENSE file at https://angular.dev/license
                    */
                   existingNode,
                   currentView,

@@ -3,16 +3,17 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {assertDomNode, assertIndexInRange} from '../util/assert';
 
-import {TNode, TNodeFlags, TNodeType} from './interfaces/node';
+import {TNode, TNodeType} from './interfaces/node';
 import {Renderer} from './interfaces/renderer';
 import {RElement, RNode} from './interfaces/renderer_dom';
 import {LView} from './interfaces/view';
-import {getInsertInFrontOfRNodeWithNoI18n, nativeInsertBefore} from './node_manipulation';
+import {getInsertInFrontOfRNodeWithNoI18n} from './node_manipulation';
+import {nativeInsertBefore} from './dom_node_manipulation';
 import {unwrapRNode} from './util/view_utils';
 
 /**

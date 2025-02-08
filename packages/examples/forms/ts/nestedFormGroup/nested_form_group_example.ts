@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /* tslint:disable:no-console  */
@@ -27,6 +27,7 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 
     <button (click)="setPreset()">Set preset</button>
   `,
+  standalone: false,
 })
 export class NestedFormGroupComp {
   form = new FormGroup({

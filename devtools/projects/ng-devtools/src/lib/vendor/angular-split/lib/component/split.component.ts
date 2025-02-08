@@ -1,4 +1,3 @@
-// tslint:disable
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -92,7 +91,6 @@ import {
       <div class="as-split-gutter-icon"></div>
     </div>
     } }`,
-  standalone: true,
 })
 export class SplitComponent implements AfterViewInit, OnDestroy {
   private _direction: 'horizontal' | 'vertical' = 'horizontal';

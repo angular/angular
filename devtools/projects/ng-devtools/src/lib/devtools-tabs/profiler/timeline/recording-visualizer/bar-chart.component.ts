@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -15,7 +15,7 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, input, output} from '@angular/core';
 
 import {BargraphNode} from '../record-formatter/bargraph-formatter/bargraph-formatter';
 import {MatTooltip} from '@angular/material/tooltip';
@@ -39,17 +39,18 @@ interface BarData {
     ]),
     trigger('stagger', [transition(':enter', [query(':enter', stagger('.1s', [animateChild()]))])]),
   ],
-  standalone: true,
   imports: [MatTooltip],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BarChartComponent {
-  @Input()
-  set data(nodes: BargraphNode[]) {
-    this.originalData = nodes;
-    this.internalData = [];
+  readonly data = input<BargraphNode[]>([]);
+
+  readonly internalData = computed(() => {
+    const nodes = this.data() ?? [];
+    const values: BarData[] = [];
     const max = nodes.reduce((a: number, c) => Math.max(a, c.value), -Infinity);
     for (const node of nodes) {
-      this.internalData.push({
+      values.push({
         label: node.label,
         count: node.count ?? 1,
         width: (node.value / max) * 100,
@@ -57,12 +58,11 @@ export class BarChartComponent {
         text: createBarText(node),
       });
     }
-  }
-  @Input({required: true}) color!: string;
-  @Output() barClick = new EventEmitter<BargraphNode>();
+    return values;
+  });
 
-  originalData!: BargraphNode[];
-  internalData: BarData[] = [];
+  readonly color = input.required<string>();
+  readonly barClick = output<BargraphNode>();
 }
 
 export function createBarText(bar: BargraphNode) {

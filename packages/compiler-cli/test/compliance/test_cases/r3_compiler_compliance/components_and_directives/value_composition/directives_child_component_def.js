@@ -1,6 +1,7 @@
 ChildComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: ChildComponent,
   selectors: [["child"]],
+  standalone: false,
   decls: 1,
   vars: 0,
   template:  function ChildComponent_Template(rf, ctx) {

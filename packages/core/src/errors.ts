@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ERROR_DETAILS_PAGE_BASE_URL} from './error_details_base_url';
@@ -81,6 +81,7 @@ export const enum RuntimeErrorCode {
   MISSING_HYDRATION_ANNOTATIONS = -505,
   HYDRATION_STABLE_TIMEDOUT = -506,
   MISSING_SSR_CONTENT_INTEGRITY_MARKER = -507,
+  MISCONFIGURED_INCREMENTAL_HYDRATION = 508,
 
   // Signal Errors
   SIGNAL_WRITE_FROM_ILLEGAL_CONTEXT = 600,
@@ -96,7 +97,7 @@ export const enum RuntimeErrorCode {
   MISSING_LOCALE_DATA = 701,
 
   // Defer errors (750-799 range)
-  DEFER_LOADING_FAILED = 750,
+  DEFER_LOADING_FAILED = -750,
 
   // standalone errors
   IMPORT_PROVIDERS_FROM_STANDALONE = 800,
@@ -132,8 +133,10 @@ export const enum RuntimeErrorCode {
   LOOP_TRACK_RECREATE = -956,
 
   // Runtime dependency tracker errors
-  RUNTIME_DEPS_INVALID_IMPORTED_TYPE = 1000,
-  RUNTIME_DEPS_ORPHAN_COMPONENT = 1001,
+  RUNTIME_DEPS_INVALID_IMPORTED_TYPE = 980,
+  RUNTIME_DEPS_ORPHAN_COMPONENT = 981,
+
+  // Upper bounds for core runtime errors is 999
 }
 
 /**
@@ -141,7 +144,7 @@ export const enum RuntimeErrorCode {
  * Formats and outputs the error message in a consistent way.
  *
  * Example:
- * ```
+ * ```ts
  *  throw new RuntimeError(
  *    RuntimeErrorCode.INJECTOR_ALREADY_DESTROYED,
  *    ngDevMode && 'Injector has already been destroyed.');

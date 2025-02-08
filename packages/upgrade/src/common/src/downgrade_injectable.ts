@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Injector} from '@angular/core';
@@ -46,7 +46,7 @@ import {getTypeName, isFunction, validateInjectionKey} from './util';
  *
  * {@example upgrade/static/ts/full/module.ts region="example-app"}
  *
- * <div class="alert is-important">
+ * <div class="docs-alert docs-alert-important">
  *
  *   When using `downgradeModule()`, downgraded injectables will not be available until the Angular
  *   module that provides them is instantiated. In order to be safe, you need to ensure that the

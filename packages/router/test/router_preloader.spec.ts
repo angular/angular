@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {provideLocationMocks} from '@angular/common/testing';
@@ -17,9 +17,8 @@ import {
   NgModuleFactory,
   NgModuleRef,
   Type,
+  EnvironmentInjector,
 } from '@angular/core';
-import {R3Injector} from '@angular/core/src/di/r3_injector';
-import {NgModuleRef as R3NgModuleRef} from '@angular/core/src/render3';
 import {fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {
   PreloadAllModules,
@@ -41,7 +40,10 @@ import {
 } from '../src/utils/config';
 
 describe('RouterPreloader', () => {
-  @Component({template: ''})
+  @Component({
+    template: '',
+    standalone: false,
+  })
   class LazyLoadedCmp {}
 
   describe('should properly handle', () => {
@@ -127,7 +129,11 @@ describe('RouterPreloader', () => {
     it('should work', fakeAsync(
       inject(
         [RouterPreloader, Router, NgModuleRef],
-        (preloader: RouterPreloader, router: Router, testModule: R3NgModuleRef<unknown>) => {
+        (
+          preloader: RouterPreloader,
+          router: Router,
+          testModule: {_r3Injector: EnvironmentInjector},
+        ) => {
           const events: Array<RouteConfigLoadStart | RouteConfigLoadEnd> = [];
           @NgModule({
             declarations: [LazyLoadedCmp],
@@ -238,7 +244,7 @@ describe('RouterPreloader', () => {
         (
           preloader: RouterPreloader,
           router: Router,
-          testModule: R3NgModuleRef<unknown>,
+          testModule: {_r3Injector: EnvironmentInjector},
           compiler: Compiler,
         ) => {
           @NgModule()
@@ -270,13 +276,15 @@ describe('RouterPreloader', () => {
 
           const c = router.config;
 
-          const injector = getLoadedInjector(c[0]) as R3Injector;
+          const injector = getLoadedInjector(c[0]) as unknown as {parent: EnvironmentInjector};
 
           const loadedRoutes = getLoadedRoutes(c[0])!;
           expect(injector.parent).toBe(testModule._r3Injector);
 
           const loadedRoutes2: Route[] = getLoadedRoutes(loadedRoutes[0])!;
-          const injector3 = getLoadedInjector(loadedRoutes2[0]) as R3Injector;
+          const injector3 = getLoadedInjector(loadedRoutes2[0]) as unknown as {
+            parent: EnvironmentInjector;
+          };
           expect(injector3.parent).toBe(module2.injector);
         },
       ),
@@ -724,7 +732,7 @@ describe('RouterPreloader', () => {
     });
 
     it('base case', fakeAsync(() => {
-      @Component({template: '', standalone: true})
+      @Component({template: ''})
       class LoadedComponent {}
 
       const preloader = TestBed.inject(RouterPreloader);
@@ -766,7 +774,7 @@ describe('RouterPreloader', () => {
     }));
 
     it('should recover from errors', fakeAsync(() => {
-      @Component({template: '', standalone: true})
+      @Component({template: ''})
       class LoadedComponent {}
 
       const preloader = TestBed.inject(RouterPreloader);
@@ -788,7 +796,7 @@ describe('RouterPreloader', () => {
     }));
 
     it('works when there is both loadComponent and loadChildren', fakeAsync(() => {
-      @Component({template: '', standalone: true})
+      @Component({template: ''})
       class LoadedComponent {}
 
       @NgModule({
@@ -817,7 +825,7 @@ describe('RouterPreloader', () => {
     }));
 
     it('loadComponent does not block loadChildren', fakeAsync(() => {
-      @Component({template: '', standalone: true})
+      @Component({template: ''})
       class LoadedComponent {}
 
       lazyComponentSpy.and.returnValue(of(LoadedComponent).pipe(delay(5)));
@@ -860,7 +868,7 @@ describe('RouterPreloader', () => {
     }));
 
     it('loads nested components', () => {
-      @Component({template: '', standalone: true})
+      @Component({template: ''})
       class LoadedComponent {}
       lazyComponentSpy.and.returnValue(LoadedComponent);
 

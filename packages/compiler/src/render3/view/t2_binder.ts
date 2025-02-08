@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -16,7 +16,7 @@ import {
   SafePropertyRead,
   ThisReceiver,
 } from '../../expression_parser/ast';
-import {SelectorMatcher} from '../../selector';
+import {CssSelector, SelectorMatcher} from '../../selector';
 import {
   BoundAttribute,
   BoundEvent,
@@ -59,7 +59,73 @@ import {
   TargetBinder,
   TemplateEntity,
 } from './t2_api';
+import {parseTemplate} from './template';
 import {createCssSelectorFromNode} from './util';
+
+/**
+ * Computes a difference between full list (first argument) and
+ * list of items that should be excluded from the full list (second
+ * argument).
+ */
+function diff(fullList: string[], itemsToExclude: string[]): string[] {
+  const exclude = new Set(itemsToExclude);
+  return fullList.filter((item) => !exclude.has(item));
+}
+
+/**
+ * Given a template string and a set of available directive selectors,
+ * computes a list of matching selectors and splits them into 2 buckets:
+ * (1) eagerly used in a template and (2) directives used only in defer
+ * blocks. Similarly, returns 2 lists of pipes (eager and deferrable).
+ *
+ * Note: deferrable directives selectors and pipes names used in `@defer`
+ * blocks are **candidates** and API caller should make sure that:
+ *
+ *  * A Component where a given template is defined is standalone
+ *  * Underlying dependency classes are also standalone
+ *  * Dependency class symbols are not eagerly used in a TS file
+ *    where a host component (that owns the template) is located
+ */
+export function findMatchingDirectivesAndPipes(template: string, directiveSelectors: string[]) {
+  const matcher = new SelectorMatcher<unknown[]>();
+  for (const selector of directiveSelectors) {
+    // Create a fake directive instance to account for the logic inside
+    // of the `R3TargetBinder` class (which invokes the `hasBindingPropertyName`
+    // function internally).
+    const fakeDirective = {
+      selector,
+      exportAs: null,
+      inputs: {
+        hasBindingPropertyName() {
+          return false;
+        },
+      },
+      outputs: {
+        hasBindingPropertyName() {
+          return false;
+        },
+      },
+    };
+    matcher.addSelectables(CssSelector.parse(selector), [fakeDirective]);
+  }
+  const parsedTemplate = parseTemplate(template, '' /* templateUrl */);
+  const binder = new R3TargetBinder(matcher as any);
+  const bound = binder.bind({template: parsedTemplate.nodes});
+
+  const eagerDirectiveSelectors = bound.getEagerlyUsedDirectives().map((dir) => dir.selector!);
+  const allMatchedDirectiveSelectors = bound.getUsedDirectives().map((dir) => dir.selector!);
+  const eagerPipes = bound.getEagerlyUsedPipes();
+  return {
+    directives: {
+      regular: eagerDirectiveSelectors,
+      deferCandidates: diff(allMatchedDirectiveSelectors, eagerDirectiveSelectors),
+    },
+    pipes: {
+      regular: eagerPipes,
+      deferCandidates: diff(bound.getUsedPipes(), eagerPipes),
+    },
+  };
+}
 
 /**
  * Processes `Target`s with a given set of directives and performs a binding operation, which
@@ -747,6 +813,8 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
     this.ingestScopedNode(deferred);
     deferred.triggers.when?.value.visit(this);
     deferred.prefetchTriggers.when?.value.visit(this);
+    deferred.hydrateTriggers.when?.value.visit(this);
+    deferred.hydrateTriggers.never?.visit(this);
     deferred.placeholder && this.visitNode(deferred.placeholder);
     deferred.loading && this.visitNode(deferred.loading);
     deferred.error && this.visitNode(deferred.error);
@@ -854,21 +922,13 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   private maybeMap(ast: PropertyRead | SafePropertyRead | PropertyWrite, name: string): void {
     // If the receiver of the expression isn't the `ImplicitReceiver`, this isn't the root of an
     // `AST` expression that maps to a `Variable` or `Reference`.
-    if (!(ast.receiver instanceof ImplicitReceiver)) {
+    if (!(ast.receiver instanceof ImplicitReceiver) || ast.receiver instanceof ThisReceiver) {
       return;
     }
 
     // Check whether the name exists in the current scope. If so, map it. Otherwise, the name is
     // probably a property on the top-level component context.
     const target = this.scope.lookup(name);
-
-    // It's not allowed to read template entities via `this`, however it previously worked by
-    // accident (see #55115). Since `@let` declarations are new, we can fix it from the beginning,
-    // whereas pre-existing template entities will be fixed in #55115.
-    if (target instanceof LetDeclaration && ast.receiver instanceof ThisReceiver) {
-      return;
-    }
-
     if (target !== null) {
       this.bindings.set(ast, target);
     }

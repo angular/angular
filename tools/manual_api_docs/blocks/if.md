@@ -2,7 +2,7 @@ The `@if` block conditionally displays its content when its condition expression
 
 ## Syntax
 
-```html
+```angular-html
 @if (a > b) {
   {{a}} is greater than {{b}}
 } @else if (b > a) {
@@ -20,7 +20,7 @@ the `@if` and `@else` blocks.
 The built-in `@if` supports referencing of expression results to keep a solution for common coding
 patterns:
 
-```html
+```angular-html
 @if (users$ | async; as users) {
   {{ users.length }}
 }

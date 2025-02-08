@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /**
@@ -75,12 +75,12 @@ export interface AnimationPlayer {
   reset(): void;
   /**
    * Sets the position of the animation.
-   * @param position A 0-based offset into the duration, in milliseconds.
+   * @param position A fractional value, representing the progress through the animation.
    */
   setPosition(position: number): void;
   /**
    * Reports the current position of the animation.
-   * @returns A 0-based offset into the duration, in milliseconds.
+   * @returns A fractional value, representing the progress through the animation.
    */
   getPosition(): number;
   /**
@@ -114,7 +114,6 @@ export interface AnimationPlayer {
  *
  * @see {@link animate}
  * @see {@link AnimationPlayer}
- * @see {@link ɵAnimationGroupPlayer AnimationGroupPlayer}
  *
  * @publicApi
  */

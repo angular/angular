@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {HttpClient} from '@angular/common/http';
@@ -15,6 +15,7 @@ import {Component, OnInit} from '@angular/core';
     <div class="one">{{ responseOne }}</div>
     <div class="two">{{ responseTwo }}</div>
   `,
+  standalone: false,
 })
 export class TransferStateComponent implements OnInit {
   responseOne: string = '';

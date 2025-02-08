@@ -3,7 +3,6 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 /* avoid pointless aliasing */
 
 @Component({
-  standalone: true,
   selector: 'toh-hero-button',
   template: `<button type="button">{{label}}</button>`,
 })

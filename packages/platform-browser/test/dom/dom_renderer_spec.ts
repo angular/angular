@@ -3,12 +3,13 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {Component, Renderer2, ViewEncapsulation} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {
+  addBaseHrefToCssSourceMap,
   NAMESPACE_URIS,
   REMOVE_STYLES_ON_COMPONENT_DESTROY,
 } from '@angular/platform-browser/src/dom/dom_renderer';
@@ -98,13 +99,12 @@ describe('DefaultDomRendererV2', () => {
   });
 
   describe('removeChild', () => {
-    it('should not error when removing a child with a different parent than given', () => {
-      const savedParent = document.createElement('div');
-      const realParent = document.createElement('div');
+    it('should not error when removing a child without passing a parent', () => {
+      const parent = document.createElement('div');
       const child = document.createElement('div');
 
-      realParent.appendChild(child);
-      renderer.removeChild(savedParent, child);
+      parent.appendChild(child);
+      renderer.removeChild(null, child);
     });
   });
 
@@ -269,6 +269,89 @@ describe('DefaultDomRendererV2', () => {
       }
     });
   });
+
+  it('should update an external sourceMappingURL by prepending the baseHref as a prefix', () => {
+    document.head.innerHTML = `<base href="/base/" />`;
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      declarations: [CmpEncapsulationNoneWithSourceMap],
+    });
+
+    const fixture = TestBed.createComponent(CmpEncapsulationNoneWithSourceMap);
+    fixture.detectChanges();
+
+    expect(document.head.querySelector('style')?.textContent).toContain(
+      '/*# sourceMappingURL=/base/cmp-none.css.map */',
+    );
+
+    document.head.innerHTML = '';
+  });
+});
+
+describe('addBaseHrefToCssSourceMap', () => {
+  it('should return the original styles if baseHref is empty', () => {
+    const styles = ['body { color: red; }'];
+    const result = addBaseHrefToCssSourceMap('', styles);
+    expect(result).toEqual(styles);
+  });
+
+  it('should skip styles that do not contain a sourceMappingURL', () => {
+    const styles = ['body { color: red; }', 'h1 { font-size: 2rem; }'];
+    const result = addBaseHrefToCssSourceMap('/base/', styles);
+    expect(result).toEqual(styles);
+  });
+
+  it('should not modify inline (encoded) sourceMappingURL maps', () => {
+    const styles = ['/*# sourceMappingURL=data:application/json;base64,xyz */'];
+    const result = addBaseHrefToCssSourceMap('/base/', styles);
+    expect(result).toEqual(styles);
+  });
+
+  it('should prepend baseHref to external sourceMappingURL', () => {
+    const styles = ['/*# sourceMappingURL=style.css */'];
+    const result = addBaseHrefToCssSourceMap('/base/', styles);
+    expect(result).toEqual(['/*# sourceMappingURL=/base/style.css */']);
+  });
+
+  it('should handle baseHref with a trailing slash correctly', () => {
+    const styles = ['/*# sourceMappingURL=style.css */'];
+    const result = addBaseHrefToCssSourceMap('/base/', styles);
+    expect(result).toEqual(['/*# sourceMappingURL=/base/style.css */']);
+  });
+
+  it('should handle baseHref without a trailing slash correctly', () => {
+    const styles = ['/*# sourceMappingURL=style.css */'];
+    const result = addBaseHrefToCssSourceMap('/base', styles);
+    expect(result).toEqual(['/*# sourceMappingURL=/style.css */']);
+  });
+
+  it('should not duplicate slashes in the final URL', () => {
+    const styles = ['/*# sourceMappingURL=./style.css */'];
+    const result = addBaseHrefToCssSourceMap('/base/', styles);
+    expect(result).toEqual(['/*# sourceMappingURL=/base/style.css */']);
+  });
+
+  it('should not add base href to sourceMappingURL that is absolute', () => {
+    const styles = ['/*# sourceMappingURL=http://example.com/style.css */'];
+    const result = addBaseHrefToCssSourceMap('/base/', styles);
+    expect(result).toEqual(['/*# sourceMappingURL=http://example.com/style.css */']);
+  });
+
+  it('should process multiple styles and handle each case correctly', () => {
+    const styles = [
+      '/*# sourceMappingURL=style1.css */',
+      '/*# sourceMappingURL=data:application/json;base64,xyz */',
+      'h1 { font-size: 2rem; }',
+      '/*# sourceMappingURL=style2.css */',
+    ];
+    const result = addBaseHrefToCssSourceMap('/base/', styles);
+    expect(result).toEqual([
+      '/*# sourceMappingURL=/base/style1.css */',
+      '/*# sourceMappingURL=data:application/json;base64,xyz */',
+      'h1 { font-size: 2rem; }',
+      '/*# sourceMappingURL=/base/style2.css */',
+    ]);
+  });
 });
 
 async function styleCount(
@@ -297,6 +380,7 @@ async function styleCount(
   template: `<div class="emulated"></div>`,
   styles: [`.emulated { color: blue; }`],
   encapsulation: ViewEncapsulation.Emulated,
+  standalone: false,
 })
 class CmpEncapsulationEmulated {}
 
@@ -305,14 +389,25 @@ class CmpEncapsulationEmulated {}
   template: `<div class="none"></div>`,
   styles: [`.none { color: lime; }`],
   encapsulation: ViewEncapsulation.None,
+  standalone: false,
 })
 class CmpEncapsulationNone {}
+
+@Component({
+  selector: 'cmp-none',
+  template: `<div class="none"></div>`,
+  styles: [`.none { color: lime; }\n/*# sourceMappingURL=cmp-none.css.map */`],
+  encapsulation: ViewEncapsulation.None,
+  standalone: false,
+})
+class CmpEncapsulationNoneWithSourceMap {}
 
 @Component({
   selector: 'cmp-shadow',
   template: `<div class="shadow"></div><cmp-emulated></cmp-emulated><cmp-none></cmp-none>`,
   styles: [`.shadow { color: red; }`],
   encapsulation: ViewEncapsulation.ShadowDom,
+  standalone: false,
 })
 class CmpEncapsulationShadow {}
 
@@ -323,10 +418,15 @@ class CmpEncapsulationShadow {}
     <cmp-emulated></cmp-emulated>
     <cmp-none></cmp-none>
   `,
+  standalone: false,
 })
 export class SomeApp {}
 
-@Component({selector: 'test-cmp', template: ''})
+@Component({
+  selector: 'test-cmp',
+  template: '',
+  standalone: false,
+})
 class TestCmp {
   constructor(public renderer: Renderer2) {}
 }
@@ -340,6 +440,7 @@ class TestCmp {
     <cmp-none *ngIf="!componentOneInstanceHidden && !showEmulatedComponents"></cmp-none>
     <cmp-none *ngIf="!componentTwoInstanceHidden && !showEmulatedComponents"></cmp-none>
   `,
+  standalone: false,
 })
 export class SomeAppForCleanUp {
   componentOneInstanceHidden = false;

@@ -1,1 +1,1 @@
-EmptyOutletComponent.ɵfac = function EmptyOutletComponent_Factory(t) { return new (t || EmptyOutletComponent)(); };
+EmptyOutletComponent.ɵfac = function EmptyOutletComponent_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || EmptyOutletComponent)(); };

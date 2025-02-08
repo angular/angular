@@ -3,11 +3,11 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
+import {afterNextRender} from '../render3/after_render/hooks';
 import type {Injector} from '../di';
-import {internalAfterNextRender} from '../render3/after_render_hooks';
 import {assertLContainer, assertLView} from '../render3/assert';
 import {CONTAINER_HEADER_OFFSET} from '../render3/interfaces/container';
 import {TNode} from '../render3/interfaces/node';
@@ -47,10 +47,10 @@ const interactionTriggers = new WeakMap<Element, DeferEventEntry>();
 const viewportTriggers = new WeakMap<Element, DeferEventEntry>();
 
 /** Names of the events considered as interaction events. */
-const interactionEventNames = ['click', 'keydown'] as const;
+export const interactionEventNames = ['click', 'keydown'] as const;
 
 /** Names of the events considered as hover events. */
-const hoverEventNames = ['mouseenter', 'focusin'] as const;
+export const hoverEventNames = ['mouseenter', 'mouseover', 'focusin'] as const;
 
 /** `IntersectionObserver` used to observe `viewport` triggers. */
 let intersectionObserver: IntersectionObserver | null = null;
@@ -278,7 +278,8 @@ export function registerDomTrigger(
   callback: VoidFunction,
   type: TriggerType,
 ) {
-  const injector = initialLView[INJECTOR]!;
+  const injector = initialLView[INJECTOR];
+  const zone = injector.get(NgZone);
   function pollDomTrigger() {
     // If the initial view was destroyed, we don't need to do anything.
     if (isDestroyed(initialLView)) {
@@ -300,7 +301,7 @@ export function registerDomTrigger(
 
     // Keep polling until we resolve the trigger's LView.
     if (!triggerLView) {
-      internalAfterNextRender(pollDomTrigger, {injector});
+      afterNextRender({read: pollDomTrigger}, {injector});
       return;
     }
 
@@ -313,10 +314,14 @@ export function registerDomTrigger(
     const cleanup = registerFn(
       element,
       () => {
-        if (initialLView !== triggerLView) {
-          removeLViewOnDestroy(triggerLView, cleanup);
-        }
-        callback();
+        // `pollDomTrigger` runs outside the zone (because of `afterNextRender`) and registers its
+        // listeners outside the zone, so we jump back into the zone prior to running the callback.
+        zone.run(() => {
+          if (initialLView !== triggerLView) {
+            removeLViewOnDestroy(triggerLView, cleanup);
+          }
+          callback();
+        });
       },
       injector,
     );
@@ -334,5 +339,5 @@ export function registerDomTrigger(
   }
 
   // Begin polling for the trigger.
-  internalAfterNextRender(pollDomTrigger, {injector});
+  afterNextRender({read: pollDomTrigger}, {injector});
 }

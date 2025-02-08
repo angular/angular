@@ -9,7 +9,6 @@ import {sharedImports} from '../shared/shared';
 import {DashboardHeroComponent} from './dashboard-hero.component';
 
 @Component({
-  standalone: true,
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -26,12 +26,13 @@ import {
   SymbolKind,
   TcbLocation,
   TemplateSymbol,
+  TemplateTypeChecker,
 } from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 
 import {convertToTemplateDocumentSpan} from './references_and_rename_utils';
 import {getTargetAtPosition, TargetNodeKind} from './template_target';
-import {findTightestNode, getParentClassDeclaration} from './ts_utils';
+import {findTightestNode, getParentClassDeclaration} from './utils/ts_utils';
 import {
   getDirectiveMatchesForAttribute,
   getDirectiveMatchesForElementTag,
@@ -55,12 +56,14 @@ interface HasTcbLocation {
 }
 
 export class DefinitionBuilder {
-  private readonly ttc = this.compiler.getTemplateTypeChecker();
+  private readonly ttc: TemplateTypeChecker;
 
   constructor(
     private readonly tsLS: ts.LanguageService,
     private readonly compiler: NgCompiler,
-  ) {}
+  ) {
+    this.ttc = this.compiler.getTemplateTypeChecker();
+  }
 
   getDefinitionAndBoundSpan(
     fileName: string,

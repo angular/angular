@@ -1,5 +1,5 @@
-load("//devtools/tools:ng_module.bzl", "ng_module")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//devtools/tools:ng_module.bzl", "ng_module")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -23,6 +23,7 @@ ng_module(
     deps = [
         "//devtools/src/app/demo-app/todo/about",
         "//devtools/src/app/demo-app/todo/home",
+        "//devtools/src/app/demo-app/todo/routes",
         "//packages/common",
         "//packages/core",
         "//packages/forms",

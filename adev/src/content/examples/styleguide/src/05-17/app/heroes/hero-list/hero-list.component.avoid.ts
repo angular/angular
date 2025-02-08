@@ -9,7 +9,6 @@ import {HeroComponent} from '../hero/hero.component';
 /* avoid */
 
 @Component({
-  standalone: true,
   selector: 'toh-hero-list',
   template: `
     <section>

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {EnvironmentInjector} from '../di';
@@ -31,7 +31,7 @@ export abstract class DestroyRef {
    *
    * @usageNotes
    * ### Example
-   * ```typescript
+   * ```ts
    * const destroyRef = inject(DestroyRef);
    *
    * // register a destroy callback
@@ -56,8 +56,8 @@ export abstract class DestroyRef {
   static __NG_ENV_ID__: (injector: EnvironmentInjector) => DestroyRef = (injector) => injector;
 }
 
-class NodeInjectorDestroyRef extends DestroyRef {
-  constructor(private _lView: LView) {
+export class NodeInjectorDestroyRef extends DestroyRef {
+  constructor(readonly _lView: LView) {
     super();
   }
 

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -61,14 +61,14 @@ export class SwitchView {
  * Define a container element for the directive, and specify the switch expression
  * to match against as an attribute:
  *
- * ```
+ * ```html
  * <container-element [ngSwitch]="switch_expression">
  * ```
  *
  * Within the container, `*ngSwitchCase` statements specify the match expressions
  * as attributes. Include `*ngSwitchDefault` as the final case.
  *
- * ```
+ * ```html
  * <container-element [ngSwitch]="switch_expression">
  *    <some-element *ngSwitchCase="match_expression_1">...</some-element>
  * ...
@@ -80,7 +80,7 @@ export class SwitchView {
  *
  * The following example shows how to use more than one case to display the same view:
  *
- * ```
+ * ```html
  * <container-element [ngSwitch]="switch_expression">
  *   <!-- the same view can be shown in more than one case -->
  *   <some-element *ngSwitchCase="match_expression_1">...</some-element>
@@ -92,7 +92,7 @@ export class SwitchView {
  * ```
  *
  * The following example shows how cases can be nested:
- * ```
+ * ```html
  * <container-element [ngSwitch]="switch_expression">
  *       <some-element *ngSwitchCase="match_expression_1">...</some-element>
  *       <some-element *ngSwitchCase="match_expression_2">...</some-element>
@@ -114,7 +114,6 @@ export class SwitchView {
  */
 @Directive({
   selector: '[ngSwitch]',
-  standalone: true,
 })
 export class NgSwitch {
   private _defaultViews: SwitchView[] = [];
@@ -178,7 +177,7 @@ export class NgSwitch {
  * Within a switch container, `*ngSwitchCase` statements specify the match expressions
  * as attributes. Include `*ngSwitchDefault` as the final case.
  *
- * ```
+ * ```html
  * <container-element [ngSwitch]="switch_expression">
  *   <some-element *ngSwitchCase="match_expression_1">...</some-element>
  *   ...
@@ -200,7 +199,6 @@ export class NgSwitch {
  */
 @Directive({
   selector: '[ngSwitchCase]',
-  standalone: true,
 })
 export class NgSwitchCase implements DoCheck {
   private _view: SwitchView;
@@ -247,7 +245,6 @@ export class NgSwitchCase implements DoCheck {
  */
 @Directive({
   selector: '[ngSwitchDefault]',
-  standalone: true,
 })
 export class NgSwitchDefault {
   constructor(
@@ -270,8 +267,4 @@ function throwNgSwitchProviderNotFoundError(attrName: string, directiveName: str
       `(matching the "${directiveName}" directive) must be located inside an element with the "ngSwitch" attribute ` +
       `(matching "NgSwitch" directive)`,
   );
-}
-
-function stringifyValue(value: unknown): string {
-  return typeof value === 'string' ? `'${value}'` : String(value);
 }

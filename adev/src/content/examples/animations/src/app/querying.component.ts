@@ -14,7 +14,6 @@ import {HEROES} from './mock-heroes';
 import {NgIf} from '@angular/common';
 
 @Component({
-  standalone: true,
   selector: 'app-querying',
   template: `
     <nav>

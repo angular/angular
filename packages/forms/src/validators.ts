@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -15,7 +15,7 @@ import {
 import {forkJoin, from, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {
+import type {
   AsyncValidator,
   AsyncValidatorFn,
   ValidationErrors,
@@ -23,22 +23,29 @@ import {
   ValidatorFn,
 } from './directives/validators';
 import {RuntimeErrorCode} from './errors';
-import {AbstractControl} from './model/abstract_model';
+import type {AbstractControl} from './model/abstract_model';
 
-function isEmptyInputValue(value: any): boolean {
-  /**
-   * Check if the object is a string or array before evaluating the length attribute.
-   * This avoids falsely rejecting objects that contain a custom length attribute.
-   * For example, the object {id: 1, length: 0, width: 0} should not be returned as empty.
-   */
-  return (
-    value == null || ((typeof value === 'string' || Array.isArray(value)) && value.length === 0)
-  );
+function isEmptyInputValue(value: unknown): boolean {
+  return value == null || lengthOrSize(value) === 0;
 }
 
-function hasValidLength(value: any): boolean {
+/**
+ * Extract the length property in case it's an array or a string.
+ * Extract the size property in case it's a set.
+ * Return null else.
+ * @param value Either an array, set or undefined.
+ */
+function lengthOrSize(value: unknown): number | null {
   // non-strict comparison is intentional, to check for both `null` and `undefined` values
-  return value != null && typeof value.length === 'number';
+  if (value == null) {
+    return null;
+  } else if (Array.isArray(value) || typeof value === 'string') {
+    return value.length;
+  } else if (value instanceof Set) {
+    return value.size;
+  }
+
+  return null;
 }
 
 /**
@@ -55,7 +62,7 @@ function hasValidLength(value: any): boolean {
  * The following example registers a custom validator directive. Adding the validator to the
  * existing collection of validators requires the `multi: true` option.
  *
- * ```typescript
+ * ```ts
  * @Directive({
  *   selector: '[customValidator]',
  *   providers: [{provide: NG_VALIDATORS, useExisting: CustomValidatorDirective, multi: true}]
@@ -87,7 +94,7 @@ export const NG_VALIDATORS = new InjectionToken<ReadonlyArray<Validator | Functi
  * The following example implements the `AsyncValidator` interface to create an
  * async validator directive with a custom error key.
  *
- * ```typescript
+ * ```ts
  * @Directive({
  *   selector: '[customAsyncValidator]',
  *   providers: [{provide: NG_ASYNC_VALIDATORS, useExisting: CustomAsyncValidatorDirective, multi:
@@ -159,7 +166,7 @@ export class Validators {
    *
    * ### Validate against a minimum of 3
    *
-   * ```typescript
+   * ```ts
    * const control = new FormControl(2, Validators.min(3));
    *
    * console.log(control.errors); // {min: {min: 3, actual: 2}}
@@ -183,7 +190,7 @@ export class Validators {
    *
    * ### Validate against a maximum of 15
    *
-   * ```typescript
+   * ```ts
    * const control = new FormControl(16, Validators.max(15));
    *
    * console.log(control.errors); // {max: {max: 15, actual: 16}}
@@ -207,7 +214,7 @@ export class Validators {
    *
    * ### Validate that the field is non-empty
    *
-   * ```typescript
+   * ```ts
    * const control = new FormControl('', Validators.required);
    *
    * console.log(control.errors); // {required: true}
@@ -232,7 +239,7 @@ export class Validators {
    *
    * ### Validate that the field value is true
    *
-   * ```typescript
+   * ```ts
    * const control = new FormControl('some value', Validators.requiredTrue);
    *
    * console.log(control.errors); // {required: true}
@@ -272,7 +279,7 @@ export class Validators {
    *
    * ### Validate that the field matches a valid email pattern
    *
-   * ```typescript
+   * ```ts
    * const control = new FormControl('bad@', Validators.email);
    *
    * console.log(control.errors); // {email: true}
@@ -290,19 +297,20 @@ export class Validators {
 
   /**
    * @description
-   * Validator that requires the length of the control's value to be greater than or equal
-   * to the provided minimum length. This validator is also provided by default if you use the
+   * Validator that requires the number of items in the control's value to be greater than or equal
+   * to the provided minimum length. This validator is also provided by default if you use
    * the HTML5 `minlength` attribute. Note that the `minLength` validator is intended to be used
-   * only for types that have a numeric `length` property, such as strings or arrays. The
-   * `minLength` validator logic is also not invoked for values when their `length` property is 0
-   * (for example in case of an empty string or an empty array), to support optional controls. You
-   * can use the standard `required` validator if empty values should not be considered valid.
+   * only for types that have a numeric `length` or `size` property, such as strings, arrays or
+   * sets. The `minLength` validator logic is also not invoked for values when their `length` or
+   * `size` property is 0 (for example in case of an empty string or an empty array), to support
+   * optional controls. You can use the standard `required` validator if empty values should not be
+   * considered valid.
    *
    * @usageNotes
    *
    * ### Validate that the field has a minimum of 3 characters
    *
-   * ```typescript
+   * ```ts
    * const control = new FormControl('ng', Validators.minLength(3));
    *
    * console.log(control.errors); // {minlength: {requiredLength: 3, actualLength: 2}}
@@ -324,16 +332,17 @@ export class Validators {
 
   /**
    * @description
-   * Validator that requires the length of the control's value to be less than or equal
-   * to the provided maximum length. This validator is also provided by default if you use the
+   * Validator that requires the number of items in the control's value to be less than or equal
+   * to the provided maximum length. This validator is also provided by default if you use
    * the HTML5 `maxlength` attribute. Note that the `maxLength` validator is intended to be used
-   * only for types that have a numeric `length` property, such as strings or arrays.
+   * only for types that have a numeric `length` or `size` property, such as strings, arrays or
+   * sets.
    *
    * @usageNotes
    *
    * ### Validate that the field has maximum of 5 characters
    *
-   * ```typescript
+   * ```ts
    * const control = new FormControl('Angular', Validators.maxLength(5));
    *
    * console.log(control.errors); // {maxlength: {requiredLength: 5, actualLength: 7}}
@@ -362,7 +371,7 @@ export class Validators {
    *
    * ### Validate that the field only contains letters or spaces
    *
-   * ```typescript
+   * ```ts
    * const control = new FormControl('1', Validators.pattern('[a-zA-Z ]*'));
    *
    * console.log(control.errors); // {pattern: {requiredPattern: '^[a-zA-Z ]*$', actualValue: '1'}}
@@ -383,7 +392,7 @@ export class Validators {
    * `Validators.pattern` you **do not** pass in a `RegExp` object with either the global or sticky
    * flag enabled.
    *
-   * ```typescript
+   * ```ts
    * // Not recommended (since the `g` flag is used)
    * const controlOne = new FormControl('1', Validators.pattern(/foo/g));
    *
@@ -456,7 +465,7 @@ export class Validators {
  */
 export function minValidator(min: number): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
-    if (isEmptyInputValue(control.value) || isEmptyInputValue(min)) {
+    if (control.value == null || min == null) {
       return null; // don't validate empty values to allow optional controls
     }
     const value = parseFloat(control.value);
@@ -472,7 +481,7 @@ export function minValidator(min: number): ValidatorFn {
  */
 export function maxValidator(max: number): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
-    if (isEmptyInputValue(control.value) || isEmptyInputValue(max)) {
+    if (control.value == null || max == null) {
       return null; // don't validate empty values to allow optional controls
     }
     const value = parseFloat(control.value);
@@ -511,32 +520,41 @@ export function emailValidator(control: AbstractControl): ValidationErrors | nul
 }
 
 /**
- * Validator that requires the length of the control's value to be greater than or equal
+ * Validator that requires the number of items in the control's value to be greater than or equal
  * to the provided minimum length. See `Validators.minLength` for additional information.
+ *
+ * The minLengthValidator respects every length property in an object, regardless of whether it's an array.
+ * For example, the object {id: 1, length: 0, width: 0} should be validated.
  */
 export function minLengthValidator(minLength: number): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
-    if (isEmptyInputValue(control.value) || !hasValidLength(control.value)) {
+    const length = control.value?.length ?? lengthOrSize(control.value);
+    if (length === null || length === 0) {
       // don't validate empty values to allow optional controls
-      // don't validate values without `length` property
+      // don't validate values without `length` or `size` property
       return null;
     }
 
-    return control.value.length < minLength
-      ? {'minlength': {'requiredLength': minLength, 'actualLength': control.value.length}}
+    return length < minLength
+      ? {'minlength': {'requiredLength': minLength, 'actualLength': length}}
       : null;
   };
 }
 
 /**
- * Validator that requires the length of the control's value to be less than or equal
+ * Validator that requires the number of items in the control's value to be less than or equal
  * to the provided maximum length. See `Validators.maxLength` for additional information.
+ *
+ * The maxLengthValidator respects every length property in an object, regardless of whether it's an array.
+ * For example, the object {id: 1, length: 0, width: 0} should be validated.
  */
 export function maxLengthValidator(maxLength: number): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
-    return hasValidLength(control.value) && control.value.length > maxLength
-      ? {'maxlength': {'requiredLength': maxLength, 'actualLength': control.value.length}}
-      : null;
+    const length = control.value?.length ?? lengthOrSize(control.value);
+    if (length !== null && length > maxLength) {
+      return {'maxlength': {'requiredLength': maxLength, 'actualLength': length}};
+    }
+    return null;
   };
 }
 

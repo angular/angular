@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 
 @Component({
-  template: `
+    template: `
     <div i18n>
       Content:
       @switch (count) {
@@ -10,7 +10,8 @@ import {Component} from '@angular/core';
         @default {before<button>otherwise</button>after}
       }
     </div>
-  `
+  `,
+    standalone: false
 })
 export class MyApp {
   count = 0;

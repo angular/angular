@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Component, Inject} from '@angular/core';
@@ -18,7 +18,6 @@ export interface DialogData {
 
 @Component({
   selector: 'app-dialog',
-  standalone: true,
   imports: [MatDialogModule, MatFormField, MatLabel, FormsModule],
   template: `
     <h1 mat-dialog-title>Hi {{ data.name }}</h1>

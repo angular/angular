@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {DOCUMENT} from '@angular/common';
@@ -163,10 +163,11 @@ export class JsonpClientBackend implements HttpBackend {
       // the response callback from the window. This logic is used in both the
       // success, error, and cancellation paths, so it's extracted out for convenience.
       const cleanup = () => {
+        node.removeEventListener('load', onLoad);
+        node.removeEventListener('error', onError);
+
         // Remove the <script> tag if it's still on the page.
-        if (node.parentNode) {
-          node.parentNode.removeChild(node);
-        }
+        node.remove();
 
         // Remove the response callback from the callbackMap (window object in the
         // browser).

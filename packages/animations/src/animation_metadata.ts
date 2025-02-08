@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /**
@@ -488,7 +488,7 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
  * The provided animation value is expected to be an array consisting of state and
  * transition declarations.
  *
- * ```typescript
+ * ```ts
  * @Component({
  *   selector: "my-component",
  *   templateUrl: "my-component-tpl.html",
@@ -518,7 +518,7 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
  * The `transition` animation method also supports reading an inline function which can decide
  * if its associated animation should be run.
  *
- * ```typescript
+ * ```ts
  * // this method is run each time the `myAnimationTrigger` trigger value changes.
  * function myInlineMatcherFn(fromState: string, toState: string, element: any, params: {[key:
  string]: any}): boolean {
@@ -551,7 +551,7 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
  *
  * The following example shows how to use this feature:
  *
- * ```typescript
+ * ```angular-ts
  * @Component({
  *   selector: 'my-component',
  *   template: `
@@ -580,7 +580,7 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
  * This means that you can disable all animations for an app
  * by placing a host binding set on `@.disabled` on the topmost Angular component.
  *
- * ```typescript
+ * ```ts
  * import {Component, HostBinding} from '@angular/core';
  *
  * @Component({
@@ -654,12 +654,12 @@ export function trigger(name: string, definitions: AnimationMetadata[]): Animati
  * **Style examples**
  *
  * The following example calls `style()` to set a single CSS style.
- * ```typescript
+ * ```ts
  * animate(500, style({ background: "red" }))
  * ```
  * The following example calls `keyframes()` to set a CSS style
  * to different values for successive keyframes.
- * ```typescript
+ * ```ts
  * animate(500, keyframes(
  *  [
  *   style({ background: "blue" }),
@@ -686,7 +686,7 @@ export function animate(
  * `keyframes()`, or use `animate()` calls with a delay value.
  * For example:
  *
- * ```typescript
+ * ```ts
  * group([
  *   animate("1s", style({ background: "black" })),
  *   animate("2s", style({ color: "white" }))
@@ -724,7 +724,7 @@ export function group(
  * - Steps defined by `animate()` calls apply the styling data over time
  *   as specified by the timing data.
  *
- * ```typescript
+ * ```ts
  * sequence([
  *   style({ opacity: 0 }),
  *   animate("1s", style({ opacity: 1 }))
@@ -777,7 +777,7 @@ export function sequence(
  * The following examples create animation styles that collect a set of
  * CSS property values:
  *
- * ```typescript
+ * ```ts
  * // string values for CSS properties
  * style({ background: "red", color: "blue" })
  *
@@ -788,7 +788,7 @@ export function sequence(
  * The following example uses auto-styling to allow an element to animate from
  * a height of 0 up to its full height:
  *
- * ```
+ * ```ts
  * style({ height: 0 }),
  * animate("1s", style({ height: "*" }))
  * ```
@@ -859,7 +859,7 @@ export function state(
  * when each `backgroundColor` value is applied. The color is red at the start, and changes to
  * blue when 20% of the total time has elapsed.
  *
- * ```typescript
+ * ```ts
  * // the provided offset values
  * animate("5s", keyframes([
  *   style({ backgroundColor: "red", offset: 0 }),
@@ -872,7 +872,7 @@ export function state(
  * If there are no `offset` values specified in the style entries, the offsets
  * are calculated automatically.
  *
- * ```typescript
+ * ```ts
  * animate("5s", keyframes([
  *   style({ backgroundColor: "red" }) // offset = 0
  *   style({ backgroundColor: "blue" }) // offset = 0.33
@@ -915,7 +915,7 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  *    expression bound to the trigger's element goes from `fromState` to `toState`
  *
  *    _Example:_
- *      ```typescript
+ *      ```ts
  *        transition('open => closed', animate('.5s ease-out', style({ height: 0 }) ))
  *      ```
  *
@@ -923,7 +923,7 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  *    the expression bound to the trigger's element goes from `fromState` to `toState` or vice versa
  *
  *    _Example:_
- *      ```typescript
+ *      ```ts
  *        transition('enabled <=> disabled', animate('1s cubic-bezier(0.8,0.3,0,1)'))
  *      ```
  *
@@ -931,7 +931,7 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  *    element enters or exists the DOM
  *
  *    _Example:_
- *      ```typescript
+ *      ```ts
  *        transition(':enter', [
  *          style({ opacity: 0 }),
  *          animate('500ms', style({ opacity: 1 }))
@@ -942,7 +942,7 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  *    the numerical expression bound to the trigger's element has increased in value or decreased
  *
  *    _Example:_
- *      ```typescript
+ *      ```ts
  *        transition(':increment', query('@counter', animateChild()))
  *      ```
  *
@@ -950,7 +950,7 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  *    should occur whenever one of the state change expressions matches
  *
  *    _Example:_
- *      ```typescript
+ *      ```ts
  *        transition(':increment, * => enabled, :enter', animate('1s ease', keyframes([
  *          style({ transform: 'scale(1)', offset: 0}),
  *          style({ transform: 'scale(1.1)', offset: 0.7}),
@@ -966,7 +966,7 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  *  - `true` and `false` also match expression values of `1` and `0` respectively (but do not match
  *    _truthy_ and _falsy_ values)
  *
- * <div class="alert is-helpful">
+ * <div class="docs-alert docs-alert-helpful">
  *
  *  Be careful about entering end leaving elements as their transitions present a common
  *  pitfall for developers.
@@ -993,13 +993,13 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  *  - Transition animations applied based on
  *    the trigger's expression value
  *
- *   ```HTML
+ *   ```html
  *   <div [@myAnimationTrigger]="myStatusExp">
  *    ...
  *   </div>
  *   ```
  *
- *   ```typescript
+ *   ```ts
  *   trigger("myAnimationTrigger", [
  *     ..., // states
  *     transition("on => off, open => closed", animate(500)),
@@ -1010,7 +1010,7 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  *  - Transition animations applied based on custom logic dependent
  *    on the trigger's expression value and provided parameters
  *
- *    ```HTML
+ *    ```html
  *    <div [@myAnimationTrigger]="{
  *     value: stepName,
  *     params: { target: currentTarget }
@@ -1019,7 +1019,7 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  *    </div>
  *    ```
  *
- *    ```typescript
+ *    ```ts
  *    trigger("myAnimationTrigger", [
  *      ..., // states
  *      transition(
@@ -1065,7 +1065,7 @@ export function transition(
  * The following example defines a reusable animation, providing some default parameter
  * values.
  *
- * ```typescript
+ * ```ts
  * var fadeAnimation = animation([
  *   style({ opacity: '{{ start }}' }),
  *   animate('{{ time }}',
@@ -1168,7 +1168,7 @@ export function useAnimation(
  *
  * Tokens can be merged into a combined query selector string. For example:
  *
- * ```typescript
+ * ```ts
  *  query(':self, .record:enter, .record:leave, @subTrigger', [...])
  * ```
  *
@@ -1205,7 +1205,7 @@ export function useAnimation(
  *  - Those inserted dynamically (via `ViewContainerRef`)
  *  - Those that have a structural directive (which, under the hood, are a subset of the above ones)
  *
- * <div class="alert is-helpful">
+ * <div class="docs-alert docs-alert-helpful">
  *
  *  Note that elements will be successfully queried via `:enter`/`:leave` even if their
  *  insertion/removal is not done manually via `ViewContainerRef`or caused by their structural
@@ -1213,7 +1213,7 @@ export function useAnimation(
  *
  * </div>
  *
- * <div class="alert is-important">
+ * <div class="docs-alert docs-alert-important">
  *
  *  There is an exception to what previously mentioned, besides elements entering/leaving based on
  *  their own logic, elements with an animation trigger can always be queried via `:leave` when
@@ -1226,7 +1226,7 @@ export function useAnimation(
  * The following example queries for inner elements and animates them
  * individually using `animate()`.
  *
- * ```typescript
+ * ```angular-ts
  * @Component({
  *   selector: 'inner',
  *   template: `
@@ -1301,7 +1301,7 @@ export function query(
  *
  * Here is the component code:
  *
- * ```typescript
+ * ```ts
  * import {trigger, transition, style, animate, query, stagger} from '@angular/animations';
  * @Component({
  *   templateUrl: 'list.component.html',
@@ -1330,7 +1330,7 @@ export function query(
  *
  * Here is the animation trigger code:
  *
- * ```typescript
+ * ```ts
  * trigger('listAnimation', [
  *   transition('* => *', [ // each time the binding value changes
  *     query(':leave', [

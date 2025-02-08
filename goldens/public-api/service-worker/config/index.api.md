@@ -26,6 +26,8 @@ export interface Config {
     // (undocumented)
     appData?: {};
     // (undocumented)
+    applicationMaxAge?: Duration;
+    // (undocumented)
     assetGroups?: AssetGroup[];
     // (undocumented)
     dataGroups?: DataGroup[];
@@ -44,6 +46,7 @@ export interface DataGroup {
         maxSize: number;
         maxAge: Duration;
         timeout?: Duration;
+        refreshAhead?: Duration;
         strategy?: 'freshness' | 'performance';
         cacheOpaqueResponses?: boolean;
     };

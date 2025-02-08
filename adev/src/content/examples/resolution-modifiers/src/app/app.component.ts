@@ -10,7 +10,6 @@ import {SelfNoDataComponent} from './self-no-data/self-no-data.component';
 import {SkipselfComponent} from './skipself/skipself.component';
 
 @Component({
-  standalone: true,
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],

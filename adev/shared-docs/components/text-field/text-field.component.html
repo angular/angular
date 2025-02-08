@@ -1,0 +1,12 @@
+@if (!hideIcon()) {
+  <docs-icon class="docs-icon_high-contrast">search</docs-icon>
+}
+<input
+  #inputRef
+  type="text"
+  [attr.placeholder]="placeholder()"
+  [attr.name]="name()"
+  [ngModel]="value()"
+  (ngModelChange)="setValue($event)"
+  class="docs-text-field"
+/>

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {forwardRef, resolveForwardRef} from '../../di/forward_ref';
@@ -50,7 +50,7 @@ export const angularCoreEnv: {[name: string]: unknown} = (() => ({
   'ɵɵCopyDefinitionFeature': r3.ɵɵCopyDefinitionFeature,
   'ɵɵInheritDefinitionFeature': r3.ɵɵInheritDefinitionFeature,
   'ɵɵInputTransformsFeature': r3.ɵɵInputTransformsFeature,
-  'ɵɵStandaloneFeature': r3.ɵɵStandaloneFeature,
+  'ɵɵExternalStylesFeature': r3.ɵɵExternalStylesFeature,
   'ɵɵnextContext': r3.ɵɵnextContext,
   'ɵɵnamespaceHTML': r3.ɵɵnamespaceHTML,
   'ɵɵnamespaceMathML': r3.ɵɵnamespaceMathML,
@@ -155,6 +155,14 @@ export const angularCoreEnv: {[name: string]: unknown} = (() => ({
   'ɵɵdeferPrefetchOnHover': r3.ɵɵdeferPrefetchOnHover,
   'ɵɵdeferPrefetchOnInteraction': r3.ɵɵdeferPrefetchOnInteraction,
   'ɵɵdeferPrefetchOnViewport': r3.ɵɵdeferPrefetchOnViewport,
+  'ɵɵdeferHydrateWhen': r3.ɵɵdeferHydrateWhen,
+  'ɵɵdeferHydrateNever': r3.ɵɵdeferHydrateNever,
+  'ɵɵdeferHydrateOnIdle': r3.ɵɵdeferHydrateOnIdle,
+  'ɵɵdeferHydrateOnImmediate': r3.ɵɵdeferHydrateOnImmediate,
+  'ɵɵdeferHydrateOnTimer': r3.ɵɵdeferHydrateOnTimer,
+  'ɵɵdeferHydrateOnHover': r3.ɵɵdeferHydrateOnHover,
+  'ɵɵdeferHydrateOnInteraction': r3.ɵɵdeferHydrateOnInteraction,
+  'ɵɵdeferHydrateOnViewport': r3.ɵɵdeferHydrateOnViewport,
   'ɵɵdeferEnableTimerScheduling': r3.ɵɵdeferEnableTimerScheduling,
   'ɵɵrepeater': r3.ɵɵrepeater,
   'ɵɵrepeaterCreate': r3.ɵɵrepeaterCreate,
@@ -190,6 +198,7 @@ export const angularCoreEnv: {[name: string]: unknown} = (() => ({
   'ɵɵdeclareLet': r3.ɵɵdeclareLet,
   'ɵɵstoreLet': r3.ɵɵstoreLet,
   'ɵɵreadContextLet': r3.ɵɵreadContextLet,
+  'ɵɵattachSourceLocations': r3.ɵɵattachSourceLocations,
 
   'ɵɵsanitizeHtml': sanitization.ɵɵsanitizeHtml,
   'ɵɵsanitizeStyle': sanitization.ɵɵsanitizeStyle,
@@ -207,4 +216,6 @@ export const angularCoreEnv: {[name: string]: unknown} = (() => ({
   'ɵɵtwoWayProperty': r3.ɵɵtwoWayProperty,
   'ɵɵtwoWayBindingSet': r3.ɵɵtwoWayBindingSet,
   'ɵɵtwoWayListener': r3.ɵɵtwoWayListener,
+
+  'ɵɵreplaceMetadata': r3.ɵɵreplaceMetadata,
 }))();

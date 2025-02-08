@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as eventLib from './event';
@@ -46,7 +46,7 @@ export function preventDefaultForA11yClick(eventInfo: eventInfoLib.EventInfo) {
 export function populateClickOnlyAction(
   actionElement: Element,
   eventInfo: eventInfoLib.EventInfo,
-  actionMap: {[key: string]: string},
+  actionMap: {[key: string]: string | undefined},
 ) {
   if (
     // If there's already an action, don't attempt to set a CLICKONLY
@@ -60,5 +60,5 @@ export function populateClickOnlyAction(
     return;
   }
   eventInfoLib.setEventType(eventInfo, EventType.CLICKONLY);
-  eventInfoLib.setAction(eventInfo, actionMap[EventType.CLICKONLY], actionElement);
+  eventInfoLib.setAction(eventInfo, actionMap[EventType.CLICKONLY]!, actionElement);
 }

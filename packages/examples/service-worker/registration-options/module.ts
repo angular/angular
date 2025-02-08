@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 // tslint:disable: no-duplicate-imports
 import {Component} from '@angular/core';
@@ -18,6 +18,7 @@ import {SwUpdate} from '@angular/service-worker';
 @Component({
   selector: 'example-app',
   template: 'SW enabled: {{ swu.isEnabled }}',
+  standalone: false,
 })
 export class AppComponent {
   constructor(readonly swu: SwUpdate) {}

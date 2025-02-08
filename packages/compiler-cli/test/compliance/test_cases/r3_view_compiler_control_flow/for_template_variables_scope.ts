@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 
 @Component({
-  template: `
+    template: `
     {{$index}} {{$count}} {{$first}} {{$last}}
 
     @for (item of items; track item) {
@@ -10,6 +10,7 @@ import {Component} from '@angular/core';
 
     {{$index}} {{$count}} {{$first}} {{$last}}
   `,
+    standalone: false
 })
 export class MyApp {
   message = 'hello';

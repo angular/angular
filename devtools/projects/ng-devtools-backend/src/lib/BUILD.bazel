@@ -81,6 +81,7 @@ ts_library(
     srcs = ["router-tree.ts"],
     deps = [
         "//devtools/projects/protocol",
+        "//packages/router",
     ],
 )
 
@@ -132,6 +133,7 @@ ts_library(
         ":component_tree",
         ":highlighter",
         ":interfaces",
+        ":router_tree",
         ":set_console_reference",
         ":utils",
         "//devtools/projects/ng-devtools-backend/src/lib/component-inspector",

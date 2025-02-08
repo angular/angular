@@ -3,10 +3,18 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 export {ComputedNode, createComputed} from './src/computed';
+export {
+  ComputationFn,
+  LinkedSignalNode,
+  LinkedSignalGetter,
+  createLinkedSignal,
+  linkedSignalSetFn,
+  linkedSignalUpdateFn,
+} from './src/linked_signal';
 export {ValueEqualityFn, defaultEquals} from './src/equality';
 export {setThrowInvalidWriteToSignalError} from './src/errors';
 export {
@@ -24,6 +32,7 @@ export {
   isReactive,
   producerAccessed,
   producerIncrementEpoch,
+  producerMarkClean,
   producerNotifyConsumers,
   producerUpdateValueVersion,
   producerUpdatesAllowed,

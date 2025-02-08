@@ -3,14 +3,13 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, EventEmitter, Input, OnDestroy, Output} from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {ChangeDetectionStrategy, Component, computed, inject, input, output} from '@angular/core';
 import {ProfilerFrame} from 'protocol';
 
-import {Theme, ThemeService} from '../../../../theme-service';
+import {ThemeService} from '../../../../theme-service';
 import {BarGraphFormatter, BargraphNode} from '../record-formatter/bargraph-formatter/index';
 
 import {formatDirectiveProfile} from './profile-formatter';
@@ -21,27 +20,21 @@ import {BarChartComponent} from './bar-chart.component';
   selector: 'ng-bargraph-visualizer',
   templateUrl: './bargraph-visualizer.component.html',
   styleUrls: ['./bargraph-visualizer.component.scss'],
-  standalone: true,
   imports: [BarChartComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BargraphVisualizerComponent {
-  barColor!: string;
-  profileRecords!: BargraphNode[];
+  public themeService = inject(ThemeService);
+  readonly barColor = computed(() => {
+    return this.themeService.currentTheme() === 'dark-theme' ? '#073d69' : '#cfe8fc';
+  });
 
-  @Output() nodeSelect = new EventEmitter<SelectedEntry>();
+  readonly nodeSelect = output<SelectedEntry>();
 
-  private _formatter = new BarGraphFormatter();
+  private readonly _formatter = new BarGraphFormatter();
+  frame = input.required<ProfilerFrame>();
 
-  @Input()
-  set frame(data: ProfilerFrame) {
-    this.profileRecords = this._formatter.formatFrame(data);
-  }
-
-  constructor(public themeService: ThemeService) {
-    this.themeService.currentTheme.pipe(takeUntilDestroyed()).subscribe((theme) => {
-      this.barColor = theme === 'dark-theme' ? '#073d69' : '#cfe8fc';
-    });
-  }
+  profileRecords = computed(() => this._formatter.formatFrame(this.frame()));
 
   formatEntryData(bargraphNode: BargraphNode): SelectedDirective[] {
     return formatDirectiveProfile(bargraphNode.directives ?? []);

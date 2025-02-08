@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {R3Identifiers} from '@angular/compiler';
@@ -18,7 +18,7 @@ import {
   PipeDecoratorHandler,
   ReferencesRegistry,
 } from '../../annotations';
-import {InjectableClassRegistry} from '../../annotations/common';
+import {InjectableClassRegistry, JitDeclarationRegistry} from '../../annotations/common';
 import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../cycles';
 import {
   COMPILER_ERRORS_WITH_GUIDES,
@@ -124,6 +124,8 @@ import {DiagnosticCategoryLabel, NgCompilerAdapter, NgCompilerOptions} from '../
 
 import {coreHasSymbol} from './core_version';
 import {coreVersionSupportsFeature} from './feature_detection';
+import {angularJitApplicationTransform} from '../../transform/jit';
+import {untagAllTsFiles} from '../../shims';
 
 /**
  * State information about a compilation which is only generated once some data is requested from
@@ -145,6 +147,8 @@ interface LazyCompilationState {
   extendedTemplateChecker: ExtendedTemplateChecker | null;
   templateSemanticsChecker: TemplateSemanticsChecker | null;
   sourceFileValidator: SourceFileValidator | null;
+  jitDeclarationRegistry: JitDeclarationRegistry;
+  supportJitMode: boolean;
 
   /**
    * Only available in local compilation mode when option `generateExtraImportsInLocalMode` is set.
@@ -386,6 +390,8 @@ export class NgCompiler {
   private readonly enableBlockSyntax: boolean;
   private readonly enableLetSyntax: boolean;
   private readonly angularCoreVersion: string | null;
+  private readonly enableHmr: boolean;
+  private readonly implicitStandaloneValue: boolean;
 
   /**
    * `NgCompiler` can be reused for multiple compilations (for resource-only changes), and each
@@ -450,13 +456,21 @@ export class NgCompiler {
     readonly usePoisonedData: boolean,
     private livePerfRecorder: ActivePerfRecorder,
   ) {
+    this.angularCoreVersion = options['_angularCoreVersion'] ?? null;
     this.delegatingPerfRecorder = new DelegatingPerfRecorder(this.perfRecorder);
+    this.usePoisonedData = usePoisonedData || !!options._compilePoisonedComponents;
     this.enableTemplateTypeChecker =
-      enableTemplateTypeChecker || (options['_enableTemplateTypeChecker'] ?? false);
+      enableTemplateTypeChecker || !!options._enableTemplateTypeChecker;
     // TODO(crisbeto): remove this flag and base `enableBlockSyntax` on the `angularCoreVersion`.
     this.enableBlockSyntax = options['_enableBlockSyntax'] ?? true;
     this.enableLetSyntax = options['_enableLetSyntax'] ?? true;
-    this.angularCoreVersion = options['_angularCoreVersion'] ?? null;
+    // Standalone by default is enabled since v19. We need to toggle it here,
+    // because the language service extension may be running with the latest
+    // version of the compiler against an older version of Angular.
+    this.implicitStandaloneValue =
+      this.angularCoreVersion === null ||
+      coreVersionSupportsFeature(this.angularCoreVersion, '>= 19.0.0');
+    this.enableHmr = !!options['_enableHmr'];
     this.constructionDiagnostics.push(
       ...this.adapter.constructionDiagnostics,
       ...verifyCompatibleTypeCheckOptions(this.options),
@@ -789,6 +803,10 @@ export class NgCompiler {
   } {
     const compilation = this.ensureAnalyzed();
 
+    // Untag all the files, otherwise TS 5.4 may end up emitting
+    // references to typecheck files (see #56945 and #57135).
+    untagAllTsFiles(this.inputProgram);
+
     const coreImportsFrom = compilation.isCore ? getR3SymbolsFile(this.inputProgram) : null;
     let importRewriter: ImportRewriter;
     if (coreImportsFrom !== null) {
@@ -813,6 +831,39 @@ export class NgCompiler {
       aliasTransformFactory(compilation.traitCompiler.exportStatements),
       defaultImportTracker.importPreservingTransformer(),
     ];
+
+    // If there are JIT declarations, wire up the JIT transform and efficiently
+    // run it against the target declarations.
+    if (compilation.supportJitMode && compilation.jitDeclarationRegistry.jitDeclarations.size > 0) {
+      const {jitDeclarations} = compilation.jitDeclarationRegistry;
+      const jitDeclarationsArray = Array.from(jitDeclarations);
+      const jitDeclarationOriginalNodes = new Set(
+        jitDeclarationsArray.map((d) => ts.getOriginalNode(d)),
+      );
+      const sourceFilesWithJit = new Set(
+        jitDeclarationsArray.map((d) => d.getSourceFile().fileName),
+      );
+
+      before.push((ctx) => {
+        const reflectionHost = new TypeScriptReflectionHost(this.inputProgram.getTypeChecker());
+        const jitTransform = angularJitApplicationTransform(
+          this.inputProgram,
+          compilation.isCore,
+          (node) => {
+            // Class may be synthetic at this point due to Ivy transform.
+            node = ts.getOriginalNode(node, ts.isClassDeclaration);
+            return reflectionHost.isClass(node) && jitDeclarationOriginalNodes.has(node);
+          },
+        )(ctx);
+
+        return (sourceFile) => {
+          if (!sourceFilesWithJit.has(sourceFile.fileName)) {
+            return sourceFile;
+          }
+          return jitTransform(sourceFile);
+        };
+      });
+    }
 
     const afterDeclarations: ts.TransformerFactory<ts.SourceFile>[] = [];
 
@@ -859,8 +910,13 @@ export class NgCompiler {
    *
    * @param entryPoint Path to the entry point for the package for which API
    *     docs should be extracted.
+   *
+   * @returns A map of symbols with their associated module, eg: ApplicationRef => @angular/core
    */
-  getApiDocumentation(entryPoint: string): DocEntry[] {
+  getApiDocumentation(
+    entryPoint: string,
+    privateModules: Set<string>,
+  ): {entries: DocEntry[]; symbols: Map<string, string>} {
     const compilation = this.ensureAnalyzed();
     const checker = this.inputProgram.getTypeChecker();
     const docsExtractor = new DocsExtractor(checker, compilation.metaReader);
@@ -876,9 +932,9 @@ export class NgCompiler {
     }
 
     // TODO: Technically the current directory is not the root dir.
-    //  Should probably be derived from the config.
+    // Should probably be derived from the config.
     const rootDir = this.inputProgram.getCurrentDirectory();
-    return docsExtractor.extractAll(entryPointSourceFile, rootDir);
+    return docsExtractor.extractAll(entryPointSourceFile, rootDir, privateModules);
   }
 
   /**
@@ -889,6 +945,34 @@ export class NgCompiler {
     // optimized.
     const compilation = this.ensureAnalyzed();
     compilation.traitCompiler.xi18n(ctx);
+  }
+
+  /**
+   * Emits the JavaScript module that can be used to replace the metadata of a class during HMR.
+   * @param node Class for which to generate the update module.
+   */
+  emitHmrUpdateModule(node: DeclarationNode): string | null {
+    const {traitCompiler, reflector} = this.ensureAnalyzed();
+
+    if (!reflector.isClass(node)) {
+      return null;
+    }
+
+    const callback = traitCompiler.compileHmrUpdateCallback(node);
+
+    if (callback === null) {
+      return null;
+    }
+
+    const sourceFile = node.getSourceFile();
+    const printer = ts.createPrinter();
+    const nodeText = printer.printNode(ts.EmitHint.Unspecified, callback, sourceFile);
+
+    return ts.transpileModule(nodeText, {
+      compilerOptions: this.options,
+      fileName: sourceFile.fileName,
+      reportDiagnostics: false,
+    }).outputText;
   }
 
   private ensureAnalyzed(this: NgCompiler): LazyCompilationState {
@@ -943,6 +1027,7 @@ export class NgCompiler {
     const strictTemplates = !!this.options.strictTemplates;
 
     const useInlineTypeConstructors = this.programDriver.supportsInlineOperations;
+    const checkTwoWayBoundEvents = this.options['_checkTwoWayBoundEvents'] ?? false;
 
     // Check whether the loaded version of `@angular/core` in the `ts.Program` supports unwrapping
     // writable signals for type-checking. If this check fails to find a suitable .d.ts file, fall
@@ -952,7 +1037,7 @@ export class NgCompiler {
     let allowSignalsInTwoWayBindings =
       coreHasSymbol(this.inputProgram, R3Identifiers.unwrapWritableSignal) ??
       (this.angularCoreVersion === null ||
-        coreVersionSupportsFeature(this.angularCoreVersion, '>= 17.2.0-0'));
+        coreVersionSupportsFeature(this.angularCoreVersion, '>= 17.2.0'));
 
     // First select a type-checking configuration, based on whether full template type-checking is
     // requested.
@@ -993,7 +1078,10 @@ export class NgCompiler {
         suggestionsForSuboptimalTypeInference: this.enableTemplateTypeChecker && !strictTemplates,
         controlFlowPreventingContentProjection:
           this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
+        unusedStandaloneImports:
+          this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
         allowSignalsInTwoWayBindings,
+        checkTwoWayBoundEvents,
       };
     } else {
       typeCheckingConfig = {
@@ -1025,7 +1113,10 @@ export class NgCompiler {
         suggestionsForSuboptimalTypeInference: false,
         controlFlowPreventingContentProjection:
           this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
+        unusedStandaloneImports:
+          this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
         allowSignalsInTwoWayBindings,
+        checkTwoWayBoundEvents,
       };
     }
 
@@ -1069,6 +1160,10 @@ export class NgCompiler {
     ) {
       typeCheckingConfig.controlFlowPreventingContentProjection =
         this.options.extendedDiagnostics.checks.controlFlowPreventingContentProjection;
+    }
+    if (this.options.extendedDiagnostics?.checks?.unusedStandaloneImports !== undefined) {
+      typeCheckingConfig.unusedStandaloneImports =
+        this.options.extendedDiagnostics.checks.unusedStandaloneImports;
     }
 
     return typeCheckingConfig;
@@ -1337,6 +1432,7 @@ export class NgCompiler {
     const strictCtorDeps = this.options.strictInjectionParameters || false;
     const supportJitMode = this.options['supportJitMode'] ?? true;
     const supportTestBed = this.options['supportTestBed'] ?? true;
+    const externalRuntimeStyles = this.options['externalRuntimeStyles'] ?? false;
 
     // Libraries compiled in partial mode could potentially be used with TestBed within an
     // application. Since this is not known at library compilation time, support is required to
@@ -1361,6 +1457,8 @@ export class NgCompiler {
       );
     }
 
+    const jitDeclarationRegistry = new JitDeclarationRegistry();
+
     // Set up the IvyCompilation, which manages state for the Ivy transformer.
     const handlers: DecoratorHandler<unknown, unknown, SemanticSymbol | null, unknown>[] = [
       new ComponentDecoratorHandler(
@@ -1369,7 +1467,7 @@ export class NgCompiler {
         metaRegistry,
         metaReader,
         scopeReader,
-        depScopeReader,
+        this.adapter,
         ngModuleScopeRegistry,
         typeCheckScopeRegistry,
         resourceRegistry,
@@ -1400,7 +1498,13 @@ export class NgCompiler {
         !!this.options.forbidOrphanComponents,
         this.enableBlockSyntax,
         this.enableLetSyntax,
+        externalRuntimeStyles,
         localCompilationExtraImportsTracker,
+        jitDeclarationRegistry,
+        this.options.i18nPreserveWhitespaceForLegacyExtraction ?? true,
+        !!this.options.strictStandalone,
+        this.enableHmr,
+        this.implicitStandaloneValue,
       ),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
@@ -1422,7 +1526,9 @@ export class NgCompiler {
         importTracker,
         supportTestBed,
         compilationMode,
-        !!this.options.generateExtraImportsInLocalMode,
+        jitDeclarationRegistry,
+        !!this.options.strictStandalone,
+        this.implicitStandaloneValue,
       ) as Readonly<DecoratorHandler<unknown, unknown, SemanticSymbol | null, unknown>>,
       // Pipe handler must be before injectable handler in list so pipe factories are printed
       // before injectable factories (so injectable factories can delegate to them)
@@ -1437,6 +1543,8 @@ export class NgCompiler {
         supportTestBed,
         compilationMode,
         !!this.options.generateExtraImportsInLocalMode,
+        !!this.options.strictStandalone,
+        this.implicitStandaloneValue,
       ),
       new InjectableDecoratorHandler(
         reflector,
@@ -1467,6 +1575,7 @@ export class NgCompiler {
         supportJitMode,
         compilationMode,
         localCompilationExtraImportsTracker,
+        jitDeclarationRegistry,
       ),
     ];
 
@@ -1492,11 +1601,12 @@ export class NgCompiler {
       },
     );
 
+    const typeCheckingConfig = this.getTypeCheckingConfig();
     const templateTypeChecker = new TemplateTypeCheckerImpl(
       this.inputProgram,
       notifyingDriver,
       traitCompiler,
-      this.getTypeCheckingConfig(),
+      typeCheckingConfig,
       refEmitter,
       reflector,
       this.adapter,
@@ -1527,7 +1637,7 @@ export class NgCompiler {
 
     const sourceFileValidator =
       this.constructionDiagnostics.length === 0
-        ? new SourceFileValidator(reflector, importTracker)
+        ? new SourceFileValidator(reflector, importTracker, templateTypeChecker, typeCheckingConfig)
         : null;
 
     return {
@@ -1545,8 +1655,10 @@ export class NgCompiler {
       resourceRegistry,
       extendedTemplateChecker,
       localCompilationExtraImportsTracker,
+      jitDeclarationRegistry,
       templateSemanticsChecker,
       sourceFileValidator,
+      supportJitMode,
     };
   }
 }

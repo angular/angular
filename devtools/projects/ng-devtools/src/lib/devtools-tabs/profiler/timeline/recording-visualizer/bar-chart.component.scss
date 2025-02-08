@@ -7,7 +7,9 @@
   padding-bottom: 3px;
   opacity: 0.8;
   cursor: pointer;
-  transition: opacity 0.3s ease-out, width 0.3s ease;
+  transition:
+    opacity 0.3s ease-out,
+    width 0.3s ease;
 }
 
 .bar span {

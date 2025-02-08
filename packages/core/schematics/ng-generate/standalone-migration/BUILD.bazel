@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "esbuild", "ts_library")
+load("//tools:defaults.bzl", "ts_library")
 
 package(
     default_visibility = [
@@ -25,16 +25,4 @@ ts_library(
         "@npm//@types/node",
         "@npm//typescript",
     ],
-)
-
-esbuild(
-    name = "bundle",
-    entry_point = ":index.ts",
-    external = [
-        "@angular-devkit/*",
-        "typescript",
-    ],
-    format = "cjs",
-    platform = "node",
-    deps = [":standalone-migration"],
 )

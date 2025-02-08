@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Directive, ElementRef, forwardRef, Provider} from '@angular/core';
@@ -36,7 +36,7 @@ const NUMBER_VALUE_ACCESSOR: Provider = {
  * const totalCountControl = new FormControl();
  * ```
  *
- * ```
+ * ```html
  * <input type="number" [formControl]="totalCountControl">
  * ```
  *
@@ -49,6 +49,7 @@ const NUMBER_VALUE_ACCESSOR: Provider = {
     'input[type=number][formControlName],input[type=number][formControl],input[type=number][ngModel]',
   host: {'(input)': 'onChange($event.target.value)', '(blur)': 'onTouched()'},
   providers: [NUMBER_VALUE_ACCESSOR],
+  standalone: false,
 })
 export class NumberValueAccessor
   extends BuiltInControlValueAccessor

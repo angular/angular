@@ -3,7 +3,6 @@ import {HEROES} from './mock-heroes';
 import {HeroListEnterLeaveComponent} from './hero-list-enter-leave.component';
 
 @Component({
-  standalone: true,
   selector: 'app-hero-list-enter-leave-page',
   template: `
     <section>

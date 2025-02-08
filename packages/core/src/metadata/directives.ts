@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ChangeDetectionStrategy} from '../change_detection/constants';
@@ -164,7 +164,7 @@ export interface Directive {
    *
    * The following example creates a component with two data-bound properties.
    *
-   * ```typescript
+   * ```ts
    * @Component({
    *   selector: 'bank-account',
    *   inputs: ['bankName', {name: 'id', alias: 'account-id'}],
@@ -204,7 +204,7 @@ export interface Directive {
    *
    * @usageNotes
    *
-   * ```typescript
+   * ```ts
    * @Component({
    *   selector: 'child-dir',
    *   outputs: [ 'bankNameChange' ],
@@ -401,9 +401,10 @@ export interface ComponentDecorator {
    * Unlike other directives, only one component can be instantiated for a given element in a
    * template.
    *
-   * A component must belong to an NgModule in order for it to be available
-   * to another component or application. To make it a member of an NgModule,
-   * list it in the `declarations` field of the `NgModule` metadata.
+   * Standalone components can be directly imported in any other standalone component or NgModule.
+   * NgModule based apps on the other hand require components to belong to an NgModule in
+   * order for them to be available to another component or application. To make a component a
+   * member of an NgModule, list it in the `declarations` field of the `NgModule` metadata.
    *
    * Note that, in addition to these options for configuring a directive,
    * you can control a component's runtime behavior by implementing
@@ -417,7 +418,7 @@ export interface ComponentDecorator {
    * The following example creates a component with two data-bound properties,
    * specified by the `inputs` value.
    *
-   * <code-example path="core/ts/metadata/directives.ts" region="component-input"></code-example>
+   * {@example core/ts/metadata/directives.ts region='component-input'}
    *
    *
    * ### Setting component outputs
@@ -713,7 +714,7 @@ export interface PipeDecorator {
    * For example, if the name is "myPipe", use a template binding expression
    * such as the following:
    *
-   * ```
+   * ```html
    * {{ exp | myPipe }}
    * ```
    *
@@ -800,7 +801,7 @@ export interface InputDecorator {
    * The following example creates a component with two input properties,
    * one of which is given a special binding name.
    *
-   * ```typescript
+   * ```ts
    * import { Component, Input, numberAttribute, booleanAttribute } from '@angular/core';
    * @Component({
    *   selector: 'bank-account',
@@ -952,7 +953,7 @@ export interface HostBindingDecorator {
    * The following example creates a directive that sets the `valid` and `invalid`
    * class, a style color, and an id on the DOM element that has an `ngModel` directive on it.
    *
-   * ```typescript
+   * ```ts
    * @Directive({selector: '[ngModel]'})
    * class NgModelStatus {
    *   constructor(public control: NgModel) {}

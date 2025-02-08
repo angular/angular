@@ -5,7 +5,6 @@ import {Observable, interval} from 'rxjs';
 import {map, startWith, take} from 'rxjs/operators';
 
 @Component({
-  standalone: true,
   selector: 'app-hero-async-message',
   template: `
     <h2>Async Messages and AsyncPipe</h2>

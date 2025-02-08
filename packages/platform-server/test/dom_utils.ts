@@ -3,12 +3,13 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {DOCUMENT} from '@angular/common';
-import {ApplicationRef, Provider, Type, ɵsetDocument} from '@angular/core';
-import {getComponentDef} from '@angular/core/src/render3/definition';
+import {ApplicationRef, PLATFORM_ID, Provider, Type, ɵsetDocument} from '@angular/core';
+import {CLIENT_RENDER_MODE_FLAG} from '@angular/core/src/hydration/api';
+import {getComponentDef} from '@angular/core/src/render3/def_getters';
 import {
   bootstrapApplication,
   HydrationFeature,
@@ -87,32 +88,61 @@ export function resetTViewsFor(...types: Type<unknown>[]) {
 export function hydrate(
   doc: Document,
   component: Type<unknown>,
-  options?: {
+  options: {
     envProviders?: Provider[];
-    hydrationFeatures?: HydrationFeature<HydrationFeatureKind>[];
-  },
+    hydrationFeatures?: () => HydrationFeature<HydrationFeatureKind>[];
+  } = {},
 ) {
-  function _document(): any {
-    ɵsetDocument(doc);
-    global.document = doc; // needed for `DefaultDomRenderer2`
-    return doc;
-  }
+  const {envProviders = [], hydrationFeatures = () => []} = options;
 
-  const envProviders = options?.envProviders ?? [];
-  const hydrationFeatures = options?.hydrationFeatures ?? [];
+  // Apply correct reference to the `document` object,
+  // which will be used by runtime.
+  ɵsetDocument(doc);
+
+  // Define `document` to make `DefaultDomRenderer2` work, since it
+  // references `document` directly to create style tags.
+  global.document = doc;
+
   const providers = [
     ...envProviders,
-    {provide: DOCUMENT, useFactory: _document, deps: []},
-    provideClientHydration(...hydrationFeatures),
+    {provide: PLATFORM_ID, useValue: 'browser'},
+    {provide: DOCUMENT, useFactory: () => doc},
+    provideClientHydration(...hydrationFeatures()),
   ];
 
   return bootstrapApplication(component, {providers});
 }
 
-export function render(doc: Document, html: string) {
+export function insertDomInDocument(doc: Document, html: string) {
   // Get HTML contents of the `<app>`, create a DOM element and append it into the body.
   const container = convertHtmlToDom(html, doc);
+
+  // If there was a client render mode marker present in HTML - apply it to the <body>
+  // element as well.
+  const hasClientModeMarker = new RegExp(` ${CLIENT_RENDER_MODE_FLAG}`, 'g').test(html);
+  if (hasClientModeMarker) {
+    doc.body.setAttribute(CLIENT_RENDER_MODE_FLAG, '');
+  }
+
   Array.from(container.childNodes).forEach((node) => doc.body.appendChild(node));
+}
+
+/**
+ * This prepares the environment before hydration begins.
+ *
+ * @param doc the document object
+ * @param html the server side rendered DOM string to be hydrated
+ * @returns a promise with the application ref
+ */
+export function prepareEnvironment(doc: Document, html: string) {
+  insertDomInDocument(doc, html);
+  globalThis.document = doc;
+  const scripts = doc.getElementsByTagName('script');
+  for (const script of Array.from(scripts)) {
+    if (script?.textContent?.startsWith('window.__jsaction_bootstrap')) {
+      eval(script.textContent);
+    }
+  }
 }
 
 /**
@@ -124,15 +154,23 @@ export function render(doc: Document, html: string) {
  * @param envProviders the environment providers
  * @returns a promise with the application ref
  */
-export async function renderAndHydrate(
+export async function prepareEnvironmentAndHydrate(
   doc: Document,
   html: string,
   component: Type<unknown>,
   options?: {
     envProviders?: Provider[];
-    hydrationFeatures?: HydrationFeature<HydrationFeatureKind>[];
+    hydrationFeatures?: () => HydrationFeature<HydrationFeatureKind>[];
   },
 ): Promise<ApplicationRef> {
-  render(doc, html);
+  prepareEnvironment(doc, html);
   return hydrate(doc, component, options);
+}
+
+/**
+ * Clears document contents to have a clean state for the next test.
+ */
+export function clearDocument(doc: Document) {
+  doc.body.textContent = '';
+  doc.body.removeAttribute(CLIENT_RENDER_MODE_FLAG);
 }

@@ -16,6 +16,20 @@
       ]
     },
     {
+      "description": "should pass in the component metadata styles into the component definition and shim them using style encapsulation",
+      "inputFiles": [
+        "encapsulation_emulated.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "encapsulation_emulated.js"
+          ]
+        }
+      ]
+    },
+    {
       "description": "should pass in styles, but skip shimming the styles if the view encapsulation signals not to",
       "inputFiles": [
         "encapsulation_none.ts"
@@ -39,6 +53,26 @@
           "failureMessage": "Incorrect template",
           "files": [
             "encapsulation_shadow_dom.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should emit external runtime styles component feature for file-based styles when 'externalRuntimeStyles' option is enabled",
+      "inputFiles": [
+        "external_runtime_files.ts"
+      ],
+      "angularCompilerOptions": {
+        "externalRuntimeStyles": true
+      },
+      "compilationModeFilter": [
+        "full compile"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "external_runtime_files.js"
           ]
         }
       ]

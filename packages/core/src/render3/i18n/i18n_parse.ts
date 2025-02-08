@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import '../../util/ng_dev_mode';
 import '../../util/ng_i18n_closure_mode';
@@ -26,7 +26,7 @@ import {
 } from '../../util/assert';
 import {CharCode} from '../../util/char_code';
 import {loadIcuContainerVisitor} from '../instructions/i18n_icu_container_visitor';
-import {allocExpando, createTNodeAtIndex} from '../instructions/shared';
+
 import {getDocument} from '../interfaces/document';
 import {
   ELEMENT_MARKER,
@@ -68,6 +68,8 @@ import {
   setTIcu,
   setTNodeInsertBeforeIndex,
 } from './i18n_util';
+import {createTNodeAtIndex} from '../tnode_manipulation';
+import {allocExpando} from '../view/construction';
 
 const BINDING_REGEXP = /�(\d+):?\d*�/gi;
 const ICU_REGEXP = /({\s*�\d+:?\d*�\s*,\s*\S{6}\s*,[\s\S]*})/gi;
@@ -236,6 +238,7 @@ export function i18nStartFirstCreatePass(
     create: createOpCodes,
     update: updateOpCodes,
     ast: astStack[0],
+    parentTNodeIndex,
   };
 }
 
@@ -530,7 +533,7 @@ function removeInnerTemplateTranslation(message: string): string {
  * translated message can span multiple templates.
  *
  * Example:
- * ```
+ * ```html
  * <div i18n>Translate <span *ngIf>me</span>!</div>
  * ```
  *

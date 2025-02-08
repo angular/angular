@@ -4,7 +4,6 @@ import {Component, EventEmitter, Output} from '@angular/core';
 /* avoid */
 
 @Component({
-  standalone: true,
   selector: 'toh-hero',
   template: `...`,
 })

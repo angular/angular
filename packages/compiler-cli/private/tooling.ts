@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /**
@@ -15,7 +15,7 @@
 
 import ts from 'typescript';
 
-import {angularJitApplicationTransform} from '../src/transformers/jit_transforms/index';
+import {angularJitApplicationTransform} from '../src/ngtsc/transform/jit/index';
 
 /**
  * Known values for global variables in `@angular/core` that Terser should set using

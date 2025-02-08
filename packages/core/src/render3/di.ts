@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {isForwardRef, resolveForwardRef} from '../di/forward_ref';
@@ -47,7 +47,7 @@ import {
   TNodeProviderIndexes,
   TNodeType,
 } from './interfaces/node';
-import {isComponentDef, isComponentHost} from './interfaces/type_checks';
+import {isComponentDef, isComponentHost, isRootView} from './interfaces/type_checks';
 import {
   DECLARATION_COMPONENT_VIEW,
   DECLARATION_VIEW,
@@ -82,7 +82,7 @@ import {stringifyForError} from './util/stringify_utils';
  *
  * Example:
  *
- * ```
+ * ```ts
  * @Injectable()
  * class MyService {
  *   constructor(public value: String) {}
@@ -315,19 +315,19 @@ export function diPublicInInjector(
  *
  * # Example
  * Given:
- * ```
+ * ```ts
  * @Component(...)
  * class MyComponent {
  *   constructor(@Attribute('title') title: string) { ... }
  * }
  * ```
  * When instantiated with
- * ```
+ * ```html
  * <my-component title="Hello"></my-component>
  * ```
  *
  * Then factory method generated is:
- * ```
+ * ```ts
  * MyComponent.ɵcmp = defineComponent({
  *   factory: () => new MyComponent(injectAttribute('title'))
  *   ...
@@ -958,7 +958,7 @@ function lookupTokenUsingEmbeddedInjector<T>(
     currentTNode !== null &&
     currentLView !== null &&
     currentLView[FLAGS] & LViewFlags.HasEmbeddedViewInjector &&
-    !(currentLView[FLAGS] & LViewFlags.IsRoot)
+    !isRootView(currentLView)
   ) {
     ngDevMode && assertTNodeForLView(currentTNode, currentLView);
 

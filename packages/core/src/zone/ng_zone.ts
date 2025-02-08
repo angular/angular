@@ -3,13 +3,13 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
+import {SCHEDULE_IN_ROOT_ZONE_DEFAULT} from '../change_detection/scheduling/flags';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {EventEmitter} from '../event_emitter';
 import {scheduleCallbackWithRafRace} from '../util/callback_scheduler';
-import {global} from '../util/global';
 import {noop} from '../util/noop';
 
 import {AsyncStackTaggingZoneSpec} from './async-stack-tagging';
@@ -17,6 +17,11 @@ import {AsyncStackTaggingZoneSpec} from './async-stack-tagging';
 // The below is needed as otherwise a number of targets fail in G3 due to:
 // ERROR - [JSC_UNDEFINED_VARIABLE] variable Zone is undeclared
 declare const Zone: any;
+
+const isAngularZoneProperty = 'isAngularZone';
+export const angularZoneInstanceIdProperty = isAngularZoneProperty + '_ID';
+
+let ngZoneInstanceId = 0;
 
 /**
  * An injectable service for executing work inside or outside of the Angular zone.
@@ -34,7 +39,7 @@ declare const Zone: any;
  * @usageNotes
  * ### Example
  *
- * ```
+ * ```ts
  * import {Component, NgZone} from '@angular/core';
  * import {NgIf} from '@angular/common';
  *
@@ -125,11 +130,18 @@ export class NgZone {
    */
   readonly onError: EventEmitter<any> = new EventEmitter(false);
 
-  constructor({
-    enableLongStackTrace = false,
-    shouldCoalesceEventChangeDetection = false,
-    shouldCoalesceRunChangeDetection = false,
+  constructor(options: {
+    enableLongStackTrace?: boolean;
+    shouldCoalesceEventChangeDetection?: boolean;
+    shouldCoalesceRunChangeDetection?: boolean;
   }) {
+    const {
+      enableLongStackTrace = false,
+      shouldCoalesceEventChangeDetection = false,
+      shouldCoalesceRunChangeDetection = false,
+      scheduleInRootZone = SCHEDULE_IN_ROOT_ZONE_DEFAULT,
+    } = options as InternalNgZoneOptions;
+
     if (typeof Zone == 'undefined') {
       throw new RuntimeError(
         RuntimeErrorCode.MISSING_ZONEJS,
@@ -165,6 +177,7 @@ export class NgZone {
       !shouldCoalesceRunChangeDetection && shouldCoalesceEventChangeDetection;
     self.shouldCoalesceRunChangeDetection = shouldCoalesceRunChangeDetection;
     self.callbackScheduled = false;
+    self.scheduleInRootZone = scheduleInRootZone;
     forkInnerZoneWithAngularBehavior(self);
   }
 
@@ -173,7 +186,7 @@ export class NgZone {
   */
   static isInAngularZone(): boolean {
     // Zone needs to be checked, because this method might be called even when NoopNgZone is used.
-    return typeof Zone !== 'undefined' && Zone.current.get('isAngularZone') === true;
+    return typeof Zone !== 'undefined' && Zone.current.get(isAngularZoneProperty) === true;
   }
 
   /**
@@ -220,7 +233,7 @@ export class NgZone {
    * Executes the `fn` function synchronously within the Angular zone as a task and returns value
    * returned by the function.
    *
-   * Running functions via `run` allows you to reenter Angular zone from a task that was executed
+   * Running functions via `runTask` allows you to reenter Angular zone from a task that was executed
    * outside of the Angular zone (typically started via {@link #runOutsideAngular}).
    *
    * Any future tasks or microtasks scheduled from within this function will continue executing from
@@ -266,7 +279,7 @@ export class NgZone {
 
 const EMPTY_PAYLOAD = {};
 
-interface NgZonePrivate extends NgZone {
+export interface NgZonePrivate extends NgZone {
   _outer: Zone;
   _inner: Zone;
   _nesting: number;
@@ -325,6 +338,11 @@ interface NgZonePrivate extends NgZone {
    *
    */
   shouldCoalesceRunChangeDetection: boolean;
+
+  /**
+   * Whether to schedule the coalesced change detection in the root zone
+   */
+  scheduleInRootZone: boolean;
 }
 
 function checkStable(zone: NgZonePrivate) {
@@ -378,7 +396,7 @@ function delayChangeDetectionForEvents(zone: NgZonePrivate) {
     return;
   }
   zone.callbackScheduled = true;
-  Zone.root.run(() => {
+  function scheduleCheckStable() {
     scheduleCallbackWithRafRace(() => {
       zone.callbackScheduled = false;
       updateMicroTaskStatus(zone);
@@ -386,7 +404,16 @@ function delayChangeDetectionForEvents(zone: NgZonePrivate) {
       checkStable(zone);
       zone.isCheckStableRunning = false;
     });
-  });
+  }
+  if (zone.scheduleInRootZone) {
+    Zone.root.run(() => {
+      scheduleCheckStable();
+    });
+  } else {
+    zone._outer.run(() => {
+      scheduleCheckStable();
+    });
+  }
   updateMicroTaskStatus(zone);
 }
 
@@ -394,9 +421,14 @@ function forkInnerZoneWithAngularBehavior(zone: NgZonePrivate) {
   const delayChangeDetectionForEventsDelegate = () => {
     delayChangeDetectionForEvents(zone);
   };
+  const instanceId = ngZoneInstanceId++;
   zone._inner = zone._inner.fork({
     name: 'angular',
-    properties: <any>{'isAngularZone': true},
+    properties: <any>{
+      [isAngularZoneProperty]: true,
+      [angularZoneInstanceIdProperty]: instanceId,
+      [angularZoneInstanceIdProperty + instanceId]: true,
+    },
     onInvokeTask: (
       delegate: ZoneDelegate,
       current: Zone,
@@ -564,9 +596,10 @@ function hasApplyArgsData(applyArgs: unknown, key: string) {
 
 // Set of options recognized by the NgZone.
 export interface InternalNgZoneOptions {
-  enableLongStackTrace: boolean;
-  shouldCoalesceEventChangeDetection: boolean;
-  shouldCoalesceRunChangeDetection: boolean;
+  enableLongStackTrace?: boolean;
+  shouldCoalesceEventChangeDetection?: boolean;
+  shouldCoalesceRunChangeDetection?: boolean;
+  scheduleInRootZone?: boolean;
 }
 
 export function getNgZone(

@@ -7,7 +7,7 @@
     "esModuleInterop": true,
     "declaration": false,
     "experimentalDecorators": true,
-    "module": "esnext",
+    "module": "es2022",
     "moduleResolution": "node",
     "importHelpers": true,
     "target": "es2022",

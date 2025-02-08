@@ -1,3 +1,39 @@
+# [0.15.0](https://github.com/angular/angular/compare/zone.js-0.14.10...zone.js-0.15.0) (2024-08-15)
+
+
+### Bug Fixes
+
+* **zone.js:** Add support for addition jest functions. ([#57280](https://github.com/angular/angular/issues/57280)) ([e1240c6](https://github.com/angular/angular/commit/e1240c6f5d9a3d68ccef7ffbf0a0646ad1164cd8)), closes [#57277](https://github.com/angular/angular/issues/57277)
+* **zone.js:** Update the default behavior of fakeAsync to flush after the test ([#57240](https://github.com/angular/angular/issues/57240)) ([70e8b40](https://github.com/angular/angular/commit/70e8b40750e894bc1439713cd508d8bd9fafb7a4))
+
+
+### BREAKING CHANGES
+
+* **zone.js:** `fakeAsync` will now flush pending timers at the end of
+the given function by default. To opt-out of this, you can use `{flush:
+false}` in options parameter of `fakeAsync`
+
+
+
+## [0.14.10](https://github.com/angular/angular/compare/zone.js-0.14.8...zone.js-0.14.10) (2024-08-05)
+
+
+### Features
+
+* **zone.js:** Add 'flush' parameter option to fakeAsync to flush after the test ([#57137](https://github.com/angular/angular/issues/57137)) ([99d679d](https://github.com/angular/angular/commit/99d679d6061d731a04930824e92f247bb94f21e7))
+
+
+
+## [0.14.8](https://github.com/angular/angular/compare/zone.js-0.14.7...zone.js-0.14.8) (2024-07-17)
+
+
+### Bug Fixes
+
+* **zone.js:** allow enabling default `beforeunload` handling ([#55875](https://github.com/angular/angular/issues/55875)) ([b8d5882](https://github.com/angular/angular/commit/b8d5882127a6e9944d30a7e0c87c2e2c59b352e6)), closes [#47579](https://github.com/angular/angular/issues/47579)
+* **zone.js:** support `Timeout.refresh` in Node.js ([#56852](https://github.com/angular/angular/issues/56852)) ([982f1b1](https://github.com/angular/angular/commit/982f1b125147e4292716f9524bef75423b70c71c)), closes [#56586](https://github.com/angular/angular/issues/56586)
+
+
+
 ## [0.14.7](https://github.com/angular/angular/compare/zone.js-0.14.6...zone.js-0.14.7) (2024-06-06)
 
 

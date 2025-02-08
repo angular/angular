@@ -2,7 +2,7 @@ The `@switch` block is inspired by the JavaScript `switch` statement:
 
 ## Syntax
 
-```html
+```angular-html
 @switch (condition) {
   @case (caseA) {
     Case A.

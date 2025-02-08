@@ -8,7 +8,6 @@ import {HeroListComponent} from './hero-list.component';
  * TSP stands for Tree-Shakeable Provider.
  */
 @Component({
-  standalone: true,
   selector: 'app-heroes-tsp',
   template: `
     <h2>Heroes</h2>

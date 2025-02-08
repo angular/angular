@@ -3,7 +3,8 @@ MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   selectors: [
     ["my-component"]
   ],
-  features: [$r3$.ɵɵHostDirectivesFeature(function () {
+    standalone: false,
+    features: [$r3$.ɵɵHostDirectivesFeature(function () {
     return [DirectiveB];
   })],
   decls: 0,
@@ -13,8 +14,7 @@ MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
 });…
 DirectiveB.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
   type: DirectiveB,
-  standalone: true,
-  features: [$r3$.ɵɵHostDirectivesFeature(function () {
+    features: [$r3$.ɵɵHostDirectivesFeature(function () {
     return [{
       directive: DirectiveA,
       inputs: ["value", "value"]
@@ -25,6 +25,5 @@ DirectiveA.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
   type: DirectiveA,
   inputs: {
     value: "value"
-  },
-  standalone: true
+  }
 });

@@ -5,6 +5,7 @@
     "noFallthroughCasesInSwitch": true,
     "experimentalDecorators": true,
     "outDir": "./build",
+    "typeRoots": [],
     "rootDir": ".",
     "target": "es2020",
     "module": "Node16",

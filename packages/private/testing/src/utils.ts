@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {ɵresetJitOptions as resetJitOptions} from '@angular/core';
 
@@ -21,7 +21,7 @@ import {ɵresetJitOptions as resetJitOptions} from '@angular/core';
  *
  * Example:
  *
- * ```
+ * ```ts
  * describe('something', () => {
  *   it('should do something', withBody('<app-root></app-root>', async () => {
  *     const fixture = TestBed.createComponent(MyApp);
@@ -55,7 +55,7 @@ export function withBody(
  *
  * Example:
  *
- * ```
+ * ```ts
  * describe('something', () => {
  *   it('should do something', withHead('<link rel="preconnect" href="...">', async () => {
  *     // ...

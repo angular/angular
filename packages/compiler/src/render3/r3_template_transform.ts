@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {EmptyExpr, ParsedEvent, ParsedProperty, ParsedVariable} from '../expression_parser/ast';
@@ -349,7 +349,9 @@ class HtmlAstToIvyAst implements html.Visitor {
     }
     if (!isI18nRootNode(expansion.i18n)) {
       throw new Error(
-        `Invalid type "${expansion.i18n.constructor}" for "i18n" property of ${expansion.sourceSpan.toString()}. Expected a "Message"`,
+        `Invalid type "${
+          expansion.i18n.constructor
+        }" for "i18n" property of ${expansion.sourceSpan.toString()}. Expected a "Message"`,
       );
     }
     const message = expansion.i18n;

@@ -3,10 +3,10 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
-import {createLView, createTNode, createTView} from '@angular/core/src/render3/instructions/shared';
+import {createLView, createTView} from '@angular/core/src/render3/instructions/shared';
 import {TNodeType} from '@angular/core/src/render3/interfaces/node';
 import {
   HEADER_OFFSET,
@@ -23,11 +23,12 @@ import {
 } from '@angular/core/src/render3/state';
 
 import {MockRendererFactory} from './mock_renderer_factory';
+import {createTNode} from '@angular/core/src/render3/tnode_manipulation';
 
 /**
  * Setups a simple `LView` so that it is possible to do unit tests on instructions.
  *
- * ```
+ * ```ts
  * describe('styling', () => {
  *  beforeEach(enterViewWithOneDiv);
  *  afterEach(leaveView);
@@ -72,8 +73,6 @@ export function enterViewWithOneDiv() {
     {
       rendererFactory,
       sanitizer: null,
-      inlineEffectRunner: null,
-      afterRenderEventManager: null,
       changeDetectionScheduler: null,
     },
     renderer,

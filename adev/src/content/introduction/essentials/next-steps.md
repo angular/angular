@@ -1,15 +1,19 @@
 <docs-decorative-header title="Next Steps" imgSrc="adev/src/assets/images/roadmap.svg"> <!-- markdownlint-disable-line -->
 </docs-decorative-header>
 
-Now that you have been introduced to core concepts of Angular - you're ready to put what you learned into practices with our interactive tutorials and learn more with our in-depth guides.
+Now that you have been introduced to main concepts of Angular - you're ready to put what you learned into practices with our interactive tutorials and learn more with our in-depth guides.
 
 ## Playground
+
+Try out Angular in an interactive code editor to further explore the concepts you've learned.
 
 <docs-pill-row>
   <docs-pill title="Play with Angular!" href="playground" />
 </docs-pill-row>
 
 ## Tutorials
+
+Put these main concepts into practice with our in-browser tutorial or build your first app locally with the Angular CLI.
 
 <docs-pill-row>
   <docs-pill title="Learn Angular's fundamentals" href="tutorials/learn-angular" />

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /**
@@ -15,7 +15,7 @@
  *  - packages/core/src/compiler/compiler_facade_interface.ts     (replica)
  *
  * Please ensure that the two files are in sync using this command:
- * ```
+ * ```shell
  * cp packages/compiler/src/compiler_facade_interface.ts \
  *    packages/core/src/compiler/compiler_facade_interface.ts
  * ```
@@ -227,6 +227,7 @@ export type LegacyInputPartialMapping =
 export interface R3DeclareDirectiveFacade {
   selector?: string;
   type: Type;
+  version: string;
   inputs?: {
     [fieldName: string]:
       | {
@@ -391,6 +392,7 @@ export interface R3DeclareNgModuleFacade {
 export interface R3DeclarePipeFacade {
   type: Type;
   name: string;
+  version: string;
   pure?: boolean;
   isStandalone?: boolean;
 }

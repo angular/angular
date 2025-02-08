@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -19,25 +19,22 @@ import {GenericBrowserDomAdapter} from './generic_browser_adapter';
  * @security Tread carefully! Interacting with the DOM directly is dangerous and
  * can introduce XSS risks.
  */
-/* tslint:disable:requireParameterType no-console */
 export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   static makeCurrent() {
     setRootDomAdapter(new BrowserDomAdapter());
   }
 
-  override onAndCancel(el: Node, evt: any, listener: any): Function {
-    el.addEventListener(evt, listener);
+  override onAndCancel(el: Node, evt: any, listener: any, options: any): Function {
+    el.addEventListener(evt, listener, options);
     return () => {
-      el.removeEventListener(evt, listener);
+      el.removeEventListener(evt, listener, options);
     };
   }
   override dispatchEvent(el: Node, evt: any) {
     el.dispatchEvent(evt);
   }
   override remove(node: Node): void {
-    if (node.parentNode) {
-      node.parentNode.removeChild(node);
-    }
+    (node as Element | Text | Comment).remove();
   }
   override createElement(tagName: string, doc?: Document): HTMLElement {
     doc = doc || this.getDefaultDocument();

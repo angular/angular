@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
@@ -53,7 +53,7 @@ export abstract class ViewRef extends ChangeDetectorRef {
  * The following template breaks down into two separate `TemplateRef` instances,
  * an outer one and an inner one.
  *
- * ```
+ * ```html
  * Count: {{items.length}}
  * <ul>
  *   <li *ngFor="let  item of items">{{item}}</li>
@@ -62,7 +62,7 @@ export abstract class ViewRef extends ChangeDetectorRef {
  *
  * This is the outer `TemplateRef`:
  *
- * ```
+ * ```html
  * Count: {{items.length}}
  * <ul>
  *   <ng-template ngFor let-item [ngForOf]="items"></ng-template>
@@ -71,13 +71,13 @@ export abstract class ViewRef extends ChangeDetectorRef {
  *
  * This is the inner `TemplateRef`:
  *
- * ```
+ * ```html
  *   <li>{{item}}</li>
  * ```
  *
  * The outer and inner `TemplateRef` instances are assembled into views as follows:
  *
- * ```
+ * ```html
  * <!-- ViewRef: outer-0 -->
  * Count: 2
  * <ul>
@@ -99,14 +99,4 @@ export abstract class EmbeddedViewRef<C> extends ViewRef {
    * The root nodes for this embedded view.
    */
   abstract get rootNodes(): any[];
-}
-
-/**
- * Interface for tracking root `ViewRef`s in `ApplicationRef`.
- *
- * NOTE: Importing `ApplicationRef` here directly creates circular dependency, which is why we have
- * a subset of the `ApplicationRef` interface `ViewRefTracker` here.
- */
-export interface ViewRefTracker {
-  detachView(viewRef: ViewRef): void;
 }

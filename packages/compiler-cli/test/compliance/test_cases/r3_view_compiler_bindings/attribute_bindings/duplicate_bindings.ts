@@ -2,7 +2,6 @@ import {Component} from '@angular/core';
 
 @Component({
   selector: 'my-component',
-  standalone: true,
   template: `
     <div aria-label="hello" aria-label="hi"></div>
     <div style="width: 0" style="height: 0">

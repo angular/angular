@@ -10,7 +10,6 @@ import {DecimalPipe, DatePipe, CurrencyPipe} from '@angular/common';
       <li>Currency with "currency" {{ cost }}</li>
     </ul>
   `,
-  standalone: true,
   imports: [DecimalPipe, DatePipe, CurrencyPipe],
 })
 export class AppComponent {

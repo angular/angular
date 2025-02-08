@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 
 @Component({
-  template: `
+    template: `
     {{message}}
     @defer (
       prefetch when isVisible() || isReady;
@@ -14,6 +14,7 @@ import {Component} from '@angular/core';
         <button #button>Click me</button>
       }
   `,
+    standalone: false
 })
 export class MyApp {
   message = 'hello';

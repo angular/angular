@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../../util/security/trusted_type_defs';
@@ -33,12 +33,6 @@ export interface RNode {
    * Gets the Node immediately following this one in the parent's childNodes
    */
   nextSibling: RNode | null;
-
-  /**
-   * Removes a child from the current node and returns the removed node
-   * @param oldChild the child node to remove
-   */
-  removeChild(oldChild: RNode): RNode;
 
   /**
    * Insert a child node.
@@ -77,7 +71,7 @@ export interface RElement extends RNode {
   ): void;
   addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
   removeEventListener(type: string, listener?: EventListener, options?: boolean): void;
-
+  remove(): void;
   setProperty?(name: string, value: any): void;
 }
 

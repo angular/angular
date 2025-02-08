@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {DehydratedContainerView} from '../../hydration/interfaces';
@@ -118,7 +118,7 @@ export interface LContainer extends Array<any> {
 }
 
 /** Flags associated with an LContainer (saved in LContainer[FLAGS]) */
-export enum LContainerFlags {
+export const enum LContainerFlags {
   None = 0,
   /**
    * Flag to signify that this `LContainer` may have transplanted views which need to be change

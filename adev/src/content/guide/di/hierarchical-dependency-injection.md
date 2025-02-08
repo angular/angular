@@ -16,7 +16,7 @@ Angular has two injector hierarchies:
 
 | Injector hierarchies        | Details |
 |:---                         |:---     |
-| `EnvironmentInjector` hierarchy | Configure an `ElementInjector` in this hierarchy using `@Injectable()` or `providers` array in `ApplicationConfig`. |
+| `EnvironmentInjector` hierarchy | Configure an `EnvironmentInjector` in this hierarchy using `@Injectable()` or `providers` array in `ApplicationConfig`. |
 | `ElementInjector` hierarchy | Created implicitly at each DOM element. An `ElementInjector` is empty by default unless you configure it in the `providers` property on `@Directive()` or `@Component()`. |
 
 <docs-callout title="NgModule Based Applications">
@@ -94,9 +94,9 @@ The following diagram represents the relationship between the `root` `ModuleInje
 
 ```mermaid
 stateDiagram-v2
-    elementInjector: EnvironmentInjector\n(configured by Angular)\nhas special things like DomSanitizer => providedIn 'platform'
-    rootInjector: root EnvironmentInjector\n(configured by AppConfig)\nhas things for your app => bootstrapApplication(..., AppConfig)
-    nullInjector: NullInjector\nalways throws an error unless\nyou use @Optional()
+    elementInjector: EnvironmentInjector<br>(configured by Angular)<br>has special things like DomSanitizer => providedIn 'platform'
+    rootInjector: root EnvironmentInjector<br>(configured by AppConfig)<br>has things for your app => bootstrapApplication(..., AppConfig)
+    nullInjector: NullInjector<br>always throws an error unless<br>you use @Optional()
 
     direction BT
     rootInjector --> elementInjector
@@ -215,7 +215,7 @@ Use `@Self()` so that Angular will only look at the `ElementInjector` for the cu
 A good use case for `@Self()` is to inject a service but only if it is available on the current host element.
 To avoid errors in this situation, combine `@Self()` with `@Optional()`.
 
-For example, in the following `SelfComponent`, notice the injected `LeafService` in the constructor.
+For example, in the following `SelfNoDataComponent`, notice the injected `LeafService` in the constructor.
 
 <docs-code header="src/app/self-no-data/self-no-data.component.ts" language="typescript"
            highlight="[7]">
@@ -466,7 +466,7 @@ In the example case, the constraints are:
         This would not be the case for a directive matched at the same location.
     * The ending location happens to be the same as the component itself, because it is the topmost component in this application.
 
-1. The `ElementInjector` provided by the `ApplicationConfig` acts as the fallback injector when the injection token can't be found in the `ElementInjector` hierarchies.
+1. The `EnvironmentInjector` provided by the `ApplicationConfig` acts as the fallback injector when the injection token can't be found in the `ElementInjector` hierarchies.
 
 ### Using the `providers` array
 
@@ -816,9 +816,8 @@ Because the injector has only to look at the `ElementInjector` of the `<app-chil
 As in the `FlowerService` example, if you add `@SkipSelf()` to the constructor for the `AnimalService`, the injector won't look in the  `ElementInjector` of the current `<app-child>` for the `AnimalService`.
 Instead, the injector will begin at the `<app-root>` `ElementInjector`.
 
-<docs-code language="typescript" highlight="[6]">
+<docs-code language="typescript" highlight="[5]">
 @Component({
-  standalone: true,
   selector: 'app-child',
   …
   viewProviders: [
@@ -853,9 +852,8 @@ If you just use `@Host()` for the injection of `AnimalService`, the result is do
 The `ChildComponent` configures the `viewProviders` so that the dog emoji is provided as `AnimalService` value.
 You can also see `@Host()` in the constructor:
 
-<docs-code language="typescript" highlight="[[6],[10]]">
+<docs-code language="typescript" highlight="[[5],[9]]">
 @Component({
-  standalone: true
   selector: 'app-child',
   …
   viewProviders: [
@@ -886,9 +884,8 @@ export class ChildComponent {
 
 Add a `viewProviders` array with a third animal, hedgehog <code>&#x1F994;</code>, to the `app.component.ts` `@Component()` metadata:
 
-<docs-code language="typescript" highlight="[7]">
+<docs-code language="typescript" highlight="[6]">
 @Component({
-  standalone: true,
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: [ './app.component.css' ],

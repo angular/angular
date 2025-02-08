@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {EmitterVisitorContext} from '@angular/compiler/src/output/abstract_emitter';
@@ -16,12 +16,10 @@ describe('Output JIT', () => {
   describe('regression', () => {
     it('should generate unique argument names', () => {
       const externalIds = newArray(10, 1).map(
-        (_, index) =>
-          new o.ExternalReference('@angular/core', `id_${index}_`, {name: `id_${index}_`}),
+        (_, index) => new o.ExternalReference('@angular/core', `id_${index}_`),
       );
       const externalIds1 = newArray(10, 1).map(
-        (_, index) =>
-          new o.ExternalReference('@angular/core', `id_${index}_1`, {name: `id_${index}_1`}),
+        (_, index) => new o.ExternalReference('@angular/core', `id_${index}_1`),
       );
       const ctx = EmitterVisitorContext.createRoot();
       const reflectorContext: {[key: string]: string} = {};

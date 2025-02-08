@@ -3,15 +3,22 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Lexer as ExpressionLexer} from '../expression_parser/lexer';
 import {Parser as ExpressionParser} from '../expression_parser/parser';
+import {serialize as serializeExpression} from '../expression_parser/serializer';
 import * as html from '../ml_parser/ast';
 import {InterpolationConfig} from '../ml_parser/defaults';
 import {getHtmlTagDefinition} from '../ml_parser/html_tags';
-import {InterpolatedAttributeToken, InterpolatedTextToken, TokenType} from '../ml_parser/tokens';
+import {
+  AttributeValueInterpolationToken,
+  InterpolatedAttributeToken,
+  InterpolatedTextToken,
+  InterpolationToken,
+  TokenType,
+} from '../ml_parser/tokens';
 import {ParseSourceSpan} from '../parse_util';
 
 import * as i18n from './i18n_ast';
@@ -37,8 +44,16 @@ export interface I18nMessageFactory {
 export function createI18nMessageFactory(
   interpolationConfig: InterpolationConfig,
   containerBlocks: Set<string>,
+  retainEmptyTokens: boolean,
+  preserveExpressionWhitespace: boolean,
 ): I18nMessageFactory {
-  const visitor = new _I18nVisitor(_expParser, interpolationConfig, containerBlocks);
+  const visitor = new _I18nVisitor(
+    _expParser,
+    interpolationConfig,
+    containerBlocks,
+    retainEmptyTokens,
+    preserveExpressionWhitespace,
+  );
   return (nodes, meaning, description, customId, visitNodeFn) =>
     visitor.toI18nMessage(nodes, meaning, description, customId, visitNodeFn);
 }
@@ -61,6 +76,8 @@ class _I18nVisitor implements html.Visitor {
     private _expressionParser: ExpressionParser,
     private _interpolationConfig: InterpolationConfig,
     private _containerBlocks: Set<string>,
+    private readonly _retainEmptyTokens: boolean,
+    private readonly _preserveExpressionWhitespace: boolean,
   ) {}
 
   public toI18nMessage(
@@ -267,17 +284,36 @@ class _I18nVisitor implements html.Visitor {
         case TokenType.INTERPOLATION:
         case TokenType.ATTR_VALUE_INTERPOLATION:
           hasInterpolation = true;
-          const expression = token.parts[1];
+          const [startMarker, expression, endMarker] = token.parts;
           const baseName = extractPlaceholderName(expression) || 'INTERPOLATION';
           const phName = context.placeholderRegistry.getPlaceholderName(baseName, expression);
-          context.placeholderToContent[phName] = {
-            text: token.parts.join(''),
-            sourceSpan: token.sourceSpan,
-          };
-          nodes.push(new i18n.Placeholder(expression, phName, token.sourceSpan));
+
+          if (this._preserveExpressionWhitespace) {
+            context.placeholderToContent[phName] = {
+              text: token.parts.join(''),
+              sourceSpan: token.sourceSpan,
+            };
+            nodes.push(new i18n.Placeholder(expression, phName, token.sourceSpan));
+          } else {
+            const normalized = this.normalizeExpression(token);
+            context.placeholderToContent[phName] = {
+              text: `${startMarker}${normalized}${endMarker}`,
+              sourceSpan: token.sourceSpan,
+            };
+            nodes.push(new i18n.Placeholder(normalized, phName, token.sourceSpan));
+          }
           break;
         default:
-          if (token.parts[0].length > 0) {
+          // Try to merge text tokens with previous tokens. We do this even for all tokens
+          // when `retainEmptyTokens == true` because whitespace tokens may have non-zero
+          // length, but will be trimmed by `WhitespaceVisitor` in one extraction pass and
+          // be considered "empty" there. Therefore a whitespace token with
+          // `retainEmptyTokens === true` should be treated like an empty token and either
+          // retained or merged into the previous node. Since extraction does two passes with
+          // different trimming behavior, the second pass needs to have identical node count
+          // to reuse source spans, so we need this check to get the same answer when both
+          // trimming and not trimming.
+          if (token.parts[0].length > 0 || this._retainEmptyTokens) {
             // This token is text or an encoded entity.
             // If it is following on from a previous text node then merge it into that node
             // Otherwise, if it is following an interpolation, then add a new node.
@@ -293,7 +329,17 @@ class _I18nVisitor implements html.Visitor {
             } else {
               nodes.push(new i18n.Text(token.parts[0], token.sourceSpan));
             }
+          } else {
+            // Retain empty tokens to avoid breaking dropping entire nodes such that source
+            // spans should not be reusable across multiple parses of a template. We *should*
+            // do this all the time, however we need to maintain backwards compatibility
+            // with existing message IDs so we can't do it by default and should only enable
+            // this when removing significant whitespace.
+            if (this._retainEmptyTokens) {
+              nodes.push(new i18n.Text(token.parts[0], token.sourceSpan));
+            }
           }
+
           break;
       }
     }
@@ -305,6 +351,19 @@ class _I18nVisitor implements html.Visitor {
     } else {
       return nodes[0];
     }
+  }
+
+  // Normalize expression whitespace by parsing and re-serializing it. This makes
+  // message IDs more durable to insignificant whitespace changes.
+  normalizeExpression(token: InterpolationToken | AttributeValueInterpolationToken): string {
+    const expression = token.parts[1];
+    const expr = this._expressionParser.parseBinding(
+      expression,
+      /* location */ token.sourceSpan.start.toString(),
+      /* absoluteOffset */ token.sourceSpan.start.offset,
+      this._interpolationConfig,
+    );
+    return serializeExpression(expr);
   }
 }
 
@@ -359,7 +418,17 @@ function assertSingleContainerMessage(message: i18n.Message): void {
  */
 function assertEquivalentNodes(previousNodes: i18n.Node[], nodes: i18n.Node[]): void {
   if (previousNodes.length !== nodes.length) {
-    throw new Error('The number of i18n message children changed between first and second pass.');
+    throw new Error(
+      `
+The number of i18n message children changed between first and second pass.
+
+First pass (${previousNodes.length} tokens):
+${previousNodes.map((node) => `"${node.sourceSpan.toString()}"`).join('\n')}
+
+Second pass (${nodes.length} tokens):
+${nodes.map((node) => `"${node.sourceSpan.toString()}"`).join('\n')}
+    `.trim(),
+    );
   }
   if (previousNodes.some((node, i) => nodes[i].constructor !== node.constructor)) {
     throw new Error(

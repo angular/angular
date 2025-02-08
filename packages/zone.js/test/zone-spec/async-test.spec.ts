@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ProxyZoneSpec} from '../../lib/zone-spec/proxy';
@@ -12,10 +12,6 @@ import {ifEnvSupports} from '../test-util';
 describe('AsyncTestZoneSpec', function () {
   let log: string[];
   const AsyncTestZoneSpec = (Zone as any)['AsyncTestZoneSpec'];
-
-  function finishCallback() {
-    log.push('finish');
-  }
 
   function failCallback() {
     log.push('fail');

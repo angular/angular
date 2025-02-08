@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -96,6 +96,11 @@ describe('parser', () => {
       checkAction('true || false');
       checkAction('null ?? 0');
       checkAction('null ?? undefined ?? 0');
+    });
+
+    it('should parse typeof expression', () => {
+      checkAction(`typeof {} === "object"`);
+      checkAction('(!(typeof {} === "number"))', '!typeof {} === "number"');
     });
 
     it('should parse grouped expressions', () => {
@@ -408,6 +413,38 @@ describe('parser', () => {
       expect(parseAction(`"{{a('\\"')}}"`).errors).toEqual([]);
       expect(parseAction(`'{{a("\\'")}}'`).errors).toEqual([]);
     });
+
+    describe('template literals', () => {
+      it('should parse template literals without interpolations', () => {
+        checkBinding('`hello world`');
+        checkBinding('`foo $`');
+        checkBinding('`foo }`');
+        checkBinding('`foo $ {}`');
+      });
+
+      it('should parse template literals with interpolations', () => {
+        checkBinding('`hello ${name}`');
+        checkBinding('`${name} Johnson`');
+        checkBinding('`foo${bar}baz`');
+        checkBinding('`${a} - ${b} - ${c}`');
+        checkBinding('`foo ${{$: true}} baz`');
+        checkBinding('`foo ${`hello ${`${a} - b`}`} baz`');
+        checkBinding('[`hello ${name}`, `see ${name} later`]');
+        checkBinding('`hello ${name}` + 123');
+      });
+
+      it('should parse template literals with pipes inside interpolations', () => {
+        checkBinding('`hello ${name | capitalize}!!!`', '`hello ${(name | capitalize)}!!!`');
+        checkBinding('`hello ${(name | capitalize)}!!!`');
+      });
+
+      it('should report error if interpolation is empty', () => {
+        expectBindingError(
+          '`hello ${}`',
+          'Template literal interpolation cannot be empty at the end of the expression',
+        );
+      });
+    });
   });
 
   describe('parse spans', () => {
@@ -457,6 +494,20 @@ describe('parser', () => {
       const ast = parseAction('a.b = c');
       expect(unparseWithSpan(ast)).toContain(['a.b = c', 'a.b = c']);
       expect(unparseWithSpan(ast)).toContain(['a.b = c', '[nameSpan] b']);
+    });
+
+    it('should record template literal space', () => {
+      const ast = parseAction('`before ${one} - ${two} - ${three} after`');
+      const unparsed = unparseWithSpan(ast);
+      expect(unparsed).toContain(['before ', '']);
+      expect(unparsed).toContain(['one', 'one']);
+      expect(unparsed).toContain(['one', '[nameSpan] one']);
+      expect(unparsed).toContain([' - ', '']);
+      expect(unparsed).toContain(['two', 'two']);
+      expect(unparsed).toContain(['two', '[nameSpan] two']);
+      expect(unparsed).toContain(['three', 'three']);
+      expect(unparsed).toContain(['three', '[nameSpan] three']);
+      expect(unparsed).toContain([' after', '']);
     });
 
     it('should include parenthesis in spans', () => {

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Directive, forwardRef, Provider} from '@angular/core';
@@ -36,7 +36,7 @@ const RANGE_VALUE_ACCESSOR: Provider = {
  * const ageControl = new FormControl();
  * ```
  *
- * ```
+ * ```html
  * <input type="range" [formControl]="ageControl">
  * ```
  *
@@ -53,6 +53,7 @@ const RANGE_VALUE_ACCESSOR: Provider = {
     '(blur)': 'onTouched()',
   },
   providers: [RANGE_VALUE_ACCESSOR],
+  standalone: false,
 })
 export class RangeValueAccessor
   extends BuiltInControlValueAccessor

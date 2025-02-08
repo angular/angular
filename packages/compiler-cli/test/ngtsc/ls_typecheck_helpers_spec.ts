@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {PotentialImportMode} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
@@ -117,6 +117,7 @@ runInEachFileSystem(() => {
 			  @Component({
 				  selector: 'app-cmp',
 				  template: '<div></div>',
+          standalone: false,
 			  })
 			  export class AppCmp {}
 			`,
@@ -338,6 +339,7 @@ runInEachFileSystem(() => {
 			 @Component({
 				 selector: 'two-cmp',
 				 template: '<div></div>',
+         standalone: false,
 			 })
 			 export class TwoCmp {}
 			 `,

@@ -1,9 +1,10 @@
 import {Component, HostBinding, NgModule} from '@angular/core';
 
 @Component({
-  selector: 'my-component',
-  template: '',
-  host: {'[style.height.pt]': 'myHeightProp', '[class.bar]': 'myBarClass'}
+    selector: 'my-component',
+    template: '',
+    host: { '[style.height.pt]': 'myHeightProp', '[class.bar]': 'myBarClass' },
+    standalone: false
 })
 export class MyComponent {
   myHeightProp = 20;

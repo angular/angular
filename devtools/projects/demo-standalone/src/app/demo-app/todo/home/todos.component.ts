@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {NgForOf} from '@angular/common';
@@ -29,7 +29,7 @@ export const enum TodoFilter {
   Active = 'active',
 }
 
-@Pipe({pure: false, name: 'todosFilter', standalone: true})
+@Pipe({pure: false, name: 'todosFilter'})
 export class TodosFilter implements PipeTransform {
   transform(todos: Todo[], filter: TodoFilter): Todo[] {
     return (todos || []).filter((t) => {
@@ -57,7 +57,6 @@ const fib = (n: number): number => {
 @Component({
   selector: 'app-todos',
   imports: [RouterLink, TodoComponent, SamplePipe, TodosFilter, TooltipDirective],
-  standalone: true,
   template: `
     <a [routerLink]="">Home</a>
     <a [routerLink]="">Home</a>

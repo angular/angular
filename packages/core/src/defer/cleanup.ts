@@ -3,10 +3,11 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
+  HYDRATE_TRIGGER_CLEANUP_FNS,
   LDeferBlockDetails,
   PREFETCH_TRIGGER_CLEANUP_FNS,
   TRIGGER_CLEANUP_FNS,
@@ -22,19 +23,19 @@ export function storeTriggerCleanupFn(
   lDetails: LDeferBlockDetails,
   cleanupFn: VoidFunction,
 ) {
-  const key = type === TriggerType.Prefetch ? PREFETCH_TRIGGER_CLEANUP_FNS : TRIGGER_CLEANUP_FNS;
+  const key = getCleanupFnKeyByType(type);
   if (lDetails[key] === null) {
     lDetails[key] = [];
   }
-  lDetails[key]!.push(cleanupFn);
+  (lDetails[key]! as VoidFunction[]).push(cleanupFn);
 }
 
 /**
  * Invokes registered cleanup functions either for prefetch or for regular triggers.
  */
 export function invokeTriggerCleanupFns(type: TriggerType, lDetails: LDeferBlockDetails) {
-  const key = type === TriggerType.Prefetch ? PREFETCH_TRIGGER_CLEANUP_FNS : TRIGGER_CLEANUP_FNS;
-  const cleanupFns = lDetails[key];
+  const key = getCleanupFnKeyByType(type);
+  const cleanupFns = lDetails[key] as VoidFunction[];
   if (cleanupFns !== null) {
     for (const cleanupFn of cleanupFns) {
       cleanupFn();
@@ -44,9 +45,20 @@ export function invokeTriggerCleanupFns(type: TriggerType, lDetails: LDeferBlock
 }
 
 /**
- * Invokes registered cleanup functions for both prefetch and regular triggers.
+ * Invokes registered cleanup functions for prefetch, hydrate, and regular triggers.
  */
 export function invokeAllTriggerCleanupFns(lDetails: LDeferBlockDetails) {
   invokeTriggerCleanupFns(TriggerType.Prefetch, lDetails);
   invokeTriggerCleanupFns(TriggerType.Regular, lDetails);
+  invokeTriggerCleanupFns(TriggerType.Hydrate, lDetails);
+}
+
+function getCleanupFnKeyByType(type: TriggerType): number {
+  let key = TRIGGER_CLEANUP_FNS;
+  if (type === TriggerType.Prefetch) {
+    key = PREFETCH_TRIGGER_CLEANUP_FNS;
+  } else if (type === TriggerType.Hydrate) {
+    key = HYDRATE_TRIGGER_CLEANUP_FNS;
+  }
+  return key;
 }

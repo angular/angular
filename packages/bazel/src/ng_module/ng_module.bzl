@@ -1,7 +1,7 @@
 # Copyright Google LLC All Rights Reserved.
 #
 # Use of this source code is governed by an MIT-style license that can be
-# found in the LICENSE file at https://angular.io/license
+# found in the LICENSE file at https://angular.dev/license
 """Run Angular's AOT template compiler
 """
 
@@ -208,10 +208,6 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
     # https://github.com/bazelbuild/rules_nodejs/blob/901df3868e3ceda177d3ed181205e8456a5592ea/third_party/github.com/bazelbuild/rules_typescript/internal/common/tsconfig.bzl#L195
     # TODO(devversion): In the future, combine prodmode and devmode so we can get rid of the
     # ambiguous terminology and concept that can result in slow-down for development workflows.
-    # TODO(alanagius): The below causes a drastic size increase when enabled (4Kb in the //integration/forms:test). This is mainly due to Babel transforms for Safari 15.
-    # https://github.com/angular/angular-cli/blob/3e8bdf72d6b7e2925d2822da807b726f88a77e1a/packages/angular_devkit/build_angular/src/babel/presets/application.ts#L199-L204
-    # https://www.diffchecker.com/9Ge3pexk
-    tsconfig["compilerOptions"]["useDefineForClassFields"] = False
     tsconfig["compilerOptions"]["target"] = "es2022"
     tsconfig["compilerOptions"]["module"] = "esnext"
 

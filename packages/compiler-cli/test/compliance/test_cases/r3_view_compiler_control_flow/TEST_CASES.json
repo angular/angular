@@ -54,7 +54,7 @@
           "files": [
             {
               "generated": "switch_with_pipe.js",
-              "expected": "switch_with_pipe_template.pipeline.js"
+              "expected": "switch_with_pipe_template.js"
             }
           ],
           "failureMessage": "Incorrect template"
@@ -144,7 +144,7 @@
           "files": [
             {
               "generated": "if_with_pipe.js",
-              "expected": "if_with_pipe_template.pipeline.js"
+              "expected": "if_with_pipe_template.js"
             }
           ],
           "failureMessage": "Incorrect template"
@@ -188,7 +188,7 @@
         {
           "files": [
             {
-              "expected": "if_nested_alias_listeners_template.pipeline.js",
+              "expected": "if_nested_alias_listeners_template.js",
               "generated": "if_nested_alias_listeners.js"
             }
           ],
@@ -278,7 +278,7 @@
         {
           "files": [
             {
-              "expected": "for_template_variables_template.pipeline.js",
+              "expected": "for_template_variables_template.js",
               "generated": "for_template_variables.js"
             }
           ],
@@ -293,7 +293,7 @@
         {
           "files": [
             {
-              "expected": "for_aliased_template_variables_template.pipeline.js",
+              "expected": "for_aliased_template_variables_template.js",
               "generated": "for_aliased_template_variables.js"
             }
           ],
@@ -338,7 +338,7 @@
         {
           "files": [
             {
-              "expected": "for_template_variables_listener_template.pipeline.js",
+              "expected": "for_template_variables_listener_template.js",
               "generated": "for_template_variables_listener.js"
             }
           ],
@@ -383,7 +383,7 @@
         {
           "files": [
             {
-              "expected": "for_template_variables_scope_template.pipeline.js",
+              "expected": "for_template_variables_scope_template.js",
               "generated": "for_template_variables_scope.js"
             }
           ],
@@ -527,6 +527,21 @@
       ]
     },
     {
+      "description": "should generate an if block with an element root node preceded by non-element node",
+      "inputFiles": ["if_element_root_node_at_end.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "if_element_root_node_at_end_template.js",
+              "generated": "if_element_root_node_at_end.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
       "description": "should generate a for block with an element root node",
       "inputFiles": ["for_element_root_node.ts"],
       "expectations": [
@@ -557,6 +572,21 @@
       ]
     },
     {
+      "description": "should generate a for block with an element root node preceded by non-element node",
+      "inputFiles": ["for_element_root_node_at_end.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_element_root_node_at_end_template.js",
+              "generated": "for_element_root_node_at_end.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
       "description": "should generate a switch block with cases that have element root nodes",
       "inputFiles": ["switch_element_root_node.ts"],
       "expectations": [
@@ -565,6 +595,21 @@
             {
               "expected": "switch_element_root_node_template.js",
               "generated": "switch_element_root_node.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a switch block with cases that have element root nodes preceded by non-element node",
+      "inputFiles": ["switch_element_root_node_at_end.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "switch_element_root_node_at_end_template.js",
+              "generated": "switch_element_root_node_at_end.js"
             }
           ],
           "failureMessage": "Incorrect template"

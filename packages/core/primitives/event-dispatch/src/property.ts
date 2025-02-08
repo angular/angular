@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /** All properties that are used by jsaction. */
@@ -28,7 +28,7 @@ export const Property = {
 
 declare global {
   interface Node {
-    [Property.JSACTION]?: string;
+    [Property.JSACTION]?: {[key: string]: string | undefined};
     [Property.OWNER]?: ParentNode;
   }
 }

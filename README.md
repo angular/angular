@@ -18,26 +18,17 @@
   ·
   <a href="https://github.com/angular/angular/issues">Submit an Issue</a>
   ·
-  <a href="https://blog.angular.io/">Blog</a>
+  <a href="https://blog.angular.dev/">Blog</a>
   <br>
   <br>
 </p>
 
 <p align="center">
-  <a href="https://circleci.com/gh/angular/workflows/angular/tree/main">
-    <img src="https://img.shields.io/circleci/build/github/angular/angular/main.svg?logo=circleci&logoColor=fff&label=CircleCI" alt="CI status" />
-  </a>&nbsp;
   <a href="https://www.npmjs.com/@angular/core">
     <img src="https://img.shields.io/npm/v/@angular/core.svg?logo=npm&logoColor=fff&label=NPM+package&color=limegreen" alt="Angular on npm" />
   </a>&nbsp;
   <a href="https://discord.gg/angular">
     <img src="https://img.shields.io/discord/463752820026376202.svg?logo=discord&logoColor=fff&label=Discord&color=7389d8" alt="Discord conversation" />
-  </a>
-</p>
-
-<p align="center">
-  <a href="https://app.circleci.com/insights/github/angular/angular/workflows/default_workflow?branch=main">
-    <img src="https://dl.circleci.com/insights-snapshot/gh/angular/angular/main/default_workflow/badge.svg" alt="InsightsSnapshot" />
   </a>
 </p>
 
@@ -134,6 +125,7 @@ Help us keep Angular open and inclusive. Please read and follow our [Code of Con
 Join the conversation and help the community.
 
 - [X (formerly Twitter)][X (formerly Twitter)]
+- [Bluesky][bluesky]
 - [Discord][discord]
 - [Gitter][gitter]
 - [YouTube][youtube]
@@ -163,6 +155,7 @@ Join the conversation and help the community.
 [npm]: https://www.npmjs.com/get-npm
 [codeofconduct]: CODE_OF_CONDUCT.md
 [X (formerly Twitter)]: https://www.twitter.com/angular
+[bluesky]: https://bsky.app/profile/angular.dev
 [discord]: https://discord.gg/angular
 [gitter]: https://gitter.im/angular/angular
 [stackoverflow]: https://stackoverflow.com/questions/tagged/angular

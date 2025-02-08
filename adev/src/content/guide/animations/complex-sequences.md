@@ -89,7 +89,7 @@ The heroes list gradually re-enters the page as you delete each letter in the fi
 
 The HTML template contains a trigger called `filterAnimation`.
 
-<docs-code header="src/app/hero-list-page.component.html" path="adev/src/content/examples/animations/src/app/hero-list-page.component.html" visibleRegion="filter-animations"/>
+<docs-code header="src/app/hero-list-page.component.html" path="adev/src/content/examples/animations/src/app/hero-list-page.component.html" visibleRegion="filter-animations" language="angular-html"/>
 
 The `filterAnimation` in the component's decorator contains three transitions.
 
@@ -115,8 +115,7 @@ This is because it will lose track of which element is which, resulting in broke
 The only way to help Angular keep track of such elements is by assigning a `TrackByFunction` to the `NgForOf` directive.
 This makes sure that Angular always knows which element is which, thus allowing it to apply the correct animations to the correct elements all the time.
 
-IMPORTANT:
-If you need to animate the items of an `*ngFor` list and there is a possibility that the order of such items will change during runtime, always use a `TrackByFunction`.
+IMPORTANT: If you need to animate the items of an `*ngFor` list and there is a possibility that the order of such items will change during runtime, always use a `TrackByFunction`.
 
 ## Animations and Component View Encapsulation
 

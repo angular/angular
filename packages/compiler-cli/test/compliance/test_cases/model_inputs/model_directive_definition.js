@@ -7,6 +7,6 @@ TestDir.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
   outputs: {
     counter: "counterChange",
     name: "nameChange"
-  },
+  }
   …
 });

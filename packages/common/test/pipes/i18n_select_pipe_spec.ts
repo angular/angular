@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {I18nSelectPipe} from '@angular/common';
@@ -43,7 +43,6 @@ describe('I18nSelectPipe', () => {
         selector: 'test-component',
         imports: [I18nSelectPipe],
         template: '{{ value | i18nSelect:mapping }}',
-        standalone: true,
       })
       class TestComponent {
         value = 'other';

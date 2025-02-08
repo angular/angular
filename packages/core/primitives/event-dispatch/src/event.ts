@@ -3,11 +3,11 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {EventHandlerInfo} from './event_handler';
-import {isCaptureEvent, EventType} from './event_type';
+import {isCaptureEventType, EventType} from './event_type';
 import {KeyCode} from './key_code';
 
 /**
@@ -38,12 +38,15 @@ export function getBrowserEventType(eventType: string) {
  * @param element The element.
  * @param eventType The event type.
  * @param handler The handler function to install.
+ * @param passive A boolean value that, if `true`, indicates that the function
+ *     specified by `handler` will never call `preventDefault()`.
  * @return Information needed to uninstall the event handler eventually.
  */
 export function addEventListener(
   element: Element,
   eventType: string,
   handler: (event: Event) => void,
+  passive?: boolean,
 ): EventHandlerInfo {
   // All event handlers are registered in the bubbling
   // phase.
@@ -61,12 +64,14 @@ export function addEventListener(
   // handled in the capture phase.
   let capture = false;
 
-  if (isCaptureEvent(eventType)) {
+  if (isCaptureEventType(eventType)) {
     capture = true;
   }
-  element.addEventListener(eventType, handler, capture);
 
-  return {eventType, handler, capture};
+  const options = typeof passive === 'boolean' ? {capture, passive} : capture;
+  element.addEventListener(eventType, handler, options);
+
+  return {eventType, handler, capture, passive};
 }
 
 /**
@@ -79,12 +84,14 @@ export function addEventListener(
  */
 export function removeEventListener(element: Element, info: EventHandlerInfo) {
   if (element.removeEventListener) {
-    element.removeEventListener(info.eventType, info.handler as EventListener, info.capture);
+    // It's worth noting that some browser releases have been inconsistent on this, and unless
+    // you have specific reasons otherwise, it's probably wise to use the same values used for
+    // the call to addEventListener() when calling removeEventListener().
+    const options = typeof info.passive === 'boolean' ? {capture: info.capture} : info.capture;
+    element.removeEventListener(info.eventType, info.handler as EventListener, options);
     // `detachEvent` is an old DOM API.
-    // tslint:disable-next-line:no-any
   } else if ((element as any).detachEvent) {
     // `detachEvent` is an old DOM API.
-    // tslint:disable-next-line:no-any
     (element as any).detachEvent(`on${info.eventType}`, info.handler);
   }
 }
@@ -138,13 +145,10 @@ let isMac: boolean = typeof navigator !== 'undefined' && /Macintosh/.test(naviga
 function isMiddleClick(e: Event): boolean {
   return (
     // `which` is an old DOM API.
-    // tslint:disable-next-line:no-any
     (e as any).which === 2 ||
     // `which` is an old DOM API.
-    // tslint:disable-next-line:no-any
     ((e as any).which == null &&
       // `button` is an old DOM API.
-      // tslint:disable-next-line:no-any
       (e as any).button === 4) // middle click for IE
   );
 }
@@ -159,14 +163,11 @@ function isMiddleClick(e: Event): boolean {
 export function isModifiedClickEvent(e: Event): boolean {
   return (
     // `metaKey` is an old DOM API.
-    // tslint:disable-next-line:no-any
     (isMac && (e as any).metaKey) ||
     // `ctrlKey` is an old DOM API.
-    // tslint:disable-next-line:no-any
     (!isMac && (e as any).ctrlKey) ||
     isMiddleClick(e) ||
     // `shiftKey` is an old DOM API.
-    // tslint:disable-next-line:no-any
     (e as any).shiftKey
   );
 }
@@ -205,7 +206,6 @@ export function isValidActionKeyTarget(el: Element): boolean {
     return false;
   }
   // `isContentEditable` is an old DOM API.
-  // tslint:disable-next-line:no-any
   if ((el as any).isContentEditable) {
     return false;
   }
@@ -221,16 +221,12 @@ export function isValidActionKeyTarget(el: Element): boolean {
 function hasModifierKey(e: Event): boolean {
   return (
     // `ctrlKey` is an old DOM API.
-    // tslint:disable-next-line:no-any
     (e as any).ctrlKey ||
     // `shiftKey` is an old DOM API.
-    // tslint:disable-next-line:no-any
     (e as any).shiftKey ||
     // `altKey` is an old DOM API.
-    // tslint:disable-next-line:no-any
     (e as any).altKey ||
     // `metaKey` is an old DOM API.
-    // tslint:disable-next-line:no-any
     (e as any).metaKey
   );
 }
@@ -285,10 +281,8 @@ export function shouldCallPreventDefaultOnNativeHtmlControl(e: Event): boolean {
 export function isActionKeyEvent(e: Event): boolean {
   let key =
     // `which` is an old DOM API.
-    // tslint:disable-next-line:no-any
     (e as any).which ||
     // `keyCode` is an old DOM API.
-    // tslint:disable-next-line:no-any
     (e as any).keyCode;
   if (!key && (e as KeyboardEvent).key) {
     key = ACTION_KEY_TO_KEYCODE[(e as KeyboardEvent).key];
@@ -365,10 +359,8 @@ const NATIVELY_FOCUSABLE_ELEMENTS: {[key: string]: number} = {
 export function isSpaceKeyEvent(e: Event): boolean {
   const key =
     // `which` is an old DOM API.
-    // tslint:disable-next-line:no-any
     (e as any).which ||
     // `keyCode` is an old DOM API.
-    // tslint:disable-next-line:no-any
     (e as any).keyCode;
   const el = getTarget(e);
   const elementName = ((el as HTMLInputElement).type || el.tagName).toUpperCase();
@@ -395,7 +387,6 @@ export function isSpaceKeyEvent(e: Event): boolean {
  */
 export function isMouseSpecialEvent(e: Event, type: string, element: Element): boolean {
   // `relatedTarget` is an old DOM API.
-  // tslint:disable-next-line:no-any
   const related = (e as any).relatedTarget as Node;
 
   return (
@@ -427,22 +418,19 @@ export function createMouseSpecialEvent(e: Event, target: Element): Event {
   // this event into a pseudo-real mouseenter/mouseleave event by adjusting
   // its type.
   //
-  // tslint:disable-next-line:no-any
-  const copy: {-readonly [P in keyof Event]?: Event[P]} = {};
+  const copy: {-readonly [P in keyof Event]?: Event[P]} & {'_originalEvent'?: Event} = {};
   for (const property in e) {
     if (property === 'srcElement' || property === 'target') {
       continue;
     }
     const key = property as keyof Event;
     // Making a copy requires iterating through all properties of `Event`.
-    // tslint:disable-next-line:no-dict-access-on-struct-type
     const value = e[key];
     if (typeof value === 'function') {
       continue;
     }
     // Value should be the expected type, but the value of `key` is not known
     // statically.
-    // tslint:disable-next-line:no-any
     copy[key] = value as any;
   }
   if (e.type === EventType.MOUSEOVER) {
@@ -456,6 +444,7 @@ export function createMouseSpecialEvent(e: Event, target: Element): Event {
   }
   copy['target'] = copy['srcElement'] = target;
   copy['bubbles'] = false;
+  copy['_originalEvent'] = e;
   return copy as Event;
 }
 
@@ -514,14 +503,12 @@ export function recreateTouchEventAsClick(event: TouchEvent): MouseEvent {
     }
     const key = property as keyof TouchEvent;
     // Making a copy requires iterating through all properties of `TouchEvent`.
-    // tslint:disable-next-line:no-dict-access-on-struct-type
     const value = event[key];
     if (typeof value === 'function') {
       continue;
     }
     // Value should be the expected type, but the value of `key` is not known
     // statically.
-    // tslint:disable-next-line:no-any
     click[key as keyof MouseEvent] = value as any;
   }
 

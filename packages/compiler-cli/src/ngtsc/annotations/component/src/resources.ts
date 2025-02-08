@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -38,7 +38,7 @@ import {
  */
 export interface StyleUrlMeta {
   url: string;
-  nodeForError: ts.Node;
+  expression: ts.Expression;
   source:
     | ResourceTypeForDiagnostics.StylesheetFromTemplate
     | ResourceTypeForDiagnostics.StylesheetFromDecorator;
@@ -123,7 +123,9 @@ export interface ExternalTemplateDeclaration extends CommonTemplateDeclaration {
 export type TemplateDeclaration = InlineTemplateDeclaration | ExternalTemplateDeclaration;
 
 /** Determines the node to use for debugging purposes for the given TemplateDeclaration. */
-export function getTemplateDeclarationNodeForError(declaration: TemplateDeclaration): ts.Node {
+export function getTemplateDeclarationNodeForError(
+  declaration: TemplateDeclaration,
+): ts.Expression {
   return declaration.isInline ? declaration.expression : declaration.templateUrlExpression;
 }
 
@@ -133,6 +135,7 @@ export interface ExtractTemplateOptions {
   i18nNormalizeLineEndingsInICUs: boolean;
   enableBlockSyntax: boolean;
   enableLetSyntax: boolean;
+  preserveSignificantWhitespace?: boolean;
 }
 
 export function extractTemplate(
@@ -275,15 +278,16 @@ function parseExtractedTemplate(
   const parsedTemplate = parseTemplate(sourceStr, sourceMapUrl ?? '', {
     ...commonParseOptions,
     preserveWhitespaces: template.preserveWhitespaces,
+    preserveSignificantWhitespace: options.preserveSignificantWhitespace,
   });
 
   // Unfortunately, the primary parse of the template above may not contain accurate source map
   // information. If used directly, it would result in incorrect code locations in template
   // errors, etc. There are three main problems:
   //
-  // 1. `preserveWhitespaces: false` annihilates the correctness of template source mapping, as
-  //    the whitespace transformation changes the contents of HTML text nodes before they're
-  //    parsed into Angular expressions.
+  // 1. `preserveWhitespaces: false` or `preserveSignificantWhitespace: false` annihilates the
+  //    correctness of template source mapping, as the whitespace transformation changes the
+  //    contents of HTML text nodes before they're parsed into Angular expressions.
   // 2. `preserveLineEndings: false` causes growing misalignments in templates that use '\r\n'
   //    line endings, by normalizing them to '\n'.
   // 3. By default, the template parser strips leading trivia characters (like spaces, tabs, and
@@ -296,6 +300,7 @@ function parseExtractedTemplate(
     ...commonParseOptions,
     preserveWhitespaces: true,
     preserveLineEndings: true,
+    preserveSignificantWhitespace: true,
     leadingTriviaChars: [],
   });
 
@@ -424,6 +429,7 @@ export function preloadAndParseTemplate(
       const templatePromise = resourceLoader.preload(resourceUrl, {
         type: 'template',
         containingFile,
+        className: node.name.text,
       });
 
       // If the preload worked, then actually load and parse the template, and wait for any
@@ -629,7 +635,7 @@ export function extractComponentStyleUrls(
       {
         url: styleUrl,
         source: ResourceTypeForDiagnostics.StylesheetFromDecorator,
-        nodeForError: styleUrlExpr,
+        expression: styleUrlExpr,
       },
     ];
   }
@@ -657,7 +663,7 @@ function extractStyleUrlsFromExpression(
         styleUrls.push({
           url: styleUrl,
           source: ResourceTypeForDiagnostics.StylesheetFromDecorator,
-          nodeForError: styleUrlExpr,
+          expression: styleUrlExpr,
         });
       }
     }
@@ -675,7 +681,7 @@ function extractStyleUrlsFromExpression(
       styleUrls.push({
         url: styleUrl,
         source: ResourceTypeForDiagnostics.StylesheetFromDecorator,
-        nodeForError: styleUrlsExpr,
+        expression: styleUrlsExpr,
       });
     }
   }
@@ -683,34 +689,10 @@ function extractStyleUrlsFromExpression(
   return styleUrls;
 }
 
-export function extractStyleResources(
-  resourceLoader: ResourceLoader,
-  component: Map<string, ts.Expression>,
-  containingFile: string,
-): ReadonlySet<Resource> {
+export function extractInlineStyleResources(component: Map<string, ts.Expression>): Set<Resource> {
   const styles = new Set<Resource>();
   function stringLiteralElements(array: ts.ArrayLiteralExpression): ts.StringLiteralLike[] {
     return array.elements.filter((e): e is ts.StringLiteralLike => ts.isStringLiteralLike(e));
-  }
-
-  // If styleUrls is a literal array, process each resource url individually and register ones that
-  // are string literals. If `styleUrl` is specified, register a single stylesheet. Note that
-  // `styleUrl` and `styleUrls` are mutually-exclusive. This is validated in
-  // `extractComponentStyleUrls`.
-  const styleUrlExpr = component.get('styleUrl');
-  const styleUrlsExpr = component.get('styleUrls');
-  if (styleUrlsExpr !== undefined && ts.isArrayLiteralExpression(styleUrlsExpr)) {
-    for (const expression of stringLiteralElements(styleUrlsExpr)) {
-      const resource = stringLiteralUrlToResource(resourceLoader, expression, containingFile);
-      if (resource !== null) {
-        styles.add(resource);
-      }
-    }
-  } else if (styleUrlExpr !== undefined && ts.isStringLiteralLike(styleUrlExpr)) {
-    const resource = stringLiteralUrlToResource(resourceLoader, styleUrlExpr, containingFile);
-    if (resource !== null) {
-      styles.add(resource);
-    }
   }
 
   const stylesExpr = component.get('styles');
@@ -727,31 +709,15 @@ export function extractStyleResources(
   return styles;
 }
 
-function stringLiteralUrlToResource(
-  resourceLoader: ResourceLoader,
-  expression: ts.StringLiteralLike,
-  containingFile: string,
-): Resource | null {
-  try {
-    const resourceUrl = resourceLoader.resolve(expression.text, containingFile);
-    return {path: absoluteFrom(resourceUrl), expression};
-  } catch {
-    // Errors in style resource extraction do not need to be handled here. We will produce
-    // diagnostics for each one that fails in the analysis, after we evaluate the `styleUrls`
-    // expression to determine _all_ style resources, not just the string literals.
-    return null;
-  }
-}
-
 export function _extractTemplateStyleUrls(template: ParsedTemplateWithSource): StyleUrlMeta[] {
   if (template.styleUrls === null) {
     return [];
   }
 
-  const nodeForError = getTemplateDeclarationNodeForError(template.declaration);
+  const expression = getTemplateDeclarationNodeForError(template.declaration);
   return template.styleUrls.map((url) => ({
     url,
     source: ResourceTypeForDiagnostics.StylesheetFromTemplate,
-    nodeForError,
+    expression,
   }));
 }

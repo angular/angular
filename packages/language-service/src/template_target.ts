@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -229,6 +229,7 @@ export function getTargetAtPosition(
   }
 
   const candidate = path[path.length - 1];
+
   // Walk up the result nodes to find the nearest `TmplAstTemplate` which contains the targeted
   // node.
   let context: TmplAstTemplate | null = null;

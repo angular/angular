@@ -7,7 +7,6 @@ import {Component} from '@angular/core';
     @let result = two + 1;
     The result is {{result}}
   `,
-  standalone: true,
 })
 export class MyApp {
   value = 1;

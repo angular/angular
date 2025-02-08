@@ -1,7 +1,7 @@
 # Copyright Google LLC All Rights Reserved.
 #
 # Use of this source code is governed by an MIT-style license that can be
-# found in the LICENSE file at https://angular.io/license
+# found in the LICENSE file at https://angular.dev/license
 """Package Angular libraries for npm distribution
 
 If all users of an Angular library use Bazel (e.g. internal usage in your company)
@@ -37,13 +37,18 @@ _NG_PACKAGE_MODULE_MAPPINGS_ATTR = "ng_package_module_mappings"
 
 def _ng_package_module_mappings_aspect_impl(target, ctx):
     mappings = dict()
-    for dep in ctx.rule.attr.deps:
-        if hasattr(dep, _NG_PACKAGE_MODULE_MAPPINGS_ATTR):
-            for k, v in getattr(dep, _NG_PACKAGE_MODULE_MAPPINGS_ATTR).items():
-                if k in mappings and mappings[k] != v:
-                    fail(("duplicate module mapping at %s: %s maps to both %s and %s" %
-                          (target.label, k, mappings[k], v)), "deps")
-                mappings[k] = v
+
+    # Note: the target might not have `deps`. e.g.
+    # in `rules_js`, node module targets don't have such attribute.
+    if hasattr(ctx.rule.attr, "deps"):
+        for dep in ctx.rule.attr.deps:
+            if hasattr(dep, _NG_PACKAGE_MODULE_MAPPINGS_ATTR):
+                for k, v in getattr(dep, _NG_PACKAGE_MODULE_MAPPINGS_ATTR).items():
+                    if k in mappings and mappings[k] != v:
+                        fail(("duplicate module mapping at %s: %s maps to both %s and %s" %
+                              (target.label, k, mappings[k], v)), "deps")
+                    mappings[k] = v
+
     if ((hasattr(ctx.rule.attr, "module_name") and ctx.rule.attr.module_name) or
         (hasattr(ctx.rule.attr, "module_root") and ctx.rule.attr.module_root)):
         mn = ctx.rule.attr.module_name
@@ -231,11 +236,12 @@ def _serialize_files_for_arg(files):
         result.append(_serialize_file(file))
     return json.encode(result)
 
-def _find_matching_file(files, search_short_path):
+def _find_matching_file(files, search_short_paths):
     for file in files:
-        if file.short_path == search_short_path:
-            return file
-    fail("Could not find file that is expected to exist: %s" % search_short_path)
+        for search_short_path in search_short_paths:
+            if file.short_path == search_short_path:
+                return file
+    fail("Could not find file that matches: %s" % (", ".join(search_short_paths)))
 
 def _is_part_of_package(file, owning_package):
     return file.short_path.startswith(owning_package)
@@ -308,7 +314,7 @@ def _ng_package_impl(ctx):
         # Module name of the current entry-point. eg. @angular/core/testing
         module_name = ""
 
-        # Packsge name where this entry-point is defined in,
+        # Package name where this entry-point is defined in,
         entry_point_package = dep.label.package
 
         # Intentionally evaluates to empty string for the main entry point
@@ -328,6 +334,10 @@ def _ng_package_impl(ctx):
         # set the "module_name" in the provider struct.
         if hasattr(dep, "module_name"):
             module_name = dep.module_name
+        elif LinkablePackageInfo in dep:
+            # Modern `ts_project` interop targets don't make use of legacy struct
+            # providers, and instead encapsulate the `module_name` in an idiomatic provider.
+            module_name = dep[LinkablePackageInfo].package_name
 
         if is_primary_entry_point:
             npm_package_name = module_name
@@ -368,8 +378,15 @@ def _ng_package_impl(ctx):
             # In case the dependency is built through the "ts_library" rule, or the "ng_module"
             # rule does not generate a flat module bundle, we determine the index file and
             # typings entry-point through the most reasonable defaults (i.e. "package/index").
-            es2022_entry_point = _find_matching_file(unscoped_esm2022_list, "%s/index.mjs" % entry_point_package)
-            typings_entry_point = _find_matching_file(unscoped_types, "%s/index.d.ts" % entry_point_package)
+            es2022_entry_point = _find_matching_file(
+                unscoped_esm2022_list,
+                [
+                    "%s/index.mjs" % entry_point_package,
+                    # Fallback for `ts_project` support where `.mjs` is not auto-generated.
+                    "%s/index.js" % entry_point_package,
+                ],
+            )
+            typings_entry_point = _find_matching_file(unscoped_types, ["%s/index.d.ts" % entry_point_package])
             guessed_paths = True
 
         bundle_name = "%s.mjs" % (primary_bundle_name if is_primary_entry_point else entry_point)
@@ -478,6 +495,13 @@ def _ng_package_impl(ctx):
         # placeholder
         packager_args.add("")
 
+    if ctx.file.license:
+        packager_inputs.append(ctx.file.license)
+        packager_args.add(ctx.file.license.path)
+    else:
+        #placeholder
+        packager_args.add("")
+
     packager_args.add(_serialize_files_for_arg(fesm2022))
     packager_args.add(_serialize_files_for_arg(esm2022))
     packager_args.add(_serialize_files_for_arg(static_files))
@@ -536,6 +560,10 @@ _NG_PACKAGE_ATTRS = dict(PKG_NPM_ATTRS, **{
         The contents of the file will be copied to the top of the resulting bundles.
         Configured substitutions are applied like with other files in the package.""",
         allow_single_file = [".txt"],
+    ),
+    "license": attr.label(
+        doc = """A textfile that will be copied to the root of the npm package.""",
+        allow_single_file = True,
     ),
     "deps": attr.label_list(
         doc = """ Targets that produce production JavaScript outputs, such as `ts_library`.""",

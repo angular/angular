@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {TestBed, fakeAsync, tick} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {DebugElement, signal} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {of} from 'rxjs';
@@ -64,16 +64,11 @@ describe('Preview', () => {
     };
   };
 
-  it('should set iframe src on init', fakeAsync(() => {
-    const {component, PREVIEW_URL} = beforeEach();
-
-    component.ngAfterViewInit();
-
-    tick(100);
-
-    expect(component.previewIframe?.nativeElement).toBeTruthy();
-    expect(component.previewIframe?.nativeElement?.src).toBe(PREVIEW_URL);
-  }));
+  it('should set iframe src', () => {
+    const {fixture, PREVIEW_URL} = beforeEach();
+    const iframeElement = fixture.debugElement.query(By.css('iframe'));
+    expect(iframeElement?.nativeElement?.src).toBe(PREVIEW_URL);
+  });
 
   it('should not render loading elements if the loadingStep is READY or ERROR', () => {
     const {fixture, fakeNodeRuntimeState, getLoadingElementsWrapper} = beforeEach();

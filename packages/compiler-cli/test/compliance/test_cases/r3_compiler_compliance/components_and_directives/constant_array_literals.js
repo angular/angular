@@ -4,6 +4,7 @@ const $c1$ = () => [0, 1, 2];
 MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: MyApp,
   selectors: [["ng-component"]],
+  standalone: false,
   decls: 1,
   vars: 4,
   consts: [[__AttributeMarker.Bindings__, "prop", "otherProp"]],

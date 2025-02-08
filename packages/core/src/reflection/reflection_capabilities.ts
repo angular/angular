@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {isType, Type} from '../interface/type';
@@ -25,19 +25,19 @@ import {PlatformReflectionCapabilities} from './platform_reflection_capabilities
  * it intends to capture the pattern where existing constructors have been downleveled from
  * ES2015 to ES5 using TypeScript w/ downlevel iteration. e.g.
  *
- * ```
+ * ```ts
  *   function MyClass() {
  *     var _this = _super.apply(this, arguments) || this;
  * ```
  *
  * downleveled to ES5 with `downlevelIteration` for TypeScript < 4.2:
- * ```
+ * ```ts
  *   function MyClass() {
  *     var _this = _super.apply(this, __spread(arguments)) || this;
  * ```
  *
  * or downleveled to ES5 with `downlevelIteration` for TypeScript >= 4.2:
- * ```
+ * ```ts
  *   function MyClass() {
  *     var _this = _super.apply(this, __spreadArray([], __read(arguments), false)) || this;
  * ```

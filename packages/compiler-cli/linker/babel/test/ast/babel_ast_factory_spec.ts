@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {leadingComment} from '@angular/compiler';
 import {template, types as t} from '@babel/core';
@@ -33,6 +33,18 @@ describe('BabelAstFactory', () => {
       ]);
 
       expect(generate(stmt).code).toEqual(['/* comment 1 */', '//comment 2', 'x = 10;'].join('\n'));
+    });
+
+    it('should add the comments to the given statement', () => {
+      const expr = expression.ast`x + 10`;
+      factory.attachComments(expr, [
+        leadingComment('comment 1', true),
+        leadingComment('comment 2', false),
+      ]);
+
+      expect(generate(expr).code).toEqual(
+        ['(', '/* comment 1 */', '//comment 2', 'x + 10'].join('\n') + ')',
+      );
     });
   });
 
@@ -187,10 +199,16 @@ describe('BabelAstFactory', () => {
   });
 
   describe('createDynamicImport()', () => {
-    it('should create a dynamic import', () => {
+    it('should create a dynamic import with a string URL', () => {
       const url = './some/path';
       const dynamicImport = factory.createDynamicImport(url);
       expect(generate(dynamicImport).code).toEqual(`import("${url}")`);
+    });
+
+    it('should create a dynamic import with an expression URL', () => {
+      const url = expression.ast`'/' + 'abc' + '/'`;
+      const dynamicImport = factory.createDynamicImport(url);
+      expect(generate(dynamicImport).code).toEqual(`import('/' + 'abc' + '/')`);
     });
   });
 

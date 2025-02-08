@@ -22,6 +22,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/suffix_not_supported",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/text_attribute_not_binding",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/uninvoked_function_in_event_binding",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/unused_let_declaration",
         "@npm//typescript",
     ],
 )

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -34,7 +34,7 @@ import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
 import {RuntimeErrorCode} from './errors';
 import {Routes} from './models';
-import {NavigationTransitions} from './navigation_transition';
+import {NAVIGATION_ERROR_HANDLER, NavigationTransitions} from './navigation_transition';
 import {
   getBootstrapListener,
   rootRoute,
@@ -63,9 +63,7 @@ const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink, RouterLinkActive, EmptyOutl
  * @docsNotRequired
  */
 export const ROUTER_FORROOT_GUARD = new InjectionToken<void>(
-  typeof ngDevMode === 'undefined' || ngDevMode
-    ? 'router duplicate forRoot guard'
-    : 'ROUTER_FORROOT_GUARD',
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'router duplicate forRoot guard' : '',
 );
 
 // TODO(atscott): All of these except `ActivatedRoute` are `providedIn: 'root'`. They are only kept
@@ -112,7 +110,11 @@ export const ROUTER_PROVIDERS: Provider[] = [
   exports: ROUTER_DIRECTIVES,
 })
 export class RouterModule {
-  constructor(@Optional() @Inject(ROUTER_FORROOT_GUARD) guard: any) {}
+  constructor() {
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      inject(ROUTER_FORROOT_GUARD, {optional: true});
+    }
+  }
 
   /**
    * Creates and configures a module with all the router providers and directives.
@@ -120,7 +122,7 @@ export class RouterModule {
    *
    * When registering the NgModule at the root, import as follows:
    *
-   * ```
+   * ```ts
    * @NgModule({
    *   imports: [RouterModule.forRoot(ROUTES)]
    * })
@@ -143,11 +145,19 @@ export class RouterModule {
             : []
           : [],
         {provide: ROUTES, multi: true, useValue: routes},
-        {
-          provide: ROUTER_FORROOT_GUARD,
-          useFactory: provideForRootGuard,
-          deps: [[Router, new Optional(), new SkipSelf()]],
-        },
+        typeof ngDevMode === 'undefined' || ngDevMode
+          ? {
+              provide: ROUTER_FORROOT_GUARD,
+              useFactory: provideForRootGuard,
+              deps: [[Router, new Optional(), new SkipSelf()]],
+            }
+          : [],
+        config?.errorHandler
+          ? {
+              provide: NAVIGATION_ERROR_HANDLER,
+              useValue: config.errorHandler,
+            }
+          : [],
         {provide: ROUTER_CONFIGURATION, useValue: config ? config : {}},
         config?.useHash ? provideHashLocationStrategy() : providePathLocationStrategy(),
         provideRouterScroller(),
@@ -165,7 +175,7 @@ export class RouterModule {
    * without creating a new Router service.
    * When registering for submodules and lazy-loaded submodules, create the NgModule as follows:
    *
-   * ```
+   * ```ts
    * @NgModule({
    *   imports: [RouterModule.forChild(ROUTES)]
    * })
@@ -218,7 +228,7 @@ function providePathLocationStrategy(): Provider {
 }
 
 export function provideForRootGuard(router: Router): any {
-  if ((typeof ngDevMode === 'undefined' || ngDevMode) && router) {
+  if (router) {
     throw new RuntimeError(
       RuntimeErrorCode.FOR_ROOT_CALLED_TWICE,
       `The Router was provided more than once. This can happen if 'forRoot' is used outside of the root injector.` +

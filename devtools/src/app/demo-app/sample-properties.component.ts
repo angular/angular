@@ -3,10 +3,10 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, ElementRef, inject, signal, ViewChild} from '@angular/core';
+import {Component, computed, ElementRef, inject, signal, viewChild} from '@angular/core';
 import {SIGNAL} from '@angular/core/primitives/signals';
 
 import {SampleService} from './sample.service';
@@ -17,7 +17,7 @@ import {SampleService} from './sample.service';
   styles: [''],
 })
 export class SamplePropertiesComponent {
-  @ViewChild('elementReference') elementRef!: ElementRef;
+  readonly elementRef = viewChild<ElementRef>('elementReference');
 
   exampleService = inject(SampleService);
 

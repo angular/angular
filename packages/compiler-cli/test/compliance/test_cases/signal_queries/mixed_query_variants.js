@@ -19,6 +19,6 @@ TestDir.ɵdir = /* @__PURE__ */ $r3$.ɵɵdefineDirective({
       let _t;
       i0.ɵɵqueryRefresh(_t = i0.ɵɵloadQuery()) && (ctx.decoratorViewChild = _t.first);
     }
-  },
+  }
   …
 });

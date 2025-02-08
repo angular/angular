@@ -65,7 +65,7 @@ Then upload it:
 
 1.  Go to the Firefox Addons [page](https://addons.mozilla.org/developers/addons)
 1.  Find the email and password [on Valentine](http://valentine/#/show/1651707871496288)
-1.  Setup Google Authenticator with the 2FA QR code.
+1.  Set up Google Authenticator with the 2FA QR code.
     *   You can find the QR code [on Valentine as well](http://valentine/#/show/1651792043556329)
 
 The Firefox publishing process is slightly more involved than Chrome. In particular, they
@@ -94,15 +94,6 @@ Commit the version bump:
 
 ```shell
 git checkout -b devtools-release
-git add . && git commit -m "release: bump Angular DevTools version to 1.0.10"
-git push -u origin devtools-release
-```
-
-Then create and merge a PR targeting `patch` with this change.
-
-Once the PR merges and both Chrome and Firefox are showing the new version to end users, then
-the release is complete!
-
 git add . && git commit -m "release: bump Angular DevTools version to 1.0.10"
 git push -u origin devtools-release
 ```

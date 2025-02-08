@@ -3,11 +3,13 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {compressNodeLocation, decompressNodeLocation} from '../../src/hydration/compression';
 import {
+  NODE_NAVIGATION_STEP_FIRST_CHILD,
+  NODE_NAVIGATION_STEP_NEXT_SIBLING,
   NodeNavigationStep,
   REFERENCE_NODE_BODY,
   REFERENCE_NODE_HOST,
@@ -15,8 +17,8 @@ import {
 
 describe('compression of node location', () => {
   it('should handle basic cases', () => {
-    const fc = NodeNavigationStep.FirstChild;
-    const ns = NodeNavigationStep.NextSibling;
+    const fc = NODE_NAVIGATION_STEP_FIRST_CHILD;
+    const ns = NODE_NAVIGATION_STEP_NEXT_SIBLING;
     const cases = [
       [[REFERENCE_NODE_HOST, fc, 1], 'hf'],
       [[REFERENCE_NODE_BODY, fc, 1], 'bf'],

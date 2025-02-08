@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {HtmlParser, MessageBundle} from '@angular/compiler';
@@ -28,7 +28,7 @@ import {IndexedComponent} from './indexer';
 import {ActivePerfRecorder, PerfCheckpoint as PerfCheckpoint, PerfEvent, PerfPhase} from './perf';
 import {TsCreateProgramDriver} from './program_driver';
 import {DeclarationNode} from './reflection';
-import {retagAllTsFiles, untagAllTsFiles} from './shims';
+import {retagAllTsFiles} from './shims';
 import {OptimizeFor} from './typecheck/api';
 
 /**
@@ -258,7 +258,13 @@ export class NgtscProgram implements api.Program {
   }
 
   private emitXi18n(): void {
-    const ctx = new MessageBundle(new HtmlParser(), [], {}, this.options.i18nOutLocale ?? null);
+    const ctx = new MessageBundle(
+      new HtmlParser(),
+      [],
+      {},
+      this.options.i18nOutLocale ?? null,
+      this.options.i18nPreserveWhitespaceForLegacyExtraction,
+    );
     this.compiler.xi18n(ctx);
     i18nExtract(
       this.options.i18nOutFormat ?? null,
@@ -393,8 +399,11 @@ export class NgtscProgram implements api.Program {
    * @param entryPoint Path to the entry point for the package for which API
    *     docs should be extracted.
    */
-  getApiDocumentation(entryPoint: string): DocEntry[] {
-    return this.compiler.getApiDocumentation(entryPoint);
+  getApiDocumentation(
+    entryPoint: string,
+    privateModules: Set<string>,
+  ): {entries: DocEntry[]; symbols: Map<string, string>} {
+    return this.compiler.getApiDocumentation(entryPoint, privateModules);
   }
 
   getEmittedSourceFiles(): Map<string, ts.SourceFile> {

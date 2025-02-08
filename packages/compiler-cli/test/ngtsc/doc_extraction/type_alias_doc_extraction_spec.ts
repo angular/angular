@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {DocEntry} from '@angular/compiler-cli/src/ngtsc/docs';
@@ -62,6 +62,27 @@ runInEachFileSystem(() => {
           name: string;
           age: number;
         }`);
+    });
+
+    it('should extract type aliases based with generics', () => {
+      env.write(
+        'index.ts',
+        `
+          type Foo<T> = undefined;
+          export type Bar<T extends string> = Foo<T>;
+        `,
+      );
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+
+      const typeAliasEntry = docs[0] as TypeAliasEntry;
+      expect(typeAliasEntry.name).toBe('Bar');
+      expect(typeAliasEntry.entryType).toBe(EntryType.TypeAlias);
+      expect(typeAliasEntry.type).toBe('Foo<T>');
+      expect(typeAliasEntry.generics).toEqual([
+        {name: 'T', constraint: 'string', default: undefined},
+      ]);
     });
   });
 });

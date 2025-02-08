@@ -1,6 +1,9 @@
 import {Directive, NgModule} from '@angular/core';
 
-@Directive({selector: '[hostAttributeDir]', host: {'aria-label': 'label'}})
+@Directive({
+    selector: '[hostAttributeDir]', host: { 'aria-label': 'label' },
+    standalone: false
+})
 export class HostAttributeDir {
 }
 

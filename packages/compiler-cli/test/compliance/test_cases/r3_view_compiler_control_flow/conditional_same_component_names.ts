@@ -11,7 +11,8 @@ it('case 1', () => {
         Second
       }
     `,
-  })
+    standalone: false
+})
   class TestComponent {
   }
 });
@@ -25,7 +26,8 @@ it('case 2', () => {
         Second
       }
     `,
-  })
+    standalone: false
+})
   class TestComponent {
   }
 });

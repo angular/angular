@@ -7,7 +7,6 @@ import {isPlatformBrowser} from '@angular/common';
 import {MessagesComponent} from './messages/messages.component';
 
 @Component({
-  standalone: true,
   selector: 'app-root',
   templateUrl: './app.component.html',
   imports: [RouterLink, RouterOutlet, MessagesComponent],

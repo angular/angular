@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Component, Inject, Injectable, NgModule} from '@angular/core';
@@ -13,6 +13,7 @@ import {ServerModule} from '@angular/platform-server';
 @Component({
   selector: 'string-app',
   template: '{{data}}',
+  standalone: false,
 })
 export class AppComponent {
   data: string;

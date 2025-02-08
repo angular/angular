@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {NotificationSource} from '../../change_detection/scheduling/zoneless_scheduling';
@@ -22,7 +22,6 @@ import {getRootComponents} from './discovery_utils';
  * @param component Component to {@link ChangeDetectorRef#markForCheck mark for check}.
  *
  * @publicApi
- * @globalApi ng
  */
 export function applyChanges(component: {}): void {
   ngDevMode && assertDefined(component, 'component');

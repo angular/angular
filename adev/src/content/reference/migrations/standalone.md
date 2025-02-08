@@ -4,7 +4,9 @@
 
 <docs-video src="https://www.youtube.com/embed/x5PZwb4XurU" title="Getting started with standalone components"/>
 
-As of version 15.2.0, Angular offers a [schematic](tools/cli/schematics) to help project authors convert existing projects to the standalone APIs. The schematic aims to transform as much code as possible automatically, but it may require some manual fixes by the project author. Run the schematic with the following command:
+This schematic helps to transform components, directive and pipes in existing projects to become standalone. The schematic aims to transform as much code as possible automatically, but it may require some manual fixes by the project author.
+
+Run the schematic using the following command:
 
 <docs-code language="shell">
 
@@ -61,7 +63,7 @@ You should run these migrations in the order given.
 
 ### Convert declarations to standalone
 
-In this mode, the migration converts all components, directives and pipes to standalone by setting `standalone: true` and adding dependencies to their `imports` array.
+In this mode, the migration converts all components, directives and pipes to standalone by removing `standalone: false` and adding dependencies to their `imports` array.
 
 HELPFUL: The schematic ignores NgModules which bootstrap a component during this step because they are likely root modules used by `bootstrapModule` rather than the standalone-compatible `bootstrapApplication`. The schematic converts these declarations automatically as a part of the ["Switch to standalone bootstrapping API"](#switch-to-standalone-bootstrapping-api) step.
 
@@ -82,6 +84,7 @@ export class SharedModule {}
 @Component({
   selector: 'greeter',
   template: '<div *ngIf="showGreeting">Hello</div>',
+  standalone: false,
 })
 export class GreeterComponent {
   showGreeting = true;
@@ -104,7 +107,6 @@ export class SharedModule {}
 @Component({
   selector: 'greeter',
   template: '<div *ngIf="showGreeting">Hello</div>',
-  standalone: true,
   imports: [NgIf]
 })
 export class GreeterComponent {
@@ -148,7 +150,7 @@ export class ImporterModule {}
 
 ### Switch to standalone bootstrapping API
 
-This step converts any usages of  `bootstrapModule` to the new, standalone-based `bootstrapApplication`. It also switches the root component to `standalone: true` and deletes the root NgModule. If the root module has any `providers` or `imports`, the migration attempts to copy as much of this configuration as possible into the new bootstrap call.
+This step converts any usages of  `bootstrapModule` to the new, standalone-based `bootstrapApplication`. It also removes `standalone: false` from the root component and deletes the root NgModule. If the root module has any `providers` or `imports`, the migration attempts to copy as much of this configuration as possible into the new bootstrap call.
 
 **Before:**
 
@@ -166,7 +168,11 @@ export class AppModule {}
 
 ```typescript
 // ./app/app.component.ts
-@Component({ selector: 'app', template: 'hello' })
+@Component({
+  selector: 'app',
+  template: 'hello',
+  standalone: false,
+})
 export class AppComponent {}
 ```
 
@@ -187,7 +193,10 @@ platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
 
 ```typescript
 // ./app/app.component.ts
-@Component({ selector: 'app', template: 'hello', standalone: true })
+@Component({
+  selector: 'app',
+  template: 'hello'
+})
 export class AppComponent {}
 ```
 

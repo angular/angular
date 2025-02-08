@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ApplicationRef, PLATFORM_ID} from '@angular/core';
@@ -30,8 +30,7 @@ const serviceWorkerModuleApi = 'ServiceWorkerModule';
     let swRegisterSpy: jasmine.Spy;
 
     const untilStable = () => {
-      const appRef: ApplicationRef = TestBed.inject(ApplicationRef);
-      return appRef.isStable.pipe(filter(Boolean), take(1)).toPromise();
+      return TestBed.inject(ApplicationRef).whenStable();
     };
 
     beforeEach(
@@ -170,6 +169,7 @@ const serviceWorkerModuleApi = 'ServiceWorkerModule';
                   provide: ApplicationRef,
                   useValue: {
                     isStable: isStableSub.asObservable(),
+                    whenStable: () => isStableSub.pipe(filter(Boolean), take(1)),
                     afterTick: new Subject(),
                     onDestroy: () => {},
                   },
@@ -189,6 +189,7 @@ const serviceWorkerModuleApi = 'ServiceWorkerModule';
                   provide: ApplicationRef,
                   useValue: {
                     isStable: isStableSub.asObservable(),
+                    whenStable: () => isStableSub.pipe(filter(Boolean), take(1)),
                     afterTick: new Subject(),
                     onDestroy: () => {},
                   },

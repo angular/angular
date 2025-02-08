@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -282,7 +282,9 @@ export const ALL_ENABLED_CONFIG: Readonly<TypeCheckingConfig> = {
   useInlineTypeConstructors: true,
   suggestionsForSuboptimalTypeInference: false,
   controlFlowPreventingContentProjection: 'warning',
+  unusedStandaloneImports: 'warning',
   allowSignalsInTwoWayBindings: true,
+  checkTwoWayBoundEvents: true,
 };
 
 // Remove 'ref' from TypeCheckableDirectiveMeta and add a 'selector' instead.
@@ -414,6 +416,7 @@ export function tcb(
     checkControlFlowBodies: true,
     alwaysCheckSchemaInTemplateBodies: true,
     controlFlowPreventingContentProjection: 'warning',
+    unusedStandaloneImports: 'warning',
     strictSafeNavigationTypes: true,
     useContextGenericType: true,
     strictLiteralTypes: true,
@@ -421,6 +424,7 @@ export function tcb(
     useInlineTypeConstructors: true,
     suggestionsForSuboptimalTypeInference: false,
     allowSignalsInTwoWayBindings: true,
+    checkTwoWayBoundEvents: true,
     ...config,
   };
   options = options || {
@@ -893,6 +897,8 @@ function getDirectiveMetaFromDeclaration(
     ngContentSelectors: decl.ngContentSelectors || null,
     preserveWhitespaces: decl.preserveWhitespaces ?? false,
     isExplicitlyDeferred: false,
+    imports: decl.imports,
+    rawImports: null,
     hostDirectives:
       decl.hostDirectives === undefined
         ? null
@@ -948,6 +954,7 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         isStandalone: false,
         isSignal: false,
         imports: null,
+        rawImports: null,
         deferredImports: null,
         schemas: null,
         decorator: null,
@@ -955,6 +962,7 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         ngContentSelectors: decl.ngContentSelectors || null,
         preserveWhitespaces: decl.preserveWhitespaces ?? false,
         isExplicitlyDeferred: false,
+        inputFieldNamesFromMetadataArray: null,
         hostDirectives:
           decl.hostDirectives === undefined
             ? null

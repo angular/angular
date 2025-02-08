@@ -1,8 +1,6 @@
 StandaloneCmp.ɵcmp = /*@__PURE__*/ i0.ɵɵdefineComponent({
   type: StandaloneCmp,
   selectors: [["ng-component"]],
-  standalone: true,
-  features: [i0.ɵɵStandaloneFeature],
   decls: 1,
   vars: 0,
   template: function StandaloneCmp_Template(rf, ctx) {

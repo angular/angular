@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {InputSignalNode} from '../../authoring/input/input_signal_node';
@@ -260,8 +260,17 @@ export interface DirectiveDef<T> {
       ) => void)
     | null;
 
-  /** Additional directives to be applied whenever the directive has been matched. */
-  hostDirectives: HostDirectiveDef[] | null;
+  /**
+   * Additional directives to be applied whenever the directive has been matched.
+   *
+   * `HostDirectiveConfig` objects represent a host directive that can be resolved eagerly and were
+   * already pre-processed when the definition was created. A function needs to be resolved lazily
+   * during directive matching, because it's a forward reference.
+   *
+   * **Note:** we can't `HostDirectiveConfig` in the array, because there's no way to distinguish if
+   * a function in the array is a `Type` or a `() => HostDirectiveConfig[]`.
+   */
+  hostDirectives: (HostDirectiveDef | (() => HostDirectiveConfig[]))[] | null;
 
   setInput:
     | (<U extends T>(
@@ -393,12 +402,17 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
   tView: TView | null;
 
   /**
-   * A function added by the {@link ɵɵStandaloneFeature} and used by the framework to create
-   * standalone injectors.
+   * A function used by the framework to create standalone injectors.
    */
   getStandaloneInjector:
     | ((parentInjector: EnvironmentInjector) => EnvironmentInjector | null)
     | null;
+
+  /**
+   * A function added by the {@link ɵɵExternalStylesFeature} and used by the framework to create
+   * the list of external runtime style URLs.
+   */
+  getExternalStyles: ((encapsulationId?: string) => string[]) | null;
 
   /**
    * Used to store the result of `noSideEffects` function so that it is not removed by closure
@@ -492,6 +506,15 @@ export type HostDirectiveBindingMap = {
  * and the configuration that was used to define it as such.
  */
 export type HostDirectiveDefs = Map<DirectiveDef<unknown>, HostDirectiveDef>;
+
+/** Value that can be used to configure a host directive. */
+export type HostDirectiveConfig =
+  | Type<unknown>
+  | {
+      directive: Type<unknown>;
+      inputs?: string[];
+      outputs?: string[];
+    };
 
 export interface ComponentDefFeature {
   <T>(componentDef: ComponentDef<T>): void;

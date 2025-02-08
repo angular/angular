@@ -3,29 +3,17 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Type} from '../interface/type';
 import {stringify} from '../util/stringify';
 
-import {ComponentFactory} from './component_factory';
-
-export function noComponentFactoryError(component: Function) {
-  const error = Error(`No component factory found for ${stringify(component)}.`);
-  (error as any)[ERROR_COMPONENT] = component;
-  return error;
-}
-
-const ERROR_COMPONENT = 'ngComponent';
-
-export function getComponent(error: Error): Type<any> {
-  return (error as any)[ERROR_COMPONENT];
-}
+import type {ComponentFactory} from './component_factory';
 
 class _NullComponentFactoryResolver implements ComponentFactoryResolver {
   resolveComponentFactory<T>(component: {new (...args: any[]): T}): ComponentFactory<T> {
-    throw noComponentFactoryError(component);
+    throw Error(`No component factory found for ${stringify(component)}.`);
   }
 }
 

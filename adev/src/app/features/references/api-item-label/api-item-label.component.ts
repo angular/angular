@@ -6,29 +6,20 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, Input, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, input} from '@angular/core';
 import {ApiItemType} from '../interfaces/api-item-type';
-import {ApiLabel} from '../pipes/api-label.pipe';
+import {shortLabelsMap} from '../pipes/api-label.pipe';
 
 @Component({
   selector: 'docs-api-item-label',
-  standalone: true,
-  templateUrl: './api-item-label.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '[attr.data-type]': 'apiItemType()',
-    '[attr.data-mode]': 'labelMode()',
+    '[class]': `clazz()`,
   },
-  imports: [ApiLabel],
+  template: `{{ label() }}`,
 })
 export default class ApiItemLabel {
-  @Input({required: true}) set type(value: ApiItemType) {
-    this.apiItemType.set(value);
-  }
-  @Input({required: true}) set mode(value: 'short' | 'full') {
-    this.labelMode.set(value);
-  }
-
-  protected apiItemType = signal<ApiItemType | undefined>(undefined);
-  protected labelMode = signal<'short' | 'full'>('short');
+  readonly type = input.required<ApiItemType>();
+  readonly label = computed(() => shortLabelsMap[this.type()]);
+  readonly clazz = computed(() => `type-${this.type()}`);
 }

@@ -14,54 +14,42 @@ The main advantages of SSR as compared to client-side rendering (CSR) are:
 
 To create a **new** project with SSR, run:
 
-<docs-code language="shell">
-
+```shell
 ng new --ssr
-
-</docs-code>
+```
 
 To add SSR to an **existing** project, use the Angular CLI `ng add` command.
 
-<docs-code language="shell">
-
+```shell
 ng add @angular/ssr
+```
 
-</docs-code>
+Note: Interested in the latest SSR advancements in Angular? Take a look at the developer preview [hybrid rendering APIs](guide/hybrid-rendering).
 
 These commands create and update application code to enable SSR and adds extra files to the project structure.
 
-<docs-code language="text">
-
+```
 my-app
 |-- server.ts                       # application server
 └── src
     |-- app
     |   └── app.config.server.ts    # server application configuration
     └── main.server.ts              # main server application bootstrapping
-
-</docs-code>
+```
 
 To verify that the application is server-side rendered, run it locally with `ng serve`. The initial HTML request should contain application content.
 
 ## Configure server-side rendering
 
+Note: In Angular v17 and later, `server.ts` is no longer used by `ng serve`. The dev server will use `main.server.ts` directly to perform server side rendering.
+
 The `server.ts` file configures a Node.js Express server and Angular server-side rendering. `CommonEngine` is used to render an Angular application.
 
-<docs-code path="adev/src/content/examples/ssr/server.ts" visibleLines="[31,45]"></docs-code>
-
-The `render` method of `CommonEngine` accepts an object with the following properties:
-
-| Properties          | Details                                                                                  | Default Value |
-| ------------------- | ---------------------------------------------------------------------------------------- | ------------- |
-| `bootstrap`         | A method which returns an `NgModule` or a promise which resolves to an `ApplicationRef`. |               |
-| `providers`         | An array of platform level providers for the current request.                            |               |
-| `url`               | The url of the page to render.                                                           |               |
-| `inlineCriticalCss` | Whether to reduce render blocking requests by inlining critical CSS.                     | `true`        |
-| `publicPath`        | Base path for browser files and assets.                                                  |               |
-| `document`          | The initial DOM to use for bootstrapping the server application.                         |               |
-| `documentFilePath`  | File path of the initial DOM to use to bootstrap the server application.                 |               |
+<docs-code path="adev/src/content/examples/ssr/server.ts" visibleLines="[33,47]"></docs-code>
 
 Angular CLI will scaffold an initial server implementation focused on server-side rendering your Angular application. This server can be extended to support other features such as API routes, redirects, static assets, and more. See [Express documentation](https://expressjs.com/) for more details.
+
+For more information on the APIs, refer to the [`CommonEngine` API reference](api/ssr/node/CommonEngineRenderOptions).
 
 ## Hydration
 
@@ -73,8 +61,7 @@ Hydration is the process that restores the server side rendered application on t
 
 By default, `HttpClient` caches all `HEAD` and `GET` requests which don't contain `Authorization` or `Proxy-Authorization` headers. You can override those settings by using [`withHttpTransferCacheOptions`](api/platform-browser/withHttpTransferCacheOptions) when providing hydration.
 
-<docs-code language="typescript">
-
+```typescript
 bootstrapApplication(AppComponent, {
   providers: [
     provideClientHydration(withHttpTransferCacheOptions({
@@ -82,8 +69,7 @@ bootstrapApplication(AppComponent, {
     }))
   ]
 });
-
-</docs-code>
+```
 
 ## Authoring server-compatible components
 
@@ -91,8 +77,7 @@ Some common browser APIs and capabilities might not be available on the server. 
 
 In general, code which relies on browser-specific symbols should only be executed in the browser, not on the server. This can be enforced through the [`afterRender`](api/core/afterRender) and [`afterNextRender`](api/core/afterNextRender) lifecycle hooks. These are only executed on the browser and skipped on the server.
 
-<docs-code language="typescript">
-
+```angular-ts
 import { Component, ViewChild, afterNextRender } from '@angular/core';
 
 @Component({
@@ -109,8 +94,7 @@ export class MyComponent {
     });
   }
 }
-
-</docs-code>
+```
 
 ## Using Angular Service Worker
 

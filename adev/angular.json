@@ -25,11 +25,11 @@
               // see https://github.com/xtermjs/xterm.js/pull/4940
               "self": "this"
             },
+            "outputMode": "static",
             "outputPath": "dist/angular-dev",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "server": "src/main.server.ts",
-            "ssr": true,
             "polyfills": [],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
@@ -84,10 +84,10 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "tsconfig.spec.json",
             "include": ["src/app"],
             "karmaConfig": "karma.conf.js",
+            "main": "test-main.ts",
             "inlineStyleLanguage": "scss",
             "assets": ["src/favicon.ico", "src/assets"],
             "styles": ["@angular/docs/styles/global-styles.scss"],

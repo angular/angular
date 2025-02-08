@@ -3,15 +3,15 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {EnvironmentInjector, ProviderToken, runInInjectionContext} from '@angular/core';
 import {EMPTY, from, MonoTypeOperatorFunction, Observable, of, throwError} from 'rxjs';
-import {catchError, concatMap, first, map, mapTo, mergeMap, takeLast, tap} from 'rxjs/operators';
+import {catchError, concatMap, first, map, mergeMap, takeLast, tap} from 'rxjs/operators';
 
 import {RedirectCommand, ResolveData} from '../models';
-import {NavigationTransition} from '../navigation_transition';
+import type {NavigationTransition} from '../navigation_transition';
 import {
   ActivatedRouteSnapshot,
   getInherited,
@@ -122,7 +122,7 @@ function resolveNode(
       ),
     ),
     takeLast(1),
-    mapTo(data),
+    map(() => data),
     catchError((e: unknown) => (isEmptyError(e as Error) ? EMPTY : throwError(e))),
   );
 }

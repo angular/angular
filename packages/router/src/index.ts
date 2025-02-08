@@ -3,13 +3,13 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 export {createUrlTreeFromSnapshot} from './create_url_tree';
 export {RouterLink, RouterLinkWithHref} from './directives/router_link';
 export {RouterLinkActive} from './directives/router_link_active';
-export {RouterOutlet, RouterOutletContract} from './directives/router_outlet';
+export {RouterOutlet, ROUTER_OUTLET_DATA, RouterOutletContract} from './directives/router_outlet';
 export {
   ActivationEnd,
   ActivationStart,
@@ -71,6 +71,7 @@ export * from './models_deprecated';
 export {Navigation, NavigationExtras, UrlCreationOptions} from './navigation_transition';
 export {DefaultTitleStrategy, TitleStrategy} from './page_title_strategy';
 export {
+  ComponentInputBindingFeature,
   DebugTracingFeature,
   DisabledInitialNavigationFeature,
   withViewTransitions,
@@ -144,3 +145,4 @@ export {
 export {VERSION} from './version';
 
 export * from './private_export';
+import './router_devtools';

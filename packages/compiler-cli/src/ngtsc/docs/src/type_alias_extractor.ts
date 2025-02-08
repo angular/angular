@@ -3,12 +3,13 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import ts from 'typescript';
 
 import {EntryType} from './entities';
 import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from './jsdoc_extractor';
+import {extractGenerics} from './generics_extractor';
 
 /** Extract the documentation entry for a type alias. */
 export function extractTypeAlias(declaration: ts.TypeAliasDeclaration) {
@@ -20,6 +21,7 @@ export function extractTypeAlias(declaration: ts.TypeAliasDeclaration) {
     name: declaration.name.getText(),
     type: declaration.type.getText(),
     entryType: EntryType.TypeAlias,
+    generics: extractGenerics(declaration),
     rawComment: extractRawJsDoc(declaration),
     description: extractJsDocDescription(declaration),
     jsdocTags: extractJsDocTags(declaration),

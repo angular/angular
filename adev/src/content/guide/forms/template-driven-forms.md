@@ -18,18 +18,18 @@ You can specify validation rules and display validation errors, conditionally al
 
 This tutorial teaches you how to do the following:
 
-* Build an Angular form with a component and template
-* Use `ngModel` to create two-way data bindings for reading and writing input-control values
-* Provide visual feedback using special CSS classes that track the state of the controls
-* Display validation errors to users and conditionally allow input from form controls based on the form status
-* Share information across HTML elements using [template reference variables](guide/templates/reference-variables)
+- Build an Angular form with a component and template
+- Use `ngModel` to create two-way data bindings for reading and writing input-control values
+- Provide visual feedback using special CSS classes that track the state of the controls
+- Display validation errors to users and conditionally allow input from form controls based on the form status
+- Share information across HTML elements using [template reference variables](guide/templates/variables#template-reference-variables)
 
 ## Build a template-driven form
 
 Template-driven forms rely on directives defined in the `FormsModule`.
 
-| Directives     | Details |
-|:---            |:---     |
+| Directives     | Details                                                                                                                                                                                                                                                                         |
+| :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `NgModel`      | Reconciles value changes in the attached form element with changes in the data model, allowing you to respond to user input with input validation and error handling.                                                                                                           |
 | `NgForm`       | Creates a top-level `FormGroup` instance and binds it to a `<form>` element to track aggregated form value and validation status. As soon as you import `FormsModule`, this directive becomes active by default on all `<form>` tags. You don't need to add a special selector. |
 | `NgModelGroup` | Creates and binds a `FormGroup` instance to a DOM element.                                                                                                                                                                                                                      |
@@ -39,18 +39,18 @@ Template-driven forms rely on directives defined in the `FormsModule`.
 In the course of this tutorial, you bind a sample form to data and handle user input using the following steps.
 
 1. Build the basic form.
-    * Define a sample data model
-    * Include required infrastructure such as the `FormsModule`
+   - Define a sample data model
+   - Include required infrastructure such as the `FormsModule`
 1. Bind form controls to data properties using the `ngModel` directive and two-way data-binding syntax.
-    * Examine how `ngModel` reports control states using CSS classes
-    * Name controls to make them accessible to `ngModel`
+   - Examine how `ngModel` reports control states using CSS classes
+   - Name controls to make them accessible to `ngModel`
 1. Track input validity and control status using `ngModel`.
-    * Add custom CSS to provide visual feedback on the status
-    * Show and hide validation-error messages
+   - Add custom CSS to provide visual feedback on the status
+   - Show and hide validation-error messages
 1. Respond to a native HTML button-click event by adding to the model data.
 1. Handle form submission using the [`ngSubmit`](api/forms/NgForm#properties) output property of the form.
-    * Disable the **Submit** button until the form is valid
-    * After submit, swap out the finished form for different content on the page
+   - Disable the **Submit** button until the form is valid
+   - After submit, swap out the finished form for different content on the page
 
 ## Build the form
 
@@ -59,48 +59,48 @@ In the course of this tutorial, you bind a sample form to data and handle user i
 
 1. The provided sample application creates the `Actor` class which defines the data model reflected in the form.
 
-    <docs-code header="src/app/actor.ts" language="typescript" path="adev/src/content/examples/forms/src/app/actor.ts"/>
+<docs-code header="src/app/actor.ts" language="typescript" path="adev/src/content/examples/forms/src/app/actor.ts"/>
 
 1. The form layout and details are defined in the `ActorFormComponent` class.
 
-    <docs-code header="src/app/actor-form/actor-form.component.ts (v1)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.ts" visibleRegion="v1"/>
+   <docs-code header="src/app/actor-form/actor-form.component.ts (v1)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.ts" visibleRegion="v1"/>
 
-    The component's `selector` value of "app-actor-form" means you can drop this form in a parent template using the `<app-actor-form>` tag.
+   The component's `selector` value of "app-actor-form" means you can drop this form in a parent template using the `<app-actor-form>` tag.
 
 1. The following code creates a new actor instance, so that the initial form can show an example actor.
 
-    <docs-code language="typescript" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.ts" language="typescript" visibleRegion="Marilyn"/>
+   <docs-code language="typescript" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.ts" language="typescript" visibleRegion="Marilyn"/>
 
-    This demo uses dummy data for `model` and `skills`.
-    In a real app, you would inject a data service to get and save real data, or expose these properties as inputs and outputs.
+   This demo uses dummy data for `model` and `skills`.
+   In a real app, you would inject a data service to get and save real data, or expose these properties as inputs and outputs.
 
 1. The application enables the Forms feature and registers the created form component.
 
-    <docs-code header="src/app/app.module.ts" language="typescript" path="adev/src/content/examples/forms/src/app/app.module.ts"/>
+<docs-code header="src/app/app.module.ts" language="typescript" path="adev/src/content/examples/forms/src/app/app.module.ts"/>
 
 1. The form is displayed in the application layout defined by the root component's template.
 
-    <docs-code header="src/app/app.component.html" language="html" path="adev/src/content/examples/forms/src/app/app.component.html"/>
+   <docs-code header="src/app/app.component.html" language="html" path="adev/src/content/examples/forms/src/app/app.component.html"/>
 
-    The initial template defines the layout for a form with two form groups and a submit button.
-    The form groups correspond to two properties of the Actor data model, name and studio.
-    Each group has a label and a box for user input.
+   The initial template defines the layout for a form with two form groups and a submit button.
+   The form groups correspond to two properties of the Actor data model, name and studio.
+   Each group has a label and a box for user input.
 
-    * The **Name** `<input>` control element has the HTML5 `required` attribute
-    * The **Studio** `<input>` control element does not because `studio` is optional
+   - The **Name** `<input>` control element has the HTML5 `required` attribute
+   - The **Studio** `<input>` control element does not because `studio` is optional
 
-    The **Submit** button has some classes on it for styling.
-    At this point, the form  layout is all plain HTML5, with no bindings or directives.
+   The **Submit** button has some classes on it for styling.
+   At this point, the form layout is all plain HTML5, with no bindings or directives.
 
 1. The sample form uses some style classes from [Twitter Bootstrap](https://getbootstrap.com/css): `container`, `form-group`, `form-control`, and `btn`.
-    To use these styles, the application's style sheet imports the library.
+To use these styles, the application's style sheet imports the library.
 
-    <docs-code header="src/styles.css" path="adev/src/content/examples/forms/src/styles.1.css"/>
+<docs-code header="src/styles.css" path="adev/src/content/examples/forms/src/styles.1.css"/>
 
 1. The form requires that an actor's skill is chosen from a predefined list of `skills` maintained internally in `ActorFormComponent`.
-    The Angular [NgForOf directive](api/common/NgForOf "API reference") iterates over the data values to populate the `<select>` element.
+The Angular [NgForOf directive](api/common/NgForOf 'API reference') iterates over the data values to populate the `<select>` element.
 
-    <docs-code header="src/app/actor-form/actor-form.component.html (skills)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="skills"/>
+<docs-code header="src/app/actor-form/actor-form.component.html (skills)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="skills"/>
 
 If you run the application right now, you see the list of skills in the selection control.
 The input elements are not yet bound to data values or events, so they are still blank and have no behavior.
@@ -110,7 +110,7 @@ The input elements are not yet bound to data values or events, so they are still
 The next step is to bind the input controls to the corresponding `Actor` properties with two-way data binding, so that they respond to user input by updating the data model, and also respond to programmatic changes in the data by updating the display.
 
 The `ngModel` directive declared in the `FormsModule` lets you bind controls in your template-driven form to properties in your data model.
-When you include the directive using the  syntax for two-way data binding, `[(ngModel)]`, Angular can track the value and user interaction of the control and keep the view synced with the model.
+When you include the directive using the syntax for two-way data binding, `[(ngModel)]`, Angular can track the value and user interaction of the control and keep the view synced with the model.
 
 1. Edit the template file `actor-form.component.html`.
 1. Find the `<input>` tag next to the **Name** label.
@@ -124,21 +124,21 @@ HELPFUL: This example has a temporary diagnostic interpolation after each input 
 
 When you imported the `FormsModule` in your component, Angular automatically created and attached an [NgForm](api/forms/NgForm) directive to the `<form>` tag in the template (because `NgForm` has the selector `form` that matches `<form>` elements).
 
-To get access to the `NgForm` and the overall form status, declare a [template reference variable](guide/templates/reference-variables).
+To get access to the `NgForm` and the overall form status, declare a [template reference variable](guide/templates/variables#template-reference-variables).
 
 1. Edit the template file `actor-form.component.html`.
 1. Update the `<form>` tag with a template reference variable, `#actorForm`, and set its value as follows.
 
-    <docs-code header="src/app/actor-form/actor-form.component.html (excerpt)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="template-variable"/>
+   <docs-code header="src/app/actor-form/actor-form.component.html (excerpt)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="template-variable"/>
 
-    The `actorForm` template variable is now a reference to the `NgForm` directive instance that governs the form as a whole.
+   The `actorForm` template variable is now a reference to the `NgForm` directive instance that governs the form as a whole.
 
 1. Run the app.
 1. Start typing in the **Name** input box.
 
-    As you add and delete characters, you can see them appear and disappear from the data model.
+   As you add and delete characters, you can see them appear and disappear from the data model.
 
-  The diagnostic line that shows interpolated values demonstrates that values are really flowing from the input box to the model and back again.
+The diagnostic line that shows interpolated values demonstrates that values are really flowing from the input box to the model and back again.
 
 ### Naming control elements
 
@@ -158,11 +158,11 @@ After these revisions, the form template should look like the following:
 
 You'll notice that:
 
-* Each `<input>` element has an `id` property.
-    This is used by the `<label>` element's `for` attribute to match the label to its input control.
-    This is a [standard HTML feature](https://developer.mozilla.org/docs/Web/HTML/Element/label).
+- Each `<input>` element has an `id` property.
+  This is used by the `<label>` element's `for` attribute to match the label to its input control.
+  This is a [standard HTML feature](https://developer.mozilla.org/docs/Web/HTML/Element/label).
 
-* Each `<input>` element also has the required `name` property that Angular uses to register the control with the form.
+- Each `<input>` element also has the required `name` property that Angular uses to register the control with the form.
 
 When you have observed the effects, you can delete the `{{ model | json }}` text binding.
 
@@ -178,7 +178,7 @@ These classes can be used to change a control's style based on its state.
 The following table describes the class names that Angular applies based on the control's state.
 
 | States                           | Class if true | Class if false |
-|:---                              |:---           |:---            |
+| :------------------------------- | :------------ | :------------- |
 | The control has been visited.    | `ng-touched`  | `ng-untouched` |
 | The control's value has changed. | `ng-dirty`    | `ng-pristine`  |
 | The control's value is valid.    | `ng-valid`    | `ng-invalid`   |
@@ -192,29 +192,30 @@ You use these CSS classes to define the styles for your control based on its sta
 
 To see how the classes are added and removed by the framework, open the browser's developer tools and inspect the `<input>` element that represents the actor name.
 
-1. Using your browser's developer tools, find the  `<input>` element that corresponds to the **Name** input box.
-    You can see that the element has multiple CSS classes in addition to "form-control".
+1. Using your browser's developer tools, find the `<input>` element that corresponds to the **Name** input box.
+   You can see that the element has multiple CSS classes in addition to "form-control".
 
 1. When you first bring it up, the classes indicate that it has a valid value, that the value has not been changed since initialization or reset, and that the control has not been visited since initialization or reset.
 
-    <docs-code language="html">
+   <docs-code language="html">
 
-    <input class="form-control ng-untouched ng-pristine ng-valid">;
+   <input class="form-control ng-untouched ng-pristine ng-valid">;
 
-    </docs-code>
+   </docs-code>
 
 1. Take the following actions on the **Name** `<input>` box, and observe which classes appear.
-    * Look but don't touch.
-        The classes indicate that it is untouched, pristine, and valid.
 
-    * Click inside the name box, then click outside it.
-        The control has now been visited, and the element has the `ng-touched` class instead of the `ng-untouched` class.
+   - Look but don't touch.
+     The classes indicate that it is untouched, pristine, and valid.
 
-    * Add slashes to the end of the name.
-        It is now touched and dirty.
+   - Click inside the name box, then click outside it.
+     The control has now been visited, and the element has the `ng-touched` class instead of the `ng-untouched` class.
 
-    * Erase the name.
-        This makes the value invalid, so the `ng-invalid` class replaces the `ng-valid` class.
+   - Add slashes to the end of the name.
+     It is now touched and dirty.
+
+   - Erase the name.
+     This makes the value invalid, so the `ng-invalid` class replaces the `ng-valid` class.
 
 ### Create visual feedback for states
 
@@ -273,7 +274,7 @@ Add a conditional error message to the `name` input box, as in the following exa
 
 <docs-callout title='Illustrating the "pristine" state'>
 
-In this example, you hide the message when the control is either valid or *pristine*.
+In this example, you hide the message when the control is either valid or _pristine_.
 Pristine means the user hasn't changed the value since it was displayed in this form.
 If you ignore the `pristine` state, you would hide the message only when the value is valid.
 If you arrive in this component with a new, blank actor or an invalid actor, you'll see the error message immediately, before you've done anything.
@@ -292,28 +293,28 @@ To let form users add a new actor, you will add a **New Actor** button that resp
 1. In the template, place a "New Actor" `<button>` element at the bottom of the form.
 1. In the component file, add the actor-creation method to the actor data model.
 
-    <docs-code header="src/app/actor-form/actor-form.component.ts (New Actor method)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.ts" visibleRegion="new-actor"/>
+<docs-code header="src/app/actor-form/actor-form.component.ts (New Actor method)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.ts" visibleRegion="new-actor"/>
 
 1. Bind the button's click event to an actor-creation method, `newActor()`.
 
-    <docs-code header="src/app/actor-form/actor-form.component.html (New Actor button)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="new-actor-button-no-reset"/>
+<docs-code header="src/app/actor-form/actor-form.component.html (New Actor button)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="new-actor-button-no-reset"/>
 
 1. Run the application again and click the **New Actor** button.
 
-    The form clears, and the *required* bars to the left of the input box are red, indicating invalid `name` and `skill` properties.
-    Notice that the error messages are hidden.
-    This is because the form is pristine; you haven't changed anything yet.
+   The form clears, and the _required_ bars to the left of the input box are red, indicating invalid `name` and `skill` properties.
+   Notice that the error messages are hidden.
+   This is because the form is pristine; you haven't changed anything yet.
 
 1. Enter a name and click **New Actor** again.
 
-    Now the application displays a `Name is required` error message, because the input box is no longer pristine.
-    The form remembers that you entered a name before clicking **New Actor**.
+   Now the application displays a `Name is required` error message, because the input box is no longer pristine.
+   The form remembers that you entered a name before clicking **New Actor**.
 
 1. To restore the pristine state of the form controls, clear all of the flags imperatively by calling the form's `reset()` method after calling the `newActor()` method.
 
-    <docs-code header="src/app/actor-form/actor-form.component.html (Reset the form)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="new-actor-button-form-reset"/>
+   <docs-code header="src/app/actor-form/actor-form.component.html (Reset the form)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="new-actor-button-form-reset"/>
 
-    Now clicking **New Actor** resets both the form and its control flags.
+   Now clicking **New Actor** resets both the form and its control flags.
 
 ## Submit the form with `ngSubmit`
 
@@ -374,7 +375,7 @@ To show something else while the form is in the submitted state, add the followi
 
 This `<div>`, which shows a read-only actor with interpolation bindings, appears only while the component is in the submitted state.
 
-The alternative display includes an *Edit* button whose click event is bound to an expression that clears the `submitted` flag.
+The alternative display includes an _Edit_ button whose click event is bound to an expression that clears the `submitted` flag.
 </docs-step>
 
 <docs-step title="Test the Edit button">
@@ -387,15 +388,15 @@ Click the *Edit* button to switch the display back to the editable form.
 The Angular form discussed in this page takes advantage of the following
 framework features to provide support for data modification, validation, and more.
 
-* An Angular HTML form template
-* A form component class with a `@Component` decorator
-* Handling form submission by binding to the `NgForm.ngSubmit` event property
-* Template-reference variables such as `#actorForm` and `#name`
-* `[(ngModel)]` syntax for two-way data binding
-* The use of `name` attributes for validation and form-element change tracking
-* The reference variable's `valid` property on input controls indicates whether a control is valid or should show error messages
-* Controlling the **Submit** button's enabled state by binding to `NgForm` validity
-* Custom CSS classes that provide visual feedback to users about controls that are not valid
+- An Angular HTML form template
+- A form component class with a `@Component` decorator
+- Handling form submission by binding to the `NgForm.ngSubmit` event property
+- Template-reference variables such as `#actorForm` and `#name`
+- `[(ngModel)]` syntax for two-way data binding
+- The use of `name` attributes for validation and form-element change tracking
+- The reference variable's `valid` property on input controls indicates whether a control is valid or should show error messages
+- Controlling the **Submit** button's enabled state by binding to `NgForm` validity
+- Custom CSS classes that provide visual feedback to users about controls that are not valid
 
 Here's the code for the final version of the application:
 

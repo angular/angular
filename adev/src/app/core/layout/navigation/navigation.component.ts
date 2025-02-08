@@ -7,7 +7,7 @@
  */
 
 import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
-import {CommonModule, DOCUMENT, Location, isPlatformBrowser} from '@angular/common';
+import {DOCUMENT, Location, isPlatformBrowser} from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -19,18 +19,16 @@ import {
 import {takeUntilDestroyed, toObservable} from '@angular/core/rxjs-interop';
 import {
   ClickOutside,
-  NavigationList,
   NavigationState,
-  WINDOW,
   IconComponent,
   getBaseUrlAfterRedirects,
   isApple,
   IS_SEARCH_DIALOG_OPEN,
 } from '@angular/docs';
-import {ActivatedRoute, NavigationEnd, Router, RouterLink} from '@angular/router';
+import {NavigationEnd, Router, RouterLink} from '@angular/router';
 import {filter, map, startWith} from 'rxjs/operators';
 import {DOCS_ROUTES, REFERENCE_ROUTES, TUTORIALS_ROUTES} from '../../../routes';
-import {GITHUB, MEDIUM, X, YOUTUBE, DISCORD} from '../../constants/links';
+import {GITHUB, MEDIUM, X, YOUTUBE, DISCORD, BLUESKY} from '../../constants/links';
 import {PagePrefix} from '../../enums/pages';
 import {Theme, ThemeManager} from '../../services/theme-manager.service';
 import {VersionManager} from '../../services/version-manager.service';
@@ -42,17 +40,7 @@ type MenuType = 'social' | 'theme-picker' | 'version-picker';
 
 @Component({
   selector: 'div.adev-nav',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterLink,
-    NavigationList,
-    ClickOutside,
-    CdkMenu,
-    CdkMenuItem,
-    CdkMenuTrigger,
-    IconComponent,
-  ],
+  imports: [RouterLink, ClickOutside, CdkMenu, CdkMenuItem, CdkMenuTrigger, IconComponent],
   templateUrl: './navigation.component.html',
   styleUrls: ['./navigation.component.scss', './mini-menu.scss', './nav-item.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -66,7 +54,6 @@ export class Navigation implements OnInit {
   private readonly location = inject(Location);
   private readonly themeManager = inject(ThemeManager);
   private readonly isSearchDialogOpen = inject(IS_SEARCH_DIALOG_OPEN);
-  private readonly window = inject(WINDOW);
   private readonly versionManager = inject(VersionManager);
 
   readonly DOCS_ROUTE = PagePrefix.DOCS;
@@ -80,6 +67,7 @@ export class Navigation implements OnInit {
   readonly MEDIUM = MEDIUM;
   readonly YOUTUBE = YOUTUBE;
   readonly DISCORD = DISCORD;
+  readonly BLUESKY = BLUESKY;
 
   readonly PRIMARY_NAV_ID = PRIMARY_NAV_ID;
   readonly SECONDARY_NAV_ID = SECONDARY_NAV_ID;

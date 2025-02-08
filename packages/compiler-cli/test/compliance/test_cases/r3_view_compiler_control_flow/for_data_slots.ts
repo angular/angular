@@ -3,7 +3,7 @@ import {Component} from '@angular/core';
 // We verify the data slots by defining templates before/after
 // and checking that the indexes are sequential.
 @Component({
-  template: `
+    template: `
     <ng-template/>
     @for (item of items; track item) {
       {{item}}
@@ -12,6 +12,7 @@ import {Component} from '@angular/core';
     }
     <ng-template/>
   `,
+    standalone: false
 })
 export class MyApp {
   items = ['one', 'two', 'three'];

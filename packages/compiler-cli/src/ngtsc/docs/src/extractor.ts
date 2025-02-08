@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import ts from 'typescript';
@@ -27,6 +27,7 @@ import {
   isInitializerApiFunction,
 } from './initializer_api_function_extractor';
 import {extractTypeAlias} from './type_alias_extractor';
+import {getImportedSymbols} from './import_extractor';
 
 type DeclarationWithExportName = readonly [string, ts.Declaration];
 
@@ -46,8 +47,13 @@ export class DocsExtractor {
    *
    * @param sourceFile The file from which to extract documentable entries.
    */
-  extractAll(sourceFile: ts.SourceFile, rootDir: string): DocEntry[] {
+  extractAll(
+    sourceFile: ts.SourceFile,
+    rootDir: string,
+    privateModules: Set<string>,
+  ): {entries: DocEntry[]; symbols: Map<string, string>} {
     const entries: DocEntry[] = [];
+    const symbols = new Map<string, string>();
 
     const exportedDeclarations = this.getExportedDeclarations(sourceFile);
     for (const [exportName, node] of exportedDeclarations) {
@@ -61,6 +67,32 @@ export class DocsExtractor {
         // The source file parameter is the package entry: the index.ts
         // We want the real source file of the declaration.
         const realSourceFile = node.getSourceFile();
+
+        /**
+         * The `sourceFile` from `extractAll` is the main entry-point file of a package.
+         * Usually following a format like `export * from './public_api';`, simply re-exporting.
+         * It is necessary to pick-up every import from the actual source files
+         * where declarations are living, so that we can determine what symbols
+         * are actually referenced in the context of that particular declaration
+         * By doing this, the generation remains independent from other packages
+         */
+        const importedSymbols = getImportedSymbols(realSourceFile);
+        importedSymbols.forEach((moduleName, symbolName) => {
+          if (symbolName.startsWith('ɵ') || privateModules.has(moduleName)) {
+            return;
+          }
+
+          if (symbols.has(symbolName) && symbols.get(symbolName) !== moduleName) {
+            // If this ever throws, we need to improve the symbol extraction strategy
+            throw new Error(
+              `Ambigous symbol \`${symbolName}\` exported by both ${symbols.get(
+                symbolName,
+              )} & ${moduleName}`,
+            );
+          }
+
+          symbols.set(symbolName, moduleName);
+        });
 
         // Set the source code references for the extracted entry.
         (entry as DocEntryWithSourceInfo).source = {
@@ -77,7 +109,7 @@ export class DocsExtractor {
       }
     }
 
-    return entries;
+    return {entries, symbols};
   }
 
   /** Extract the doc entry for a single declaration. */
@@ -122,31 +154,13 @@ export class DocsExtractor {
   private getExportedDeclarations(sourceFile: ts.SourceFile): DeclarationWithExportName[] {
     // Use the reflection host to get all the exported declarations from this
     // source file entry point.
-    const reflector = new TypeScriptReflectionHost(this.typeChecker);
+    const reflector = new TypeScriptReflectionHost(this.typeChecker, false, true);
     const exportedDeclarationMap = reflector.getExportsOfModule(sourceFile);
 
     // Augment each declaration with the exported name in the public API.
     let exportedDeclarations = Array.from(exportedDeclarationMap?.entries() ?? []).map(
       ([exportName, declaration]) => [exportName, declaration.node] as const,
     );
-
-    // Cache the declaration count since we're going to be appending more declarations as
-    // we iterate.
-    const declarationCount = exportedDeclarations.length;
-
-    // The exported declaration map only includes one function declaration in situations
-    // where a function has overloads, so we add the overloads here.
-    for (let i = 0; i < declarationCount; i++) {
-      const [exportName, declaration] = exportedDeclarations[i];
-      if (ts.isFunctionDeclaration(declaration)) {
-        const extractor = new FunctionExtractor(exportName, declaration, this.typeChecker);
-        const overloads = extractor
-          .getOverloads()
-          .map((overload) => [exportName, overload] as const);
-
-        exportedDeclarations.push(...overloads);
-      }
-    }
 
     // Sort the declaration nodes into declaration position because their order is lost in
     // reading from the export map. This is primarily useful for testing and debugging.

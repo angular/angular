@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Injector} from '@angular/core';
@@ -28,8 +28,7 @@ import {UpgradeAppType} from '../../../src/common/src/util';
  * The AngularJS `ng1AppModule`, which is the AngularJS part of our hybrid application and the
  * `Ng2AppModule`, which is the Angular part.
  *
- * <code-example path="upgrade/static/ts/full/module.spec.ts"
- * region="angularjs-setup"></code-example>
+ * {@example upgrade/static/ts/full/module.spec.ts region='angularjs-setup'}
  *
  * Once this is done we can get hold of services via the AngularJS `$injector` as normal.
  * Services that are (or have dependencies on) a downgraded Angular service, will be instantiated as
@@ -38,10 +37,9 @@ import {UpgradeAppType} from '../../../src/common/src/util';
  * In the following code snippet, `heroesService` is a downgraded Angular service that we are
  * accessing from AngularJS.
  *
- * <code-example path="upgrade/static/ts/full/module.spec.ts"
- * region="angularjs-spec"></code-example>
+ * {@example upgrade/static/ts/full/module.spec.ts region='angularjs-spec'}
  *
- * <div class="alert is-important">
+ * <div class="docs-alert docs-alert-important">
  *
  * This helper is for testing services not components.
  * For Component testing you must still bootstrap a hybrid app. See `UpgradeModule` or
@@ -49,7 +47,7 @@ import {UpgradeAppType} from '../../../src/common/src/util';
  *
  * </div>
  *
- * <div class="alert is-important">
+ * <div class="docs-alert docs-alert-important">
  *
  * The resulting configuration does not wire up AngularJS digests to Zone hooks. It is the
  * responsibility of the test writer to call `$rootScope.$apply`, as necessary, to trigger
@@ -57,7 +55,7 @@ import {UpgradeAppType} from '../../../src/common/src/util';
  *
  * </div>
  *
- * <div class="alert is-important">
+ * <div class="docs-alert docs-alert-important">
  *
  * The helper sets up global variables to hold the shared Angular and AngularJS injectors.
  *

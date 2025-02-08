@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {setActiveConsumer} from '@angular/core/primitives/signals';
@@ -36,7 +36,6 @@ import {
   detachView,
   getBeforeNodeForView,
   insertView,
-  nativeParentNode,
 } from './node_manipulation';
 
 export function createAndRenderEmbeddedLView<T>(
@@ -135,7 +134,7 @@ export function addLViewToLContainer(
   if (addToDOM) {
     const beforeNode = getBeforeNodeForView(index, lContainer);
     const renderer = lView[RENDERER];
-    const parentRNode = nativeParentNode(renderer, lContainer[NATIVE] as RElement | RComment);
+    const parentRNode = renderer.parentNode(lContainer[NATIVE] as RElement | RComment);
     if (parentRNode !== null) {
       addViewToDOM(tView, lContainer[T_HOST], renderer, lView, parentRNode, beforeNode);
     }

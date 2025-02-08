@@ -7,6 +7,7 @@ import {Actor} from '../actor';
 @Component({
   selector: 'app-actor-form',
   templateUrl: './actor-form.component.html',
+  standalone: false,
 })
 export class ActorFormComponent {
   skills = ['Method Acting', 'Singing', 'Dancing', 'Swordfighting'];

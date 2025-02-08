@@ -47,6 +47,7 @@ ts_library(
         "//packages/localize",
         "//packages/localize/init",
         "//packages/platform-browser",
+        "//packages/platform-browser/animations",
         "//packages/platform-server",
         "//packages/private/testing",
         "//packages/router",
@@ -73,6 +74,9 @@ ts_library(
 jasmine_node_test(
     name = "test",
     bootstrap = ["//tools/testing:node"],
+    data = [
+        "//packages/core/primitives/event-dispatch:contract_bundle_min",
+    ],
     deps = [
         ":test_lib",
     ],

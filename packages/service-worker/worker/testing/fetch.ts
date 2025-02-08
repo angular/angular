@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 export class MockBody implements Body {
@@ -37,6 +37,10 @@ export class MockBody implements Body {
   }
 
   async formData(): Promise<FormData> {
+    throw 'Not implemented';
+  }
+
+  async bytes(): Promise<Uint8Array<ArrayBufferLike>> {
     throw 'Not implemented';
   }
 

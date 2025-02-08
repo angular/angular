@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {setActiveConsumer} from '@angular/core/primitives/signals';
@@ -13,21 +13,22 @@ import {assertIndexInRange} from '../../util/assert';
 import {NodeOutputBindings, TNode, TNodeType} from '../interfaces/node';
 import {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
 import {RElement} from '../interfaces/renderer_dom';
-import {isDirectiveHost} from '../interfaces/type_checks';
+import {isComponentHost, isDirectiveHost} from '../interfaces/type_checks';
 import {CLEANUP, CONTEXT, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
 import {profiler} from '../profiler';
 import {ProfilerEvent} from '../profiler_types';
 import {getCurrentDirectiveDef, getCurrentTNode, getLView, getTView} from '../state';
-import {getComponentLViewByIndex, getNativeByTNode, unwrapRNode} from '../util/view_utils';
-
-import {markViewDirty} from './mark_view_dirty';
 import {
+  getComponentLViewByIndex,
+  getNativeByTNode,
   getOrCreateLViewCleanup,
   getOrCreateTViewCleanup,
-  handleError,
-  loadComponentRenderer,
-} from './shared';
+  unwrapRNode,
+} from '../util/view_utils';
+
+import {markViewDirty} from './mark_view_dirty';
+import {handleError, loadComponentRenderer} from './shared';
 
 /**
  * Contains a reference to a function that disables event replay feature
@@ -304,8 +305,7 @@ function wrapListener(
 
     // In order to be backwards compatible with View Engine, events on component host nodes
     // must also mark the component view itself dirty (i.e. the view that it owns).
-    const startView =
-      tNode.componentOffset > -1 ? getComponentLViewByIndex(tNode.index, lView) : lView;
+    const startView = isComponentHost(tNode) ? getComponentLViewByIndex(tNode.index, lView) : lView;
     markViewDirty(startView, NotificationSource.Listener);
 
     let result = executeListenerWithErrorHandling(lView, context, listenerFn, e);

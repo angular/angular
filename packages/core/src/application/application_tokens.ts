@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {InjectionToken} from '../di/injection_token';
@@ -18,7 +18,7 @@ import {getDocument} from '../render3/interfaces/document';
  * (for example, using `bootstrapApplication` calls). In this case, ensure that those applications
  * have different `APP_ID` value setup. For example:
  *
- * ```
+ * ```ts
  * bootstrapApplication(ComponentA, {
  *   providers: [
  *     { provide: APP_ID, useValue: 'app-a' },
@@ -49,6 +49,11 @@ const DEFAULT_APP_ID = 'ng';
 
 /**
  * A function that is executed when a platform is initialized.
+ *
+ * @deprecated from v19.0.0, use providePlatformInitializer instead
+ *
+ * @see {@link providePlatformInitializer}
+ *
  * @publicApi
  */
 export const PLATFORM_INITIALIZER = new InjectionToken<ReadonlyArray<() => void>>(

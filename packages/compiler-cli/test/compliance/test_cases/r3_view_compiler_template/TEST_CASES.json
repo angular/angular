@@ -10,7 +10,7 @@
         {
           "files": [
             {
-              "expected": "nested_template_context.pipeline.js",
+              "expected": "nested_template_context.js",
               "generated": "nested_template_context.js"
             }
           ],
@@ -78,7 +78,7 @@
         {
           "files": [
             {
-              "expected": "ng_for_parent_context_variables.pipeline.js",
+              "expected": "ng_for_parent_context_variables.js",
               "generated": "ng_for_parent_context_variables.js"
             }
           ],
@@ -392,6 +392,17 @@
       "description": "should handle implict contezt in ng-template",
       "inputFiles": [
         "ng_template_implicit.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should break large element creation chains",
+      "inputFiles": [
+        "create_many_elements.ts"
       ],
       "expectations": [
         {

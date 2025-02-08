@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /**
@@ -37,13 +37,14 @@ export {
   assertPlatform,
   destroyPlatform,
   getPlatform,
+  providePlatformInitializer,
 } from './platform/platform';
 export {
   provideZoneChangeDetection,
   NgZoneOptions,
 } from './change_detection/scheduling/ng_zone_scheduling';
 export {provideExperimentalZonelessChangeDetection} from './change_detection/scheduling/zoneless_scheduling_impl';
-export {ExperimentalPendingTasks} from './pending_tasks';
+export {PendingTasks} from './pending_tasks';
 export {provideExperimentalCheckNoChangesForDebug} from './change_detection/scheduling/exhaustive_check_no_changes';
 export {enableProdMode, isDevMode} from './util/is_dev_mode';
 export {
@@ -54,7 +55,11 @@ export {
   ANIMATION_MODULE_TYPE,
   CSP_NONCE,
 } from './application/application_tokens';
-export {APP_INITIALIZER, ApplicationInitStatus} from './application/application_init';
+export {
+  APP_INITIALIZER,
+  ApplicationInitStatus,
+  provideAppInitializer,
+} from './application/application_init';
 export * from './zone';
 export * from './render';
 export * from './linker';
@@ -89,6 +94,7 @@ export {ErrorHandler} from './error_handler';
 export * from './core_private_export';
 export * from './core_render3_private_export';
 export * from './core_reactivity_export';
+export * from './resource';
 export {SecurityContext} from './sanitization/security';
 export {Sanitizer} from './sanitization/sanitizer';
 export {
@@ -97,18 +103,19 @@ export {
   createEnvironmentInjector,
 } from './render3/ng_module_ref';
 export {createComponent, reflectComponentType, ComponentMirror} from './render3/component';
-export {isStandalone} from './render3/definition';
+export {isStandalone} from './render3/def_getters';
+export {AfterRenderPhase, AfterRenderRef} from './render3/after_render/api';
+export {publishExternalGlobalUtil as ɵpublishExternalGlobalUtil} from './render3/util/global_utils';
 export {
-  AfterRenderRef,
   AfterRenderOptions,
-  AfterRenderPhase,
   afterRender,
   afterNextRender,
   ɵFirstAvailable,
-} from './render3/after_render_hooks';
+} from './render3/after_render/hooks';
 export {ApplicationConfig, mergeApplicationConfig} from './application/application_config';
 export {makeStateKey, StateKey, TransferState} from './transfer_state';
 export {booleanAttribute, numberAttribute} from './util/coercion';
+export {REQUEST, REQUEST_CONTEXT, RESPONSE_INIT} from './application/platform_tokens';
 
 import {global} from './util/global';
 if (typeof ngDevMode !== 'undefined' && ngDevMode) {

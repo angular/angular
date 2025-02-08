@@ -2,7 +2,7 @@
 
 End-to-end or (E2E) testing is a form of testing used to assert your entire application works as expected from start to finish or _"end-to-end"_. E2E testing differs from unit testing in that it is completely decoupled from the underlying implementation details of your code. It is typically used to validate an application in a way that mimics the way a user would interact with it. This page serves as a guide to getting started with end-to-end testing in Angular using the Angular CLI.
 
-## Setup E2E Testing
+## Set Up E2E Testing
 
 The Angular CLI downloads and installs everything you need to run end-to-end tests for your Angular application.
 
@@ -23,6 +23,7 @@ For example:
 Cypress: ng add @cypress/schematic
 Nightwatch: ng add @nightwatch/schematics
 WebdriverIO: ng add @wdio/schematics
+Playwright: ng add playwright-ng-schematics
 Puppeteer: ng add @puppeteer/ng-schematics
 
 Would you like to add a package with "e2e" capabilities now?
@@ -30,11 +31,12 @@ No
 ❯ Cypress
 Nightwatch
 WebdriverIO
+Playwright
 Puppeteer
 
 </docs-code>
 
-If you don't find the test runner you would like you use from the list above, you can add manually add a package using `ng add`.
+If you don't find the test runner you would like to use from the list above, you can manually add a package using `ng add`.
 
 ## Running E2E Tests
 
@@ -55,4 +57,5 @@ Note, their isn't anything "special" about running your tests with any of the in
 | Cypress      | [Getting started with Cypress](https://docs.cypress.io/guides/end-to-end-testing/writing-your-first-end-to-end-test) |
 | Nightwatch   | [Getting started with Nightwatch](https://nightwatchjs.org/guide/writing-tests/introduction.html)                    |
 | WebdriverIO  | [Getting started with Webdriver.io](https://webdriver.io/docs/gettingstarted)                                        |
+| Playwright   | [Getting started with Playwright](https://playwright.dev/docs/writing-tests)                                         |
 | Puppeteer    | [Getting started with Puppeteer](https://pptr.dev)                                                                   |

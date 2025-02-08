@@ -3,13 +3,13 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as e from '../../../src/expression_parser/ast';
 import * as a from '../../../src/render3/r3_ast';
 import {DirectiveMeta, InputOutputPropertySet} from '../../../src/render3/view/t2_api';
-import {R3TargetBinder} from '../../../src/render3/view/t2_binder';
+import {findMatchingDirectivesAndPipes, R3TargetBinder} from '../../../src/render3/view/t2_binder';
 import {parseTemplate} from '../../../src/render3/view/template';
 import {CssSelector, SelectorMatcher} from '../../../src/selector';
 
@@ -139,6 +139,103 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta[]> {
 
   return matcher;
 }
+
+describe('findMatchingDirectivesAndPipes', () => {
+  it('should match directives and detect pipes in eager and deferrable parts of a template', () => {
+    const template = `
+      <div [title]="abc | uppercase"></div>
+      @defer {
+        <my-defer-cmp [label]="abc | lowercase" />
+      } @placeholder {}
+    `;
+    const directiveSelectors = ['[title]', 'my-defer-cmp', 'not-matching'];
+    const result = findMatchingDirectivesAndPipes(template, directiveSelectors);
+    expect(result).toEqual({
+      directives: {
+        regular: ['[title]'],
+        deferCandidates: ['my-defer-cmp'],
+      },
+      pipes: {
+        regular: ['uppercase'],
+        deferCandidates: ['lowercase'],
+      },
+    });
+  });
+
+  it('should return empty directive list if no selectors are provided', () => {
+    const template = `
+        <div [title]="abc | uppercase"></div>
+        @defer {
+          <my-defer-cmp [label]="abc | lowercase" />
+        } @placeholder {}
+      `;
+    const directiveSelectors: string[] = [];
+    const result = findMatchingDirectivesAndPipes(template, directiveSelectors);
+    expect(result).toEqual({
+      directives: {
+        regular: [],
+        deferCandidates: [],
+      },
+      // Expect pipes to be present still.
+      pipes: {
+        regular: ['uppercase'],
+        deferCandidates: ['lowercase'],
+      },
+    });
+  });
+
+  it('should return a directive and a pipe only once (either as a regular or deferrable)', () => {
+    const template = `
+        <my-defer-cmp [label]="abc | lowercase" [title]="abc | uppercase" />
+        @defer {
+          <my-defer-cmp [label]="abc | lowercase" [title]="abc | uppercase" />
+        } @placeholder {}
+      `;
+    const directiveSelectors = ['[title]', 'my-defer-cmp', 'not-matching'];
+    const result = findMatchingDirectivesAndPipes(template, directiveSelectors);
+    expect(result).toEqual({
+      directives: {
+        regular: ['my-defer-cmp', '[title]'],
+        // All directives/components are used eagerly.
+        deferCandidates: [],
+      },
+      pipes: {
+        regular: ['lowercase', 'uppercase'],
+        // All pipes are used eagerly.
+        deferCandidates: [],
+      },
+    });
+  });
+
+  it('should handle directives on elements with local refs', () => {
+    const template = `
+        <input [(ngModel)]="name" #ctrl="ngModel" required />
+        @defer {
+          <my-defer-cmp [label]="abc | lowercase" [title]="abc | uppercase" />
+          <input [(ngModel)]="name" #ctrl="ngModel" required />
+        } @placeholder {}
+      `;
+    const directiveSelectors = [
+      '[ngModel]:not([formControlName]):not([formControl])',
+      '[title]',
+      'my-defer-cmp',
+      'not-matching',
+    ];
+    const result = findMatchingDirectivesAndPipes(template, directiveSelectors);
+    expect(result).toEqual({
+      directives: {
+        // `ngModel` is used both eagerly and in a defer block, thus it's located
+        // in the "regular" (eager) bucket.
+        regular: ['[ngModel]:not([formControlName]):not([formControl])'],
+        deferCandidates: ['my-defer-cmp', '[title]'],
+      },
+      pipes: {
+        regular: [],
+        deferCandidates: ['lowercase', 'uppercase'],
+      },
+    });
+  });
+});
 
 describe('t2 binding', () => {
   it('should bind a simple template', () => {
@@ -274,6 +371,35 @@ describe('t2 binding', () => {
 
     expect(target instanceof a.LetDeclaration).toBe(true);
     expect((target as a.LetDeclaration)?.name).toBe('value');
+  });
+
+  it('should not resolve a `this` access to a template reference', () => {
+    const template = parseTemplate(
+      `
+        <input #value>
+        {{this.value}}
+      `,
+      '',
+    );
+    const binder = new R3TargetBinder(new SelectorMatcher<DirectiveMeta[]>());
+    const res = binder.bind({template: template.nodes});
+    const interpolationWrapper = (template.nodes[1] as a.BoundText).value as e.ASTWithSource;
+    const propertyRead = (interpolationWrapper.ast as e.Interpolation).expressions[0];
+    const target = res.getExpressionTarget(propertyRead);
+
+    expect(target).toBe(null);
+  });
+
+  it('should not resolve a `this` access to a template variable', () => {
+    const template = parseTemplate(`<ng-template let-value>{{this.value}}</ng-template>`, '');
+    const binder = new R3TargetBinder(new SelectorMatcher<DirectiveMeta[]>());
+    const res = binder.bind({template: template.nodes});
+    const templateNode = template.nodes[0] as a.Template;
+    const interpolationWrapper = (templateNode.children[0] as a.BoundText).value as e.ASTWithSource;
+    const propertyRead = (interpolationWrapper.ast as e.Interpolation).expressions[0];
+    const target = res.getExpressionTarget(propertyRead);
+
+    expect(target).toBe(null);
   });
 
   it('should not resolve a `this` access to a `@let` declaration', () => {

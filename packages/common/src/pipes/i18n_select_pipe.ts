@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Pipe, PipeTransform} from '@angular/core';
@@ -29,7 +29,6 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  */
 @Pipe({
   name: 'i18nSelect',
-  standalone: true,
 })
 export class I18nSelectPipe implements PipeTransform {
   /**

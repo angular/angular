@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {XhrFactory} from '@angular/common';
@@ -39,7 +39,7 @@ import {
  *
  * Create an in-memory data store class that implements `InMemoryDbService`.
  * Call `config` static method with this service class and optional configuration object:
- * ```
+ * ```ts
  * // other imports
  * import { HttpClientModule } from '@angular/common/http';
  * import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';

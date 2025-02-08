@@ -33,3 +33,8 @@
   other {{{ minutes }} minutes ago by {gender, select, male {male} female {female} other {other}}}}
 </span>
 <!--#enddocregion i18n-nested-->
+<br><br>
+<!--#docregion i18n-conditional-->
+<button type="button" (click)="toggleDisplay()">Toggle</button>
+<div i18n [attr.aria-label]="toggleAriaLabel()">{{toggle()}}</div>
+<!--#enddocregion i18n-conditional-->

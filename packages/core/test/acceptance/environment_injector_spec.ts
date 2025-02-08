@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -19,6 +19,7 @@ import {
   INJECTOR,
   Injector,
   NgModuleRef,
+  provideEnvironmentInitializer,
   ViewContainerRef,
 } from '@angular/core';
 import {R3Injector} from '@angular/core/src/di/r3_injector';
@@ -105,6 +106,7 @@ describe('environment injector', () => {
 
   it('should expose the NgModuleRef token', () => {
     class Service {}
+
     const parentEnvInjector = TestBed.inject(EnvironmentInjector);
     const envInjector = createEnvironmentInjector([Service], parentEnvInjector);
 
@@ -120,7 +122,10 @@ describe('environment injector', () => {
   it('should expose the ComponentFactoryResolver token bound to env injector with specified providers', () => {
     class Service {}
 
-    @Component({selector: 'test-cmp'})
+    @Component({
+      selector: 'test-cmp',
+      standalone: false,
+    })
     class TestComponent {
       constructor(readonly service: Service) {}
     }
@@ -282,3 +287,63 @@ describe('environment injector', () => {
     });
   });
 });
+
+describe(provideEnvironmentInitializer.name, () => {
+  it('should not call the provided function before environment is initialized', () => {
+    let initialized = false;
+
+    provideEnvironmentInitializer(() => {
+      initialized = true;
+    });
+
+    expect(initialized).toBe(false);
+  });
+
+  it('should call the provided function when environment is initialized', () => {
+    let initialized = false;
+
+    const parentEnvInjector = TestBed.inject(EnvironmentInjector);
+    createEnvironmentInjector(
+      [
+        provideEnvironmentInitializer(() => {
+          initialized = true;
+        }),
+      ],
+      parentEnvInjector,
+    );
+
+    expect(initialized).toBe(true);
+  });
+
+  it('should be able to inject dependencies', () => {
+    const TEST_TOKEN = new InjectionToken<string>('TEST_TOKEN', {
+      providedIn: 'root',
+      factory: () => 'test',
+    });
+    let injectedValue!: string;
+
+    const parentEnvInjector = TestBed.inject(EnvironmentInjector);
+    createEnvironmentInjector(
+      [
+        provideEnvironmentInitializer(() => {
+          injectedValue = inject(TEST_TOKEN);
+        }),
+      ],
+      parentEnvInjector,
+    );
+
+    expect(injectedValue).toBe('test');
+  });
+});
+
+/**
+ * Typing tests.
+ */
+
+@Component({
+  template: '',
+  // @ts-expect-error: `provideEnvironmentInitializer()` should not work with Component.providers,
+  // as it wouldn't be executed anyway.
+  providers: [provideEnvironmentInitializer(() => {})],
+})
+class Test {}

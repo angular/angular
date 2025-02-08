@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Component} from '@angular/core';
@@ -38,6 +38,7 @@ export interface MlbTeam {
       </cfc-expanding-row-details-content>
     </cfc-expanding-row>
   </cfc-expanding-row-host>`,
+  standalone: false,
 })
 export class BenchmarkableExpandingRow {
   // TODO(b/109816955): remove '!', see go/strict-prop-init-fix.

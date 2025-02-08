@@ -1,0 +1,145 @@
+:host {
+  &:not(:empty) {
+    z-index: var(--z-index-top-level-banner);
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+    width: 100vw;
+    padding: .5rem;
+    border-bottom: 1px solid var(--septenary-contrast);
+    text-align: center;
+    align-content: center;
+    backdrop-filter: blur(16px);
+    background-color: color-mix(in srgb, var(--page-background) 70%, transparent);
+  }
+
+  a.docs-top-level-banner {
+    display: grid;
+    width: auto;
+    margin: 0rem 2.5rem;
+
+    &:hover{
+      h1.docs-top-level-banner-cta.background{ 
+        span.docs-top-level-banner-cta__text::after{ 
+          transform: scaleX(1);
+          transform-origin: bottom left;
+        }}
+    }
+  }
+
+  h1.docs-top-level-banner-cta {
+    grid-row-start: 1;
+    grid-column-start: 1;
+    font-size: 0.875rem;
+    margin: 0;
+    width: fit-content;
+    font-weight: 500;
+
+    &.background {
+      color: var(--tertiary-contrast);
+      
+      & .docs-top-level-banner-cta__text{
+        position:relative;
+
+        &::after {
+          content: '';
+          position: absolute;
+          width: calc(100% + 2rem);
+          height: 1px;
+          bottom: -2px;
+          left: -1rem;
+          background: var(--tertiary-contrast);
+          transform: scaleX(0);
+          transform-origin: bottom right;
+          @media (prefers-reduced-motion: no-preference) {
+            transition: transform 0.3s ease;
+          }
+        }
+
+      }
+      
+    }
+
+    &:not(.background) {
+      color: transparent;
+    }
+  }
+
+  .docs-top-level-banner-close {
+    position: absolute;
+    top: 0.25rem;
+    right: 1.4rem;
+    color: var(--tertiary-contrast);
+    padding-left: 0rem;
+  }
+}
+
+.shimmer {
+  background: var(--red-to-pink-to-purple-horizontal-gradient);
+  z-index: 1;
+
+  @media (prefers-reduced-motion: no-preference) {
+    background-repeat: no-repeat;
+    -webkit-background-size: 125px 100%;
+    -moz-background-size: 125px 100%;
+    background-size: 125px 100%;
+    -webkit-background-clip: text;
+    -moz-background-clip: text;
+    background-clip: text;
+    -webkit-animation-name: shimmer;
+    -moz-animation-name: shimmer;
+    animation-name: shimmer;
+    -webkit-animation-duration: 10s;
+    -moz-animation-duration: 10s;
+    animation-duration: 10s;
+    -webkit-animation-iteration-count: infinite;
+    -moz-animation-iteration-count: infinite;
+    animation-iteration-count: infinite;
+  }
+}
+
+@-moz-keyframes shimmer {
+  0% {
+    background-position: top left;
+    background-position-x: -150px;
+  }
+  100% {
+    background-position: top right;
+    background-position-x: 500px;
+  }
+}
+
+@-webkit-keyframes shimmer {
+  0% {
+    background-position: top left;
+    background-position-x: -150px;
+  }
+  100% {
+    background-position: top right;
+    background-position-x: 500px;
+  }
+}
+
+@-o-keyframes shimmer {
+  0% {
+    background-position: top left;
+    background-position-x: -150px;
+  }
+  100% {
+    background-position: top right;
+    background-position-x: 500px;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: top left;
+    background-position-x: -150px;
+  }
+  100% {
+    background-position: top right;
+    background-position-x: 500px;
+  }
+}

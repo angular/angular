@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ChangeDetectionStrategy} from '../../change_detection/constants';
@@ -17,11 +17,12 @@ import {
   getLContext,
   readPatchedLView,
 } from '../context_discovery';
-import {getComponentDef, getDirectiveDef} from '../definition';
+import {getComponentDef, getDirectiveDef} from '../def_getters';
 import {NodeInjector} from '../di';
 import {DirectiveDef} from '../interfaces/definition';
 import {TElementNode, TNode, TNodeProviderIndexes} from '../interfaces/node';
-import {CLEANUP, CONTEXT, FLAGS, LView, LViewFlags, TVIEW, TViewType} from '../interfaces/view';
+import {isRootView} from '../interfaces/type_checks';
+import {CLEANUP, CONTEXT, LView, TVIEW, TViewType} from '../interfaces/view';
 
 import {getRootContext} from './view_traversal_utils';
 import {getLViewParent, unwrapRNode} from './view_utils';
@@ -51,7 +52,6 @@ import {getLViewParent, unwrapRNode} from './view_utils';
  *    is no component associated with it.
  *
  * @publicApi
- * @globalApi ng
  */
 export function getComponent<T>(element: Element): T | null {
   ngDevMode && assertDomElement(element);
@@ -79,7 +79,6 @@ export function getComponent<T>(element: Element): T | null {
  *    inside any component.
  *
  * @publicApi
- * @globalApi ng
  */
 export function getContext<T extends {}>(element: Element): T | null {
   assertDomElement(element);
@@ -101,7 +100,6 @@ export function getContext<T extends {}>(element: Element): T | null {
  *    part of a component view.
  *
  * @publicApi
- * @globalApi ng
  */
 export function getOwningComponent<T>(elementOrDir: Element | {}): T | null {
   const context = getLContext(elementOrDir)!;
@@ -112,7 +110,7 @@ export function getOwningComponent<T>(elementOrDir: Element | {}): T | null {
   while (lView[TVIEW].type === TViewType.Embedded && (parent = getLViewParent(lView)!)) {
     lView = parent;
   }
-  return lView[FLAGS] & LViewFlags.IsRoot ? null : (lView[CONTEXT] as unknown as T);
+  return isRootView(lView) ? null : (lView[CONTEXT] as unknown as T);
 }
 
 /**
@@ -124,7 +122,6 @@ export function getOwningComponent<T>(elementOrDir: Element | {}): T | null {
  * @returns Root components associated with the target object.
  *
  * @publicApi
- * @globalApi ng
  */
 export function getRootComponents(elementOrDir: Element | {}): {}[] {
   const lView = readPatchedLView<{}>(elementOrDir);
@@ -139,7 +136,6 @@ export function getRootComponents(elementOrDir: Element | {}): {}[] {
  * @returns Injector associated with the element, component or directive instance.
  *
  * @publicApi
- * @globalApi ng
  */
 export function getInjector(elementOrDir: Element | {}): Injector {
   const context = getLContext(elementOrDir)!;
@@ -201,7 +197,6 @@ export function getInjectionTokens(element: Element): any[] {
  * @returns Array of directives associated with the node.
  *
  * @publicApi
- * @globalApi ng
  */
 export function getDirectives(node: Node): {}[] {
   // Skip text nodes because we can't have directives associated with them.
@@ -266,7 +261,6 @@ export interface ComponentDebugMetadata extends DirectiveDebugMetadata {
  * @returns metadata of the passed directive or component
  *
  * @publicApi
- * @globalApi ng
  */
 export function getDirectiveMetadata(
   directiveOrComponentInstance: any,
@@ -329,7 +323,6 @@ export function getLocalRefs(target: {}): {[key: string]: any} {
  * @returns Host element of the target.
  *
  * @publicApi
- * @globalApi ng
  */
 export function getHostElement(componentOrDirective: {}): Element {
   return getLContext(componentOrDirective)!.native as unknown as Element;
@@ -398,7 +391,6 @@ export interface Listener {
  * @returns Array of event listeners on the DOM element.
  *
  * @publicApi
- * @globalApi ng
  */
 export function getListeners(element: Element): Listener[] {
   ngDevMode && assertDomElement(element);

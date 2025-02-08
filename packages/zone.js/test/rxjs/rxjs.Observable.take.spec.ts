@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {interval, Observable, of} from 'rxjs';
 import {take, takeLast, takeUntil, takeWhile} from 'rxjs/operators';

@@ -3,24 +3,21 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CONTAINER_HEADER_OFFSET, LContainer} from '../render3/interfaces/container';
+import {CONTAINER_HEADER_OFFSET} from '../render3/interfaces/container';
 import {TNode} from '../render3/interfaces/node';
 import {isLContainer, isLView} from '../render3/interfaces/type_checks';
 import {HEADER_OFFSET, LView, TVIEW} from '../render3/interfaces/view';
 
-import {TDeferBlockDetails} from './interfaces';
+import {DehydratedDeferBlock, TDeferBlockDetails} from './interfaces';
 import {getTDeferBlockDetails, isTDeferBlockDetails} from './utils';
 
 /**
  * Defer block instance for testing.
  */
-export interface DeferBlockDetails {
-  lContainer: LContainer;
-  lView: LView;
-  tNode: TNode;
+export interface DeferBlockDetails extends DehydratedDeferBlock {
   tDetails: TDeferBlockDetails;
 }
 

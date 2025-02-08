@@ -9,7 +9,6 @@ import {HeroService} from '../model/hero.service';
 import {sharedImports} from '../shared/shared';
 
 @Component({
-  standalone: true,
   selector: 'app-heroes',
   templateUrl: './hero-list.component.html',
   styleUrls: ['./hero-list.component.css'],

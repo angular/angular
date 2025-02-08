@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {CommonModule, NgComponentOutlet} from '@angular/common';
@@ -62,14 +62,33 @@ describe('standalone components, directives, and pipes', () => {
 
   it('should render a standalone component with a standalone dependency', () => {
     @Component({
-      standalone: true,
       selector: 'inner-cmp',
       template: 'Look at me, no NgModule!',
     })
     class InnerCmp {}
 
     @Component({
+      template: '<inner-cmp></inner-cmp>',
+      imports: [InnerCmp],
+    })
+    class StandaloneCmp {}
+
+    const fixture = TestBed.createComponent(StandaloneCmp);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerHTML).toEqual(
+      '<inner-cmp>Look at me, no NgModule!</inner-cmp>',
+    );
+  });
+
+  it('should render a standalone component (with standalone: true) with a standalone dependency', () => {
+    @Component({
+      selector: 'inner-cmp',
+      template: 'Look at me, no NgModule!',
       standalone: true,
+    })
+    class InnerCmp {}
+
+    @Component({
       template: '<inner-cmp></inner-cmp>',
       imports: [InnerCmp],
     })
@@ -86,6 +105,7 @@ describe('standalone components, directives, and pipes', () => {
     @Component({
       selector: 'inner-cmp',
       template: 'Look at me, no NgModule (kinda)!',
+      standalone: false,
     })
     class InnerCmp {}
 
@@ -142,6 +162,7 @@ describe('standalone components, directives, and pipes', () => {
     @Component({
       selector: 'app-cmpt',
       template: `<standalone-cmp standalone-dir></standalone-cmp>{{'standalone' | standalonePipe}}`,
+      standalone: false,
     })
     class AppComponent {}
 
@@ -541,7 +562,11 @@ describe('standalone components, directives, and pipes', () => {
     @Component({selector: 'test-red', standalone: true, template: 'red(<ng-content></ng-content>)'})
     class RedComponent {}
 
-    @Component({selector: 'test-blue', template: 'blue(<ng-content></ng-content>)'})
+    @Component({
+      selector: 'test-blue',
+      standalone: false,
+      template: 'blue(<ng-content></ng-content>)',
+    })
     class BlueComponent {}
 
     @NgModule({declarations: [BlueComponent], exports: [BlueComponent]})
@@ -587,6 +612,7 @@ describe('standalone components, directives, and pipes', () => {
     @Component({
       selector: 'not-a-standalone',
       template: '',
+      standalone: false,
     })
     class NonStandaloneCmp {}
 
@@ -606,7 +632,10 @@ describe('standalone components, directives, and pipes', () => {
   });
 
   it('should error when a non-standalone directive is imported', () => {
-    @Directive({selector: '[not-a-standalone]'})
+    @Directive({
+      selector: '[not-a-standalone]',
+      standalone: false,
+    })
     class NonStandaloneDirective {}
 
     @Component({
@@ -625,7 +654,10 @@ describe('standalone components, directives, and pipes', () => {
   });
 
   it('should error when a non-standalone pipe is imported', () => {
-    @Pipe({name: 'not-a-standalone'})
+    @Pipe({
+      name: 'not-a-standalone',
+      standalone: false,
+    })
     class NonStandalonePipe {}
 
     @Component({
@@ -720,7 +752,11 @@ describe('standalone components, directives, and pipes', () => {
     });
 
     it('should error when schemas are specified for a non-standalone component', () => {
-      @Component({template: '', schemas: [NO_ERRORS_SCHEMA]})
+      @Component({
+        template: '',
+        schemas: [NO_ERRORS_SCHEMA],
+        standalone: false,
+      })
       class AppCmp {}
 
       expect(() => {
@@ -814,7 +850,11 @@ describe('standalone components, directives, and pipes', () => {
    */
   describe('inheritance', () => {
     it('should allow extending a regular component and turn it into a standalone one', () => {
-      @Component({selector: 'regular', template: 'regular: {{in}}'})
+      @Component({
+        selector: 'regular',
+        template: 'regular: {{in}}',
+        standalone: false,
+      })
       class RegularCmp {
         @Input() in: string | undefined;
       }
@@ -834,7 +874,11 @@ describe('standalone components, directives, and pipes', () => {
         @Input() in: string | undefined;
       }
 
-      @Component({selector: 'regular', template: 'regular: {{in}}'})
+      @Component({
+        selector: 'regular',
+        template: 'regular: {{in}}',
+        standalone: false,
+      })
       class RegularCmp extends StandaloneCmp {}
 
       const fixture = TestBed.createComponent(RegularCmp);
@@ -861,7 +905,10 @@ describe('standalone components, directives, and pipes', () => {
         @Input() in: string | undefined;
       }
 
-      @Component({selector: 'regular'})
+      @Component({
+        selector: 'regular',
+        standalone: false,
+      })
       class RegularCmp extends StandaloneCmp {}
 
       const fixture = TestBed.createComponent(RegularCmp);
@@ -875,6 +922,13 @@ describe('standalone components, directives, and pipes', () => {
 
   describe('isStandalone()', () => {
     it('should return `true` if component is standalone', () => {
+      @Component({selector: 'standalone-cmp'})
+      class StandaloneCmp {}
+
+      expect(isStandalone(StandaloneCmp)).toBeTrue();
+    });
+
+    it('should return `true` if component is standalone (with `standalone:true`)', () => {
       @Component({selector: 'standalone-cmp', standalone: true})
       class StandaloneCmp {}
 

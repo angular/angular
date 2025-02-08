@@ -7,12 +7,10 @@
  */
 
 import {DestroyRef, inject, Injectable, signal} from '@angular/core';
-import {checkFilesInDirectory} from '@angular/docs';
 import {FileSystemTree, WebContainer, WebContainerProcess} from '@webcontainer/api';
 import {BehaviorSubject, filter, map, Subject} from 'rxjs';
 
-import type {FileAndContent} from '@angular/docs';
-import {TutorialType} from '@angular/docs';
+import {type FileAndContent, TutorialType, checkFilesInDirectory} from '@angular/docs';
 
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AlertManager} from './alert-manager.service';
@@ -107,7 +105,10 @@ export class NodeRuntimeSandbox {
 
       console.timeEnd('Load time');
     } catch (error: any) {
-      this.setErrorState(error.message);
+      // If we're already in an error state, throw away the most recent error which may have happened because
+      // we were in the error state already and tried to do more things after terminating.
+      const message = this.nodeRuntimeState.error()?.message ?? error.message;
+      this.setErrorState(message);
     }
   }
 
@@ -142,12 +143,20 @@ export class NodeRuntimeSandbox {
   async getSolutionFiles(): Promise<FileAndContent[]> {
     const webContainer = await this.webContainerPromise!;
 
-    const excludeFolders = ['node_modules', '.angular', 'dist'];
+    const excludeFromRoot = [
+      'node_modules',
+      '.angular',
+      'dist',
+      'BUILD.bazel',
+      'idx',
+      'package.json.template',
+      'config.json',
+    ];
 
     return await checkFilesInDirectory(
-      '/',
+      '',
       webContainer.fs,
-      (path?: string) => !!path && !excludeFolders.includes(path),
+      (path: string) => !excludeFromRoot.includes(path),
     );
   }
 
@@ -250,7 +259,7 @@ export class NodeRuntimeSandbox {
       this.setLoading(LoadingStep.READY);
   }
 
-  async writeFile(path: string, content: string | Buffer): Promise<void> {
+  async writeFile(path: string, content: string | Uint8Array): Promise<void> {
     const webContainer = await this.webContainerPromise!;
 
     try {
@@ -382,7 +391,9 @@ export class NodeRuntimeSandbox {
     this.setLoading(LoadingStep.BOOT);
 
     if (!this.webContainerPromise) {
-      this.webContainerPromise = WebContainer.boot();
+      this.webContainerPromise = WebContainer.boot({
+        workdirName: 'angular',
+      });
     }
     return await this.webContainerPromise;
   }

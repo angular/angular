@@ -9,6 +9,5 @@ import {Component} from '@angular/core';
       <li>I agree with the other comments!</li>
     </ul>
   `,
-  standalone: true,
 })
 export class CommentsComponent {}

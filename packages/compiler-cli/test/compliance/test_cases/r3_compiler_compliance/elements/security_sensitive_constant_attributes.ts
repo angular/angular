@@ -1,8 +1,8 @@
 import {Component, NgModule} from '@angular/core';
 
 @Component({
-  selector: 'my-component',
-  template: `
+    selector: 'my-component',
+    template: `
     <!-- A couple of security-sensitive attributes with constant values -->
     <embed src="https://angular.io/" />
     <iframe srcdoc="<h1>Angular</h1>"></iframe>
@@ -13,7 +13,8 @@ import {Component, NgModule} from '@angular/core';
 
     <!-- Another element with a src attribute that is not security sensitive -->
     <img src="https://angular.io/" />
-  `
+  `,
+    standalone: false
 })
 export class MyComponent {
 }

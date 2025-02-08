@@ -5,7 +5,6 @@ import {Component} from '@angular/core';
   template: `
     Username: {{ username }}
   `,
-  standalone: true,
 })
 export class UserComponent {
   username = 'youngTech';
@@ -18,7 +17,6 @@ export class UserComponent {
       <app-user />
     </section>
   `,
-  standalone: true,
   imports: [UserComponent],
 })
 export class AppComponent {}

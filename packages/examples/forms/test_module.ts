@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Component, NgModule} from '@angular/core';
@@ -22,7 +22,11 @@ import * as simpleFormControlExample from './ts/simpleFormControl/module';
 import * as simpleFormGroupExample from './ts/simpleFormGroup/module';
 import * as simpleNgModelExample from './ts/simpleNgModel/module';
 
-@Component({selector: 'example-app', template: '<router-outlet></router-outlet>'})
+@Component({
+  selector: 'example-app',
+  template: '<router-outlet></router-outlet>',
+  standalone: false,
+})
 export class TestsAppComponent {}
 
 @NgModule({

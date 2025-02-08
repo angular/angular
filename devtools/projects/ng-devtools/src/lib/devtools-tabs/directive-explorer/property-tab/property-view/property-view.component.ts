@@ -3,16 +3,12 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, computed, inject, input, output} from '@angular/core';
 import {DirectivePosition} from 'protocol';
 
-import {
-  DirectivePropertyResolver,
-  DirectiveTreeData,
-} from '../../property-resolver/directive-property-resolver';
 import {ElementPropertyResolver, FlatNode} from '../../property-resolver/element-property-resolver';
 import {PropertyViewBodyComponent} from './property-view-body.component';
 import {PropertyViewHeaderComponent} from './property-view-header.component';
@@ -21,29 +17,20 @@ import {PropertyViewHeaderComponent} from './property-view-header.component';
   selector: 'ng-property-view',
   templateUrl: './property-view.component.html',
   styleUrls: ['./property-view.component.scss'],
-  standalone: true,
   imports: [PropertyViewHeaderComponent, PropertyViewBodyComponent],
 })
 export class PropertyViewComponent {
-  @Input({required: true}) directive!: string;
-  @Output() inspect = new EventEmitter<{node: FlatNode; directivePosition: DirectivePosition}>();
-  @Output() viewSource = new EventEmitter<void>();
+  readonly directive = input.required<string>();
+  readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
+  readonly viewSource = output<void>();
 
-  constructor(private _nestedProps: ElementPropertyResolver) {}
+  private _nestedProps = inject(ElementPropertyResolver);
 
-  get controller(): DirectivePropertyResolver | undefined {
-    return this._nestedProps.getDirectiveController(this.directive);
-  }
+  readonly controller = computed(() => this._nestedProps.getDirectiveController(this.directive()));
 
-  get directiveInputControls(): DirectiveTreeData | void {
-    return this.controller?.directiveInputControls;
-  }
+  readonly directiveInputControls = computed(() => this.controller()?.directiveInputControls);
 
-  get directiveOutputControls(): DirectiveTreeData | void {
-    return this.controller?.directiveOutputControls;
-  }
+  readonly directiveOutputControls = computed(() => this.controller()?.directiveOutputControls);
 
-  get directiveStateControls(): DirectiveTreeData | void {
-    return this.controller?.directiveStateControls;
-  }
+  readonly directiveStateControls = computed(() => this.controller()?.directiveStateControls);
 }

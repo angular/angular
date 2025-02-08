@@ -6,7 +6,6 @@ import {Hero} from '../hero';
 import {HeroService} from '../hero.service';
 
 @Component({
-  standalone: true,
   selector: 'app-heroes',
   templateUrl: './heroes.component.html',
   imports: [NgFor, RouterLink],

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -24,6 +24,7 @@ import {
   LiteralPrimitive,
   NonNullAssert,
   PrefixNot,
+  TypeofExpression,
   PropertyRead,
   PropertyWrite,
   RecursiveAstVisitor,
@@ -32,6 +33,8 @@ import {
   SafePropertyRead,
   ThisReceiver,
   Unary,
+  TemplateLiteralElement,
+  TemplateLiteral,
 } from '../../../src/expression_parser/ast';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../src/ml_parser/defaults';
 
@@ -192,6 +195,11 @@ class Unparser implements AstVisitor {
     this._visit(ast.expression);
   }
 
+  visitTypeofExpression(ast: TypeofExpression, context: any) {
+    this._expression += 'typeof ';
+    this._visit(ast.expression);
+  }
+
   visitNonNullAssert(ast: NonNullAssert, context: any) {
     this._visit(ast.expression);
     this._expression += '!';
@@ -207,6 +215,24 @@ class Unparser implements AstVisitor {
     this._expression += '?.[';
     this._visit(ast.key);
     this._expression += ']';
+  }
+
+  visitTemplateLiteral(ast: TemplateLiteral, context: any) {
+    this._expression += '`';
+    for (let i = 0; i < ast.elements.length; i++) {
+      this._visit(ast.elements[i]);
+      const expression = i < ast.expressions.length ? ast.expressions[i] : null;
+      if (expression !== null) {
+        this._expression += '${';
+        this._visit(expression);
+        this._expression += '}';
+      }
+    }
+    this._expression += '`';
+  }
+
+  visitTemplateLiteralElement(ast: TemplateLiteralElement, context: any) {
+    this._expression += ast.text;
   }
 
   private _visit(ast: AST) {

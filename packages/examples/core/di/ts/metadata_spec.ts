@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -141,7 +141,10 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
         class OtherService {}
         class HostService {}
 
-        @Directive({selector: 'child-directive'})
+        @Directive({
+          selector: 'child-directive',
+          standalone: false,
+        })
         class ChildDirective {
           logs: string[] = [];
 
@@ -157,6 +160,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
           selector: 'parent-cmp',
           viewProviders: [HostService],
           template: '<child-directive></child-directive>',
+          standalone: false,
         })
         class ParentCmp {}
 
@@ -164,6 +168,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
           selector: 'app',
           viewProviders: [OtherService],
           template: '<parent-cmp></parent-cmp>',
+          standalone: false,
         })
         class App {}
         // #enddocregion

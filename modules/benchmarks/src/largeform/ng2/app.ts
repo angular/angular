@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Component, NgModule} from '@angular/core';
@@ -64,6 +64,7 @@ import {BrowserModule} from '@angular/platform-browser';
     <input type="text" [(ngModel)]="values[48]" name="value48" />
     <input type="text" [(ngModel)]="values[49]" name="value49" />
   </form>`,
+  standalone: false,
 })
 export class AppComponent {
   copies: number[] = [];

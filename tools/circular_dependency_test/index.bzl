@@ -1,7 +1,7 @@
 # Copyright Google LLC All Rights Reserved.
 #
 # Use of this source code is governed by an MIT-style license that can be
-# found in the LICENSE file at https://angular.io/license
+# found in the LICENSE file at https://angular.dev/license
 
 load("//tools:defaults.bzl", "nodejs_test")
 
@@ -27,7 +27,7 @@ def circular_dependency_test(name, deps, entry_point, **kwargs):
             # TODO: revisit once https://github.com/bazelbuild/rules_nodejs/issues/1563 is solved.
             "$$(rlocation %s)" % entry_point,
             # Madge supports custom module resolution, but expects a configuration file
-            # similar to a Webpack configuration file setting the `resolve` option.
+            # similar to a webpack configuration file setting the `resolve` option.
             "--webpack-config",
             "$$(rlocation $(rootpath %s))" % MADGE_CONFIG_LABEL,
         ],

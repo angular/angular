@@ -87,7 +87,7 @@ yarn build
 Bazel is used as the primary tool for building and testing Angular.
 
 To see how to run and debug Angular tests locally please refer to the
-Bazel [Testing Angular](./BAZEL.md#testing-angular) section.
+Bazel [Testing Angular](./building-with-bazel.md#testing-angular) section.
 
 Note that you should execute all test suites before submitting a PR to
 GitHub (`yarn test //packages/...`).
@@ -135,7 +135,7 @@ node --preserve-symlinks --preserve-symlinks-main node_modules/@angular/cli/lib/
 
 ## Formatting your source code
 
-Angular uses [prettier](https://clang.llvm.org/docs/ClangFormat.html) to format the source code.
+Angular uses [prettier](https://prettier.io) to format the source code.
 If the source code is not properly formatted, the CI will fail and the PR cannot be merged.
 
 You can automatically format your code by running:

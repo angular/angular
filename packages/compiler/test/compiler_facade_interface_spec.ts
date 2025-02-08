@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as core from '../../core/src/compiler/compiler_facade_interface';
@@ -19,7 +19,7 @@ import * as compiler from '../src/compiler_facade_interface';
  *  - packages/core/src/render3/jit/compiler_facade_interface.ts     (copy)
  *
  * Please ensure that the two files are in sync using this command:
- * ```
+ * ```shell
  * cp packages/compiler/src/compiler_facade_interface.ts \
  *    packages/core/src/render3/jit/compiler_facade_interface.ts
  * ```

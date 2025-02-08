@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as o from '../../../output/output_ast';
@@ -243,6 +243,7 @@ export function defer(
   placeholderConfig: o.Expression | null,
   enableTimerScheduling: boolean,
   sourceSpan: ParseSourceSpan | null,
+  flags: ir.TDeferDetailsFlags | null,
 ): ir.CreateOp {
   const args: Array<o.Expression> = [
     o.literal(selfSlot),
@@ -254,6 +255,7 @@ export function defer(
     loadingConfig ?? o.literal(null),
     placeholderConfig ?? o.literal(null),
     enableTimerScheduling ? o.importExpr(Identifiers.deferEnableTimerScheduling) : o.literal(null),
+    o.literal(flags),
   ];
 
   let expr: o.Expression;
@@ -269,34 +271,74 @@ export function defer(
 }
 
 const deferTriggerToR3TriggerInstructionsMap = new Map([
-  [ir.DeferTriggerKind.Idle, [Identifiers.deferOnIdle, Identifiers.deferPrefetchOnIdle]],
+  [
+    ir.DeferTriggerKind.Idle,
+    {
+      [ir.DeferOpModifierKind.NONE]: Identifiers.deferOnIdle,
+      [ir.DeferOpModifierKind.PREFETCH]: Identifiers.deferPrefetchOnIdle,
+      [ir.DeferOpModifierKind.HYDRATE]: Identifiers.deferHydrateOnIdle,
+    },
+  ],
   [
     ir.DeferTriggerKind.Immediate,
-    [Identifiers.deferOnImmediate, Identifiers.deferPrefetchOnImmediate],
+    {
+      [ir.DeferOpModifierKind.NONE]: Identifiers.deferOnImmediate,
+      [ir.DeferOpModifierKind.PREFETCH]: Identifiers.deferPrefetchOnImmediate,
+      [ir.DeferOpModifierKind.HYDRATE]: Identifiers.deferHydrateOnImmediate,
+    },
   ],
-  [ir.DeferTriggerKind.Timer, [Identifiers.deferOnTimer, Identifiers.deferPrefetchOnTimer]],
-  [ir.DeferTriggerKind.Hover, [Identifiers.deferOnHover, Identifiers.deferPrefetchOnHover]],
+  [
+    ir.DeferTriggerKind.Timer,
+    {
+      [ir.DeferOpModifierKind.NONE]: Identifiers.deferOnTimer,
+      [ir.DeferOpModifierKind.PREFETCH]: Identifiers.deferPrefetchOnTimer,
+      [ir.DeferOpModifierKind.HYDRATE]: Identifiers.deferHydrateOnTimer,
+    },
+  ],
+  [
+    ir.DeferTriggerKind.Hover,
+    {
+      [ir.DeferOpModifierKind.NONE]: Identifiers.deferOnHover,
+      [ir.DeferOpModifierKind.PREFETCH]: Identifiers.deferPrefetchOnHover,
+      [ir.DeferOpModifierKind.HYDRATE]: Identifiers.deferHydrateOnHover,
+    },
+  ],
   [
     ir.DeferTriggerKind.Interaction,
-    [Identifiers.deferOnInteraction, Identifiers.deferPrefetchOnInteraction],
+    {
+      [ir.DeferOpModifierKind.NONE]: Identifiers.deferOnInteraction,
+      [ir.DeferOpModifierKind.PREFETCH]: Identifiers.deferPrefetchOnInteraction,
+      [ir.DeferOpModifierKind.HYDRATE]: Identifiers.deferHydrateOnInteraction,
+    },
   ],
   [
     ir.DeferTriggerKind.Viewport,
-    [Identifiers.deferOnViewport, Identifiers.deferPrefetchOnViewport],
+    {
+      [ir.DeferOpModifierKind.NONE]: Identifiers.deferOnViewport,
+      [ir.DeferOpModifierKind.PREFETCH]: Identifiers.deferPrefetchOnViewport,
+      [ir.DeferOpModifierKind.HYDRATE]: Identifiers.deferHydrateOnViewport,
+    },
+  ],
+  [
+    ir.DeferTriggerKind.Never,
+    {
+      [ir.DeferOpModifierKind.NONE]: Identifiers.deferHydrateNever,
+      [ir.DeferOpModifierKind.PREFETCH]: Identifiers.deferHydrateNever,
+      [ir.DeferOpModifierKind.HYDRATE]: Identifiers.deferHydrateNever,
+    },
   ],
 ]);
 
 export function deferOn(
   trigger: ir.DeferTriggerKind,
   args: number[],
-  prefetch: boolean,
+  modifier: ir.DeferOpModifierKind,
   sourceSpan: ParseSourceSpan | null,
 ): ir.CreateOp {
-  const instructions = deferTriggerToR3TriggerInstructionsMap.get(trigger);
-  if (instructions === undefined) {
+  const instructionToCall = deferTriggerToR3TriggerInstructionsMap.get(trigger)?.[modifier];
+  if (instructionToCall === undefined) {
     throw new Error(`Unable to determine instruction for trigger ${trigger}`);
   }
-  const instructionToCall = prefetch ? instructions[1] : instructions[0];
   return call(
     instructionToCall,
     args.map((a) => o.literal(a)),
@@ -394,11 +436,16 @@ export function repeater(
 }
 
 export function deferWhen(
-  prefetch: boolean,
+  modifier: ir.DeferOpModifierKind,
   expr: o.Expression,
   sourceSpan: ParseSourceSpan | null,
 ): ir.UpdateOp {
-  return call(prefetch ? Identifiers.deferPrefetchWhen : Identifiers.deferWhen, [expr], sourceSpan);
+  if (modifier === ir.DeferOpModifierKind.PREFETCH) {
+    return call(Identifiers.deferPrefetchWhen, [expr], sourceSpan);
+  } else if (modifier === ir.DeferOpModifierKind.HYDRATE) {
+    return call(Identifiers.deferHydrateWhen, [expr], sourceSpan);
+  }
+  return call(Identifiers.deferWhen, [expr], sourceSpan);
 }
 
 export function declareLet(slot: number, sourceSpan: ParseSourceSpan): ir.CreateOp {
@@ -674,6 +721,13 @@ export function pureFunction(
     [],
     null,
   );
+}
+
+export function attachSourceLocation(
+  templatePath: string,
+  locations: o.LiteralArrayExpr,
+): ir.CreateOp {
+  return call(Identifiers.attachSourceLocations, [o.literal(templatePath), locations], null);
 }
 
 /**

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ɵWritable as Writable} from '@angular/core';
@@ -65,7 +65,7 @@ export type ɵFormArrayRawValue<T extends AbstractControl<any>> = ɵTypedOrUntyp
  *
  * ### Create an array of form controls
  *
- * ```
+ * ```ts
  * const arr = new FormArray([
  *   new FormControl('Nancy', Validators.minLength(2)),
  *   new FormControl('Drew'),
@@ -84,7 +84,7 @@ export type ɵFormArrayRawValue<T extends AbstractControl<any>> = ɵTypedOrUntyp
  * The two types of validators are passed in separately as the second and third arg
  * respectively, or together as part of an options object.
  *
- * ```
+ * ```ts
  * const arr = new FormArray([
  *   new FormControl('Nancy'),
  *   new FormControl('Drew')
@@ -273,7 +273,7 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
    * @usageNotes
    * ### Set the values for the controls in the form array
    *
-   * ```
+   * ```ts
    * const arr = new FormArray([
    *   new FormControl(),
    *   new FormControl()
@@ -322,7 +322,7 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
    * @usageNotes
    * ### Patch the values for controls in a form array
    *
-   * ```
+   * ```ts
    * const arr = new FormArray([
    *    new FormControl(),
    *    new FormControl()
@@ -388,7 +388,7 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
    *
    * ### Reset the values in a form array and the disabled status for the first control
    *
-   * ```
+   * ```ts
    * arr.reset([
    *   {value: 'name', disabled: true},
    *   'last'

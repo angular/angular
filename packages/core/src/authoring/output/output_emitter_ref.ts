@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {setActiveConsumer} from '@angular/core/primitives/signals';
@@ -26,7 +26,7 @@ import {OutputRef, OutputRefSubscription} from './output_ref';
  * <my-comp (valueChange)="processNewValue($event)" />
  * ```
  *
- * @developerPreview
+ * @publicAPI
  */
 export class OutputEmitterRef<T> implements OutputRef<T> {
   private destroyed = false;

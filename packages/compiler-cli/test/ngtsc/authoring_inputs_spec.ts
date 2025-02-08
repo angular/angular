@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import ts from 'typescript';
@@ -21,7 +21,7 @@ runInEachFileSystem(() => {
 
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
-      env.tsconfig({strictTemplates: true});
+      env.tsconfig({strictTemplates: true, _checkTwoWayBoundEvents: true});
     });
 
     it('should handle a basic, primitive valued input', () => {
@@ -256,8 +256,9 @@ runInEachFileSystem(() => {
       );
 
       const diags = env.driveDiagnostics();
-      expect(diags.length).toBe(1);
+      expect(diags.length).toBe(2);
       expect(diags[0].messageText).toBe(`Type 'number' is not assignable to type 'string'.`);
+      expect(diags[1].messageText).toBe(`Type 'string' is not assignable to type 'number'.`);
     });
 
     describe('type checking', () => {

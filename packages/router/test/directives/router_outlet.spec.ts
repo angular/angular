@@ -3,19 +3,18 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {CommonModule, NgForOf} from '@angular/common';
 import {
   Component,
-  EnvironmentInjector,
-  Input,
-  NgModule,
-  Type,
-  createEnvironmentInjector,
-  importProvidersFrom,
   inject,
+  provideExperimentalZonelessChangeDetection,
+  Input,
+  Signal,
+  Type,
+  NgModule,
 } from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {
@@ -24,14 +23,14 @@ import {
   RouterModule,
   RouterOutlet,
   withComponentInputBinding,
-} from '@angular/router';
+  ROUTER_OUTLET_DATA,
+} from '@angular/router/src';
 import {RouterTestingHarness} from '@angular/router/testing';
 import {InjectionToken} from '../../../core/src/di';
 
 describe('router outlet name', () => {
   it('should support name binding', fakeAsync(() => {
     @Component({
-      standalone: true,
       template: '<router-outlet [name]="name"></router-outlet>',
       imports: [RouterOutlet],
     })
@@ -41,7 +40,6 @@ describe('router outlet name', () => {
 
     @Component({
       template: 'popup component',
-      standalone: true,
     })
     class PopupCmp {}
 
@@ -55,7 +53,6 @@ describe('router outlet name', () => {
 
   it('should be able to change the name of the outlet', fakeAsync(() => {
     @Component({
-      standalone: true,
       template: '<router-outlet [name]="name"></router-outlet>',
       imports: [RouterOutlet],
     })
@@ -65,13 +62,11 @@ describe('router outlet name', () => {
 
     @Component({
       template: 'hello world',
-      standalone: true,
     })
     class GreetingCmp {}
 
     @Component({
       template: 'goodbye cruel world',
-      standalone: true,
     })
     class FarewellCmp {}
 
@@ -102,7 +97,6 @@ describe('router outlet name', () => {
 
   it('should support outlets in ngFor', fakeAsync(() => {
     @Component({
-      standalone: true,
       template: `
             <div *ngFor="let outlet of outlets">
                 <router-outlet [name]="outlet"></router-outlet>
@@ -116,19 +110,16 @@ describe('router outlet name', () => {
 
     @Component({
       template: 'component 1',
-      standalone: true,
     })
     class Cmp1 {}
 
     @Component({
       template: 'component 2',
-      standalone: true,
     })
     class Cmp2 {}
 
     @Component({
       template: 'component 3',
-      standalone: true,
     })
     class Cmp3 {}
 
@@ -164,7 +155,6 @@ describe('router outlet name', () => {
 
   it('should not activate if route is changed', fakeAsync(() => {
     @Component({
-      standalone: true,
       template: '<div *ngIf="initDone"><router-outlet></router-outlet></div>',
       imports: [RouterOutlet, CommonModule],
     })
@@ -177,7 +167,6 @@ describe('router outlet name', () => {
 
     @Component({
       template: 'child component',
-      standalone: true,
     })
     class ChildCmp {}
 
@@ -209,6 +198,7 @@ describe('component input binding', () => {
   it('sets component inputs from matching query params', async () => {
     @Component({
       template: '',
+      standalone: false,
     })
     class MyComponent {
       @Input() language?: string;
@@ -237,6 +227,7 @@ describe('component input binding', () => {
   it('sets component inputs from resolved and static data', async () => {
     @Component({
       template: '',
+      standalone: false,
     })
     class MyComponent {
       @Input() resolveA?: string;
@@ -268,6 +259,7 @@ describe('component input binding', () => {
   it('sets component inputs from path params', async () => {
     @Component({
       template: '',
+      standalone: false,
     })
     class MyComponent {
       @Input() language?: string;
@@ -287,6 +279,7 @@ describe('component input binding', () => {
   it('when keys conflict, sets inputs based on priority: data > path params > query params', async () => {
     @Component({
       template: '',
+      standalone: false,
     })
     class MyComponent {
       @Input() result?: string;
@@ -332,6 +325,7 @@ describe('component input binding', () => {
     let resultLog: Array<string | undefined> = [];
     @Component({
       template: '',
+      standalone: false,
     })
     class MyComponent {
       @Input()
@@ -357,7 +351,6 @@ describe('component input binding', () => {
   it('Should have inputs available to all outlets after navigation', async () => {
     @Component({
       template: '{{myInput}}',
-      standalone: true,
     })
     class MyComponent {
       @Input() myInput?: string;
@@ -366,7 +359,6 @@ describe('component input binding', () => {
     @Component({
       template: '<router-outlet/>',
       imports: [RouterOutlet],
-      standalone: true,
     })
     class OutletWrapper {}
 
@@ -398,7 +390,6 @@ describe('injectors', () => {
 
     @Component({
       template: '',
-      standalone: true,
     })
     class Child {
       constructor() {
@@ -414,7 +405,6 @@ describe('injectors', () => {
     @Component({
       template: '<router-outlet/>',
       imports: [RouterOutlet, ModWithProviders],
-      standalone: true,
     })
     class App {}
 
@@ -433,7 +423,6 @@ describe('injectors', () => {
     const TOKEN = new InjectionToken<any>('');
     @Component({
       template: '',
-      standalone: true,
     })
     class Child {
       constructor() {
@@ -444,7 +433,6 @@ describe('injectors', () => {
     @Component({
       template: '<router-outlet/>',
       imports: [RouterOutlet],
-      standalone: true,
     })
     class App {}
 
@@ -464,6 +452,123 @@ describe('injectors', () => {
     await TestBed.inject(Router).navigateByUrl('/b');
     fixture.detectChanges();
     expect(childTokenValue).toEqual(null);
+  });
+});
+
+describe('router outlet data', () => {
+  it('is injectable even when not set', async () => {
+    @Component({template: ''})
+    class MyComponent {
+      data = inject(ROUTER_OUTLET_DATA);
+    }
+
+    @Component({template: '<router-outlet />', imports: [RouterOutlet]})
+    class App {}
+
+    TestBed.configureTestingModule({
+      providers: [provideRouter([{path: '**', component: MyComponent}])],
+    });
+
+    const fixture = TestBed.createComponent(App);
+    await TestBed.inject(Router).navigateByUrl('/');
+    fixture.detectChanges();
+    const routedComponent = fixture.debugElement.query(
+      (v) => v.componentInstance instanceof MyComponent,
+    ).componentInstance as MyComponent;
+    expect(routedComponent.data()).toEqual(undefined);
+  });
+
+  it('can set and update value', async () => {
+    @Component({template: ''})
+    class MyComponent {
+      data = inject(ROUTER_OUTLET_DATA);
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([{path: '**', component: MyComponent}]),
+        provideExperimentalZonelessChangeDetection(),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create();
+    harness.fixture.componentInstance.routerOutletData.set('initial');
+    const routedComponent = await harness.navigateByUrl('/', MyComponent);
+
+    expect(routedComponent.data()).toEqual('initial');
+    harness.fixture.componentInstance.routerOutletData.set('new');
+    await harness.fixture.whenStable();
+    expect(routedComponent.data()).toEqual('new');
+  });
+
+  it('overrides parent provided data with nested', async () => {
+    @Component({
+      imports: [RouterOutlet],
+      template: `{{outletData()}}|<router-outlet [routerOutletData]="'child'" />`,
+    })
+    class Child {
+      readonly outletData = inject(ROUTER_OUTLET_DATA);
+    }
+
+    @Component({
+      template: '{{outletData()}}',
+    })
+    class GrandChild {
+      readonly outletData = inject(ROUTER_OUTLET_DATA);
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([
+          {
+            path: 'child',
+            component: Child,
+            children: [{path: 'grandchild', component: GrandChild}],
+          },
+        ]),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create();
+    harness.fixture.componentInstance.routerOutletData.set('parent');
+
+    await harness.navigateByUrl('/child/grandchild');
+    expect(harness.routeNativeElement?.innerText).toContain('parent|child');
+  });
+
+  it('does not inherit ancestor data when not provided in nested', async () => {
+    @Component({
+      imports: [RouterOutlet],
+      template: `{{outletData()}}|<router-outlet />`,
+    })
+    class Child {
+      readonly outletData = inject(ROUTER_OUTLET_DATA);
+    }
+
+    @Component({
+      template: '{{outletData() ?? "not provided"}}',
+    })
+    class GrandChild {
+      readonly outletData = inject(ROUTER_OUTLET_DATA);
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([
+          {
+            path: 'child',
+            component: Child,
+            children: [{path: 'grandchild', component: GrandChild}],
+          },
+        ]),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create();
+    harness.fixture.componentInstance.routerOutletData.set('parent');
+
+    await harness.navigateByUrl('/child/grandchild');
+    expect(harness.routeNativeElement?.innerText).toContain('parent|not provided');
   });
 });
 

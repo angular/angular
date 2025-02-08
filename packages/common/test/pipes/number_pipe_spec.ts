@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {CurrencyPipe, DecimalPipe, PercentPipe} from '@angular/common';
@@ -83,7 +83,6 @@ describe('Number pipes', () => {
         selector: 'test-component',
         imports: [DecimalPipe],
         template: '{{ value | number }}',
-        standalone: true,
       })
       class TestComponent {
         value = 12345;
@@ -136,7 +135,6 @@ describe('Number pipes', () => {
         selector: 'test-component',
         imports: [PercentPipe],
         template: '{{ value | percent }}',
-        standalone: true,
       })
       class TestComponent {
         value = 15;
@@ -234,7 +232,6 @@ describe('Number pipes', () => {
         selector: 'test-component',
         imports: [CurrencyPipe],
         template: '{{ value | currency }}',
-        standalone: true,
       })
       class TestComponent {
         value = 15;

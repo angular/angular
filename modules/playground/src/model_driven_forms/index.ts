@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /* tslint:disable:no-console  */
@@ -51,6 +51,7 @@ function creditCardValidator(c: AbstractControl): {[key: string]: boolean} {
   selector: 'show-error',
   inputs: ['controlPath: control', 'errorTypes: errors'],
   template: ` <span *ngIf="errorMessage !== null">{{ errorMessage }}</span> `,
+  standalone: false,
 })
 export class ShowError {
   formDir: FormGroupDirective;
@@ -140,6 +141,7 @@ export class ShowError {
       <button type="submit" [disabled]="!f.form.valid">Submit</button>
     </form>
   `,
+  standalone: false,
 })
 export class ReactiveForms {
   form: UntypedFormGroup;

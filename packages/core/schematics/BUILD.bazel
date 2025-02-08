@@ -1,3 +1,4 @@
+load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
 load("//tools:defaults.bzl", "pkg_npm")
 
 exports_files([
@@ -12,16 +13,61 @@ pkg_npm(
         "collection.json",
         "migrations.json",
         "package.json",
+        "//packages/core/schematics/ng-generate/cleanup-unused-imports:static_files",
         "//packages/core/schematics/ng-generate/control-flow-migration:static_files",
+        "//packages/core/schematics/ng-generate/inject-migration:static_files",
+        "//packages/core/schematics/ng-generate/output-migration:static_files",
+        "//packages/core/schematics/ng-generate/route-lazy-loading:static_files",
+        "//packages/core/schematics/ng-generate/signal-input-migration:static_files",
+        "//packages/core/schematics/ng-generate/signal-queries-migration:static_files",
+        "//packages/core/schematics/ng-generate/signals:static_files",
         "//packages/core/schematics/ng-generate/standalone-migration:static_files",
     ],
     validate = False,
     visibility = ["//packages/core:__pkg__"],
     deps = [
-        "//packages/core/schematics/migrations/after-render-phase:bundle",
-        "//packages/core/schematics/migrations/http-providers:bundle",
-        "//packages/core/schematics/migrations/invalid-two-way-bindings:bundle",
-        "//packages/core/schematics/ng-generate/control-flow-migration:bundle",
-        "//packages/core/schematics/ng-generate/standalone-migration:bundle",
+        ":bundles",
+    ],
+)
+
+rollup_bundle(
+    name = "bundles",
+    config_file = ":rollup.config.js",
+    entry_points = {
+        "//packages/core/schematics/ng-generate/control-flow-migration:index.ts": "control-flow-migration",
+        "//packages/core/schematics/ng-generate/inject-migration:index.ts": "inject-migration",
+        "//packages/core/schematics/ng-generate/route-lazy-loading:index.ts": "route-lazy-loading",
+        "//packages/core/schematics/ng-generate/standalone-migration:index.ts": "standalone-migration",
+        "//packages/core/schematics/ng-generate/cleanup-unused-imports:index.ts": "cleanup-unused-imports",
+        "//packages/core/schematics/ng-generate/signals:index.ts": "signals",
+        "//packages/core/schematics/ng-generate/signal-input-migration:index.ts": "signal-input-migration",
+        "//packages/core/schematics/ng-generate/signal-queries-migration:index.ts": "signal-queries-migration",
+        "//packages/core/schematics/ng-generate/output-migration:index.ts": "output-migration",
+        "//packages/core/schematics/migrations/explicit-standalone-flag:index.ts": "explicit-standalone-flag",
+        "//packages/core/schematics/migrations/pending-tasks:index.ts": "pending-tasks",
+        "//packages/core/schematics/migrations/provide-initializer:index.ts": "provide-initializer",
+    },
+    format = "cjs",
+    link_workspace_root = True,
+    output_dir = True,
+    sourcemap = "false",
+    visibility = [
+        "//packages/core/schematics/test:__pkg__",
+    ],
+    deps = [
+        "//packages/core/schematics/migrations/explicit-standalone-flag",
+        "//packages/core/schematics/migrations/pending-tasks",
+        "//packages/core/schematics/migrations/provide-initializer",
+        "//packages/core/schematics/ng-generate/cleanup-unused-imports",
+        "//packages/core/schematics/ng-generate/control-flow-migration",
+        "//packages/core/schematics/ng-generate/inject-migration",
+        "//packages/core/schematics/ng-generate/output-migration",
+        "//packages/core/schematics/ng-generate/route-lazy-loading",
+        "//packages/core/schematics/ng-generate/signal-input-migration",
+        "//packages/core/schematics/ng-generate/signal-queries-migration",
+        "//packages/core/schematics/ng-generate/signals",
+        "//packages/core/schematics/ng-generate/standalone-migration",
+        "@npm//@rollup/plugin-commonjs",
+        "@npm//@rollup/plugin-node-resolve",
     ],
 )

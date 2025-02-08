@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Directive} from '@angular/core';
@@ -17,7 +17,7 @@ import {Directive} from '@angular/core';
  *
  * If you want to use native validation with Angular forms, just add `ngNativeValidate` attribute:
  *
- * ```
+ * ```html
  * <form ngNativeValidate></form>
  * ```
  *
@@ -28,6 +28,7 @@ import {Directive} from '@angular/core';
 @Directive({
   selector: 'form:not([ngNoForm]):not([ngNativeValidate])',
   host: {'novalidate': ''},
+  standalone: false,
 })
 export class ɵNgNoValidate {}
 

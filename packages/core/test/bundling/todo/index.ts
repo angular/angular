@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {CommonModule} from '@angular/common';
@@ -136,8 +136,7 @@ class TodoStore {
     </footer>
   </section>
   `,
-  // TODO(misko): switch over to OnPush
-  // changeDetection: ChangeDetectionStrategy.OnPush
+  standalone: false,
 })
 class ToDoAppComponent {
   newTodoText = '';

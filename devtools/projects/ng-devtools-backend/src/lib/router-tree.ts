@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Route} from 'protocol';
@@ -14,52 +14,72 @@ type Routes = any;
 type Router = any;
 
 export function parseRoutes(router: Router): Route {
+  const currentUrl = router.stateManager?.routerState?.snapshot?.url;
   const rootName = (router as any).rootComponentType?.name || 'no-name';
   const rootChildren = router.config;
 
   const root: Route = {
-    handler: rootName,
-    name: rootName,
+    component: rootName,
     path: '/',
-    children: rootChildren ? assignChildrenToParent(null, rootChildren) : [],
+    children: rootChildren ? assignChildrenToParent(null, rootChildren, currentUrl) : [],
     isAux: false,
-    specificity: null,
-    data: null,
-    hash: null,
+    isLazy: false,
+    isActive: currentUrl === '/',
   };
 
   return root;
 }
 
-function assignChildrenToParent(parentPath: string | null, children: Routes): Route[] {
+function getGuardNames(child: AngularRoute): string[] | null {
+  const guards = child?.canActivate || [];
+  const names = guards.map((g: any) => g.name);
+  return names || null;
+}
+
+function getProviderName(child: any): string[] | null {
+  const providers = child?.providers || [];
+  const names = providers.map((p: any) => p.name);
+  return names || null;
+}
+
+function assignChildrenToParent(
+  parentPath: string | null,
+  children: Routes,
+  currentUrl: string,
+): Route[] {
   return children.map((child: AngularRoute) => {
     const childName = childRouteName(child);
-    const childDescendents: [any] = (child as any)._loadedConfig?.routes || child.children;
-
-    // only found in aux routes, otherwise property will be undefined
-    const isAuxRoute = !!child.outlet;
+    const loadedRoutes = (window as any).ng?.ɵgetLoadedRoutes?.(child as any);
+    const childDescendents: [AngularRoute] = loadedRoutes || child.children;
 
     const pathFragment = child.outlet ? `(${child.outlet}:${child.path})` : child.path;
+    const routePath = `${parentPath ?? ''}/${pathFragment}`.split('//').join('/');
+
+    // only found in aux routes, otherwise property will be undefined
+    const isAux = Boolean(child.outlet);
+    const isLazy = Boolean(child.loadChildren || child.loadComponent);
+    const isActive = routePath === currentUrl;
 
     const routeConfig: Route = {
-      handler: childName,
-      data: [],
-      hash: null,
-      specificity: null,
-      name: childName,
-      path: `${parentPath ? parentPath : ''}/${pathFragment}`.split('//').join('/'),
-      isAux: isAuxRoute,
-      children: [],
+      title: child.title,
+      pathMatch: child.pathMatch,
+      component: childName,
+      canActivateGuards: getGuardNames(child),
+      providers: getProviderName(child),
+      path: routePath,
+      isAux,
+      isLazy,
+      isActive,
     };
 
     if (childDescendents) {
-      routeConfig.children = assignChildrenToParent(routeConfig.path, childDescendents);
+      routeConfig.children = assignChildrenToParent(routeConfig.path, childDescendents, currentUrl);
     }
 
     if (child.data) {
       for (const el in child.data) {
         if (child.data.hasOwnProperty(el)) {
-          routeConfig.data.push({
+          routeConfig?.data?.push({
             key: el,
             value: child.data[el],
           });
@@ -74,7 +94,7 @@ function assignChildrenToParent(parentPath: string | null, children: Routes): Ro
 function childRouteName(child: AngularRoute): string {
   if (child.component) {
     return child.component.name;
-  } else if (child.loadChildren) {
+  } else if (child.loadChildren || child.loadComponent) {
     return `${child.path} [Lazy]`;
   } else if (child.redirectTo) {
     return `${child.path} -> redirecting to -> "${child.redirectTo}"`;

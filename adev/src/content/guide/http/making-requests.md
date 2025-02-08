@@ -18,9 +18,9 @@ http.get<Config>('/api/config').subscribe(config => {
 });
 </docs-code>
 
-Note the generic type argument which specifies that the data returned by the server will be of type `Config`. This argument is optional, and if you omit it then the returned data will have type `any`.
+Note the generic type argument which specifies that the data returned by the server will be of type `Config`. This argument is optional, and if you omit it then the returned data will have type `Object`.
 
-Tip: If the data has an unknown shape, then a safer alternative to `any` is to use the `unknown` type as the response type.
+Tip: When dealing with data of uncertain structure and potential `undefined` or `null` values, consider using the `unknown` type instead of `Object` as the response type.
 
 CRITICAL: The generic type of request methods is a type **assertion** about the data returned by the server. `HttpClient` does not verify that the actual return data matches this type.
 
@@ -247,7 +247,6 @@ Within a component, you can combine `@if` with the `async` pipe to render the UI
 <docs-code language="ts">
 import { AsyncPipe } from '@angular/common';
 @Component({
-  standalone: true,
   imports: [AsyncPipe],
   template: `
     @if (user$ | async; as user) {
@@ -263,7 +262,7 @@ export class UserProfileComponent {
   constructor(private userService: UserService) {}
 
   ngOnInit(): void {
-    this.user$ = userService.getUser(this.userId);
+    this.user$ = this.userService.getUser(this.userId);
   }
 }
 </docs-code>

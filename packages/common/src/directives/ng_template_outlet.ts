@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -30,7 +30,7 @@ import {
  * by the local template `let` declarations.
  *
  * @usageNotes
- * ```
+ * ```html
  * <ng-container *ngTemplateOutlet="templateRefExp; context: contextExp"></ng-container>
  * ```
  *
@@ -44,7 +44,6 @@ import {
  */
 @Directive({
   selector: '[ngTemplateOutlet]',
-  standalone: true,
 })
 export class NgTemplateOutlet<C = unknown> implements OnChanges {
   private _viewRef: EmbeddedViewRef<C> | null = null;

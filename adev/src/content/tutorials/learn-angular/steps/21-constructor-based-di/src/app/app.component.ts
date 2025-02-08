@@ -6,7 +6,6 @@ import {CarService} from './car.service';
   template: `
     <p>Car Listing: {{ display }}</p>
   `,
-  standalone: true,
 })
 export class AppComponent {
   display = '';

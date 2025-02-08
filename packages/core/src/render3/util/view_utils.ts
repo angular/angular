@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {NotificationSource} from '../../change_detection/scheduling/zoneless_scheduling';
@@ -19,8 +19,9 @@ import {assertLView, assertTNode, assertTNodeForLView} from '../assert';
 import {LContainer, TYPE} from '../interfaces/container';
 import {TConstants, TNode} from '../interfaces/node';
 import {RNode} from '../interfaces/renderer_dom';
-import {isLContainer, isLView} from '../interfaces/type_checks';
+import {isDestroyed, isLContainer, isLView} from '../interfaces/type_checks';
 import {
+  CLEANUP,
   DECLARATION_VIEW,
   ENVIRONMENT,
   FLAGS,
@@ -271,7 +272,7 @@ export function markAncestorsForTraversal(lView: LView) {
  * Stores a LView-specific destroy callback.
  */
 export function storeLViewOnDestroy(lView: LView, onDestroyCallback: () => void) {
-  if ((lView[FLAGS] & LViewFlags.Destroyed) === LViewFlags.Destroyed) {
+  if (isDestroyed(lView)) {
     throw new RuntimeError(
       RuntimeErrorCode.VIEW_ALREADY_DESTROYED,
       ngDevMode && 'View has already been destroyed.',
@@ -304,4 +305,50 @@ export function getLViewParent(lView: LView): LView | null {
   ngDevMode && assertLView(lView);
   const parent = lView[PARENT];
   return isLContainer(parent) ? parent[PARENT] : parent;
+}
+
+export function getOrCreateLViewCleanup(view: LView): any[] {
+  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
+  return (view[CLEANUP] ??= []);
+}
+
+export function getOrCreateTViewCleanup(tView: TView): any[] {
+  return (tView.cleanup ??= []);
+}
+
+/**
+ * Saves context for this cleanup function in LView.cleanupInstances.
+ *
+ * On the first template pass, saves in TView:
+ * - Cleanup function
+ * - Index of context we just saved in LView.cleanupInstances
+ */
+export function storeCleanupWithContext(
+  tView: TView,
+  lView: LView,
+  context: any,
+  cleanupFn: Function,
+): void {
+  const lCleanup = getOrCreateLViewCleanup(lView);
+
+  // Historically the `storeCleanupWithContext` was used to register both framework-level and
+  // user-defined cleanup callbacks, but over time those two types of cleanups were separated.
+  // This dev mode checks assures that user-level cleanup callbacks are _not_ stored in data
+  // structures reserved for framework-specific hooks.
+  ngDevMode &&
+    assertDefined(
+      context,
+      'Cleanup context is mandatory when registering framework-level destroy hooks',
+    );
+  lCleanup.push(context);
+
+  if (tView.firstCreatePass) {
+    getOrCreateTViewCleanup(tView).push(cleanupFn, lCleanup.length - 1);
+  } else {
+    // Make sure that no new framework-level cleanup functions are registered after the first
+    // template pass is done (and TView data structures are meant to fully constructed).
+    if (ngDevMode) {
+      Object.freeze(getOrCreateTViewCleanup(tView));
+    }
+  }
 }

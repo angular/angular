@@ -1,6 +1,9 @@
 import {Directive, HostBinding, NgModule} from '@angular/core';
 
-@Directive({selector: '[hostBindingDir]'})
+@Directive({
+    selector: '[hostBindingDir]',
+    standalone: false
+})
 export class HostBindingDir {
   @HostBinding('class.a') 'is-a': any;
   @HostBinding('class.b') 'is-"b"': any;

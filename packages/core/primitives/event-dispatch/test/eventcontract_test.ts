@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -15,7 +15,6 @@ import {
   EventContractContainer,
   EventContractContainerManager,
 } from '../src/event_contract_container';
-import {EventContractMultiContainer} from '../src/event_contract_multi_container';
 import {EventInfoWrapper} from '../src/event_info';
 import {EventType} from '../src/event_type';
 import {Dispatcher, EventContract} from '../src/eventcontract';
@@ -29,9 +28,6 @@ declare global {
 
 const domContent = `
 <div id="container"></div>
-
-<div id="container2">
-</div>
 
 <div id="click-container">
   <div id="click-action-element" jsaction="handleClick">
@@ -82,15 +78,6 @@ function getRequiredElementById(id: string) {
   return element!;
 }
 
-function createEventContractMultiContainer(
-  container: Element,
-  {stopPropagation = false}: {stopPropagation?: boolean} = {},
-) {
-  const eventContractContainerManager = new EventContractMultiContainer(stopPropagation);
-  eventContractContainerManager.addContainer(container);
-  return eventContractContainerManager;
-}
-
 function createEventContract({
   eventContractContainerManager,
   eventTypes,
@@ -100,10 +87,7 @@ function createEventContract({
   eventTypes: Array<string | [string, string]>;
   dispatcher?: jasmine.Spy<Dispatcher>;
 }): EventContract {
-  const eventContract = new EventContract(
-    eventContractContainerManager,
-    /* useActionResolver= */ false,
-  );
+  const eventContract = new EventContract(eventContractContainerManager);
   for (const eventType of eventTypes) {
     if (typeof eventType === 'string') {
       eventContract.addEvent(eventType);
@@ -145,7 +129,6 @@ function dispatchMouseEvent(
   } = {},
 ) {
   // createEvent/initMouseEvent is used to support IE11
-  // tslint:disable:deprecation
   const event = document.createEvent('MouseEvent');
   event.initMouseEvent(
     type,
@@ -179,45 +162,14 @@ describe('EventContract', () => {
     spyOn(Date, 'now').and.returnValue(0);
   });
 
-  it('adds event listener after adding container', () => {
-    const container = getRequiredElementById('container');
-    const container2 = getRequiredElementById('container2');
-    const addEventListenerSpy = spyOn(container, 'addEventListener');
-    const addEventListenerSpy2 = spyOn(container2, 'addEventListener');
-
-    const eventContractContainerManager = new EventContractMultiContainer();
-    const eventContract = createEventContract({eventContractContainerManager, eventTypes: []});
-    eventContract.addEvent('click');
-
-    expect(addEventListenerSpy).not.toHaveBeenCalled();
-
-    eventContractContainerManager.addContainer(container);
-    eventContractContainerManager.addContainer(container2);
-
-    const registeredEventTypes = addEventListenerSpy.calls
-      .allArgs()
-      .map(([eventType]) => eventType);
-    expect(registeredEventTypes).toEqual(['click']);
-
-    const registeredEventTypes2 = addEventListenerSpy2.calls
-      .allArgs()
-      .map(([eventType]) => eventType);
-    expect(registeredEventTypes2).toEqual(['click']);
-  });
-
   it('adds event listener to added containers', () => {
     const container = getRequiredElementById('container');
-    const container2 = getRequiredElementById('container2');
     const addEventListenerSpy = spyOn(container, 'addEventListener');
-    const addEventListenerSpy2 = spyOn(container2, 'addEventListener');
 
-    const eventContractContainerManager = new EventContractMultiContainer();
+    const eventContractContainerManager = new EventContractContainer(container);
     const eventContract = createEventContract({eventContractContainerManager, eventTypes: []});
-    eventContractContainerManager.addContainer(container);
-    eventContractContainerManager.addContainer(container2);
 
     expect(addEventListenerSpy).not.toHaveBeenCalled();
-    expect(addEventListenerSpy2).not.toHaveBeenCalled();
 
     eventContract.addEvent('click');
 
@@ -225,26 +177,63 @@ describe('EventContract', () => {
       .allArgs()
       .map(([eventType]) => eventType);
     expect(registeredEventTypes).toEqual(['click']);
-
-    const registeredEventTypes2 = addEventListenerSpy2.calls
-      .allArgs()
-      .map(([eventType]) => eventType);
-    expect(registeredEventTypes2).toEqual(['click']);
   });
 
   it('adds event listener for aliased event', () => {
     const container = getRequiredElementById('container');
     const addEventListenerSpy = spyOn(container, 'addEventListener');
 
-    const eventContractContainerManager = new EventContractMultiContainer();
+    const eventContractContainerManager = new EventContractContainer(container);
     const eventContract = createEventContract({eventContractContainerManager, eventTypes: []});
     eventContract.addEvent('animationend', 'webkitanimationend');
-    eventContractContainerManager.addContainer(container);
 
     const registeredEventTypes = addEventListenerSpy.calls
       .allArgs()
       .map(([eventType]) => eventType);
     expect(registeredEventTypes).toEqual(['webkitanimationend']);
+  });
+
+  it('adds event listener without passive option', () => {
+    const container = getRequiredElementById('container');
+    const addEventListenerSpy = spyOn(container, 'addEventListener');
+
+    const eventContractContainerManager = new EventContractContainer(container);
+    const eventContract = createEventContract({eventContractContainerManager, eventTypes: []});
+    eventContract.addEvent('touchstart');
+
+    expect(addEventListenerSpy).toHaveBeenCalledOnceWith(
+      'touchstart',
+      jasmine.any(Function),
+      false,
+    );
+  });
+
+  it('adds event listener for passive:false event', () => {
+    const container = getRequiredElementById('container');
+    const addEventListenerSpy = spyOn(container, 'addEventListener');
+
+    const eventContractContainerManager = new EventContractContainer(container);
+    const eventContract = createEventContract({eventContractContainerManager, eventTypes: []});
+    eventContract.addEvent('touchstart', '', false);
+
+    expect(addEventListenerSpy).toHaveBeenCalledOnceWith('touchstart', jasmine.any(Function), {
+      capture: false,
+      passive: false,
+    });
+  });
+
+  it('adds event listener for passive:true event', () => {
+    const container = getRequiredElementById('container');
+    const addEventListenerSpy = spyOn(container, 'addEventListener');
+
+    const eventContractContainerManager = new EventContractContainer(container);
+    const eventContract = createEventContract({eventContractContainerManager, eventTypes: []});
+    eventContract.addEvent('touchstart', '', true);
+
+    expect(addEventListenerSpy).toHaveBeenCalledOnceWith('touchstart', jasmine.any(Function), {
+      capture: false,
+      passive: true,
+    });
   });
 
   it('queues events until dispatcher is registered', () => {
@@ -311,7 +300,6 @@ describe('EventContract', () => {
     });
 
     // createEvent/initEvent is used to support IE11
-    // tslint:disable:deprecation
     const animationEndEvent = document.createEvent('AnimationEvent');
     animationEndEvent.initEvent('webkitanimationend', true, true);
     // tslint:enable:deprecation
@@ -404,155 +392,6 @@ describe('EventContract', () => {
     expect(clickEvent.preventDefault).not.toHaveBeenCalled();
   });
 
-  describe('nested containers', () => {
-    let outerContainer: Element;
-    let outerTargetElement: Element;
-    let innerContainer: Element;
-    let innerTargetElement: Element;
-
-    beforeEach(() => {
-      outerContainer = getRequiredElementById('nested-outer-container');
-      outerTargetElement = getRequiredElementById('nested-outer-target-element');
-      innerContainer = getRequiredElementById('nested-inner-container');
-      innerTargetElement = getRequiredElementById('nested-inner-target-element');
-    });
-
-    it('dispatches events in outer container', () => {
-      const documentListener = jasmine.createSpy('documentListener');
-      window.document.documentElement.addEventListener('click', documentListener);
-      const dispatcher = createDispatcherSpy();
-      const eventContractContainerManager = createEventContractMultiContainer(outerContainer);
-      createEventContract({
-        eventContractContainerManager,
-        eventTypes: ['click'],
-        dispatcher,
-      });
-      eventContractContainerManager.addContainer(innerContainer);
-
-      const clickEvent = dispatchMouseEvent(outerTargetElement);
-
-      expect(dispatcher).toHaveBeenCalledTimes(1);
-      const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
-      expect(eventInfoWrapper.getEventType()).toBe('click');
-      expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
-      expect(eventInfoWrapper.getTargetElement()).toBe(outerTargetElement);
-      expect(eventInfoWrapper.getAction()).toBeUndefined();
-      expect(documentListener).toHaveBeenCalledTimes(1);
-    });
-
-    it('dispatches events in inner container', () => {
-      const documentListener = jasmine.createSpy('documentListener');
-      window.document.documentElement.addEventListener('click', documentListener);
-      const dispatcher = createDispatcherSpy();
-      const eventContractContainerManager = createEventContractMultiContainer(outerContainer);
-      createEventContract({
-        eventContractContainerManager,
-        eventTypes: ['click'],
-        dispatcher,
-      });
-      eventContractContainerManager.addContainer(innerContainer);
-
-      const clickEvent = dispatchMouseEvent(innerTargetElement);
-
-      expect(dispatcher).toHaveBeenCalledTimes(1);
-      const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
-      expect(eventInfoWrapper.getEventType()).toBe('click');
-      expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
-      expect(eventInfoWrapper.getTargetElement()).toBe(innerTargetElement);
-      expect(eventInfoWrapper.getAction()).toBeUndefined();
-      expect(documentListener).toHaveBeenCalledTimes(1);
-    });
-
-    it('dispatches events in outer container, inner registered first', () => {
-      const documentListener = jasmine.createSpy('documentListener');
-      window.document.documentElement.addEventListener('click', documentListener);
-      const dispatcher = createDispatcherSpy();
-      const eventContractContainerManager = createEventContractMultiContainer(innerContainer);
-      createEventContract({
-        eventContractContainerManager,
-        eventTypes: ['click'],
-        dispatcher,
-      });
-      eventContractContainerManager.addContainer(outerContainer);
-
-      const clickEvent = dispatchMouseEvent(outerTargetElement);
-
-      expect(dispatcher).toHaveBeenCalledTimes(1);
-      const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
-      expect(eventInfoWrapper.getEventType()).toBe('click');
-      expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
-      expect(eventInfoWrapper.getTargetElement()).toBe(outerTargetElement);
-      expect(eventInfoWrapper.getAction()).toBeUndefined();
-
-      expect(documentListener).toHaveBeenCalledTimes(1);
-    });
-
-    it('dispatches events in inner container, inner container registered first', () => {
-      const documentListener = jasmine.createSpy('documentListener');
-      window.document.documentElement.addEventListener('click', documentListener);
-      const dispatcher = createDispatcherSpy();
-      const eventContractContainerManager = createEventContractMultiContainer(innerContainer);
-      createEventContract({
-        eventContractContainerManager,
-        eventTypes: ['click'],
-        dispatcher,
-      });
-      eventContractContainerManager.addContainer(outerContainer);
-
-      const clickEvent = dispatchMouseEvent(innerTargetElement);
-
-      expect(dispatcher).toHaveBeenCalledTimes(1);
-      const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
-      expect(eventInfoWrapper.getEventType()).toBe('click');
-      expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
-      expect(eventInfoWrapper.getTargetElement()).toBe(innerTargetElement);
-      expect(eventInfoWrapper.getAction()).toBeUndefined();
-
-      expect(documentListener).toHaveBeenCalledTimes(1);
-    });
-
-    it('dispatches events in inner container, inner container removed', () => {
-      const documentListener = jasmine.createSpy('documentListener');
-      window.document.documentElement.addEventListener('click', documentListener);
-      const dispatcher = createDispatcherSpy();
-      const eventContractContainerManager = createEventContractMultiContainer(outerContainer);
-      createEventContract({
-        eventContractContainerManager,
-        eventTypes: ['click'],
-        dispatcher,
-      });
-      const innerEventContractContainer =
-        eventContractContainerManager.addContainer(innerContainer);
-
-      let clickEvent = dispatchMouseEvent(innerTargetElement);
-
-      expect(dispatcher).toHaveBeenCalledTimes(1);
-      let eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
-      expect(eventInfoWrapper.getEventType()).toBe('click');
-      expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
-      expect(eventInfoWrapper.getTargetElement()).toBe(innerTargetElement);
-      expect(eventInfoWrapper.getAction()).toBeUndefined();
-
-      expect(documentListener).toHaveBeenCalledTimes(1);
-
-      dispatcher.calls.reset();
-      documentListener.calls.reset();
-
-      eventContractContainerManager.removeContainer(innerEventContractContainer);
-
-      clickEvent = dispatchMouseEvent(innerTargetElement);
-
-      expect(dispatcher).toHaveBeenCalledTimes(1);
-      eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
-      expect(eventInfoWrapper.getEventType()).toBe('click');
-      expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
-      expect(eventInfoWrapper.getTargetElement()).toBe(innerTargetElement);
-      expect(eventInfoWrapper.getAction()).toBeUndefined();
-
-      expect(documentListener).toHaveBeenCalledTimes(1);
-    });
-  });
-
   describe('early events', () => {
     it('early events are dispatched', () => {
       const container = getRequiredElementById('click-container');
@@ -614,9 +453,8 @@ describe('EventContract', () => {
         dispatcher,
       });
 
-      eventContract.replayEarlyEvents(replaySink);
+      eventContract.replayEarlyEvents(replaySink._ejsa);
 
-      expect(replaySink._ejsa).toBeUndefined();
       expect(removeEventListenerSpy).toHaveBeenCalledTimes(1);
       expect(dispatcher).toHaveBeenCalledTimes(1);
       const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);

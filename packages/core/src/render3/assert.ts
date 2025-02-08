@@ -3,13 +3,13 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {assertDefined, assertEqual, assertNumber, throwError} from '../util/assert';
 
-import {getComponentDef, getNgModuleDef} from './definition';
+import {getComponentDef, getNgModuleDef} from './def_getters';
 import {LContainer} from './interfaces/container';
 import {DirectiveDef} from './interfaces/definition';
 import {TIcu} from './interfaces/i18n';

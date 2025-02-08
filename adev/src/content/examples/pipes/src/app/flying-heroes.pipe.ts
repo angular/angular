@@ -5,7 +5,6 @@ import {Pipe, PipeTransform} from '@angular/core';
 import {Hero} from './heroes';
 
 @Pipe({
-  standalone: true,
   name: 'flyingHeroes',
 })
 export class FlyingHeroesPipe implements PipeTransform {
@@ -21,7 +20,6 @@ export class FlyingHeroesPipe implements PipeTransform {
 // #docregion impure
 // #docregion pipe-decorator
 @Pipe({
-  standalone: true,
   name: 'flyingHeroesImpure',
   pure: false,
 })

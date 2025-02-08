@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Location} from '@angular/common';
@@ -99,5 +99,5 @@ describe('`navigationExtras handling with redirects`', () => {
   });
 });
 
-@Component({selector: 'simple-cmp', template: `simple`, standalone: true})
+@Component({selector: 'simple-cmp', template: `simple`})
 class SimpleCmp {}

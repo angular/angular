@@ -8,23 +8,22 @@
 
 import {DOCUMENT, isPlatformBrowser} from '@angular/common';
 import {
-  afterNextRender,
   ChangeDetectionStrategy,
   Component,
   inject,
-  Injector,
   OnInit,
   PLATFORM_ID,
   signal,
   WritableSignal,
 } from '@angular/core';
-import {NavigationEnd, NavigationSkipped, Router, RouterLink, RouterOutlet} from '@angular/router';
+import {NavigationEnd, NavigationSkipped, Router, RouterOutlet} from '@angular/router';
 import {filter, map, skip} from 'rxjs/operators';
 import {
   CookiePopup,
   getActivatedRouteSnapshotFromRouter,
   IS_SEARCH_DIALOG_OPEN,
   SearchDialog,
+  TopLevelBannerComponent,
 } from '@angular/docs';
 import {Footer} from './core/layout/footer/footer.component';
 import {Navigation} from './core/layout/navigation/navigation.component';
@@ -36,16 +35,15 @@ import {HeaderService} from './core/services/header.service';
 @Component({
   selector: 'adev-root',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
   imports: [
     CookiePopup,
     Navigation,
     Footer,
     SecondaryNavigation,
     RouterOutlet,
-    RouterLink,
     SearchDialog,
     ProgressBarComponent,
+    TopLevelBannerComponent,
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
@@ -79,8 +77,6 @@ export class AppComponent implements OnInit {
 
         this.updateCanonicalLink(url);
       });
-
-    this.focusFirstHeadingOnRouteChange();
   }
 
   focusFirstHeading(): void {
@@ -88,7 +84,7 @@ export class AppComponent implements OnInit {
       return;
     }
 
-    const h1 = this.document.querySelector<HTMLHeadingElement>('h1');
+    const h1 = this.document.querySelector<HTMLHeadingElement>('h1:not(docs-top-level-banner h1)');
     h1?.focus();
   }
 
@@ -101,18 +97,6 @@ export class AppComponent implements OnInit {
 
     this.displaySecondaryNav.set(activatedRoute.data['displaySecondaryNav']);
     this.displayFooter.set(!activatedRoute.data['hideFooter']);
-  }
-
-  private focusFirstHeadingOnRouteChange(): void {
-    this.router.events
-      .pipe(
-        filter((e): e is NavigationEnd => e instanceof NavigationEnd),
-        // Skip first emission, cause on the initial load we would like to `Skip to main content` popup when it's focused
-        skip(1),
-      )
-      .subscribe(() => {
-        this.focusFirstHeading();
-      });
   }
 
   private setSearchDialogVisibilityOnKeyPress(event: KeyboardEvent): void {

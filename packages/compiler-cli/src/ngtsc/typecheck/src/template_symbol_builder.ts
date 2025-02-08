@@ -3,11 +3,12 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
   AST,
+  ASTWithName,
   ASTWithSource,
   BindingPipe,
   ParseSourceSpan,
@@ -708,9 +709,13 @@ export class SymbolBuilder {
 
     let withSpan = expression.sourceSpan;
 
-    // The `name` part of a `PropertyWrite` and a non-safe `Call` does not have its own
+    // The `name` part of a `PropertyWrite` and `ASTWithName` do not have their own
     // AST so there is no way to retrieve a `Symbol` for just the `name` via a specific node.
-    if (expression instanceof PropertyWrite) {
+    // Also skipping SafePropertyReads as it breaks nullish coalescing not nullable extended diagnostic
+    if (
+      expression instanceof PropertyWrite ||
+      (expression instanceof ASTWithName && !(expression instanceof SafePropertyRead))
+    ) {
       withSpan = expression.nameSpan;
     }
 
@@ -770,6 +775,8 @@ export class SymbolBuilder {
     let tsSymbol: ts.Symbol | undefined;
     if (ts.isPropertyAccessExpression(node)) {
       tsSymbol = this.getTypeChecker().getSymbolAtLocation(node.name);
+    } else if (ts.isCallExpression(node)) {
+      tsSymbol = this.getTypeChecker().getSymbolAtLocation(node.expression);
     } else {
       tsSymbol = this.getTypeChecker().getSymbolAtLocation(node);
     }

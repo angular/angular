@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -79,7 +79,7 @@ function _extractId(valueString: string): string {
  * const selectedCountriesControl = new FormControl();
  * ```
  *
- * ```
+ * ```html
  * <select [compareWith]="compareFn"  [formControl]="selectedCountriesControl">
  *     <option *ngFor="let country of countries" [ngValue]="country">
  *         {{country.name}}
@@ -104,6 +104,7 @@ function _extractId(valueString: string): string {
     'select:not([multiple])[formControlName],select:not([multiple])[formControl],select:not([multiple])[ngModel]',
   host: {'(change)': 'onChange($event.target.value)', '(blur)': 'onTouched()'},
   providers: [SELECT_VALUE_ACCESSOR],
+  standalone: false,
 })
 export class SelectControlValueAccessor
   extends BuiltInControlValueAccessor
@@ -188,7 +189,10 @@ export class SelectControlValueAccessor
  * @ngModule FormsModule
  * @publicApi
  */
-@Directive({selector: 'option'})
+@Directive({
+  selector: 'option',
+  standalone: false,
+})
 export class NgSelectOption implements OnDestroy {
   /**
    * @description

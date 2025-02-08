@@ -12,12 +12,15 @@ import * as i1 from '@angular/router';
 import { ModuleWithProviders } from '@angular/core';
 import { Routes } from '@angular/router';
 import { Type } from '@angular/core';
+import { WritableSignal } from '@angular/core';
 
 // @public
 export class RouterTestingHarness {
     static create(initialUrl?: string): Promise<RouterTestingHarness>;
     detectChanges(): void;
-    readonly fixture: ComponentFixture<unknown>;
+    readonly fixture: ComponentFixture<{
+        routerOutletData: WritableSignal<unknown>;
+    }>;
     navigateByUrl(url: string): Promise<null | {}>;
     navigateByUrl<T>(url: string, requiredRoutedComponentType: Type<T>): Promise<T>;
     get routeDebugElement(): DebugElement | null;

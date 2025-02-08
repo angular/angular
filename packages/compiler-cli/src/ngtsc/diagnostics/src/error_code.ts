@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /**
@@ -155,6 +155,11 @@ export enum ErrorCode {
    */
   COMPONENT_UNKNOWN_DEFERRED_IMPORT = 2022,
 
+  /**
+   * Raised when a `standalone: false` component is declared but `strictStandalone` is set.
+   */
+  NON_STANDALONE_NOT_ALLOWED = 2023,
+
   SYMBOL_NOT_EXPORTED = 3001,
   /**
    * Raised when a relationship between directives and/or pipes would cause a cyclic import to be
@@ -268,7 +273,7 @@ export enum ErrorCode {
    * The left-hand side of an assignment expression was a template variable. Effectively, the
    * template looked like:
    *
-   * ```
+   * ```html
    * <ng-template let-something>
    *   <button (click)="something = ...">...</button>
    * </ng-template>
@@ -303,7 +308,7 @@ export enum ErrorCode {
    * The tracking expression of a `for` loop block is accessing a variable that is unavailable,
    * for example:
    *
-   * ```
+   * ```angular-html
    * <ng-template let-ref>
    *   @for (item of items; track ref) {}
    * </ng-template>
@@ -315,7 +320,7 @@ export enum ErrorCode {
    * The trigger of a `defer` block cannot access its trigger element,
    * either because it doesn't exist or it's in a different view.
    *
-   * ```
+   * ```angular-html
    * @defer (on interaction(trigger)) {...}
    *
    * <ng-template>
@@ -329,7 +334,7 @@ export enum ErrorCode {
    * A control flow node is projected at the root of a component and is preventing its direct
    * descendants from being projected, because it has more than one root node.
    *
-   * ```
+   * ```angular-html
    * <comp>
    *  @if (expr) {
    *    <div projectsIntoSlot></div>
@@ -371,7 +376,7 @@ export enum ErrorCode {
    * A two way binding in a template has an incorrect syntax,
    * parentheses outside brackets. For example:
    *
-   * ```
+   * ```html
    * <div ([foo])="bar" />
    * ```
    */
@@ -380,7 +385,7 @@ export enum ErrorCode {
   /**
    * The left side of a nullish coalescing operation is not nullable.
    *
-   * ```
+   * ```html
    * {{ foo ?? bar }}
    * ```
    * When the type of foo doesn't include `null` or `undefined`.
@@ -397,7 +402,7 @@ export enum ErrorCode {
    * A text attribute is not interpreted as a binding but likely intended to be.
    *
    * For example:
-   * ```
+   * ```html
    * <div
    *   attr.x="value"
    *   class.blue="true"
@@ -415,7 +420,7 @@ export enum ErrorCode {
    * in their statement.
    *
    * For example:
-   * ```
+   * ```html
    * <ul><li *ngFor="item of items">{{item["name"]}};</li></ul>
    * ```
    */
@@ -435,7 +440,7 @@ export enum ErrorCode {
   /**
    * The left side of an optional chain operation is not nullable.
    *
-   * ```
+   * ```html
    * {{ foo?.bar }}
    * {{ foo?.['bar'] }}
    * {{ foo?.() }}
@@ -448,7 +453,7 @@ export enum ErrorCode {
    * `ngSkipHydration` should not be a binding (it should be a static attribute).
    *
    * For example:
-   * ```
+   * ```html
    * <my-cmp [ngSkipHydration]="someTruthyVar" />
    * ```
    *
@@ -461,7 +466,7 @@ export enum ErrorCode {
    * Signal functions should be invoked when interpolated in templates.
    *
    * For example:
-   * ```
+   * ```html
    * {{ mySignal() }}
    * ```
    */
@@ -470,7 +475,7 @@ export enum ErrorCode {
   /**
    * Initializer-based APIs can only be invoked from inside of an initializer.
    *
-   * ```
+   * ```ts
    * // Allowed
    * myInput = input();
    *
@@ -486,7 +491,7 @@ export enum ErrorCode {
    * A function in an event binding is not called.
    *
    * For example:
-   * ```
+   * ```html
    * <button (click)="myFunc"></button>
    * ```
    *
@@ -494,6 +499,24 @@ export enum ErrorCode {
    * `<button (click)="myFunc()"></button>`.
    */
   UNINVOKED_FUNCTION_IN_EVENT_BINDING = 8111,
+
+  /**
+   * A `@let` declaration in a template isn't used.
+   *
+   * For example:
+   * ```angular-html
+   * @let used = 1; <!-- Not an error -->
+   * @let notUsed = 2; <!-- Error -->
+   *
+   * {{used}}
+   * ```
+   */
+  UNUSED_LET_DECLARATION = 8112,
+
+  /**
+   * A symbol referenced in `@Component.imports` isn't being used within the template.
+   */
+  UNUSED_STANDALONE_IMPORTS = 8113,
 
   /**
    * The template type-checking engine would need to generate an inline type check block for a

@@ -19,22 +19,25 @@ Start developing with the latest Angular features from our roadmap. This list re
 
 ### Available to experiment with
 
-* [Explore Angular Signals](guide/signals)
-* [Event replay with SSR](https://angular.dev/api/platform-browser/withEventReplay)
-* [Zoneless change detection](https://angular.dev/guide/experimental/zoneless)
-* [Hydration support for i18n blocks](https://angular.dev/api/platform-browser/withI18nSupport)
+* [Incremental hydration](/guide/incremental-hydration)
+* [Zoneless change detection](/guide/experimental/zoneless)
+* [Hydration support for i18n blocks](/api/platform-browser/withI18nSupport)
+* [Resource API](/guide/signals/resource)
+* [Effect API](/api/core/effect)
+* [Linked Signal API](/guide/signals/linked-signal)
+* [Route-level render mode](/guide/hybrid-rendering)
 
 ### Production ready
 
-* [Hydration](guide/hydration)
-* [Deferrable views](https://angular.dev/guide/defer)
-* [Built-in control flow](https://angular.dev/guide/templates/control-flow)
-* [Migrate your Angular Material to MDC](https://material.angular.io/guide/mdc-migration)
-* [Angular Material 3](https://material.angular.io/guide/theming)
-* [Migrate to Standalone APIs](reference/migrations/standalone)
-* [Improve image performance with NgOptimizedImage](guide/image-optimization)
-* [Try out Inject](/tutorials/learn-angular/20-inject-based-di)
-* [New CDK directives](https://material.angular.io/cdk/categories)
+* [Explore Angular Signals](/guide/signals)
+* [Event replay with SSR](/api/platform-browser/withEventReplay)
+* [Deferrable views](/guide/defer)
+* [Built-in control flow](/guide/templates/control-flow)
+* [Local variable declaration](/guide/templates/variables)
+* [Signal inputs](/guide/signals/inputs)
+* [Model inputs](/guide/signals/model)
+* [Signal queries](/guide/signals/queries)
+* [Function-based outputs](/guide/components/outputs)
 
 ## Improving the Angular developer experience
 
@@ -44,15 +47,23 @@ Start developing with the latest Angular features from our roadmap. This list re
   <docs-card title="Deliver Angular Signals" href="https://github.com/angular/angular/discussions/49685">
   This project rethinks the Angular reactivity model by introducing Signals as a reactivity primitive. The initial planning resulted in hundreds of discussions, conversations with developers, feedback sessions, user experience studies, and a series of RFCs, which received over 1,000 comments.
 
-  As part of the v17 release, we graduated the Angular Signals library from developer preview. In v18 you can now use signal-based queries, inputs, and model inputs in developer preview. Next we'll continue addressing community feedback before graduating these APIs to stable and integrate signals deeper in Angular's change detection mechanism.
+  As part of the v17 release, we graduated the Angular Signals library from developer preview. In v19 we moved signal-based queries, inputs, and model inputs to stable. Next, we'll need to finalize effects before we complete this project.
   </docs-card>
   <docs-card title="Zoneless Angular" href="">
   In v18 we shipped experimental zoneless support in Angular. It enables developers to use the framework without including zone.js in their bundle, which improves performance, debugging experience, and interoperability. As part of the initial release we also introduced zoneless support to the Angular CDK and Angular Material.
 
-  As the next step, we'll continue iterating on the API to improve developer experience.
+  In v19 we introduced zoneless support in server-side rendering, addressed some edge cases, and created a schematic to scaffold zoneless projects. We transitioned <a href="https://fonts.google.com/">Google Fonts</a> to zoneless which improved performance, developer experience, and allowed us to identify gaps that we need to address before moving this feature to developer preview. Stay tuned for more updates in the next months.
   </docs-card>
-  <docs-card title="Local template variables" href="https://github.com/angular/angular/issues/15280">
-  Local template variables is one of the most upvoted features in the Angular issue tracker. In Q2 2024 we started initial design and prototyping. Expect updates later in 2024.
+  <docs-card title="Signal integrations" href="">
+  We're working towards improving the integration of fundamental Angular packages, such as forms, HTTP, and router, with Signals. As part of this project, we'll seek opportunities to introduce convenient signal-based APIs or wrappers to improve the holistic developer experience.
+  </docs-card>
+  <docs-card title="Signal debugging in Angular DevTools" href="">
+  With the evolution of Signals in Angular, we are working on a better tooling for debugging them. High on the priority list is a UI for inspecting and debugging signals.
+  </docs-card>
+  <docs-card title="Improve HMR (Hot Module Reload)" href="https://github.com/angular/angular/issues/39367#issuecomment-1439537306">
+  We're working towards faster edit/refresh cycle by enabling hot module replacement.
+  
+  In Angular v19 we shipped initial support for CSS and template HMR. We'll continue collecting feedback to make sure we're addressing developers' needs before we mark this project as complete.
   </docs-card>
 </docs-card-container>
 
@@ -71,30 +82,29 @@ Start developing with the latest Angular features from our roadmap. This list re
 
 <docs-card-container>
   <docs-card title="Modernize unit testing tooling with ng test" href="">
-  In v12, we revisited the Angular end-to-end testing experience by replacing Protractor with modern alternatives such as Cypress, Nightwatch, and Webdriver.io. Next, we'd like to tackle `ng test` to modernize Angular's unit testing experience. In Q2 2023, we introduced experimental [Jest](https://jestjs.io/) support and [announced](https://blog.angular.io/moving-angular-cli-to-jest-and-web-test-runner-ef85ef69ceca) the transition from Karma to the [Web Test Runner](https://modern-web.dev/docs/test-runner/overview/).
+  In v12, we revisited the Angular end-to-end testing experience by replacing Protractor with modern alternatives such as Cypress, Nightwatch, Puppeteer, Playwright, and Webdriver.io. Next, we'd like to tackle `ng test` to modernize Angular's unit testing experience.
 
-  Later this year we'll continue making progress towards introducing Web Test Runner as the replacement of Karma.
+  We're currently evaluating Web Test Runner, Vitest, and Jest as candidates for a new test runner for Angular projects while preserving Jasmine as assertion library to not break existing tests.
   </docs-card>
-  <docs-card title="Streamline standalone imports with Language Service" href="">
-  As part of this initiative, the language service automatically imports components and pipes in standalone and NgModule-based apps. Additionally, to enable smaller app bundles, we'll work on allowing the language service to propose the automatic removal of unused imports.
+  <docs-card title="Evaluating Nitro support in the Angular CLI" href="https://nitro.unjs.io/">
+  We're excited about the set of features that Nitro offers such as more deployment options, improved compatibility of server-side rendering with different runtimes and file-based routing. In 2025 we'll evaluate how it fits in the Angular server-side rendering model.
+
+  We'll share updates as we make progress in this investigation.
   </docs-card>
 </docs-card-container>
 
 ## Fast by default
 
 <docs-card-container>
-  <docs-card title="Exploration of partial hydration" href="">
-  In v17 we graduated hydration from developer preview and we've been consistently observing 40-50% improvements in LCP. Since then we started prototyping partial hydration and shared a demo on stage at ng-conf. Expect an experimental support in 2024.
-  </docs-card>
-  <docs-card title="Event replay with SSR and prerendering" href="https://angular.dev/api/platform-browser/withEventReplay">
-  In v18 we introduced an event replay functionality when using server-side rendering or prerendering. For this feature we depend on the event dispatch primitive (previously known as jsaction) that is running on Google.com.
-
-  Over the next couple of months we'll be collecting feedback from the community for this feature and work towards graduating it to stable.
+  <docs-card title="Enable incremental hydration" href="">
+  In v17 we graduated hydration from developer preview and we've been consistently observing 40-50% improvements in LCP. Since then we started prototyping incremental hydration and shared a demo on stage at ng-conf.
+  
+  In v19 we shipped the incremental hydration in developer preview mode, powered by `@defer` blocks. Give it a try and <a href="https://github.com/angular/angular/issues">share your feedback</a> with us!
   </docs-card>
   <docs-card title="Server route configuration" href="">
   We're working towards enabling a more ergonomic route configuration on the server. We want to make it trivial to declare which routes should be server-side rendered, prerendered or client-side rendered.
 
-  As of right now, we're in early design and prototyping phase. Expect updates later in 2024.
+  In Angular v19 we shipped developer preview of route-level render mode which allows you to granularly configure which routes you want Angular to prerender, server-side render or client-side render. 
   </docs-card>
 </docs-card-container>
 
@@ -103,14 +113,13 @@ Start developing with the latest Angular features from our roadmap. This list re
 This section represents explorations and prototyping of potential future projects. A reasonable outcome is to decide that our current solutions are the best options. Other projects may result in RFCs, graduating to in-progress projects, or being deprioritized as the web continues to innovate along with our framework.
 
 <docs-card-container>
-  <docs-card title="Signal debugging in Angular DevTools" href="">
-  With the evolution of Signals in Angular, we'll be also working on a better tooling for debugging them. High on the priority list is a UI for inspecting and debugging Signal-based components.
+  <docs-card title="Signal Forms" href="">
+  We plan to analyze existing feedback about Angular forms and design a solution which addresses developers' requirements and uses Signals for management of reactive state.
   </docs-card>
-  <docs-card title="Improve HMR (Hot Module Reload)" href="https://github.com/angular/angular/issues/39367#issuecomment-1439537306">
-  Angular CLI currently supports HMR via `ng serve --hmr`. Under the hood, this mostly rerenders the Angular application from scratch, which is better than a full page reload, but can definitely be improved. Most importantly, our strategy here should be to optimize the turnaround time for any given change scaled with the frequency of that kind of change. In the future, our team will explore a number of opportunities for improving HMR, including:
+  <docs-card title="Selectorless" href="">
+  To reduce boilerplate and improve the ergonomics of standalone components we are now designing a solution that will make selectors optional. To use a component or directive you'll be able to import it and directly use it in a component's template.
 
-- Fast track CSS-only changes and apply them to any existing components on the page.
-- Fast track Angular template-only changes and apply them to any existing components on the page.
+  We're still in early stages of planning selectorless. We'll share a request for comments when we have an early design and we're ready for next steps.
   </docs-card>
   <docs-card title="Exploration of streamed server-side rendering" href="">
   Over the past few releases we've been working on making Angular's server-side rendering story more robust. On our priority list is to explore streamed server-side rendering for zoneless application.
@@ -118,19 +127,36 @@ This section represents explorations and prototyping of potential future project
   <docs-card title="Investigation for authoring format improvements" href="">
   Based on our developer surveys' results we saw there are opportunities for improving the ergonomics of the component authoring format. The first step of the process will be to gather requirements and understand the problem space in advanced to an RFC. We'll share updates as we make progress. High priority in the future work will be backward compatibility and interoperability.
   </docs-card>
-  <docs-card title="Support two-dimensional drag-and-drop" href="https://github.com/angular/components/issues/13372">
-  As part of this project, we'd like to implement mixed orientation support for the Angular CDK drag and drop. This is one of the repository's most highly requested features.
+  <docs-card title="Improve TestBed" href="">
+  Based on feedback over the years and the recent updates in Angular's runtime, we'll evaluate TestBed to identify opportunities to improve developer experience and reduce boilerplate when developing unit tests.
   </docs-card>
-  <docs-card title="Evaluating Nitro support in the Angular CLI" href="https://nitro.unjs.io/">
-  We're excited about the set of features that Nitro offers such as portability, minimal design, and file-based routing. Later this year we'll evaluate how it fits in the Angular server-side rendering model.
+  <docs-card title="Incremental adoption" href="">
+  Angular has been lacking the tools and the flexibility to add interactivity to a multi-page app or embed an Angular component inside of an existing app built with a different framework.
 
-  We'll share updates as we make progress in this investigation.
+  As part of this project, we'll explore the requirement space of cross framework interop and our build tooling offering to make this use case possible.
   </docs-card>
 </docs-card-container>
 
 ## Completed projects
 
 <docs-card-container>
+  <docs-card title="Support two-dimensional drag-and-drop" link="Completed in Q2 2024" href="https://github.com/angular/components/issues/13372">
+  As part of this project, we implemented mixed orientation support for the Angular CDK drag and drop. This is one of the repository's most highly requested features.
+  </docs-card>
+  <docs-card title="Event replay with SSR and prerendering" link="Completed in Q4 2024" href="https://angular.dev/api/platform-browser/withEventReplay">
+  In v18 we introduced an event replay functionality when using server-side rendering or prerendering. For this feature we depend on the event dispatch primitive (previously known as jsaction) that is running on Google.com.
+
+  In Angular v19 we graduated event replay to stable and enabled it by default for all new projects.
+  </docs-card>
+  <docs-card title="Integrate Angular Language Service with Schematics" link="Completed in Q4 2024" href="">
+  To make it easier for developers to use modern Angular APIs, we enabled integration between the Angular language service and schematics which allows you to refactor your app with a single click.
+  </docs-card>
+  <docs-card title="Streamline standalone imports with Language Service" link="Completed in Q4 2024" href="">
+  As part of this initiative, the language service automatically imports components and pipes in standalone and NgModule-based apps. Additionally, we've added a template diagnostic to highlight unused imports in standalone components, which should help make application bundles smaller.
+  </docs-card>
+  <docs-card title="Local template variables" link="Completed in Q3 2024">
+  We've released the support for local template variables in Angular, see [`@let` docs](https://angular.dev/api/core/@let) for additional information.
+  </docs-card>
   <docs-card title="Expand the customizability of Angular Material" link="Completed in Q2 2024" href="https://material.angular.io/guide/theming">
   To provide better customization of our Angular Material components and enable Material 3 capabilities, we'll be collaborating with Google's Material Design team on defining token-based theming APIs.
 
@@ -142,7 +168,7 @@ This section represents explorations and prototyping of potential future project
   <docs-card title="iframe support in Angular DevTools" link="Completed in Q2 2024" href="">
   We enabled debugging and profiling of Angular apps embedded within an iframe on the page.
   </docs-card>
-  <docs-card title="Automation for transition of existing hybrid rendering projects to esbuild and vite" link="Completed in Q2 2024" href="tools/cli/esbuild">
+  <docs-card title="Automation for transition of existing hybrid rendering projects to esbuild and vite" link="Completed in Q2 2024" href="tools/cli/build-system-migration">
   In v17 we shipped a vite and esbuild-based application builder and enabled it for new projects by default. It improves build time for projects using hybrid rendering with up to 87%. As part of v18 we shipped schematics and a guide that migrate existing projects using hybrid rendering to the new build pipeline.
   </docs-card>
   <docs-card title="Make Angular.dev the official home for Angular developers" link="Completed in Q2 2024" href="https://goo.gle/angular-dot-dev">
@@ -164,7 +190,7 @@ This section represents explorations and prototyping of potential future project
   We released a developer preview of the `ng new --standalone` schematics collection, allowing you to create apps free of NgModules. In v17 we switched the new application authoring format to standalone APIs and changed the documentation to reflect the recommendation. Additionally, we shipped schematics which support updating existing applications to standalone components, directives, and pipes. Even though NgModules will stick around for foreseeable future, we recommend you to explore the benefits of the new APIs to improve developer experience and benefit from the new features we build for them.
   </docs-card>
   <docs-card title="Explore hydration and server-side rendering improvements" link="Completed Q4 2023">
-  In v16, we released a developer preview of non-destructive full hydration, see the [hydration guide](guide/hydration) and the [blog post](https://blog.angular.io/whats-next-for-server-side-rendering-in-angular-2a6f27662b67) for additional information. We're already seeing significant improvements to Core Web Vitals, including [LCP](https://web.dev/lcp) and [CLS](https://web.dev/cls). In lab tests, we consistently observed 45% better LCP of a real-world app.
+  In v16, we released a developer preview of non-destructive full hydration, see the [hydration guide](guide/hydration) and the [blog post](https://blog.angular.dev/whats-next-for-server-side-rendering-in-angular-2a6f27662b67) for additional information. We're already seeing significant improvements to Core Web Vitals, including [LCP](https://web.dev/lcp) and [CLS](https://web.dev/cls). In lab tests, we consistently observed 45% better LCP of a real-world app.
 
   In v17 we launched hydration outside developer preview and did a series of improvements in the server-side rendering story, including: route discovery at runtime for SSG, up to 87% faster build times for hybrid rendered applications, prompt that enables hybrid rendering for new projects.
   </docs-card>
@@ -180,7 +206,7 @@ This section represents explorations and prototyping of potential future project
   <docs-card title="Improve image performance" link="Completed Q4 2022" href="guide/image-optimization">
   The Aurora and the Angular teams are working on the implementation of an image directive that aims to improve Core Web Vitals. We shipped a stable version of the image directive in v15.
   </docs-card>
-  <docs-card title="Modern CSS" link="Completed Q4 2022" href="https://blog.angular.io/modern-css-in-angular-layouts-4a259dca9127">
+  <docs-card title="Modern CSS" link="Completed Q4 2022" href="https://blog.angular.dev/modern-css-in-angular-layouts-4a259dca9127">
   The Web ecosystem evolves constantly and we want to reflect the latest modern standards in Angular. In this project we aim to provide guidelines on using modern CSS features in Angular to ensure developers follow best practices for layout, styling, etc. We shared official guidelines for layout and as part of the initiative stopped publishing flex layout.
   </docs-card>
   <docs-card title="Support adding directives to host elements" link="Completed Q4 2022" href="guide/directives/directive-composition-api">
@@ -192,7 +218,7 @@ This section represents explorations and prototyping of potential future project
   <docs-card title="Enhanced Angular Material components by integrating MDC Web" link="Completed Q4 2022" href="https://material.angular.io/guide/mdc-migration">
   MDC Web is a library created by the Google Material Design team that provides reusable primitives for building Material Design components. The Angular team is incorporating these primitives into Angular Material. Using MDC Web aligns Angular Material more closely with the Material Design specification, expands accessibility, improves component quality, and improves the velocity of our team.
   </docs-card>
-  <docs-card title="Implement APIs for optional NgModules" link="Completed Q4 2022" href="https://blog.angular.io/angular-v15-is-now-available-df7be7f2f4c8">
+  <docs-card title="Implement APIs for optional NgModules" link="Completed Q4 2022" href="https://blog.angular.dev/angular-v15-is-now-available-df7be7f2f4c8">
   In the process of making Angular simpler, we are working on introducing APIs that allow developers to initialize apps, instantiate components, and use the router without NgModules. Angular v14 introduces developer preview of the APIs for standalone components, directives, and pipes. In the next few quarters we'll collect feedback from developers and finalize the project making the APIs stable. As the next step we will work on improving use cases such as TestBed, Angular elements, etc.
   </docs-card>
   <docs-card title="Allow binding to protected fields in templates" link="Completed Q2 2022" href="guide/templates/binding">
@@ -204,10 +230,10 @@ This section represents explorations and prototyping of potential future project
   <docs-card title="Rollout strict typings for @angular/forms" link="Completed Q2 2022" href="guide/forms/typed-forms">
   In Q4 2021 we designed a solution for introducing strict typings for forms and in Q1 2022 we concluded the corresponding request for comments. Currently, we are implementing a rollout strategy with an automated migration step that will enable the improvements for existing projects. We are first testing the solution with more than 2,500 projects at Google to ensure a smooth migration path for the external community.
   </docs-card>
-  <docs-card title="Remove legacy View Engine" link="Completed Q1 2022" href="https://blog.angular.io/angular-v15-is-now-available-df7be7f2f4c8">
+  <docs-card title="Remove legacy View Engine" link="Completed Q1 2022" href="https://blog.angular.dev/angular-v15-is-now-available-df7be7f2f4c8">
   After the transition of all our internal tooling to Ivy is completed, we will remove the legacy View Engine for reduced Angular conceptual overhead, smaller package size, lower maintenance cost, and lower codebase complexity.
   </docs-card>
-  <docs-card title="Simplified Angular mental model with optional NgModules" link="Completed Q1 2022" href="https://blog.angular.io/angular-v15-is-now-available-df7be7f2f4c8">
+  <docs-card title="Simplified Angular mental model with optional NgModules" link="Completed Q1 2022" href="https://blog.angular.dev/angular-v15-is-now-available-df7be7f2f4c8">
   To simplify the Angular mental model and learning journey, we will be working on making NgModules optional. This work lets developers develop standalone components and implement an alternative API for declaring the compilation scope of the component. We kicked this project off with high-level design discussions that we captured in an RFC.
   </docs-card>
   <docs-card title="Design strict typing for @angular/forms" link="Completed Q1 2022" href="guide/forms/typed-forms">

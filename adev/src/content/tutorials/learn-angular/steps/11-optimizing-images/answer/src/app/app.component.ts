@@ -6,7 +6,6 @@ import {UserComponent} from './user.component';
   template: `
     <app-user />
   `,
-  standalone: true,
   imports: [UserComponent],
 })
 export class AppComponent {}

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Lexer} from '../../expression_parser/lexer';
@@ -35,6 +35,10 @@ export interface ParseTemplateOptions {
    * Preserve original line endings instead of normalizing '\r\n' endings to '\n'.
    */
   preserveLineEndings?: boolean;
+  /**
+   * Preserve whitespace significant to rendering.
+   */
+  preserveSignificantWhitespace?: boolean;
   /**
    * How to parse interpolation markers.
    */
@@ -126,14 +130,6 @@ export interface ParseTemplateOptions {
 
   /** Whether the `@let` syntax is enabled. */
   enableLetSyntax?: boolean;
-
-  // TODO(crisbeto): delete this option when the migration is deleted.
-  /**
-   * Whether the parser should allow invalid two-way bindings.
-   *
-   * This option is only present to support an automated migration away from the invalid syntax.
-   */
-  allowInvalidAssignmentEvents?: boolean;
 }
 
 /**
@@ -148,13 +144,8 @@ export function parseTemplate(
   templateUrl: string,
   options: ParseTemplateOptions = {},
 ): ParsedTemplate {
-  const {
-    interpolationConfig,
-    preserveWhitespaces,
-    enableI18nLegacyMessageIdFormat,
-    allowInvalidAssignmentEvents,
-  } = options;
-  const bindingParser = makeBindingParser(interpolationConfig, allowInvalidAssignmentEvents);
+  const {interpolationConfig, preserveWhitespaces, enableI18nLegacyMessageIdFormat} = options;
+  const bindingParser = makeBindingParser(interpolationConfig);
   const htmlParser = new HtmlParser();
   const parseResult = htmlParser.parse(template, templateUrl, {
     leadingTriviaChars: LEADING_TRIVIA_CHARS,
@@ -186,6 +177,12 @@ export function parseTemplate(
 
   let rootNodes: html.Node[] = parseResult.rootNodes;
 
+  // We need to use the same `retainEmptyTokens` value for both parses to avoid
+  // causing a mismatch when reusing source spans, even if the
+  // `preserveSignificantWhitespace` behavior is different between the two
+  // parses.
+  const retainEmptyTokens = !(options.preserveSignificantWhitespace ?? true);
+
   // process i18n meta information (scan attributes, generate ids)
   // before we run whitespace removal process, because existing i18n
   // extraction process (ng extract-i18n) relies on a raw content to generate
@@ -194,6 +191,9 @@ export function parseTemplate(
     interpolationConfig,
     /* keepI18nAttrs */ !preserveWhitespaces,
     enableI18nLegacyMessageIdFormat,
+    /* containerBlocks */ undefined,
+    options.preserveSignificantWhitespace,
+    retainEmptyTokens,
   );
   const i18nMetaResult = i18nMetaVisitor.visitAllWithErrors(rootNodes);
 
@@ -220,7 +220,25 @@ export function parseTemplate(
   rootNodes = i18nMetaResult.rootNodes;
 
   if (!preserveWhitespaces) {
-    rootNodes = html.visitAll(new WhitespaceVisitor(), rootNodes);
+    // Always preserve significant whitespace here because this is used to generate the `goog.getMsg`
+    // and `$localize` calls which should retain significant whitespace in order to render the
+    // correct output. We let this diverge from the message IDs generated earlier which might not
+    // have preserved significant whitespace.
+    //
+    // This should use `visitAllWithSiblings` to set `WhitespaceVisitor` context correctly, however
+    // there is an existing bug where significant whitespace is not properly retained in the JS
+    // output of leading/trailing whitespace for ICU messages due to the existing lack of context\
+    // in `WhitespaceVisitor`. Using `visitAllWithSiblings` here would fix that bug and retain the
+    // whitespace, however it would also change the runtime representation which we don't want to do
+    // right now.
+    rootNodes = html.visitAll(
+      new WhitespaceVisitor(
+        /* preserveSignificantWhitespace */ true,
+        /* originalNodeMap */ undefined,
+        /* requireContext */ false,
+      ),
+      rootNodes,
+    );
 
     // run i18n meta visitor again in case whitespaces are removed (because that might affect
     // generated i18n message content) and first pass indicated that i18n content is present in a
@@ -228,7 +246,14 @@ export function parseTemplate(
     // mimic existing extraction process (ng extract-i18n)
     if (i18nMetaVisitor.hasI18nMeta) {
       rootNodes = html.visitAll(
-        new I18nMetaVisitor(interpolationConfig, /* keepI18nAttrs */ false),
+        new I18nMetaVisitor(
+          interpolationConfig,
+          /* keepI18nAttrs */ false,
+          /* enableI18nLegacyMessageIdFormat */ undefined,
+          /* containerBlocks */ undefined,
+          /* preserveSignificantWhitespace */ true,
+          retainEmptyTokens,
+        ),
         rootNodes,
       );
     }
@@ -264,15 +289,8 @@ const elementRegistry = new DomElementSchemaRegistry();
  */
 export function makeBindingParser(
   interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
-  allowInvalidAssignmentEvents = false,
 ): BindingParser {
-  return new BindingParser(
-    new Parser(new Lexer()),
-    interpolationConfig,
-    elementRegistry,
-    [],
-    allowInvalidAssignmentEvents,
-  );
+  return new BindingParser(new Parser(new Lexer()), interpolationConfig, elementRegistry, []);
 }
 
 /**

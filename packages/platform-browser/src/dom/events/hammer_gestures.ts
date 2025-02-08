@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {DOCUMENT} from '@angular/common';
@@ -11,9 +11,9 @@ import {
   Inject,
   Injectable,
   InjectionToken,
+  Injector,
   NgModule,
   Optional,
-  Provider,
   ɵConsole as Console,
 } from '@angular/core';
 
@@ -68,7 +68,9 @@ const EVENT_NAMES = {
  * @ngModule HammerModule
  * @publicApi
  */
-export const HAMMER_GESTURE_CONFIG = new InjectionToken<HammerGestureConfig>('HammerGestureConfig');
+export const HAMMER_GESTURE_CONFIG = new InjectionToken<HammerGestureConfig>(
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'HammerGestureConfig' : '',
+);
 
 /**
  * Function that loads HammerJS, returning a promise that is resolved once HammerJs is loaded.
@@ -78,11 +80,15 @@ export const HAMMER_GESTURE_CONFIG = new InjectionToken<HammerGestureConfig>('Ha
 export type HammerLoader = () => Promise<void>;
 
 /**
- * Injection token used to provide a {@link HammerLoader} to Angular.
+ * Injection token used to provide a HammerLoader to Angular.
+ *
+ * @see {@link HammerLoader}
  *
  * @publicApi
  */
-export const HAMMER_LOADER = new InjectionToken<HammerLoader>('HammerLoader');
+export const HAMMER_LOADER = new InjectionToken<HammerLoader>(
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'HammerLoader' : '',
+);
 
 export interface HammerInstance {
   on(eventName: string, callback?: Function): void;
@@ -172,7 +178,7 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
   constructor(
     @Inject(DOCUMENT) doc: any,
     @Inject(HAMMER_GESTURE_CONFIG) private _config: HammerGestureConfig,
-    private console: Console,
+    private _injector: Injector,
     @Optional() @Inject(HAMMER_LOADER) private loader?: HammerLoader | null,
   ) {
     super(doc);
@@ -185,7 +191,10 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
 
     if (!(window as any).Hammer && !this.loader) {
       if (typeof ngDevMode === 'undefined' || ngDevMode) {
-        this.console.warn(
+        // Get a `Console` through an injector to tree-shake the
+        // class when it is unused in production.
+        const _console = this._injector.get(Console);
+        _console.warn(
           `The "${eventName}" event cannot be bound because Hammer.JS is not ` +
             `loaded and no custom loader has been specified.`,
         );
@@ -217,9 +226,8 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
           // If Hammer isn't actually loaded when the custom loader resolves, give up.
           if (!(window as any).Hammer) {
             if (typeof ngDevMode === 'undefined' || ngDevMode) {
-              this.console.warn(
-                `The custom HAMMER_LOADER completed, but Hammer.JS is not present.`,
-              );
+              const _console = this._injector.get(Console);
+              _console.warn(`The custom HAMMER_LOADER completed, but Hammer.JS is not present.`);
             }
             deregister = () => {};
             return;
@@ -233,7 +241,8 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
           }
         }).catch(() => {
           if (typeof ngDevMode === 'undefined' || ngDevMode) {
-            this.console.warn(
+            const _console = this._injector.get(Console);
+            _console.warn(
               `The "${eventName}" event cannot be bound because the custom ` +
                 `Hammer.JS loader failed.`,
             );
@@ -291,7 +300,7 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
       provide: EVENT_MANAGER_PLUGINS,
       useClass: HammerGesturesPlugin,
       multi: true,
-      deps: [DOCUMENT, HAMMER_GESTURE_CONFIG, Console, [new Optional(), HAMMER_LOADER]],
+      deps: [DOCUMENT, HAMMER_GESTURE_CONFIG, Injector, [new Optional(), HAMMER_LOADER]],
     },
     {provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig, deps: []},
   ],

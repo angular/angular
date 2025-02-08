@@ -74,9 +74,9 @@ HELPFUL: Approximate dates are offered as general guidance and are subject to ch
 
 | Version | Date               |
 |:--------|:-------------------|
-| v18.1   | Week of 2024-07-08 |
-| v18.2   | Week of 2024-08-12 |
-| v19.0   | Week of 2024-11-13 |
+| v19.1   | Week of 2025-01-13 |
+| v19.2   | Week of 2025-02-24 |
+| v20.0   | Week of 2025-05-19 |
 
 ### Support window
 
@@ -93,11 +93,11 @@ The following table provides the status for Angular versions under support.
 
 | Version | Status | Released   | Active ends | LTS ends   |
 |:--------|:-------|:-----------|:------------|:-----------|
-| ^18.0.0 | Active | 2024-05-22 | 2024-11-15  | 2025-11-15 |
+| ^19.0.0 | Active | 2024-11-19 | 2025-05-19  | 2026-05-19 |
+| ^18.0.0 | LTS    | 2024-05-22 | 2024-11-19  | 2025-11-19 |
 | ^17.0.0 | LTS    | 2023-11-08 | 2024-05-08  | 2025-05-15 |
-| ^16.0.0 | LTS    | 2023-05-03 | 2023-11-08  | 2024-11-08 |
 
-Angular versions v2 to v15 are no longer supported.
+Angular versions v2 to v16 are no longer supported.
 
 ### LTS fixes
 
@@ -165,6 +165,6 @@ The policies and practices that are described in this document do not apply to A
 
 ## Experimental
 
-These are APIs might not become stable at all or have significant changes before becoming stable.
+These APIs might not become stable at all or have significant changes before becoming stable.
 
 The policies and practices that are described in this document do not apply to APIs marked as experimental. Such APIs can change at any time, even in new patch versions of the framework. Teams should decide for themselves whether the benefits of using experimental APIs are worth the risk of breaking changes outside of our normal use of semantic versioning.

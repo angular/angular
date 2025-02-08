@@ -1,7 +1,6 @@
 import {Component, contentChild, contentChildren, viewChild, viewChildren} from '@angular/core';
 
 @Component({
-  standalone: true,
   template: 'Works',
 })
 export class TestComp {

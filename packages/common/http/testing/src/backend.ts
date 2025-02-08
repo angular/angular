@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {HttpBackend, HttpEvent, HttpEventType, HttpRequest} from '@angular/common/http';
@@ -30,6 +30,11 @@ export class HttpClientTestingBackend implements HttpBackend, HttpTestingControl
    * List of pending requests which have not yet been expected.
    */
   private open: TestRequest[] = [];
+
+  /**
+   * Used when checking if we need to throw the NOT_USING_FETCH_BACKEND_IN_SSR error
+   */
+  private isTestingBackend = true;
 
   /**
    * Handle an incoming request by queueing it in the list of open requests.

@@ -12,9 +12,23 @@
   "separateMajorMinor": false,
   "prHourlyLimit": 3,
   "timezone": "America/Tijuana",
-  "lockFileMaintenance": {"enabled": true},
+  "lockFileMaintenance": {
+    "enabled": true
+  },
   "labels": ["target: patch", "area: build & ci", "action: merge"],
+  "postUpgradeTasks": {
+    "commands": [
+      "git restore .yarn/releases/yarn-1.22.22.cjs",
+      "yarn install --frozen-lockfile --non-interactive",
+      "yarn ng-dev misc update-generated-files"
+    ],
+    "fileFilters": [".github/actions/deploy-docs-site/**/*", "packages/**/*"],
+    "executionMode": "branch"
+  },
   "ignoreDeps": [
+    "@bazel/ibazel",
+    "@bazel/runfiles",
+    "@rollup/plugin-node-resolve",
     "@types/node",
     "@types/selenium-webdriver",
     "angular-1.5",
@@ -25,83 +39,91 @@
     "angular-mocks-1.6",
     "angular-mocks-1.7",
     "angular-mocks-1.8",
-    "remark",
-    "remark-html",
-    "selenium-webdriver",
-    "watchr",
-    "rxjs",
-    "glob",
+    "aspect_bazel_lib",
+    "build_bazel_rules_nodejs",
     "chalk",
     "convert-source-map",
-    "@rollup/plugin-node-resolve",
-    "hast-util-is-element",
+    "glob",
     "hast-util-has-property",
+    "hast-util-is-element",
     "hast-util-to-string",
     "rehype-slug",
+    "remark",
+    "remark-html",
     "rollup",
+    "rules_pkg",
+    "rxjs",
+    "selenium-webdriver",
     "systemjs",
     "unist-util-filter",
     "unist-util-source",
     "unist-util-visit",
     "unist-util-visit-parents",
-    "rules_pkg",
-    "aspect_bazel_lib"
+    "watchr"
   ],
   "packageRules": [
     {
-      "matchDepPatterns": ["*"],
+      "matchPackageNames": ["*"],
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "all non-major dependencies",
       "schedule": ["after 10:00pm on monday", "before 04:00am on tuesday"]
     },
-
     {
-      "matchDepPatterns": ["^@bazel/.*", "^build_bazel.*"],
       "groupName": "bazel setup",
-      "schedule": ["at any time"]
+      "schedule": ["at any time"],
+      "matchDepNames": ["/^@bazel/.*/", "/^build_bazel.*/"]
     },
-
     {
-      "matchPackagePrefixes": ["@angular/", "angular/", "@angular-devkit", "@schematics/"],
       "followTag": "next",
       "groupName": "cross-repo Angular dependencies",
-      "schedule": ["at any time"]
+      "schedule": ["at any time"],
+      "matchPackageNames": [
+        "@angular/{/,}**",
+        "angular/{/,}**",
+        "@angular-devkit{/,}**",
+        "@schematics/{/,}**"
+      ]
     },
-
     {
-      "matchPackagePrefixes": ["@angular/", "angular/", "@angular-devkit", "@schematics/"],
-      "matchPaths": [
-        "packages/**",
-        "adev/src/content/tutorials/**"
-      ],
-      "followTag": null
+      "matchFileNames": ["packages/**", "adev/src/content/tutorials/**"],
+      "followTag": null,
+      "matchPackageNames": [
+        "@angular/{/,}**",
+        "angular/{/,}**",
+        "@angular-devkit{/,}**",
+        "@schematics/{/,}**"
+      ]
     },
-
     {
-      "matchPackagePrefixes": ["@babel/", "@types/babel__"],
-      "groupName": "babel dependencies"
+      "groupName": "babel dependencies",
+      "matchPackageNames": ["@babel/{/,}**", "@types/babel__{/,}**"]
     },
-
     {
-      "matchPackagePrefixes": ["@angular-eslint/", "@typescript-eslint/"],
-      "groupName": "eslint dependencies"
+      "groupName": "eslint dependencies",
+      "matchPackageNames": [
+        "@angular-eslint/{/,}**",
+        "@typescript-eslint/{/,}**"
+      ]
     },
-
     {
       "matchPackageNames": ["typescript", "tslib"],
       "groupName": "typescript dependencies"
     },
-
     {
-      "matchPaths": [".github/workflows/scorecard.yml"],
+      "matchFileNames": [".github/workflows/scorecard.yml"],
       "groupName": "scorecard action dependencies",
       "groupSlug": "scorecard-action"
     },
-
-    {"matchCurrentVersion": "0.0.0-PLACEHOLDER", "enabled": false},
-
     {
-      "matchPaths": ["integration/**", "packages/zone.js/test/typings/package.json"],
+      "matchCurrentVersion": "0.0.0-PLACEHOLDER",
+      "enabled": false
+    },
+    {
+      "matchFileNames": [
+        "integration/**",
+        "packages/zone.js/test/typings/package.json",
+        "packages/core/schematics/migrations/signal-migration/test/**"
+      ],
       "enabled": false
     }
   ]

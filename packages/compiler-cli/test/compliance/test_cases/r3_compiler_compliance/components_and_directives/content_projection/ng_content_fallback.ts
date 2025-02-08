@@ -2,7 +2,6 @@ import {Component} from '@angular/core';
 
 @Component({
   selector: 'test',
-  standalone: true,
   template: `
     <ng-content select="basic">Basic fallback</ng-content>
 

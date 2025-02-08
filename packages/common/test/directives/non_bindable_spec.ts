@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Component, Directive} from '@angular/core';
@@ -47,14 +47,21 @@ describe('non-bindable', () => {
   }));
 });
 
-@Directive({selector: '[test-dec]'})
+@Directive({
+  selector: '[test-dec]',
+  standalone: false,
+})
 class TestDirective {
   constructor(el: ElementRef) {
     el.nativeElement.classList.add('compiled');
   }
 }
 
-@Component({selector: 'test-cmp', template: ''})
+@Component({
+  selector: 'test-cmp',
+  template: '',
+  standalone: false,
+})
 class TestComponent {
   text: string;
   constructor() {

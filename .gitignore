@@ -4,11 +4,8 @@
 /bazel-out
 /integration/bazel/bazel-*
 *.log
-/node_modules/
-
-# CircleCI temporary file for cache key computation.
-# See `save_month_to_file` in `.circleci/config.yml`.
-month.txt
+node_modules/
+modules/ssr-benchmarks/node_modules/
 
 # Include when developing application packages.
 pubspec.lock
@@ -57,10 +54,5 @@ baseline.json
 # Husky
 .husky/_
 
-
 # Ignore cache created with the Angular CLI.
 .angular/
-
-# Ignore AIO files, useful when changing branches 
-aio/node_modules
-aio/out-tsc

@@ -1,5 +1,5 @@
-load("//devtools/tools:ng_module.bzl", "ng_module")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//devtools/tools:ng_module.bzl", "ng_module")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -12,7 +12,7 @@ ng_module(
     name = "app",
     srcs = [
         "app.component.ts",
-        "app.module.ts",
+        "app.config.ts",
     ],
     angular_assets = [
         "app.component.html",

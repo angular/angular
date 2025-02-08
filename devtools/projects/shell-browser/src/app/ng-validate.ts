@@ -3,16 +3,10 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /// <reference types="chrome"/>
-
-window.addEventListener('message', (event: MessageEvent) => {
-  if (event.source === window && event.data) {
-    chrome.runtime.sendMessage(event.data);
-  }
-});
 
 if (document.contentType === 'text/html') {
   const script = document.createElement('script');

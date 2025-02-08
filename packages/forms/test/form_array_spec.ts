@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {fakeAsync, tick} from '@angular/core/testing';
@@ -1538,7 +1538,7 @@ import {asyncValidator} from './util';
         describe('can be extended', () => {
           it('by a simple strongly-typed array', () => {
             abstract class StringFormArray extends FormArray {
-              override value!: string[];
+              override value: string[] = [];
             }
           });
 
@@ -1546,8 +1546,8 @@ import {asyncValidator} from './util';
             abstract class OtherTypedFormArray<
               TControls extends Array<AbstractControl<unknown>>,
             > extends FormArray {
-              override controls!: TControls;
-              override value!: never[];
+              override controls: TControls = {} as TControls;
+              override value: string[] = [];
             }
           });
         });

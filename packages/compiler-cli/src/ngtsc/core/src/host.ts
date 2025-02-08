@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import ts from 'typescript';
@@ -121,7 +121,7 @@ export class DelegatingCompilerHost
   ): ExtendedTsCompilerHost[M] {
     return this.delegate[name] !== undefined
       ? (this.delegate[name] as any).bind(this.delegate)
-      : undefined;
+      : undefined!;
   }
 }
 

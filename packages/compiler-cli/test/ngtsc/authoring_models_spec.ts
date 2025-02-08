@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import ts from 'typescript';
@@ -21,7 +21,7 @@ runInEachFileSystem(() => {
 
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
-      env.tsconfig({strictTemplates: true});
+      env.tsconfig({strictTemplates: true, _checkTwoWayBoundEvents: true});
     });
 
     it('should declare an input/output pair for a field initialized to a model()', () => {
@@ -46,7 +46,7 @@ runInEachFileSystem(() => {
       expect(dts).toContain(
         'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, never, never, ' +
           '{ "value": { "alias": "value"; "required": false; "isSignal": true; }; }, ' +
-          '{ "value": "valueChange"; }, never, never, false, never>;',
+          '{ "value": "valueChange"; }, never, never, true, never>;',
       );
     });
 
@@ -72,7 +72,7 @@ runInEachFileSystem(() => {
       expect(dts).toContain(
         'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, never, never, ' +
           '{ "value": { "alias": "alias"; "required": false; "isSignal": true; }; }, ' +
-          '{ "value": "aliasChange"; }, never, never, false, never>;',
+          '{ "value": "aliasChange"; }, never, never, true, never>;',
       );
     });
 
@@ -98,7 +98,7 @@ runInEachFileSystem(() => {
       expect(dts).toContain(
         'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, never, never, ' +
           '{ "value": { "alias": "value"; "required": true; "isSignal": true; }; }, ' +
-          '{ "value": "valueChange"; }, never, never, false, never>;',
+          '{ "value": "valueChange"; }, never, never, true, never>;',
       );
     });
 
@@ -298,8 +298,9 @@ runInEachFileSystem(() => {
         );
 
         const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(1);
+        expect(diags.length).toBe(2);
         expect(diags[0].messageText).toBe(`Type 'boolean' is not assignable to type 'number'.`);
+        expect(diags[1].messageText).toBe(`Type 'number' is not assignable to type 'boolean'.`);
       });
 
       it('should check a signal value bound to a model input via a two-way binding', () => {
@@ -328,8 +329,9 @@ runInEachFileSystem(() => {
         );
 
         const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(1);
+        expect(diags.length).toBe(2);
         expect(diags[0].messageText).toBe(`Type 'boolean' is not assignable to type 'number'.`);
+        expect(diags[1].messageText).toBe(`Type 'number' is not assignable to type 'boolean'.`);
       });
 
       it('should check two-way binding of a signal to a decorator-based input/output pair', () => {
@@ -359,8 +361,9 @@ runInEachFileSystem(() => {
         );
 
         const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(1);
+        expect(diags.length).toBe(2);
         expect(diags[0].messageText).toBe(`Type 'boolean' is not assignable to type 'number'.`);
+        expect(diags[1].messageText).toBe(`Type 'number' is not assignable to type 'boolean'.`);
       });
 
       it('should not allow a non-writable signal to be assigned to a model', () => {
@@ -389,9 +392,12 @@ runInEachFileSystem(() => {
         );
 
         const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(1);
+        expect(diags.length).toBe(2);
         expect(diags[0].messageText).toBe(
           `Type 'InputSignal<number>' is not assignable to type 'number'.`,
+        );
+        expect(diags[1].messageText).toBe(
+          `Type 'number' is not assignable to type 'InputSignal<number>'.`,
         );
       });
 
@@ -513,9 +519,16 @@ runInEachFileSystem(() => {
         );
 
         const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
-          `Type '{ id: number; }' is not assignable to type '{ id: string; }'.`,
+        expect(diags.length).toBe(2);
+        expect(diags[0].messageText).toEqual(
+          jasmine.objectContaining({
+            messageText: `Type '{ id: number; }' is not assignable to type '{ id: string; }'.`,
+          }),
+        );
+        expect(diags[1].messageText).toEqual(
+          jasmine.objectContaining({
+            messageText: `Type '{ id: string; }' is not assignable to type '{ id: number; }'.`,
+          }),
         );
       });
 
@@ -545,9 +558,16 @@ runInEachFileSystem(() => {
         );
 
         const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(1);
+        expect(diags.length).toBe(2);
         expect(diags[0].messageText).toEqual(
-          `Type '{ id: number; }' is not assignable to type '{ id: string; }'.`,
+          jasmine.objectContaining({
+            messageText: `Type '{ id: number; }' is not assignable to type '{ id: string; }'.`,
+          }),
+        );
+        expect(diags[1].messageText).toEqual(
+          jasmine.objectContaining({
+            messageText: `Type '{ id: string; }' is not assignable to type '{ id: number; }'.`,
+          }),
         );
       });
 

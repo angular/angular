@@ -110,7 +110,7 @@ at runtime which enables:
 
 * Extra safety checks such as [`expression-changed-after-checked`](errors/NG0100) detection.
 * More detailed error messages.
-* Additional debugging utilities such as the global `ng` variable and [Angular DevTools](tools/devtools) support.
+* Additional debugging utilities such as the global `ng` variable with [debugging functions](api#core-global) and [Angular DevTools](tools/devtools) support.
 
 These features are helpful during development, but they require extra code in the app, which is
 undesirable in production. To ensure these features do not negatively impact bundle size for end users, Angular CLI

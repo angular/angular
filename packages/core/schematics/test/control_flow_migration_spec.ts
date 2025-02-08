@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {getSystemPath, logging, normalize, virtualFs} from '@angular-devkit/core';
@@ -1653,6 +1653,48 @@ describe('control flow migration', () => {
         [
           `<div>`,
           `<div *ngIf="user of users; else noUserBlock; let tooltipContent;">{{ user.name }}</div>`,
+          `<ng-template #noUserBlock>No user</ng-template>`,
+          `</div>`,
+        ].join('\n'),
+      );
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe(
+        [
+          `<div>`,
+          `  @if (user of users; as tooltipContent) {`,
+          `    <div>{{ user.name }}</div>`,
+          `  } @else {`,
+          `    No user`,
+          `  }`,
+          `</div>`,
+        ].join('\n'),
+      );
+    });
+
+    it('should migrate if/else with let variable in wrong place with no semicolons', async () => {
+      writeFile(
+        '/comp.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          user$ = of({ name: 'Jane' }})
+        }
+      `,
+      );
+
+      writeFile(
+        '/comp.html',
+        [
+          `<div>`,
+          `<div *ngIf="user of users; let tooltipContent else noUserBlock">{{ user.name }}</div>`,
           `<ng-template #noUserBlock>No user</ng-template>`,
           `</div>`,
         ].join('\n'),
@@ -6196,6 +6238,54 @@ describe('control flow migration', () => {
         `  imports: [NG_MODULE_IMPORTS],`,
         `})`,
         `export class ExampleModule {}`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
+    it('should not remove common module when second run of migration and common module symbols are found', async () => {
+      writeFile(
+        '/comp.ts',
+        [
+          `import {Component} from '@angular/core';`,
+          `import {CommonModule} from '@angular/common';\n`,
+          `@Component({`,
+          `  standalone: true`,
+          `  selector: 'example-cmp',`,
+          `  templateUrl: './comp.html',`,
+          `  imports: [CommonModule],`,
+          `})`,
+          `export class ExampleCmp {`,
+          `}`,
+        ].join('\n'),
+      );
+
+      writeFile(
+        '/comp.html',
+        [
+          `<div>`,
+          `  @if (state$ | async; as state) {`,
+          `    <div>`,
+          `      <span>Content here {{state}}</span>`,
+          `    </div>`,
+          `  }`,
+          `</div>`,
+        ].join('\n'),
+      );
+
+      await runMigration();
+      const actual = tree.readContent('/comp.ts');
+      const expected = [
+        `import {Component} from '@angular/core';`,
+        `import {CommonModule} from '@angular/common';\n`,
+        `@Component({`,
+        `  standalone: true`,
+        `  selector: 'example-cmp',`,
+        `  templateUrl: './comp.html',`,
+        `  imports: [CommonModule],`,
+        `})`,
+        `export class ExampleCmp {`,
+        `}`,
       ].join('\n');
 
       expect(actual).toBe(expected);

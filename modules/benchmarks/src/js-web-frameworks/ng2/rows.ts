@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ApplicationRef, Component, NgModule} from '@angular/core';
@@ -36,6 +36,7 @@ export interface RowData {
       </tbody>
     </table>
   `,
+  standalone: false,
 })
 export class JsWebFrameworksComponent {
   data: Array<RowData> = [];

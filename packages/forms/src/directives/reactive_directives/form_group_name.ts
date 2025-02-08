@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -82,7 +82,11 @@ const formGroupNameProvider: Provider = {
  * @ngModule ReactiveFormsModule
  * @publicApi
  */
-@Directive({selector: '[formGroupName]', providers: [formGroupNameProvider]})
+@Directive({
+  selector: '[formGroupName]',
+  providers: [formGroupNameProvider],
+  standalone: false,
+})
 export class FormGroupName extends AbstractFormGroupDirective implements OnInit, OnDestroy {
   /**
    * @description
@@ -146,7 +150,11 @@ export const formArrayNameProvider: any = {
  * @ngModule ReactiveFormsModule
  * @publicApi
  */
-@Directive({selector: '[formArrayName]', providers: [formArrayNameProvider]})
+@Directive({
+  selector: '[formArrayName]',
+  providers: [formArrayNameProvider],
+  standalone: false,
+})
 export class FormArrayName extends ControlContainer implements OnInit, OnDestroy {
   /** @internal */
   _parent: ControlContainer;
@@ -182,7 +190,9 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
    * @nodoc
    */
   ngOnInit(): void {
-    this._checkParentType();
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      this._checkParentType();
+    }
     this.formDirective!.addFormArray(this);
   }
 

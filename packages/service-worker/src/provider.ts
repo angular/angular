@@ -3,10 +3,9 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
-import {isPlatformBrowser} from '@angular/common';
 import {
   APP_INITIALIZER,
   ApplicationRef,
@@ -15,10 +14,9 @@ import {
   Injector,
   makeEnvironmentProviders,
   NgZone,
-  PLATFORM_ID,
 } from '@angular/core';
-import {merge, Observable, of} from 'rxjs';
-import {delay, filter, take} from 'rxjs/operators';
+import {merge, from, Observable, of} from 'rxjs';
+import {delay, take} from 'rxjs/operators';
 
 import {NgswCommChannel} from './low_level';
 import {SwPush} from './push';
@@ -30,12 +28,13 @@ export function ngswAppInitializer(
   injector: Injector,
   script: string,
   options: SwRegistrationOptions,
-  platformId: string,
 ): Function {
   return () => {
-    if (
-      !(isPlatformBrowser(platformId) && 'serviceWorker' in navigator && options.enabled !== false)
-    ) {
+    if (typeof ngServerMode !== 'undefined' && ngServerMode) {
+      return;
+    }
+
+    if (!('serviceWorker' in navigator && options.enabled !== false)) {
       return;
     }
 
@@ -76,9 +75,10 @@ export function ngswAppInitializer(
           readyToRegister$ = delayWithTimeout(+args[0] || 0);
           break;
         case 'registerWhenStable':
+          const whenStable$ = from(injector.get(ApplicationRef).whenStable());
           readyToRegister$ = !args[0]
-            ? whenStable(injector)
-            : merge(whenStable(injector), delayWithTimeout(+args[0]));
+            ? whenStable$
+            : merge(whenStable$, delayWithTimeout(+args[0]));
           break;
         default:
           // Unknown strategy.
@@ -108,17 +108,11 @@ function delayWithTimeout(timeout: number): Observable<unknown> {
   return of(null).pipe(delay(timeout));
 }
 
-function whenStable(injector: Injector): Observable<unknown> {
-  const appRef = injector.get(ApplicationRef);
-  return appRef.isStable.pipe(filter((stable) => stable));
-}
+export function ngswCommChannelFactory(opts: SwRegistrationOptions): NgswCommChannel {
+  const isBrowser = !(typeof ngServerMode !== 'undefined' && ngServerMode);
 
-export function ngswCommChannelFactory(
-  opts: SwRegistrationOptions,
-  platformId: string,
-): NgswCommChannel {
   return new NgswCommChannel(
-    isPlatformBrowser(platformId) && opts.enabled !== false ? navigator.serviceWorker : undefined,
+    isBrowser && opts.enabled !== false ? navigator.serviceWorker : undefined,
   );
 }
 
@@ -211,12 +205,12 @@ export function provideServiceWorker(
     {
       provide: NgswCommChannel,
       useFactory: ngswCommChannelFactory,
-      deps: [SwRegistrationOptions, PLATFORM_ID],
+      deps: [SwRegistrationOptions],
     },
     {
       provide: APP_INITIALIZER,
       useFactory: ngswAppInitializer,
-      deps: [Injector, SCRIPT, SwRegistrationOptions, PLATFORM_ID],
+      deps: [Injector, SCRIPT, SwRegistrationOptions],
       multi: true,
     },
   ]);

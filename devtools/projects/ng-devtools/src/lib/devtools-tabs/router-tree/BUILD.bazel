@@ -1,5 +1,5 @@
-load("//devtools/tools:ng_module.bzl", "ng_module")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//devtools/tools:ng_module.bzl", "ng_module")
 
 package(default_visibility = ["//:__subpackages__"])
 
@@ -12,6 +12,7 @@ ng_module(
     name = "router-tree",
     srcs = [
         "router-tree.component.ts",
+        "router-tree-visualizer.ts",
     ],
     angular_assets = [
         ":router-tree.component.html",

@@ -94,6 +94,6 @@ This new data type also makes it possible for your IDE and the TypeScript compil
 For more information about the topics covered in this lesson, visit:
 
 <docs-pill-row>
-  <docs-pill href="cli/generate#interface-command" title="ng generate interface"/>
+  <docs-pill href="cli/generate/interface" title="ng generate interface"/>
   <docs-pill href="cli/generate" title="ng generate"/>
 </docs-pill-row>

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {
   AbsoluteFsPath,
@@ -172,6 +172,7 @@ runInEachFileSystem(() => {
         @Component({
           selector: 'test-cmp',
           templateUrl: './test.html',
+          standalone: false,
         })
         export class TestCmp {}
       `,
@@ -185,6 +186,7 @@ runInEachFileSystem(() => {
 
         @Component({
           templateUrl: './test_import.html',
+          standalone: false,
         })
         export class TestImportCmp {}
 

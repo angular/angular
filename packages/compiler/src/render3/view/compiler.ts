@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ConstantPool} from '../../constant_pool';
@@ -23,13 +23,12 @@ import {
   DeclarationListEmitMode,
   DeferBlockDepsEmitMode,
   R3ComponentMetadata,
-  R3DeferPerBlockDependency,
-  R3DeferPerComponentDependency,
   R3DeferResolverFunctionMetadata,
   R3DirectiveMetadata,
   R3HostMetadata,
   R3TemplateDependency,
 } from './api';
+import {getTemplateSourceLocationsEnabled} from './config';
 import {createContentQueriesFunction, createViewQueriesFunction} from './query_generation';
 import {makeBindingParser} from './template';
 import {asLiteral, conditionallyCreateDirectiveBindingLiteral, DefinitionMap} from './util';
@@ -93,8 +92,8 @@ function baseDirectiveFields(
     definitionMap.set('exportAs', o.literalArr(meta.exportAs.map((e) => o.literal(e))));
   }
 
-  if (meta.isStandalone) {
-    definitionMap.set('standalone', o.literal(true));
+  if (meta.isStandalone === false) {
+    definitionMap.set('standalone', o.literal(false));
   }
   if (meta.isSignal) {
     definitionMap.set('signals', o.literal(true));
@@ -148,9 +147,11 @@ function addFeatures(
   if (meta.lifecycle.usesOnChanges) {
     features.push(o.importExpr(R3.NgOnChangesFeature));
   }
-  // TODO: better way of differentiating component vs directive metadata.
-  if (meta.hasOwnProperty('template') && meta.isStandalone) {
-    features.push(o.importExpr(R3.StandaloneFeature));
+  if ('externalStyles' in meta && meta.externalStyles?.length) {
+    const externalStyleNodes = meta.externalStyles.map((externalStyle) => o.literal(externalStyle));
+    features.push(
+      o.importExpr(R3.ExternalStylesFeature).callFn([o.literalArr(externalStyleNodes)]),
+    );
   }
   if (features.length) {
     definitionMap.set('features', o.literalArr(features));
@@ -232,6 +233,8 @@ export function compileComponentFromMetadata(
     meta.i18nUseExternalIds,
     meta.defer,
     allDeferrableDepsFn,
+    meta.relativeTemplatePath,
+    getTemplateSourceLocationsEnabled(),
   );
 
   // Then the IR is transformed to prepare it for cod egeneration.
@@ -281,6 +284,7 @@ export function compileComponentFromMetadata(
     meta.encapsulation = core.ViewEncapsulation.Emulated;
   }
 
+  let hasStyles = !!meta.externalStyles?.length;
   // e.g. `styles: [str1, str2]`
   if (meta.styles && meta.styles.length) {
     const styleValues =
@@ -295,9 +299,12 @@ export function compileComponentFromMetadata(
     }, [] as o.Expression[]);
 
     if (styleNodes.length > 0) {
+      hasStyles = true;
       definitionMap.set('styles', o.literalArr(styleNodes));
     }
-  } else if (meta.encapsulation === core.ViewEncapsulation.Emulated) {
+  }
+
+  if (!hasStyles && meta.encapsulation === core.ViewEncapsulation.Emulated) {
     // If there is no style, don't generate css selectors on elements
     meta.encapsulation = core.ViewEncapsulation.None;
   }
@@ -625,11 +632,18 @@ function compileStyles(styles: string[], selector: string, hostSelector: string)
  * is using the `ViewEncapsulation.Emulated` mode.
  *
  * @param style The content of a CSS stylesheet.
+ * @param componentIdentifier The identifier to use within the CSS rules.
  * @returns The encapsulated content for the style.
  */
-export function encapsulateStyle(style: string): string {
+export function encapsulateStyle(style: string, componentIdentifier?: string): string {
   const shadowCss = new ShadowCss();
-  return shadowCss.shimCssText(style, CONTENT_ATTR, HOST_ATTR);
+  const selector = componentIdentifier
+    ? CONTENT_ATTR.replace(COMPONENT_VARIABLE, componentIdentifier)
+    : CONTENT_ATTR;
+  const hostSelector = componentIdentifier
+    ? HOST_ATTR.replace(COMPONENT_VARIABLE, componentIdentifier)
+    : HOST_ATTR;
+  return shadowCss.shimCssText(style, selector, hostSelector);
 }
 
 function createHostDirectivesType(meta: R3DirectiveMetadata): o.Type {

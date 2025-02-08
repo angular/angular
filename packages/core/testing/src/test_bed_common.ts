@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -67,6 +67,20 @@ export interface TestModuleMetadata {
    * @see [NG8002](/errors/NG8002) for the description of the error and how to fix it
    */
   errorOnUnknownProperties?: boolean;
+
+  /**
+   * Whether errors that happen during application change detection should be rethrown.
+   *
+   * When `true`, errors that are caught during application change detection will
+   * be reported to the `ErrorHandler` and rethrown to prevent them from going
+   * unnoticed in tests.
+   *
+   * When `false`, errors are only forwarded to the `ErrorHandler`, which by default
+   * simply logs them to the console.
+   *
+   * Defaults to `true`.
+   */
+  rethrowApplicationErrors?: boolean;
 
   /**
    * Whether defer blocks should behave with manual triggering or play through normally.

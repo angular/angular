@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Pipe, PipeTransform} from '@angular/core';
@@ -30,7 +30,6 @@ const _INTERPOLATION_REGEXP: RegExp = /#/g;
  */
 @Pipe({
   name: 'i18nPlural',
-  standalone: true,
 })
 export class I18nPluralPipe implements PipeTransform {
   constructor(private _localization: NgLocalization) {}

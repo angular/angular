@@ -127,7 +127,7 @@ export const DATE_PIPE_DEFAULT_TIMEZONE: InjectionToken<string>;
 
 // @public
 export class DatePipe implements PipeTransform {
-    constructor(locale: string, defaultTimezone?: (string | null) | undefined, defaultOptions?: (DatePipeConfig | null) | undefined);
+    constructor(locale: string, defaultTimezone?: string | null | undefined, defaultOptions?: (DatePipeConfig | null) | undefined);
     // (undocumented)
     transform(value: Date | string | number, format?: string, timezone?: string, locale?: string): string | null;
     // (undocumented)
@@ -367,19 +367,19 @@ export interface KeyValue<K, V> {
 export class KeyValuePipe implements PipeTransform {
     constructor(differs: KeyValueDiffers);
     // (undocumented)
-    transform<K, V>(input: ReadonlyMap<K, V>, compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number): Array<KeyValue<K, V>>;
+    transform<K, V>(input: ReadonlyMap<K, V>, compareFn?: ((a: KeyValue<K, V>, b: KeyValue<K, V>) => number) | null): Array<KeyValue<K, V>>;
     // (undocumented)
-    transform<K extends number, V>(input: Record<K, V>, compareFn?: (a: KeyValue<string, V>, b: KeyValue<string, V>) => number): Array<KeyValue<string, V>>;
+    transform<K extends number, V>(input: Record<K, V>, compareFn?: ((a: KeyValue<string, V>, b: KeyValue<string, V>) => number) | null): Array<KeyValue<string, V>>;
     // (undocumented)
-    transform<K extends string, V>(input: Record<K, V> | ReadonlyMap<K, V>, compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number): Array<KeyValue<K, V>>;
+    transform<K extends string, V>(input: Record<K, V> | ReadonlyMap<K, V>, compareFn?: ((a: KeyValue<K, V>, b: KeyValue<K, V>) => number) | null): Array<KeyValue<K, V>>;
     // (undocumented)
-    transform(input: null | undefined, compareFn?: (a: KeyValue<unknown, unknown>, b: KeyValue<unknown, unknown>) => number): null;
+    transform(input: null | undefined, compareFn?: ((a: KeyValue<unknown, unknown>, b: KeyValue<unknown, unknown>) => number) | null): null;
     // (undocumented)
-    transform<K, V>(input: ReadonlyMap<K, V> | null | undefined, compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number): Array<KeyValue<K, V>> | null;
+    transform<K, V>(input: ReadonlyMap<K, V> | null | undefined, compareFn?: ((a: KeyValue<K, V>, b: KeyValue<K, V>) => number) | null): Array<KeyValue<K, V>> | null;
     // (undocumented)
-    transform<K extends number, V>(input: Record<K, V> | null | undefined, compareFn?: (a: KeyValue<string, V>, b: KeyValue<string, V>) => number): Array<KeyValue<string, V>> | null;
+    transform<K extends number, V>(input: Record<K, V> | null | undefined, compareFn?: ((a: KeyValue<string, V>, b: KeyValue<string, V>) => number) | null): Array<KeyValue<string, V>> | null;
     // (undocumented)
-    transform<K extends string, V>(input: Record<K, V> | ReadonlyMap<K, V> | null | undefined, compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number): Array<KeyValue<K, V>> | null;
+    transform<K extends string, V>(input: Record<K, V> | ReadonlyMap<K, V> | null | undefined, compareFn?: ((a: KeyValue<K, V>, b: KeyValue<K, V>) => number) | null): Array<KeyValue<K, V>> | null;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<KeyValuePipe, never>;
     // (undocumented)
@@ -490,9 +490,9 @@ export class NgClass implements DoCheck {
 }
 
 // @public
-export class NgComponentOutlet implements OnChanges, DoCheck, OnDestroy {
+export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy {
     constructor(_viewContainerRef: ViewContainerRef);
-    // (undocumented)
+    get componentInstance(): T | null;
     ngComponentOutlet: Type<any> | null;
     // (undocumented)
     ngComponentOutletContent?: any[][];
@@ -511,9 +511,9 @@ export class NgComponentOutlet implements OnChanges, DoCheck, OnDestroy {
     // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgComponentOutlet, "[ngComponentOutlet]", never, { "ngComponentOutlet": { "alias": "ngComponentOutlet"; "required": false; }; "ngComponentOutletInputs": { "alias": "ngComponentOutletInputs"; "required": false; }; "ngComponentOutletInjector": { "alias": "ngComponentOutletInjector"; "required": false; }; "ngComponentOutletContent": { "alias": "ngComponentOutletContent"; "required": false; }; "ngComponentOutletNgModule": { "alias": "ngComponentOutletNgModule"; "required": false; }; "ngComponentOutletNgModuleFactory": { "alias": "ngComponentOutletNgModuleFactory"; "required": false; }; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgComponentOutlet<any>, "[ngComponentOutlet]", ["ngComponentOutlet"], { "ngComponentOutlet": { "alias": "ngComponentOutlet"; "required": false; }; "ngComponentOutletInputs": { "alias": "ngComponentOutletInputs"; "required": false; }; "ngComponentOutletInjector": { "alias": "ngComponentOutletInjector"; "required": false; }; "ngComponentOutletContent": { "alias": "ngComponentOutletContent"; "required": false; }; "ngComponentOutletNgModule": { "alias": "ngComponentOutletNgModule"; "required": false; }; "ngComponentOutletNgModuleFactory": { "alias": "ngComponentOutletNgModuleFactory"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<NgComponentOutlet, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgComponentOutlet<any>, never>;
 }
 
 // @public
@@ -536,20 +536,20 @@ export { NgForOf }
 
 // @public (undocumented)
 export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
-    // (undocumented)
     $implicit: T;
-    constructor($implicit: T, ngForOf: U, index: number, count: number);
-    // (undocumented)
+    constructor(
+    $implicit: T,
+    ngForOf: U,
+    index: number,
+    count: number);
     count: number;
     // (undocumented)
     get even(): boolean;
     // (undocumented)
     get first(): boolean;
-    // (undocumented)
     index: number;
     // (undocumented)
     get last(): boolean;
-    // (undocumented)
     ngForOf: U;
     // (undocumented)
     get odd(): boolean;
@@ -601,7 +601,8 @@ export abstract class NgLocalization {
 }
 
 // @public
-export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
+export class NgOptimizedImage implements OnInit, OnChanges {
+    constructor();
     disableOptimizedSrcset: boolean;
     fill: boolean;
     height: number | undefined;
@@ -625,8 +626,6 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     static ngAcceptInputType_width: unknown;
     // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
-    // (undocumented)
-    ngOnDestroy(): void;
     // (undocumented)
     ngOnInit(): void;
     ngSrc: string;

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Type} from '@angular/core';
@@ -29,7 +29,7 @@ import {Tree, TreeNode} from './utils/tree';
  * The following fragment shows how a component gets the root node
  * of the current state to establish its own route tree:
  *
- * ```
+ * ```ts
  * @Component({templateUrl:'template.html'})
  * class MyComponent {
  *   constructor(router: Router) {
@@ -305,7 +305,7 @@ export function getInherited(
  * The following example initializes a component with route information extracted
  * from the snapshot of the root node at the time of creation.
  *
- * ```
+ * ```ts
  * @Component({templateUrl:'./my-component.html'})
  * class MyComponent {
  *   constructor(route: ActivatedRoute) {
@@ -349,7 +349,7 @@ export class ActivatedRouteSnapshot {
      *  You can compute all params (or data) in the router state or to get params outside
      *  of an activated component by traversing the `RouterState` tree as in the following
      *  example:
-     *  ```
+     *  ```ts
      *  collectRouteParams(router: Router) {
      *    let params = {};
      *    let stack: ActivatedRouteSnapshot[] = [router.routerState.snapshot.root];
@@ -433,7 +433,7 @@ export class ActivatedRouteSnapshot {
  * The following example shows how a component is initialized with information
  * from the snapshot of the root node's state at the time of creation.
  *
- * ```
+ * ```ts
  * @Component({templateUrl:'template.html'})
  * class MyComponent {
  *   constructor(router: Router) {

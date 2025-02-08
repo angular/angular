@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Component, Directive, Input} from '@angular/core';
@@ -16,7 +16,10 @@ describe('integration tests', () => {
 
   describe('directives', () => {
     it('should support dotted selectors', waitForAsync(() => {
-      @Directive({selector: '[dot.name]'})
+      @Directive({
+        selector: '[dot.name]',
+        standalone: false,
+      })
       class MyDir {
         @Input('dot.name') value!: string;
       }
@@ -39,6 +42,7 @@ describe('integration tests', () => {
         selector: 'comp',
         template:
           '<svg><ng-container *ngIf="1"><rect x="10" y="10" width="30" height="30"></rect></ng-container></svg>',
+        standalone: false,
       })
       class MyCmp {}
 
@@ -50,7 +54,11 @@ describe('integration tests', () => {
   });
 });
 
-@Component({selector: 'test-cmp', template: ''})
+@Component({
+  selector: 'test-cmp',
+  template: '',
+  standalone: false,
+})
 class TestComponent {}
 
 function createTestComponent(template: string): ComponentFixture<TestComponent> {

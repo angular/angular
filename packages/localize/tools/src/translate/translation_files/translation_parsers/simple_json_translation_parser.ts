@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {MessageId, ɵParsedTranslation, ɵparseTranslation} from '@angular/localize';
 import {extname} from 'path';
@@ -20,7 +20,7 @@ interface SimpleJsonFile {
 /**
  * A translation parser that can parse JSON that has the form:
  *
- * ```
+ * ```json
  * {
  *   "locale": "...",
  *   "translations": {

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Component, Input, NgModule} from '@angular/core';
@@ -21,7 +21,11 @@ function createTreeComponent(level: number, isLeaf: boolean) {
     template += `<${nextTreeEl} [data]='data.right'></${nextTreeEl}><${nextTreeEl} [data]='data.left'></${nextTreeEl}>`;
   }
 
-  @Component({selector: `tree${level}`, template: template})
+  @Component({
+    selector: `tree${level}`,
+    template: template,
+    standalone: false,
+  })
   class TreeComponent {
     @Input() data: TreeNode;
     get bgColor() {
@@ -35,6 +39,7 @@ function createTreeComponent(level: number, isLeaf: boolean) {
 @Component({
   selector: 'tree',
   template: `<tree0 *ngIf="data.left != null" [data]="data"></tree0>`,
+  standalone: false,
 })
 export class RootTreeComponent {
   @Input() data: TreeNode = emptyTree;

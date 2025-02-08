@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {computed, signal} from '@angular/core';
@@ -125,6 +125,11 @@ describe('signals', () => {
   it('should have a toString implementation', () => {
     const state = signal(false);
     expect(state + '').toBe('[Signal: false]');
+  });
+
+  it('should set debugName when a debugName is provided', () => {
+    const node = signal(false, {debugName: 'falseSignal'})[SIGNAL] as ReactiveNode;
+    expect(node.debugName).toBe('falseSignal');
   });
 
   describe('optimizations', () => {

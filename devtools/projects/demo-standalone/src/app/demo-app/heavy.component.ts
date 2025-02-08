@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Component, Input} from '@angular/core';
@@ -15,7 +15,7 @@ const fib = (n: number): number => {
   return fib(n - 1) + fib(n - 2);
 };
 
-@Component({selector: 'app-heavy', template: `<h1>{{ calculate() }}</h1>`, standalone: true})
+@Component({selector: 'app-heavy', template: `<h1>{{ calculate() }}</h1>`})
 export class HeavyComponent {
   @Input()
   set foo(_: any) {}

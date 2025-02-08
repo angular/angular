@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -22,9 +22,8 @@ import {
   missingControlValueError,
   noControlsError,
 } from '../directives/reactive_errors';
-import {AsyncValidatorFn, ValidationErrors, ValidatorFn} from '../directives/validators';
+import type {AsyncValidatorFn, ValidationErrors, ValidatorFn} from '../directives/validators';
 import {RuntimeErrorCode} from '../errors';
-import {FormArray, FormGroup} from '../forms';
 import {
   addValidators,
   composeAsyncValidators,
@@ -33,6 +32,8 @@ import {
   removeValidators,
   toObservable,
 } from '../validators';
+import type {FormArray} from './form_array';
+import type {FormGroup} from './form_group';
 
 /**
  * Reports that a control is valid, meaning that no errors exist in the input value.
@@ -91,6 +92,8 @@ export type FormControlStatus = 'VALID' | 'INVALID' | 'PENDING' | 'DISABLED';
 export abstract class ControlEvent<T = any> {
   /**
    * Form control from which this event is originated.
+   *
+   * Note: the type of the control can't be infered from T as the event can be emitted by any of child controls
    */
   public abstract readonly source: AbstractControl<unknown>;
 }
@@ -1427,7 +1430,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    *
    * ### Manually set the errors for a control
    *
-   * ```
+   * ```ts
    * const login = new FormControl('someLogin');
    * login.setErrors({
    *   notUnique: true
@@ -1529,7 +1532,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * @usageNotes
    * For example, for the following `FormGroup`:
    *
-   * ```
+   * ```ts
    * form = new FormGroup({
    *   address: new FormGroup({ street: new FormControl() })
    * });
@@ -1561,7 +1564,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * @usageNotes
    * For example, for the following `FormGroup`:
    *
-   * ```
+   * ```ts
    * form = new FormGroup({
    *   address: new FormGroup({ street: new FormControl() })
    * });

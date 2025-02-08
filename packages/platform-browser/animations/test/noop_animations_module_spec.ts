@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {animate, style, transition, trigger} from '@angular/animations';
 import {ɵAnimationEngine} from '@angular/animations/browser';
@@ -61,6 +61,7 @@ function noopAnimationTests() {
           ]),
         ]),
       ],
+      standalone: false,
     })
     class Cmp {
       exp: any;
@@ -105,6 +106,7 @@ function noopAnimationTests() {
           transition(':leave', [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))]),
         ]),
       ],
+      standalone: false,
     })
     class Cmp {
       exp: any;

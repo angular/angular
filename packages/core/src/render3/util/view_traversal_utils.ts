@@ -3,15 +3,15 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {assertDefined} from '../../util/assert';
 import {assertLView} from '../assert';
 import {readPatchedLView} from '../context_discovery';
 import {LContainer} from '../interfaces/container';
-import {isLContainer, isLView} from '../interfaces/type_checks';
-import {CHILD_HEAD, CONTEXT, FLAGS, LView, LViewFlags, NEXT, PARENT} from '../interfaces/view';
+import {isLContainer, isLView, isRootView} from '../interfaces/type_checks';
+import {CHILD_HEAD, CONTEXT, LView, NEXT} from '../interfaces/view';
 
 import {getLViewParent} from './view_utils';
 
@@ -24,7 +24,7 @@ import {getLViewParent} from './view_utils';
 export function getRootView<T>(componentOrLView: LView | {}): LView<T> {
   ngDevMode && assertDefined(componentOrLView, 'component');
   let lView = isLView(componentOrLView) ? componentOrLView : readPatchedLView(componentOrLView)!;
-  while (lView && !(lView[FLAGS] & LViewFlags.IsRoot)) {
+  while (lView && !isRootView(lView)) {
     lView = getLViewParent(lView)!;
   }
   ngDevMode && assertLView(lView);

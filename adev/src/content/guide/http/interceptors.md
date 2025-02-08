@@ -95,9 +95,9 @@ export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) 
   const authToken = inject(AuthService).getAuthToken();
 
   // Clone the request to add the authentication header.
-  const newReq = req.clone({headers: {
-    req.headers.append('X-Authentication-Token', authToken),
-  }});
+  const newReq = req.clone({
+    headers: req.headers.append('X-Authentication-Token', authToken),
+  });
   return next(newReq);
 }
 </docs-code>

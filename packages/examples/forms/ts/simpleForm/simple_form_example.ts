@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /* tslint:disable:no-console  */
@@ -25,6 +25,7 @@ import {NgForm} from '@angular/forms';
     <p>Form value: {{ f.value | json }}</p>
     <p>Form valid: {{ f.valid }}</p>
   `,
+  standalone: false,
 })
 export class SimpleFormComp {
   onSubmit(f: NgForm) {

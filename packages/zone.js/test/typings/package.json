@@ -9,7 +9,6 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@types/node": "file:../../../../node_modules/@types/node",
     "domino": "file:../../../../node_modules/domino",
     "zone.js": "file:../../../../dist/bin/packages/zone.js/npm_package"
   },

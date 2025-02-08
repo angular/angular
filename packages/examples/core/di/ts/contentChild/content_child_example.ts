@@ -3,13 +3,16 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 // #docregion Component
 import {Component, ContentChild, Directive, Input} from '@angular/core';
 
-@Directive({selector: 'pane'})
+@Directive({
+  selector: 'pane',
+  standalone: false,
+})
 export class Pane {
   @Input() id!: string;
 }
@@ -17,6 +20,7 @@ export class Pane {
 @Component({
   selector: 'tab',
   template: ` <div>pane: {{ pane?.id }}</div> `,
+  standalone: false,
 })
 export class Tab {
   @ContentChild(Pane) pane!: Pane;
@@ -32,6 +36,7 @@ export class Tab {
 
     <button (click)="toggle()">Toggle</button>
   `,
+  standalone: false,
 })
 export class ContentChildComp {
   shouldShow = true;

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Component, NgModule} from '@angular/core';
@@ -22,6 +22,7 @@ import {Zippy} from './app/zippy';
       <li *ngFor="let log of logs">{{ log }}</li>
     </ul>
   `,
+  standalone: false,
 })
 export class ZippyApp {
   logs: string[] = [];

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as jsactionEvent from '../src/event';
@@ -70,40 +70,128 @@ describe('event test.ts', () => {
     divInternal = document.createElement('div');
   });
 
-  it('add event listener w3 c', () => {
-    const eventInfo = jsactionEvent.addEventListener(divInternal, 'click', () => {});
+  it('add event listener click w3 c', () => {
+    const addEventListenerSpy = spyOn(divInternal, 'addEventListener').and.callThrough();
+    const handler = () => {};
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'click', handler);
+    expect(addEventListenerSpy).toHaveBeenCalledOnceWith('click', handler, false);
     expect(eventInfo.eventType).toBe('click');
     expect(eventInfo.capture).toBe(false);
+    expect(eventInfo.passive).toBeUndefined();
   });
 
   it('add event listener focus w3 c', () => {
-    const eventInfo = jsactionEvent.addEventListener(divInternal, 'focus', () => {});
+    const addEventListenerSpy = spyOn(divInternal, 'addEventListener').and.callThrough();
+    const handler = () => {};
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'focus', handler);
+    expect(addEventListenerSpy).toHaveBeenCalledOnceWith('focus', handler, true);
     expect(eventInfo.eventType).toBe('focus');
     expect(eventInfo.capture).toBe(true);
+    expect(eventInfo.passive).toBeUndefined();
   });
 
   it('add event listener blur w3 c', () => {
-    const eventInfo = jsactionEvent.addEventListener(divInternal, 'blur', () => {});
+    const addEventListenerSpy = spyOn(divInternal, 'addEventListener').and.callThrough();
+    const handler = () => {};
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'blur', handler);
+    expect(addEventListenerSpy).toHaveBeenCalledOnceWith('blur', handler, true);
     expect(eventInfo.eventType).toBe('blur');
     expect(eventInfo.capture).toBe(true);
+    expect(eventInfo.passive).toBeUndefined();
   });
 
   it('add event listener error w3 c', () => {
-    const eventInfo = jsactionEvent.addEventListener(divInternal, 'error', () => {});
+    const addEventListenerSpy = spyOn(divInternal, 'addEventListener').and.callThrough();
+    const handler = () => {};
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'error', handler);
+    expect(addEventListenerSpy).toHaveBeenCalledOnceWith('error', handler, true);
     expect(eventInfo.eventType).toBe('error');
     expect(eventInfo.capture).toBe(true);
+    expect(eventInfo.passive).toBeUndefined();
   });
 
   it('add event listener load w3 c', () => {
-    const eventInfo = jsactionEvent.addEventListener(divInternal, 'load', () => {});
+    const addEventListenerSpy = spyOn(divInternal, 'addEventListener').and.callThrough();
+    const handler = () => {};
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'load', handler);
+    expect(addEventListenerSpy).toHaveBeenCalledOnceWith('load', handler, true);
     expect(eventInfo.eventType).toBe('load');
     expect(eventInfo.capture).toBe(true);
+    expect(eventInfo.passive).toBeUndefined();
   });
 
   it('add event listener toggle w3 c', () => {
-    const eventInfo = jsactionEvent.addEventListener(divInternal, 'toggle', () => {});
+    const addEventListenerSpy = spyOn(divInternal, 'addEventListener').and.callThrough();
+    const handler = () => {};
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'toggle', handler);
+    expect(addEventListenerSpy).toHaveBeenCalledOnceWith('toggle', handler, true);
     expect(eventInfo.eventType).toBe('toggle');
     expect(eventInfo.capture).toBe(true);
+    expect(eventInfo.passive).toBeUndefined();
+  });
+
+  it('add event listener touchstart w3 c', () => {
+    const addEventListenerSpy = spyOn(divInternal, 'addEventListener').and.callThrough();
+    const handler = () => {};
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'touchstart', handler);
+    expect(addEventListenerSpy).toHaveBeenCalledOnceWith('touchstart', handler, false);
+    expect(eventInfo.eventType).toBe('touchstart');
+    expect(eventInfo.capture).toBe(false);
+    expect(eventInfo.passive).toBeUndefined();
+  });
+
+  it('add event listener touchstart w3 c with passive:false', () => {
+    const addEventListenerSpy = spyOn(divInternal, 'addEventListener').and.callThrough();
+    const handler = () => {};
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'touchstart', handler, false);
+    expect(addEventListenerSpy).toHaveBeenCalledOnceWith('touchstart', handler, {
+      capture: false,
+      passive: false,
+    });
+    expect(eventInfo.eventType).toBe('touchstart');
+    expect(eventInfo.capture).toBe(false);
+    expect(eventInfo.passive).toBe(false);
+  });
+
+  it('add event listener touchstart w3 c with passive:true', () => {
+    const addEventListenerSpy = spyOn(divInternal, 'addEventListener').and.callThrough();
+    const handler = () => {};
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'touchstart', handler, true);
+    expect(addEventListenerSpy).toHaveBeenCalledOnceWith('touchstart', handler, {
+      capture: false,
+      passive: true,
+    });
+    expect(eventInfo.eventType).toBe('touchstart');
+    expect(eventInfo.capture).toBe(false);
+    expect(eventInfo.passive).toBe(true);
+  });
+
+  it('remove event listener touchstart w3 c', () => {
+    const removeEventListenerSpy = spyOn(divInternal, 'removeEventListener').and.callThrough();
+    const handler = () => {};
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'touchstart', handler);
+    jsactionEvent.removeEventListener(divInternal, eventInfo);
+    expect(removeEventListenerSpy).toHaveBeenCalledOnceWith('touchstart', handler, false);
+  });
+
+  it('remove event listener touchstart w3 c with passive:false', () => {
+    const removeEventListenerSpy = spyOn(divInternal, 'removeEventListener').and.callThrough();
+    const handler = () => {};
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'touchstart', handler, false);
+    jsactionEvent.removeEventListener(divInternal, eventInfo);
+    expect(removeEventListenerSpy).toHaveBeenCalledOnceWith('touchstart', handler, {
+      capture: false,
+    });
+  });
+
+  it('remove event listener touchstart w3 c with passive:true', () => {
+    const removeEventListenerSpy = spyOn(divInternal, 'removeEventListener').and.callThrough();
+    const handler = () => {};
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'touchstart', handler, true);
+    jsactionEvent.removeEventListener(divInternal, eventInfo);
+    expect(removeEventListenerSpy).toHaveBeenCalledOnceWith('touchstart', handler, {
+      capture: false,
+    });
   });
 
   it('is modified click event mac meta key', () => {
@@ -533,7 +621,6 @@ describe('event test.ts', () => {
     const originalEvent = document.createEvent('UIEvent') as TouchEvent;
     originalEvent.initEvent('touchend', false, false);
     // touches is readonly.
-    // tslint:disable-next-line:no-any
     (originalEvent as any).touches = [
       {clientX: 1, clientY: 2, screenX: 3, screenY: 4, pageX: 5, pageY: 6},
       {},
@@ -552,7 +639,6 @@ describe('event test.ts', () => {
     const originalEvent = document.createEvent('UIEvent') as TouchEvent;
     originalEvent.initEvent('touchend', false, false);
     // changedTouches is readonly.
-    // tslint:disable-next-line:no-any
     (originalEvent as any).changedTouches = [
       {
         clientX: 'other',
@@ -572,7 +658,6 @@ describe('event test.ts', () => {
     expect(event.screenX).toBe(3);
     expect(event.screenY).toBe(4);
     // originalEventType is a non-standard added property.
-    // tslint:disable-next-line:no-any
     expect((event as any).originalEventType).toBe('touchend');
   });
 
@@ -580,10 +665,8 @@ describe('event test.ts', () => {
     const originalEvent = document.createEvent('UIEvent') as TouchEvent;
     originalEvent.initEvent('touchend', false, false);
     // changedTouches is readonly.
-    // tslint:disable-next-line:no-any
     (originalEvent as any).changedTouches = [];
     // touches is readonly.
-    // tslint:disable-next-line:no-any
     (originalEvent as any).touches = [{clientX: 1}, {}];
 
     const event = jsactionEvent.recreateTouchEventAsClick(originalEvent);
@@ -597,7 +680,6 @@ describe('event test.ts', () => {
     const originalEvent = document.createEvent('UIEvent') as TouchEvent;
     originalEvent.initEvent('touchend', false, false);
     // touches is readonly.
-    // tslint:disable-next-line:no-any
     (originalEvent as any).touches = [
       {'clientX': 101, 'clientY': 102, 'screenX': 201, 'screenY': 202},
     ];
@@ -610,7 +692,6 @@ describe('event test.ts', () => {
 
     expect(event.type).toBe(EventType.CLICK);
     // originalEventType is a non-standard added property.
-    // tslint:disable-next-line:no-any
     expect((event as any).originalEventType).toBe(EventType.TOUCHEND);
     expect(event.target).toBe(div);
     expect(event.clientX).toBe(101);
@@ -632,7 +713,6 @@ describe('event test.ts', () => {
 
     expect(event.type).toBe(EventType.CLICK);
     // originalEventType is a non-standard added property.
-    // tslint:disable-next-line:no-any
     expect((event as any).originalEventType).toBe(EventType.TOUCHEND);
     expect(event.target).toBe(div);
     expect(event.clientX).toBeUndefined();
@@ -645,7 +725,6 @@ describe('event test.ts', () => {
     const originalEvent = document.createEvent('UIEvent') as TouchEvent;
     originalEvent.initEvent('touchend', false, false);
     // touches is readonly.
-    // tslint:disable-next-line:no-any
     (originalEvent as any).touches = [
       {clientX: 1, clientY: 2, screenX: 3, screenY: 4, pageX: 5, pageY: 6},
       {},
@@ -659,11 +738,9 @@ describe('event test.ts', () => {
     expect(event.defaultPrevented).toBe(true);
 
     // _propagationStopped is a non-standard added property.
-    // tslint:disable-next-line:no-any
     expect((event as any)['_propagationStopped']).toBe(false);
     event.stopPropagation();
     // _propagationStopped is a non-standard added property.
-    // tslint:disable-next-line:no-any
     expect((event as any)['_propagationStopped']).toBe(true);
   });
 
@@ -671,7 +748,6 @@ describe('event test.ts', () => {
     const originalEvent = document.createEvent('UIEvent') as TouchEvent;
     originalEvent.initEvent('touchend', false, false);
     // touches is readonly.
-    // tslint:disable-next-line:no-any
     (originalEvent as any).touches = [
       {clientX: 1, clientY: 2, screenX: 3, screenY: 4, pageX: 5, pageY: 6},
       {},

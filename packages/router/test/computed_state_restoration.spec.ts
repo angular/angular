@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {CommonModule, Location} from '@angular/common';
@@ -511,16 +511,28 @@ function createRoot<T>(router: Router, type: Type<T>): ComponentFixture<T> {
   return f;
 }
 
-@Component({selector: 'simple-cmp', template: `simple`})
+@Component({
+  selector: 'simple-cmp',
+  template: `simple`,
+  standalone: false,
+})
 class SimpleCmp {}
 
 @NgModule({imports: [RouterModule.forChild([{path: '', component: SimpleCmp}])]})
 class ModuleWithSimpleCmpAsRoute {}
 
-@Component({selector: 'root-cmp', template: `<router-outlet></router-outlet>`})
+@Component({
+  selector: 'root-cmp',
+  template: `<router-outlet></router-outlet>`,
+  standalone: false,
+})
 class RootCmp {}
 
-@Component({selector: 'throwing-cmp', template: ''})
+@Component({
+  selector: 'throwing-cmp',
+  template: '',
+  standalone: false,
+})
 class ThrowingCmp {
   constructor() {
     throw new Error('Throwing Cmp');

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 //////////////////////////////////////
@@ -86,9 +86,9 @@ export {
   ReadVarExpr,
   ReturnStatement,
   StatementVisitor,
-  TaggedTemplateExpr,
-  TemplateLiteral,
-  TemplateLiteralElement,
+  TaggedTemplateLiteralExpr,
+  TemplateLiteralExpr,
+  TemplateLiteralElementExpr,
   Type,
   TypeModifier,
   TypeVisitor,
@@ -150,6 +150,7 @@ export {
   TimerDeferredTrigger as TmplAstTimerDeferredTrigger,
   InteractionDeferredTrigger as TmplAstInteractionDeferredTrigger,
   ViewportDeferredTrigger as TmplAstViewportDeferredTrigger,
+  NeverDeferredTrigger as TmplAstNeverDeferredTrigger,
   SwitchBlock as TmplAstSwitchBlock,
   SwitchBlockCase as TmplAstSwitchBlockCase,
   ForLoopBlock as TmplAstForLoopBlock,
@@ -172,6 +173,12 @@ export {
   compileOpaqueAsyncClassMetadata,
 } from './render3/r3_class_metadata_compiler';
 export {compileClassDebugInfo, R3ClassDebugInfo} from './render3/r3_class_debug_info_compiler';
+export {
+  compileHmrInitializer,
+  compileHmrUpdateCallback,
+  R3HmrMetadata,
+  R3HmrNamespaceDependency,
+} from './render3/r3_hmr_compiler';
 export {
   compileFactoryFunction,
   R3DependencyMetadata,

@@ -2,7 +2,6 @@
 import {Component, EventEmitter} from '@angular/core';
 
 @Component({
-  standalone: true,
   selector: 'app-in-the-metadata',
   template: `
   <p>Latest clearance item: {{clearanceItem}}</p>

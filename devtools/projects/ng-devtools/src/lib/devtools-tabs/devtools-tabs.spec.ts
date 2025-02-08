@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Component} from '@angular/core';
@@ -24,7 +24,6 @@ import {FrameManager} from '../frame_manager';
 @Component({
   selector: 'ng-directive-explorer',
   template: '',
-  standalone: true,
   imports: [MatTooltip, MatMenuModule],
 })
 export class MockDirectiveExplorerComponent {}
@@ -61,11 +60,11 @@ describe('DevtoolsTabsComponent', () => {
   });
 
   it('toggles inspector flag', () => {
-    expect(comp.inspectorRunning).toBe(false);
+    expect(comp.inspectorRunning()).toBe(false);
     comp.toggleInspectorState();
-    expect(comp.inspectorRunning).toBe(true);
+    expect(comp.inspectorRunning()).toBe(true);
     comp.toggleInspectorState();
-    expect(comp.inspectorRunning).toBe(false);
+    expect(comp.inspectorRunning()).toBe(false);
   });
 
   it('emits inspector event', () => {
@@ -95,6 +94,6 @@ describe('DevtoolsTabsComponent', () => {
     spyOn(comp.frameSelected, 'emit');
     comp.emitSelectedFrame('1');
 
-    expect(comp.frameSelected.emit).toHaveBeenCalledWith(comp.frameManager.frames[0]);
+    expect(comp.frameSelected.emit).toHaveBeenCalledWith(comp.frameManager.frames()[0]);
   });
 });

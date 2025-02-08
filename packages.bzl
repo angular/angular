@@ -1,13 +1,16 @@
 # Copyright Google LLC All Rights Reserved.
 #
 # Use of this source code is governed by an MIT-style license that can be
-# found in the LICENSE file at https://angular.io/license
+# found in the LICENSE file at https://angular.dev/license
 """Packages published to npm"""
 
 def to_package_label(package_name):
     """Get a label corresponding to the npm_package target for the package name"""
     if package_name == "angular-in-memory-web-api":
         return "//packages/misc/angular-in-memory-web-api:npm_package"
+
+    if package_name == "@angular/docs":
+        return "//adev/shared-docs:npm_package"
 
     return "//packages/{package_name}:npm_package".format(package_name = package_name.replace("@angular/", ""))
 
@@ -18,7 +21,7 @@ def _exclude_pkgs(packages, *args):
     return modified_packages
 
 # All framework packages published to NPM.
-ALL_PACKAGES = [
+PUBLISHED_PACKAGES = [
     "@angular/animations",
     "@angular/benchpress",
     "@angular/common",
@@ -39,8 +42,15 @@ ALL_PACKAGES = [
     "zone.js",
 ]
 
+# All packages in the repository which are not published to NPM
+UNPUBLISHED_PACKAGES = [
+    "@angular/docs",
+]
+
+ALL_PACKAGES = PUBLISHED_PACKAGES + UNPUBLISHED_PACKAGES
+
 # Packages used by integration tests
-INTEGRATION_PACKAGES = _exclude_pkgs(ALL_PACKAGES, "angular-in-memory-web-api")
+INTEGRATION_PACKAGES = _exclude_pkgs(PUBLISHED_PACKAGES, "angular-in-memory-web-api")
 
 # Package names under //packages that have `files_for_docgen` targets
 DOCS_ENTRYPOINTS = [

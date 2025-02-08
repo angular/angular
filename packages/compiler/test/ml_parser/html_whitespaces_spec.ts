@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as html from '../../src/ml_parser/ast';
@@ -16,7 +16,12 @@ import {humanizeDom} from './ast_spec_utils';
 
 describe('removeWhitespaces', () => {
   function parseAndRemoveWS(template: string, options?: TokenizeOptions): any[] {
-    return humanizeDom(removeWhitespaces(new HtmlParser().parse(template, 'TestComp', options)));
+    return humanizeDom(
+      removeWhitespaces(
+        new HtmlParser().parse(template, 'TestComp', options),
+        true /* preserveSignificantWhitespace */,
+      ),
+    );
   }
 
   it('should remove blank text nodes', () => {

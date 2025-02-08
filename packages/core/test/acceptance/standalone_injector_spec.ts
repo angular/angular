@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -38,7 +38,11 @@ describe('standalone injector', () => {
       constructor(readonly service: Service) {}
     }
 
-    @Component({selector: 'app', template: `<ng-template #insert></ng-template>`})
+    @Component({
+      selector: 'app',
+      template: `<ng-template #insert></ng-template>`,
+      standalone: false,
+    })
     class AppComponent {
       @ViewChild('insert', {static: true, read: ViewContainerRef}) vcRef!: ViewContainerRef;
 
@@ -85,7 +89,9 @@ describe('standalone injector', () => {
       constructor(readonly service: Service) {}
     }
 
-    @Component({})
+    @Component({
+      standalone: false,
+    })
     class AppComponent {}
 
     const fixture = TestBed.createComponent(AppComponent);

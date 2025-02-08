@@ -3,6 +3,7 @@ MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   selectors: [
     ["my-component"]
   ],
+  standalone: false,
   features: [$r3$.ɵɵHostDirectivesFeature([{
     directive: HostDir,
     inputs: ["valueAlias", "valueAlias", "colorAlias", "customColorAlias"],

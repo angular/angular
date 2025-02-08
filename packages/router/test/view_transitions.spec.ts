@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {DOCUMENT} from '@angular/common';
@@ -30,7 +30,6 @@ describe('view transitions', () => {
 
   @Component({
     selector: 'test-app',
-    standalone: true,
     template: ``,
   })
   class App {}
@@ -62,7 +61,6 @@ describe('view transitions', () => {
     @Component({
       selector: 'component-b',
       template: `b`,
-      standalone: true,
     })
     class ComponentB {}
 
@@ -83,7 +81,6 @@ describe('view transitions', () => {
     it('should not create a view transition if only the fragment changes', async () => {
       @Component({
         selector: 'test-app',
-        standalone: true,
         template: `{{checks}}`,
       })
       class App {

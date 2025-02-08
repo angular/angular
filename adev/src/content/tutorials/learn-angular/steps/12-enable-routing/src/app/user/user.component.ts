@@ -5,7 +5,6 @@ import {Component} from '@angular/core';
   template: `
     <div>Username: {{ username }}</div>
   `,
-  standalone: true,
 })
 export class UserComponent {
   username = 'youngTech';

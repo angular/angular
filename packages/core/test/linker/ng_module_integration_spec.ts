@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -30,7 +30,7 @@ import {
 } from '@angular/core';
 import {ɵɵdefineInjectable} from '@angular/core/src/di/interface/defs';
 import {NgModuleType} from '@angular/core/src/render3';
-import {getNgModuleDef} from '@angular/core/src/render3/definition';
+import {getNgModuleDef} from '@angular/core/src/render3/def_getters';
 import {ComponentFixture, inject, TestBed} from '@angular/core/testing';
 
 import {InternalNgModuleRef, NgModuleFactory} from '../../src/linker/ng_module_factory';
@@ -76,22 +76,36 @@ class NoAnnotations {
   constructor(secretDependency: any) {}
 }
 
-@Component({selector: 'comp', template: ''})
+@Component({
+  selector: 'comp',
+  template: '',
+  standalone: false,
+})
 class SomeComp {}
 
-@Directive({selector: '[someDir]'})
+@Directive({
+  selector: '[someDir]',
+  standalone: false,
+})
 class SomeDirective {
   @HostBinding('title') @Input() someDir: string | undefined;
 }
 
-@Pipe({name: 'somePipe'})
+@Pipe({
+  name: 'somePipe',
+  standalone: false,
+})
 class SomePipe {
   transform(value: string): any {
     return `transformed ${value}`;
   }
 }
 
-@Component({selector: 'comp', template: `<div  [someDir]="'someValue' | somePipe"></div>`})
+@Component({
+  selector: 'comp',
+  template: `<div  [someDir]="'someValue' | somePipe"></div>`,
+  standalone: false,
+})
 class CompUsingModuleDirectiveAndPipe {}
 
 describe('NgModule', () => {
@@ -164,9 +178,9 @@ describe('NgModule', () => {
         `Type ${stringify(SomeDirective)} is part of the declarations of 2 modules: ${stringify(
           Module1,
         )} and ${stringify(Module2)}! ` +
-          `Please consider moving ${stringify(SomeDirective)} to a higher module that imports ${stringify(
-            Module1,
-          )} and ${stringify(Module2)}. ` +
+          `Please consider moving ${stringify(
+            SomeDirective,
+          )} to a higher module that imports ${stringify(Module1)} and ${stringify(Module2)}. ` +
           `You can also create a new NgModule that exports and includes ${stringify(
             SomeDirective,
           )} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`,
@@ -206,9 +220,9 @@ describe('NgModule', () => {
         `Type ${stringify(SomePipe)} is part of the declarations of 2 modules: ${stringify(
           Module1,
         )} and ${stringify(Module2)}! ` +
-          `Please consider moving ${stringify(SomePipe)} to a higher module that imports ${stringify(
-            Module1,
-          )} and ${stringify(Module2)}. ` +
+          `Please consider moving ${stringify(
+            SomePipe,
+          )} to a higher module that imports ${stringify(Module1)} and ${stringify(Module2)}. ` +
           `You can also create a new NgModule that exports and includes ${stringify(
             SomePipe,
           )} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`,
@@ -226,9 +240,9 @@ describe('NgModule', () => {
         `Type ${stringify(SomePipe)} is part of the declarations of 2 modules: ${stringify(
           Module1,
         )} and ${stringify(Module2)}! ` +
-          `Please consider moving ${stringify(SomePipe)} to a higher module that imports ${stringify(
-            Module1,
-          )} and ${stringify(Module2)}. ` +
+          `Please consider moving ${stringify(
+            SomePipe,
+          )} to a higher module that imports ${stringify(Module1)} and ${stringify(Module2)}. ` +
           `You can also create a new NgModule that exports and includes ${stringify(
             SomePipe,
           )} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`,
@@ -238,7 +252,10 @@ describe('NgModule', () => {
 
   describe('schemas', () => {
     it('should error on unknown bound properties on custom elements by default', () => {
-      @Component({template: '<div [someUnknownProp]="true"></div>'})
+      @Component({
+        template: '<div [someUnknownProp]="true"></div>',
+        standalone: false,
+      })
       class ComponentUsingInvalidProperty {}
 
       @NgModule({declarations: [ComponentUsingInvalidProperty]})
@@ -251,7 +268,10 @@ describe('NgModule', () => {
     });
 
     it('should not error on unknown bound properties on custom elements when using the CUSTOM_ELEMENTS_SCHEMA', () => {
-      @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
+      @Component({
+        template: '<some-element [someUnknownProp]="true"></some-element>',
+        standalone: false,
+      })
       class ComponentUsingInvalidProperty {}
 
       @NgModule({
@@ -376,6 +396,7 @@ describe('NgModule', () => {
         @Component({
           selector: 'parent',
           template: '<comp></comp>',
+          standalone: false,
         })
         class ParentCompUsingModuleDirectiveAndPipe {}
 

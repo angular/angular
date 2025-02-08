@@ -4,7 +4,6 @@ import {HeroService} from './hero.service';
 import {HeroListComponent} from './hero-list.component';
 
 @Component({
-  standalone: true,
   selector: 'app-heroes',
   providers: [HeroService],
   template: `

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -100,6 +100,7 @@ import {
   getValidConstructorDependencies,
   InjectableClassRegistry,
   isExpressionForwardReference,
+  JitDeclarationRegistry,
   ReferencesRegistry,
   resolveProvidersRequiringFactory,
   toR3Reference,
@@ -285,6 +286,7 @@ export class NgModuleDecoratorHandler
     private includeSelectorScope: boolean,
     private readonly compilationMode: CompilationMode,
     private readonly localCompilationExtraImportsTracker: LocalCompilationExtraImportsTracker | null,
+    private readonly jitDeclarationRegistry: JitDeclarationRegistry,
   ) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
@@ -341,6 +343,7 @@ export class NgModuleDecoratorHandler
     const ngModule = reflectObjectLiteral(meta);
 
     if (ngModule.has('jit')) {
+      this.jitDeclarationRegistry.jitDeclarations.add(node);
       // The only allowed value is true, so there's no need to expand further.
       return {};
     }
@@ -731,6 +734,7 @@ export class NgModuleDecoratorHandler
       rawExports: analysis.rawExports,
       decorator: analysis.decorator,
       mayDeclareProviders: analysis.providers !== null,
+      isPoisoned: false,
     });
 
     this.injectableRegistry.registerInjectable(node, {

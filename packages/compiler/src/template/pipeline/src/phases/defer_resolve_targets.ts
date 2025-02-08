@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as ir from '../../ir';
@@ -54,6 +54,7 @@ export function resolveDeferTargetNames(job: ComponentCompilationJob): void {
   ): void {
     switch (op.trigger.kind) {
       case ir.DeferTriggerKind.Idle:
+      case ir.DeferTriggerKind.Never:
       case ir.DeferTriggerKind.Immediate:
       case ir.DeferTriggerKind.Timer:
         return;
@@ -120,7 +121,13 @@ export function resolveDeferTargetNames(job: ComponentCompilationJob): void {
           break;
         case ir.OpKind.DeferOn:
           const deferOp = defers.get(op.defer)!;
-          resolveTrigger(unit, op, deferOp.placeholderView);
+          resolveTrigger(
+            unit,
+            op,
+            op.modifier === ir.DeferOpModifierKind.HYDRATE
+              ? deferOp.mainView
+              : deferOp.placeholderView,
+          );
           break;
       }
     }

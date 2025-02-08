@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {defaultEquals, ValueEqualityFn} from './equality';
@@ -14,6 +14,7 @@ import {
   producerUpdateValueVersion,
   REACTIVE_NODE,
   ReactiveNode,
+  setActiveConsumer,
   SIGNAL,
 } from './graph';
 
@@ -75,21 +76,21 @@ export function createComputed<T>(computation: () => T): ComputedGetter<T> {
  * A dedicated symbol used before a computed value has been calculated for the first time.
  * Explicitly typed as `any` so we can use it as signal's value.
  */
-const UNSET: any = /* @__PURE__ */ Symbol('UNSET');
+export const UNSET: any = /* @__PURE__ */ Symbol('UNSET');
 
 /**
  * A dedicated symbol used in place of a computed signal value to indicate that a given computation
  * is in progress. Used to detect cycles in computation chains.
  * Explicitly typed as `any` so we can use it as signal's value.
  */
-const COMPUTING: any = /* @__PURE__ */ Symbol('COMPUTING');
+export const COMPUTING: any = /* @__PURE__ */ Symbol('COMPUTING');
 
 /**
  * A dedicated symbol used in place of a computed signal value to indicate that a given computation
  * failed. The thrown error is cached until the computation gets dirty again.
  * Explicitly typed as `any` so we can use it as signal's value.
  */
-const ERRORED: any = /* @__PURE__ */ Symbol('ERRORED');
+export const ERRORED: any = /* @__PURE__ */ Symbol('ERRORED');
 
 // Note: Using an IIFE here to ensure that the spread assignment is not considered
 // a side-effect, ending up preserving `COMPUTED_NODE` and `REACTIVE_NODE`.
@@ -101,6 +102,7 @@ const COMPUTED_NODE = /* @__PURE__ */ (() => {
     dirty: true,
     error: null,
     equal: defaultEquals,
+    kind: 'computed',
 
     producerMustRecompute(node: ComputedNode<unknown>): boolean {
       // Force a recomputation if there's no current value, or if the current value is in the
@@ -119,8 +121,17 @@ const COMPUTED_NODE = /* @__PURE__ */ (() => {
 
       const prevConsumer = consumerBeforeComputation(node);
       let newValue: unknown;
+      let wasEqual = false;
       try {
         newValue = node.computation();
+        // We want to mark this node as errored if calling `equal` throws; however, we don't want
+        // to track any reactive reads inside `equal`.
+        setActiveConsumer(null);
+        wasEqual =
+          oldValue !== UNSET &&
+          oldValue !== ERRORED &&
+          newValue !== ERRORED &&
+          node.equal(oldValue, newValue);
       } catch (err) {
         newValue = ERRORED;
         node.error = err;
@@ -128,12 +139,7 @@ const COMPUTED_NODE = /* @__PURE__ */ (() => {
         consumerAfterComputation(node, prevConsumer);
       }
 
-      if (
-        oldValue !== UNSET &&
-        oldValue !== ERRORED &&
-        newValue !== ERRORED &&
-        node.equal(oldValue, newValue)
-      ) {
+      if (wasEqual) {
         // No change to `valueVersion` - old and new values are
         // semantically equivalent.
         node.value = oldValue;

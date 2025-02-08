@@ -3,18 +3,18 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Type} from '../interface/type';
 
-import {Component} from './directives';
+import type {Component} from './directives';
 
 /**
  * Used to resolve resource URLs on `@Component` when used with JIT compilation.
  *
  * Example:
- * ```
+ * ```ts
  * @Component({
  *   selector: 'my-comp',
  *   templateUrl: 'my-comp.html', // This requires asynchronous resolution

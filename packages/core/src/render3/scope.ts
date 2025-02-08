@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {isForwardRef, resolveForwardRef} from '../di/forward_ref';
@@ -11,8 +11,9 @@ import {Type} from '../interface/type';
 import {flatten} from '../util/array_utils';
 import {noSideEffects} from '../util/closure';
 import {EMPTY_ARRAY} from '../util/empty';
+import {getNgModuleDef} from './def_getters';
 
-import {extractDefListOrFactory, getNgModuleDef} from './definition';
+import {extractDefListOrFactory} from './definition';
 import {depsTracker} from './deps_tracker/deps_tracker';
 import {
   ComponentDef,

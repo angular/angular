@@ -7,7 +7,6 @@ import {Component} from '@angular/core';
   // #enddocregion example
   template: '<div>users component</div>',
   // #docregion example
-  standalone: true,
   selector: 'admin-users',
 })
 export class UsersComponent {}

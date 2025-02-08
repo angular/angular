@@ -21,7 +21,7 @@
     "@types/jasmine": "file:../../node_modules/@types/jasmine",
     "rxjs": "file:../../node_modules/rxjs",
     "typescript": "5.5.2",
-    "zone.js": "0.14.0"
+    "zone.js": "0.14.10"
   },
   "scripts": {
     "test": "tsc"

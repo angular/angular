@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {EnvironmentInjector, Type, ɵRuntimeError as RuntimeError} from '@angular/core';
@@ -37,7 +37,7 @@ import {PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 import {getOutlet, sortByMatchingOutlets} from './utils/config';
 import {
-  isImmediateMatch,
+  emptyPathMatch,
   match,
   matchWithChecks,
   noLeftoversInUrl,
@@ -76,7 +76,7 @@ export function recognize(
 const MAX_ALLOWED_REDIRECTS = 31;
 
 export class Recognizer {
-  private applyRedirects = new ApplyRedirects(this.urlSerializer, this.urlTree);
+  private applyRedirects: ApplyRedirects;
   private absoluteRedirectCount = 0;
   allowRedirects = true;
 
@@ -88,7 +88,9 @@ export class Recognizer {
     private urlTree: UrlTree,
     private paramsInheritanceStrategy: ParamsInheritanceStrategy,
     private readonly urlSerializer: UrlSerializer,
-  ) {}
+  ) {
+    this.applyRedirects = new ApplyRedirects(this.urlSerializer, this.urlTree);
+  }
 
   private noMatchError(e: NoMatch): RuntimeError<RuntimeErrorCode.NO_MATCH> {
     return new RuntimeError(
@@ -293,7 +295,23 @@ export class Recognizer {
     allowRedirects: boolean,
     parentRoute: ActivatedRouteSnapshot,
   ): Observable<TreeNode<ActivatedRouteSnapshot> | NoLeftoversInUrl> {
-    if (!isImmediateMatch(route, rawSegment, segments, outlet)) return noMatch(rawSegment);
+    // We allow matches to empty paths when the outlets differ so we can match a url like `/(b:b)` to
+    // a config like
+    // * `{path: '', children: [{path: 'b', outlet: 'b'}]}`
+    // or even
+    // * `{path: '', outlet: 'a', children: [{path: 'b', outlet: 'b'}]`
+    //
+    // The exception here is when the segment outlet is for the primary outlet. This would
+    // result in a match inside the named outlet because all children there are written as primary
+    // outlets. So we need to prevent child named outlet matches in a url like `/b` in a config like
+    // * `{path: '', outlet: 'x' children: [{path: 'b'}]}`
+    // This should only match if the url is `/(x:b)`.
+    if (
+      getOutlet(route) !== outlet &&
+      (outlet === PRIMARY_OUTLET || !emptyPathMatch(rawSegment, segments, route))
+    ) {
+      return noMatch(rawSegment);
+    }
 
     if (route.redirectTo === undefined) {
       return this.matchSegmentAgainstRoute(

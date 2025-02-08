@@ -5,9 +5,7 @@
   gap: 1rem;
   width: 100%;
   box-sizing: border-box;
-  @include mq.for-desktop-down {
-    flex-direction: column;
-  }
+  flex-direction: column;
 
   h1 {
     font-size: 1.5rem;
@@ -34,32 +32,14 @@
   .adev-header-and-tabs {
     padding: var(--layout-padding) 0 1rem var(--layout-padding);
     box-sizing: border-box;
+    width: 100%;
+    max-width: var(--page-width);
 
-    @include mq.for-desktop-up {
-      // this section should only be independently scrollable if
-      // the API tab is active & the screen is wide enough
-      &:has(.docs-reference-api-tab),
-      &.adev-cli-content {
-        position: sticky;
-        top: 0;
-        padding-inline-end: 1rem;
-        max-height: 100vh;
-        height: max-content;
-        overflow-y: scroll;
-        width: 50%;
-      }
-      &:has(.docs-reference-api-tab) {
-        width: 60%;
-      }
-      &:not(:has(.docs-reference-api-tab)) {
-        width: 100%;
-        max-width: var(--page-width);
-      }
-    }
     @include mq.for-desktop-down {
       padding: var(--layout-padding);
-      width: 100%;
+      max-width: none;
     }
+
     &::-webkit-scrollbar-thumb {
       background-color: var(--septenary-contrast);
       border-radius: 10px;
@@ -70,7 +50,6 @@
   .docs-code {
     pre {
       margin-block: 0;
-      padding-block: 1rem;
     }
   }
 
@@ -118,15 +97,8 @@
 
       button {
         transition: background-color 0.3s ease;
-        font-family: monospace;
 
-        &.hljs-ln-line {
-          font-weight: 400;
-          text-align: left;
-          padding-block: 0.25rem;
-        }
-
-        &.hljs-ln-line-highlighted {
+        &.shiki-ln-line-highlighted {
           background-color: var(--senary-contrast);
         }
         &:hover {
@@ -165,17 +137,15 @@
 
   .docs-reference-members-container {
     width: 40%;
-    padding: 0 var(--layout-padding) 1rem 0;
     box-sizing: border-box;
-    max-width: 60ch;
+    width: 100%;
+    max-width: var(--page-width);
+    padding: 0 0 1rem var(--layout-padding);
+
     @include mq.for-desktop-down {
-      width: 100%;
       padding: var(--layout-padding);
+      padding-top: 0;
       max-width: none;
-      // override javascript-applied margin-top:
-      // determined by how much space the sticky header takes up
-      // to align the selected card member with the code block
-      margin-block-start: 0 !important;
     }
   }
 
@@ -233,6 +203,20 @@
     letter-spacing: -0.00875rem;
   }
 
+  .docs-reference-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+
+    padding: 0.7rem 1rem;
+
+    code:not(pre *) {
+      padding: 0 0.3rem;
+    }
+  }
+
   .docs-reference-member-card {
     border: 1px solid var(--senary-contrast);
     border-radius: 0.25rem;
@@ -256,45 +240,44 @@
       }
     }
 
-    &:has(.docs-reference-card-body) {
-      header {
-        border-radius: 0.25rem 0.25rem 0 0;
-        border-bottom: 1px solid var(--senary-contrast);
-      }
-    }
-
     header {
       display: flex;
       flex-direction: column;
-      padding: 0.7rem 1rem;
-      border-radius: 0.25rem;
+      border-radius: 0.25rem 0.25rem 0 0;
       background-color: var(--octonary-contrast);
       position: relative;
       z-index: 10;
+      cursor: pointer;
       transition:
         background-color 0.3s ease,
         border 0.3s ease;
 
-      // h3 + code || # of overloads
-      .docs-reference-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-        div {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-        }
+      & > code {
+        max-width: 100%;
       }
 
+      code:has(pre) {
+        padding: 0;
+      }
+
+      pre {
+        margin: 0;
+
+        /* Do we have a better alternative ? */
+        overflow: auto;
+      }
+    }
+
+    .docs-reference-card-header {
       h3 {
         display: inline-block;
         font-family: var(--code-font);
-        font-size: 1.25rem;
+        font-size: 1rem;
         letter-spacing: -0.025rem;
         margin: 0;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       code,
@@ -322,6 +305,10 @@
     }
     .docs-code {
       margin-block-end: 1rem;
+    }
+
+    &:empty {
+      display: none;
     }
   }
 
@@ -386,7 +373,7 @@
     margin-inline-end: 0.5rem;
   }
 
-  .adev-param-name {
+  .docs-param-name {
     color: var(--vivid-pink);
     font-family: var(--code-font);
     margin-inline-end: 0.25rem;

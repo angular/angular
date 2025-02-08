@@ -10,7 +10,6 @@ import {ItemDetailMetadataComponent} from './item-details-metadata.component';
 import {ItemOutputComponent} from './item-output.component';
 
 @Component({
-  standalone: true,
   selector: 'app-root',
   templateUrl: './app.component.html',
   imports: [

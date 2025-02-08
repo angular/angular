@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -58,6 +58,7 @@ type UpOrDown = 'up' | 'down';
     <div #lastFocusable (focus)="focusOnLastFocusedRow()" tabindex="0"></div>`,
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [{provide: EXPANDING_ROW_HOST_INJECTION_TOKEN, useExisting: ExpandingRowHost}],
+  standalone: false,
 })
 export class ExpandingRowHost implements AfterViewInit, OnDestroy, ExpandingRowHostBase {
   /**

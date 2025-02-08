@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ProviderToken} from '../../di';
@@ -16,7 +16,7 @@ import {
   getQueryResults,
   getTQuery,
   loadQueryInternal,
-} from '../query';
+} from '../queries/query';
 import {getCurrentQueryIndex, getLView, getTView, setCurrentQueryIndex} from '../state';
 import {isCreationMode} from '../util/view_utils';
 

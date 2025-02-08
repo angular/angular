@@ -17,6 +17,7 @@ import {Hero} from '../hero';
   selector: 'app-hero-list',
   templateUrl: './hero-list.component.html',
   styleUrls: ['./hero-list.component.css'],
+  standalone: false,
 })
 // #docregion ctor
 export class HeroListComponent implements OnInit {

@@ -10,7 +10,10 @@ class GreeterEN implements Greeter {
   }
 }
 
-@Component({selector: 'my-component', template: '<div></div>', viewProviders: [GreeterEN]})
+@Component({
+    selector: 'my-component', template: '<div></div>', viewProviders: [GreeterEN],
+    standalone: false
+})
 export class MyComponent {
 }
 
