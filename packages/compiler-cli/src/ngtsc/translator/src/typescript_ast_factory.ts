@@ -291,6 +291,8 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
 
   createTypeOfExpression = ts.factory.createTypeOfExpression;
 
+  createVoidExpression = ts.factory.createVoidExpression;
+
   createUnaryExpression(operator: UnaryOperator, operand: ts.Expression): ts.Expression {
     return ts.factory.createPrefixUnaryExpression(UNARY_OPERATORS[operator], operand);
   }

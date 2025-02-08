@@ -409,6 +409,17 @@ describe('TypeScriptAstFactory', () => {
     });
   });
 
+  describe('createVoidExpression()', () => {
+    it('should create a void expression node', () => {
+      const {
+        items: [expr],
+        generate,
+      } = setupExpressions(`42`);
+      const voidExpr = factory.createVoidExpression(expr);
+      expect(generate(voidExpr)).toEqual('void 42');
+    });
+  });
+
   describe('createUnaryExpression()', () => {
     it('should create a unary expression with the operator and operand', () => {
       const {
