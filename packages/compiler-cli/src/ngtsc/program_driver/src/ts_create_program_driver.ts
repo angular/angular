@@ -208,6 +208,7 @@ export class TsCreateProgramDriver implements ProgramDriver {
     private originalHost: ts.CompilerHost,
     private options: ts.CompilerOptions,
     private shimExtensionPrefixes: string[],
+    private projectReferences?: readonly ts.ProjectReference[],
   ) {
     this.program = this.originalProgram;
   }
@@ -260,6 +261,8 @@ export class TsCreateProgramDriver implements ProgramDriver {
       rootNames: this.program.getRootFileNames(),
       options: this.options,
       oldProgram,
+      undefined,
+      projectReferences: this.projectReferences,
     });
     host.postProgramCreationCleanup();
 
