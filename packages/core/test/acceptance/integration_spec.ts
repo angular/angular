@@ -2736,6 +2736,28 @@ describe('acceptance integration tests', () => {
     expect(fixture.nativeElement.textContent).toContain('Message: Hello, Bilbo - 1');
   });
 
+  it('should support void expressions', () => {
+    @Component({
+      host: {
+        '(click)': 'void doStuff($event)',
+      },
+    })
+    class TestComponent {
+      e: Event | null = null;
+
+      doStuff(e: Event) {
+        this.e = e;
+        return false;
+      }
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    fixture.nativeElement.click();
+    expect(fixture.componentInstance.e).not.toBeNull();
+    expect(fixture.componentInstance.e!.defaultPrevented).toBe(false);
+  });
+
   describe('tView.firstUpdatePass', () => {
     function isFirstUpdatePass() {
       const lView = getLView();
