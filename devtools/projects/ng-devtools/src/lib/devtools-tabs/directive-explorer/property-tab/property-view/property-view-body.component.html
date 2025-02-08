@@ -51,4 +51,25 @@
       </div>
     }
   </mat-accordion>
+  @if (showSignalDependencyGraph){
+    <div class="mat-accordion-content">
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header collapsedHeight="25px" expandedHeight="25px">
+          <mat-panel-title>
+            Signal Dependency Graph
+            <a
+              href="https://angular.dev/guide/signals"
+              target="_blank"
+              class="documentation"
+              matTooltip="Open docs reference"
+              (click)="$event.stopPropagation()"
+              >
+              <mat-icon class="docs-link">open_in_new</mat-icon>
+            </a>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-signal-graph />
+      </mat-expansion-panel>
+    </div>
+  }
 }
