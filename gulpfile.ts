@@ -11,7 +11,7 @@
 const gulp = require('gulp');
 
 // See `tools/gulp-tasks/README.md` for information about task loading.
-function loadTask(fileName, taskName) {
+function loadTask(fileName: string, taskName?: string) {
   const taskModule = require('./tools/gulp-tasks/' + fileName);
   const task = taskName ? taskModule[taskName] : taskModule;
   return task(gulp);
