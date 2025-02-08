@@ -831,6 +831,34 @@ describe('completions', () => {
       expect(ts.displayPartsToString(details.documentation!)).toEqual('This is another component.');
     });
 
+    it('should return the right code action for standalone and NgModule', () => {
+      const OTHER_CMP = {
+        'OtherCmp': `
+            import {} from "@angular/common";
+           `,
+      };
+      const {templateFile} = setup(`<div>`, '', OTHER_CMP);
+      templateFile.moveCursorToText('<div¦>');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(
+        completions,
+        unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.COMPONENT),
+        ['mat-card'],
+      );
+
+      const details = templateFile.getCompletionEntryDetails('mat-card')!;
+      /**
+       * The `codeActions` should include one action.
+       *
+       * For example, the `mat-card` component is a standalone component, and it's also exported by a module.
+       * There will be two actions to import the `mat-card` component, one is to import the `MatCardModule`
+       * and another is to import the `MatCardComponent`.
+       */
+      expect(details.codeActions?.length).toBe(1);
+      expect(details).toBeDefined();
+      expect(ts.displayPartsToString(details.displayParts)).toEqual('(component) MatCard');
+    });
+
     // TODO: check why this test is now broken
     xit('should return component completions not imported', () => {
       const {templateFile} = setup(
