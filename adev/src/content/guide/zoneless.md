@@ -60,6 +60,7 @@ use [ChangeDetectionStrategy.OnPush](/best-practices/skipping-subtrees#using-onp
 
 The `OnPush` change detection strategy is not required, but it is a recommended step towards zoneless compatibility for application components. It is not always possible for library components to use `ChangeDetectionStrategy.OnPush`.
 When a library component is a host for user-components which might use `ChangeDetectionStrategy.Default`, it cannot use `OnPush` because that would prevent the child component from being refreshed if it is not `OnPush` compatible and relies on ZoneJS to trigger change detection. Components can use the `Default` strategy as long as they notify Angular when change detection needs to run (calling `markForCheck`, using signals, `AsyncPipe`, etc.).
+Note that being a host for a user component means using an API such as `ViewContainerRef.createComponent` and not simply hosting a portion of a template from a user component (i.e. content projection or a using a template ref input).
 
 ### Remove `NgZone.onMicrotaskEmpty`, `NgZone.onUnstable`, `NgZone.isStable`, or `NgZone.onStable`
 
@@ -121,6 +122,17 @@ change detection to run when Angular might otherwise have not
 scheduled change detection. Tests should ensure these notifications
 are happening and allow Angular to handle when to synchronize
 state rather than manually forcing it to happen in the test.
+
+The use of `fixture.detectChanges()` is a common pattern in many test
+suites and it is likely not worth the effort of converting these to
+`await fixture.whenStable()`. `TestBed` will still enforce that the
+fixture's component is `OnPush` compatible and will throw `ExpressionChangedAfterItHasBeenCheckedError`
+if it finds that template values were updated without a
+change notification (i.e. `fixture.componentInstance.someValue = 'newValue';`).
+If the component is used in production, this issue should be addressed by updating
+the component to use signals for state or call `ChangeDetectorRef.markForCheck()`.
+If the component is only used as a test wrapper and never used in an application,
+it is acceptable to use `fixture.changeDetectorRef.markForCheck()`.
 
 ### Debug-mode check to ensure updates are detected
 
