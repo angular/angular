@@ -191,7 +191,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
    *
    * Detached views will not be checked during change detection runs until they are
    * re-attached, even if they are dirty. `detach` can be used in combination with
-   * {@link ChangeDetectorRef#detectChanges} to implement local change
+   * [`detectChanges`](/api/core/ChangeDetectorRef#detectChanges) to implement local change
    * detection checks.
    *
    * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->

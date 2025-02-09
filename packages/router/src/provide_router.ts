@@ -622,7 +622,7 @@ export type RouterHashLocationFeature = RouterFeature<RouterFeatureKind.RouterHa
  * ```
  *
  * @see {@link provideRouter}
- * @see {@link HashLocationStrategy}
+ * @see [HashLocationStrategy](/api/common/HashLocationStrategy)
  *
  * @returns A set of providers for use with `provideRouter`.
  *
@@ -672,7 +672,7 @@ export type NavigationErrorHandlerFeature =
  * ```
  *
  * @see {@link NavigationError}
- * @see {@link core/inject}
+ * @see [inject](/api/core/inject)
  * @see {@link runInInjectionContext}
  *
  * @returns A set of providers for use with `provideRouter`.
@@ -747,7 +747,7 @@ export type ViewTransitionsFeature = RouterFeature<RouterFeatureKind.ViewTransit
  * Default values can be provided with a resolver on the route to ensure the value is always present
  * or an input and use an input transform in the component.
  *
- * @see {@link guide/components/inputs#input-transforms input transforms}
+ * @see [Input Transforms](/guide/components/inputs#input-transforms)
  * @returns A set of providers for use with `provideRouter`.
  */
 export function withComponentInputBinding(): ComponentInputBindingFeature {

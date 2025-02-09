@@ -57,8 +57,8 @@ export function locationSyncBootstrapListener(ngUpgrade: UpgradeModule) {
  *
  * @param ngUpgrade The upgrade NgModule.
  * @param urlType The location strategy.
- * @see {@link HashLocationStrategy}
- * @see {@link PathLocationStrategy}
+ * @see [HashLocationStrategy](/api/common/HashLocationStrategy)
+ * @see [PathLocationStrategy](/api/common/PathLocationStrategy)
  *
  * @publicApi
  */
