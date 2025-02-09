@@ -258,7 +258,9 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(2);
       expect(diags[0].messageText).toBe(`Type 'number' is not assignable to type 'string'.`);
-      expect(diags[1].messageText).toBe(`Type 'string' is not assignable to type 'number'.`);
+      expect(diags[1].messageText).toBe(
+        `Argument of type 'string' is not assignable to parameter of type 'number'.`,
+      );
     });
 
     describe('type checking', () => {
