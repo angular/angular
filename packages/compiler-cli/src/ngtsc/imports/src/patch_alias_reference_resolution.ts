@@ -68,8 +68,12 @@ interface EmitResolver {
  *
  * The set that is returned by this function is meant to be filled with import declaration nodes
  * that have been referenced in a value-position by the transform, such the installed patch can
- * ensure that those import declarations are not elided. If `null` is returned then the transform
- * operates in an isolated context.
+ * ensure that those import declarations are not elided.
+ *
+ * If `null` is returned then the transform operates in an isolated context, i.e. using the
+ * `ts.transform` API. In such scenario there is no information whether an alias declaration
+ * is referenced, so all alias declarations are naturally preserved and explicitly registering
+ * an alias declaration as used isn't necessary.
  *
  * See below. Note that this uses sourcegraph as the TypeScript checker file doesn't display on
  * Github.
