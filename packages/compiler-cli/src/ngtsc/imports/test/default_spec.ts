@@ -82,6 +82,50 @@ runInEachFileSystem(() => {
       expect(testContents).toContain(`var dep_1 = require("./dep");`);
       expect(testContents).toContain(`var ref = dep_1.default;`);
     });
+
+    it('should prevent a default import from being elided if used in an isolated transform', () => {
+      const {program} = makeProgram(
+        [
+          {name: _('/dep.ts'), contents: `export default class Foo {}`},
+          {
+            name: _('/test.ts'),
+            contents: `import Foo from './dep'; export function test(f: Foo) {}`,
+          },
+
+          // This control file is identical to the test file, but will not have its import marked
+          // for preservation. It exists to capture the behavior without the DefaultImportTracker's
+          // emit modifications.
+          {
+            name: _('/ctrl.ts'),
+            contents: `import Foo from './dep'; export function test(f: Foo) {}`,
+          },
+        ],
+        {
+          module: ts.ModuleKind.ES2015,
+        },
+      );
+      const fooClause = getDeclaration(program, _('/test.ts'), 'Foo', ts.isImportClause);
+      const fooDecl = fooClause.parent as ts.ImportDeclaration;
+
+      const tracker = new DefaultImportTracker();
+      tracker.recordUsedImport(fooDecl);
+
+      const result = ts.transform(
+        [program.getSourceFile(_('/test.ts'))!, program.getSourceFile(_('/ctrl.ts'))!],
+        [tracker.importPreservingTransformer()],
+      );
+      expect(result.diagnostics?.length ?? 0).toBe(0);
+      expect(result.transformed.length).toBe(2);
+
+      const printer = ts.createPrinter({newLine: ts.NewLineKind.LineFeed});
+
+      const testOutput = printer.printFile(result.transformed[0]);
+      expect(testOutput).toContain(`import Foo from './dep';`);
+
+      // In an isolated transform, TypeScript also retains the default import.
+      const ctrlOutput = printer.printFile(result.transformed[1]);
+      expect(ctrlOutput).toContain(`import Foo from './dep';`);
+    });
   });
 
   function addReferenceTransformer(id: ts.Identifier): ts.TransformerFactory<ts.SourceFile> {

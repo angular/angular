@@ -872,38 +872,81 @@ describe('downlevel decorator transform', () => {
       );
       expect(written).toBe(numberOfTestFiles);
     });
-
-    function createProgramWithTransform(files: string[]) {
-      const program = ts.createProgram(
-        files,
-        {
-          moduleResolution: ts.ModuleResolutionKind.Node10,
-          importHelpers: true,
-          lib: [],
-          module: ts.ModuleKind.ESNext,
-          target: ts.ScriptTarget.Latest,
-          declaration: false,
-          experimentalDecorators: true,
-          emitDecoratorMetadata: false,
-        },
-        host,
-      );
-      const typeChecker = program.getTypeChecker();
-      const reflectionHost = new TypeScriptReflectionHost(typeChecker);
-      const transformers: ts.CustomTransformers = {
-        before: [
-          getDownlevelDecoratorsTransform(
-            program.getTypeChecker(),
-            reflectionHost,
-            diagnostics,
-            /* isCore */ false,
-            isClosureEnabled,
-          ),
-        ],
-      };
-      return {program, transformers};
-    }
   });
+
+  it('should work using an isolated transform operation', () => {
+    context.writeFile(
+      'foo_service.d.ts',
+      `
+         export declare class Foo {};
+       `,
+    );
+    context.writeFile(
+      'foo.ts',
+      `
+         import {Injectable} from '@angular/core';
+         import {Foo} from './foo_service';
+
+         @Injectable()
+         export class MyService {
+           constructor(foo: Foo) {}
+         }
+       `,
+    );
+
+    const {program, transformers} = createProgramWithTransform(['/foo.ts', '/foo_service.d.ts']);
+    const result = ts.transform(program.getSourceFile('/foo.ts')!, [
+      ...(transformers.before ?? []),
+      ...(transformers.after ?? []),
+    ] as ts.TransformerFactory<ts.SourceFile>[]);
+    expect(result.diagnostics?.length ?? 0).toBe(0);
+    expect(result.transformed.length).toBe(1);
+
+    const printer = ts.createPrinter({newLine: ts.NewLineKind.LineFeed});
+    const output = printer.printFile(result.transformed[0]);
+    expect(omitLeadingWhitespace(output)).toEqual(dedent`
+       import { Injectable } from '@angular/core';
+       import { Foo } from './foo_service';
+       @Injectable()
+       export class MyService {
+           constructor(foo: Foo) { }
+           static ctorParameters = () => [
+               { type: Foo }
+           ];
+       }
+       `);
+  });
+
+  function createProgramWithTransform(files: string[]) {
+    const program = ts.createProgram(
+      files,
+      {
+        moduleResolution: ts.ModuleResolutionKind.Node10,
+        importHelpers: true,
+        lib: [],
+        module: ts.ModuleKind.ESNext,
+        target: ts.ScriptTarget.Latest,
+        declaration: false,
+        experimentalDecorators: true,
+        emitDecoratorMetadata: false,
+      },
+      host,
+    );
+    const typeChecker = program.getTypeChecker();
+    const reflectionHost = new TypeScriptReflectionHost(typeChecker);
+    const transformers: ts.CustomTransformers = {
+      before: [
+        getDownlevelDecoratorsTransform(
+          program.getTypeChecker(),
+          reflectionHost,
+          diagnostics,
+          /* isCore */ false,
+          isClosureEnabled,
+        ),
+      ],
+    };
+    return {program, transformers};
+  }
 });
 
 /** Template string function that can be used to dedent a given string literal. */
