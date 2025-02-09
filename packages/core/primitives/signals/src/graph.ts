@@ -226,11 +226,17 @@ export function producerAccessed(node: ReactiveNode): void {
   }
 
   activeConsumer.consumerOnSignalRead(node);
+  assertConsumerNode(activeConsumer);
+
+  // Check if this producer is the tail dependency of `activeConsumer`. This is a cheap optimization
+  // for cases when the same signal is read back-to-back.
+  let idx = activeConsumer.producerNode.length - 1;
+  if (idx >= 0 && activeConsumer.producerNode[idx] === node) {
+    return;
+  }
 
   // This producer is the `idx`th dependency of `activeConsumer`.
-  const idx = activeConsumer.nextProducerIndex++;
-
-  assertConsumerNode(activeConsumer);
+  idx = activeConsumer.nextProducerIndex++;
 
   if (idx < activeConsumer.producerNode.length && activeConsumer.producerNode[idx] !== node) {
     // There's been a change in producers since the last execution of `activeConsumer`.
