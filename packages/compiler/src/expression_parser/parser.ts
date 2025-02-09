@@ -37,7 +37,6 @@ import {
   ParserError,
   ParseSpan,
   PrefixNot,
-  TypeofExpression,
   PropertyRead,
   PropertyWrite,
   RecursiveAstVisitor,
@@ -46,11 +45,13 @@ import {
   SafePropertyRead,
   TemplateBinding,
   TemplateBindingIdentifier,
-  ThisReceiver,
-  Unary,
-  VariableBinding,
   TemplateLiteral,
   TemplateLiteralElement,
+  ThisReceiver,
+  TypeofExpression,
+  Unary,
+  VariableBinding,
+  VoidExpression,
 } from './ast';
 import {EOF, Lexer, StringTokenKind, Token, TokenType} from './lexer';
 
@@ -968,6 +969,11 @@ class _ParseAST {
       const start = this.inputIndex;
       let result = this.parsePrefix();
       return new TypeofExpression(this.span(start), this.sourceSpan(start), result);
+    } else if (this.next.isKeywordVoid()) {
+      this.advance();
+      const start = this.inputIndex;
+      let result = this.parsePrefix();
+      return new VoidExpression(this.span(start), this.sourceSpan(start), result);
     }
     return this.parseCallChain();
   }
