@@ -15,7 +15,7 @@ const tsMdBlock = (code: string) => '```angular-ts\n' + code + '\n```';
 const htmlMdBlock = (code: string) => '```angular-html\n' + code + '\n```';
 
 const entriesBuilder = (comment: string): DocEntry[] => [
-  {jsdocTags: [], rawComment: comment} as unknown as DocEntry,
+  {jsdocTags: [], rawComment: comment, description: ''} as unknown as DocEntry,
 ];
 
 const getComment = (entries: DocEntry[]) => entries[0].rawComment;
@@ -35,6 +35,7 @@ describe('interpolate_code_examples', () => {
           },
         ],
         rawComment: `{@example dummy/jsdocs_raw.ts region='function'}`,
+        description: `{@example dummy/jsdocs_raw.ts region='function'}`,
       },
     ];
 
