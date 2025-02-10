@@ -66,6 +66,10 @@ describe('parser', () => {
       checkAction('a.b!()');
     });
 
+    it('should parse exponentiation expressions', () => {
+      checkAction('1*2**3', '1 * 2 ** 3');
+    });
+
     it('should parse multiplicative expressions', () => {
       checkAction('3*4/2%5', '3 * 4 / 2 % 5');
     });

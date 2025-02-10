@@ -43,6 +43,7 @@ const BINARY_OPERATORS = new Map<o.BinaryOperator, BinaryOperator>([
   [o.BinaryOperator.Or, '||'],
   [o.BinaryOperator.Plus, '+'],
   [o.BinaryOperator.NullishCoalesce, '??'],
+  [o.BinaryOperator.Exponentiation, '**'],
 ]);
 
 export type RecordWrappedNodeFn<TExpression> = (node: o.WrappedNodeExpr<TExpression>) => void;

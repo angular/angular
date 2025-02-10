@@ -311,6 +311,7 @@ export type BinaryOperator =
   | '-'
   | '%'
   | '*'
+  | '**'
   | '!='
   | '!=='
   | '||'

@@ -22,6 +22,7 @@ export const BINARY_OPERATORS = new Map([
   ['<=', o.BinaryOperator.LowerEquals],
   ['-', o.BinaryOperator.Minus],
   ['%', o.BinaryOperator.Modulo],
+  ['**', o.BinaryOperator.Exponentiation],
   ['*', o.BinaryOperator.Multiply],
   ['!=', o.BinaryOperator.NotEquals],
   ['!==', o.BinaryOperator.NotIdentical],

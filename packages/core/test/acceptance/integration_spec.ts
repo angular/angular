@@ -2757,6 +2757,36 @@ describe('acceptance integration tests', () => {
     expect(fixture.componentInstance.e!.defaultPrevented).toBe(false);
   });
 
+  it('should have correct operator precedence', () => {
+    @Component({
+      template: '{{1 + 10 ** -2 * 3}}',
+    })
+    class TestComponent {}
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toEqual('1.03');
+  });
+
+  it('should throw on ambiguous unary operator in exponentiation expression', () => {
+    @Component({
+      template: '{{1 + -10 ** -2 * 3}}',
+    })
+    class TestComponent {}
+    expect(() => TestBed.createComponent(TestComponent)).toThrowError(
+      /Unary operator used immediately before exponentiation expression. Parenthesis must be used to disambiguate operator precedence/,
+    );
+  });
+
+  it('should not throw on unambiguous unary operator in exponentiation expression', () => {
+    @Component({
+      template: '{{1 + (-10) ** -2 * 3}} | {{1 + -(10 ** -2) * 3}}',
+    })
+    class TestComponent {}
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toEqual('1.03 | 0.97');
+  });
+
   describe('tView.firstUpdatePass', () => {
     function isFirstUpdatePass() {
       const lView = getLView();

@@ -35,6 +35,10 @@ describe('serializer', () => {
       expect(serialize(parse(' 1234   +   4321 '))).toBe('1234 + 4321');
     });
 
+    it('serializes exponentiation', () => {
+      expect(serialize(parse(' 1  *  2  **  3 '))).toBe('1 * 2 ** 3');
+    });
+
     it('serializes chains', () => {
       expect(serialize(parseAction(' 1234;   4321 '))).toBe('1234; 4321');
     });
