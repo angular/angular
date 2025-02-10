@@ -54,6 +54,7 @@ const BINARY_OPERATORS: Record<BinaryOperator, ts.BinaryOperator> = {
   '-': ts.SyntaxKind.MinusToken,
   '%': ts.SyntaxKind.PercentToken,
   '*': ts.SyntaxKind.AsteriskToken,
+  '**': ts.SyntaxKind.AsteriskAsteriskToken,
   '!=': ts.SyntaxKind.ExclamationEqualsToken,
   '!==': ts.SyntaxKind.ExclamationEqualsEqualsToken,
   '||': ts.SyntaxKind.BarBarToken,

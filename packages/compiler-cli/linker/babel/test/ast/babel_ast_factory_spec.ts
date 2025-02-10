@@ -82,6 +82,13 @@ describe('BabelAstFactory', () => {
       expect(t.isLogicalExpression(expr)).toBe(true);
       expect(generate(expr).code).toEqual('17 && 42');
     });
+
+    it('should create a binary operation node for exponentiation', () => {
+      const left = expression.ast`2`;
+      const right = expression.ast`3`;
+      const expr = factory.createBinaryExpression(left, '**', right);
+      expect(generate(expr).code).toEqual('2 ** 3');
+    });
   });
 
   describe('createBlock()', () => {

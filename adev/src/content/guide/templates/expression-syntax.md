@@ -53,6 +53,7 @@ Angular supports the following operators from standard JavaScript.
 | Multiply              | `41 * 6`                                 |
 | Divide                | `20 / 4`                                 |
 | Remainder (Modulo)    | `17 % 5`                                 |
+| Exponentiation        | `10 ** 3`                                |
 | Parenthesis           | `9 * (8 + 4)`                            |
 | Conditional (Ternary) | `a > b ? true : false`                   |
 | And (Logical)         | `&&`                                     |

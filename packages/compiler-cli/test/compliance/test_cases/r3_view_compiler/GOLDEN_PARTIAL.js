@@ -91,7 +91,7 @@ export class MyApp {
 MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
     {{ 1 + 2 }}
-    {{ (1 % 2) + 3 / 4 * 5 }}
+    {{ (1 % 2) + 3 / 4 * 5 ** 6 }}
     {{ +1 }}
     {{ typeof {} === 'object' }}
     {{ !(typeof {} === 'object') }}
@@ -104,7 +104,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     template: `
     {{ 1 + 2 }}
-    {{ (1 % 2) + 3 / 4 * 5 }}
+    {{ (1 % 2) + 3 / 4 * 5 ** 6 }}
     {{ +1 }}
     {{ typeof {} === 'object' }}
     {{ !(typeof {} === 'object') }}

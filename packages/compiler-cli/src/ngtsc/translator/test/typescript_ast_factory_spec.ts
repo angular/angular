@@ -73,6 +73,15 @@ describe('TypeScriptAstFactory', () => {
       const assignment = factory.createBinaryExpression(left, '+', right);
       expect(generate(assignment)).toEqual('17 + 42');
     });
+
+    it('should create a binary operation node for exponentiation', () => {
+      const {
+        items: [left, right],
+        generate,
+      } = setupExpressions(`2`, `3`);
+      const assignment = factory.createBinaryExpression(left, '**', right);
+      expect(generate(assignment)).toEqual('2 ** 3');
+    });
   });
 
   describe('createDynamicImport()', () => {

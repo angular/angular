@@ -456,6 +456,9 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
       case o.BinaryOperator.Modulo:
         opStr = '%';
         break;
+      case o.BinaryOperator.Exponentiation:
+        opStr = '**';
+        break;
       case o.BinaryOperator.Lower:
         opStr = '<';
         break;
