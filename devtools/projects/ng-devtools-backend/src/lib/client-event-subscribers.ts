@@ -155,6 +155,9 @@ const getLatestComponentExplorerViewCallback =
     if (state) {
       const {directiveProperties} = state;
       messageBus.emit('latestComponentExplorerView', [{forest, properties: directiveProperties}]);
+    } else {
+      // if the node is not found in the tree, we assume its gone and send the tree as is.
+      messageBus.emit('latestComponentExplorerView', [{forest}]);
     }
   };
 
