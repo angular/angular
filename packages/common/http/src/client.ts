@@ -30,12 +30,12 @@ import {RuntimeErrorCode} from './errors';
  */
 function addBody<T>(
   options: {
-    headers?: HttpHeaders | {[header: string]: string | string[]};
+    headers?: HttpHeaders | Record<string, string | string[]>;
     context?: HttpContext;
     observe?: 'body' | 'events' | 'response';
     params?:
       | HttpParams
-      | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+      | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
     reportProgress?: boolean;
     responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
     withCredentials?: boolean;
@@ -66,8 +66,7 @@ function addBody<T>(
  * single data type of the response.
  * A single overload version of the method handles each response type.
  * The value of `responseType` cannot be a union, as the combined signature could imply.
-
- * TODO(adev): review
+ *
  * @usageNotes
  *
  * ### HTTP Request Example
@@ -137,12 +136,12 @@ export class HttpClient {
     url: string,
     options: {
       body?: any;
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'arraybuffer';
       withCredentials?: boolean;
@@ -165,12 +164,12 @@ export class HttpClient {
     url: string,
     options: {
       body?: any;
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'blob';
       withCredentials?: boolean;
@@ -193,12 +192,12 @@ export class HttpClient {
     url: string,
     options: {
       body?: any;
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'text';
       withCredentials?: boolean;
@@ -222,11 +221,11 @@ export class HttpClient {
     url: string,
     options: {
       body?: any;
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       observe: 'events';
       reportProgress?: boolean;
       responseType: 'arraybuffer';
@@ -251,12 +250,12 @@ export class HttpClient {
     url: string,
     options: {
       body?: any;
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'blob';
       withCredentials?: boolean;
@@ -280,12 +279,12 @@ export class HttpClient {
     url: string,
     options: {
       body?: any;
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'text';
       withCredentials?: boolean;
@@ -309,13 +308,13 @@ export class HttpClient {
     url: string,
     options: {
       body?: any;
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       reportProgress?: boolean;
       observe: 'events';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       responseType?: 'json';
       withCredentials?: boolean;
       transferCache?: {includeHeaders?: string[]} | boolean;
@@ -338,13 +337,13 @@ export class HttpClient {
     url: string,
     options: {
       body?: any;
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       reportProgress?: boolean;
       observe: 'events';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       responseType?: 'json';
       withCredentials?: boolean;
       transferCache?: {includeHeaders?: string[]} | boolean;
@@ -366,12 +365,12 @@ export class HttpClient {
     url: string,
     options: {
       body?: any;
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'arraybuffer';
       withCredentials?: boolean;
@@ -393,12 +392,12 @@ export class HttpClient {
     url: string,
     options: {
       body?: any;
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'blob';
       withCredentials?: boolean;
@@ -421,12 +420,12 @@ export class HttpClient {
     url: string,
     options: {
       body?: any;
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'text';
       withCredentials?: boolean;
@@ -450,13 +449,13 @@ export class HttpClient {
     url: string,
     options: {
       body?: any;
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       reportProgress?: boolean;
       observe: 'response';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       responseType?: 'json';
       withCredentials?: boolean;
     },
@@ -477,13 +476,13 @@ export class HttpClient {
     url: string,
     options: {
       body?: any;
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       reportProgress?: boolean;
       observe: 'response';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       responseType?: 'json';
       withCredentials?: boolean;
       transferCache?: {includeHeaders?: string[]} | boolean;
@@ -505,12 +504,12 @@ export class HttpClient {
     url: string,
     options?: {
       body?: any;
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       responseType?: 'json';
       reportProgress?: boolean;
       withCredentials?: boolean;
@@ -533,12 +532,12 @@ export class HttpClient {
     url: string,
     options?: {
       body?: any;
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       responseType?: 'json';
       reportProgress?: boolean;
       withCredentials?: boolean;
@@ -560,11 +559,11 @@ export class HttpClient {
     url: string,
     options?: {
       body?: any;
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       observe?: 'body' | 'events' | 'response';
       reportProgress?: boolean;
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
@@ -604,12 +603,12 @@ export class HttpClient {
     url?: string,
     options: {
       body?: any;
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body' | 'events' | 'response';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
@@ -757,12 +756,12 @@ export class HttpClient {
   delete(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'arraybuffer';
       withCredentials?: boolean;
@@ -782,12 +781,12 @@ export class HttpClient {
   delete(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'blob';
       withCredentials?: boolean;
@@ -807,12 +806,12 @@ export class HttpClient {
   delete(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'text';
       withCredentials?: boolean;
@@ -833,12 +832,12 @@ export class HttpClient {
   delete(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'arraybuffer';
       withCredentials?: boolean;
@@ -859,12 +858,12 @@ export class HttpClient {
   delete(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'blob';
       withCredentials?: boolean;
@@ -885,12 +884,12 @@ export class HttpClient {
   delete(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'text';
       withCredentials?: boolean;
@@ -911,12 +910,12 @@ export class HttpClient {
   delete(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -937,12 +936,12 @@ export class HttpClient {
   delete<T>(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | (string | number | boolean)[]};
+        | Record<string, string | number | boolean | (string | number | boolean)[]>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -962,12 +961,12 @@ export class HttpClient {
   delete(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'arraybuffer';
       withCredentials?: boolean;
@@ -987,12 +986,12 @@ export class HttpClient {
   delete(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'blob';
       withCredentials?: boolean;
@@ -1012,12 +1011,12 @@ export class HttpClient {
   delete(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'text';
       withCredentials?: boolean;
@@ -1038,12 +1037,12 @@ export class HttpClient {
   delete(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -1063,12 +1062,12 @@ export class HttpClient {
   delete<T>(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -1088,12 +1087,12 @@ export class HttpClient {
   delete(
     url: string,
     options?: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -1113,12 +1112,12 @@ export class HttpClient {
   delete<T>(
     url: string,
     options?: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -1138,12 +1137,12 @@ export class HttpClient {
   delete(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body' | 'events' | 'response';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
@@ -1165,12 +1164,12 @@ export class HttpClient {
   get(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'arraybuffer';
       withCredentials?: boolean;
@@ -1190,12 +1189,12 @@ export class HttpClient {
   get(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'blob';
       withCredentials?: boolean;
@@ -1215,12 +1214,12 @@ export class HttpClient {
   get(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'text';
       withCredentials?: boolean;
@@ -1241,12 +1240,12 @@ export class HttpClient {
   get(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'arraybuffer';
       withCredentials?: boolean;
@@ -1266,12 +1265,12 @@ export class HttpClient {
   get(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'blob';
       withCredentials?: boolean;
@@ -1291,12 +1290,12 @@ export class HttpClient {
   get(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'text';
       withCredentials?: boolean;
@@ -1316,12 +1315,12 @@ export class HttpClient {
   get(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -1341,12 +1340,12 @@ export class HttpClient {
   get<T>(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -1367,12 +1366,12 @@ export class HttpClient {
   get(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'arraybuffer';
       withCredentials?: boolean;
@@ -1393,12 +1392,12 @@ export class HttpClient {
   get(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'blob';
       withCredentials?: boolean;
@@ -1419,12 +1418,12 @@ export class HttpClient {
   get(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'text';
       withCredentials?: boolean;
@@ -1445,12 +1444,12 @@ export class HttpClient {
   get(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -1471,12 +1470,12 @@ export class HttpClient {
   get<T>(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -1497,12 +1496,12 @@ export class HttpClient {
   get(
     url: string,
     options?: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -1522,12 +1521,12 @@ export class HttpClient {
   get<T>(
     url: string,
     options?: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -1543,12 +1542,12 @@ export class HttpClient {
   get(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body' | 'events' | 'response';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
@@ -1570,12 +1569,12 @@ export class HttpClient {
   head(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'arraybuffer';
       withCredentials?: boolean;
@@ -1596,12 +1595,12 @@ export class HttpClient {
   head(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'blob';
       withCredentials?: boolean;
@@ -1621,12 +1620,12 @@ export class HttpClient {
   head(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'text';
       withCredentials?: boolean;
@@ -1647,12 +1646,12 @@ export class HttpClient {
   head(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'arraybuffer';
       withCredentials?: boolean;
@@ -1673,12 +1672,12 @@ export class HttpClient {
   head(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'blob';
       withCredentials?: boolean;
@@ -1699,12 +1698,12 @@ export class HttpClient {
   head(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'text';
       withCredentials?: boolean;
@@ -1725,12 +1724,12 @@ export class HttpClient {
   head(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -1751,12 +1750,12 @@ export class HttpClient {
   head<T>(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -1777,12 +1776,12 @@ export class HttpClient {
   head(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'arraybuffer';
       withCredentials?: boolean;
@@ -1803,12 +1802,12 @@ export class HttpClient {
   head(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'blob';
       withCredentials?: boolean;
@@ -1829,12 +1828,12 @@ export class HttpClient {
   head(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'text';
       withCredentials?: boolean;
@@ -1855,12 +1854,12 @@ export class HttpClient {
   head(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -1881,12 +1880,12 @@ export class HttpClient {
   head<T>(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -1907,12 +1906,12 @@ export class HttpClient {
   head(
     url: string,
     options?: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -1933,12 +1932,12 @@ export class HttpClient {
   head<T>(
     url: string,
     options?: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -1956,12 +1955,12 @@ export class HttpClient {
   head(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body' | 'events' | 'response';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
@@ -2033,12 +2032,12 @@ export class HttpClient {
   options(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'arraybuffer';
       withCredentials?: boolean;
@@ -2057,12 +2056,12 @@ export class HttpClient {
   options(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'blob';
       withCredentials?: boolean;
@@ -2081,12 +2080,12 @@ export class HttpClient {
   options(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'text';
       withCredentials?: boolean;
@@ -2106,12 +2105,12 @@ export class HttpClient {
   options(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'arraybuffer';
       withCredentials?: boolean;
@@ -2131,12 +2130,12 @@ export class HttpClient {
   options(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'blob';
       withCredentials?: boolean;
@@ -2156,12 +2155,12 @@ export class HttpClient {
   options(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'text';
       withCredentials?: boolean;
@@ -2181,12 +2180,12 @@ export class HttpClient {
   options(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -2206,12 +2205,12 @@ export class HttpClient {
   options<T>(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -2231,12 +2230,12 @@ export class HttpClient {
   options(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'arraybuffer';
       withCredentials?: boolean;
@@ -2256,12 +2255,12 @@ export class HttpClient {
   options(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'blob';
       withCredentials?: boolean;
@@ -2281,12 +2280,12 @@ export class HttpClient {
   options(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'text';
       withCredentials?: boolean;
@@ -2306,12 +2305,12 @@ export class HttpClient {
   options(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -2331,12 +2330,12 @@ export class HttpClient {
   options<T>(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -2356,12 +2355,12 @@ export class HttpClient {
   options(
     url: string,
     options?: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -2380,12 +2379,12 @@ export class HttpClient {
   options<T>(
     url: string,
     options?: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -2402,12 +2401,12 @@ export class HttpClient {
   options(
     url: string,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body' | 'events' | 'response';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
@@ -2430,12 +2429,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'arraybuffer';
       withCredentials?: boolean;
@@ -2456,12 +2455,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'blob';
       withCredentials?: boolean;
@@ -2482,12 +2481,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'text';
       withCredentials?: boolean;
@@ -2510,12 +2509,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'arraybuffer';
       withCredentials?: boolean;
@@ -2537,12 +2536,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'blob';
       withCredentials?: boolean;
@@ -2564,12 +2563,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'text';
       withCredentials?: boolean;
@@ -2591,12 +2590,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -2618,12 +2617,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -2645,12 +2644,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'arraybuffer';
       withCredentials?: boolean;
@@ -2672,12 +2671,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'blob';
       withCredentials?: boolean;
@@ -2699,12 +2698,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'text';
       withCredentials?: boolean;
@@ -2726,12 +2725,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -2753,12 +2752,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -2780,12 +2779,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options?: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -2807,12 +2806,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options?: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -2828,12 +2827,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body' | 'events' | 'response';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
@@ -2856,12 +2855,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'arraybuffer';
       withCredentials?: boolean;
@@ -2883,12 +2882,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'blob';
       withCredentials?: boolean;
@@ -2910,12 +2909,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'text';
       withCredentials?: boolean;
@@ -2938,12 +2937,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'arraybuffer';
       withCredentials?: boolean;
@@ -2965,12 +2964,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'blob';
       withCredentials?: boolean;
@@ -2993,12 +2992,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'text';
       withCredentials?: boolean;
@@ -3021,12 +3020,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -3049,12 +3048,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -3077,12 +3076,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'arraybuffer';
       withCredentials?: boolean;
@@ -3105,12 +3104,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'blob';
       withCredentials?: boolean;
@@ -3133,12 +3132,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'text';
       withCredentials?: boolean;
@@ -3161,12 +3160,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -3190,12 +3189,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -3217,12 +3216,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options?: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -3245,12 +3244,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options?: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -3268,12 +3267,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body' | 'events' | 'response';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
@@ -3297,12 +3296,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'arraybuffer';
       withCredentials?: boolean;
@@ -3323,12 +3322,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'blob';
       withCredentials?: boolean;
@@ -3349,12 +3348,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'text';
       withCredentials?: boolean;
@@ -3376,12 +3375,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'arraybuffer';
       withCredentials?: boolean;
@@ -3403,12 +3402,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'blob';
       withCredentials?: boolean;
@@ -3430,12 +3429,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'text';
       withCredentials?: boolean;
@@ -3457,12 +3456,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -3484,12 +3483,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'events';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -3511,12 +3510,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'arraybuffer';
       withCredentials?: boolean;
@@ -3538,12 +3537,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'blob';
       withCredentials?: boolean;
@@ -3565,12 +3564,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType: 'text';
       withCredentials?: boolean;
@@ -3592,12 +3591,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -3619,12 +3618,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       observe: 'response';
       context?: HttpContext;
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -3645,12 +3644,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options?: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -3671,12 +3670,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options?: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'json';
       withCredentials?: boolean;
@@ -3693,12 +3692,12 @@ export class HttpClient {
     url: string,
     body: any | null,
     options: {
-      headers?: HttpHeaders | {[header: string]: string | string[]};
+      headers?: HttpHeaders | Record<string, string | string[]>;
       context?: HttpContext;
       observe?: 'body' | 'events' | 'response';
       params?:
         | HttpParams
-        | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>};
+        | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
       reportProgress?: boolean;
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
