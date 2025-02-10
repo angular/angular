@@ -43,6 +43,7 @@ const MD_CTYPE_MAP: {[key in FileType]: string} = {
 export function interpolateCodeExamples(entries: DocEntry[]): void {
   for (const entry of entries) {
     entry.rawComment = replaceExample(entry.rawComment);
+    entry.description = replaceExample(entry.description);
 
     for (const jsdocTag of entry.jsdocTags) {
       jsdocTag.comment = replaceExample(jsdocTag.comment);
