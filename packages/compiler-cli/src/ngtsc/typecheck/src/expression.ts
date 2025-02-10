@@ -76,6 +76,7 @@ const BINARY_OPS = new Map<string, ts.BinaryOperator>([
   ['==', ts.SyntaxKind.EqualsEqualsToken],
   ['===', ts.SyntaxKind.EqualsEqualsEqualsToken],
   ['*', ts.SyntaxKind.AsteriskToken],
+  ['**', ts.SyntaxKind.AsteriskAsteriskToken],
   ['/', ts.SyntaxKind.SlashToken],
   ['%', ts.SyntaxKind.PercentToken],
   ['!=', ts.SyntaxKind.ExclamationEqualsToken],

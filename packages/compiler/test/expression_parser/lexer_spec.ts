@@ -303,6 +303,15 @@ describe('lexer', () => {
       expectNumberToken(lex('0.5')[0], 0, 3, 0.5);
     });
 
+    it('should tokenize multiplication and exponentiation', () => {
+      const tokens: Token[] = lex('1 * 2 ** 3');
+      expectNumberToken(tokens[0], 0, 1, 1);
+      expectOperatorToken(tokens[1], 2, 3, '*');
+      expectNumberToken(tokens[2], 4, 5, 2);
+      expectOperatorToken(tokens[3], 6, 8, '**');
+      expectNumberToken(tokens[4], 9, 10, 3);
+    });
+
     it('should tokenize number with exponent', () => {
       let tokens: Token[] = lex('0.5E-10');
       expect(tokens.length).toEqual(1);
