@@ -1,5 +1,5 @@
-load("//devtools/tools:typescript.bzl", "ts_library")
 load("//devtools/tools:ng_module.bzl", "ng_module")
+load("//devtools/tools:typescript.bzl", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -8,6 +8,7 @@ ng_module(
     srcs = ["resolution-path.component.ts"],
     deps = [
         ":injector_tree_visualizer",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tree-visualizer-host",
         "//devtools/projects/protocol",
         "//packages/core",
         "@npm//@types",
