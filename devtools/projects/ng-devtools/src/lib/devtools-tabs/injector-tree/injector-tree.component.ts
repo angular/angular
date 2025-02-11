@@ -32,7 +32,7 @@ import {
   InjectorTreeD3Node,
   InjectorTreeVisualizer,
 } from '../dependency-injection/injector-tree-visualizer';
-
+import {TreeVisualizerHostComponent} from '../tree-visualizer-host/tree-visualizer-host.component';
 import {InjectorProvidersComponent} from './injector-providers/injector-providers.component';
 import {
   filterOutAngularInjectors,
@@ -50,6 +50,7 @@ import {
     SplitComponent,
     SplitAreaDirective,
     InjectorProvidersComponent,
+    TreeVisualizerHostComponent,
     MatIcon,
     MatTooltip,
     MatCheckbox,
@@ -58,11 +59,8 @@ import {
   styleUrls: ['./injector-tree.component.scss'],
 })
 export class InjectorTreeComponent {
-  private svgContainer = viewChild.required<ElementRef>('svgContainer');
-  private g = viewChild.required<ElementRef>('mainGroup');
-
-  private elementSvgContainer = viewChild.required<ElementRef>('elementSvgContainer');
-  private elementG = viewChild.required<ElementRef>('elementMainGroup');
+  private environmentTree = viewChild.required<TreeVisualizerHostComponent>('environmentTree');
+  private elementTree = viewChild.required<TreeVisualizerHostComponent>('elementTree');
 
   private _messageBus = inject(MessageBus) as MessageBus<Events>;
   zone = inject(NgZone);
@@ -263,32 +261,29 @@ export class InjectorTreeComponent {
   }
 
   setUpEnvironmentInjectorVisualizer(): void {
-    const svg = this.svgContainer()?.nativeElement;
-    const g = this.g()?.nativeElement;
-    if (!svg || !g) {
-      return;
-    }
+    const svg = this.environmentTree().container().nativeElement;
+    const g = this.environmentTree().group().nativeElement;
 
     this.injectorTreeGraph?.cleanup?.();
     this.injectorTreeGraph = new InjectorTreeVisualizer(svg, g);
   }
 
   setUpElementInjectorVisualizer(): void {
-    const svg = this.elementSvgContainer()?.nativeElement;
-    const g = this.elementG()?.nativeElement;
-    if (!svg || !g) {
-      return;
-    }
+    const svg = this.elementTree().container().nativeElement;
+    const g = this.elementTree().group().nativeElement;
 
     this.elementInjectorTreeGraph?.cleanup?.();
     this.elementInjectorTreeGraph = new InjectorTreeVisualizer(svg, g, {nodeSeparation: () => 1});
   }
 
   highlightPathFromSelectedInjector(): void {
-    this.unhighlightAllEdges(this.elementG());
-    this.unhighlightAllNodes(this.elementG());
-    this.unhighlightAllEdges(this.g());
-    this.unhighlightAllNodes(this.g());
+    const envGroup = this.environmentTree().group();
+    const elementGroup = this.elementTree().group();
+
+    this.unhighlightAllEdges(elementGroup);
+    this.unhighlightAllNodes(elementGroup);
+    this.unhighlightAllEdges(envGroup);
+    this.unhighlightAllNodes(envGroup);
 
     this.checkIfSelectedNodeStillExists();
 
@@ -298,22 +293,22 @@ export class InjectorTreeComponent {
 
     if (this.selectedNode()!.data.injector.type === 'element') {
       const idsToRoot = getInjectorIdsToRootFromNode(this.selectedNode()!);
-      idsToRoot.forEach((id) => this.highlightNodeById(this.elementG(), id));
+      idsToRoot.forEach((id) => this.highlightNodeById(elementGroup, id));
       const edgeIds = generateEdgeIdsFromNodeIds(idsToRoot);
-      edgeIds.forEach((edgeId) => this.highlightEdgeById(this.elementG(), edgeId));
+      edgeIds.forEach((edgeId) => this.highlightEdgeById(elementGroup, edgeId));
 
       const environmentPath =
         this.elementToEnvironmentPath.get(this.selectedNode()!.data.injector.id) ?? [];
-      environmentPath.forEach((injector) => this.highlightNodeById(this.g(), injector.id));
+      environmentPath.forEach((injector) => this.highlightNodeById(envGroup, injector.id));
       const environmentEdgeIds = generateEdgeIdsFromNodeIds(
         environmentPath.map((injector) => injector.id),
       );
-      environmentEdgeIds.forEach((edgeId) => this.highlightEdgeById(this.g(), edgeId));
+      environmentEdgeIds.forEach((edgeId) => this.highlightEdgeById(envGroup, edgeId));
     } else {
       const idsToRoot = getInjectorIdsToRootFromNode(this.selectedNode()!);
-      idsToRoot.forEach((id) => this.highlightNodeById(this.g(), id));
+      idsToRoot.forEach((id) => this.highlightNodeById(envGroup, id));
       const edgeIds = generateEdgeIdsFromNodeIds(idsToRoot);
-      edgeIds.forEach((edgeId) => this.highlightEdgeById(this.g(), edgeId));
+      edgeIds.forEach((edgeId) => this.highlightEdgeById(envGroup, edgeId));
     }
   }
 

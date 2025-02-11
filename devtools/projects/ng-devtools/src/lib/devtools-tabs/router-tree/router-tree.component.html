@@ -8,9 +8,5 @@
     />
     <mat-checkbox (change)="togglePathSettings()">Show Full Path </mat-checkbox>
   </div>
-  <section #routerTree class="router-tree router-graph router-tree-container">
-    <svg #routerTreeSvgContainer>
-      <g #routerTreeMainGroup></g>
-    </svg>
-  </section>
+  <ng-tree-visualizer-host #routerTree />
 </div>

@@ -25,6 +25,7 @@ ng_module(
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection:injector_tree_visualizer",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection/resolution-path",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/injector-tree/injector-providers",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tree-visualizer-host",
         "//devtools/projects/ng-devtools/src/lib/vendor/angular-split",
         "//devtools/projects/protocol",
         "//packages/common",
