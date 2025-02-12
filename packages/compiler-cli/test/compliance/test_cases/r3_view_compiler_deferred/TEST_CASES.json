@@ -290,6 +290,25 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should handle a component with deferred blocks that share the same dependency",
+      "inputFiles": [
+        "deferred_with_duplicate_external_dep.ts",
+        "deferred_with_duplicate_external_dep_lazy.ts",
+        "deferred_with_duplicate_external_dep_other.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_with_duplicate_external_dep_template.js",
+              "generated": "deferred_with_duplicate_external_dep.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }
