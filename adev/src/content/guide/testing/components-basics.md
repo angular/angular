@@ -26,7 +26,7 @@ But many components have complex interactions with the DOM elements described in
 
 To answer these kinds of questions, you have to create the DOM elements associated with the components, you must examine the DOM to confirm that component state displays properly at the appropriate times, and you must simulate user interaction with the screen to determine whether those interactions cause the component to behave as expected.
 
-To write these kinds of test, you'll use additional features of the `TestBed` as well as other testing helpers.
+To write this kind of test, you'll use additional features of the `TestBed` as well as other testing helpers.
 
 ### CLI-generated tests
 
