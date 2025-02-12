@@ -18,7 +18,7 @@ import {
   MOCK_PLATFORM_LOCATION_CONFIG,
 } from '../mock_platform_location';
 
-import {FakeNavigation} from '@angular/core/primitives/dom-navigation/testing';
+import {FakeNavigation} from './fake_navigation';
 
 /**
  * Return a provider for the `FakeNavigation` in place of the real Navigation API.

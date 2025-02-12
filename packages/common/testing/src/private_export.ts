@@ -7,4 +7,4 @@
  */
 
 export {provideFakePlatformNavigation as ɵprovideFakePlatformNavigation} from './navigation/provide_fake_platform_navigation';
-export {FakeNavigation as ɵFakeNavigation} from '@angular/core/primitives/dom-navigation/testing';
+export {FakeNavigation as ɵFakeNavigation} from './navigation/fake_navigation';

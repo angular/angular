@@ -16,7 +16,7 @@ import {
 import {Inject, inject, Injectable, InjectionToken, Optional} from '@angular/core';
 import {Subject} from 'rxjs';
 
-import {FakeNavigation} from '@angular/core/primitives/dom-navigation/testing';
+import {FakeNavigation} from './navigation/fake_navigation';
 
 /**
  * Parser from https://tools.ietf.org/html/rfc3986#appendix-B

@@ -20,7 +20,7 @@ import {
   NavigationInterceptOptions,
   NavigationDestination,
   Navigation,
-} from '@angular/core/primitives/dom-navigation';
+} from '../src/navigation_types';
 
 /**
  * Fake implementation of user agent history and navigation behavior. This is a

@@ -10,7 +10,7 @@ ng_module(
     deps = [
         "//packages/common",
         "//packages/core",
-        "//packages/core/primitives/dom-navigation/testing",
+        "//packages/core/testing",
         "@npm//rxjs",
     ],
 )
