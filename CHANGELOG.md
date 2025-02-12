@@ -1,3 +1,25 @@
+<a name="19.1.6"></a>
+# 19.1.6 (2025-02-12)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [01f669a274](https://github.com/angular/angular/commit/01f669a27425c5034a04274763cc60801f961aa2) | fix | handle tracking expressions requiring temporary variables ([#58520](https://github.com/angular/angular/pull/58520)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dcfb9f1959](https://github.com/angular/angular/commit/dcfb9f1959164baf45f5f954b4bf681d650d8a2d) | fix | handle deferred blocks with shared dependencies correctly ([#59926](https://github.com/angular/angular/pull/59926)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cab7a9b69c](https://github.com/angular/angular/commit/cab7a9b69c3a5d789432a87a554e8489c78a0f15) | fix | invalidate HMR component if replacement throws an error ([#59854](https://github.com/angular/angular/pull/59854)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [710759ddcc](https://github.com/angular/angular/commit/710759ddcc0ecbad68deb20821b535fd5deb69c6) | fix | account for let declarations in control flow migration ([#59861](https://github.com/angular/angular/pull/59861)) |
+| [46f36a58bf](https://github.com/angular/angular/commit/46f36a58bf3a7b9131b6330e84d4adb3e73f3601) | fix | count used dependencies inside existing control flow ([#59861](https://github.com/angular/angular/pull/59861)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.1.5"></a>
 # 19.1.5 (2025-02-06)
 ### compiler-cli
