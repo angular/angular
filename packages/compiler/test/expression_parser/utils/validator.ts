@@ -22,16 +22,17 @@ import {
   LiteralPrimitive,
   ParseSpan,
   PrefixNot,
-  TypeofExpression,
   PropertyRead,
   PropertyWrite,
   RecursiveAstVisitor,
   SafeCall,
   SafeKeyedRead,
   SafePropertyRead,
-  Unary,
+  TaggedTemplateLiteral,
   TemplateLiteral,
   TemplateLiteralElement,
+  TypeofExpression,
+  Unary,
 } from '../../../src/expression_parser/ast';
 
 import {unparse} from './unparser';
@@ -149,6 +150,10 @@ class ASTValidator extends RecursiveAstVisitor {
 
   override visitTemplateLiteralElement(ast: TemplateLiteralElement, context: any): any {
     this.validate(ast, () => super.visitTemplateLiteralElement(ast, context));
+  }
+
+  override visitTaggedTemplateLiteral(ast: TaggedTemplateLiteral, context: any): void {
+    this.validate(ast, () => super.visitTaggedTemplateLiteral(ast, context));
   }
 }
 

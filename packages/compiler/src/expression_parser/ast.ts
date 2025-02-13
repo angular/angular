@@ -429,6 +429,21 @@ export class SafeCall extends AST {
   }
 }
 
+export class TaggedTemplateLiteral extends AST {
+  constructor(
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    public tag: AST,
+    public template: TemplateLiteral,
+  ) {
+    super(span, sourceSpan);
+  }
+
+  override visit(visitor: AstVisitor, context?: any) {
+    return visitor.visitTaggedTemplateLiteral(this, context);
+  }
+}
+
 export class TemplateLiteral extends AST {
   constructor(
     span: ParseSpan,
@@ -443,6 +458,7 @@ export class TemplateLiteral extends AST {
     return visitor.visitTemplateLiteral(this, context);
   }
 }
+
 export class TemplateLiteralElement extends AST {
   constructor(
     span: ParseSpan,
@@ -585,6 +601,7 @@ export interface AstVisitor {
   visitSafeCall(ast: SafeCall, context: any): any;
   visitTemplateLiteral(ast: TemplateLiteral, context: any): any;
   visitTemplateLiteralElement(ast: TemplateLiteralElement, context: any): any;
+  visitTaggedTemplateLiteral(ast: TaggedTemplateLiteral, context: any): any;
   visitASTWithSource?(ast: ASTWithSource, context: any): any;
   /**
    * This function is optionally defined to allow classes that implement this
@@ -686,6 +703,10 @@ export class RecursiveAstVisitor implements AstVisitor {
     }
   }
   visitTemplateLiteralElement(ast: TemplateLiteralElement, context: any) {}
+  visitTaggedTemplateLiteral(ast: TaggedTemplateLiteral, context: any) {
+    this.visit(ast.tag, context);
+    this.visit(ast.template, context);
+  }
   // This is not part of the AstVisitor interface, just a helper method
   visitAll(asts: AST[], context: any): any {
     for (const ast of asts) {
