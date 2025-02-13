@@ -30,6 +30,7 @@ import {
   SafeCall,
   SafeKeyedRead,
   SafePropertyRead,
+  TaggedTemplateLiteral,
   TemplateLiteral,
   TemplateLiteralElement,
   ThisReceiver,
@@ -38,12 +39,9 @@ import {
   VoidExpression,
 } from '@angular/compiler';
 import ts from 'typescript';
-
 import {TypeCheckingConfig} from '../api';
-
 import {addParseSpanInfo, wrapForDiagnostics, wrapForTypeChecker} from './diagnostics';
 import {tsCastToAny, tsNumericExpression} from './ts_util';
-
 /**
  * Expression that is cast to any. Currently represented as `0 as any`.
  *
@@ -484,6 +482,14 @@ class AstTranslator implements AstVisitor {
     throw new Error('Method not implemented');
   }
 
+  visitTaggedTemplateLiteral(ast: TaggedTemplateLiteral): ts.TaggedTemplateExpression {
+    return ts.factory.createTaggedTemplateExpression(
+      this.translate(ast.tag),
+      undefined,
+      this.visitTemplateLiteral(ast.template),
+    );
+  }
+
   private convertToSafeCall(
     ast: Call | SafeCall,
     expr: ts.Expression,
@@ -613,6 +619,9 @@ class VeSafeLhsInferenceBugDetector implements AstVisitor {
     return false;
   }
   visitTemplateLiteralElement(ast: TemplateLiteralElement, context: any) {
+    return false;
+  }
+  visitTaggedTemplateLiteral(ast: TaggedTemplateLiteral, context: any) {
     return false;
   }
 }

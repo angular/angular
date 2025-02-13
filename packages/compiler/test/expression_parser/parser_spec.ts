@@ -453,6 +453,29 @@ describe('parser', () => {
           'Template literal interpolation cannot be empty at the end of the expression',
         );
       });
+
+      it('should parse tagged template literals with no interpolations', () => {
+        checkBinding('tag`hello!`');
+        checkBinding('tags.first`hello!`');
+        checkBinding('tags[0]`hello!`');
+        checkBinding('tag()`hello!`');
+        checkBinding('(tag ?? otherTag)`hello!`', 'tag ?? otherTag`hello!`');
+        checkBinding('tag!`hello!`');
+      });
+
+      it('should parse tagged template literals with interpolations', () => {
+        checkBinding('tag`hello ${name}!`');
+        checkBinding('tags.first`hello ${name}!`');
+        checkBinding('tags[0]`hello ${name}!`');
+        checkBinding('tag()`hello ${name}!`');
+        checkBinding('(tag ?? otherTag)`hello ${name}!`', 'tag ?? otherTag`hello ${name}!`');
+        checkBinding('tag!`hello ${name}!`');
+      });
+
+      it('should not mistake operator for tagged literal tag', () => {
+        checkBinding('typeof `hello!`');
+        checkBinding('typeof `hello ${name}!`');
+      });
     });
   });
 
@@ -517,6 +540,47 @@ describe('parser', () => {
       expect(unparsed).toContain(['three', 'three']);
       expect(unparsed).toContain(['three', '[nameSpan] three']);
       expect(unparsed).toContain([' after', '']);
+    });
+
+    it('should record spans for tagged template literal with no interpolations', () => {
+      const ast = parseAction('tag`text`');
+      const unparsed = unparseWithSpan(ast);
+      expect(unparsed).toEqual([
+        ['tag`text`', 'tag`text`'],
+        ['tag', 'tag'],
+        ['tag', '[nameSpan] tag'],
+        ['', ''],
+        ['`text`', ''],
+        ['text', ''],
+      ]);
+    });
+
+    it('should record spans for tagged template literal with interpolations', () => {
+      const ast = parseAction('tag`before ${one} - ${two} - ${three} after`');
+      const unparsed = unparseWithSpan(ast);
+      expect(unparsed).toEqual([
+        [
+          'tag`before ${one} - ${two} - ${three} after`',
+          'tag`before ${one} - ${two} - ${three} after`',
+        ],
+        ['tag', 'tag'],
+        ['tag', '[nameSpan] tag'],
+        ['', ''],
+        ['`before ${one} - ${two} - ${three} after`', '`before ${one} - ${two} - ${three} after`'],
+        ['before ', ''],
+        ['one', 'one'],
+        ['one', '[nameSpan] one'],
+        ['', ''],
+        [' - ', ''],
+        ['two', 'two'],
+        ['two', '[nameSpan] two'],
+        ['', ''],
+        [' - ', ''],
+        ['three', 'three'],
+        ['three', '[nameSpan] three'],
+        ['', ''],
+        [' after', ''],
+      ]);
     });
 
     it('should include parenthesis in spans', () => {

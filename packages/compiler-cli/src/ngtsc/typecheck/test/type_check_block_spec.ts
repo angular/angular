@@ -166,6 +166,16 @@ describe('type check blocks', () => {
     );
   });
 
+  it('should handle tagged template literals', () => {
+    expect(tcb('{{ tag`hello world` }}')).toContain('"" + (((this).tag) `hello world`);');
+    expect(tcb('{{ tag`hello \\${name}!!!` }}')).toContain(
+      '"" + (((this).tag) `hello \\${name}!!!`);',
+    );
+    expect(tcb('{{ tag`${a} - ${b} - ${c}` }}')).toContain(
+      '"" + (((this).tag) `${((this).a)} - ${((this).b)} - ${((this).c)}`);',
+    );
+  });
+
   describe('type constructors', () => {
     it('should handle missing property bindings', () => {
       const TEMPLATE = `<div dir [inputA]="foo"></div>`;

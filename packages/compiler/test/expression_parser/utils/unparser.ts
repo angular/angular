@@ -30,6 +30,7 @@ import {
   SafeCall,
   SafeKeyedRead,
   SafePropertyRead,
+  TaggedTemplateLiteral,
   TemplateLiteral,
   TemplateLiteralElement,
   ThisReceiver,
@@ -239,6 +240,11 @@ class Unparser implements AstVisitor {
 
   visitTemplateLiteralElement(ast: TemplateLiteralElement, context: any) {
     this._expression += ast.text;
+  }
+
+  visitTaggedTemplateLiteral(ast: TaggedTemplateLiteral, context: any) {
+    this._visit(ast.tag);
+    this._visit(ast.template);
   }
 
   private _visit(ast: AST) {

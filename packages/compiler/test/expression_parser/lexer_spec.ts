@@ -620,6 +620,25 @@ describe('lexer', () => {
           'Lexer Error: Unterminated template literal at column 15 in expression [`hello ${name!`]',
         );
       });
+
+      it('should tokenize tagged template literal with no interpolations', () => {
+        const tokens: Token[] = lex('tag`hello world`');
+        expect(tokens.length).toBe(2);
+        expectIdentifierToken(tokens[0], 0, 3, 'tag');
+        expectStringToken(tokens[1], 3, 16, 'hello world', StringTokenKind.TemplateLiteralEnd);
+      });
+
+      it('should tokenize nested tagged template literals', () => {
+        const tokens: Token[] = lex('tag`hello ${tag`world`}`');
+        expect(tokens.length).toBe(7);
+        expectIdentifierToken(tokens[0], 0, 3, 'tag');
+        expectStringToken(tokens[1], 3, 10, 'hello ', StringTokenKind.TemplateLiteralPart);
+        expectOperatorToken(tokens[2], 10, 12, '${');
+        expectIdentifierToken(tokens[3], 12, 15, 'tag');
+        expectStringToken(tokens[4], 15, 22, 'world', StringTokenKind.TemplateLiteralEnd);
+        expectOperatorToken(tokens[5], 22, 23, '}');
+        expectStringToken(tokens[6], 23, 24, '', StringTokenKind.TemplateLiteralEnd);
+      });
     });
   });
 });
