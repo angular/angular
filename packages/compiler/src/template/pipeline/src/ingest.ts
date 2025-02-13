@@ -1165,14 +1165,12 @@ function convertAst(
   } else if (ast instanceof e.TypeofExpression) {
     return o.typeofExpr(convertAst(ast.expression, job, baseSourceSpan));
   } else if (ast instanceof e.TemplateLiteral) {
-    return new o.TemplateLiteralExpr(
-      ast.elements.map((el) => {
-        return new o.TemplateLiteralElementExpr(
-          el.text,
-          convertSourceSpan(el.span, baseSourceSpan),
-        );
-      }),
-      ast.expressions.map((expr) => convertAst(expr, job, baseSourceSpan)),
+    return convertTemplateLiteral(ast, job, baseSourceSpan);
+  } else if (ast instanceof e.TaggedTemplateLiteral) {
+    return new o.TaggedTemplateLiteralExpr(
+      convertAst(ast.tag, job, baseSourceSpan),
+      convertTemplateLiteral(ast.template, job, baseSourceSpan),
+      undefined,
       convertSourceSpan(ast.span, baseSourceSpan),
     );
   } else {
@@ -1180,6 +1178,20 @@ function convertAst(
       `Unhandled expression type "${ast.constructor.name}" in file "${baseSourceSpan?.start.file.url}"`,
     );
   }
+}
+
+function convertTemplateLiteral(
+  ast: e.TemplateLiteral,
+  job: CompilationJob,
+  baseSourceSpan: ParseSourceSpan | null,
+) {
+  return new o.TemplateLiteralExpr(
+    ast.elements.map((el) => {
+      return new o.TemplateLiteralElementExpr(el.text, convertSourceSpan(el.span, baseSourceSpan));
+    }),
+    ast.expressions.map((expr) => convertAst(expr, job, baseSourceSpan)),
+    convertSourceSpan(ast.span, baseSourceSpan),
+  );
 }
 
 function convertAstWithInterpolation(
