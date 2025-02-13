@@ -227,9 +227,9 @@ groups:
     <<: *defaults
     conditions:
       - >
-        contains_any_globs(files, [
+        contains_any_globs(files.exclude('yarn.lock','package.json'), [
           'packages/zone.js/**/{*,.*}',
-          ])
+        ])
     reviewers:
       users:
         - JiaLiPassion
