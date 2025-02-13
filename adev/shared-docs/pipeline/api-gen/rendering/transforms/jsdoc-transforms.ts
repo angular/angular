@@ -195,10 +195,10 @@ function parseAtLink(link: string): {label: string; url: string} {
   let [rawSymbol, description] = link.split(/\s(.+)/);
   if (rawSymbol.startsWith('#')) {
     rawSymbol = rawSymbol.substring(1);
-  } else if (rawSymbol.startsWith('http://') || rawSymbol.startsWith('https://')) {
+  } else if (rawSymbol.includes('/')) {
     return {
       url: rawSymbol,
-      label: rawSymbol.split('/').pop()!,
+      label: description ?? rawSymbol.split('/').pop()!,
     };
   }
 
