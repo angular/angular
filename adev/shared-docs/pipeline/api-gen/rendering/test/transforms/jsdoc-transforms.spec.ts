@@ -66,6 +66,18 @@ describe('jsdoc transforms', () => {
           name: 'see',
           comment: '{@link https://angular.dev}',
         },
+        {
+          name: 'see',
+          comment: '{@link /cli/build ng build}',
+        },
+        {
+          name: 'see',
+          comment: '{@link cli/build ng build}',
+        },
+        {
+          name: 'see',
+          comment: '{@link /ecosystem/rxjs-interop/output-interop Output Interop}',
+        },
       ],
       moduleName: 'test',
     });
@@ -116,6 +128,23 @@ describe('jsdoc transforms', () => {
     expect(entry.additionalLinks[9]).toEqual({
       label: 'angular.dev',
       url: 'https://angular.dev',
+    });
+
+    expect(entry.additionalLinks[10]).toEqual({
+      label: 'ng build',
+      url: '/cli/build',
+    });
+
+    // TODO: in the future when all links are valid we would throw an error instead when not starting with a slash
+    // Links should be absolute within adev (to support both next & stable site)
+    expect(entry.additionalLinks[11]).toEqual({
+      label: 'ng build',
+      url: 'cli/build',
+    });
+
+    expect(entry.additionalLinks[12]).toEqual({
+      label: 'Output Interop',
+      url: '/ecosystem/rxjs-interop/output-interop',
     });
   });
 });
