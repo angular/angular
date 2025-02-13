@@ -161,7 +161,7 @@
     "@actions/github": "^6.0.0",
     "@angular-devkit/architect-cli": "0.1902.0-next.2",
     "@angular/animations": "^19.2.0-next",
-    "@angular/build-tooling": "https://github.com/angular/dev-infra-private-build-tooling-builds.git#0a40c8d0fa04fc6b9f8d91ec5e8da1d8322cfd1e",
+    "@angular/build-tooling": "https://github.com/angular/dev-infra-private-build-tooling-builds.git#ce04ec6cf7604014191821a637e60964a1a3bb4a",
     "@angular/core": "^19.2.0-next",
     "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#e29eb33d02c473598361716df343c13016a6c943",
     "@bazel/bazelisk": "^1.7.5",
