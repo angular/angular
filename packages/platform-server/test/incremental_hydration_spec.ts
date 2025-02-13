@@ -38,7 +38,7 @@ import {
   withEventReplay,
   withIncrementalHydration,
 } from '@angular/platform-browser';
-import {fakeAsync, TestBed} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
 import {DEHYDRATED_BLOCK_REGISTRY} from '@angular/core/src/defer/registry';
 import {JSACTION_BLOCK_ELEMENT_MAP} from '@angular/core/src/hydration/tokens';
@@ -1329,12 +1329,16 @@ describe('platform-server partial hydration integration', () => {
       });
 
       describe('timer', () => {
-        it('top level timer', fakeAsync(async () => {
-          @Component({
-            selector: 'app',
-            template: `
+        const TEST_TIMEOUT = 10_000; // 10 seconds
+
+        it(
+          'top level timer',
+          async () => {
+            @Component({
+              selector: 'app',
+              template: `
             <main (click)="fnA()">
-              @defer (hydrate on timer(500)) {
+              @defer (hydrate on timer(150)) {
                 <article>
                   defer block rendered!
                   <span id="test" (click)="fnB()">{{value()}}</span>
@@ -1344,72 +1348,76 @@ describe('platform-server partial hydration integration', () => {
               }
             </main>
           `,
-          })
-          class SimpleComponent {
-            value = signal('start');
-            fnA() {}
-            fnB() {
-              this.value.set('end');
+            })
+            class SimpleComponent {
+              value = signal('start');
+              fnA() {}
+              fnB() {
+                this.value.set('end');
+              }
             }
-          }
 
-          const appId = 'custom-app-id';
-          const providers = [{provide: APP_ID, useValue: appId}];
-          const hydrationFeatures = () => [withIncrementalHydration()];
+            const appId = 'custom-app-id';
+            const providers = [{provide: APP_ID, useValue: appId}];
+            const hydrationFeatures = () => [withIncrementalHydration()];
 
-          const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
-          const ssrContents = getAppContents(html);
+            const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+            const ssrContents = getAppContents(html);
 
-          // <main> uses "eager" `custom-app-id` namespace.
-          expect(ssrContents).toContain('<main jsaction="click:;');
-          // <div>s inside a defer block have `d0` as a namespace.
-          expect(ssrContents).toContain('<article>');
-          // Outer defer block is rendered.
-          expect(ssrContents).toContain('defer block rendered');
+            // <main> uses "eager" `custom-app-id` namespace.
+            expect(ssrContents).toContain('<main jsaction="click:;');
+            // <div>s inside a defer block have `d0` as a namespace.
+            expect(ssrContents).toContain('<article>');
+            // Outer defer block is rendered.
+            expect(ssrContents).toContain('defer block rendered');
 
-          // Internal cleanup before we do server->client transition in this test.
-          resetTViewsFor(SimpleComponent);
+            // Internal cleanup before we do server->client transition in this test.
+            resetTViewsFor(SimpleComponent);
 
-          ////////////////////////////////
-          const doc = getDocument();
-          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
-            envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
-            hydrationFeatures,
-          });
-          const compRef = getComponentRef<SimpleComponent>(appRef);
-          appRef.tick();
-          await appRef.whenStable();
+            ////////////////////////////////
+            const doc = getDocument();
+            const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+              envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
+              hydrationFeatures,
+            });
+            const compRef = getComponentRef<SimpleComponent>(appRef);
+            appRef.tick();
+            await appRef.whenStable();
 
-          const appHostNode = compRef.location.nativeElement;
+            const appHostNode = compRef.location.nativeElement;
 
-          expect(appHostNode.outerHTML).toContain('<article>');
+            expect(appHostNode.outerHTML).toContain('<article>');
 
-          await timeout(500); // wait for timer
-          appRef.tick();
+            await timeout(150); // wait for timer
+            appRef.tick();
 
-          await allPendingDynamicImports();
-          appRef.tick();
+            await allPendingDynamicImports();
+            appRef.tick();
 
-          expect(appHostNode.outerHTML).toContain('<span id="test">start</span>');
+            expect(appHostNode.outerHTML).toContain('<span id="test">start</span>');
 
-          const testElement = doc.getElementById('test')!;
-          const clickEvent2 = new CustomEvent('click');
-          testElement.dispatchEvent(clickEvent2);
+            const testElement = doc.getElementById('test')!;
+            const clickEvent2 = new CustomEvent('click');
+            testElement.dispatchEvent(clickEvent2);
 
-          appRef.tick();
+            appRef.tick();
 
-          expect(appHostNode.outerHTML).toContain('<span id="test">end</span>');
-        }));
+            expect(appHostNode.outerHTML).toContain('<span id="test">end</span>');
+          },
+          TEST_TIMEOUT,
+        );
 
-        it('nested timer', fakeAsync(async () => {
-          @Component({
-            selector: 'app',
-            template: `
+        it(
+          'nested timer',
+          async () => {
+            @Component({
+              selector: 'app',
+              template: `
             <main (click)="fnA()">
               @defer (on viewport; hydrate on interaction) {
                 <div id="main" (click)="fnA()">
                   defer block rendered!
-                  @defer (on viewport; hydrate on timer(500)) {
+                  @defer (on viewport; hydrate on timer(150)) {
                     <article>
                       <p id="nested">Nested defer block</p>
                       <span id="test" (click)="fnB()">{{value()}}</span>
@@ -1423,71 +1431,73 @@ describe('platform-server partial hydration integration', () => {
               }
             </main>
           `,
-          })
-          class SimpleComponent {
-            value = signal('start');
-            fnA() {}
-            fnB() {
-              this.value.set('end');
+            })
+            class SimpleComponent {
+              value = signal('start');
+              fnA() {}
+              fnB() {
+                this.value.set('end');
+              }
             }
-          }
 
-          const appId = 'custom-app-id';
-          const providers = [{provide: APP_ID, useValue: appId}];
-          const hydrationFeatures = () => [withIncrementalHydration()];
+            const appId = 'custom-app-id';
+            const providers = [{provide: APP_ID, useValue: appId}];
+            const hydrationFeatures = () => [withIncrementalHydration()];
 
-          const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
-          const ssrContents = getAppContents(html);
+            const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+            const ssrContents = getAppContents(html);
 
-          // <main> uses "eager" `custom-app-id` namespace.
-          expect(ssrContents).toContain('<main jsaction="click:;');
-          // <div>s inside a defer block have `d0` as a namespace.
-          expect(ssrContents).toContain('<article>');
-          // Outer defer block is rendered.
-          expect(ssrContents).toContain('defer block rendered');
+            // <main> uses "eager" `custom-app-id` namespace.
+            expect(ssrContents).toContain('<main jsaction="click:;');
+            // <div>s inside a defer block have `d0` as a namespace.
+            expect(ssrContents).toContain('<article>');
+            // Outer defer block is rendered.
+            expect(ssrContents).toContain('defer block rendered');
 
-          // Internal cleanup before we do server->client transition in this test.
-          resetTViewsFor(SimpleComponent);
+            // Internal cleanup before we do server->client transition in this test.
+            resetTViewsFor(SimpleComponent);
 
-          ////////////////////////////////
-          const doc = getDocument();
-          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
-            envProviders: [
-              ...providers,
-              {provide: PLATFORM_ID, useValue: 'browser'},
-              withDebugConsole(),
-            ],
-            hydrationFeatures,
-          });
-          const compRef = getComponentRef<SimpleComponent>(appRef);
-          appRef.tick();
-          await appRef.whenStable();
+            ////////////////////////////////
+            const doc = getDocument();
+            const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+              envProviders: [
+                ...providers,
+                {provide: PLATFORM_ID, useValue: 'browser'},
+                withDebugConsole(),
+              ],
+              hydrationFeatures,
+            });
+            const compRef = getComponentRef<SimpleComponent>(appRef);
+            appRef.tick();
+            await appRef.whenStable();
 
-          const appHostNode = compRef.location.nativeElement;
+            const appHostNode = compRef.location.nativeElement;
 
-          expect(appHostNode.outerHTML).toContain('<article>');
+            expect(appHostNode.outerHTML).toContain('<article>');
 
-          verifyHasLog(
-            appRef,
-            'Angular hydrated 1 component(s) and 21 node(s), 0 component(s) were skipped. 2 defer block(s) were configured to use incremental hydration.',
-          );
+            verifyHasLog(
+              appRef,
+              'Angular hydrated 1 component(s) and 21 node(s), 0 component(s) were skipped. 2 defer block(s) were configured to use incremental hydration.',
+            );
 
-          await timeout(500); // wait for timer
-          appRef.tick();
+            await timeout(150); // wait for timer
+            appRef.tick();
 
-          await allPendingDynamicImports();
-          appRef.tick();
+            await allPendingDynamicImports();
+            appRef.tick();
 
-          expect(appHostNode.outerHTML).toContain('<span id="test">start</span>');
+            expect(appHostNode.outerHTML).toContain('<span id="test">start</span>');
 
-          const testElement = doc.getElementById('test')!;
-          const clickEvent2 = new CustomEvent('click');
-          testElement.dispatchEvent(clickEvent2);
+            const testElement = doc.getElementById('test')!;
+            const clickEvent2 = new CustomEvent('click');
+            testElement.dispatchEvent(clickEvent2);
 
-          appRef.tick();
+            appRef.tick();
 
-          expect(appHostNode.outerHTML).toContain('<span id="test">end</span>');
-        }));
+            expect(appHostNode.outerHTML).toContain('<span id="test">end</span>');
+          },
+          TEST_TIMEOUT,
+        );
       });
 
       it('when', async () => {
