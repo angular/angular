@@ -1,3 +1,27 @@
+<a name="19.2.0-next.3"></a>
+# 19.2.0-next.3 (2025-02-13)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9e847fc60d](https://github.com/angular/angular/commit/9e847fc60d4eef47e665e789ccd2d4f0b4bb94ea) | fix | handle tracking expressions requiring temporary variables ([#58520](https://github.com/angular/angular/pull/58520)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5cd26a9420](https://github.com/angular/angular/commit/5cd26a94206dfe8aabdf0dd15bfc09e7a8c606da) | fix | handle deferred blocks with shared dependencies correctly ([#59926](https://github.com/angular/angular/pull/59926)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6789c7ef94](https://github.com/angular/angular/commit/6789c7ef947952551d7598fe37a3d86093b75720) | fix | Defer afterRender until after first CD ([#59455](https://github.com/angular/angular/pull/59455)) ([#59551](https://github.com/angular/angular/pull/59551)) |
+| [c87e581dd9](https://github.com/angular/angular/commit/c87e581dd9e240c88cea50f222942873bdccd01d) | fix | Don't run effects in check no changes pass ([#59455](https://github.com/angular/angular/pull/59455)) ([#59551](https://github.com/angular/angular/pull/59551)) |
+| [b0266bda4a](https://github.com/angular/angular/commit/b0266bda4ad4efd19710fd0363a50984f48269dc) | fix | invalidate HMR component if replacement throws an error ([#59854](https://github.com/angular/angular/pull/59854)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [aa285c548c](https://github.com/angular/angular/commit/aa285c548c164917ebb5760802484843c6830daf) | fix | account for let declarations in control flow migration ([#59861](https://github.com/angular/angular/pull/59861)) |
+| [1119f85ca9](https://github.com/angular/angular/commit/1119f85ca935f43641f53ee8bc50efa47ad09717) | fix | count used dependencies inside existing control flow ([#59861](https://github.com/angular/angular/pull/59861)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.1.6"></a>
 # 19.1.6 (2025-02-12)
 ### compiler
