@@ -28,6 +28,7 @@ import {
   SafeCall,
   SafeKeyedRead,
   SafePropertyRead,
+  TaggedTemplateLiteral,
   TemplateLiteral,
   TemplateLiteralElement,
   TypeofExpression,
@@ -154,6 +155,10 @@ class ASTValidator extends RecursiveAstVisitor {
 
   override visitTemplateLiteralElement(ast: TemplateLiteralElement, context: any): any {
     this.validate(ast, () => super.visitTemplateLiteralElement(ast, context));
+  }
+
+  override visitTaggedTemplateLiteral(ast: TaggedTemplateLiteral, context: any): void {
+    this.validate(ast, () => super.visitTaggedTemplateLiteral(ast, context));
   }
 }
 

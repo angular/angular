@@ -75,6 +75,7 @@ function quickInfoSkeleton(): {[fileName: string]: string} {
               }
             }
           };
+          someTag = (...args: any[]) => '';
         }
 
         @Directive({
@@ -410,6 +411,14 @@ describe('quick info', () => {
           expectedDisplayString: '(variable) name: { readonly name: "name"; }',
         });
       });
+
+      it('should work for tagged template literals', () => {
+        expectQuickInfo({
+          templateOverride: `<div *ngFor="let name of constNames">{{someTag\`Hello \${na¦me}\`}}</div>`,
+          expectedSpanText: 'name',
+          expectedDisplayString: '(variable) name: { readonly name: "name"; }',
+        });
+      });
     });
 
     describe('pipes', () => {
@@ -614,6 +623,14 @@ describe('quick info', () => {
           templateOverride: `<div (click)="void myClick($e¦vent)"></div>`,
           expectedSpanText: '$event',
           expectedDisplayString: '(parameter) $event: MouseEvent',
+        });
+      });
+
+      it('should work for tagged template literal tag', () => {
+        expectQuickInfo({
+          templateOverride: `<div>{{ some¦Tag\`text\` }}</div>`,
+          expectedSpanText: 'someTag',
+          expectedDisplayString: '(property) AppCmp.someTag: (...args: any[]) => string',
         });
       });
 

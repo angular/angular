@@ -503,6 +503,70 @@ describe('definitions', () => {
     assertFileNames(Array.from(definitions), ['app.ts']);
   });
 
+  it('gets definition for a tagged template literal expression', () => {
+    initMockFileSystem('Native');
+    const files = {
+      'app.html': '',
+      'app.ts': `
+         import {Component} from '@angular/core';
+
+         @Component({
+          templateUrl: '/app.html',
+          standalone: false,
+         })
+         export class AppCmp {
+           name = 'Bob';
+           tag = (...args: unknown[]) => '';
+         }
+       `,
+    };
+    const env = LanguageServiceTestEnv.setup();
+
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+    const template = project.openFile('app.html');
+    template.contents = '{{ tag`Hello, ${name}!` }}';
+    project.expectNoSourceDiagnostics();
+
+    template.moveCursorToText('${na¦me}');
+    const {definitions} = getDefinitionsAndAssertBoundSpan(env, template);
+    expect(definitions[0].name).toEqual('name');
+    expect(definitions[0].kind).toBe(ts.ScriptElementKind.memberVariableElement);
+    expect(definitions[0].textSpan).toBe('name');
+    assertFileNames(Array.from(definitions), ['app.ts']);
+  });
+
+  it('gets definition for a tagged template literal tag', () => {
+    initMockFileSystem('Native');
+    const files = {
+      'app.html': '',
+      'app.ts': `
+         import {Component} from '@angular/core';
+
+         @Component({
+          templateUrl: '/app.html',
+          standalone: false,
+         })
+         export class AppCmp {
+           name = 'Bob';
+           tag = (...args: unknown[]) => '';
+         }
+       `,
+    };
+    const env = LanguageServiceTestEnv.setup();
+
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+    const template = project.openFile('app.html');
+    template.contents = '{{ tag`Hello, ${name}!` }}';
+    project.expectNoSourceDiagnostics();
+
+    template.moveCursorToText('t¦ag`');
+    const {definitions} = getDefinitionsAndAssertBoundSpan(env, template);
+    expect(definitions[0].name).toEqual('tag');
+    expect(definitions[0].kind).toBe(ts.ScriptElementKind.memberVariableElement);
+    expect(definitions[0].textSpan).toBe('tag');
+    assertFileNames(Array.from(definitions), ['app.ts']);
+  });
+
   function getDefinitionsAndAssertBoundSpan(env: LanguageServiceTestEnv, file: OpenBuffer) {
     env.expectNoSourceDiagnostics();
     const definitionAndBoundSpan = file.getDefinitionAndBoundSpan();
