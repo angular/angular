@@ -13,7 +13,7 @@ import {
   setActiveConsumer,
   setThrowInvalidWriteToSignalError,
 } from '@angular/core/primitives/signals';
-import {Observable, Subject, Subscription} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {ZONELESS_ENABLED} from '../change_detection/scheduling/zoneless_scheduling';
@@ -41,7 +41,7 @@ import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from '../render
 import {requiresRefreshOrTraversal} from '../render3/util/view_utils';
 import {ViewRef as InternalViewRef} from '../render3/view_ref';
 import {TESTABILITY} from '../testability/testability';
-import {NgZone} from '../zone/ng_zone';
+import {NgZone, Subscribable} from '../zone/ng_zone';
 
 import {profiler} from '../render3/profiler';
 import {ProfilerEvent} from '../render3/profiler_types';
@@ -313,7 +313,7 @@ export class ApplicationRef {
   // Eventually the hostView of the fixture should just attach to ApplicationRef.
   private externalTestViews: Set<InternalViewRef<unknown>> = new Set();
   /** @internal */
-  afterTick = new Subject<void>();
+  afterTick = new Subscribable();
   /** @internal */
   get allViews(): Array<InternalViewRef<unknown>> {
     return [...this.externalTestViews.keys(), ...this._views];
@@ -612,7 +612,7 @@ export class ApplicationRef {
       this.tracingSnapshot?.dispose();
       this.tracingSnapshot = null;
       setActiveConsumer(prevConsumer);
-      this.afterTick.next();
+      this.afterTick.emit();
 
       profiler(ProfilerEvent.ChangeDetectionEnd);
     }

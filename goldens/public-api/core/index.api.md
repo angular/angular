@@ -1288,10 +1288,11 @@ export class NgZone {
     readonly hasPendingMicrotasks: boolean;
     static isInAngularZone(): boolean;
     readonly isStable: boolean;
-    readonly onError: EventEmitter<any>;
-    readonly onMicrotaskEmpty: EventEmitter<any>;
-    readonly onStable: EventEmitter<any>;
-    readonly onUnstable: EventEmitter<any>;
+    readonly onError: Subscribable<any>;
+    readonly onMicrotaskEmpty: Subscribable<any>;
+    // (undocumented)
+    readonly onStable: Subscribable<any>;
+    readonly onUnstable: Subscribable<any>;
     run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T;
     runGuarded<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T;
     runOutsideAngular<T>(fn: (...args: any[]) => T): T;
@@ -1777,6 +1778,18 @@ export type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvi
 export interface StreamingResourceOptions<T, R> extends BaseResourceOptions<T, R> {
     loader?: never;
     stream: ResourceStreamingLoader<T, R>;
+}
+
+// @public
+export class Subscribable<T = void> {
+    // (undocumented)
+    emit(value?: T): void;
+    // (undocumented)
+    subscribe(subscription: ((value: T) => void) | {
+        next: (value: T) => void;
+    }): {
+        unsubscribe(): void;
+    };
 }
 
 // @public

@@ -423,11 +423,11 @@ describe('bootstrap', () => {
           const ngModuleRef = await platformBrowserDynamic().bootstrapModule(TestModule);
           const ngZone = ngModuleRef.injector.get(NgZone);
 
-          expect(ngZone.onError.observers.length).toBe(1);
+          expect(ngZone.onError['observers'].length).toBe(1);
 
           ngModuleRef.destroy();
 
-          expect(ngZone.onError.observers.length).toBe(0);
+          expect(ngZone.onError['observers'].length).toBe(0);
         }),
       );
     });

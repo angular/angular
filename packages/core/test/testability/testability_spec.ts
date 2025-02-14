@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {EventEmitter} from '@angular/core';
+import {Subscribable} from '@angular/core';
 import {Injectable} from '@angular/core/src/di';
 import {
   GetTestability,
@@ -42,15 +42,15 @@ class NoopGetTestability implements GetTestability {
 @Injectable()
 class MockNgZone extends NgZone {
   /** @internal */
-  override onUnstable: EventEmitter<any>;
+  override onUnstable: Subscribable<any>;
 
   /** @internal */
-  override onStable: EventEmitter<any>;
+  override onStable: Subscribable<any>;
 
   constructor() {
     super({enableLongStackTrace: false});
-    this.onUnstable = new EventEmitter(false);
-    this.onStable = new EventEmitter(false);
+    this.onUnstable = new Subscribable();
+    this.onStable = new Subscribable();
   }
 
   unstable(): void {

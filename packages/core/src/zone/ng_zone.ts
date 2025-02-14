@@ -8,7 +8,6 @@
 
 import {SCHEDULE_IN_ROOT_ZONE_DEFAULT} from '../change_detection/scheduling/flags';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {EventEmitter} from '../event_emitter';
 import {scheduleCallbackWithRafRace} from '../util/callback_scheduler';
 import {noop} from '../util/noop';
 
@@ -109,26 +108,26 @@ export class NgZone {
   /**
    * Notifies when code enters Angular Zone. This gets fired first on VM Turn.
    */
-  readonly onUnstable: EventEmitter<any> = new EventEmitter(false);
+  readonly onUnstable = new Subscribable<any>();
 
   /**
    * Notifies when there is no more microtasks enqueued in the current VM Turn.
    * This is a hint for Angular to do change detection, which may enqueue more microtasks.
    * For this reason this event can fire multiple times per VM Turn.
    */
-  readonly onMicrotaskEmpty: EventEmitter<any> = new EventEmitter(false);
+  readonly onMicrotaskEmpty = new Subscribable<any>();
 
-  /**
+  /*
    * Notifies when the last `onMicrotaskEmpty` has run and there are no more microtasks, which
    * implies we are about to relinquish VM turn.
    * This event gets called just once.
    */
-  readonly onStable: EventEmitter<any> = new EventEmitter(false);
+  readonly onStable = new Subscribable<any>();
 
   /**
    * Notifies that an error has been delivered.
    */
-  readonly onError: EventEmitter<any> = new EventEmitter(false);
+  readonly onError = new Subscribable<any>();
 
   constructor(options: {
     enableLongStackTrace?: boolean;
@@ -550,10 +549,10 @@ export class NoopNgZone implements NgZone {
   readonly hasPendingMicrotasks = false;
   readonly hasPendingMacrotasks = false;
   readonly isStable = true;
-  readonly onUnstable = new EventEmitter<any>();
-  readonly onMicrotaskEmpty = new EventEmitter<any>();
-  readonly onStable = new EventEmitter<any>();
-  readonly onError = new EventEmitter<any>();
+  readonly onUnstable = new Subscribable();
+  readonly onMicrotaskEmpty = new Subscribable();
+  readonly onStable = new Subscribable();
+  readonly onError = new Subscribable();
 
   run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any): T {
     return fn.apply(applyThis, applyArgs);
@@ -613,4 +612,29 @@ export function getNgZone(
     return new NgZone(options);
   }
   return ngZoneToUse;
+}
+
+/**
+ * Mimics a Subject/EventEmitter without pulling rxjs
+ *
+ */
+export class Subscribable<T = void> {
+  private observers: ((value: T) => void)[] = [];
+
+  subscribe(subscription: ((value: T) => void) | {next: (value: T) => void}): {
+    unsubscribe(): void;
+  } {
+    const fn = typeof subscription === 'function' ? subscription : subscription.next;
+    this.observers.push(fn);
+
+    return {unsubscribe: () => (this.observers = this.observers.filter((s) => s !== fn))};
+  }
+
+  emit(value?: T) {
+    this.observers.forEach((subscription) => {
+      try {
+        subscription(value!);
+      } catch (e) {}
+    });
+  }
 }
