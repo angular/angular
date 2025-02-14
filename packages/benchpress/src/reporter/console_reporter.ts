@@ -32,7 +32,7 @@ export class ConsoleReporter extends Reporter {
     },
   ];
 
-  private textReporter = new TextReporterBase(this._columnWidth, this._sampleDescription);
+  private textReporter: TextReporterBase;
 
   constructor(
     @Inject(COLUMN_WIDTH) private _columnWidth: number,
@@ -40,6 +40,7 @@ export class ConsoleReporter extends Reporter {
     @Inject(ConsoleReporter.PRINT) private _print: Function,
   ) {
     super();
+    this.textReporter = new TextReporterBase(this._columnWidth, this._sampleDescription);
     this._print(this.textReporter.description());
   }
 
