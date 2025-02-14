@@ -5,9 +5,9 @@ runs:
   using: 'composite'
   steps:
     - name: Setup Bazel
-      uses: angular/dev-infra/github-actions/bazel/setup@2670abf637fa155971cdd1f7e570a7f234922a65
+      uses: angular/dev-infra/github-actions/bazel/setup@3bfa6d8c9861c6477a52146828382a3d5043005f
     - name: Setup Saucelabs Variables
-      uses: angular/dev-infra/github-actions/saucelabs@2670abf637fa155971cdd1f7e570a7f234922a65
+      uses: angular/dev-infra/github-actions/saucelabs@3bfa6d8c9861c6477a52146828382a3d5043005f
     - name: Starting Saucelabs tunnel service
       shell: bash
       run: ./tools/saucelabs/sauce-service.sh run &
