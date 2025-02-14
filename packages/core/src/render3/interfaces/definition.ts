@@ -110,7 +110,7 @@ export interface DirectiveDef<T> {
    * A dictionary mapping the inputs' public name to their minified property names
    * (along with flags if there are any).
    */
-  readonly inputs: {[P in keyof T]?: string | [minifiedName: string, flags: InputFlags]};
+  readonly inputs: {[P in keyof T]?: [minifiedName: string, flags: InputFlags]};
 
   /**
    * A dictionary mapping the private names of inputs to their transformation functions.

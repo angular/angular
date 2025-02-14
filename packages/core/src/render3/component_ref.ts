@@ -94,51 +94,40 @@ export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
   }
 }
 
-function toRefArray<T>(
-  map: DirectiveDef<T>['inputs'],
-  isInputMap: true,
-): ComponentFactory<T>['inputs'];
-function toRefArray<T>(
-  map: DirectiveDef<T>['outputs'],
-  isInput: false,
-): ComponentFactory<T>['outputs'];
-
-function toRefArray<
-  T,
-  IsInputMap extends boolean,
-  Return extends IsInputMap extends true
-    ? ComponentFactory<T>['inputs']
-    : ComponentFactory<T>['outputs'],
->(map: DirectiveDef<T>['inputs'] | DirectiveDef<T>['outputs'], isInputMap: IsInputMap): Return {
-  const array: Return = [] as unknown as Return;
+function toInputRefArray<T>(map: DirectiveDef<T>['inputs']): ComponentFactory<T>['inputs'] {
+  const result: ComponentFactory<T>['inputs'] = [];
   for (const publicName in map) {
-    if (!map.hasOwnProperty(publicName)) {
-      continue;
-    }
+    if (map.hasOwnProperty(publicName)) {
+      const value = map[publicName];
 
-    const value = map[publicName];
-    if (value === undefined) {
-      continue;
-    }
+      if (value !== undefined) {
+        const [propName, flags] = value;
 
-    const isArray = Array.isArray(value);
-    const propName: string = isArray ? value[0] : value;
-    const flags: InputFlags = isArray ? value[1] : InputFlags.None;
-
-    if (isInputMap) {
-      (array as ComponentFactory<T>['inputs']).push({
-        propName: propName,
-        templateName: publicName,
-        isSignal: (flags & InputFlags.SignalBased) !== 0,
-      });
-    } else {
-      (array as ComponentFactory<T>['outputs']).push({
-        propName: propName,
-        templateName: publicName,
-      });
+        result.push({
+          propName: propName,
+          templateName: publicName,
+          isSignal: (flags & InputFlags.SignalBased) !== 0,
+        });
+      }
     }
   }
-  return array;
+  return result;
+}
+
+function toOutputRefArray<T>(map: DirectiveDef<T>['outputs']): ComponentFactory<T>['outputs'] {
+  const result: ComponentFactory<T>['outputs'] = [];
+  for (const publicName in map) {
+    if (map.hasOwnProperty(publicName)) {
+      const value = map[publicName];
+      if (value !== undefined) {
+        result.push({
+          propName: value,
+          templateName: publicName,
+        });
+      }
+    }
+  }
+  return result;
 }
 
 function verifyNotAnOrphanComponent(componentDef: ComponentDef<unknown>) {
@@ -228,7 +217,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
   }[] {
     const componentDef = this.componentDef;
     const inputTransforms = componentDef.inputTransforms;
-    const refArray = toRefArray(componentDef.inputs, true);
+    const refArray = toInputRefArray(componentDef.inputs);
 
     if (inputTransforms !== null) {
       for (const input of refArray) {
@@ -242,7 +231,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
   }
 
   override get outputs(): {propName: string; templateName: string}[] {
-    return toRefArray(this.componentDef.outputs, false);
+    return toOutputRefArray(this.componentDef.outputs);
   }
 
   /**
