@@ -71,8 +71,8 @@ describe('component declaration jit compilation', () => {
 
     expectComponentDef(def, {
       inputs: {
-        'property': 'minifiedProperty',
-        'bindingName': 'minifiedClassProperty',
+        'property': ['minifiedProperty', InputFlags.None],
+        'bindingName': ['minifiedClassProperty', InputFlags.None],
       },
       declaredInputs: {
         'property': 'property',

@@ -481,26 +481,13 @@ function extractInputDebugMetadata<T>(inputs: DirectiveDef<T>['inputs']) {
   const res: DirectiveDebugMetadata['inputs'] = {};
 
   for (const key in inputs) {
-    if (!inputs.hasOwnProperty(key)) {
-      continue;
+    if (inputs.hasOwnProperty(key)) {
+      const value = inputs[key];
+
+      if (value !== undefined) {
+        res[key] = value[0];
+      }
     }
-
-    const value = inputs[key];
-    if (value === undefined) {
-      continue;
-    }
-
-    let minifiedName: string;
-
-    if (Array.isArray(value)) {
-      minifiedName = value[0];
-      // flags are not used for now.
-      // TODO: Consider exposing flag information in discovery.
-    } else {
-      minifiedName = value;
-    }
-
-    res[key] = minifiedName;
   }
 
   return res;

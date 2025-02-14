@@ -361,8 +361,7 @@ function captureNodeBindings<T>(
     let internalName: string;
     let inputFlags = InputFlags.None;
 
-    // For inputs, the value might be an array capturing additional
-    // input flags.
+    // For inputs, the value is an array. For outputs it's a string.
     if (Array.isArray(value)) {
       internalName = value[0];
       inputFlags = value[1];
