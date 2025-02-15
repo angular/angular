@@ -88,7 +88,6 @@
       border-radius: 0.25rem;
       position: relative;
       transition: border 0.3s ease;
-      pointer-events: none;
 
       &::before {
         content: '';
@@ -99,7 +98,7 @@
         z-index: 0;
       }
 
-      &:focus {
+      &.highlighted {
         box-shadow: 10px 4px 40px 0 rgba(0, 0, 0, 0.01);
 
         &::before {
@@ -112,10 +111,6 @@
         margin-block-end: 0;
       }
 
-      a {
-        pointer-events: initial;
-      }
-
       .docs-reference-card-header {
         display: flex;
         align-items: center;
@@ -125,7 +120,6 @@
         position: relative;
         z-index: 10;
         padding: 0.7rem 1rem;
-        cursor: pointer;
         gap: 0.5rem;
         flex-wrap: wrap;
         transition:
