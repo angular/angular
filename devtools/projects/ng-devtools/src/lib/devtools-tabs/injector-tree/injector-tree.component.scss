@@ -25,6 +25,10 @@ as-split-area {
   overflow-y: auto !important;
 }
 
+svg {
+  display: block;
+}
+
 :host {
   ::ng-deep {
     .mat-tab-label {
