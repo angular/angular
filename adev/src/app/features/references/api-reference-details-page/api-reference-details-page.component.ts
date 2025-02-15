@@ -6,12 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, inject, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, inject, input, Renderer2} from '@angular/core';
+import {toSignal} from '@angular/core/rxjs-interop';
 import {DocContent, DocViewer} from '@angular/docs';
 import {ActivatedRoute} from '@angular/router';
 import {DOCUMENT} from '@angular/common';
 import {ReferenceScrollHandler} from '../services/reference-scroll-handler.service';
 import {API_SECTION_CLASS_NAME} from '../constants/api-reference-prerender.constants';
+
+const HIGHLIGHTED_CARD_CLASS = 'highlighted';
 
 @Component({
   selector: 'adev-reference-page',
@@ -26,12 +29,21 @@ export default class ApiReferenceDetailsPage {
   private readonly referenceScrollHandler = inject(ReferenceScrollHandler);
   private readonly route = inject(ActivatedRoute);
   private readonly document = inject(DOCUMENT);
+  private readonly renderer = inject(Renderer2);
+
+  private highlightedElement: HTMLElement | null = null;
 
   docContent = input<DocContent | undefined>();
+  urlFragment = toSignal(this.route.fragment);
+
+  constructor() {
+    effect(() => this.highlightCard());
+  }
 
   onContentLoaded() {
     this.referenceScrollHandler.setupListeners(API_SECTION_CLASS_NAME);
     this.scrollToSectionLegacy();
+    this.highlightCard();
   }
 
   /** Handle legacy URLs with a `tab` query param from the old tab layout  */
@@ -50,6 +62,25 @@ export default class ApiReferenceDetailsPage {
           section.scrollIntoView({behavior: 'smooth'});
         }, 100);
       }
+    }
+  }
+
+  /** Highlight the member card that corresponds to the URL fragment.  */
+  private highlightCard() {
+    if (this.highlightedElement) {
+      this.renderer.removeClass(this.highlightedElement, HIGHLIGHTED_CARD_CLASS);
+      this.highlightedElement = null;
+    }
+
+    const fragment = this.urlFragment();
+
+    if (fragment) {
+      const element = this.document.getElementById(fragment);
+
+      if (element) {
+        this.renderer.addClass(element, HIGHLIGHTED_CARD_CLASS);
+      }
+      this.highlightedElement = element;
     }
   }
 }
