@@ -55,7 +55,7 @@ export function ClassMember(props: {member: MemberEntryRenderable}) {
   const memberName = member.name;
   const returnType = getMemberType(member);
   return (
-    <div id={memberName} tabIndex={-1} className={REFERENCE_MEMBER_CARD}>
+    <div id={memberName} className={REFERENCE_MEMBER_CARD}>
       <header className={REFERENCE_MEMBER_CARD_HEADER}>
         <h3>{memberName}</h3>
         {isClassMethodEntry(member) && member.signatures.length > 1 ? (
