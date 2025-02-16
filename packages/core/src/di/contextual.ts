@@ -13,8 +13,8 @@ import {
 } from '../render3/debug/injector_profiler';
 
 import {getInjectImplementation, setInjectImplementation} from './inject_switch';
-import type {Injector} from './injector';
-import {getCurrentInjector, setCurrentInjector} from './injector_compatibility';
+import {Injector} from './injector';
+import {getCurrentInjector, inject, setCurrentInjector} from './injector_compatibility';
 import {assertNotDestroyed, R3Injector} from './r3_injector';
 
 /**
@@ -49,6 +49,102 @@ export function runInInjectionContext<ReturnT>(injector: Injector, fn: () => Ret
     ngDevMode && setInjectorProfilerContext(prevInjectorProfilerContext!);
     setInjectImplementation(previousInjectImplementation);
   }
+}
+
+/**
+ * Binds the given function to an [injection context](guide/di/dependency-injection-context). If no
+ * context is passed, the currently active injection context is used.
+ *
+ * @usageNotes
+ *
+ * A function that is bound to an [injection context](guide/di/dependency-injection-context) will
+ * always be executed in the context it was bound to. This allows you to call
+ * [`inject`](api/core/inject) in the function, even if the caller is not inside an injection
+ * context.
+ *
+ * The example blow demonstrates how to wrap a utility function to easily track clicks.
+ *
+ * ```angular-ts
+ * // For tracking we need to know where the user clicked (navbar, content, footer ,etc.). This
+ * // information is provided via the current injection token.
+ * const CLICK_AREA = new InjectionToken<string>('click-area');
+ *
+ * // This utility function provides a simplified interface to an imaginary TrackingService. But it
+ * // must be called inside an injection context to work. 
+ * function trackClick(description: string) {
+ *   const clickArea = inject(CLICK_AREA);
+ *   const tracker = inject(TrackerService);
+ *   tracker.trackClick({
+ *     clickArea,
+ *     description,
+ *   });
+ * }
+ * 
+ * @Component({
+ *  selector: 'app-nav-link',
+ *  // Clicks on the nav links should be tracked
+ *  template: `<a href={{href()}} (click)="trackClick(label())">{{label()}}</a>`
+ * })
+ * export class NavLinkComponent {
+ *   readonly label = input.required<string>();
+ *   readonly href = input.required<string>();
+ * 
+ *   // Binding the trackClick to the injection context during component creation
+ *   private readonly trackClick = bindToInjectionContext(trackClick);
+ * }
+ * 
+ * @Component({
+ *   standalone: true,
+ *   imports: [NavLinkComponent],
+ *   template: `
+ *    <nav>
+ *     <ul>
+ *       <li><app-nav-link label="Home" href="/" /><li>
+ *       <li><app-nav-link label="User" href="/user" /><li>
+ *       <li><app-nav-link label="Heroes" href="/heroes" /><li>
+ *     </ul>
+ *    </nav>
+ *   `,
+ *   providers: [
+ *     // Provide context for clicks inside this component
+ *     { provide: CLICK_AREA, useValue: 'navbar' }
+ *   ]
+ * })
+ * export class NavComponent {}
+ * ```
+ *
+ * `bindToInjectionContext` can also be used for callbacks, that need access to the inject function:
+ *
+ * ```angular-ts
+ * @Component({
+ *   // ...
+ * })
+ * export class TabComponent {
+ *   constructor() {
+ *     inject(TabManager).registerTab({
+ *       onActivate: bindToInjectionContext(() => {
+ *         inject(Renderer2).addClass(inject(ElementRef).nativeElement, 'active');
+ *       }),
+ *       onDeactivate: bindToInjectionContext(() => {
+ *         inject(Renderer2).removeClass(inject(ElementRef).nativeElement, 'active');
+ *       }),
+ *     });
+ *   }
+ * }
+ * ```
+ *
+ * @param fn The closure to bind to an injection context.
+ * @param injector The injector to bind the function to. Defaults to the current injection context.
+ * @returns A new function that is bound to an injection context.
+ * @publicApi
+ */
+export function bindToInjectionContext<Fn extends (...args: any[]) => any>(
+  fn: Fn,
+  injector = inject(Injector),
+): Fn {
+  return ((...args) => {
+    return runInInjectionContext(injector, () => fn(...args));
+  }) as Fn;
 }
 
 /**
