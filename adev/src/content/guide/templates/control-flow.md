@@ -64,6 +64,23 @@ For static collections that never change, you can use `$index` to tell Angular t
 
 If no other option is available, you can specify `identity`. This tells Angular to track the item by its reference identity using the triple-equals operator (`===`). Avoid this option whenever possible as it can lead to significantly slower rendering updates, as Angular has no way to map which data item corresponds to which DOM nodes.
 
+### Comparing built-in control flow to `NgFor`
+The `@for` block replaces `NgFor` structural directive for iteration. It has several differences compared to its predecessor:
+
+* The `@for` block requires a tracking expression to uniquely identify items in the collection and simplifies tracking by accepting a `track` _expression_. `NgFor` uses an optional `trackBy` _method_, that defaultd to tracking items by identity if none is provided.
+* You can specify the content to show when the collection is empty with an `@empty` block.
+* The `@for` block utilizes an optimized reconciliation algorithm to minimize the number of DOM operations.
+  necessary after a collection is modified. While `NgFor` allowed developers to provide a custom
+  `IterableDiffer` implementation, the `@for` block does not support custom differs.
+
+The `track` setting serves as a replacement for NgFor's `trackBy` function. Since `@for` is a built-in feature, it allows for an improved experience by using an expression to represent the key directly, instead of passing a `trackBy` function. Transitioning from trackBy to track can be done by invoking the trackBy function:
+
+```html
+@for (item of items; track itemId($index, item)) {
+  {{ item.name }}
+}
+```
+
 ### Contextual variables in `@for` blocks
 
 Inside `@for` blocks, several implicit variables are always available:
