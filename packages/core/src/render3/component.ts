@@ -60,6 +60,57 @@ import {assertComponentDef} from './errors';
  * componentRef.changeDetectorRef.detectChanges();
  * ```
  *
+ * You can use the `createComponent`method to dynamically create and render a
+ * component. When you create a new component with a `ViewContainerRef`, Angular appends it into the
+ * DOM as the next sibling of the component or directive that injected the `ViewContainerRef`.
+ *
+ * ```angular-ts
+ * @Component({
+ *   selector: 'leaf-content',
+ *   template: `
+ *     This is the leaf content
+ *   `,
+ * })
+ * export class LeafContent {}
+ *
+ * @Component({
+ *   selector: 'outer-container',
+ *   template: `
+ *     <p>This is the start of the outer container</p>
+ *     <inner-item />
+ *     <p>This is the end of the outer container</p>
+ *   `,
+ * })
+ * export class OuterContainer {}
+ *
+ * @Component({
+ *   selector: 'inner-item',
+ *   template: `
+ *     <button (click)="loadContent()">Load content</button>
+ *   `,
+ * })
+ * export class InnerItem {
+ *   constructor(private viewContainer: ViewContainerRef) {}
+ *
+ *   loadContent() {
+ *     this.viewContainer.createComponent(LeafContent);
+ *   }
+ * }
+ * ```
+ *
+ * In the example above, clicking the "Load content" button results in the following DOM structure
+ *
+ * ```angular-html
+ * <outer-container>
+ *   <p>This is the start of the outer container</p>
+ *   <inner-item>
+ *     <button>Load content</button>
+ *   </inner-item>
+ *   <leaf-content>This is the leaf content</leaf-content>
+ *   <p>This is the end of the outer container</p>
+ * </outer-container>
+ * ```
+ *
  * @param component Component class reference.
  * @param options Set of options to use:
  *  * `environmentInjector`: An `EnvironmentInjector` instance to be used for the component.
