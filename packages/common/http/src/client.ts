@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {
+  EnvironmentProviders,
+  Injectable,
+  makeEnvironmentProviders,
+  ɵRuntimeError as RuntimeError,
+} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {concatMap, filter, map} from 'rxjs/operators';
 
@@ -17,6 +22,8 @@ import {HttpParams, HttpParamsOptions} from './params';
 import {HttpRequest} from './request';
 import {HttpEvent, HttpResponse} from './response';
 import {RuntimeErrorCode} from './errors';
+import {HttpFeature, HttpFeatureKind} from './provider';
+import {Environment} from '@angular/compiler-cli/src/ngtsc/typecheck/src/environment';
 
 /**
  * Constructs an instance of `HttpRequestOptions<T>` from a source `HttpMethodOptions` and
@@ -54,6 +61,18 @@ function addBody<T>(
     withCredentials: options.withCredentials,
     transferCache: options.transferCache,
   };
+}
+
+export function provideHttpClient(
+  ...features: HttpFeature<HttpFeatureKind>[]
+): EnvironmentProviders {
+  return makeEnvironmentProviders(
+    features.flatMap((f) =>
+      f.ɵproviders.map((provider) =>
+        provider instanceof Array ? makeEnvironmentProviders(provider) : provider,
+      ),
+    ),
+  );
 }
 
 /**

@@ -20,6 +20,8 @@ import {
   HttpResponse,
   HttpXhrBackend,
   JsonpClientBackend,
+  HttpFeature,
+  provideHttpClient,
 } from '@angular/common/http';
 import {
   HttpClientTestingModule,
@@ -34,6 +36,8 @@ import {
   InjectionToken,
   PLATFORM_ID,
   Provider,
+  makeEnvironmentProviders,
+  EnvironmentProviders,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {EMPTY, Observable, from} from 'rxjs';
@@ -563,6 +567,28 @@ describe('provideHttpClient', () => {
     });
   });
 });
+
+describe('HttpFeature with EnvironmentProviders', () => {
+  it('should allow EnvironmentProviders in HttpFeature', () => {
+    const mockEnvProvider: EnvironmentProviders = makeEnvironmentProviders([]);
+
+    const customFeature: HttpFeature<any> = {
+      ɵkind: 999,
+      ɵproviders: [{provide: HttpBackend, useClass: MockHttpBackend}],
+    };
+
+    const result = provideHttpClient(customFeature);
+
+    expect(result).toBeDefined();
+    expect(result).toEqual(jasmine.any(Object));
+  });
+});
+
+class MockHttpBackend implements HttpBackend {
+  handle(req: any): any {
+    return null;
+  }
+}
 
 function setXsrfToken(token: string): void {
   setCookie(`XSRF-TOKEN=${token}`);
