@@ -328,7 +328,6 @@
   "stringifyCSSSelector",
   "throwProviderNotFoundError",
   "timeoutProvider",
-  "toRefArray",
   "uniqueIdCounter",
   "unregisterLView",
   "unwrapRNode",
