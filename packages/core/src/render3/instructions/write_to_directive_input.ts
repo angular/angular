@@ -13,6 +13,7 @@ import {InputSignalNode} from '../../authoring/input/input_signal_node';
 import {applyValueToInputField} from '../apply_value_input_field';
 import {DirectiveDef} from '../interfaces/definition';
 import {InputFlags} from '../interfaces/input_flags';
+import {isFactory} from '../interfaces/injector';
 
 export function writeToDirectiveInput<T>(
   def: DirectiveDef<T>,
@@ -22,10 +23,21 @@ export function writeToDirectiveInput<T>(
 ) {
   const prevConsumer = setActiveConsumer(null);
   try {
-    if (ngDevMode && !def.inputs.hasOwnProperty(publicName)) {
-      throw new Error(
-        `ASSERTION ERROR: Directive ${def.type.name} does not have an input with a public name of "${publicName}"`,
-      );
+    if (ngDevMode) {
+      if (!def.inputs.hasOwnProperty(publicName)) {
+        throw new Error(
+          `ASSERTION ERROR: Directive ${def.type.name} does not have an input with a public name of "${publicName}"`,
+        );
+      }
+
+      // Usually we resolve the directive instance using `LView[someIndex]` before writing to an
+      // input, however if the read happens to early, the `LView[someIndex]` might actually be a
+      // `NodeInjectorFactory`. Check for this specific case here since it can break in subtle ways.
+      if (isFactory(instance)) {
+        throw new Error(
+          `ASSERTION ERROR: Cannot write input to factory for type ${def.type.name}. Directive has not been created yet.`,
+        );
+      }
     }
 
     const [privateName, flags, transform] = def.inputs[publicName];
