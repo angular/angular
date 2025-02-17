@@ -444,20 +444,14 @@ function generateInitialInputs(
     if (typeof attrName === 'number') break;
 
     if (inputs.hasOwnProperty(attrName as string)) {
-      if (inputsToStore === null) inputsToStore = [];
-
       // Find the input's public name from the input store. Note that we can be found easier
       // through the directive def, but we want to do it using the inputs store so that it can
       // account for host directive aliases.
       const inputConfig = inputs[attrName as string];
-      for (let j = 0; j < inputConfig.length; j += 3) {
+      for (let j = 0; j < inputConfig.length; j += 2) {
         if (inputConfig[j] === directiveIndex) {
-          inputsToStore.push(
-            attrName as string,
-            inputConfig[j + 1] as string,
-            inputConfig[j + 2] as InputFlags,
-            attrs[i + 1] as string,
-          );
+          inputsToStore ??= [];
+          inputsToStore.push(inputConfig[j + 1] as string, attrs[i + 1] as string);
           // A directive can't have multiple inputs with the same name so we can break here.
           break;
         }

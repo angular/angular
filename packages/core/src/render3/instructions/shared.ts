@@ -533,17 +533,15 @@ function setInputsFromAttrs<T>(
 ): void {
   const initialInputs: InitialInputs | null = initialInputData![directiveIndex];
   if (initialInputs !== null) {
-    for (let i = 0; i < initialInputs.length; ) {
-      const publicName = initialInputs[i++] as string;
-      const privateName = initialInputs[i++] as string;
-      const flags = initialInputs[i++] as InputFlags;
-      const value = initialInputs[i++] as string;
+    for (let i = 0; i < initialInputs.length; i += 2) {
+      const lookupName = initialInputs[i];
+      const value = initialInputs[i + 1];
 
-      writeToDirectiveInput<T>(def, instance, privateName, value);
+      writeToDirectiveInput<T>(def, instance, lookupName, value);
 
       if (ngDevMode) {
         const nativeElement = getNativeByTNode(tNode, lView) as RElement;
-        setNgReflectProperty(lView, nativeElement, tNode.type, privateName, value);
+        setNgReflectProperty(lView, nativeElement, tNode.type, lookupName, value);
       }
     }
   }
