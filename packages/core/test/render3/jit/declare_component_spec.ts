@@ -23,7 +23,6 @@ import {
   AttributeMarker,
   ComponentDef,
   ɵɵInheritDefinitionFeature,
-  ɵɵInputTransformsFeature,
   ɵɵNgOnChangesFeature,
 } from '../../../src/render3';
 
@@ -106,7 +105,6 @@ describe('component declaration jit compilation', () => {
       declaredInputs: {
         'bindingName': 'classProperty',
       },
-      features: [ɵɵInputTransformsFeature],
     });
   });
 
