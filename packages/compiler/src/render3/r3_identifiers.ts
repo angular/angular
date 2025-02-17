@@ -551,11 +551,6 @@ export class Identifiers {
     moduleName: CORE,
   };
 
-  static InputTransformsFeatureFeature: o.ExternalReference = {
-    name: 'ɵɵInputTransformsFeature',
-    moduleName: CORE,
-  };
-
   static ExternalStylesFeature: o.ExternalReference = {
     name: 'ɵɵExternalStylesFeature',
     moduleName: CORE,
