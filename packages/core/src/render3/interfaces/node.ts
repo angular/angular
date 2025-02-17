@@ -811,9 +811,8 @@ export type NodeInputBindings = Record<string, (number | string)[]>;
  *
  * Within each sub-array:
  *
- * i+0: attribute name
- * i+1: minified/internal input name
- * i+2: initial value
+ * i+0: public name
+ * i+1: initial value
  *
  * If a directive on a node does not have any input properties
  * that should be set from attributes, its index is set to null
@@ -834,7 +833,7 @@ export type InitialInputData = (InitialInputs | null)[];
  *
  * e.g. ['role-min', 'minified-input', 'button']
  */
-export type InitialInputs = (string | InputFlags)[];
+export type InitialInputs = string[];
 
 /**
  * Type representing a set of TNodes that can have local refs (`#foo`) placed on them.
