@@ -9,8 +9,8 @@ import {KeyValueArray} from '../../util/array_utils';
 import {TStylingRange} from '../interfaces/styling';
 import {AttributeMarker} from './attribute_marker';
 
-import {InputFlags} from './input_flags';
 import {TIcu} from './i18n';
+import {InputFlags} from './input_flags';
 import {CssSelector} from './projection';
 import {RNode} from './renderer_dom';
 import type {LView, TView} from './view';
@@ -793,16 +793,15 @@ export type NodeOutputBindings = Record<string, (number | string)[]>;
  *
  * i+0: directive instance index
  * i+1: privateName
- * i+2: input flags
  *
  * e.g.
  * ```
  * {
- *   "publicName": [0, 'change-minified', <bit-input-flags>]
+ *   "publicName": [0, 'change-minified']
  * }
  * ```
  */
-export type NodeInputBindings = Record<string, (number | string | InputFlags)[]>;
+export type NodeInputBindings = Record<string, (number | string)[]>;
 
 /**
  * This array contains information about input properties that
