@@ -27,7 +27,6 @@ import type {
   HostDirectiveDefs,
 } from '../interfaces/definition';
 import {NodeInjectorFactory} from '../interfaces/injector';
-import {InputFlags} from '../interfaces/input_flags';
 import {
   InitialInputData,
   InitialInputs,
@@ -46,6 +45,7 @@ import {isInlineTemplate} from '../node_selector_matcher';
 import {NO_CHANGE} from '../tokens';
 import {mergeHostAttrs} from '../util/attrs_utils';
 import {allocExpando} from './construction';
+import {InputFlags} from '../interfaces/input_flags';
 
 export type DirectiveMatcherStrategy = (
   tView: TView,
@@ -358,17 +358,6 @@ function captureNodeBindings<T>(
 
     bindingsResult ??= {};
 
-    let internalName: string;
-    let inputFlags = InputFlags.None;
-
-    // For inputs, the value is an array. For outputs it's a string.
-    if (Array.isArray(value)) {
-      internalName = value[0];
-      inputFlags = value[1];
-    } else {
-      internalName = value;
-    }
-
     // If there are no host directive mappings, we want to remap using the alias map from the
     // definition itself. If there is an alias map, it has two functions:
     // 1. It serves as an allowlist of bindings that are exposed by the host directives. Only the
@@ -390,15 +379,14 @@ function captureNodeBindings<T>(
         bindingsResult as NodeInputBindings,
         directiveIndex,
         finalPublicName,
-        internalName,
-        inputFlags,
+        publicName,
       );
     } else {
       addPropertyBinding(
         bindingsResult as NodeOutputBindings,
         directiveIndex,
         finalPublicName,
-        internalName,
+        value as string,
       );
     }
   }
@@ -406,36 +394,15 @@ function captureNodeBindings<T>(
 }
 
 function addPropertyBinding(
-  bindings: NodeInputBindings,
-  directiveIndex: number,
-  publicName: string,
-  internalName: string,
-  inputFlags: InputFlags,
-): void;
-function addPropertyBinding(
-  bindings: NodeOutputBindings,
-  directiveIndex: number,
-  publicName: string,
-  internalName: string,
-): void;
-
-function addPropertyBinding(
   bindings: NodeInputBindings | NodeOutputBindings,
   directiveIndex: number,
   publicName: string,
-  internalName: string,
-  inputFlags?: InputFlags,
+  lookupName: string,
 ) {
-  let values: (typeof bindings)[typeof publicName];
-
   if (bindings.hasOwnProperty(publicName)) {
-    (values = bindings[publicName]).push(directiveIndex, internalName);
+    bindings[publicName].push(directiveIndex, lookupName);
   } else {
-    values = bindings[publicName] = [directiveIndex, internalName];
-  }
-
-  if (inputFlags !== undefined) {
-    (values as NodeInputBindings[typeof publicName]).push(inputFlags);
+    bindings[publicName] = [directiveIndex, lookupName];
   }
 }
 

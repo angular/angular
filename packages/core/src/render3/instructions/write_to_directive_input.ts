@@ -18,8 +18,6 @@ export function writeToDirectiveInput<T>(
   def: DirectiveDef<T>,
   instance: T,
   publicName: string,
-  privateName: string,
-  flags: InputFlags,
   value: unknown,
 ) {
   const prevConsumer = setActiveConsumer(null);
