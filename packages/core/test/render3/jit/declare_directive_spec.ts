@@ -55,8 +55,8 @@ describe('directive declaration jit compilation', () => {
 
     expectDirectiveDef(def, {
       inputs: {
-        'property': ['minifiedProperty', InputFlags.None],
-        'bindingName': ['minifiedClassProperty', InputFlags.None],
+        'property': ['minifiedProperty', InputFlags.None, null],
+        'bindingName': ['minifiedClassProperty', InputFlags.None, null],
       },
       declaredInputs: {
         'property': 'property',

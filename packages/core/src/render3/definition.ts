@@ -511,27 +511,33 @@ export function ɵɵdefineNgModule<T>(def: {
 function parseAndConvertInputsForDefinition<T>(
   obj: DirectiveDefinition<T>['inputs'],
   declaredInputs: Record<string, string>,
-): Record<string, [minifiedName: string, flags: InputFlags]> {
+) {
   if (obj == null) return EMPTY_OBJ as any;
-  const newLookup: Record<string, [minifiedName: string, flags: InputFlags]> = {};
+  const newLookup: Record<
+    string,
+    [minifiedName: string, flags: InputFlags, transform: InputTransformFunction | null]
+  > = {};
   for (const minifiedKey in obj) {
     if (obj.hasOwnProperty(minifiedKey)) {
       const value = obj[minifiedKey]!;
       let publicName: string;
       let declaredName: string;
       let inputFlags: InputFlags;
+      let transform: InputTransformFunction | null;
 
       if (Array.isArray(value)) {
         inputFlags = value[0];
         publicName = value[1];
         declaredName = value[2] ?? publicName; // declared name might not be set to save bytes.
+        transform = value[3] || null;
       } else {
         publicName = value;
         declaredName = value;
         inputFlags = InputFlags.None;
+        transform = null;
       }
 
-      newLookup[publicName] = [minifiedKey, inputFlags];
+      newLookup[publicName] = [minifiedKey, inputFlags, transform];
       declaredInputs[publicName] = declaredName as string;
     }
   }
@@ -631,7 +637,6 @@ function getNgDirectiveDef<T>(directiveDefinition: DirectiveDefinition<T>): Dire
     hostAttrs: directiveDefinition.hostAttrs || null,
     contentQueries: directiveDefinition.contentQueries || null,
     declaredInputs: declaredInputs,
-    inputTransforms: null,
     inputConfig: directiveDefinition.inputs || EMPTY_OBJ,
     exportAs: directiveDefinition.exportAs || null,
     standalone: directiveDefinition.standalone ?? true,

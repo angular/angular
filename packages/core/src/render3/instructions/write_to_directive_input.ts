@@ -24,6 +24,14 @@ export function writeToDirectiveInput<T>(
 ) {
   const prevConsumer = setActiveConsumer(null);
   try {
+    if (ngDevMode && !def.inputs.hasOwnProperty(publicName)) {
+      throw new Error(
+        `ASSERTION ERROR: Directive ${def.type.name} does not have an input with a public name of "${publicName}"`,
+      );
+    }
+
+    const [privateName, flags, transform] = def.inputs[publicName];
+
     // If we know we are dealing with a signal input, we cache its reference
     // in a tree-shakable way. The input signal node can then be used for
     // value transform execution or actual value updates without introducing
@@ -38,10 +46,9 @@ export function writeToDirectiveInput<T>(
     // delegating to features like `NgOnChanges`.
     if (inputSignalNode !== null && inputSignalNode.transformFn !== undefined) {
       value = inputSignalNode.transformFn(value);
-    }
-    // If there is a decorator input transform, run it.
-    if ((flags & InputFlags.HasDecoratorInputTransform) !== 0) {
-      value = def.inputTransforms![privateName]!.call(instance, value);
+    } else if (transform !== null) {
+      // If there is a decorator input transform, run it.
+      value = transform.call(instance, value);
     }
 
     if (def.setInput !== null) {

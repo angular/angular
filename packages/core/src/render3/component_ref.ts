@@ -102,13 +102,18 @@ function toInputRefArray<T>(map: DirectiveDef<T>['inputs']): ComponentFactory<T>
       const value = map[publicName];
 
       if (value !== undefined) {
-        const [propName, flags] = value;
-
-        result.push({
+        const [propName, flags, transform] = value;
+        const inputData: ComponentFactory<T>['inputs'][0] = {
           propName: propName,
           templateName: publicName,
           isSignal: (flags & InputFlags.SignalBased) !== 0,
-        });
+        };
+
+        if (transform) {
+          inputData.transform = transform;
+        }
+
+        result.push(inputData);
       }
     }
   }
@@ -216,19 +221,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
     isSignal: boolean;
     transform?: (value: any) => any;
   }[] {
-    const componentDef = this.componentDef;
-    const inputTransforms = componentDef.inputTransforms;
-    const refArray = toInputRefArray(componentDef.inputs);
-
-    if (inputTransforms !== null) {
-      for (const input of refArray) {
-        if (inputTransforms.hasOwnProperty(input.propName)) {
-          input.transform = inputTransforms[input.propName];
-        }
-      }
-    }
-
-    return refArray;
+    return toInputRefArray(this.componentDef.inputs);
   }
 
   override get outputs(): {propName: string; templateName: string}[] {
