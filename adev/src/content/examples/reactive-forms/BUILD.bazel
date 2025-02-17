@@ -2,7 +2,6 @@ package(default_visibility = ["//visibility:public"])
 
 exports_files([
     "src/app/app.component.1.html",
-    "src/app/app.module.ts",
     "src/app/name-editor/name-editor.component.html",
     "src/app/name-editor/name-editor.component.ts",
     "src/app/profile-editor/profile-editor.component.1.html",

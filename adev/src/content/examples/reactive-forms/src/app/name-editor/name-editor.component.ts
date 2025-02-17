@@ -1,15 +1,18 @@
 // #docplaster
 // #docregion create-control
 import {Component} from '@angular/core';
-import {FormControl} from '@angular/forms';
+
+// #docregion imports
+import {FormControl, ReactiveFormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-name-editor',
   templateUrl: './name-editor.component.html',
   styleUrls: ['./name-editor.component.css'],
-  standalone: false,
+  imports: [ReactiveFormsModule],
 })
 export class NameEditorComponent {
+  // #enddocregion imports
   name = new FormControl('');
   // #enddocregion create-control
 
