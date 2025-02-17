@@ -25,7 +25,6 @@ import {attachPatchData} from '../context_discovery';
 import {getNodeInjectable, getOrCreateNodeInjectorForNode} from '../di';
 import {throwMultipleComponentError} from '../errors';
 import {ComponentDef, ComponentTemplate, DirectiveDef, RenderFlags} from '../interfaces/definition';
-import {InputFlags} from '../interfaces/input_flags';
 import {
   InitialInputData,
   InitialInputs,
@@ -76,6 +75,7 @@ import {createComponentLView} from '../view/construction';
 import {selectIndexInternal} from './advance';
 import {handleUnknownPropertyError, isPropertyValid, matchingSchemas} from './element_validation';
 import {writeToDirectiveInput} from './write_to_directive_input';
+import {InputFlags} from '../interfaces/input_flags';
 
 export function executeTemplate<T>(
   tView: TView,
@@ -270,7 +270,7 @@ export function elementPropertyInternal<T>(
     setInputsForProperty(tView, lView, dataValue, propName, value);
     if (isComponentHost(tNode)) markDirtyIfOnPush(lView, tNode.index);
     if (ngDevMode) {
-      setNgReflectProperties(lView, element, tNode.type, dataValue, value);
+      setNgReflectProperties(lView, tView, element, tNode.type, dataValue, value);
     }
   } else if (tNode.type & TNodeType.AnyRNode) {
     propName = mapPropName(propName);
@@ -331,6 +331,7 @@ function setNgReflectProperty(
 
 export function setNgReflectProperties(
   lView: LView,
+  tView: TView,
   element: RElement | RComment,
   type: TNodeType,
   dataValue: NodeInputBindings[string],
@@ -342,11 +343,14 @@ export function setNgReflectProperties(
      * i+0: directive instance index
      * i+1: privateName
      *
-     * e.g. [0, 'change', 'change-minified']
+     * e.g. [0, 'change']
      * we want to set the reflected property with the privateName: dataValue[i+1]
      */
-    for (let i = 0; i < dataValue.length; i += 3) {
-      setNgReflectProperty(lView, element, type, dataValue[i + 1] as string, value);
+    for (let i = 0; i < dataValue.length; i += 2) {
+      const index = dataValue[i] as number;
+      const lookupName = dataValue[i + 1] as string;
+      const def = tView.data[index] as DirectiveDef<unknown>;
+      setNgReflectProperty(lView, element, type, def.inputs[lookupName][0], value);
     }
   }
 }
@@ -535,7 +539,7 @@ function setInputsFromAttrs<T>(
       const flags = initialInputs[i++] as InputFlags;
       const value = initialInputs[i++] as string;
 
-      writeToDirectiveInput<T>(def, instance, publicName, privateName, flags, value);
+      writeToDirectiveInput<T>(def, instance, privateName, value);
 
       if (ngDevMode) {
         const nativeElement = getNativeByTNode(tNode, lView) as RElement;
@@ -638,14 +642,12 @@ export function setInputsForProperty(
   publicName: string,
   value: unknown,
 ): void {
-  for (let i = 0; i < inputs.length; ) {
-    const index = inputs[i++] as number;
-    const privateName = inputs[i++] as string;
-    const flags = inputs[i++] as InputFlags;
-    const instance = lView[index];
+  for (let i = 0; i < inputs.length; i += 2) {
+    const index = inputs[i] as number;
     ngDevMode && assertIndexInRange(lView, index);
+    const privateName = inputs[i + 1] as string;
+    const instance = lView[index];
     const def = tView.data[index] as DirectiveDef<any>;
-
-    writeToDirectiveInput(def, instance, publicName, privateName, flags, value);
+    writeToDirectiveInput(def, instance, privateName, value);
   }
 }
