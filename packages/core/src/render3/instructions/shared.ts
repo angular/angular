@@ -263,16 +263,16 @@ export function elementPropertyInternal<T>(
   nativeOnly: boolean,
 ): void {
   ngDevMode && assertNotSame(value, NO_CHANGE as any, 'Incoming value should never be NO_CHANGE.');
-  const element = getNativeByTNode(tNode, lView) as RElement | RComment;
   let inputData = tNode.inputs;
   let dataValue: NodeInputBindings[typeof propName] | undefined;
   if (!nativeOnly && inputData != null && (dataValue = inputData[propName])) {
     setInputsForProperty(tView, lView, dataValue, propName, value);
     if (isComponentHost(tNode)) markDirtyIfOnPush(lView, tNode.index);
     if (ngDevMode) {
-      setNgReflectProperties(lView, tView, element, tNode.type, dataValue, value);
+      setNgReflectProperties(lView, tView, tNode, dataValue, value);
     }
   } else if (tNode.type & TNodeType.AnyRNode) {
+    const element = getNativeByTNode(tNode, lView) as RElement | RComment;
     propName = mapPropName(propName);
 
     if (ngDevMode) {
@@ -305,17 +305,12 @@ export function markDirtyIfOnPush(lView: LView, viewIndex: number): void {
   }
 }
 
-function setNgReflectProperty(
-  lView: LView,
-  element: RElement | RComment,
-  type: TNodeType,
-  attrName: string,
-  value: any,
-) {
+function setNgReflectProperty(lView: LView, tNode: TNode, attrName: string, value: any) {
+  const element = getNativeByTNode(tNode, lView) as RElement | RComment;
   const renderer = lView[RENDERER];
   attrName = normalizeDebugBindingName(attrName);
   const debugValue = normalizeDebugBindingValue(value);
-  if (type & TNodeType.AnyRNode) {
+  if (tNode.type & TNodeType.AnyRNode) {
     if (value == null) {
       renderer.removeAttribute(element as RElement, attrName);
     } else {
@@ -332,25 +327,17 @@ function setNgReflectProperty(
 export function setNgReflectProperties(
   lView: LView,
   tView: TView,
-  element: RElement | RComment,
-  type: TNodeType,
-  dataValue: NodeInputBindings[string],
+  tNode: TNode,
+  inputConfig: NodeInputBindings[string],
   value: any,
 ) {
-  if (type & (TNodeType.AnyRNode | TNodeType.Container)) {
-    /**
-     * dataValue is an array containing runtime input or output names for the directives:
-     * i+0: directive instance index
-     * i+1: privateName
-     *
-     * e.g. [0, 'change']
-     * we want to set the reflected property with the privateName: dataValue[i+1]
-     */
-    for (let i = 0; i < dataValue.length; i += 2) {
-      const index = dataValue[i] as number;
-      const lookupName = dataValue[i + 1] as string;
+  if (tNode.type & (TNodeType.AnyRNode | TNodeType.Container)) {
+    // Note: we set the private name of the input as the reflected property, not the public one.
+    for (let i = 0; i < inputConfig.length; i += 2) {
+      const index = inputConfig[i] as number;
+      const lookupName = inputConfig[i + 1] as string;
       const def = tView.data[index] as DirectiveDef<unknown>;
-      setNgReflectProperty(lView, element, type, def.inputs[lookupName][0], value);
+      setNgReflectProperty(lView, tNode, def.inputs[lookupName][0], value);
     }
   }
 }
@@ -540,8 +527,7 @@ function setInputsFromAttrs<T>(
       writeToDirectiveInput<T>(def, instance, lookupName, value);
 
       if (ngDevMode) {
-        const nativeElement = getNativeByTNode(tNode, lView) as RElement;
-        setNgReflectProperty(lView, nativeElement, tNode.type, lookupName, value);
+        setNgReflectProperty(lView, tNode, def.inputs[lookupName][0], value);
       }
     }
   }
