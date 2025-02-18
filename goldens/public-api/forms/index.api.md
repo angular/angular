@@ -556,7 +556,7 @@ export interface FormRecord<TControl> {
         emitEvent?: boolean;
     }): void;
     setValue(value: {
-        [key: string]: ɵValue<TControl>;
+        [key: string]: ɵRawValue<TControl>;
     }, options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
