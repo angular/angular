@@ -19,6 +19,7 @@ ng_module(
         ":router_tree_styles",
     ],
     deps = [
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tree-visualizer-host",
         "//devtools/projects/protocol",
         "//packages/common",
         "//packages/core",

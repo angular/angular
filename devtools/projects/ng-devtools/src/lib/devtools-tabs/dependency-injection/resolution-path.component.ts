@@ -11,7 +11,6 @@ import {
   Component,
   computed,
   effect,
-  ElementRef,
   input,
   OnDestroy,
   viewChild,
@@ -19,15 +18,13 @@ import {
 import {SerializedInjector} from 'protocol';
 
 import {InjectorTreeNode, InjectorTreeVisualizer} from './injector-tree-visualizer';
+import {TreeVisualizerHostComponent} from '../tree-visualizer-host/tree-visualizer-host.component';
 
 @Component({
   selector: 'ng-resolution-path',
+  imports: [TreeVisualizerHostComponent],
   template: `
-    <section class="injector-graph">
-      <svg #svgContainer>
-        <g #mainGroup></g>
-      </svg>
-    </section>
+    <ng-tree-visualizer-host #tree />
   `,
   styles: [
     `
@@ -38,8 +35,7 @@ import {InjectorTreeNode, InjectorTreeVisualizer} from './injector-tree-visualiz
   ],
 })
 export class ResolutionPathComponent implements OnDestroy {
-  private svgContainer = viewChild.required<ElementRef>('svgContainer');
-  private g = viewChild.required<ElementRef>('mainGroup');
+  private tree = viewChild.required<TreeVisualizerHostComponent>('tree');
 
   readonly orientation = input<'horizontal' | 'vertical'>('horizontal');
 
@@ -70,10 +66,10 @@ export class ResolutionPathComponent implements OnDestroy {
 
   constructor() {
     afterNextRender({
-      read: () => {
+      write: () => {
         this.injectorTree = new InjectorTreeVisualizer(
-          this.svgContainer().nativeElement,
-          this.g().nativeElement,
+          this.tree().container().nativeElement,
+          this.tree().group().nativeElement,
           {
             orientation: this.orientation(),
           },
