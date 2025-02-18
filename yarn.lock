@@ -3839,61 +3839,59 @@
     "@angular-devkit/schematics" "19.2.0-next.2"
     jsonc-parser "3.3.1"
 
-"@shikijs/core@2.3.2":
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/@shikijs/core/-/core-2.3.2.tgz#dcdc851e6963fe4196e2f1051302dcecce1a8706"
-  integrity sha512-s7vyL3LzUKm3Qwf36zRWlavX9BQMZTIq9B1almM63M5xBuSldnsTHCmsXzoF/Kyw4k7Xgas7yAyJz9VR/vcP1A==
+"@shikijs/core@3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@shikijs/core/-/core-3.0.0.tgz#b962c9b9b75371308218eaf9a9f426c696cc2c6e"
+  integrity sha512-gSm3JQf2J2psiUn5bWokmZwnu5N0jfBtRps4CQ1B+qrFvmZCRAkMVoaxgl9qZgAFK5KisLAS3//XaMFVytYHKw==
   dependencies:
-    "@shikijs/engine-javascript" "2.3.2"
-    "@shikijs/engine-oniguruma" "2.3.2"
-    "@shikijs/types" "2.3.2"
-    "@shikijs/vscode-textmate" "^10.0.1"
+    "@shikijs/types" "3.0.0"
+    "@shikijs/vscode-textmate" "^10.0.2"
     "@types/hast" "^3.0.4"
     hast-util-to-html "^9.0.4"
 
-"@shikijs/engine-javascript@2.3.2":
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/@shikijs/engine-javascript/-/engine-javascript-2.3.2.tgz#9be457bb1ce4c8650b3b46b0f5054d4afef48a6d"
-  integrity sha512-w3IEMu5HfL/OaJTsMbIfZ1HRPnWVYRANeDtmsdIIEgUOcLjzFJFQwlnkckGjKHekEzNqlMLbgB/twnfZ/EEAGg==
+"@shikijs/engine-javascript@3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@shikijs/engine-javascript/-/engine-javascript-3.0.0.tgz#e55423e09e27d1a33365f3ea7742609e81e25333"
+  integrity sha512-zoB10hTfvk1iZk1ldt6VaF+0iucQL+4TtSvTdTu5MhOeLPLEf5nZ8Wz6uxlp99y627OLalYa2z4W0iTTwb6oyA==
   dependencies:
-    "@shikijs/types" "2.3.2"
-    "@shikijs/vscode-textmate" "^10.0.1"
+    "@shikijs/types" "3.0.0"
+    "@shikijs/vscode-textmate" "^10.0.2"
     oniguruma-to-es "^3.1.0"
 
-"@shikijs/engine-oniguruma@2.3.2":
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/@shikijs/engine-oniguruma/-/engine-oniguruma-2.3.2.tgz#42e64b7bbbaec5e903b12718dde1f1e1738a9c66"
-  integrity sha512-vikMY1TroyZXUHIXbMnvY/mjtOxMn+tavcfAeQPgWS9FHcgFSUoEtywF5B5sOLb9NXb8P2vb7odkh3nj15/00A==
+"@shikijs/engine-oniguruma@3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@shikijs/engine-oniguruma/-/engine-oniguruma-3.0.0.tgz#fcdae70f4a3e8539f8970f40bb63d0b93c1e7f4d"
+  integrity sha512-uM9lqwMrlPHPVcdpAN/4pAzTJah1pY7mi9f1MxG887SDkjF/tdiQK+5200Y8N5Hg125sewdMQ1K2agoAo8hDiA==
   dependencies:
-    "@shikijs/types" "2.3.2"
-    "@shikijs/vscode-textmate" "^10.0.1"
+    "@shikijs/types" "3.0.0"
+    "@shikijs/vscode-textmate" "^10.0.2"
 
-"@shikijs/langs@2.3.2":
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/@shikijs/langs/-/langs-2.3.2.tgz#a716ac528dea9e927d7088102a132c153f8a161b"
-  integrity sha512-UqI6bSxFzhexIJficZLKeB1L2Sc3xoNiAV0yHpfbg5meck93du+EKQtsGbBv66Ki53XZPhnR/kYkOr85elIuFw==
+"@shikijs/langs@3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@shikijs/langs/-/langs-3.0.0.tgz#77b57131c36c99e0f31b4dd63aa613df33c8bc37"
+  integrity sha512-HBsZAukiYz7k3hzttPWa0en3PABEwK3cpxcAcERRwvwuKc5pn0Y+yPxAIYZtN9cFdtNqrbFJNhfcEu/xbG1u/A==
   dependencies:
-    "@shikijs/types" "2.3.2"
+    "@shikijs/types" "3.0.0"
 
-"@shikijs/themes@2.3.2":
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/@shikijs/themes/-/themes-2.3.2.tgz#c117d826ce22899dea802499a7ad5a99c2de0446"
-  integrity sha512-QAh7D/hhfYKHibkG2tti8vxNt3ekAH5EqkXJeJbTh7FGvTCWEI7BHqNCtMdjFvZ0vav5nvUgdvA7/HI7pfsB4w==
+"@shikijs/themes@3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@shikijs/themes/-/themes-3.0.0.tgz#678203802fc4ca763d4f46619c70f4f3f18636a5"
+  integrity sha512-mz63nyVB5nXWsv5H2hifDFIThZEJ/cJhMq1/+0JjMdOuuBq2H2D1Fn8UM5yzUtEvap/ipRltv381+hsHZFs4ug==
   dependencies:
-    "@shikijs/types" "2.3.2"
+    "@shikijs/types" "3.0.0"
 
-"@shikijs/types@2.3.2":
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/@shikijs/types/-/types-2.3.2.tgz#d273d19a7b0c23445e07c0370f127a66400d1eb8"
-  integrity sha512-CBaMY+a3pepyC4SETi7+bSzO0f6hxEQJUUuS4uD7zppzjmrN4ZRtBqxaT+wOan26CR9eeJ5iBhc4qvWEwn7Eeg==
+"@shikijs/types@3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@shikijs/types/-/types-3.0.0.tgz#8ab7ed0510a2d2184db846811a37d617728913eb"
+  integrity sha512-kh/xgZHxI6m9trVvPw+C47jyVHx190r0F5gkF+VO5vYB54UtcoPJe66dzZmK7GbJbzmtGEGbOwct/jsoPjjUqg==
   dependencies:
-    "@shikijs/vscode-textmate" "^10.0.1"
+    "@shikijs/vscode-textmate" "^10.0.2"
     "@types/hast" "^3.0.4"
 
-"@shikijs/vscode-textmate@^10.0.1":
-  version "10.0.1"
-  resolved "https://registry.yarnpkg.com/@shikijs/vscode-textmate/-/vscode-textmate-10.0.1.tgz#d06d45b67ac5e9b0088e3f67ebd3f25c6c3d711a"
-  integrity sha512-fTIQwLF+Qhuws31iw7Ncl1R3HUDtGwIipiJ9iU+UsDUwMhegFcQKQHd51nZjb7CArq0MvON8rbgCGQYWHUKAdg==
+"@shikijs/vscode-textmate@^10.0.2":
+  version "10.0.2"
+  resolved "https://registry.yarnpkg.com/@shikijs/vscode-textmate/-/vscode-textmate-10.0.2.tgz#a90ab31d0cc1dfb54c66a69e515bf624fa7b2224"
+  integrity sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==
 
 "@sigstore/bundle@^3.1.0":
   version "3.1.0"
@@ -15781,18 +15779,18 @@ shelljs@^0.8.5:
     interpret "^1.0.0"
     rechoir "^0.6.2"
 
-shiki@^2.0.0:
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/shiki/-/shiki-2.3.2.tgz#d13bae8403c8aec11907185b4d96746b317cf539"
-  integrity sha512-UZhz/gsUz7DHFbQBOJP7eXqvKyYvMGramxQiSDc83M/7OkWm6OdVHAReEc3vMLh6L6TRhgL9dvhXz9XDkCDaaw==
+shiki@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/shiki/-/shiki-3.0.0.tgz#3f9007a475da0aa92820c4f32ec59a7b8f0673a9"
+  integrity sha512-x6MMdYN9auPGx7kMFtyKbaj65eCdetfrfkvQZwqisZLnGMnAZsZxOpcWD0ElvLPFWHOSMukVyN9Opm7TxQjnZA==
   dependencies:
-    "@shikijs/core" "2.3.2"
-    "@shikijs/engine-javascript" "2.3.2"
-    "@shikijs/engine-oniguruma" "2.3.2"
-    "@shikijs/langs" "2.3.2"
-    "@shikijs/themes" "2.3.2"
-    "@shikijs/types" "2.3.2"
-    "@shikijs/vscode-textmate" "^10.0.1"
+    "@shikijs/core" "3.0.0"
+    "@shikijs/engine-javascript" "3.0.0"
+    "@shikijs/engine-oniguruma" "3.0.0"
+    "@shikijs/langs" "3.0.0"
+    "@shikijs/themes" "3.0.0"
+    "@shikijs/types" "3.0.0"
+    "@shikijs/vscode-textmate" "^10.0.2"
     "@types/hast" "^3.0.4"
 
 side-channel-list@^1.0.0:

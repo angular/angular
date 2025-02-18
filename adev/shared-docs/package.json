@@ -23,7 +23,7 @@
     "jsdom": "~26.0.0",
     "marked": "~15.0.0",
     "mermaid": "^11.0.0",
-    "shiki": "^2.0.0"
+    "shiki": "^3.0.0"
   },
   "exports": {
     "./styles/*": {
