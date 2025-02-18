@@ -301,6 +301,30 @@ describe('control flow - if', () => {
     expect(fixture.nativeElement.textContent.trim()).toBe('42');
   });
 
+  it('should support a condition with the a binary expression with the in keyword', () => {
+    @Component({
+      standalone: true,
+      template: `
+          @if (key in {foo: 'bar'}) {
+            has {{key}}
+          } @else {
+            no {{key}}
+          }
+        `,
+    })
+    class TestComponent {
+      key: string | number = 'foo';
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent.trim()).toBe('has foo');
+
+    fixture.componentInstance.key = 42;
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent.trim()).toBe('no 42');
+  });
+
   describe('content projection', () => {
     it('should project an @if with a single root node into the root node slot', () => {
       @Component({
