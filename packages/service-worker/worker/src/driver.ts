@@ -700,7 +700,14 @@ export class Driver implements Debuggable, UpdateSource {
     //
     // NOTE: For navigation requests, we care about the `resultingClientId`. If it is undefined or
     //       the empty string (which is the case for sub-resource requests), we look at `clientId`.
-    const clientId = event.resultingClientId || event.clientId;
+    //
+    // NOTE: If a request is a worker script, we should use the `clientId`, as worker is a part
+    //       of requesting client.
+    const isWorkerScriptRequest =
+      event.request.destination === 'worker' && event.resultingClientId && event.clientId;
+    const clientId = isWorkerScriptRequest
+      ? event.clientId
+      : event.resultingClientId || event.clientId;
     if (clientId) {
       // Check if there is an assigned client id.
       if (this.clientVersionMap.has(clientId)) {
@@ -727,6 +734,18 @@ export class Driver implements Debuggable, UpdateSource {
           }
 
           appVersion = this.lookupVersionByHash(this.latestHash, 'assignVersion');
+        }
+
+        if (isWorkerScriptRequest) {
+          if (!this.clientVersionMap.has(event.resultingClientId)) {
+            // New worker hasn't been seen before; set this client to requesting client version
+            this.clientVersionMap.set(event.resultingClientId, hash);
+            await this.sync();
+          } else if (this.clientVersionMap.get(event.resultingClientId)! !== hash) {
+            throw new Error(
+              `Version mismatch between worker client ${event.resultingClientId} and requesting client ${clientId}`,
+            );
+          }
         }
 
         // TODO: make sure the version is valid.
@@ -761,6 +780,17 @@ export class Driver implements Debuggable, UpdateSource {
         // First validate the current state.
         if (this.latestHash === null) {
           throw new Error(`Invariant violated (assignVersion): latestHash was null`);
+        }
+
+        if (isWorkerScriptRequest) {
+          if (!this.clientVersionMap.has(event.resultingClientId)) {
+            // New worker hasn't been seen before; set this client to latest hash as well
+            this.clientVersionMap.set(event.resultingClientId, this.latestHash);
+          } else if (this.clientVersionMap.get(event.resultingClientId)! !== this.latestHash) {
+            throw new Error(
+              `Version mismatch between worker client ${event.resultingClientId} and requesting client ${clientId}`,
+            );
+          }
         }
 
         // Pin this client ID to the current latest version, indefinitely.
