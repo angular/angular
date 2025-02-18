@@ -1338,13 +1338,23 @@ class TcbUnclaimedInputsOp extends TcbOp {
         continue;
       }
 
-      const expr = widenBinding(tcbExpression(binding.value, this.tcb, this.scope), this.tcb);
+      let expr = widenBinding(tcbExpression(binding.value, this.tcb, this.scope), this.tcb);
+      const is2WayBinding = binding.type === BindingType.TwoWay;
 
-      if (this.tcb.env.config.checkTypeOfDomBindings && isPropertyBinding) {
+      if (
+        (this.tcb.env.config.checkTypeOfDomBindings && isPropertyBinding) ||
+        // We specifically enable type checking for two-way bindings on control elements.
+        (is2WayBinding && this.isControlBinding(binding))
+      ) {
         if (binding.name !== 'style' && binding.name !== 'class') {
           if (elId === null) {
             elId = this.scope.resolve(this.element);
           }
+
+          if (is2WayBinding && this.tcb.env.config.allowSignalsInTwoWayBindings) {
+            expr = unwrapWritableSignal(expr, this.tcb);
+          }
+
           // A direct binding to a property.
           const propertyName = ATTR_TO_PROP.get(binding.name) ?? binding.name;
           const prop = ts.factory.createElementAccessExpression(
@@ -1370,6 +1380,17 @@ class TcbUnclaimedInputsOp extends TcbOp {
     }
 
     return null;
+  }
+
+  // To enable typechecking on 2way bindings for input/select/textarea elements
+  private isControlBinding(binding: TmplAstBoundAttribute): boolean {
+    const isInputValueBinding =
+      this.element.name === 'input' &&
+      ['value', 'valueAsNumber', 'valueAsDate', 'checked', 'files'].includes(binding.name);
+    const isOtherValueBinding =
+      (this.element.name === 'textarea' || this.element.name === 'select') &&
+      binding.name === 'value';
+    return isInputValueBinding || isOtherValueBinding;
   }
 }
 
