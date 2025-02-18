@@ -95,44 +95,22 @@ export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
 }
 
 function toInputRefArray<T>(map: DirectiveDef<T>['inputs']): ComponentFactory<T>['inputs'] {
-  const result: ComponentFactory<T>['inputs'] = [];
-  for (const publicName in map) {
-    if (map.hasOwnProperty(publicName)) {
-      const value = map[publicName];
-
-      if (value !== undefined) {
-        const [propName, flags, transform] = value;
-        const inputData: ComponentFactory<T>['inputs'][0] = {
-          propName: propName,
-          templateName: publicName,
-          isSignal: (flags & InputFlags.SignalBased) !== 0,
-        };
-
-        if (transform) {
-          inputData.transform = transform;
-        }
-
-        result.push(inputData);
-      }
+  return Object.keys(map).map((name) => {
+    const [propName, flags, transform] = map[name];
+    const inputData: ComponentFactory<T>['inputs'][0] = {
+      propName: propName,
+      templateName: name,
+      isSignal: (flags & InputFlags.SignalBased) !== 0,
+    };
+    if (transform) {
+      inputData.transform = transform;
     }
-  }
-  return result;
+    return inputData;
+  });
 }
 
 function toOutputRefArray<T>(map: DirectiveDef<T>['outputs']): ComponentFactory<T>['outputs'] {
-  const result: ComponentFactory<T>['outputs'] = [];
-  for (const publicName in map) {
-    if (map.hasOwnProperty(publicName)) {
-      const value = map[publicName];
-      if (value !== undefined) {
-        result.push({
-          propName: value,
-          templateName: publicName,
-        });
-      }
-    }
-  }
-  return result;
+  return Object.keys(map).map((name) => ({propName: map[name], templateName: name}));
 }
 
 function verifyNotAnOrphanComponent(componentDef: ComponentDef<unknown>) {
