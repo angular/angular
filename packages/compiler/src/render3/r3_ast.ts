@@ -420,7 +420,7 @@ export class SwitchBlock extends BlockNode implements Node {
 
 export class SwitchBlockCase extends BlockNode implements Node {
   constructor(
-    public expression: AST | null,
+    public expressions: AST[] | null,
     public children: Node[],
     sourceSpan: ParseSourceSpan,
     startSourceSpan: ParseSourceSpan,
