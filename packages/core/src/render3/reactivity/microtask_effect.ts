@@ -121,7 +121,6 @@ export function microtaskEffect(
   effectFn: (onCleanup: EffectCleanupRegisterFn) => void,
   options?: CreateEffectOptions,
 ): EffectRef {
-  performanceMarkFeature('NgSignals');
   ngDevMode &&
     assertNotInReactiveContext(
       effect,

@@ -540,7 +540,6 @@
   "optionsReducer",
   "parseAndConvertInputsForDefinition",
   "parseAndConvertOutputsForDefinition",
-  "performanceMarkFeature",
   "pickAsyncValidators",
   "pickValidators",
   "platformBrowser",
