@@ -995,6 +995,22 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
   }
 
   /**
+   * Marks the control and all its descendant controls as `dirty`.
+   * @see {@link markAsDirty()}
+   *
+   * @param opts Configuration options that determine how the control propagates changes
+   * and emits events after marking is applied.
+   * * `emitEvent`: When true or not supplied (the default), the `events`
+   * observable emits a `PristineChangeEvent` with the `pristine` property being `false`.
+   * When false, no events are emitted.
+   */
+  markAllAsDirty(opts: {emitEvent?: boolean} = {}): void {
+    this.markAsDirty({onlySelf: true, emitEvent: opts.emitEvent, sourceControl: this});
+
+    this._forEachChild((control: AbstractControl) => control.markAllAsDirty(opts));
+  }
+
+  /**
    * Marks the control and all its descendant controls as `touched`.
    * @see {@link markAsTouched()}
    *
