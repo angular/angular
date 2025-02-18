@@ -10,7 +10,7 @@
     {
       "name": "allowed-hosts",
       "type": "array",
-      "description": "List of hosts that are allowed to access the dev server. This option has no effect when using the 'application' or other esbuild-based builders."
+      "description": "List of hosts that are allowed to access the dev server."
     },
     {
       "name": "browser-target",
@@ -29,7 +29,7 @@
       "aliases": [
         "c"
       ],
-      "description": "One or more named builder configurations as a comma-separated list as specified in the \"configurations\" section in angular.json.\nThe builder uses the named configurations to run the given target.\nFor more information, see https://angular.io/guide/workspace-config#alternate-build-configurations."
+      "description": "One or more named builder configurations as a comma-separated list as specified in the \"configurations\" section in angular.json.\nThe builder uses the named configurations to run the given target.\nFor more information, see https://angular.dev/reference/configs/workspace-config#alternate-build-configurations."
     },
     {
       "name": "disable-host-check",
