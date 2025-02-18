@@ -157,7 +157,6 @@ export function effect(
     return microtaskEffect(effectFn, options);
   }
 
-  performanceMarkFeature('NgSignals');
   ngDevMode &&
     assertNotInReactiveContext(
       effect,
