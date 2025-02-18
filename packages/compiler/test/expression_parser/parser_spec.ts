@@ -1052,10 +1052,6 @@ describe('parser', () => {
       checkInterpolation(`{{foo.split('\\\\\\\\\\\\')}}`, `{{ foo.split("\\\\\\") }}`);
     });
 
-    it('should not parse interpolation with mismatching quotes', () => {
-      expect(parseInterpolation(`{{ "{{a}}' }}`)).toBeNull();
-    });
-
     it('should parse prefix/suffix with multiple interpolation', () => {
       const originalExp = 'before {{ a }} middle {{ b }} after';
       const ast = parseInterpolation(originalExp)!.ast;
@@ -1096,6 +1092,12 @@ describe('parser', () => {
       expect(ast.strings).toEqual(['', '']);
       expect(ast.expressions.length).toEqual(1);
       expect(ast.expressions[0].name).toEqual('a');
+    });
+
+    it('should report unterminated quote in interpolation', () => {
+      expectError(parseInterpolation(`{{ 123 + '123 }}`)!, 'Unterminated quote at column 11 in');
+      expectError(parseInterpolation(`{{ " }}`)!, 'Unterminated quote at column 5 in');
+      expectError(parseInterpolation('{{ foo || ` }}')!, 'Unterminated quote at column 12 in');
     });
 
     describe('comments', () => {
