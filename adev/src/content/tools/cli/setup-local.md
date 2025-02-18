@@ -37,11 +37,29 @@ See [Angular's version compatibility](reference/versions) guide for more informa
 
 To install the Angular CLI, open a terminal window and run the following command:
 
-<docs-code language="shell">
+<docs-code-multifile>
+   <docs-code
+     header="npm"
+     >
+     npm install -g @angular/cli
+     </docs-code>
+   <docs-code
+     header="pnpm"
+     >
+     pnpm install -g @angular/cli
+     </docs-code>
+   <docs-code
+     header="yarn"
+     >
+     yarn global add @angular/cli
+     </docs-code>
+   <docs-code
+     header="bun"
+     >
+     bun install -g @angular/cli
+     </docs-code>
 
-npm install -g @angular/cli
-
-</docs-code>
+ </docs-code-multifile>
 
 ### Powershell execution policy
 
@@ -58,14 +76,32 @@ Carefully read the message displayed after executing the command and follow the 
 
 ### Unix permissions
 
-On some Unix-like setups, global npm scripts may be owned by the root user, so to the above command may fail with a permission error.
+On some Unix-like setups, global  scripts may be owned by the root user, so to the above command may fail with a permission error.
 Run with `sudo` to execute the command as the root user and enter your password when prompted:
 
-<docs-code language="sh">
+<docs-code-multifile>
+   <docs-code
+     header="npm"
+     >
+     sudo npm install -g @angular/cli
+     </docs-code>
+   <docs-code
+     header="pnpm"
+     >
+     sudo pnpm install -g @angular/cli
+     </docs-code>
+   <docs-code
+     header="yarn"
+     >
+     sudo yarn global add @angular/cli
+     </docs-code>
+   <docs-code
+     header="bun"
+     >
+     sudo bun install -g @angular/cli
+     </docs-code>
 
-sudo npm install -g @angular/cli
-
-</docs-code>
+ </docs-code-multifile>
 
 Make sure you understand the implications of running commands as root.
 
