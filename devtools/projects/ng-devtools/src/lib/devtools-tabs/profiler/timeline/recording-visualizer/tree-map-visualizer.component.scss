@@ -1,3 +1,5 @@
+@use '../../../../../styles/theme' as theme;
+
 .web-tree {
   height: calc(100% - 25px);
   width: calc(100% - 25px);
@@ -15,7 +17,7 @@
   }
 }
 
-:host-context(.dark-theme) {
+@include theme.dark-theme {
   ::ng-deep {
     .webtreemap-node {
       background: #202124;

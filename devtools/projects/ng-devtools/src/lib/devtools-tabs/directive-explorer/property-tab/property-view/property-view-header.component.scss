@@ -1,3 +1,5 @@
+@use '../../../../../styles/theme' as theme;
+
 mat-toolbar {
   padding-left: 10px;
   justify-content: space-between;
@@ -32,7 +34,7 @@ button {
   }
 }
 
-:host-context(.dark-theme) {
+@include theme.dark-theme {
   button {
     color: #fff;
   }

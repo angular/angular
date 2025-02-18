@@ -1,4 +1,5 @@
 @use '@angular/material' as mat;
+@use '../../../../styles/theme' as theme;
 
 h2 {
   font-size: 0.875rem;
@@ -82,7 +83,7 @@ tr.example-detail-row {
   opacity: 0.5;
 }
 
-:host-context(.dark-theme) {
+@include theme.dark-theme {
   .providers-title {
     color: #ffffff;
   }
