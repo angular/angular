@@ -133,6 +133,7 @@ groups:
         - devversion
         - kirjs
         - JoostK
+        - mmalerba
 
   # =========================================================
   #  Framework: General (most code in our packages)
@@ -175,6 +176,7 @@ groups:
         - ~jelbourn
         - thePunderWoman
         - pkozlowski-opensource
+        - mmalerba
 
   # =========================================================
   #  Framework: Security-sensitive files which require extra review
@@ -285,6 +287,7 @@ groups:
         - mgechev
         - MarkTechson
         - kirjs
+        - mmalerba
 
   # =========================================================
   #  Angular DevTools
@@ -391,6 +394,7 @@ groups:
         - thePunderWoman
         - pkozlowski-opensource
         - kirjs
+        - mmalerba
         - ~iteriani
         - ~tbondwilkinson
         - ~rahatarmanahmed
@@ -420,6 +424,7 @@ groups:
         - ~jelbourn
         - thePunderWoman
         - pkozlowski-opensource
+        - mmalerba
     reviews:
       request: 2 # Request reviews from 2 people
       required: 1 # Require that 1 person approve
