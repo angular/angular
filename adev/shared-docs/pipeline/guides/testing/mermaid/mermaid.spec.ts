@@ -20,9 +20,24 @@ describe('markdown to html', () => {
     // Extend the timeout interval tyo 15 seconds because we were seeing issues with not being able to run marked
     // within the default timeframe.
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
-    const markdownContent = await readFile(runfiles.resolvePackageRelative('./mermaid.md'), {
-      encoding: 'utf-8',
-    });
+
+    // This test was flaky, 1st attemp to fix it is by inlining the markdown content
+    const markdownContent = `
+\`\`\`mermaid
+    graph TD;
+      A-->B;
+      A-->C;
+      B-->D;
+      C-->D;
+\`\`\`
+
+\`\`\`mermaid
+  pie title Pets adopted by volunteers
+      "Dogs" : 386
+      "Cats" : 85
+      "Rats" : 15
+\`\`\`
+    `;
 
     marked.use({
       async: true,
