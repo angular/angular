@@ -409,25 +409,6 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
 }
 
 class OutletInjector implements Injector {
-  /**
-   * This injector has a special handing for the `ActivatedRoute` and
-   * `ChildrenOutletContexts` tokens: it returns corresponding values for those
-   * tokens dynamically. This behavior is different from the regular injector logic,
-   * when we initialize and store a value, which is later returned for all inject
-   * requests.
-   *
-   * In some cases (e.g. when using `@defer`), this dynamic behavior requires special
-   * handling. This function allows to identify an instance of the `OutletInjector` and
-   * create an instance of it without referring to the class itself (so this logic can
-   * be invoked from the `core` package). This helps to retain dynamic behavior for the
-   * mentioned tokens.
-   *
-   * Note: it's a temporary solution and we should explore how to support this case better.
-   */
-  private __ngOutletInjector(parentInjector: Injector) {
-    return new OutletInjector(this.route, this.childContexts, parentInjector, this.outletData);
-  }
-
   constructor(
     private route: ActivatedRoute,
     private childContexts: ChildrenOutletContexts,
