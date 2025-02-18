@@ -13,7 +13,7 @@
 import {ZoneType} from '../zone-impl';
 
 const _global: any =
-  (typeof window === 'object' && window) || (typeof self === 'object' && self) || global;
+  (typeof window === 'object' && window) || (typeof self === 'object' && self) || globalThis.global;
 
 export function patchWtf(Zone: ZoneType): void {
   interface Wtf {
