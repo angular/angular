@@ -769,7 +769,7 @@ export interface FormRecord<TControl> {
    * See `FormGroup#setValue` for additional information.
    */
   setValue(
-    value: {[key: string]: ɵValue<TControl>},
+    value: {[key: string]: ɵRawValue<TControl>},
     options?: {
       onlySelf?: boolean;
       emitEvent?: boolean;
