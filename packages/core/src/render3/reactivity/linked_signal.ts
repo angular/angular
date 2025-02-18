@@ -55,8 +55,6 @@ export function linkedSignal<S, D>(
     | (() => D),
   options?: {equal?: ValueEqualityFn<D>},
 ): WritableSignal<D> {
-  performanceMarkFeature('NgSignals');
-
   if (typeof optionsOrComputation === 'function') {
     const getter = createLinkedSignal<D, D>(
       optionsOrComputation,
