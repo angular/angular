@@ -6,7 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {SIGNAL} from '@angular/core/primitives/signals';
+import {SIGNAL, ɵTYPE_MARKER} from '@angular/core/primitives/signals';
+
+/** Extracts the inner type of a Signal. */
+export type SignalType<T extends SignalFn<unknown>> = T[typeof ɵTYPE_MARKER];
+
+/** Function type definition for a `Signal`. */
+export interface SignalFn<T> {
+  (): SignalType<this>;
+  [ɵTYPE_MARKER]: T;
+}
 
 /**
  * A reactive value which notifies consumers of any changes.
@@ -16,9 +25,7 @@ import {SIGNAL} from '@angular/core/primitives/signals';
  *
  * Ordinary values can be turned into `Signal`s with the `signal` function.
  */
-export type Signal<T> = (() => T) & {
-  [SIGNAL]: unknown;
-};
+export type Signal<T> = SignalFn<T> & { [SIGNAL]: unknown; };
 
 /**
  * Checks if the given `value` is a reactive `Signal`.

@@ -47,6 +47,7 @@ export {
   setPostSignalSetFn,
   signalSetFn,
   signalUpdateFn,
+  ɵTYPE_MARKER,
 } from './src/signal';
 export {Watch, WatchCleanupFn, WatchCleanupRegisterFn, createWatch} from './src/watch';
 export {setAlternateWeakRefImpl} from './src/weak_ref';
