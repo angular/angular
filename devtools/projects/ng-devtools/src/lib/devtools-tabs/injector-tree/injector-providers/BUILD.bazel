@@ -22,7 +22,7 @@ ng_module(
         ":injector_providers_component_styles",
     ],
     deps = [
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection:resolution_path",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection/resolution-path",
         "//devtools/projects/protocol",
         "//packages/animations",
         "//packages/common",

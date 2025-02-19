@@ -1,0 +1,3 @@
+@for (node of reversedPath(); track node.id) {
+  <div [class]="['node', NODE_TYPE_CLASS_MAP[node.type]]">{{ node.name }}</div>
+}

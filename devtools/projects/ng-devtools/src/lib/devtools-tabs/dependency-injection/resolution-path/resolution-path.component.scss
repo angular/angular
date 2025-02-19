@@ -1,0 +1,85 @@
+@use '../../../../styles/theme' as theme;
+
+/* TODO: Extract */
+$darkBg: #1a1a1a;
+$lightBg: #f3f3f3;
+
+:host {
+  display: flex;
+  flex-wrap: wrap;
+  background: $lightBg;
+  border-top: 1px solid black;
+  padding: 0.5rem 0.5rem 0.25rem 0.5rem;
+
+  .node {
+    position: relative;
+    border-radius: 5px;
+    background: #c4c4c4;
+    color: black;
+    padding: 4px 25px 4px 15px;
+    margin-bottom: 0.25rem;
+    font-size: 0.75rem;
+    height: 28px;
+    box-sizing: border-box;
+
+    &.type-env {
+      background: #f9c2c5;
+    }
+
+    &.type-element {
+      background: #a6d5a9;
+    }
+
+    &.type-imported {
+      background: #c79eff;
+    }
+
+    &.type-hidden {
+      display: none;
+    }
+
+    &:last-of-type {
+      padding-right: 15px;
+    }
+
+    &::after,
+    &::before {
+      position: absolute;
+      transform: rotate(-45deg);
+      transform-origin: 0 100%;
+    }
+
+    &:not(:first-of-type)::after {
+      content: '';
+      background: inherit;
+      width: 19px;
+      height: 18px;
+      top: calc(50% - 5px);
+      left: 2px;
+    }
+
+    &:not(:last-of-type)::before {
+      content: '';
+      background: $lightBg;
+      width: 21px;
+      height: 21px;
+      top: calc(50% - 6px);
+      right: -19px;
+    }
+
+    &:not(:first-of-type) {
+      margin-left: 12px;
+    }
+
+    &:not(:last-of-type) {
+      margin-right: -14px;
+    }
+  }
+}
+
+@include theme.dark-theme {
+  :host,
+  .node:not(:last-of-type)::before {
+    background: #1a1a1a;
+  }
+}

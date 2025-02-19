@@ -294,8 +294,12 @@ const getDependenciesForDirective = (
       // (2)
       // We slice the import path to remove the first element because this is the same
       // injector as the last injector in the resolution path.
-      ...(foundProvider?.importPath ?? []).slice(1).map((node) => {
-        return {type: 'imported-module', name: valueToLabel(node), id: getInjectorId()};
+      ...(foundProvider?.importPath ?? []).slice(1).map((node): SerializedInjector => {
+        return {
+          type: 'imported-module',
+          name: valueToLabel(node),
+          id: getInjectorId(),
+        };
       }),
     ];
 
