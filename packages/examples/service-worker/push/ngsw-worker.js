@@ -8,7 +8,7 @@
 
 // Mock `ngsw-worker.js` used for testing the examples.
 // This code ensures that the service worker can handle range requests,
-//allowing video seeking to work correctly when videos are delivered by the service worker. -ZE
+//allowing video seeking to work correctly when videos are delivered by the service worker.-ZE
 self.addEventListener('fetch', event => {
   const request = event.request;
   if (request.headers.get('range')) {
