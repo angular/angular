@@ -1016,6 +1016,7 @@ class _Tokenizer {
     // Find the end of the interpolation, ignoring content inside quotes.
     const expressionStart = this._cursor.clone();
     let inQuote: number | null = null;
+    let leftBraces: number = 0;
     let inComment = false;
     while (
       this._cursor.peek() !== chars.$EOF &&
@@ -1033,7 +1034,7 @@ class _Tokenizer {
         return;
       }
 
-      if (inQuote === null) {
+      if (inQuote === null && leftBraces === 0) {
         if (this._attemptStr(this._interpolationConfig.end)) {
           // We are not in a string, and we hit the end interpolation marker
           parts.push(this._getProcessedChars(expressionStart, current));
@@ -1054,9 +1055,15 @@ class _Tokenizer {
       } else if (char === inQuote) {
         // Exiting the current quoted string
         inQuote = null;
+      } else if (chars.isRightBrace(char) && leftBraces !== 0) {
+        // Exiting the current brace
+        leftBraces--;
       } else if (!inComment && inQuote === null && chars.isQuote(char)) {
         // Entering a new quoted string
         inQuote = char;
+      } else if (!inComment && inQuote === null && chars.isLeftBrace(char)) {
+        // Entering a new brace
+        leftBraces++;
       }
     }
 
