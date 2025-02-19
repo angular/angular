@@ -209,6 +209,12 @@ export class Driver implements Debuggable, UpdateSource {
       return;
     }
 
+    // Calls range request handler
+    if (req.headers.has('range')) {
+      event.respondWith(this.handleRangeRequest(req));
+      return;
+    }
+
     // The only thing that is served unconditionally is the debug page.
     if (requestUrlObj.path === this.ngswStatePath) {
       // Allow the debugger to handle the request, but don't affect SW state in any other way.
@@ -260,6 +266,63 @@ export class Driver implements Debuggable, UpdateSource {
     // fail (and result in `state` being set to `SAFE_MODE`), but even in that case the
     // SW will still deliver a response.
     event.respondWith(this.handleFetch(event));
+  }
+
+  // function to handle Range requests
+  private async handleRangeRequest(req: Request): Promise<Response> {
+    try {
+      const response = await fetch(req);
+      const contentType = response.headers.get('Content-Type');
+
+      // Only apply logic to content that is a video
+      if (!contentType || !contentType.startsWith('video/')) {
+        return response;
+      }
+
+      const rangeHeader = req.headers.get('range');
+      if (!rangeHeader) {
+        return new Response(null, {
+          status: 416,
+          statusText: 'Range Not Satisfiable',
+        });
+      }
+
+      const rangeMatch = /bytes=(\d+)-(\d+)?/.exec(rangeHeader);
+      if (!rangeMatch) {
+        return new Response(null, {
+          status: 416,
+          statusText: 'Range Not Satisfiable',
+        });
+      }
+
+      const start = Number(rangeMatch[1]);
+      const end = rangeMatch[2] ? Number(rangeMatch[2]) : undefined;
+
+      const buffer = await response.arrayBuffer();
+      const contentLength = buffer.byteLength;
+
+      const chunk = buffer.slice(start, end ? end + 1 : contentLength);
+      const chunkLength = chunk.byteLength;
+
+      const headers = new Headers(response.headers);
+      headers.set(
+        'Content-Range',
+        `bytes ${start}-${end ? end : contentLength - 1}/${contentLength}`,
+      );
+      headers.set('Content-Length', chunkLength.toString());
+      headers.set('Accept-Ranges', 'bytes');
+
+      return new Response(chunk, {
+        status: 206,
+        statusText: 'Partial Content',
+        headers: headers,
+      });
+    } catch (error) {
+      return new Response(null, {
+        status: 500,
+        statusText: 'Internal Server Error',
+      });
+    }
   }
 
   /**
