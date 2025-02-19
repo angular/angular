@@ -419,7 +419,11 @@ class DefaultDomRenderer2 implements Renderer2 {
     if (typeof target === 'string') {
       target = getDOM().getGlobalEventTarget(this.doc, target);
       if (!target) {
-        throw new Error(`Unsupported event target ${target} for event ${event}`);
+        throw new RuntimeError(
+          RuntimeErrorCode.UNSUPPORTED_EVENT_TARGET,
+          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+            `Unsupported event target ${target} for event ${event}`,
+        );
       }
     }
 
