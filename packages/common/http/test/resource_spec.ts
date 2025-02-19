@@ -165,6 +165,23 @@ describe('httpResource', () => {
     expect(res.value()).toEqual('[1,2,3]');
   });
 
+  it('should allow defining an equality function', async () => {
+    const backend = TestBed.inject(HttpTestingController);
+    const res = httpResource<number>('/data', {
+      injector: TestBed.inject(Injector),
+      equal: (_a, _b) => true,
+    });
+    TestBed.flushEffects();
+    const req = backend.expectOne('/data');
+    req.flush(1);
+
+    await TestBed.inject(ApplicationRef).whenStable();
+    expect(res.value()).toEqual(1);
+
+    res.value.set(5);
+    expect(res.value()).toBe(1); // equality blocked writes
+  });
+
   it('should support text responses', async () => {
     const backend = TestBed.inject(HttpTestingController);
     const res = httpResource.text(
