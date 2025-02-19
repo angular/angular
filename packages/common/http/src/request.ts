@@ -141,13 +141,12 @@ export class HttpRequest<T> {
   /**
    * Outgoing headers for this request.
    */
-  // TODO(issue/24571): remove '!'.
-  readonly headers!: HttpHeaders;
+  readonly headers?: HttpHeaders;
 
   /**
    * Shared and mutable context that can be used by interceptors
    */
-  readonly context!: HttpContext;
+  readonly context?: HttpContext;
 
   /**
    * Whether this request should be made in a way that exposes progress events.
