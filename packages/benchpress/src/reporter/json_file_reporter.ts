@@ -46,9 +46,11 @@ export class JsonFileReporter extends Reporter {
     @Inject(Options.NOW) private _now: Function,
   ) {
     super();
+
+    this.textReporter = new TextReporterBase(this._columnWidth, this._description);
   }
 
-  private textReporter = new TextReporterBase(this._columnWidth, this._description);
+  private textReporter: TextReporterBase;
 
   override reportMeasureValues(measureValues: MeasureValues): Promise<any> {
     return Promise.resolve(null);
