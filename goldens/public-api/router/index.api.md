@@ -211,6 +211,9 @@ export function convertToParamMap(params: Params): ParamMap;
 export function createUrlTreeFromSnapshot(relativeTo: ActivatedRouteSnapshot, commands: any[], queryParams?: Params | null, fragment?: string | null): UrlTree;
 
 // @public
+export const CUSTOM_ELEMENT_ANCHOR_TAG_NAMES: InjectionToken<readonly string[]>;
+
+// @public
 export type Data = {
     [key: string | symbol]: any;
 };
@@ -796,7 +799,7 @@ export type RouterHashLocationFeature = RouterFeature<RouterFeatureKind.RouterHa
 
 // @public
 class RouterLink implements OnChanges, OnDestroy {
-    constructor(router: Router, route: ActivatedRoute, tabIndexAttribute: string | null | undefined, renderer: Renderer2, el: ElementRef, locationStrategy?: LocationStrategy | undefined);
+    constructor(router: Router, route: ActivatedRoute, tabIndexAttribute: string | null | undefined, renderer: Renderer2, el: ElementRef, locationStrategy?: LocationStrategy | undefined, customElementAnchorTagNames?: readonly string[]);
     fragment?: string;
     href: string | null;
     info?: unknown;
@@ -828,7 +831,7 @@ class RouterLink implements OnChanges, OnDestroy {
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLink, "[routerLink]", never, { "target": { "alias": "target"; "required": false; }; "queryParams": { "alias": "queryParams"; "required": false; }; "fragment": { "alias": "fragment"; "required": false; }; "queryParamsHandling": { "alias": "queryParamsHandling"; "required": false; }; "state": { "alias": "state"; "required": false; }; "info": { "alias": "info"; "required": false; }; "relativeTo": { "alias": "relativeTo"; "required": false; }; "preserveFragment": { "alias": "preserveFragment"; "required": false; }; "skipLocationChange": { "alias": "skipLocationChange"; "required": false; }; "replaceUrl": { "alias": "replaceUrl"; "required": false; }; "routerLink": { "alias": "routerLink"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<RouterLink, [null, null, { attribute: "tabindex"; }, null, null, null]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<RouterLink, [null, null, { attribute: "tabindex"; }, null, null, null, { optional: true; }]>;
 }
 export { RouterLink }
 export { RouterLink as RouterLinkWithHref }
