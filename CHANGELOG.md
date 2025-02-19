@@ -1,3 +1,20 @@
+<a name="19.1.7"></a>
+# 19.1.7 (2025-02-19)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e9f10eb4c9](https://github.com/angular/angular/commit/e9f10eb4c950692992098619b9628ecefd1b36ce) | fix | clean up `urlChanges` subscribers when root scope is destroyed ([#59703](https://github.com/angular/angular/pull/59703)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [16fc074689](https://github.com/angular/angular/commit/16fc074689d31ef6886c49525b020bc6c1529d0e) | fix | avoid crash in isolated transform operations ([#59869](https://github.com/angular/angular/pull/59869)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ec1e4c3d94](https://github.com/angular/angular/commit/ec1e4c3d9430f5ea4380252098d2b4b71d8a950f) | fix | Fix typing on `FormRecord`. ([#59993](https://github.com/angular/angular/pull/59993)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.1.6"></a>
 # 19.1.6 (2025-02-12)
 ### compiler
