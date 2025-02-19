@@ -226,7 +226,7 @@ type ResponseType = 'arraybuffer' | 'blob' | 'json' | 'text';
 type RawRequestType = (() => string | undefined) | (() => HttpResourceRequest | undefined);
 
 function makeHttpResourceFn<TRaw>(responseType: ResponseType) {
-  return function httpResourceRef<TResult = TRaw>(
+  return function httpResource<TResult = TRaw>(
     request: RawRequestType,
     options?: HttpResourceOptions<TResult, TRaw>,
   ): HttpResourceRef<TResult> {
