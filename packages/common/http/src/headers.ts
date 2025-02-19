@@ -23,8 +23,7 @@ export class HttpHeaders {
   /**
    * Internal map of lowercase header names to values.
    */
-  // TODO(issue/24571): remove '!'.
-  private headers!: Map<string, string[]>;
+  private headers: Map<string, string[]> = new Map();
 
   /**
    * Internal map of lowercased header names to the normalized
@@ -47,11 +46,9 @@ export class HttpHeaders {
   constructor(
     headers?: string | {[name: string]: string | number | (string | number)[]} | Headers,
   ) {
-    if (!headers) {
-      this.headers = new Map<string, string[]>();
-    } else if (typeof headers === 'string') {
+    if (!headers) return;
+    if (typeof headers === 'string') {
       this.lazyInit = () => {
-        this.headers = new Map<string, string[]>();
         headers.split('\n').forEach((line) => {
           const index = line.indexOf(':');
           if (index > 0) {
@@ -62,7 +59,6 @@ export class HttpHeaders {
         });
       };
     } else if (typeof Headers !== 'undefined' && headers instanceof Headers) {
-      this.headers = new Map<string, string[]>();
       headers.forEach((value: string, name: string) => {
         this.addHeaderEntry(name, value);
       });
@@ -71,7 +67,6 @@ export class HttpHeaders {
         if (typeof ngDevMode === 'undefined' || ngDevMode) {
           assertValidHeaders(headers);
         }
-        this.headers = new Map<string, string[]>();
         Object.entries(headers).forEach(([name, values]) => {
           this.setHeaderEntries(name, values);
         });
