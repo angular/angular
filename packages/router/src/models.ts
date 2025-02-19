@@ -59,7 +59,7 @@ export type OnSameUrlNavigation = 'reload' | 'ignore';
  * @see {@link CanActivateChildFn}
  * @see {@link CanDeactivateFn}
  * @see {@link ResolveFn}
- * @see {@link core/inject}
+ * @see [inject](/api/core/inject)
  * @publicApi
  */
 export type DeprecatedGuard = ProviderToken<any> | any;
