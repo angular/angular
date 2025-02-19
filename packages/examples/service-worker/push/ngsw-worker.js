@@ -7,8 +7,47 @@
  */
 
 // Mock `ngsw-worker.js` used for testing the examples.
-// Immediately takes over and unregisters itself.
-self.addEventListener('install', (evt) => evt.waitUntil(self.skipWaiting()));
-self.addEventListener('activate', (evt) =>
-  evt.waitUntil(self.clients.claim().then(() => self.registration.unregister())),
-);
+// This code ensures that the service worker can handle range requests,
+//allowing video seeking to work correctly when videos are delivered by the service worker. -ZE
+self.addEventListener('fetch', event => {
+  const request = event.request;
+  if (request.headers.get('range')) {
+    event.respondWith(handleRangeRequest(event));
+  } else {
+    event.respondWith(fetch(request));
+  }
+});
+
+async function handleRangeRequest(event) {
+  try {
+    const request = event.request;
+    const rangeHeader = request.headers.get('range');
+    const rangeMatch = /bytes\=(\d+)\-(\d+)?/.exec(rangeHeader);
+    if (!rangeMatch) {
+      throw new Error('Invalid range header');
+    }
+    const start = Number(rangeMatch[1]);
+    const end = rangeMatch[2] ? Number(rangeMatch[2]) : undefined;
+
+    const response = await caches.match(request);
+    if (!response) {
+      return fetch(request);
+    }
+
+    const blob = await response.blob();
+    const slicedBlob = blob.slice(start, end);
+    const slicedResponse = new Response(slicedBlob, {
+      status: 206,
+      statusText: 'Partial Content',
+      headers: [
+        ['Content-Range', `bytes ${start}-${end || blob.size - 1}/${blob.size}`],
+        ['Content-Type', blob.type]
+      ]
+    });
+
+    return slicedResponse;
+  } catch (error) {
+    console.error('Error handling range request:', error);
+    return fetch(event.request);
+  }
+}
