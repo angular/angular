@@ -71,7 +71,7 @@ export function injectInjectorOnly<T>(
     throw new RuntimeError(
       RuntimeErrorCode.MISSING_INJECTION_CONTEXT,
       ngDevMode &&
-        `inject() must be called from an injection context such as a constructor, a factory function, a field initializer, or a function used with \`runInInjectionContext\`.`,
+        `inject() must be called from an injection context such as a constructor, a factory function, a field initializer, or a function used with \`runInInjectionContext\`. The token being injected: ${stringify(token)}.`,
     );
   } else if (_currentInjector === null) {
     return injectRootLimpMode(token, undefined, flags);
