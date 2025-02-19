@@ -40,7 +40,6 @@ generate_guides(
         "//adev/src/content/examples/forms-overview:src/app/template/favorite-color/favorite-color.component.spec.ts",
         "//adev/src/content/examples/forms-overview:src/app/template/favorite-color/favorite-color.component.ts",
         "//adev/src/content/examples/reactive-forms:src/app/app.component.1.html",
-        "//adev/src/content/examples/reactive-forms:src/app/app.module.ts",
         "//adev/src/content/examples/reactive-forms:src/app/name-editor/name-editor.component.html",
         "//adev/src/content/examples/reactive-forms:src/app/name-editor/name-editor.component.ts",
         "//adev/src/content/examples/reactive-forms:src/app/profile-editor/profile-editor.component.1.html",
