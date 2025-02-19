@@ -28,6 +28,7 @@ export interface FlatNode {
   original: IndexedNode;
   newItem?: boolean;
   hydration: HydrationStatus;
+  onPush?: boolean;
 }
 
 const expandable = (node: IndexedNode) => !!node.children && node.children.length > 0;
@@ -94,6 +95,7 @@ export class ComponentDataSource extends DataSource<FlatNode> {
         original: node,
         level,
         hydration: node.hydration,
+        onPush: node.onPush,
       };
       this._nodeToFlat.set(node, flatNode);
       return flatNode;
