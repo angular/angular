@@ -26,6 +26,7 @@ const indexTree = (
     directives: node.directives.map((d, i) => ({name: d.name, id: d.id})),
     children: node.children.map((n, i) => indexTree(n, i, position)),
     hydration: node.hydration,
+    onPush: node.onPush,
   };
 };
 

@@ -39,6 +39,7 @@ import {
   idToInjector,
   injectorsSeen,
   isElementInjector,
+  isOnPushDirective,
   nodeInjectorToResolutionPath,
   queryDirectiveForest,
   serializeProviderRecord,
@@ -387,6 +388,7 @@ const prepareForestForSerialization = (
       })),
       children: prepareForestForSerialization(node.children, includeResolutionPath),
       hydration: node.hydration,
+      onPush: node.component ? isOnPushDirective(node.component) : false,
     };
     serializedNodes.push(serializedNode);
 

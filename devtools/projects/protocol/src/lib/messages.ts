@@ -36,6 +36,7 @@ export interface DevToolsNode<DirType = DirectiveType, CmpType = ComponentType> 
   nativeElement?: Node;
   resolutionPath?: SerializedInjector[];
   hydration: HydrationStatus;
+  onPush?: boolean;
 }
 
 export interface SerializedInjector {

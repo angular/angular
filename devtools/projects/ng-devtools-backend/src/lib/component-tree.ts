@@ -245,6 +245,11 @@ const getDirectiveMetadata = (dir: any): DirectiveMetadata => {
   };
 };
 
+export function isOnPushDirective(dir: any): boolean {
+  const metadata = getDirectiveMetadata(dir.instance);
+  return metadata.onPush;
+}
+
 export function getInjectorProviders(injector: Injector) {
   if (isNullInjector(injector)) {
     return [];

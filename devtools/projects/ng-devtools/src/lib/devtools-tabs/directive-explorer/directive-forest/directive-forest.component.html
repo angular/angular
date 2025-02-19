@@ -44,6 +44,10 @@
           <span class="console-reference"> == $ng0 </span>
         }
 
+        @if (node.onPush) {
+          <span class="on-push">OnPush</span>
+        }
+
         @switch (node.hydration?.status) {
           @case ('hydrated') {
             <mat-icon matTooltip="Hydrated" class="hydration">water_drop</mat-icon>
