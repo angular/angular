@@ -1,6 +1,6 @@
 # Security
 
-This topic describes Angular's built-in protections against common web-application vulnerabilities and attacks such as cross-site scripting attacks.
+This topic describes Angular's built-in protections against common web application vulnerabilities and attacks such as cross-site scripting attacks.
 It doesn't cover application-level security, such as authentication and authorization.
 
 For more information about the attacks and mitigations described below, see the [Open Web Application Security Project (OWASP) Guide](https://www.owasp.org/index.php/Category:OWASP_Guide_Project).
@@ -9,7 +9,7 @@ For more information about the attacks and mitigations described below, see the 
 
 <docs-callout title="Reporting vulnerabilities">
 
-Angular is part of Google [Open Source Software Vulnerability Reward Program](https://bughunters.google.com/about/rules/6521337925468160/google-open-source-software-vulnerability-reward-program-rules). [For vulnerabilities in Angular, please submit your report at https://bughunters.google.com](https://bughunters.google.com/report).
+Angular is part of Google [Open Source Software Vulnerability Reward Program](https://bughunters.google.com/about/rules/6521337925468160/google-open-source-software-vulnerability-reward-program-rules). For vulnerabilities in Angular, please submit your report at [https://bughunters.google.com](https://bughunters.google.com/report).
 
 For more information about how Google handles security issues, see [Google's security philosophy](https://www.google.com/about/appsecurity).
 
@@ -53,8 +53,8 @@ For this reason, it is strongly encouraged to take advantage of these features. 
 
 *Sanitization* is the inspection of an untrusted value, turning it into a value that's safe to insert into the DOM.
 In many cases, sanitization doesn't change a value at all.
-Sanitization depends on context:
-A value that's harmless in CSS is potentially dangerous in a URL.
+Sanitization depends on a context.
+For example, a value that's harmless in CSS is potentially dangerous in a URL.
 
 Angular defines the following security contexts:
 
@@ -95,7 +95,7 @@ Avoid directly interacting with the DOM and instead use Angular templates where 
 
 For cases where this is unavoidable, use the built-in Angular sanitization functions.
 Sanitize untrusted values with the [DomSanitizer.sanitize](api/platform-browser/DomSanitizer#sanitize) method and the appropriate `SecurityContext`.
-That function also accepts values that were marked as trusted using the `bypassSecurityTrust` … functions, and does not sanitize them, as [described below](#trusting-safe-values).
+That function also accepts values that were marked as trusted using the `bypassSecurityTrust` functions, and does not sanitize them, as [described below](#trusting-safe-values).
 
 ### Trusting safe values
 
