@@ -43,6 +43,7 @@ const BINARY_OPERATORS = new Map<o.BinaryOperator, BinaryOperator>([
   [o.BinaryOperator.Or, '||'],
   [o.BinaryOperator.Plus, '+'],
   [o.BinaryOperator.NullishCoalesce, '??'],
+  [o.BinaryOperator.Exponentiation, '**'],
 ]);
 
 export type RecordWrappedNodeFn<TExpression> = (node: o.WrappedNodeExpr<TExpression>) => void;
@@ -445,6 +446,10 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
 
   visitTypeofExpr(ast: o.TypeofExpr, context: Context): TExpression {
     return this.factory.createTypeOfExpression(ast.expr.visitExpression(this, context));
+  }
+
+  visitVoidExpr(ast: o.VoidExpr, context: Context): TExpression {
+    return this.factory.createVoidExpression(ast.expr.visitExpression(this, context));
   }
 
   visitUnaryOperatorExpr(ast: o.UnaryOperatorExpr, context: Context): TExpression {

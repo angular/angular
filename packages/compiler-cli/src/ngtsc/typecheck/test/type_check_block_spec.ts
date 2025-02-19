@@ -69,6 +69,18 @@ describe('type check blocks', () => {
     );
   });
 
+  it('should handle void expressions', () => {
+    expect(tcb('{{void a}}')).toContain('void (((this).a))');
+    expect(tcb('{{!(void a)}}')).toContain('!(void (((this).a)))');
+    expect(tcb('{{!(void a === "object")}}')).toContain('!((void (((this).a))) === ("object"))');
+  });
+
+  it('should handle exponentiation expressions', () => {
+    expect(tcb('{{a * b ** c + d}}')).toContain(
+      '(((((this).a)) * ((((this).b)) ** (((this).c)))) + (((this).d)))',
+    );
+  });
+
   it('should handle attribute values for directive inputs', () => {
     const TEMPLATE = `<div dir inputA="value"></div>`;
     const DIRECTIVES: TestDeclaration[] = [

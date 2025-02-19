@@ -25,16 +25,17 @@ import {
   LiteralPrimitive,
   NonNullAssert,
   PrefixNot,
-  TypeofExpression,
   PropertyRead,
   PropertyWrite,
   SafeCall,
   SafeKeyedRead,
   SafePropertyRead,
-  ThisReceiver,
-  Unary,
   TemplateLiteral,
   TemplateLiteralElement,
+  ThisReceiver,
+  TypeofExpression,
+  Unary,
+  VoidExpression,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -75,6 +76,7 @@ const BINARY_OPS = new Map<string, ts.BinaryOperator>([
   ['==', ts.SyntaxKind.EqualsEqualsToken],
   ['===', ts.SyntaxKind.EqualsEqualsEqualsToken],
   ['*', ts.SyntaxKind.AsteriskToken],
+  ['**', ts.SyntaxKind.AsteriskAsteriskToken],
   ['/', ts.SyntaxKind.SlashToken],
   ['%', ts.SyntaxKind.PercentToken],
   ['!=', ts.SyntaxKind.ExclamationEqualsToken],
@@ -281,6 +283,13 @@ class AstTranslator implements AstVisitor {
   visitTypeofExpression(ast: TypeofExpression): ts.Expression {
     const expression = wrapForDiagnostics(this.translate(ast.expression));
     const node = ts.factory.createTypeOfExpression(expression);
+    addParseSpanInfo(node, ast.sourceSpan);
+    return node;
+  }
+
+  visitVoidExpression(ast: VoidExpression): ts.Expression {
+    const expression = wrapForDiagnostics(this.translate(ast.expression));
+    const node = ts.factory.createVoidExpression(expression);
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
   }
@@ -579,10 +588,13 @@ class VeSafeLhsInferenceBugDetector implements AstVisitor {
   visitPrefixNot(ast: PrefixNot): boolean {
     return ast.expression.visit(this);
   }
-  visitTypeofExpression(ast: PrefixNot): boolean {
+  visitTypeofExpression(ast: TypeofExpression): boolean {
     return ast.expression.visit(this);
   }
-  visitNonNullAssert(ast: PrefixNot): boolean {
+  visitVoidExpression(ast: VoidExpression): boolean {
+    return ast.expression.visit(this);
+  }
+  visitNonNullAssert(ast: NonNullAssert): boolean {
     return ast.expression.visit(this);
   }
   visitPropertyRead(ast: PropertyRead): boolean {

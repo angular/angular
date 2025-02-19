@@ -37,7 +37,6 @@ import {
   ParserError,
   ParseSpan,
   PrefixNot,
-  TypeofExpression,
   PropertyRead,
   PropertyWrite,
   RecursiveAstVisitor,
@@ -46,11 +45,13 @@ import {
   SafePropertyRead,
   TemplateBinding,
   TemplateBindingIdentifier,
-  ThisReceiver,
-  Unary,
-  VariableBinding,
   TemplateLiteral,
   TemplateLiteralElement,
+  ThisReceiver,
+  TypeofExpression,
+  Unary,
+  VariableBinding,
+  VoidExpression,
 } from './ast';
 import {EOF, Lexer, StringTokenKind, Token, TokenType} from './lexer';
 
@@ -514,6 +515,7 @@ enum ParseContextFlags {
 }
 
 class _ParseAST {
+  private lastUnary: Unary | PrefixNot | TypeofExpression | VoidExpression | null = null;
   private rparensExpected = 0;
   private rbracketsExpected = 0;
   private rbracesExpected = 0;
@@ -927,7 +929,7 @@ class _ParseAST {
   private parseMultiplicative(): AST {
     // '*', '%', '/'
     const start = this.inputIndex;
-    let result = this.parsePrefix();
+    let result = this.parseExponentiation();
     while (this.next.type == TokenType.Operator) {
       const operator = this.next.strValue;
       switch (operator) {
@@ -935,11 +937,31 @@ class _ParseAST {
         case '%':
         case '/':
           this.advance();
-          let right = this.parsePrefix();
+          const right = this.parseExponentiation();
           result = new Binary(this.span(start), this.sourceSpan(start), operator, result, right);
           continue;
       }
       break;
+    }
+    return result;
+  }
+
+  private parseExponentiation(): AST {
+    // '**'
+    const start = this.inputIndex;
+    let result = this.parsePrefix();
+    while (this.next.type == TokenType.Operator && this.next.strValue === '**') {
+      // This aligns with Javascript semantics which require any unary operator preceeding the
+      // exponentiation operation to be explicitly grouped as either applying to the base or result
+      // of the exponentiation operation.
+      if (result === this.lastUnary) {
+        this.error(
+          'Unary operator used immediately before exponentiation expression. Parenthesis must be used to disambiguate operator precedence',
+        );
+      }
+      this.advance();
+      const right = this.parsePrefix();
+      result = new Binary(this.span(start), this.sourceSpan(start), '**', result, right);
     }
     return result;
   }
@@ -953,21 +975,42 @@ class _ParseAST {
         case '+':
           this.advance();
           result = this.parsePrefix();
-          return Unary.createPlus(this.span(start), this.sourceSpan(start), result);
+          return (this.lastUnary = Unary.createPlus(
+            this.span(start),
+            this.sourceSpan(start),
+            result,
+          ));
         case '-':
           this.advance();
           result = this.parsePrefix();
-          return Unary.createMinus(this.span(start), this.sourceSpan(start), result);
+          return (this.lastUnary = Unary.createMinus(
+            this.span(start),
+            this.sourceSpan(start),
+            result,
+          ));
         case '!':
           this.advance();
           result = this.parsePrefix();
-          return new PrefixNot(this.span(start), this.sourceSpan(start), result);
+          return (this.lastUnary = new PrefixNot(this.span(start), this.sourceSpan(start), result));
       }
     } else if (this.next.isKeywordTypeof()) {
       this.advance();
       const start = this.inputIndex;
       let result = this.parsePrefix();
-      return new TypeofExpression(this.span(start), this.sourceSpan(start), result);
+      return (this.lastUnary = new TypeofExpression(
+        this.span(start),
+        this.sourceSpan(start),
+        result,
+      ));
+    } else if (this.next.isKeywordVoid()) {
+      this.advance();
+      const start = this.inputIndex;
+      let result = this.parsePrefix();
+      return (this.lastUnary = new VoidExpression(
+        this.span(start),
+        this.sourceSpan(start),
+        result,
+      ));
     }
     return this.parseCallChain();
   }
@@ -1004,6 +1047,7 @@ class _ParseAST {
       this.rparensExpected++;
       const result = this.parsePipe();
       this.rparensExpected--;
+      this.lastUnary = null;
       this.expectCharacter(chars.$RPAREN);
       return result;
     } else if (this.next.isKeywordNull()) {

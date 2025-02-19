@@ -1289,6 +1289,8 @@ export function transformExpressionsInExpression(
     }
   } else if (expr instanceof o.TypeofExpr) {
     expr.expr = transformExpressionsInExpression(expr.expr, transform, flags);
+  } else if (expr instanceof o.VoidExpr) {
+    expr.expr = transformExpressionsInExpression(expr.expr, transform, flags);
   } else if (expr instanceof o.WriteVarExpr) {
     expr.value = transformExpressionsInExpression(expr.value, transform, flags);
   } else if (expr instanceof o.LocalizedString) {
