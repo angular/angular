@@ -6,13 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  DOCUMENT,
-  PlatformLocation,
-  ɵPlatformNavigation as PlatformNavigation,
-} from '@angular/common';
+import {DOCUMENT, PlatformLocation} from '@angular/common';
 import {inject, Provider} from '@angular/core';
 
+// @ng_package: ignore-cross-repo-import
+import {PlatformNavigation} from '../../../src/navigation/platform_navigation';
 import {
   FakeNavigationPlatformLocation,
   MOCK_PLATFORM_LOCATION_CONFIG,

@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-// TODO: Figure out how to use the types from NPM in the public API
-
 export interface NavigationEventMap {
   navigate: NavigateEvent;
   navigatesuccess: Event;
