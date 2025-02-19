@@ -25,16 +25,17 @@ import {
   LiteralPrimitive,
   NonNullAssert,
   PrefixNot,
-  TypeofExpression,
   PropertyRead,
   PropertyWrite,
   SafeCall,
   SafeKeyedRead,
   SafePropertyRead,
-  ThisReceiver,
-  Unary,
+  TaggedTemplateLiteral,
   TemplateLiteral,
   TemplateLiteralElement,
+  ThisReceiver,
+  TypeofExpression,
+  Unary,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -475,6 +476,14 @@ class AstTranslator implements AstVisitor {
     throw new Error('Method not implemented');
   }
 
+  visitTaggedTemplateLiteral(ast: TaggedTemplateLiteral): ts.TaggedTemplateExpression {
+    return ts.factory.createTaggedTemplateExpression(
+      this.translate(ast.tag),
+      undefined, // TODO: what should this be?
+      this.visitTemplateLiteral(ast.template), // TODO: is it ok to directly call this here?
+    );
+  }
+
   private convertToSafeCall(
     ast: Call | SafeCall,
     expr: ts.Expression,
@@ -601,6 +610,9 @@ class VeSafeLhsInferenceBugDetector implements AstVisitor {
     return false;
   }
   visitTemplateLiteralElement(ast: TemplateLiteralElement, context: any) {
+    return false;
+  }
+  visitTaggedTemplateLiteral(ast: TaggedTemplateLiteral, context: any) {
     return false;
   }
 }

@@ -24,17 +24,18 @@ import {
   LiteralPrimitive,
   NonNullAssert,
   PrefixNot,
-  TypeofExpression,
   PropertyRead,
   PropertyWrite,
   RecursiveAstVisitor,
   SafeCall,
   SafeKeyedRead,
   SafePropertyRead,
-  ThisReceiver,
-  Unary,
-  TemplateLiteralElement,
+  TaggedTemplateLiteral,
   TemplateLiteral,
+  TemplateLiteralElement,
+  ThisReceiver,
+  TypeofExpression,
+  Unary,
 } from '../../../src/expression_parser/ast';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../src/ml_parser/defaults';
 
@@ -233,6 +234,11 @@ class Unparser implements AstVisitor {
 
   visitTemplateLiteralElement(ast: TemplateLiteralElement, context: any) {
     this._expression += ast.text;
+  }
+
+  visitTaggedTemplateLiteral(ast: TaggedTemplateLiteral, context: any) {
+    this._visit(ast.tag);
+    this._visit(ast.template);
   }
 
   private _visit(ast: AST) {

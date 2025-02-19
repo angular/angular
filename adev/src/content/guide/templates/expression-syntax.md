@@ -8,22 +8,22 @@ Angular supports a subset of [literal values](https://developer.mozilla.org/en-U
 
 ### Supported value literals
 
-| Literal type     | Example values                  |
-| ---------------- | ------------------------------- |
-| String           | `'Hello'`, `"World"`            |
-| Boolean          | `true`, `false`                 |
-| Number           | `123`, `3.14`                   |
-| Object           | `{name: 'Alice'}`               |
-| Array            | `['Onion', 'Cheese', 'Garlic']` |
-| null             | `null`                          |
-| Template string  | `` `Hello ${name}` ``           |
+| Literal type           | Example values                  |
+| ---------------------- | ------------------------------- |
+| String                 | `'Hello'`, `"World"`            |
+| Boolean                | `true`, `false`                 |
+| Number                 | `123`, `3.14`                   |
+| Object                 | `{name: 'Alice'}`               |
+| Array                  | `['Onion', 'Cheese', 'Garlic']` |
+| null                   | `null`                          |
+| Template string        | `` `Hello ${name}` ``           |
+| Tagged template string | `` tag`Hello ${name}` ``        |
 
 ### Unsupported literals
 
-| Literal type             | Example value             |
-| ------------------------ | ------------------------- |
-| RegExp                   | `/\d+/`                   |
-| Tagged template string   | `` tag`Hello ${name}` ``  |
+| Literal type | Example value |
+| ------------ | ------------- |
+| RegExp       | `/\d+/`       |
 
 ## Globals
 
