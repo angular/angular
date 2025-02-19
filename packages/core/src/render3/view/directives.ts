@@ -28,11 +28,9 @@ import type {
 } from '../interfaces/definition';
 import {NodeInjectorFactory} from '../interfaces/injector';
 import {
-  InitialInputData,
   InitialInputs,
   NodeInputBindings,
   NodeOutputBindings,
-  TAttributes,
   TNodeFlags,
   type TContainerNode,
   type TElementContainerNode,
@@ -45,7 +43,6 @@ import {isInlineTemplate} from '../node_selector_matcher';
 import {NO_CHANGE} from '../tokens';
 import {mergeHostAttrs} from '../util/attrs_utils';
 import {allocExpando} from './construction';
-import {InputFlags} from '../interfaces/input_flags';
 
 export type DirectiveMatcherStrategy = (
   tView: TView,
@@ -161,7 +158,7 @@ function markAsComponentHost(tView: TView, hostTNode: TNode, componentOffset: nu
 }
 
 /** Initializes the data structures necessary for a list of directives to be instantiated. */
-export function initializeDirectives(
+function initializeDirectives(
   tView: TView,
   lView: LView<unknown>,
   tNode: TElementNode | TContainerNode | TElementContainerNode,
@@ -252,11 +249,6 @@ function initializeInputAndOutputAliases(
   const end = tNode.directiveEnd;
   const tViewData = tView.data;
 
-  const tNodeAttrs = tNode.attrs;
-  const inputsFromAttrs: InitialInputData = [];
-  let inputsStore: NodeInputBindings | null = null;
-  let outputsStore: NodeOutputBindings | null = null;
-
   for (let directiveIndex = start; directiveIndex < end; directiveIndex++) {
     const directiveDef = tViewData[directiveIndex] as DirectiveDef<any>;
     const aliasData = hostDirectiveDefinitionMap
@@ -265,41 +257,33 @@ function initializeInputAndOutputAliases(
     const aliasedInputs = aliasData ? aliasData.inputs : null;
     const aliasedOutputs = aliasData ? aliasData.outputs : null;
 
-    inputsStore = captureNodeBindings(
+    setupBindings(
       CaptureNodeBindingMode.Inputs,
-      directiveDef.inputs,
+      tNode,
+      directiveDef,
       directiveIndex,
-      inputsStore,
       aliasedInputs,
     );
-    outputsStore = captureNodeBindings(
+    setupBindings(
       CaptureNodeBindingMode.Outputs,
-      directiveDef.outputs,
+      tNode,
+      directiveDef,
       directiveIndex,
-      outputsStore,
       aliasedOutputs,
     );
     // Do not use unbound attributes as inputs to structural directives, since structural
     // directive inputs can only be set using microsyntax (e.g. `<div *dir="exp">`).
-    const initialInputs =
-      inputsStore !== null && tNodeAttrs !== null && !isInlineTemplate(tNode)
-        ? generateInitialInputs(inputsStore, directiveIndex, tNodeAttrs)
-        : null;
-    inputsFromAttrs.push(initialInputs);
+    setupInitialInputs(tNode, directiveIndex);
   }
 
-  if (inputsStore !== null) {
-    if (inputsStore.hasOwnProperty('class')) {
+  if (tNode.inputs !== null) {
+    if (tNode.inputs.hasOwnProperty('class')) {
       tNode.flags |= TNodeFlags.hasClassInput;
     }
-    if (inputsStore.hasOwnProperty('style')) {
+    if (tNode.inputs.hasOwnProperty('style')) {
       tNode.flags |= TNodeFlags.hasStyleInput;
     }
   }
-
-  tNode.initialInputs = inputsFromAttrs;
-  tNode.inputs = inputsStore;
-  tNode.outputs = outputsStore;
 }
 
 /** Mode for capturing node bindings. */
@@ -309,43 +293,22 @@ const enum CaptureNodeBindingMode {
 }
 
 /**
- * Captures node input bindings for the given directive based on the inputs metadata.
- * This will be called multiple times to combine inputs from various directives on a node.
+ * Sets up input/input bindings on a node for the given directive based on the definition metadata.
+ * This will be called multiple times to combine bindings from various directives on a node.
  *
  * The host binding alias map is used to alias and filter out properties for host directives.
  * If the mapping is provided, it'll act as an allowlist, as well as a mapping of what public
  * name inputs/outputs should be exposed under.
  */
-function captureNodeBindings<T>(
-  mode: CaptureNodeBindingMode.Inputs,
-  inputs: DirectiveDef<T>['inputs'],
-  directiveIndex: number,
-  bindingsResult: NodeInputBindings | null,
-  hostDirectiveAliasMap: HostDirectiveBindingMap | null,
-): NodeInputBindings | null;
-/**
- * Captures node output bindings for the given directive based on the output metadata.
- * This will be called multiple times to combine inputs from various directives on a node.
- *
- * The host binding alias map is used to alias and filter out properties for host directives.
- * If the mapping is provided, it'll act as an allowlist, as well as a mapping of what public
- * name inputs/outputs should be exposed under.
- */
-function captureNodeBindings<T>(
-  mode: CaptureNodeBindingMode.Outputs,
-  outputs: DirectiveDef<T>['outputs'],
-  directiveIndex: number,
-  bindingsResult: NodeOutputBindings | null,
-  hostDirectiveAliasMap: HostDirectiveBindingMap | null,
-): NodeOutputBindings | null;
-
-function captureNodeBindings<T>(
+function setupBindings<T>(
   mode: CaptureNodeBindingMode,
-  aliasMap: DirectiveDef<T>['inputs'] | DirectiveDef<T>['outputs'],
+  tNode: TNode,
+  def: DirectiveDef<T>,
   directiveIndex: number,
-  bindingsResult: NodeInputBindings | NodeOutputBindings | null,
   hostDirectiveAliasMap: HostDirectiveBindingMap | null,
-): NodeInputBindings | NodeOutputBindings | null {
+): void {
+  const aliasMap = mode === CaptureNodeBindingMode.Inputs ? def.inputs : def.outputs;
+
   for (let publicName in aliasMap) {
     if (!aliasMap.hasOwnProperty(publicName)) {
       continue;
@@ -355,8 +318,6 @@ function captureNodeBindings<T>(
     if (value === undefined) {
       continue;
     }
-
-    bindingsResult ??= {};
 
     // If there are no host directive mappings, we want to remap using the alias map from the
     // definition itself. If there is an alias map, it has two functions:
@@ -375,22 +336,13 @@ function captureNodeBindings<T>(
     }
 
     if (mode === CaptureNodeBindingMode.Inputs) {
-      addPropertyBinding(
-        bindingsResult as NodeInputBindings,
-        directiveIndex,
-        finalPublicName,
-        publicName,
-      );
+      tNode.inputs ??= {};
+      addPropertyBinding(tNode.inputs, directiveIndex, finalPublicName, publicName);
     } else {
-      addPropertyBinding(
-        bindingsResult as NodeOutputBindings,
-        directiveIndex,
-        finalPublicName,
-        value as string,
-      );
+      tNode.outputs ??= {};
+      addPropertyBinding(tNode.outputs, directiveIndex, finalPublicName, value as string);
     }
   }
-  return bindingsResult;
 }
 
 function addPropertyBinding(
@@ -407,7 +359,7 @@ function addPropertyBinding(
 }
 
 /**
- * Generates initialInputData for a node and stores it in the template's static storage
+ * Sets up the initialInputData for a node and stores it in the template's static storage
  * so subsequent template invocations don't have to recalculate it.
  *
  * initialInputData is an array containing values that need to be set as input properties
@@ -417,15 +369,18 @@ function addPropertyBinding(
  *
  * <my-component name="Bess"></my-component>
  *
- * @param inputs Input alias map that was generated from the directive def inputs.
+ * @param tNode TNode on which to set up the initial inputs.
  * @param directiveIndex Index of the directive that is currently being processed.
- * @param attrs Static attrs on this node.
  */
-function generateInitialInputs(
-  inputs: NodeInputBindings,
-  directiveIndex: number,
-  attrs: TAttributes,
-): InitialInputs | null {
+function setupInitialInputs(tNode: TNode, directiveIndex: number): void {
+  const {attrs, inputs} = tNode;
+
+  if (attrs === null || inputs === null || isInlineTemplate(tNode)) {
+    tNode.initialInputs ??= [];
+    tNode.initialInputs.push(null);
+    return;
+  }
+
   let inputsToStore: InitialInputs | null = null;
   let i = 0;
   while (i < attrs.length) {
@@ -460,7 +415,9 @@ function generateInitialInputs(
 
     i += 2;
   }
-  return inputsToStore;
+
+  tNode.initialInputs ??= [];
+  tNode.initialInputs.push(inputsToStore);
 }
 
 /**

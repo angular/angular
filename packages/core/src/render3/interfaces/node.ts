@@ -417,7 +417,7 @@ export interface TNode {
   localNames: (string | number)[] | null;
 
   /** Information about input properties that need to be set once from attribute data. */
-  initialInputs: InitialInputData | null | undefined;
+  initialInputs: InitialInputData | null;
 
   /**
    * Input data for all directives on this node. `null` means that there are no directives with

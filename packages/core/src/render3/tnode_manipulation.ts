@@ -291,7 +291,7 @@ export function createTNode(
     attrs: attrs,
     mergedAttrs: null,
     localNames: null,
-    initialInputs: undefined,
+    initialInputs: null,
     inputs: null,
     outputs: null,
     tView: null,
