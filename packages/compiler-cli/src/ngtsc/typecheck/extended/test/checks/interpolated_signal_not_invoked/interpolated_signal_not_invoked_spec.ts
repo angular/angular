@@ -61,7 +61,7 @@ runInEachFileSystem(() => {
       {
         fileName,
         templates: {
-          'TestCmp': `<div>{{ mySignal1 }} {{ mySignal2 }}</div>`,
+          'TestCmp': `<div>{{ mySignal1 }} {{ mySignal2 }} {{ !mySignal3 }}</div>`,
         },
         source: `
           import {signal, Signal} from '@angular/core';
@@ -69,6 +69,7 @@ runInEachFileSystem(() => {
           export class TestCmp {
             mySignal1 = signal<number>(0);
             mySignal2: Signal<number>;
+            mySignal3 = signal<number>(0);
           }`,
       },
     ]);
@@ -81,11 +82,12 @@ runInEachFileSystem(() => {
       {} /* options */,
     );
     const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
-    expect(diags.length).toBe(2);
+    expect(diags.length).toBe(3);
     expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
     expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED));
     expect(getSourceCodeForDiagnostic(diags[0])).toBe(`mySignal1`);
     expect(getSourceCodeForDiagnostic(diags[1])).toBe(`mySignal2`);
+    expect(getSourceCodeForDiagnostic(diags[2])).toBe(`mySignal3`);
   });
 
   it('should produce a warning when a readonly signal is not invoked', () => {
@@ -638,13 +640,15 @@ runInEachFileSystem(() => {
         {
           fileName,
           templates: {
-            'TestCmp': `<div [${binding}]="mySignal"></div>`,
+            'TestCmp': `<div [${binding}]="mySignal"></div> 
+            <div [${binding}]="!negatedSignal"></div>`,
           },
           source: `
           import {signal} from '@angular/core';
 
           export class TestCmp {
             mySignal = signal<number>(0);
+            negatedSignal = signal<number>(0);
           }`,
         },
       ]);
@@ -657,10 +661,11 @@ runInEachFileSystem(() => {
         {} /* options */,
       );
       const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
-      expect(diags.length).toBe(1);
+      expect(diags.length).toBe(2);
       expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
       expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED));
       expect(getSourceCodeForDiagnostic(diags[0])).toBe(`mySignal`);
+      expect(getSourceCodeForDiagnostic(diags[1])).toBe(`negatedSignal`);
     });
 
     it(`should not produce a warning when signal is invoked on ${name} binding`, () => {
@@ -669,13 +674,15 @@ runInEachFileSystem(() => {
         {
           fileName,
           templates: {
-            'TestCmp': `<div [${binding}]="mySignal()"></div>`,
+            'TestCmp': `<div [${binding}]="mySignal()"></div>
+            <div [${binding}]="!negatedSignal()"></div>`,
           },
           source: `
           import {signal} from '@angular/core';
 
           export class TestCmp {
             mySignal = signal<number>(0);
+            negatedSignal = signal<number>(0);
           }`,
         },
       ]);
