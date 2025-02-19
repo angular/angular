@@ -39,7 +39,7 @@ function createOverlay(color: RgbColor): {overlay: HTMLElement; overlayContent: 
   const overlay = document.createElement('div');
   overlay.className = 'ng-devtools-overlay';
   overlay.style.backgroundColor = toCSSColor(...color, 0.35);
-  overlay.style.position = 'fixed';
+  overlay.style.position = 'absolute';
   overlay.style.zIndex = '2147483647';
   overlay.style.pointerEvents = 'none';
   overlay.style.display = 'flex';
@@ -196,8 +196,8 @@ function showOverlay(
   const {width, height, top, left} = dimensions;
   overlay.style.width = ~~width + 'px';
   overlay.style.height = ~~height + 'px';
-  overlay.style.top = ~~top + 'px';
-  overlay.style.left = ~~left + 'px';
+  overlay.style.top = ~~top + window.scrollY + 'px';
+  overlay.style.left = ~~left + window.scrollX + 'px';
 
   positionOverlayContent(overlayContent, dimensions, labelPosition);
   overlayContent.replaceChildren();
