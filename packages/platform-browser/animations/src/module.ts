@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {
+  EnvironmentProviders,
   ModuleWithProviders,
   NgModule,
-  Provider,
+  makeEnvironmentProviders,
   ɵperformanceMarkFeature as performanceMarkFeature,
 } from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
@@ -87,11 +88,11 @@ export class BrowserAnimationsModule {
  *
  * @publicApi
  */
-export function provideAnimations(): Provider[] {
+export function provideAnimations(): EnvironmentProviders {
   performanceMarkFeature('NgEagerAnimations');
   // Return a copy to prevent changes to the original array in case any in-place
   // alterations are performed to the `provideAnimations` call results in app code.
-  return [...BROWSER_ANIMATIONS_PROVIDERS];
+  return makeEnvironmentProviders([...BROWSER_ANIMATIONS_PROVIDERS]);
 }
 
 /**
@@ -125,8 +126,8 @@ export class NoopAnimationsModule {}
  *
  * @publicApi
  */
-export function provideNoopAnimations(): Provider[] {
+export function provideNoopAnimations(): EnvironmentProviders {
   // Return a copy to prevent changes to the original array in case any in-place
   // alterations are performed to the `provideNoopAnimations` call results in app code.
-  return [...BROWSER_NOOP_ANIMATIONS_PROVIDERS];
+  return makeEnvironmentProviders([...BROWSER_NOOP_ANIMATIONS_PROVIDERS]);
 }
