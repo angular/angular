@@ -59,6 +59,8 @@ export class $locationShim {
 
   private urlChanges = new ReplaySubject<{newUrl: string; newState: unknown}>(1);
 
+  private readonly removeOnUrlChangeFn: VoidFunction;
+
   constructor(
     $injector: any,
     private location: Location,
@@ -82,7 +84,7 @@ export class $locationShim {
     this.cacheState();
     this.$$state = this.browserState();
 
-    this.location.onUrlChange((newUrl, newState) => {
+    this.removeOnUrlChangeFn = this.location.onUrlChange((newUrl, newState) => {
       this.urlChanges.next({newUrl, newState});
     });
 
@@ -249,6 +251,7 @@ export class $locationShim {
     });
 
     $rootScope.$on('$destroy', () => {
+      this.removeOnUrlChangeFn();
       // Complete the subject to release all active observers when the root
       // scope is destroyed. Before this change, we subscribed to the `urlChanges`
       // subject, and the subscriber captured `this`, leading to a memory leak
