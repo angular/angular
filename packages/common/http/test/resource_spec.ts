@@ -22,6 +22,12 @@ describe('httpResource', () => {
     TestBed.configureTestingModule({providers: [provideHttpClient(), provideHttpClientTesting()]});
   });
 
+  it('should throw if used outside injection context', () => {
+    expect(() => httpResource(() => '/data')).toThrowMatching((thrown) =>
+      thrown.message.includes('httpResource() can only be used within an injection context'),
+    );
+  });
+
   it('should send a basic request', async () => {
     const backend = TestBed.inject(HttpTestingController);
     const res = httpResource(() => '/data', {injector: TestBed.inject(Injector)});
