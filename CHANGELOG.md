@@ -1,3 +1,33 @@
+<a name="19.2.0-rc.0"></a>
+# 19.2.0-rc.0 (2025-02-19)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3e39da593a](https://github.com/angular/angular/commit/3e39da593a0a0c047a2a03b8d5fcabf9dbace40f) | feat | introduce experimental `httpResource` ([#59876](https://github.com/angular/angular/pull/59876)) |
+| [7bd4be0fa5](https://github.com/angular/angular/commit/7bd4be0fa585fda8a09d27683ade77b383500768) | fix | clean up `urlChanges` subscribers when root scope is destroyed ([#59703](https://github.com/angular/angular/pull/59703)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5b20bab96d](https://github.com/angular/angular/commit/5b20bab96d20fe89b5cc4b4af28edbaae2604da1) | feat | Add Skip Hydration diagnostic. ([#59576](https://github.com/angular/angular/pull/59576)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [973033abd2](https://github.com/angular/angular/commit/973033abd2d9580cec79948c9c38f977fef2de87) | fix | avoid crash in isolated transform operations ([#59869](https://github.com/angular/angular/pull/59869)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2588985f43](https://github.com/angular/angular/commit/2588985f433b20a6a5a8d239347291f5d6fb2451) | feat | pass signal node to throwInvalidWriteToSignalErrorFn ([#59600](https://github.com/angular/angular/pull/59600)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cf36951f83](https://github.com/angular/angular/commit/cf36951f8327d461a3ad4bf65d12bb16cf9a9e4b) | fix | Fix typing on `FormRecord`. ([#59993](https://github.com/angular/angular/pull/59993)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1cd3a7db83](https://github.com/angular/angular/commit/1cd3a7db83e1d05a31d23324676420b614cdabe2) | feat | add migration to convert templates to use self-closing tags ([#57342](https://github.com/angular/angular/pull/57342)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.1.7"></a>
 # 19.1.7 (2025-02-19)
 ### common
