@@ -19,6 +19,7 @@ import {
   Resource,
   WritableSignal,
   ResourceStreamItem,
+  type ValueEqualityFn,
 } from '@angular/core';
 import {Subscription} from 'rxjs';
 
@@ -240,6 +241,7 @@ function makeHttpResourceFn<TRaw>(responseType: 'arraybuffer' | 'blob' | 'json' 
       () => normalizeRequest(request, responseType),
       options?.defaultValue,
       options?.parse as (value: unknown) => TResult,
+      options?.equal as ValueEqualityFn<unknown>,
     ) as HttpResourceRef<TResult>;
   };
 }
@@ -313,6 +315,7 @@ class HttpResourceImpl<T>
     request: () => HttpRequest<T> | undefined,
     defaultValue: T,
     parse?: (value: unknown) => T,
+    equal?: ValueEqualityFn<unknown>,
   ) {
     super(
       request,
@@ -364,7 +367,7 @@ class HttpResourceImpl<T>
         return promise;
       },
       defaultValue,
-      undefined,
+      equal,
       injector,
     );
     this.client = injector.get(HttpClient);
