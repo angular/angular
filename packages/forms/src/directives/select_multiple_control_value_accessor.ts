@@ -44,19 +44,6 @@ function _extractId(valueString: string): string {
   return valueString.split(':')[0];
 }
 
-/** Mock interface for HTML Options */
-interface HTMLOption {
-  value: string;
-  selected: boolean;
-}
-
-/** Mock interface for HTMLCollection */
-abstract class HTMLCollection {
-  // TODO(issue/24571): remove '!'.
-  length!: number;
-  abstract item(_: number): HTMLOption;
-}
-
 /**
  * @description
  * The `ControlValueAccessor` for writing multi-select control values and listening to multi-select
