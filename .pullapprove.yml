@@ -144,7 +144,6 @@ groups:
       - >
         contains_any_globs(files.exclude('packages/core/primitives/*'), [
           'contributing-docs/public-api-surface.md',
-          'goldens/circular-deps/packages.json',
           'integration/**/{*,.*}',
           'modules/**/{*,.*}',
           'packages/animations/**/{*,.*}',
@@ -429,28 +428,6 @@ groups:
       request: 2 # Request reviews from 2 people
       required: 1 # Require that 1 person approve
       reviewed_for: required
-
-  # ================================================
-  #  Circular dependencies
-  # ================================================
-  circular-dependencies:
-    <<: *defaults
-    conditions:
-      - *no-groups-above-this-pending
-      - *no-groups-above-this-rejected
-      - >
-        contains_any_globs(files, [
-          'goldens/circular-deps/packages.json'
-        ])
-    reviewers:
-      users:
-        - alxhub
-        - AndrewKushnir
-        - atscott
-        - ~jelbourn
-        - thePunderWoman
-        - pkozlowski-opensource
-        - kirjs
 
   ####################################################################################
   #  Special Cases
