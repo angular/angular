@@ -6,6 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {
+  Consumer as InteropConsumer,
+  Signal as InteropSignal,
+  setActiveConsumer,
+} from './interop_lib';
 import {defaultEquals, ValueEqualityFn} from './equality';
 import {
   consumerAfterComputation,
@@ -14,16 +19,16 @@ import {
   producerUpdateValueVersion,
   REACTIVE_NODE,
   ReactiveNode,
-  setActiveConsumer,
   SIGNAL,
 } from './graph';
+import {CONSUMER_NODE, PRODUCER_NODE} from './interop';
 
 /**
  * A computation, which derives a value from a declarative reactive expression.
  *
  * `Computed`s are both producers and consumers of reactivity.
  */
-export interface ComputedNode<T> extends ReactiveNode {
+export interface ComputedNode<T> extends ReactiveNode, InteropConsumer, InteropSignal {
   /**
    * Current value of the computation, or one of the sentinel values above (`UNSET`, `COMPUTING`,
    * `ERROR`).
@@ -102,9 +107,11 @@ export const ERRORED: any = /* @__PURE__ */ Symbol('ERRORED');
 // Note: Using an IIFE here to ensure that the spread assignment is not considered
 // a side-effect, ending up preserving `COMPUTED_NODE` and `REACTIVE_NODE`.
 // TODO: remove when https://github.com/evanw/esbuild/issues/3392 is resolved.
-const COMPUTED_NODE = /* @__PURE__ */ (() => {
+const COMPUTED_NODE: Omit<ComputedNode<unknown>, 'computation'> = /* @__PURE__ */ (() => {
   return {
     ...REACTIVE_NODE,
+    ...PRODUCER_NODE,
+    ...CONSUMER_NODE,
     value: UNSET,
     dirty: true,
     error: null,

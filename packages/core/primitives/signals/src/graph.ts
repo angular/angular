@@ -6,19 +6,20 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {
+  getActiveConsumer,
+  Consumer as InteropConsumer,
+  Signal as InteropSignal,
+  setActiveConsumer,
+} from './interop_lib';
+
 // Required as the signals library is in a separate package, so we need to explicitly ensure the
 // global `ngDevMode` type is defined.
 declare const ngDevMode: boolean | undefined;
 
-/**
- * The currently active consumer `ReactiveNode`, if running code in a reactive context.
- *
- * Change this via `setActiveConsumer`.
- */
-let activeConsumer: ReactiveNode | null = null;
 let inNotificationPhase = false;
 
-type Version = number & {__brand: 'Version'};
+export type Version = number & {__brand: 'Version'};
 
 /**
  * Global epoch counter. Incremented whenever a source signal is set.
@@ -32,16 +33,6 @@ let epoch: Version = 1 as Version;
  */
 export const SIGNAL = /* @__PURE__ */ Symbol('SIGNAL');
 
-export function setActiveConsumer(consumer: ReactiveNode | null): ReactiveNode | null {
-  const prev = activeConsumer;
-  activeConsumer = consumer;
-  return prev;
-}
-
-export function getActiveConsumer(): ReactiveNode | null {
-  return activeConsumer;
-}
-
 export function isInNotificationPhase(): boolean {
   return inNotificationPhase;
 }
@@ -53,7 +44,6 @@ export interface Reactive {
 export function isReactive(value: unknown): value is Reactive {
   return (value as Partial<Reactive>)[SIGNAL] !== undefined;
 }
-
 export const REACTIVE_NODE: ReactiveNode = {
   version: 0 as Version,
   lastCleanEpoch: 0 as Version,
@@ -62,6 +52,7 @@ export const REACTIVE_NODE: ReactiveNode = {
   producerLastReadVersion: undefined,
   producerIndexOfThis: undefined,
   nextProducerIndex: 0,
+  hasInteropSignalDep: false,
   liveConsumerNode: undefined,
   liveConsumerIndexOfThis: undefined,
   consumerAllowSignalWrites: false,
@@ -145,6 +136,11 @@ export interface ReactiveNode {
   nextProducerIndex: number;
 
   /**
+   * Whether this consumer has any interop signals as dependencies.
+   */
+  hasInteropSignalDep: boolean;
+
+  /**
    * Array of consumers of this producer that are "live" (they require push notifications).
    *
    * `liveConsumerNode.length` is effectively our reference count for this node.
@@ -182,6 +178,21 @@ export interface ReactiveNode {
   consumerOnSignalRead(node: unknown): void;
 
   /**
+   * Called when the signal is accessed.
+   */
+  producerOnAccess?(): void;
+
+  /**
+   * Called when the signal becomes "live"
+   */
+  watched?(): void;
+
+  /**
+   * Called when the signal stops being "live"
+   */
+  unwatched?(): void;
+
+  /**
    * A debug name for the reactive node. Used in Angular DevTools to identify the node.
    */
   debugName?: string;
@@ -211,7 +222,7 @@ interface ProducerNode extends ReactiveNode {
 /**
  * Called by implementations when a producer's signal is read.
  */
-export function producerAccessed(node: ReactiveNode): void {
+export function producerAccessed<T>(node: ReactiveNode & InteropSignal): void {
   if (inNotificationPhase) {
     throw new Error(
       typeof ngDevMode !== 'undefined' && ngDevMode
@@ -219,18 +230,23 @@ export function producerAccessed(node: ReactiveNode): void {
         : '',
     );
   }
+  getActiveConsumer()?.addProducer(node);
+}
 
-  if (activeConsumer === null) {
-    // Accessed outside of a reactive context, so nothing to record.
-    return;
-  }
-
+export function internalProducerAccessed(
+  node: ReactiveNode,
+  activeConsumer: ReactiveNode & InteropConsumer,
+): void {
   activeConsumer.consumerOnSignalRead(node);
 
   // This producer is the `idx`th dependency of `activeConsumer`.
   const idx = activeConsumer.nextProducerIndex++;
 
   assertConsumerNode(activeConsumer);
+
+  if (node.hasInteropSignalDep) {
+    activeConsumer.hasInteropSignalDep = true;
+  }
 
   if (idx < activeConsumer.producerNode.length && activeConsumer.producerNode[idx] !== node) {
     // There's been a change in producers since the last execution of `activeConsumer`.
@@ -281,7 +297,7 @@ export function producerUpdateValueVersion(node: ReactiveNode): void {
     return;
   }
 
-  if (!node.dirty && node.lastCleanEpoch === epoch) {
+  if (!node.dirty && node.lastCleanEpoch === epoch && !node.hasInteropSignalDep) {
     // Even non-live consumers can skip polling if they previously found themselves to be clean at
     // the current epoch, since their dependencies could not possibly have changed (such a change
     // would've increased the epoch).
@@ -328,7 +344,10 @@ export function producerNotifyConsumers(node: ReactiveNode): void {
  * based on the current consumer context.
  */
 export function producerUpdatesAllowed(): boolean {
-  return activeConsumer?.consumerAllowSignalWrites !== false;
+  return (
+    (getActiveConsumer() as (InteropConsumer & ReactiveNode) | null)?.consumerAllowSignalWrites !==
+    false
+  );
 }
 
 export function consumerMarkDirty(node: ReactiveNode): void {
@@ -348,8 +367,13 @@ export function producerMarkClean(node: ReactiveNode): void {
  * Must be called by subclasses which represent reactive computations, before those computations
  * begin.
  */
-export function consumerBeforeComputation(node: ReactiveNode | null): ReactiveNode | null {
-  node && (node.nextProducerIndex = 0);
+export function consumerBeforeComputation(
+  node: (ReactiveNode & InteropConsumer) | null,
+): InteropConsumer | null {
+  if (node) {
+    node.nextProducerIndex = 0;
+    node.hasInteropSignalDep = false;
+  }
   return setActiveConsumer(node);
 }
 
@@ -361,7 +385,7 @@ export function consumerBeforeComputation(node: ReactiveNode | null): ReactiveNo
  */
 export function consumerAfterComputation(
   node: ReactiveNode | null,
-  prevConsumer: ReactiveNode | null,
+  prevConsumer: InteropConsumer | null,
 ): void {
   setActiveConsumer(prevConsumer);
 
@@ -458,14 +482,19 @@ function producerAddLiveConsumer(
   indexOfThis: number,
 ): number {
   assertProducerNode(node);
-  if (node.liveConsumerNode.length === 0 && isConsumerNode(node)) {
+  const startLive = node.liveConsumerNode.length === 0;
+  if (startLive && isConsumerNode(node)) {
     // When going from 0 to 1 live consumers, we become a live consumer to our producers.
     for (let i = 0; i < node.producerNode.length; i++) {
       node.producerIndexOfThis[i] = producerAddLiveConsumer(node.producerNode[i], node, i);
     }
   }
   node.liveConsumerIndexOfThis.push(indexOfThis);
-  return node.liveConsumerNode.push(consumer) - 1;
+  const res = node.liveConsumerNode.push(consumer) - 1;
+  if (startLive) {
+    node.watched?.();
+  }
+  return res;
 }
 
 /**
@@ -480,7 +509,8 @@ function producerRemoveLiveConsumerAtIndex(node: ReactiveNode, idx: number): voi
     );
   }
 
-  if (node.liveConsumerNode.length === 1 && isConsumerNode(node)) {
+  const stopLive = node.liveConsumerNode.length === 1;
+  if (stopLive && isConsumerNode(node)) {
     // When removing the last live consumer, we will no longer be live. We need to remove
     // ourselves from our producers' tracking (which may cause consumer-producers to lose
     // liveness as well).
@@ -506,6 +536,10 @@ function producerRemoveLiveConsumerAtIndex(node: ReactiveNode, idx: number): voi
     const consumer = node.liveConsumerNode[idx];
     assertConsumerNode(consumer);
     consumer.producerIndexOfThis[idxProducer] = idx;
+  }
+
+  if (stopLive) {
+    node.unwatched?.();
   }
 }
 

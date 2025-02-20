@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {REACTIVE_NODE, ReactiveNode} from '@angular/core/primitives/signals';
+import {REACTIVE_NODE, CONSUMER_NODE, ReactiveNode, Consumer as InteropConsumer} from '@angular/core/primitives/signals';
 
 import {
   LView,
@@ -20,7 +20,7 @@ import {getLViewParent, markAncestorsForTraversal, markViewForRefresh} from './u
 import {assertDefined} from '../util/assert';
 
 let freeConsumers: ReactiveNode[] = [];
-export interface ReactiveLViewConsumer extends ReactiveNode {
+export interface ReactiveLViewConsumer extends ReactiveNode, InteropConsumer {
   lView: LView | null;
 }
 
@@ -50,6 +50,7 @@ export function maybeReturnReactiveLViewConsumer(consumer: ReactiveLViewConsumer
 
 export const REACTIVE_LVIEW_CONSUMER_NODE: Omit<ReactiveLViewConsumer, 'lView'> = {
   ...REACTIVE_NODE,
+  ...CONSUMER_NODE,
   consumerIsAlwaysLive: true,
   kind: 'template',
   consumerMarkedDirty: (node: ReactiveLViewConsumer) => {
@@ -78,8 +79,9 @@ export function getOrCreateTemporaryConsumer(lView: LView): ReactiveLViewConsume
   return consumer;
 }
 
-export const TEMPORARY_CONSUMER_NODE = {
+export const TEMPORARY_CONSUMER_NODE: Omit<ReactiveLViewConsumer, 'lView'> = {
   ...REACTIVE_NODE,
+  ...CONSUMER_NODE,
   consumerIsAlwaysLive: true,
   kind: 'template',
   consumerMarkedDirty: (node: ReactiveLViewConsumer) => {

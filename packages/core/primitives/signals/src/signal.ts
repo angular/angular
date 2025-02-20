@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {beginBatch, Signal as InteropSignal} from './interop_lib';
 import {defaultEquals, ValueEqualityFn} from './equality';
 import {throwInvalidWriteToSignalError} from './errors';
 import {
@@ -17,6 +18,7 @@ import {
   ReactiveNode,
   SIGNAL,
 } from './graph';
+import {PRODUCER_NODE} from './interop';
 
 // Required as the signals library is in a separate package, so we need to explicitly ensure the
 // global `ngDevMode` type is defined.
@@ -30,7 +32,7 @@ declare const ngDevMode: boolean | undefined;
  */
 let postSignalSetFn: (() => void) | null = null;
 
-export interface SignalNode<T> extends ReactiveNode {
+export interface SignalNode<T> extends ReactiveNode, InteropSignal {
   value: T;
   equal: ValueEqualityFn<T>;
 }
@@ -100,6 +102,7 @@ export function runPostSignalSetFn(): void {
 export const SIGNAL_NODE: SignalNode<unknown> = /* @__PURE__ */ (() => {
   return {
     ...REACTIVE_NODE,
+    ...PRODUCER_NODE,
     equal: defaultEquals,
     value: undefined,
     kind: 'signal',
@@ -109,6 +112,15 @@ export const SIGNAL_NODE: SignalNode<unknown> = /* @__PURE__ */ (() => {
 function signalValueChanged<T>(node: SignalNode<T>): void {
   node.version++;
   producerIncrementEpoch();
-  producerNotifyConsumers(node);
-  postSignalSetFn?.();
+  const endBatch = beginBatch();
+  let queueError;
+  try {
+    producerNotifyConsumers(node);
+    postSignalSetFn?.();
+  } finally {
+    queueError = endBatch();
+  }
+  if (queueError) {
+    throw queueError.error;
+  }
 }

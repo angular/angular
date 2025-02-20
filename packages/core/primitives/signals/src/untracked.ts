@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {setActiveConsumer} from './graph';
+import {setActiveConsumer} from './interop_lib';
 
 /**
  * Execute an arbitrary function in a non-reactive (non-tracking) context. The executed function
