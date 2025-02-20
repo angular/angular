@@ -10,7 +10,7 @@ import {setActiveConsumer} from '@angular/core/primitives/signals';
 
 import {NotificationSource} from '../../change_detection/scheduling/zoneless_scheduling';
 import {assertIndexInRange} from '../../util/assert';
-import {NodeOutputBindings, TNode, TNodeType} from '../interfaces/node';
+import {TNode, TNodeType} from '../interfaces/node';
 import {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
 import {RElement} from '../interfaces/renderer_dom';
 import {isComponentHost, isDirectiveHost} from '../interfaces/type_checks';
@@ -238,22 +238,34 @@ export function listenerInternal(
     if (hostDirectiveOutputConfig && hostDirectiveOutputConfig.length) {
       for (let i = 0; i < hostDirectiveOutputConfig.length; i += 2) {
         const index = hostDirectiveOutputConfig[i] as number;
-        ngDevMode && assertIndexInRange(lView, index);
-        const instance = lView[index];
         const lookupName = hostDirectiveOutputConfig[i + 1] as string;
-        const def = tView.data[index] as DirectiveDef<unknown>;
-        const minifiedName = def.outputs[lookupName];
-        listenToOutput(tNode, instance, eventName, minifiedName, listenerFn, lCleanup, tCleanup);
+        listenToOutput(
+          tNode,
+          tView,
+          lView,
+          index,
+          lookupName,
+          eventName,
+          listenerFn,
+          lCleanup,
+          tCleanup,
+        );
       }
     }
 
     if (outputConfig && outputConfig.length) {
-      for (let i = 0; i < outputConfig.length; i += 2) {
-        const index = outputConfig[i] as number;
-        ngDevMode && assertIndexInRange(lView, index);
-        const instance = lView[index];
-        const minifiedName = outputConfig[i + 1] as string;
-        listenToOutput(tNode, instance, eventName, minifiedName, listenerFn, lCleanup, tCleanup);
+      for (const index of outputConfig) {
+        listenToOutput(
+          tNode,
+          tView,
+          lView,
+          index,
+          eventName,
+          eventName,
+          listenerFn,
+          lCleanup,
+          tCleanup,
+        );
       }
     }
   }
@@ -261,13 +273,19 @@ export function listenerInternal(
 
 function listenToOutput(
   tNode: TNode,
-  instance: any,
+  tView: TView,
+  lView: LView,
+  index: number,
+  lookupName: string,
   eventName: string,
-  propertyName: string,
   listenerFn: (e?: any) => any,
   lCleanup: any[],
   tCleanup: any[] | null,
 ) {
+  ngDevMode && assertIndexInRange(lView, index);
+  const instance = lView[index];
+  const def = tView.data[index] as DirectiveDef<unknown>;
+  const propertyName = def.outputs[lookupName];
   const output = instance[propertyName];
 
   if (ngDevMode && !isOutputSubscribable(output)) {

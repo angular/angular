@@ -289,18 +289,14 @@ function setupSelectorMatchedInputsOrOutputs<T>(
 
   for (const publicName in aliasMap) {
     if (aliasMap.hasOwnProperty(publicName)) {
-      const value = aliasMap[publicName];
       let bindings: NodeInputBindings | NodeOutputBindings;
-      let privateName: string;
       if (mode === BindingType.Inputs) {
         bindings = tNode.inputs ??= {};
-        privateName = publicName;
       } else {
         bindings = tNode.outputs ??= {};
-        privateName = value as string;
       }
       bindings[publicName] ??= [];
-      bindings[publicName].push(directiveIndex, privateName);
+      bindings[publicName].push(directiveIndex);
       setShadowStylingInputFlags(tNode, publicName);
     }
   }
@@ -397,10 +393,11 @@ function setupInitialInputs(tNode: TNode, directiveIndex: number, isHostDirectiv
       // through the directive def, but we want to do it using the inputs store so that it can
       // account for host directive aliases.
       const inputConfig = inputs![attrName as string];
-      for (let j = 0; j < inputConfig.length; j += 2) {
-        if (inputConfig[j] === directiveIndex) {
+
+      for (const index of inputConfig) {
+        if (index === directiveIndex) {
           inputsToStore ??= [];
-          inputsToStore.push(inputConfig[j + 1] as string, attrs[i + 1] as string);
+          inputsToStore.push(attrName as string, attrs[i + 1] as string);
           // A directive can't have multiple inputs with the same name so we can break here.
           break;
         }
