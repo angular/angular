@@ -42,13 +42,7 @@ import {
 } from './instructions/shared';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {InputFlags} from './interfaces/input_flags';
-import {
-  NodeInputBindings,
-  TContainerNode,
-  TElementContainerNode,
-  TElementNode,
-  TNode,
-} from './interfaces/node';
+import {TContainerNode, TElementContainerNode, TElementNode, TNode} from './interfaces/node';
 import {RElement, RNode} from './interfaces/renderer_dom';
 import {
   CONTEXT,
@@ -386,31 +380,28 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
   }
 
   override setInput(name: string, value: unknown): void {
-    const inputData = this._tNode.inputs;
-    let dataValue: NodeInputBindings[typeof name] | undefined;
-    if (inputData !== null && (dataValue = inputData[name])) {
-      this.previousInputValues ??= new Map();
-      // Do not set the input if it is the same as the last value
-      // This behavior matches `bindingUpdated` when binding inputs in templates.
-      if (
-        this.previousInputValues.has(name) &&
-        Object.is(this.previousInputValues.get(name), value)
-      ) {
-        return;
-      }
+    const tNode = this._tNode;
+    this.previousInputValues ??= new Map();
+    // Do not set the input if it is the same as the last value
+    // This behavior matches `bindingUpdated` when binding inputs in templates.
+    if (
+      this.previousInputValues.has(name) &&
+      Object.is(this.previousInputValues.get(name), value)
+    ) {
+      return;
+    }
 
-      const lView = this._rootLView;
-      setInputsForProperty(lView[TVIEW], lView, dataValue, name, value);
-      this.previousInputValues.set(name, value);
-      const childComponentLView = getComponentLViewByIndex(this._tNode.index, lView);
-      markViewDirty(childComponentLView, NotificationSource.SetInput);
-    } else {
-      if (ngDevMode) {
-        const cmpNameForError = stringifyForError(this.componentType);
-        let message = `Can't set value of the '${name}' input on the '${cmpNameForError}' component. `;
-        message += `Make sure that the '${name}' property is annotated with @Input() or a mapped @Input('${name}') exists.`;
-        reportUnknownPropertyError(message);
-      }
+    const lView = this._rootLView;
+    const hasSetInput = setInputsForProperty(tNode, lView[TVIEW], lView, name, value);
+    this.previousInputValues.set(name, value);
+    const childComponentLView = getComponentLViewByIndex(tNode.index, lView);
+    markViewDirty(childComponentLView, NotificationSource.SetInput);
+
+    if (ngDevMode && !hasSetInput) {
+      const cmpNameForError = stringifyForError(this.componentType);
+      let message = `Can't set value of the '${name}' input on the '${cmpNameForError}' component. `;
+      message += `Make sure that the '${name}' property is annotated with @Input() or a mapped @Input('${name}') exists.`;
+      reportUnknownPropertyError(message);
     }
   }
 
