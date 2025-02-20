@@ -426,10 +426,20 @@ export interface TNode {
   inputs: NodeInputBindings | null;
 
   /**
+   * Input data for host directives applied to the node.
+   */
+  hostDirectiveInputs: HostDirectiveInputs | null;
+
+  /**
    * Output data for all directives on this node. `null` means that there are no directives with
    * outputs on this node.
    */
   outputs: NodeOutputBindings | null;
+
+  /**
+   * Input data for host directives applied to the node.
+   */
+  hostDirectiveOutputs: HostDirectiveOutputs | null;
 
   /**
    * The TView attached to this node.
@@ -834,6 +844,26 @@ export type InitialInputData = (InitialInputs | null)[];
  * e.g. ['role-min', 'minified-input', 'button']
  */
 export type InitialInputs = string[];
+
+/**
+ * Represents inputs coming from a host directive and exposed on a TNode.
+ *
+ * - The key is the public name of an input as it is exposed on the specific node.
+ * - The value is an array where:
+ *   - i+0: Index of the host directive that should be written to.
+ *   - i+1: Public name of the input as it was defined on the host directive before aliasing.
+ */
+export type HostDirectiveInputs = Record<string, (number | string)[]>;
+
+/**
+ * Represents outputs coming from a host directive and exposed on a TNode.
+ *
+ * - The key is the public name of an output as it is exposed on the specific node.
+ * - The value is an array where:
+ *   - i+0: Index of the host directive on which the output is defined..
+ *   - i+1: Public name of the output as it was defined on the host directive before aliasing.
+ */
+export type HostDirectiveOutputs = Record<string, (number | string)[]>;
 
 /**
  * Type representing a set of TNodes that can have local refs (`#foo`) placed on them.

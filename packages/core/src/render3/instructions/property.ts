@@ -71,8 +71,6 @@ export function setDirectiveInputsWhichShadowsStyling(
   value: any,
   isClassBased: boolean,
 ) {
-  const inputs = tNode.inputs!;
-  const property = isClassBased ? 'class' : 'style';
   // We support both 'class' and `className` hence the fallback.
-  setInputsForProperty(tView, lView, inputs[property], property, value);
+  setInputsForProperty(tNode, tView, lView, isClassBased ? 'class' : 'style', value);
 }
