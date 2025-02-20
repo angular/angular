@@ -782,36 +782,28 @@ export interface TLetDeclarationNode extends TNode {
 export type TDirectiveHostNode = TElementNode | TContainerNode | TElementContainerNode;
 
 /**
- * Store the runtime output names for all the directives.
+ * Maps the public names of outputs available on a specific node to the index
+ * of the directive instance that defines the output, for example:
  *
- * i+0: directive instance index
- * i+1: privateName
- *
- * e.g.
  * ```
  * {
- *   "publicName": [0, 'change-minified']
+ *   "publicName": [0, 5]
  * }
+ * ```
  */
-export type NodeOutputBindings = Record<string, (number | string)[]>;
+export type NodeOutputBindings = Record<string, number[]>;
 
 /**
- * Store the runtime input for all directives applied to a node.
+ * Maps the public names of inputs applied to a specific node to the index of the
+ * directive instance to which the input value should be written, for example:
  *
- * This allows efficiently setting the same input on a directive that
- * might apply to multiple directives.
- *
- * i+0: directive instance index
- * i+1: privateName
- *
- * e.g.
  * ```
  * {
- *   "publicName": [0, 'change-minified']
+ *   "publicName": [0, 5]
  * }
  * ```
  */
-export type NodeInputBindings = Record<string, (number | string)[]>;
+export type NodeInputBindings = Record<string, number[]>;
 
 /**
  * This array contains information about input properties that

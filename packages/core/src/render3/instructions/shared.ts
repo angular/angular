@@ -324,8 +324,6 @@ function setNgReflectProperties(
     return;
   }
 
-  // TODO: this is identical to the block below, but will diverge in a future refactor.
-  // Figure out if we still can't consolidate them somehow.
   const inputConfig = tNode.inputs?.[publicName];
   const hostInputConfig = tNode.hostDirectiveInputs?.[publicName];
 
@@ -340,11 +338,9 @@ function setNgReflectProperties(
 
   // Note: we set the private name of the input as the reflected property, not the public one.
   if (inputConfig) {
-    for (let i = 0; i < inputConfig.length; i += 2) {
-      const index = inputConfig[i] as number;
-      const lookupName = inputConfig[i + 1] as string;
+    for (const index of inputConfig) {
       const def = tView.data[index] as DirectiveDef<unknown>;
-      setNgReflectProperty(lView, tNode, def.inputs[lookupName][0], value);
+      setNgReflectProperty(lView, tNode, def.inputs[publicName][0], value);
     }
   }
 }
@@ -636,8 +632,6 @@ export function setInputsForProperty(
   const hostDirectiveInputs = tNode.hostDirectiveInputs?.[publicName];
   let hasMatch = false;
 
-  // TODO: this is identical to the block below, but will diverge in a future refactor.
-  // Figure out if we still can't consolidate them somehow.
   if (hostDirectiveInputs) {
     for (let i = 0; i < hostDirectiveInputs.length; i += 2) {
       const index = hostDirectiveInputs[i] as number;
@@ -650,13 +644,11 @@ export function setInputsForProperty(
   }
 
   if (inputs) {
-    for (let i = 0; i < inputs.length; i += 2) {
-      const index = inputs[i] as number;
+    for (const index of inputs) {
       ngDevMode && assertIndexInRange(lView, index);
-      const privateName = inputs[i + 1] as string;
       const instance = lView[index];
       const def = tView.data[index] as DirectiveDef<any>;
-      writeToDirectiveInput(def, instance, privateName, value);
+      writeToDirectiveInput(def, instance, publicName, value);
       hasMatch = true;
     }
   }
