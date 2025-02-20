@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+export {getActiveConsumer, setActiveConsumer, Consumer} from './src/interop_lib';
 export {ComputedNode, createComputed} from './src/computed';
 export {
   ComputationFn,
@@ -27,7 +28,6 @@ export {
   consumerDestroy,
   consumerMarkDirty,
   consumerPollProducersForChange,
-  getActiveConsumer,
   isInNotificationPhase,
   isReactive,
   producerAccessed,
@@ -36,7 +36,6 @@ export {
   producerNotifyConsumers,
   producerUpdateValueVersion,
   producerUpdatesAllowed,
-  setActiveConsumer,
 } from './src/graph';
 export {
   SIGNAL_NODE,
@@ -51,3 +50,4 @@ export {
 export {Watch, WatchCleanupFn, WatchCleanupRegisterFn, createWatch} from './src/watch';
 export {setAlternateWeakRefImpl} from './src/weak_ref';
 export {untracked} from './src/untracked';
+export {PRODUCER_NODE, CONSUMER_NODE} from './src/interop';
