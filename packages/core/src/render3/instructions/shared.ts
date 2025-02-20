@@ -249,15 +249,18 @@ export function elementPropertyInternal<T>(
   nativeOnly: boolean,
 ): void {
   ngDevMode && assertNotSame(value, NO_CHANGE as any, 'Incoming value should never be NO_CHANGE.');
-  let inputData = tNode.inputs;
-  let dataValue: NodeInputBindings[typeof propName] | undefined;
-  if (!nativeOnly && inputData != null && (dataValue = inputData[propName])) {
-    setInputsForProperty(tView, lView, dataValue, propName, value);
-    if (isComponentHost(tNode)) markDirtyIfOnPush(lView, tNode.index);
-    if (ngDevMode) {
-      setNgReflectProperties(lView, tView, tNode, dataValue, value);
+
+  if (!nativeOnly) {
+    const hasSetInput = setInputsForProperty(tNode, tView, lView, propName, value);
+
+    if (hasSetInput) {
+      isComponentHost(tNode) && markDirtyIfOnPush(lView, tNode.index);
+      ngDevMode && setNgReflectProperties(lView, tView, tNode, propName, value);
+      return; // Stop propcessing if we've matched at least one input.
     }
-  } else if (tNode.type & TNodeType.AnyRNode) {
+  }
+
+  if (tNode.type & TNodeType.AnyRNode) {
     const element = getNativeByTNode(tNode, lView) as RElement | RComment;
     propName = mapPropName(propName);
 
@@ -310,15 +313,33 @@ function setNgReflectProperty(lView: LView, tNode: TNode, attrName: string, valu
   }
 }
 
-export function setNgReflectProperties(
+function setNgReflectProperties(
   lView: LView,
   tView: TView,
   tNode: TNode,
-  inputConfig: NodeInputBindings[string],
+  publicName: string,
   value: any,
 ) {
-  if (tNode.type & (TNodeType.AnyRNode | TNodeType.Container)) {
-    // Note: we set the private name of the input as the reflected property, not the public one.
+  if (!(tNode.type & (TNodeType.AnyRNode | TNodeType.Container))) {
+    return;
+  }
+
+  // TODO: this is identical to the block below, but will diverge in a future refactor.
+  // Figure out if we still can't consolidate them somehow.
+  const inputConfig = tNode.inputs?.[publicName];
+  const hostInputConfig = tNode.hostDirectiveInputs?.[publicName];
+
+  if (hostInputConfig) {
+    for (let i = 0; i < hostInputConfig.length; i += 2) {
+      const index = hostInputConfig[i] as number;
+      const publicName = hostInputConfig[i + 1] as string;
+      const def = tView.data[index] as DirectiveDef<unknown>;
+      setNgReflectProperty(lView, tNode, def.inputs[publicName][0], value);
+    }
+  }
+
+  // Note: we set the private name of the input as the reflected property, not the public one.
+  if (inputConfig) {
     for (let i = 0; i < inputConfig.length; i += 2) {
       const index = inputConfig[i] as number;
       const lookupName = inputConfig[i + 1] as string;
@@ -555,7 +576,7 @@ export function storePropertyBindingMetadata(
   // Since we don't have a concept of the "first update pass" we need to check for presence of the
   // binding meta-data to decide if one should be stored (or if was stored already).
   if (tData[bindingIndex] === null) {
-    if (tNode.inputs == null || !tNode.inputs[propertyName]) {
+    if (!tNode.inputs?.[propertyName] && !tNode.hostDirectiveInputs?.[propertyName]) {
       const propBindingIdxs = tNode.propertyBindings || (tNode.propertyBindings = []);
       propBindingIdxs.push(bindingIndex);
       let bindingMetadata = propertyName;
@@ -599,25 +620,46 @@ export function handleError(lView: LView, error: any): void {
 /**
  * Set the inputs of directives at the current node to corresponding value.
  *
+ * @param tNode TNode on which the input is being set.
  * @param tView The current TView
  * @param lView the `LView` which contains the directives.
- * @param inputs mapping between the public "input" name and privately-known,
- *        possibly minified, property names to write to.
  * @param value Value to set.
  */
 export function setInputsForProperty(
+  tNode: TNode,
   tView: TView,
   lView: LView,
-  inputs: NodeInputBindings[typeof publicName],
   publicName: string,
   value: unknown,
-): void {
-  for (let i = 0; i < inputs.length; i += 2) {
-    const index = inputs[i] as number;
-    ngDevMode && assertIndexInRange(lView, index);
-    const privateName = inputs[i + 1] as string;
-    const instance = lView[index];
-    const def = tView.data[index] as DirectiveDef<any>;
-    writeToDirectiveInput(def, instance, privateName, value);
+): boolean {
+  const inputs = tNode.inputs?.[publicName];
+  const hostDirectiveInputs = tNode.hostDirectiveInputs?.[publicName];
+  let hasMatch = false;
+
+  // TODO: this is identical to the block below, but will diverge in a future refactor.
+  // Figure out if we still can't consolidate them somehow.
+  if (hostDirectiveInputs) {
+    for (let i = 0; i < hostDirectiveInputs.length; i += 2) {
+      const index = hostDirectiveInputs[i] as number;
+      ngDevMode && assertIndexInRange(lView, index);
+      const publicName = hostDirectiveInputs[i + 1] as string;
+      const def = tView.data[index] as DirectiveDef<unknown>;
+      writeToDirectiveInput(def, lView[index], publicName, value);
+      hasMatch = true;
+    }
   }
+
+  if (inputs) {
+    for (let i = 0; i < inputs.length; i += 2) {
+      const index = inputs[i] as number;
+      ngDevMode && assertIndexInRange(lView, index);
+      const privateName = inputs[i + 1] as string;
+      const instance = lView[index];
+      const def = tView.data[index] as DirectiveDef<any>;
+      writeToDirectiveInput(def, instance, privateName, value);
+      hasMatch = true;
+    }
+  }
+
+  return hasMatch;
 }

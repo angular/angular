@@ -29,6 +29,7 @@ import {
 
 import {markViewDirty} from './mark_view_dirty';
 import {handleError, loadComponentRenderer} from './shared';
+import {DirectiveDef} from '../interfaces/definition';
 
 /**
  * Contains a reference to a function that disables event replay feature
@@ -159,7 +160,7 @@ export function listenerInternal(
 ): void {
   const isTNodeDirectiveHost = isDirectiveHost(tNode);
   const firstCreatePass = tView.firstCreatePass;
-  const tCleanup: false | any[] = firstCreatePass && getOrCreateTViewCleanup(tView);
+  const tCleanup = firstCreatePass ? getOrCreateTViewCleanup(tView) : null;
   const context = lView[CONTEXT];
 
   // When the ɵɵlistener instruction was generated and is executed we know that there is either a
@@ -230,32 +231,53 @@ export function listenerInternal(
     listenerFn = wrapListener(tNode, lView, context, listenerFn);
   }
 
-  // subscribe to directive outputs
-  const outputs = tNode.outputs;
-  let props: NodeOutputBindings[keyof NodeOutputBindings] | undefined;
-  if (processOutputs && outputs !== null && (props = outputs[eventName])) {
-    const propsLength = props.length;
-    if (propsLength) {
-      for (let i = 0; i < propsLength; i += 2) {
-        const index = props[i] as number;
+  if (processOutputs) {
+    const outputConfig = tNode.outputs?.[eventName];
+    const hostDirectiveOutputConfig = tNode.hostDirectiveOutputs?.[eventName];
+
+    if (hostDirectiveOutputConfig && hostDirectiveOutputConfig.length) {
+      for (let i = 0; i < hostDirectiveOutputConfig.length; i += 2) {
+        const index = hostDirectiveOutputConfig[i] as number;
         ngDevMode && assertIndexInRange(lView, index);
-        const minifiedName = props[i + 1];
-        const directiveInstance = lView[index];
-        const output = directiveInstance[minifiedName];
+        const instance = lView[index];
+        const lookupName = hostDirectiveOutputConfig[i + 1] as string;
+        const def = tView.data[index] as DirectiveDef<unknown>;
+        const minifiedName = def.outputs[lookupName];
+        listenToOutput(tNode, instance, eventName, minifiedName, listenerFn, lCleanup, tCleanup);
+      }
+    }
 
-        if (ngDevMode && !isOutputSubscribable(output)) {
-          throw new Error(
-            `@Output ${minifiedName} not initialized in '${directiveInstance.constructor.name}'.`,
-          );
-        }
-
-        const subscription = (output as SubscribableOutput<unknown>).subscribe(listenerFn);
-        const idx = lCleanup.length;
-        lCleanup.push(listenerFn, subscription);
-        tCleanup && tCleanup.push(eventName, tNode.index, idx, -(idx + 1));
+    if (outputConfig && outputConfig.length) {
+      for (let i = 0; i < outputConfig.length; i += 2) {
+        const index = outputConfig[i] as number;
+        ngDevMode && assertIndexInRange(lView, index);
+        const instance = lView[index];
+        const minifiedName = outputConfig[i + 1] as string;
+        listenToOutput(tNode, instance, eventName, minifiedName, listenerFn, lCleanup, tCleanup);
       }
     }
   }
+}
+
+function listenToOutput(
+  tNode: TNode,
+  instance: any,
+  eventName: string,
+  propertyName: string,
+  listenerFn: (e?: any) => any,
+  lCleanup: any[],
+  tCleanup: any[] | null,
+) {
+  const output = instance[propertyName];
+
+  if (ngDevMode && !isOutputSubscribable(output)) {
+    throw new Error(`@Output ${propertyName} not initialized in '${instance.constructor.name}'.`);
+  }
+
+  const subscription = (output as SubscribableOutput<unknown>).subscribe(listenerFn);
+  const idx = lCleanup.length;
+  lCleanup.push(listenerFn, subscription);
+  tCleanup && tCleanup.push(eventName, tNode.index, idx, -(idx + 1));
 }
 
 function executeListenerWithErrorHandling(
