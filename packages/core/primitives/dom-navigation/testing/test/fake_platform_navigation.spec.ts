@@ -577,6 +577,17 @@ describe('navigation', () => {
       await expectAsync(finished).toBeResolvedTo(committedEntry);
     });
 
+    it('push, finish, push does not result in abort of first', async () => {
+      locals.pendingInterceptOptions.push({});
+
+      const {finished} = locals.navigation.navigate('/test');
+      const [navigateEvent] = locals.navigateEvents;
+      await finished;
+      locals.pendingInterceptOptions.push({});
+      await locals.navigation.navigate('/other').finished;
+      expect(navigateEvent.signal.aborted).toBeFalse();
+    });
+
     it('push with interruption', async () => {
       locals.pendingInterceptOptions.push({
         handler: () => new Promise(() => {}),

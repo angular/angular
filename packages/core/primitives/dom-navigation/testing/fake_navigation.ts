@@ -452,6 +452,11 @@ export class FakeNavigation implements Navigation {
     });
 
     this.navigateEvent = navigateEvent;
+    result.finished.then(() => {
+      if (this.navigateEvent === navigateEvent) {
+        this.navigateEvent = undefined;
+      }
+    });
     this.eventTarget.dispatchEvent(navigateEvent);
     navigateEvent.dispatchedNavigateEvent();
     if (navigateEvent.commitOption === 'immediate') {
