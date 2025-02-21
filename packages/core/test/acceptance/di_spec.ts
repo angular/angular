@@ -60,6 +60,7 @@ import {
   ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID,
   ɵINJECTOR_SCOPE,
   ɵInternalEnvironmentProviders as InternalEnvironmentProviders,
+  DestroyRef,
 } from '@angular/core';
 import {RuntimeError, RuntimeErrorCode} from '@angular/core/src/errors';
 import {ViewRef as ViewRefInternal} from '@angular/core/src/render3/view_ref';
@@ -6528,5 +6529,27 @@ describe('di', () => {
     ]);
 
     expect(injector.get(token)).toBe('module');
+  });
+
+  it('should be able to destroy programmatically created injectors', () => {
+    @Injectable()
+    class Service {
+      ngOnDestroy() {}
+    }
+
+    const parentInjector = Injector.create({
+      providers: [Service],
+      parent: TestBed.inject(Injector),
+    });
+
+    const childInjector = Injector.create({providers: [Service], parent: parentInjector});
+
+    const instance = childInjector.get(Service);
+    const destroySpy = spyOn(instance, 'ngOnDestroy');
+
+    parentInjector.get(DestroyRef).onDestroy(() => childInjector.destroy());
+    parentInjector.destroy();
+
+    expect(destroySpy).toHaveBeenCalled();
   });
 });

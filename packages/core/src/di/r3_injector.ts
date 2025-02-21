@@ -113,6 +113,8 @@ interface Record<T> {
 /**
  * An `Injector` that's part of the environment injector hierarchy, which exists outside of the
  * component tree.
+ *
+ * @publicApi
  */
 export abstract class EnvironmentInjector implements Injector {
   /**
