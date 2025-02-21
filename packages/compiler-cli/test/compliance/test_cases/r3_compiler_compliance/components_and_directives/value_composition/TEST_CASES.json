@@ -273,6 +273,16 @@
           "files": ["tagged_template_literals.js"]
         }
       ]
+    },
+    {
+      "description": "should support $localize template literals",
+      "inputFiles": ["localize_template_literals.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid $localize template literal binding",
+          "files": ["localize_template_literals.js"]
+        }
+      ]
     }
   ]
 }

@@ -3605,6 +3605,11 @@ describe('runtime i18n', () => {
       'translatedText value',
     );
   });
+
+  it('should support $localize in template', () => {
+    const fixture = initWithTemplate(AppComp, '<div>{{ $localize`Hello, ${name}!` }}</div>');
+    expect(fixture.nativeElement.innerHTML).toEqual('<div>Hello, Angular!</div>');
+  });
 });
 
 function initWithTemplate(compType: Type<any>, template: string) {
