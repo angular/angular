@@ -232,7 +232,6 @@ export class FakeNavigation implements Navigation {
       // Always false for pushState() or replaceState().
       userInitiated: false,
       hashChange,
-      triggeredByHistoryApi: true,
     });
   }
 
@@ -456,7 +455,6 @@ export class FakeNavigation implements Navigation {
       destination,
       info: options.info,
       sameDocument: destination.sameDocument,
-      triggeredByHistoryApi: options.triggeredByHistoryApi,
       result,
     });
   }
@@ -479,32 +477,12 @@ export class FakeNavigation implements Navigation {
     }
     // "If navigationType is "push" or "replace", then run the URL and history update steps given document and event's destination's URL, with serialiedData set to event's classic history API state and historyHandling set to navigationType."
     if (navigateEvent.navigationType === 'push' || navigateEvent.navigationType === 'replace') {
-      // TODO(atscott): The spec doesn't have this branch and only does urlAndHistoryUpdateSteps
-      // but I cannot find where popstate
-      if (navigateEvent.triggeredByHistoryApi) {
-        this.urlAndHistoryUpdateSteps(navigateEvent);
-      } else {
-        this.updateDocumentForHistoryStepApplication(navigateEvent);
-      }
+      this.urlAndHistoryUpdateSteps(navigateEvent);
     } else if (navigateEvent.navigationType === 'reload') {
       this.updateNavigationEntriesForSameDocumentNavigation(navigateEvent);
     } else if (navigateEvent.navigationType === 'traverse') {
       // "If navigationType is "traverse", then this event firing is happening as part of the traversal process, and that process will take care of performing the appropriate session history entry updates."
     }
-  }
-
-  /**
-   * https://html.spec.whatwg.org/multipage/browsing-the-web.html#update-document-for-history-step-application
-   * @param navigateEvent
-   */
-  private updateDocumentForHistoryStepApplication(navigateEvent: InternalFakeNavigateEvent) {
-    this.updateNavigationEntriesForSameDocumentNavigation(navigateEvent);
-    // Happens as part of "updating the document" steps https://whatpr.org/html/10919/browsing-the-web.html#updating-the-document
-    const popStateEvent = createPopStateEvent({
-      state: navigateEvent.destination.getHistoryState(),
-    });
-    this.window.dispatchEvent(popStateEvent);
-    // TODO(atscott): If oldURL's fragment is not equal to entry's URL's fragment, then queue a global task to fire an event named hashchange
   }
 
   /**
@@ -533,6 +511,7 @@ export class FakeNavigation implements Navigation {
       state: navigateEvent.destination.getHistoryState(),
     });
     this.window.dispatchEvent(popStateEvent);
+    // TODO(atscott): If oldURL's fragment is not equal to entry's URL's fragment, then queue a global task to fire an event named hashchange
   }
 
   /** https://whatpr.org/html/10919/nav-history-apis.html#update-the-navigation-api-entries-for-a-same-document-navigation */
@@ -770,7 +749,6 @@ export interface FakeNavigateEvent extends ExperimentalNavigateEvent {
 
 interface InternalFakeNavigateEvent extends FakeNavigateEvent {
   readonly sameDocument: boolean;
-  readonly triggeredByHistoryApi?: boolean;
   readonly commitOption: 'after-transition' | 'immediate';
   readonly result: InternalNavigationResult;
   interceptionState: 'none' | 'intercepted' | 'committed' | 'scrolled' | 'finished';
@@ -797,7 +775,6 @@ function dispatchNavigateEvent({
   destination,
   info,
   sameDocument,
-  triggeredByHistoryApi,
   result,
 }: {
   cancelable: boolean;
@@ -809,7 +786,6 @@ function dispatchNavigateEvent({
   destination: FakeNavigationDestination;
   info: unknown;
   sameDocument: boolean;
-  triggeredByHistoryApi?: boolean;
   result: InternalNavigationResult;
 }) {
   const {navigation} = result;
@@ -831,7 +807,6 @@ function dispatchNavigateEvent({
   event.result = result;
 
   event.sameDocument = sameDocument;
-  event.triggeredByHistoryApi = triggeredByHistoryApi;
   event.commitOption = 'immediate';
 
   let handlersFinished = [Promise.resolve()];
@@ -1164,5 +1139,4 @@ interface InternalNavigateOptions {
   userInitiated: boolean;
   hashChange: boolean;
   info?: unknown;
-  triggeredByHistoryApi?: boolean;
 }

@@ -195,15 +195,13 @@ describe('navigation', () => {
         }),
       );
       expect(currentEntryChangeEvent.from.getState()).toBe(initialEntry.getState());
-      expect(locals.popStateEvents.length).toBe(1);
-      const popStateEvent = locals.popStateEvents[0];
-      expect(popStateEvent.state).toBeNull();
+      expect(locals.popStateEvents.length).toBe(0);
       const finishedEntry = await finished;
       expect(committedEntry).toBe(finishedEntry);
       expect(locals.navigation.currentEntry).toBe(finishedEntry);
       expect(locals.navigateEvents.length).toBe(1);
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
-      expect(locals.popStateEvents.length).toBe(1);
+      expect(locals.popStateEvents.length).toBe(0);
     });
 
     it('push URL relative', async () => {
@@ -270,15 +268,13 @@ describe('navigation', () => {
         }),
       );
       expect(currentEntryChangeEvent.from.getState()).toBe(initialEntry.getState());
-      expect(locals.popStateEvents.length).toBe(1);
-      const popStateEvent = locals.popStateEvents[0];
-      expect(popStateEvent.state).toBeNull();
+      expect(locals.popStateEvents.length).toBe(0);
       const finishedEntry = await finished;
       expect(committedEntry).toBe(finishedEntry);
       expect(locals.navigation.currentEntry).toBe(finishedEntry);
       expect(locals.navigateEvents.length).toBe(1);
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
-      expect(locals.popStateEvents.length).toBe(1);
+      expect(locals.popStateEvents.length).toBe(0);
     });
 
     it('push URL with state', async () => {
@@ -293,7 +289,7 @@ describe('navigation', () => {
       const committedEntry = await committed;
       expect(committedEntry.getState()).toEqual(state);
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
-      expect(locals.popStateEvents.length).toBe(1);
+      expect(locals.popStateEvents.length).toBe(0);
       const finishedEntry = await finished;
       expect(committedEntry).toBe(finishedEntry);
     });
@@ -311,7 +307,7 @@ describe('navigation', () => {
       const committedEntry = await committed;
       expect(committedEntry.getState()).toEqual(state);
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
-      expect(locals.popStateEvents.length).toBe(1);
+      expect(locals.popStateEvents.length).toBe(0);
       const finishedEntry = await finished;
       expect(committedEntry).toBe(finishedEntry);
     });
@@ -325,7 +321,7 @@ describe('navigation', () => {
       const committedEntry = await committed;
       expect(committedEntry.url).toBe('https://test.com/#test');
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
-      expect(locals.popStateEvents.length).toBe(1);
+      expect(locals.popStateEvents.length).toBe(0);
       const finishedEntry = await finished;
       expect(committedEntry).toBe(finishedEntry);
     });
@@ -341,7 +337,7 @@ describe('navigation', () => {
       const committedEntry = await committed;
       expect(committedEntry.url).toBe('https://test.com/#test');
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
-      expect(locals.popStateEvents.length).toBe(1);
+      expect(locals.popStateEvents.length).toBe(0);
       const finishedEntry = await finished;
       expect(committedEntry).toBe(finishedEntry);
     });
@@ -355,7 +351,7 @@ describe('navigation', () => {
       expect(navigateEvent.info).toBe(info);
       await committed;
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
-      expect(locals.popStateEvents.length).toBe(1);
+      expect(locals.popStateEvents.length).toBe(0);
       await finished;
     });
 
@@ -371,7 +367,7 @@ describe('navigation', () => {
       expect(navigateEvent.info).toBe(info);
       await committed;
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
-      expect(locals.popStateEvents.length).toBe(1);
+      expect(locals.popStateEvents.length).toBe(0);
       await finished;
     });
 
@@ -397,7 +393,7 @@ describe('navigation', () => {
       );
       expect(committedEntry.getState()).toBeUndefined();
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
-      expect(locals.popStateEvents.length).toBe(1);
+      expect(locals.popStateEvents.length).toBe(0);
       await expectAsync(finished).toBePending();
       handlerFinishedResolve(undefined);
       await expectAsync(finished).toBeResolvedTo(committedEntry);
@@ -427,7 +423,7 @@ describe('navigation', () => {
       );
       expect(committedEntry.getState()).toBeUndefined();
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
-      expect(locals.popStateEvents.length).toBe(1);
+      expect(locals.popStateEvents.length).toBe(0);
       await expectAsync(finished).toBePending();
       handlerFinishedResolve(undefined);
       await expectAsync(finished).toBeResolvedTo(committedEntry);
@@ -459,7 +455,7 @@ describe('navigation', () => {
       );
       expect(committedEntry.getState()).toBeUndefined();
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
-      expect(locals.popStateEvents.length).toBe(1);
+      expect(locals.popStateEvents.length).toBe(0);
       await expectAsync(finished).toBePending();
       handlerFinishedResolve(undefined);
       await expectAsync(finished).toBeResolvedTo(committedEntry);
@@ -491,7 +487,7 @@ describe('navigation', () => {
       );
       expect(committedEntry.getState()).toBeUndefined();
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
-      expect(locals.popStateEvents.length).toBe(1);
+      expect(locals.popStateEvents.length).toBe(0);
       await expectAsync(finished).toBeResolvedTo(committedEntry);
     });
 
@@ -573,7 +569,7 @@ describe('navigation', () => {
       );
       expect(committedEntry.getState()).toBeUndefined();
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
-      expect(locals.popStateEvents.length).toBe(1);
+      expect(locals.popStateEvents.length).toBe(0);
       await expectAsync(finished).toBeResolvedTo(committedEntry);
     });
 
@@ -598,7 +594,7 @@ describe('navigation', () => {
       const navigateEvent = locals.navigateEvents[0];
       await committed;
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
-      expect(locals.popStateEvents.length).toBe(1);
+      expect(locals.popStateEvents.length).toBe(0);
       await expectAsync(finished).toBePending();
       locals.pendingInterceptOptions.push({});
       const interruptResult = locals.navigation.navigate('/interrupt');
@@ -606,7 +602,7 @@ describe('navigation', () => {
       expect(navigateEvent.signal.aborted).toBeTrue();
       await interruptResult.committed;
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(2);
-      expect(locals.popStateEvents.length).toBe(2);
+      expect(locals.popStateEvents.length).toBe(0);
       await interruptResult.finished;
     });
 
@@ -622,7 +618,7 @@ describe('navigation', () => {
       const navigateEvent = locals.navigateEvents[0];
       await committed;
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
-      expect(locals.popStateEvents.length).toBe(1);
+      expect(locals.popStateEvents.length).toBe(0);
       await expectAsync(finished).toBePending();
       locals.pendingInterceptOptions.push({});
       const interruptResult = locals.navigation.navigate('/interrupt');
@@ -630,7 +626,7 @@ describe('navigation', () => {
       expect(navigateEvent.signal.aborted).toBeTrue();
       await interruptResult.committed;
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(2);
-      expect(locals.popStateEvents.length).toBe(2);
+      expect(locals.popStateEvents.length).toBe(0);
       await interruptResult.finished;
     });
 
@@ -648,7 +644,7 @@ describe('navigation', () => {
       const navigateEvent = locals.navigateEvents[0];
       await committed;
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
-      expect(locals.popStateEvents.length).toBe(1);
+      expect(locals.popStateEvents.length).toBe(0);
       await expectAsync(finished).toBePending();
       const error = new Error('rejected');
       handlerFinishedReject(error);
@@ -672,7 +668,7 @@ describe('navigation', () => {
       const navigateEvent = locals.navigateEvents[0];
       await committed;
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
-      expect(locals.popStateEvents.length).toBe(1);
+      expect(locals.popStateEvents.length).toBe(0);
       await expectAsync(finished).toBePending();
       const error = new Error('rejected');
       handlerFinishedReject(error);
@@ -900,7 +896,7 @@ describe('navigation', () => {
       expect(navigateEvent.signal.aborted).toBeTrue();
       await interruptResult.committed;
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(2);
-      expect(locals.popStateEvents.length).toBe(2);
+      expect(locals.popStateEvents.length).toBe(1);
       await interruptResult.finished;
     });
 
@@ -1192,7 +1188,7 @@ describe('navigation', () => {
         }),
       );
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
-      expect(locals.popStateEvents.length).toBe(1);
+      expect(locals.popStateEvents.length).toBe(0);
       const navigateResultFinishedEntry = await navigateResult.finished;
       expect(navigateResultFinishedEntry).toBe(navigateResultCommittedEntry);
       expect(locals.navigation.currentEntry).toBe(navigateResultCommittedEntry);
@@ -1211,7 +1207,7 @@ describe('navigation', () => {
         }),
       );
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(2);
-      expect(locals.popStateEvents.length).toBe(2);
+      expect(locals.popStateEvents.length).toBe(1);
       const firstTraverseFinishedEntry = await firstTraverseResult.finished;
       expect(firstTraverseFinishedEntry).toBe(firstPageEntry);
       expect(locals.navigation.currentEntry).toBe(firstPageEntry);
@@ -1230,7 +1226,7 @@ describe('navigation', () => {
         }),
       );
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(3);
-      expect(locals.popStateEvents.length).toBe(3);
+      expect(locals.popStateEvents.length).toBe(2);
       const secondTraverseFinishedEntry = await secondTraverseResult.finished;
       expect(secondTraverseFinishedEntry).toBe(secondPageEntry);
       expect(locals.navigation.currentEntry).toBe(secondPageEntry);
@@ -1458,7 +1454,7 @@ describe('navigation', () => {
         expect(navigateEvent.signal.aborted).toBeTrue();
         await interruptResult.committed;
         expect(locals.navigationCurrentEntryChangeEvents.length).toBe(2);
-        expect(locals.popStateEvents.length).toBe(1);
+        expect(locals.popStateEvents.length).toBe(0);
         await interruptResult.finished;
       });
 
@@ -1477,7 +1473,7 @@ describe('navigation', () => {
         expect(navigateEvent.signal.aborted).toBeTrue();
         await interruptResult.committed;
         expect(locals.navigationCurrentEntryChangeEvents.length).toBe(2);
-        expect(locals.popStateEvents.length).toBe(1);
+        expect(locals.popStateEvents.length).toBe(0);
         await interruptResult.finished;
       });
 
@@ -1705,7 +1701,7 @@ describe('navigation', () => {
         await interruptResult.committed;
         expect(navigateEvent.signal.aborted).toBeTrue();
         expect(locals.navigationCurrentEntryChangeEvents.length).toBe(2);
-        expect(locals.popStateEvents.length).toBe(2);
+        expect(locals.popStateEvents.length).toBe(1);
         await interruptResult.finished;
       });
 
@@ -1836,17 +1832,17 @@ describe('navigation', () => {
         const interruptEntry = await interruptResult.finished;
         expect(locals.navigation.currentEntry).toBe(interruptEntry);
         expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
-        expect(locals.popStateEvents.length).toBe(1);
+        expect(locals.popStateEvents.length).toBe(0);
         const firstNavigateEvent = await locals.nextNavigateEvent();
         expect(firstNavigateEvent.destination.key).toBe(secondPageEntry.key);
         expect(locals.navigation.currentEntry).toBe(secondPageEntry);
         expect(locals.navigationCurrentEntryChangeEvents.length).toBe(2);
-        expect(locals.popStateEvents.length).toBe(2);
+        expect(locals.popStateEvents.length).toBe(1);
         const secondNavigateEvent = await locals.nextNavigateEvent();
         expect(secondNavigateEvent.destination.key).toBe(thirdPageEntry.key);
         expect(locals.navigation.currentEntry).toBe(thirdPageEntry);
         expect(locals.navigationCurrentEntryChangeEvents.length).toBe(3);
-        expect(locals.popStateEvents.length).toBe(3);
+        expect(locals.popStateEvents.length).toBe(2);
       });
     });
   });
