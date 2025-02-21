@@ -204,7 +204,6 @@
   "detectChangesInEmbeddedViews",
   "detectChangesInView",
   "detectChangesInViewIfAttached",
-  "detectChangesInViewIfRequired",
   "detectChangesInternal",
   "diPublicInInjector",
   "enterDI",

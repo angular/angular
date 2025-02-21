@@ -669,13 +669,8 @@ export class ApplicationRef {
       this.dirtyFlags |= ApplicationRefDirtyFlags.AfterRender;
 
       // Check all potentially dirty views.
-      for (let {_lView, notifyErrorHandler} of this.allViews) {
-        detectChangesInViewIfRequired(
-          _lView,
-          notifyErrorHandler,
-          useGlobalCheck,
-          this.zonelessEnabled,
-        );
+      for (let {_lView} of this.allViews) {
+        detectChangesInViewIfRequired(_lView, useGlobalCheck, this.zonelessEnabled);
       }
 
       // If `markForCheck()` was called during view checking, it will have set the `ViewTreeCheck`
@@ -893,7 +888,6 @@ export const enum ApplicationRefDirtyFlags {
 
 export function detectChangesInViewIfRequired(
   lView: LView,
-  notifyErrorHandler: boolean,
   isFirstPass: boolean,
   zonelessEnabled: boolean,
 ) {
@@ -910,5 +904,5 @@ export function detectChangesInViewIfRequired(
         ChangeDetectionMode.Global
       : // Only refresh views with the `RefreshView` flag or views is a changed signal
         ChangeDetectionMode.Targeted;
-  detectChangesInternal(lView, notifyErrorHandler, mode);
+  detectChangesInternal(lView, mode);
 }
