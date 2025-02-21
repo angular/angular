@@ -290,4 +290,32 @@ describe('form', () => {
       expect(f.$.metadata()).toEqual({label: '(1, 0)'});
     });
   });
+
+  it('nested arrays', () => {
+    const s = schema<number[][]>((grid) => {
+      each(grid, (row, rowidx) => {
+        each(row, (col, colidx) => {
+          rule(
+            col,
+            when(() => rowidx % 2 === 0 && colidx % 2 === 0, error('some error')),
+          );
+        });
+      });
+    });
+
+    const f = form(
+      signal([
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+      ]),
+      s,
+    );
+
+    expect(f[0][0].$.errors()).toEqual([{type: 'custom', message: 'some error'}]);
+    expect(f[1][0].$.errors()).toEqual([]);
+    expect(f[0][1].$.errors()).toEqual([]);
+    expect(f[1][1].$.errors()).toEqual([]);
+    expect(f[2][2].$.errors()).toEqual([{type: 'custom', message: 'some error'}]);
+  });
 });
