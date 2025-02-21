@@ -6,22 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {signalAsReadonlyFn, WritableSignal} from './signal';
-import {Signal, ValueEqualityFn} from './api';
 import {
+  consumerAfterComputation,
+  consumerBeforeComputation,
+  defaultEquals,
+  producerAccessed,
   producerMarkClean,
+  producerUpdateValueVersion,
+  REACTIVE_NODE,
   ReactiveNode,
   SIGNAL,
   signalSetFn,
   signalUpdateFn,
-  producerUpdateValueVersion,
-  REACTIVE_NODE,
-  defaultEquals,
-  consumerBeforeComputation,
-  consumerAfterComputation,
-  producerAccessed,
 } from '@angular/core/primitives/signals';
 import {performanceMarkFeature} from '../../util/performance';
+import {Signal, ValueEqualityFn} from './api';
+import {signalAsReadonlyFn, WritableSignal} from './signal';
 
 type ComputationFn<S, D> = (source: S, previous?: {source: S; value: D}) => D;
 
