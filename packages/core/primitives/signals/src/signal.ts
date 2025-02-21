@@ -30,7 +30,7 @@ declare const ngDevMode: boolean | undefined;
  */
 let postSignalSetFn: (() => void) | null = null;
 
-export interface SignalNode<T> extends ReactiveNode {
+export interface test<T> extends ReactiveNode {
   value: T;
   equal: ValueEqualityFn<T>;
 }
@@ -40,7 +40,7 @@ export type SignalBaseGetter<T> = (() => T) & {readonly [SIGNAL]: unknown};
 // Note: Closure *requires* this to be an `interface` and not a type, which is why the
 // `SignalBaseGetter` type exists to provide the correct shape.
 export interface SignalGetter<T> extends SignalBaseGetter<T> {
-  readonly [SIGNAL]: SignalNode<T>;
+  readonly [SIGNAL]: test<T>;
 }
 
 /**
