@@ -232,7 +232,6 @@ export class FakeNavigation implements Navigation {
       // Always false for pushState() or replaceState().
       userInitiated: false,
       hashChange,
-      triggeredByHistoryApi: true,
     });
   }
 
@@ -456,7 +455,6 @@ export class FakeNavigation implements Navigation {
       destination,
       info: options.info,
       sameDocument: destination.sameDocument,
-      triggeredByHistoryApi: options.triggeredByHistoryApi,
       result,
     });
   }
@@ -479,32 +477,12 @@ export class FakeNavigation implements Navigation {
     }
     // "If navigationType is "push" or "replace", then run the URL and history update steps given document and event's destination's URL, with serialiedData set to event's classic history API state and historyHandling set to navigationType."
     if (navigateEvent.navigationType === 'push' || navigateEvent.navigationType === 'replace') {
-      // TODO(atscott): The spec doesn't have this branch and only does urlAndHistoryUpdateSteps
-      // but I cannot find where popstate
-      if (navigateEvent.triggeredByHistoryApi) {
-        this.urlAndHistoryUpdateSteps(navigateEvent);
-      } else {
-        this.updateDocumentForHistoryStepApplication(navigateEvent);
-      }
+      this.urlAndHistoryUpdateSteps(navigateEvent);
     } else if (navigateEvent.navigationType === 'reload') {
       this.updateNavigationEntriesForSameDocumentNavigation(navigateEvent);
     } else if (navigateEvent.navigationType === 'traverse') {
       // "If navigationType is "traverse", then this event firing is happening as part of the traversal process, and that process will take care of performing the appropriate session history entry updates."
     }
-  }
-
-  /**
-   * https://html.spec.whatwg.org/multipage/browsing-the-web.html#update-document-for-history-step-application
-   * @param navigateEvent
-   */
-  private updateDocumentForHistoryStepApplication(navigateEvent: InternalFakeNavigateEvent) {
-    this.updateNavigationEntriesForSameDocumentNavigation(navigateEvent);
-    // Happens as part of "updating the document" steps https://whatpr.org/html/10919/browsing-the-web.html#updating-the-document
-    const popStateEvent = createPopStateEvent({
-      state: navigateEvent.destination.getHistoryState(),
-    });
-    this.window.dispatchEvent(popStateEvent);
-    // TODO(atscott): If oldURL's fragment is not equal to entry's URL's fragment, then queue a global task to fire an event named hashchange
   }
 
   /**
@@ -533,6 +511,7 @@ export class FakeNavigation implements Navigation {
       state: navigateEvent.destination.getHistoryState(),
     });
     this.window.dispatchEvent(popStateEvent);
+    // TODO(atscott): If oldURL's fragment is not equal to entry's URL's fragment, then queue a global task to fire an event named hashchange
   }
 
   /** https://whatpr.org/html/10919/nav-history-apis.html#update-the-navigation-api-entries-for-a-same-document-navigation */
@@ -770,10 +749,10 @@ export interface FakeNavigateEvent extends ExperimentalNavigateEvent {
 
 interface InternalFakeNavigateEvent extends FakeNavigateEvent {
   readonly sameDocument: boolean;
-  readonly triggeredByHistoryApi?: boolean;
   readonly commitOption: 'after-transition' | 'immediate';
   readonly result: InternalNavigationResult;
-  interceptionState: 'none' | 'intercepted' | 'committed' | 'scrolled' | 'finished';
+  // TODO(atscott): rejected is not in the spec https://github.com/whatwg/html/issues/11087
+  interceptionState: 'none' | 'intercepted' | 'committed' | 'scrolled' | 'finished' | 'rejected';
   scrollBehavior: 'after-transition' | 'manual' | null;
   focusResetBehavior: 'after-transition' | 'manual' | null;
 
@@ -797,7 +776,6 @@ function dispatchNavigateEvent({
   destination,
   info,
   sameDocument,
-  triggeredByHistoryApi,
   result,
 }: {
   cancelable: boolean;
@@ -809,7 +787,6 @@ function dispatchNavigateEvent({
   destination: FakeNavigationDestination;
   info: unknown;
   sameDocument: boolean;
-  triggeredByHistoryApi?: boolean;
   result: InternalNavigationResult;
 }) {
   const {navigation} = result;
@@ -831,7 +808,6 @@ function dispatchNavigateEvent({
   event.result = result;
 
   event.sameDocument = sameDocument;
-  event.triggeredByHistoryApi = triggeredByHistoryApi;
   event.commitOption = 'immediate';
 
   let handlersFinished = [Promise.resolve()];
@@ -936,7 +912,9 @@ function dispatchNavigateEvent({
         const navigatesuccessEvent = new Event('navigatesuccess', {bubbles: false, cancelable});
         navigation.eventTarget.dispatchEvent(navigatesuccessEvent);
         result.finishedResolve();
-        // TODO(atscott): If navigation's transition is not null, then resolve navigation's transition's finished promise with undefined.
+        if (navigation.transition !== null) {
+          (navigation.transition as InternalNavigationTransition).finishedResolve();
+        }
         navigation.transition = null;
       },
       (reason) => {
@@ -947,11 +925,14 @@ function dispatchNavigateEvent({
           throw new Error("Navigation's ongoing event not equal to resolved event");
         }
         navigation.navigateEvent = null;
+        event.interceptionState = 'rejected'; // TODO(atscott): this is not in the spec https://github.com/whatwg/html/issues/11087
         finishNavigationEvent(event, false);
         const navigateerrorEvent = new Event('navigateerror', {bubbles: false, cancelable});
         navigation.eventTarget.dispatchEvent(navigateerrorEvent);
         result.finishedReject(reason);
-        // TODO(atscott): If navigation's transition is not null, then resolve navigation's transition's finished promise with undefined.
+        if (navigation.transition !== null) {
+          (navigation.transition as InternalNavigationTransition).finishedResolve();
+        }
         navigation.transition = null;
       },
     );
@@ -970,8 +951,9 @@ function finishNavigationEvent(event: InternalFakeNavigateEvent, didFulfill: boo
   if (event.interceptionState === 'none') {
     return;
   }
-  potentiallyResetFocus(event);
   if (didFulfill) {
+    // TODO(atscott): https://github.com/whatwg/html/issues/11087 focus reset is not guarded by didFulfill in the spec
+    potentiallyResetFocus(event);
     potentiallyResetScroll(event);
   }
   event.interceptionState = 'finished';
@@ -1144,7 +1126,14 @@ class InternalNavigationResult {
     });
 
     this.finished = new Promise<FakeNavigationHistoryEntry>(async (resolve, reject) => {
-      this.finishedResolve = () => void resolve(this.committedTo!);
+      this.finishedResolve = () => {
+        if (this.committedTo === null) {
+          throw new Error(
+            'NavigateEvent should have been committed before resolving finished promise.',
+          );
+        }
+        resolve(this.committedTo);
+      };
       this.finishedReject = (reason: Error) => {
         reject(reason);
         this.abortController.abort(reason);
@@ -1164,5 +1153,4 @@ interface InternalNavigateOptions {
   userInitiated: boolean;
   hashChange: boolean;
   info?: unknown;
-  triggeredByHistoryApi?: boolean;
 }
