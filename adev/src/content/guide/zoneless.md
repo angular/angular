@@ -86,7 +86,7 @@ are used in applications that still rely on ZoneJS.
 
 If you are using SSR with Angular, you may know that it relies on ZoneJS to help determine when the application
 is "stable" and can be serialized. If there are asynchronous tasks that should prevent serialization, an application
-not using ZoneJS will need to make Angular aware of these with the [PendingTasks](/api/core/PendingTasks) service. Serialization
+not using ZoneJS must make Angular aware of these with the [PendingTasks](/api/core/PendingTasks) service. Serialization
 will wait for the first moment that all pending tasks have been removed.
 
 
@@ -100,7 +100,7 @@ taskService.run(async () => {
 });
 ```
 
-For more complicated use-cases, manually adding and removing a pending task can be done as follows:
+For more complicated use-cases, you can manuall add and remove a pending tasks:
 
 ```typescript
 const taskService = inject(PendingTasks);
