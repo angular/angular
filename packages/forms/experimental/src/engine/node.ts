@@ -43,7 +43,7 @@
 
 */
 
-import {computed, signal, WritableSignal} from '@angular/core';
+import {computed, linkedSignal, Signal, signal, WritableSignal} from '@angular/core';
 import {deepSignal} from './deep_signal';
 
 export class FormNode {
@@ -63,31 +63,68 @@ export class FormNode {
 
     return false;
   });
-  // TODO(kirjs): ReactiveMap?
 
-  // private readonly childrenMap = signal(new Map<PropertyKey, FormNode>(), {equal: () => false});
-  private readonly childrenMap = computed(() => {
-    const map = new Map<PropertyKey, FormNode>();
-    // TODO: add child nodes to the map
-    return map;
-  });
+  readonly disabled: Signal<boolean> = computed(
+    () => (this.parent?.disabled() || this.logic.disabled?.(this)) ?? false,
+  );
 
-  constructor(readonly value: WritableSignal<unknown>) {}
+  private readonly childrenMap: Signal<Map<PropertyKey, FormNode>>;
+
+  constructor(
+    readonly value: WritableSignal<unknown>,
+    private readonly parent: FormNode | undefined = undefined,
+    private readonly logic: NodeLogic = DEFAULT_LOGIC,
+  ) {
+    this.childrenMap = linkedSignal<unknown, Map<PropertyKey, FormNode>>({
+      source: this.value,
+      computation: (data, previous) => {
+        const map = previous?.value ?? new Map<PropertyKey, FormNode>();
+        if (isObject(data)) {
+          for (const key of map.keys()) {
+            if (!data.hasOwnProperty(key)) {
+              map.delete(key);
+            }
+          }
+          for (const key of Object.keys(data)) {
+            if (!map.has(key)) {
+              map.set(
+                key,
+                new FormNode(
+                  deepSignal(this.value, key as never),
+                  this,
+                  this.logic.getLogicForChild(key),
+                ),
+              );
+            }
+          }
+        }
+        return map;
+      },
+      equal: () => false,
+    });
+  }
 
   markAsTouched(): void {
     this._touched.set(true);
   }
 
   getChild(key: PropertyKey): FormNode | undefined {
-    const data = this.value();
-    if (isObject(data) && data.hasOwnProperty(key)) {
-      return this.childrenMap().get(key);
-    } else {
-      return undefined;
-    }
+    return this.childrenMap().get(key);
   }
 }
 
 function isObject(data: unknown): data is Record<PropertyKey, unknown> {
   return typeof data === 'object';
 }
+
+// define schema -> compiled -> tree of NodeLogics
+interface NodeLogic {
+  disabled?(node: FormNode): boolean;
+  getLogicForChild(key: PropertyKey): NodeLogic;
+}
+
+const DEFAULT_LOGIC: NodeLogic = {
+  getLogicForChild() {
+    return DEFAULT_LOGIC;
+  },
+};
