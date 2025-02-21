@@ -163,6 +163,12 @@ describe('type check blocks', () => {
     );
   });
 
+  it('generates reference for $localize tag', () => {
+    const block = tcb('{{ $localize`hello` }}');
+    expect(block).toContain(`import * as i1 from '@angular/localize'`);
+    expect(block).toContain('i1.ɵ$localize `hello`');
+  });
+
   describe('type constructors', () => {
     it('should handle missing property bindings', () => {
       const TEMPLATE = `<div dir [inputA]="foo"></div>`;
