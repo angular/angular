@@ -43,7 +43,7 @@ import {createLContainer} from '../view/container';
 import {resolveDirectives} from '../view/directives';
 
 import {
-  createDirectivesInstancesInInstruction,
+  createDirectivesInstances,
   findDirectiveDefMatches,
   saveResolvedLocalsInData,
 } from './shared';
@@ -168,7 +168,7 @@ export function declareTemplate(
   populateDehydratedViewsInLContainer(lContainer, tNode, declarationLView);
 
   if (isDirectiveHost(tNode)) {
-    createDirectivesInstancesInInstruction(declarationTView, declarationLView, tNode);
+    createDirectivesInstances(declarationTView, declarationLView, tNode);
   }
 
   if (localRefsIndex != null) {
