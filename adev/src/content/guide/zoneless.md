@@ -7,7 +7,7 @@ The main advantages to removing ZoneJS as a dependency are:
 - **Improved performance**: ZoneJS uses DOM events and async tasks as indicators of when application state _might_ have updated and subsequently triggers application synchronization to run change detection on the application's views. ZoneJS does not have any insight into whether application state actually changed and so this synchronization is triggered more frequently than necessary.
 - **Improved Core Web Vitals**: ZoneJS brings a fair amount of overhead, both in payload size and in startup time cost.
 - **Improved debugging experience**: ZoneJS makes debugging code more difficult. Stack traces are harder to understand with ZoneJS. It's also difficult to understand when code breaks as a result of being outside the Angular Zone.
-- **Better ecosystem compatibility**: ZoneJS works by patching browser APIs but does not automatically have patches for every new browser API. Some APIs simply cannot be patched effectively, such as `async`/`await`, and have to be downleveled to work with ZoneJS. Sometimes libraries in the ecosystem are also incompatible with the way ZoneJS patches the native APIs. Removing ZoneJS as a dependency ensures better long-term compatibility by removing a source of complexity, monkey patching, and ongoing maintenance.
+- **Better ecosystem compatibility**: ZoneJS works by patching browser APIs but does not automatically have patches for every new browser API. Some APIs cannot be patched effectively, such as `async`/`await`, and have to be downleveled to work with ZoneJS. Sometimes libraries in the ecosystem are also incompatible with the way ZoneJS patches the native APIs. Removing ZoneJS as a dependency ensures better long-term compatibility by removing a source of complexity, monkey patching, and ongoing maintenance.
 
 ## Enabling Zoneless in an application
 
@@ -151,7 +151,7 @@ state rather than manually forcing it to happen in the test.
 For existing test suites, using `fixture.detectChanges()` is a common pattern
 and it is likely not worth the effort of converting these to
 `await fixture.whenStable()`. `TestBed` will still enforce that the
-fixture's component is `OnPush` compatible and will throw `ExpressionChangedAfterItHasBeenCheckedError`
+fixture's component is `OnPush` compatible and throws `ExpressionChangedAfterItHasBeenCheckedError`
 if it finds that template values were updated without a
 change notification (i.e. `fixture.componentInstance.someValue = 'newValue';`).
 If the component is used in production, this issue should be addressed by updating
@@ -164,6 +164,6 @@ it is acceptable to use `fixture.changeDetectorRef.markForCheck()`.
 Angular also provides an additional tool to help verify that an application is making
 updates to state in a zoneless-compatible way. `provideExperimentalCheckNoChangesForDebug`
 can be used to periodically check to ensure that no bindings have been updated
-without a notification. Angular will throw `ExpressionChangedAfterItHasBeenCheckedError`
+without a notification. Angular throws `ExpressionChangedAfterItHasBeenCheckedError`
 if there is an updated binding that would not have refreshed by the zoneless change
 detection.
