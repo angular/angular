@@ -860,6 +860,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'ecosystem/web-workers',
       },
       {
+        label: 'Custom build pipeline',
+        path: 'ecosystem/custom-build-pipeline',
+        contentPath: 'ecosystem/custom-build-pipeline',
+      },
+      {
         label: 'Angular Fire',
         path: 'https://github.com/angular/angularfire#readme',
       },
