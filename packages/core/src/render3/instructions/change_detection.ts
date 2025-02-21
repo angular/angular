@@ -69,18 +69,14 @@ import {profiler} from '../profiler';
 import {ProfilerEvent} from '../profiler_types';
 import {executeViewQueryFn, refreshContentQueries} from '../queries/query_execution';
 import {runEffectsInView} from '../reactivity/view_effect_runner';
-import {executeTemplate, handleError} from './shared';
+import {executeTemplate} from './shared';
 
 /**
  * The maximum number of times the change detection traversal will rerun before throwing an error.
  */
 export const MAXIMUM_REFRESH_RERUNS = 100;
 
-export function detectChangesInternal(
-  lView: LView,
-  notifyErrorHandler = true,
-  mode = ChangeDetectionMode.Global,
-) {
+export function detectChangesInternal(lView: LView, mode = ChangeDetectionMode.Global) {
   const environment = lView[ENVIRONMENT];
   const rendererFactory = environment.rendererFactory;
 
@@ -95,11 +91,6 @@ export function detectChangesInternal(
 
   try {
     detectChangesInViewWhileDirty(lView, mode);
-  } catch (error) {
-    if (notifyErrorHandler) {
-      handleError(lView, error);
-    }
-    throw error;
   } finally {
     if (!checkNoChangesMode) {
       rendererFactory.end?.();
@@ -146,14 +137,10 @@ function detectChangesInViewWhileDirty(lView: LView, mode: ChangeDetectionMode) 
   }
 }
 
-export function checkNoChangesInternal(
-  lView: LView,
-  mode: CheckNoChangesMode,
-  notifyErrorHandler = true,
-) {
+export function checkNoChangesInternal(lView: LView, mode: CheckNoChangesMode) {
   setIsInCheckNoChangesMode(mode);
   try {
-    detectChangesInternal(lView, notifyErrorHandler);
+    detectChangesInternal(lView);
   } finally {
     setIsInCheckNoChangesMode(CheckNoChangesMode.Off);
   }

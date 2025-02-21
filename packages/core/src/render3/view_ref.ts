@@ -74,7 +74,6 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
      * This may be different from `_lView` if the `_cdRefInjectingView` is an embedded view.
      */
     private _cdRefInjectingView?: LView,
-    readonly notifyErrorHandler = true,
   ) {}
 
   get context(): T {
@@ -327,7 +326,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
     // until the end of the refresh. Using `RefreshView` prevents creating a potential difference
     // in the state of the LViewFlags during template execution.
     this._lView[FLAGS] |= LViewFlags.RefreshView;
-    detectChangesInternal(this._lView, this.notifyErrorHandler);
+    detectChangesInternal(this._lView);
   }
 
   /**
@@ -338,11 +337,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
    */
   checkNoChanges(): void {
     if (ngDevMode) {
-      checkNoChangesInternal(
-        this._lView,
-        CheckNoChangesMode.OnlyDirtyViews,
-        this.notifyErrorHandler,
-      );
+      checkNoChangesInternal(this._lView, CheckNoChangesMode.OnlyDirtyViews);
     }
   }
 

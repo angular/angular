@@ -374,7 +374,6 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
     this.hostView = this.changeDetectorRef = new ViewRef<T>(
       _rootLView,
       undefined /* _cdRefInjectingView */,
-      false /* notifyErrorHandler */,
     );
     this.componentType = componentType;
   }

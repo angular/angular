@@ -271,7 +271,6 @@
   "detectChangesInEmbeddedViews",
   "detectChangesInView",
   "detectChangesInViewIfAttached",
-  "detectChangesInViewIfRequired",
   "detectChangesInternal",
   "diPublicInInjector",
   "elementEndFirstCreatePass",
