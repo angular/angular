@@ -425,7 +425,6 @@
   "generateInitialInputs",
   "getAllRouteGuards",
   "getBeforeNodeForView",
-  "getBindingsEnabled",
   "getBootstrapListener",
   "getChildRouteGuards",
   "getClosestRouteInjector",

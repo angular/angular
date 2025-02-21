@@ -247,7 +247,6 @@
   "convertToBitFlags",
   "createContainerAnchorImpl",
   "createDirectivesInstances",
-  "createDirectivesInstancesInInstruction",
   "createElementNode",
   "createElementRef",
   "createEnvironmentInjector",

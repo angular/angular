@@ -75,7 +75,6 @@ import {createComponentLView} from '../view/construction';
 import {selectIndexInternal} from './advance';
 import {handleUnknownPropertyError, isPropertyValid, matchingSchemas} from './element_validation';
 import {writeToDirectiveInput} from './write_to_directive_input';
-import {InputFlags} from '../interfaces/input_flags';
 
 export function executeTemplate<T>(
   tView: TView,
@@ -107,19 +106,6 @@ export function executeTemplate<T>(
       : ProfilerEvent.TemplateCreateEnd;
     profiler(postHookType, context as unknown as {});
   }
-}
-
-/**
- * Creates directive instances.
- */
-export function createDirectivesInstancesInInstruction(
-  tView: TView,
-  lView: LView,
-  tNode: TDirectiveHostNode,
-) {
-  if (!getBindingsEnabled()) return;
-  attachPatchData(getNativeByTNode(tNode, lView), lView);
-  createDirectivesInstances(tView, lView, tNode);
 }
 
 /**

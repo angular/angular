@@ -298,7 +298,6 @@
   "forwardRef",
   "freeConsumers",
   "generateInitialInputs",
-  "getBindingsEnabled",
   "getClosureSafeProperty",
   "getComponentDef",
   "getComponentLViewByIndex",
