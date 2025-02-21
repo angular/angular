@@ -1396,7 +1396,7 @@ export const PACKAGE_ROOT_URL: InjectionToken<string>;
 // @public
 export class PendingTasks {
     add(): () => void;
-    run<T>(fn: () => Promise<T>): Promise<T>;
+    run<T>(fn: () => Promise<T>): void;
     // (undocumented)
     static ɵprov: unknown;
 }
