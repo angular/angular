@@ -589,6 +589,12 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
 export const defineInjectable: typeof ɵɵdefineInjectable;
 
 // @public
+export interface DestroyableInjector extends Injector {
+    // (undocumented)
+    destroy(): void;
+}
+
+// @public
 export function destroyPlatform(): void;
 
 // @public
@@ -949,7 +955,7 @@ export abstract class Injector {
         providers: Array<Provider | StaticProvider>;
         parent?: Injector;
         name?: string;
-    }): Injector;
+    }): DestroyableInjector;
     abstract get<T>(token: ProviderToken<T>, notFoundValue: undefined, options: InjectOptions & {
         optional?: false;
     }): T;

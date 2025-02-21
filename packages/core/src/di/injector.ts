@@ -117,7 +117,7 @@ export abstract class Injector {
     providers: Array<Provider | StaticProvider>;
     parent?: Injector;
     name?: string;
-  }): Injector;
+  }): DestroyableInjector;
 
   static create(
     options:
@@ -145,4 +145,13 @@ export abstract class Injector {
    * @nocollapse
    */
   static __NG_ELEMENT_ID__ = InjectorMarkers.Injector;
+}
+
+/**
+ * An Injector that the owner can destroy and trigger the DestroyRef.destroy hooks.
+ *
+ * @publicApi
+ */
+export interface DestroyableInjector extends Injector {
+  destroy(): void;
 }
