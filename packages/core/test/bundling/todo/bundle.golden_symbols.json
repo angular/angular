@@ -240,7 +240,6 @@
   "context",
   "convertToBitFlags",
   "createDirectivesInstances",
-  "createDirectivesInstancesInInstruction",
   "createElementNode",
   "createElementRef",
   "createErrorClass",

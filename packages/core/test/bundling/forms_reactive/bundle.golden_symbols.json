@@ -295,7 +295,6 @@
   "controlPath",
   "convertToBitFlags",
   "createDirectivesInstances",
-  "createDirectivesInstancesInInstruction",
   "createElementNode",
   "createElementRef",
   "createErrorClass",
