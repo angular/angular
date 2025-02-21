@@ -1,7 +1,7 @@
 import {computed, signal} from '@angular/core';
 import {FormNode} from '../../src/engine/node';
 
-fdescribe('Node', () => {
+describe('Node', () => {
   it('is untouched initially', () => {
     const value = signal({a: 1, b: 2});
     const node = new FormNode(value);
