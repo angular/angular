@@ -140,6 +140,7 @@ The available triggers are as follows:
 | [`hover`](#hover)             | Triggers when the mouse hovers over specified area                     |
 | [`immediate`](#immediate)     | Triggers immediately after non-deferred content has finished rendering |
 | [`timer`](#timer)             | Triggers after a specific duration                                     |
+| [`when`](#when)               | Triggers accepts a custom conditional expression                       |
 
 #### `idle`
 
