@@ -1,23 +1,15 @@
 function _forTrack0($index, $item) {
-  let tmp_0_0;
-  return (tmp_0_0 =
-    $item == null
+  return ($item == null
       ? null
       : $item.name == null
         ? null
         : $item.name[0] == null
           ? null
-          : $item.name[0].toUpperCase()) !== null && tmp_0_0 !== undefined
-    ? tmp_0_0
-    : this.foo;
+          : $item.name[0].toUpperCase()) ?? this.foo;
 }
 
 function _forTrack1($index, $item) {
-  let tmp_0_0;
-  return (tmp_0_0 = (tmp_0_0 = $item.name) !== null && tmp_0_0 !== undefined ? tmp_0_0 : $index) !==
-    null && tmp_0_0 !== undefined
-    ? tmp_0_0
-    : this.foo;
+  return $item.name ?? $index ?? this.foo;
 }
 
 …
