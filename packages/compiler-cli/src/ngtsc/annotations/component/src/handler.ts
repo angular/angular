@@ -161,6 +161,7 @@ import {
 } from './metadata';
 import {
   _extractTemplateStyleUrls,
+  createEmptyTemplate,
   extractComponentStyleUrls,
   extractInlineStyleResources,
   extractTemplate,
@@ -663,50 +664,66 @@ export class ComponentDecoratorHandler
 
       template = preanalyzed;
     } else {
-      const templateDecl = parseTemplateDeclaration(
-        node,
-        decorator,
-        component,
-        containingFile,
-        this.evaluator,
-        this.depTracker,
-        this.resourceLoader,
-        this.defaultPreserveWhitespaces,
-      );
-      template = extractTemplate(
-        node,
-        templateDecl,
-        this.evaluator,
-        this.depTracker,
-        this.resourceLoader,
-        {
-          enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
-          i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
-          usePoisonedData: this.usePoisonedData,
-          enableBlockSyntax: this.enableBlockSyntax,
-          enableLetSyntax: this.enableLetSyntax,
-          preserveSignificantWhitespace: this.i18nPreserveSignificantWhitespace,
-        },
-        this.compilationMode,
-      );
-
-      if (
-        this.compilationMode === CompilationMode.LOCAL &&
-        template.errors &&
-        template.errors.length > 0
-      ) {
-        // Template errors are handled at the type check phase. But we skip this phase in local compilation mode. As a result we need to handle the errors now and add them to the diagnostics.
-        if (diagnostics === undefined) {
-          diagnostics = [];
-        }
-
-        diagnostics.push(
-          ...getTemplateDiagnostics(
-            template.errors,
-            '' as TemplateId, // Template ID is required as part of the template type check, mainly for mapping the template to its component class. But here we are generating the diagnostic outside of the type check context, and so we skip the template ID.
-            template.sourceMapping,
-          ),
+      try {
+        const templateDecl = parseTemplateDeclaration(
+          node,
+          decorator,
+          component,
+          containingFile,
+          this.evaluator,
+          this.depTracker,
+          this.resourceLoader,
+          this.defaultPreserveWhitespaces,
         );
+        template = extractTemplate(
+          node,
+          templateDecl,
+          this.evaluator,
+          this.depTracker,
+          this.resourceLoader,
+          {
+            enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
+            i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
+            usePoisonedData: this.usePoisonedData,
+            enableBlockSyntax: this.enableBlockSyntax,
+            enableLetSyntax: this.enableLetSyntax,
+            preserveSignificantWhitespace: this.i18nPreserveSignificantWhitespace,
+          },
+          this.compilationMode,
+        );
+
+        if (
+          this.compilationMode === CompilationMode.LOCAL &&
+          template.errors &&
+          template.errors.length > 0
+        ) {
+          // Template errors are handled at the type check phase. But we skip this phase in local compilation mode. As a result we need to handle the errors now and add them to the diagnostics.
+          if (diagnostics === undefined) {
+            diagnostics = [];
+          }
+
+          diagnostics.push(
+            ...getTemplateDiagnostics(
+              template.errors,
+              '' as TemplateId, // Template ID is required as part of the template type check, mainly for mapping the template to its component class. But here we are generating the diagnostic outside of the type check context, and so we skip the template ID.
+              template.sourceMapping,
+            ),
+          );
+        }
+      } catch (e) {
+        if (e instanceof FatalDiagnosticError) {
+          diagnostics ??= [];
+          diagnostics.push(e.toDiagnostic());
+          isPoisoned = true;
+          // Create an empty template for the missing/invalid template.
+          // A build will still fail in this case. However, for the language service,
+          // this allows the component to exist in the compiler registry and prevents
+          // cascading diagnostics within an IDE due to "missing" components. The
+          // originating template related errors will still be reported in the IDE.
+          template = createEmptyTemplate(node, component, containingFile);
+        } else {
+          throw e;
+        }
       }
     }
     const templateResource = template.declaration.isInline
