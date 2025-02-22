@@ -51,7 +51,6 @@ import {nameFunctionsAndVariables} from './phases/naming';
 import {mergeNextContextExpressions} from './phases/next_context_merging';
 import {generateNgContainerOps} from './phases/ng_container';
 import {disableBindings} from './phases/nonbindable';
-import {generateNullishCoalesceExpressions} from './phases/nullish_coalescing';
 import {orderOps} from './phases/ordering';
 import {parseExtractedStyles} from './phases/parse_extracted_styles';
 import {removeContentSelectors} from './phases/phase_remove_content_selectors';
@@ -139,7 +138,6 @@ const phases: Phase[] = [
   {kind: Kind.Both, fn: resolveContexts},
   {kind: Kind.Both, fn: resolveSanitizers},
   {kind: Kind.Tmpl, fn: liftLocalRefs},
-  {kind: Kind.Both, fn: generateNullishCoalesceExpressions},
   {kind: Kind.Both, fn: requiredParentheses},
   {kind: Kind.Both, fn: expandSafeReads},
   {kind: Kind.Both, fn: generateTemporaryVariables},
