@@ -211,7 +211,7 @@ Follows a familiar convention from other technology platforms.
 
 ### Component selectors
 
-#### Style 05-02
+#### Style 02-06
 
 **Do** use *dashed-case* or *kebab-case* for naming the element selectors of components.
 
@@ -252,7 +252,7 @@ Components are easy to identify in the DOM.
 
 ### Directive selectors
 
-#### Style 02-06
+#### Style 02-08
 
 **Do** Use lower camel case for naming the selectors of directives.
 
@@ -264,7 +264,7 @@ The Angular HTML parser is case-sensitive and recognizes lower camel case.
 
 ### Directive custom prefix
 
-#### Style 02-08
+#### Style 02-09
 
 **Do** spell non-element selectors in lower camel case unless the selector is meant to match a native HTML attribute.
 
@@ -282,7 +282,7 @@ Directives are easily identified.
 
 ### Pipe names
 
-#### Style 02-09
+#### Style 02-10
 
 **Do** use consistent names for all pipes, named after their feature.
 The pipe class name should use `UpperCamelCase` \(the general convention for class names\), and the corresponding `name` string should use *lowerCamelCase*.
@@ -298,7 +298,7 @@ Provides a consistent way to quickly identify and reference pipes.
 
 ### Unit test file names
 
-#### Style 02-10
+#### Style 02-11
 
 **Do** name test specification files the same as the component they test.
 
