@@ -2718,7 +2718,6 @@ describe('acceptance integration tests', () => {
 
   it('should support template literals in expressions', () => {
     @Component({
-      standalone: true,
       template: 'Message: {{`Hello, ${name} - ${value}`}}',
     })
     class TestComponent {

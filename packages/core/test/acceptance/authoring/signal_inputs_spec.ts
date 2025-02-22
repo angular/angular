@@ -36,7 +36,6 @@ describe('signal inputs', () => {
   it('should be possible to bind to an input', () => {
     @Component({
       selector: 'input-comp',
-      standalone: true,
       template: 'input:{{input()}}',
     })
     class InputComp {
@@ -44,7 +43,6 @@ describe('signal inputs', () => {
     }
 
     @Component({
-      standalone: true,
       template: `<input-comp [input]="value" />`,
       imports: [InputComp],
     })
@@ -66,7 +64,6 @@ describe('signal inputs', () => {
   it('should be possible to use an input in a computed expression', () => {
     @Component({
       selector: 'input-comp',
-      standalone: true,
       template: 'changed:{{changed()}}',
     })
     class InputComp {
@@ -75,7 +72,6 @@ describe('signal inputs', () => {
     }
 
     @Component({
-      standalone: true,
       template: `<input-comp [input]="value" />`,
       imports: [InputComp],
     })
@@ -99,7 +95,6 @@ describe('signal inputs', () => {
 
     @Component({
       selector: 'input-comp',
-      standalone: true,
       template: '',
     })
     class InputComp {
@@ -113,7 +108,6 @@ describe('signal inputs', () => {
     }
 
     @Component({
-      standalone: true,
       template: `<input-comp [input]="value" />`,
       imports: [InputComp],
     })
@@ -137,7 +131,6 @@ describe('signal inputs', () => {
   it('should support transforms', () => {
     @Component({
       selector: 'input-comp',
-      standalone: true,
       template: 'input:{{input()}}',
     })
     class InputComp {
@@ -145,7 +138,6 @@ describe('signal inputs', () => {
     }
 
     @Component({
-      standalone: true,
       template: `<input-comp [input]="value" />`,
       imports: [InputComp],
     })
@@ -165,7 +157,6 @@ describe('signal inputs', () => {
     let transformRunCount = 0;
     @Component({
       selector: 'input-comp',
-      standalone: true,
       template: '',
     })
     class InputComp {
@@ -175,7 +166,6 @@ describe('signal inputs', () => {
     }
 
     @Component({
-      standalone: true,
       template: `<input-comp [input]="value" />`,
       imports: [InputComp],
     })
@@ -193,7 +183,6 @@ describe('signal inputs', () => {
   it('should throw error if a required input is accessed too early', () => {
     @Component({
       selector: 'input-comp',
-      standalone: true,
       template: 'input:{{input()}}',
     })
     class InputComp {
@@ -205,7 +194,6 @@ describe('signal inputs', () => {
     }
 
     @Component({
-      standalone: true,
       template: `<input-comp [input]="value" />`,
       imports: [InputComp],
     })
@@ -226,13 +214,11 @@ describe('signal inputs', () => {
 
     @Component({
       selector: 'input-comp',
-      standalone: true,
       template: 'input:{{input()}}',
     })
     class InputComp extends BaseDir {}
 
     @Component({
-      standalone: true,
       template: `<input-comp [input]="value" />`,
       imports: [InputComp],
     })
@@ -252,7 +238,7 @@ describe('signal inputs', () => {
   });
 
   it('should support two-way binding to signal input and @Output decorated member', () => {
-    @Directive({selector: '[dir]', standalone: true})
+    @Directive({selector: '[dir]'})
     class Dir {
       value = input(0);
       @Output() valueChange = new EventEmitter<number>();
@@ -260,7 +246,6 @@ describe('signal inputs', () => {
 
     @Component({
       template: '<div [(value)]="value" dir></div>',
-      standalone: true,
       imports: [Dir],
     })
     class App {
@@ -290,14 +275,13 @@ describe('signal inputs', () => {
   });
 
   it('should assign a debugName to the input signal node when a debugName is provided', () => {
-    @Directive({selector: '[dir]', standalone: true})
+    @Directive({selector: '[dir]'})
     class Dir {
       value = input(0, {debugName: 'TEST_DEBUG_NAME'});
     }
 
     @Component({
       template: '<div [value]="1" dir></div>',
-      standalone: true,
       imports: [Dir],
     })
     class App {
@@ -312,14 +296,13 @@ describe('signal inputs', () => {
   });
 
   it('should assign a debugName to the input signal node when a debugName is provided to a required input', () => {
-    @Directive({selector: '[dir]', standalone: true})
+    @Directive({selector: '[dir]'})
     class Dir {
       value = input.required({debugName: 'TEST_DEBUG_NAME'});
     }
 
     @Component({
       template: '<div [value]="1" dir></div>',
-      standalone: true,
       imports: [Dir],
     })
     class App {

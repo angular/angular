@@ -239,7 +239,6 @@ describe('after render hooks', () => {
         let log: string[] = [];
 
         @Component({
-          standalone: true,
           template: ``,
         })
         class MyComp {
@@ -852,12 +851,12 @@ describe('after render hooks', () => {
         const appRef = TestBed.inject(ApplicationRef);
 
         const counter = signal(0);
-        @Component({standalone: true, template: '{{counter()}}'})
+        @Component({template: '{{counter()}}'})
         class Reader {
           counter = counter;
         }
 
-        @Component({standalone: true, template: ''})
+        @Component({template: ''})
         class Writer {
           ngAfterViewInit(): void {
             counter.set(1);
@@ -1364,7 +1363,6 @@ describe('after render hooks', () => {
 
       @Component({
         selector: 'test-component',
-        standalone: true,
         template: ` {{counter()}} `,
       })
       class TestCmp {
@@ -1393,7 +1391,6 @@ describe('after render hooks', () => {
     it('allows updating state and calling markForCheck in afterRender', async () => {
       @Component({
         selector: 'test-component',
-        standalone: true,
         template: ` {{counter}} `,
       })
       class TestCmp {
@@ -1425,7 +1422,6 @@ describe('after render hooks', () => {
       const counter = signal(0);
       @Component({
         selector: 'test-component',
-        standalone: true,
         template: `{{counter()}}`,
       })
       class TestCmp {
@@ -1467,7 +1463,6 @@ describe('after render hooks', () => {
 
       @Component({
         selector: 'test-component',
-        standalone: true,
         template: ` {{counter()}} `,
       })
       class TestCmp {
