@@ -724,6 +724,7 @@
   "init_type_checks",
   "init_types",
   "init_untracked",
+  "init_untracked2",
   "init_url_sanitizer",
   "init_util",
   "init_util2",
