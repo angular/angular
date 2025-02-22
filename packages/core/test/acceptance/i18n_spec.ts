@@ -563,7 +563,6 @@ describe('runtime i18n', () => {
 
     @Component({
       selector: 'defer-comp',
-      standalone: true,
       template:
         '<div i18n>Content: @defer (when isLoaded) {before<span>middle</span>after} ' +
         '@placeholder {before<div>placeholder</div>after}!</div>',
