@@ -56,6 +56,7 @@ export class SelfClosingTagsMigration extends TsurgeFunnelMigration<
 
     for (const sf of sourceFiles) {
       ts.forEachChild(sf, (node: ts.Node) => {
+        // Skipping any non component declarations
         if (!ts.isClassDeclaration(node)) {
           return;
         }
@@ -75,26 +76,28 @@ export class SelfClosingTagsMigration extends TsurgeFunnelMigration<
             template.content,
           );
 
-          if (changed) {
-            const fileToMigrate = template.inline
-              ? file
-              : projectFile(template.filePath as AbsoluteFsPath, info);
-            const end = template.start + template.content.length;
+          if (!changed) {
+            return;
+          }
 
-            const replacements = [
-              prepareTextReplacement(fileToMigrate, migrated, template.start, end),
-            ];
+          const fileToMigrate = template.inline
+            ? file
+            : projectFile(template.filePath as AbsoluteFsPath, info);
+          const end = template.start + template.content.length;
 
-            const fileReplacements = tagReplacements.find(
-              (tagReplacement) => tagReplacement.file === file,
-            );
+          const replacements = [
+            prepareTextReplacement(fileToMigrate, migrated, template.start, end),
+          ];
 
-            if (fileReplacements) {
-              fileReplacements.replacements.push(...replacements);
-              fileReplacements.replacementCount += replacementCount;
-            } else {
-              tagReplacements.push({file, replacements, replacementCount});
-            }
+          const fileReplacements = tagReplacements.find(
+            (tagReplacement) => tagReplacement.file === file,
+          );
+
+          if (fileReplacements) {
+            fileReplacements.replacements.push(...replacements);
+            fileReplacements.replacementCount += replacementCount;
+          } else {
+            tagReplacements.push({file, replacements, replacementCount});
           }
         });
       });
@@ -107,9 +110,12 @@ export class SelfClosingTagsMigration extends TsurgeFunnelMigration<
     unitA: SelfClosingTagsCompilationUnitData,
     unitB: SelfClosingTagsCompilationUnitData,
   ): Promise<Serializable<SelfClosingTagsCompilationUnitData>> {
-    return confirmAsSerializable({
-      tagReplacements: unitA.tagReplacements.concat(unitB.tagReplacements),
-    });
+    const uniqueReplacements = removeDuplicateReplacements([
+      ...unitA.tagReplacements,
+      ...unitB.tagReplacements,
+    ]);
+
+    return confirmAsSerializable({tagReplacements: uniqueReplacements});
   }
 
   override async globalMeta(
@@ -158,4 +164,21 @@ function prepareTextReplacement(
       toInsert: replacement,
     }),
   );
+}
+
+function removeDuplicateReplacements(
+  replacements: SelfClosingTagsMigrationData[],
+): SelfClosingTagsMigrationData[] {
+  const uniqueFiles = new Set<string>();
+  const result: SelfClosingTagsMigrationData[] = [];
+
+  for (const replacement of replacements) {
+    const fileId = replacement.file.id;
+    if (!uniqueFiles.has(fileId)) {
+      uniqueFiles.add(fileId);
+      result.push(replacement);
+    }
+  }
+
+  return result;
 }
