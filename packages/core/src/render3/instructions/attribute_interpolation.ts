@@ -49,7 +49,7 @@ export function ɵɵattributeInterpolate1(
   attrName: string,
   prefix: string,
   v0: any,
-  suffix: string,
+  suffix?: string,
   sanitizer?: SanitizerFn,
   namespace?: string,
 ): typeof ɵɵattributeInterpolate1 {
@@ -65,7 +65,7 @@ export function ɵɵattributeInterpolate1(
         'attr.' + attrName,
         getBindingIndex() - 1,
         prefix,
-        suffix,
+        suffix ?? '',
       );
   }
   return ɵɵattributeInterpolate1;
@@ -103,7 +103,7 @@ export function ɵɵattributeInterpolate2(
   v0: any,
   i0: string,
   v1: any,
-  suffix: string,
+  suffix?: string,
   sanitizer?: SanitizerFn,
   namespace?: string,
 ): typeof ɵɵattributeInterpolate2 {
@@ -120,7 +120,7 @@ export function ɵɵattributeInterpolate2(
         getBindingIndex() - 2,
         prefix,
         i0,
-        suffix,
+        suffix ?? '',
       );
   }
   return ɵɵattributeInterpolate2;
@@ -163,7 +163,7 @@ export function ɵɵattributeInterpolate3(
   v1: any,
   i1: string,
   v2: any,
-  suffix: string,
+  suffix?: string,
   sanitizer?: SanitizerFn,
   namespace?: string,
 ): typeof ɵɵattributeInterpolate3 {
@@ -181,7 +181,7 @@ export function ɵɵattributeInterpolate3(
         prefix,
         i0,
         i1,
-        suffix,
+        suffix ?? '',
       );
   }
   return ɵɵattributeInterpolate3;
@@ -228,7 +228,7 @@ export function ɵɵattributeInterpolate4(
   v2: any,
   i2: string,
   v3: any,
-  suffix: string,
+  suffix?: string,
   sanitizer?: SanitizerFn,
   namespace?: string,
 ): typeof ɵɵattributeInterpolate4 {
@@ -247,7 +247,7 @@ export function ɵɵattributeInterpolate4(
         i0,
         i1,
         i2,
-        suffix,
+        suffix ?? '',
       );
   }
   return ɵɵattributeInterpolate4;
@@ -298,7 +298,7 @@ export function ɵɵattributeInterpolate5(
   v3: any,
   i3: string,
   v4: any,
-  suffix: string,
+  suffix?: string,
   sanitizer?: SanitizerFn,
   namespace?: string,
 ): typeof ɵɵattributeInterpolate5 {
@@ -331,7 +331,7 @@ export function ɵɵattributeInterpolate5(
         i1,
         i2,
         i3,
-        suffix,
+        suffix ?? '',
       );
   }
   return ɵɵattributeInterpolate5;
@@ -386,7 +386,7 @@ export function ɵɵattributeInterpolate6(
   v4: any,
   i4: string,
   v5: any,
-  suffix: string,
+  suffix?: string,
   sanitizer?: SanitizerFn,
   namespace?: string,
 ): typeof ɵɵattributeInterpolate6 {
@@ -422,7 +422,7 @@ export function ɵɵattributeInterpolate6(
         i2,
         i3,
         i4,
-        suffix,
+        suffix ?? '',
       );
   }
   return ɵɵattributeInterpolate6;
@@ -481,7 +481,7 @@ export function ɵɵattributeInterpolate7(
   v5: any,
   i5: string,
   v6: any,
-  suffix: string,
+  suffix?: string,
   sanitizer?: SanitizerFn,
   namespace?: string,
 ): typeof ɵɵattributeInterpolate7 {
@@ -520,7 +520,7 @@ export function ɵɵattributeInterpolate7(
         i3,
         i4,
         i5,
-        suffix,
+        suffix ?? '',
       );
   }
   return ɵɵattributeInterpolate7;
@@ -583,7 +583,7 @@ export function ɵɵattributeInterpolate8(
   v6: any,
   i6: string,
   v7: any,
-  suffix: string,
+  suffix?: string,
   sanitizer?: SanitizerFn,
   namespace?: string,
 ): typeof ɵɵattributeInterpolate8 {
@@ -625,7 +625,7 @@ export function ɵɵattributeInterpolate8(
         i4,
         i5,
         i6,
-        suffix,
+        suffix ?? '',
       );
   }
   return ɵɵattributeInterpolate8;
@@ -669,7 +669,7 @@ export function ɵɵattributeInterpolateV(
     const tNode = getSelectedTNode();
     elementAttributeInternal(tNode, lView, attrName, interpolated, sanitizer, namespace);
     if (ngDevMode) {
-      const interpolationInBetween = [values[0]]; // prefix
+      const interpolationInBetween = [values[0] as string]; // prefix
       for (let i = 2; i < values.length; i += 2) {
         interpolationInBetween.push(values[i]);
       }

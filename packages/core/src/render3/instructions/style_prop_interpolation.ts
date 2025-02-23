@@ -50,7 +50,7 @@ export function ɵɵstylePropInterpolate1(
   prop: string,
   prefix: string,
   v0: any,
-  suffix: string,
+  suffix?: string,
   valueSuffix?: string | null,
 ): typeof ɵɵstylePropInterpolate1 {
   const lView = getLView();
@@ -93,7 +93,7 @@ export function ɵɵstylePropInterpolate2(
   v0: any,
   i0: string,
   v1: any,
-  suffix: string,
+  suffix?: string,
   valueSuffix?: string | null,
 ): typeof ɵɵstylePropInterpolate2 {
   const lView = getLView();
@@ -140,7 +140,7 @@ export function ɵɵstylePropInterpolate3(
   v1: any,
   i1: string,
   v2: any,
-  suffix: string,
+  suffix?: string,
   valueSuffix?: string | null,
 ): typeof ɵɵstylePropInterpolate3 {
   const lView = getLView();
@@ -191,7 +191,7 @@ export function ɵɵstylePropInterpolate4(
   v2: any,
   i2: string,
   v3: any,
-  suffix: string,
+  suffix?: string,
   valueSuffix?: string | null,
 ): typeof ɵɵstylePropInterpolate4 {
   const lView = getLView();
@@ -246,7 +246,7 @@ export function ɵɵstylePropInterpolate5(
   v3: any,
   i3: string,
   v4: any,
-  suffix: string,
+  suffix?: string,
   valueSuffix?: string | null,
 ): typeof ɵɵstylePropInterpolate5 {
   const lView = getLView();
@@ -318,7 +318,7 @@ export function ɵɵstylePropInterpolate6(
   v4: any,
   i4: string,
   v5: any,
-  suffix: string,
+  suffix?: string,
   valueSuffix?: string | null,
 ): typeof ɵɵstylePropInterpolate6 {
   const lView = getLView();
@@ -397,7 +397,7 @@ export function ɵɵstylePropInterpolate7(
   v5: any,
   i5: string,
   v6: any,
-  suffix: string,
+  suffix?: string,
   valueSuffix?: string | null,
 ): typeof ɵɵstylePropInterpolate7 {
   const lView = getLView();
@@ -482,7 +482,7 @@ export function ɵɵstylePropInterpolate8(
   v6: any,
   i6: string,
   v7: any,
-  suffix: string,
+  suffix?: string,
   valueSuffix?: string | null,
 ): typeof ɵɵstylePropInterpolate8 {
   const lView = getLView();
