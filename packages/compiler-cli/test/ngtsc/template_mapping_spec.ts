@@ -72,7 +72,7 @@ runInEachFileSystem((os) => {
           });
           expectMapping(mappings, {
             source: 'Hello {{ name }}',
-            generated: 'i0.ɵɵtextInterpolate1("Hello ", ctx.name, "")',
+            generated: 'i0.ɵɵtextInterpolate1("Hello ", ctx.name)',
             sourceUrl: '../test.ts',
           });
           expectMapping(mappings, {
