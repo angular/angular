@@ -16,6 +16,7 @@ export class IdentityPipe {
     {{ !(typeof {} === 'object') }}
     {{ typeof foo?.bar === 'string' }}
     {{ typeof foo?.bar | identity }}
+    {{ 'bar' in foo }}
   `,
   imports: [IdentityPipe],
 })
