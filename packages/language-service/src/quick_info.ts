@@ -145,38 +145,41 @@ export class QuickInfoBuilder {
   }
 
   private getQuickInfoForVariableSymbol(symbol: VariableSymbol): ts.QuickInfo {
-    const documentation = this.getDocumentationFromTypeDefAtLocation(symbol.initializerLocation);
+    const info = this.getQuickInfoFromTypeDefAtLocation(symbol.initializerLocation);
     return createQuickInfo(
       symbol.declaration.name,
       DisplayInfoKind.VARIABLE,
       getTextSpanOfNode(this.node),
       undefined /* containerName */,
       this.typeChecker.typeToString(symbol.tsType),
-      documentation,
+      info?.documentation,
+      info?.tags
     );
   }
 
   private getQuickInfoForLetDeclarationSymbol(symbol: LetDeclarationSymbol): ts.QuickInfo {
-    const documentation = this.getDocumentationFromTypeDefAtLocation(symbol.initializerLocation);
+    const info = this.getQuickInfoFromTypeDefAtLocation(symbol.initializerLocation);
     return createQuickInfo(
       symbol.declaration.name,
       DisplayInfoKind.LET,
       getTextSpanOfNode(this.node),
       undefined /* containerName */,
       this.typeChecker.typeToString(symbol.tsType),
-      documentation,
+      info?.documentation,
+      info?.tags
     );
   }
 
   private getQuickInfoForReferenceSymbol(symbol: ReferenceSymbol): ts.QuickInfo {
-    const documentation = this.getDocumentationFromTypeDefAtLocation(symbol.targetLocation);
+    const info = this.getQuickInfoFromTypeDefAtLocation(symbol.targetLocation);
     return createQuickInfo(
       symbol.declaration.name,
       DisplayInfoKind.REFERENCE,
       getTextSpanOfNode(this.node),
       undefined /* containerName */,
       this.typeChecker.typeToString(symbol.tsType),
-      documentation,
+      info?.documentation,
+      info?.tags
     );
   }
 
@@ -217,7 +220,7 @@ export class QuickInfoBuilder {
     node: TmplAstNode | AST = this.node,
   ): ts.QuickInfo {
     const kind = dir.isComponent ? DisplayInfoKind.COMPONENT : DisplayInfoKind.DIRECTIVE;
-    const documentation = this.getDocumentationFromTypeDefAtLocation(dir.tcbLocation);
+    const info = this.getQuickInfoFromTypeDefAtLocation(dir.tcbLocation);
     let containerName: string | undefined;
     if (ts.isClassDeclaration(dir.tsSymbol.valueDeclaration) && dir.ngModule !== null) {
       containerName = dir.ngModule.name.getText();
@@ -229,13 +232,14 @@ export class QuickInfoBuilder {
       getTextSpanOfNode(this.node),
       containerName,
       undefined,
-      documentation,
+      info?.documentation,
+      info?.tags
     );
   }
 
-  private getDocumentationFromTypeDefAtLocation(
+  private getQuickInfoFromTypeDefAtLocation(
     tcbLocation: TcbLocation,
-  ): ts.SymbolDisplayPart[] | undefined {
+  ): ts.QuickInfo | undefined {
     const typeDefs = this.tsLS.getTypeDefinitionAtPosition(
       tcbLocation.tcbPath,
       tcbLocation.positionInFile,
@@ -243,8 +247,7 @@ export class QuickInfoBuilder {
     if (typeDefs === undefined || typeDefs.length === 0) {
       return undefined;
     }
-    return this.tsLS.getQuickInfoAtPosition(typeDefs[0].fileName, typeDefs[0].textSpan.start)
-      ?.documentation;
+    return this.tsLS.getQuickInfoAtPosition(typeDefs[0].fileName, typeDefs[0].textSpan.start);
   }
 
   private getQuickInfoAtTcbLocation(location: TcbLocation): ts.QuickInfo | undefined {

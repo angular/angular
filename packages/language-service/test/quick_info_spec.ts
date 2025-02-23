@@ -104,6 +104,17 @@ function quickInfoSkeleton(): {[fileName: string]: string} {
           @Input() config?: {color?: string};
         }
 
+        /**
+         * Don't use me
+         * 
+         * @deprecated use the new thing
+         */
+        @Directive({
+          selector: '[deprecated]',
+          standalone: false,
+        })
+        export class DeprecatedDirective {}
+
         @NgModule({
           declarations: [
             AppCmp,
@@ -111,6 +122,7 @@ function quickInfoSkeleton(): {[fileName: string]: string} {
             StringModel,
             TestComponent,
             SignalModel,
+            DeprecatedDirective
           ],
           imports: [
             CommonModule,
@@ -214,6 +226,20 @@ describe('quick info', () => {
           expectedSpanText: 'hero',
           expectedDisplayString: '(variable) hero: Hero',
         });
+      });
+
+      it('should get tags', () => {
+        const templateOverride = '<div depr¦ecated></div>';
+        const text = templateOverride.replace('¦', '');
+        const template = project.openFile('app.html');
+        template.contents = text;
+        env.expectNoSourceDiagnostics();
+
+        template.moveCursorToText(templateOverride);
+        const quickInfo = template.getQuickInfoAtPosition();
+        const tags = quickInfo!.tags!;
+        expect(tags[0].name).toBe('deprecated');
+        expect(toText(tags[0].text)).toBe('use the new thing');
       });
     });
 
