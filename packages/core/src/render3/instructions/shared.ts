@@ -540,6 +540,8 @@ function setInputsFromAttrs<T>(
 //// Bindings & interpolations
 ///////////////////////////////
 
+type StringArrayMaybeLastIsUndefined = [...string[], undefined | string] | string[];
+
 /**
  * Stores meta-data for a property binding to be used by TestBed's `DebugElement.properties`.
  *
@@ -566,7 +568,7 @@ export function storePropertyBindingMetadata(
   tNode: TNode,
   propertyName: string,
   bindingIndex: number,
-  ...interpolationParts: string[]
+  ...interpolationParts: StringArrayMaybeLastIsUndefined
 ) {
   // Binding meta-data are stored only the first time a given property instruction is processed.
   // Since we don't have a concept of the "first update pass" we need to check for presence of the
@@ -576,7 +578,13 @@ export function storePropertyBindingMetadata(
       const propBindingIdxs = tNode.propertyBindings || (tNode.propertyBindings = []);
       propBindingIdxs.push(bindingIndex);
       let bindingMetadata = propertyName;
+
       if (interpolationParts.length > 0) {
+        // This handles potential undefined last suffix in the interpolationParts array.
+        if (interpolationParts[interpolationParts.length - 1] === undefined) {
+          interpolationParts.pop();
+        }
+
         bindingMetadata +=
           INTERPOLATION_DELIMITER + interpolationParts.join(INTERPOLATION_DELIMITER);
       }

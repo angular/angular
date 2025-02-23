@@ -13,6 +13,6 @@ template: function MyApp_Template(rf, ctx) {
     i0.ɵɵadvance();
     i0.ɵɵtextInterpolate1("Hello, ", ($tmp_0_0$ = ctx.firstName) !== null && $tmp_0_0$ !== undefined ? $tmp_0_0$ : "Frodo", "!");
     i0.ɵɵadvance(2);
-    i0.ɵɵtextInterpolate1("Your last name is ", ($tmp_1_0$ = ($tmp_1_0$ = ctx.lastName) !== null && $tmp_1_0$ !== undefined ? $tmp_1_0$ : ctx.lastNameFallback) !== null && $tmp_1_0$ !== undefined ? $tmp_1_0$ : "unknown", "");
+    i0.ɵɵtextInterpolate1("Your last name is ", ($tmp_1_0$ = ($tmp_1_0$ = ctx.lastName) !== null && $tmp_1_0$ !== undefined ? $tmp_1_0$ : ctx.lastNameFallback) !== null && $tmp_1_0$ !== undefined ? $tmp_1_0$ : "unknown");
   }
 }

@@ -578,8 +578,18 @@ export function textInterpolate(
   expressions: o.Expression[],
   sourceSpan: ParseSourceSpan,
 ): ir.UpdateOp {
-  const interpolationArgs = collateInterpolationArgs(strings, expressions);
-  return callVariadicInstruction(TEXT_INTERPOLATE_CONFIG, [], interpolationArgs, [], sourceSpan);
+  const {expr: interpolationArgs, skipLastInterpolation} = collateInterpolationArgs(
+    strings,
+    expressions,
+  );
+  return callVariadicInstruction(
+    TEXT_INTERPOLATE_CONFIG,
+    [],
+    interpolationArgs,
+    [],
+    sourceSpan,
+    skipLastInterpolation,
+  );
 }
 
 export function i18nExp(expr: o.Expression, sourceSpan: ParseSourceSpan | null): ir.UpdateOp {
@@ -597,7 +607,11 @@ export function propertyInterpolate(
   sanitizer: o.Expression | null,
   sourceSpan: ParseSourceSpan,
 ): ir.UpdateOp {
-  const interpolationArgs = collateInterpolationArgs(strings, expressions);
+  const {expr: interpolationArgs, skipLastInterpolation} = collateInterpolationArgs(
+    strings,
+    expressions,
+    sanitizer !== null,
+  );
   const extraArgs = [];
   if (sanitizer !== null) {
     extraArgs.push(sanitizer);
@@ -609,6 +623,7 @@ export function propertyInterpolate(
     interpolationArgs,
     extraArgs,
     sourceSpan,
+    skipLastInterpolation,
   );
 }
 
@@ -619,7 +634,11 @@ export function attributeInterpolate(
   sanitizer: o.Expression | null,
   sourceSpan: ParseSourceSpan,
 ): ir.UpdateOp {
-  const interpolationArgs = collateInterpolationArgs(strings, expressions);
+  const {expr: interpolationArgs, skipLastInterpolation} = collateInterpolationArgs(
+    strings,
+    expressions,
+    sanitizer !== null,
+  );
   const extraArgs = [];
   if (sanitizer !== null) {
     extraArgs.push(sanitizer);
@@ -631,6 +650,7 @@ export function attributeInterpolate(
     interpolationArgs,
     extraArgs,
     sourceSpan,
+    skipLastInterpolation,
   );
 }
 
@@ -641,7 +661,10 @@ export function stylePropInterpolate(
   unit: string | null,
   sourceSpan: ParseSourceSpan,
 ): ir.UpdateOp {
-  const interpolationArgs = collateInterpolationArgs(strings, expressions);
+  const {expr: interpolationArgs, skipLastInterpolation} = collateInterpolationArgs(
+    strings,
+    expressions,
+  );
   const extraArgs: o.Expression[] = [];
   if (unit !== null) {
     extraArgs.push(o.literal(unit));
@@ -653,6 +676,7 @@ export function stylePropInterpolate(
     interpolationArgs,
     extraArgs,
     sourceSpan,
+    skipLastInterpolation,
   );
 }
 
@@ -661,7 +685,10 @@ export function styleMapInterpolate(
   expressions: o.Expression[],
   sourceSpan: ParseSourceSpan,
 ): ir.UpdateOp {
-  const interpolationArgs = collateInterpolationArgs(strings, expressions);
+  const {expr: interpolationArgs, skipLastInterpolation} = collateInterpolationArgs(
+    strings,
+    expressions,
+  );
 
   return callVariadicInstruction(
     STYLE_MAP_INTERPOLATE_CONFIG,
@@ -669,6 +696,7 @@ export function styleMapInterpolate(
     interpolationArgs,
     [],
     sourceSpan,
+    skipLastInterpolation,
   );
 }
 
@@ -677,7 +705,10 @@ export function classMapInterpolate(
   expressions: o.Expression[],
   sourceSpan: ParseSourceSpan,
 ): ir.UpdateOp {
-  const interpolationArgs = collateInterpolationArgs(strings, expressions);
+  const {expr: interpolationArgs, skipLastInterpolation} = collateInterpolationArgs(
+    strings,
+    expressions,
+  );
 
   return callVariadicInstruction(
     CLASS_MAP_INTERPOLATE_CONFIG,
@@ -685,6 +716,7 @@ export function classMapInterpolate(
     interpolationArgs,
     [],
     sourceSpan,
+    skipLastInterpolation,
   );
 }
 
@@ -720,6 +752,7 @@ export function pureFunction(
     args,
     [],
     null,
+    false,
   );
 }
 
@@ -733,7 +766,11 @@ export function attachSourceLocation(
 /**
  * Collates the string an expression arguments for an interpolation instruction.
  */
-function collateInterpolationArgs(strings: string[], expressions: o.Expression[]): o.Expression[] {
+function collateInterpolationArgs(
+  strings: string[],
+  expressions: o.Expression[],
+  hasSanitizer = false,
+): {expr: o.Expression[]; skipLastInterpolation: boolean} {
   if (strings.length < 1 || expressions.length !== strings.length - 1) {
     throw new Error(
       `AssertionError: expected specific shape of args for strings/expressions in interpolation`,
@@ -741,6 +778,7 @@ function collateInterpolationArgs(strings: string[], expressions: o.Expression[]
   }
   const interpolationArgs: o.Expression[] = [];
 
+  let skipLastInterpolation = false;
   if (expressions.length === 1 && strings[0] === '' && strings[1] === '') {
     interpolationArgs.push(expressions[0]);
   } else {
@@ -748,11 +786,16 @@ function collateInterpolationArgs(strings: string[], expressions: o.Expression[]
     for (idx = 0; idx < expressions.length; idx++) {
       interpolationArgs.push(o.literal(strings[idx]), expressions[idx]);
     }
-    // idx points at the last string.
-    interpolationArgs.push(o.literal(strings[idx]));
+    if (strings[idx] == '' && !hasSanitizer) {
+      // If the last string is empty, and there is no sanitizer, we'll not push it into the interpolation args.
+      skipLastInterpolation = true;
+    } else {
+      // idx points at the last string.
+      interpolationArgs.push(o.literal(strings[idx]));
+    }
   }
 
-  return interpolationArgs;
+  return {expr: interpolationArgs, skipLastInterpolation};
 }
 
 function call<OpT extends ir.CreateOp | ir.UpdateOp>(
@@ -952,8 +995,13 @@ function callVariadicInstructionExpr(
   interpolationArgs: o.Expression[],
   extraArgs: o.Expression[],
   sourceSpan: ParseSourceSpan | null,
+  skipLastInterpolationArg: boolean,
 ): o.Expression {
-  const n = config.mapping(interpolationArgs.length);
+  // When skipLastInterpolation is true, the last interpolation argument was an empty string was ommitted.
+  // We still make sure the args count is even
+  const interpolationLength = interpolationArgs.length + (skipLastInterpolationArg ? 1 : 0);
+
+  const n = config.mapping(interpolationLength);
   if (n < config.constant.length) {
     // Constant calling pattern.
     return o
@@ -975,6 +1023,7 @@ function callVariadicInstruction(
   interpolationArgs: o.Expression[],
   extraArgs: o.Expression[],
   sourceSpan: ParseSourceSpan | null,
+  skipLastInterpolation: boolean,
 ): ir.UpdateOp {
   return ir.createStatementOp(
     callVariadicInstructionExpr(
@@ -983,6 +1032,7 @@ function callVariadicInstruction(
       interpolationArgs,
       extraArgs,
       sourceSpan,
+      skipLastInterpolation,
     ).toStmt(),
   );
 }
