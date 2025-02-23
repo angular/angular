@@ -20,8 +20,7 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
         "1:", i0.ɵɵpipeBind2(2, 7, ctx.name, 1),
         "2:", i0.ɵɵpipeBind3(3, 10, ctx.name, 1, 2),
         "3:", i0.ɵɵpipeBind4(4, 14, ctx.name, 1, 2, 3),
-        "4:", i0.ɵɵpipeBindV(5, 19, $r3$.ɵɵpureFunction1(25, $c0$, ctx.name)),
-        ""
+        "4:", i0.ɵɵpipeBindV(5, 19, $r3$.ɵɵpureFunction1(25, $c0$, ctx.name))
       );
     }
   },

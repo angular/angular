@@ -93,7 +93,7 @@ export function ɵɵpropertyInterpolate1(
   propName: string,
   prefix: string,
   v0: any,
-  suffix: string,
+  suffix?: string,
   sanitizer?: SanitizerFn,
 ): typeof ɵɵpropertyInterpolate1 {
   const lView = getLView();
@@ -118,7 +118,7 @@ export function ɵɵpropertyInterpolate1(
         propName,
         getBindingIndex() - 1,
         prefix,
-        suffix,
+        suffix ?? '',
       );
   }
   return ɵɵpropertyInterpolate1;
@@ -160,7 +160,7 @@ export function ɵɵpropertyInterpolate2(
   v0: any,
   i0: string,
   v1: any,
-  suffix: string,
+  suffix?: string,
   sanitizer?: SanitizerFn,
 ): typeof ɵɵpropertyInterpolate2 {
   const lView = getLView();
@@ -186,7 +186,7 @@ export function ɵɵpropertyInterpolate2(
         getBindingIndex() - 2,
         prefix,
         i0,
-        suffix,
+        suffix ?? '',
       );
   }
   return ɵɵpropertyInterpolate2;
@@ -233,7 +233,7 @@ export function ɵɵpropertyInterpolate3(
   v1: any,
   i1: string,
   v2: any,
-  suffix: string,
+  suffix?: string,
   sanitizer?: SanitizerFn,
 ): typeof ɵɵpropertyInterpolate3 {
   const lView = getLView();
@@ -260,7 +260,7 @@ export function ɵɵpropertyInterpolate3(
         prefix,
         i0,
         i1,
-        suffix,
+        suffix ?? '',
       );
   }
   return ɵɵpropertyInterpolate3;
@@ -311,7 +311,7 @@ export function ɵɵpropertyInterpolate4(
   v2: any,
   i2: string,
   v3: any,
-  suffix: string,
+  suffix?: string,
   sanitizer?: SanitizerFn,
 ): typeof ɵɵpropertyInterpolate4 {
   const lView = getLView();
@@ -339,7 +339,7 @@ export function ɵɵpropertyInterpolate4(
         i0,
         i1,
         i2,
-        suffix,
+        suffix ?? '',
       );
   }
   return ɵɵpropertyInterpolate4;
@@ -394,7 +394,7 @@ export function ɵɵpropertyInterpolate5(
   v3: any,
   i3: string,
   v4: any,
-  suffix: string,
+  suffix?: string,
   sanitizer?: SanitizerFn,
 ): typeof ɵɵpropertyInterpolate5 {
   const lView = getLView();
@@ -436,7 +436,7 @@ export function ɵɵpropertyInterpolate5(
         i1,
         i2,
         i3,
-        suffix,
+        suffix ?? '',
       );
   }
   return ɵɵpropertyInterpolate5;
@@ -495,7 +495,7 @@ export function ɵɵpropertyInterpolate6(
   v4: any,
   i4: string,
   v5: any,
-  suffix: string,
+  suffix?: string,
   sanitizer?: SanitizerFn,
 ): typeof ɵɵpropertyInterpolate6 {
   const lView = getLView();
@@ -540,7 +540,7 @@ export function ɵɵpropertyInterpolate6(
         i2,
         i3,
         i4,
-        suffix,
+        suffix ?? '',
       );
   }
   return ɵɵpropertyInterpolate6;
@@ -603,7 +603,7 @@ export function ɵɵpropertyInterpolate7(
   v5: any,
   i5: string,
   v6: any,
-  suffix: string,
+  suffix?: string,
   sanitizer?: SanitizerFn,
 ): typeof ɵɵpropertyInterpolate7 {
   const lView = getLView();
@@ -651,7 +651,7 @@ export function ɵɵpropertyInterpolate7(
         i3,
         i4,
         i5,
-        suffix,
+        suffix ?? '',
       );
   }
   return ɵɵpropertyInterpolate7;
@@ -718,7 +718,7 @@ export function ɵɵpropertyInterpolate8(
   v6: any,
   i6: string,
   v7: any,
-  suffix: string,
+  suffix?: string,
   sanitizer?: SanitizerFn,
 ): typeof ɵɵpropertyInterpolate8 {
   const lView = getLView();
@@ -769,7 +769,7 @@ export function ɵɵpropertyInterpolate8(
         i4,
         i5,
         i6,
-        suffix,
+        suffix ?? '',
       );
   }
   return ɵɵpropertyInterpolate8;

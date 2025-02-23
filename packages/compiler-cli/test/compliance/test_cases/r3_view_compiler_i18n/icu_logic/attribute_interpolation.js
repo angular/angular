@@ -67,7 +67,7 @@ template: function MyComponent_Template(rf, ctx) {
   }
   if (rf & 2) {
     i0.ɵɵadvance(2);
-    i0.ɵɵpropertyInterpolate2("title", "", ctx.foo, "-", ctx.foo, "");
+    i0.ɵɵpropertyInterpolate2("title", "", ctx.foo, "-", ctx.foo);
     i0.ɵɵadvance(2);
     i0.ɵɵi18nExp(ctx.foo)(ctx.foo)(ctx.foo)(ctx.foo)(ctx.foo);
     i0.ɵɵi18nApply(1);

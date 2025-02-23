@@ -42,7 +42,7 @@ import {checkStylingMap, classStringParser} from './styling';
  * @param suffix Static value used for concatenation only.
  * @codeGenApi
  */
-export function ɵɵclassMapInterpolate1(prefix: string, v0: any, suffix: string): void {
+export function ɵɵclassMapInterpolate1(prefix: string, v0: any, suffix?: string): void {
   const lView = getLView();
   const interpolatedValue = interpolation1(lView, prefix, v0, suffix);
   checkStylingMap(keyValueArraySet, classStringParser, interpolatedValue, true);
@@ -76,7 +76,7 @@ export function ɵɵclassMapInterpolate2(
   v0: any,
   i0: string,
   v1: any,
-  suffix: string,
+  suffix?: string,
 ): void {
   const lView = getLView();
   const interpolatedValue = interpolation2(lView, prefix, v0, i0, v1, suffix);
@@ -116,7 +116,7 @@ export function ɵɵclassMapInterpolate3(
   v1: any,
   i1: string,
   v2: any,
-  suffix: string,
+  suffix?: string,
 ): void {
   const lView = getLView();
   const interpolatedValue = interpolation3(lView, prefix, v0, i0, v1, i1, v2, suffix);
@@ -160,7 +160,7 @@ export function ɵɵclassMapInterpolate4(
   v2: any,
   i2: string,
   v3: any,
-  suffix: string,
+  suffix?: string,
 ): void {
   const lView = getLView();
   const interpolatedValue = interpolation4(lView, prefix, v0, i0, v1, i1, v2, i2, v3, suffix);
@@ -208,7 +208,7 @@ export function ɵɵclassMapInterpolate5(
   v3: any,
   i3: string,
   v4: any,
-  suffix: string,
+  suffix?: string,
 ): void {
   const lView = getLView();
   const interpolatedValue = interpolation5(
@@ -273,7 +273,7 @@ export function ɵɵclassMapInterpolate6(
   v4: any,
   i4: string,
   v5: any,
-  suffix: string,
+  suffix?: string,
 ): void {
   const lView = getLView();
   const interpolatedValue = interpolation6(
@@ -344,7 +344,7 @@ export function ɵɵclassMapInterpolate7(
   v5: any,
   i5: string,
   v6: any,
-  suffix: string,
+  suffix?: string,
 ): void {
   const lView = getLView();
   const interpolatedValue = interpolation7(
@@ -421,7 +421,7 @@ export function ɵɵclassMapInterpolate8(
   v6: any,
   i6: string,
   v7: any,
-  suffix: string,
+  suffix?: string,
 ): void {
   const lView = getLView();
   const interpolatedValue = interpolation8(

@@ -579,6 +579,7 @@ export function textInterpolate(
   sourceSpan: ParseSourceSpan,
 ): ir.UpdateOp {
   const interpolationArgs = collateInterpolationArgs(strings, expressions);
+
   return callVariadicInstruction(TEXT_INTERPOLATE_CONFIG, [], interpolationArgs, [], sourceSpan);
 }
 
@@ -598,6 +599,7 @@ export function propertyInterpolate(
   sourceSpan: ParseSourceSpan,
 ): ir.UpdateOp {
   const interpolationArgs = collateInterpolationArgs(strings, expressions);
+
   const extraArgs = [];
   if (sanitizer !== null) {
     extraArgs.push(sanitizer);
@@ -620,6 +622,7 @@ export function attributeInterpolate(
   sourceSpan: ParseSourceSpan,
 ): ir.UpdateOp {
   const interpolationArgs = collateInterpolationArgs(strings, expressions);
+
   const extraArgs = [];
   if (sanitizer !== null) {
     extraArgs.push(sanitizer);
@@ -642,6 +645,7 @@ export function stylePropInterpolate(
   sourceSpan: ParseSourceSpan,
 ): ir.UpdateOp {
   const interpolationArgs = collateInterpolationArgs(strings, expressions);
+
   const extraArgs: o.Expression[] = [];
   if (unit !== null) {
     extraArgs.push(o.literal(unit));
@@ -748,6 +752,7 @@ function collateInterpolationArgs(strings: string[], expressions: o.Expression[]
     for (idx = 0; idx < expressions.length; idx++) {
       interpolationArgs.push(o.literal(strings[idx]), expressions[idx]);
     }
+
     // idx points at the last string.
     interpolationArgs.push(o.literal(strings[idx]));
   }
@@ -953,7 +958,21 @@ function callVariadicInstructionExpr(
   extraArgs: o.Expression[],
   sourceSpan: ParseSourceSpan | null,
 ): o.Expression {
+  // mapping need to be done before potentially dropping the last interpolation argument
   const n = config.mapping(interpolationArgs.length);
+
+  // In the case the interpolation instruction ends with a empty string we drop it
+  // And the runtime will take care of it.
+  const lastInterpolationArg = interpolationArgs.at(-1);
+  if (
+    extraArgs.length === 0 &&
+    interpolationArgs.length > 1 &&
+    lastInterpolationArg instanceof o.LiteralExpr &&
+    lastInterpolationArg.value === ''
+  ) {
+    interpolationArgs.pop();
+  }
+
   if (n < config.constant.length) {
     // Constant calling pattern.
     return o
