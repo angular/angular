@@ -89,6 +89,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     MISCONFIGURED_INCREMENTAL_HYDRATION = 508,
     // (undocumented)
+    MISSING_DIRECTIVE_DEFINITION = 916,
+    // (undocumented)
     MISSING_DOCUMENT = 210,
     // (undocumented)
     MISSING_GENERATED_DEF = 906,
@@ -100,6 +102,8 @@ export const enum RuntimeErrorCode {
     MISSING_INJECTION_TOKEN = 208,
     // (undocumented)
     MISSING_LOCALE_DATA = 701,
+    // (undocumented)
+    MISSING_NG_MODULE_DEFINITION = 915,
     // (undocumented)
     MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP = 402,
     // (undocumented)
