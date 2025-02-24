@@ -56,8 +56,8 @@ export class ChromeApplicationOperations extends ApplicationOperations {
     this.runInInspectedWindow(inspect, target);
   }
 
-  override viewSourceFromRouter(name: string, type: string, target?: URL): void {
+  override viewSourceFromRouter(name: string, type: string, target: Frame): void {
     const viewSource = `inspect(inspectedApplication.findConstructorByNameForRouter('${name}', '${type}'))`;
-    runInInspectedWindow(viewSource, target);
+    this.runInInspectedWindow(viewSource, target);
   }
 }
