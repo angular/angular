@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
 import type {NgModuleDef} from '../r3_symbols';
 import {stringify} from '../util/stringify';
@@ -16,8 +17,12 @@ export function getNgModuleDef<T>(type: any, throwIfNotFound: true): NgModuleDef
 export function getNgModuleDef<T>(type: any): NgModuleDef<T> | null;
 export function getNgModuleDef<T>(type: any, throwIfNotFound?: boolean): NgModuleDef<T> | null {
   const ngModuleDef = type[NG_MOD_DEF] || null;
-  if (!ngModuleDef && throwIfNotFound === true) {
-    throw new Error(`Type ${stringify(type)} does not have 'ɵmod' property.`);
+  if (!ngModuleDef && throwIfNotFound) {
+    throw new RuntimeError(
+      RuntimeErrorCode.MISSING_NG_MODULE_DEFINITION,
+      (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        `Type ${stringify(type)} does not have 'ɵmod' property.`,
+    );
   }
   return ngModuleDef;
 }
@@ -36,8 +41,12 @@ export function getDirectiveDef<T>(type: any, throwIfNotFound: true): DirectiveD
 export function getDirectiveDef<T>(type: any): DirectiveDef<T> | null;
 export function getDirectiveDef<T>(type: any, throwIfNotFound?: boolean): DirectiveDef<T> | null {
   const def = type[NG_DIR_DEF] || null;
-  if (!def && throwIfNotFound === true) {
-    throw new Error(`Type ${stringify(type)} does not have 'ɵdir' property.`);
+  if (!def && throwIfNotFound) {
+    throw new RuntimeError(
+      RuntimeErrorCode.MISSING_DIRECTIVE_DEFINITION,
+      (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        `Type ${stringify(type)} does not have 'ɵdir' property.`,
+    );
   }
   return def;
 }
