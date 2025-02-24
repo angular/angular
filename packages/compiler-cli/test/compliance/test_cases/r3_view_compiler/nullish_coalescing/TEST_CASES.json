@@ -54,6 +54,24 @@
           "failureMessage": "Incorrect host bindings"
         }
       ]
+    },
+    {
+      "description": "should preserve required parentheses for nullish coalescing",
+      "inputFiles": ["nullish_coalescing_parens.ts"],
+      "compilerOptions": {
+        "target": "es2020"
+      },
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "nullish_coalescing_parens_template.js",
+              "generated": "nullish_coalescing_parens.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }
