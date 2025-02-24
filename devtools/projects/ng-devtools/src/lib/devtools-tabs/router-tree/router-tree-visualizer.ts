@@ -237,13 +237,19 @@ export class RouterTreeVisualizer {
         return `translate(${node.x},${node.y})`;
       })
       .on('click', (pointerEvent: PointerEvent, node: RouterTreeD3Node) => {
-        this.nodeClickListeners.forEach((listener) => listener(pointerEvent, node));
+        for (const listener of this.nodeClickListeners) {
+          listener(pointerEvent, node);
+        }
       })
       .on('mouseover', (pointerEvent: PointerEvent, node: RouterTreeD3Node) => {
-        this.nodeMouseoverListeners.forEach((listener) => listener(pointerEvent, node));
+        for (const listener of this.nodeMouseoverListeners) {
+          listener(pointerEvent, node);
+        }
       })
       .on('mouseout', (pointerEvent: PointerEvent, node: RouterTreeD3Node) => {
-        this.nodeMouseoutListeners.forEach((listener) => listener(pointerEvent, node));
+        for (const listener of this.nodeMouseoutListeners) {
+          listener(pointerEvent, node);
+        }
       });
     const [width, height] = this.config.nodeLabelSize!;
 

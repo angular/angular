@@ -1,0 +1,46 @@
+@use '../../../styles/theme' as theme;
+
+td,
+th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+.tag-active {
+  display: inline-block;
+  border-radius: 5px;
+  padding: 2px 8px;
+  background: #a6d5a9;
+}
+
+.tag-inactive {
+  display: inline-block;
+  border-radius: 5px;
+  padding: 2px 8px;
+  background: #f9c2c5;
+}
+
+.chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  overflow-wrap: normal;
+}
+
+button {
+  border-radius: 25px;
+  font-size: 12px;
+}
+
+@include theme.dark-theme {
+  td,
+  th {
+    border: 1px solid #3f3f3f;
+  }
+  .row-title {
+    color: #ffffff;
+  }
+
+  .row-data {
+    color: #ffffff;
+  }
+}

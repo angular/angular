@@ -18,8 +18,29 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {ApplicationOperations} from '../../application-operations/index';
 import {RouteDetailsRowComponent} from './route-details-row.component';
+import {MatTableModule} from '@angular/material/table';
 
 const DEFAULT_FILTER = /.^/;
+
+export interface PeriodicElement {
+  name: string;
+  position: number;
+  weight: number;
+  symbol: string;
+}
+
+const ELEMENT_DATA: PeriodicElement[] = [
+  {position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H'},
+  {position: 2, name: 'Helium', weight: 4.0026, symbol: 'He'},
+  {position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'},
+  {position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be'},
+  {position: 5, name: 'Boron', weight: 10.811, symbol: 'B'},
+  {position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C'},
+  {position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N'},
+  {position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O'},
+  {position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F'},
+  {position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne'},
+];
 
 @Component({
   selector: 'ng-router-tree',
@@ -34,6 +55,7 @@ const DEFAULT_FILTER = /.^/;
     SplitAreaDirective,
     MatIconModule,
     MatButtonModule,
+    MatTableModule,
     RouteDetailsRowComponent,
   ],
   standalone: true,
@@ -47,10 +69,13 @@ export class RouterTreeComponent {
   private readonly _messageBus = inject(MessageBus) as MessageBus<Events>;
   private readonly _appOperations = inject(ApplicationOperations);
 
-  selectedRoute = signal<Route | null>(null);
+  protected selectedRoute = signal<Route | null>(null);
 
   routes = input<Route[]>([]);
   snapToRoot = input(false);
+
+  displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
+  dataSource = ELEMENT_DATA;
 
   constructor() {
     effect(() => {
@@ -99,12 +124,12 @@ export class RouterTreeComponent {
     });
   }
 
-  viewSourceFromRouter(g: string, type: string): void {
-    this._appOperations.viewSourceFromRouter(g, type);
+  viewSourceFromRouter(className: string, type: string): void {
+    this._appOperations.viewSourceFromRouter(className, type);
   }
 
-  viewComponentSource(c: string): void {
-    this._appOperations.viewSourceFromRouter(c, 'component');
+  viewComponentSource(component: string): void {
+    this._appOperations.viewSourceFromRouter(component, 'component');
   }
 
   navigateRoute(route: any): void {
