@@ -14,6 +14,7 @@ import {
   Signal,
   signal,
   BaseResourceOptions,
+  ResourceStreamItem,
 } from '@angular/core';
 import {Observable, Subscription} from 'rxjs';
 
@@ -57,11 +58,11 @@ export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T |
       params.abortSignal.addEventListener('abort', onAbort);
 
       // Start off stream as undefined.
-      const stream = signal<{value: T} | {error: unknown}>({value: undefined as T});
-      let resolve: ((value: Signal<{value: T} | {error: unknown}>) => void) | undefined;
-      const promise = new Promise<Signal<{value: T} | {error: unknown}>>((r) => (resolve = r));
+      const stream = signal<ResourceStreamItem<T>>({value: undefined as T});
+      let resolve: ((value: Signal<ResourceStreamItem<T>>) => void) | undefined;
+      const promise = new Promise<Signal<ResourceStreamItem<T>>>((r) => (resolve = r));
 
-      function send(value: {value: T} | {error: unknown}): void {
+      function send(value: ResourceStreamItem<T>): void {
         stream.set(value);
         resolve?.(stream);
         resolve = undefined;
