@@ -270,6 +270,7 @@
   "makeRecord",
   "map",
   "markAncestorsForTraversal",
+  "markAsComponentHost",
   "markViewDirty",
   "markViewForRefresh",
   "maybeWrapInNotSelector",
