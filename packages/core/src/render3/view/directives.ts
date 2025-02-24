@@ -10,6 +10,7 @@ import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {Writable} from '../../interface/type';
 import {DoCheck, OnChanges, OnInit} from '../../interface/lifecycle_hooks';
 import {
+  assertDefined,
   assertGreaterThan,
   assertGreaterThanOrEqual,
   assertNotEqual,
@@ -39,7 +40,7 @@ import {
   type TElementNode,
   type TNode,
 } from '../interfaces/node';
-import {isComponentDef, isComponentHost} from '../interfaces/type_checks';
+import {isComponentDef} from '../interfaces/type_checks';
 import {HEADER_OFFSET, HostBindingOpCodes, type LView, type TView} from '../interfaces/view';
 import {isInlineTemplate} from '../node_selector_matcher';
 import {NO_CHANGE} from '../tokens';
@@ -52,6 +53,13 @@ export type DirectiveMatcherStrategy = (
 ) => DirectiveDef<unknown>[] | null;
 
 /**
+ * Map that tracks a selector-matched directive to the range within which its host directives
+ * are declared. Host directives for a specific directive are always contiguous within the runtime.
+ * Note that both the start and end are inclusive and they're both **after** `tNode.directiveStart`.
+ */
+type HostDirectiveRanges = Map<DirectiveDef<unknown>, [start: number, end: number]>;
+
+/**
  * Resolve the matched directives on a node.
  */
 export function resolveDirectives(
@@ -61,21 +69,28 @@ export function resolveDirectives(
   localRefs: string[] | null,
   directiveMatcher: DirectiveMatcherStrategy,
 ): void {
-  // Please make sure to have explicit type for `exportsMap`. Inferred type triggers bug in
-  // tsickle.
+  // Please make sure to have explicit type for `exportsMap`. Inferred type triggers bug in tsickle.
   ngDevMode && assertFirstCreatePass(tView);
 
   const exportsMap: Record<string, number> | null = localRefs === null ? null : {'': -1};
   const matchedDirectiveDefs = directiveMatcher(tView, tNode);
 
   if (matchedDirectiveDefs !== null) {
-    const [directiveDefs, hostDirectiveDefs] = resolveHostDirectives(
+    const [directiveDefs, hostDirectiveDefs, hostDirectiveRanges] = resolveHostDirectives(
       tView,
       tNode,
       matchedDirectiveDefs,
     );
 
-    initializeDirectives(tView, lView, tNode, directiveDefs, exportsMap, hostDirectiveDefs);
+    initializeDirectives(
+      tView,
+      lView,
+      tNode,
+      directiveDefs,
+      exportsMap,
+      hostDirectiveDefs,
+      hostDirectiveRanges,
+    );
   }
   if (exportsMap !== null && localRefs !== null) {
     cacheMatchingLocalNames(tNode, localRefs, exportsMap);
@@ -104,38 +119,51 @@ function cacheMatchingLocalNames(
   }
 }
 
-export function resolveHostDirectives(
+function resolveHostDirectives(
   tView: TView,
   tNode: TNode,
   matches: DirectiveDef<unknown>[],
-): [matches: DirectiveDef<unknown>[], hostDirectiveDefs: HostDirectiveDefs | null] {
+): [
+  matches: DirectiveDef<unknown>[],
+  hostDirectiveDefs: HostDirectiveDefs | null,
+  hostDirectiveRanges: HostDirectiveRanges | null,
+] {
   const allDirectiveDefs: DirectiveDef<unknown>[] = [];
+  const hasComponent = matches.length > 0 && isComponentDef(matches[0]);
   let hostDirectiveDefs: HostDirectiveDefs | null = null;
+  let hostDirectiveRanges: HostDirectiveRanges | null = null;
 
-  for (const def of matches) {
+  // Components are inserted at the front of the matches array so that their lifecycle
+  // hooks run before any directive lifecycle hooks. This appears to be for ViewEngine
+  // compatibility. This logic doesn't make sense with host directives, because it
+  // would allow the host directives to undo any overrides the host may have made.
+  // To handle this case, the host directives of components are inserted at the beginning
+  // of the array, followed by the component. As such, the insertion order is as follows:
+  // 1. Host directives belonging to the selector-matched component.
+  // 2. Selector-matched component.
+  // 3. Host directives belonging to selector-matched directives.
+  // 4. Selector-matched dir
+  if (hasComponent) {
+    const def = matches[0];
     if (def.findHostDirectiveDefs !== null) {
-      // TODO(pk): probably could return matches instead of taking in an array to fill in?
+      hostDirectiveRanges ??= new Map();
       hostDirectiveDefs ??= new Map();
-      // Components are inserted at the front of the matches array so that their lifecycle
-      // hooks run before any directive lifecycle hooks. This appears to be for ViewEngine
-      // compatibility. This logic doesn't make sense with host directives, because it
-      // would allow the host directives to undo any overrides the host may have made.
-      // To handle this case, the host directives of components are inserted at the beginning
-      // of the array, followed by the component. As such, the insertion order is as follows:
-      // 1. Host directives belonging to the selector-matched component.
-      // 2. Selector-matched component.
-      // 3. Host directives belonging to selector-matched directives.
-      // 4. Selector-matched directives.
-      def.findHostDirectiveDefs(def, allDirectiveDefs, hostDirectiveDefs);
+      resolveHostDirectivesForDef(def, allDirectiveDefs, hostDirectiveRanges, hostDirectiveDefs);
     }
+    markAsComponentHost(tView, tNode, allDirectiveDefs.push(def) - 1);
+  }
 
-    if (isComponentDef(def)) {
-      allDirectiveDefs.push(def);
-      markAsComponentHost(tView, tNode, allDirectiveDefs.length - 1);
+  // If there's a component, we already processed it above so we can skip it here.
+  for (let i = hasComponent ? 1 : 0; i < matches.length; i++) {
+    const def = matches[i];
+    if (def.findHostDirectiveDefs !== null) {
+      hostDirectiveRanges ??= new Map();
+      hostDirectiveDefs ??= new Map();
+      resolveHostDirectivesForDef(def, allDirectiveDefs, hostDirectiveRanges, hostDirectiveDefs);
     }
   }
 
-  if (isComponentHost(tNode)) {
+  if (hasComponent) {
     allDirectiveDefs.push(...matches.slice(1));
   } else {
     allDirectiveDefs.push(...matches);
@@ -145,7 +173,23 @@ export function resolveHostDirectives(
     assertNoDuplicateDirectives(allDirectiveDefs);
   }
 
-  return [allDirectiveDefs, hostDirectiveDefs];
+  return [allDirectiveDefs, hostDirectiveDefs, hostDirectiveRanges];
+}
+
+function resolveHostDirectivesForDef(
+  def: DirectiveDef<unknown>,
+  allDirectiveDefs: DirectiveDef<unknown>[],
+  hostDirectiveRanges: HostDirectiveRanges,
+  hostDirectiveDefs: HostDirectiveDefs,
+) {
+  ngDevMode && assertDefined(def.findHostDirectiveDefs, 'Expected host directive resolve function');
+  const start = allDirectiveDefs.length;
+  // TODO(pk): probably could return matches instead of taking in an array to fill in?
+  def.findHostDirectiveDefs!(def, allDirectiveDefs, hostDirectiveDefs);
+
+  // Note that these indexes are within the offset by `directiveStart`. We can't do the
+  // offsetting here, because `directiveStart` hasn't been initialized on the TNode yet.
+  hostDirectiveRanges.set(def, [start, allDirectiveDefs.length - 1]);
 }
 
 /**
@@ -168,16 +212,19 @@ function initializeDirectives(
   directives: DirectiveDef<unknown>[],
   exportsMap: {[key: string]: number} | null,
   hostDirectiveDefs: HostDirectiveDefs | null,
+  hostDirectiveRanges: HostDirectiveRanges | null,
 ) {
   ngDevMode && assertFirstCreatePass(tView);
 
+  const directivesLength = directives.length;
+
   // Publishes the directive types to DI so they can be injected. Needs to
   // happen in a separate pass before the TNode flags have been initialized.
-  for (let i = 0; i < directives.length; i++) {
+  for (let i = 0; i < directivesLength; i++) {
     diPublicInInjector(getOrCreateNodeInjectorForNode(tNode, lView), tView, directives[i].type);
   }
 
-  initTNodeFlags(tNode, tView.data.length, directives.length);
+  initTNodeFlags(tNode, tView.data.length, directivesLength);
 
   // When the same token is provided by several directives on the same node, some rules apply in
   // the viewEngine:
@@ -185,13 +232,13 @@ function initializeDirectives(
   // - the last directive in NgModule.declarations has priority over the previous one
   // So to match these rules, the order in which providers are added in the arrays is very
   // important.
-  for (let i = 0; i < directives.length; i++) {
+  for (let i = 0; i < directivesLength; i++) {
     const def = directives[i];
     if (def.providersResolver) def.providersResolver(def);
   }
   let preOrderHooksFound = false;
   let preOrderCheckHooksFound = false;
-  let directiveIdx = allocExpando(tView, lView, directives.length, null);
+  let directiveIdx = allocExpando(tView, lView, directivesLength, null);
   ngDevMode &&
     assertSame(
       directiveIdx,
@@ -199,7 +246,12 @@ function initializeDirectives(
       'TNode.directiveStart should point to just allocated space',
     );
 
-  for (let i = 0; i < directives.length; i++) {
+  // If there's at least one directive, we'll have to track it so initialize the map.
+  if (directivesLength > 0) {
+    tNode.directiveToIndex = new Map();
+  }
+
+  for (let i = 0; i < directivesLength; i++) {
     const def = directives[i];
     // Merge the attrs in the order of matches. This assumes that the first directive is the
     // component itself, so that the component has the least priority.
@@ -207,6 +259,20 @@ function initializeDirectives(
 
     configureViewWithDirective(tView, tNode, lView, directiveIdx, def);
     saveNameToExportMap(directiveIdx, def, exportsMap);
+
+    // If a directive has host directives, we need to track both its index and the range within
+    // the host directives are declared. Host directives are not tracked, but should be resolved
+    // by looking up the host and getting its indexes from there.
+    if (hostDirectiveRanges !== null && hostDirectiveRanges.has(def)) {
+      const [start, end] = hostDirectiveRanges.get(def)!;
+      tNode.directiveToIndex!.set(def.type, [
+        directiveIdx,
+        start + tNode.directiveStart,
+        end + tNode.directiveStart,
+      ]);
+    } else if (hostDirectiveDefs === null || !hostDirectiveDefs.has(def)) {
+      tNode.directiveToIndex!.set(def.type, directiveIdx);
+    }
 
     if (def.contentQueries !== null) tNode.flags |= TNodeFlags.hasContentQuery;
     if (def.hostBindings !== null || def.hostAttrs !== null || def.hostVars !== 0)

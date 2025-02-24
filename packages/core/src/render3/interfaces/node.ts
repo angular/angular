@@ -5,12 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
+import {Type} from '../../interface/type';
 import {KeyValueArray} from '../../util/array_utils';
 import {TStylingRange} from '../interfaces/styling';
 import {AttributeMarker} from './attribute_marker';
 
 import {TIcu} from './i18n';
-import {InputFlags} from './input_flags';
 import {CssSelector} from './projection';
 import {RNode} from './renderer_dom';
 import type {LView, TView} from './view';
@@ -442,6 +442,11 @@ export interface TNode {
   hostDirectiveOutputs: HostDirectiveOutputs | null;
 
   /**
+   * Mapping between directive classes applied to the node and their indexes.
+   */
+  directiveToIndex: DirectiveIndexMap | null;
+
+  /**
    * The TView attached to this node.
    *
    * If this TNode corresponds to an LContainer with a template (e.g. structural
@@ -856,6 +861,30 @@ export type HostDirectiveInputs = Record<string, (number | string)[]>;
  *   - i+1: Public name of the output as it was defined on the host directive before aliasing.
  */
 export type HostDirectiveOutputs = Record<string, (number | string)[]>;
+
+/**
+ * Represents a map between a class reference and the index at which its directive is available on
+ * a specific TNode. The value can be either:
+ *   1. A number means that there's only one selector-matched directive on the node and it
+ *      doesn't have any host directives.
+ *   2. An array means that there's a selector-matched directive and it has host directives.
+ *      The array is structured as follows:
+ *        - 0: Index of the selector-matched directive.
+ *        - 1: Start index of the range within which the host directives are defined.
+ *        - 2: End of the host directive range.
+ *
+ * Example:
+ * ```
+ * Map {
+ *   [NoHostDirectives]: 5,
+ *   [HasHostDirectives]: [10, 6, 8],
+ * }
+ * ```
+ */
+export type DirectiveIndexMap = Map<
+  Type<unknown>,
+  number | [directiveIndex: number, hostDirectivesStart: number, hostDirectivesEnd: number]
+>;
 
 /**
  * Type representing a set of TNodes that can have local refs (`#foo`) placed on them.

@@ -166,6 +166,7 @@ const ShapeOfTNode: ShapeOf<TNode> = {
   hostDirectiveInputs: true,
   outputs: true,
   hostDirectiveOutputs: true,
+  directiveToIndex: true,
   tView: true,
   next: true,
   prev: true,
