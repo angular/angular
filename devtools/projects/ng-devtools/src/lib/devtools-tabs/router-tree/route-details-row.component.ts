@@ -21,8 +21,8 @@ export type RowType = 'text' | 'chip' | 'flag' | 'list';
             {{ data() }}
           </mat-chip>
       } @else if (rowType() === 'flag') {
-        <span  class="{{ data() ? 'tag-active' : 'tag-incactive' }}">
-          {{ data()  ? 'Active' : 'Inactive' }}
+        <span  class="{{ data() ? 'tag-active' : 'tag-inactive' }}">
+          {{ data() ? 'Active' : 'Inactive' }}
         </span>
       } @else if (rowType() === 'list') {
         <div style="display: flex; gap: 5px">
@@ -52,7 +52,7 @@ export type RowType = 'text' | 'chip' | 'flag' | 'list';
         color: #fff;
       }
 
-      .tag-incactive {
+      .tag-inactive {
         display: inline-block;
         border-radius: 5px;
         padding: 2px 8px;
