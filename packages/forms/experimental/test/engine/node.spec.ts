@@ -1,5 +1,7 @@
 import {computed, signal} from '@angular/core';
 import {FormNode} from '../../src/engine/node';
+import {LogicNode} from '../../src/engine/logic';
+import {disabled, schema} from '../../src/api/schema';
 
 describe('Node', () => {
   it('is untouched initially', () => {
@@ -100,6 +102,72 @@ describe('Node', () => {
       value.set({a: 2});
       expect(node.touched()).toBe(false);
       expect(node.getChild('b')).toBeUndefined();
+    });
+  });
+
+  describe('arrays', () => {
+    it('should only have child nodes for elements that exist', () => {
+      const value = signal([1, 2]);
+      const node = new FormNode(value);
+      expect(node.getChild(0)).toBeDefined();
+      expect(node.getChild(1)).toBeDefined();
+      expect(node.getChild(2)).not.toBeDefined();
+      expect(node.getChild('length')).not.toBeDefined();
+    });
+
+    it('should support element-level logic', () => {
+      const value = signal([1, 2, 3]);
+      const logic = new LogicNode();
+      logic.element = new LogicNode();
+      // Disabled if even.
+      logic.element.disabled = (node: FormNode) => (node.value() as number) % 2 === 0;
+      const node = new FormNode(value, undefined, logic);
+
+      expect(node.getChild(0)!.disabled()).toBe(false);
+      expect(node.getChild(1)!.disabled()).toBe(true);
+      expect(node.getChild(2)!.disabled()).toBe(false);
+    });
+
+    it('should support dynamic elements', () => {
+      const value = signal([1, 2, 3]);
+      const logic = new LogicNode();
+      logic.element = new LogicNode();
+      // Disabled if even.
+      logic.element.disabled = (node: FormNode) => (node.value() as number) % 2 === 0;
+      const node = new FormNode(value, undefined, logic);
+
+      value.update((v) => [...v, 4]);
+      expect(node.getChild(3)!.disabled()).toBe(true);
+    });
+
+    it('should support removing elements', () => {
+      const value = signal([1, 2, 3]);
+      const node = new FormNode(value);
+
+      node.getChild(2)!.markAsTouched();
+      expect(node.touched()).toBe(true);
+
+      value.set([1, 2]);
+      expect(node.touched()).toBe(false);
+    });
+  });
+
+  describe('disabled', () => {
+    it('should allow logic to make a node disabled', () => {
+      const value = signal({a: 1, b: 2});
+      const logic = schema<ReturnType<typeof value>>((p) => {
+        disabled(p.a, (v) => v !== 2);
+      });
+      const node = new FormNode(value, undefined, logic);
+
+      const a = node.getChild('a')!;
+
+      expect(node.disabled()).toBe(false);
+      expect(a.disabled()).toBe(true);
+
+      a.value.set(2);
+      expect(node.disabled()).toBe(false);
+      expect(a.disabled()).toBe(false);
     });
   });
 });

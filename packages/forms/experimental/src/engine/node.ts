@@ -45,6 +45,7 @@
 
 import {computed, linkedSignal, Signal, signal, WritableSignal} from '@angular/core';
 import {deepSignal} from './deep_signal';
+import {LogicNode} from './logic';
 
 export class FormNode {
   private _touched = signal(false);
@@ -65,15 +66,15 @@ export class FormNode {
   });
 
   readonly disabled: Signal<boolean> = computed(
-    () => (this.parent?.disabled() || this.logic.disabled?.(this)) ?? false,
+    () => (this.parent?.disabled() || this.logic?.disabled?.(this)) ?? false,
   );
 
   private readonly childrenMap: Signal<Map<PropertyKey, FormNode>>;
 
   constructor(
     readonly value: WritableSignal<unknown>,
-    private readonly parent: FormNode | undefined = undefined,
-    private readonly logic: NodeLogic = DEFAULT_LOGIC,
+    private readonly parent?: FormNode,
+    private readonly logic?: LogicNode,
   ) {
     this.childrenMap = linkedSignal<unknown, Map<PropertyKey, FormNode>>({
       source: this.value,
@@ -85,16 +86,17 @@ export class FormNode {
               map.delete(key);
             }
           }
+
           for (const key of Object.keys(data)) {
             if (!map.has(key)) {
-              map.set(
-                key,
-                new FormNode(
-                  deepSignal(this.value, key as never),
-                  this,
-                  this.logic.getLogicForChild(key),
-                ),
-              );
+              let childLogic: LogicNode | undefined;
+              if (Array.isArray(data)) {
+                // TODO: other dynamic data
+                childLogic = this.logic?.element;
+              } else {
+                childLogic = this.logic?.children.get(key);
+              }
+              map.set(key, new FormNode(deepSignal(this.value, key as never), this, childLogic));
             }
           }
         }
@@ -109,22 +111,10 @@ export class FormNode {
   }
 
   getChild(key: PropertyKey): FormNode | undefined {
-    return this.childrenMap().get(key);
+    return this.childrenMap().get(typeof key === 'number' ? key.toString() : key);
   }
 }
 
 function isObject(data: unknown): data is Record<PropertyKey, unknown> {
   return typeof data === 'object';
 }
-
-// define schema -> compiled -> tree of NodeLogics
-interface NodeLogic {
-  disabled?(node: FormNode): boolean;
-  getLogicForChild(key: PropertyKey): NodeLogic;
-}
-
-const DEFAULT_LOGIC: NodeLogic = {
-  getLogicForChild() {
-    return DEFAULT_LOGIC;
-  },
-};
