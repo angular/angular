@@ -6,13 +6,13 @@ This is a purely aesthetic change and does not affect the behavior of the applic
 The migration can be run using the following command:
 
 ```bash
-ng generate @angular/core:self-closing-tag
+ng generate @angular/core:self-closing-tags-migration
 ```
 
 By default, the migration will go over the entire application. If you want to apply this migration to a subset of the files, you can pass the path argument as shown below:
 
 ```bash
-ng generate @angular/core:self-closing-tag --path src/app/sub-component
+ng generate @angular/core:self-closing-tags-migration --path src/app/sub-component
 ```
 
 ### How does it work?

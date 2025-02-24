@@ -8,7 +8,7 @@ Run the schematic using the following command:
 
 <docs-code language="shell">
 
-ng generate @angular/core:self-closing-tag
+ng generate @angular/core:self-closing-tags-migration
 
 </docs-code>
 
