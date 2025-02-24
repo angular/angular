@@ -54,10 +54,10 @@
                 @if (route.data.pathMatch) {
                   <tr ng-route-details-row title="Path Match" [data]="route.data.pathMatch"></tr>
                 }
-                @if (route.data.data && route.data.data.length > 0) {
+                @if (route?.data?.data?.length > 0) {
                   <tr ng-route-details-row title="Data" [data]="route.data.data | json"></tr>
                 }
-                @if (route.data.canActivateGuards && route.data.canActivateGuards.length > 0) {
+                @if (route?.data?.canActivateGuards?.length > 0) {
                   <tr
                     ng-route-details-row
                     title="Can Activate Guards"
@@ -66,9 +66,7 @@
                     (chipClick)="viewSourceFromRouter($event, 'canActivate')"
                   ></tr>
                 }
-                @if (
-                  route.data.canActivateChildGuards && route.data.canActivateChildGuards.length > 0
-                ) {
+                @if (route?.data?.canActivateChildGuards?.length > 0) {
                   <tr
                     ng-route-details-row
                     title="Can Activate Child Guards"
@@ -77,16 +75,16 @@
                     (chipClick)="viewSourceFromRouter($event, 'canActivateChild')"
                   ></tr>
                 }
-                @if (route.data.canDeActivateGuards && route.data.canDeActivateGuards.length > 0) {
+                @if (route?.data?.canDeactivateGuards?.length > 0) {
                   <tr
                     ng-route-details-row
                     title="Can DeActivate Guards"
                     rowType="list"
-                    [data]="route.data.canDeActivateGuards"
+                    [data]="route.data.canDeactivateGuards"
                     (chipClick)="viewSourceFromRouter($event, 'canDeactivate')"
                   ></tr>
                 }
-                @if (route.data.canMatchGuards && route.data.canMatchGuards.length > 0) {
+                @if (route?.data?.canMatchGuards?.length > 0) {
                   <tr
                     ng-route-details-row
                     title="Can Match Guards"
@@ -96,7 +94,7 @@
                   ></tr>
                 }
 
-                @if (route.data.providers && route.data.providers.length > 0) {
+                @if (route?.data?.providers?.length > 0) {
                   <tr
                     ng-route-details-row
                     title="Providers"
@@ -108,7 +106,7 @@
                 @if (route.data.title) {
                   <tr ng-route-details-row title="Title" [data]="route.data.title"></tr>
                 }
-                @if (route.data.children && route.data.children.length > 0) {
+                @if (route?.data?.children?.length > 0) {
                   <tr
                     ng-route-details-row
                     title="Children"

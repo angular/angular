@@ -211,7 +211,7 @@ export interface Route {
   canActivateGuards?: string[] | null;
   canActivateChildGuards?: string[] | null;
   canMatchGuards?: string[] | null;
-  canDeActivateGuards?: string[] | null;
+  canDeactivateGuards?: string[] | null;
   providers?: string[] | null;
   title?: string;
   children?: Array<Route>;

@@ -49,7 +49,12 @@ import {unHighlight} from './highlighter';
 import {disableTimingAPI, enableTimingAPI, initializeOrGetDirectiveForestHooks} from './hooks';
 import {start as startProfiling, stop as stopProfiling} from './hooks/capture';
 import {ComponentTreeNode} from './interfaces';
-import {getElementRefByName, getComponentRefByName, parseRoutes} from './router-tree';
+import {
+  getElementRefByName,
+  getComponentRefByName,
+  parseRoutes,
+  RoutePropertyType,
+} from './router-tree';
 import {ngDebugDependencyInjectionApiIsSupported} from './ng-debug-api/ng-debug-api';
 import {setConsoleReference} from './set-console-reference';
 import {serializeDirectiveState} from './state-serializer/state-serializer';
@@ -171,14 +176,20 @@ const navigateRouteCallback = (messageBus: MessageBus<Events>) => (path: string)
   router.navigateByUrl(path);
 };
 
-export const viewSourceFromRouter = (path: string, type: string) => {
+/**
+ * Opens the source code of a component or a directive in the editor.
+ * @param name - The name of the component, provider, or directive to view source for.
+ * @param type - The type of the element to view source for  component, provider, or directive.
+ * @returns - The element instance of the component, provider, or directive.
+ */
+export const viewSourceFromRouter = (name: string, type: RoutePropertyType) => {
   const router: any = getRouterInstance();
 
   let element;
   if (type === 'component') {
-    element = getComponentRefByName(router.config, path);
+    element = getComponentRefByName(router.config, name);
   } else {
-    element = getElementRefByName(type, router.config, path);
+    element = getElementRefByName(type, router.config, name);
   }
   return element;
 };
@@ -313,10 +324,10 @@ const getProviderValue = (
 
 const getRouterConfigFromRoot = (injector: SerializedInjector): Route => {
   const serializedProviderRecords = getSerializedProviderRecords(injector) ?? [];
-  const routerInstance = serializedProviderRecords.filter(
+  const routerInstance = serializedProviderRecords.find(
     (provider) => provider.token === 'Router', // get the instance of router using token
   );
-  const routerProvider = getProviderValue(injector, routerInstance[0]);
+  const routerProvider = getProviderValue(injector, routerInstance!);
 
   return parseRoutes(routerProvider);
 };
@@ -561,14 +572,12 @@ const getInjectorInstance = (
 
   const injector = idToInjector.get(serializedInjector.id)!;
   const providerRecords = getInjectorProviders(injector);
-  let value;
 
   if (typeof serializedProvider.index === 'number') {
     const provider = providerRecords[serializedProvider.index];
-    value = injector.get(provider.token, null, {optional: true});
+    return injector.get(provider.token, null, {optional: true});
   } else if (Array.isArray(serializedProvider.index)) {
     const providers = serializedProvider.index.map((index) => providerRecords[index]);
-    value = injector.get(providers[0].token, null, {optional: true});
+    return injector.get(providers[0].token, null, {optional: true});
   }
-  return value;
 };
