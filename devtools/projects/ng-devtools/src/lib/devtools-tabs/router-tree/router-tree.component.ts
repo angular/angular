@@ -9,8 +9,7 @@
 import {CommonModule} from '@angular/common';
 import {afterNextRender, Component, effect, inject, input, signal, viewChild} from '@angular/core';
 import {MatInputModule} from '@angular/material/input';
-import {Events, MessageBus, Route} from 'protocol';
-import {RouterTreeVisualizer} from './router-tree-visualizer';
+import {RouterTreeD3Node, RouterTreeVisualizer} from './router-tree-visualizer';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {TreeVisualizerHostComponent} from '../tree-visualizer-host/tree-visualizer-host.component';
 import {SplitAreaDirective, SplitComponent} from '../../vendor/angular-split/public_api';
@@ -18,6 +17,9 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {ApplicationOperations} from '../../application-operations/index';
 import {RouteDetailsRowComponent} from './route-details-row.component';
+import {MatTableModule} from '@angular/material/table';
+import {FrameManager} from '../../application-services/frame_manager';
+import {Events, MessageBus, Route} from '../../../../../protocol';
 
 const DEFAULT_FILTER = /.^/;
 
@@ -34,6 +36,7 @@ const DEFAULT_FILTER = /.^/;
     SplitAreaDirective,
     MatIconModule,
     MatButtonModule,
+    MatTableModule,
     RouteDetailsRowComponent,
   ],
   standalone: true,
@@ -44,10 +47,11 @@ export class RouterTreeComponent {
   private routerTreeVisualizer!: RouterTreeVisualizer;
   private showFullPath = false;
 
-  private readonly _messageBus = inject(MessageBus) as MessageBus<Events>;
-  private readonly _appOperations = inject(ApplicationOperations);
+  private readonly messageBus = inject(MessageBus) as MessageBus<Events>;
+  private readonly appOperations = inject(ApplicationOperations);
+  private readonly frameManager = inject(FrameManager);
 
-  selectedRoute = signal<Route | null>(null);
+  protected selectedRoute = signal<RouterTreeD3Node | null>(null);
 
   routes = input<Route[]>([]);
   snapToRoot = input(false);
@@ -99,15 +103,19 @@ export class RouterTreeComponent {
     });
   }
 
-  viewSourceFromRouter(g: string, type: string): void {
-    this._appOperations.viewSourceFromRouter(g, type);
+  viewSourceFromRouter(className: string, type: string): void {
+    this.appOperations.viewSourceFromRouter(className, type, this.frameManager.selectedFrame()!);
   }
 
-  viewComponentSource(c: string): void {
-    this._appOperations.viewSourceFromRouter(c, 'component');
+  viewComponentSource(component: string): void {
+    this.appOperations.viewSourceFromRouter(
+      component,
+      'component',
+      this.frameManager.selectedFrame()!,
+    );
   }
 
   navigateRoute(route: any): void {
-    this._messageBus.emit('navigateRoute', [route.data.path]);
+    this.messageBus.emit('navigateRoute', [route.data.path]);
   }
 }
