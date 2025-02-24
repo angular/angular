@@ -267,15 +267,15 @@ export interface UpdatedStateData {
 
 export interface Route {
   name?: string;
-  hash?: string | null;
-  specificity?: string | null;
+  hash?: string;
+  specificity?: string;
   handler?: string;
   pathMatch?: 'prefix' | 'full';
-  canActivateGuards?: string[] | null;
-  canActivateChildGuards?: string[] | null;
-  canMatchGuards?: string[] | null;
-  canDeActivateGuards?: string[] | null;
-  providers?: string[] | null;
+  canActivateGuards?: string[];
+  canActivateChildGuards?: string[];
+  canMatchGuards?: string[];
+  canDeactivateGuards?: string[];
+  providers?: string[];
   title?: string;
   children?: Array<Route>;
   data?: any;

@@ -26,9 +26,16 @@ export class RouterTreeVisualizer {
   private root: RouterTreeD3Node | null = null;
   private zoomController: d3.ZoomBehavior<HTMLElement, unknown> | null = null;
 
-  protected nodeClickListeners: ((pointerEvent: PointerEvent, node: any) => void)[] = [];
-  protected nodeMouseoverListeners: ((pointerEvent: PointerEvent, node: any) => void)[] = [];
-  protected nodeMouseoutListeners: ((pointerEvent: PointerEvent, node: any) => void)[] = [];
+  protected nodeClickListeners: ((pointerEvent: PointerEvent, node: RouterTreeD3Node) => void)[] =
+    [];
+  protected nodeMouseoverListeners: ((
+    pointerEvent: PointerEvent,
+    node: RouterTreeD3Node,
+  ) => void)[] = [];
+  protected nodeMouseoutListeners: ((
+    pointerEvent: PointerEvent,
+    node: RouterTreeD3Node,
+  ) => void)[] = [];
 
   constructor(
     private _containerElement: HTMLElement,
@@ -48,15 +55,15 @@ export class RouterTreeVisualizer {
     };
   }
 
-  onNodeClick(cb: (pointerEvent: PointerEvent, node: any) => void): void {
+  onNodeClick(cb: (pointerEvent: PointerEvent, node: RouterTreeD3Node) => void): void {
     this.nodeClickListeners.push(cb);
   }
 
-  onNodeMouseover(cb: (pointerEvent: PointerEvent, node: any) => void): void {
+  onNodeMouseover(cb: (pointerEvent: PointerEvent, node: RouterTreeD3Node) => void): void {
     this.nodeMouseoverListeners.push(cb);
   }
 
-  onNodeMouseout(cb: (pointerEvent: PointerEvent, node: any) => void): void {
+  onNodeMouseout(cb: (pointerEvent: PointerEvent, node: RouterTreeD3Node) => void): void {
     this.nodeMouseoutListeners.push(cb);
   }
 
@@ -234,13 +241,19 @@ export class RouterTreeVisualizer {
         return `translate(${node.x},${node.y})`;
       })
       .on('click', (pointerEvent: PointerEvent, node: RouterTreeD3Node) => {
-        this.nodeClickListeners.forEach((listener) => listener(pointerEvent, node));
+        for (const listener of this.nodeClickListeners) {
+          listener(pointerEvent, node);
+        }
       })
       .on('mouseover', (pointerEvent: PointerEvent, node: RouterTreeD3Node) => {
-        this.nodeMouseoverListeners.forEach((listener) => listener(pointerEvent, node));
+        for (const listener of this.nodeMouseoverListeners) {
+          listener(pointerEvent, node);
+        }
       })
       .on('mouseout', (pointerEvent: PointerEvent, node: RouterTreeD3Node) => {
-        this.nodeMouseoutListeners.forEach((listener) => listener(pointerEvent, node));
+        for (const listener of this.nodeMouseoutListeners) {
+          listener(pointerEvent, node);
+        }
       });
     const [width, height] = this.config.nodeLabelSize!;
 

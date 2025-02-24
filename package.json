@@ -42,6 +42,7 @@
     "devtools:build:chrome": "bazelisk build --//devtools/projects/shell-browser/src:flag_browser=chrome -- devtools/projects/shell-browser/src:prodapp",
     "devtools:build:firefox": "bazelisk build --config snapshot-build-firefox --//devtools/projects/shell-browser/src:flag_browser=firefox -- devtools/projects/shell-browser/src:prodapp",
     "devtools:test": "bazelisk test --//devtools/projects/shell-browser/src:flag_browser=chrome -- //devtools/...",
+    "devtools:test:unit": "bazelisk test -- //devtools/...",
     "docs": "[[ -n $CI ]] && echo 'Cannot run this yarn script on CI' && exit 1 || yarn ibazel run //adev:serve",
     "docs:build": "[[ -n $CI ]] && echo 'Cannot run this yarn script on CI' && exit 1 || yarn bazel build //adev:build",
     "benchmarks": "tsx --tsconfig=scripts/tsconfig.json scripts/benchmarks/index.mts",
