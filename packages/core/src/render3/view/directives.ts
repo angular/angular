@@ -76,11 +76,8 @@ export function resolveDirectives(
   const matchedDirectiveDefs = directiveMatcher(tView, tNode);
 
   if (matchedDirectiveDefs !== null) {
-    const [directiveDefs, hostDirectiveDefs, hostDirectiveRanges] = resolveHostDirectives(
-      tView,
-      tNode,
-      matchedDirectiveDefs,
-    );
+    const [directiveDefs, hostDirectiveDefs, hostDirectiveRanges] =
+      resolveHostDirectives(matchedDirectiveDefs);
 
     initializeDirectives(
       tView,
@@ -120,8 +117,6 @@ function cacheMatchingLocalNames(
 }
 
 function resolveHostDirectives(
-  tView: TView,
-  tNode: TNode,
   matches: DirectiveDef<unknown>[],
 ): [
   matches: DirectiveDef<unknown>[],
@@ -150,7 +145,7 @@ function resolveHostDirectives(
       hostDirectiveDefs ??= new Map();
       resolveHostDirectivesForDef(def, allDirectiveDefs, hostDirectiveRanges, hostDirectiveDefs);
     }
-    markAsComponentHost(tView, tNode, allDirectiveDefs.push(def) - 1);
+    allDirectiveDefs.push(def);
   }
 
   // If there's a component, we already processed it above so we can skip it here.
@@ -217,11 +212,17 @@ function initializeDirectives(
   ngDevMode && assertFirstCreatePass(tView);
 
   const directivesLength = directives.length;
+  let hasSeenComponent = false;
 
   // Publishes the directive types to DI so they can be injected. Needs to
   // happen in a separate pass before the TNode flags have been initialized.
   for (let i = 0; i < directivesLength; i++) {
-    diPublicInInjector(getOrCreateNodeInjectorForNode(tNode, lView), tView, directives[i].type);
+    const def = directives[i];
+    if (!hasSeenComponent && isComponentDef(def)) {
+      hasSeenComponent = true;
+      markAsComponentHost(tView, tNode, i);
+    }
+    diPublicInInjector(getOrCreateNodeInjectorForNode(tNode, lView), tView, def.type);
   }
 
   initTNodeFlags(tNode, tView.data.length, directivesLength);
