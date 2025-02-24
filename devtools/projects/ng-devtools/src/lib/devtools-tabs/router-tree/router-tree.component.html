@@ -8,7 +8,7 @@
           placeholder="Search routes"
           class="filter-input"
         />
-        <mat-checkbox (change)="togglePathSettings()">Show Full Path </mat-checkbox>
+        <mat-checkbox (change)="togglePathSettings()">Show Full Path</mat-checkbox>
       </div>
     </as-split-area>
     <as-split-area>
@@ -28,43 +28,46 @@
 
         @let route = selectedRoute();
 
-        @if (route) {
+        @if (route && route.data) {
           <as-split-area size="30" minSize="20">
             <div>
               <div class="selected-node-title">
-                <h1>Routes Details</h1>
-                <button mat-icon-button (click)="selectedRoute.set(null)">
-                  <mat-icon fontIcon="close"></mat-icon>
-                </button>
+                <h2 class="router-title">Routes Details</h2>
+                <mat-icon
+                  class="close-icon"
+                  fontIcon="close"
+                  (click)="selectedRoute.set(null)"
+                ></mat-icon>
               </div>
+
               <table id="route-details-table">
                 <tr
                   ng-route-details-row
-                  title="Path"
-                  rowType="chip"
+                  label="Path"
+                  type="chip"
                   [data]="route.data.path"
-                  (chipClick)="navigateRoute(route)"
+                  (click)="navigateRoute(route)"
                 ></tr>
                 <tr
                   ng-route-details-row
-                  title="Component"
-                  rowType="chip"
+                  label="Component"
+                  type="chip"
                   [data]="route.data.component"
-                  (chipClick)="viewComponentSource(route.data.component)"
+                  (click)="viewComponentSource(route.data.component)"
                 ></tr>
                 @if (route.data.pathMatch) {
-                  <tr ng-route-details-row title="Path Match" [data]="route.data.pathMatch"></tr>
+                  <tr ng-route-details-row label="Path Match" [data]="route.data.pathMatch"></tr>
                 }
-                @if (route.data.data && route.data.data.length > 0) {
-                  <tr ng-route-details-row title="Data" [data]="route.data.data | json"></tr>
+                @if (route?.data?.data?.length > 0) {
+                  <tr ng-route-details-row label="Data" [data]="route.data.data | json"></tr>
                 }
                 @if (route.data.canActivateGuards && route.data.canActivateGuards.length > 0) {
                   <tr
                     ng-route-details-row
-                    title="Can Activate Guards"
-                    rowType="list"
+                    label="Can Activate Guards"
+                    type="list"
                     [data]="route.data.canActivateGuards"
-                    (chipClick)="viewSourceFromRouter($event, 'canActivate')"
+                    (click)="viewSourceFromRouter($event, 'canActivate')"
                   ></tr>
                 }
                 @if (
@@ -72,68 +75,56 @@
                 ) {
                   <tr
                     ng-route-details-row
-                    title="Can Activate Child Guards"
-                    rowType="list"
+                    label="Can Activate Child Guards"
+                    type="list"
                     [data]="route.data.canActivateChildGuards"
-                    (chipClick)="viewSourceFromRouter($event, 'canActivateChild')"
+                    (click)="viewSourceFromRouter($event, 'canActivateChild')"
                   ></tr>
                 }
-                @if (route.data.canDeActivateGuards && route.data.canDeActivateGuards.length > 0) {
+                @if (route.data.canDeactivateGuards && route.data.canDeactivateGuards.length > 0) {
                   <tr
                     ng-route-details-row
-                    title="Can DeActivate Guards"
-                    rowType="list"
-                    [data]="route.data.canDeActivateGuards"
-                    (chipClick)="viewSourceFromRouter($event, 'canDeactivate')"
+                    label="Can DeActivate Guards"
+                    type="list"
+                    [data]="route.data.canDeactivateGuards"
+                    (click)="viewSourceFromRouter($event, 'canDeactivate')"
                   ></tr>
                 }
                 @if (route.data.canMatchGuards && route.data.canMatchGuards.length > 0) {
                   <tr
                     ng-route-details-row
-                    title="Can Match Guards"
-                    rowType="list"
+                    label="Can Match Guards"
+                    type="list"
                     [data]="route.data.canMatchGuards"
-                    (chipClick)="viewSourceFromRouter($event, 'canMatch')"
+                    (click)="viewSourceFromRouter($event, 'canMatch')"
                   ></tr>
                 }
 
                 @if (route.data.providers && route.data.providers.length > 0) {
                   <tr
                     ng-route-details-row
-                    title="Providers"
-                    rowType="list"
+                    label="Providers"
+                    type="list"
                     [data]="route.data.providers"
-                    (chipClick)="viewSourceFromRouter($event, 'providers')"
+                    (click)="viewSourceFromRouter($event, 'providers')"
                   ></tr>
                 }
                 @if (route.data.title) {
-                  <tr ng-route-details-row title="Title" [data]="route.data.title"></tr>
-                }
-                @if (route.data.children && route.data.children.length > 0) {
-                  <tr
-                    ng-route-details-row
-                    title="Children"
-                    [data]="route.data.children?.length"
-                  ></tr>
+                  <tr ng-route-details-row label="Title" [data]="route.data.title"></tr>
                 }
                 <tr
                   ng-route-details-row
-                  title="Active"
-                  rowType="flag"
+                  label="Active"
+                  type="flag"
                   [data]="route.data.isActive"
                 ></tr>
                 <tr
                   ng-route-details-row
-                  title="Auxiliary"
-                  rowType="flag"
+                  label="Auxiliary"
+                  type="flag"
                   [data]="route.data.isAux"
                 ></tr>
-                <tr
-                  ng-route-details-row
-                  title="Lazy"
-                  rowType="flag"
-                  [data]="route.data.isLazy"
-                ></tr>
+                <tr ng-route-details-row label="Lazy" type="flag" [data]="route.data.isLazy"></tr>
               </table>
             </div>
           </as-split-area>
