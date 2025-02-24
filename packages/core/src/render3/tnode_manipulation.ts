@@ -296,6 +296,7 @@ export function createTNode(
     hostDirectiveInputs: null,
     outputs: null,
     hostDirectiveOutputs: null,
+    directiveToIndex: null,
     tView: null,
     next: null,
     prev: null,
