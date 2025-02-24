@@ -8,8 +8,44 @@
 
 import {Route} from 'protocol';
 
+export type RoutePropertyType =
+  | 'canActivate'
+  | 'canActivateChild'
+  | 'canDeactivate'
+  | 'canMatch'
+  | 'providers'
+  | 'component';
+
 // todo(aleksanderbodurri): type these properly
-type AngularRoute = any;
+type AngularRoute = {
+  title?: string;
+  path?: string;
+  pathMatch?: 'prefix' | 'full' | undefined;
+  // matcher?: UrlMatcher | undefined;
+  component?: any;
+  // loadComponent?:
+  //   | (() =>
+  //       | Type<unknown>
+  //       | Observable<Type<unknown> | DefaultExport<Type<unknown>>>
+  //       | Promise<Type<unknown> | DefaultExport<Type<unknown>>>)
+  //   | undefined;
+  redirectTo?: any;
+  outlet?: string | undefined;
+  canActivate?: any[];
+  canMatch?: any[];
+  canActivateChild?: any[];
+  canDeactivate?: any[];
+  providers?: any[];
+  data?: any;
+  // resolve?: ResolveData | undefined;
+  children?: Routes;
+  loadChildren?: any;
+  loadComponent?: any;
+  _loadedRoutes?: any;
+  // loadChildren?: LoadChildrenCallback | undefined;
+  // runGuardsAndResolvers?: RunGuardsAndResolvers | undefined;
+  // providers?: (Provider | EnvironmentProviders)[] | undefined;
+};
 type Routes = any;
 type Router = any;
 
@@ -31,7 +67,7 @@ export function parseRoutes(router: Router): Route {
   return root;
 }
 
-function getGuardNames(child: AngularRoute, type: string): string[] | null {
+function getGuardNames(child: AngularRoute, type: RoutePropertyType): string[] | null {
   const guards = child?.[type] || [];
   const names = guards.map((g: any) => g.name);
   return names || null;
@@ -70,7 +106,7 @@ function assignChildrenToParent(
       canActivateGuards: getGuardNames(child, 'canActivate'),
       canActivateChildGuards: getGuardNames(child, 'canActivateChild'),
       canMatchGuards: getGuardNames(child, 'canMatch'),
-      canDeActivateGuards: getGuardNames(child, 'canDeactivate'),
+      canDeactivateGuards: getGuardNames(child, 'canDeactivate'),
       providers: getProviderName(child),
       path: routePath,
       data: [],
@@ -110,10 +146,21 @@ function childRouteName(child: AngularRoute): string {
   }
 }
 
-export function getElementRefByName(ref: string, routes: any[], name: string): any | null {
+/**
+ *  Get the element reference by type & name from the routes array. Called recursively to search through all children.
+ * @param type - type of element to search for (canActivate, canActivateChild, canDeactivate, canLoad, providers)
+ * @param routes - array of routes to search through
+ * @param name - name of the element to search for refers to the name of the guard or provider
+ * @returns - the element reference if found, otherwise null
+ */
+export function getElementRefByName(
+  type: RoutePropertyType,
+  routes: AngularRoute[],
+  name: string,
+): any | null {
   for (const element of routes) {
-    if (element[ref]) {
-      for (const guard of element[ref]) {
+    if (element[type]) {
+      for (const guard of element[type]) {
         if (guard.name === name) {
           return guard;
         }
@@ -121,14 +168,14 @@ export function getElementRefByName(ref: string, routes: any[], name: string): a
     }
 
     if (element?._loadedRoutes) {
-      const result = getElementRefByName(ref, element._loadedRoutes, name);
+      const result = getElementRefByName(type, element._loadedRoutes, name);
       if (result !== null) {
         return result;
       }
     }
 
     if (element?.children) {
-      const result = getElementRefByName(ref, element.children, name);
+      const result = getElementRefByName(type, element.children, name);
       if (result !== null) {
         return result;
       }
@@ -136,7 +183,13 @@ export function getElementRefByName(ref: string, routes: any[], name: string): a
   }
 }
 
-export function getComponentRefByName(routes: any[], name: string): any | null {
+/**
+ *  Get the componet reference by name from the routes array. Called recursively to search through all children.
+ * @param routes - array of routes to search through
+ * @param name - name of the component to search for
+ * @returns - the element reference if found, otherwise null
+ */
+export function getComponentRefByName(routes: AngularRoute[], name: string): any | null {
   for (const element of routes) {
     if (element?.component?.name === name) {
       return element.component;
