@@ -52,6 +52,13 @@ export type DirectiveMatcherStrategy = (
   tNode: TElementNode | TContainerNode | TElementContainerNode,
 ) => DirectiveDef<unknown>[] | null;
 
+/** Data produced after host directives are resolved for a node. */
+type HostDirectiveResolution = [
+  matches: DirectiveDef<unknown>[],
+  hostDirectiveDefs: HostDirectiveDefs | null,
+  hostDirectiveRanges: HostDirectiveRanges | null,
+];
+
 /**
  * Map that tracks a selector-matched directive to the range within which its host directives
  * are declared. Host directives for a specific directive are always contiguous within the runtime.
@@ -76,8 +83,16 @@ export function resolveDirectives(
   const matchedDirectiveDefs = directiveMatcher(tView, tNode);
 
   if (matchedDirectiveDefs !== null) {
-    const [directiveDefs, hostDirectiveDefs, hostDirectiveRanges] =
-      resolveHostDirectives(matchedDirectiveDefs);
+    let directiveDefs: DirectiveDef<unknown>[];
+    let hostDirectiveDefs: HostDirectiveDefs | null = null;
+    let hostDirectiveRanges: HostDirectiveRanges | null = null;
+    const hostDirectiveResolution = resolveHostDirectives(matchedDirectiveDefs);
+
+    if (hostDirectiveResolution === null) {
+      directiveDefs = matchedDirectiveDefs;
+    } else {
+      [directiveDefs, hostDirectiveDefs, hostDirectiveRanges] = hostDirectiveResolution;
+    }
 
     initializeDirectives(
       tView,
@@ -116,15 +131,28 @@ function cacheMatchingLocalNames(
   }
 }
 
-function resolveHostDirectives(
-  matches: DirectiveDef<unknown>[],
-): [
-  matches: DirectiveDef<unknown>[],
-  hostDirectiveDefs: HostDirectiveDefs | null,
-  hostDirectiveRanges: HostDirectiveRanges | null,
-] {
-  const allDirectiveDefs: DirectiveDef<unknown>[] = [];
-  const hasComponent = matches.length > 0 && isComponentDef(matches[0]);
+function resolveHostDirectives(matches: DirectiveDef<unknown>[]): HostDirectiveResolution | null {
+  let componentDef: ComponentDef<unknown> | null = null;
+  let hasHostDirectives = false;
+
+  for (let i = 0; i < matches.length; i++) {
+    const def = matches[i];
+
+    if (i === 0 && isComponentDef(def)) {
+      componentDef = def;
+    }
+
+    if (def.findHostDirectiveDefs !== null) {
+      hasHostDirectives = true;
+      break;
+    }
+  }
+
+  if (!hasHostDirectives) {
+    return null;
+  }
+
+  let allDirectiveDefs: DirectiveDef<unknown>[] | null = null;
   let hostDirectiveDefs: HostDirectiveDefs | null = null;
   let hostDirectiveRanges: HostDirectiveRanges | null = null;
 
@@ -138,37 +166,28 @@ function resolveHostDirectives(
   // 2. Selector-matched component.
   // 3. Host directives belonging to selector-matched directives.
   // 4. Selector-matched dir
-  if (hasComponent) {
-    const def = matches[0];
+  for (const def of matches) {
     if (def.findHostDirectiveDefs !== null) {
-      hostDirectiveRanges ??= new Map();
+      allDirectiveDefs ??= [];
       hostDirectiveDefs ??= new Map();
+      hostDirectiveRanges ??= new Map();
       resolveHostDirectivesForDef(def, allDirectiveDefs, hostDirectiveRanges, hostDirectiveDefs);
     }
-    allDirectiveDefs.push(def);
-  }
 
-  // If there's a component, we already processed it above so we can skip it here.
-  for (let i = hasComponent ? 1 : 0; i < matches.length; i++) {
-    const def = matches[i];
-    if (def.findHostDirectiveDefs !== null) {
-      hostDirectiveRanges ??= new Map();
-      hostDirectiveDefs ??= new Map();
-      resolveHostDirectivesForDef(def, allDirectiveDefs, hostDirectiveRanges, hostDirectiveDefs);
+    // Component definition needs to be pushed early to maintain the correct ordering.
+    if (def === componentDef) {
+      allDirectiveDefs ??= [];
+      allDirectiveDefs.push(def);
     }
   }
 
-  if (hasComponent) {
-    allDirectiveDefs.push(...matches.slice(1));
-  } else {
-    allDirectiveDefs.push(...matches);
+  if (allDirectiveDefs !== null) {
+    allDirectiveDefs.push(...(componentDef === null ? matches : matches.slice(1)));
+    ngDevMode && assertNoDuplicateDirectives(allDirectiveDefs);
+    return [allDirectiveDefs, hostDirectiveDefs, hostDirectiveRanges];
   }
 
-  if (ngDevMode) {
-    assertNoDuplicateDirectives(allDirectiveDefs);
-  }
-
-  return [allDirectiveDefs, hostDirectiveDefs, hostDirectiveRanges];
+  return null;
 }
 
 function resolveHostDirectivesForDef(
