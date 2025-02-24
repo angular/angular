@@ -251,7 +251,7 @@ export function elementPropertyInternal<T>(
   ngDevMode && assertNotSame(value, NO_CHANGE as any, 'Incoming value should never be NO_CHANGE.');
 
   if (!nativeOnly) {
-    const hasSetInput = setInputsForProperty(tNode, tView, lView, propName, value);
+    const hasSetInput = setAllInputsForProperty(tNode, tView, lView, propName, value);
 
     if (hasSetInput) {
       isComponentHost(tNode) && markDirtyIfOnPush(lView, tNode.index);
@@ -614,14 +614,15 @@ export function handleError(lView: LView, error: any): void {
 }
 
 /**
- * Set the inputs of directives at the current node to corresponding value.
+ * Set all directive inputs with the specific public name on the node.
  *
  * @param tNode TNode on which the input is being set.
- * @param tView The current TView
- * @param lView the `LView` which contains the directives.
+ * @param tView Current TView
+ * @param lView `LView` which contains the directives.
+ * @param publicName Public name of the input being set.
  * @param value Value to set.
  */
-export function setInputsForProperty(
+export function setAllInputsForProperty(
   tNode: TNode,
   tView: TView,
   lView: LView,
@@ -654,4 +655,70 @@ export function setInputsForProperty(
   }
 
   return hasMatch;
+}
+
+/**
+ * Sets an input value only on a specific directive and its host directives.
+ * @param tNode TNode on which the input is being set.
+ * @param tView Current TView
+ * @param lView `LView` which contains the directives.
+ * @param target Directive on which to set the input.
+ * @param publicName Public name of the input being set.
+ * @param value Value to set.
+ */
+export function setDirectiveInput(
+  tNode: TNode,
+  tView: TView,
+  lView: LView,
+  target: DirectiveDef<unknown>,
+  publicName: string,
+  value: string,
+): boolean {
+  let hostIndex: number | null = null;
+  let hostDirectivesStart: number | null = null;
+  let hostDirectivesEnd: number | null = null;
+  let hasSet = false;
+
+  if (ngDevMode && !tNode.directiveToIndex?.has(target.type)) {
+    throw new Error(`Node does not have a directive with type ${target.type.name}`);
+  }
+
+  const data = tNode.directiveToIndex!.get(target.type)!;
+
+  if (typeof data === 'number') {
+    hostIndex = data;
+  } else {
+    [hostIndex, hostDirectivesStart, hostDirectivesEnd] = data;
+  }
+
+  if (
+    hostDirectivesStart !== null &&
+    hostDirectivesEnd !== null &&
+    tNode.hostDirectiveInputs?.hasOwnProperty(publicName)
+  ) {
+    const hostDirectiveInputs = tNode.hostDirectiveInputs[publicName];
+
+    for (let i = 0; i < hostDirectiveInputs.length; i += 2) {
+      const index = hostDirectiveInputs[i] as number;
+
+      if (index >= hostDirectivesStart && index <= hostDirectivesEnd) {
+        ngDevMode && assertIndexInRange(lView, index);
+        const def = tView.data[index] as DirectiveDef<unknown>;
+        const hostDirectivePublicName = hostDirectiveInputs[i + 1] as string;
+        writeToDirectiveInput(def, lView[index], hostDirectivePublicName, value);
+        hasSet = true;
+      } else if (index > hostDirectivesEnd) {
+        // Directives here are in ascending order so we can stop looking once we're past the range.
+        break;
+      }
+    }
+  }
+
+  if (hostIndex !== null) {
+    ngDevMode && assertIndexInRange(lView, hostIndex);
+    writeToDirectiveInput(target, lView[hostIndex], publicName, value);
+    hasSet = true;
+  }
+
+  return hasSet;
 }
