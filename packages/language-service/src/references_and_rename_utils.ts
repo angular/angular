@@ -16,6 +16,7 @@ import {
   TmplAstBoundEvent,
   TmplAstLetDeclaration,
   TmplAstNode,
+  TmplAstElement,
   TmplAstReference,
   TmplAstTextAttribute,
   TmplAstVariable,
@@ -341,9 +342,7 @@ export function getRenameTextAndSpanAtPosition(
     } else if (node.valueSpan && isWithin(position, node.valueSpan)) {
       return {text: node.valueSpan.toString(), span: toTextSpan(node.valueSpan)};
     }
-  }
-
-  if (
+  } else if (
     node instanceof PropertyRead ||
     node instanceof PropertyWrite ||
     node instanceof SafePropertyRead ||
@@ -359,6 +358,8 @@ export function getRenameTextAndSpanAtPosition(
       span.length -= 2;
     }
     return {text, span};
+  } else if (node instanceof TmplAstElement) {
+    return {text: node.name, span: toTextSpan(node.startSourceSpan)};
   }
 
   return null;
