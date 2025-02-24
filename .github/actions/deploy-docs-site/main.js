@@ -3754,7 +3754,7 @@ var require_dist_node4 = __commonJS({
         if (options.request.headers.authorization) {
           requestCopy.headers = Object.assign({}, options.request.headers, {
             authorization: options.request.headers.authorization.replace(
-              / .*$/,
+              /(?<! ) .*$/,
               " [REDACTED]"
             )
           });
@@ -3814,7 +3814,7 @@ var require_dist_node5 = __commonJS({
     module.exports = __toCommonJS(dist_src_exports);
     var import_endpoint3 = require_dist_node2();
     var import_universal_user_agent7 = require_dist_node();
-    var VERSION11 = "8.4.0";
+    var VERSION11 = "8.4.1";
     function isPlainObject5(value) {
       if (typeof value !== "object" || value === null)
         return false;
@@ -3863,7 +3863,7 @@ var require_dist_node5 = __commonJS({
           headers[keyAndValue[0]] = keyAndValue[1];
         }
         if ("deprecation" in headers) {
-          const matches = headers.link && headers.link.match(/<([^>]+)>; rel="deprecation"/);
+          const matches = headers.link && headers.link.match(/<([^<>]+)>; rel="deprecation"/);
           const deprecationLink = matches && matches.pop();
           log.warn(
             `[@octokit/request] "${requestOptions.method} ${requestOptions.url}" is deprecated. It is scheduled to be removed on ${headers.sunset}${deprecationLink ? `. See ${deprecationLink}` : ""}`
@@ -4015,16 +4015,16 @@ var require_dist_node6 = __commonJS({
       return to;
     };
     var __toCommonJS = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var dist_src_exports = {};
-    __export(dist_src_exports, {
+    var index_exports = {};
+    __export(index_exports, {
       GraphqlResponseError: () => GraphqlResponseError2,
       graphql: () => graphql22,
       withCustomRequest: () => withCustomRequest2
     });
-    module.exports = __toCommonJS(dist_src_exports);
+    module.exports = __toCommonJS(index_exports);
     var import_request3 = require_dist_node5();
     var import_universal_user_agent7 = require_dist_node();
-    var VERSION11 = "7.1.0";
+    var VERSION11 = "7.1.1";
     var import_request22 = require_dist_node5();
     var import_request4 = require_dist_node5();
     function _buildMessageForResponseErrors2(data) {
@@ -6533,7 +6533,7 @@ var require_dist_node10 = __commonJS({
       paginatingEndpoints: () => paginatingEndpoints
     });
     module.exports = __toCommonJS(dist_src_exports);
-    var VERSION11 = "9.2.1";
+    var VERSION11 = "9.2.2";
     function normalizePaginatedListResponse2(response) {
       if (!response.data) {
         return {
@@ -6577,7 +6577,7 @@ var require_dist_node10 = __commonJS({
               const response = await requestMethod({ method, url, headers });
               const normalizedResponse = normalizePaginatedListResponse2(response);
               url = ((normalizedResponse.headers.link || "").match(
-                /<([^>]+)>;\s*rel="next"/
+                /<([^<>]+)>;\s*rel="next"/
               ) || [])[1];
               return { value: normalizedResponse };
             } catch (error) {
