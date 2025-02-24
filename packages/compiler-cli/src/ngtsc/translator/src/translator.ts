@@ -394,13 +394,8 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
     if (!BINARY_OPERATORS.has(ast.operator)) {
       throw new Error(`Unknown binary operator: ${o.BinaryOperator[ast.operator]}`);
     }
-    // TODO: Why is this necessary? It seems to happen automatically for `||`
-    let lhs = ast.lhs.visitExpression(this, context);
-    if (ast.operator === o.BinaryOperator.NullishCoalesce && ast.lhs instanceof o.ConditionalExpr) {
-      lhs = this.factory.createParenthesizedExpression(lhs);
-    }
     return this.factory.createBinaryExpression(
-      lhs,
+      ast.lhs.visitExpression(this, context),
       BINARY_OPERATORS.get(ast.operator)!,
       ast.rhs.visitExpression(this, context),
     );
