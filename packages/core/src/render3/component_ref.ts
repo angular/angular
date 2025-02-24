@@ -38,7 +38,7 @@ import {renderView} from './instructions/render';
 import {
   createDirectivesInstances,
   locateHostElement,
-  setInputsForProperty,
+  setAllInputsForProperty,
 } from './instructions/shared';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {InputFlags} from './interfaces/input_flags';
@@ -392,7 +392,7 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
     }
 
     const lView = this._rootLView;
-    const hasSetInput = setInputsForProperty(tNode, lView[TVIEW], lView, name, value);
+    const hasSetInput = setAllInputsForProperty(tNode, lView[TVIEW], lView, name, value);
     this.previousInputValues.set(name, value);
     const childComponentLView = getComponentLViewByIndex(tNode.index, lView);
     markViewDirty(childComponentLView, NotificationSource.SetInput);
