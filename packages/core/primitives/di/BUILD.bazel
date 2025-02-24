@@ -12,6 +12,7 @@ ts_library(
             "**/*.ts",
         ],
     ),
+    module_name = "@angular/core/primitives/di",
 )
 
 tsec_test(
