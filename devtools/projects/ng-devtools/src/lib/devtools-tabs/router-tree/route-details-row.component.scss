@@ -1,0 +1,52 @@
+@use '../../../styles/theme' as theme;
+
+td,
+th {
+  border: 1px solid var(--color-separator);
+  padding: 8px;
+}
+
+.tag-active {
+  display: inline-block;
+  border-radius: 5px;
+  padding: 2px 8px;
+  background: var(--green-03);
+  color: var(--color-text);
+}
+
+.tag-inactive {
+  display: inline-block;
+  border-radius: 5px;
+  padding: 2px 8px;
+  background: var(--red-06);
+  color: var(--color-text);
+}
+
+.chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  overflow-wrap: normal;
+}
+
+button {
+  border-radius: 25px;
+  font-size: 12px;
+}
+
+.row-data {
+  color: var(--color-text);
+}
+
+.row-title {
+  color: var(--color-text);
+}
+
+@include theme.dark-theme {
+  .tag-active {
+    color: var(--color-text-chip);
+  }
+  .tag-inactive {
+    color: var(--color-text-chip);
+  }
+}
