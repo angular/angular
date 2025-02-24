@@ -35,5 +35,6 @@ ts_library(
 
 jasmine_node_test(
     name = "test",
+    enable_linker = True,
     deps = [":test_lib"],
 )
