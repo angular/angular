@@ -1,0 +1,21 @@
+diff --git a/node_modules/@angular/build/src/utils/version.js b/node_modules/@angular/build/src/utils/version.js
+index 31884c3..8f9cda0 100755
+--- a/node_modules/@angular/build/src/utils/version.js
++++ b/node_modules/@angular/build/src/utils/version.js
+@@ -34,10 +34,10 @@ function assertCompatibleAngularVersion(projectRoot) {
+         return;
+     }
+     const angularVersion = new semver_1.SemVer(angularPkgJson['version']);
+-    if (!(0, semver_1.satisfies)(angularVersion, supportedAngularSemver, { includePrerelease: true })) {
+-        console.error(`Error: The current version of "@angular/build" supports Angular versions ${supportedAngularSemver},\n` +
+-            `but detected Angular version ${angularVersion} instead.\n` +
+-            'Please visit the link below to find instructions on how to update Angular.\nhttps://update.angular.dev/');
+-        process.exit(3);
+-    }
++    // if (!(0, semver_1.satisfies)(angularVersion, supportedAngularSemver, { includePrerelease: true })) {
++    //     console.error(`Error: The current version of "@angular/build" supports Angular versions ${supportedAngularSemver},\n` +
++    //         `but detected Angular version ${angularVersion} instead.\n` +
++    //         'Please visit the link below to find instructions on how to update Angular.\nhttps://update.angular.dev/');
++    //     process.exit(3);
++    // }
+ }
