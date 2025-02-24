@@ -7,6 +7,11 @@
  */
 
 import {
+  ɵRuntimeError as RuntimeError,
+  ɵformatRuntimeError as formatRuntimeError,
+} from '@angular/core';
+
+import {
   FormatWidth,
   FormStyle,
   getLocaleDateFormat,
@@ -24,6 +29,7 @@ import {
   Time,
   TranslationWidth,
 } from './locale_data_api';
+import {RuntimeErrorCode} from '../errors';
 
 export const ISO8601_DATE_REGEX =
   /^(\d{4,})-?(\d\d)-?(\d\d)(?:T(\d\d)(?::?(\d\d)(?::?(\d\d)(?:\.(\d+))?)?)?(Z|([+-])(\d\d):?(\d\d))?)?$/;
@@ -104,6 +110,10 @@ export function formatDate(
     }
   }
 
+  if (typeof ngDevMode === 'undefined' || ngDevMode) {
+    assertValidDateFormat(parts);
+  }
+
   let dateTimezoneOffset = date.getTimezoneOffset();
   if (timezone) {
     dateTimezoneOffset = timezoneToOffset(timezone, dateTimezoneOffset);
@@ -121,6 +131,29 @@ export function formatDate(
   });
 
   return text;
+}
+
+/**
+ * Asserts that the given date format is free from common mistakes.  Throws an
+ * error if one is found (except for the case of all "Y", in which case we just
+ * log a warning).  This should only be called in development mode.
+ */
+function assertValidDateFormat(parts: string[]) {
+  if (parts.some((part) => /^Y+$/.test(part)) && !parts.some((part) => /^w+$/.test(part))) {
+    // "Y" indicates "week-based year", which differs from the actual calendar
+    // year for a few days around Jan 1 most years.  Unless "w" is also
+    // present (e.g. a date like "2024-W52") this is likely a mistake.  Users
+    // probably meant "y" instead.
+    const message = `Suspicious use of week-based year "Y" in date pattern "${parts.join(
+      '',
+    )}". Did you mean to use calendar year "y" instead?`;
+    if (parts.length === 1) {
+      // NOTE: allow "YYYY" with just a warning, since it's used in tests.
+      console.error(formatRuntimeError(RuntimeErrorCode.SUSPICIOUS_DATE_FORMAT, message));
+    } else {
+      throw new RuntimeError(RuntimeErrorCode.SUSPICIOUS_DATE_FORMAT, message);
+    }
+  }
 }
 
 /**

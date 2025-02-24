@@ -8,9 +8,14 @@ import { EnvironmentInjector } from '@angular/core';
 import { EnvironmentProviders } from '@angular/core';
 import * as i0 from '@angular/core';
 import { InjectionToken } from '@angular/core';
+import type { Injector } from '@angular/core';
 import { ModuleWithProviders } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Provider } from '@angular/core';
+import type { ResourceRef } from '@angular/core';
+import type { Signal } from '@angular/core';
+import type { ValueEqualityFn } from '@angular/core';
+import type { WritableResource } from '@angular/core';
 import { XhrFactory } from '@angular/common';
 
 // @public
@@ -2151,6 +2156,84 @@ export class HttpRequest<T> {
     readonly url: string;
     readonly urlWithParams: string;
     readonly withCredentials: boolean;
+}
+
+// @public
+export const httpResource: HttpResourceFn;
+
+// @public
+export interface HttpResourceFn {
+    <TResult = unknown>(url: string | (() => string | undefined), options: HttpResourceOptions<TResult, unknown> & {
+        defaultValue: NoInfer<TResult>;
+    }): HttpResourceRef<TResult>;
+    <TResult = unknown>(url: string | (() => string | undefined), options?: HttpResourceOptions<TResult, unknown>): HttpResourceRef<TResult | undefined>;
+    <TResult = unknown>(request: HttpResourceRequest | (() => HttpResourceRequest | undefined), options: HttpResourceOptions<TResult, unknown> & {
+        defaultValue: NoInfer<TResult>;
+    }): HttpResourceRef<TResult>;
+    <TResult = unknown>(request: HttpResourceRequest | (() => HttpResourceRequest | undefined), options?: HttpResourceOptions<TResult, unknown>): HttpResourceRef<TResult | undefined>;
+    arrayBuffer: {
+        <TResult = ArrayBuffer>(url: string | (() => string | undefined), options: HttpResourceOptions<TResult, ArrayBuffer> & {
+            defaultValue: NoInfer<TResult>;
+        }): HttpResourceRef<TResult>;
+        <TResult = ArrayBuffer>(url: string | (() => string | undefined), options?: HttpResourceOptions<TResult, ArrayBuffer>): HttpResourceRef<TResult | undefined>;
+        <TResult = ArrayBuffer>(request: HttpResourceRequest | (() => HttpResourceRequest | undefined), options: HttpResourceOptions<TResult, ArrayBuffer> & {
+            defaultValue: NoInfer<TResult>;
+        }): HttpResourceRef<TResult>;
+        <TResult = ArrayBuffer>(request: HttpResourceRequest | (() => HttpResourceRequest | undefined), options?: HttpResourceOptions<TResult, ArrayBuffer>): HttpResourceRef<TResult | undefined>;
+    };
+    blob: {
+        <TResult = Blob>(url: string | (() => string | undefined), options: HttpResourceOptions<TResult, Blob> & {
+            defaultValue: NoInfer<TResult>;
+        }): HttpResourceRef<TResult>;
+        <TResult = Blob>(url: string | (() => string | undefined), options?: HttpResourceOptions<TResult, Blob>): HttpResourceRef<TResult | undefined>;
+        <TResult = Blob>(request: HttpResourceRequest | (() => HttpResourceRequest | undefined), options: HttpResourceOptions<TResult, Blob> & {
+            defaultValue: NoInfer<TResult>;
+        }): HttpResourceRef<TResult>;
+        <TResult = Blob>(request: HttpResourceRequest | (() => HttpResourceRequest | undefined), options?: HttpResourceOptions<TResult, Blob>): HttpResourceRef<TResult | undefined>;
+    };
+    text: {
+        <TResult = string>(url: string | (() => string | undefined), options: HttpResourceOptions<TResult, string> & {
+            defaultValue: NoInfer<TResult>;
+        }): HttpResourceRef<TResult>;
+        <TResult = string>(url: string | (() => string | undefined), options?: HttpResourceOptions<TResult, string>): HttpResourceRef<TResult | undefined>;
+        <TResult = string>(request: HttpResourceRequest | (() => HttpResourceRequest | undefined), options: HttpResourceOptions<TResult, string> & {
+            defaultValue: NoInfer<TResult>;
+        }): HttpResourceRef<TResult>;
+        <TResult = string>(request: HttpResourceRequest | (() => HttpResourceRequest | undefined), options?: HttpResourceOptions<TResult, string>): HttpResourceRef<TResult | undefined>;
+    };
+}
+
+// @public
+export interface HttpResourceOptions<TResult, TRaw> {
+    defaultValue?: NoInfer<TResult>;
+    equal?: ValueEqualityFn<NoInfer<TResult>>;
+    injector?: Injector;
+    map?: (value: TRaw) => TResult;
+}
+
+// @public
+export interface HttpResourceRef<T> extends WritableResource<T>, ResourceRef<T> {
+    // (undocumented)
+    destroy(): void;
+    // (undocumented)
+    hasValue(): this is HttpResourceRef<Exclude<T, undefined>>;
+    readonly headers: Signal<HttpHeaders | undefined>;
+    readonly progress: Signal<HttpProgressEvent | undefined>;
+    readonly statusCode: Signal<number | undefined>;
+}
+
+// @public
+export interface HttpResourceRequest {
+    body?: unknown;
+    headers?: HttpHeaders | Record<string, string | ReadonlyArray<string>>;
+    method?: string;
+    params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
+    reportProgress?: boolean;
+    transferCache?: {
+        includeHeaders?: string[];
+    } | boolean;
+    url: string;
+    withCredentials?: boolean;
 }
 
 // @public

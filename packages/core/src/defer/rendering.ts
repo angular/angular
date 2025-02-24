@@ -22,12 +22,7 @@ import {TContainerNode, TNode} from '../render3/interfaces/node';
 import {isDestroyed} from '../render3/interfaces/type_checks';
 import {HEADER_OFFSET, INJECTOR, LView, PARENT, TVIEW, TView} from '../render3/interfaces/view';
 import {getConstant, getTNode} from '../render3/util/view_utils';
-import {
-  addLViewToLContainer,
-  createAndRenderEmbeddedLView,
-  removeLViewFromLContainer,
-  shouldAddViewToDom,
-} from '../render3/view_manipulation';
+import {createAndRenderEmbeddedLView, shouldAddViewToDom} from '../render3/view_manipulation';
 import {assertDefined} from '../util/assert';
 
 import {
@@ -58,6 +53,7 @@ import {
 } from './utils';
 import {profiler} from '../render3/profiler';
 import {ProfilerEvent} from '../render3/profiler_types';
+import {addLViewToLContainer, removeLViewFromLContainer} from '../render3/view/container';
 
 /**
  * **INTERNAL**, avoid referencing it in application code.
@@ -226,13 +222,14 @@ export function renderDeferBlockState(
 function findMatchingDehydratedViewForDeferBlock(
   lContainer: LContainer,
   lDetails: LDeferBlockDetails,
-): DehydratedContainerView | null {
-  // Find matching view based on serialized defer block state.
-  return (
-    lContainer[DEHYDRATED_VIEWS]?.find(
+): {dehydratedView: DehydratedContainerView | null; dehydratedViewIx: number} {
+  const dehydratedViewIx =
+    lContainer[DEHYDRATED_VIEWS]?.findIndex(
       (view: any) => view.data[SERIALIZED_DEFER_BLOCK_STATE] === lDetails[DEFER_BLOCK_STATE],
-    ) ?? null
-  );
+    ) ?? -1;
+  const dehydratedView =
+    dehydratedViewIx > -1 ? lContainer[DEHYDRATED_VIEWS]![dehydratedViewIx] : null;
+  return {dehydratedView, dehydratedViewIx};
 }
 
 /**
@@ -277,10 +274,10 @@ function applyDeferBlockState(
         injector = createDeferBlockInjector(hostLView[INJECTOR], tDetails, providers);
       }
     }
-    const dehydratedView = findMatchingDehydratedViewForDeferBlock(lContainer, lDetails);
-    // Erase dehydrated view info, so that it's not removed later
-    // by post-hydration cleanup process.
-    lContainer[DEHYDRATED_VIEWS] = null;
+    const {dehydratedView, dehydratedViewIx} = findMatchingDehydratedViewForDeferBlock(
+      lContainer,
+      lDetails,
+    );
 
     const embeddedLView = createAndRenderEmbeddedLView(hostLView, activeBlockTNode, null, {
       injector,
@@ -294,11 +291,16 @@ function applyDeferBlockState(
     );
     markViewDirty(embeddedLView, NotificationSource.DeferBlockStateUpdate);
 
-    // TODO(incremental-hydration):
-    // - what if we had some views in `lContainer[DEHYDRATED_VIEWS]`, but
-    //   we didn't find a view that matches the expected state?
-    // - for example, handle a situation when a block was in the "completed" state
-    //   on the server, but the loading failing on the client. How do we reconcile and cleanup?
+    if (dehydratedViewIx > -1) {
+      // Erase dehydrated view info in a given LContainer, so that the view is not
+      // removed later by post-hydration cleanup process (which iterates over all
+      // dehydrated views in component tree). This clears only the dehydrated view
+      // that was found for this render, which in most cases will be the only view.
+      // In the case that there was control flow that changed, there may be either
+      // more than one or the views would not match up due to the server rendered
+      // content being a different branch of the control flow.
+      lContainer[DEHYDRATED_VIEWS]?.splice(dehydratedViewIx, 1);
+    }
 
     if (
       (newState === DeferBlockState.Complete || newState === DeferBlockState.Error) &&

@@ -9,7 +9,8 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {WINDOW} from '@angular/docs';
 
-import {NodeRuntimeSandbox, EmbeddedTutorialManager} from '../../editor';
+import {EmbeddedTutorialManager} from '../../editor';
+import {NodeRuntimeSandbox} from '../../editor/node-runtime-sandbox.service';
 
 import TutorialPlayground from './playground.component';
 

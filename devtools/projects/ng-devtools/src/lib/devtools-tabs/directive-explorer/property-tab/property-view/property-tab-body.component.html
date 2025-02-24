@@ -3,7 +3,7 @@
     <div class="explorer-panel">
       <ng-property-view
         (inspect)="inspect.emit($event)"
-        (viewSource)="viewSource.emit(directive)"
+        (viewSource)="viewSource.emit(directive.name)"
         [directive]="directive"
       />
     </div>

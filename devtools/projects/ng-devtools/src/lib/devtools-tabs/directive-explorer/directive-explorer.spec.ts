@@ -17,7 +17,7 @@ import {IndexedNode} from './directive-forest/index-forest';
 
 import SpyObj = jasmine.SpyObj;
 import {By} from '@angular/platform-browser';
-import {FrameManager} from '../../frame_manager';
+import {FrameManager} from '../../application-services/frame_manager';
 import {Component, CUSTOM_ELEMENTS_SCHEMA, output, input} from '@angular/core';
 import {ElementPropertyResolver, FlatNode} from './property-resolver/element-property-resolver';
 import {BreadcrumbsComponent} from './directive-forest/breadcrumbs/breadcrumbs.component';

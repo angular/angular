@@ -6,7 +6,7 @@ The content is written primarily in Markdown format located in `src/content`. Fo
 
 ## Local Development
 
-For local development, [yarn](https://yarnpkg.com/) is the preferred package manager. You can setup a local environment with the following commands
+For local development, [yarn](https://yarnpkg.com/) is the preferred package manager. You can set up a local environment with the following commands
 :
 
 ```bash

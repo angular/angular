@@ -11,7 +11,7 @@ import {Events, MessageBus, PriorityAwareMessageBus} from 'protocol';
 
 import {IFrameMessageBus} from '../../../../../src/iframe-message-bus';
 import {DevToolsComponent} from 'ng-devtools';
-import {FrameManager} from '../../../../../projects/ng-devtools/src/lib/frame_manager';
+import {FrameManager} from '../../../../../projects/ng-devtools/src/lib/application-services/frame_manager';
 
 @Component({
   imports: [DevToolsComponent],

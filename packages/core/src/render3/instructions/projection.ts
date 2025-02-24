@@ -28,11 +28,8 @@ import {
 } from '../node_selector_matcher';
 import {getLView, getTView, isInSkipHydrationBlock, setCurrentTNodeAsNotParent} from '../state';
 import {getOrCreateTNode} from '../tnode_manipulation';
-import {
-  addLViewToLContainer,
-  createAndRenderEmbeddedLView,
-  shouldAddViewToDom,
-} from '../view_manipulation';
+import {addLViewToLContainer} from '../view/container';
+import {createAndRenderEmbeddedLView, shouldAddViewToDom} from '../view_manipulation';
 
 import {declareTemplate} from './template';
 

@@ -114,7 +114,6 @@ function addFeatures(
 
   const providers = meta.providers;
   const viewProviders = (meta as R3ComponentMetadata<R3TemplateDependency>).viewProviders;
-  const inputKeys = Object.keys(meta.inputs);
 
   if (providers || viewProviders) {
     const args = [providers || new o.LiteralArrayExpr([])];
@@ -122,12 +121,6 @@ function addFeatures(
       args.push(viewProviders);
     }
     features.push(o.importExpr(R3.ProvidersFeature).callFn(args));
-  }
-  for (const key of inputKeys) {
-    if (meta.inputs[key].transformFunction !== null) {
-      features.push(o.importExpr(R3.InputTransformsFeatureFeature));
-      break;
-    }
   }
   // Note: host directives feature needs to be inserted before the
   // inheritance feature to ensure the correct execution order.

@@ -2,7 +2,7 @@
 
 End-to-end or (E2E) testing is a form of testing used to assert your entire application works as expected from start to finish or _"end-to-end"_. E2E testing differs from unit testing in that it is completely decoupled from the underlying implementation details of your code. It is typically used to validate an application in a way that mimics the way a user would interact with it. This page serves as a guide to getting started with end-to-end testing in Angular using the Angular CLI.
 
-## Setup E2E Testing
+## Set Up E2E Testing
 
 The Angular CLI downloads and installs everything you need to run end-to-end tests for your Angular application.
 
@@ -36,7 +36,7 @@ Puppeteer
 
 </docs-code>
 
-If you don't find the test runner you would like you use from the list above, you can add manually add a package using `ng add`.
+If you don't find the test runner you would like to use from the list above, you can manually add a package using `ng add`.
 
 ## Running E2E Tests
 

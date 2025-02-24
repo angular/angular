@@ -3283,7 +3283,7 @@ var require_dist_node2 = __commonJS({
     });
     module.exports = __toCommonJS(dist_src_exports);
     var import_universal_user_agent7 = require_dist_node();
-    var VERSION11 = "9.0.5";
+    var VERSION11 = "9.0.6";
     var userAgent3 = `octokit-endpoint.js/${VERSION11} ${(0, import_universal_user_agent7.getUserAgent)()}`;
     var DEFAULTS3 = {
       method: "GET",
@@ -3373,9 +3373,9 @@ var require_dist_node2 = __commonJS({
         return `${name}=${encodeURIComponent(parameters[name])}`;
       }).join("&");
     }
-    var urlVariableRegex3 = /\{[^}]+\}/g;
+    var urlVariableRegex3 = /\{[^{}}]+\}/g;
     function removeNonChars3(variableName) {
-      return variableName.replace(/^\W+|\W+$/g, "").split(/,/);
+      return variableName.replace(/(?:^\W+)|(?:(?<!\W)\W+$)/g, "").split(/,/);
     }
     function extractUrlVariableNames3(url) {
       const matches = url.match(urlVariableRegex3);
@@ -3556,7 +3556,7 @@ var require_dist_node2 = __commonJS({
         }
         if (url.endsWith("/graphql")) {
           if ((_a = options.mediaType.previews) == null ? void 0 : _a.length) {
-            const previewsFromAcceptHeader = headers.accept.match(/[\w-]+(?=-preview)/g) || [];
+            const previewsFromAcceptHeader = headers.accept.match(/(?<![\w-])[\w-]+(?=-preview)/g) || [];
             headers.accept = previewsFromAcceptHeader.concat(options.mediaType.previews).map((preview) => {
               const format = options.mediaType.format ? `.${options.mediaType.format}` : "+json";
               return `application/vnd.github.${preview}-preview${format}`;
@@ -4158,13 +4158,13 @@ var require_dist_node7 = __commonJS({
       createTokenAuth: () => createTokenAuth3
     });
     module.exports = __toCommonJS(dist_src_exports);
-    var REGEX_IS_INSTALLATION_LEGACY2 = /^v1\./;
-    var REGEX_IS_INSTALLATION2 = /^ghs_/;
-    var REGEX_IS_USER_TO_SERVER2 = /^ghu_/;
+    var REGEX_IS_INSTALLATION_LEGACY = /^v1\./;
+    var REGEX_IS_INSTALLATION = /^ghs_/;
+    var REGEX_IS_USER_TO_SERVER = /^ghu_/;
     async function auth2(token) {
       const isApp = token.split(/\./).length === 3;
-      const isInstallation = REGEX_IS_INSTALLATION_LEGACY2.test(token) || REGEX_IS_INSTALLATION2.test(token);
-      const isUserToServer = REGEX_IS_USER_TO_SERVER2.test(token);
+      const isInstallation = REGEX_IS_INSTALLATION_LEGACY.test(token) || REGEX_IS_INSTALLATION.test(token);
+      const isUserToServer = REGEX_IS_USER_TO_SERVER.test(token);
       const tokenType = isApp ? "app" : isInstallation ? "installation" : isUserToServer ? "user-to-server" : "oauth";
       return {
         type: "token",
@@ -7376,6 +7376,7 @@ var require_re = __commonJS({
     var re = exports.re = [];
     var safeRe = exports.safeRe = [];
     var src = exports.src = [];
+    var safeSrc = exports.safeSrc = [];
     var t = exports.t = {};
     var R = 0;
     var LETTERDASHNUMBER = "[a-zA-Z0-9-]";
@@ -7396,6 +7397,7 @@ var require_re = __commonJS({
       debug(name, index, value);
       t[name] = index;
       src[index] = value;
+      safeSrc[index] = safe;
       re[index] = new RegExp(value, isGlobal ? "g" : void 0);
       safeRe[index] = new RegExp(safe, isGlobal ? "g" : void 0);
     };
@@ -7492,7 +7494,7 @@ var require_semver = __commonJS({
   ""(exports, module) {
     var debug = require_debug();
     var { MAX_LENGTH, MAX_SAFE_INTEGER } = require_constants();
-    var { safeRe: re, t } = require_re();
+    var { safeRe: re, safeSrc: src, t } = require_re();
     var parseOptions = require_parse_options();
     var { compareIdentifiers } = require_identifiers();
     var SemVer = class {
@@ -7630,6 +7632,18 @@ var require_semver = __commonJS({
         } while (++i);
       }
       inc(release, identifier, identifierBase) {
+        if (release.startsWith("pre")) {
+          if (!identifier && identifierBase === false) {
+            throw new Error("invalid increment argument: identifier is empty");
+          }
+          if (identifier) {
+            const r = new RegExp(`^${this.options.loose ? src[t.PRERELEASELOOSE] : src[t.PRERELEASE]}$`);
+            const match = `-${identifier}`.match(r);
+            if (!match || match[1] !== identifier) {
+              throw new Error(`invalid identifier: ${identifier}`);
+            }
+          }
+        }
         switch (release) {
           case "premajor":
             this.prerelease.length = 0;
@@ -7655,6 +7669,12 @@ var require_semver = __commonJS({
             }
             this.inc("pre", identifier, identifierBase);
             break;
+          case "release":
+            if (this.prerelease.length === 0) {
+              throw new Error(`version ${this.raw} is not a prerelease`);
+            }
+            this.prerelease.length = 0;
+            break;
           case "major":
             if (this.minor !== 0 || this.patch !== 0 || this.prerelease.length === 0) {
               this.major++;
@@ -7678,9 +7698,6 @@ var require_semver = __commonJS({
             break;
           case "pre": {
             const base = Number(identifierBase) ? 1 : 0;
-            if (!identifier && identifierBase === false) {
-              throw new Error("invalid increment argument: identifier is empty");
-            }
             if (this.prerelease.length === 0) {
               this.prerelease = [base];
             } else {
@@ -7815,13 +7832,12 @@ var require_diff = __commonJS({
         if (!lowVersion.patch && !lowVersion.minor) {
           return "major";
         }
-        if (highVersion.patch) {
+        if (lowVersion.compareMain(highVersion) === 0) {
+          if (lowVersion.minor && !lowVersion.patch) {
+            return "minor";
+          }
           return "patch";
         }
-        if (highVersion.minor) {
-          return "minor";
-        }
-        return "major";
       }
       const prefix = highHasPre ? "pre" : "";
       if (v1.major !== v2.major) {
@@ -9719,9 +9735,9 @@ var require_cjs = __commonJS({
 var require_lib2 = __commonJS({
   ""(exports, module) {
     var { isexe, sync: isexeSync } = require_cjs();
-    var { join: join3, delimiter, sep, posix } = __require("path");
+    var { join: join3, delimiter, sep: sep2, posix } = __require("path");
     var isWindows = process.platform === "win32";
-    var rSlash = new RegExp(`[${posix.sep}${sep === posix.sep ? "" : sep}]`.replace(/(\\)/g, "\\$1"));
+    var rSlash = new RegExp(`[${posix.sep}${sep2 === posix.sep ? "" : sep2}]`.replace(/(\\)/g, "\\$1"));
     var rRel = new RegExp(`^\\.${rSlash.source}`);
     var getNotFoundError = (cmd) => Object.assign(new Error(`not found: ${cmd}`), { code: "ENOENT" });
     var getPathInfo = (cmd, {
@@ -11800,15 +11816,15 @@ var require_lockfile = __commonJS({
           }
           toString(opts) {
             opts = opts || {};
-            let sep = opts.sep || " ";
+            let sep2 = opts.sep || " ";
             if (opts.strict) {
-              sep = sep.replace(/\S+/g, " ");
+              sep2 = sep2.replace(/\S+/g, " ");
             }
             return Object.keys(this).map((k) => {
               return this[k].map((hash) => {
                 return Hash.prototype.toString.call(hash, opts);
-              }).filter((x) => x.length).join(sep);
-            }).filter((x) => x.length).join(sep);
+              }).filter((x) => x.length).join(sep2);
+            }).filter((x) => x.length).join(sep2);
           }
           concat(integrity, opts) {
             const other = typeof integrity === "string" ? integrity : stringify(integrity, opts);
@@ -21217,10 +21233,10 @@ var require_resolve_block_map = __commonJS({
       let offset = bm.offset;
       let commentEnd = null;
       for (const collItem of bm.items) {
-        const { start, key, sep, value } = collItem;
+        const { start, key, sep: sep2, value } = collItem;
         const keyProps = resolveProps.resolveProps(start, {
           indicator: "explicit-key-ind",
-          next: key ?? (sep == null ? void 0 : sep[0]),
+          next: key ?? (sep2 == null ? void 0 : sep2[0]),
           offset,
           onError,
           parentIndent: bm.indent,
@@ -21234,7 +21250,7 @@ var require_resolve_block_map = __commonJS({
             else if ("indent" in key && key.indent !== bm.indent)
               onError(offset, "BAD_INDENT", startColMsg);
           }
-          if (!keyProps.anchor && !keyProps.tag && !sep) {
+          if (!keyProps.anchor && !keyProps.tag && !sep2) {
             commentEnd = keyProps.end;
             if (keyProps.comment) {
               if (map.comment)
@@ -21258,7 +21274,7 @@ var require_resolve_block_map = __commonJS({
         ctx.atKey = false;
         if (utilMapIncludes.mapIncludes(ctx, map.items, keyNode))
           onError(keyStart, "DUPLICATE_KEY", "Map keys must be unique");
-        const valueProps = resolveProps.resolveProps(sep ?? [], {
+        const valueProps = resolveProps.resolveProps(sep2 ?? [], {
           indicator: "map-value-ind",
           next: value,
           offset: keyNode.range[2],
@@ -21274,7 +21290,7 @@ var require_resolve_block_map = __commonJS({
             if (ctx.options.strict && keyProps.start < valueProps.found.offset - 1024)
               onError(keyNode.range, "KEY_OVER_1024_CHARS", "The : indicator must be at most 1024 chars after the start of an implicit block mapping key");
           }
-          const valueNode = value ? composeNode(ctx, value, valueProps, onError) : composeEmptyNode(ctx, offset, sep, null, valueProps, onError);
+          const valueNode = value ? composeNode(ctx, value, valueProps, onError) : composeEmptyNode(ctx, offset, sep2, null, valueProps, onError);
           if (ctx.schema.compat)
             utilFlowIndentCheck.flowIndentCheck(bm.indent, value, onError);
           offset = valueNode.range[2];
@@ -21365,7 +21381,7 @@ var require_resolve_end = __commonJS({
       let comment = "";
       if (end) {
         let hasSpace = false;
-        let sep = "";
+        let sep2 = "";
         for (const token of end) {
           const { source, type } = token;
           switch (type) {
@@ -21379,13 +21395,13 @@ var require_resolve_end = __commonJS({
               if (!comment)
                 comment = cb;
               else
-                comment += sep + cb;
-              sep = "";
+                comment += sep2 + cb;
+              sep2 = "";
               break;
             }
             case "newline":
               if (comment)
-                sep += source;
+                sep2 += source;
               hasSpace = true;
               break;
             default:
@@ -21428,18 +21444,18 @@ var require_resolve_flow_collection = __commonJS({
       let offset = fc.offset + fc.start.source.length;
       for (let i = 0; i < fc.items.length; ++i) {
         const collItem = fc.items[i];
-        const { start, key, sep, value } = collItem;
+        const { start, key, sep: sep2, value } = collItem;
         const props = resolveProps.resolveProps(start, {
           flow: fcName,
           indicator: "explicit-key-ind",
-          next: key ?? (sep == null ? void 0 : sep[0]),
+          next: key ?? (sep2 == null ? void 0 : sep2[0]),
           offset,
           onError,
           parentIndent: fc.indent,
           startOnNewline: false
         });
         if (!props.found) {
-          if (!props.anchor && !props.tag && !sep && !value) {
+          if (!props.anchor && !props.tag && !sep2 && !value) {
             if (i === 0 && props.comma)
               onError(props.comma, "UNEXPECTED_TOKEN", `Unexpected , in ${fcName}`);
             else if (i < fc.items.length - 1)
@@ -21493,8 +21509,8 @@ var require_resolve_flow_collection = __commonJS({
             }
           }
         }
-        if (!isMap && !sep && !props.found) {
-          const valueNode = value ? composeNode(ctx, value, props, onError) : composeEmptyNode(ctx, props.end, sep, null, props, onError);
+        if (!isMap && !sep2 && !props.found) {
+          const valueNode = value ? composeNode(ctx, value, props, onError) : composeEmptyNode(ctx, props.end, sep2, null, props, onError);
           coll.items.push(valueNode);
           offset = valueNode.range[2];
           if (isBlock(value))
@@ -21506,7 +21522,7 @@ var require_resolve_flow_collection = __commonJS({
           if (isBlock(key))
             onError(keyNode.range, "BLOCK_IN_FLOW", blockMsg);
           ctx.atKey = false;
-          const valueProps = resolveProps.resolveProps(sep ?? [], {
+          const valueProps = resolveProps.resolveProps(sep2 ?? [], {
             flow: fcName,
             indicator: "map-value-ind",
             next: value,
@@ -21517,8 +21533,8 @@ var require_resolve_flow_collection = __commonJS({
           });
           if (valueProps.found) {
             if (!isMap && !props.found && ctx.options.strict) {
-              if (sep)
-                for (const st of sep) {
+              if (sep2)
+                for (const st of sep2) {
                   if (st === valueProps.found)
                     break;
                   if (st.type === "newline") {
@@ -21535,7 +21551,7 @@ var require_resolve_flow_collection = __commonJS({
             else
               onError(valueProps.start, "MISSING_CHAR", `Missing , or : between ${fcName} items`);
           }
-          const valueNode = value ? composeNode(ctx, value, valueProps, onError) : valueProps.found ? composeEmptyNode(ctx, valueProps.end, sep, null, valueProps, onError) : null;
+          const valueNode = value ? composeNode(ctx, value, valueProps, onError) : valueProps.found ? composeEmptyNode(ctx, valueProps.end, sep2, null, valueProps, onError) : null;
           if (valueNode) {
             if (isBlock(value))
               onError(valueNode.range, "BLOCK_IN_FLOW", blockMsg);
@@ -21716,7 +21732,7 @@ var require_resolve_block_scalar = __commonJS({
           chompStart = i + 1;
       }
       let value = "";
-      let sep = "";
+      let sep2 = "";
       let prevMoreIndented = false;
       for (let i = 0; i < contentStart; ++i)
         value += lines[i][0].slice(trimIndent) + "\n";
@@ -21733,24 +21749,24 @@ var require_resolve_block_scalar = __commonJS({
           indent = "";
         }
         if (type === Scalar.Scalar.BLOCK_LITERAL) {
-          value += sep + indent.slice(trimIndent) + content;
-          sep = "\n";
+          value += sep2 + indent.slice(trimIndent) + content;
+          sep2 = "\n";
         } else if (indent.length > trimIndent || content[0] === "	") {
-          if (sep === " ")
-            sep = "\n";
-          else if (!prevMoreIndented && sep === "\n")
-            sep = "\n\n";
-          value += sep + indent.slice(trimIndent) + content;
-          sep = "\n";
+          if (sep2 === " ")
+            sep2 = "\n";
+          else if (!prevMoreIndented && sep2 === "\n")
+            sep2 = "\n\n";
+          value += sep2 + indent.slice(trimIndent) + content;
+          sep2 = "\n";
           prevMoreIndented = true;
         } else if (content === "") {
-          if (sep === "\n")
+          if (sep2 === "\n")
             value += "\n";
           else
-            sep = "\n";
+            sep2 = "\n";
         } else {
-          value += sep + content;
-          sep = " ";
+          value += sep2 + content;
+          sep2 = " ";
           prevMoreIndented = false;
         }
       }
@@ -21928,25 +21944,25 @@ var require_resolve_flow_scalar = __commonJS({
       if (!match)
         return source;
       let res = match[1];
-      let sep = " ";
+      let sep2 = " ";
       let pos = first.lastIndex;
       line.lastIndex = pos;
       while (match = line.exec(source)) {
         if (match[1] === "") {
-          if (sep === "\n")
-            res += sep;
+          if (sep2 === "\n")
+            res += sep2;
           else
-            sep = "\n";
+            sep2 = "\n";
         } else {
-          res += sep + match[1];
-          sep = " ";
+          res += sep2 + match[1];
+          sep2 = " ";
         }
         pos = line.lastIndex;
       }
       const last = /[ \t]*(.*)/sy;
       last.lastIndex = pos;
       match = last.exec(source);
-      return res + sep + ((match == null ? void 0 : match[1]) ?? "");
+      return res + sep2 + ((match == null ? void 0 : match[1]) ?? "");
     }
     function doubleQuotedValue(source, onError) {
       let res = "";
@@ -22726,14 +22742,14 @@ var require_cst_stringify = __commonJS({
         }
       }
     }
-    function stringifyItem({ start, key, sep, value }) {
+    function stringifyItem({ start, key, sep: sep2, value }) {
       let res = "";
       for (const st of start)
         res += st.source;
       if (key)
         res += stringifyToken(key);
-      if (sep)
-        for (const st of sep)
+      if (sep2)
+        for (const st of sep2)
           res += st.source;
       if (value)
         res += stringifyToken(value);
@@ -23857,18 +23873,18 @@ var require_parser = __commonJS({
         if (this.type === "map-value-ind") {
           const prev = getPrevProps(this.peek(2));
           const start = getFirstKeyStartProps(prev);
-          let sep;
+          let sep2;
           if (scalar.end) {
-            sep = scalar.end;
-            sep.push(this.sourceToken);
+            sep2 = scalar.end;
+            sep2.push(this.sourceToken);
             delete scalar.end;
           } else
-            sep = [this.sourceToken];
+            sep2 = [this.sourceToken];
           const map = {
             type: "block-map",
             offset: scalar.offset,
             indent: scalar.indent,
-            items: [{ start, key: scalar, sep }]
+            items: [{ start, key: scalar, sep: sep2 }]
           };
           this.onKeyLine = true;
           this.stack[this.stack.length - 1] = map;
@@ -24021,15 +24037,15 @@ var require_parser = __commonJS({
                 } else if (isFlowToken(it.key) && !includesToken(it.sep, "newline")) {
                   const start2 = getFirstKeyStartProps(it.start);
                   const key = it.key;
-                  const sep = it.sep;
-                  sep.push(this.sourceToken);
+                  const sep2 = it.sep;
+                  sep2.push(this.sourceToken);
                   delete it.key;
                   delete it.sep;
                   this.stack.push({
                     type: "block-map",
                     offset: this.offset,
                     indent: this.indent,
-                    items: [{ start: start2, key, sep }]
+                    items: [{ start: start2, key, sep: sep2 }]
                   });
                 } else if (start.length > 0) {
                   it.sep = it.sep.concat(start, this.sourceToken);
@@ -24214,13 +24230,13 @@ var require_parser = __commonJS({
             const prev = getPrevProps(parent);
             const start = getFirstKeyStartProps(prev);
             fixFlowSeqItems(fc);
-            const sep = fc.end.splice(1, fc.end.length);
-            sep.push(this.sourceToken);
+            const sep2 = fc.end.splice(1, fc.end.length);
+            sep2.push(this.sourceToken);
             const map = {
               type: "block-map",
               offset: fc.offset,
               indent: fc.indent,
-              items: [{ start, key: fc, sep }]
+              items: [{ start, key: fc, sep: sep2 }]
             };
             this.onKeyLine = true;
             this.stack[this.stack.length - 1] = map;
@@ -26220,9 +26236,9 @@ function addQueryParameters(url, parameters) {
     return `${name}=${encodeURIComponent(parameters[name])}`;
   }).join("&");
 }
-var urlVariableRegex = /\{[^}]+\}/g;
+var urlVariableRegex = /\{[^{}}]+\}/g;
 function removeNonChars(variableName) {
-  return variableName.replace(/^\W+|\W+$/g, "").split(/,/);
+  return variableName.replace(/(?:^\W+)|(?:(?<!\W)\W+$)/g, "").split(/,/);
 }
 function extractUrlVariableNames(url) {
   const matches = url.match(urlVariableRegex);
@@ -26403,7 +26419,7 @@ function parse(options) {
     }
     if (url.endsWith("/graphql")) {
       if ((_a = options.mediaType.previews) == null ? void 0 : _a.length) {
-        const previewsFromAcceptHeader = headers.accept.match(/[\w-]+(?=-preview)/g) || [];
+        const previewsFromAcceptHeader = headers.accept.match(/(?<![\w-])[\w-]+(?=-preview)/g) || [];
         headers.accept = previewsFromAcceptHeader.concat(options.mediaType.previews).map((preview) => {
           const format = options.mediaType.format ? `.${options.mediaType.format}` : "+json";
           return `application/vnd.github.${preview}-preview${format}`;
@@ -26472,7 +26488,7 @@ var RequestError = class extends Error {
     if (options.request.headers.authorization) {
       requestCopy.headers = Object.assign({}, options.request.headers, {
         authorization: options.request.headers.authorization.replace(
-          / .*$/,
+          /(?<! ) .*$/,
           " [REDACTED]"
         )
       });
@@ -26562,7 +26578,7 @@ async function fetchWrapper(requestOptions) {
     data: ""
   };
   if ("deprecation" in responseHeaders) {
-    const matches = responseHeaders.link && responseHeaders.link.match(/<([^>]+)>; rel="deprecation"/);
+    const matches = responseHeaders.link && responseHeaders.link.match(/<([^<>]+)>; rel="deprecation"/);
     const deprecationLink = matches && matches.pop();
     log.warn(
       `[@octokit/request] "${requestOptions.method} ${requestOptions.url}" is deprecated. It is scheduled to be removed on ${responseHeaders.sunset}${deprecationLink ? `. See ${deprecationLink}` : ""}`
@@ -26604,7 +26620,7 @@ async function getResponseData(response) {
     return response.text().catch(() => "");
   }
   const mimetype = (0, import_fast_content_type_parse.safeParse)(contentType);
-  if (mimetype.type === "application/json") {
+  if (isJSONResponse(mimetype)) {
     let text = "";
     try {
       text = await response.text();
@@ -26617,6 +26633,9 @@ async function getResponseData(response) {
   } else {
     return response.arrayBuffer().catch(() => new ArrayBuffer(0));
   }
+}
+function isJSONResponse(mimetype) {
+  return mimetype.type === "application/json" || mimetype.type === "application/scim+json";
 }
 function toErrorMessage(data) {
   if (typeof data === "string") {
@@ -26758,9 +26777,9 @@ function addQueryParameters2(url, parameters) {
     return `${name}=${encodeURIComponent(parameters[name])}`;
   }).join("&");
 }
-var urlVariableRegex2 = /\{[^}]+\}/g;
+var urlVariableRegex2 = /\{[^{}}]+\}/g;
 function removeNonChars2(variableName) {
-  return variableName.replace(/^\W+|\W+$/g, "").split(/,/);
+  return variableName.replace(/(?:^\W+)|(?:(?<!\W)\W+$)/g, "").split(/,/);
 }
 function extractUrlVariableNames2(url) {
   const matches = url.match(urlVariableRegex2);
@@ -26941,7 +26960,7 @@ function parse2(options) {
     }
     if (url.endsWith("/graphql")) {
       if ((_a = options.mediaType.previews) == null ? void 0 : _a.length) {
-        const previewsFromAcceptHeader = headers.accept.match(/[\w-]+(?=-preview)/g) || [];
+        const previewsFromAcceptHeader = headers.accept.match(/(?<![\w-])[\w-]+(?=-preview)/g) || [];
         headers.accept = previewsFromAcceptHeader.concat(options.mediaType.previews).map((preview) => {
           const format = options.mediaType.format ? `.${options.mediaType.format}` : "+json";
           return `application/vnd.github.${preview}-preview${format}`;
@@ -27010,7 +27029,7 @@ var RequestError2 = class extends Error {
     if (options.request.headers.authorization) {
       requestCopy.headers = Object.assign({}, options.request.headers, {
         authorization: options.request.headers.authorization.replace(
-          / .*$/,
+          /(?<! ) .*$/,
           " [REDACTED]"
         )
       });
@@ -27100,7 +27119,7 @@ async function fetchWrapper2(requestOptions) {
     data: ""
   };
   if ("deprecation" in responseHeaders) {
-    const matches = responseHeaders.link && responseHeaders.link.match(/<([^>]+)>; rel="deprecation"/);
+    const matches = responseHeaders.link && responseHeaders.link.match(/<([^<>]+)>; rel="deprecation"/);
     const deprecationLink = matches && matches.pop();
     log.warn(
       `[@octokit/request] "${requestOptions.method} ${requestOptions.url}" is deprecated. It is scheduled to be removed on ${responseHeaders.sunset}${deprecationLink ? `. See ${deprecationLink}` : ""}`
@@ -27142,7 +27161,7 @@ async function getResponseData2(response) {
     return response.text().catch(() => "");
   }
   const mimetype = (0, import_fast_content_type_parse2.safeParse)(contentType);
-  if (mimetype.type === "application/json") {
+  if (isJSONResponse2(mimetype)) {
     let text = "";
     try {
       text = await response.text();
@@ -27155,6 +27174,9 @@ async function getResponseData2(response) {
   } else {
     return response.arrayBuffer().catch(() => new ArrayBuffer(0));
   }
+}
+function isJSONResponse2(mimetype) {
+  return mimetype.type === "application/json" || mimetype.type === "application/scim+json";
 }
 function toErrorMessage2(data) {
   if (typeof data === "string") {
@@ -27223,7 +27245,8 @@ var NON_VARIABLE_OPTIONS = [
   "headers",
   "request",
   "query",
-  "mediaType"
+  "mediaType",
+  "operationName"
 ];
 var FORBIDDEN_VARIABLE_OPTIONS = ["query", "method", "url"];
 var GHES_V3_SUFFIX_REGEX = /\/api\/v3\/?$/;
@@ -27302,13 +27325,14 @@ function withCustomRequest(customRequest) {
 }
 
 // 
-var REGEX_IS_INSTALLATION_LEGACY = /^v1\./;
-var REGEX_IS_INSTALLATION = /^ghs_/;
-var REGEX_IS_USER_TO_SERVER = /^ghu_/;
+var b64url = "(?:[a-zA-Z0-9_-]+)";
+var sep = "\\.";
+var jwtRE = new RegExp(`^${b64url}${sep}${b64url}${sep}${b64url}$`);
+var isJWT = jwtRE.test.bind(jwtRE);
 async function auth(token) {
-  const isApp = token.split(/\./).length === 3;
-  const isInstallation = REGEX_IS_INSTALLATION_LEGACY.test(token) || REGEX_IS_INSTALLATION.test(token);
-  const isUserToServer = REGEX_IS_USER_TO_SERVER.test(token);
+  const isApp = isJWT(token);
+  const isInstallation = token.startsWith("v1.") || token.startsWith("ghs_");
+  const isUserToServer = token.startsWith("ghu_");
   const tokenType = isApp ? "app" : isInstallation ? "installation" : isUserToServer ? "user-to-server" : "oauth";
   return {
     type: "token",
@@ -27346,7 +27370,7 @@ var createTokenAuth = function createTokenAuth2(token) {
 };
 
 // 
-var VERSION6 = "6.1.3";
+var VERSION6 = "6.1.4";
 
 // 
 var noop = () => {
@@ -27534,7 +27558,7 @@ function iterator(octokit, route, parameters) {
           const response = await requestMethod({ method, url, headers });
           const normalizedResponse = normalizePaginatedListResponse(response);
           url = ((normalizedResponse.headers.link || "").match(
-            /<([^>]+)>;\s*rel="next"/
+            /<([^<>]+)>;\s*rel="next"/
           ) || [])[1];
           return { value: normalizedResponse };
         } catch (error) {
@@ -27596,7 +27620,7 @@ function paginateRest(octokit) {
 paginateRest.VERSION = VERSION8;
 
 // 
-var VERSION9 = "13.3.0";
+var VERSION9 = "13.3.1";
 
 // 
 var Endpoints = {
@@ -29806,7 +29830,7 @@ function legacyRestEndpointMethods(octokit) {
 legacyRestEndpointMethods.VERSION = VERSION9;
 
 // 
-var VERSION10 = "21.1.0";
+var VERSION10 = "21.1.1";
 
 // 
 var Octokit2 = Octokit.plugin(requestLog, legacyRestEndpointMethods, paginateRest).defaults(

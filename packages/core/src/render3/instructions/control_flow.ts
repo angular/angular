@@ -29,19 +29,19 @@ import {
   TView,
 } from '../interfaces/view';
 import {LiveCollection, reconcile} from '../list_reconciliation';
-import {destroyLView, detachView} from '../node_manipulation';
+import {destroyLView} from '../node_manipulation';
 import {getLView, getSelectedIndex, getTView, nextBindingIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {getConstant, getTNode} from '../util/view_utils';
-import {
-  addLViewToLContainer,
-  createAndRenderEmbeddedLView,
-  getLViewFromLContainer,
-  removeLViewFromLContainer,
-  shouldAddViewToDom,
-} from '../view_manipulation';
+import {createAndRenderEmbeddedLView, shouldAddViewToDom} from '../view_manipulation';
 
 import {declareTemplate} from './template';
+import {
+  addLViewToLContainer,
+  detachView,
+  getLViewFromLContainer,
+  removeLViewFromLContainer,
+} from '../view/container';
 
 /**
  * The conditional instruction represents the basic building block on the runtime side to support

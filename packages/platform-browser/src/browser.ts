@@ -233,7 +233,7 @@ const BROWSER_MODULE_PROVIDERS: Provider[] = [
     provide: EVENT_MANAGER_PLUGINS,
     useClass: DomEventsPlugin,
     multi: true,
-    deps: [DOCUMENT, NgZone, PLATFORM_ID],
+    deps: [DOCUMENT],
   },
   {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true, deps: [DOCUMENT]},
   DomRendererFactory2,

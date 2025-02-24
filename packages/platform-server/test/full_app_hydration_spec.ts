@@ -11,6 +11,7 @@ import '@angular/localize/init';
 import {
   CommonModule,
   DOCUMENT,
+  isPlatformBrowser,
   isPlatformServer,
   NgComponentOutlet,
   NgFor,
@@ -35,6 +36,7 @@ import {
   inject,
   Input,
   NgZone,
+  PendingTasks,
   Pipe,
   PipeTransform,
   PLATFORM_ID,
@@ -60,10 +62,12 @@ import {
   stripUtilAttributes,
 } from './dom_utils';
 import {
+  clearConsole,
   EMPTY_TEXT_NODE_COMMENT,
   getComponentRef,
   getHydrationInfoFromTransferState,
   NGH_ATTR_NAME,
+  resetNgDevModeCounters,
   ssr,
   stripExcessiveSpaces,
   stripSsrIntegrityMarker,
@@ -73,6 +77,7 @@ import {
   verifyAllChildNodesClaimedForHydration,
   verifyAllNodesClaimedForHydration,
   verifyClientAndSSRContentsMatch,
+  verifyEmptyConsole,
   verifyHasLog,
   verifyHasNoLog,
   verifyNodeHasMismatchInfo,
@@ -80,9 +85,6 @@ import {
   verifyNoNodesWereClaimedForHydration,
   withDebugConsole,
   withNoopErrorHandler,
-  verifyEmptyConsole,
-  clearConsole,
-  resetNgDevModeCounters,
 } from './hydration_utils';
 
 import {CLIENT_RENDER_MODE_FLAG} from '@angular/core/src/hydration/api';
@@ -2071,7 +2073,7 @@ describe('platform-server full application hydration integration', () => {
 
           const content = clientRootNode.querySelector('app-content');
           expect(content.innerHTML).toBe(
-            'Start  Inner Start  Hello <span>World</span>! <!--ICU 26:0--> Inner End  Middle <span>Span</span> End',
+            'Start  Inner Start  Hello <span>World</span>! <!--ICU 27:0--> Inner End  Middle <span>Span</span> End',
           );
         });
 
@@ -2125,7 +2127,7 @@ describe('platform-server full application hydration integration', () => {
 
           const content = clientRootNode.querySelector('app-content-outer');
           expect(content.innerHTML).toBe(
-            '<app-content-inner>Start  Outer Start <span>Span</span> Hello <span>World</span>! <!--ICU 26:0--> Outer End  Middle  End</app-content-inner>',
+            '<app-content-inner>Start  Outer Start <span>Span</span> Hello <span>World</span>! <!--ICU 27:0--> Outer End  Middle  End</app-content-inner>',
           );
         });
 
@@ -2366,7 +2368,7 @@ describe('platform-server full application hydration integration', () => {
           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
 
           const div = clientRootNode.querySelector('div');
-          expect(div.innerHTML).toMatch(/Some <strong>strong<\/strong><!--ICU 26:0--> content/);
+          expect(div.innerHTML).toMatch(/Some <strong>strong<\/strong><!--ICU 27:0--> content/);
         });
 
         it('should support translations that remove elements', async () => {
@@ -7023,6 +7025,63 @@ describe('platform-server full application hydration integration', () => {
           expect(clientRootNode.textContent).toContain('Hi!');
         },
       );
+
+      it('should not throw an error when app is destroyed before becoming stable', async () => {
+        // Spy manually, because we may not be able to retrieve the `DebugConsole`
+        // after we destroy the application, but we still want to ensure that
+        // no error is thrown in the console.
+        const errorSpy = spyOn(console, 'error').and.callThrough();
+        const logs: string[] = [];
+
+        @Component({
+          standalone: true,
+          selector: 'app',
+          template: `Hi!`,
+        })
+        class SimpleComponent {
+          constructor() {
+            const isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
+            if (isBrowser) {
+              const pendingTasks = inject(PendingTasks);
+              // Given that, in a real-world scenario, some APIs add a pending
+              // task and don't remove it until the app is destroyed.
+              // This could be an HTTP request that contributes to app stability
+              // and does not respond until the app is destroyed.
+              pendingTasks.add();
+            }
+          }
+        }
+
+        const html = await ssr(SimpleComponent);
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+
+        appRef.isStable.subscribe((isStable) => {
+          logs.push(`isStable=${isStable}`);
+        });
+
+        // Destroy the application before it becomes stable, because we added
+        // a task and didn't remove it explicitly.
+        appRef.destroy();
+
+        expect(logs).toEqual([
+          'isStable=false',
+          'isStable=true',
+          'isStable=false',
+          // In the end, the application became stable while being destroyed.
+          'isStable=true',
+        ]);
+
+        // Wait for a microtask so that `whenStableWithTimeout` resolves.
+        await Promise.resolve();
+
+        // Ensure no error has been logged in the console,
+        // such as "injector has already been destroyed."
+        expect(errorSpy).not.toHaveBeenCalled();
+      });
     });
 
     describe('@if', () => {

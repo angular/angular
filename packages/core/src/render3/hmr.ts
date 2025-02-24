@@ -13,11 +13,6 @@ import {getComponentDef} from './def_getters';
 import {assertComponentDef} from './errors';
 import {refreshView} from './instructions/change_detection';
 import {renderView} from './instructions/render';
-import {
-  createLView,
-  getInitialLViewFlagsFromDef,
-  getOrCreateComponentTView,
-} from './instructions/shared';
 import {CONTAINER_HEADER_OFFSET} from './interfaces/container';
 import {ComponentDef} from './interfaces/definition';
 import {getTrackedLViews} from './interfaces/lview_tracking';
@@ -44,6 +39,18 @@ import {RendererFactory} from './interfaces/renderer';
 import {NgZone} from '../zone';
 import {ViewEncapsulation} from '../metadata/view';
 import {NG_COMP_DEF} from './fields';
+import {
+  createLView,
+  getInitialLViewFlagsFromDef,
+  getOrCreateComponentTView,
+} from './view/construction';
+
+/** Represents `import.meta` plus some information that's not in the built-in types. */
+type ImportMetaExtended = ImportMeta & {
+  hot?: {
+    send?: (name: string, payload: unknown) => void;
+  };
+};
 
 /**
  * Replaces the metadata of a component type and re-renders all live instances of the component.
@@ -51,6 +58,10 @@ import {NG_COMP_DEF} from './fields';
  * @param applyMetadata Callback that will apply a new set of metadata on the `type` when invoked.
  * @param environment Syntehtic namespace imports that need to be passed along to the callback.
  * @param locals Local symbols from the source location that have to be exposed to the callback.
+ * @param importMeta `import.meta` from the call site of the replacement function. Optional since
+ *   it isn't used internally.
+ * @param id ID to the class being replaced. **Not** the same as the component definition ID.
+ *   Optional since the ID might not be available internally.
  * @codeGenApi
  */
 export function ɵɵreplaceMetadata(
@@ -58,6 +69,8 @@ export function ɵɵreplaceMetadata(
   applyMetadata: (...args: [Type<unknown>, unknown[], ...unknown[]]) => void,
   namespaces: unknown[],
   locals: unknown[],
+  importMeta: ImportMetaExtended | null = null,
+  id: string | null = null,
 ) {
   ngDevMode && assertComponentDef(type);
   const currentDef = getComponentDef(type)!;
@@ -84,7 +97,7 @@ export function ɵɵreplaceMetadata(
       // Note: we have the additional check, because `IsRoot` can also indicate
       // a component created through something like `createComponent`.
       if (isRootView(root) && root[PARENT] === null) {
-        recreateMatchingLViews(newDef, oldDef, root);
+        recreateMatchingLViews(importMeta, id, newDef, oldDef, root);
       }
     }
   }
@@ -129,10 +142,14 @@ function mergeWithExistingDefinition(
 
 /**
  * Finds all LViews matching a specific component definition and recreates them.
+ * @param importMeta `import.meta` information.
+ * @param id HMR ID of the component.
  * @param oldDef Component definition to search for.
  * @param rootLView View from which to start the search.
  */
 function recreateMatchingLViews(
+  importMeta: ImportMetaExtended | null,
+  id: string | null,
   newDef: ComponentDef<unknown>,
   oldDef: ComponentDef<unknown>,
   rootLView: LView,
@@ -149,7 +166,7 @@ function recreateMatchingLViews(
   // produce false positives when using inheritance.
   if (tView === oldDef.tView) {
     ngDevMode && assertComponentDef(oldDef.type);
-    recreateLView(newDef, oldDef, rootLView);
+    recreateLView(importMeta, id, newDef, oldDef, rootLView);
     return;
   }
 
@@ -159,14 +176,14 @@ function recreateMatchingLViews(
     if (isLContainer(current)) {
       // The host can be an LView if a component is injecting `ViewContainerRef`.
       if (isLView(current[HOST])) {
-        recreateMatchingLViews(newDef, oldDef, current[HOST]);
+        recreateMatchingLViews(importMeta, id, newDef, oldDef, current[HOST]);
       }
 
       for (let j = CONTAINER_HEADER_OFFSET; j < current.length; j++) {
-        recreateMatchingLViews(newDef, oldDef, current[j]);
+        recreateMatchingLViews(importMeta, id, newDef, oldDef, current[j]);
       }
     } else if (isLView(current)) {
-      recreateMatchingLViews(newDef, oldDef, current);
+      recreateMatchingLViews(importMeta, id, newDef, oldDef, current);
     }
   }
 }
@@ -187,11 +204,15 @@ function clearRendererCache(factory: RendererFactory, def: ComponentDef<unknown>
 
 /**
  * Recreates an LView in-place from a new component definition.
+ * @param importMeta `import.meta` information.
+ * @param id HMR ID for the component.
  * @param newDef Definition from which to recreate the view.
  * @param oldDef Previous component definition being swapped out.
  * @param lView View to be recreated.
  */
 function recreateLView(
+  importMeta: ImportMetaExtended | null,
+  id: string | null,
   newDef: ComponentDef<unknown>,
   oldDef: ComponentDef<unknown>,
   lView: LView<unknown>,
@@ -269,9 +290,35 @@ function recreateLView(
 
   // The callback isn't guaranteed to be inside the Zone so we need to bring it in ourselves.
   if (zone === null) {
-    recreate();
+    executeWithInvalidateFallback(importMeta, id, recreate);
   } else {
-    zone.run(recreate);
+    zone.run(() => executeWithInvalidateFallback(importMeta, id, recreate));
+  }
+}
+
+/**
+ * Runs an HMR-related function and falls back to
+ * invalidating the HMR data if it throws an error.
+ */
+function executeWithInvalidateFallback(
+  importMeta: ImportMetaExtended | null,
+  id: string | null,
+  callback: () => void,
+) {
+  try {
+    callback();
+  } catch (e) {
+    const error = e as {message?: string; stack?: string};
+
+    // If we have all the necessary information and APIs to send off the invalidation
+    // request, send it before rethrowing so the dev server can decide what to do.
+    if (id !== null && error.message) {
+      const toLog = error.message + (error.stack ? '\n' + error.stack : '');
+      importMeta?.hot?.send?.('angular:invalidate', {id, message: toLog, error: true});
+    }
+
+    // Throw the error in case the page doesn't get refreshed.
+    throw e;
   }
 }
 

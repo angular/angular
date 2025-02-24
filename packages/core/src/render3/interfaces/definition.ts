@@ -110,17 +110,10 @@ export interface DirectiveDef<T> {
    * A dictionary mapping the inputs' public name to their minified property names
    * (along with flags if there are any).
    */
-  readonly inputs: {[P in keyof T]?: string | [minifiedName: string, flags: InputFlags]};
-
-  /**
-   * A dictionary mapping the private names of inputs to their transformation functions.
-   * Note: the private names are used for the keys, rather than the public ones, because public
-   * names can be re-aliased in host directives which would invalidate the lookup.
-   *
-   * Note: Signal inputs will not have transforms captured here. This is because their
-   * transform function is already integrated into the `InputSignal`.
-   */
-  readonly inputTransforms: {[classPropertyName: string]: InputTransformFunction} | null;
+  readonly inputs: Record<
+    string,
+    [minifiedName: string, flags: InputFlags, transform: InputTransformFunction | null]
+  >;
 
   /**
    * Contains the raw input information produced by the compiler. Can be
@@ -141,7 +134,7 @@ export interface DirectiveDef<T> {
    * are their aliases if any, or their original unminified property names
    * (as in `@Output('alias') propertyName: any;`).
    */
-  readonly outputs: {[P in keyof T]?: string};
+  readonly outputs: Record<string, string>;
 
   /**
    * Function to create and refresh content queries associated with a given directive.

@@ -46,7 +46,7 @@ class MockRenderer implements Renderer {
   }
   selectRootElement(selectorOrNode: string | any): RElement {
     return typeof selectorOrNode === 'string'
-      ? document.querySelector(selectorOrNode)
+      ? document.querySelector<HTMLElement>(selectorOrNode)!
       : selectorOrNode;
   }
   parentNode(node: Node): RElement | null {

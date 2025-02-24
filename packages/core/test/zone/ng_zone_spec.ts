@@ -935,7 +935,6 @@ function commonTests() {
       }
 
       @Component({
-        standalone: true,
         template: `
           <div class="clickable" (click)="clicked = true"></div>
           {{clicked ? 'clicked' : '' }}

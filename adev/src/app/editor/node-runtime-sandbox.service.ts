@@ -143,12 +143,20 @@ export class NodeRuntimeSandbox {
   async getSolutionFiles(): Promise<FileAndContent[]> {
     const webContainer = await this.webContainerPromise!;
 
-    const excludeFolders = ['node_modules', '.angular', 'dist'];
+    const excludeFromRoot = [
+      'node_modules',
+      '.angular',
+      'dist',
+      'BUILD.bazel',
+      'idx',
+      'package.json.template',
+      'config.json',
+    ];
 
     return await checkFilesInDirectory(
-      '/',
+      '',
       webContainer.fs,
-      (path?: string) => !!path && !excludeFolders.includes(path),
+      (path: string) => !excludeFromRoot.includes(path),
     );
   }
 

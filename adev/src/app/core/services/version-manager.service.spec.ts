@@ -39,8 +39,8 @@ describe('VersionManager', () => {
   });
 
   it('should contain correct number of Angular Docs versions', () => {
-    // Note: From v2 to v17 (inclusive), there were no v3
-    const expectedAioDocsVersionsCount = 15;
+    // Note: From v2 to v18 (inclusive), there were no v3
+    const expectedAioDocsVersionsCount = 16;
 
     // Last stable version and next
     const expectedRecentDocsVersionCount = 2;

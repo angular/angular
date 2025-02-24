@@ -31,9 +31,9 @@ export interface R3HmrMetadata {
   /**
    * HMR update functions cannot contain imports so any locals the generated code depends on
    * (e.g. references to imports within the same file or imported symbols) have to be passed in
-   * as function parameters. This array contains the names of those local symbols.
+   * as function parameters. This array contains the names and runtime representation of the locals.
    */
-  localDependencies: string[];
+  localDependencies: {name: string; runtimeRepresentation: o.Expression}[];
 }
 
 /** HMR dependency on a namespace import. */
@@ -53,13 +53,11 @@ export interface R3HmrNamespaceDependency {
  * @param meta HMR metadata extracted from the class.
  */
 export function compileHmrInitializer(meta: R3HmrMetadata): o.Expression {
-  const id = encodeURIComponent(`${meta.filePath}@${meta.className}`);
-  const urlPartial = `./@ng/component?c=${id}&t=`;
   const moduleName = 'm';
   const dataName = 'd';
   const timestampName = 't';
+  const idName = 'id';
   const importCallbackName = `${meta.className}_HmrLoad`;
-  const locals = meta.localDependencies.map((localName) => o.variable(localName));
   const namespaces = meta.namespaceDependencies.map((dep) => {
     return new o.ExternalExpr({moduleName: dep.moduleName, name: null});
   });
@@ -67,17 +65,26 @@ export function compileHmrInitializer(meta: R3HmrMetadata): o.Expression {
   // m.default
   const defaultRead = o.variable(moduleName).prop('default');
 
-  // ɵɵreplaceMetadata(Comp, m.default, [...namespaces], [...locals]);
+  // ɵɵreplaceMetadata(Comp, m.default, [...namespaces], [...locals], import.meta, id);
   const replaceCall = o
     .importExpr(R3.replaceMetadata)
-    .callFn([meta.type, defaultRead, o.literalArr(namespaces), o.literalArr(locals)]);
+    .callFn([
+      meta.type,
+      defaultRead,
+      o.literalArr(namespaces),
+      o.literalArr(meta.localDependencies.map((l) => l.runtimeRepresentation)),
+      o.variable('import').prop('meta'),
+      o.variable(idName),
+    ]);
 
   // (m) => m.default && ɵɵreplaceMetadata(...)
   const replaceCallback = o.arrowFn([new o.FnParam(moduleName)], defaultRead.and(replaceCall));
 
-  // '<urlPartial>' + encodeURIComponent(t)
+  // '<url>?c=' + id + '&t=' + encodeURIComponent(t)
   const urlValue = o
-    .literal(urlPartial)
+    .literal(`./@ng/component?c=`)
+    .plus(o.variable(idName))
+    .plus(o.literal('&t='))
     .plus(o.variable('encodeURIComponent').callFn([o.variable(timestampName)]));
 
   // import.meta.url
@@ -105,13 +112,13 @@ export function compileHmrInitializer(meta: R3HmrMetadata): o.Expression {
     o.StmtModifier.Final,
   );
 
-  // (d) => d.id === <id> && Cmp_HmrLoad(d.timestamp)
+  // (d) => d.id === id && Cmp_HmrLoad(d.timestamp)
   const updateCallback = o.arrowFn(
     [new o.FnParam(dataName)],
     o
       .variable(dataName)
       .prop('id')
-      .identical(o.literal(id))
+      .identical(o.variable(idName))
       .and(o.variable(importCallbackName).callFn([o.variable(dataName).prop('timestamp')])),
   );
 
@@ -135,6 +142,13 @@ export function compileHmrInitializer(meta: R3HmrMetadata): o.Expression {
     .arrowFn(
       [],
       [
+        // const id = <id>;
+        new o.DeclareVarStmt(
+          idName,
+          o.literal(encodeURIComponent(`${meta.filePath}@${meta.className}`)),
+          null,
+          o.StmtModifier.Final,
+        ),
         // function Cmp_HmrLoad() {...}.
         importCallback,
         // ngDevMode && Cmp_HmrLoad(Date.now());
@@ -159,10 +173,12 @@ export function compileHmrUpdateCallback(
   meta: R3HmrMetadata,
 ): o.DeclareFunctionStmt {
   const namespaces = 'ɵɵnamespaces';
-  const params = [meta.className, namespaces, ...meta.localDependencies].map(
-    (name) => new o.FnParam(name, o.DYNAMIC_TYPE),
-  );
+  const params = [meta.className, namespaces].map((name) => new o.FnParam(name, o.DYNAMIC_TYPE));
   const body: o.Statement[] = [];
+
+  for (const local of meta.localDependencies) {
+    params.push(new o.FnParam(local.name));
+  }
 
   // Declare variables that read out the individual namespaces.
   for (let i = 0; i < meta.namespaceDependencies.length; i++) {

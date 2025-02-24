@@ -1659,6 +1659,7 @@ export class ComponentDecoratorHandler
       ? extractHmrMetatadata(
           node,
           this.reflector,
+          this.evaluator,
           this.compilerHost,
           this.rootDirs,
           def,
@@ -1725,6 +1726,7 @@ export class ComponentDecoratorHandler
       ? extractHmrMetatadata(
           node,
           this.reflector,
+          this.evaluator,
           this.compilerHost,
           this.rootDirs,
           def,
@@ -1787,6 +1789,7 @@ export class ComponentDecoratorHandler
       ? extractHmrMetatadata(
           node,
           this.reflector,
+          this.evaluator,
           this.compilerHost,
           this.rootDirs,
           def,
@@ -1843,6 +1846,7 @@ export class ComponentDecoratorHandler
       ? extractHmrMetatadata(
           node,
           this.reflector,
+          this.evaluator,
           this.compilerHost,
           this.rootDirs,
           def,
@@ -1884,22 +1888,32 @@ export class ComponentDecoratorHandler
   private resolveAllDeferredDependencies(
     resolution: Readonly<ComponentResolutionData>,
   ): R3DeferPerComponentDependency[] {
+    const seenDeps = new Set<ClassDeclaration>();
     const deferrableTypes: R3DeferPerComponentDependency[] = [];
     // Go over all dependencies of all defer blocks and update the value of
     // the `isDeferrable` flag and the `importPath` to reflect the current
     // state after visiting all components during the `resolve` phase.
     for (const [_, deps] of resolution.deferPerBlockDependencies) {
       for (const deferBlockDep of deps) {
-        const importDecl =
-          resolution.deferrableDeclToImportDecl.get(deferBlockDep.declaration.node) ?? null;
+        const node = deferBlockDep.declaration.node;
+        const importDecl = resolution.deferrableDeclToImportDecl.get(node) ?? null;
         if (importDecl !== null && this.deferredSymbolTracker.canDefer(importDecl)) {
           deferBlockDep.isDeferrable = true;
           deferBlockDep.importPath = (importDecl.moduleSpecifier as ts.StringLiteral).text;
           deferBlockDep.isDefaultImport = isDefaultImport(importDecl);
-          deferrableTypes.push(deferBlockDep as R3DeferPerComponentDependency);
+
+          // The same dependency may be used across multiple deferred blocks. De-duplicate it
+          // because it can throw off other logic further down the compilation pipeline.
+          // Note that the logic above needs to run even if the dependency is seen before,
+          // because the object literals are different between each block.
+          if (!seenDeps.has(node)) {
+            seenDeps.add(node);
+            deferrableTypes.push(deferBlockDep as R3DeferPerComponentDependency);
+          }
         }
       }
     }
+
     return deferrableTypes;
   }
 

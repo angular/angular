@@ -92,6 +92,10 @@ The vast majority of pull requests will target `major`, `minor`, or `patch` base
 the code change. In rare cases, a pull request will specify `target: rc` or `target: lts` to
 explicitly target a special branch.
 
+Note that PRs merged with `target: rc` often benefit from additional testing in an RC release.
+Therefore PR authors and caretakers should consider publishing a new `-next` release after merging
+any PRs to an RC branch to support extra testing before the stable release.
+
 Breaking changes, marked with `target: major`, can only be merged when `main` represents the next
 major version.
 

@@ -13,9 +13,10 @@ import {
   R3HmrNamespaceDependency,
   outputAst as o,
 } from '@angular/compiler';
-import {DeclarationNode} from '../../reflection';
+import {DeclarationNode, ReflectionHost} from '../../reflection';
 import {CompileResult} from '../../transform';
 import ts from 'typescript';
+import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
 
 /**
  * Determines the file-level dependencies that the HMR initializer needs to capture and pass along.
@@ -33,7 +34,12 @@ export function extractHmrDependencies(
   deferBlockMetadata: R3ComponentDeferMetadata,
   classMetadata: o.Statement | null,
   debugInfo: o.Statement | null,
-): {local: string[]; external: R3HmrNamespaceDependency[]} {
+  reflection: ReflectionHost,
+  evaluator: PartialEvaluator,
+): {
+  local: {name: string; runtimeRepresentation: o.Expression}[];
+  external: R3HmrNamespaceDependency[];
+} | null {
   const name = ts.isClassDeclaration(node) && node.name ? node.name.text : null;
   const visitor = new PotentialTopLevelReadsVisitor();
   const sourceFile = node.getSourceFile();
@@ -57,14 +63,79 @@ export function extractHmrDependencies(
   // variables inside of functions. Note that we filter out the class name since it is always
   // defined and it saves us having to repeat this logic wherever the locals are consumed.
   const availableTopLevel = getTopLevelDeclarationNames(sourceFile);
+  const local: {name: string; runtimeRepresentation: o.Expression}[] = [];
+  const seenLocals = new Set<string>();
+
+  for (const readNode of visitor.allReads) {
+    const readName = readNode instanceof o.ReadVarExpr ? readNode.name : readNode.text;
+
+    if (readName !== name && !seenLocals.has(readName) && availableTopLevel.has(readName)) {
+      const runtimeRepresentation = getRuntimeRepresentation(readNode, reflection, evaluator);
+
+      if (runtimeRepresentation === null) {
+        return null;
+      }
+
+      local.push({name: readName, runtimeRepresentation});
+      seenLocals.add(readName);
+    }
+  }
 
   return {
-    local: Array.from(visitor.allReads).filter((r) => r !== name && availableTopLevel.has(r)),
+    local,
     external: Array.from(visitor.namespaceReads, (name, index) => ({
       moduleName: name,
       assignedName: `ɵhmr${index}`,
     })),
   };
+}
+
+/**
+ * Gets a node that can be used to represent an identifier in the HMR replacement code at runtime.
+ */
+function getRuntimeRepresentation(
+  node: o.ReadVarExpr | ts.Identifier,
+  reflection: ReflectionHost,
+  evaluator: PartialEvaluator,
+): o.Expression | null {
+  if (node instanceof o.ReadVarExpr) {
+    return o.variable(node.name);
+  }
+
+  // Const enums can't be passed by reference, because their values are inlined.
+  // Pass in an object literal with all of the values instead.
+  if (isConstEnumReference(node, reflection)) {
+    const evaluated = evaluator.evaluate(node);
+
+    if (evaluated instanceof Map) {
+      const members: {key: string; quoted: boolean; value: o.Expression}[] = [];
+
+      for (const [name, value] of evaluated.entries()) {
+        if (
+          value instanceof EnumValue &&
+          (value.resolved == null ||
+            typeof value.resolved === 'string' ||
+            typeof value.resolved === 'boolean' ||
+            typeof value.resolved === 'number')
+        ) {
+          members.push({
+            key: name,
+            quoted: false,
+            value: o.literal(value.resolved),
+          });
+        } else {
+          // TS is pretty restrictive about what values can be in a const enum so our evaluator
+          // should be able to handle them, however if we happen to hit such a case, we return null
+          // so the HMR update can be invalidated.
+          return null;
+        }
+      }
+
+      return o.literalMap(members);
+    }
+  }
+
+  return o.variable(node.text);
 }
 
 /**
@@ -81,8 +152,7 @@ function getTopLevelDeclarationNames(sourceFile: ts.SourceFile): Set<string> {
     if (
       ts.isClassDeclaration(node) ||
       ts.isFunctionDeclaration(node) ||
-      (ts.isEnumDeclaration(node) &&
-        !node.modifiers?.some((m) => m.kind === ts.SyntaxKind.ConstKeyword))
+      ts.isEnumDeclaration(node)
     ) {
       if (node.name) {
         results.add(node.name.text);
@@ -157,7 +227,7 @@ function trackBindingName(node: ts.BindingName, results: Set<string>): void {
  * inside functions.
  */
 class PotentialTopLevelReadsVisitor extends o.RecursiveAstVisitor {
-  readonly allReads = new Set<string>();
+  readonly allReads = new Set<o.ReadVarExpr | ts.Identifier>();
   readonly namespaceReads = new Set<string>();
 
   override visitExternalExpr(ast: o.ExternalExpr, context: any) {
@@ -168,7 +238,7 @@ class PotentialTopLevelReadsVisitor extends o.RecursiveAstVisitor {
   }
 
   override visitReadVarExpr(ast: o.ReadVarExpr, context: any) {
-    this.allReads.add(ast.name);
+    this.allReads.add(ast);
     super.visitReadVarExpr(ast, context);
   }
 
@@ -186,7 +256,7 @@ class PotentialTopLevelReadsVisitor extends o.RecursiveAstVisitor {
    */
   private addAllTopLevelIdentifiers = (node: ts.Node) => {
     if (ts.isIdentifier(node) && this.isTopLevelIdentifierReference(node)) {
-      this.allReads.add(node.text);
+      this.allReads.add(node);
     } else {
       ts.forEachChild(node, this.addAllTopLevelIdentifiers);
     }
@@ -325,4 +395,26 @@ class PotentialTopLevelReadsVisitor extends o.RecursiveAstVisitor {
     // on a narrow set of use cases so checking for `kind` should be enough.
     return !!value && typeof value.kind === 'number';
   }
+}
+
+/** Checks whether a node is a reference to a const enum. */
+function isConstEnumReference(node: ts.Identifier, reflection: ReflectionHost): boolean {
+  const parent = node.parent;
+
+  // Only check identifiers that are in the form of `Foo.bar` where `Foo` is the node being checked.
+  if (
+    !parent ||
+    !ts.isPropertyAccessExpression(parent) ||
+    parent.expression !== node ||
+    !ts.isIdentifier(parent.name)
+  ) {
+    return false;
+  }
+
+  const declaration = reflection.getDeclarationOfIdentifier(node);
+  return (
+    declaration !== null &&
+    ts.isEnumDeclaration(declaration.node) &&
+    !!declaration.node.modifiers?.some((m) => m.kind === ts.SyntaxKind.ConstKeyword)
+  );
 }

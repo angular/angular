@@ -43,7 +43,7 @@
     }
   },
   "dependencies": {
-    "@babel/core": "7.26.0",
+    "@babel/core": "7.26.9",
     "@jridgewell/sourcemap-codec": "^1.4.14",
     "reflect-metadata": "^0.2.0",
     "chokidar": "^4.0.0",
@@ -54,7 +54,7 @@
   },
   "peerDependencies": {
     "@angular/compiler": "0.0.0-PLACEHOLDER",
-    "typescript": ">=5.5 <5.8"
+    "typescript": ">=5.5 <5.9"
   },
   "repository": {
     "type": "git",

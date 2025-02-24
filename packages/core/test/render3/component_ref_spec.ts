@@ -48,7 +48,6 @@ describe('ComponentFactory', () => {
     it('should correctly populate default properties', () => {
       @Component({
         selector: 'test[foo], bar',
-        standalone: true,
         template: '',
       })
       class TestComponent {}
@@ -67,7 +66,6 @@ describe('ComponentFactory', () => {
 
       @Component({
         selector: 'test[foo], bar',
-        standalone: true,
         template: `
           <ng-content></ng-content>
           <ng-content select="a"></ng-content>
@@ -407,7 +405,6 @@ describe('ComponentFactory', () => {
       let log: string[] = [];
       @Component({
         template: `{{in}}`,
-        standalone: true,
       })
       class DynamicCmp {
         @Input()
@@ -429,7 +426,6 @@ describe('ComponentFactory', () => {
     it('marks parents dirty so component is not "shielded" by a non-dirty OnPush parent', () => {
       @Component({
         template: `{{input}}`,
-        standalone: true,
         selector: 'dynamic',
       })
       class DynamicCmp {
@@ -438,7 +434,6 @@ describe('ComponentFactory', () => {
 
       @Component({
         template: '<ng-template #template></ng-template>',
-        standalone: true,
         imports: [DynamicCmp],
         changeDetection: ChangeDetectionStrategy.OnPush,
       })

@@ -25,33 +25,26 @@ import {
 } from '../../hydration/utils';
 import {isDetachedByI18n} from '../../i18n/utils';
 import {assertDefined, assertEqual, assertIndexInRange} from '../../util/assert';
-import {assertFirstCreatePass, assertHasParent} from '../assert';
+import {assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
-import {registerPostOrderHooks} from '../hooks';
-import {
-  hasClassInput,
-  hasStyleInput,
-  TAttributes,
-  TElementNode,
-  TNode,
-  TNodeType,
-} from '../interfaces/node';
-import {Renderer} from '../interfaces/renderer';
-import {RElement} from '../interfaces/renderer_dom';
-import {isComponentHost, isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
-import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
-import {assertTNodeType} from '../node_assert';
-import {executeContentQueries} from '../queries/query_execution';
-import {appendChild} from '../node_manipulation';
 import {
   clearElementContents,
   createElementNode,
   setupStaticAttributes,
 } from '../dom_node_manipulation';
+import {hasClassInput, hasStyleInput, TElementNode, TNode, TNodeType} from '../interfaces/node';
+import {Renderer} from '../interfaces/renderer';
+import {RElement} from '../interfaces/renderer_dom';
+import {isComponentHost, isDirectiveHost} from '../interfaces/type_checks';
+import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
+import {assertTNodeType} from '../node_assert';
+import {appendChild} from '../node_manipulation';
+import {executeContentQueries} from '../queries/query_execution';
 import {
   decreaseElementDepthCount,
   enterSkipHydrationBlock,
   getBindingIndex,
+  getBindingsEnabled,
   getCurrentTNode,
   getElementDepthCount,
   getLView,
@@ -67,49 +60,15 @@ import {
   setCurrentTNodeAsNotParent,
   wasLastNodeCreated,
 } from '../state';
-import {computeStaticStyling} from '../styling/static_styling';
-import {getConstant} from '../util/view_utils';
+import {elementEndFirstCreatePass, elementStartFirstCreatePass} from '../view/elements';
 
 import {validateElementIsKnown} from './element_validation';
 import {setDirectiveInputsWhichShadowsStyling} from './property';
 import {
-  createDirectivesInstancesInInstruction,
-  resolveDirectives,
+  createDirectivesInstances,
+  findDirectiveDefMatches,
   saveResolvedLocalsInData,
 } from './shared';
-import {getOrCreateTNode} from '../tnode_manipulation';
-
-function elementStartFirstCreatePass(
-  index: number,
-  tView: TView,
-  lView: LView,
-  name: string,
-  attrsIndex?: number | null,
-  localRefsIndex?: number,
-): TElementNode {
-  ngDevMode && assertFirstCreatePass(tView);
-  ngDevMode && ngDevMode.firstCreatePass++;
-
-  const tViewConsts = tView.consts;
-  const attrs = getConstant<TAttributes>(tViewConsts, attrsIndex);
-  const tNode = getOrCreateTNode(tView, index, TNodeType.Element, name, attrs);
-
-  resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
-
-  if (tNode.attrs !== null) {
-    computeStaticStyling(tNode, tNode.attrs, false);
-  }
-
-  if (tNode.mergedAttrs !== null) {
-    computeStaticStyling(tNode, tNode.mergedAttrs, true);
-  }
-
-  if (tView.queries !== null) {
-    tView.queries.elementStart(tView, tNode);
-  }
-
-  return tNode;
-}
 
 /**
  * Create DOM element. The instruction must later be followed by `elementEnd()` call.
@@ -146,7 +105,16 @@ export function ɵɵelementStart(
 
   const renderer = lView[RENDERER];
   const tNode = tView.firstCreatePass
-    ? elementStartFirstCreatePass(adjustedIndex, tView, lView, name, attrsIndex, localRefsIndex)
+    ? elementStartFirstCreatePass(
+        adjustedIndex,
+        tView,
+        lView,
+        name,
+        findDirectiveDefMatches,
+        getBindingsEnabled(),
+        attrsIndex,
+        localRefsIndex,
+      )
     : (tView.data[adjustedIndex] as TElementNode);
 
   const native = _locateOrCreateElementNode(tView, lView, tNode, renderer, name, index);
@@ -170,13 +138,13 @@ export function ɵɵelementStart(
   // any immediate children of a component or template container must be pre-emptively
   // monkey-patched with the component view data so that the element can be inspected
   // later on using any element discovery utility methods (see `element_discovery.ts`)
-  if (getElementDepthCount() === 0) {
+  if (getElementDepthCount() === 0 || hasDirectives) {
     attachPatchData(native, lView);
   }
   increaseElementDepthCount();
 
   if (hasDirectives) {
-    createDirectivesInstancesInInstruction(tView, lView, tNode);
+    createDirectivesInstances(tView, lView, tNode);
     executeContentQueries(tView, tNode, lView);
   }
   if (localRefsIndex !== null) {
@@ -213,10 +181,7 @@ export function ɵɵelementEnd(): typeof ɵɵelementEnd {
 
   const tView = getTView();
   if (tView.firstCreatePass) {
-    registerPostOrderHooks(tView, currentTNode);
-    if (isContentQueryHost(currentTNode)) {
-      tView.queries!.elementEnd(currentTNode);
-    }
+    elementEndFirstCreatePass(tView, tNode);
   }
 
   if (tNode.classesWithoutHost != null && hasClassInput(tNode)) {

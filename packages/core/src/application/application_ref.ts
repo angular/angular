@@ -41,14 +41,13 @@ import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from '../render
 import {requiresRefreshOrTraversal} from '../render3/util/view_utils';
 import {ViewRef as InternalViewRef} from '../render3/view_ref';
 import {TESTABILITY} from '../testability/testability';
-import {isPromise} from '../util/lang';
 import {NgZone} from '../zone/ng_zone';
 
+import {profiler} from '../render3/profiler';
+import {ProfilerEvent} from '../render3/profiler_types';
+import {EffectScheduler} from '../render3/reactivity/root_effect_scheduler';
 import {ApplicationInitStatus} from './application_init';
 import {TracingAction, TracingService, TracingSnapshot} from './tracing';
-import {EffectScheduler} from '../render3/reactivity/root_effect_scheduler';
-import {ProfilerEvent} from '../render3/profiler_types';
-import {profiler} from '../render3/profiler';
 
 /**
  * A DI token that provides a set of callbacks to
@@ -178,29 +177,6 @@ export interface BootstrapOptions {
 /** Maximum number of times ApplicationRef will refresh all attached views in a single tick. */
 const MAXIMUM_REFRESH_RERUNS = 10;
 
-export function _callAndReportToErrorHandler(
-  errorHandler: ErrorHandler,
-  ngZone: NgZone,
-  callback: () => any,
-): any {
-  try {
-    const result = callback();
-    if (isPromise(result)) {
-      return result.catch((e: any) => {
-        ngZone.runOutsideAngular(() => errorHandler.handleError(e));
-        // rethrow as the exception handler might not do it
-        throw e;
-      });
-    }
-
-    return result;
-  } catch (e) {
-    ngZone.runOutsideAngular(() => errorHandler.handleError(e));
-    // rethrow as the exception handler might not do it
-    throw e;
-  }
-}
-
 export function optionsReducer<T extends Object>(dst: T, objs: T | T[]): T {
   if (Array.isArray(objs)) {
     return objs.reduce(optionsReducer, dst);
@@ -322,13 +298,6 @@ export class ApplicationRef {
    * @internal
    */
   dirtyFlags = ApplicationRefDirtyFlags.None;
-
-  /**
-   * Like `dirtyFlags` but don't cause `tick()` to loop.
-   *
-   * @internal
-   */
-  deferredDirtyFlags = ApplicationRefDirtyFlags.None;
 
   /**
    * Most recent snapshot from the `TracingService`, if any.
@@ -604,21 +573,20 @@ export class ApplicationRef {
   }
 
   /** @internal */
-  _tick = (): void => {
+  _tick(): void {
     profiler(ProfilerEvent.ChangeDetectionStart);
 
     if (this.tracingSnapshot !== null) {
-      const snapshot = this.tracingSnapshot;
-      this.tracingSnapshot = null;
-
-      // Ensure we always run `_tick()` in the context of the most recent snapshot,
+      // Ensure we always run `tickImpl()` in the context of the most recent snapshot,
       // if one exists. Snapshots may be reference counted by the implementation so
       // we want to ensure that if we request a snapshot that we use it.
-      snapshot.run(TracingAction.CHANGE_DETECTION, this._tick);
-      snapshot.dispose();
-      return;
+      this.tracingSnapshot.run(TracingAction.CHANGE_DETECTION, this.tickImpl);
+    } else {
+      this.tickImpl();
     }
+  }
 
+  private tickImpl = (): void => {
     (typeof ngDevMode === 'undefined' || ngDevMode) && warnIfDestroyed(this._destroyed);
     if (this._runningTick) {
       throw new RuntimeError(
@@ -641,6 +609,8 @@ export class ApplicationRef {
       this.internalErrorHandler(e);
     } finally {
       this._runningTick = false;
+      this.tracingSnapshot?.dispose();
+      this.tracingSnapshot = null;
       setActiveConsumer(prevConsumer);
       this.afterTick.next();
 
@@ -656,10 +626,6 @@ export class ApplicationRef {
     if (this._rendererFactory === null && !(this._injector as R3Injector).destroyed) {
       this._rendererFactory = this._injector.get(RendererFactory2, null, {optional: true});
     }
-
-    // When beginning synchronization, all deferred dirtiness becomes active dirtiness.
-    this.dirtyFlags |= this.deferredDirtyFlags;
-    this.deferredDirtyFlags = ApplicationRefDirtyFlags.None;
 
     let runs = 0;
     while (this.dirtyFlags !== ApplicationRefDirtyFlags.None && runs++ < MAXIMUM_REFRESH_RERUNS) {
@@ -683,10 +649,6 @@ export class ApplicationRef {
    * Perform a single synchronization pass.
    */
   private synchronizeOnce(): void {
-    // If we happened to loop, deferred dirtiness can be processed as active dirtiness again.
-    this.dirtyFlags |= this.deferredDirtyFlags;
-    this.deferredDirtyFlags = ApplicationRefDirtyFlags.None;
-
     // First, process any dirty root effects.
     if (this.dirtyFlags & ApplicationRefDirtyFlags.RootEffects) {
       this.dirtyFlags &= ~ApplicationRefDirtyFlags.RootEffects;

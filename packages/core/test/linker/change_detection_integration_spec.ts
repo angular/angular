@@ -45,6 +45,7 @@ import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {MockResourceLoader} from './resource_loader_mock';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 const TEST_COMPILER_PROVIDERS: Provider[] = [
   {provide: ResourceLoader, useClass: MockResourceLoader, deps: []},
@@ -110,6 +111,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
     beforeEach(() => {
       TestBed.configureCompiler({providers: TEST_COMPILER_PROVIDERS});
       TestBed.configureTestingModule({
+        imports: [NoopAnimationsModule],
         declarations: [
           TestData,
           TestDirective,

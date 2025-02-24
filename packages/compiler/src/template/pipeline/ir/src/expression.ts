@@ -50,7 +50,8 @@ export type Expression =
   | ConstCollectedExpr
   | TwoWayBindingSetExpr
   | ContextLetReferenceExpr
-  | StoreLetExpr;
+  | StoreLetExpr
+  | TrackContextExpr;
 
 /**
  * Transformer type which converts expressions into general `o.Expression`s (which may be an
@@ -1153,7 +1154,13 @@ export function transformExpressionsInOp(
         op.trustedValueFn && transformExpressionsInExpression(op.trustedValueFn, transform, flags);
       break;
     case OpKind.RepeaterCreate:
-      op.track = transformExpressionsInExpression(op.track, transform, flags);
+      if (op.trackByOps === null) {
+        op.track = transformExpressionsInExpression(op.track, transform, flags);
+      } else {
+        for (const innerOp of op.trackByOps) {
+          transformExpressionsInOp(innerOp, transform, flags | VisitorContextFlag.InChildOperation);
+        }
+      }
       if (op.trackByFn !== null) {
         op.trackByFn = transformExpressionsInExpression(op.trackByFn, transform, flags);
       }

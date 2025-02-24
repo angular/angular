@@ -508,45 +508,50 @@ export function ɵɵdefineNgModule<T>(def: {
  *
 
  */
-function parseAndConvertBindingsForDefinition<T>(
-  obj: DirectiveDefinition<T>['outputs'] | undefined,
-): Record<keyof T, string>;
-function parseAndConvertBindingsForDefinition<T>(
-  obj: DirectiveInputs<T> | undefined,
+function parseAndConvertInputsForDefinition<T>(
+  obj: DirectiveDefinition<T>['inputs'],
   declaredInputs: Record<string, string>,
-): Record<keyof T, string | [minifiedName: string, flags: InputFlags]>;
-
-function parseAndConvertBindingsForDefinition<T>(
-  obj: undefined | DirectiveInputs<T> | DirectiveDefinition<T>['outputs'],
-  declaredInputs?: Record<string, string>,
-): Record<keyof T, string | [minifiedName: string, flags: InputFlags]> {
+) {
   if (obj == null) return EMPTY_OBJ as any;
-  const newLookup: any = {};
+  const newLookup: Record<
+    string,
+    [minifiedName: string, flags: InputFlags, transform: InputTransformFunction | null]
+  > = {};
   for (const minifiedKey in obj) {
     if (obj.hasOwnProperty(minifiedKey)) {
       const value = obj[minifiedKey]!;
       let publicName: string;
       let declaredName: string;
-      let inputFlags = InputFlags.None;
+      let inputFlags: InputFlags;
+      let transform: InputTransformFunction | null;
 
       if (Array.isArray(value)) {
         inputFlags = value[0];
         publicName = value[1];
         declaredName = value[2] ?? publicName; // declared name might not be set to save bytes.
+        transform = value[3] || null;
       } else {
         publicName = value;
         declaredName = value;
+        inputFlags = InputFlags.None;
+        transform = null;
       }
 
-      // For inputs, capture the declared name, or if some flags are set.
-      if (declaredInputs) {
-        // Perf note: An array is only allocated for the input if there are flags.
-        newLookup[publicName] =
-          inputFlags !== InputFlags.None ? [minifiedKey, inputFlags] : minifiedKey;
-        declaredInputs[publicName] = declaredName as string;
-      } else {
-        newLookup[publicName] = minifiedKey;
-      }
+      newLookup[publicName] = [minifiedKey, inputFlags, transform];
+      declaredInputs[publicName] = declaredName as string;
+    }
+  }
+  return newLookup;
+}
+
+function parseAndConvertOutputsForDefinition<T>(
+  obj: DirectiveDefinition<T>['outputs'],
+): Record<keyof T, string> {
+  if (obj == null) return EMPTY_OBJ as any;
+  const newLookup: any = {};
+  for (const minifiedKey in obj) {
+    if (obj.hasOwnProperty(minifiedKey)) {
+      newLookup[obj[minifiedKey]!] = minifiedKey;
     }
   }
   return newLookup;
@@ -632,7 +637,6 @@ function getNgDirectiveDef<T>(directiveDefinition: DirectiveDefinition<T>): Dire
     hostAttrs: directiveDefinition.hostAttrs || null,
     contentQueries: directiveDefinition.contentQueries || null,
     declaredInputs: declaredInputs,
-    inputTransforms: null,
     inputConfig: directiveDefinition.inputs || EMPTY_OBJ,
     exportAs: directiveDefinition.exportAs || null,
     standalone: directiveDefinition.standalone ?? true,
@@ -643,8 +647,8 @@ function getNgDirectiveDef<T>(directiveDefinition: DirectiveDefinition<T>): Dire
     setInput: null,
     findHostDirectiveDefs: null,
     hostDirectives: null,
-    inputs: parseAndConvertBindingsForDefinition(directiveDefinition.inputs, declaredInputs),
-    outputs: parseAndConvertBindingsForDefinition(directiveDefinition.outputs),
+    inputs: parseAndConvertInputsForDefinition(directiveDefinition.inputs, declaredInputs),
+    outputs: parseAndConvertOutputsForDefinition(directiveDefinition.outputs),
     debugInfo: null,
   };
 }
