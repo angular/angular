@@ -122,7 +122,7 @@ export function createEmptyStateSnapshot(rootComponent: Type<any> | null): Route
  *
  * @publicApi
  */
-export class ActivatedRoute {
+export class ActivatedRoute<T extends Data = Data> {
   /** The current snapshot of this route */
   snapshot!: ActivatedRouteSnapshot;
   /** @internal */
@@ -146,7 +146,7 @@ export class ActivatedRoute {
   /** An observable of the URL fragment shared by all the routes. */
   public fragment: Observable<string | null>;
   /** An observable of the static and resolved data of this route. */
-  public data: Observable<Data>;
+  public data: Observable<T>;
 
   /** @internal */
   constructor(
@@ -159,7 +159,7 @@ export class ActivatedRoute {
     /** @internal */
     public fragmentSubject: BehaviorSubject<string | null>,
     /** @internal */
-    public dataSubject: BehaviorSubject<Data>,
+    public dataSubject: BehaviorSubject<T>,
     /** The outlet name of the route, a constant. */
     public outlet: string,
     /** The component of the route, a constant. */
@@ -167,7 +167,7 @@ export class ActivatedRoute {
     futureSnapshot: ActivatedRouteSnapshot,
   ) {
     this._futureSnapshot = futureSnapshot;
-    this.title = this.dataSubject?.pipe(map((d: Data) => d[RouteTitleKey])) ?? of(undefined);
+    this.title = this.dataSubject?.pipe(map((d: T) => d[RouteTitleKey])) ?? of(undefined);
     // TODO(atscott): Verify that these can be changed to `.asObservable()` with TGP.
     this.url = urlSubject;
     this.params = paramsSubject;
@@ -318,7 +318,7 @@ export function getInherited(
  *
  * @publicApi
  */
-export class ActivatedRouteSnapshot {
+export class ActivatedRouteSnapshot<T extends Data = Data> {
   /** The configuration used to match this route **/
   public readonly routeConfig: Route | null;
   /** @internal */
@@ -368,7 +368,7 @@ export class ActivatedRouteSnapshot {
     /** The URL fragment shared by all the routes */
     public fragment: string | null,
     /** The static and resolved data of this route */
-    public data: Data,
+    public data: T,
     /** The outlet name of the route */
     public outlet: string,
     /** The component of the route */
