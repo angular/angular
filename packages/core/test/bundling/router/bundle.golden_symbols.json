@@ -220,6 +220,7 @@
   "StandaloneService",
   "StateManager",
   "Subject",
+  "Subscribable",
   "Subscriber",
   "Subscription",
   "TEMPORARY_CONSUMER_NODE",
