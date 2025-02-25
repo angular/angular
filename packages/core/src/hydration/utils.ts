@@ -562,17 +562,13 @@ export function convertHydrateTriggersToJsAction(
  * hierarchical order as a list of defer block ids.
  * Note: This is utilizing serialized information to navigate up the tree
  */
-export function getParentBlockHydrationQueue(
-  deferBlockId: string,
-  injector: Injector,
-): {parentBlockPromise: Promise<void> | null; hydrationQueue: string[]} {
+export function getParentBlockHydrationQueue(deferBlockId: string, injector: Injector): string[] {
   const dehydratedBlockRegistry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
   const transferState = injector.get(TransferState);
   const deferBlockParents = transferState.get(NGH_DEFER_BLOCKS_KEY, {});
 
   let isTopMostDeferBlock = false;
   let currentBlockId: string | undefined = deferBlockId;
-  let parentBlockPromise: Promise<void> | null = null;
   const hydrationQueue: string[] = [];
 
   while (!isTopMostDeferBlock && currentBlockId) {
@@ -585,15 +581,11 @@ export function getParentBlockHydrationQueue(
 
     isTopMostDeferBlock = dehydratedBlockRegistry.has(currentBlockId);
     const hydratingParentBlock = dehydratedBlockRegistry.hydrating.get(currentBlockId);
-    if (parentBlockPromise === null && hydratingParentBlock != null) {
-      // TODO: add an ngDevMode asset that `hydratingParentBlock.promise` exists and is of type Promise.
-      parentBlockPromise = hydratingParentBlock.promise;
-      break;
-    }
+    if (hydratingParentBlock != null) break;
     hydrationQueue.unshift(currentBlockId);
     currentBlockId = deferBlockParents[currentBlockId][DEFER_PARENT_BLOCK_ID];
   }
-  return {parentBlockPromise, hydrationQueue};
+  return hydrationQueue;
 }
 
 function gatherDeferBlocksByJSActionAttribute(doc: Document): Set<HTMLElement> {

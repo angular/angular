@@ -384,7 +384,7 @@ export async function triggerHydrationFromBlockName(
   // The parent promise is the possible case of a list of defer blocks already being queued
   // If it is queued, it'll exist; otherwise it'll be null. The hydration queue will contain all
   // elements that need to be hydrated, sans any that have promises already
-  const {parentBlockPromise, hydrationQueue} = getParentBlockHydrationQueue(blockName, injector);
+  const hydrationQueue = getParentBlockHydrationQueue(blockName, injector);
 
   // The hydrating map in the registry prevents re-triggering hydration for a block that's already in
   // the hydration queue. Here we generate promises for each of the blocks about to be hydrated
@@ -402,7 +402,8 @@ export async function triggerHydrationFromBlockName(
   // If the parent block was being hydrated, but the process has
   // not yet complete, wait until parent block promise settles before
   // going over dehydrated blocks from the queue.
-  if (parentBlockPromise !== null) {
+  const parentBlockPromise = dehydratedBlockRegistry.hydrating.get(blockName);
+  if (parentBlockPromise != null) {
     await parentBlockPromise;
   }
 
@@ -658,15 +659,18 @@ function setIdleTriggers(injector: Injector, elementTriggers: ElementTrigger[]) 
 
 function setViewportTriggers(injector: Injector, elementTriggers: ElementTrigger[]) {
   if (elementTriggers.length > 0) {
+    const appRef = injector.get(ApplicationRef);
     const registry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
-    for (let elementTrigger of elementTriggers) {
-      const cleanupFn = onViewport(
-        elementTrigger.el,
-        () => triggerHydrationFromBlockName(injector, elementTrigger.blockName),
-        injector,
-      );
-      registry.addCleanupFn(elementTrigger.blockName, cleanupFn);
-    }
+    appRef.whenStable().then(() => {
+      for (let elementTrigger of elementTriggers) {
+        const cleanupFn = onViewport(
+          elementTrigger.el,
+          () => triggerHydrationFromBlockName(injector, elementTrigger.blockName),
+          injector,
+        );
+        registry.addCleanupFn(elementTrigger.blockName, cleanupFn);
+      }
+    });
   }
 }
 
@@ -681,9 +685,12 @@ function setTimerTriggers(injector: Injector, elementTriggers: ElementTrigger[])
 }
 
 function setImmediateTriggers(injector: Injector, elementTriggers: ElementTrigger[]) {
-  for (const elementTrigger of elementTriggers) {
-    // Note: we intentionally avoid awaiting each call and instead kick off
-    // th hydration process simultaneously for all defer blocks with this trigger;
-    triggerHydrationFromBlockName(injector, elementTrigger.blockName);
-  }
+  const appRef = injector.get(ApplicationRef);
+  appRef.whenStable().then(() => {
+    for (const elementTrigger of elementTriggers) {
+      // Note: we intentionally avoid awaiting each call and instead kick off
+      // th hydration process simultaneously for all defer blocks with this trigger;
+      triggerHydrationFromBlockName(injector, elementTrigger.blockName);
+    }
+  });
 }
