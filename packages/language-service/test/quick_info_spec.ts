@@ -625,6 +625,14 @@ describe('quick info', () => {
         const documentation = toText(quickInfo!.documentation);
         expect(documentation).toBe('This is the title of the `AppCmp` Component.');
       });
+
+      it('should work with parenthesized exponentiation expression', () => {
+        expectQuickInfo({
+          templateOverride: `{{ (-¦anyValue) ** 2 }}`,
+          expectedSpanText: 'anyValue',
+          expectedDisplayString: '(property) AppCmp.anyValue: any',
+        });
+      });
     });
 
     describe('blocks', () => {
