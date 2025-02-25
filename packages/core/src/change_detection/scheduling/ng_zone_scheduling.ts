@@ -31,13 +31,14 @@ import {
   SCHEDULE_IN_ROOT_ZONE,
 } from './zoneless_scheduling';
 import {SCHEDULE_IN_ROOT_ZONE_DEFAULT} from './flags';
-import {ErrorHandler, INTERNAL_APPLICATION_ERROR_HANDLER} from '../../error_handler';
+import {INTERNAL_APPLICATION_ERROR_HANDLER, ErrorHandler} from '../../error_handler';
 
 @Injectable({providedIn: 'root'})
 export class NgZoneChangeDetectionScheduler {
   private readonly zone = inject(NgZone);
   private readonly changeDetectionScheduler = inject(ChangeDetectionScheduler);
   private readonly applicationRef = inject(ApplicationRef);
+  private readonly applicationErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
 
   private _onMicrotaskEmptySubscription?: Subscription;
 
@@ -55,7 +56,11 @@ export class NgZoneChangeDetectionScheduler {
           return;
         }
         this.zone.run(() => {
-          this.applicationRef.tick();
+          try {
+            this.applicationRef.tick();
+          } catch (e) {
+            this.applicationErrorHandler(e);
+          }
         });
       },
     });

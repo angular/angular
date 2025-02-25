@@ -23,8 +23,8 @@ import {Injectable} from '../di/injectable';
 import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
 import {EnvironmentInjector, type R3Injector} from '../di/r3_injector';
-import {ErrorHandler, INTERNAL_APPLICATION_ERROR_HANDLER} from '../error_handler';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
+import {ErrorHandler, INTERNAL_APPLICATION_ERROR_HANDLER} from '../error_handler';
 import {Type} from '../interface/type';
 import {ComponentFactory, ComponentRef} from '../linker/component_factory';
 import {ComponentFactoryResolver} from '../linker/component_factory_resolver';
@@ -603,9 +603,6 @@ export class ApplicationRef {
           view.checkNoChanges();
         }
       }
-    } catch (e) {
-      // Attention: Don't rethrow as it could cancel subscriptions to Observables!
-      this.internalErrorHandler(e);
     } finally {
       this._runningTick = false;
       this.tracingSnapshot?.dispose();
@@ -754,7 +751,11 @@ export class ApplicationRef {
 
   private _loadComponent(componentRef: ComponentRef<any>): void {
     this.attachView(componentRef.hostView);
-    this.tick();
+    try {
+      this.tick();
+    } catch (e) {
+      this.internalErrorHandler(e);
+    }
     this.components.push(componentRef);
     // Get the listeners lazily to prevent DI cycles.
     const listeners = this._injector.get(APP_BOOTSTRAP_LISTENER, []);

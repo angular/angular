@@ -31,6 +31,7 @@ import {
   ZONELESS_SCHEDULER_DISABLED,
 } from './zoneless_scheduling';
 import {TracingService} from '../../application/tracing';
+import {INTERNAL_APPLICATION_ERROR_HANDLER} from '../../error_handler';
 
 const CONSECUTIVE_MICROTASK_NOTIFICATION_LIMIT = 100;
 let consecutiveMicrotaskNotifications = 0;
@@ -57,6 +58,7 @@ function trackMicrotaskNotificationForDebugging() {
 
 @Injectable({providedIn: 'root'})
 export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
+  private readonly applicationErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
   private readonly appRef = inject(ApplicationRef);
   private readonly taskService = inject(PendingTasksInternal);
   private readonly ngZone = inject(NgZone);
@@ -292,7 +294,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
       );
     } catch (e: unknown) {
       this.taskService.remove(task);
-      throw e;
+      this.applicationErrorHandler(e);
     } finally {
       this.cleanup();
     }
