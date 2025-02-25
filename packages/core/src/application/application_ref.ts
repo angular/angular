@@ -23,7 +23,6 @@ import {Injectable} from '../di/injectable';
 import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
 import {EnvironmentInjector, type R3Injector} from '../di/r3_injector';
-import {ErrorHandler, INTERNAL_APPLICATION_ERROR_HANDLER} from '../error_handler';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
 import {ComponentFactory, ComponentRef} from '../linker/component_factory';
@@ -284,7 +283,6 @@ export class ApplicationRef {
   private _destroyListeners: Array<() => void> = [];
   /** @internal */
   _views: InternalViewRef<unknown>[] = [];
-  private readonly internalErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
   private readonly afterRenderManager = inject(AfterRenderManager);
   private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
   private readonly rootEffectScheduler = inject(EffectScheduler);
@@ -604,9 +602,6 @@ export class ApplicationRef {
           view.checkNoChanges();
         }
       }
-    } catch (e) {
-      // Attention: Don't rethrow as it could cancel subscriptions to Observables!
-      this.internalErrorHandler(e);
     } finally {
       this._runningTick = false;
       this.tracingSnapshot?.dispose();
