@@ -286,7 +286,7 @@ interface ComponentDefinition<T> extends Omit<DirectiveDefinition<T>, 'features'
   features?: ComponentDefFeature[];
 
   /**
-   * Defines template and style encapsulation options available for Component's {@link Component}.
+   * Defines template and style encapsulation options available for Component's [`Component`](/api/core/Component).
    */
   encapsulation?: ViewEncapsulation;
 
