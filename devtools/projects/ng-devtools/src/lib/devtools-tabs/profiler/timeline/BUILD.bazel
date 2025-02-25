@@ -1,7 +1,7 @@
-load("//devtools/tools:ng_module.bzl", "ng_module")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//devtools/tools:typescript.bzl", "ts_test_library")
 load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
+load("//devtools/tools:ng_module.bzl", "ng_module")
+load("//devtools/tools:typescript.bzl", "ts_test_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -21,6 +21,7 @@ _STYLE_LABELS = [
     sass_binary(
         name = label,
         src = src,
+        deps = ["//devtools/projects/ng-devtools/src/styles:theme"],
     )
     for label, src in zip(_STYLE_LABELS, _STYLE_SRCS)
 ]

@@ -8,6 +8,7 @@ package(default_visibility = ["//visibility:public"])
 sass_binary(
     name = "devtools_component_styles",
     src = "devtools.component.scss",
+    deps = ["//devtools/projects/ng-devtools/src/styles:theme"],
 )
 
 ng_module(

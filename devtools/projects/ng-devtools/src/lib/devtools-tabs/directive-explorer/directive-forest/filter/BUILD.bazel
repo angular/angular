@@ -6,6 +6,7 @@ package(default_visibility = ["//visibility:public"])
 sass_binary(
     name = "filter_component_styles",
     src = "filter.component.scss",
+    deps = ["//devtools/projects/ng-devtools/src/styles:theme"],
 )
 
 ng_module(

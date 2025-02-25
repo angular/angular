@@ -9,7 +9,10 @@ sass_binary(
     include_paths = [
         "external/npm/node_modules",
     ],
-    deps = ["//devtools/projects/ng-devtools/src/styles:material_sass_deps"],
+    deps = [
+        "//devtools/projects/ng-devtools/src/styles:material_sass_deps",
+        "//devtools/projects/ng-devtools/src/styles:theme",
+    ],
 )
 
 ng_module(
