@@ -174,7 +174,7 @@ export function validateStyleParams(
   }
 }
 
-const PARAM_REGEX = new RegExp(
+const PARAM_REGEX = /* @__PURE__ */ new RegExp(
   `${SUBSTITUTION_EXPR_START}\\s*(.+?)\\s*${SUBSTITUTION_EXPR_END}`,
   'g',
 );
