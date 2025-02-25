@@ -103,8 +103,6 @@ export class ExampleViewer {
 
     this.snippetCode.set(this.exampleMetadata()?.files[0]);
 
-    this.changeDetector.detectChanges();
-
     this.setCodeLinesVisibility();
 
     this.elementRef.nativeElement.setAttribute(
