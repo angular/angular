@@ -2787,6 +2787,16 @@ describe('acceptance integration tests', () => {
     expect(fixture.nativeElement.textContent).toEqual('1.03 | 0.97');
   });
 
+  it('should have right-to-left associativity for exponentiation', () => {
+    @Component({
+      template: '{{2 ** 2 ** 3}}',
+    })
+    class TestComponent {}
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toEqual('256');
+  });
+
   describe('tView.firstUpdatePass', () => {
     function isFirstUpdatePass() {
       const lView = getLView();
