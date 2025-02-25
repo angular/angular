@@ -14,6 +14,6 @@ template: function MyApp_Template(rf, $ctx$) {
     $i0$.ɵɵadvance();
     $i0$.ɵɵproperty("title", $ctx$.person == null ? null : $ctx$.person.getName(($tmp_1_0$ = $ctx$.config.get("title")) == null ? null : $tmp_1_0$.enabled));
     $i0$.ɵɵadvance();
-    $i0$.ɵɵproperty("title", $ctx$.person == null ? null : $ctx$.person.getName(($tmp_2_0$ = ($tmp_2_0$ = $ctx$.config.get("title")) == null ? null : $tmp_2_0$.enabled) !== null && $tmp_2_0$ !== undefined ? $tmp_2_0$ : true));
+    i0.ɵɵproperty("title", ctx.person == null ? null : ctx.person.getName(((tmp_4_0 = ctx.config.get("title")) == null ? null : tmp_4_0.enabled) ?? true));
   }
 }

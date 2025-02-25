@@ -395,10 +395,27 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
       throw new Error(`Unknown binary operator: ${o.BinaryOperator[ast.operator]}`);
     }
     return this.factory.createBinaryExpression(
-      ast.lhs.visitExpression(this, context),
+      this.visitBinaryOperand(ast.operator, ast.lhs, context),
       BINARY_OPERATORS.get(ast.operator)!,
-      ast.rhs.visitExpression(this, context),
+      this.visitBinaryOperand(ast.operator, ast.rhs, context),
     );
+  }
+
+  // TODO: Why is this necessary? It seems to happen automatically for `||`
+  private visitBinaryOperand(
+    operator: o.BinaryOperator,
+    operand: o.Expression,
+    context: Context,
+  ): TExpression {
+    if (
+      operator === o.BinaryOperator.NullishCoalesce &&
+      (operand instanceof o.ConditionalExpr ||
+        (operand instanceof o.BinaryOperatorExpr &&
+          (operand.operator === o.BinaryOperator.And || operand.operator === o.BinaryOperator.Or)))
+    ) {
+      return this.factory.createParenthesizedExpression(operand.visitExpression(this, context));
+    }
+    return operand.visitExpression(this, context);
   }
 
   visitReadPropExpr(ast: o.ReadPropExpr, context: Context): TExpression {
