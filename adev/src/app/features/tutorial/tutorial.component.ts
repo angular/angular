@@ -41,11 +41,11 @@ import {filter} from 'rxjs/operators';
 
 import {PagePrefix} from '../../core/enums/pages';
 import {
-  EmbeddedTutorialManager,
   LoadingStep,
   NodeRuntimeState,
   EmbeddedEditor,
   injectNodeRuntimeSandbox,
+  injectEmbeddedTutorialManager,
 } from '../../editor/index';
 import {SplitResizerHandler} from './split-resizer-handler.service';
 
@@ -81,7 +81,6 @@ export default class Tutorial {
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
   private readonly environmentInjector = inject(EnvironmentInjector);
   private readonly elementRef = inject(ElementRef<unknown>);
-  private readonly embeddedTutorialManager = inject(EmbeddedTutorialManager);
   private readonly nodeRuntimeState = inject(NodeRuntimeState);
   private readonly route = inject(ActivatedRoute);
   private readonly splitResizerHandler = inject(SplitResizerHandler);
@@ -149,12 +148,14 @@ export default class Tutorial {
   async handleRevealAnswer() {
     if (!this.canRevealAnswer()) return;
 
-    this.embeddedTutorialManager.revealAnswer();
+    const embeddedTutorialManager = await injectEmbeddedTutorialManager(this.environmentInjector);
+
+    embeddedTutorialManager.revealAnswer();
 
     const nodeRuntimeSandbox = await injectNodeRuntimeSandbox(this.environmentInjector);
 
     await Promise.all(
-      Object.entries(this.embeddedTutorialManager.answerFiles()).map(([path, contents]) =>
+      Object.entries(embeddedTutorialManager.answerFiles()).map(([path, contents]) =>
         nodeRuntimeSandbox.writeFile(path, contents as string | Uint8Array),
       ),
     );
@@ -165,12 +166,14 @@ export default class Tutorial {
   async handleResetAnswer() {
     if (!this.canRevealAnswer()) return;
 
-    this.embeddedTutorialManager.resetRevealAnswer();
+    const embeddedTutorialManager = await injectEmbeddedTutorialManager(this.environmentInjector);
+
+    embeddedTutorialManager.resetRevealAnswer();
 
     const nodeRuntimeSandbox = await injectNodeRuntimeSandbox(this.environmentInjector);
 
     await Promise.all(
-      Object.entries(this.embeddedTutorialManager.tutorialFiles()).map(([path, contents]) =>
+      Object.entries(embeddedTutorialManager.tutorialFiles()).map(([path, contents]) =>
         nodeRuntimeSandbox.writeFile(path, contents as string | Uint8Array),
       ),
     );
@@ -245,9 +248,11 @@ export default class Tutorial {
 
     const currentTutorial = tutorialPath.replace(`${PagePrefix.TUTORIALS}/`, '');
 
-    await this.embeddedTutorialManager.fetchAndSetTutorialFiles(currentTutorial);
+    const embeddedTutorialManager = await injectEmbeddedTutorialManager(this.environmentInjector);
 
-    const hasAnswers = Object.keys(this.embeddedTutorialManager.answerFiles()).length > 0;
+    await embeddedTutorialManager.fetchAndSetTutorialFiles(currentTutorial);
+
+    const hasAnswers = Object.keys(embeddedTutorialManager.answerFiles()).length > 0;
     this.shouldRenderRevealAnswer.set(hasAnswers);
 
     await this.loadEmbeddedEditor();
