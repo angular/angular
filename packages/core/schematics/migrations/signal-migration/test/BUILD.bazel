@@ -142,4 +142,5 @@ ts_library(
 jasmine_node_test(
     name = "test_jasmine",
     srcs = [":test_lib"],
+    enable_linker = True,
 )
