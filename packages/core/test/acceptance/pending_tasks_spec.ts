@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationRef, PendingTasks} from '@angular/core';
+import {ApplicationRef, PendingTasks, ErrorHandler} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {EMPTY, firstValueFrom, of} from 'rxjs';
-import {filter, map, take, withLatestFrom} from 'rxjs/operators';
+import {map, withLatestFrom} from 'rxjs/operators';
 
 import {PendingTasksInternal} from '../../src/pending_tasks';
 
@@ -96,36 +96,22 @@ describe('public PendingTasks', () => {
     await expectAsync(TestBed.inject(ApplicationRef).whenStable()).toBeResolved();
   });
 
-  it('should return the result of the run function', async () => {
+  it('should stop blocking stability if run promise rejects', async () => {
     const appRef = TestBed.inject(ApplicationRef);
     const pendingTasks = TestBed.inject(PendingTasks);
-
-    const result = await pendingTasks.run(async () => {
-      await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(false);
-      return 1;
-    });
-
-    expect(result).toBe(1);
-    await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(false);
-    await expectAsync(TestBed.inject(ApplicationRef).whenStable()).toBeResolved();
-  });
-
-  xit('should stop blocking stability if run promise rejects', async () => {
-    const appRef = TestBed.inject(ApplicationRef);
-    const pendingTasks = TestBed.inject(PendingTasks);
+    const errorHandler = TestBed.inject(ErrorHandler);
+    const spy = spyOn(errorHandler, 'handleError');
 
     let rejectFn: () => void;
-    const task = pendingTasks.run(() => {
+    pendingTasks.run(() => {
       return new Promise<void>((_, reject) => {
         rejectFn = reject;
       });
     });
     await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(false);
-    try {
-      rejectFn!();
-      await task;
-    } catch {}
-    await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(true);
+    rejectFn!();
+    await expectAsync(appRef.whenStable()).toBeResolved();
+    expect(spy).toHaveBeenCalled();
   });
 });
 
