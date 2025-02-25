@@ -7,18 +7,41 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {afterNextRender, Component, effect, ElementRef, input, viewChild} from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  effect,
+  ElementRef,
+  inject,
+  input,
+  signal,
+  viewChild,
+} from '@angular/core';
 import {MatInputModule} from '@angular/material/input';
-import {Route} from 'protocol';
+import {Events, MessageBus, Route} from 'protocol';
 import {RouterTreeVisualizer} from './router-tree-visualizer';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import {SplitAreaDirective, SplitComponent} from '../../vendor/angular-split/public_api';
+import {MatIconModule} from '@angular/material/icon';
+import {MatButtonModule} from '@angular/material/button';
+import {ApplicationOperations} from '../../application-operations/index';
+import {RouteDetailsRowComponent} from './route-details-row.component';
 
 const DEFAULT_FILTER = /.^/;
 @Component({
   selector: 'ng-router-tree',
   templateUrl: './router-tree.component.html',
   styleUrls: ['./router-tree.component.scss'],
-  imports: [CommonModule, MatInputModule, MatCheckboxModule],
+  imports: [
+    CommonModule,
+    MatInputModule,
+    MatCheckboxModule,
+    SplitComponent,
+    SplitAreaDirective,
+    MatIconModule,
+    MatButtonModule,
+    RouteDetailsRowComponent,
+  ],
   standalone: true,
 })
 export class RouterTreeComponent {
@@ -27,6 +50,11 @@ export class RouterTreeComponent {
   private filterRegex = new RegExp(DEFAULT_FILTER);
   private routerTreeVisualizer!: RouterTreeVisualizer;
   private showFullPath = false;
+
+  private readonly _messageBus = inject(MessageBus) as MessageBus<Events>;
+  private readonly _appOperations = inject(ApplicationOperations);
+
+  selectedRoute = signal<Route | null>(null);
 
   routes = input<Route[]>([]);
   snapToRoot = input(false);
@@ -77,5 +105,20 @@ export class RouterTreeComponent {
 
   renderGraph(routes: Route[]): void {
     this.routerTreeVisualizer?.render(routes[0], this.filterRegex, this.showFullPath);
+    this.routerTreeVisualizer?.onNodeClick((_, node) => {
+      this.selectedRoute.set(node);
+    });
+  }
+
+  viewSourceFromRouter(g: string, type: string): void {
+    this._appOperations.viewSourceFromRouter(g, type);
+  }
+
+  viewComponentSource(c: string): void {
+    this._appOperations.viewSourceFromRouter(c, 'component');
+  }
+
+  navigateRoute(route: any): void {
+    this._messageBus.emit('navigateRoute', [route.data.path]);
   }
 }
