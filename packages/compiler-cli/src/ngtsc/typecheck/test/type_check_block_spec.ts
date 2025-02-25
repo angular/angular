@@ -79,6 +79,7 @@ describe('type check blocks', () => {
     expect(tcb('{{a * b ** c + d}}')).toContain(
       '(((((this).a)) * ((((this).b)) ** (((this).c)))) + (((this).d)))',
     );
+    expect(tcb('{{a ** b ** c}}')).toContain('blah');
   });
 
   it('should handle attribute values for directive inputs', () => {
