@@ -35,10 +35,7 @@ export function rxResource<T, R>(opts: RxResourceOptions<T, R> & {
 export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T | undefined>;
 
 // @public
-export interface RxResourceOptions<T, R> extends BaseResourceOptions<T, R> {
-    // (undocumented)
-    loader: (params: ResourceLoaderParams<R>) => Observable<T>;
-}
+export type RxResourceOptions<T, R> = RxResourceStreamOptions<T, R> | RxResourceLoaderOptions<T, R>;
 
 // @public
 export function takeUntilDestroyed<T>(destroyRef?: DestroyRef): MonoTypeOperatorFunction<T>;
