@@ -293,9 +293,6 @@ export class DocViewer implements OnChanges {
       }
     }
 
-    // Trigger change detection after setting inputs.
-    componentRef.changeDetectorRef.detectChanges();
-
     // Attach a view to the ApplicationRef for change detection
     // purposes and for hydration serialization to pick it up
     // during SSG.
