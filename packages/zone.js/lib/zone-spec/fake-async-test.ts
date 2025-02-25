@@ -780,6 +780,8 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
     targetZone: Zone,
     error: any,
   ): boolean {
+    // ComponentFixture has a special-case handling to detect FakeAsyncTestZoneSpec
+    // and prevent rethrowing the error from the onError subscription since it's handled here.
     this._lastError = error;
     return false; // Don't propagate error to parent zone.
   }
