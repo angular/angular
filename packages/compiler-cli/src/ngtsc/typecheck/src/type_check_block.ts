@@ -25,6 +25,7 @@ import {
   SafePropertyRead,
   SchemaMetadata,
   SelectorMatcher,
+  TaggedTemplateLiteral,
   TemplateEntity,
   ThisReceiver,
   TmplAstBoundAttribute,
@@ -69,7 +70,7 @@ import {
 } from './diagnostics';
 import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
-import {astToTypescript, ANY_EXPRESSION} from './expression';
+import {ANY_EXPRESSION, astToTypescript} from './expression';
 import {OutOfBandDiagnosticRecorder} from './oob';
 import {
   tsCallMethod,
@@ -2856,6 +2857,20 @@ class TcbExpressionTranslator {
       const node = ts.factory.createCallExpression(method, undefined, args);
       addParseSpanInfo(node, ast.sourceSpan);
       return node;
+    } else if (
+      ast instanceof TaggedTemplateLiteral &&
+      ast.tag instanceof PropertyRead &&
+      ast.tag.receiver instanceof ImplicitReceiver &&
+      !(ast.tag.receiver instanceof ThisReceiver) &&
+      ast.tag.name === '$localize'
+    ) {
+      // Resolve the special `$localize` tagged template literals.
+      const tag = this.tcb.env.referenceExternalSymbol('@angular/localize', 'ɵ$localize');
+      return ts.factory.createTaggedTemplateExpression(
+        tag,
+        undefined,
+        this.translate(ast.template) as ts.TemplateLiteral,
+      );
     } else {
       // This AST isn't special after all.
       return null;
