@@ -21,7 +21,9 @@ import {
 import {
   ComponentFixtureAutoDetect,
   ComponentFixtureNoNgZone,
+  fakeAsync,
   TestBed,
+  tick,
   waitForAsync,
   withModule,
 } from '@angular/core/testing';
@@ -371,6 +373,37 @@ describe('ComponentFixture', () => {
     const fixture = TestBed.createComponent(App);
     expect(() => fixture.detectChanges()).toThrow();
   });
+
+  it('should not duplicate errors when used with fake async', fakeAsync(() => {
+    @Component({
+      template: '<button (click)="doThrow()">a</button>',
+    })
+    class Throwing {
+      doThrow() {
+        throw new Error('thrown');
+      }
+    }
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: ErrorHandler,
+          useClass: class {
+            handleError(e: unknown) {
+              throw e;
+            }
+          },
+        },
+      ],
+    });
+    const fix = TestBed.createComponent(Throwing);
+    try {
+      fix.nativeElement.querySelector('button').click();
+      tick();
+      fail('should have thrown');
+    } catch (e) {
+      expect((e as Error).message).toMatch('thrown');
+    }
+  }));
 
   describe('errors during ApplicationRef.tick', () => {
     @Component({
