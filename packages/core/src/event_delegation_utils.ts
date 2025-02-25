@@ -9,7 +9,7 @@
 // tslint:disable:no-duplicate-imports
 import {EventContract} from '@angular/core/primitives/event-dispatch';
 import {Attribute} from '@angular/core/primitives/event-dispatch';
-import {InjectionToken, Injector} from './di';
+import {InjectionToken} from './di';
 import {RElement} from './render3/interfaces/renderer_dom';
 
 export const DEFER_BLOCK_SSR_ID_ATTRIBUTE = 'ngb';
@@ -17,16 +17,6 @@ export const DEFER_BLOCK_SSR_ID_ATTRIBUTE = 'ngb';
 declare global {
   interface Element {
     __jsaction_fns: Map<string, Function[]> | undefined;
-  }
-}
-
-export function invokeRegisteredDelegationListeners(event: Event) {
-  const handlerFns = (event.currentTarget as Element)?.__jsaction_fns?.get(event.type);
-  if (!handlerFns) {
-    return;
-  }
-  for (const handler of handlerFns) {
-    handler(event);
   }
 }
 
@@ -112,7 +102,7 @@ export const JSACTION_EVENT_CONTRACT = new InjectionToken<EventContractDetails>(
 
 export function invokeListeners(event: Event, currentTarget: Element | null) {
   const handlerFns = currentTarget?.__jsaction_fns?.get(event.type);
-  if (!handlerFns) {
+  if (!handlerFns || !currentTarget?.isConnected) {
     return;
   }
   for (const handler of handlerFns) {
