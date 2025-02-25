@@ -9,7 +9,13 @@
 import {Component, inject, signal, provideExperimentalZonelessChangeDetection} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {Router, RouterLink, RouterModule, provideRouter} from '@angular/router';
+import {
+  Router,
+  RouterLink,
+  RouterModule,
+  provideRouter,
+  CUSTOM_ELEMENT_ANCHOR_TAG_NAMES,
+} from '@angular/router';
 
 describe('RouterLink', () => {
   beforeEach(() => {
@@ -207,6 +213,85 @@ describe('RouterLink', () => {
     });
   });
 
+  // Avoid executing in node environment because customElements is not defined.
+  if (typeof customElements === 'object') {
+    describe('on a custom element anchor', () => {
+      /** Simple anchor element imitation. */
+      class CustomAnchor extends HTMLElement {
+        get href(): string {
+          return this.getAttribute('href') ?? '';
+        }
+        set href(value: string) {
+          this.setAttribute('href', value);
+        }
+
+        constructor() {
+          super();
+          const shadow = this.attachShadow({mode: 'open'});
+          shadow.innerHTML = '<a><slot></slot></a>';
+        }
+
+        attributedChangedCallback(name: string, _oldValue: string | null, newValue: string | null) {
+          if (name === 'href') {
+            const anchor = this.shadowRoot!.querySelector('a')!;
+
+            if (newValue === null) {
+              anchor.removeAttribute('href');
+            } else {
+              anchor.setAttribute('href', newValue);
+            }
+          }
+        }
+      }
+
+      if (!customElements.get('custom-anchor')) {
+        customElements.define('custom-anchor', CustomAnchor);
+      }
+
+      @Component({
+        template: `
+          <custom-anchor [routerLink]="link()"></custom-anchor>
+        `,
+        standalone: false,
+        providers: [
+          {provide: CUSTOM_ELEMENT_ANCHOR_TAG_NAMES, useValue: 'custom-anchor', multi: true},
+        ],
+      })
+      class LinkComponent {
+        link = signal<string | null | undefined>('/');
+      }
+      let fixture: ComponentFixture<LinkComponent>;
+      let link: HTMLAnchorElement;
+
+      beforeEach(async () => {
+        TestBed.configureTestingModule({
+          imports: [RouterModule.forRoot([])],
+          declarations: [LinkComponent],
+        });
+        fixture = TestBed.createComponent(LinkComponent);
+        await fixture.whenStable();
+        link = fixture.debugElement.query(By.css('custom-anchor')).nativeElement;
+      });
+
+      it('does not touch tabindex', async () => {
+        expect(link.outerHTML).not.toContain('tabindex');
+      });
+
+      it('null, removes href', async () => {
+        expect(link.outerHTML).toContain('href');
+        fixture.componentInstance.link.set(null);
+        await fixture.whenStable();
+        expect(link.outerHTML).not.toContain('href');
+      });
+
+      it('undefined, removes href', async () => {
+        expect(link.outerHTML).toContain('href');
+        fixture.componentInstance.link.set(undefined);
+        await fixture.whenStable();
+        expect(link.outerHTML).not.toContain('href');
+      });
+    });
+  }
   it('can use a UrlTree as the input', async () => {
     @Component({
       template: '<a [routerLink]="urlTree">link</a>',
