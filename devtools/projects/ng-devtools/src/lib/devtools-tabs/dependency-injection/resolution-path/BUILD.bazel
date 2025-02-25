@@ -8,9 +8,8 @@ package(default_visibility = ["//:__subpackages__"])
 sass_binary(
     name = "resolution_path_styles",
     src = "resolution-path.component.scss",
-    visibility = [
-        "//visibility:private",
-    ],
+    visibility = ["//visibility:private"],
+    deps = ["//devtools/projects/ng-devtools/src/styles:theme"],
 )
 
 ng_module(
