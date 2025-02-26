@@ -2,9 +2,9 @@
 
 # Automatic conversation locking
 
-Closed issues and pull requests are locked automatically after 30 days of inactivity.
+Closed issues and pull requests are locked automatically after 30 days of inactivit.
 
-## I want to comment on a locked conversation, what should I do?
+## I want to comment on a locked conversation, what should I do?.
 
 When an issue has been closed and inactive for over 30 days, the original context is likely
 outdated.
