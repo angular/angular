@@ -1318,6 +1318,8 @@ export function transformExpressionsInExpression(
     for (let i = 0; i < expr.expressions.length; i++) {
       expr.expressions[i] = transformExpressionsInExpression(expr.expressions[i], transform, flags);
     }
+  } else if (expr instanceof o.ParenthesizedExpr) {
+    expr.expr = transformExpressionsInExpression(expr.expr, transform, flags);
   } else if (
     expr instanceof o.ReadVarExpr ||
     expr instanceof o.ExternalExpr ||
