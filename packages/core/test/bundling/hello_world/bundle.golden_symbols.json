@@ -332,6 +332,7 @@
   "storeLViewOnDestroy",
   "stringify",
   "stringifyCSSSelector",
+  "throwCyclicDependencyError",
   "throwProviderNotFoundError",
   "timeoutProvider",
   "uniqueIdCounter",
