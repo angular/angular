@@ -462,6 +462,10 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
     );
   }
 
+  visitParenthesizedExpr(ast: o.ParenthesizedExpr, context: any) {
+    return this.factory.createParenthesizedExpression(ast.expr.visitExpression(this, context));
+  }
+
   private visitStatements(statements: o.Statement[], context: Context): TStatement[] {
     return statements
       .map((stmt) => stmt.visitStatement(this, context))

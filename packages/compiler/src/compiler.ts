@@ -94,6 +94,7 @@ export {
   MapType,
   NONE_TYPE,
   NotExpr,
+  ParenthesizedExpr,
   ReadKeyExpr,
   ReadPropExpr,
   ReadVarExpr,

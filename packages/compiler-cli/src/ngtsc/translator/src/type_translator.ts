@@ -280,6 +280,10 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
     throw new Error('Method not implemented.');
   }
 
+  visitParenthesizedExpr(ast: o.ParenthesizedExpr, context: any) {
+    throw new Error('Method not implemented.');
+  }
+
   private translateType(type: o.Type, context: Context): ts.TypeNode {
     const typeNode = type.visitType(this, context);
     if (!ts.isTypeNode(typeNode)) {

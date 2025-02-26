@@ -268,19 +268,11 @@ export abstract class Expression {
   and(rhs: Expression, sourceSpan?: ParseSourceSpan | null): BinaryOperatorExpr {
     return new BinaryOperatorExpr(BinaryOperator.And, this, rhs, null, sourceSpan);
   }
-  bitwiseOr(
-    rhs: Expression,
-    sourceSpan?: ParseSourceSpan | null,
-    parens: boolean = true,
-  ): BinaryOperatorExpr {
-    return new BinaryOperatorExpr(BinaryOperator.BitwiseOr, this, rhs, null, sourceSpan, parens);
+  bitwiseOr(rhs: Expression, sourceSpan?: ParseSourceSpan | null): BinaryOperatorExpr {
+    return new BinaryOperatorExpr(BinaryOperator.BitwiseOr, this, rhs, null, sourceSpan);
   }
-  bitwiseAnd(
-    rhs: Expression,
-    sourceSpan?: ParseSourceSpan | null,
-    parens: boolean = true,
-  ): BinaryOperatorExpr {
-    return new BinaryOperatorExpr(BinaryOperator.BitwiseAnd, this, rhs, null, sourceSpan, parens);
+  bitwiseAnd(rhs: Expression, sourceSpan?: ParseSourceSpan | null): BinaryOperatorExpr {
+    return new BinaryOperatorExpr(BinaryOperator.BitwiseAnd, this, rhs, null, sourceSpan);
   }
   or(rhs: Expression, sourceSpan?: ParseSourceSpan | null): BinaryOperatorExpr {
     return new BinaryOperatorExpr(BinaryOperator.Or, this, rhs, null, sourceSpan);
@@ -1224,6 +1216,33 @@ export class UnaryOperatorExpr extends Expression {
   }
 }
 
+export class ParenthesizedExpr extends Expression {
+  constructor(
+    public expr: Expression,
+    type?: Type | null,
+    sourceSpan?: ParseSourceSpan | null,
+  ) {
+    super(type, sourceSpan);
+  }
+
+  override visitExpression(visitor: ExpressionVisitor, context: any) {
+    return visitor.visitParenthesizedExpr(this, context);
+  }
+
+  override isEquivalent(e: Expression): boolean {
+    // TODO: should this ignore paren depth? i.e. is `(1)` equivalent to `1`?
+    return e instanceof ParenthesizedExpr && e.expr.isEquivalent(this.expr);
+  }
+
+  override isConstant(): boolean {
+    return this.expr.isConstant();
+  }
+
+  override clone(): ParenthesizedExpr {
+    return new ParenthesizedExpr(this.expr.clone());
+  }
+}
+
 export class BinaryOperatorExpr extends Expression {
   public lhs: Expression;
   constructor(
@@ -1232,7 +1251,6 @@ export class BinaryOperatorExpr extends Expression {
     public rhs: Expression,
     type?: Type | null,
     sourceSpan?: ParseSourceSpan | null,
-    public parens: boolean = true,
   ) {
     super(type || lhs.type, sourceSpan);
     this.lhs = lhs;
@@ -1262,7 +1280,6 @@ export class BinaryOperatorExpr extends Expression {
       this.rhs.clone(),
       this.type,
       this.sourceSpan,
-      this.parens,
     );
   }
 }
@@ -1466,6 +1483,7 @@ export interface ExpressionVisitor {
   visitTypeofExpr(ast: TypeofExpr, context: any): any;
   visitVoidExpr(ast: VoidExpr, context: any): any;
   visitArrowFunctionExpr(ast: ArrowFunctionExpr, context: any): any;
+  visitParenthesizedExpr(ast: ParenthesizedExpr, context: any): any;
 }
 
 export const NULL_EXPR = new LiteralExpr(null, null, null);
@@ -1784,6 +1802,10 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
     return this.visitExpression(ast, context);
   }
   visitTemplateLiteralElementExpr(ast: TemplateLiteralElementExpr, context: any) {
+    return this.visitExpression(ast, context);
+  }
+  visitParenthesizedExpr(ast: ParenthesizedExpr, context: any) {
+    ast.expr.visitExpression(this, context);
     return this.visitExpression(ast, context);
   }
   visitAllExpressions(exprs: Expression[], context: any): void {
