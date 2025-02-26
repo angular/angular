@@ -25,9 +25,7 @@ export function HeaderApi(props: {entry: DocEntryRenderable; showFullDescription
   // When ADEV is not deployed on the main branch branch anymore,
   // We should update it to point to the tag of the released version which ADEV runs on.
 
-  const sourceUrl = isDocEntryWithSourceInfo(entry)
-    ? `https://github.com/angular/angular/blob/main${entry.source.filePath}#L${entry.source.startLine}-L${entry.source.endLine}`
-    : null;
+  const sourceUrl = sourceUrlForEntry(entry);
 
   return (
     <header className={HEADER_CLASS_NAME}>
@@ -40,9 +38,7 @@ export function HeaderApi(props: {entry: DocEntryRenderable; showFullDescription
             {getEntryTypeDisplayName(entry.entryType)}
           </div>
           {entry.isDeprecated && (
-            <div className={`${HEADER_ENTRY_LABEL} type-deprecated full`}>
-              Deprecated
-            </div>
+            <div className={`${HEADER_ENTRY_LABEL} type-deprecated full`}>Deprecated</div>
           )}
           {entry.isDeveloperPreview && (
             <div className={`${HEADER_ENTRY_LABEL} type-developer_preview full`}>
@@ -94,4 +90,17 @@ function getEntryTypeDisplayName(entryType: EntryType | string): string {
       return 'Initializer API';
   }
   return entryType;
+}
+
+function sourceUrlForEntry(entry: DocEntryRenderable): string | null {
+  if (!isDocEntryWithSourceInfo(entry)) {
+    return null;
+  }
+
+  if (entry.source.filePath.includes('node_modules')) {
+    // We don't know the source path in external repos link the CLI
+    return null;
+  } else {
+    return `https://github.com/angular/angular/blob/main${entry.source.filePath}#L${entry.source.startLine}-L${entry.source.endLine}`;
+  }
 }
