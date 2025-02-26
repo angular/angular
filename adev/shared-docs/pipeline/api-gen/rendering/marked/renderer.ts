@@ -8,6 +8,7 @@
 
 import {Renderer, Tokens} from 'marked';
 import {codeToHtml} from '../shiki/shiki';
+import {SECTION_HEADING, SECTION_SUB_HEADING} from '../styling/css-classes';
 
 /**
  * Custom renderer for marked that will be used to transform markdown files to HTML
@@ -55,21 +56,39 @@ export const renderer: Partial<Renderer> = {
       <div class="docs-table docs-scroll-track-transparent">
         <table>
           <thead>
-          ${this.tablerow({
-            text: header.map((cell) => this.tablecell(cell)).join(''),
-          })}
+          ${this.tablerow({text: header.map((cell) => this.tablecell(cell)).join('')})}
           </thead>
           <tbody>
           ${rows
-            .map((row) =>
-              this.tablerow({
-                text: row.map((cell) => this.tablecell(cell)).join(''),
-              }),
-            )
+            .map((row) => this.tablerow({text: row.map((cell) => this.tablecell(cell)).join('')}))
             .join('')}
           </tbody>
         </table>
       </div>
+    `;
+  },
+
+  heading(this: Renderer, {text, depth, tokens}: Tokens.Heading) {
+    const id = text
+      .toLowerCase()
+      .replaceAll(' ', '-')
+      .replace(/[^a-z0-9-]/g, '');
+
+    // Since we have a code transformer `addApiLinksToHtml` which adds anchors
+    // to code blocks of known symbols, we add an additional `data-skip-anchor`
+    // attribute that prevents the transformation. This is needed since nested
+    // anchor tags are illegal and break the HTML.
+    const textRenderer = new Renderer();
+    textRenderer.codespan = ({text}) => `<code data-skip-anchor>${text}</code>`;
+    const parsedText = this.parser.parseInline(tokens, textRenderer);
+
+    // The template matches templates/section-heading.tsx
+    return `
+      <h${depth} id="${id}" class="${SECTION_HEADING} ${SECTION_SUB_HEADING}">
+        <a href="#${id}" aria-label="Link to ${text} section" tabIndex="-1">
+          ${parsedText}
+        </a>
+      </h${depth}>
     `;
   },
 };

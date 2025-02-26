@@ -27,3 +27,4 @@ export const HEADER_ENTRY_LABEL = 'docs-api-item-label';
 
 export const SECTION_CONTAINER = 'docs-reference-section';
 export const SECTION_HEADING = 'docs-reference-section-heading';
+export const SECTION_SUB_HEADING = 'docs-reference-section-heading--sub';
