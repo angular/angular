@@ -875,6 +875,7 @@
   "storeLViewOnDestroy",
   "stringify",
   "stringifyCSSSelector",
+  "throwCyclicDependencyError",
   "throwProviderNotFoundError",
   "timeoutProvider",
   "trackMovedView",

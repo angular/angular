@@ -702,6 +702,7 @@
   "take",
   "takeLast",
   "tap",
+  "throwCyclicDependencyError",
   "throwError2",
   "throwIfEmpty",
   "throwInvalidWriteToSignalErrorFn",
