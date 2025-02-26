@@ -94,6 +94,8 @@ export function resolveDirectives(
       [directiveDefs, hostDirectiveDefs, hostDirectiveRanges] = hostDirectiveResolution;
     }
 
+    ngDevMode && assertNoDuplicateDirectives(directiveDefs);
+
     initializeDirectives(
       tView,
       lView,
@@ -135,9 +137,12 @@ function resolveHostDirectives(matches: DirectiveDef<unknown>[]): HostDirectiveR
   let componentDef: ComponentDef<unknown> | null = null;
   let hasHostDirectives = false;
 
+  // Having host directives is the less common scenario. Make an initial
+  // validation pass so we don't allocate memory unnecessarily.
   for (let i = 0; i < matches.length; i++) {
     const def = matches[i];
 
+    // Given that we may need this further down, we can resolve it already while validating.
     if (i === 0 && isComponentDef(def)) {
       componentDef = def;
     }
@@ -148,11 +153,12 @@ function resolveHostDirectives(matches: DirectiveDef<unknown>[]): HostDirectiveR
     }
   }
 
+  // If there's at least one def with host directive, we can't bail out of this function.
   if (!hasHostDirectives) {
     return null;
   }
 
-  let allDirectiveDefs: DirectiveDef<unknown>[] | null = null;
+  const allDirectiveDefs: DirectiveDef<unknown>[] = [];
   let hostDirectiveDefs: HostDirectiveDefs | null = null;
   let hostDirectiveRanges: HostDirectiveRanges | null = null;
 
@@ -168,7 +174,6 @@ function resolveHostDirectives(matches: DirectiveDef<unknown>[]): HostDirectiveR
   // 4. Selector-matched dir
   for (const def of matches) {
     if (def.findHostDirectiveDefs !== null) {
-      allDirectiveDefs ??= [];
       hostDirectiveDefs ??= new Map();
       hostDirectiveRanges ??= new Map();
       resolveHostDirectivesForDef(def, allDirectiveDefs, hostDirectiveRanges, hostDirectiveDefs);
@@ -176,18 +181,17 @@ function resolveHostDirectives(matches: DirectiveDef<unknown>[]): HostDirectiveR
 
     // Component definition needs to be pushed early to maintain the correct ordering.
     if (def === componentDef) {
-      allDirectiveDefs ??= [];
       allDirectiveDefs.push(def);
     }
   }
 
-  if (allDirectiveDefs !== null) {
-    allDirectiveDefs.push(...(componentDef === null ? matches : matches.slice(1)));
-    ngDevMode && assertNoDuplicateDirectives(allDirectiveDefs);
-    return [allDirectiveDefs, hostDirectiveDefs, hostDirectiveRanges];
+  if (componentDef === null) {
+    allDirectiveDefs.push(...matches);
+  } else {
+    allDirectiveDefs.push(...matches.slice(1));
   }
 
-  return null;
+  return [allDirectiveDefs, hostDirectiveDefs, hostDirectiveRanges];
 }
 
 function resolveHostDirectivesForDef(
@@ -642,7 +646,7 @@ function initTNodeFlags(tNode: TNode, index: number, numberOfDirectives: number)
   tNode.providerIndexes = index;
 }
 
-export function assertNoDuplicateDirectives(directives: DirectiveDef<unknown>[]): void {
+function assertNoDuplicateDirectives(directives: DirectiveDef<unknown>[]): void {
   // The array needs at least two elements in order to have duplicates.
   if (directives.length < 2) {
     return;
