@@ -603,6 +603,7 @@
   "storeLViewOnDestroy",
   "stringify",
   "stringifyCSSSelector",
+  "throwCyclicDependencyError",
   "throwInvalidWriteToSignalError",
   "throwInvalidWriteToSignalErrorFn",
   "throwProviderNotFoundError",

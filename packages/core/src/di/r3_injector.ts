@@ -469,7 +469,7 @@ export class R3Injector extends EnvironmentInjector {
   private hydrate<T>(token: ProviderToken<T>, record: Record<T>): T {
     const prevConsumer = setActiveConsumer(null);
     try {
-      if (ngDevMode && record.value === CIRCULAR) {
+      if (record.value === CIRCULAR) {
         throwCyclicDependencyError(stringify(token));
       } else if (record.value === NOT_YET) {
         record.value = CIRCULAR;

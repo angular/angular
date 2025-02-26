@@ -487,6 +487,7 @@
   "storeLViewOnDestroy",
   "stringify",
   "stringifyCSSSelector",
+  "throwCyclicDependencyError",
   "throwProviderNotFoundError",
   "timeoutProvider",
   "toTStylingRange",
