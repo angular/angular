@@ -239,7 +239,7 @@ function makeHttpResourceFn<TRaw>(responseType: 'arraybuffer' | 'blob' | 'json' 
       injector,
       () => normalizeRequest(request, responseType),
       options?.defaultValue,
-      options?.map as (value: unknown) => TResult,
+      options?.parse as (value: unknown) => TResult,
     ) as HttpResourceRef<TResult>;
   };
 }
@@ -312,7 +312,7 @@ class HttpResourceImpl<T>
     injector: Injector,
     request: () => HttpRequest<T> | undefined,
     defaultValue: T,
-    map?: (value: unknown) => T,
+    parse?: (value: unknown) => T,
   ) {
     super(
       request,
@@ -342,7 +342,7 @@ class HttpResourceImpl<T>
                 this._headers.set(event.headers);
                 this._statusCode.set(event.status);
                 try {
-                  send({value: map ? map(event.body) : (event.body as T)});
+                  send({value: parse ? parse(event.body) : (event.body as T)});
                 } catch (error) {
                   send({error});
                 }
