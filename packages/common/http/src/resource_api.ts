@@ -81,12 +81,12 @@ export interface HttpResourceOptions<TResult, TRaw> {
   /**
    * Transform the result of the HTTP request before it's delivered to the resource.
    *
-   * `map` receives the value from the HTTP layer as its raw type (e.g. as `unknown` for JSON data).
+   * `parse` receives the value from the HTTP layer as its raw type (e.g. as `unknown` for JSON data).
    * It can be used to validate or transform the type of the resource, and return a more specific
    * type. This is also useful for validating backend responses using a runtime schema validation
    * library such as Zod.
    */
-  map?: (value: TRaw) => TResult;
+  parse?: (value: TRaw) => TResult;
 
   /**
    * Value that the resource will take when in Idle, Loading, or Error states.

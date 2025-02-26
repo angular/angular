@@ -154,7 +154,7 @@ describe('httpResource', () => {
       },
       {
         injector: TestBed.inject(Injector),
-        map: (value) => JSON.stringify(value),
+        parse: (value) => JSON.stringify(value),
       },
     );
     TestBed.flushEffects();
