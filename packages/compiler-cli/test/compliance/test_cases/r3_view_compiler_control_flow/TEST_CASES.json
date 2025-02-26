@@ -77,6 +77,21 @@
       ]
     },
     {
+      "description": "should generate code for switch blocks containing a case with multiple guards",
+      "inputFiles": ["switch_with_multi_case.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "switch_with_multi_case_template.js",
+              "generated": "switch_with_multi_case.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
       "description": "should generate a basic if block",
       "inputFiles": ["basic_if.ts"],
       "expectations": [
