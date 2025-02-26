@@ -995,6 +995,9 @@ export const Input: InputDecorator;
 // @public
 export const input: InputFunction;
 
+// @public
+export function inputBinding<T>(publicName: string, value: () => unknown): Binding;
+
 // @public (undocumented)
 export interface InputDecorator {
     (arg?: string | Input): any;

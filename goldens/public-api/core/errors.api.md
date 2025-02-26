@@ -63,6 +63,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INJECTOR_ALREADY_DESTROYED = 205,
     // (undocumented)
+    INVALID_BINDING_TARGET = 316,
+    // (undocumented)
     INVALID_DIFFER_INPUT = 900,
     // (undocumented)
     INVALID_EVENT_BINDING = 306,
@@ -108,6 +110,8 @@ export const enum RuntimeErrorCode {
     MULTIPLE_MATCHING_PIPES = 313,
     // (undocumented)
     MULTIPLE_PLATFORMS = 400,
+    // (undocumented)
+    NO_BINDING_TARGET = 315,
     // (undocumented)
     NO_SUPPORTING_DIFFER_FACTORY = 901,
     // (undocumented)
