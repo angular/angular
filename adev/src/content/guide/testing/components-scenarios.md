@@ -51,7 +51,7 @@ Only then does the `<h1>` have the expected title.
 <docs-code path="adev/src/content/examples/testing/src/app/banner/banner.component.spec.ts" visibleRegion="expect-h1-default"/>
 
 Delayed change detection is intentional and useful.
-It gives the tester an opportunity to inspect and change the state of the component *before Angular initiates data binding and calls [lifecycle hooks](guide/components/lifecycle)*.
+It gives the tester an opportunity to inspect and change the state of the component *before Angular initiates data binding and calls* [lifecycle hooks](guide/components/lifecycle).
 
 Here's another test that changes the component's `title` property *before* calling `fixture.detectChanges()`.
 
