@@ -714,7 +714,7 @@ export function setDirectiveInput(
     }
   }
 
-  if (hostIndex !== null) {
+  if (hostIndex !== null && target.inputs.hasOwnProperty(publicName)) {
     ngDevMode && assertIndexInRange(lView, hostIndex);
     writeToDirectiveInput(target, lView[hostIndex], publicName, value);
     hasSet = true;
