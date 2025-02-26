@@ -12,7 +12,7 @@ import {NotificationSource} from '../../change_detection/scheduling/zoneless_sch
 import {assertIndexInRange} from '../../util/assert';
 import {TNode, TNodeType} from '../interfaces/node';
 import {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
-import {RElement} from '../interfaces/renderer_dom';
+import {RElement, RNode} from '../interfaces/renderer_dom';
 import {isComponentHost, isDirectiveHost} from '../interfaces/type_checks';
 import {CLEANUP, CONTEXT, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
@@ -30,6 +30,10 @@ import {
 import {markViewDirty} from './mark_view_dirty';
 import {handleError, loadComponentRenderer} from './shared';
 import {DirectiveDef} from '../interfaces/definition';
+import {getDocument} from '../interfaces/document';
+
+const COMPOSITION_START = 'compositionstart';
+const COMPOSITION_END = 'compositionend';
 
 /**
  * Contains a reference to a function that disables event replay feature
@@ -177,8 +181,19 @@ export function listenerInternal(
   // - The event target has a resolver (usually resulting in a global object,
   //   such as `window` or `document`).
   if (tNode.type & TNodeType.AnyRNode || eventTargetResolver) {
-    const native = getNativeByTNode(tNode, lView) as RElement;
-    const target = eventTargetResolver ? eventTargetResolver(native) : native;
+    // The native element can be a comment node (eg a directive host listener applied on a ng-container)
+    const native = getNativeByTNode(tNode, lView);
+
+    // `target` can be an Element but also a non-Element node: `document`.
+    const target = (eventTargetResolver?.(native) ?? native) as RElement | RNode;
+
+    // Specific behavior for value two-way binding on an input element.
+    const eventMapping = createControlValueChangeEventMapping(target, eventName);
+    const eventMapperFn = eventMapping ? eventMapping.mapperFn : null;
+    if (eventMapping) {
+      eventName = eventMapping.eventName;
+    }
+
     const lCleanupIndex = lCleanup.length;
     const idxOrTargetGetter = eventTargetResolver
       ? (_lView: LView) => eventTargetResolver(unwrapRNode(_lView[tNode.index]))
@@ -217,18 +232,30 @@ export function listenerInternal(
       (<any>existingListener).__ngLastListenerFn__ = listenerFn;
       processOutputs = false;
     } else {
-      listenerFn = wrapListener(tNode, lView, context, listenerFn);
-      stashEventListener(native, eventName, listenerFn);
-      const cleanupFn = renderer.listen(target as RElement, eventName, listenerFn);
-      ngDevMode && ngDevMode.rendererAddEventListener++;
+      listenerFn = wrapListener(tNode, lView, context, listenerFn, eventMapperFn);
 
-      lCleanup.push(listenerFn, cleanupFn);
-      tCleanup && tCleanup.push(eventName, idxOrTargetGetter, lCleanupIndex, lCleanupIndex + 1);
+      const listenFn = (eventName: string) => {
+        // TODO: Fix the event replay part, `native` can be document which is not an Element
+        stashEventListener(native as RElement, eventName, listenerFn);
+        const cleanupFn = renderer.listen(target, eventName, listenerFn);
+        ngDevMode && ngDevMode.rendererAddEventListener++;
+
+        lCleanup.push(listenerFn, cleanupFn);
+        tCleanup && tCleanup.push(eventName, idxOrTargetGetter, lCleanupIndex, lCleanupIndex + 1);
+      };
+
+      listenFn(eventName);
+
+      // In case we are mapping an input event, we also want to listen for the composition events
+      if (eventMapperFn) {
+        listenFn(COMPOSITION_START);
+        listenFn(COMPOSITION_END);
+      }
     }
   } else {
     // Even if there is no native listener to add, we still need to wrap the listener so that OnPush
     // ancestors are marked dirty when an event occurs.
-    listenerFn = wrapListener(tNode, lView, context, listenerFn);
+    listenerFn = wrapListener(tNode, lView, context, listenerFn, null);
   }
 
   if (processOutputs) {
@@ -333,6 +360,7 @@ function wrapListener(
   lView: LView<{} | null>,
   context: {} | null,
   listenerFn: (e?: any) => any,
+  inputEventMapperFn: ((e: Event) => any) | null,
 ): EventListener {
   // Note: we are performing most of the work in the listener function itself
   // to optimize listener registration.
@@ -343,12 +371,21 @@ function wrapListener(
       return listenerFn;
     }
 
+    // Mapping the `input` event to the control's value
+    if (inputEventMapperFn) {
+      e = inputEventMapperFn(e);
+      // The event is now the control's value
+    }
+
     // In order to be backwards compatible with View Engine, events on component host nodes
     // must also mark the component view itself dirty (i.e. the view that it owns).
     const startView = isComponentHost(tNode) ? getComponentLViewByIndex(tNode.index, lView) : lView;
     markViewDirty(startView, NotificationSource.Listener);
 
-    let result = executeListenerWithErrorHandling(lView, context, listenerFn, e);
+    // Some events might be skipped (e.g. composition events)
+    let result =
+      e !== SKIP_EVENT ? executeListenerWithErrorHandling(lView, context, listenerFn, e) : false;
+
     // A just-invoked listener function might have coalesced listeners so we need to check for
     // their presence and invoke as needed.
     let nextListenerFn = (<any>wrapListenerIn_markDirtyAndPreventDefault).__ngNextListenerFn__;
@@ -359,6 +396,136 @@ function wrapListener(
     }
 
     return result;
+  };
+}
+
+const SUPPORTED_CONTROLS = ['INPUT', 'SELECT', 'TEXTAREA'];
+
+const INPUT_EVENT = 'input';
+
+const VALUE_CHANGE_EVENT = 'valueChange';
+const VALUE_AS_NUMBER_CHANGE_EVENT = 'valueAsNumberChange';
+const VALUE_AS_DATE_CHANGE_EVENT = 'valueAsDateChange';
+const CHECKED_CHANGE_EVENT = 'checkedChange';
+const FILES_CHANGE_EVENT = 'filesChange';
+
+// Dummy object to indicate that no synthetic change event should be emitted
+const SKIP_EVENT = typeof ngDevMode === 'undefined' || ngDevMode ? {__brand__: 'SKIP_EVENT'} : {};
+
+/**
+ * For specific control elements (like `input`, `select`, `textarea`) we want to emit a synthetic change event.
+ *
+ * valueChange/valueAsNumberChange/valueAsDateChange/checkedChange/filesChange are the synthetic events
+ * that are emitted when the value/checked/files property changes.
+ *
+ * Returns null when no synthetic event should be emitted.
+ */
+function createControlValueChangeEventMapping(
+  nativeElement: RElement | RNode,
+  eventName: string,
+): {mapperFn: (e: Event) => unknown; eventName: string} | null {
+  if (!('tagName' in nativeElement)) {
+    // Document or Window node
+    return null;
+  }
+
+  const tagName = nativeElement.tagName.toUpperCase();
+
+  if (!SUPPORTED_CONTROLS.includes(tagName)) {
+    //We don't support emitting input change events for other DOM elements
+    return null;
+  }
+
+  const isOneOfSupportedChangeEvents = [
+    VALUE_CHANGE_EVENT,
+    VALUE_AS_NUMBER_CHANGE_EVENT,
+    VALUE_AS_DATE_CHANGE_EVENT,
+    CHECKED_CHANGE_EVENT,
+    FILES_CHANGE_EVENT,
+  ].includes(eventName);
+
+  if (!isOneOfSupportedChangeEvents) {
+    return null;
+  }
+
+  /** Whether the user is creating a composed string (via IME events). */
+  let isComposing = false;
+
+  return {
+    mapperFn: (e) => {
+      // In composition mode we don't want to emit the synthetic event
+      // We wait until the 'compositionend' event to emit the synthetic event again
+      if (e.type === COMPOSITION_START) {
+        isComposing = true;
+        return SKIP_EVENT;
+      }
+      if (isComposing && e.type !== COMPOSITION_END) {
+        return SKIP_EVENT;
+      }
+
+      if (e.type === COMPOSITION_END) {
+        isComposing = false;
+        // No early return, we want to emit the synthetic event
+      }
+
+      const target = e.target as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+
+      if (ngDevMode && !SUPPORTED_CONTROLS.includes(target?.tagName!)) {
+        throw new Error(`Target ${target} is not supported for value 2-way binding`);
+      }
+
+      if (target?.tagName === 'INPUT') {
+        const input = target as HTMLInputElement;
+
+        // We need to synthesize input events for all the other radio buttons within the same group
+        // in order to update their binded value.
+        const type = target.type;
+        if (type === 'radio') {
+          [
+            // This only works on browsers (in node tests this returns an empty array)
+            ...getDocument().querySelectorAll(`input[type="radio"][name="${input.name}"]`),
+          ].forEach((radio) => {
+            if (radio != input) {
+              radio.dispatchEvent(new Event(INPUT_EVENT));
+            }
+          });
+        }
+
+        switch (eventName) {
+          case CHECKED_CHANGE_EVENT:
+            return input.checked;
+
+          case VALUE_AS_NUMBER_CHANGE_EVENT:
+            // By spec, the runtime throws if the type is not a valid "date- or time-based nor numeric" type (number, range, date, time, datetime, datetime-local)
+            // Thus "type=text" throws at runtime
+            // https://html.spec.whatwg.org/multipage/input.html#common-input-element-apis
+            return input.valueAsNumber;
+
+          case VALUE_AS_DATE_CHANGE_EVENT:
+            // By spec, the runtime throws if the type is not a valid "date" type (date, time, datetime, datetime-local)
+            // https://html.spec.whatwg.org/multipage/input.html#common-input-element-apis
+            return input.valueAsDate;
+
+          case FILES_CHANGE_EVENT:
+            // By spec, the runtime throws if the type is not a valid "file" type (date, time, datetime, datetime-local)
+            return input.files;
+
+          // Explicit break so we can throw on unsupported change events
+          case VALUE_CHANGE_EVENT:
+            break;
+
+          default:
+            // TODO: RuntimeError
+            throw new Error(`Unsupported input event: ${eventName} for ${input.tagName}`);
+          // In the future we might want to support valueAsTemporal
+          // https://github.com/tc39/proposal-temporal/issues/3075
+          // https://github.com/whatwg/html/issues/10882
+        }
+      }
+
+      return target.value;
+    },
+    eventName: INPUT_EVENT,
   };
 }
 

@@ -1338,13 +1338,23 @@ class TcbUnclaimedInputsOp extends TcbOp {
         continue;
       }
 
-      const expr = widenBinding(tcbExpression(binding.value, this.tcb, this.scope), this.tcb);
+      let expr = widenBinding(tcbExpression(binding.value, this.tcb, this.scope), this.tcb);
+      const is2WayBinding = binding.type === BindingType.TwoWay;
 
-      if (this.tcb.env.config.checkTypeOfDomBindings && isPropertyBinding) {
+      if (
+        (this.tcb.env.config.checkTypeOfDomBindings && isPropertyBinding) ||
+        // We specifically enable type checking only for two-way bindings on control elements.
+        (this.isControlBinding(binding) && is2WayBinding)
+      ) {
         if (binding.name !== 'style' && binding.name !== 'class') {
           if (elId === null) {
             elId = this.scope.resolve(this.element);
           }
+
+          if (is2WayBinding && this.tcb.env.config.allowSignalsInTwoWayBindings) {
+            expr = unwrapWritableSignal(expr, this.tcb);
+          }
+
           // A direct binding to a property.
           const propertyName = ATTR_TO_PROP.get(binding.name) ?? binding.name;
           const prop = ts.factory.createElementAccessExpression(
@@ -1370,6 +1380,17 @@ class TcbUnclaimedInputsOp extends TcbOp {
     }
 
     return null;
+  }
+
+  // To enable typechecking on 2way bindings for input/select/textarea elements
+  private isControlBinding(binding: TmplAstBoundAttribute): boolean {
+    const isInputValueBinding =
+      this.element.name === 'input' &&
+      ['value', 'valueAsNumber', 'valueAsDate', 'checked', 'files'].includes(binding.name);
+    const isOtherValueBinding =
+      (this.element.name === 'textarea' || this.element.name === 'select') &&
+      binding.name === 'value';
+    return isInputValueBinding || isOtherValueBinding;
   }
 }
 
@@ -1506,6 +1527,42 @@ class TcbUnclaimedOutputsOp extends TcbOp {
         if (elId === null) {
           elId = this.scope.resolve(this.element);
         }
+
+        const isInputValueChangeBinding =
+          this.element.name === 'input' &&
+          [
+            'valueChange',
+            'valueAsNumberChange',
+            'valueAsDateChange',
+            'checkedChange',
+            'filesChange',
+          ].includes(output.name);
+
+        const isOtherValueChangeBinding =
+          (this.element.name === 'textarea' || this.element.name === 'select') &&
+          output.name === 'valueChange';
+        const isTwoWayBinding = output.type === ParsedEventType.TwoWay;
+
+        // Typechecking the synthetic emission of input elements value change (and related)
+        if (!isTwoWayBinding && (isInputValueChangeBinding || isOtherValueChangeBinding)) {
+          const corresponpingPropertyName = output.name.replace(/Change$/, '');
+          const prop = ts.factory.createElementAccessExpression(
+            elId,
+            ts.factory.createStringLiteral(corresponpingPropertyName),
+          );
+
+          // simulating the invocation of the handler with the same type as the input
+          const call = ts.factory.createCallExpression(
+            /* expression */ handler,
+            /* typeArguments */ undefined,
+            /* arguments */ [prop],
+          );
+
+          addParseSpanInfo(call, output.sourceSpan);
+          this.scope.addStatement(ts.factory.createExpressionStatement(call));
+          return null;
+        }
+
         const propertyAccess = ts.factory.createPropertyAccessExpression(elId, 'addEventListener');
         addParseSpanInfo(propertyAccess, output.keySpan);
         const call = ts.factory.createCallExpression(
