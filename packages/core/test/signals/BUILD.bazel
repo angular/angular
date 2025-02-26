@@ -12,12 +12,13 @@ ts_library(
         "//packages/core",
         "//packages/core/primitives/signals",
         "//packages/core/src/util",
+        "//packages/core/testing",
     ],
 )
 
 jasmine_node_test(
     name = "signals",
-    bootstrap = ["//tools/testing:node_no_angular"],
+    bootstrap = ["//tools/testing:node"],
     deps = [
         ":signals_lib",
     ],
