@@ -503,6 +503,7 @@
   "stringify",
   "stringifyCSSSelector",
   "style",
+  "throwCyclicDependencyError",
   "throwProviderNotFoundError",
   "timeoutProvider",
   "transition",

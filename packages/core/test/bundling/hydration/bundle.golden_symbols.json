@@ -441,6 +441,7 @@
   "stringify",
   "stringifyCSSSelector",
   "subscribeOn",
+  "throwCyclicDependencyError",
   "throwProviderNotFoundError",
   "timeoutProvider",
   "transferCacheInterceptorFn",
