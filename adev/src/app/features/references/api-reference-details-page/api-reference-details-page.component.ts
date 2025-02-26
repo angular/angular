@@ -14,7 +14,7 @@ import {DOCUMENT} from '@angular/common';
 import {ReferenceScrollHandler} from '../services/reference-scroll-handler.service';
 import {API_SECTION_CLASS_NAME} from '../constants/api-reference-prerender.constants';
 
-const HIGHLIGHTED_CARD_CLASS = 'highlighted';
+const HIGHLIGHTED_CARD_CLASS = 'docs-highlighted-card';
 
 @Component({
   selector: 'adev-reference-page',
