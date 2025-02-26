@@ -1,3 +1,24 @@
+<a name="19.1.8"></a>
+# 19.1.8 (2025-02-26)
+### benchpress
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f0990c67e6](https://github.com/angular/angular/commit/f0990c67e660c61109fa910885da6aa4beaf576a) | fix | Ensure future-proof correct initialization order ([#60025](https://github.com/angular/angular/pull/60025)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1fbaeab37d](https://github.com/angular/angular/commit/1fbaeab37d5c65436938b6e14e21bc4d57bb517b) | fix | make types for HttpClient more readable ([#59901](https://github.com/angular/angular/pull/59901)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c611c8d212](https://github.com/angular/angular/commit/c611c8d212b0134365954726c2fd6c98c28e5424) | fix | capture stack for HMR errors ([#60067](https://github.com/angular/angular/pull/60067)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4c9d09c643](https://github.com/angular/angular/commit/4c9d09c643cf1232d1f502ff7d6bd25709ba1c6a) | fix | provide correct rename info for elements ([#60088](https://github.com/angular/angular/pull/60088)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.1.7"></a>
 # 19.1.7 (2025-02-19)
 ### common
