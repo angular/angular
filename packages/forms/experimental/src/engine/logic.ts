@@ -5,4 +5,6 @@ export class LogicNode {
 
   element?: LogicNode;
   readonly children = new Map<PropertyKey, LogicNode>();
+
+  constructor(readonly parentDepths: number[]) {}
 }

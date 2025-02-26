@@ -73,7 +73,7 @@ export class FormNode {
 
   constructor(
     readonly value: WritableSignal<unknown>,
-    private readonly parent?: FormNode,
+    readonly parent?: FormNode,
     private readonly logic?: LogicNode,
   ) {
     this.childrenMap = linkedSignal<unknown, Map<PropertyKey, FormNode>>({
