@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {APP_ID, Component, destroyPlatform, ErrorHandler, PLATFORM_ID} from '@angular/core';
+import {
+  APP_ID,
+  Component,
+  destroyPlatform,
+  Directive,
+  ErrorHandler,
+  HostListener,
+  PLATFORM_ID,
+} from '@angular/core';
 import {withEventReplay} from '@angular/platform-browser';
 
 import {EventPhase} from '@angular/core/primitives/event-dispatch';
@@ -181,6 +189,128 @@ describe('event replay', () => {
       hydrationFeatures,
     });
     expect(outerOnClickSpy).toHaveBeenCalledBefore(innerOnClickSpy);
+  });
+
+  describe('host bindings', () => {
+    it('should not error when when binding to document:click on a container', async () => {
+      const clickSpy = jasmine.createSpy();
+      @Directive({
+        selector: '[add-listener]',
+      })
+      class AddGlobalListener {
+        @HostListener('document:click')
+        handleClick = clickSpy;
+      }
+
+      @Component({
+        selector: 'app',
+        template: `
+          <ng-container add-listener>
+            <button id="click-me">Click me!</button>
+          </ng-container>`,
+        imports: [AddGlobalListener],
+      })
+      class AppComponent {}
+
+      const appId = 'custom-app-id';
+      const providers = [{provide: APP_ID, useValue: appId}];
+      const hydrationFeatures = () => [withEventReplay()];
+
+      const html = await ssr(AppComponent, {envProviders: providers, hydrationFeatures});
+      const ssrContents = getAppContents(html);
+      const doc = getDocument();
+
+      prepareEnvironment(doc, ssrContents);
+      resetTViewsFor(AppComponent);
+      const clickMe = doc.getElementById('click-me')!;
+      clickMe.click();
+      await hydrate(doc, AppComponent, {
+        envProviders: [{provide: PLATFORM_ID, useValue: 'browser'}, ...providers],
+        hydrationFeatures,
+      });
+
+      expect(clickSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not error when when binding to window:click on a container', async () => {
+      const clickSpy = jasmine.createSpy();
+      @Directive({
+        selector: '[add-listener]',
+      })
+      class AddGlobalListener {
+        @HostListener('window:click')
+        handleClick = clickSpy;
+      }
+
+      @Component({
+        selector: 'app',
+        template: `
+          <ng-container add-listener>
+            <button id="click-me">Click me!</button>
+          </ng-container>`,
+        imports: [AddGlobalListener],
+      })
+      class AppComponent {}
+
+      const appId = 'custom-app-id';
+      const providers = [{provide: APP_ID, useValue: appId}];
+      const hydrationFeatures = () => [withEventReplay()];
+
+      const html = await ssr(AppComponent, {envProviders: providers, hydrationFeatures});
+      const ssrContents = getAppContents(html);
+      const doc = getDocument();
+
+      prepareEnvironment(doc, ssrContents);
+      resetTViewsFor(AppComponent);
+      const clickMe = doc.getElementById('click-me')!;
+      clickMe.click();
+      await hydrate(doc, AppComponent, {
+        envProviders: [{provide: PLATFORM_ID, useValue: 'browser'}, ...providers],
+        hydrationFeatures,
+      });
+
+      expect(clickSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not error when when binding to body:click on a container', async () => {
+      const clickSpy = jasmine.createSpy();
+      @Directive({
+        selector: '[add-listener]',
+      })
+      class AddGlobalListener {
+        @HostListener('body:click')
+        handleClick = clickSpy;
+      }
+
+      @Component({
+        selector: 'app',
+        template: `
+          <ng-container add-listener>
+            <button id="click-me">Click me!</button>
+          </ng-container>`,
+        imports: [AddGlobalListener],
+      })
+      class AppComponent {}
+
+      const appId = 'custom-app-id';
+      const providers = [{provide: APP_ID, useValue: appId}];
+      const hydrationFeatures = () => [withEventReplay()];
+
+      const html = await ssr(AppComponent, {envProviders: providers, hydrationFeatures});
+      const ssrContents = getAppContents(html);
+      const doc = getDocument();
+
+      prepareEnvironment(doc, ssrContents);
+      resetTViewsFor(AppComponent);
+      const clickMe = doc.getElementById('click-me')!;
+      clickMe.click();
+      await hydrate(doc, AppComponent, {
+        envProviders: [{provide: PLATFORM_ID, useValue: 'browser'}, ...providers],
+        hydrationFeatures,
+      });
+
+      expect(clickSpy).not.toHaveBeenCalled();
+    });
   });
 
   it('should remove jsaction attributes, but continue listening to events.', async () => {

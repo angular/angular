@@ -57,8 +57,8 @@ export const sharedStashFunction = (rEl: RElement, eventType: string, listenerFn
 };
 
 export const sharedMapFunction = (rEl: RElement, jsActionMap: Map<string, Set<Element>>) => {
-  let blockName = rEl.getAttribute(DEFER_BLOCK_SSR_ID_ATTRIBUTE) ?? '';
   const el = rEl as unknown as Element;
+  let blockName = el.getAttribute(DEFER_BLOCK_SSR_ID_ATTRIBUTE) ?? '';
   const blockSet = jsActionMap.get(blockName) ?? new Set<Element>();
   if (!blockSet.has(el)) {
     blockSet.add(el);
