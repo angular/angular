@@ -23,6 +23,7 @@
   "AnonymousSubject",
   "ApplicationInitStatus",
   "ApplicationRef",
+  "BINDING",
   "BROWSER_ANIMATIONS_PROVIDERS",
   "BROWSER_MODULE_PROVIDERS",
   "BaseAnimationRenderer",

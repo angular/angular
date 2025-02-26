@@ -16,7 +16,7 @@ import {
 import {Injector} from '../di/injector';
 import {EnvironmentInjector} from '../di/r3_injector';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {Type} from '../interface/type';
+import {Type, Writable} from '../interface/type';
 import {
   ComponentFactory as AbstractComponentFactory,
   ComponentRef as AbstractComponentRef,
@@ -40,7 +40,7 @@ import {
   locateHostElement,
   setAllInputsForProperty,
 } from './instructions/shared';
-import {ComponentDef, DirectiveDef} from './interfaces/definition';
+import {ComponentDef, ComponentTemplate, DirectiveDef, RenderFlags} from './interfaces/definition';
 import {InputFlags} from './interfaces/input_flags';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode} from './interfaces/node';
 import {RElement, RNode} from './interfaces/renderer_dom';
@@ -50,6 +50,7 @@ import {
   LView,
   LViewEnvironment,
   LViewFlags,
+  TView,
   TVIEW,
   TViewType,
 } from './interfaces/view';
@@ -73,6 +74,7 @@ import {getComponentLViewByIndex, getTNode} from './util/view_utils';
 import {elementEndFirstCreatePass, elementStartFirstCreatePass} from './view/elements';
 import {ViewRef} from './view_ref';
 import {createLView, createTView, getInitialLViewFlagsFromDef} from './view/construction';
+import {BINDING, Binding, DirectiveWithBindings} from './dynamic_bindings';
 
 export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
   /**
@@ -231,7 +233,8 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
     projectableNodes?: any[][] | undefined,
     rootSelectorOrNode?: any,
     environmentInjector?: NgModuleRef<any> | EnvironmentInjector | undefined,
-    directives?: Type<unknown>[],
+    directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[],
+    componentBindings?: Binding[],
   ): AbstractComponentRef<T> {
     profiler(ProfilerEvent.DynamicComponentStart);
 
@@ -240,25 +243,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
       const cmpDef = this.componentDef;
       ngDevMode && verifyNotAnOrphanComponent(cmpDef);
 
-      const tAttributes = rootSelectorOrNode
-        ? ['ng-version', '0.0.0-PLACEHOLDER']
-        : // Extract attributes and classes from the first selector only to match VE behavior.
-          extractAttrsAndClassesFromSelector(this.componentDef.selectors[0]);
-      // Create the root view. Uses empty TView and ContentTemplate.
-      const rootTView = createTView(
-        TViewType.Root,
-        null,
-        null,
-        1,
-        0,
-        null,
-        null,
-        null,
-        null,
-        [tAttributes],
-        null,
-      );
-
+      const rootTView = createRootTView(rootSelectorOrNode, cmpDef, componentBindings, directives);
       const rootViewInjector = createRootViewInjector(
         cmpDef,
         environmentInjector || this.ngModule,
@@ -293,7 +278,8 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
       const directivesToApply: DirectiveDef<unknown>[] = [this.componentDef];
 
       if (directives) {
-        for (const directiveType of directives) {
+        for (const directive of directives) {
+          const directiveType = typeof directive === 'function' ? directive : directive.type;
           const directiveDef = getDirectiveDef(directiveType, true);
 
           if (ngDevMode && !directiveDef.standalone) {
@@ -374,6 +360,98 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
       setActiveConsumer(prevConsumer);
     }
   }
+}
+
+function createRootTView(
+  rootSelectorOrNode: any,
+  componentDef: ComponentDef<unknown>,
+  componentBindings: Binding[] | undefined,
+  directives: (Type<unknown> | DirectiveWithBindings<unknown>)[] | undefined,
+): TView {
+  const tAttributes = rootSelectorOrNode
+    ? ['ng-version', '0.0.0-PLACEHOLDER']
+    : // Extract attributes and classes from the first selector only to match VE behavior.
+      extractAttrsAndClassesFromSelector(componentDef.selectors[0]);
+  let creationBindings: Binding[] | null = null;
+  let updateBindings: Binding[] | null = null;
+  let varsToAllocate = 0;
+
+  if (componentBindings) {
+    for (const binding of componentBindings) {
+      varsToAllocate += binding[BINDING].requiredVars;
+
+      if (binding.create) {
+        (binding as Writable<Binding>).target = componentDef;
+        (creationBindings ??= []).push(binding);
+      }
+
+      if (binding.update) {
+        (binding as Writable<Binding>).target = componentDef;
+        (updateBindings ??= []).push(binding);
+      }
+    }
+  }
+
+  if (directives) {
+    for (const directive of directives) {
+      if (typeof directive !== 'function') {
+        const def: DirectiveDef<unknown> = getDirectiveDef(directive.type, true);
+
+        for (const binding of directive.bindings) {
+          varsToAllocate += binding[BINDING].requiredVars;
+
+          if (binding.create) {
+            (binding as Writable<Binding>).target = def;
+            (creationBindings ??= []).push(binding);
+          }
+
+          if (binding.update) {
+            (binding as Writable<Binding>).target = def;
+            (updateBindings ??= []).push(binding);
+          }
+        }
+      }
+    }
+  }
+
+  const rootTView = createTView(
+    TViewType.Root,
+    null,
+    getRootTViewTemplate(creationBindings, updateBindings),
+    1,
+    varsToAllocate,
+    null,
+    null,
+    null,
+    null,
+    [tAttributes],
+    null,
+  );
+
+  return rootTView;
+}
+
+function getRootTViewTemplate(
+  creationBindings: Binding[] | null,
+  updateBindings: Binding[] | null,
+): ComponentTemplate<unknown> | null {
+  if (!creationBindings && !updateBindings) {
+    return null;
+  }
+
+  return (flags) => {
+    if (flags & RenderFlags.Create && creationBindings) {
+      for (const binding of creationBindings) {
+        binding.create!();
+      }
+    }
+
+    if (flags & RenderFlags.Update && updateBindings) {
+      for (const binding of updateBindings) {
+        binding.update!();
+      }
+    }
+  };
 }
 
 /**

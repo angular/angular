@@ -23,6 +23,7 @@ import {
   InjectionToken,
   Injector,
   Input,
+  inputBinding,
   NgModule,
   NgModuleRef,
   NO_ERRORS_SCHEMA,
@@ -35,6 +36,7 @@ import {
   RendererFactory2,
   RendererType2,
   Sanitizer,
+  signal,
   TemplateRef,
   ViewChild,
   ViewChildren,
@@ -1857,6 +1859,68 @@ describe('ViewContainerRef', () => {
           '<p vcref=""></p><host-component attr-three="host" attr-one="one" ' +
             'attr-two="two" class="host class-1 class-2"></host-component>',
         );
+      });
+
+      it('should support binding to inputs of a component', () => {
+        let dirInstance!: Dir;
+
+        @Directive({selector: '[dir]'})
+        class Dir {
+          @Input() dirInput = '';
+
+          constructor() {
+            dirInstance = this;
+          }
+        }
+
+        @Component({
+          template: 'Value: {{hostInput}}',
+          standalone: false,
+        })
+        class HostComponent {
+          @Input() hostInput = '';
+        }
+
+        TestBed.resetTestingModule();
+        TestBed.configureTestingModule({
+          declarations: [EmbeddedViewInsertionComp, VCRefDirective, HostComponent],
+        });
+        const hostValue = signal('initial');
+        let dirValue = 'initial';
+        const fixture = TestBed.createComponent(EmbeddedViewInsertionComp);
+        const vcRefDir = fixture.debugElement
+          .query(By.directive(VCRefDirective))
+          .injector.get(VCRefDirective);
+        fixture.detectChanges();
+
+        const ref = vcRefDir.vcref.createComponent(HostComponent, {
+          index: 0,
+          bindings: [inputBinding('hostInput', hostValue)],
+          directives: [
+            {
+              type: Dir,
+              bindings: [inputBinding('dirInput', () => dirValue)],
+            },
+          ],
+        });
+        fixture.detectChanges();
+
+        expect(ref.instance.hostInput).toBe('initial');
+        expect(dirInstance.dirInput).toBe('initial');
+        expect(fixture.nativeElement.textContent).toContain('Value: initial');
+
+        hostValue.set('host changed');
+        fixture.detectChanges();
+
+        expect(ref.instance.hostInput).toBe('host changed');
+        expect(dirInstance.dirInput).toBe('initial');
+        expect(fixture.nativeElement.textContent).toContain('Value: host changed');
+
+        dirValue = 'dir changed';
+        fixture.detectChanges();
+        expect(ref.instance.hostInput).toBe('host changed');
+        expect(dirInstance.dirInput).toBe('dir changed');
+        expect(fixture.nativeElement.textContent).toContain('Value: host changed');
       });
 
       describe('`options` argument handling', () => {

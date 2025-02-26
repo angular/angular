@@ -19,8 +19,13 @@ import {
   InjectionToken,
   Injector,
   Input,
+  inputBinding,
   NgModule,
+  OnChanges,
   OnDestroy,
+  signal,
+  SimpleChange,
+  SimpleChanges,
   Type,
   ViewChild,
 } from '@angular/core';
@@ -563,6 +568,29 @@ describe('createComponent', () => {
       }).toThrowError(/Type NotADir does not have 'ɵdir' property/);
     });
 
+    it('should throw if a non-directive class is attached using the DirectiveWithBinding syntax', () => {
+      class NotADir {}
+
+      @Component({template: ''})
+      class HostComponent {}
+
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+
+      expect(() => {
+        createComponent(HostComponent, {
+          hostElement,
+          environmentInjector,
+          directives: [
+            {
+              type: NotADir,
+              bindings: [],
+            },
+          ],
+        });
+      }).toThrowError(/Type NotADir does not have 'ɵdir' property/);
+    });
+
     it('should throw if a component class is attached', () => {
       @Component({template: '', standalone: true})
       class NotADir {}
@@ -601,6 +629,460 @@ describe('createComponent', () => {
       }).toThrowError(
         /The Dir directive must be standalone in order to be applied to a dynamically-created component/,
       );
+    });
+  });
+
+  describe('root component inputs', () => {
+    it('should be able to bind to inputs of the root component', () => {
+      @Component({template: '{{one}} - {{two}} - {{other}}'})
+      class RootComp {
+        @Input() one = '';
+        @Input({alias: 'twoAlias'}) two = '';
+        other = 'other';
+      }
+
+      const oneValue = signal('initial');
+      let twoValue = 'initial';
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const ref = createComponent(RootComp, {
+        hostElement,
+        environmentInjector,
+        bindings: [inputBinding('one', oneValue), inputBinding('twoAlias', () => twoValue)],
+      });
+      ref.changeDetectorRef.detectChanges();
+      expect(hostElement.textContent).toBe('initial - initial - other');
+
+      oneValue.set('1');
+      ref.changeDetectorRef.detectChanges();
+      expect(hostElement.textContent).toBe('1 - initial - other');
+
+      twoValue = '1';
+      ref.changeDetectorRef.detectChanges();
+      expect(hostElement.textContent).toBe('1 - 1 - other');
+
+      oneValue.set('2');
+      twoValue = '2';
+      ref.changeDetectorRef.detectChanges();
+      expect(hostElement.textContent).toBe('2 - 2 - other');
+    });
+
+    it('should not bind root component inputs to directives', () => {
+      let dirInstance!: RootDir;
+
+      @Directive()
+      class RootDir {
+        @Input() someInput = '';
+
+        constructor() {
+          dirInstance = this;
+        }
+      }
+
+      @Component({template: ''})
+      class RootComp {
+        @Input() someInput = '';
+      }
+
+      const value = signal('initial');
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const ref = createComponent(RootComp, {
+        hostElement,
+        environmentInjector,
+        directives: [RootDir],
+        bindings: [inputBinding('someInput', value)],
+      });
+      ref.changeDetectorRef.detectChanges();
+      expect(ref.instance.someInput).toBe('initial');
+      expect(dirInstance.someInput).toBe('');
+
+      value.set('changed');
+      ref.changeDetectorRef.detectChanges();
+      expect(ref.instance.someInput).toBe('changed');
+      expect(dirInstance.someInput).toBe('');
+    });
+
+    it('should bind root component inputs to host directives of the root component, in addition to the component itself', () => {
+      let hostDirInstance!: RootHostDir;
+      let dirInstance!: RootDir;
+
+      @Directive()
+      class RootDir {
+        @Input() someInput = '';
+
+        constructor() {
+          dirInstance = this;
+        }
+      }
+
+      @Directive()
+      class RootHostDir {
+        @Input() someInput = '';
+
+        constructor() {
+          hostDirInstance = this;
+        }
+      }
+
+      @Component({
+        template: '',
+        hostDirectives: [{directive: RootHostDir, inputs: ['someInput']}],
+      })
+      class RootComp {
+        @Input() someInput = '';
+      }
+
+      const value = signal('initial');
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const ref = createComponent(RootComp, {
+        hostElement,
+        environmentInjector,
+        directives: [RootDir],
+        bindings: [inputBinding('someInput', value)],
+      });
+      ref.changeDetectorRef.detectChanges();
+      expect(ref.instance.someInput).toBe('initial');
+      expect(hostDirInstance.someInput).toBe('initial');
+      expect(dirInstance.someInput).toBe('');
+
+      value.set('changed');
+      ref.changeDetectorRef.detectChanges();
+      expect(ref.instance.someInput).toBe('changed');
+      expect(hostDirInstance.someInput).toBe('changed');
+      expect(dirInstance.someInput).toBe('');
+    });
+
+    it('should bind to inputs of host directives of directives applied to the root component', () => {
+      let hostDirInstance!: RootHostDir;
+
+      @Directive()
+      class RootHostDir {
+        @Input() someInput = '';
+
+        constructor() {
+          hostDirInstance = this;
+        }
+      }
+
+      @Directive({
+        hostDirectives: [
+          {
+            directive: RootHostDir,
+            inputs: ['someInput: alias'],
+          },
+        ],
+      })
+      class RootDir {}
+
+      @Component({template: ''})
+      class RootComp {}
+
+      const value = signal('initial');
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const ref = createComponent(RootComp, {
+        hostElement,
+        environmentInjector,
+        directives: [
+          {
+            type: RootDir,
+            bindings: [inputBinding('alias', value)],
+          },
+        ],
+      });
+      ref.changeDetectorRef.detectChanges();
+      expect(hostDirInstance.someInput).toBe('initial');
+
+      value.set('changed');
+      ref.changeDetectorRef.detectChanges();
+      expect(hostDirInstance.someInput).toBe('changed');
+    });
+
+    it('should bind to aliased inputs of host directives of the root component', () => {
+      let dirInstance!: RootHostDir;
+
+      @Directive()
+      class RootHostDir {
+        @Input({alias: 'someAlias'}) someInput = '';
+
+        constructor() {
+          dirInstance = this;
+        }
+      }
+
+      @Component({
+        template: '',
+        hostDirectives: [{directive: RootHostDir, inputs: ['someAlias: alias']}],
+      })
+      class RootComp {}
+
+      const value = signal('initial');
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const ref = createComponent(RootComp, {
+        hostElement,
+        environmentInjector,
+        bindings: [inputBinding('alias', value)],
+      });
+      ref.changeDetectorRef.detectChanges();
+      expect(dirInstance.someInput).toBe('initial');
+
+      value.set('changed');
+      ref.changeDetectorRef.detectChanges();
+      expect(dirInstance.someInput).toBe('changed');
+    });
+
+    it('should bind input to directives, but not the root component', () => {
+      let dir1Instance!: RootDir1;
+      let dir2Instance!: RootDir2;
+
+      @Directive()
+      class RootDir1 {
+        @Input() someInput = '';
+
+        constructor() {
+          dir1Instance = this;
+        }
+      }
+
+      @Directive()
+      class RootDir2 {
+        @Input() someOtherInput = '';
+
+        constructor() {
+          dir2Instance = this;
+        }
+      }
+
+      @Component({template: ''})
+      class RootComp {
+        @Input() someInput = '';
+        @Input() someOtherInput = '';
+      }
+
+      const oneValue = signal('initial');
+      const twoValue = signal('initial');
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const ref = createComponent(RootComp, {
+        hostElement,
+        environmentInjector,
+        directives: [
+          {
+            type: RootDir1,
+            bindings: [inputBinding('someInput', oneValue)],
+          },
+          {
+            type: RootDir2,
+            bindings: [inputBinding('someOtherInput', twoValue)],
+          },
+        ],
+      });
+      ref.changeDetectorRef.detectChanges();
+      expect(ref.instance.someInput).toBe('');
+      expect(ref.instance.someOtherInput).toBe('');
+      expect(dir1Instance.someInput).toBe('initial');
+      expect(dir2Instance.someOtherInput).toBe('initial');
+
+      oneValue.set('one changed');
+      twoValue.set('two changed');
+      ref.changeDetectorRef.detectChanges();
+      expect(ref.instance.someInput).toBe('');
+      expect(ref.instance.someOtherInput).toBe('');
+      expect(dir1Instance.someInput).toBe('one changed');
+      expect(dir2Instance.someOtherInput).toBe('two changed');
+    });
+
+    it('should invoke ngOnChanges when binding to a root component input', () => {
+      const changes: SimpleChange[] = [];
+
+      @Component({template: ''})
+      class RootComp implements OnChanges {
+        @Input() someInput = '';
+
+        ngOnChanges(c: SimpleChanges) {
+          changes.push(c['someInput']);
+        }
+      }
+
+      const value = signal('initial');
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const ref = createComponent(RootComp, {
+        hostElement,
+        environmentInjector,
+        bindings: [inputBinding('someInput', value)],
+      });
+      ref.changeDetectorRef.detectChanges();
+      expect(changes).toEqual([
+        jasmine.objectContaining({
+          firstChange: true,
+          previousValue: undefined,
+          currentValue: 'initial',
+        }),
+      ]);
+
+      value.set('1');
+      ref.changeDetectorRef.detectChanges();
+      expect(changes).toEqual([
+        jasmine.objectContaining({
+          firstChange: true,
+          previousValue: undefined,
+          currentValue: 'initial',
+        }),
+        jasmine.objectContaining({
+          firstChange: false,
+          previousValue: 'initial',
+          currentValue: '1',
+        }),
+      ]);
+    });
+
+    it('should transform input bound to the root component', () => {
+      @Component({template: ''})
+      class RootComp {
+        @Input({transform: (value: string) => parseInt(value)}) someInput = -1;
+      }
+
+      const value = signal(0);
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const ref = createComponent(RootComp, {
+        hostElement,
+        environmentInjector,
+        bindings: [inputBinding('someInput', value)],
+      });
+      ref.changeDetectorRef.detectChanges();
+      expect(ref.instance.someInput).toBe(0);
+
+      value.set(1);
+      ref.changeDetectorRef.detectChanges();
+      expect(ref.instance.someInput).toBe(1);
+    });
+
+    it('should bind different values to inputs that all have the same name', () => {
+      let dir1Instance!: RootDir1;
+      let dir2Instance!: RootDir2;
+
+      @Directive()
+      class RootDir1 {
+        @Input() someInput = '';
+
+        constructor() {
+          dir1Instance = this;
+        }
+      }
+
+      @Directive()
+      class RootDir2 {
+        @Input() someInput = '';
+
+        constructor() {
+          dir2Instance = this;
+        }
+      }
+
+      @Component({template: ''})
+      class RootComp {
+        @Input() someInput = '';
+      }
+
+      const rootValue = signal('initial');
+      const oneValue = signal('initial');
+      const twoValue = signal('initial');
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const ref = createComponent(RootComp, {
+        hostElement,
+        environmentInjector,
+        bindings: [inputBinding('someInput', rootValue)],
+        directives: [
+          {
+            type: RootDir1,
+            bindings: [inputBinding('someInput', oneValue)],
+          },
+          {
+            type: RootDir2,
+            bindings: [inputBinding('someInput', twoValue)],
+          },
+        ],
+      });
+      ref.changeDetectorRef.detectChanges();
+      expect(ref.instance.someInput).toBe('initial');
+      expect(dir1Instance.someInput).toBe('initial');
+      expect(dir2Instance.someInput).toBe('initial');
+
+      rootValue.set('root changed');
+      oneValue.set('one changed');
+      twoValue.set('two changed');
+      ref.changeDetectorRef.detectChanges();
+      expect(ref.instance.someInput).toBe('root changed');
+      expect(dir1Instance.someInput).toBe('one changed');
+      expect(dir2Instance.someInput).toBe('two changed');
+    });
+
+    it('should only invoke setters if the value has changed', () => {
+      let setterCount = 0;
+
+      @Component({template: ''})
+      class RootComp {
+        @Input()
+        set someInput(_: string) {
+          setterCount++;
+        }
+      }
+
+      const value = signal('initial');
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const ref = createComponent(RootComp, {
+        hostElement,
+        environmentInjector,
+        bindings: [inputBinding('someInput', value)],
+      });
+      expect(setterCount).toBe(0);
+
+      ref.changeDetectorRef.detectChanges();
+      expect(setterCount).toBe(1);
+      ref.changeDetectorRef.detectChanges();
+      expect(setterCount).toBe(1);
+
+      value.set('changed');
+      ref.changeDetectorRef.detectChanges();
+      expect(setterCount).toBe(2);
+      ref.changeDetectorRef.detectChanges();
+      expect(setterCount).toBe(2);
+    });
+
+    it('should throw if target does not have an input with a specific name', () => {
+      @Component({template: ''})
+      class RootComp {
+        @Input() someInput = '';
+      }
+
+      @Directive()
+      class RootDir {}
+
+      const value = signal('initial');
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const ref = createComponent(RootComp, {
+        hostElement,
+        environmentInjector,
+        directives: [
+          {
+            type: RootDir,
+            // `someInput` exists on `RootComp`, but not `RootDir`.
+            bindings: [inputBinding('someInput', value)],
+          },
+        ],
+      });
+
+      expect(() => {
+        ref.changeDetectorRef.detectChanges();
+      }).toThrowError(/RootDir does not have an input with a public name of "someInput"/);
     });
   });
 
