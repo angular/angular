@@ -45,7 +45,7 @@ bootstrapApplication(AppComponent, {
   `provideAnimationsAsync` in the `bootstrapApplication` function call.
 </docs-callout>
 
-For `NgModule` based applications import `BrowserAnimationsModule`, which introduces the animation capabilities into your Angular root application module.
+For `NgModule` based applications add `provideAnimationsAsync` to the list of providers, which introduces the animation capabilities into your Angular root application module.
 
 <docs-code header="src/app/app.module.ts" path="adev/src/content/examples/animations/src/app/app.module.1.ts"/>
 </docs-step>
