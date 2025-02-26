@@ -7,7 +7,28 @@
  */
 
 import {InjectionToken} from './injection_token';
+import {NotFound} from './not_found';
 
 export interface Injector {
-  get<T>(token: InjectionToken<T>, options: unknown): T | undefined;
+  retrieve?<T>(token: InjectionToken<T>, options?: unknown): T | NotFound;
+}
+
+/**
+ * Current injector value used by `inject`.
+ * - `undefined`: it is an error to call `inject`
+ * - `null`: `inject` can be called but there is no injector (limp-mode).
+ * - Injector instance: Use the injector for resolution.
+ */
+let _currentInjector: Injector | undefined | null = undefined;
+
+export function getCurrentInjector(): Injector | undefined | null {
+  return _currentInjector;
+}
+
+export function setCurrentInjector(
+  injector: Injector | null | undefined,
+): Injector | undefined | null {
+  const former = _currentInjector;
+  _currentInjector = injector;
+  return former;
 }
