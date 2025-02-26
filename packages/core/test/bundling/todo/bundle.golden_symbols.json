@@ -8,6 +8,7 @@
   "ApplicationInitStatus",
   "ApplicationModule",
   "ApplicationRef",
+  "BINDING",
   "BROWSER_MODULE_PROVIDERS",
   "BehaviorSubject",
   "BrowserDomAdapter",

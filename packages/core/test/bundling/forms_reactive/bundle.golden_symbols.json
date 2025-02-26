@@ -12,6 +12,7 @@
   "ApplicationInitStatus",
   "ApplicationModule",
   "ApplicationRef",
+  "BINDING",
   "BROWSER_MODULE_PROVIDERS",
   "BaseControlValueAccessor",
   "BehaviorSubject",

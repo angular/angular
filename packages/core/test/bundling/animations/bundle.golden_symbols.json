@@ -26,6 +26,7 @@
   "ApplicationInitStatus",
   "ApplicationModule",
   "ApplicationRef",
+  "BINDING",
   "BROWSER_ANIMATIONS_PROVIDERS",
   "BROWSER_MODULE_PROVIDERS",
   "BROWSER_NOOP_ANIMATIONS_PROVIDERS",

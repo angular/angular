@@ -6,6 +6,7 @@
   "AnonymousSubject",
   "ApplicationInitStatus",
   "ApplicationRef",
+  "BINDING",
   "BROWSER_MODULE_PROVIDERS",
   "BehaviorSubject",
   "BrowserDomAdapter",
@@ -379,5 +380,6 @@
   "ɵɵdefineComponent",
   "ɵɵdefineInjectable",
   "ɵɵdirectiveInject",
-  "ɵɵinject"
+  "ɵɵinject",
+  "ɵɵtext"
 ]

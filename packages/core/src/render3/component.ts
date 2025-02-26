@@ -13,6 +13,7 @@ import {ComponentRef} from '../linker/component_factory';
 
 import {ComponentFactory} from './component_ref';
 import {getComponentDef} from './def_getters';
+import {Binding, DirectiveWithBindings} from './dynamic_bindings';
 import {assertComponentDef} from './errors';
 
 /**
@@ -74,6 +75,7 @@ import {assertComponentDef} from './errors';
  * `[[element1, element2], [element3]]`: projects `element1` and `element2` into one `<ng-content>`,
  * and `element3` into a separate `<ng-content>`.
  *  * `directives` (optional): Directives that should be applied to the component.
+ *  * `binding` (optional): Bindings to apply to the root component.
  * @returns ComponentRef instance that represents a given Component.
  *
  * @publicApi
@@ -85,7 +87,8 @@ export function createComponent<C>(
     hostElement?: Element;
     elementInjector?: Injector;
     projectableNodes?: Node[][];
-    directives?: Type<unknown>[];
+    directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
+    bindings?: Binding[];
   },
 ): ComponentRef<C> {
   ngDevMode && assertComponentDef(component);
@@ -98,6 +101,7 @@ export function createComponent<C>(
     options.hostElement,
     options.environmentInjector,
     options.directives,
+    options.bindings,
   );
 }
 

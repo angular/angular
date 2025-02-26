@@ -6,6 +6,7 @@
   "AnonymousSubject",
   "ApplicationInitStatus",
   "ApplicationRef",
+  "BINDING",
   "BehaviorSubject",
   "BrowserDomAdapter",
   "CIRCULAR",
