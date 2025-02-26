@@ -1724,7 +1724,7 @@ export interface HttpResourceOptions<TResult, TRaw> {
     defaultValue?: NoInfer<TResult>;
     equal?: ValueEqualityFn<NoInfer<TResult>>;
     injector?: Injector;
-    map?: (value: TRaw) => TResult;
+    parse?: (value: TRaw) => TResult;
 }
 
 // @public
