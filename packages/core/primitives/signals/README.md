@@ -71,8 +71,8 @@ Effects do not execute synchronously with the set (see the section on glitch-fre
 
 ```typescript
 const counter = signal(0);
-const untrackedCounter = signal(0)
-effect(() => console.log(`counter: ${counter()}, untrackedCounter: ${untracked(untrackedCounter)}`);
+const untrackedCounter = signal(0);
+effect(() => console.log(`counter: ${counter()}, untrackedCounter: ${untracked(untrackedCounter)}`));
 // counter: 0, untrackedCounter: 0
 
 untrackedCounter.set(1);
