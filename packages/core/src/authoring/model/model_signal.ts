@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {producerAccessed, SIGNAL, signalSetFn} from '@angular/core/primitives/signals';
+import {
+  producerAccessed,
+  SIGNAL,
+  signalSetFn,
+  ɵTYPE_MARKER,
+} from '@angular/core/primitives/signals';
 
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {Signal} from '../../render3/reactivity/api';
@@ -103,6 +108,7 @@ export function createModelSignal<T>(initialValue: T, opts?: ModelOptions): Mode
       | typeof ɵINPUT_SIGNAL_BRAND_READ_TYPE
       | typeof ɵINPUT_SIGNAL_BRAND_WRITE_TYPE
       | typeof ɵWRITABLE_SIGNAL
+      | typeof ɵTYPE_MARKER
     >;
 }
 

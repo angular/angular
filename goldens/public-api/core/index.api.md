@@ -10,6 +10,7 @@ import { SIGNAL } from '@angular/core/primitives/signals';
 import { SignalNode } from '@angular/core/primitives/signals';
 import { Subject } from 'rxjs';
 import { Subscription } from 'rxjs';
+import { ɵTYPE_MARKER } from '@angular/core/primitives/signals';
 
 // @public
 export interface AbstractType<T> extends Function {
@@ -1713,7 +1714,7 @@ export interface SelfDecorator {
 export function setTestabilityGetter(getter: GetTestability): void;
 
 // @public
-export type Signal<T> = (() => T) & {
+export type Signal<T> = SignalFn<T> & {
     [SIGNAL]: unknown;
 };
 
@@ -2025,9 +2026,9 @@ export interface WritableResource<T> extends Resource<T> {
 export interface WritableSignal<T> extends Signal<T> {
     // (undocumented)
     [ɵWRITABLE_SIGNAL]: T;
-    asReadonly(): Signal<T>;
-    set(value: T): void;
-    update(updateFn: (value: T) => T): void;
+    asReadonly(): Signal<SignalType<this>>;
+    set(value: SignalType<this>): void;
+    update(updateFn: (value: SignalType<this>) => SignalType<this>): void;
 }
 
 // (No @packageDocumentation comment for this package)
