@@ -1,7 +1,6 @@
 import {computed, signal} from '@angular/core';
+import {array, disabled, form} from '../../src/api/schema';
 import {FormNode} from '../../src/engine/node';
-import {LogicNode} from '../../src/engine/logic';
-import {disabled, schema} from '../../src/api/schema';
 
 describe('Node', () => {
   it('is untouched initially', () => {
@@ -116,12 +115,12 @@ describe('Node', () => {
     });
 
     it('should support element-level logic', () => {
-      const value = signal([1, 2, 3]);
-      const logic = new LogicNode();
-      logic.element = new LogicNode();
-      // Disabled if even.
-      logic.element.disabled = (node: FormNode) => (node.value() as number) % 2 === 0;
-      const node = new FormNode(value, undefined, logic);
+      const node = form(signal([1, 2, 3]), (p) => {
+        array(p, (a) => {
+          a;
+          disabled(a, (v) => v % 2 === 0);
+        });
+      });
 
       expect(node.getChild(0)!.disabled()).toBe(false);
       expect(node.getChild(1)!.disabled()).toBe(true);
@@ -129,14 +128,15 @@ describe('Node', () => {
     });
 
     it('should support dynamic elements', () => {
-      const value = signal([1, 2, 3]);
-      const logic = new LogicNode();
-      logic.element = new LogicNode();
-      // Disabled if even.
-      logic.element.disabled = (node: FormNode) => (node.value() as number) % 2 === 0;
-      const node = new FormNode(value, undefined, logic);
+      const model = signal([1, 2, 3]);
+      const node = form(model, (p) => {
+        array(p, (el) => {
+          // Disabled if even.
+          disabled(el, (v) => v % 2 === 0);
+        });
+      });
 
-      value.update((v) => [...v, 4]);
+      model.update((v) => [...v, 4]);
       expect(node.getChild(3)!.disabled()).toBe(true);
     });
 
@@ -154,11 +154,9 @@ describe('Node', () => {
 
   describe('disabled', () => {
     it('should allow logic to make a node disabled', () => {
-      const value = signal({a: 1, b: 2});
-      const logic = schema<ReturnType<typeof value>>((p) => {
+      const node = form(signal({a: 1, b: 2}), (p) => {
         disabled(p.a, (v) => v !== 2);
       });
-      const node = new FormNode(value, undefined, logic);
 
       const a = node.getChild('a')!;
 
