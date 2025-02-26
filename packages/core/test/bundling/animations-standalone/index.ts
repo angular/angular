@@ -34,4 +34,6 @@ class AnimationsComponent {
 })
 class RootComponent {}
 
-(window as any).waitForApp = bootstrapApplication(RootComponent, {providers: provideAnimations()});
+(window as any).waitForApp = bootstrapApplication(RootComponent, {
+  providers: [provideAnimations()],
+});
