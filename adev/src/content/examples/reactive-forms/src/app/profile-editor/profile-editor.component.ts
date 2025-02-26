@@ -1,6 +1,6 @@
 // #docplaster
 import {Component} from '@angular/core';
-import {FormBuilder} from '@angular/forms';
+import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
 // #docregion validator-imports
 import {Validators} from '@angular/forms';
 // #enddocregion validator-imports
@@ -10,7 +10,7 @@ import {FormArray} from '@angular/forms';
   selector: 'app-profile-editor',
   templateUrl: './profile-editor.component.html',
   styleUrls: ['./profile-editor.component.css'],
-  standalone: false,
+  imports: [ReactiveFormsModule],
 })
 export class ProfileEditorComponent {
   // #docregion required-validator, aliases
