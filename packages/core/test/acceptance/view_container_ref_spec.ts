@@ -1790,6 +1790,75 @@ describe('ViewContainerRef', () => {
         );
       });
 
+      it('should support attaching directives when creating the component', () => {
+        const logs: string[] = [];
+
+        @Directive({
+          selector: '[dir-one]',
+          host: {
+            'class': 'class-1',
+            'attr-one': 'one',
+          },
+        })
+        class Dir1 {
+          constructor() {
+            logs.push('Dir1');
+          }
+        }
+
+        @Directive({
+          selector: 'dir-two',
+          host: {
+            'class': 'class-2',
+            'attr-two': 'two',
+          },
+        })
+        class Dir2 {
+          constructor() {
+            logs.push('Dir2');
+          }
+        }
+
+        @Component({
+          selector: 'host-component',
+          template: '',
+          standalone: false,
+          host: {
+            'class': 'host',
+            'attr-three': 'host',
+          },
+        })
+        class HostComponent {
+          constructor() {
+            logs.push('HostComponent');
+          }
+        }
+
+        TestBed.resetTestingModule();
+        TestBed.configureTestingModule({
+          declarations: [EmbeddedViewInsertionComp, VCRefDirective, HostComponent],
+        });
+        const fixture = TestBed.createComponent(EmbeddedViewInsertionComp);
+        const vcRefDir = fixture.debugElement
+          .query(By.directive(VCRefDirective))
+          .injector.get(VCRefDirective);
+        fixture.detectChanges();
+
+        expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>');
+
+        vcRefDir.vcref.createComponent(HostComponent, {
+          index: 0,
+          directives: [Dir1, Dir2],
+        });
+        fixture.detectChanges();
+
+        expect(logs).toEqual(['HostComponent', 'Dir1', 'Dir2']);
+        expect(getElementHtml(fixture.nativeElement)).toEqual(
+          '<p vcref=""></p><host-component attr-three="host" attr-one="one" ' +
+            'attr-two="two" class="host class-1 class-2"></host-component>',
+        );
+      });
+
       describe('`options` argument handling', () => {
         it('should work correctly when an empty object is provided', () => {
           fixture.componentInstance.viewContainerRef.createComponent(ChildA, {});

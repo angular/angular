@@ -29,7 +29,7 @@ import {Sanitizer} from '../sanitization/sanitizer';
 
 import {assertComponentType} from './assert';
 import {attachPatchData} from './context_discovery';
-import {getComponentDef} from './def_getters';
+import {getComponentDef, getDirectiveDef} from './def_getters';
 import {depsTracker} from './deps_tracker/deps_tracker';
 import {NodeInjector} from './di';
 import {reportUnknownPropertyError} from './instructions/element_validation';
@@ -231,6 +231,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
     projectableNodes?: any[][] | undefined,
     rootSelectorOrNode?: any,
     environmentInjector?: NgModuleRef<any> | EnvironmentInjector | undefined,
+    directives?: Type<unknown>[],
   ): AbstractComponentRef<T> {
     profiler(ProfilerEvent.DynamicComponentStart);
 
@@ -289,6 +290,24 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
         retrieveHydrationInfo(hostElement, rootViewInjector, true /* isRootView */),
       );
 
+      const directivesToApply: DirectiveDef<unknown>[] = [this.componentDef];
+
+      if (directives) {
+        for (const directiveType of directives) {
+          const directiveDef = getDirectiveDef(directiveType, true);
+
+          if (ngDevMode && !directiveDef.standalone) {
+            throw new RuntimeError(
+              RuntimeErrorCode.TYPE_IS_NOT_STANDALONE,
+              `The ${stringifyForError(directiveType)} directive must be standalone in ` +
+                `order to be applied to a dynamically-created component.`,
+            );
+          }
+
+          directivesToApply.push(directiveDef);
+        }
+      }
+
       rootLView[HEADER_OFFSET] = hostElement;
 
       // rootView is the parent when bootstrapping
@@ -306,14 +325,14 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
           rootTView,
           rootLView,
           '#host',
-          () => [this.componentDef],
+          () => directivesToApply,
           true,
           0,
         );
 
         // ---- element instruction
 
-        // TODO(crisbeto): in practice `hostRNode` should always be defined, but there are some
+        // TODO(crisbeto): in practice `hostElement` should always be defined, but there are some
         // tests where the renderer is mocked out and `undefined` is returned. We should update the
         // tests so that this check can be removed.
         if (hostElement) {
