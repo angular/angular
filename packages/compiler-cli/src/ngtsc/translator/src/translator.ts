@@ -395,10 +395,28 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
       throw new Error(`Unknown binary operator: ${o.BinaryOperator[ast.operator]}`);
     }
     return this.factory.createBinaryExpression(
-      ast.lhs.visitExpression(this, context),
+      this.visitBinaryOperand(/* isLeftSide */ true, ast.operator, ast.lhs, context),
       BINARY_OPERATORS.get(ast.operator)!,
-      ast.rhs.visitExpression(this, context),
+      this.visitBinaryOperand(/* isLeftSide */ false, ast.operator, ast.rhs, context),
     );
+  }
+
+  private visitBinaryOperand(
+    isLeftSide: boolean,
+    operator: o.BinaryOperator,
+    operand: o.Expression,
+    context: Context,
+  ): TExpression {
+    if (
+      isLeftSide &&
+      operator === o.BinaryOperator.Exponentiation &&
+      operand instanceof o.UnaryOperatorExpr
+    ) {
+      // A Unary operator in the left-hand side of an exponentiation operation needs to be wrapped
+      // in parentheses.
+      return this.factory.createParenthesizedExpression(operand.visitExpression(this, context));
+    }
+    return operand.visitExpression(this, context);
   }
 
   visitReadPropExpr(ast: o.ReadPropExpr, context: Context): TExpression {

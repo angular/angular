@@ -17,6 +17,7 @@ export class IdentityPipe {
     {{ typeof foo?.bar === 'string' }}
     {{ typeof foo?.bar | identity }}
     {{ void 'test' }}
+    {{ (-1) ** 3 }}
   `,
   imports: [IdentityPipe],
 })

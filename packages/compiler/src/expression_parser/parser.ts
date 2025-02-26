@@ -960,7 +960,7 @@ class _ParseAST {
         );
       }
       this.advance();
-      const right = this.parsePrefix();
+      const right = this.parseExponentiation();
       result = new Binary(this.span(start), this.sourceSpan(start), '**', result, right);
     }
     return result;
