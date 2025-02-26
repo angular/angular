@@ -188,7 +188,6 @@ export function optionsReducer<T extends Object>(dst: T, objs: T | T[]): T {
  * A reference to an Angular application running on a page.
  *
  * @usageNotes
- * {@a is-stable-examples}
  * ### isStable examples and caveats
  *
  * Note two important points about `isStable`, demonstrated in the examples below:
