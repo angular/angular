@@ -295,7 +295,7 @@ export interface ComponentDecorator {
 // @public @deprecated
 export abstract class ComponentFactory<C> {
     abstract get componentType(): Type<any>;
-    abstract create(injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string | any, environmentInjector?: EnvironmentInjector | NgModuleRef<any>): ComponentRef<C>;
+    abstract create(injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string | any, environmentInjector?: EnvironmentInjector | NgModuleRef<any>, directives?: Type<unknown>[]): ComponentRef<C>;
     abstract get inputs(): {
         propName: string;
         templateName: string;
@@ -454,6 +454,7 @@ export function createComponent<C>(component: Type<C>, options: {
     hostElement?: Element;
     elementInjector?: Injector;
     projectableNodes?: Node[][];
+    directives?: Type<unknown>[];
 }): ComponentRef<C>;
 
 // @public
@@ -1980,9 +1981,10 @@ export abstract class ViewContainerRef {
         ngModuleRef?: NgModuleRef<unknown>;
         environmentInjector?: EnvironmentInjector | NgModuleRef<unknown>;
         projectableNodes?: Node[][];
+        directives?: Type<unknown>[];
     }): ComponentRef<C>;
     // @deprecated
-    abstract createComponent<C>(componentFactory: ComponentFactory<C>, index?: number, injector?: Injector, projectableNodes?: any[][], environmentInjector?: EnvironmentInjector | NgModuleRef<any>): ComponentRef<C>;
+    abstract createComponent<C>(componentFactory: ComponentFactory<C>, index?: number, injector?: Injector, projectableNodes?: any[][], environmentInjector?: EnvironmentInjector | NgModuleRef<any>, directives?: Type<unknown>[]): ComponentRef<C>;
     abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, options?: {
         index?: number;
         injector?: Injector;

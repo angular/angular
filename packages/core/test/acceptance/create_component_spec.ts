@@ -489,6 +489,43 @@ describe('createComponent', () => {
       expect(createdInstance).toBe(injectedInstance);
     });
 
+    it('should write to the inputs of the attached directives using setInput', () => {
+      let dirInstance!: Dir;
+
+      @Directive()
+      class Dir {
+        @Input() someInput = 0;
+
+        constructor() {
+          dirInstance = this;
+        }
+      }
+
+      @Component({template: ''})
+      class HostComponent {
+        @Input() someInput = 0;
+      }
+
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const ref = createComponent(HostComponent, {
+        hostElement,
+        environmentInjector,
+        directives: [Dir],
+      });
+
+      expect(dirInstance.someInput).toBe(0);
+      expect(ref.instance.someInput).toBe(0);
+
+      ref.setInput('someInput', 1);
+      expect(dirInstance.someInput).toBe(1);
+      expect(ref.instance.someInput).toBe(1);
+
+      ref.setInput('someInput', 2);
+      expect(dirInstance.someInput).toBe(2);
+      expect(ref.instance.someInput).toBe(2);
+    });
+
     it('should throw if the same directive is attached multiple times', () => {
       @Directive({})
       class Dir {}
@@ -523,7 +560,7 @@ describe('createComponent', () => {
           environmentInjector,
           directives: [NotADir],
         });
-      }).toThrowError(/Class NotADir is not a directive/);
+      }).toThrowError(/Type NotADir does not have 'ɵdir' property/);
     });
 
     it('should throw if a component class is attached', () => {
@@ -542,7 +579,28 @@ describe('createComponent', () => {
           environmentInjector,
           directives: [NotADir],
         });
-      }).toThrowError(/Class NotADir is not a directive/);
+      }).toThrowError(/Type NotADir does not have 'ɵdir' property/);
+    });
+
+    it('should throw if attached directive is not standalone', () => {
+      @Directive({standalone: false})
+      class Dir {}
+
+      @Component({template: ''})
+      class HostComponent {}
+
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+
+      expect(() => {
+        createComponent(HostComponent, {
+          hostElement,
+          environmentInjector,
+          directives: [Dir],
+        });
+      }).toThrowError(
+        /The Dir directive must be standalone in order to be applied to a dynamically-created component/,
+      );
     });
   });
 

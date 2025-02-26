@@ -73,6 +73,7 @@ import {assertComponentDef} from './errors';
  * `[[element1, element2]]`: projects `element1` and `element2` into the same `<ng-content>`.
  * `[[element1, element2], [element3]]`: projects `element1` and `element2` into one `<ng-content>`,
  * and `element3` into a separate `<ng-content>`.
+ *  * `directives` (optional): Directives that should be applied to the component.
  * @returns ComponentRef instance that represents a given Component.
  *
  * @publicApi
@@ -84,6 +85,7 @@ export function createComponent<C>(
     hostElement?: Element;
     elementInjector?: Injector;
     projectableNodes?: Node[][];
+    directives?: Type<unknown>[];
   },
 ): ComponentRef<C> {
   ngDevMode && assertComponentDef(component);
@@ -95,6 +97,7 @@ export function createComponent<C>(
     options.projectableNodes,
     options.hostElement,
     options.environmentInjector,
+    options.directives,
   );
 }
 
