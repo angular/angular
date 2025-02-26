@@ -12,7 +12,7 @@ import {NotificationSource} from '../../change_detection/scheduling/zoneless_sch
 import {assertIndexInRange} from '../../util/assert';
 import {TNode, TNodeType} from '../interfaces/node';
 import {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
-import {RElement} from '../interfaces/renderer_dom';
+import {RElement, RNode} from '../interfaces/renderer_dom';
 import {isComponentHost, isDirectiveHost} from '../interfaces/type_checks';
 import {CLEANUP, CONTEXT, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
@@ -37,7 +37,7 @@ import {DirectiveDef} from '../interfaces/definition';
  * an actual implementation when the event replay feature is enabled via
  * `withEventReplay()` call.
  */
-let stashEventListener = (el: RElement, eventName: string, listenerFn: (e?: any) => any) => {};
+let stashEventListener = (el: RNode, eventName: string, listenerFn: (e?: any) => any) => {};
 
 export function setStashFn(fn: typeof stashEventListener) {
   stashEventListener = fn;
@@ -218,7 +218,7 @@ export function listenerInternal(
       processOutputs = false;
     } else {
       listenerFn = wrapListener(tNode, lView, context, listenerFn);
-      stashEventListener(native, eventName, listenerFn);
+      stashEventListener(target as RElement, eventName, listenerFn);
       const cleanupFn = renderer.listen(target as RElement, eventName, listenerFn);
       ngDevMode && ngDevMode.rendererAddEventListener++;
 

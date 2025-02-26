@@ -23,7 +23,7 @@ import {ENVIRONMENT_INITIALIZER, Injector} from '../di';
 import {inject} from '../di/injector_compatibility';
 import {Provider} from '../di/interface/provider';
 import {setStashFn} from '../render3/instructions/listener';
-import {RElement} from '../render3/interfaces/renderer_dom';
+import {RElement, RNode} from '../render3/interfaces/renderer_dom';
 import {CLEANUP, LView, TView} from '../render3/interfaces/view';
 import {unwrapRNode} from '../render3/util/view_utils';
 
@@ -106,9 +106,13 @@ export function withEventReplay(): Provider[] {
           if (!appsWithEventReplay.has(appRef)) {
             const jsActionMap = inject(JSACTION_BLOCK_ELEMENT_MAP);
             if (shouldEnableEventReplay(injector)) {
-              setStashFn((rEl: RElement, eventName: string, listenerFn: VoidFunction) => {
-                sharedStashFunction(rEl, eventName, listenerFn);
-                sharedMapFunction(rEl, jsActionMap);
+              setStashFn((rEl: RNode, eventName: string, listenerFn: VoidFunction) => {
+                // If a user binds to a ng-container and uses a directive that binds using a host listener,
+                // this element could be a comment node. So we need to ensure we have an actual element
+                // node before stashing anything.
+                if ((rEl as Node).nodeType !== Node.ELEMENT_NODE) return;
+                sharedStashFunction(rEl as RElement, eventName, listenerFn);
+                sharedMapFunction(rEl as RElement, jsActionMap);
               });
             }
           }
