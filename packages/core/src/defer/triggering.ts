@@ -25,7 +25,7 @@ import {PendingTasksInternal} from '../pending_tasks';
 import {assertLContainer} from '../render3/assert';
 import {getComponentDef, getDirectiveDef, getPipeDef} from '../render3/def_getters';
 import {getTemplateLocationDetails} from '../render3/instructions/element_validation';
-import {handleError} from '../render3/instructions/shared';
+import {handleUncaughtError} from '../render3/instructions/shared';
 import {DirectiveDefList, PipeDefList} from '../render3/interfaces/definition';
 import {TNode} from '../render3/interfaces/node';
 import {INJECTOR, LView, TView, TVIEW} from '../render3/interfaces/view';
@@ -261,7 +261,7 @@ export function triggerResourceLoading(
               `but no \`@error\` block was configured${templateLocation}. ` +
               'Consider using the `@error` block to render an error state.',
         );
-        handleError(lView, error);
+        handleUncaughtError(lView, error);
       }
     } else {
       tDetails.loadingState = DeferDependenciesLoadingState.COMPLETE;
