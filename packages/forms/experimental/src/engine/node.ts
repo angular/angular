@@ -45,9 +45,12 @@
 
 import {computed, linkedSignal, Signal, signal, WritableSignal} from '@angular/core';
 import {deepSignal} from './deep_signal';
+import {formProxy} from './field';
 import {LogicNode} from './logic';
 
 export class FormNode {
+  readonly proxy = formProxy(this);
+
   private _touched = signal(false);
 
   // touched = my touched touched state + any(my children touched state)
@@ -75,6 +78,7 @@ export class FormNode {
     readonly value: WritableSignal<unknown>,
     readonly parent?: FormNode,
     private readonly logic?: LogicNode,
+    private readonly wrap = (n: FormNode) => n,
   ) {
     this.childrenMap = linkedSignal<unknown, Map<PropertyKey, FormNode>>({
       source: this.value,
