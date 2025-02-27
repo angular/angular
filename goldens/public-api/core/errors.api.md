@@ -79,6 +79,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INVALID_MULTI_PROVIDER = -209,
     // (undocumented)
+    INVALID_SET_INPUT_CALL = 317,
+    // (undocumented)
     INVALID_SKIP_HYDRATION_HOST = -504,
     // (undocumented)
     LOOP_TRACK_DUPLICATE_KEYS = -955,

@@ -62,6 +62,7 @@ export const enum RuntimeErrorCode {
   UNINITIALIZED_LET_ACCESS = 314,
   NO_BINDING_TARGET = 315,
   INVALID_BINDING_TARGET = 316,
+  INVALID_SET_INPUT_CALL = 317,
 
   // Bootstrap Errors
   MULTIPLE_PLATFORMS = 400,
