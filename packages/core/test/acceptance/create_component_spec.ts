@@ -1084,6 +1084,28 @@ describe('createComponent', () => {
         ref.changeDetectorRef.detectChanges();
       }).toThrowError(/RootDir does not have an input with a public name of "someInput"/);
     });
+
+    it('should throw when using setInput on a component already using inputBindings', () => {
+      @Component({template: ''})
+      class RootComp {
+        @Input() someInput = '';
+      }
+
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const ref = createComponent(RootComp, {
+        hostElement,
+        environmentInjector,
+        bindings: [inputBinding('someInput', () => 'hello')],
+      });
+      ref.changeDetectorRef.detectChanges();
+
+      expect(() => {
+        ref.setInput('someInput', 'changed');
+      }).toThrowError(
+        /Cannot call `setInput` on a component that is using the `inputBinding` function/,
+      );
+    });
   });
 
   describe('error checking', () => {

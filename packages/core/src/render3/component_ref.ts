@@ -260,6 +260,9 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
             rootViewInjector,
           )
         : createHostElement(cmpDef, hostRenderer);
+      const hasInputBindings =
+        componentBindings?.some(isInputBinding) ||
+        directives?.some((d) => typeof d !== 'function' && d.bindings.some(isInputBinding));
 
       const rootLView = createLView<T>(
         null,
@@ -355,7 +358,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
         leaveView();
       }
 
-      return new ComponentRef(this.componentType, rootLView);
+      return new ComponentRef(this.componentType, rootLView, !!hasInputBindings);
     } finally {
       setActiveConsumer(prevConsumer);
     }
@@ -454,6 +457,10 @@ function getRootTViewTemplate(
   };
 }
 
+function isInputBinding(binding: Binding): boolean {
+  return binding[BINDING].kind === 'input';
+}
+
 /**
  * Represents an instance of a Component created via a {@link ComponentFactory}.
  *
@@ -473,7 +480,8 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
 
   constructor(
     componentType: Type<T>,
-    private _rootLView: LView,
+    private readonly _rootLView: LView,
+    private readonly _hasInputBindings: boolean,
   ) {
     super();
     this._tNode = getTNode(_rootLView[TVIEW], HEADER_OFFSET) as TElementNode;
@@ -487,6 +495,13 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
   }
 
   override setInput(name: string, value: unknown): void {
+    if (this._hasInputBindings && ngDevMode) {
+      throw new RuntimeError(
+        RuntimeErrorCode.INVALID_SET_INPUT_CALL,
+        'Cannot call `setInput` on a component that is using the `inputBinding` function.',
+      );
+    }
+
     const tNode = this._tNode;
     this.previousInputValues ??= new Map();
     // Do not set the input if it is the same as the last value
