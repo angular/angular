@@ -3,7 +3,11 @@
   height: 100%;
 
   svg {
-    cursor: move;
+    cursor: grab;
+
+    &.panning {
+      cursor: grabbing;
+    }
 
     ::ng-deep {
       .node-hidden,
