@@ -9,9 +9,11 @@
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
 import {bindingUpdated} from './bindings';
+import {listenToDirectiveOutput, wrapListener} from './instructions/listener';
 import {setDirectiveInput, storePropertyBindingMetadata} from './instructions/shared';
 import {DirectiveDef} from './interfaces/definition';
-import {getLView, getSelectedTNode, getTView, nextBindingIndex} from './state';
+import {CONTEXT} from './interfaces/view';
+import {getCurrentTNode, getLView, getSelectedTNode, getTView, nextBindingIndex} from './state';
 
 /** Symbol used to store and retrieve metadata about a binding. */
 export const BINDING = /* @__PURE__ */ Symbol('BINDING');
@@ -47,8 +49,9 @@ export interface DirectiveWithBindings<T> {
   bindings: Binding[];
 }
 
-// This is constant between all the bindings so we can reuse the object.
+// These are constant between all the bindings so we can reuse the objects.
 const INPUT_BINDING_METADATA: Binding[typeof BINDING] = {kind: 'input', requiredVars: 1};
+const OUTPUT_BINDING_METADATA: Binding[typeof BINDING] = {kind: 'output', requiredVars: 0};
 
 class InputBinding<T> implements Binding {
   readonly target!: DirectiveDef<T>;
@@ -89,6 +92,46 @@ class InputBinding<T> implements Binding {
   }
 }
 
+class OutputBinding<T> implements Binding {
+  readonly target!: DirectiveDef<unknown>;
+  readonly [BINDING] = OUTPUT_BINDING_METADATA;
+
+  constructor(
+    private readonly eventName: string,
+    private readonly listener: (event: T) => unknown,
+  ) {}
+
+  create(): void {
+    if (!this.target && ngDevMode) {
+      throw new RuntimeError(
+        RuntimeErrorCode.NO_BINDING_TARGET,
+        `Output binding to "${this.eventName}" does not have a target.`,
+      );
+    }
+
+    const lView = getLView<{} | null>();
+    const tView = getTView();
+    const tNode = getCurrentTNode()!;
+    const context = lView[CONTEXT];
+    const wrappedListener = wrapListener(tNode, lView, context, this.listener);
+    const hasBound = listenToDirectiveOutput(
+      tNode,
+      tView,
+      lView,
+      this.target,
+      this.eventName,
+      wrappedListener,
+    );
+
+    if (!hasBound && ngDevMode) {
+      throw new RuntimeError(
+        RuntimeErrorCode.INVALID_BINDING_TARGET,
+        `${this.target.type.name} does not have an output with a public name of "${this.eventName}".`,
+      );
+    }
+  }
+}
+
 /**
  * Creates an input binding.
  * @param publicName Public name of the input to bind to.
@@ -109,4 +152,29 @@ class InputBinding<T> implements Binding {
  */
 export function inputBinding<T>(publicName: string, value: () => unknown): Binding {
   return new InputBinding<T>(publicName, value);
+}
+
+/**
+ * Creates an output binding.
+ * @param eventName Public name of the output to listen to.
+ * @param listener Function to be called when the output emits.
+ *
+ * ### Usage example
+ * In this example we create an instance of the `MyCheckbox` component and listen
+ * to its `onChange` event.
+ *
+ * ```
+ * interface CheckboxChange {
+ *   value: string;
+ * }
+ *
+ * createComponent(MyCheckbox, {
+ *   bindings: [
+ *    outputBinding<CheckboxChange>('onChange', event => console.log(event.value))
+ *   ],
+ * });
+ * ```
+ */
+export function outputBinding<T>(eventName: string, listener: (event: T) => unknown): Binding {
+  return new OutputBinding<T>(eventName, listener);
 }

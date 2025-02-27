@@ -377,6 +377,7 @@
   "isEnvironmentProviders",
   "isFunction",
   "isInlineTemplate",
+  "isInputBinding",
   "isLContainer",
   "isLView",
   "isListLikeIterable",

@@ -539,6 +539,7 @@
   "isFunction",
   "isFunction2",
   "isInlineTemplate",
+  "isInputBinding",
   "isInteropObservable",
   "isIterable",
   "isLContainer",
