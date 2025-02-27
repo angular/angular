@@ -239,10 +239,6 @@ export const routes: Route[] = [
         redirectTo: DefaultPage.DOCS,
       },
       {
-        path: PagePrefix.TUTORIALS,
-        redirectTo: DefaultPage.TUTORIALS,
-      },
-      {
         path: PagePrefix.REFERENCE,
         redirectTo: DefaultPage.REFERENCE,
       },
