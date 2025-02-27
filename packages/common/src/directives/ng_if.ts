@@ -13,7 +13,10 @@ import {
   TemplateRef,
   ViewContainerRef,
   ɵstringify as stringify,
+  ɵRuntimeError as RuntimeError,
 } from '@angular/core';
+
+import {RuntimeErrorCode} from '../errors';
 
 /**
  * A structural directive that conditionally includes a template based on the value of
@@ -185,7 +188,7 @@ export class NgIf<T = unknown> {
    */
   @Input()
   set ngIfThen(templateRef: TemplateRef<NgIfContext<T>> | null) {
-    assertTemplate('ngIfThen', templateRef);
+    assertTemplate(templateRef, (typeof ngDevMode === 'undefined' || ngDevMode) && 'ngIfThen');
     this._thenTemplateRef = templateRef;
     this._thenViewRef = null; // clear previous view if any.
     this._updateView();
@@ -196,7 +199,7 @@ export class NgIf<T = unknown> {
    */
   @Input()
   set ngIfElse(templateRef: TemplateRef<NgIfContext<T>> | null) {
-    assertTemplate('ngIfElse', templateRef);
+    assertTemplate(templateRef, (typeof ngDevMode === 'undefined' || ngDevMode) && 'ngIfElse');
     this._elseTemplateRef = templateRef;
     this._elseViewRef = null; // clear previous view if any.
     this._updateView();
@@ -263,9 +266,15 @@ export class NgIfContext<T = unknown> {
   public ngIf: T = null!;
 }
 
-function assertTemplate(property: string, templateRef: TemplateRef<any> | null): void {
-  const isTemplateRefOrNull = !!(!templateRef || templateRef.createEmbeddedView);
-  if (!isTemplateRefOrNull) {
-    throw new Error(`${property} must be a TemplateRef, but received '${stringify(templateRef)}'.`);
+function assertTemplate(
+  templateRef: TemplateRef<any> | null,
+  property: string | false | null,
+): void {
+  if (templateRef && !templateRef.createEmbeddedView) {
+    throw new RuntimeError(
+      RuntimeErrorCode.NG_IF_NOT_A_TEMPLATE_REF,
+      (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        `${property} must be a TemplateRef, but received '${stringify(templateRef)}'.`,
+    );
   }
 }
