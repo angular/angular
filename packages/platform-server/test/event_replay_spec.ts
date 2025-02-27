@@ -6,7 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {APP_ID, Component, destroyPlatform, ErrorHandler, PLATFORM_ID, Type} from '@angular/core';
+import {
+  APP_ID,
+  Component,
+  destroyPlatform,
+  ErrorHandler,
+  inject,
+  PendingTasks,
+  PLATFORM_ID,
+  Type,
+} from '@angular/core';
 import {
   withEventReplay,
   bootstrapApplication,
@@ -25,6 +34,7 @@ import {
   resetTViewsFor,
 } from './dom_utils';
 import {getDocument} from '@angular/core/src/render3/interfaces/document';
+import {isPlatformBrowser} from '@angular/common';
 
 /**
  * Represents the <script> tag added by the build process to inject
@@ -274,6 +284,71 @@ describe('event replay', () => {
       `<app ngCspNonce="{{nonce}}"></app></body></html>`;
     const html = await ssr(SimpleComponent, {doc});
     expect(getAppContents(html)).toContain('<script nonce="{{nonce}}">window.__jsaction_bootstrap');
+  });
+
+  it('should not throw an error when app is destroyed before becoming stable', async () => {
+    // Spy manually, because we may not be able to retrieve the `Console`
+    // after we destroy the application, but we still want to ensure that
+    // no error is thrown in the console.
+    const errorSpy = spyOn(console, 'error').and.callThrough();
+    const logs: string[] = [];
+
+    @Component({
+      selector: 'app',
+      standalone: true,
+      template: `
+        <button id="btn" (click)="onClick()"></button>
+      `,
+    })
+    class AppComponent {
+      constructor() {
+        const isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+        if (isBrowser) {
+          const pendingTasks = inject(PendingTasks);
+          // Given that, in a real-world scenario, some APIs add a pending
+          // task and don't remove it until the app is destroyed.
+          // This could be an HTTP request that contributes to app stability
+          // and does not respond until the app is destroyed.
+          pendingTasks.add();
+        }
+      }
+
+      onClick(): void {}
+    }
+    const html = await ssr(AppComponent);
+    const ssrContents = getAppContents(html);
+    const doc = getDocument();
+
+    prepareEnvironment(doc, ssrContents);
+    resetTViewsFor(AppComponent);
+    const btn = doc.getElementById('btn')!;
+    btn.click();
+    const appRef = await hydrate(doc, AppComponent, {
+      hydrationFeatures: () => [withEventReplay()],
+    });
+
+    appRef.isStable.subscribe((isStable) => {
+      logs.push(`isStable=${isStable}`);
+    });
+
+    // Destroy the application before it becomes stable, because we added
+    // a task and didn't remove it explicitly.
+    appRef.destroy();
+
+    // Wait for a microtask so that `whenStable` resolves.
+    await Promise.resolve();
+
+    expect(logs).toEqual([
+      'isStable=false',
+      'isStable=true',
+      'isStable=false',
+      // In the end, the application became stable while being destroyed.
+      'isStable=true',
+    ]);
+
+    // Ensure no error has been logged in the console,
+    // such as "injector has already been destroyed."
+    expect(errorSpy).not.toHaveBeenCalledWith(/Injector has already been destroyed/);
   });
 
   describe('bubbling behavior', () => {
