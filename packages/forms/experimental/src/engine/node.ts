@@ -47,7 +47,15 @@ import {computed, linkedSignal, Signal, signal, WritableSignal} from '@angular/c
 import {deepSignal} from './deep_signal';
 import {LogicNode} from './logic';
 
-export class FormNode {
+export const IMPL = Symbol('IMPL');
+
+export interface FormNode {
+  [IMPL]: FormNodeImpl;
+}
+
+export class FormNodeImpl implements FormNode {
+  [IMPL] = this;
+
   private _touched = signal(false);
 
   // touched = my touched touched state + any(my children touched state)
@@ -57,7 +65,7 @@ export class FormNode {
     }
 
     for (const node of this.childrenMap().values()) {
-      if (node.touched()) {
+      if (node[IMPL].touched()) {
         return true;
       }
     }
@@ -66,7 +74,7 @@ export class FormNode {
   });
 
   readonly disabled: Signal<boolean> = computed(
-    () => (this.parent?.disabled() || this.logic?.disabled?.(this)) ?? false,
+    () => (this.parent?.[IMPL].disabled() || this.logic?.disabled?.(this)) ?? false,
   );
 
   private readonly childrenMap: Signal<Map<PropertyKey, FormNode>>;
@@ -75,6 +83,7 @@ export class FormNode {
     readonly value: WritableSignal<unknown>,
     readonly parent?: FormNode,
     private readonly logic?: LogicNode,
+    private readonly wrap = (n: FormNode) => n,
   ) {
     this.childrenMap = linkedSignal<unknown, Map<PropertyKey, FormNode>>({
       source: this.value,
@@ -96,7 +105,10 @@ export class FormNode {
               } else {
                 childLogic = this.logic?.children.get(key);
               }
-              map.set(key, new FormNode(deepSignal(this.value, key as never), this, childLogic));
+              map.set(
+                key,
+                this.wrap(new FormNodeImpl(deepSignal(this.value, key as never), this, childLogic)),
+              );
             }
           }
         }
