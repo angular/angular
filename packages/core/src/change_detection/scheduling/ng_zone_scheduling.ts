@@ -144,7 +144,7 @@ export function internalProvideZoneChangeDetection({
  * ```
  *
  * @publicApi
- * @see {@link bootstrapApplication}
+ * @see [bootstrapApplication](/api/core/bootstrapApplication)
  * @see {@link NgZoneOptions}
  */
 export function provideZoneChangeDetection(options?: NgZoneOptions): EnvironmentProviders {

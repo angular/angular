@@ -26,7 +26,7 @@ import {OnSameUrlNavigation, QueryParamsHandling, RedirectCommand} from './model
  * more control over when the router starts its initial navigation due to some complex
  * initialization logic.
  *
- * @see {@link forRoot()}
+ * @see [forRoot](/api/router/routerModule#forRoot)
  *
  * @publicApi
  */
@@ -179,7 +179,7 @@ export interface InMemoryScrollingOptions {
  * A set of configuration options for a router module, provided in the
  * `forRoot()` method.
  *
- * @see {@link forRoot()}
+ * @see [forRoot](/api/router/routerModule#forRoot)
  *
  *
  * @publicApi
