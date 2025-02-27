@@ -1,171 +1,161 @@
 import {computed, signal} from '@angular/core';
-import {array, disabled, form} from '../../src/api/schema';
-import {FormNode} from '../../src/engine/node';
+import {form} from '../../src/api/form';
+import {array, disabled} from '../../src/api/schema';
 
 describe('Node', () => {
   it('is untouched initially', () => {
-    const value = signal({a: 1, b: 2});
-    const node = new FormNode(value);
-
-    expect(node.touched()).toBe(false);
+    const f = form(signal({a: 1, b: 2}));
+    expect(f.$.touched()).toBe(false);
   });
 
   it('can get a child of a key that exists', () => {
-    const value = signal({a: 1, b: 2});
-    const node = new FormNode(value);
-
-    const child = node.getChild('a')!;
-    expect(child).toBeDefined();
-    expect(child.value()).toBe(1);
+    const f = form(signal({a: 1, b: 2}));
+    expect(f.a).toBeDefined();
+    expect(f.a.$.value()).toBe(1);
   });
 
   describe('instances', () => {
     it('should get the same instance when asking for a child multiple times', () => {
-      const value = signal({a: 1, b: 2});
-      const node = new FormNode(value);
-
-      const child = node.getChild('a')!;
-
-      expect(node.getChild('a')).toBe(child);
+      const f = form(signal({a: 1, b: 2}));
+      const child = f.a;
+      expect(f.a).toBe(child);
     });
 
     it('should get the same instance when asking for a child multiple times', () => {
-      const value = signal<Object>({a: 1, b: 2});
-      const node = new FormNode(value);
-
-      const child = node.getChild('a')!;
-
+      const value = signal<{a: number; b?: number}>({a: 1, b: 2});
+      const f = form(value);
+      const child = f.a;
       value.set({a: 3});
-      expect(node.getChild('a')).toBe(child);
+      expect(f.a).toBe(child);
     });
   });
 
   it('cannot get a child of a key that does not exist', () => {
-    const value = signal({a: 1, b: 2});
-    const node = new FormNode(value);
-
-    expect(node.getChild('c')).toBeUndefined();
+    const f = form(signal<{a: number; b: number; c?: number}>({a: 1, b: 2}));
+    expect(f.c).toBeUndefined();
   });
 
   it('can get a child inside of a computed', () => {
-    const value = signal({a: 1, b: 2});
-    const node = new FormNode(value);
-    const childA = computed(() => node.getChild('a')!);
-
+    const f = form(signal({a: 1, b: 2}));
+    const childA = computed(() => f.a);
     expect(childA()).toBeDefined();
   });
 
   it('can get a child inside of a computed', () => {
-    const value = signal({a: 1, b: 2});
-    const node = new FormNode(value);
-    const childA = computed(() => node.getChild('a')!);
-
+    const f = form(signal({a: 1, b: 2}));
+    const childA = computed(() => f.a);
     expect(childA()).toBeDefined();
   });
 
   describe('touched', () => {
     it('can be marked as touched', () => {
-      const value = signal({a: 1, b: 2});
-      const node = new FormNode(value);
+      const f = form(signal({a: 1, b: 2}));
+      expect(f.$.touched()).toBe(false);
 
-      expect(node.touched()).toBe(false);
-      node.markAsTouched();
-      expect(node.touched()).toBe(true);
+      f.$.markAsTouched();
+      expect(f.$.touched()).toBe(true);
     });
 
     it('propagates from the children', () => {
-      const value = signal({a: 1, b: 2});
-      const node = new FormNode(value);
+      const f = form(signal({a: 1, b: 2}));
+      expect(f.$.touched()).toBe(false);
 
-      expect(node.touched()).toBe(false);
-      node.getChild('a')!.markAsTouched();
-      expect(node.touched()).toBe(true);
+      f.a.$.markAsTouched();
+      expect(f.$.touched()).toBe(true);
     });
 
     it('does not propagate down', () => {
-      const value = signal({a: 1, b: 2});
-      const node = new FormNode(value);
+      const f = form(signal({a: 1, b: 2}));
 
-      expect(node.getChild('a')!.touched()).toBe(false);
-      node.markAsTouched();
-      expect(node.getChild('a')!.touched()).toBe(false);
+      expect(f.a.$.touched()).toBe(false);
+      f.$.markAsTouched();
+      expect(f.a.$.touched()).toBe(false);
     });
 
     it('does not consider children that get removed', () => {
-      const value = signal<Object>({a: 1, b: 2});
-      const node = new FormNode(value);
+      const value = signal<{a: number; b?: number}>({a: 1, b: 2});
+      const f = form(value);
+      expect(f.$.touched()).toBe(false);
 
-      expect(node.touched()).toBe(false);
-      node.getChild('b')!.markAsTouched();
-      expect(node.touched()).toBe(true);
+      f.b!.$.markAsTouched();
+      expect(f.$.touched()).toBe(true);
+
       value.set({a: 2});
-      expect(node.touched()).toBe(false);
-      expect(node.getChild('b')).toBeUndefined();
+      expect(f.$.touched()).toBe(false);
+      expect(f.b).toBeUndefined();
     });
   });
 
   describe('arrays', () => {
     it('should only have child nodes for elements that exist', () => {
-      const value = signal([1, 2]);
-      const node = new FormNode(value);
-      expect(node.getChild(0)).toBeDefined();
-      expect(node.getChild(1)).toBeDefined();
-      expect(node.getChild(2)).not.toBeDefined();
-      expect(node.getChild('length')).not.toBeDefined();
+      const f = form(signal([1, 2]));
+      expect(f[0]).toBeDefined();
+      expect(f[1]).toBeDefined();
+      expect(f[2]).not.toBeDefined();
+      expect(f['length']).toBe(2);
+    });
+
+    it('should get the element node', () => {
+      const f = form(signal({names: [{name: 'Alex'}, {name: 'Miles'}]}), (p) => {
+        array(p.names, (a) => {
+          disabled(a.name, (name, el, f2) => {
+            expect(el.$.value().name).toBe(name);
+            expect(f2.names.findIndex((e) => e === el)).not.toBe(-1);
+            return true;
+          });
+        });
+      });
+      expect(f.names[0].name.$.disabled()).toBe(true);
+      expect(f.names[1].name.$.disabled()).toBe(true);
     });
 
     it('should support element-level logic', () => {
-      const node = form(signal([1, 2, 3]), (p) => {
+      const f = form(signal([1, 2, 3]), (p) => {
         array(p, (a) => {
           a;
-          disabled(a, (v) => v % 2 === 0);
+          disabled(a, (v) => (v as any) % 2 === 0);
         });
       });
-
-      expect(node.getChild(0)!.disabled()).toBe(false);
-      expect(node.getChild(1)!.disabled()).toBe(true);
-      expect(node.getChild(2)!.disabled()).toBe(false);
+      expect(f[0].$.disabled()).toBe(false);
+      expect(f[1].$.disabled()).toBe(true);
+      expect(f[2].$.disabled()).toBe(false);
     });
 
     it('should support dynamic elements', () => {
       const model = signal([1, 2, 3]);
-      const node = form(model, (p) => {
-        array(p, (el) => {
+      const f = form(model, (p) => {
+        array(p as any, (el) => {
           // Disabled if even.
-          disabled(el, (v) => v % 2 === 0);
+          disabled(el, (v) => (v as any) % 2 === 0);
         });
       });
-
       model.update((v) => [...v, 4]);
-      expect(node.getChild(3)!.disabled()).toBe(true);
+      expect(f[3].$.disabled()).toBe(true);
     });
 
     it('should support removing elements', () => {
       const value = signal([1, 2, 3]);
-      const node = new FormNode(value);
-
-      node.getChild(2)!.markAsTouched();
-      expect(node.touched()).toBe(true);
+      const f = form(value);
+      f[2].$.markAsTouched();
+      expect(f.$.touched()).toBe(true);
 
       value.set([1, 2]);
-      expect(node.touched()).toBe(false);
+      expect(f.$.touched()).toBe(false);
     });
   });
 
   describe('disabled', () => {
     it('should allow logic to make a node disabled', () => {
-      const node = form(signal({a: 1, b: 2}), (p) => {
+      const f = form(signal({a: 1, b: 2}), (p) => {
         disabled(p.a, (v) => v !== 2);
       });
+      const a = f.a;
+      expect(f.$.disabled()).toBe(false);
+      expect(a.$.disabled()).toBe(true);
 
-      const a = node.getChild('a')!;
-
-      expect(node.disabled()).toBe(false);
-      expect(a.disabled()).toBe(true);
-
-      a.value.set(2);
-      expect(node.disabled()).toBe(false);
-      expect(a.disabled()).toBe(false);
+      a.$.value.set(2);
+      expect(f.$.disabled()).toBe(false);
+      expect(a.$.disabled()).toBe(false);
     });
   });
 });
