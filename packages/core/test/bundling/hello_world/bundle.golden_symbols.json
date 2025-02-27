@@ -256,6 +256,7 @@
   "isDetachedByI18n",
   "isEnvironmentProviders",
   "isFunction",
+  "isInputBinding",
   "isLContainer",
   "isLView",
   "isPositive",

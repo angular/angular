@@ -14,6 +14,8 @@ import {
   ElementRef,
   EmbeddedViewRef,
   EnvironmentInjector,
+  ErrorHandler,
+  EventEmitter,
   inject,
   Injectable,
   InjectionToken,
@@ -23,6 +25,8 @@ import {
   NgModule,
   OnChanges,
   OnDestroy,
+  Output,
+  outputBinding,
   signal,
   SimpleChange,
   SimpleChanges,
@@ -1105,6 +1109,263 @@ describe('createComponent', () => {
       }).toThrowError(
         /Cannot call `setInput` on a component that is using the `inputBinding` function/,
       );
+    });
+  });
+
+  describe('root component outputs', () => {
+    it('should be able to bind to outputs of the root component', () => {
+      @Component({template: ''})
+      class RootComp {
+        @Output() event = new EventEmitter<{value: number}>();
+      }
+
+      const events: {value: number}[] = [];
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const ref = createComponent(RootComp, {
+        hostElement,
+        environmentInjector,
+        bindings: [outputBinding<{value: number}>('event', (event) => events.push(event))],
+      });
+      ref.changeDetectorRef.detectChanges();
+      expect(events).toEqual([]);
+
+      ref.instance.event.emit({value: 0});
+      expect(events).toEqual([jasmine.objectContaining({value: 0})]);
+
+      ref.instance.event.emit({value: 1});
+      expect(events).toEqual([
+        jasmine.objectContaining({value: 0}),
+        jasmine.objectContaining({value: 1}),
+      ]);
+    });
+
+    it('should clean up root component output listeners', () => {
+      @Component({template: ''})
+      class RootComp {
+        @Output() event = new EventEmitter<void>();
+      }
+
+      let count = 0;
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const ref = createComponent(RootComp, {
+        hostElement,
+        environmentInjector,
+        bindings: [outputBinding('event', () => count++)],
+      });
+      ref.changeDetectorRef.detectChanges();
+      expect(count).toBe(0);
+
+      ref.instance.event.emit();
+      expect(count).toBe(1);
+
+      ref.destroy();
+      ref.instance.event.emit();
+      expect(count).toBe(1);
+    });
+
+    it('should handle errors in root component listeners through the ErrorHandler', () => {
+      @Component({template: ''})
+      class RootComp {
+        @Output() event = new EventEmitter<void>();
+      }
+
+      TestBed.configureTestingModule({
+        providers: [
+          {
+            provide: ErrorHandler,
+            useValue: {
+              handleError: (error: Error) => errors.push(error.message),
+            },
+          },
+        ],
+      });
+      const errors: string[] = [];
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const ref = createComponent(RootComp, {
+        hostElement,
+        environmentInjector,
+        bindings: [
+          outputBinding('event', () => {
+            throw new Error('oh no');
+          }),
+        ],
+      });
+      ref.changeDetectorRef.detectChanges();
+      expect(errors).toEqual([]);
+
+      ref.instance.event.emit();
+      expect(errors).toEqual(['oh no']);
+    });
+
+    it('should listen to host directive outputs on the root component', () => {
+      let hostDirInstance!: RootHostDir;
+      let dirInstance!: RootDir;
+
+      @Directive()
+      class RootHostDir {
+        @Output() myEvent = new EventEmitter<string>();
+
+        constructor() {
+          hostDirInstance = this;
+        }
+      }
+
+      @Component({
+        template: '',
+        hostDirectives: [
+          {
+            directive: RootHostDir,
+            outputs: ['myEvent: event'],
+          },
+        ],
+      })
+      class RootComp {
+        @Output() event = new EventEmitter<string>();
+      }
+
+      @Directive()
+      class RootDir {
+        @Output() event = new EventEmitter<string>();
+
+        constructor() {
+          dirInstance = this;
+        }
+      }
+
+      const logs: string[] = [];
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const ref = createComponent(RootComp, {
+        hostElement,
+        environmentInjector,
+        bindings: [outputBinding<string>('event', (value) => logs.push(value))],
+        directives: [RootDir],
+      });
+      ref.changeDetectorRef.detectChanges();
+      expect(logs).toEqual([]);
+
+      ref.instance.event.emit('component');
+      expect(logs).toEqual(['component']);
+
+      hostDirInstance.myEvent.emit('host directive');
+      expect(logs).toEqual(['component', 'host directive']);
+
+      dirInstance.event.emit('directive');
+      expect(logs).toEqual(['component', 'host directive']);
+    });
+
+    it('should not listen to directive outputs with the same name as outputs on the root component', () => {
+      let dirInstance!: RootDir;
+
+      @Component({template: ''})
+      class RootComp {
+        @Output() event = new EventEmitter<string>();
+      }
+
+      @Directive()
+      class RootDir {
+        @Output() event = new EventEmitter<string>();
+
+        constructor() {
+          dirInstance = this;
+        }
+      }
+
+      const logs: string[] = [];
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const ref = createComponent(RootComp, {
+        hostElement,
+        environmentInjector,
+        bindings: [outputBinding<string>('event', (value) => logs.push(value))],
+        directives: [RootDir],
+      });
+      ref.changeDetectorRef.detectChanges();
+      expect(logs).toEqual([]);
+
+      ref.instance.event.emit('component');
+      expect(logs).toEqual(['component']);
+
+      dirInstance.event.emit('directive');
+      expect(logs).toEqual(['component']);
+    });
+
+    it('should not listen to root component outputs with the same name as outputs on one of the directives', () => {
+      let dirInstance!: RootDir;
+
+      @Component({template: ''})
+      class RootComp {
+        @Output() event = new EventEmitter<string>();
+      }
+
+      @Directive()
+      class RootDir {
+        @Output() event = new EventEmitter<string>();
+
+        constructor() {
+          dirInstance = this;
+        }
+      }
+
+      const logs: string[] = [];
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const ref = createComponent(RootComp, {
+        hostElement,
+        environmentInjector,
+        directives: [
+          {
+            type: RootDir,
+            bindings: [outputBinding<string>('event', (value) => logs.push(value))],
+          },
+        ],
+      });
+      ref.changeDetectorRef.detectChanges();
+      expect(logs).toEqual([]);
+
+      dirInstance.event.emit('directive');
+      expect(logs).toEqual(['directive']);
+
+      ref.instance.event.emit('component');
+      expect(logs).toEqual(['directive']);
+    });
+
+    it('should throw if root component does not have an output with the specified name', () => {
+      @Component({template: ''})
+      class RootComp {}
+
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+
+      expect(() => {
+        createComponent(RootComp, {
+          hostElement,
+          environmentInjector,
+          bindings: [outputBinding('click', () => {})],
+        });
+      }).toThrowError(/RootComp does not have an output with a public name of "click"/);
+    });
+
+    it('should not listen to native event when creating an output binding', () => {
+      @Component({template: ''})
+      class RootComp {
+        @Output() click = new EventEmitter<void>();
+      }
+
+      const hostElement = document.createElement('button');
+      const spy = spyOn(hostElement, 'addEventListener');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const ref = createComponent(RootComp, {
+        hostElement,
+        environmentInjector,
+        bindings: [outputBinding('click', () => {})],
+      });
+      ref.changeDetectorRef.detectChanges();
+
+      expect(spy).not.toHaveBeenCalled();
     });
   });
 

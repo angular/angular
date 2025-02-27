@@ -394,6 +394,7 @@
   "isEnvironmentProviders",
   "isFunction",
   "isInlineTemplate",
+  "isInputBinding",
   "isLContainer",
   "isLView",
   "isNodeMatchingSelector",

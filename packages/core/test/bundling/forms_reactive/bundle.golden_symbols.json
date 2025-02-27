@@ -462,6 +462,7 @@
   "isForwardRef",
   "isFunction",
   "isInlineTemplate",
+  "isInputBinding",
   "isInteropObservable",
   "isIterable",
   "isLContainer",

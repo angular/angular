@@ -1364,6 +1364,9 @@ export const Output: OutputDecorator;
 export function output<T = void>(opts?: OutputOptions): OutputEmitterRef<T>;
 
 // @public
+export function outputBinding<T>(eventName: string, listener: (event: T) => unknown): Binding;
+
+// @public
 export interface OutputDecorator {
     (alias?: string): any;
     // (undocumented)

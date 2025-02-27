@@ -328,7 +328,7 @@ function executeListenerWithErrorHandling(
  * @param wrapWithPreventDefault Whether or not to prevent default behavior
  * (the procedural renderer does this already, so in those cases, we should skip)
  */
-function wrapListener(
+export function wrapListener(
   tNode: TNode,
   lView: LView<{} | null>,
   context: {} | null,
@@ -377,4 +377,81 @@ function isOutputSubscribable(value: unknown): value is SubscribableOutput<unkno
   return (
     value != null && typeof (value as Partial<SubscribableOutput<unknown>>).subscribe === 'function'
   );
+}
+
+/** Listens to an output on a specific directive. */
+export function listenToDirectiveOutput(
+  tNode: TNode,
+  tView: TView,
+  lView: LView,
+  target: DirectiveDef<unknown>,
+  eventName: string,
+  listenerFn: (e?: any) => any,
+): boolean {
+  const tCleanup = tView.firstCreatePass ? getOrCreateTViewCleanup(tView) : null;
+  const lCleanup = getOrCreateLViewCleanup(lView);
+  let hostIndex: number | null = null;
+  let hostDirectivesStart: number | null = null;
+  let hostDirectivesEnd: number | null = null;
+  let hasOutput = false;
+
+  if (ngDevMode && !tNode.directiveToIndex?.has(target.type)) {
+    throw new Error(`Node does not have a directive with type ${target.type.name}`);
+  }
+
+  const data = tNode.directiveToIndex!.get(target.type)!;
+
+  if (typeof data === 'number') {
+    hostIndex = data;
+  } else {
+    [hostIndex, hostDirectivesStart, hostDirectivesEnd] = data;
+  }
+
+  if (
+    hostDirectivesStart !== null &&
+    hostDirectivesEnd !== null &&
+    tNode.hostDirectiveOutputs?.hasOwnProperty(eventName)
+  ) {
+    const hostDirectiveOutputs = tNode.hostDirectiveOutputs[eventName];
+
+    for (let i = 0; i < hostDirectiveOutputs.length; i += 2) {
+      const index = hostDirectiveOutputs[i] as number;
+
+      if (index >= hostDirectivesStart && index <= hostDirectivesEnd) {
+        ngDevMode && assertIndexInRange(lView, index);
+        hasOutput = true;
+        listenToOutput(
+          tNode,
+          tView,
+          lView,
+          index,
+          hostDirectiveOutputs[i + 1] as string,
+          eventName,
+          listenerFn,
+          lCleanup,
+          tCleanup,
+        );
+      } else if (index > hostDirectivesEnd) {
+        break;
+      }
+    }
+  }
+
+  if (hostIndex !== null && target.outputs.hasOwnProperty(eventName)) {
+    ngDevMode && assertIndexInRange(lView, hostIndex);
+    hasOutput = true;
+    listenToOutput(
+      tNode,
+      tView,
+      lView,
+      hostIndex,
+      eventName,
+      eventName,
+      listenerFn,
+      lCleanup,
+      tCleanup,
+    );
+  }
+
+  return hasOutput;
 }
