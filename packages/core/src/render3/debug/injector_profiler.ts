@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {FactoryProvider} from '../../di';
+import type {FactoryProvider, ProviderToken} from '../../di';
 import {resolveForwardRef} from '../../di/forward_ref';
 import {InjectionToken} from '../../di/injection_token';
 import type {Injector} from '../../di/injector';
@@ -41,6 +41,11 @@ export const enum InjectorProfilerEventType {
    * Emits when an effect is created.
    */
   EffectCreated,
+
+  /**
+   * Emits when an Angular DI system is about to create an instance corresponding to a given token.
+   */
+  InjectorToCreateInstanceEvent,
 }
 
 /**
@@ -68,6 +73,12 @@ export interface InjectedServiceEvent {
   service: InjectedService;
 }
 
+export interface InjectorToCreateInstanceEvent {
+  type: InjectorProfilerEventType.InjectorToCreateInstanceEvent;
+  context: InjectorProfilerContext;
+  token: ProviderToken<unknown>;
+}
+
 export interface InjectorCreatedInstanceEvent {
   type: InjectorProfilerEventType.InstanceCreatedByInjector;
   context: InjectorProfilerContext;
@@ -92,6 +103,7 @@ export interface EffectCreatedEvent {
 
 export type InjectorProfilerEvent =
   | InjectedServiceEvent
+  | InjectorToCreateInstanceEvent
   | InjectorCreatedInstanceEvent
   | ProviderConfiguredEvent
   | EffectCreatedEvent;
@@ -251,6 +263,22 @@ export function emitProviderConfiguredEvent(
     type: InjectorProfilerEventType.ProviderConfigured,
     context: getInjectorProfilerContext(),
     providerRecord: {token, provider, isViewProvider},
+  });
+}
+
+/**
+ * Emits an event to the injector profiler when an instance corresponding to a given token is about to be created be an injector. Note that
+ * the injector associated with this emission can be accessed by using getDebugInjectContext()
+ *
+ * @param instance an object created by an injector
+ */
+export function emitInjectorToCreateInstanceEvent(token: ProviderToken<unknown>): void {
+  !ngDevMode && throwError('Injector profiler should never be called in production mode');
+
+  injectorProfiler({
+    type: InjectorProfilerEventType.InjectorToCreateInstanceEvent,
+    context: getInjectorProfilerContext(),
+    token: token,
   });
 }
 
