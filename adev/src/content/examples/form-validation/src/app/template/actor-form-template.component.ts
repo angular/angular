@@ -1,10 +1,13 @@
 import {Component} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {UnambiguousRoleValidatorDirective} from '../shared/unambiguous-role.directive';
+import {ForbiddenValidatorDirective} from '../shared/forbidden-name.directive';
 
 @Component({
   selector: 'app-actor-form-template',
   templateUrl: './actor-form-template.component.html',
   styleUrls: ['./actor-form-template.component.css'],
-  standalone: false,
+  imports: [UnambiguousRoleValidatorDirective, FormsModule, ForbiddenValidatorDirective],
 })
 export class ActorFormTemplateComponent {
   skills = ['Method Acting', 'Singing', 'Dancing', 'Swordfighting'];
