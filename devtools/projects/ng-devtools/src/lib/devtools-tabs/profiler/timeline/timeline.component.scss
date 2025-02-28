@@ -1,5 +1,3 @@
-@use '../../../../styles/theme' as theme;
-
 :host {
   font-size: 11px;
   width: 100%;
@@ -27,10 +25,4 @@
   flex-direction: column;
   height: 100%;
   margin: 0 10px;
-}
-
-@include theme.dark-theme {
-  .info {
-    color: #ffffff;
-  }
 }

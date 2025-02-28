@@ -152,7 +152,6 @@ export class DependencyViewerComponent {
   styles: [
     `
       ng-dependency-viewer {
-        border-bottom: 1px solid color-mix(in srgb, currentColor, #bdbdbd 85%);
         display: block;
       }
     `,

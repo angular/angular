@@ -1,11 +1,9 @@
-@use '../../../../../styles/theme' as theme;
-
 .filter {
   display: flex;
   padding: 0px;
   border-radius: 0px;
   box-shadow: none !important;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  border-bottom: 1px solid var(--color-separator);
 
   label {
     display: flex;
@@ -25,7 +23,6 @@
 
     .filter-input {
       border: none;
-      border-left: 1px solid rgba(0, 0, 0, 0.12);
       padding-left: 5px;
       width: 100%;
       font-size: 11px;
@@ -33,7 +30,7 @@
       font-weight: inherit;
       height: 30px;
       outline: none;
-      color: rgba(0, 0, 0, 0.87);
+      background: var(--color-background);
     }
   }
 }
@@ -62,20 +59,5 @@
     &:active {
       opacity: 1;
     }
-  }
-}
-
-@include theme.dark-theme {
-  .filter {
-    label {
-      .filter-input {
-        background-color: #202124;
-        color: #ffffff;
-      }
-    }
-  }
-
-  mat-icon {
-    color: #fff;
   }
 }

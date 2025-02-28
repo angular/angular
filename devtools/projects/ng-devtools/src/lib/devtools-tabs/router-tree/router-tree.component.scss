@@ -1,5 +1,3 @@
-@use '../../../styles/theme' as theme;
-
 .router-tree-wrapper {
   font-size: 1em;
   width: 100%;
@@ -9,7 +7,7 @@
 }
 
 .filter-input {
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--senary-contrast);
   border-radius: 3px;
   padding-left: 5px;
   margin: 0 5px 0 10px;
@@ -17,12 +15,5 @@
   font-size: 11px;
   height: 28px;
   outline: none;
-  color: rgba(0, 0, 0, 0.87);
-}
-
-@include theme.dark-theme {
-  .filter-input {
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    color: rgba(255, 255, 255, 0.87);
-  }
+  color: var(--black);
 }

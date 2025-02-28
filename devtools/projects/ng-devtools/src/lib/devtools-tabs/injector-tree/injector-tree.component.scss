@@ -1,5 +1,3 @@
-@use '../../../styles/theme' as theme;
-
 :host {
   width: 100%;
   height: 100%;
@@ -56,14 +54,14 @@ svg {
       }
 
       .docs-link {
-        color: #000000de;
+        color: var(--black);
         height: inherit;
         width: fit-content;
         font-size: initial;
         padding-left: 0.1rem;
 
         &:active {
-          color: #1b1aa5;
+          color: var(--blue-02);
         }
       }
     }
@@ -89,7 +87,7 @@ svg {
         height: 90px;
         flex-shrink: 0;
         align-items: center;
-        border-right: 1px solid #e8e8e8;
+        border-right: 1px solid var(--septenary-contrast);
       }
 
       .parameter {
@@ -113,20 +111,20 @@ svg {
       }
 
       .parameter-name {
-        color: #d23a32;
+        color: var(--dynamic-red-01);
       }
 
       .parameter-flag {
         a {
           display: inline-block;
           padding: 0px 6px;
-          background: #dddddd;
+          background: var(--senary-contrast);
           border-radius: 10px;
           color: inherit;
           text-decoration: none;
 
           &:hover {
-            background: #c6c6c6;
+            background: var(--senary-contrast);
           }
         }
       }
@@ -162,16 +160,16 @@ svg {
   display: flex;
   overflow: auto;
 
-  background: #f5f5f5;
+  background: var(--septenary-contrast);
 
   .dep {
-    border-top: 1px solid #e8e8e8;
-    border-bottom: 1px solid #e8e8e8;
-    border-left: 1px solid #e8e8e8;
+    border-top: 1px solid var(--septenary-contrast);
+    border-bottom: 1px solid var(--septenary-contrast);
+    border-left: 1px solid var(--septenary-contrast);
     padding: 1rem;
 
     &:last-of-type {
-      border-right: 1px solid #e8e8e8;
+      border-right: 1px solid var(--septenary-contrast);
     }
 
     .dep-header {
@@ -195,7 +193,7 @@ svg {
   font-size: 11px;
   font-weight: 500;
   height: auto;
-  background: #f5f5f5;
+  background: var(--septenary-contrast);
 }
 
 .injector-hierarchy {
@@ -207,7 +205,7 @@ svg {
     margin: 0;
     display: flex;
     align-items: center;
-    border-bottom: 1px solid #777777;
+    border-bottom: 1px solid var(--quaternary-contrast);
     font-size: 0.875rem;
     display: flex;
     align-items: center;
@@ -224,27 +222,11 @@ svg {
 
 .injector-graph {
   overflow: auto;
-  background: #f3f3f3;
+  background: var(--octonary-contrast);
   height: calc(100% - 50px);
 }
 
 .hierarchy-ref {
   color: currentColor;
   text-decoration: none;
-}
-
-@include theme.dark-theme {
-  .injector-hierarchy {
-    h2 {
-      color: #ffffff;
-    }
-  }
-
-  .deps {
-    background: #161515;
-  }
-
-  .injector-graph {
-    background: #1a1a1a;
-  }
 }
