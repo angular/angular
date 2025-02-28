@@ -332,19 +332,29 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/routing/overview',
           },
           {
-            label: 'Common routing tasks',
+            label: 'Define routes',
+            path: 'guide/routing/define-routes',
+            contentPath: 'guide/routing/define-routes',
+          },
+          {
+            label: 'Show routes with Outlets',
+            path: 'guide/routing/show-routes-with-outlets',
+            contentPath: 'guide/routing/show-routes-with-outlets',
+          },
+          {
+            label: 'Navigate to routes',
+            path: 'guide/routing/navigate-to-routes',
+            contentPath: 'guide/routing/navigate-to-routes',
+          },
+          {
+            label: 'Read route state',
+            path: 'guide/routing/read-route-state',
+            contentPath: 'guide/routing/read-route-state',
+          },
+          {
+            label: 'Other routing tasks',
             path: 'guide/routing/common-router-tasks',
             contentPath: 'guide/routing/common-router-tasks',
-          },
-          {
-            label: 'Routing in single-page applications',
-            path: 'guide/routing/router-tutorial',
-            contentPath: 'guide/routing/router-tutorial',
-          },
-          {
-            label: 'Creating custom route matches',
-            path: 'guide/routing/routing-with-urlmatcher',
-            contentPath: 'guide/routing/routing-with-urlmatcher',
           },
           {
             label: 'Router reference',
