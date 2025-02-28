@@ -68,6 +68,19 @@ export class FormNode {
     return false;
   });
 
+  readonly errors = computed(() => this.logic?.errors?.(this) ?? []);
+  readonly valid = computed(() => {
+    if (this.errors().length > 0) {
+      return false;
+    }
+    for (const node of this.childrenMap().values()) {
+      if (!node.valid()) {
+        return false;
+      }
+    }
+    return true;
+  });
+
   readonly disabled: Signal<boolean> = computed(
     () => (this.parent?.disabled() || this.logic?.disabled?.(this)) ?? false,
   );
@@ -78,7 +91,6 @@ export class FormNode {
     readonly value: WritableSignal<unknown>,
     readonly parent?: FormNode,
     private readonly logic?: LogicNode,
-    private readonly wrap = (n: FormNode) => n,
   ) {
     this.childrenMap = linkedSignal<unknown, Map<PropertyKey, FormNode>>({
       source: this.value,

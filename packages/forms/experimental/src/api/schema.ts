@@ -1,4 +1,4 @@
-import {LogicNode} from '../engine/logic';
+import {FormError, LogicNode} from '../engine/logic';
 import {FormNode} from '../engine/node';
 import {type Form} from './form';
 
@@ -51,6 +51,22 @@ export function array<T extends any[], TRoots extends Form<any>[]>(
   const logic = (path as any)['$logic'] as LogicNode;
   logic.element = new LogicNode([0, ...logic.parentDepths.map((depth) => depth + 1)]);
   fn(makeFormPath(logic.element));
+}
+
+export function validate<T, TRoots extends Form<any>[]>(
+  path: FormPathTerminal<T, TRoots>,
+  validator: (v: T, ...roots: TRoots) => FormError | Array<FormError> | undefined,
+): void {
+  const logic = (path as any)['$logic'] as LogicNode;
+  const prevErrors = logic.errors ?? (() => []);
+  logic.errors = (node: FormNode) => {
+    const roots = getRoots(logic.parentDepths, node) as TRoots;
+    let myErrors = validator(node.value() as T, ...roots);
+    if (!Array.isArray(myErrors)) {
+      myErrors = myErrors ? [myErrors] : [];
+    }
+    return [...prevErrors(node), ...myErrors];
+  };
 }
 
 function makeFormPath<T, TRoots extends any[]>(node: LogicNode): FormPath<T, TRoots> {
