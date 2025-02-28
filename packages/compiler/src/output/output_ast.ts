@@ -1687,12 +1687,6 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
   visitWrappedNodeExpr(ast: WrappedNodeExpr<any>, context: any): any {
     return ast;
   }
-  visitTypeofExpr(ast: TypeofExpr, context: any): any {
-    return this.visitExpression(ast, context);
-  }
-  visitVoidExpr(ast: VoidExpr, context: any) {
-    return this.visitExpression(ast, context);
-  }
   visitReadVarExpr(ast: ReadVarExpr, context: any): any {
     return this.visitExpression(ast, context);
   }
@@ -1767,6 +1761,14 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
     return this.visitExpression(ast, context);
   }
   visitUnaryOperatorExpr(ast: UnaryOperatorExpr, context: any): any {
+    ast.expr.visitExpression(this, context);
+    return this.visitExpression(ast, context);
+  }
+  visitTypeofExpr(ast: TypeofExpr, context: any): any {
+    ast.expr.visitExpression(this, context);
+    return this.visitExpression(ast, context);
+  }
+  visitVoidExpr(ast: VoidExpr, context: any) {
     ast.expr.visitExpression(this, context);
     return this.visitExpression(ast, context);
   }
