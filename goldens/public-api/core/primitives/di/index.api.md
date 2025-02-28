@@ -16,7 +16,7 @@ export interface InjectionToken<T> extends Type<T> {
 // @public (undocumented)
 export interface Injector {
     // (undocumented)
-    retrieve?<T>(token: InjectionToken<T>, options?: unknown): T | NotFound;
+    retrieve<T>(token: InjectionToken<T>, options?: unknown): T | NotFound;
 }
 
 // @public
