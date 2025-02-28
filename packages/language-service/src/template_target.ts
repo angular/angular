@@ -55,7 +55,7 @@ import {
   isTemplateNodeWithKeyAndValue,
   isWithin,
   isWithinKeyValue,
-  TemplateInfo,
+  TypeCheckInfo,
 } from './utils';
 
 /**
@@ -349,16 +349,16 @@ interface TcbNodesInfoForTemplate {
  *
  */
 export function getTcbNodesOfTemplateAtPosition(
-  templateInfo: TemplateInfo,
+  typeCheckInfo: TypeCheckInfo,
   position: number,
   compiler: NgCompiler,
 ): TcbNodesInfoForTemplate | null {
-  const target = getTargetAtPosition(templateInfo.template, position);
+  const target = getTargetAtPosition(typeCheckInfo.nodes, position);
   if (target === null) {
     return null;
   }
 
-  const tcb = compiler.getTemplateTypeChecker().getTypeCheckBlock(templateInfo.component);
+  const tcb = compiler.getTemplateTypeChecker().getTypeCheckBlock(typeCheckInfo.declaration);
   if (tcb === null) {
     return null;
   }
