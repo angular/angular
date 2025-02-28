@@ -11,28 +11,19 @@ import {DeclarationNode} from '../../../reflection';
 
 import {TemplateId} from '../../api';
 
-const TEMPLATE_ID = Symbol('ngTemplateId');
-const NEXT_TEMPLATE_ID = Symbol('ngNextTemplateId');
-
-interface HasTemplateId {
-  [TEMPLATE_ID]: TemplateId;
-}
+const TEMPLATE_ID_MAP = Symbol('ngTemplateId');
 
 interface HasNextTemplateId {
-  [NEXT_TEMPLATE_ID]: number;
+  [TEMPLATE_ID_MAP]: Map<ts.Node, TemplateId>;
 }
 
 export function getTemplateId(clazz: DeclarationNode): TemplateId {
-  const node = clazz as ts.Declaration & Partial<HasTemplateId>;
-  if (node[TEMPLATE_ID] === undefined) {
-    node[TEMPLATE_ID] = allocateTemplateId(node.getSourceFile());
+  const sf = clazz.getSourceFile() as ts.SourceFile & Partial<HasNextTemplateId>;
+  if (sf[TEMPLATE_ID_MAP] === undefined) {
+    sf[TEMPLATE_ID_MAP] = new Map();
   }
-  return node[TEMPLATE_ID]!;
-}
-
-function allocateTemplateId(sf: ts.SourceFile & Partial<HasNextTemplateId>): TemplateId {
-  if (sf[NEXT_TEMPLATE_ID] === undefined) {
-    sf[NEXT_TEMPLATE_ID] = 1;
+  if (sf[TEMPLATE_ID_MAP].get(clazz) === undefined) {
+    sf[TEMPLATE_ID_MAP].set(clazz, `tcb${sf[TEMPLATE_ID_MAP].size + 1}` as TemplateId);
   }
-  return `tcb${sf[NEXT_TEMPLATE_ID]!++}` as TemplateId;
+  return sf[TEMPLATE_ID_MAP].get(clazz)!;
 }
