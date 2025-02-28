@@ -24,7 +24,7 @@ import ts from 'typescript';
 import {Reference} from '../../../imports';
 import {
   ClassPropertyMapping,
-  ComponentResources,
+  DirectiveResources,
   DirectiveTypeCheckMeta,
   HostDirectiveMeta,
   InputMapping,
@@ -74,7 +74,7 @@ export interface ComponentAnalysisData {
    */
   viewProvidersRequiringFactory: Set<Reference<ClassDeclaration>> | null;
 
-  resources: ComponentResources;
+  resources: DirectiveResources;
 
   /**
    * `styleUrls` extracted from the decorator, if present.

@@ -17,7 +17,7 @@ import {
 } from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
+import {isExternalResource, Resource} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {
   DirectiveSymbol,
   DomBindingSymbol,
@@ -407,15 +407,27 @@ function getDefinitionForExpressionAtPosition(
   if (classDeclaration === undefined) {
     return;
   }
-  const componentResources = compiler.getComponentResources(classDeclaration);
-  if (componentResources === null) {
+  const resource = compiler.getDirectiveResources(classDeclaration);
+  if (resource === null) {
     return;
   }
 
-  const allResources = [...componentResources.styles, componentResources.template];
+  let resourceForExpression: Resource | null = null;
 
-  const resourceForExpression = allResources.find((resource) => resource.expression === expression);
-  if (resourceForExpression === undefined || !isExternalResource(resourceForExpression)) {
+  if (resource.template?.expression === expression) {
+    resourceForExpression = resource.template;
+  }
+
+  if (resourceForExpression === null && resource.styles !== null) {
+    for (const style of resource.styles) {
+      if (style.expression === expression) {
+        resourceForExpression = style;
+        break;
+      }
+    }
+  }
+
+  if (resourceForExpression === null || !isExternalResource(resourceForExpression)) {
     return;
   }
 
