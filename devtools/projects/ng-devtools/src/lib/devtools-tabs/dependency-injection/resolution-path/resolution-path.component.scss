@@ -1,21 +1,15 @@
-@use '../../../../styles/theme' as theme;
-
-/* TODO: Extract */
-$darkBg: #1a1a1a;
-$lightBg: #f3f3f3;
-
 :host {
   display: flex;
   flex-wrap: wrap;
-  background: $lightBg;
-  border-top: 1px solid black;
+  background: var(--octonary-contrast);
   padding: 0.5rem 0.5rem 0.25rem 0.5rem;
+  border-top: 1px solid var(--senary-contrast);
 
   .node {
     position: relative;
     border-radius: 5px;
-    background: #c4c4c4;
-    color: black;
+    background: var(--octonary-contrast);
+    color: var(--black);
     padding: 4px 25px 4px 15px;
     margin-bottom: 0.25rem;
     font-size: 0.75rem;
@@ -23,15 +17,15 @@ $lightBg: #f3f3f3;
     box-sizing: border-box;
 
     &.type-env {
-      background: #f9c2c5;
+      background: var(--red-06);
     }
 
     &.type-element {
-      background: #a6d5a9;
+      background: var(--green-03);
     }
 
     &.type-imported {
-      background: #c79eff;
+      background: var(--purple-03);
     }
 
     &.type-hidden {
@@ -60,7 +54,7 @@ $lightBg: #f3f3f3;
 
     &:not(:last-of-type)::before {
       content: '';
-      background: $lightBg;
+      background: var(--octonary-contrast);
       width: 21px;
       height: 21px;
       top: calc(50% - 6px);
@@ -74,12 +68,5 @@ $lightBg: #f3f3f3;
     &:not(:last-of-type) {
       margin-right: -14px;
     }
-  }
-}
-
-@include theme.dark-theme {
-  :host,
-  .node:not(:last-of-type)::before {
-    background: #1a1a1a;
   }
 }
