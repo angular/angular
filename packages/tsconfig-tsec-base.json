@@ -3,7 +3,7 @@
   "extends": "./tsconfig-build.json",
   "compilerOptions": {
     "noEmit": true,
-    "lib": ["es2020", "dom", "dom.iterable"],
+    "lib": ["es2020", "es2022", "dom", "dom.iterable"],
     "plugins": [{"name": "tsec", "exemptionConfig": "./tsec-exemption.json"}]
   }
 }

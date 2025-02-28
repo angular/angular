@@ -27,7 +27,6 @@ import {renderStringify} from '../util/stringify_utils';
  */
 export function interpolationV(lView: LView, values: any[]): string | NO_CHANGE {
   ngDevMode && assertLessThan(2, values.length, 'should have at least 3 values');
-  ngDevMode && assertEqual(values.length % 2, 1, 'should have an odd number of values');
   let isBindingUpdated = false;
   let bindingIndex = getBindingIndex();
 
@@ -44,7 +43,8 @@ export function interpolationV(lView: LView, values: any[]): string | NO_CHANGE 
   // Build the updated content
   let content = values[0];
   for (let i = 1; i < values.length; i += 2) {
-    content += renderStringify(values[i]) + values[i + 1];
+    // The condition is to prevent an out-of-bound read
+    content += renderStringify(values[i]) + (i + 1 !== values.length ? values[i + 1] : '');
   }
 
   return content;
@@ -61,7 +61,7 @@ export function interpolation1(
   lView: LView,
   prefix: string,
   v0: any,
-  suffix: string,
+  suffix = '',
 ): string | NO_CHANGE {
   const different = bindingUpdated(lView, nextBindingIndex(), v0);
   return different ? prefix + renderStringify(v0) + suffix : NO_CHANGE;
@@ -76,7 +76,7 @@ export function interpolation2(
   v0: any,
   i0: string,
   v1: any,
-  suffix: string,
+  suffix = '',
 ): string | NO_CHANGE {
   const bindingIndex = getBindingIndex();
   const different = bindingUpdated2(lView, bindingIndex, v0, v1);
@@ -96,7 +96,7 @@ export function interpolation3(
   v1: any,
   i1: string,
   v2: any,
-  suffix: string,
+  suffix = '',
 ): string | NO_CHANGE {
   const bindingIndex = getBindingIndex();
   const different = bindingUpdated3(lView, bindingIndex, v0, v1, v2);
@@ -120,7 +120,7 @@ export function interpolation4(
   v2: any,
   i2: string,
   v3: any,
-  suffix: string,
+  suffix = '',
 ): string | NO_CHANGE {
   const bindingIndex = getBindingIndex();
   const different = bindingUpdated4(lView, bindingIndex, v0, v1, v2, v3);
@@ -154,7 +154,7 @@ export function interpolation5(
   v3: any,
   i3: string,
   v4: any,
-  suffix: string,
+  suffix = '',
 ): string | NO_CHANGE {
   const bindingIndex = getBindingIndex();
   let different = bindingUpdated4(lView, bindingIndex, v0, v1, v2, v3);
@@ -193,7 +193,7 @@ export function interpolation6(
   v4: any,
   i4: string,
   v5: any,
-  suffix: string,
+  suffix = '',
 ): string | NO_CHANGE {
   const bindingIndex = getBindingIndex();
   let different = bindingUpdated4(lView, bindingIndex, v0, v1, v2, v3);
@@ -236,7 +236,7 @@ export function interpolation7(
   v5: any,
   i5: string,
   v6: any,
-  suffix: string,
+  suffix = '',
 ): string | NO_CHANGE {
   const bindingIndex = getBindingIndex();
   let different = bindingUpdated4(lView, bindingIndex, v0, v1, v2, v3);
@@ -283,7 +283,7 @@ export function interpolation8(
   v6: any,
   i6: string,
   v7: any,
-  suffix: string,
+  suffix = '',
 ): string | NO_CHANGE {
   const bindingIndex = getBindingIndex();
   let different = bindingUpdated4(lView, bindingIndex, v0, v1, v2, v3);
