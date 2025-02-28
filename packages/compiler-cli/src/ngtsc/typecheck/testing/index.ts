@@ -79,7 +79,7 @@ import {
   TypeCheckContext,
 } from '../api';
 import {
-  TemplateId,
+  TypeCheckId,
   TemplateSourceMapping,
   TypeCheckableDirectiveMeta,
   TypeCheckBlockMetadata,
@@ -388,7 +388,7 @@ export function tcb(
   const binder = new R3TargetBinder<DirectiveMeta>(matcher);
   const boundTarget = binder.bind({template: nodes});
 
-  const id = 'tcb' as TemplateId;
+  const id = 'tcb' as TypeCheckId;
   const meta: TypeCheckBlockMetadata = {
     id,
     boundTarget,
@@ -1039,8 +1039,8 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
   }
   missingReferenceTarget(): void {}
   missingPipe(): void {}
-  deferredPipeUsedEagerly(templateId: TemplateId, ast: BindingPipe): void {}
-  deferredComponentUsedEagerly(templateId: TemplateId, element: TmplAstElement): void {}
+  deferredPipeUsedEagerly(id: TypeCheckId, ast: BindingPipe): void {}
+  deferredComponentUsedEagerly(id: TypeCheckId, element: TmplAstElement): void {}
   duplicateTemplateVar(): void {}
   requiresInlineTcb(): void {}
   requiresInlineTypeConstructors(): void {}
@@ -1051,14 +1051,14 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
   inaccessibleDeferredTriggerElement(): void {}
   controlFlowPreventingContentProjection(): void {}
   illegalWriteToLetDeclaration(
-    templateId: TemplateId,
+    id: TypeCheckId,
     node: PropertyWrite,
     target: TmplAstLetDeclaration,
   ): void {}
   letUsedBeforeDefinition(
-    templateId: TemplateId,
+    id: TypeCheckId,
     node: PropertyRead,
     target: TmplAstLetDeclaration,
   ): void {}
-  conflictingDeclaration(templateId: TemplateId, current: TmplAstLetDeclaration): void {}
+  conflictingDeclaration(id: TypeCheckId, current: TmplAstLetDeclaration): void {}
 }

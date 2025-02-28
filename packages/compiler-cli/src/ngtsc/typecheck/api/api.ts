@@ -44,7 +44,7 @@ export interface TypeCheckableDirectiveMeta extends DirectiveMeta, DirectiveType
   rawImports: ts.Expression | null;
 }
 
-export type TemplateId = string & {__brand: 'TemplateId'};
+export type TypeCheckId = string & {__brand: 'TypeCheckId'};
 
 /**
  * A `ts.Diagnostic` with additional information about the diagnostic related to template
@@ -54,12 +54,12 @@ export interface TemplateDiagnostic extends ts.Diagnostic {
   /**
    * The component with the template that resulted in this diagnostic.
    */
-  componentFile: ts.SourceFile;
+  sourceFile: ts.SourceFile;
 
   /**
-   * The template id of the component that resulted in this diagnostic.
+   * The type check ID of the directive that resulted in this diagnostic.
    */
-  templateId: TemplateId;
+  typeCheckId: TypeCheckId;
 }
 
 /**
@@ -75,9 +75,9 @@ export interface TypeCheckBlockMetadata {
   /**
    * A unique identifier for the class which gave rise to this TCB.
    *
-   * This can be used to map errors back to the `ts.ClassDeclaration` for the component.
+   * This can be used to map errors back to the `ts.ClassDeclaration` for the directive.
    */
-  id: TemplateId;
+  id: TypeCheckId;
 
   /**
    * Semantic information about the template of the component.
@@ -410,10 +410,10 @@ export interface ExternalTemplateSourceMapping {
 }
 
 /**
- * A mapping of a TCB template id to a span in the corresponding template source.
+ * A mapping of a TCB template id to a span in the corresponding source code.
  */
 export interface SourceLocation {
-  id: TemplateId;
+  id: TypeCheckId;
   span: AbsoluteSourceSpan;
 }
 
