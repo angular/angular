@@ -15,7 +15,7 @@ import {
 import ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
-import {TemplateDiagnostic, TemplateId} from '../api';
+import {TemplateDiagnostic, TypeCheckId} from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
 import {TemplateSourceResolver} from './tcb_util';
@@ -91,7 +91,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
   constructor(private resolver: TemplateSourceResolver) {}
 
   checkElement(
-    id: TemplateId,
+    id: TypeCheckId,
     element: TmplAstElement,
     schemas: SchemaMetadata[],
     hostIsStandalone: boolean,
@@ -130,7 +130,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
   }
 
   checkProperty(
-    id: TemplateId,
+    id: TypeCheckId,
     element: TmplAstElement,
     name: string,
     span: ParseSourceSpan,

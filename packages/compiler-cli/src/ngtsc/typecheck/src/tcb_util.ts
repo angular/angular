@@ -12,7 +12,7 @@ import ts from 'typescript';
 import {ClassDeclaration, ReflectionHost} from '../../../../src/ngtsc/reflection';
 import {Reference} from '../../imports';
 import {getTokenAtPosition} from '../../util/src/typescript';
-import {FullTemplateMapping, SourceLocation, TemplateId, TemplateSourceMapping} from '../api';
+import {FullTemplateMapping, SourceLocation, TypeCheckId, TemplateSourceMapping} from '../api';
 
 import {hasIgnoreForDiagnosticsMarker, readSpanComment} from './comments';
 import {ReferenceEmitEnvironment} from './reference_emit_environment';
@@ -37,24 +37,24 @@ const TCB_FILE_IMPORT_GRAPH_PREPARE_IDENTIFIERS = [
 ];
 
 /**
- * Adapter interface which allows the template type-checking diagnostics code to interpret offsets
+ * Adapter interface which allows the directive type-checking diagnostics code to interpret offsets
  * in a TCB and map them back to original locations in the template.
  */
 export interface TemplateSourceResolver {
-  getTemplateId(node: ts.ClassDeclaration): TemplateId;
+  getTypeCheckId(node: ts.ClassDeclaration): TypeCheckId;
 
   /**
-   * For the given template id, retrieve the original source mapping which describes how the offsets
-   * in the template should be interpreted.
+   * For the given type checking id, retrieve the original source mapping which describes how the
+   * offsets in the template should be interpreted.
    */
-  getSourceMapping(id: TemplateId): TemplateSourceMapping;
+  getSourceMapping(id: TypeCheckId): TemplateSourceMapping;
 
   /**
-   * Convert an absolute source span associated with the given template id into a full
+   * Convert an absolute source span associated with the given type checking id into a full
    * `ParseSourceSpan`. The returned parse span has line and column numbers in addition to only
-   * absolute offsets and gives access to the original template source.
+   * absolute offsets and gives access to the original source code.
    */
-  toParseSourceSpan(id: TemplateId, span: AbsoluteSourceSpan): ParseSourceSpan | null;
+  toParseSourceSpan(id: TypeCheckId, span: AbsoluteSourceSpan): ParseSourceSpan | null;
 }
 
 /**
@@ -131,7 +131,7 @@ export function getTemplateMapping(
 
 export function findTypeCheckBlock(
   file: ts.SourceFile,
-  id: TemplateId,
+  id: TypeCheckId,
   isDiagnosticRequest: boolean,
 ): ts.Node | null {
   for (const stmt of file.statements) {
@@ -181,7 +181,7 @@ function getTemplateId(
   node: ts.Node,
   sourceFile: ts.SourceFile,
   isDiagnosticRequest: boolean,
-): TemplateId | null {
+): TypeCheckId | null {
   // Walk up to the function declaration of the TCB, the file information is attached there.
   while (!ts.isFunctionDeclaration(node)) {
     if (hasIgnoreForDiagnosticsMarker(node, sourceFile) && isDiagnosticRequest) {
@@ -204,7 +204,7 @@ function getTemplateId(
       }
       const commentText = sourceFile.text.substring(pos + 2, end - 2);
       return commentText;
-    }) as TemplateId) || null
+    }) as TypeCheckId) || null
   );
 }
 

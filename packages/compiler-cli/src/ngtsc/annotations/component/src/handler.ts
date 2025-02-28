@@ -116,7 +116,7 @@ import {
   HandlerPrecedence,
   ResolveResult,
 } from '../../../transform';
-import {TemplateId, TypeCheckableDirectiveMeta, TypeCheckContext} from '../../../typecheck/api';
+import {TypeCheckId, TypeCheckableDirectiveMeta, TypeCheckContext} from '../../../typecheck/api';
 import {ExtendedTemplateChecker} from '../../../typecheck/extended/api';
 import {TemplateSemanticsChecker} from '../../../typecheck/template_semantics/api/api';
 import {getSourceFile} from '../../../util/src/typescript';
@@ -695,7 +695,8 @@ export class ComponentDecoratorHandler
         template.errors &&
         template.errors.length > 0
       ) {
-        // Template errors are handled at the type check phase. But we skip this phase in local compilation mode. As a result we need to handle the errors now and add them to the diagnostics.
+        // Template errors are handled at the type check phase. But we skip this phase in local
+        // compilation mode. As a result we need to handle the errors now and add them to the diagnostics.
         if (diagnostics === undefined) {
           diagnostics = [];
         }
@@ -703,7 +704,10 @@ export class ComponentDecoratorHandler
         diagnostics.push(
           ...getTemplateDiagnostics(
             template.errors,
-            '' as TemplateId, // Template ID is required as part of the template type check, mainly for mapping the template to its component class. But here we are generating the diagnostic outside of the type check context, and so we skip the template ID.
+            // Type check ID is required as part of the ype check, mainly for mapping the
+            // diagnostic back to its source. But here we are generating the diagnostic outside
+            // of the type check context, and so we skip the template ID.
+            '' as TypeCheckId,
             template.sourceMapping,
           ),
         );
