@@ -14,8 +14,9 @@ import {
 
 import {getInjectImplementation, setInjectImplementation} from './inject_switch';
 import type {Injector} from './injector';
-import {getCurrentInjector, setCurrentInjector} from './injector_compatibility';
+import {getCurrentInjector, setCurrentInjector, RetrievingInjector} from './injector_compatibility';
 import {assertNotDestroyed, R3Injector} from './r3_injector';
+import {Injector as PrimitivesInjector} from '@angular/core/primitives/di';
 
 /**
  * Runs the given function in the [context](guide/di/dependency-injection-context) of the given
@@ -32,15 +33,19 @@ import {assertNotDestroyed, R3Injector} from './r3_injector';
  * @publicApi
  */
 export function runInInjectionContext<ReturnT>(injector: Injector, fn: () => ReturnT): ReturnT {
+  let internalInjector: PrimitivesInjector;
   if (injector instanceof R3Injector) {
     assertNotDestroyed(injector);
+    internalInjector = injector;
+  } else {
+    internalInjector = new RetrievingInjector(injector);
   }
 
   let prevInjectorProfilerContext: InjectorProfilerContext;
   if (ngDevMode) {
     prevInjectorProfilerContext = setInjectorProfilerContext({injector, token: null});
   }
-  const prevInjector = setCurrentInjector(injector);
+  const prevInjector = setCurrentInjector(internalInjector);
   const previousInjectImplementation = setInjectImplementation(undefined);
   try {
     return fn();
