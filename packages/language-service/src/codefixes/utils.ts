@@ -10,7 +10,7 @@ import {absoluteFrom} from '@angular/compiler-cli';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import tss from 'typescript';
 
-import {TemplateInfo} from '../utils';
+import {TypeCheckInfo} from '../utils';
 
 /**
  * This context is the info includes the `errorCode` at the given span the user selected in the
@@ -20,7 +20,7 @@ import {TemplateInfo} from '../utils';
  * context will be provided to the `CodeActionMeta` which could handle the `errorCode`.
  */
 export interface CodeActionContext {
-  templateInfo: TemplateInfo | null;
+  typeCheckInfo: TypeCheckInfo | null;
   fileName: string;
   compiler: NgCompiler;
   start: number;

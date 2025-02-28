@@ -114,16 +114,16 @@ export function isExpressionNode(node: TmplAstNode | AST): node is AST {
   return node instanceof AST;
 }
 
-export interface TemplateInfo {
-  template: TmplAstNode[];
-  component: ts.ClassDeclaration;
+export interface TypeCheckInfo {
+  nodes: TmplAstNode[];
+  declaration: ts.ClassDeclaration;
 }
 
-function getInlineTemplateInfoAtPosition(
+function getInlineTypeCheckInfoAtPosition(
   sf: ts.SourceFile,
   position: number,
   compiler: NgCompiler,
-): TemplateInfo | undefined {
+): TypeCheckInfo | undefined {
   const expression = findTightestNode(sf, position);
   if (expression === undefined) {
     return undefined;
@@ -150,24 +150,24 @@ function getInlineTemplateInfoAtPosition(
     return undefined;
   }
 
-  return {template, component: classDecl};
+  return {nodes: template, declaration: classDecl};
 }
 
 /**
- * Retrieves the `ts.ClassDeclaration` at a location along with its template nodes.
+ * Retrieves the `ts.ClassDeclaration` at a location along with its template AST nodes.
  */
-export function getTemplateInfoAtPosition(
+export function getTypeCheckInfoAtPosition(
   fileName: string,
   position: number,
   compiler: NgCompiler,
-): TemplateInfo | undefined {
+): TypeCheckInfo | undefined {
   if (isTypeScriptFile(fileName)) {
     const sf = compiler.getCurrentProgram().getSourceFile(fileName);
     if (sf === undefined) {
       return undefined;
     }
 
-    return getInlineTemplateInfoAtPosition(sf, position, compiler);
+    return getInlineTypeCheckInfoAtPosition(sf, position, compiler);
   } else {
     return getFirstComponentForTemplateFile(fileName, compiler);
   }
@@ -192,7 +192,7 @@ function tsDeclarationSortComparator(a: DeclarationNode, b: DeclarationNode): nu
 export function getFirstComponentForTemplateFile(
   fileName: string,
   compiler: NgCompiler,
-): TemplateInfo | undefined {
+): TypeCheckInfo | undefined {
   const templateTypeChecker = compiler.getTemplateTypeChecker();
   const components = compiler.getComponentsWithTemplateFile(fileName);
   const sortedComponents = Array.from(components).sort(tsDeclarationSortComparator);
@@ -204,7 +204,7 @@ export function getFirstComponentForTemplateFile(
     if (template === null) {
       continue;
     }
-    return {template, component};
+    return {nodes: template, declaration: component};
   }
 
   return undefined;

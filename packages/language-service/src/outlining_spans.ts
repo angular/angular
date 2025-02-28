@@ -51,12 +51,8 @@ export function getOutliningSpans(compiler: NgCompiler, fileName: string): ts.Ou
     }
     return templatesInFile.map((template) => BlockVisitor.getBlockSpans(template)).flat();
   } else {
-    const templateInfo = getFirstComponentForTemplateFile(fileName, compiler);
-    if (templateInfo === undefined) {
-      return [];
-    }
-    const {template} = templateInfo;
-    return BlockVisitor.getBlockSpans(template);
+    const typeCheckInfo = getFirstComponentForTemplateFile(fileName, compiler);
+    return typeCheckInfo === undefined ? [] : BlockVisitor.getBlockSpans(typeCheckInfo.nodes);
   }
 }
 

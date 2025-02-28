@@ -47,7 +47,7 @@ import {
   getParentClassDeclaration,
   getPropertyAssignmentFromValue,
 } from './utils/ts_utils';
-import {getTemplateInfoAtPosition, isTypeScriptFile} from './utils';
+import {getTypeCheckInfoAtPosition, isTypeScriptFile} from './utils';
 import {ActiveRefactoring, allRefactorings} from './refactorings/refactoring';
 
 type LanguageServiceConfig = Omit<PluginConfig, 'angularOnly'>;
@@ -169,7 +169,7 @@ export class LanguageService {
     position: number,
   ): readonly ts.DefinitionInfo[] | undefined {
     return this.withCompilerAndPerfTracing(PerfPhase.LsDefinition, (compiler) => {
-      if (!isTemplateContext(compiler.getCurrentProgram(), fileName, position)) {
+      if (!isInTypeCheckContext(compiler.getCurrentProgram(), fileName, position)) {
         return undefined;
       }
       return new DefinitionBuilder(this.tsLS, compiler).getTypeDefinitionsAtPosition(
@@ -190,15 +190,15 @@ export class LanguageService {
     position: number,
     compiler: NgCompiler,
   ): ts.QuickInfo | undefined {
-    if (!isTemplateContext(compiler.getCurrentProgram(), fileName, position)) {
+    if (!isInTypeCheckContext(compiler.getCurrentProgram(), fileName, position)) {
       return undefined;
     }
 
-    const templateInfo = getTemplateInfoAtPosition(fileName, position, compiler);
-    if (templateInfo === undefined) {
+    const typeCheckInfo = getTypeCheckInfoAtPosition(fileName, position, compiler);
+    if (typeCheckInfo === undefined) {
       return undefined;
     }
-    const positionDetails = getTargetAtPosition(templateInfo.template, position);
+    const positionDetails = getTargetAtPosition(typeCheckInfo.nodes, position);
     if (positionDetails === null) {
       return undefined;
     }
@@ -213,7 +213,7 @@ export class LanguageService {
     return new QuickInfoBuilder(
       this.tsLS,
       compiler,
-      templateInfo.component,
+      typeCheckInfo.declaration,
       node,
       positionDetails,
     ).get();
@@ -266,11 +266,11 @@ export class LanguageService {
     position: number,
     compiler: NgCompiler,
   ): CompletionBuilder<TmplAstNode | AST> | null {
-    const templateInfo = getTemplateInfoAtPosition(fileName, position, compiler);
-    if (templateInfo === undefined) {
+    const typeCheckInfo = getTypeCheckInfoAtPosition(fileName, position, compiler);
+    if (typeCheckInfo === undefined) {
       return null;
     }
-    const positionDetails = getTargetAtPosition(templateInfo.template, position);
+    const positionDetails = getTargetAtPosition(typeCheckInfo.nodes, position);
     if (positionDetails === null) {
       return null;
     }
@@ -284,7 +284,7 @@ export class LanguageService {
     return new CompletionBuilder(
       this.tsLS,
       compiler,
-      templateInfo.component,
+      typeCheckInfo.declaration,
       node,
       positionDetails,
     );
@@ -306,7 +306,7 @@ export class LanguageService {
     options: ts.GetCompletionsAtPositionOptions | undefined,
     compiler: NgCompiler,
   ): ts.WithMetadata<ts.CompletionInfo> | undefined {
-    if (!isTemplateContext(compiler.getCurrentProgram(), fileName, position)) {
+    if (!isInTypeCheckContext(compiler.getCurrentProgram(), fileName, position)) {
       return undefined;
     }
 
@@ -326,7 +326,7 @@ export class LanguageService {
     data: ts.CompletionEntryData | undefined,
   ): ts.CompletionEntryDetails | undefined {
     return this.withCompilerAndPerfTracing(PerfPhase.LsCompletions, (compiler) => {
-      if (!isTemplateContext(compiler.getCurrentProgram(), fileName, position)) {
+      if (!isInTypeCheckContext(compiler.getCurrentProgram(), fileName, position)) {
         return undefined;
       }
 
@@ -344,7 +344,7 @@ export class LanguageService {
     options?: ts.SignatureHelpItemsOptions,
   ): ts.SignatureHelpItems | undefined {
     return this.withCompilerAndPerfTracing(PerfPhase.LsSignatureHelp, (compiler) => {
-      if (!isTemplateContext(compiler.getCurrentProgram(), fileName, position)) {
+      if (!isInTypeCheckContext(compiler.getCurrentProgram(), fileName, position)) {
         return undefined;
       }
 
@@ -364,7 +364,7 @@ export class LanguageService {
     entryName: string,
   ): ts.Symbol | undefined {
     return this.withCompilerAndPerfTracing(PerfPhase.LsCompletions, (compiler) => {
-      if (!isTemplateContext(compiler.getCurrentProgram(), fileName, position)) {
+      if (!isInTypeCheckContext(compiler.getCurrentProgram(), fileName, position)) {
         return undefined;
       }
 
@@ -410,7 +410,7 @@ export class LanguageService {
         }
         return this.codeFixes.getCodeFixesAtPosition(
           fileName,
-          getTemplateInfoAtPosition(fileName, start, compiler) ?? null,
+          getTypeCheckInfoAtPosition(fileName, start, compiler) ?? null,
           compiler,
           start,
           end,
@@ -519,13 +519,13 @@ export class LanguageService {
     return this.withCompilerAndPerfTracing<GetTcbResponse | undefined>(
       PerfPhase.LsTcb,
       (compiler) => {
-        const templateInfo = getTemplateInfoAtPosition(fileName, position, compiler);
-        if (templateInfo === undefined) {
+        const typeCheckInfo = getTypeCheckInfoAtPosition(fileName, position, compiler);
+        if (typeCheckInfo === undefined) {
           return undefined;
         }
 
         const selectionNodesInfo = getTcbNodesOfTemplateAtPosition(
-          templateInfo,
+          typeCheckInfo,
           position,
           compiler,
         );
@@ -796,7 +796,7 @@ function getOrCreateTypeCheckScriptInfo(
   return scriptInfo;
 }
 
-function isTemplateContext(program: ts.Program, fileName: string, position: number): boolean {
+function isInTypeCheckContext(program: ts.Program, fileName: string, position: number): boolean {
   if (!isTypeScriptFile(fileName)) {
     // If we aren't in a TS file, we must be in an HTML file, which we treat as template context
     return true;
