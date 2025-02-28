@@ -58,12 +58,12 @@ import ts from 'typescript';
 import {Reference} from '../../imports';
 import {BindingPropertyName, ClassPropertyName, PipeMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
-import {TemplateId, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata} from '../api';
+import {TypeCheckId, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata} from '../api';
 
 import {addExpressionIdentifier, ExpressionIdentifier, markIgnoreDiagnostics} from './comments';
 import {
   addParseSpanInfo,
-  addTemplateId,
+  addTypeCheckId,
   wrapForDiagnostics,
   wrapForTypeChecker,
 } from './diagnostics';
@@ -213,7 +213,7 @@ export function generateTypeCheckBlock(
     /* type */ undefined,
     /* body */ body,
   );
-  addTemplateId(fnDecl, meta.id);
+  addTypeCheckId(fnDecl, meta.id);
   return fnDecl;
 }
 
@@ -1934,7 +1934,7 @@ export class Context {
     readonly env: Environment,
     readonly domSchemaChecker: DomSchemaChecker,
     readonly oobRecorder: OutOfBandDiagnosticRecorder,
-    readonly id: TemplateId,
+    readonly id: TypeCheckId,
     readonly boundTarget: BoundTarget<TypeCheckableDirectiveMeta>,
     private pipes: Map<string, PipeMeta>,
     readonly schemas: SchemaMetadata[],

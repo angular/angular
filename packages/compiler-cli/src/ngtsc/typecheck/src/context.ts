@@ -27,7 +27,7 @@ import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
 import {
   TemplateDiagnostic,
-  TemplateId,
+  TypeCheckId,
   TemplateSourceMapping,
   TypeCheckableDirectiveMeta,
   TypeCheckBlockMetadata,
@@ -67,10 +67,10 @@ export interface ShimTypeCheckingData {
   hasInlines: boolean;
 
   /**
-   * Map of `TemplateId` to information collected about the template during the template
+   * Map of `TypeCheckId` to information collected about the template during the template
    * type-checking process.
    */
-  templates: Map<TemplateId, TemplateData>;
+  templates: Map<TypeCheckId, TemplateData>;
 }
 
 /**
@@ -132,9 +132,9 @@ export interface PendingShimData {
   file: TypeCheckFile;
 
   /**
-   * Map of `TemplateId` to information collected about the template as it's ingested.
+   * Map of `TypeCheckId` to information collected about the template as it's ingested.
    */
-  templates: Map<TemplateId, TemplateData>;
+  templates: Map<TypeCheckId, TemplateData>;
 }
 
 /**
@@ -245,12 +245,12 @@ export class TypeCheckContextImpl implements TypeCheckContext {
 
     const fileData = this.dataForFile(ref.node.getSourceFile());
     const shimData = this.pendingShimForComponent(ref.node);
-    const templateId = fileData.sourceManager.getTemplateId(ref.node);
+    const id = fileData.sourceManager.getTypeCheckId(ref.node);
 
     const templateDiagnostics: TemplateDiagnostic[] = [];
 
     if (parseErrors !== null) {
-      templateDiagnostics.push(...getTemplateDiagnostics(parseErrors, templateId, sourceMapping));
+      templateDiagnostics.push(...getTemplateDiagnostics(parseErrors, id, sourceMapping));
     }
 
     const boundTarget = binder.bind({template});
@@ -283,7 +283,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       }
     }
 
-    shimData.templates.set(templateId, {
+    shimData.templates.set(id, {
       template,
       boundTarget,
       templateDiagnostics,
@@ -314,7 +314,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       // and inlining would be required.
 
       // Record diagnostics to indicate the issues with this template.
-      shimData.oobRecorder.requiresInlineTcb(templateId, ref.node);
+      shimData.oobRecorder.requiresInlineTcb(id, ref.node);
 
       // Checking this template would be unsupported, so don't try.
       this.perf.eventCount(PerfEvent.SkipGenerateTcbNoInline);
@@ -537,7 +537,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
           this.reflector,
           this.compilerHost,
         ),
-        templates: new Map<TemplateId, TemplateData>(),
+        templates: new Map<TypeCheckId, TemplateData>(),
       });
     }
     return fileData.shimData.get(shimPath)!;
@@ -561,7 +561,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
 
 export function getTemplateDiagnostics(
   parseErrors: ParseError[],
-  templateId: TemplateId,
+  templateId: TypeCheckId,
   sourceMapping: TemplateSourceMapping,
 ): TemplateDiagnostic[] {
   return parseErrors.map((error) => {

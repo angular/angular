@@ -9,21 +9,21 @@
 import ts from 'typescript';
 import {DeclarationNode} from '../../../reflection';
 
-import {TemplateId} from '../../api';
+import {TypeCheckId} from '../../api';
 
-const TEMPLATE_ID_MAP = Symbol('ngTemplateId');
+const TYPE_CHECK_ID_MAP = Symbol('TypeCheckId');
 
-interface HasNextTemplateId {
-  [TEMPLATE_ID_MAP]: Map<ts.Node, TemplateId>;
+interface HasNextTypeCheckId {
+  [TYPE_CHECK_ID_MAP]: Map<ts.Node, TypeCheckId>;
 }
 
-export function getTemplateId(clazz: DeclarationNode): TemplateId {
-  const sf = clazz.getSourceFile() as ts.SourceFile & Partial<HasNextTemplateId>;
-  if (sf[TEMPLATE_ID_MAP] === undefined) {
-    sf[TEMPLATE_ID_MAP] = new Map();
+export function getTypeCheckId(clazz: DeclarationNode): TypeCheckId {
+  const sf = clazz.getSourceFile() as ts.SourceFile & Partial<HasNextTypeCheckId>;
+  if (sf[TYPE_CHECK_ID_MAP] === undefined) {
+    sf[TYPE_CHECK_ID_MAP] = new Map();
   }
-  if (sf[TEMPLATE_ID_MAP].get(clazz) === undefined) {
-    sf[TEMPLATE_ID_MAP].set(clazz, `tcb${sf[TEMPLATE_ID_MAP].size + 1}` as TemplateId);
+  if (sf[TYPE_CHECK_ID_MAP].get(clazz) === undefined) {
+    sf[TYPE_CHECK_ID_MAP].set(clazz, `tcb${sf[TYPE_CHECK_ID_MAP].size + 1}` as TypeCheckId);
   }
-  return sf[TEMPLATE_ID_MAP].get(clazz)!;
+  return sf[TYPE_CHECK_ID_MAP].get(clazz)!;
 }

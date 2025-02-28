@@ -8,7 +8,7 @@
 import {AbsoluteSourceSpan, ParseSourceSpan} from '@angular/compiler';
 import ts from 'typescript';
 
-import {TemplateDiagnostic, TemplateId} from '../api';
+import {TemplateDiagnostic, TypeCheckId} from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
 import {getTemplateMapping, TemplateSourceResolver} from './tcb_util';
@@ -58,10 +58,10 @@ export function addParseSpanInfo(node: ts.Node, span: AbsoluteSourceSpan | Parse
 }
 
 /**
- * Adds a synthetic comment to the function declaration that contains the template id
+ * Adds a synthetic comment to the function declaration that contains the type checking ID
  * of the class declaration.
  */
-export function addTemplateId(tcb: ts.FunctionDeclaration, id: TemplateId): void {
+export function addTypeCheckId(tcb: ts.FunctionDeclaration, id: TypeCheckId): void {
   ts.addSyntheticLeadingComment(tcb, ts.SyntaxKind.MultiLineCommentTrivia, id, true);
 }
 
