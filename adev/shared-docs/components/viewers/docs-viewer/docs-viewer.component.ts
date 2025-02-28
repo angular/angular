@@ -196,13 +196,13 @@ export class DocViewer implements OnChanges {
     const exampleRef = this.viewContainer.createComponent(ExampleViewer);
 
     this.countOfExamples++;
-    exampleRef.instance.metadata = {
+    exampleRef.setInput('metadata', {
       title: title ?? firstCodeSnippetTitle,
       path,
       files: snippets,
       preview,
       id: this.countOfExamples,
-    };
+    });
 
     exampleRef.instance.githubUrl = `${GITHUB_CONTENT_URL}/${snippets[0].name}`;
     exampleRef.instance.stackblitzUrl = `${ASSETS_EXAMPLES_PATH}/${snippets[0].name}.html`;

@@ -7,6 +7,7 @@
  */
 
 import {
+  afterNextRender,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -15,6 +16,8 @@ import {
   ElementRef,
   forwardRef,
   inject,
+  Injector,
+  input,
   Input,
   signal,
   Type,
@@ -47,10 +50,7 @@ export const HIDDEN_CLASS_NAME = 'hidden';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExampleViewer {
-  // TODO: replace by signal-based input when it'll be available
-  @Input({required: true}) set metadata(value: ExampleMetadata) {
-    this.exampleMetadata.set(value);
-  }
+  exampleMetadata = input.required<ExampleMetadata>({alias: 'metadata'});
 
   @Input() githubUrl: string | null = null;
   @Input() stackblitzUrl: string | null = null;
@@ -60,6 +60,7 @@ export class ExampleViewer {
   private readonly clipboard = inject(Clipboard);
   private readonly destroyRef = inject(DestroyRef);
   private readonly document = inject(DOCUMENT);
+  private readonly injector = inject(Injector);
   private readonly elementRef = inject(ElementRef<HTMLElement>);
   private readonly exampleViewerContentLoader = inject(EXAMPLE_VIEWER_CONTENT_LOADER);
 
@@ -76,7 +77,6 @@ export class ExampleViewer {
 
   expandable = signal<boolean>(false);
   expanded = signal<boolean>(false);
-  exampleMetadata = signal<ExampleMetadata | null>(null);
   snippetCode = signal<Snippet | undefined>(undefined);
   tabs = computed(() =>
     this.exampleMetadata()?.files.map((file) => ({
@@ -101,21 +101,27 @@ export class ExampleViewer {
 
     this.snippetCode.set(this.exampleMetadata()?.files[0]);
 
-    this.setCodeLinesVisibility();
+    afterNextRender(
+      () => {
+        // Several function below query the DOM directly, we need to wait until the DOM is rendered.
+        this.setCodeLinesVisibility();
 
-    this.elementRef.nativeElement.setAttribute(
-      'id',
-      `example-${this.exampleMetadata()?.id.toString()!}`,
+        this.elementRef.nativeElement.setAttribute(
+          'id',
+          `example-${this.exampleMetadata()?.id.toString()!}`,
+        );
+
+        this.matTabGroup?.realignInkBar();
+
+        this.listenToMatTabIndexChange();
+
+        const lines = this.getHiddenCodeLines();
+        const lineNumbers = this.getHiddenCodeLineNumbers();
+
+        this.expandable.set(lines.length > 0 || lineNumbers.length > 0);
+      },
+      {injector: this.injector},
     );
-
-    this.matTabGroup?.realignInkBar();
-
-    this.listenToMatTabIndexChange();
-
-    const lines = this.getHiddenCodeLines();
-    const lineNumbers = this.getHiddenCodeLineNumbers();
-
-    this.expandable.set(lines.length > 0 || lineNumbers.length > 0);
   }
 
   toggleExampleVisibility(): void {
