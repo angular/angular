@@ -19,7 +19,28 @@ import {Reference} from '../../imports';
 import {PipeMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 
-import {TemplateSourceMapping, TypeCheckableDirectiveMeta} from './api';
+import {SourceMapping, TypeCheckableDirectiveMeta} from './api';
+
+/** Contextuable data for type checking the template of a component. */
+export interface TemplateContext {
+  /** AST nodes representing the template. */
+  nodes: TmplAstNode[];
+
+  /** Describes the origin of the template text. Used for mapping errors back. */
+  sourceMapping: SourceMapping;
+
+  /** `ParseSourceFile` associated with the template. */
+  file: ParseSourceFile;
+
+  /** Errors produced while parsing the template. */
+  parseErrors: ParseError[] | null;
+
+  /** Pipes available within the template. */
+  pipes: Map<string, PipeMeta>;
+
+  /** Whether the template preserves whitespaces. */
+  preserveWhitespaces: boolean;
+}
 
 /**
  * A currently pending type checking operation, into which templates for type-checking can be
@@ -27,37 +48,26 @@ import {TemplateSourceMapping, TypeCheckableDirectiveMeta} from './api';
  */
 export interface TypeCheckContext {
   /**
-   * Register a template to potentially be type-checked.
+   * Register a directive to be potentially be type-checked.
    *
-   * Templates registered via `addTemplate` are available for checking, but might be skipped if
-   * checking of that component is not required. This can happen for a few reasons, including if
-   * the component was previously checked and the prior results are still valid.
+   * Directives registered via `addDIrective` are available for checking, but might be skipped if
+   * checking of that class is not required. This can happen for a few reasons, including if it was
+   * previously checked and the prior results are still valid.
    *
-   * @param ref a `Reference` to the component class which yielded this template.
+   * @param ref a `Reference` to the directive class which yielded this template.
    * @param binder an `R3TargetBinder` which encapsulates the scope of this template, including all
    * available directives.
-   * @param template the original template AST of this component.
-   * @param pipes a `Map` of pipes available within the scope of this template.
-   * @param schemas any schemas which apply to this template.
-   * @param sourceMapping a `TemplateSourceMapping` instance which describes the origin of the
-   * template text described by the AST.
-   * @param file the `ParseSourceFile` associated with the template.
-   * @param parseErrors the `ParseError`'s associated with the template.
-   * @param isStandalone a boolean indicating whether the component is standalone.
-   * @param preserveWhitespaces a boolean indicating whether the component's template preserves
-   * whitespaces.
+   * @param schemas Schemas that will apply when checking the directive.
+   * @param templateContext Contextual information necessary for checking the template.
+   * Only relevant for component classes.
+   * @param isStandalone a boolean indicating whether the directive is standalone.
    */
-  addTemplate(
+  addDirective(
     ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
     binder: R3TargetBinder<TypeCheckableDirectiveMeta>,
-    template: TmplAstNode[],
-    pipes: Map<string, PipeMeta>,
     schemas: SchemaMetadata[],
-    sourceMapping: TemplateSourceMapping,
-    file: ParseSourceFile,
-    parseErrors: ParseError[] | null,
+    templateContext: TemplateContext | null,
     isStandalone: boolean,
-    preserveWhitespaces: boolean,
   ): void;
 }
 

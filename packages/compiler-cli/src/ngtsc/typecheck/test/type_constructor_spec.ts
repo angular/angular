@@ -314,7 +314,7 @@ class TestTypeCheckingHost implements TypeCheckingHost {
     return this.sourceManager;
   }
 
-  shouldCheckComponent(): boolean {
+  shouldCheckClass(): boolean {
     return true;
   }
 

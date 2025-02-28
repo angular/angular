@@ -12,10 +12,10 @@ import ts from 'typescript';
 import {addDiagnosticChain, makeDiagnosticChain} from '../../../diagnostics';
 import {
   ExternalTemplateSourceMapping,
-  IndirectTemplateSourceMapping,
+  IndirectSourceMapping,
   TemplateDiagnostic,
   TypeCheckId,
-  TemplateSourceMapping,
+  SourceMapping,
 } from '../../api';
 
 /**
@@ -23,7 +23,7 @@ import {
  */
 export function makeTemplateDiagnostic(
   id: TypeCheckId,
-  mapping: TemplateSourceMapping,
+  mapping: SourceMapping,
   span: ParseSourceSpan,
   category: ts.DiagnosticCategory,
   code: number,
@@ -150,7 +150,7 @@ const TemplateSourceFile = Symbol('TemplateSourceFile');
 
 type TemplateSourceMappingWithSourceFile = (
   | ExternalTemplateSourceMapping
-  | IndirectTemplateSourceMapping
+  | IndirectSourceMapping
 ) & {
   [TemplateSourceFile]?: ts.SourceFile;
 };

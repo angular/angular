@@ -87,7 +87,7 @@ export interface TypeCheckBlockMetadata {
   /*
    * Pipes used in the template of the component.
    */
-  pipes: Map<string, PipeMeta>;
+  pipes: Map<string, PipeMeta> | null;
 
   /**
    * Schemas that apply to this template.
@@ -364,31 +364,29 @@ export interface TypeCheckingConfig {
   checkTwoWayBoundEvents: boolean;
 }
 
-export type TemplateSourceMapping =
-  | DirectTemplateSourceMapping
-  | IndirectTemplateSourceMapping
+export type SourceMapping =
+  | DirectSourceMapping
+  | IndirectSourceMapping
   | ExternalTemplateSourceMapping;
 
 /**
- * A mapping to an inline template in a TS file.
+ * A mapping to a node within the same source file..
  *
- * `ParseSourceSpan`s for this template should be accurate for direct reporting in a TS error
- * message.
+ * `ParseSourceSpan`s for this node should be accurate for direct reporting in a TS error message.
  */
-export interface DirectTemplateSourceMapping {
+export interface DirectSourceMapping {
   type: 'direct';
-  node: ts.StringLiteral | ts.NoSubstitutionTemplateLiteral;
+  node: ts.Expression;
 }
 
 /**
- * A mapping to a template which is still in a TS file, but where the node positions in any
+ * A mapping to a node which is still in a TS file, but where the positions in any
  * `ParseSourceSpan`s are not accurate for one reason or another.
  *
- * This can occur if the template expression was interpolated in a way where the compiler could not
- * construct a contiguous mapping for the template string. The `node` refers to the `template`
- * expression.
+ * This can occur if the expression was interpolated in a way where the compiler could not
+ * construct a contiguous mapping for the template string.
  */
-export interface IndirectTemplateSourceMapping {
+export interface IndirectSourceMapping {
   type: 'indirect';
   componentClass: ClassDeclaration;
   node: ts.Expression;
@@ -423,6 +421,6 @@ export interface SourceLocation {
  */
 export interface FullTemplateMapping {
   sourceLocation: SourceLocation;
-  templateSourceMapping: TemplateSourceMapping;
+  templateSourceMapping: SourceMapping;
   span: ParseSourceSpan;
 }

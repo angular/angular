@@ -1936,7 +1936,7 @@ export class Context {
     readonly oobRecorder: OutOfBandDiagnosticRecorder,
     readonly id: TypeCheckId,
     readonly boundTarget: BoundTarget<TypeCheckableDirectiveMeta>,
-    private pipes: Map<string, PipeMeta>,
+    private pipes: Map<string, PipeMeta> | null,
     readonly schemas: SchemaMetadata[],
     readonly hostIsStandalone: boolean,
     readonly hostPreserveWhitespaces: boolean,
@@ -1953,7 +1953,7 @@ export class Context {
   }
 
   getPipeByName(name: string): PipeMeta | null {
-    if (!this.pipes.has(name)) {
+    if (this.pipes === null || !this.pipes.has(name)) {
       return null;
     }
     return this.pipes.get(name)!;
