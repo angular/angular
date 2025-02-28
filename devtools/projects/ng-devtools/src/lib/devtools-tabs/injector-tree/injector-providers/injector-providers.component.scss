@@ -1,5 +1,4 @@
 @use '@angular/material' as mat;
-@use '../../../../styles/theme' as theme;
 
 h2 {
   font-size: 0.875rem;
@@ -107,14 +106,4 @@ tr.example-detail-row {
   font-size: 0.8rem;
   padding: 0.5rem 0;
   text-align: center;
-}
-
-@include theme.dark-theme {
-  .providers-title {
-    color: #ffffff;
-  }
-
-  .no-providers-label {
-    color: #bcc5ce;
-  }
 }

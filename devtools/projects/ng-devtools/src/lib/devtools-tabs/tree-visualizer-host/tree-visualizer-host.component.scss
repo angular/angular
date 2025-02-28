@@ -15,23 +15,54 @@
         display: none;
       }
 
+      .legend {
+        background: var(--primary-contrast);
+      }
+
+      .arrow {
+        fill: var(--full-contrast);
+      }
+
+      .legend-router-tree {
+        fill: var(--full-contrast) !important;
+      }
+
       .link {
-        stroke: #9b9b9b;
+        stroke: var(--quaternary-contrast);
         stroke-width: 3px;
         fill: none;
 
         &.highlighted {
-          stroke: #4da1ff;
+          stroke: var(--blue-02);
         }
       }
 
       .node {
         cursor: pointer;
 
+        .node-container {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          height: 100%;
+          color: black;
+          font-size: 16px;
+          box-sizing: border-box;
+          border-radius: 2px;
+          border-style: solid;
+          border-width: 2px;
+          font-weight: 300;
+
+          &:hover {
+            color: white;
+          }
+        }
+
         &.highlighted {
           .node-container,
           .node-container:hover {
-            background: oklch(0.65 0.25 266 / 1);
+            background: var(--blue-02);
             border-color: white;
             color: white;
             font-weight: 400;
@@ -40,28 +71,13 @@
           &.selected {
             .node-container,
             .node-container:hover {
-              color: oklch(0.65 0.25 266 / 1);
+              color: var(--blue-02);
               background: white;
               border-width: 3px;
-              border-color: oklch(0.65 0.25 266 / 1);
+              border-color: var(--blue-02);
               font-weight: 800;
             }
           }
-        }
-
-        .node-container {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 100%;
-          height: 100%;
-          color: #000;
-          font-size: 16px;
-          box-sizing: border-box;
-          border-radius: 2px;
-          border-style: solid;
-          border-width: 2px;
-          font-weight: 300;
         }
 
         .node-search {
@@ -72,44 +88,48 @@
         }
 
         .node-environment {
-          border: 1px solid #ff7a7e;
-          background: #f9c2c5;
+          border: 1px solid var(--red-05);
+          background: var(--red-06);
 
           &:hover {
-            background: #ff7a7e;
+            background: var(--red-05);
           }
         }
 
         .node-imported-module {
-          border-color: #8838f7;
-          background: #c79eff;
+          border-color: var(--purple-02);
+          background: var(--purple-03);
 
           &:hover {
-            background: #8838f7;
+            background: var(--purple-02);
           }
         }
 
         .node-lazy {
-          border-color: oklch(0.65 0.25 266/1);
-          background: #8bc1ff;
+          border-color: var(--blue-02);
+          background: var(--blue-03);
 
           &:hover {
-            background: #8bc1ff;
+            background: var(--blue-02);
           }
         }
 
         .node-element {
-          border-color: #28ab2c;
-          background: #a7d5a9;
+          border-color: var(--green-02);
+          background: var(--green-03);
 
           &:hover {
-            background: #28ab2c;
+            background: var(--green-02);
           }
         }
 
         .node-null {
-          border: 1px solid #8b8b8b;
+          border: 1px solid var(--quaternary-contrast);
           background: white;
+
+          &:hover {
+            color: black;
+          }
         }
 
         .node-label {
@@ -119,35 +139,6 @@
           text-align: center;
         }
       }
-    }
-  }
-}
-
-:host-context(.dark-theme) {
-  svg ::ng-deep {
-    .legend {
-      background: #2f2c2c;
-    }
-
-    .link {
-      stroke: #bcc5ce;
-      fill: none;
-
-      &.highlighted {
-        stroke: #4da1ff;
-      }
-    }
-
-    .arrow {
-      fill: white;
-    }
-
-    .node-label {
-      color: #000;
-    }
-
-    .legend-router-tree {
-      fill: #ffffff !important;
     }
   }
 }

@@ -1,5 +1,3 @@
-@use '../../../../../styles/theme' as theme;
-
 .web-tree {
   height: calc(100% - 25px);
   width: calc(100% - 25px);
@@ -8,25 +6,15 @@
 
 :host {
   ::ng-deep {
+    .webtreemap-node {
+      background: var(--primary-contrast);
+    }
     .webtreemap-caption {
       font-size: 0.9em;
+      // color: white;
     }
     .webtreemap-node:hover {
-      background: #ebf1fb;
-    }
-  }
-}
-
-@include theme.dark-theme {
-  ::ng-deep {
-    .webtreemap-node {
-      background: #202124;
-    }
-    .webtreemap-node:hover {
-      background: #262d36;
-    }
-    .webtreemap-caption {
-      color: #ffffff;
+      background: var(--septenary-contrast);
     }
   }
 }

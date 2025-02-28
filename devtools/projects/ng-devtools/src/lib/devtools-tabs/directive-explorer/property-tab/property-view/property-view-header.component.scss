@@ -1,5 +1,3 @@
-@use '../../../../../styles/theme' as theme;
-
 mat-toolbar {
   padding-left: 10px;
   justify-content: space-between;
@@ -31,11 +29,5 @@ button {
 
   &:active {
     opacity: 1;
-  }
-}
-
-@include theme.dark-theme {
-  button {
-    color: #fff;
   }
 }

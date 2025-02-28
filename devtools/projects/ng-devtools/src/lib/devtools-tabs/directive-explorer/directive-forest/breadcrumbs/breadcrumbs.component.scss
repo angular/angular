@@ -1,5 +1,3 @@
-@use '../../../../../styles/theme' as theme;
-
 .mdc-card.breadcrumb-card {
   padding: 0;
   width: 100%;
@@ -9,7 +7,7 @@
 
   .scroll-button {
     height: 100%;
-    background-color: rgb(243, 243, 243);
+    background-color: var(--septenary-contrast);
     border: none;
     cursor: pointer;
 
@@ -34,7 +32,7 @@
       height: 24px;
 
       &.selected {
-        background-color: rgb(243, 243, 243);
+        background-color: var(--color-tree-node-highlighted);
       }
     }
   }
@@ -45,36 +43,10 @@
     font-size: 11px;
     margin-right: 5px;
     width: fit-content;
-    color: #8a1882;
+    color: var(--color-tree-node-element-name);
 
     &:hover {
-      background-color: #ebf1fb;
-    }
-  }
-}
-
-@include theme.dark-theme {
-  .mdc-card {
-    &.breadcrumb-card {
-      .scroll-button {
-        background-color: rgb(41, 42, 45);
-        color: #ffffff;
-      }
-
-      .breadcrumbs {
-        button {
-          &.selected {
-            background-color: rgb(41, 42, 45);
-          }
-        }
-      }
-
-      .mdc-button {
-        color: #5caace;
-        &:hover {
-          background-color: #093e69;
-        }
-      }
+      background-color: var(--color-tree-node-hovered);
     }
   }
 }
