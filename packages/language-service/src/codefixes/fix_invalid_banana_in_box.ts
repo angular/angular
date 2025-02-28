@@ -11,7 +11,7 @@ import {ErrorCode, ngErrorCode} from '@angular/compiler-cli/src/ngtsc/diagnostic
 import tss from 'typescript';
 
 import {getTargetAtPosition, TargetNodeKind} from '../template_target';
-import {getTemplateInfoAtPosition, TemplateInfo} from '../utils';
+import {getTypeCheckInfoAtPosition, TypeCheckInfo} from '../utils';
 
 import {CodeActionMeta, FixIdForCodeFixesAll} from './utils';
 
@@ -20,9 +20,9 @@ import {CodeActionMeta, FixIdForCodeFixesAll} from './utils';
  */
 export const fixInvalidBananaInBoxMeta: CodeActionMeta = {
   errorCodes: [ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX)],
-  getCodeActions({start, fileName, templateInfo}) {
+  getCodeActions({start, fileName, typeCheckInfo}) {
     const boundEvent =
-      templateInfo === null ? null : getTheBoundEventAtPosition(templateInfo, start);
+      typeCheckInfo === null ? null : getTheBoundEventAtPosition(typeCheckInfo, start);
     if (boundEvent === null) {
       return [];
     }
@@ -54,8 +54,8 @@ export const fixInvalidBananaInBoxMeta: CodeActionMeta = {
       if (start === undefined) {
         continue;
       }
-      const templateInfo = getTemplateInfoAtPosition(fileName, start, compiler);
-      if (templateInfo === undefined) {
+      const typeCheckInfo = getTypeCheckInfoAtPosition(fileName, start, compiler);
+      if (typeCheckInfo === undefined) {
         continue;
       }
 
@@ -64,7 +64,7 @@ export const fixInvalidBananaInBoxMeta: CodeActionMeta = {
        * parens (the BoundEvent `([thing])`) when it should be the other way around `[(thing)]` so
        * this function is trying to find the bound event in order to flip the syntax.
        */
-      const boundEvent = getTheBoundEventAtPosition(templateInfo, start);
+      const boundEvent = getTheBoundEventAtPosition(typeCheckInfo, start);
       if (boundEvent === null) {
         continue;
       }
@@ -91,7 +91,7 @@ export const fixInvalidBananaInBoxMeta: CodeActionMeta = {
 };
 
 function getTheBoundEventAtPosition(
-  templateInfo: TemplateInfo,
+  typeCheckInfo: TypeCheckInfo,
   start: number,
 ): TmplAstBoundEvent | null {
   // It's safe to get the bound event at the position `start + 1` because the `start` is at the
@@ -99,7 +99,7 @@ function getTheBoundEventAtPosition(
   // the function `getTargetAtPosition`.
   // https://github.com/angular/vscode-ng-language-service/blob/8553115972ca40a55602747667c3d11d6f47a6f8/server/src/session.ts#L220
   // https://github.com/angular/angular/blob/4e10a7494130b9bb4772ee8f76b66675867b2145/packages/language-service/src/template_target.ts#L347-L356
-  const positionDetail = getTargetAtPosition(templateInfo.template, start + 1);
+  const positionDetail = getTargetAtPosition(typeCheckInfo.nodes, start + 1);
   if (positionDetail === null) {
     return null;
   }
