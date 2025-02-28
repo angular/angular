@@ -41,7 +41,7 @@ import {Environment} from './environment';
 import {OutOfBandDiagnosticRecorder, OutOfBandDiagnosticRecorderImpl} from './oob';
 import {ReferenceEmitEnvironment} from './reference_emit_environment';
 import {TypeCheckShimGenerator} from './shim';
-import {TemplateSourceManager} from './source';
+import {DirectiveSourceManager} from './source';
 import {requiresInlineTypeCheckBlock, TcbInliningRequirement} from './tcb_util';
 import {generateTypeCheckBlock, TcbGenericContextBehavior} from './type_check_block';
 import {TypeCheckFile} from './type_check_file';
@@ -106,7 +106,7 @@ export interface PendingFileTypeCheckingData {
    * Source mapping information for mapping diagnostics from inlined type check blocks back to the
    * original template.
    */
-  sourceManager: TemplateSourceManager;
+  sourceManager: DirectiveSourceManager;
 
   /**
    * Map of in-progress shim data for shims generated from this input file.
@@ -145,9 +145,9 @@ export interface PendingShimData {
  */
 export interface TypeCheckingHost {
   /**
-   * Retrieve the `TemplateSourceManager` responsible for directives in the given input file path.
+   * Retrieve the `DirectiveSourceManager` responsible for directives in the given input file path.
    */
-  getSourceManager(sfPath: AbsoluteFsPath): TemplateSourceManager;
+  getSourceManager(sfPath: AbsoluteFsPath): DirectiveSourceManager;
 
   /**
    * Whether a particular class should be included in the current type-checking pass.
@@ -322,8 +322,8 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     }
 
     if (templateContext !== null) {
-      fileData.sourceManager.captureSource(
-        ref.node,
+      fileData.sourceManager.captureTemplateSource(
+        id,
         templateContext.sourceMapping,
         templateContext.file,
       );

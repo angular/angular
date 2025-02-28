@@ -12,7 +12,7 @@ import ts from 'typescript';
 import {ClassDeclaration, ReflectionHost} from '../../../../src/ngtsc/reflection';
 import {Reference} from '../../imports';
 import {getTokenAtPosition} from '../../util/src/typescript';
-import {FullTemplateMapping, SourceLocation, TypeCheckId, SourceMapping} from '../api';
+import {FullSourceMapping, SourceLocation, TypeCheckId, SourceMapping} from '../api';
 
 import {hasIgnoreForDiagnosticsMarker, readSpanComment} from './comments';
 import {ReferenceEmitEnvironment} from './reference_emit_environment';
@@ -38,23 +38,23 @@ const TCB_FILE_IMPORT_GRAPH_PREPARE_IDENTIFIERS = [
 
 /**
  * Adapter interface which allows the directive type-checking diagnostics code to interpret offsets
- * in a TCB and map them back to original locations in the template.
+ * in a TCB and map them back to their original locations.
  */
-export interface TemplateSourceResolver {
+export interface TypeCheckSourceResolver {
   getTypeCheckId(node: ts.ClassDeclaration): TypeCheckId;
 
   /**
    * For the given type checking id, retrieve the original source mapping which describes how the
    * offsets in the template should be interpreted.
    */
-  getSourceMapping(id: TypeCheckId): SourceMapping;
+  getTemplateSourceMapping(id: TypeCheckId): SourceMapping;
 
   /**
-   * Convert an absolute source span associated with the given type checking id into a full
-   * `ParseSourceSpan`. The returned parse span has line and column numbers in addition to only
-   * absolute offsets and gives access to the original source code.
+   * Convert an absolute source span coming from the template associated with the given type
+   * checking id into a full `ParseSourceSpan`. The returned parse span has line and column
+   * numbers in addition to only absolute offsets and gives access to the original source code.
    */
-  toParseSourceSpan(id: TypeCheckId, span: AbsoluteSourceSpan): ParseSourceSpan | null;
+  toTemplateParseSourceSpan(id: TypeCheckId, span: AbsoluteSourceSpan): ParseSourceSpan | null;
 }
 
 /**
@@ -106,27 +106,27 @@ export function requiresInlineTypeCheckBlock(
   }
 }
 
-/** Maps a shim position back to a template location. */
-export function getTemplateMapping(
+/** Maps a shim position back to a source code location. */
+export function getSourceMapping(
   shimSf: ts.SourceFile,
   position: number,
-  resolver: TemplateSourceResolver,
+  resolver: TypeCheckSourceResolver,
   isDiagnosticRequest: boolean,
-): FullTemplateMapping | null {
+): FullSourceMapping | null {
   const node = getTokenAtPosition(shimSf, position);
   const sourceLocation = findSourceLocation(node, shimSf, isDiagnosticRequest);
   if (sourceLocation === null) {
     return null;
   }
 
-  const mapping = resolver.getSourceMapping(sourceLocation.id);
-  const span = resolver.toParseSourceSpan(sourceLocation.id, sourceLocation.span);
+  const mapping = resolver.getTemplateSourceMapping(sourceLocation.id);
+  const span = resolver.toTemplateParseSourceSpan(sourceLocation.id, sourceLocation.span);
   if (span === null) {
     return null;
   }
   // TODO(atscott): Consider adding a context span by walking up from `node` until we get a
   // different span.
-  return {sourceLocation, templateSourceMapping: mapping, span};
+  return {sourceLocation, sourceMapping: mapping, span};
 }
 
 export function findTypeCheckBlock(
