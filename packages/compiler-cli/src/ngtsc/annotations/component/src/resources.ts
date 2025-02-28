@@ -22,10 +22,10 @@ import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics';
 import {absoluteFrom} from '../../../file_system';
 import {DependencyTracker} from '../../../incremental/api';
 import {Resource} from '../../../metadata';
-import {DynamicValue, PartialEvaluator, traceDynamicValue} from '../../../partial_evaluator';
+import {PartialEvaluator} from '../../../partial_evaluator';
 import {ClassDeclaration, DeclarationNode, Decorator} from '../../../reflection';
 import {CompilationMode} from '../../../transform';
-import {TemplateSourceMapping} from '../../../typecheck/api';
+import {SourceMapping} from '../../../typecheck/api';
 import {
   createValueHasWrongTypeError,
   isStringArray,
@@ -82,7 +82,7 @@ export interface ParsedComponentTemplate extends ParsedTemplate {
 export interface ParsedTemplateWithSource extends ParsedComponentTemplate {
   /** The string contents of the template. */
   content: string;
-  sourceMapping: TemplateSourceMapping;
+  sourceMapping: SourceMapping;
   declaration: TemplateDeclaration;
 }
 
@@ -151,7 +151,7 @@ export function extractTemplate(
     let sourceStr: string;
     let sourceParseRange: LexerRange | null = null;
     let templateContent: string;
-    let sourceMapping: TemplateSourceMapping;
+    let sourceMapping: SourceMapping;
     let escapedString = false;
     let sourceMapUrl: string | null;
     // We only support SourceMaps for inline templates that are simple string literals.

@@ -74,7 +74,7 @@ import {CompletionEngine} from './completion';
 import {
   InliningMode,
   ShimTypeCheckingData,
-  TemplateData,
+  TypeCheckData,
   TypeCheckContextImpl,
   TypeCheckingHost,
 } from './context';
@@ -168,7 +168,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     component: ts.ClassDeclaration,
     optimizeFor: OptimizeFor = OptimizeFor.SingleFile,
   ): {
-    data: TemplateData | null;
+    data: TypeCheckData | null;
     tcb: ts.Node | null;
     tcbPath: AbsoluteFsPath;
     tcbIsShim: boolean;
@@ -215,9 +215,9 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       }
     }
 
-    let data: TemplateData | null = null;
-    if (shimRecord.templates.has(id)) {
-      data = shimRecord.templates.get(id)!;
+    let data: TypeCheckData | null = null;
+    if (shimRecord.data.has(id)) {
+      data = shimRecord.data.get(id)!;
     }
 
     return {data, tcb, tcbPath, tcbIsShim: tcbPath === shimPath};
@@ -323,8 +323,8 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
         );
         diagnostics.push(...shimRecord.genesisDiagnostics);
 
-        for (const templateData of shimRecord.templates.values()) {
-          diagnostics.push(...templateData.templateDiagnostics);
+        for (const templateData of shimRecord.data.values()) {
+          diagnostics.push(...templateData.templateParsingDiagnostics);
         }
       }
 
@@ -371,8 +371,8 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       );
       diagnostics.push(...shimRecord.genesisDiagnostics);
 
-      for (const templateData of shimRecord.templates.values()) {
-        diagnostics.push(...templateData.templateDiagnostics);
+      for (const templateData of shimRecord.data.values()) {
+        diagnostics.push(...templateData.templateParsingDiagnostics);
       }
 
       return diagnostics.filter(
@@ -1060,7 +1060,7 @@ class WholeProgramTypeCheckingHost implements TypeCheckingHost {
     return this.impl.getFileData(sfPath).sourceManager;
   }
 
-  shouldCheckComponent(node: ts.ClassDeclaration): boolean {
+  shouldCheckClass(node: ts.ClassDeclaration): boolean {
     const sfPath = absoluteFromSourceFile(node.getSourceFile());
     const shimPath = TypeCheckShimGenerator.shimFor(sfPath);
     const fileData = this.impl.getFileData(sfPath);
@@ -1104,7 +1104,7 @@ class SingleFileTypeCheckingHost implements TypeCheckingHost {
     return this.fileData.sourceManager;
   }
 
-  shouldCheckComponent(node: ts.ClassDeclaration): boolean {
+  shouldCheckClass(node: ts.ClassDeclaration): boolean {
     if (this.sfPath !== absoluteFromSourceFile(node.getSourceFile())) {
       return false;
     }

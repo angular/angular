@@ -116,7 +116,12 @@ import {
   HandlerPrecedence,
   ResolveResult,
 } from '../../../transform';
-import {TypeCheckId, TypeCheckableDirectiveMeta, TypeCheckContext} from '../../../typecheck/api';
+import {
+  TypeCheckId,
+  TypeCheckableDirectiveMeta,
+  TypeCheckContext,
+  TemplateContext,
+} from '../../../typecheck/api';
 import {ExtendedTemplateChecker} from '../../../typecheck/extended/api';
 import {TemplateSemanticsChecker} from '../../../typecheck/template_semantics/api/api';
 import {getSourceFile} from '../../../util/src/typescript';
@@ -1043,17 +1048,21 @@ export class ComponentDecoratorHandler
     }
 
     const binder = new R3TargetBinder<TypeCheckableDirectiveMeta>(scope.matcher);
-    ctx.addTemplate(
+    const templateContext: TemplateContext = {
+      nodes: meta.template.diagNodes,
+      pipes: scope.pipes,
+      sourceMapping: meta.template.sourceMapping,
+      file: meta.template.file,
+      parseErrors: meta.template.errors,
+      preserveWhitespaces: meta.meta.template.preserveWhitespaces ?? false,
+    };
+
+    ctx.addDirective(
       new Reference(node),
       binder,
-      meta.template.diagNodes,
-      scope.pipes,
       scope.schemas,
-      meta.template.sourceMapping,
-      meta.template.file,
-      meta.template.errors,
+      templateContext,
       meta.meta.isStandalone,
-      meta.meta.template.preserveWhitespaces ?? false,
     );
   }
 
