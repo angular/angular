@@ -186,6 +186,15 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
   override componentType: Type<any>;
   override ngContentSelectors: string[];
   isBoundToModule: boolean;
+  private cachedInputs:
+    | {
+        propName: string;
+        templateName: string;
+        isSignal: boolean;
+        transform?: (value: any) => any;
+      }[]
+    | null = null;
+  private cachedOutputs: {propName: string; templateName: string}[] | null = null;
 
   override get inputs(): {
     propName: string;
@@ -193,11 +202,13 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
     isSignal: boolean;
     transform?: (value: any) => any;
   }[] {
-    return toInputRefArray(this.componentDef.inputs);
+    this.cachedInputs ??= toInputRefArray(this.componentDef.inputs);
+    return this.cachedInputs;
   }
 
   override get outputs(): {propName: string; templateName: string}[] {
-    return toOutputRefArray(this.componentDef.outputs);
+    this.cachedOutputs ??= toOutputRefArray(this.componentDef.outputs);
+    return this.cachedOutputs;
   }
 
   /**
