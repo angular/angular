@@ -34,8 +34,12 @@ export function getOutliningSpans(compiler: NgCompiler, fileName: string): ts.Ou
     const templatesInFile: Array<TmplAstNode[]> = [];
     for (const stmt of sf.statements) {
       if (isNamedClassDeclaration(stmt)) {
-        const resources = compiler.getComponentResources(stmt);
-        if (resources === null || isExternalResource(resources.template)) {
+        const resources = compiler.getDirectiveResources(stmt);
+        if (
+          resources === null ||
+          resources.template === null ||
+          isExternalResource(resources.template)
+        ) {
           continue;
         }
         const template = compiler.getTemplateTypeChecker().getTemplate(stmt);

@@ -494,11 +494,10 @@ export class LanguageService {
         if (classDeclaration === undefined) {
           return undefined;
         }
-        const resources = compiler.getComponentResources(classDeclaration);
-        if (resources === null) {
+        const template = compiler.getDirectiveResources(classDeclaration)?.template || null;
+        if (template === null) {
           return undefined;
         }
-        const {template} = resources;
         let templateFileName: string;
         let span: ts.TextSpan;
         if (template.path !== null) {

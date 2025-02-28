@@ -135,9 +135,10 @@ function getInlineTemplateInfoAtPosition(
 
   // Return `undefined` if the position is not on the template expression or the template resource
   // is not inline.
-  const resources = compiler.getComponentResources(classDecl);
+  const resources = compiler.getDirectiveResources(classDecl);
   if (
     resources === null ||
+    resources.template === null ||
     isExternalResource(resources.template) ||
     expression !== resources.template.expression
   ) {

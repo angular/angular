@@ -240,7 +240,7 @@ runInEachFileSystem(() => {
       });
     });
 
-    describe('getComponentResources', () => {
+    describe('getDirectiveResources', () => {
       it('should return the component resources', () => {
         const styleFile = _('/style.css');
         fs.writeFile(styleFile, `/* This is the template, used by components CmpA */`);
@@ -277,12 +277,12 @@ runInEachFileSystem(() => {
           /** enableTemplateTypeChecker */ false,
           /* usePoisonedData */ false,
         );
-        const resources = compiler.getComponentResources(CmpA);
+        const resources = compiler.getDirectiveResources(CmpA);
         expect(resources).not.toBeNull();
         const {template, styles} = resources!;
         expect(template!.path).toEqual(templateFile);
-        expect(styles.size).toEqual(2);
-        const actualPaths = new Set(Array.from(styles).map((r) => r.path));
+        expect(styles?.size).toEqual(2);
+        const actualPaths = new Set(Array.from(styles || []).map((r) => r.path));
         expect(actualPaths).toEqual(new Set([styleFile, styleFile2]));
       });
 
@@ -321,10 +321,10 @@ runInEachFileSystem(() => {
           /** enableTemplateTypeChecker */ false,
           /* usePoisonedData */ false,
         );
-        const resources = compiler.getComponentResources(CmpA);
+        const resources = compiler.getDirectiveResources(CmpA);
         expect(resources).not.toBeNull();
         const {styles} = resources!;
-        expect(styles.size).toEqual(0);
+        expect(styles?.size).toEqual(0);
       });
     });
 
