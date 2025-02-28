@@ -74,15 +74,15 @@ export function convertFileTextChangeInTcb(
     let fileName: string | undefined;
     const seenTextChangeInTemplate = new Set<string>();
     for (const textChange of fileTextChange.textChanges) {
-      const templateMap = ttc.getTemplateMappingAtTcbLocation({
+      const sourceLocation = ttc.getSourceMappingAtTcbLocation({
         tcbPath: absoluteFrom(fileTextChange.fileName),
         isShimFile: true,
         positionInFile: textChange.span.start,
       });
-      if (templateMap === null) {
+      if (sourceLocation === null) {
         continue;
       }
-      const mapping = templateMap.templateSourceMapping;
+      const mapping = sourceLocation.sourceMapping;
       if (mapping.type === 'external') {
         fileName = mapping.templateUrl;
       } else if (mapping.type === 'direct') {
@@ -90,8 +90,8 @@ export function convertFileTextChangeInTcb(
       } else {
         continue;
       }
-      const start = templateMap.span.start.offset;
-      const length = templateMap.span.end.offset - templateMap.span.start.offset;
+      const start = sourceLocation.span.start.offset;
+      const length = sourceLocation.span.end.offset - sourceLocation.span.start.offset;
       const changeSpanKey = `${start},${length}`;
       if (seenTextChangeInTemplate.has(changeSpanKey)) {
         continue;

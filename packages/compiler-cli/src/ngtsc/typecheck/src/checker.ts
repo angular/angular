@@ -50,7 +50,7 @@ import {isShim} from '../../shims';
 import {getSourceFileOrNull, isSymbolWithValueDeclaration} from '../../util/src/typescript';
 import {
   ElementSymbol,
-  FullTemplateMapping,
+  FullSourceMapping,
   GlobalCompletion,
   NgTemplateDiagnostic,
   OptimizeFor,
@@ -80,8 +80,8 @@ import {
 } from './context';
 import {shouldReportDiagnostic, translateDiagnostic} from './diagnostics';
 import {TypeCheckShimGenerator} from './shim';
-import {TemplateSourceManager} from './source';
-import {findTypeCheckBlock, getTemplateMapping, TemplateSourceResolver} from './tcb_util';
+import {DirectiveSourceManager} from './source';
+import {findTypeCheckBlock, getSourceMapping, TypeCheckSourceResolver} from './tcb_util';
 import {SymbolBuilder} from './template_symbol_builder';
 
 const REGISTRY = new DomElementSchemaRegistry();
@@ -262,7 +262,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return null;
   }
 
-  getTemplateMappingAtTcbLocation(tcbLocation: TcbLocation): FullTemplateMapping | null {
+  getSourceMappingAtTcbLocation(tcbLocation: TcbLocation): FullSourceMapping | null {
     const fileRecord = this.getFileRecordForTcbLocation(tcbLocation);
     if (fileRecord === null) {
       return null;
@@ -272,7 +272,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     if (shimSf === undefined) {
       return null;
     }
-    return getTemplateMapping(
+    return getSourceMapping(
       shimSf,
       tcbLocation.positionInFile,
       fileRecord.sourceManager,
@@ -466,7 +466,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     const sfPath = absoluteFromSourceFile(clazz.getSourceFile());
     const fileRecord = this.state.get(sfPath)!;
     const id = fileRecord.sourceManager.getTypeCheckId(clazz);
-    const mapping = fileRecord.sourceManager.getSourceMapping(id);
+    const mapping = fileRecord.sourceManager.getTemplateSourceMapping(id);
 
     return {
       ...makeTemplateDiagnostic(
@@ -648,7 +648,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     if (!this.state.has(path)) {
       this.state.set(path, {
         hasInlines: false,
-        sourceManager: new TemplateSourceManager(),
+        sourceManager: new DirectiveSourceManager(),
         isComplete: false,
         shimData: new Map(),
       });
@@ -1010,7 +1010,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
 function convertDiagnostic(
   diag: ts.Diagnostic,
-  sourceResolver: TemplateSourceResolver,
+  sourceResolver: TypeCheckSourceResolver,
 ): TemplateDiagnostic | null {
   if (!shouldReportDiagnostic(diag)) {
     return null;
@@ -1030,10 +1030,10 @@ export interface FileTypeCheckingData {
   hasInlines: boolean;
 
   /**
-   * Source mapping information for mapping diagnostics from inlined type check blocks back to the
-   * original template.
+   * Information for mapping diagnostics from inlined type check blocks
+   * back to their original sources.
    */
-  sourceManager: TemplateSourceManager;
+  sourceManager: DirectiveSourceManager;
 
   /**
    * Data for each shim generated from this input file.
@@ -1056,7 +1056,7 @@ export interface FileTypeCheckingData {
 class WholeProgramTypeCheckingHost implements TypeCheckingHost {
   constructor(private impl: TemplateTypeCheckerImpl) {}
 
-  getSourceManager(sfPath: AbsoluteFsPath): TemplateSourceManager {
+  getSourceManager(sfPath: AbsoluteFsPath): DirectiveSourceManager {
     return this.impl.getFileData(sfPath).sourceManager;
   }
 
@@ -1099,7 +1099,7 @@ class SingleFileTypeCheckingHost implements TypeCheckingHost {
     }
   }
 
-  getSourceManager(sfPath: AbsoluteFsPath): TemplateSourceManager {
+  getSourceManager(sfPath: AbsoluteFsPath): DirectiveSourceManager {
     this.assertPath(sfPath);
     return this.fileData.sourceManager;
   }

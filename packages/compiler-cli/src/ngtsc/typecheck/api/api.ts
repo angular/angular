@@ -416,11 +416,11 @@ export interface SourceLocation {
 }
 
 /**
- * A representation of all a node's template mapping information we know. Useful for producing
+ * A representation of all a node's type checking information we know. Useful for producing
  * diagnostics based on a TCB node or generally mapping from a TCB node back to a template location.
  */
-export interface FullTemplateMapping {
+export interface FullSourceMapping {
   sourceLocation: SourceLocation;
-  templateSourceMapping: SourceMapping;
+  sourceMapping: SourceMapping;
   span: ParseSourceSpan;
 }

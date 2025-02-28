@@ -422,7 +422,7 @@ export function getTemplateLocationFromTcbLocation(
   tcbIsShim: boolean,
   positionInFile: number,
 ): {templateUrl: AbsoluteFsPath; span: ParseSourceSpan} | null {
-  const mapping = templateTypeChecker.getTemplateMappingAtTcbLocation({
+  const mapping = templateTypeChecker.getSourceMappingAtTcbLocation({
     tcbPath,
     isShimFile: tcbIsShim,
     positionInFile,
@@ -430,13 +430,13 @@ export function getTemplateLocationFromTcbLocation(
   if (mapping === null) {
     return null;
   }
-  const {templateSourceMapping, span} = mapping;
+  const {sourceMapping, span} = mapping;
 
   let templateUrl: AbsoluteFsPath;
-  if (templateSourceMapping.type === 'direct') {
-    templateUrl = absoluteFromSourceFile(templateSourceMapping.node.getSourceFile());
-  } else if (templateSourceMapping.type === 'external') {
-    templateUrl = absoluteFrom(templateSourceMapping.templateUrl);
+  if (sourceMapping.type === 'direct') {
+    templateUrl = absoluteFromSourceFile(sourceMapping.node.getSourceFile());
+  } else if (sourceMapping.type === 'external') {
+    templateUrl = absoluteFrom(sourceMapping.templateUrl);
   } else {
     // This includes indirect mappings, which are difficult to map directly to the code
     // location. Diagnostics similarly return a synthetic template string for this case rather

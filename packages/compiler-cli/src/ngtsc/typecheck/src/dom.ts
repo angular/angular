@@ -18,7 +18,7 @@ import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {TemplateDiagnostic, TypeCheckId} from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
-import {TemplateSourceResolver} from './tcb_util';
+import {TypeCheckSourceResolver} from './tcb_util';
 
 const REGISTRY = new DomElementSchemaRegistry();
 const REMOVE_XHTML_REGEX = /^:xhtml:/;
@@ -88,7 +88,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
     return this._diagnostics;
   }
 
-  constructor(private resolver: TemplateSourceResolver) {}
+  constructor(private resolver: TypeCheckSourceResolver) {}
 
   checkElement(
     id: TypeCheckId,
@@ -102,7 +102,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
     const name = element.name.replace(REMOVE_XHTML_REGEX, '');
 
     if (!REGISTRY.hasElement(name, schemas)) {
-      const mapping = this.resolver.getSourceMapping(id);
+      const mapping = this.resolver.getTemplateSourceMapping(id);
 
       const schemas = `'${hostIsStandalone ? '@Component' : '@NgModule'}.schemas'`;
       let errorMsg = `'${name}' is not a known element:\n`;
@@ -138,7 +138,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
     hostIsStandalone: boolean,
   ): void {
     if (!REGISTRY.hasProperty(element.name, name, schemas)) {
-      const mapping = this.resolver.getSourceMapping(id);
+      const mapping = this.resolver.getTemplateSourceMapping(id);
 
       const decorator = hostIsStandalone ? '@Component' : '@NgModule';
       const schemas = `'${decorator}.schemas'`;
