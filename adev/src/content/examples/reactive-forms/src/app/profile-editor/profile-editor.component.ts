@@ -1,5 +1,5 @@
 // #docplaster
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
 // #docregion validator-imports
 import {Validators} from '@angular/forms';
@@ -13,6 +13,8 @@ import {FormArray} from '@angular/forms';
   imports: [ReactiveFormsModule],
 })
 export class ProfileEditorComponent {
+  private formBuilder = inject(FormBuilder);
+
   // #docregion required-validator, aliases
   profileForm = this.formBuilder.group({
     firstName: ['', Validators.required],
@@ -29,13 +31,10 @@ export class ProfileEditorComponent {
   });
   // #enddocregion required-validator, aliases
   // #docregion aliases-getter
-
   get aliases() {
     return this.profileForm.get('aliases') as FormArray;
   }
-
   // #enddocregion aliases-getter
-  constructor(private formBuilder: FormBuilder) {}
 
   updateProfile() {
     this.profileForm.patchValue({
@@ -46,13 +45,11 @@ export class ProfileEditorComponent {
     });
   }
   // #docregion add-alias
-
   addAlias() {
     this.aliases.push(this.formBuilder.control(''));
   }
   // #enddocregion add-alias
   // #docregion on-submit
-
   onSubmit() {
     // TODO: Use EventEmitter with form value
     console.warn(this.profileForm.value);

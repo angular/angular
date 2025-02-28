@@ -3,7 +3,6 @@
 import {Component} from '@angular/core';
 // #docregion imports
 import {FormGroup, FormControl, ReactiveFormsModule} from '@angular/forms';
-// #enddocregion imports
 
 @Component({
   selector: 'app-profile-editor',
@@ -12,6 +11,7 @@ import {FormGroup, FormControl, ReactiveFormsModule} from '@angular/forms';
   imports: [ReactiveFormsModule],
 })
 export class ProfileEditorComponent {
+  // #enddocregion imports
   // #docregion formgroup-compare
   profileForm = new FormGroup({
     firstName: new FormControl(''),

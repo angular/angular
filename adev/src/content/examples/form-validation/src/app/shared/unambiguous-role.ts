@@ -26,7 +26,6 @@ export const unambiguousRoleValidator: ValidatorFn = (
   providers: [
     {provide: NG_VALIDATORS, useExisting: UnambiguousRoleValidatorDirective, multi: true},
   ],
-  standalone: false,
 })
 export class UnambiguousRoleValidatorDirective implements Validator {
   validate(control: AbstractControl): ValidationErrors | null {
