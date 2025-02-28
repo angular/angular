@@ -97,6 +97,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     MISSING_LOCALE_DATA = 701,
     // (undocumented)
+    MISSING_NG_MODULE_DEFINITION = 915,
+    // (undocumented)
     MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP = 402,
     // (undocumented)
     MISSING_SSR_CONTENT_INTEGRITY_MARKER = -507,

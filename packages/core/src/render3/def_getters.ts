@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
 import type {NgModuleDef} from '../r3_symbols';
 import {stringify} from '../util/stringify';
@@ -16,8 +17,12 @@ export function getNgModuleDef<T>(type: any, throwNotFound: true): NgModuleDef<T
 export function getNgModuleDef<T>(type: any): NgModuleDef<T> | null;
 export function getNgModuleDef<T>(type: any, throwNotFound?: boolean): NgModuleDef<T> | null {
   const ngModuleDef = type[NG_MOD_DEF] || null;
-  if (!ngModuleDef && throwNotFound === true) {
-    throw new Error(`Type ${stringify(type)} does not have 'ɵmod' property.`);
+  if (!ngModuleDef && throwNotFound) {
+    throw new RuntimeError(
+      RuntimeErrorCode.MISSING_NG_MODULE_DEFINITION,
+      (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        `Type ${stringify(type)} does not have 'ɵmod' property.`,
+    );
   }
   return ngModuleDef;
 }
