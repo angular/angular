@@ -14,9 +14,12 @@ import {
   ElementRef,
   HostBinding,
   HostListener,
+  Inject,
+  InjectionToken,
   Input,
   OnChanges,
   OnDestroy,
+  Optional,
   Renderer2,
   ɵRuntimeError as RuntimeError,
   SimpleChanges,
@@ -31,6 +34,16 @@ import {ActivatedRoute} from '../router_state';
 import {Params} from '../shared';
 import {isUrlTree, UrlTree} from '../url_tree';
 import {RuntimeErrorCode} from '../errors';
+
+/**
+ * A multi-provided token of custom element tag names,
+ * which implement the functionality of the native anchor element.
+ *
+ * @publicApi
+ */
+export const CUSTOM_ELEMENT_ANCHOR_TAG_NAMES = new InjectionToken<readonly string[]>(
+  ngDevMode ? 'CUSTOM_ELEMENT_ANCHOR_TAG_NAMES' : '',
+);
 
 /**
  * @description
@@ -128,6 +141,24 @@ import {RuntimeErrorCode} from '../errors';
  * });
  * ```
  *
+ * ### RouterLink compatible custom elements
+ *
+ * In order to make a custom element work with routerLink,
+ * the corresponding custom element must implement the `href` attribute
+ * and must be provided as a `CUSTOM_ELEMENT_ANCHOR_TAG_NAMES` entry.
+ *
+ * ```ts
+ * ...
+ * providers: [
+ *   {
+ *     provide: CUSTOM_ELEMENT_ANCHOR_TAG_NAMES,
+ *     useValue: 'custom-anchor',
+ *     multi: true
+ *   }
+ * ],
+ * ...
+ * ```
+ *
  * @ngModule RouterModule
  *
  * @publicApi
@@ -138,13 +169,15 @@ import {RuntimeErrorCode} from '../errors';
 export class RouterLink implements OnChanges, OnDestroy {
   /**
    * Represents an `href` attribute value applied to a host element,
-   * when a host element is `<a>`. For other tags, the value is `null`.
+   * when a host element is an `<a>`/`<area>` tag or a compatible custom element.
+   * For other tags, the value is `null`.
    */
   href: string | null = null;
 
   /**
    * Represents the `target` attribute on a host element.
-   * This is only used when the host element is an `<a>` tag.
+   * This is only used when the host element is
+   * an `<a>`/`<area>` tag or a compatible custom element.
    */
   @HostBinding('attr.target') @Input() target?: string;
 
@@ -194,7 +227,7 @@ export class RouterLink implements OnChanges, OnDestroy {
    */
   @Input() relativeTo?: ActivatedRoute | null;
 
-  /** Whether a host element is an `<a>` tag. */
+  /** Whether a host element is an `<a>`/`<area>` tag or a compatible custom element. */
   private isAnchorElement: boolean;
 
   private subscription?: Subscription;
@@ -209,9 +242,15 @@ export class RouterLink implements OnChanges, OnDestroy {
     private readonly renderer: Renderer2,
     private readonly el: ElementRef,
     private locationStrategy?: LocationStrategy,
+    @Inject(CUSTOM_ELEMENT_ANCHOR_TAG_NAMES)
+    @Optional()
+    customElementAnchorTagNames?: readonly string[],
   ) {
     const tagName = el.nativeElement.tagName?.toLowerCase();
-    this.isAnchorElement = tagName === 'a' || tagName === 'area';
+    this.isAnchorElement =
+      tagName === 'a' ||
+      tagName === 'area' ||
+      (customElementAnchorTagNames?.some((a) => tagName === a.toLowerCase()) ?? false);
 
     if (this.isAnchorElement) {
       this.subscription = router.events.subscribe((s: Event) => {
