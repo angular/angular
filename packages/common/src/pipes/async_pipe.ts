@@ -16,7 +16,7 @@ import {
   ɵisPromise,
   ɵisSubscribable,
 } from '@angular/core';
-import {Observable, Subscribable, Unsubscribable} from 'rxjs';
+import type {Observable, Subscribable, Unsubscribable} from 'rxjs';
 
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
@@ -54,13 +54,46 @@ class SubscribableStrategy implements SubscriptionStrategy {
 }
 
 class PromiseStrategy implements SubscriptionStrategy {
-  createSubscription(async: Promise<any>, updateLatestValue: (v: any) => any): Promise<any> {
-    return async.then(updateLatestValue, (e) => {
-      throw e;
-    });
+  createSubscription(async: Promise<any>, updateLatestValue: any): Unsubscribable {
+    // According to the promise specification, promises are not cancellable by default.
+    // Once a promise is created, it will either resolve or reject, and it doesn't
+    // provide a built-in mechanism to cancel it.
+    // There may be situations where a promise is provided, and it either resolves after
+    // the pipe has been destroyed or never resolves at all. If the promise never
+    // resolves — potentially due to factors beyond our control, such as third-party
+    // libraries — this can lead to a memory leak.
+    // When we use `async.then(updateLatestValue)`, the engine captures a reference to the
+    // `updateLatestValue` function. This allows the promise to invoke that function when it
+    // resolves. In this case, the promise directly captures a reference to the
+    // `updateLatestValue` function. If the promise resolves later, it retains a reference
+    // to the original `updateLatestValue`, meaning that even if the context where
+    // `updateLatestValue` was defined has been destroyed, the function reference remains in memory.
+    // This can lead to memory leaks if `updateLatestValue` is no longer needed or if it holds
+    // onto resources that should be released.
+    // When we do `async.then(v => ...)` the promise captures a reference to the lambda
+    // function (the arrow function).
+    // When we assign `updateLatestValue = null` within the context of an `unsubscribe` function,
+    // we're changing the reference of `updateLatestValue` in the current scope to `null`.
+    // The lambda will no longer have access to it after the assignment, effectively
+    // preventing any further calls to the original function and allowing it to be garbage collected.
+    async.then(
+      // Using optional chaining because we may have set it to `null`; since the promise
+      // is async, the view might be destroyed by the time the promise resolves.
+      (v) => updateLatestValue?.(v),
+      (e) => {
+        throw e;
+      },
+    );
+    return {
+      unsubscribe: () => {
+        updateLatestValue = null;
+      },
+    };
   }
 
-  dispose(subscription: Promise<any>): void {}
+  dispose(subscription: Unsubscribable): void {
+    subscription.unsubscribe();
+  }
 }
 
 const _promiseStrategy = new PromiseStrategy();
