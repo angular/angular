@@ -324,7 +324,10 @@ export class Router {
     }
 
     const urlTree = this.parseUrl(url);
-    this.scheduleNavigation(urlTree, source, restoredState, extras);
+    this.scheduleNavigation(urlTree, source, restoredState, extras).catch(() => {
+      // Do not leave dangling promise rejections
+      // Note that this rejection error is already reported through the Router's error handler and/or NavigationError event
+    });
   }
 
   /** The current URL. */

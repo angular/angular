@@ -349,7 +349,10 @@ export class RouterLink implements OnChanges, OnDestroy {
       state: this.state,
       info: this.info,
     };
-    this.router.navigateByUrl(urlTree, extras);
+    this.router.navigateByUrl(urlTree, extras).catch(() => {
+      // Do not leave dangling promise rejections
+      // Note that this rejection error is already reported through the Router's error handler and/or NavigationError event
+    });
 
     // Return `false` for `<a>` elements to prevent default action
     // and cancel the native behavior, since the navigation is handled
