@@ -65,7 +65,7 @@ import {
 import {SemanticSymbol} from '../../incremental/semantic_graph';
 import {generateAnalysis, IndexedComponent, IndexingContext} from '../../indexer';
 import {
-  ComponentResources,
+  DirectiveResources,
   CompoundMetadataReader,
   CompoundMetadataRegistry,
   DirectiveMeta,
@@ -729,19 +729,15 @@ export class NgCompiler {
   }
 
   /**
-   * Retrieves external resources for the given component.
+   * Retrieves external resources for the given directive.
    */
-  getComponentResources(classDecl: DeclarationNode): ComponentResources | null {
+  getDirectiveResources(classDecl: DeclarationNode): DirectiveResources | null {
     if (!isNamedClassDeclaration(classDecl)) {
       return null;
     }
     const {resourceRegistry} = this.ensureAnalyzed();
     const styles = resourceRegistry.getStyles(classDecl);
     const template = resourceRegistry.getTemplate(classDecl);
-    if (template === null) {
-      return null;
-    }
-
     return {styles, template};
   }
 
