@@ -35,6 +35,8 @@ For collections that remain static , `track $index` provides a straightforward t
 collections experiencing additions, deletions, or reordering, opt for a
 unique property of each item as the tracking key.
 
+HELPFUL: `@for` uses the `track` expression. However, `NgFor` instead uses `trackBy` function. See [_Comparing built-in control flow to `NgFor`_](guide/templates/control-flow#comparing-built-in-control-flow-to-ngfor) for more info.
+
 ### `$index` and other contextual variables
 
 Inside `@for` contents, several implicit variables are always available:
