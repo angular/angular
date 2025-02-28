@@ -74,13 +74,13 @@ import {getRootDirs} from '../../util/src/typescript';
 import {
   OptimizeFor,
   ProgramTypeCheckAdapter,
+  TemplateContext,
   TemplateDiagnostic,
   TemplateTypeChecker,
   TypeCheckContext,
 } from '../api';
 import {
   TypeCheckId,
-  TemplateSourceMapping,
   TypeCheckableDirectiveMeta,
   TypeCheckBlockMetadata,
   TypeCheckingConfig,
@@ -633,28 +633,22 @@ export function setup(
         );
         const binder = new R3TargetBinder<DirectiveMeta>(matcher);
         const classRef = new Reference(classDecl);
-
-        const sourceMapping: TemplateSourceMapping = {
-          type: 'external',
-          template,
-          templateUrl,
-          componentClass: classRef.node,
-          // Use the class's name for error mappings.
-          node: classRef.node.name,
-        };
-
-        ctx.addTemplate(
-          classRef,
-          binder,
+        const templateContext: TemplateContext = {
           nodes,
           pipes,
-          [],
-          sourceMapping,
-          templateFile,
-          errors,
-          false,
-          false,
-        );
+          sourceMapping: {
+            type: 'external',
+            template,
+            templateUrl,
+            componentClass: classRef.node,
+            node: classRef.node.name, // Use the class's name for error mappings.
+          },
+          file: templateFile,
+          parseErrors: errors,
+          preserveWhitespaces: false,
+        };
+
+        ctx.addDirective(classRef, binder, [], templateContext, false);
       }
     }
   });

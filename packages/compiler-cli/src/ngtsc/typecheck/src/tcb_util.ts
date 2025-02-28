@@ -12,7 +12,7 @@ import ts from 'typescript';
 import {ClassDeclaration, ReflectionHost} from '../../../../src/ngtsc/reflection';
 import {Reference} from '../../imports';
 import {getTokenAtPosition} from '../../util/src/typescript';
-import {FullTemplateMapping, SourceLocation, TypeCheckId, TemplateSourceMapping} from '../api';
+import {FullTemplateMapping, SourceLocation, TypeCheckId, SourceMapping} from '../api';
 
 import {hasIgnoreForDiagnosticsMarker, readSpanComment} from './comments';
 import {ReferenceEmitEnvironment} from './reference_emit_environment';
@@ -47,7 +47,7 @@ export interface TemplateSourceResolver {
    * For the given type checking id, retrieve the original source mapping which describes how the
    * offsets in the template should be interpreted.
    */
-  getSourceMapping(id: TypeCheckId): TemplateSourceMapping;
+  getSourceMapping(id: TypeCheckId): SourceMapping;
 
   /**
    * Convert an absolute source span associated with the given type checking id into a full

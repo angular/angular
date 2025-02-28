@@ -14,7 +14,7 @@ import {
 } from '@angular/compiler';
 import ts from 'typescript';
 
-import {TypeCheckId, TemplateSourceMapping} from '../api';
+import {TypeCheckId, SourceMapping} from '../api';
 import {getTypeCheckId} from '../diagnostics';
 
 import {computeLineStartsMap, getLineAndCharacterFromPosition} from './line_mappings';
@@ -28,7 +28,7 @@ export class TemplateSource {
   private lineStarts: number[] | null = null;
 
   constructor(
-    readonly mapping: TemplateSourceMapping,
+    readonly mapping: SourceMapping,
     private file: ParseSourceFile,
   ) {}
 
@@ -71,7 +71,7 @@ export class TemplateSourceManager implements TemplateSourceResolver {
 
   captureSource(
     node: ts.ClassDeclaration,
-    mapping: TemplateSourceMapping,
+    mapping: SourceMapping,
     file: ParseSourceFile,
   ): TypeCheckId {
     const id = getTypeCheckId(node);
@@ -79,7 +79,7 @@ export class TemplateSourceManager implements TemplateSourceResolver {
     return id;
   }
 
-  getSourceMapping(id: TypeCheckId): TemplateSourceMapping {
+  getSourceMapping(id: TypeCheckId): SourceMapping {
     if (!this.templateSources.has(id)) {
       throw new Error(`Unexpected unknown template ID: ${id}`);
     }

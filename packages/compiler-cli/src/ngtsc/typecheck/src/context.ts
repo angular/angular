@@ -9,7 +9,6 @@
 import {
   BoundTarget,
   ParseError,
-  ParseSourceFile,
   R3TargetBinder,
   SchemaMetadata,
   TmplAstNode,
@@ -20,7 +19,6 @@ import ts from 'typescript';
 import {ErrorCode, ngErrorCode} from '../../../../src/ngtsc/diagnostics';
 import {absoluteFromSourceFile, AbsoluteFsPath} from '../../file_system';
 import {Reference, ReferenceEmitter} from '../../imports';
-import {PipeMeta} from '../../metadata';
 import {PerfEvent, PerfRecorder} from '../../perf';
 import {FileUpdate} from '../../program_driver';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
@@ -28,12 +26,13 @@ import {ImportManager} from '../../translator';
 import {
   TemplateDiagnostic,
   TypeCheckId,
-  TemplateSourceMapping,
+  SourceMapping,
   TypeCheckableDirectiveMeta,
   TypeCheckBlockMetadata,
   TypeCheckContext,
   TypeCheckingConfig,
   TypeCtorMetadata,
+  TemplateContext,
 } from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
@@ -70,17 +69,17 @@ export interface ShimTypeCheckingData {
    * Map of `TypeCheckId` to information collected about the template during the template
    * type-checking process.
    */
-  templates: Map<TypeCheckId, TemplateData>;
+  data: Map<TypeCheckId, TypeCheckData>;
 }
 
 /**
- * Data tracked for each template processed by the template type-checking system.
+ * Data tracked for each class processed by the type-checking system.
  */
-export interface TemplateData {
+export interface TypeCheckData {
   /**
    * Template nodes for which the TCB was generated.
    */
-  template: TmplAstNode[];
+  template: TmplAstNode[] | null;
 
   /**
    * `BoundTarget` which was used to generate the TCB, and contains bindings for the associated
@@ -89,9 +88,9 @@ export interface TemplateData {
   boundTarget: BoundTarget<TypeCheckableDirectiveMeta>;
 
   /**
-   * Errors found while parsing them template, which have been converted to diagnostics.
+   * Errors found while parsing the template, which have been converted to diagnostics.
    */
-  templateDiagnostics: TemplateDiagnostic[];
+  templateParsingDiagnostics: TemplateDiagnostic[];
 }
 
 /**
@@ -134,7 +133,7 @@ export interface PendingShimData {
   /**
    * Map of `TypeCheckId` to information collected about the template as it's ingested.
    */
-  templates: Map<TypeCheckId, TemplateData>;
+  data: Map<TypeCheckId, TypeCheckData>;
 }
 
 /**
@@ -146,18 +145,18 @@ export interface PendingShimData {
  */
 export interface TypeCheckingHost {
   /**
-   * Retrieve the `TemplateSourceManager` responsible for components in the given input file path.
+   * Retrieve the `TemplateSourceManager` responsible for directives in the given input file path.
    */
   getSourceManager(sfPath: AbsoluteFsPath): TemplateSourceManager;
 
   /**
-   * Whether a particular component class should be included in the current type-checking pass.
+   * Whether a particular class should be included in the current type-checking pass.
    *
-   * Not all components offered to the `TypeCheckContext` for checking may require processing. For
-   * example, the component may have results already available from a prior pass or from a previous
+   * Not all classes offered to the `TypeCheckContext` for checking may require processing. For
+   * example, the directive may have results already available from a prior pass or from a previous
    * program.
    */
-  shouldCheckComponent(node: ts.ClassDeclaration): boolean;
+  shouldCheckClass(node: ts.ClassDeclaration): boolean;
 
   /**
    * Report data from a shim generated from the given input file path.
@@ -165,7 +164,7 @@ export interface TypeCheckingHost {
   recordShimData(sfPath: AbsoluteFsPath, data: ShimTypeCheckingData): void;
 
   /**
-   * Record that all of the components within the given input file path had code generated - that
+   * Record that all of the classes within the given input file path had code generated - that
    * is, coverage for the file can be considered complete.
    */
   recordComplete(sfPath: AbsoluteFsPath): void;
@@ -189,8 +188,7 @@ export enum InliningMode {
 /**
  * A template type checking context for a program.
  *
- * The `TypeCheckContext` allows registration of components and their templates which need to be
- * type checked.
+ * The `TypeCheckContext` allows registration of directives to be type checked.
  */
 export class TypeCheckContextImpl implements TypeCheckContext {
   private fileMap = new Map<AbsoluteFsPath, PendingFileTypeCheckingData>();
@@ -227,33 +225,29 @@ export class TypeCheckContextImpl implements TypeCheckContext {
    *
    * Implements `TypeCheckContext.addTemplate`.
    */
-  addTemplate(
+  addDirective(
     ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
     binder: R3TargetBinder<TypeCheckableDirectiveMeta>,
-    template: TmplAstNode[],
-    pipes: Map<string, PipeMeta>,
     schemas: SchemaMetadata[],
-    sourceMapping: TemplateSourceMapping,
-    file: ParseSourceFile,
-    parseErrors: ParseError[] | null,
+    templateContext: TemplateContext | null,
     isStandalone: boolean,
-    preserveWhitespaces: boolean,
   ): void {
-    if (!this.host.shouldCheckComponent(ref.node)) {
+    if (!this.host.shouldCheckClass(ref.node)) {
       return;
     }
 
     const fileData = this.dataForFile(ref.node.getSourceFile());
-    const shimData = this.pendingShimForComponent(ref.node);
+    const shimData = this.pendingShimForClass(ref.node);
     const id = fileData.sourceManager.getTypeCheckId(ref.node);
+    const templateParsingDiagnostics: TemplateDiagnostic[] = [];
 
-    const templateDiagnostics: TemplateDiagnostic[] = [];
-
-    if (parseErrors !== null) {
-      templateDiagnostics.push(...getTemplateDiagnostics(parseErrors, id, sourceMapping));
+    if (templateContext !== null && templateContext.parseErrors !== null) {
+      templateParsingDiagnostics.push(
+        ...getTemplateDiagnostics(templateContext.parseErrors, id, templateContext.sourceMapping),
+      );
     }
 
-    const boundTarget = binder.bind({template});
+    const boundTarget = binder.bind({template: templateContext?.nodes});
 
     if (this.inlining === InliningMode.InlineOps) {
       // Get all of the directives used in the template and record inline type constructors when
@@ -283,18 +277,24 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       }
     }
 
-    shimData.templates.set(id, {
-      template,
+    shimData.data.set(id, {
+      template: templateContext?.nodes || null,
       boundTarget,
-      templateDiagnostics,
+      templateParsingDiagnostics,
     });
 
     const usedPipes: Reference<ClassDeclaration<ts.ClassDeclaration>>[] = [];
-    for (const name of boundTarget.getUsedPipes()) {
-      if (!pipes.has(name)) {
-        continue;
+
+    if (templateContext !== null) {
+      for (const name of boundTarget.getUsedPipes()) {
+        if (templateContext.pipes.has(name)) {
+          usedPipes.push(
+            templateContext.pipes.get(name)!.ref as Reference<
+              ClassDeclaration<ts.ClassDeclaration>
+            >,
+          );
+        }
       }
-      usedPipes.push(pipes.get(name)!.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>);
     }
 
     const inliningRequirement = requiresInlineTypeCheckBlock(
@@ -321,13 +321,21 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       return;
     }
 
+    if (templateContext !== null) {
+      fileData.sourceManager.captureSource(
+        ref.node,
+        templateContext.sourceMapping,
+        templateContext.file,
+      );
+    }
+
     const meta = {
-      id: fileData.sourceManager.captureSource(ref.node, sourceMapping, file),
+      id,
       boundTarget,
-      pipes,
+      pipes: templateContext?.pipes || null,
       schemas,
       isStandalone,
-      preserveWhitespaces,
+      preserveWhitespaces: templateContext?.preserveWhitespaces ?? false,
     };
     this.perf.eventCount(PerfEvent.GenerateTcb);
     if (
@@ -341,10 +349,10 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       inliningRequirement === TcbInliningRequirement.ShouldInlineForGenericBounds &&
       this.inlining === InliningMode.Error
     ) {
-      // It's suggested that this TCB should be generated inline due to the component's generic
+      // It's suggested that this TCB should be generated inline due to the class' generic
       // bounds, but inlining is not supported by the current environment. Use a non-inline type
       // check block, but fall back to `any` generic parameters since the generic bounds can't be
-      // referenced in that context. This will infer a less useful type for the component, but allow
+      // referenced in that context. This will infer a less useful type for the class, but allow
       // for type-checking it in an environment where that would not be possible otherwise.
       shimData.file.addTypeCheckBlock(
         ref,
@@ -484,7 +492,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
           ],
           hasInlines: pendingFileData.hasInlines,
           path: pendingShimData.file.fileName,
-          templates: pendingShimData.templates,
+          data: pendingShimData.data,
         });
         const sfText = pendingShimData.file.render(false /* removeComments */);
         updates.set(pendingShimData.file.fileName, {
@@ -523,7 +531,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     fileData.hasInlines = true;
   }
 
-  private pendingShimForComponent(node: ts.ClassDeclaration): PendingShimData {
+  private pendingShimForClass(node: ts.ClassDeclaration): PendingShimData {
     const fileData = this.dataForFile(node.getSourceFile());
     const shimPath = TypeCheckShimGenerator.shimFor(absoluteFromSourceFile(node.getSourceFile()));
     if (!fileData.shimData.has(shimPath)) {
@@ -537,7 +545,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
           this.reflector,
           this.compilerHost,
         ),
-        templates: new Map<TypeCheckId, TemplateData>(),
+        data: new Map<TypeCheckId, TypeCheckData>(),
       });
     }
     return fileData.shimData.get(shimPath)!;
@@ -562,7 +570,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
 export function getTemplateDiagnostics(
   parseErrors: ParseError[],
   templateId: TypeCheckId,
-  sourceMapping: TemplateSourceMapping,
+  sourceMapping: SourceMapping,
 ): TemplateDiagnostic[] {
   return parseErrors.map((error) => {
     const span = error.span;
@@ -612,7 +620,7 @@ interface Op {
 }
 
 /**
- * A type check block operation which produces inline type check code for a particular component.
+ * A type check block operation which produces inline type check code for a particular directive.
  */
 class InlineTcbOp implements Op {
   constructor(
@@ -625,7 +633,7 @@ class InlineTcbOp implements Op {
   ) {}
 
   /**
-   * Type check blocks are inserted immediately after the end of the component class.
+   * Type check blocks are inserted immediately after the end of the directve class.
    */
   get splitPoint(): number {
     return this.ref.node.end + 1;
