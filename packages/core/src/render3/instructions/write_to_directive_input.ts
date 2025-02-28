@@ -20,8 +20,9 @@ export function writeToDirectiveInput<T>(
   instance: T,
   publicName: string,
   value: unknown,
-) {
+): boolean {
   const prevConsumer = setActiveConsumer(null);
+  let shouldMarkForCheck = true;
   try {
     if (ngDevMode) {
       if (!def.inputs.hasOwnProperty(publicName)) {
@@ -50,6 +51,9 @@ export function writeToDirectiveInput<T>(
     if ((flags & InputFlags.SignalBased) !== 0) {
       const field = (instance as any)[privateName] as InputSignalWithTransform<unknown, unknown>;
       inputSignalNode = field[SIGNAL];
+      // Input signals don't require marking for check, since signal reactivity will take care of
+      // it.
+      shouldMarkForCheck = false;
     }
 
     // If there is a signal node and a transform, run it before potentially
@@ -63,10 +67,15 @@ export function writeToDirectiveInput<T>(
 
     if (def.setInput !== null) {
       def.setInput(instance, inputSignalNode, value, publicName, privateName);
+      // If directives have special handling logic for input writes (for example `ngOnChanges`),
+      // then we need to defensively `markForCheck` as those handlers might use the new input value
+      // in derivations that are outside of the reactive graph.
+      shouldMarkForCheck = true;
     } else {
       applyValueToInputField(instance, inputSignalNode, privateName, value);
     }
   } finally {
     setActiveConsumer(prevConsumer);
   }
+  return shouldMarkForCheck;
 }

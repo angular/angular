@@ -251,10 +251,12 @@ export function elementPropertyInternal<T>(
   ngDevMode && assertNotSame(value, NO_CHANGE as any, 'Incoming value should never be NO_CHANGE.');
 
   if (!nativeOnly) {
-    const hasSetInput = setAllInputsForProperty(tNode, tView, lView, propName, value);
+    const flags = setAllInputsForProperty(tNode, tView, lView, propName, value);
 
-    if (hasSetInput) {
-      isComponentHost(tNode) && markDirtyIfOnPush(lView, tNode.index);
+    if (flags) {
+      isComponentHost(tNode) &&
+        flags & REQUIRES_MARK_FOR_CHECK &&
+        markDirtyIfOnPush(lView, tNode.index);
       ngDevMode && setNgReflectProperties(lView, tView, tNode, propName, value);
       return; // Stop propcessing if we've matched at least one input.
     }
@@ -613,6 +615,9 @@ export function handleError(lView: LView, error: any): void {
   errorHandler && errorHandler.handleError(error);
 }
 
+export const MATCHED_INPUT = 0x1;
+export const REQUIRES_MARK_FOR_CHECK = 0x2;
+
 /**
  * Set all directive inputs with the specific public name on the node.
  *
@@ -628,10 +633,10 @@ export function setAllInputsForProperty(
   lView: LView,
   publicName: string,
   value: unknown,
-): boolean {
+): number {
   const inputs = tNode.inputs?.[publicName];
   const hostDirectiveInputs = tNode.hostDirectiveInputs?.[publicName];
-  let hasMatch = false;
+  let flags = 0;
 
   if (hostDirectiveInputs) {
     for (let i = 0; i < hostDirectiveInputs.length; i += 2) {
@@ -639,8 +644,8 @@ export function setAllInputsForProperty(
       ngDevMode && assertIndexInRange(lView, index);
       const publicName = hostDirectiveInputs[i + 1] as string;
       const def = tView.data[index] as DirectiveDef<unknown>;
-      writeToDirectiveInput(def, lView[index], publicName, value);
-      hasMatch = true;
+      const needsMark = writeToDirectiveInput(def, lView[index], publicName, value);
+      flags |= MATCHED_INPUT | (needsMark ? REQUIRES_MARK_FOR_CHECK : 0);
     }
   }
 
@@ -649,12 +654,12 @@ export function setAllInputsForProperty(
       ngDevMode && assertIndexInRange(lView, index);
       const instance = lView[index];
       const def = tView.data[index] as DirectiveDef<any>;
-      writeToDirectiveInput(def, instance, publicName, value);
-      hasMatch = true;
+      const needsMark = writeToDirectiveInput(def, instance, publicName, value);
+      flags |= MATCHED_INPUT | (needsMark ? REQUIRES_MARK_FOR_CHECK : 0);
     }
   }
 
-  return hasMatch;
+  return flags;
 }
 
 /**

@@ -38,6 +38,7 @@ import {renderView} from './instructions/render';
 import {
   createDirectivesInstances,
   locateHostElement,
+  REQUIRES_MARK_FOR_CHECK,
   setAllInputsForProperty,
 } from './instructions/shared';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
@@ -391,12 +392,13 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
     }
 
     const lView = this._rootLView;
-    const hasSetInput = setAllInputsForProperty(tNode, lView[TVIEW], lView, name, value);
+    const flags = setAllInputsForProperty(tNode, lView[TVIEW], lView, name, value);
     this.previousInputValues.set(name, value);
     const childComponentLView = getComponentLViewByIndex(tNode.index, lView);
-    markViewDirty(childComponentLView, NotificationSource.SetInput);
+    flags & REQUIRES_MARK_FOR_CHECK &&
+      markViewDirty(childComponentLView, NotificationSource.SetInput);
 
-    if (ngDevMode && !hasSetInput) {
+    if (ngDevMode && !flags) {
       const cmpNameForError = stringifyForError(this.componentType);
       let message = `Can't set value of the '${name}' input on the '${cmpNameForError}' component. `;
       message += `Make sure that the '${name}' property is annotated with @Input() or a mapped @Input('${name}') exists.`;
