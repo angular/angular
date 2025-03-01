@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable, inject, signal} from '@angular/core';
+import {Injectable, inject, linkedSignal, signal} from '@angular/core';
 import {NavigationItem} from '../interfaces/index';
 import {Router} from '@angular/router';
 
@@ -19,11 +19,13 @@ export class NavigationState {
   private readonly _activeNavigationItem = signal<NavigationItem | null>(null);
   private readonly _expandedItems = signal<NavigationItem[]>([]);
   private readonly _isMobileNavVisible = signal<boolean>(false);
+  private readonly _level = linkedSignal(() => this._expandedItems().length);
 
   primaryActiveRouteItem = signal<string | null>(null);
   activeNavigationItem = this._activeNavigationItem.asReadonly();
   expandedItems = this._expandedItems.asReadonly();
   isMobileNavVisible = this._isMobileNavVisible.asReadonly();
+  level = this._level.asReadonly();
 
   async toggleItem(item: NavigationItem): Promise<void> {
     if (!item.children) {
@@ -102,11 +104,15 @@ export class NavigationState {
     this._expandedItems.update((expandedItems) => {
       return [...(expandedItems ?? []), {...item, isExpanded: true}];
     });
+    this._level.update((level) => level + 1);
   }
 
   private collapse(item: NavigationItem): void {
     item.isExpanded = false;
-    this._expandedItems.update((expandedItems) => expandedItems.slice(0, -1));
+
+    // We won't remove the item, just update the level,
+    // this allows animation on the items to hide them without destroying them
+    this._level.update((level) => level - 1);
   }
 
   private async navigateToFirstPageOfTheCategory(path: string): Promise<boolean> {
