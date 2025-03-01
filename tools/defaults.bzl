@@ -1,26 +1,26 @@
 """Re-export of some bazel rules with repository-wide defaults."""
 
-load("@rules_pkg//:pkg.bzl", "pkg_tar")
 load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test", _npm_package_bin = "npm_package_bin", _pkg_npm = "pkg_npm")
-load("@npm//@bazel/jasmine:index.bzl", _jasmine_node_test = "jasmine_node_test")
-load("@npm//@bazel/concatjs:index.bzl", _ts_config = "ts_config", _ts_library = "ts_library")
-load("@npm//@bazel/rollup:index.bzl", _rollup_bundle = "rollup_bundle")
-load("@npm//@bazel/terser:index.bzl", "terser_minified")
-load("@npm//@bazel/protractor:index.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
-load("@npm//typescript:index.bzl", "tsc")
-load("@npm//@angular/build-tooling/bazel/app-bundling:index.bzl", _app_bundle = "app_bundle")
-load("@npm//@angular/build-tooling/bazel/http-server:index.bzl", _http_server = "http_server")
-load("@npm//@angular/build-tooling/bazel/karma:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
-load("@npm//@angular/build-tooling/bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
 load("@npm//@angular/build-tooling/bazel:extract_js_module_output.bzl", "extract_js_module_output")
 load("@npm//@angular/build-tooling/bazel:extract_types.bzl", _extract_types = "extract_types")
+load("@npm//@angular/build-tooling/bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
+load("@npm//@angular/build-tooling/bazel/app-bundling:index.bzl", _app_bundle = "app_bundle")
 load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", _esbuild = "esbuild", _esbuild_config = "esbuild_config", _esbuild_esm_bundle = "esbuild_esm_bundle")
-load("@npm//@angular/build-tooling/bazel/spec-bundling:spec-entrypoint.bzl", "spec_entrypoint")
+load("@npm//@angular/build-tooling/bazel/http-server:index.bzl", _http_server = "http_server")
+load("@npm//@angular/build-tooling/bazel/karma:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
 load("@npm//@angular/build-tooling/bazel/spec-bundling:index.bzl", "spec_bundle")
+load("@npm//@angular/build-tooling/bazel/spec-bundling:spec-entrypoint.bzl", "spec_entrypoint")
+load("@npm//@bazel/concatjs:index.bzl", _ts_config = "ts_config", _ts_library = "ts_library")
+load("@npm//@bazel/jasmine:index.bzl", _jasmine_node_test = "jasmine_node_test")
+load("@npm//@bazel/protractor:index.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
+load("@npm//@bazel/rollup:index.bzl", _rollup_bundle = "rollup_bundle")
+load("@npm//@bazel/terser:index.bzl", "terser_minified")
 load("@npm//tsec:index.bzl", _tsec_test = "tsec_test")
+load("@npm//typescript:index.bzl", "tsc")
+load("@rules_pkg//:pkg.bzl", "pkg_tar")
+load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", _generate_api_docs = "generate_api_docs")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("//tools/esm-interop:index.bzl", "enable_esm_node_module_loader", _nodejs_binary = "nodejs_binary", _nodejs_test = "nodejs_test")
-load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", _generate_api_docs = "generate_api_docs")
 
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
 _INTERNAL_NG_MODULE_COMPILER = "//packages/bazel/src/ngc-wrapped"
@@ -479,7 +479,7 @@ def esbuild_jasmine_node_test(name, specs = [], external = [], bootstrap = [], *
         **kwargs
     )
 
-def jasmine_node_test(name, srcs = [], data = [], bootstrap = [], env = {}, **kwargs):
+def jasmine_node_test(name, srcs = [], data = [], bootstrap = [], env = {}, templated_args = [], enable_linker = False, **kwargs):
     # Very common dependencies for tests
     deps = kwargs.pop("deps", []) + [
         "@npm//chokidar",
@@ -492,13 +492,16 @@ def jasmine_node_test(name, srcs = [], data = [], bootstrap = [], env = {}, **kw
     ]
     configuration_env_vars = kwargs.pop("configuration_env_vars", [])
 
-    # Disable the linker and rely on patched resolution which works better on Windows
-    # and is less prone to race conditions when targets build concurrently.
-    templated_args = ["--nobazel_run_linker"] + kwargs.pop("templated_args", [])
+    if not enable_linker:
+        templated_args = templated_args + [
+            # Disable the linker and rely on patched resolution which works better on Windows
+            # and is less prone to race conditions when targets build concurrently.
+            "--nobazel_run_linker",
+        ]
 
-    # We disable the linker, so the ESM node module loader needs to be enabled.
-    npm_workspace = _node_modules_workspace_name()
-    env = enable_esm_node_module_loader(npm_workspace, env)
+        # We disable the linker, so the ESM node module loader needs to be enabled.
+        npm_workspace = _node_modules_workspace_name()
+        env = enable_esm_node_module_loader(npm_workspace, env)
 
     spec_entrypoint(
         name = "%s_spec_entrypoint.spec" % name,
