@@ -242,7 +242,7 @@ export class Router {
           this._events.next(e);
         }
       } catch (e: unknown) {
-        this.navigationTransitions.transitionAbortSubject.next(e as Error);
+        this.navigationTransitions.transitionAbortWithErrorSubject.next(e as Error);
       }
     });
     this.eventsSubscription.add(subscription);

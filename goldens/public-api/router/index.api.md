@@ -398,6 +398,7 @@ export type MaybeAsync<T> = T | Observable<T> | Promise<T>;
 
 // @public
 export interface Navigation {
+    readonly abort: () => void;
     extractedUrl: UrlTree;
     extras: NavigationExtras;
     finalUrl?: UrlTree;
@@ -436,6 +437,7 @@ export class NavigationCancel extends RouterEvent {
 
 // @public
 export enum NavigationCancellationCode {
+    Aborted = 4,
     GuardRejected = 3,
     NoDataFromResolver = 2,
     Redirect = 0,

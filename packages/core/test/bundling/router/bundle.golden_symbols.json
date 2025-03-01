@@ -703,6 +703,7 @@
   "symbolIterator",
   "take",
   "takeLast",
+  "takeUntil",
   "tap",
   "throwCyclicDependencyError",
   "throwError2",
