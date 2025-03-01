@@ -242,8 +242,17 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
   }
 
   retrieve<T>(token: PrimitivesInjectionToken<T>, options?: unknown): T | NotFound {
-    const ngOptions = options as InjectOptions;
-    return this.get(token, ngOptions.optional ? NOT_FOUND : THROW_IF_NOT_FOUND, ngOptions);
+    let flags: InjectFlags;
+    if (options && (options as {flags: InjectFlags}).flags) {
+      flags = (options as {flags: InjectFlags}).flags;
+    } else {
+      flags = convertToBitFlags(options as InjectOptions | undefined) || InjectFlags.Default;
+    }
+    return this.get(
+      token as unknown as InjectionToken<T>,
+      flags & InjectFlags.Optional ? null : undefined,
+      flags,
+    );
   }
 
   /**
