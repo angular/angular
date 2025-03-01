@@ -79,6 +79,7 @@
   }
 
   p > a,
+  p > em > a,
   td > a,
   div > a:not(.docs-card),
   code > a,
@@ -93,6 +94,7 @@
   }
 
   p > a,
+  p > em > a,
   .docs-list a,
   .docs-card a {
     margin-block: 0;

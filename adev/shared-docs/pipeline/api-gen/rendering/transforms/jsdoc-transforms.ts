@@ -58,16 +58,10 @@ export function addHtmlDescription<T extends HasDescription & HasModuleName>(
 
   const description = !!entry.description ? entry.description : jsDocDescription;
   const shortTextMatch = description.match(firstParagraphRule);
-  const htmlDescription = getHtmlForJsDocText(description, entry).trim();
-  const shortHtmlDescription = getHtmlForJsDocText(
-    shortTextMatch ? shortTextMatch[0] : '',
-    entry,
-  ).trim();
-  return {
-    ...entry,
-    htmlDescription,
-    shortHtmlDescription,
-  };
+  const htmlDescription = getHtmlForJsDocText(description).trim();
+  const shortHtmlDescription = getHtmlForJsDocText(shortTextMatch ? shortTextMatch[0] : '').trim();
+
+  return {...entry, htmlDescription, shortHtmlDescription};
 }
 
 /**
@@ -81,7 +75,7 @@ export function addHtmlJsDocTagComments<T extends HasJsDocTags & HasModuleName>(
     ...entry,
     jsdocTags: entry.jsdocTags.map((tag) => ({
       ...tag,
-      htmlComment: getHtmlForJsDocText(tag.comment, entry),
+      htmlComment: getHtmlForJsDocText(tag.comment),
     })),
   };
 }
@@ -100,20 +94,16 @@ export function addHtmlUsageNotes<T extends HasJsDocTags>(entry: T): T & HasHtml
   const usageNotesTag = entry.jsdocTags.find(
     ({name}) => name === JS_DOC_USAGE_NOTES_TAG || name === JS_DOC_REMARKS_TAG,
   );
-  const htmlUsageNotes = usageNotesTag
-    ? (marked.parse(wrapExampleHtmlElementsWithCode(usageNotesTag.comment)) as string)
-    : '';
-
-  const transformedHtml = addApiLinksToHtml(htmlUsageNotes);
+  const htmlUsageNotes = usageNotesTag ? getHtmlForJsDocText(usageNotesTag.comment) : '';
 
   return {
     ...entry,
-    htmlUsageNotes: transformedHtml,
+    htmlUsageNotes,
   };
 }
 
 /** Given a markdown JsDoc text, gets the rendered HTML. */
-function getHtmlForJsDocText<T extends HasModuleName>(text: string, entry: T): string {
+function getHtmlForJsDocText(text: string): string {
   const parsed = marked.parse(convertLinks(wrapExampleHtmlElementsWithCode(text))) as string;
   return addApiLinksToHtml(parsed);
 }
@@ -126,7 +116,7 @@ export function setEntryFlags<T extends HasJsDocTags & HasModuleName>(
     ...entry,
     isDeprecated: isDeprecatedEntry(entry),
     deprecationMessage: deprecationMessage
-      ? getHtmlForJsDocText(deprecationMessage, entry)
+      ? getHtmlForJsDocText(deprecationMessage)
       : deprecationMessage,
     isDeveloperPreview: isDeveloperPreview(entry),
     isExperimental: isExperimental(entry),
