@@ -9,6 +9,7 @@
 import {NavigationBehaviorOptions, Route} from './models';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
 import {UrlTree} from './url_tree';
+import type {Navigation} from './navigation_transition';
 
 /**
  * Identifies the call or event that triggered a navigation.
@@ -190,6 +191,12 @@ export enum NavigationCancellationCode {
    * A navigation failed because a guard returned `false`.
    */
   GuardRejected,
+  /**
+   * A navigation was aborted by the `Navigation.abort` function.
+   *
+   * @see {@link Navigation}
+   */
+  Aborted,
 }
 
 /**

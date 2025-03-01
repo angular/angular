@@ -227,8 +227,8 @@ export class HistoryStateManager extends StateManager {
       }
     } else if (
       e instanceof NavigationCancel &&
-      (e.code === NavigationCancellationCode.GuardRejected ||
-        e.code === NavigationCancellationCode.NoDataFromResolver)
+      e.code !== NavigationCancellationCode.SupersededByNewNavigation &&
+      e.code !== NavigationCancellationCode.Redirect
     ) {
       this.restoreHistory(currentTransition);
     } else if (e instanceof NavigationError) {

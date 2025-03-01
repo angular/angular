@@ -10,6 +10,7 @@ import {Component, inject as coreInject, NgModule} from '@angular/core';
 import {Location} from '@angular/common';
 import {fakeAsync, TestBed, tick, inject} from '@angular/core/testing';
 import {
+  Event,
   provideRouter,
   Navigation,
   withRouterConfig,
@@ -20,6 +21,12 @@ import {
   ActivatedRoute,
   Params,
   RouterModule,
+  NavigationCancel,
+  Routes,
+  NavigationError,
+  RedirectCommand,
+  NavigationCancellationCode,
+  ActivationStart,
 } from '../../src';
 import {
   RootCmp,
@@ -30,6 +37,8 @@ import {
   createRoot,
   advance,
 } from './integration_helpers';
+import {BehaviorSubject, filter, firstValueFrom} from 'rxjs';
+import {RouterTestingHarness} from '@angular/router/testing';
 
 export function navigationIntegrationTestSuite() {
   describe('navigation', () => {
@@ -701,5 +710,196 @@ export function navigationIntegrationTestSuite() {
         ]);
       }),
     ));
+  });
+
+  describe('abort an ongoing navigation', () => {
+    let router: Router;
+    function setup(routes?: Routes) {
+      TestBed.configureTestingModule({
+        providers: [
+          provideRouter(
+            routes ?? [
+              {
+                path: '**',
+                component: class {},
+              },
+            ],
+          ),
+        ],
+      });
+      router = TestBed.inject(Router);
+    }
+
+    it('resolves the promise, clears current navigation, and send NavigationCancel', async () => {
+      setup();
+      const replay = new BehaviorSubject<Event | null>(null);
+      router.events.subscribe(replay);
+
+      const navigationPromise = router.navigateByUrl('a');
+      router.getCurrentNavigation()!.abort();
+
+      expect(router.getCurrentNavigation()).toBe(null);
+      await expectAsync(navigationPromise).toBeResolvedTo(false);
+      expect(replay.value).toBeInstanceOf(NavigationCancel);
+    });
+
+    it('does not result in errors if the navigation enters activation stage or has finished', async () => {
+      @Component({template: ''})
+      class Aborting {
+        constructor() {
+          coreInject(Router).getCurrentNavigation()!.abort();
+        }
+      }
+      setup([{path: '**', component: Aborting}]);
+      const events = [] as Event[];
+      router.events.subscribe({next: (e) => void events.push(e)});
+
+      const navigationPromise = (await RouterTestingHarness.create()).navigateByUrl('/abc');
+      const navigation = router.getCurrentNavigation()!;
+      await navigationPromise;
+
+      expect(events.at(-1)).toBeInstanceOf(NavigationEnd);
+      expect(events.some((e) => e instanceof NavigationCancel)).toBeFalse();
+      expect(events.some((e) => e instanceof NavigationError)).toBeFalse();
+      expect(router.url).toEqual('/abc');
+
+      // Aborting after navigation complete does not result in new events or errors
+      const currentEventsLength = events.length;
+      navigation.abort();
+      navigation.abort();
+      navigation.abort();
+      navigation.abort();
+      expect(events.length).toEqual(currentEventsLength);
+    });
+
+    it('does not result in errors if the navigation enters navigation already canceled from guards', async () => {
+      setup([{path: '**', component: class {}, canActivate: [() => false]}]);
+      const events = [] as Event[];
+      router.events.subscribe({next: (e) => void events.push(e)});
+
+      const navigationPromise = router.navigateByUrl('/abc')!;
+      const navigation = router.getCurrentNavigation()!;
+      await navigationPromise;
+
+      expect(events.at(-1)).toBeInstanceOf(NavigationCancel);
+
+      // Aborting after navigation complete does not result in new events or errors
+      const currentEventsLength = events.length;
+      navigation.abort();
+      navigation.abort();
+      navigation.abort();
+      navigation.abort();
+      expect(events.length).toEqual(currentEventsLength);
+    });
+
+    it('does not result in double cancellation if activate guard aborts and returns', async () => {
+      setup([
+        {
+          path: '**',
+          component: class {},
+          canActivate: [
+            () => {
+              coreInject(Router).getCurrentNavigation()!.abort();
+              return false;
+            },
+          ],
+        },
+      ]);
+      const events = [] as Event[];
+      router.events.subscribe({next: (e) => void events.push(e)});
+
+      await router.navigateByUrl('/abc')!;
+
+      expect(events.at(-2)).toBeInstanceOf(ActivationStart);
+      expect(events.at(-1)).toBeInstanceOf(NavigationCancel);
+    });
+
+    it('does not result in double cancellation if match guard aborts and returns', async () => {
+      setup([
+        {
+          path: '**',
+          component: class {},
+          canMatch: [
+            () => {
+              coreInject(Router).getCurrentNavigation()!.abort();
+              return false;
+            },
+          ],
+        },
+      ]);
+      const events = [] as Event[];
+      router.events.subscribe({next: (e) => void events.push(e)});
+
+      await router.navigateByUrl('/abc')!;
+
+      expect(events.length).toBe(2);
+      expect(events[0]).toBeInstanceOf(NavigationStart);
+      expect(events[1]).toBeInstanceOf(NavigationCancel);
+    });
+
+    it('does not result in cancelation if the navigation was already redirected', async () => {
+      setup([
+        {
+          path: 'initial',
+          component: class {},
+          canActivate: [() => new RedirectCommand(router.parseUrl('/other'))],
+        },
+        {
+          path: 'other',
+          component: class {},
+        },
+      ]);
+      const events = [] as Event[];
+      router.events.subscribe({next: (e) => void events.push(e)});
+
+      const navigationPromise = router.navigateByUrl('/initial')!;
+      const navigation = router.getCurrentNavigation()!;
+      // wait for NavigationStart from the redirecting navigation
+      await firstValueFrom(router.events.pipe(filter((e) => e instanceof NavigationStart)));
+      // abort the original navigation
+      navigation.abort();
+      await navigationPromise;
+
+      expect(events.at(-1)).toBeInstanceOf(NavigationEnd);
+      expect(router.url).toEqual('/other');
+      const cancellations = events.filter((e) => e instanceof NavigationCancel);
+      expect(cancellations.length).toBe(1);
+      expect(cancellations[0].code).toEqual(NavigationCancellationCode.Redirect);
+      expect(events.some((e) => e instanceof NavigationError)).toBeFalse();
+    });
+
+    it('can abort in while guards are executing and prevents later guards and resolvers from running', async () => {
+      let canActivateCalled = false;
+      let resolveCalled = false;
+      setup([
+        {
+          path: '**',
+          canMatch: [() => new Promise<boolean>(() => {})],
+          component: class {},
+          canActivate: [
+            () => {
+              canActivateCalled = true;
+            },
+          ],
+          resolve: {
+            someData: () => {
+              resolveCalled = true;
+            },
+          },
+        },
+      ]);
+      const events = [] as Event[];
+      router.events.subscribe({next: (e) => void events.push(e)});
+
+      const navigationPromise = router.navigateByUrl('/abc123');
+      // wait one macrotask to ensure we're in the canMatch guard
+      await new Promise((resolve) => setTimeout(resolve));
+      router.getCurrentNavigation()?.abort();
+
+      expect(events.at(-1)).toBeInstanceOf(NavigationCancel);
+      await expectAsync(navigationPromise).toBeResolvedTo(false);
+      expect(canActivateCalled).toBe(false);
+      expect(resolveCalled).toBe(false);
+    });
   });
 }

@@ -298,6 +298,12 @@ export interface Navigation {
    * for its own `previousNavigation`.
    */
   previousNavigation: Navigation | null;
+
+  /**
+   * Aborts the navigation if it has not yet been completed or reached the point where routes are being activated.
+   * This function is a no-op if the navigation is beyond the point where it can be aborted.
+   */
+  readonly abort: () => void;
 }
 
 export interface NavigationTransition {
@@ -319,6 +325,7 @@ export interface NavigationTransition {
   targetRouterState: RouterState | null;
   guards: Checks;
   guardsResult: GuardResult | null;
+  abortController: AbortController;
 }
 
 /**
@@ -352,7 +359,7 @@ export class NavigationTransitions {
   /**
    * Used to abort the current transition with an error.
    */
-  readonly transitionAbortSubject = new Subject<Error>();
+  readonly transitionAbortWithErrorSubject = new Subject<Error>();
   private readonly configLoader = inject(RouterConfigLoader);
   private readonly environmentInjector = inject(EnvironmentInjector);
   private readonly destroyRef = inject(DestroyRef);
@@ -423,6 +430,7 @@ export class NavigationTransitions {
       targetRouterState: null,
       guards: {canActivateChecks: [], canDeactivateChecks: []},
       guardsResult: null,
+      abortController: new AbortController(),
       id,
     });
   }
@@ -434,8 +442,7 @@ export class NavigationTransitions {
 
       // Using switchMap so we cancel executing navigations when a new one comes in
       switchMap((overallTransitionState) => {
-        let completed = false;
-        let errored = false;
+        let completedOrAborted = false;
         return of(overallTransitionState).pipe(
           switchMap((t) => {
             // It is possible that `switchMap` fails to cancel previous navigations if a new one happens synchronously while the operator
@@ -472,6 +479,7 @@ export class NavigationTransitions {
                     ...this.lastSuccessfulNavigation,
                     previousNavigation: null,
                   },
+              abort: () => t.abortController.abort(),
             };
             const urlTransition =
               !router.navigated || this.isUpdatingInternalState() || this.isUpdatedBrowserUrl();
@@ -754,9 +762,28 @@ export class NavigationTransitions {
           // this is done as a safety measure to avoid surfacing this error (#49567).
           take(1),
 
+          takeUntil(
+            new Observable<void>((subscriber) => {
+              const abortSignal = overallTransitionState.abortController.signal;
+              const handler = () => subscriber.next();
+              abortSignal.addEventListener('abort', handler);
+              return () => abortSignal.removeEventListener('abort', handler);
+            }).pipe(
+              // Ignore aborts if we are already completed, canceled, or are in the activation stage (we have targetRouterState)
+              filter(() => !completedOrAborted && !overallTransitionState.targetRouterState),
+              tap(() => {
+                this.cancelNavigationTransition(
+                  overallTransitionState,
+                  overallTransitionState.abortController.signal.reason + '',
+                  NavigationCancellationCode.Aborted,
+                );
+              }),
+            ),
+          ),
+
           tap({
             next: (t: NavigationTransition) => {
-              completed = true;
+              completedOrAborted = true;
               this.lastSuccessfulNavigation = this.currentNavigation;
               this.events.next(
                 new NavigationEnd(
@@ -769,7 +796,7 @@ export class NavigationTransitions {
               t.resolve(true);
             },
             complete: () => {
-              completed = true;
+              completedOrAborted = true;
             },
           }),
 
@@ -781,7 +808,7 @@ export class NavigationTransitions {
           // Navigation API where the navigation gets aborted from outside the
           // transition.
           takeUntil(
-            this.transitionAbortSubject.pipe(
+            this.transitionAbortWithErrorSubject.pipe(
               tap((err) => {
                 throw err;
               }),
@@ -795,7 +822,7 @@ export class NavigationTransitions {
              * For instance, a redirect during NavigationStart. Therefore, this is a
              * catch-all to make sure the NavigationCancel event is fired when a
              * navigation gets cancelled but not caught by other means. */
-            if (!completed && !errored) {
+            if (!completedOrAborted) {
               const cancelationReason =
                 typeof ngDevMode === 'undefined' || ngDevMode
                   ? `Navigation ID ${overallTransitionState.id} is not equal to the current navigation id ${this.navigationId}`
@@ -822,7 +849,7 @@ export class NavigationTransitions {
               return EMPTY;
             }
 
-            errored = true;
+            completedOrAborted = true;
             /* This error type is issued during Redirect, and is handled as a
              * cancellation rather than an error. */
             if (isNavigationCancelingError(e)) {
