@@ -52,6 +52,7 @@ export class NgtscProgram implements api.Program {
     private options: NgCompilerOptions,
     delegateHost: api.CompilerHost,
     oldProgram?: NgtscProgram,
+    private projectReferences?: readonly ts.ProjectReference[],
   ) {
     const perfRecorder = ActivePerfRecorder.zeroedToNow();
 
@@ -80,7 +81,7 @@ export class NgtscProgram implements api.Program {
     }
 
     this.tsProgram = perfRecorder.inPhase(PerfPhase.TypeScriptProgramCreate, () =>
-      ts.createProgram(this.host.inputFiles, options, this.host, reuseProgram),
+      ts.createProgram(this.host.inputFiles, options, this.host, reuseProgram, undefined, projectReferences),
     );
 
     perfRecorder.phase(PerfPhase.Unaccounted);
