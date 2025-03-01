@@ -8,7 +8,7 @@
 export function getCurrentInjector(): Injector | undefined | null;
 
 // @public
-export interface InjectionToken<T> extends Type<T> {
+export interface InjectionToken<T> {
     // (undocumented)
     ɵprov: ɵɵInjectableDeclaration<T>;
 }

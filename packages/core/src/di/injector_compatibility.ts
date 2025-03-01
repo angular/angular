@@ -27,10 +27,10 @@ import type {HostAttributeToken} from './host_attribute_token';
 import {
   Injector as PrimitivesInjector,
   NotFound,
-  NOT_FOUND,
   InjectionToken as PrimitivesInjectionToken,
   getCurrentInjector,
 } from '@angular/core/primitives/di';
+import {InjectionToken} from './injection_token';
 
 const _THROW_IF_NOT_FOUND = {};
 export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
@@ -44,11 +44,25 @@ export {getCurrentInjector, setCurrentInjector} from '@angular/core/primitives/d
  */
 const DI_DECORATOR_FLAG = '__NG_DI_FLAG__';
 
+/**
+ * A wrapper around an `Injector` that implements the `PrimitivesInjector` interface.
+ *
+ * This is used to allow the `inject` function to be used with the new primitives-based DI system.
+ */
 export class RetrievingInjector implements PrimitivesInjector {
   constructor(readonly injector: Injector) {}
   retrieve<T>(token: PrimitivesInjectionToken<T>, options: unknown): T | NotFound {
-    const ngOptions = options as InjectOptions;
-    return this.injector.get(token, ngOptions.optional ? NOT_FOUND : THROW_IF_NOT_FOUND, ngOptions);
+    let flags: InjectFlags;
+    if (options && (options as {flags: InjectFlags}).flags) {
+      flags = (options as {flags: InjectFlags}).flags;
+    } else {
+      flags = convertToBitFlags(options as InjectOptions | undefined) || InjectFlags.Default;
+    }
+    return this.injector.get(
+      token as unknown as InjectionToken<T>,
+      flags & InjectFlags.Optional ? null : undefined,
+      flags,
+    ) as T;
   }
 }
 
@@ -64,23 +78,17 @@ export function injectInjectorOnly<T>(
   token: ProviderToken<T>,
   flags = InjectFlags.Default,
 ): T | null {
-  if (getCurrentInjector() === undefined) {
+  const currentInjector = getCurrentInjector();
+  if (currentInjector === undefined) {
     throw new RuntimeError(
       RuntimeErrorCode.MISSING_INJECTION_CONTEXT,
       ngDevMode &&
         `The \`${stringify(token)}\` token injection failed. \`inject()\` function must be called from an injection context such as a constructor, a factory function, a field initializer, or a function used with \`runInInjectionContext\`.`,
     );
-  } else if (getCurrentInjector() === null) {
+  } else if (currentInjector === null) {
     return injectRootLimpMode(token, undefined, flags);
   } else {
-    const currentInjector = getCurrentInjector();
-    let injector: Injector;
-    if (currentInjector instanceof RetrievingInjector) {
-      injector = currentInjector.injector;
-    } else {
-      injector = currentInjector as unknown as Injector;
-    }
-    const value = injector.get(token, flags & InjectFlags.Optional ? null : undefined, flags);
+    const value = currentInjector.retrieve(token as PrimitivesInjectionToken<T>, {flags}) as T;
     ngDevMode && emitInjectEvent(token as Type<unknown>, value, flags);
     return value;
   }
