@@ -13,6 +13,7 @@ import {
   input,
   computed,
   inject,
+  afterNextRender,
 } from '@angular/core';
 import {Location} from '@angular/common';
 import {TableOfContentsLevel} from '../../interfaces/index';
@@ -39,12 +40,13 @@ export class TableOfContents {
   tableOfContentItems = this.tableOfContentsLoader.tableOfContentItems;
 
   activeItemId = this.scrollSpy.activeItemId;
-  shouldDisplayScrollToTop = computed(() => !this.scrollSpy.scrollbarThumbOnTop());
   TableOfContentsLevel = TableOfContentsLevel;
 
-  ngAfterViewInit() {
-    this.tableOfContentsLoader.buildTableOfContent(this.contentSourceElement());
-    this.scrollSpy.startListeningToScroll(this.contentSourceElement(), this.destroyRef);
+  constructor() {
+    afterNextRender(() => {
+      this.tableOfContentsLoader.buildTableOfContent(this.contentSourceElement());
+      this.scrollSpy.setupActiveItemListener(this.contentSourceElement(), this.destroyRef);
+    });
   }
 
   scrollToTop(): void {
