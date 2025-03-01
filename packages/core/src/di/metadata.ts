@@ -18,6 +18,12 @@ import {DecoratorFlags, InternalInjectFlags} from './interface/injector';
  */
 export interface InjectDecorator {
   /**
+   * @deprecated Use an InjectionToken or a class instead
+   */
+  (token: string): any;
+  new (token: string): Inject;
+
+  /**
    * Parameter decorator on a dependency parameter of a class constructor
    * that specifies a custom provider of the dependency.
    *
@@ -33,6 +39,7 @@ export interface InjectDecorator {
    * @see [Dependency Injection Guide](guide/di/dependency-injection
    *
    */
+
   (token: any): any;
   new (token: any): Inject;
 }
