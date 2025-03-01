@@ -34,6 +34,7 @@ import {
   LiteralMapKey,
   LiteralPrimitive,
   NonNullAssert,
+  Parenthesized,
   ParserError,
   ParseSpan,
   PrefixNot,
@@ -515,7 +516,6 @@ enum ParseContextFlags {
 }
 
 class _ParseAST {
-  private lastUnary: Unary | PrefixNot | TypeofExpression | VoidExpression | null = null;
   private rparensExpected = 0;
   private rbracketsExpected = 0;
   private rbracesExpected = 0;
@@ -954,7 +954,12 @@ class _ParseAST {
       // This aligns with Javascript semantics which require any unary operator preceeding the
       // exponentiation operation to be explicitly grouped as either applying to the base or result
       // of the exponentiation operation.
-      if (result === this.lastUnary) {
+      if (
+        result instanceof Unary ||
+        result instanceof PrefixNot ||
+        result instanceof TypeofExpression ||
+        result instanceof VoidExpression
+      ) {
         this.error(
           'Unary operator used immediately before exponentiation expression. Parenthesis must be used to disambiguate operator precedence',
         );
@@ -975,42 +980,26 @@ class _ParseAST {
         case '+':
           this.advance();
           result = this.parsePrefix();
-          return (this.lastUnary = Unary.createPlus(
-            this.span(start),
-            this.sourceSpan(start),
-            result,
-          ));
+          return Unary.createPlus(this.span(start), this.sourceSpan(start), result);
         case '-':
           this.advance();
           result = this.parsePrefix();
-          return (this.lastUnary = Unary.createMinus(
-            this.span(start),
-            this.sourceSpan(start),
-            result,
-          ));
+          return Unary.createMinus(this.span(start), this.sourceSpan(start), result);
         case '!':
           this.advance();
           result = this.parsePrefix();
-          return (this.lastUnary = new PrefixNot(this.span(start), this.sourceSpan(start), result));
+          return new PrefixNot(this.span(start), this.sourceSpan(start), result);
       }
     } else if (this.next.isKeywordTypeof()) {
       this.advance();
       const start = this.inputIndex;
       let result = this.parsePrefix();
-      return (this.lastUnary = new TypeofExpression(
-        this.span(start),
-        this.sourceSpan(start),
-        result,
-      ));
+      return new TypeofExpression(this.span(start), this.sourceSpan(start), result);
     } else if (this.next.isKeywordVoid()) {
       this.advance();
       const start = this.inputIndex;
       let result = this.parsePrefix();
-      return (this.lastUnary = new VoidExpression(
-        this.span(start),
-        this.sourceSpan(start),
-        result,
-      ));
+      return new VoidExpression(this.span(start), this.sourceSpan(start), result);
     }
     return this.parseCallChain();
   }
@@ -1051,9 +1040,8 @@ class _ParseAST {
       this.rparensExpected++;
       const result = this.parsePipe();
       this.rparensExpected--;
-      this.lastUnary = null;
       this.expectCharacter(chars.$RPAREN);
-      return result;
+      return new Parenthesized(this.span(start), this.sourceSpan(start), result);
     } else if (this.next.isKeywordNull()) {
       this.advance();
       return new LiteralPrimitive(this.span(start), this.sourceSpan(start), null);

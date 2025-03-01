@@ -1179,6 +1179,9 @@ function convertAst(
       undefined,
       convertSourceSpan(ast.span, baseSourceSpan),
     );
+  } else if (ast instanceof e.Parenthesized) {
+    // TODO: refactor so we can translate the expression AST parens into output AST parens
+    return convertAst(ast.expression, job, baseSourceSpan);
   } else {
     throw new Error(
       `Unhandled expression type "${ast.constructor.name}" in file "${baseSourceSpan?.start.file.url}"`,
