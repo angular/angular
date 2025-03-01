@@ -104,16 +104,16 @@ describe('parser', () => {
 
     it('should parse typeof expression', () => {
       checkAction(`typeof {} === "object"`);
-      checkAction('(!(typeof {} === "number"))', '!typeof {} === "number"');
+      checkAction('(!(typeof {} === "number"))');
     });
 
     it('should parse void expression', () => {
       checkAction(`void 0`);
-      checkAction('(!(void 0))', '!void 0');
+      checkAction('(!(void 0))');
     });
 
     it('should parse grouped expressions', () => {
-      checkAction('(1 + 2) * 3', '1 + 2 * 3');
+      checkAction('(1 + 2) * 3');
     });
 
     it('should ignore comments in expressions', () => {
@@ -364,7 +364,7 @@ describe('parser', () => {
 
         it('should recover on parenthesized empty rvalues', () => {
           const ast = parseAction('(a[1] = b) = c = d');
-          expect(unparse(ast)).toEqual('a[1] = b');
+          expect(unparse(ast)).toEqual('(a[1] = b)');
           validate(ast);
 
           expect(ast.errors.length).toBe(1);
@@ -444,7 +444,7 @@ describe('parser', () => {
 
       it('should parse template literals with pipes inside interpolations', () => {
         checkBinding('`hello ${name | capitalize}!!!`', '`hello ${(name | capitalize)}!!!`');
-        checkBinding('`hello ${(name | capitalize)}!!!`');
+        checkBinding('`hello ${(name | capitalize)}!!!`', '`hello ${((name | capitalize))}!!!`');
       });
 
       it('should report error if interpolation is empty', () => {
@@ -459,7 +459,7 @@ describe('parser', () => {
         checkBinding('tags.first`hello!`');
         checkBinding('tags[0]`hello!`');
         checkBinding('tag()`hello!`');
-        checkBinding('(tag ?? otherTag)`hello!`', 'tag ?? otherTag`hello!`');
+        checkBinding('(tag ?? otherTag)`hello!`');
         checkBinding('tag!`hello!`');
       });
 
@@ -468,7 +468,7 @@ describe('parser', () => {
         checkBinding('tags.first`hello ${name}!`');
         checkBinding('tags[0]`hello ${name}!`');
         checkBinding('tag()`hello ${name}!`');
-        checkBinding('(tag ?? otherTag)`hello ${name}!`', 'tag ?? otherTag`hello ${name}!`');
+        checkBinding('(tag ?? otherTag)`hello ${name}!`');
         checkBinding('tag!`hello ${name}!`');
       });
 
@@ -642,7 +642,7 @@ describe('parser', () => {
         checkBinding('a?.b | c', '(a?.b | c)');
         checkBinding('true | a', '(true | a)');
         checkBinding('a | b:c | d', '((a | b:c) | d)');
-        checkBinding('a | b:(c | d)', '(a | b:(c | d))');
+        checkBinding('a | b:(c | d)', '(a | b:((c | d)))');
       });
 
       describe('should parse incomplete pipes', () => {
@@ -680,7 +680,7 @@ describe('parser', () => {
           [
             'should parse incomplete pipe args',
             'a | b: (a | ) + | c',
-            '((a | b:(a | ) + ) | c)',
+            '((a | b:((a | )) + ) | c)',
             'Unexpected token |',
           ],
         ];
@@ -1319,9 +1319,9 @@ describe('parser', () => {
       const expr = validate(parseAction(text));
       expect(unparse(expr)).toEqual(expected || text);
     }
-    it('should be able to recover from an extra paren', () => recover('((a)))', 'a'));
+    it('should be able to recover from an extra paren', () => recover('((a)))', '((a))'));
     it('should be able to recover from an extra bracket', () => recover('[[a]]]', '[[a]]'));
-    it('should be able to recover from a missing )', () => recover('(a;b', 'a; b;'));
+    it('should be able to recover from a missing )', () => recover('(a;b', '(a); b;'));
     it('should be able to recover from a missing ]', () => recover('[a,b', '[a, b]'));
     it('should be able to recover from a missing selector', () => recover('a.'));
     it('should be able to recover from a missing selector in a array literal', () =>

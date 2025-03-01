@@ -23,6 +23,7 @@ import {
   LiteralMap,
   LiteralPrimitive,
   NonNullAssert,
+  Parenthesized,
   PrefixNot,
   PropertyRead,
   PropertyWrite,
@@ -245,6 +246,12 @@ class Unparser implements AstVisitor {
   visitTaggedTemplateLiteral(ast: TaggedTemplateLiteral, context: any) {
     this._visit(ast.tag);
     this._visit(ast.template);
+  }
+
+  visitParenthesized(ast: Parenthesized, context: any) {
+    this._expression += '(';
+    this._visit(ast.expression);
+    this._expression += ')';
   }
 
   private _visit(ast: AST) {
