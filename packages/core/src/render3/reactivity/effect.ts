@@ -138,8 +138,8 @@ export type EffectCleanupRegisterFn = (cleanupFn: EffectCleanupFn) => void;
  *
  * The two effect types differ in their timing. Component effects run as a component lifecycle
  * event during Angular's synchronization (change detection) process, and can safely read input
- * signals or create/destroy views that depend on component state. Root effects run as microtasks
- * and have no connection to the component tree or change detection.
+ * signals or create/destroy views that depend on component state. Root effects run during the
+ * synchronization process ahead of checking the component tree.
  *
  * `effect()` must be run in injection context, unless the `injector` option is manually specified.
  *
