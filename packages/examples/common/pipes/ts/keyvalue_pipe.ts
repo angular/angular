@@ -11,14 +11,21 @@ import {Component} from '@angular/core';
 // #docregion KeyValuePipe
 @Component({
   selector: 'keyvalue-pipe',
-  template: `<span>
-    <p>Object</p>
-    <div *ngFor="let item of object | keyvalue">{{ item.key }}:{{ item.value }}</div>
-    <p>Map</p>
-    <div *ngFor="let item of map | keyvalue">{{ item.key }}:{{ item.value }}</div>
-    <p>Natural order</p>
-    <div *ngFor="let item of map | keyvalue: null">{{ item.key }}:{{ item.value }}</div>
-  </span>`,
+  template: `
+  <span>
+  <p>Object</p>
+  @for (item of object | keyvalue; track item.key) {
+    <div>{{ item.key }}:{{ item.value }}</div>
+  }
+  <p>Map</p>
+  @for (item of map | keyvalue; track item.key) {
+    <div>{{ item.key }}:{{ item.value }}</div>
+  }
+  <p>Natural order</p>
+  @for (item of map | keyvalue : null; track item.key) {
+    <div>{{ item.key }}:{{ item.value }}</div>
+  }
+</span>`,
   standalone: false,
 })
 export class KeyValuePipeComponent {
