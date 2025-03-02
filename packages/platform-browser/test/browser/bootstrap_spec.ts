@@ -915,6 +915,22 @@ describe('providePlatformInitializer', () => {
      */
     return createOrReusePlatformInjector(providers as any);
   }
+
+  it('should not be importable in standalone components', () => {
+    @Component({
+      imports: [
+        // @ts-expect-error
+        provideAnimations(),
+
+        // @ts-expect-error
+        provideNoopAnimations(),
+      ],
+    })
+    class TestComponent {}
+
+    // This should still be fine
+    bootstrapApplication(TestComponent, {providers: [provideAnimations()]});
+  });
 });
 
 /**
