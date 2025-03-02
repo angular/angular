@@ -576,7 +576,7 @@ runInEachFileSystem(() => {
       );
       expect(diags[1].messageText).toEqual(
         jasmine.objectContaining({
-          messageText: `Type '{ id: string; }' is not assignable to type '{ id: number; }'.`,
+          messageText: `Argument of type '{ id: string; }' is not assignable to parameter of type '{ id: number; }'.`,
         }),
       );
     });
@@ -652,7 +652,7 @@ runInEachFileSystem(() => {
       );
       expect(diags[1].messageText).toEqual(
         jasmine.objectContaining({
-          messageText: `Type 'TestFn' is not assignable to type '(val: string) => number'.`,
+          messageText: `Argument of type 'TestFn' is not assignable to parameter of type '(val: string) => number'.`,
         }),
       );
     });
@@ -710,7 +710,63 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(`Type 'number' is not assignable to type 'string'.`);
+      expect(diags[0].messageText).toBe(
+        `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+      );
+    });
+
+    it('should type check a two-way binding to a narrowed value', () => {
+      env.tsconfig({strictTemplates: true, _checkTwoWayBoundEvents: true});
+      env.write(
+        'test.ts',
+        `
+          import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
+
+          @Directive({selector: '[dir]'})
+          export class Dir {
+            @Input() value: boolean;
+            @Output() valueChange = new EventEmitter<boolean>();
+          }
+
+          @Component({
+            template: '@if (value) {<div dir [(value)]="value"></div>}',
+            imports: [Dir],
+          })
+          export class App {
+            value = false;
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
+    it('should type check a two-way binding to a narrowed property', () => {
+      env.tsconfig({strictTemplates: true, _checkTwoWayBoundEvents: true});
+      env.write(
+        'test.ts',
+        `
+          import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
+
+          @Directive({selector: '[dir]'})
+          export class Dir {
+            @Input() value: boolean;
+            @Output() valueChange = new EventEmitter<boolean>();
+          }
+
+          @Component({
+            template: '@if (value) {<div dir [(value)]="value.field"></div>}',
+            imports: [Dir],
+          })
+          export class App {
+            value = {field: true} as {field: boolean} | null;
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
     });
 
     it('should check the fallback content of ng-content', () => {
