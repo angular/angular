@@ -8,7 +8,7 @@
 
 import {EventInfo, EventInfoWrapper} from './event_info';
 import {EventType} from './event_type';
-import {Restriction} from './restriction';
+import {RESTRICTION_I_AM_THE_JSACTION_FRAMEWORK} from './restriction';
 import {UnrenamedEventContract} from './eventcontract';
 import * as eventLib from './event';
 import {ActionResolver} from './action_resolver';
@@ -146,5 +146,5 @@ function shouldPreventDefaultBeforeDispatching(
 export function registerDispatcher(eventContract: UnrenamedEventContract, dispatcher: Dispatcher) {
   eventContract.ecrd((eventInfo: EventInfo) => {
     dispatcher.dispatch(eventInfo);
-  }, Restriction.I_AM_THE_JSACTION_FRAMEWORK);
+  }, RESTRICTION_I_AM_THE_JSACTION_FRAMEWORK);
 }
