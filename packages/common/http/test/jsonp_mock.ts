@@ -28,15 +28,14 @@ export class MockScriptElement {
 }
 
 export class MockDocument {
-  // TODO(issue/24571): remove '!'.
-  mock!: MockScriptElement | null;
+  mock: MockScriptElement | null = null;
   readonly body: any = this;
 
   implementation = {
     createHTMLDocument: () => new MockDocument(),
   };
 
-  createElement(tag: 'script'): HTMLScriptElement {
+  createElement(): HTMLScriptElement {
     return new MockScriptElement(this) as any as HTMLScriptElement;
   }
 
