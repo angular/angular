@@ -13,6 +13,7 @@
 | `NG0301`  | [Export Not Found](errors/NG0301)                                                    |
 | `NG0302`  | [Pipe Not Found](errors/NG0302)                                                      |
 | `NG0403`  | [Bootstrapped NgModule doesn't specify which component to initialize](errors/NG0403) |
+| `NG04008` | [Component Rendering Issue](errors/NG04008)                                          |
 | `NG0500`  | [Hydration Node Mismatch](errors/NG0500)                                             |
 | `NG0501`  | [Hydration Missing Siblings](errors/NG0501)                                          |
 | `NG0502`  | [Hydration Missing Node](errors/NG0502)                                              |
