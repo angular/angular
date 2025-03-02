@@ -163,6 +163,19 @@ describe('signals', () => {
       expect(derived()).toBe(2);
       expect(computations).toBe(2);
     });
+
+    it('should coalesce back-to-back reads of the same signal', () => {
+      const source = signal(1);
+      const derived = computed(() => source() + source() + source());
+      const derivedNode = derived[SIGNAL] as ReactiveNode;
+
+      expect(derived()).toBe(3);
+      expect(derivedNode.producerNode?.length).toBe(1);
+
+      source.set(2);
+      expect(derived()).toBe(6);
+      expect(derivedNode.producerNode?.length).toBe(1);
+    });
   });
 
   describe('post-signal-set functions', () => {
