@@ -7,6 +7,7 @@
  */
 
 import {SIGNAL} from '@angular/core/primitives/signals';
+import {InputSignal, ModelSignal} from '../../authoring';
 
 /**
  * A reactive value which notifies consumers of any changes.
@@ -25,6 +26,20 @@ export type Signal<T> = (() => T) & {
  */
 export function isSignal(value: unknown): value is Signal<unknown> {
   return typeof value === 'function' && (value as Signal<unknown>)[SIGNAL] !== undefined;
+}
+
+/**
+ * Checks if the given `value` is a reactive `InputSignal`.
+ */
+export function isInputSignal(value: unknown): value is InputSignal<unknown> {
+  return isSignal(value) && (value as InputSignal<unknown>)[SIGNAL].kind === 'input';
+}
+
+/**
+ * Checks if the given `value` is a reactive `ModelSignal`.
+ */
+export function isModelSignal(value: unknown): value is ModelSignal<unknown> {
+  return isInputSignal(value) && typeof (value as ModelSignal<unknown>).subscribe === 'function';
 }
 
 /**
