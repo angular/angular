@@ -13,7 +13,6 @@
     <!-- Third, fourth and next levels of navigation -->
     @for (item of navigationItemsSlides(); track item; let level = $index) {
       <docs-navigation-list
-        [@leaveAnimation]
         [collapsableLevel]="level + maxVisibleLevelsOnSecondaryNav()"
         [expandableLevel]="level + maxVisibleLevelsOnSecondaryNav() + 1"
         [navigationItems]="[item]"
