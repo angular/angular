@@ -21,27 +21,9 @@ export function disabled<T, TRoots extends Form<any>[]>(
 ): void {
   const logic = (path as any)['$logic'] as LogicNode;
   const prevDisabled = logic.disabled ?? (() => false);
-  logic.disabled = (node: FormNode) => {
-    const roots = getRoots(logic.parentDepths, node) as TRoots;
-    return prevDisabled(node) || fn(node.value() as T, ...roots);
+  logic.disabled = (node: FormNode, ...roots: Form<any>[]) => {
+    return prevDisabled(node) || fn(node.value() as T, ...(roots as TRoots));
   };
-}
-
-function getRoots(parentDepths: number[], node: FormNode): Form<unknown>[] {
-  const roots: Form<unknown>[] = [];
-
-  for (
-    let depth = 0, idx = 0, root = node;
-    idx < parentDepths.length;
-    depth++, root = root.parent!
-  ) {
-    if (depth === parentDepths[idx]) {
-      roots.push(root.proxy as Form<unknown>);
-      idx++;
-    }
-  }
-
-  return roots;
 }
 
 export function array<T extends any[], TRoots extends Form<any>[]>(
@@ -55,13 +37,13 @@ export function array<T extends any[], TRoots extends Form<any>[]>(
 
 export function validate<T, TRoots extends Form<any>[]>(
   path: FormPathTerminal<T, TRoots>,
-  validator: (v: T, ...roots: TRoots) => FormError | Array<FormError> | undefined,
+
+  validator: NoInfer<(v: T, ...roots: TRoots) => FormError | Array<FormError> | undefined>,
 ): void {
   const logic = (path as any)['$logic'] as LogicNode;
   const prevErrors = logic.errors ?? (() => []);
-  logic.errors = (node: FormNode) => {
-    const roots = getRoots(logic.parentDepths, node) as TRoots;
-    let myErrors = validator(node.value() as T, ...roots);
+  logic.errors = (node: FormNode, ...roots: Form<any>[]) => {
+    let myErrors = validator(node.value() as T, ...(roots as TRoots));
     if (!Array.isArray(myErrors)) {
       myErrors = myErrors ? [myErrors] : [];
     }

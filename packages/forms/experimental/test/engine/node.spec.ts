@@ -1,6 +1,6 @@
 import {computed, signal} from '@angular/core';
 import {form} from '../../src/api/form';
-import {array, disabled} from '../../src/api/schema';
+import {array, disabled, validate} from '../../src/api/schema';
 
 describe('Node', () => {
   it('is untouched initially', () => {
@@ -156,6 +156,48 @@ describe('Node', () => {
       a.$.value.set(2);
       expect(f.$.disabled()).toBe(false);
       expect(a.$.disabled()).toBe(false);
+    });
+  });
+
+  describe('validation', () => {
+    it('should validate field', () => {
+      const f = form(signal({a: 1, b: 2}), (p) => {
+        validate(p.a, (v) => {
+          if (v > 10) {
+            return {kind: 'too damn high'};
+          }
+          return undefined;
+        });
+      });
+
+      expect(f.a.$.errors()).toEqual([]);
+      expect(f.a.$.valid()).toBe(true);
+      expect(f.a.$.errors()).toEqual([]);
+      expect(f.$.valid()).toBe(true);
+
+      f.a.$.value.set(11);
+      expect(f.a.$.errors()).toEqual([{kind: 'too damn high'}]);
+      expect(f.a.$.valid()).toBe(false);
+      expect(f.$.errors()).toEqual([]);
+      expect(f.$.valid()).toBe(false);
+    });
+
+    it('should validate with multiple errors', () => {
+      const f = form(signal({a: 1, b: 2}), (p) => {
+        validate(p.a, (v) => {
+          if (v > 10) {
+            return [{kind: 'too damn high'}, {kind: 'bad'}];
+          }
+          return undefined;
+        });
+      });
+
+      expect(f.a.$.errors()).toEqual([]);
+      expect(f.a.$.valid()).toBe(true);
+
+      f.a.$.value.set(11);
+      expect(f.a.$.errors()).toEqual([{kind: 'too damn high'}, {kind: 'bad'}]);
+      expect(f.a.$.valid()).toBe(false);
     });
   });
 });

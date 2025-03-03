@@ -1,5 +1,5 @@
 import {Signal, WritableSignal} from '@angular/core';
-import {LogicNode} from '../engine/logic';
+import {FormError, LogicNode} from '../engine/logic';
 import {FormNode} from '../engine/node';
 import {FormPath, schema} from './schema';
 
@@ -7,6 +7,8 @@ export interface FormControl<T> {
   readonly value: WritableSignal<T>;
   readonly touched: Signal<boolean>;
   readonly disabled: Signal<boolean>;
+  readonly errors: Signal<FormError[]>;
+  readonly valid: Signal<boolean>;
   markAsTouched(): void;
 }
 

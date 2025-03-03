@@ -68,7 +68,7 @@ export class FormNode {
     return false;
   });
 
-  readonly errors = computed(() => this.logic?.errors?.(this) ?? []);
+  readonly errors = computed(() => this.logic?.errors?.(this, ...this.roots()) ?? []);
   readonly valid = computed(() => {
     if (this.errors().length > 0) {
       return false;
@@ -82,8 +82,10 @@ export class FormNode {
   });
 
   readonly disabled: Signal<boolean> = computed(
-    () => (this.parent?.disabled() || this.logic?.disabled?.(this)) ?? false,
+    () => (this.parent?.disabled() || this.logic?.disabled?.(this, ...this.roots())) ?? false,
   );
+
+  private readonly roots = computed(() => this.logic?.getRoots(this) ?? []);
 
   private readonly childrenMap: Signal<Map<PropertyKey, FormNode>>;
 
