@@ -615,6 +615,27 @@ export class Icu implements Node {
   }
 }
 
+/**
+ * AST node that represents the host element of a directive.
+ * This node is used only for type checking purposes and cannot be produced from a user's template.
+ */
+export class HostElement implements Node {
+  constructor(
+    readonly tagNames: string[],
+    readonly bindings: BoundAttribute[],
+    readonly listeners: BoundEvent[],
+    readonly sourceSpan: ParseSourceSpan,
+  ) {
+    if (tagNames.length === 0) {
+      throw new Error('HostElement must have at least one tag name.');
+    }
+  }
+
+  visit<Result>(): Result {
+    throw new Error(`HostElement cannot be visited`);
+  }
+}
+
 export interface Visitor<Result = any> {
   // Returning a truthy value from `visit()` will prevent `visitAll()` from the call to the typed
   // method and result returned will become the result included in `visitAll()`s result array.

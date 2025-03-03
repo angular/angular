@@ -174,6 +174,7 @@ export {
   UnknownBlock as TmplAstUnknownBlock,
   Variable as TmplAstVariable,
   ViewportDeferredTrigger as TmplAstViewportDeferredTrigger,
+  HostElement as TmplAstHostElement,
   visitAll as tmplAstVisitAll,
   Visitor as TmplAstVisitor,
 } from './render3/r3_ast';
@@ -234,6 +235,10 @@ export {
   parseTemplate,
   ParseTemplateOptions,
 } from './render3/view/template';
+
+// Note: BindingParser is intentionally exported as a type only, because it should
+// be constructed through `makeBindingParser`, rather than its constructor.
+export {type BindingParser} from './template_parser/binding_parser';
 export {createCssSelectorFromNode} from './render3/view/util';
 export * from './resource_loader';
 export * from './schema/dom_element_schema_registry';
