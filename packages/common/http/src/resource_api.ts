@@ -10,6 +10,7 @@ import type {Injector, ResourceRef, Signal, ValueEqualityFn, WritableResource} f
 import type {HttpHeaders} from './headers';
 import type {HttpParams} from './params';
 import type {HttpProgressEvent} from './response';
+import {HttpContext} from './context';
 
 /**
  * The structure of an `httpResource` request which will be sent to the backend.
@@ -49,6 +50,11 @@ export interface HttpResourceRequest {
    * Dictionary of headers to include with the outgoing request.
    */
   headers?: HttpHeaders | Record<string, string | ReadonlyArray<string>>;
+
+  /**
+   * Context of the request stored in a dictionary of key-value pairs.
+   */
+  context?: HttpContext;
 
   /**
    * If `true`, progress events will be enabled for the request and delivered through the
