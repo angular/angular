@@ -63,8 +63,8 @@ You can use Angular's built-in `NgTemplateOutlet` directive to dynamically rende
 })
 export class UserProfile {
   isAdmin = input(false);
-  adminTemplate = viewChild.required<TemplateRef<any>>('admin');
-  basicTemplate = viewChild.required<TemplateRef<any>>('basic');
+  adminTemplate = viewChild('admin');
+  basicTemplate = viewChild('basic');
   profileTemplate = computed(() => (this.isAdmin() ? this.adminTemplate() : this.basicTemplate()) as TemplateRef<any>);
 ;
 }
