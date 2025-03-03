@@ -79,7 +79,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   `,
 })
 export class CounterComponent {
-  @Input() count: number;
+  @Input() count: number = 0;
   @Output() countChange = new EventEmitter<number>();
 
   updateCount(amount: number): void {
