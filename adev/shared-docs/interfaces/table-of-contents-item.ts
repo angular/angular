@@ -19,6 +19,4 @@ export interface TableOfContentsItem {
   level: TableOfContentsLevel;
   /** The unique title for this document page. */
   title: string;
-  /** The top offset px of the heading */
-  top: number;
 }
