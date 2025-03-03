@@ -12,6 +12,7 @@ import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {OnDestroy} from '../interface/lifecycle_hooks';
 import {Type} from '../interface/type';
 import {
+  emitInjectorToCreateInstanceEvent,
   emitInstanceCreatedByInjectorEvent,
   emitProviderConfiguredEvent,
   InjectorProfilerContext,
@@ -434,6 +435,7 @@ export class R3Injector extends EnvironmentInjector {
         // these are the only providers that do not go through the value hydration logic
         // where this event would normally be emitted from.
         if (isValueProvider(provider)) {
+          emitInjectorToCreateInstanceEvent(token);
           emitInstanceCreatedByInjectorEvent(provider.useValue);
         }
 
@@ -478,6 +480,7 @@ export class R3Injector extends EnvironmentInjector {
 
         if (ngDevMode) {
           runInInjectorProfilerContext(this, token as Type<T>, () => {
+            emitInjectorToCreateInstanceEvent(token);
             record.value = record.factory!();
             emitInstanceCreatedByInjectorEvent(record.value);
           });

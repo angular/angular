@@ -37,6 +37,7 @@ import {setupFrameworkInjectorProfiler} from '@angular/core/src/render3/debug/fr
 import {
   getInjectorProfilerContext,
   InjectedServiceEvent,
+  InjectorToCreateInstanceEvent,
   InjectorCreatedInstanceEvent,
   InjectorProfilerEvent,
   InjectorProfilerEventType,
@@ -57,6 +58,7 @@ import {Router, RouterModule, RouterOutlet} from '@angular/router';
 
 describe('setProfiler', () => {
   let injectEvents: InjectedServiceEvent[] = [];
+  let aboutToCreateEvents: InjectorToCreateInstanceEvent[] = [];
   let createEvents: InjectorCreatedInstanceEvent[] = [];
   let providerConfiguredEvents: ProviderConfiguredEvent[] = [];
 
@@ -69,6 +71,7 @@ describe('setProfiler', () => {
 
   beforeEach(() => {
     injectEvents = [];
+    aboutToCreateEvents = [];
     createEvents = [];
     providerConfiguredEvents = [];
 
@@ -80,20 +83,22 @@ describe('setProfiler', () => {
           context: getInjectorProfilerContext(),
           type,
         });
-      }
-      if (type === InjectorProfilerEventType.InstanceCreatedByInjector) {
+      } else if (type === InjectorProfilerEventType.InstanceCreatedByInjector) {
         createEvents.push({
           instance: injectorProfilerEvent.instance,
           context: getInjectorProfilerContext(),
           type,
         });
-      }
-      if (type === InjectorProfilerEventType.ProviderConfigured) {
+      } else if (type === InjectorProfilerEventType.ProviderConfigured) {
         providerConfiguredEvents.push({
           providerRecord: injectorProfilerEvent.providerRecord,
           context: getInjectorProfilerContext(),
           type,
         });
+      } else if (type === InjectorProfilerEventType.InjectorToCreateInstanceEvent) {
+        aboutToCreateEvents.push(injectorProfilerEvent);
+      } else {
+        throw new Error('Unexpected event type: ' + type);
       }
     });
   });
@@ -139,6 +144,11 @@ describe('setProfiler', () => {
       createEvents,
       (event) => event.instance.value === myComp,
     );
+    const componentAboutToCreateEvent = searchForProfilerEvent<InjectorToCreateInstanceEvent>(
+      aboutToCreateEvents,
+      (event) => event.token === MyComponent,
+    );
+    expect(componentAboutToCreateEvent).toBeDefined();
     expect(componentCreateEvent).toBeTruthy();
   });
 
