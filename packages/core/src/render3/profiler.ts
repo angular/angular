@@ -29,12 +29,13 @@ export const setProfiler = (profiler: Profiler | null) => {
  *
  * @param event ProfilerEvent corresponding to the execution context
  * @param instance component instance
- * @param hookOrListener lifecycle hook function or output listener. The value depends on the
- *  execution context
+ * @param eventFn function associated with event.
+ *    For example a template function, lifecycle hook, or output listener.
+ *    The value depends on the execution context
  * @returns
  */
-export const profiler: Profiler = function (event, instance = null, hookOrListener) {
+export const profiler: Profiler = function (event, instance = null, eventFn) {
   if (profilerCallback != null /* both `null` and `undefined` */) {
-    profilerCallback(event, instance, hookOrListener);
+    profilerCallback(event, instance, eventFn);
   }
 };
