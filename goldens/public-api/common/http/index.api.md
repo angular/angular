@@ -1741,6 +1741,7 @@ export interface HttpResourceRef<T> extends WritableResource<T>, ResourceRef<T> 
 // @public
 export interface HttpResourceRequest {
     body?: unknown;
+    context?: HttpContext;
     headers?: HttpHeaders | Record<string, string | ReadonlyArray<string>>;
     method?: string;
     params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
