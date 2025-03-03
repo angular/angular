@@ -35,7 +35,7 @@ Angular's compiler produces a [dynamic import](https://developer.mozilla.org/en-
 
 This is the primary block that defines the section of content that is lazily loaded. It is not rendered initially– deferred content loads and renders once the specified [trigger](/guide/defer#triggers) occurs or the `when` condition is met.
 
-By default, a @defer block is triggered when the browser state becomes [idle](/guide/defer#on-idle).
+By default, a @defer block is triggered when the browser state becomes [idle](/guide/defer#idle).
 
 ```angular-html
 @defer {
