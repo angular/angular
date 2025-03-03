@@ -3,13 +3,16 @@
 import {Component} from '@angular/core';
 
 import {Actor} from '../actor';
+import {FormsModule} from '@angular/forms';
 
+// #docregion imports
 @Component({
   selector: 'app-actor-form',
   templateUrl: './actor-form.component.html',
-  standalone: false,
+  imports: [FormsModule],
 })
 export class ActorFormComponent {
+  // #enddocregion imports
   skills = ['Method Acting', 'Singing', 'Dancing', 'Swordfighting'];
 
   model = new Actor(18, 'Tom Cruise', this.skills[3], 'CW Productions');
