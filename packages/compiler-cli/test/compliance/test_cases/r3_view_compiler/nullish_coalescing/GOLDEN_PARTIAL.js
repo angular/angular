@@ -165,3 +165,45 @@ export declare class MyModule {
     static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: nullish_coalescing_parens.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    constructor() {
+        this.x = null;
+        this.y = 0;
+        this.z = 1;
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "my-app", ngImport: i0, template: `
+    <div>{{ (x && y) ?? z }}</div>
+    <div>{{ x && (y ?? z) }}</div>
+    <div>{{ x?.y ?? y?.z }}</div>
+    `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'my-app',
+                    template: `
+    <div>{{ (x && y) ?? z }}</div>
+    <div>{{ x && (y ?? z) }}</div>
+    <div>{{ x?.y ?? y?.z }}</div>
+    `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: nullish_coalescing_parens.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    x: any;
+    y: any;
+    z: any;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never, true, never>;
+}
+

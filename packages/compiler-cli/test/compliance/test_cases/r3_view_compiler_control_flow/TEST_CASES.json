@@ -694,6 +694,9 @@
     {
       "description": "should support expressions requiring temporary variables inside `track`",
       "inputFiles": ["for_track_by_temporary_variables.ts"],
+      "compilerOptions": {
+        "target": "es2020"
+      },
       "expectations": [
         {
           "failureMessage": "Incorrect generated output.",
