@@ -164,13 +164,15 @@ The data source has been configured, the next step is to update your web app to 
 
         <docs-code header="" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[10,13]"/>
 
-        The code now uses asynchronous code to make a **GET** request over HTTP.
+       `async` declares an asynchronous function to make a GET request over HTTP, which means it will be executed without blocking the normal flow of the application, awaiting the `Promise` of a Housing Location array. The `await` keyword indicates that the program should wait until the fetch promise resolves before moving to the next line. The extracted data, stored in `data.json()`, could be null or undefined, in which case, the function will return an empty array: `?? []`. 
 
         HELPFUL: For this example, the code uses `fetch`. For more advanced use cases consider using `HttpClient` provided by Angular.
 
     1. Update the `getHousingLocationsById` function to make a call to the web server you configured.
 
         <docs-code header="" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[15,18]"/>
+        
+        Inside the `fetch` function, `${this.url}/${id}` is just a way to dynamically construct the URL by combining the base URL `this.url` with a specific `id`. This allows you to fetch data for a specific property identified by that id
 
     1. Once all the updates are complete, your updated service should match the following code.
 
@@ -184,6 +186,8 @@ The server is now reading data from the HTTP request but the components that rel
 1. In `src/app/home/home.component.ts`, update the `constructor` to use the new asynchronous version of the `getAllHousingLocations` method.
 
     <docs-code header="" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/home/home.component.ts" visibleLines="[32,37]"/>
+    
+    As the `getAllHousingLocations()` method now returns a Promise instead of a Housing Location array, the `.then()` method ensures that the subsequent assignments (`this.housingLocationList` and `this.filteredLocationList`) wait for the response to resolve before proceeding.
 
 1. In `src/app/details/details.component.ts`, update the `constructor` to use the new asynchronous version of the `getHousingLocationById` method.
 
