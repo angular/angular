@@ -10,6 +10,7 @@ import { SIGNAL } from '@angular/core/primitives/signals';
 import { SignalNode } from '@angular/core/primitives/signals';
 import { Subject } from 'rxjs';
 import { Subscription } from 'rxjs';
+import { untracked } from '@angular/core/primitives/signals';
 
 // @public
 export interface AbstractType<T> extends Function {
@@ -1865,8 +1866,7 @@ export interface TypeDecorator {
 export interface TypeProvider extends Type<any> {
 }
 
-// @public
-export function untracked<T>(nonReactiveReadsFn: () => T): T;
+export { untracked }
 
 // @public
 export type ValueEqualityFn<T> = (a: T, b: T) => boolean;
