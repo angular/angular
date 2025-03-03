@@ -16,7 +16,7 @@ import {
 import {assertLContainer, assertTNodeForLView} from '../render3/assert';
 import {ChainedInjector} from '../render3/chained_injector';
 import {markViewDirty} from '../render3/instructions/mark_view_dirty';
-import {handleError} from '../render3/instructions/shared';
+import {handleUncaughtError} from '../render3/instructions/shared';
 import {DEHYDRATED_VIEWS, LContainer} from '../render3/interfaces/container';
 import {TContainerNode, TNode} from '../render3/interfaces/node';
 import {isDestroyed} from '../render3/interfaces/type_checks';
@@ -214,7 +214,7 @@ export function renderDeferBlockState(
     try {
       applyStateFn(newState, lDetails, lContainer, tNode, hostLView);
     } catch (error: unknown) {
-      handleError(hostLView, error);
+      handleUncaughtError(hostLView, error);
     }
   }
 }

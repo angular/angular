@@ -310,6 +310,7 @@ function executeListenerWithErrorHandling(
     // Only explicitly returning false from a listener should preventDefault
     return listenerFn(e) !== false;
   } catch (error) {
+    // TODO(atscott): This should report to the application error handler, not the ErrorHandler on LView injector
     handleError(lView, error);
     return false;
   } finally {

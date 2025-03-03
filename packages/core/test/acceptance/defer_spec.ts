@@ -832,6 +832,7 @@ describe('@defer', () => {
       };
 
       TestBed.configureTestingModule({
+        rethrowApplicationErrors: false,
         providers: [{provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor}],
       });
 
@@ -892,6 +893,7 @@ describe('@defer', () => {
 
       const reportedErrors: Error[] = [];
       TestBed.configureTestingModule({
+        rethrowApplicationErrors: false,
         providers: [
           {
             provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
@@ -966,6 +968,7 @@ describe('@defer', () => {
 
       const reportedErrors: Error[] = [];
       TestBed.configureTestingModule({
+        rethrowApplicationErrors: false,
         providers: [
           {
             provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
@@ -1054,6 +1057,7 @@ describe('@defer', () => {
           }
 
           TestBed.configureTestingModule({
+            rethrowApplicationErrors: false,
             providers: [
               {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
               {

@@ -7,7 +7,7 @@
  */
 
 import {Injector} from '../../di/injector';
-import {ErrorHandler} from '../../error_handler';
+import {ErrorHandler, INTERNAL_APPLICATION_ERROR_HANDLER} from '../../error_handler';
 import {hasSkipHydrationAttrOnRElement} from '../../hydration/skip_hydration';
 import {PRESERVE_HOST_CONTENT, PRESERVE_HOST_CONTENT_DEFAULT} from '../../hydration/tokens';
 import {processTextNodeMarkersBeforeHydration} from '../../hydration/utils';
@@ -607,10 +607,25 @@ export function loadComponentRenderer(
 }
 
 /** Handles an error thrown in an LView. */
+export function handleUncaughtError(lView: LView, error: any): void {
+  const injector = lView[INJECTOR];
+  if (!injector) {
+    return;
+  }
+  const errorHandler = injector.get(INTERNAL_APPLICATION_ERROR_HANDLER, null);
+  errorHandler?.(error);
+}
+
+/**
+ * Handles an error thrown in an LView.
+ * @deprecated Use handleUncaughtError to report to application error handler
+ */
 export function handleError(lView: LView, error: any): void {
   const injector = lView[INJECTOR];
-  const errorHandler = injector ? injector.get(ErrorHandler, null) : null;
-  errorHandler && errorHandler.handleError(error);
+  if (!injector) {
+    return;
+  }
+  injector.get(ErrorHandler, null)?.handleError(error);
 }
 
 /**
