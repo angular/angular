@@ -73,6 +73,12 @@ import {
 import {ProviderToken} from './provider_token';
 import {INJECTOR_SCOPE, InjectorScope} from './scope';
 import {setActiveConsumer} from '@angular/core/primitives/signals';
+import {
+  Injector as PrimitivesInjector,
+  InjectionToken as PrimitivesInjectionToken,
+  NOT_FOUND,
+  NotFound,
+} from '@angular/core/primitives/di';
 
 /**
  * Marker which indicates that a value has not yet been created from the factory function.
@@ -179,7 +185,7 @@ export abstract class EnvironmentInjector implements Injector {
   abstract onDestroy(callback: () => void): () => void;
 }
 
-export class R3Injector extends EnvironmentInjector {
+export class R3Injector extends EnvironmentInjector implements PrimitivesInjector {
   /**
    * Map of tokens to records which contain the instances of those tokens.
    * - `null` value implies that we don't have the record. Used by tree-shakable injectors
@@ -232,6 +238,11 @@ export class R3Injector extends EnvironmentInjector {
     }
 
     this.injectorDefTypes = new Set(this.get(INJECTOR_DEF_TYPES, EMPTY_ARRAY, InjectFlags.Self));
+  }
+
+  retrieve<T>(token: PrimitivesInjectionToken<T>, options?: unknown): T | NotFound {
+    const ngOptions = options as InjectOptions;
+    return this.get(token, ngOptions.optional ? NOT_FOUND : THROW_IF_NOT_FOUND, ngOptions);
   }
 
   /**

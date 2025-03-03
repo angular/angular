@@ -10,7 +10,7 @@ import {InjectionToken} from './injection_token';
 import {NotFound} from './not_found';
 
 export interface Injector {
-  retrieve?<T>(token: InjectionToken<T>, options?: unknown): T | NotFound;
+  retrieve<T>(token: InjectionToken<T>, options?: unknown): T | NotFound;
 }
 
 /**

@@ -24,18 +24,18 @@ import {
 } from './interface/injector';
 import {ProviderToken} from './provider_token';
 import type {HostAttributeToken} from './host_attribute_token';
-import * as di from '@angular/core/primitives/di';
+import {
+  Injector as PrimitivesInjector,
+  NotFound,
+  NOT_FOUND,
+  InjectionToken as PrimitivesInjectionToken,
+  getCurrentInjector,
+} from '@angular/core/primitives/di';
 
 const _THROW_IF_NOT_FOUND = {};
 export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
 
-export function getCurrentInjector(): Injector {
-  return di.getCurrentInjector() as unknown as Injector;
-}
-
-export function setCurrentInjector(injector: Injector | null | undefined): Injector {
-  return di.setCurrentInjector(injector as di.Injector) as unknown as Injector;
-}
+export {getCurrentInjector, setCurrentInjector} from '@angular/core/primitives/di';
 
 /*
  * Name of a property (that we patch onto DI decorator), which is used as an annotation of which
@@ -43,6 +43,14 @@ export function setCurrentInjector(injector: Injector | null | undefined): Injec
  * in the code, thus making them tree-shakable.
  */
 const DI_DECORATOR_FLAG = '__NG_DI_FLAG__';
+
+export class RetrievingInjector implements PrimitivesInjector {
+  constructor(readonly injector: Injector) {}
+  retrieve<T>(token: PrimitivesInjectionToken<T>, options: unknown): T | NotFound {
+    const ngOptions = options as InjectOptions;
+    return this.injector.get(token, ngOptions.optional ? NOT_FOUND : THROW_IF_NOT_FOUND, ngOptions);
+  }
+}
 
 export const NG_TEMP_TOKEN_PATH = 'ngTempTokenPath';
 const NG_TOKEN_PATH = 'ngTokenPath';
@@ -65,11 +73,14 @@ export function injectInjectorOnly<T>(
   } else if (getCurrentInjector() === null) {
     return injectRootLimpMode(token, undefined, flags);
   } else {
-    const value = getCurrentInjector().get(
-      token,
-      flags & InjectFlags.Optional ? null : undefined,
-      flags,
-    );
+    const currentInjector = getCurrentInjector();
+    let injector: Injector;
+    if (currentInjector instanceof RetrievingInjector) {
+      injector = currentInjector.injector;
+    } else {
+      injector = currentInjector as unknown as Injector;
+    }
+    const value = injector.get(token, flags & InjectFlags.Optional ? null : undefined, flags);
     ngDevMode && emitInjectEvent(token as Type<unknown>, value, flags);
     return value;
   }

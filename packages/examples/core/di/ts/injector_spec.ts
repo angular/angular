@@ -13,9 +13,7 @@ import {
   InjectOptions,
   Injector,
   ProviderToken,
-  ɵInjectorProfilerContext,
-  ɵsetCurrentInjector as setCurrentInjector,
-  ɵsetInjectorProfilerContext,
+  runInInjectionContext,
 } from '@angular/core';
 
 class MockRootScopeInjector implements Injector {
@@ -27,17 +25,9 @@ class MockRootScopeInjector implements Injector {
     flags: InjectFlags | InjectOptions = InjectFlags.Default,
   ): T {
     if ((token as any).ɵprov && (token as any).ɵprov.providedIn === 'root') {
-      const old = setCurrentInjector(this);
-      const previousInjectorProfilerContext = ɵsetInjectorProfilerContext({
-        injector: this,
-        token: null,
-      });
-      try {
+      return runInInjectionContext(this, () => {
         return (token as any).ɵprov.factory();
-      } finally {
-        setCurrentInjector(old);
-        ɵsetInjectorProfilerContext(previousInjectorProfilerContext);
-      }
+      });
     }
     return this.parent.get(token, defaultValue, flags);
   }
