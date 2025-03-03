@@ -20,6 +20,7 @@ import {
   LiteralArray,
   LiteralMap,
   LiteralPrimitive,
+  Parenthesized,
   ParseSpan,
   PrefixNot,
   PropertyRead,
@@ -159,6 +160,10 @@ class ASTValidator extends RecursiveAstVisitor {
 
   override visitTaggedTemplateLiteral(ast: TaggedTemplateLiteral, context: any): void {
     this.validate(ast, () => super.visitTaggedTemplateLiteral(ast, context));
+  }
+
+  override visitParenthesized(ast: Parenthesized, context: any): void {
+    this.validate(ast, () => super.visitParenthesized(ast, context));
   }
 }
 

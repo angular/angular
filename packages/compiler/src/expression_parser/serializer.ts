@@ -167,6 +167,10 @@ class SerializeExpressionVisitor implements expr.AstVisitor {
   visitTaggedTemplateLiteral(ast: expr.TaggedTemplateLiteral, context: any) {
     return ast.tag.visit(this, context) + ast.template.visit(this, context);
   }
+
+  visitParenthesized(ast: expr.Parenthesized, context: any) {
+    return '(' + ast.expression.visit(this, context) + ')';
+  }
 }
 
 /** Zips the two input arrays into a single array of pairs of elements at the same index. */
