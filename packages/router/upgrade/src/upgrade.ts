@@ -105,7 +105,10 @@ export function setUpLocationSync(ngUpgrade: UpgradeModule, urlType: 'path' | 'h
           throw 'Invalid URLType passed to setUpLocationSync: ' + urlType;
         }
         const path = location.normalize(url.pathname);
-        router.navigateByUrl(path + url.search + url.hash);
+        router.navigateByUrl(path + url.search + url.hash).catch(() => {
+          // Do not leave dangling promise rejections
+          // Note that this rejection error is already reported through the Router's error handler and/or NavigationError event
+        });
       },
     );
 }
