@@ -203,7 +203,7 @@ In the example above, clicking the "Show" button results in the following output
 
 ```angular-html
 <component-with-fragment>
-  <h2>Component with a fragment>
+  <h2>Component with a fragment</h2>
   <my-outlet>
     <button>Show</button>
   </my-outlet>
