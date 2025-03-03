@@ -672,7 +672,7 @@ export function setDirectiveInput(
   lView: LView,
   target: DirectiveDef<unknown>,
   publicName: string,
-  value: string,
+  value: unknown,
 ): boolean {
   let hostIndex: number | null = null;
   let hostDirectivesStart: number | null = null;
@@ -714,7 +714,7 @@ export function setDirectiveInput(
     }
   }
 
-  if (hostIndex !== null) {
+  if (hostIndex !== null && target.inputs.hasOwnProperty(publicName)) {
     ngDevMode && assertIndexInRange(lView, hostIndex);
     writeToDirectiveInput(target, lView[hostIndex], publicName, value);
     hasSet = true;
