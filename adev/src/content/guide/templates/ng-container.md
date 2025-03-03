@@ -65,7 +65,8 @@ export class UserProfile {
   isAdmin = input(false);
   adminTemplate = viewChild('admin', {read: TemplateRef});
   basicTemplate = viewChild('basic', {read: TemplateRef});
-  profileTemplate = computed(() => this.isAdmin() ? this.adminTemplate() : this.basicTemplate());
+  profileTemplate = computed(() => (this.isAdmin() ? this.adminTemplate() : this.basicTemplate()) as TemplateRef<any>);
+;
 }
 ```
 
