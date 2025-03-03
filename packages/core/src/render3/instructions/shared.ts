@@ -96,7 +96,7 @@ export function executeTemplate<T>(
     const preHookType = isUpdatePhase
       ? ProfilerEvent.TemplateUpdateStart
       : ProfilerEvent.TemplateCreateStart;
-    profiler(preHookType, context as unknown as {});
+    profiler(preHookType, context as unknown as {}, templateFn);
     templateFn(rf, context);
   } finally {
     setSelectedIndex(prevSelectedIndex);
@@ -104,7 +104,7 @@ export function executeTemplate<T>(
     const postHookType = isUpdatePhase
       ? ProfilerEvent.TemplateUpdateEnd
       : ProfilerEvent.TemplateCreateEnd;
-    profiler(postHookType, context as unknown as {});
+    profiler(postHookType, context as unknown as {}, templateFn);
   }
 }
 

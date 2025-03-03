@@ -443,11 +443,7 @@ describe('profiler', () => {
         return true;
       }
 
-      profile = (
-        event: ProfilerEvent,
-        instance?: {} | null,
-        hookOrListener?: (e?: any) => any,
-      ): void => {
+      profile = (event: ProfilerEvent, instance?: {} | null, eventFn?: Function): void => {
         this.events.push(event);
       };
     }
