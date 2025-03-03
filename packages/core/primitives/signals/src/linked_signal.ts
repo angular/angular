@@ -6,6 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {
+  Consumer as InteropConsumer,
+  Signal as InteropSignal,
+} from './interop_lib';
 import {COMPUTING, ERRORED, UNSET} from './computed';
 import {defaultEquals, ValueEqualityFn} from './equality';
 import {
@@ -18,11 +22,12 @@ import {
   ReactiveNode,
   SIGNAL,
 } from './graph';
+import {CONSUMER_NODE, PRODUCER_NODE} from './interop';
 import {signalSetFn, signalUpdateFn} from './signal';
 
 export type ComputationFn<S, D> = (source: S, previous?: {source: S; value: D}) => D;
 
-export interface LinkedSignalNode<S, D> extends ReactiveNode {
+export interface LinkedSignalNode<S, D> extends ReactiveNode, InteropConsumer, InteropSignal<D> {
   /**
    * Value of the source signal that was used to derive the computed value.
    */
@@ -108,13 +113,25 @@ export function linkedSignalUpdateFn<S, D>(
 // Note: Using an IIFE here to ensure that the spread assignment is not considered
 // a side-effect, ending up preserving `LINKED_SIGNAL_NODE` and `REACTIVE_NODE`.
 // TODO: remove when https://github.com/evanw/esbuild/issues/3392 is resolved.
-export const LINKED_SIGNAL_NODE = /* @__PURE__ */ (() => {
+export const LINKED_SIGNAL_NODE: Omit<
+  LinkedSignalNode<any, any>,
+  'sourceValue' | 'source' | 'computation'
+> = /* @__PURE__ */ (() => {
   return {
     ...REACTIVE_NODE,
+    ...PRODUCER_NODE,
+    ...CONSUMER_NODE,
     value: UNSET,
     dirty: true,
     error: null,
     equal: defaultEquals,
+
+    producerValue() {
+      if (this.value === ERRORED) {
+        throw this.error;
+      }
+      return this.value;
+    },
 
     producerMustRecompute(node: LinkedSignalNode<unknown, unknown>): boolean {
       // Force a recomputation if there's no current value, or if the current value is in the
