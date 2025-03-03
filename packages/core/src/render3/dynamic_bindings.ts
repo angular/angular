@@ -14,6 +14,7 @@ import {setDirectiveInput, storePropertyBindingMetadata} from './instructions/sh
 import {DirectiveDef} from './interfaces/definition';
 import {CONTEXT} from './interfaces/view';
 import {getCurrentTNode, getLView, getSelectedTNode, getTView, nextBindingIndex} from './state';
+import {stringifyForError} from './util/stringify_utils';
 
 /** Symbol used to store and retrieve metadata about a binding. */
 export const BINDING = /* @__PURE__ */ Symbol('BINDING');
@@ -53,85 +54,6 @@ export interface DirectiveWithBindings<T> {
 const INPUT_BINDING_METADATA: Binding[typeof BINDING] = {kind: 'input', requiredVars: 1};
 const OUTPUT_BINDING_METADATA: Binding[typeof BINDING] = {kind: 'output', requiredVars: 0};
 
-class InputBinding<T> implements Binding {
-  readonly target!: DirectiveDef<T>;
-  readonly [BINDING] = INPUT_BINDING_METADATA;
-
-  constructor(
-    private readonly publicName: string,
-    private readonly value: () => unknown,
-  ) {}
-
-  update(): void {
-    const lView = getLView();
-    const bindingIndex = nextBindingIndex();
-    const value = this.value();
-    if (bindingUpdated(lView, bindingIndex, value)) {
-      const tView = getTView();
-      const tNode = getSelectedTNode();
-
-      if (!this.target && ngDevMode) {
-        throw new RuntimeError(
-          RuntimeErrorCode.NO_BINDING_TARGET,
-          `Input binding to property "${this.publicName}" does not have a target.`,
-        );
-      }
-
-      const hasSet = setDirectiveInput(tNode, tView, lView, this.target, this.publicName, value);
-
-      if (ngDevMode) {
-        if (!hasSet) {
-          throw new RuntimeError(
-            RuntimeErrorCode.NO_BINDING_TARGET,
-            `${this.target.type.name} does not have an input with a public name of "${this.publicName}".`,
-          );
-        }
-        storePropertyBindingMetadata(tView.data, tNode, this.publicName, bindingIndex);
-      }
-    }
-  }
-}
-
-class OutputBinding<T> implements Binding {
-  readonly target!: DirectiveDef<unknown>;
-  readonly [BINDING] = OUTPUT_BINDING_METADATA;
-
-  constructor(
-    private readonly eventName: string,
-    private readonly listener: (event: T) => unknown,
-  ) {}
-
-  create(): void {
-    if (!this.target && ngDevMode) {
-      throw new RuntimeError(
-        RuntimeErrorCode.NO_BINDING_TARGET,
-        `Output binding to "${this.eventName}" does not have a target.`,
-      );
-    }
-
-    const lView = getLView<{} | null>();
-    const tView = getTView();
-    const tNode = getCurrentTNode()!;
-    const context = lView[CONTEXT];
-    const wrappedListener = wrapListener(tNode, lView, context, this.listener);
-    const hasBound = listenToDirectiveOutput(
-      tNode,
-      tView,
-      lView,
-      this.target,
-      this.eventName,
-      wrappedListener,
-    );
-
-    if (!hasBound && ngDevMode) {
-      throw new RuntimeError(
-        RuntimeErrorCode.INVALID_BINDING_TARGET,
-        `${this.target.type.name} does not have an output with a public name of "${this.eventName}".`,
-      );
-    }
-  }
-}
-
 /**
  * Creates an input binding.
  * @param publicName Public name of the input to bind to.
@@ -150,8 +72,44 @@ class OutputBinding<T> implements Binding {
  * });
  * ```
  */
-export function inputBinding<T>(publicName: string, value: () => unknown): Binding {
-  return new InputBinding<T>(publicName, value);
+export function inputBinding(publicName: string, value: () => unknown): Binding {
+  // Note: ideally we would use a class here, but it seems like they
+  // don't get tree shaken when constructed by a function like this.
+  const binding: Binding = {
+    [BINDING]: INPUT_BINDING_METADATA,
+    target: null,
+    update: () => {
+      const target = binding.target as DirectiveDef<unknown>;
+      const lView = getLView();
+      const bindingIndex = nextBindingIndex();
+      const resolvedValue = value();
+      if (bindingUpdated(lView, bindingIndex, resolvedValue)) {
+        const tView = getTView();
+        const tNode = getSelectedTNode();
+
+        if (!target && ngDevMode) {
+          throw new RuntimeError(
+            RuntimeErrorCode.NO_BINDING_TARGET,
+            `Input binding to property "${publicName}" does not have a target.`,
+          );
+        }
+
+        const hasSet = setDirectiveInput(tNode, tView, lView, target, publicName, resolvedValue);
+
+        if (ngDevMode) {
+          if (!hasSet) {
+            throw new RuntimeError(
+              RuntimeErrorCode.NO_BINDING_TARGET,
+              `${stringifyForError(target.type)} does not have an input with a public name of "${publicName}".`,
+            );
+          }
+          storePropertyBindingMetadata(tView.data, tNode, publicName, bindingIndex);
+        }
+      }
+    },
+  };
+
+  return binding;
 }
 
 /**
@@ -176,5 +134,43 @@ export function inputBinding<T>(publicName: string, value: () => unknown): Bindi
  * ```
  */
 export function outputBinding<T>(eventName: string, listener: (event: T) => unknown): Binding {
-  return new OutputBinding<T>(eventName, listener);
+  // Note: ideally we would use a class here, but it seems like they
+  // don't get tree shaken when constructed by a function like this.
+  const binding: Binding = {
+    [BINDING]: OUTPUT_BINDING_METADATA,
+    target: null,
+    create: () => {
+      const target = binding.target as DirectiveDef<unknown>;
+
+      if (!target && ngDevMode) {
+        throw new RuntimeError(
+          RuntimeErrorCode.NO_BINDING_TARGET,
+          `Output binding to "${eventName}" does not have a target.`,
+        );
+      }
+
+      const lView = getLView<{} | null>();
+      const tView = getTView();
+      const tNode = getCurrentTNode()!;
+      const context = lView[CONTEXT];
+      const wrappedListener = wrapListener(tNode, lView, context, listener);
+      const hasBound = listenToDirectiveOutput(
+        tNode,
+        tView,
+        lView,
+        target,
+        eventName,
+        wrappedListener,
+      );
+
+      if (!hasBound && ngDevMode) {
+        throw new RuntimeError(
+          RuntimeErrorCode.INVALID_BINDING_TARGET,
+          `${stringifyForError(target.type)} does not have an output with a public name of "${eventName}".`,
+        );
+      }
+    },
+  };
+
+  return binding;
 }

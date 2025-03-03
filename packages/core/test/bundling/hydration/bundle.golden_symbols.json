@@ -458,6 +458,5 @@
   "ɵɵdefineComponent",
   "ɵɵdefineInjectable",
   "ɵɵdirectiveInject",
-  "ɵɵinject",
-  "ɵɵtext"
+  "ɵɵinject"
 ]
