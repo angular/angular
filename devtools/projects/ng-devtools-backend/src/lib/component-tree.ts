@@ -76,7 +76,7 @@ export function getInjectorResolutionPath(injector: Injector): Injector[] {
 }
 
 export function getInjectorFromElementNode(element: Node): Injector | null {
-  return ngDebugClient().getInjector(element);
+  return ngDebugClient().getInjector?.(element) ?? null;
 }
 
 function getDirectivesFromElement(element: HTMLElement): {
@@ -108,9 +108,9 @@ export const getLatestComponentState = (
 
   const directiveProperties: DirectivesProperties = {};
 
-  const injector = ngDebugClient().getInjector(node.nativeElement!);
+  const injector = getInjectorFromElementNode(node.nativeElement!);
 
-  const injectors = getInjectorResolutionPath(injector);
+  const injectors = injector ? getInjectorResolutionPath(injector) : [];
   const resolutionPathWithProviders = !ngDebugDependencyInjectionApiIsSupported()
     ? []
     : injectors.map((injector) => ({
@@ -120,11 +120,13 @@ export const getLatestComponentState = (
   const populateResultSet = (dir: DirectiveInstanceType | ComponentInstanceType) => {
     const {instance, name} = dir;
     const metadata = getDirectiveMetadata(instance);
-    metadata.dependencies = getDependenciesForDirective(
-      injector,
-      resolutionPathWithProviders,
-      instance.constructor,
-    );
+    if (injector) {
+      metadata.dependencies = getDependenciesForDirective(
+        injector,
+        resolutionPathWithProviders,
+        instance.constructor,
+      );
+    }
 
     if (query.propertyQuery.type === PropertyQueryTypes.All) {
       directiveProperties[dir.name] = {
