@@ -13,7 +13,7 @@ import {global} from './global';
  *
  * By default, this is true, unless `enableProdMode` is invoked prior to calling this method or the
  * application is built using the Angular CLI with the `optimization` option.
- * @see {@link cli/build ng build}
+ * @see [ng build](cli/build)
  *
  * @publicApi
  */
