@@ -220,7 +220,6 @@ export function listenerInternal(
       listenerFn = wrapListener(tNode, lView, context, listenerFn);
       stashEventListener(target as RElement, eventName, listenerFn);
       const cleanupFn = renderer.listen(target as RElement, eventName, listenerFn);
-      ngDevMode && ngDevMode.rendererAddEventListener++;
 
       lCleanup.push(listenerFn, cleanupFn);
       tCleanup && tCleanup.push(eventName, idxOrTargetGetter, lCleanupIndex, lCleanupIndex + 1);

@@ -738,7 +738,6 @@ export function createContainerRef(
  */
 function insertAnchorNode(hostLView: LView, hostTNode: TNode): RComment {
   const renderer = hostLView[RENDERER];
-  ngDevMode && ngDevMode.rendererCreateComment++;
   const commentNode = renderer.createComment(ngDevMode ? 'container' : '');
 
   const hostNative = getNativeByTNode(hostTNode, hostLView)!;

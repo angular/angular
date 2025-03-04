@@ -57,14 +57,12 @@ export function setUpAttributes(renderer: Renderer, native: RElement, attrs: TAt
       const namespaceURI = attrs[i++] as string;
       const attrName = attrs[i++] as string;
       const attrVal = attrs[i++] as string;
-      ngDevMode && ngDevMode.rendererSetAttribute++;
       renderer.setAttribute(native, attrName, attrVal, namespaceURI);
     } else {
       // attrName is string;
       const attrName = value as string;
       const attrVal = attrs[++i];
       // Standard attributes
-      ngDevMode && ngDevMode.rendererSetAttribute++;
       if (isAnimationProp(attrName)) {
         renderer.setProperty(native, attrName, attrVal);
       } else {

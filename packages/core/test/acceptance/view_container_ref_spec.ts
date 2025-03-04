@@ -913,7 +913,6 @@ describe('ViewContainerRef', () => {
 
       expect(() => vcRefDir.vcref.detach(-1)).toThrow();
       expect(() => vcRefDir.vcref.detach(42)).toThrow();
-      expect(ngDevMode!.rendererDestroyNode).toBe(0);
     });
 
     it('should detach the last embedded view when no index is specified', () => {
@@ -935,7 +934,6 @@ describe('ViewContainerRef', () => {
       fixture.detectChanges();
       expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>ABCD');
       expect(viewE.destroyed).toBeFalsy();
-      expect(ngDevMode!.rendererDestroyNode).toBe(0);
     });
 
     it('should not throw when destroying a detached component view', () => {
@@ -1013,7 +1011,6 @@ describe('ViewContainerRef', () => {
 
       expect(() => vcRefDir.vcref.remove(-1)).toThrow();
       expect(() => vcRefDir.vcref.remove(42)).toThrow();
-      expect(ngDevMode!.rendererDestroyNode).toBe(2);
     });
 
     it('should remove the last embedded view when no index is specified', () => {
@@ -1035,7 +1032,6 @@ describe('ViewContainerRef', () => {
       fixture.detectChanges();
       expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>ABCD');
       expect(viewE.destroyed).toBeTruthy();
-      expect(ngDevMode!.rendererDestroyNode).toBe(1);
     });
 
     it('should throw when trying to insert a removed or destroyed view', () => {

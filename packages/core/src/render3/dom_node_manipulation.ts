@@ -14,18 +14,14 @@ import {setUpAttributes} from './util/attrs_utils';
 import {TNode} from './interfaces/node';
 
 export function createTextNode(renderer: Renderer, value: string): RText {
-  ngDevMode && ngDevMode.rendererCreateTextNode++;
-  ngDevMode && ngDevMode.rendererSetText++;
   return renderer.createText(value);
 }
 
 export function updateTextNode(renderer: Renderer, rNode: RText, value: string): void {
-  ngDevMode && ngDevMode.rendererSetText++;
   renderer.setValue(rNode, value);
 }
 
 export function createCommentNode(renderer: Renderer, value: string): RComment {
-  ngDevMode && ngDevMode.rendererCreateComment++;
   return renderer.createComment(escapeCommentText(value));
 }
 
@@ -41,7 +37,6 @@ export function createElementNode(
   name: string,
   namespace: string | null,
 ): RElement {
-  ngDevMode && ngDevMode.rendererCreateElement++;
   return renderer.createElement(name, namespace);
 }
 
@@ -56,12 +51,10 @@ export function nativeInsertBefore(
   beforeNode: RNode | null,
   isMove: boolean,
 ): void {
-  ngDevMode && ngDevMode.rendererInsertBefore++;
   renderer.insertBefore(parent, child, beforeNode, isMove);
 }
 
 export function nativeAppendChild(renderer: Renderer, parent: RElement, child: RNode): void {
-  ngDevMode && ngDevMode.rendererAppendChild++;
   ngDevMode && assertDefined(parent, 'parent node must be defined');
   renderer.appendChild(parent, child);
 }
@@ -90,7 +83,6 @@ export function nativeAppendOrInsertBefore(
  * @param isHostElement A flag indicating if a node to be removed is a host of a component.
  */
 export function nativeRemoveNode(renderer: Renderer, rNode: RNode, isHostElement?: boolean): void {
-  ngDevMode && ngDevMode.rendererRemoveNode++;
   renderer.removeChild(null, rNode, isHostElement);
 }
 
@@ -116,7 +108,6 @@ export function clearElementContents(rElement: RElement): void {
 function writeDirectStyle(renderer: Renderer, element: RElement, newValue: string) {
   ngDevMode && assertString(newValue, "'newValue' should be a string");
   renderer.setAttribute(element, 'style', newValue);
-  ngDevMode && ngDevMode.rendererSetStyle++;
 }
 
 /**
@@ -137,7 +128,6 @@ function writeDirectClass(renderer: Renderer, element: RElement, newValue: strin
   } else {
     renderer.setAttribute(element, 'class', newValue);
   }
-  ngDevMode && ngDevMode.rendererSetClassName++;
 }
 
 /** Sets up the static DOM attributes on an `RNode`. */
