@@ -738,7 +738,8 @@ export class NgCompiler {
     const {resourceRegistry} = this.ensureAnalyzed();
     const styles = resourceRegistry.getStyles(classDecl);
     const template = resourceRegistry.getTemplate(classDecl);
-    return {styles, template};
+    const hostBindings = resourceRegistry.getHostBindings(classDecl);
+    return {styles, template, hostBindings};
   }
 
   getMeta(classDecl: DeclarationNode): PipeMeta | DirectiveMeta | null {
@@ -1524,6 +1525,7 @@ export class NgCompiler {
         supportTestBed,
         compilationMode,
         jitDeclarationRegistry,
+        resourceRegistry,
         !!this.options.strictStandalone,
         this.implicitStandaloneValue,
       ) as Readonly<DecoratorHandler<unknown, unknown, SemanticSymbol | null, unknown>>,

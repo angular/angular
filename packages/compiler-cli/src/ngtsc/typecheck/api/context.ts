@@ -11,6 +11,7 @@ import {
   ParseSourceFile,
   R3TargetBinder,
   SchemaMetadata,
+  TmplAstHostElement,
   TmplAstNode,
 } from '@angular/compiler';
 import ts from 'typescript';
@@ -42,6 +43,15 @@ export interface TemplateContext {
   preserveWhitespaces: boolean;
 }
 
+/** Contextual data for type checking the host bindings of a directive. */
+export interface HostBindingsContext {
+  /** AST node representing the host element of the directive. */
+  node: TmplAstHostElement;
+
+  /** Describes the source of the host bindings. Used for mapping errors back. */
+  sourceMapping: SourceMapping;
+}
+
 /**
  * A currently pending type checking operation, into which templates for type-checking can be
  * registered.
@@ -60,6 +70,8 @@ export interface TypeCheckContext {
    * @param schemas Schemas that will apply when checking the directive.
    * @param templateContext Contextual information necessary for checking the template.
    * Only relevant for component classes.
+   * @param hostBindingContext Contextual information necessary for checking the host bindings of
+   * a directive.
    * @param isStandalone a boolean indicating whether the directive is standalone.
    */
   addDirective(
@@ -67,6 +79,7 @@ export interface TypeCheckContext {
     binder: R3TargetBinder<TypeCheckableDirectiveMeta>,
     schemas: SchemaMetadata[],
     templateContext: TemplateContext | null,
+    hostBindingContext: HostBindingsContext | null,
     isStandalone: boolean,
   ): void;
 }

@@ -231,7 +231,7 @@ runInEachFileSystem(() => {
       }
       const {analysis} = handler.analyze(TestCmp, detected.metadata);
       expect(analysis?.resources.template?.path).toBeNull();
-      expect(analysis?.resources.template?.expression.getText()).toEqual(`'${template}'`);
+      expect(analysis?.resources.template?.node.getText()).toEqual(`'${template}'`);
     });
 
     it('should keep track of external template', () => {
@@ -264,7 +264,7 @@ runInEachFileSystem(() => {
       }
       const {analysis} = handler.analyze(TestCmp, detected.metadata);
       expect(analysis?.resources.template?.path).toContain(templateUrl);
-      expect(analysis?.resources.template?.expression.getText()).toContain(`'${templateUrl}'`);
+      expect(analysis?.resources.template?.node.getText()).toContain(`'${templateUrl}'`);
     });
 
     it('should keep track of internal and external styles', () => {

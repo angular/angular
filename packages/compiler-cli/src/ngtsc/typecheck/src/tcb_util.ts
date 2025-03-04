@@ -55,6 +55,16 @@ export interface TypeCheckSourceResolver {
    * numbers in addition to only absolute offsets and gives access to the original source code.
    */
   toTemplateParseSourceSpan(id: TypeCheckId, span: AbsoluteSourceSpan): ParseSourceSpan | null;
+
+  /** For the given type checking id, retrieve the source mapping of its host bindings. */
+  getHostBindingsMapping(id: TypeCheckId): SourceMapping;
+
+  /**
+   * Convert an absolute source span coming from a host binding associated with the given type
+   * checking id into a full `ParseSourceSpan`. The returned parse span has line and column
+   * numbers in addition to only absolute offsets and gives access to the original source code.
+   */
+  toHostParseSourceSpan(id: TypeCheckId, span: AbsoluteSourceSpan): ParseSourceSpan | null;
 }
 
 /**
