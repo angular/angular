@@ -31,6 +31,9 @@ export function ngDebugApiIsSupported(api: keyof GlobalDevModeUtils['ng']): bool
  * @returns boolean
  */
 export function ngDebugDependencyInjectionApiIsSupported(): boolean {
+  if (!ngDebugApiIsSupported('getInjector')) {
+    return false;
+  }
   if (!ngDebugApiIsSupported('ɵgetInjectorResolutionPath')) {
     return false;
   }
