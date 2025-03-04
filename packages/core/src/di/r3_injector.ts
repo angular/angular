@@ -157,7 +157,7 @@ export abstract class EnvironmentInjector implements Injector {
    * @deprecated from v4.0.0 use ProviderToken<T>
    * @suppress {duplicate}
    */
-  abstract get(token: any, notFoundValue?: any): any;
+  abstract get<T>(token: string | ProviderToken<T>, notFoundValue?: any): any;
 
   /**
    * Runs the given function in the context of this `EnvironmentInjector`.

@@ -94,7 +94,7 @@ export abstract class Injector {
    * @deprecated from v4.0.0 use ProviderToken<T>
    * @suppress {duplicate}
    */
-  abstract get(token: any, notFoundValue?: any): any;
+  abstract get<T>(token: string | ProviderToken<T>, notFoundValue?: any): any;
 
   /**
    * @deprecated from v5 use the new signature Injector.create(options)
