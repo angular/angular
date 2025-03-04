@@ -6,10 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule} from '@angular/common';
 import {Component, Input} from '@angular/core/public_api';
-import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
-import {TestBed} from '@angular/core/testing';
 import {getSortedClassName} from '@angular/core/testing/src/styling';
 
 import {
@@ -77,8 +74,7 @@ describe('instructions', () => {
   });
 
   describe('bind', () => {
-    it('should update bindings when value changes with the correct perf counters', () => {
-      ngDevModeResetPerfCounters();
+    it('should update bindings when value changes', () => {
       const t = new ViewFixture({create: createAnchor, decls: 1, vars: 1});
 
       t.update(() => {
@@ -90,19 +86,9 @@ describe('instructions', () => {
         ɵɵproperty('title', 'World');
       });
       expect(t.html).toEqual('<a title="World"></a>');
-      expect(ngDevMode).toEqual(
-        jasmine.objectContaining({
-          firstCreatePass: 1,
-          tNode: 2, // 1 for hostElement + 1 for the template under test
-          tView: 2, // 1 for rootView + 1 for the template view
-          rendererCreateElement: 1,
-          rendererSetProperty: 2,
-        }),
-      );
     });
 
     it('should not update bindings when value does not change, with the correct perf counters', () => {
-      ngDevModeResetPerfCounters();
       const idempotentUpdate = () => {
         ɵɵproperty('title', 'Hello');
       };
@@ -118,21 +104,11 @@ describe('instructions', () => {
 
       t.update();
       expect(t.html).toEqual('<a title="Hello"></a>');
-      expect(ngDevMode).toEqual(
-        jasmine.objectContaining({
-          firstCreatePass: 1,
-          tNode: 2, // 1 for hostElement + 1 for the template under test
-          tView: 2, // 1 for rootView + 1 for the template view
-          rendererCreateElement: 1,
-          rendererSetProperty: 1,
-        }),
-      );
     });
   });
 
   describe('element', () => {
-    it('should create an element with the correct perf counters', () => {
-      ngDevModeResetPerfCounters();
+    it('should create an element', () => {
       const t = new ViewFixture({
         create: () => {
           ɵɵelement(0, 'div', 0);
@@ -145,14 +121,6 @@ describe('instructions', () => {
       const div = (t.host as HTMLElement).querySelector('div')!;
       expect(div.id).toEqual('test');
       expect(div.title).toEqual('Hello');
-      expect(ngDevMode).toEqual(
-        jasmine.objectContaining({
-          firstCreatePass: 1,
-          tNode: 2, // 1 for div, 1 for host element
-          tView: 2, // 1 for rootView + 1 for the template view
-          rendererCreateElement: 1,
-        }),
-      );
     });
 
     it('should instantiate nodes at high indices', () => {
@@ -193,7 +161,6 @@ describe('instructions', () => {
 
   describe('attribute', () => {
     it('should use sanitizer function', () => {
-      ngDevModeResetPerfCounters();
       const t = new ViewFixture({create: createDiv, decls: 1, vars: 1});
 
       t.update(() => {
@@ -205,15 +172,6 @@ describe('instructions', () => {
         ɵɵattribute('title', bypassSanitizationTrustUrl('javascript:true'), ɵɵsanitizeUrl);
       });
       expect(t.html).toEqual('<div title="javascript:true"></div>');
-      expect(ngDevMode).toEqual(
-        jasmine.objectContaining({
-          firstCreatePass: 1,
-          tNode: 2, // 1 for div, 1 for host element
-          tView: 2, // 1 for rootView + 1 for the template view
-          rendererCreateElement: 1,
-          rendererSetAttribute: 2,
-        }),
-      );
     });
   });
 
@@ -224,7 +182,6 @@ describe('instructions', () => {
      * is not producing chained instructions yet.
      */
     it('should chain', () => {
-      ngDevModeResetPerfCounters();
       // <div [title]="title" [accesskey]="key"></div>
       const t = new ViewFixture({create: createDiv, update: () => {}, decls: 1, vars: 2});
       t.update(() => {
@@ -235,15 +192,6 @@ describe('instructions', () => {
         ɵɵproperty('title', 'two')('accessKey', 'B');
       });
       expect(t.html).toEqual('<div accesskey="B" title="two"></div>');
-      expect(ngDevMode).toEqual(
-        jasmine.objectContaining({
-          firstCreatePass: 1,
-          tNode: 2, // 1 for div, 1 for host element
-          tView: 2, // 1 for rootView + 1 for the template view
-          rendererCreateElement: 1,
-          rendererSetProperty: 4,
-        }),
-      );
     });
   });
 
@@ -315,36 +263,6 @@ describe('instructions', () => {
 
       const div = fixture.host.querySelector('div.multiple')!;
       expect(getSortedClassName(div)).toEqual('classes multiple');
-    });
-  });
-
-  describe('performance counters', () => {
-    it('should create tView only once for each nested level', () => {
-      @Component({
-        selector: 'nested-loops',
-        template: `
-          <ul *ngFor="let row of rows">
-            <li *ngFor="let col of row.cols">{{col}}</li>
-          </ul>
-        `,
-        imports: [CommonModule],
-      })
-      class NestedLoops {
-        rows = [
-          ['a', 'b'],
-          ['A', 'B'],
-          ['a', 'b'],
-          ['A', 'B'],
-        ];
-      }
-      ngDevModeResetPerfCounters();
-      TestBed.createComponent(NestedLoops);
-      expect(ngDevMode).toEqual(
-        jasmine.objectContaining({
-          // Expect: component view + ngFor(row) + ngFor(col)
-          tView: 3, // should be: 3
-        }),
-      );
     });
   });
 

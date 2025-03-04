@@ -269,7 +269,6 @@ export function elementPropertyInternal<T>(
       if (!isPropertyValid(element, propName, tNode.value, tView.schemas)) {
         handleUnknownPropertyError(propName, tNode.value, tNode.type, lView);
       }
-      ngDevMode.rendererSetProperty++;
     }
 
     // It is assumed that the sanitizer is only added when the compiler determines that the
@@ -493,10 +492,8 @@ export function setElementAttribute(
   sanitizer: SanitizerFn | null | undefined,
 ) {
   if (value == null) {
-    ngDevMode && ngDevMode.rendererRemoveAttribute++;
     renderer.removeAttribute(element, name, namespace);
   } else {
-    ngDevMode && ngDevMode.rendererSetAttribute++;
     const strValue =
       sanitizer == null ? renderStringify(value) : sanitizer(value, tagName || '', name);
 

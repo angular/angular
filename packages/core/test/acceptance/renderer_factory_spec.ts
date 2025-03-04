@@ -503,8 +503,6 @@ describe('Renderer2 destruction hooks', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('');
-    expect(ngDevMode!.rendererDestroy).toBe(0);
-    expect(ngDevMode!.rendererDestroyNode).toBe(3);
   });
 
   it('should call renderer.destroy for each component destroyed', () => {
@@ -517,8 +515,6 @@ describe('Renderer2 destruction hooks', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('');
-    expect(ngDevMode!.rendererDestroy).toBe(3);
-    expect(ngDevMode!.rendererDestroyNode).toBe(3);
   });
 });
 

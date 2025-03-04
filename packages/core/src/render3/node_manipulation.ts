@@ -138,7 +138,6 @@ function applyToElementOrContainer(
     } else if (action === WalkTNodeTreeAction.Detach) {
       nativeRemoveNode(renderer, rNode, isComponent);
     } else if (action === WalkTNodeTreeAction.Destroy) {
-      ngDevMode && ngDevMode.rendererDestroyNode++;
       renderer.destroyNode!(rNode);
     }
     if (lContainer != null) {
@@ -321,7 +320,6 @@ function cleanUpView(tView: TView, lView: LView): void {
     processCleanups(tView, lView);
     // For component views only, the local renderer is destroyed at clean up time.
     if (lView[TVIEW].type === TViewType.Component) {
-      ngDevMode && ngDevMode.rendererDestroy++;
       lView[RENDERER].destroy();
     }
 
@@ -977,16 +975,13 @@ export function applyStyling(
   if (isClassBased) {
     // We actually want JS true/false here because any truthy value should add the class
     if (!value) {
-      ngDevMode && ngDevMode.rendererRemoveClass++;
       renderer.removeClass(rNode, prop);
     } else {
-      ngDevMode && ngDevMode.rendererAddClass++;
       renderer.addClass(rNode, prop);
     }
   } else {
     let flags = prop.indexOf('-') === -1 ? undefined : (RendererStyleFlags2.DashCase as number);
     if (value == null /** || value === undefined */) {
-      ngDevMode && ngDevMode.rendererRemoveStyle++;
       renderer.removeStyle(rNode, prop, flags);
     } else {
       // A value is important if it ends with `!important`. The style
@@ -999,7 +994,6 @@ export function applyStyling(
         flags! |= RendererStyleFlags2.Important;
       }
 
-      ngDevMode && ngDevMode.rendererSetStyle++;
       renderer.setStyle(rNode, prop, value, flags);
     }
   }

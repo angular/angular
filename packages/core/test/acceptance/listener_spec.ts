@@ -25,10 +25,6 @@ import {
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
-function getNoOfNativeListeners(): number {
-  return ngDevMode ? ngDevMode.rendererAddEventListener : 0;
-}
-
 describe('event listeners', () => {
   describe('even handling statements', () => {
     it('should call function on event emit', () => {
@@ -371,16 +367,11 @@ describe('event listeners', () => {
       TestBed.configureTestingModule({
         declarations: [TestCmpt, WithClicksCmpt, LikesClicks, MdButton],
       });
-      const noOfEventListenersRegisteredSoFar = getNoOfNativeListeners();
+
       const fixture = TestBed.createComponent(TestCmpt);
       fixture.detectChanges();
       const buttonDebugEls = fixture.debugElement.queryAll(By.css('button'));
       const withClicksEls = fixture.debugElement.queryAll(By.css('with-clicks-cmpt'));
-
-      // We want to assert that only one native event handler was registered but still all
-      // directives are notified when an event fires. This assertion can only be verified in
-      // the ngDevMode (but the coalescing always happens!).
-      ngDevMode && expect(getNoOfNativeListeners()).toBe(noOfEventListenersRegisteredSoFar + 2);
 
       buttonDebugEls[0].nativeElement.click();
       expect(withClicksEls[0].injector.get(WithClicksCmpt).counter).toBe(1);
@@ -412,15 +403,9 @@ describe('event listeners', () => {
       }
 
       TestBed.configureTestingModule({declarations: [TestCmpt, LikesClicks]});
-      const noOfEventListenersRegisteredSoFar = getNoOfNativeListeners();
       const fixture = TestBed.createComponent(TestCmpt);
       fixture.detectChanges();
       const buttonDebugEl = fixture.debugElement.query(By.css('button'));
-
-      // We want to assert that only one native event handler was registered but still all
-      // directives are notified when an event fires. This assertion can only be verified in
-      // the ngDevMode (but the coalescing always happens!).
-      ngDevMode && expect(getNoOfNativeListeners()).toBe(noOfEventListenersRegisteredSoFar + 1);
 
       buttonDebugEl.nativeElement.click();
       expect(buttonDebugEl.injector.get(LikesClicks).counter).toBe(1);
