@@ -479,7 +479,7 @@ export function addApiLinksToHtml(htmlString: string): string {
     // This regex looks for span/code blocks not wrapped by an anchor block
     // or the tag doesn't contain `data-skip-anchor` attribute.
     // Their content are then replaced with a link if the symbol is known
-    //                   The captured content ==>  vvvvvvvv
+    //                                         The captured content ==>  vvvvvvvv
     /(?<!<a[^>]*>)(<(?:(?:span)|(?:code))(?!\sdata-skip-anchor)[^>]*>\s*)([^<]*?)(\s*<\/(?:span|code)>)/g,
     (type: string, span1: string, potentialSymbolName: string, span2: string) => {
       let [symbol, subSymbol] = potentialSymbolName.split(/(?:#|\.)/) as [string, string?];
