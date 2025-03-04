@@ -578,13 +578,13 @@ export const updateState = (updatedStateData: UpdatedStateData): void => {
   if (updatedStateData.directiveId.directive !== undefined) {
     const directive = node.directives[updatedStateData.directiveId.directive].instance;
     mutateComponentOrDirective(updatedStateData, directive);
-    ng.applyChanges(ng.getOwningComponent(directive)!);
+    ng.applyChanges?.(ng.getOwningComponent(directive)!);
     return;
   }
   if (node.component) {
     const comp = node.component.instance;
     mutateComponentOrDirective(updatedStateData, comp);
-    ng.applyChanges(comp);
+    ng.applyChanges?.(comp);
     return;
   }
 };
