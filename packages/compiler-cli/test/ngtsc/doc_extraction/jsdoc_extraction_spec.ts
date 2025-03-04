@@ -244,7 +244,7 @@ runInEachFileSystem(() => {
 
         /**
          * Future version.
-         * @see [Component](/api/core/Component)
+         * @see {@link Component}
          */
         export const NEW_VERSION = '99.0.0';
       `,
@@ -257,7 +257,7 @@ runInEachFileSystem(() => {
       expect(docs[0].jsdocTags.length).toBe(1);
       expect(docs[0].jsdocTags[0]).toEqual({
         name: 'see',
-        comment: '[Component](/api/core/Component)',
+        comment: '{@link Component}',
       });
     });
 
