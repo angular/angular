@@ -37,6 +37,6 @@
     "jasmine-spec-reporter": "4.2.1",
     "protractor": "file:../../node_modules/protractor",
     "ts-node": "8.3.0",
-    "typescript": "5.5.2"
+    "typescript": "file:../../node_modules/typescript"
   }
 }
