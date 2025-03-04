@@ -121,6 +121,7 @@ import {
   TypeCheckableDirectiveMeta,
   TypeCheckContext,
   TemplateContext,
+  HostBindingsContext,
 } from '../../../typecheck/api';
 import {ExtendedTemplateChecker} from '../../../typecheck/extended/api';
 import {TemplateSemanticsChecker} from '../../../typecheck/template_semantics/api/api';
@@ -155,7 +156,11 @@ import {
   validateHostDirectives,
   wrapFunctionExpressionsInParens,
 } from '../../common';
-import {extractDirectiveMetadata, parseDirectiveStyles} from '../../directive';
+import {
+  extractDirectiveMetadata,
+  extractHostBindingResources,
+  parseDirectiveStyles,
+} from '../../directive';
 import {createModuleWithProvidersResolver, NgModuleSymbol} from '../../ng_module';
 
 import {checkCustomElementSelectorForErrors, makeCyclicImportInfo} from './diagnostics';
@@ -742,11 +747,11 @@ export class ComponentDecoratorHandler
         }
       }
     }
-    const templateResource = template.declaration.isInline
-      ? {path: null, expression: component.get('template')!}
+    const templateResource: Resource = template.declaration.isInline
+      ? {path: null, node: component.get('template')!}
       : {
           path: absoluteFrom(template.declaration.resolvedTemplateUrl),
-          expression: template.sourceMapping.node,
+          node: template.sourceMapping.node,
         };
     const relativeTemplatePath = getProjectRelativePath(
       templateResource.path ?? ts.getOriginalNode(node).getSourceFile().fileName,
@@ -760,6 +765,7 @@ export class ComponentDecoratorHandler
     let styles: string[] = [];
     const externalStyles: string[] = [];
 
+    const hostBindingResources = extractHostBindingResources(directiveResult.hostBindingNodes);
     const styleResources = extractInlineStyleResources(component);
     const styleUrls: StyleUrlMeta[] = [
       ...extractComponentStyleUrls(this.evaluator, component),
@@ -781,7 +787,7 @@ export class ComponentDecoratorHandler
           // Only string literal values from the decorator are considered style resources
           styleResources.add({
             path: absoluteFrom(resourceUrl),
-            expression: styleUrl.expression,
+            node: styleUrl.expression,
           });
         }
         const resourceStr = this.resourceLoader.load(resourceUrl);
@@ -934,6 +940,7 @@ export class ComponentDecoratorHandler
         resources: {
           styles: styleResources,
           template: templateResource,
+          hostBindings: hostBindingResources,
         },
         isPoisoned,
         animationTriggerNames,
@@ -944,6 +951,7 @@ export class ComponentDecoratorHandler
         explicitlyDeferredTypes,
         schemas,
         decorator: (decorator?.node as ts.Decorator | null) ?? null,
+        hostBindingNodes: directiveResult.hostBindingNodes,
       },
       diagnostics,
     };
@@ -1086,6 +1094,7 @@ export class ComponentDecoratorHandler
       binder,
       scope.schemas,
       templateContext,
+      null,
       meta.meta.isStandalone,
     );
   }
