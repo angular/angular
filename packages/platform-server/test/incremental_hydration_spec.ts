@@ -1202,7 +1202,7 @@ describe('platform-server partial hydration integration', () => {
         appRef.tick();
 
         expect(appHostNode.outerHTML).toContain('<span id="test">end</span>');
-      }, 100_000);
+      });
 
       describe('idle', () => {
         /**
@@ -2618,6 +2618,103 @@ describe('platform-server partial hydration integration', () => {
       expect(location.path()).toBe('/other/thing/stuff');
 
       expect(appHostNode.outerHTML).toContain('<p>OtherCmp content</p>');
+    });
+
+    it('should trigger immediate with a lazy loaded route', async () => {
+      @Component({
+        selector: 'nested-more',
+        template: `
+          <div>
+            @defer(hydrate on immediate) {
+              <button id="click-me" (click)="clickMe()">Click me I'm dehydrated?</button>
+              <p id="hydrated">{{hydrated()}}</p>
+            }
+          </div>
+        `,
+      })
+      class NestedMoreCmp {
+        hydrated = signal('nope');
+        constructor() {
+          if (!isPlatformServer(inject(PLATFORM_ID))) {
+            this.hydrated.set('yup');
+          }
+        }
+      }
+      @Component({
+        selector: 'nested',
+        imports: [NestedMoreCmp],
+        template: `
+          <div>
+            @defer(hydrate on interaction) {
+              <nested-more />
+            }
+          </div>
+        `,
+      })
+      class NestedCmp {}
+
+      @Component({
+        selector: 'lazy',
+        imports: [NestedCmp],
+        template: `
+          @defer (hydrate on interaction) {
+            <nested />
+          }
+        `,
+      })
+      class LazyCmp {}
+
+      const routes: Routes = [
+        {
+          path: '',
+          loadComponent: () => dynamicImportOf(LazyCmp, 50),
+        },
+      ];
+
+      @Component({
+        selector: 'app',
+        imports: [RouterOutlet],
+        template: `
+          Works!
+          <router-outlet />
+        `,
+      })
+      class SimpleComponent {
+        location = inject(Location);
+      }
+
+      const appId = 'custom-app-id';
+      const providers = [
+        {provide: APP_ID, useValue: appId},
+        {provide: PlatformLocation, useClass: MockPlatformLocation},
+        provideRouter(routes),
+      ] as unknown as Provider[];
+      const hydrationFeatures = () => [withIncrementalHydration()];
+
+      const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+      const ssrContents = getAppContents(html);
+
+      expect(ssrContents).toContain(
+        `<button id="click-me" jsaction="click:;" ngb="d2">Click me I'm dehydrated?</button>`,
+      );
+      expect(ssrContents).toContain(`<p id="hydrated">nope</p>`);
+
+      resetTViewsFor(SimpleComponent, LazyCmp);
+
+      const doc = getDocument();
+      const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+        envProviders: [...providers],
+        hydrationFeatures,
+      });
+      const compRef = getComponentRef<SimpleComponent>(appRef);
+      await appRef.whenStable();
+      await allPendingDynamicImports();
+      const appHostNode = compRef.location.nativeElement;
+
+      expect(appHostNode.outerHTML).toContain(
+        `<button id="click-me">Click me I'm dehydrated?</button>`,
+      );
+      expect(appHostNode.outerHTML).toContain(`<p id="hydrated">yup</p>`);
     });
   });
 });
