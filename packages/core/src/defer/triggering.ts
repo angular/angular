@@ -359,8 +359,8 @@ export function triggerDeferBlock(triggerType: TriggerType, lView: LView, tNode:
 }
 
 /**
- * The core mechanism for incremental hydration. This triggers
- * hydration for all the blocks in the tree that need to be hydrated
+ * The core mechanism for incremental hydration. This triggers or
+ * queues hydration for all the blocks in the tree that need to be hydrated
  * and keeps track of all those blocks that were hydrated along the way.
  *
  * Note: the `replayQueuedEventsFn` is only provided when hydration is invoked
@@ -381,30 +381,69 @@ export async function triggerHydrationFromBlockName(
     return;
   }
 
-  // The parent promise is the possible case of a list of defer blocks already being queued
-  // If it is queued, it'll exist; otherwise it'll be null. The hydration queue will contain all
-  // elements that need to be hydrated, sans any that have promises already
+  // Trigger resource loading and hydration for the blocks in the queue in the order of highest block
+  // to lowest block. Once a block has finished resource loading, after next render fires after hydration
+  // finishes. The new block will have its defer instruction called and will be in the registry.
+  // Due to timing related to potential nested control flow, this has to be scheduled after the next render.
   const {parentBlockPromise, hydrationQueue} = getParentBlockHydrationQueue(blockName, injector);
+  if (hydrationQueue.length === 0) return;
+
+  // It's possible that the hydrationQueue topmost item is actually in the process of hydrating and has
+  // a promise already. In that case, we don't want to destroy that promise and queue it again.
+  if (parentBlockPromise !== null) {
+    hydrationQueue.shift();
+  }
 
   // The hydrating map in the registry prevents re-triggering hydration for a block that's already in
   // the hydration queue. Here we generate promises for each of the blocks about to be hydrated
   populateHydratingStateForQueue(dehydratedBlockRegistry, hydrationQueue);
 
-  // Trigger resource loading and hydration for the blocks in the queue in the order of highest block
-  // to lowest block. Once a block has finished resource loading, after next render fires after hydration
-  // finishes. The new block will have its defer instruction called and will be in the registry.
-  // Due to timing related to potential nested control flow, this has to be scheduled after the next render.
+  // We await this after populating the hydration state so we can prevent re-triggering hydration for
+  // the same blocks while this promise is being awaited.
+  if (parentBlockPromise !== null) {
+    await parentBlockPromise;
+  }
+
+  const topmostParentBlock = hydrationQueue[0];
+  if (dehydratedBlockRegistry.has(topmostParentBlock)) {
+    // the topmost parent block is already in the registry and we can proceed
+    // with hydration.
+    await triggerHydrationForBlockQueue(injector, hydrationQueue, replayQueuedEventsFn);
+  } else {
+    // the topmost parent block is not yet in the registry, which may mean
+    // a lazy loaded route, a control flow branch was taken, a route has
+    // been navigated, etc. So we need to queue up the hydration process
+    // so that it can be finished after the top block has had its defer
+    // instruction executed.
+    dehydratedBlockRegistry.awaitParentBlock(
+      topmostParentBlock,
+      async () =>
+        await triggerHydrationForBlockQueue(injector, hydrationQueue, replayQueuedEventsFn),
+    );
+  }
+}
+
+/**
+ * The core mechanism for incremental hydration. This triggers
+ * hydration for all the blocks in the tree that need to be hydrated
+ * and keeps track of all those blocks that were hydrated along the way.
+ *
+ * Note: the `replayQueuedEventsFn` is only provided when hydration is invoked
+ * as a result of an event replay (via JsAction). When hydration is invoked from
+ * an instruction set (e.g. `deferOnImmediate`) - there is no need to replay any
+ * events.
+ */
+export async function triggerHydrationForBlockQueue(
+  injector: Injector,
+  hydrationQueue: string[],
+  replayQueuedEventsFn?: Function,
+): Promise<void> {
+  const dehydratedBlockRegistry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
+  const blocksBeingHydrated = dehydratedBlockRegistry.hydrating;
 
   // Indicate that we have some pending async work.
   const pendingTasks = injector.get(PendingTasksInternal);
   const taskId = pendingTasks.add();
-
-  // If the parent block was being hydrated, but the process has
-  // not yet complete, wait until parent block promise settles before
-  // going over dehydrated blocks from the queue.
-  if (parentBlockPromise !== null) {
-    await parentBlockPromise;
-  }
 
   // Actually do the triggering and hydration of the queue of blocks
   for (let blockQueueIdx = 0; blockQueueIdx < hydrationQueue.length; blockQueueIdx++) {
@@ -443,8 +482,10 @@ export async function triggerHydrationFromBlockName(
     }
   }
 
-  // Await hydration completion for the requested block.
-  await blocksBeingHydrated.get(blockName)?.promise;
+  const lastBlockName = hydrationQueue[hydrationQueue.length - 1];
+
+  // Await hydration completion for the last block.
+  await blocksBeingHydrated.get(lastBlockName)?.promise;
 
   // All async work is done, remove the taskId from the registry.
   pendingTasks.remove(taskId);
@@ -456,7 +497,7 @@ export async function triggerHydrationFromBlockName(
 
   // Cleanup after hydration of all affected defer blocks.
   cleanupHydratedDeferBlocks(
-    dehydratedBlockRegistry.get(blockName),
+    dehydratedBlockRegistry.get(lastBlockName),
     hydrationQueue,
     dehydratedBlockRegistry,
     injector.get(ApplicationRef),
@@ -683,7 +724,7 @@ function setTimerTriggers(injector: Injector, elementTriggers: ElementTrigger[])
 function setImmediateTriggers(injector: Injector, elementTriggers: ElementTrigger[]) {
   for (const elementTrigger of elementTriggers) {
     // Note: we intentionally avoid awaiting each call and instead kick off
-    // th hydration process simultaneously for all defer blocks with this trigger;
+    // the hydration process simultaneously for all defer blocks with this trigger;
     triggerHydrationFromBlockName(injector, elementTrigger.blockName);
   }
 }
