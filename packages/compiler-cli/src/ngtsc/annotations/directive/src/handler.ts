@@ -27,6 +27,7 @@ import {
 } from '../../../incremental/semantic_graph';
 import {
   ClassPropertyMapping,
+  DirectiveResources,
   DirectiveTypeCheckMeta,
   extractDirectiveTypeCheckMeta,
   HostDirectiveMeta,
@@ -35,6 +36,7 @@ import {
   MetadataReader,
   MetadataRegistry,
   MetaKind,
+  ResourceRegistry,
 } from '../../../metadata';
 import {PartialEvaluator} from '../../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../../perf';
@@ -74,7 +76,7 @@ import {
   validateHostDirectives,
 } from '../../common';
 
-import {extractDirectiveMetadata} from './shared';
+import {extractDirectiveMetadata, extractHostBindingResources, HostBindingNodes} from './shared';
 import {DirectiveSymbol} from './symbol';
 import {JitDeclarationRegistry} from '../../common/src/jit_declaration_registry';
 
@@ -113,6 +115,8 @@ export interface DirectiveHandlerData {
   decorator: ts.Decorator | null;
   hostDirectives: HostDirectiveMeta[] | null;
   rawHostDirectives: ts.Expression | null;
+  hostBindingNodes: HostBindingNodes;
+  resources: DirectiveResources;
 }
 
 export class DirectiveDecoratorHandler
@@ -136,6 +140,7 @@ export class DirectiveDecoratorHandler
     private includeClassMetadata: boolean,
     private readonly compilationMode: CompilationMode,
     private readonly jitDeclarationRegistry: JitDeclarationRegistry,
+    private readonly resourceRegistry: ResourceRegistry,
     private readonly strictStandalone: boolean,
     private readonly implicitStandaloneValue: boolean,
   ) {}
@@ -231,6 +236,12 @@ export class DirectiveDecoratorHandler
         isPoisoned: false,
         isStructural: directiveResult.isStructural,
         decorator: (decorator?.node as ts.Decorator | null) ?? null,
+        hostBindingNodes: directiveResult.hostBindingNodes,
+        resources: {
+          template: null,
+          styles: null,
+          hostBindings: extractHostBindingResources(directiveResult.hostBindingNodes),
+        },
       },
     };
   }
@@ -286,6 +297,7 @@ export class DirectiveDecoratorHandler
       isExplicitlyDeferred: false,
     });
 
+    this.resourceRegistry.registerResources(analysis.resources, node);
     this.injectableRegistry.registerInjectable(node, {
       ctorDeps: analysis.meta.deps,
     });

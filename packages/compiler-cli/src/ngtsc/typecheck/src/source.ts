@@ -21,10 +21,10 @@ import {computeLineStartsMap, getLineAndCharacterFromPosition} from './line_mapp
 import {TypeCheckSourceResolver} from './tcb_util';
 
 /**
- * Represents the source of a template that was processed during type-checking. This information is
- * used when translating parse offsets in diagnostics back to their original line/column location.
+ * Represents the source of code processed during type-checking. This information is used when
+ * translating parse offsets in diagnostics back to their original line/column location.
  */
-export class TemplateSource {
+class Source {
   private lineStarts: number[] | null = null;
 
   constructor(
@@ -63,14 +63,21 @@ export class DirectiveSourceManager implements TypeCheckSourceResolver {
    * attached to a TCB's function declaration as leading trivia. This enables translation of
    * diagnostics produced for TCB code to their source location in the template.
    */
-  private templateSources = new Map<TypeCheckId, TemplateSource>();
+  private templateSources = new Map<TypeCheckId, Source>();
+
+  /** Keeps track of type check IDs and the source location of their host bindings. */
+  private hostBindingSources = new Map<TypeCheckId, Source>();
 
   getTypeCheckId(node: ts.ClassDeclaration): TypeCheckId {
     return getTypeCheckId(node);
   }
 
   captureTemplateSource(id: TypeCheckId, mapping: SourceMapping, file: ParseSourceFile): void {
-    this.templateSources.set(id, new TemplateSource(mapping, file));
+    this.templateSources.set(id, new Source(mapping, file));
+  }
+
+  captureHostBindingsMapping(id: TypeCheckId, mapping: SourceMapping, file: ParseSourceFile): void {
+    this.hostBindingSources.set(id, new Source(mapping, file));
   }
 
   getTemplateSourceMapping(id: TypeCheckId): SourceMapping {
@@ -80,11 +87,26 @@ export class DirectiveSourceManager implements TypeCheckSourceResolver {
     return this.templateSources.get(id)!.mapping;
   }
 
+  getHostBindingsMapping(id: TypeCheckId): SourceMapping {
+    if (!this.hostBindingSources.has(id)) {
+      throw new Error(`Unexpected unknown type check ID: ${id}`);
+    }
+    return this.hostBindingSources.get(id)!.mapping;
+  }
+
   toTemplateParseSourceSpan(id: TypeCheckId, span: AbsoluteSourceSpan): ParseSourceSpan | null {
     if (!this.templateSources.has(id)) {
       return null;
     }
     const templateSource = this.templateSources.get(id)!;
     return templateSource.toParseSourceSpan(span.start, span.end);
+  }
+
+  toHostParseSourceSpan(id: TypeCheckId, span: AbsoluteSourceSpan): ParseSourceSpan | null {
+    if (!this.hostBindingSources.has(id)) {
+      return null;
+    }
+    const source = this.hostBindingSources.get(id)!;
+    return source.toParseSourceSpan(span.start, span.end);
   }
 }

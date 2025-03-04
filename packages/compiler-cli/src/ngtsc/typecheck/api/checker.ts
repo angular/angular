@@ -14,6 +14,7 @@ import {
   SafePropertyRead,
   TemplateEntity,
   TmplAstElement,
+  TmplAstHostElement,
   TmplAstNode,
   TmplAstTemplate,
   TmplAstTextAttribute,
@@ -49,6 +50,14 @@ export interface TemplateTypeChecker {
    * Retrieve the template in use for the given component.
    */
   getTemplate(component: ts.ClassDeclaration, optimizeFor?: OptimizeFor): TmplAstNode[] | null;
+
+  /**
+   * Retrieve the host element of the given directive.
+   */
+  getHostElement(
+    directive: ts.ClassDeclaration,
+    optimizeFor?: OptimizeFor,
+  ): TmplAstHostElement | null;
 
   /**
    * Get all `ts.Diagnostic`s currently available for the given `ts.SourceFile`.
