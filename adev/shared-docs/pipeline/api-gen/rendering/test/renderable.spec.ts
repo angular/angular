@@ -12,6 +12,7 @@ import {getRenderable} from '../processing';
 import {DocEntryRenderable} from '../entities/renderables';
 import {initHighlighter} from '../shiki/shiki';
 import {configureMarkedGlobally} from '../marked/configuration';
+import {setSymbols} from '../symbol-context';
 
 // Note: The tests will probably break if the schema of the api extraction changes.
 // All entries in the fake-entries are extracted from Angular's api.
@@ -28,6 +29,19 @@ describe('renderable', () => {
       encoding: 'utf-8',
     });
     const entryJson = JSON.parse(entryContent) as any;
+    const symbols = new Map<string, string>([
+      ['AfterRenderPhase', 'core'],
+      ['afterRender', 'core'],
+      ['EmbeddedViewRef', 'core'],
+      ['ChangeDetectionStrategy', 'core'],
+      ['ChangeDetectorRef', 'core'],
+      ['withNoHttpTransferCache', 'platform-browser'],
+      ['withHttpTransferCacheOptions', 'platform-browser'],
+      ['withI18nSupport', 'platform-browser'],
+      ['withEventReplay', 'platform-browser'],
+    ]);
+    setSymbols(symbols);
+
     for (const entry of entryJson.entries) {
       const renderableJson = getRenderable(entry, '@angular/fakeentry') as DocEntryRenderable;
       entries.set(entry['name'], renderableJson);

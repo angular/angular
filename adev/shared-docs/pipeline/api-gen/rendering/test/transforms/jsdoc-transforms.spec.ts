@@ -72,10 +72,6 @@ describe('jsdoc transforms', () => {
         },
         {
           name: 'see',
-          comment: '{@link cli/build ng build}',
-        },
-        {
-          name: 'see',
           comment: '{@link /ecosystem/rxjs-interop/output-interop Output Interop}',
         },
       ],
@@ -135,16 +131,24 @@ describe('jsdoc transforms', () => {
       url: '/cli/build',
     });
 
-    // TODO: in the future when all links are valid we would throw an error instead when not starting with a slash
-    // Links should be absolute within adev (to support both next & stable site)
     expect(entry.additionalLinks[11]).toEqual({
-      label: 'ng build',
-      url: 'cli/build',
-    });
-
-    expect(entry.additionalLinks[12]).toEqual({
       label: 'Output Interop',
       url: '/ecosystem/rxjs-interop/output-interop',
     });
+  });
+
+  it('should throw on invalid relatie @link', () => {
+    const entryFn = () =>
+      addHtmlAdditionalLinks({
+        jsdocTags: [
+          {
+            name: 'see',
+            comment: '{@link cli/build ng build}',
+          },
+        ],
+        moduleName: 'test',
+      });
+
+    expect(entryFn).toThrowError(/Forbidden relative link: cli\/build ng build/);
   });
 });

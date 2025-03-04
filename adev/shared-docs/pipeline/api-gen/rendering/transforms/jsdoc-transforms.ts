@@ -31,7 +31,7 @@ import {
 
 import {getLinkToModule} from './url-transforms';
 import {addApiLinksToHtml} from './code-transforms';
-import {getCurrentSymbol, getModuleName, logUnknownSymbol} from '../symbol-context';
+import {getCurrentSymbol, getModuleName, unknownSymbolMessage} from '../symbol-context';
 
 export const JS_DOC_REMARKS_TAG = 'remarks';
 export const JS_DOC_USAGE_NOTES_TAG = 'usageNotes';
@@ -186,6 +186,12 @@ function parseAtLink(link: string): {label: string; url: string} {
   if (rawSymbol.startsWith('#')) {
     rawSymbol = rawSymbol.substring(1);
   } else if (rawSymbol.includes('/')) {
+    if (!rawSymbol.startsWith('/') && !rawSymbol.startsWith('http')) {
+      throw Error(
+        `Forbidden relative link: ${link}. Links should be absolute and start with a slash`,
+      );
+    }
+
     return {
       url: rawSymbol,
       label: description ?? rawSymbol.split('/').pop()!,
@@ -204,11 +210,9 @@ function parseAtLink(link: string): {label: string; url: string} {
     moduleName = getModuleName(`${currentSymbol}.${symbol}`);
 
     if (!moduleName || !currentSymbol) {
-      // TODO: remove the links that generate this error
-      // TODO: throw an error when there are no more warning generated
-      logUnknownSymbol(link, symbol);
-      return {label, url: '#'};
+      throw unknownSymbolMessage(link, symbol);
     }
+
     subSymbol = symbol;
     symbol = currentSymbol;
   }
