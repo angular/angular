@@ -37,6 +37,6 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "protractor": "~7.0.0",
     "ts-node": "~10.9.0",
-    "typescript": "~5.7.0"
+    "typescript": "~5.8.0"
   }
 }
