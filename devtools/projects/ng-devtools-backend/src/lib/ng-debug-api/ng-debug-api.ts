@@ -13,7 +13,7 @@ import type {ɵGlobalDevModeUtils as GlobalDevModeUtils} from '@angular/core';
  *
  * @returns window.ng
  */
-export const ngDebugClient = () => (window as any as GlobalDevModeUtils).ng;
+export const ngDebugClient = () => (window as any).ng as Partial<GlobalDevModeUtils['ng']>;
 
 /**
  * Checks whether a given debug API is supported within window.ng
