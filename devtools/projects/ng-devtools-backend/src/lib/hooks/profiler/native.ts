@@ -36,7 +36,7 @@ export class NgProfiler extends Profiler {
   }
 
   private _initialize(): void {
-    ngDebugClient().ɵsetProfiler(
+    ngDebugClient().ɵsetProfiler!(
       (event: ɵProfilerEvent, instanceOrLView: {} | null = null, eventFn: any) =>
         this._callbacks.forEach((cb) => cb(event, instanceOrLView, eventFn)),
     );

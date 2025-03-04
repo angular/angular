@@ -98,8 +98,8 @@ export class RTreeStrategy {
     while (element.parentElement) {
       element = element.parentElement;
     }
-    const getComponent = ngDebugClient().getComponent;
-    const getDirectives = ngDebugClient().getDirectives;
+    const getComponent = ngDebugClient().getComponent!;
+    const getDirectives = ngDebugClient().getDirectives!;
     return extractViewTree(element, [], getComponent, getDirectives);
   }
 }
