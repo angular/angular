@@ -747,7 +747,7 @@ export type ViewTransitionsFeature = RouterFeature<RouterFeatureKind.ViewTransit
  * Default values can be provided with a resolver on the route to ensure the value is always present
  * or an input and use an input transform in the component.
  *
- * @see [Input Transforms](/guide/components/inputs#input-transforms)
+ * @see {@link /guide/components/inputs#input-transforms Input Transforms}
  * @returns A set of providers for use with `provideRouter`.
  */
 export function withComponentInputBinding(): ComponentInputBindingFeature {
