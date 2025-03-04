@@ -38,8 +38,6 @@ export function getCurrentSymbol(): string | undefined {
   return currentSymbol;
 }
 
-export function logUnknownSymbol(link: string, symbol: string): void {
-  console.warn(
-    `WARNING: {@link ${link}} is invalid, ${symbol} or ${currentSymbol}.${symbol} is unknown in this context`,
-  );
+export function unknownSymbolMessage(link: string, symbol: string): string {
+  return `WARNING: {@link ${link}} is invalid, ${symbol} or ${currentSymbol}.${symbol} is unknown in this context`;
 }
