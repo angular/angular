@@ -159,3 +159,18 @@ ts_library(
         "//packages/core",
     ],
 )
+
+ts_test_library(
+    name = "component_tree_test_lib",
+    srcs = ["component-tree.spec.ts"],
+    deps = [
+        ":component_tree",
+        "//packages/core",
+        "@npm//jasmine",
+    ],
+)
+
+karma_web_test_suite(
+    name = "component_tree_test",
+    deps = [":component_tree_test_lib"],
+)
