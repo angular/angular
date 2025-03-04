@@ -20,7 +20,7 @@ import {ClassDeclaration} from '../../reflection';
  */
 export interface Resource {
   path: AbsoluteFsPath | null;
-  expression: ts.Expression;
+  node: ts.Node;
 }
 
 export interface ExternalResource extends Resource {
@@ -40,6 +40,7 @@ export function isExternalResource(resource: Resource): resource is ExternalReso
 export interface DirectiveResources {
   template: Resource | null;
   styles: ReadonlySet<Resource> | null;
+  hostBindings: ReadonlySet<Resource> | null;
 }
 
 /**
@@ -54,6 +55,7 @@ export class ResourceRegistry {
   private componentToTemplateMap = new Map<ClassDeclaration, Resource>();
   private componentToStylesMap = new Map<ClassDeclaration, Set<Resource>>();
   private externalStyleToComponentsMap = new Map<AbsoluteFsPath, Set<ClassDeclaration>>();
+  private directiveToHostBindingsMap = new Map<ClassDeclaration, ReadonlySet<Resource>>();
 
   getComponentsWithTemplate(template: AbsoluteFsPath): ReadonlySet<ClassDeclaration> {
     if (!this.externalTemplateToComponentsMap.has(template)) {
@@ -71,6 +73,9 @@ export class ResourceRegistry {
       for (const style of resources.styles) {
         this.registerStyle(style, directive);
       }
+    }
+    if (resources.hostBindings !== null) {
+      this.directiveToHostBindingsMap.set(directive, resources.hostBindings);
     }
   }
 
@@ -119,5 +124,9 @@ export class ResourceRegistry {
     }
 
     return this.externalStyleToComponentsMap.get(styleUrl)!;
+  }
+
+  getHostBindings(directive: ClassDeclaration): ReadonlySet<Resource> | null {
+    return this.directiveToHostBindingsMap.get(directive) || null;
   }
 }

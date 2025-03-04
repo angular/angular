@@ -648,7 +648,7 @@ export function setup(
           preserveWhitespaces: false,
         };
 
-        ctx.addDirective(classRef, binder, [], templateContext, false);
+        ctx.addDirective(classRef, binder, [], templateContext, null, false);
       }
     }
   });

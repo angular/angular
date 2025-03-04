@@ -9,8 +9,10 @@
 import {
   BoundTarget,
   ParseError,
+  ParseSourceFile,
   R3TargetBinder,
   SchemaMetadata,
+  TmplAstHostElement,
   TmplAstNode,
 } from '@angular/compiler';
 import MagicString from 'magic-string';
@@ -24,6 +26,7 @@ import {FileUpdate} from '../../program_driver';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
 import {
+  HostBindingsContext,
   TemplateDiagnostic,
   TypeCheckId,
   SourceMapping,
@@ -91,6 +94,11 @@ export interface TypeCheckData {
    * Errors found while parsing the template, which have been converted to diagnostics.
    */
   templateParsingDiagnostics: TemplateDiagnostic[];
+
+  /**
+   * Element representing the host bindings of a directive.
+   */
+  hostElement: TmplAstHostElement | null;
 }
 
 /**
@@ -230,6 +238,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     binder: R3TargetBinder<TypeCheckableDirectiveMeta>,
     schemas: SchemaMetadata[],
     templateContext: TemplateContext | null,
+    hostBindingContext: HostBindingsContext | null,
     isStandalone: boolean,
   ): void {
     if (!this.host.shouldCheckClass(ref.node)) {
@@ -247,7 +256,10 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       );
     }
 
-    const boundTarget = binder.bind({template: templateContext?.nodes});
+    const boundTarget = binder.bind({
+      template: templateContext?.nodes,
+      host: hostBindingContext?.node,
+    });
 
     if (this.inlining === InliningMode.InlineOps) {
       // Get all of the directives used in the template and record inline type constructors when
@@ -281,6 +293,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       template: templateContext?.nodes || null,
       boundTarget,
       templateParsingDiagnostics,
+      hostElement: hostBindingContext?.node ?? null,
     });
 
     const usedPipes: Reference<ClassDeclaration<ts.ClassDeclaration>>[] = [];
@@ -326,6 +339,16 @@ export class TypeCheckContextImpl implements TypeCheckContext {
         id,
         templateContext.sourceMapping,
         templateContext.file,
+      );
+    }
+
+    if (hostBindingContext !== null) {
+      fileData.sourceManager.captureHostBindingsMapping(
+        id,
+        hostBindingContext.sourceMapping,
+        // We only support host bindings in the same file as the directive
+        // so we can get the source file from here.
+        new ParseSourceFile(ref.node.getSourceFile().text, ''),
       );
     }
 

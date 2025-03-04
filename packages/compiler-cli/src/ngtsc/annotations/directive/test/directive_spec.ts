@@ -18,7 +18,12 @@ import ts from 'typescript';
 import {absoluteFrom} from '../../../file_system';
 import {runInEachFileSystem} from '../../../file_system/testing';
 import {ImportedSymbolsTracker, ReferenceEmitter} from '../../../imports';
-import {CompoundMetadataReader, DtsMetadataReader, LocalMetadataRegistry} from '../../../metadata';
+import {
+  CompoundMetadataReader,
+  DtsMetadataReader,
+  LocalMetadataRegistry,
+  ResourceRegistry,
+} from '../../../metadata';
 import {PartialEvaluator} from '../../../partial_evaluator';
 import {NOOP_PERF_RECORDER} from '../../../perf';
 import {
@@ -195,6 +200,7 @@ runInEachFileSystem(() => {
     const injectableRegistry = new InjectableClassRegistry(reflectionHost, /* isCore */ false);
     const importTracker = new ImportedSymbolsTracker();
     const jitDeclarationRegistry = new JitDeclarationRegistry();
+    const resourceRegistry = new ResourceRegistry();
 
     const handler = new DirectiveDecoratorHandler(
       reflectionHost,
@@ -214,6 +220,7 @@ runInEachFileSystem(() => {
       /*includeClassMetadata*/ true,
       /*compilationMode */ CompilationMode.FULL,
       jitDeclarationRegistry,
+      resourceRegistry,
       /* strictStandalone */ false,
       /* implicitStandaloneValue */ true,
     );

@@ -17,6 +17,7 @@ import {
   SafePropertyRead,
   TemplateEntity,
   TmplAstElement,
+  TmplAstHostElement,
   TmplAstNode,
   TmplAstTemplate,
   TmplAstTextAttribute,
@@ -150,10 +151,15 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
   getTemplate(component: ts.ClassDeclaration, optimizeFor?: OptimizeFor): TmplAstNode[] | null {
     const {data} = this.getLatestComponentState(component, optimizeFor);
-    if (data === null) {
-      return null;
-    }
-    return data.template;
+    return data?.template || null;
+  }
+
+  getHostElement(
+    directive: ts.ClassDeclaration,
+    optimizeFor?: OptimizeFor,
+  ): TmplAstHostElement | null {
+    const {data} = this.getLatestComponentState(directive, optimizeFor);
+    return data?.hostElement || null;
   }
 
   getUsedDirectives(component: ts.ClassDeclaration): TypeCheckableDirectiveMeta[] | null {
