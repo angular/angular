@@ -19,6 +19,7 @@ import {
   Element,
   ForLoopBlock,
   ForLoopBlockEmpty,
+  HostElement,
   IfBlockBranch,
   LetDeclaration,
   Node,
@@ -40,7 +41,8 @@ export type ScopedNode =
   | DeferredBlockError
   | DeferredBlockLoading
   | DeferredBlockPlaceholder
-  | Content;
+  | Content
+  | HostElement;
 
 /** Possible values that a reference can be resolved to. */
 export type ReferenceTarget<DirectiveT> =
@@ -68,6 +70,7 @@ export type TemplateEntity = Reference | Variable | LetDeclaration;
  */
 export interface Target {
   template?: Node[];
+  host?: HostElement;
 }
 
 /**
