@@ -586,7 +586,6 @@ export function getParentBlockHydrationQueue(
     isTopMostDeferBlock = dehydratedBlockRegistry.has(currentBlockId);
     const hydratingParentBlock = dehydratedBlockRegistry.hydrating.get(currentBlockId);
     if (parentBlockPromise === null && hydratingParentBlock != null) {
-      // TODO: add an ngDevMode asset that `hydratingParentBlock.promise` exists and is of type Promise.
       parentBlockPromise = hydratingParentBlock.promise;
       break;
     }
