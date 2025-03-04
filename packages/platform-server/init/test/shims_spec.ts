@@ -15,8 +15,13 @@ describe('applyShims()', () => {
     // Un-patch `global`.
     const currentProps = Object.keys(global);
     for (const prop of currentProps) {
+      const descriptor = Object.getOwnPropertyDescriptor(global, prop);
+
       if (globalClone.hasOwnProperty(prop)) {
-        (global as any)[prop] = (globalClone as any)[prop];
+        if (descriptor?.set) {
+          // Some props don't have any setters from Node v20 onwards, ex "crypto".
+          (global as any)[prop] = (globalClone as any)[prop];
+        }
       } else {
         delete (global as any)[prop];
       }
