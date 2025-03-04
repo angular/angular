@@ -90,7 +90,7 @@ function getDirectivesFromElement(element: HTMLElement): {
 
   return {
     component,
-    directives: ngDebugClient().getDirectives!(element),
+    directives: ngDebugClient().getDirectives?.(element) ?? [],
   };
 }
 

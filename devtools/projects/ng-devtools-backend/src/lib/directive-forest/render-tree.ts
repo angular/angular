@@ -17,14 +17,14 @@ const extractViewTree = (
   domNode: Node | Element,
   result: ComponentTreeNode[],
   getComponent: (element: Element) => {} | null,
-  getDirectives: (node: Node) => {}[],
+  getDirectives?: (node: Node) => {}[],
 ): ComponentTreeNode[] => {
   // Ignore DOM Node if it came from a different frame. Use instanceof Node to check this.
   if (!(domNode instanceof Node)) {
     return result;
   }
 
-  const directives = getDirectives(domNode);
+  const directives = getDirectives?.(domNode) ?? [];
   if (!directives.length && !(domNode instanceof Element)) {
     return result;
   }
@@ -87,7 +87,7 @@ function hydrationStatus(node: HydrationNode): HydrationStatus {
 
 export class RTreeStrategy {
   supports(): boolean {
-    return (['getDirectiveMetadata', 'getComponent', 'getDirectives'] as const).every(
+    return (['getDirectiveMetadata', 'getComponent'] as const).every(
       (method) => typeof ngDebugClient()[method] === 'function',
     );
   }
@@ -99,7 +99,7 @@ export class RTreeStrategy {
       element = element.parentElement;
     }
     const getComponent = ngDebugClient().getComponent!;
-    const getDirectives = ngDebugClient().getDirectives!;
+    const getDirectives = ngDebugClient().getDirectives;
     return extractViewTree(element, [], getComponent, getDirectives);
   }
 }
