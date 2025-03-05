@@ -188,7 +188,7 @@ import {
   collectAnimationNames,
   validateAndFlattenComponentImports,
 } from './util';
-import {getTemplateDiagnostics} from '../../../typecheck';
+import {getTemplateDiagnostics, createHostElement} from '../../../typecheck';
 import {JitDeclarationRegistry} from '../../common/src/jit_declaration_registry';
 import {extractHmrMetatadata, getHmrUpdateDeclaration} from '../../../hmr';
 import {getProjectRelativePath} from '../../../util/src/path';
@@ -270,6 +270,7 @@ export class ComponentDecoratorHandler
     private readonly strictStandalone: boolean,
     private readonly enableHmr: boolean,
     private readonly implicitStandaloneValue: boolean,
+    private readonly typeCheckHostBindings: boolean,
   ) {
     this.extractTemplateOptions = {
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
@@ -1072,12 +1073,30 @@ export class ComponentDecoratorHandler
       preserveWhitespaces: meta.meta.template.preserveWhitespaces ?? false,
     };
 
+    const hostElement = this.typeCheckHostBindings
+      ? createHostElement(
+          'component',
+          meta.meta.selector,
+          node,
+          meta.hostBindingNodes.literal,
+          meta.hostBindingNodes.bindingDecorators,
+          meta.hostBindingNodes.listenerDecorators,
+        )
+      : null;
+    const hostBindingsContext: HostBindingsContext | null =
+      hostElement === null
+        ? null
+        : {
+            node: hostElement,
+            sourceMapping: {type: 'direct', node},
+          };
+
     ctx.addDirective(
       new Reference(node),
       binder,
       scope.schemas,
       templateContext,
-      null,
+      hostBindingsContext,
       meta.meta.isStandalone,
     );
   }
