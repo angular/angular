@@ -8,7 +8,6 @@
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {provideNoopAnimations} from '@angular/platform-browser/animations';
 import {provideRouter} from '@angular/router';
 import {ExampleViewerContentLoader} from '../../../interfaces';
 import {EXAMPLE_VIEWER_CONTENT_LOADER} from '../../../providers';
@@ -82,7 +81,6 @@ describe('DocViewer', () => {
     await TestBed.configureTestingModule({
       imports: [DocViewer],
       providers: [
-        provideNoopAnimations(),
         provideRouter([]),
         provideExperimentalZonelessChangeDetection(),
         {provide: EXAMPLE_VIEWER_CONTENT_LOADER, useValue: exampleContentSpy},
