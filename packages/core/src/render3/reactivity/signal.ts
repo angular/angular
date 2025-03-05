@@ -13,7 +13,7 @@ import {
   SignalNode,
   signalSetFn,
   signalUpdateFn,
-} from '@angular/core/primitives/signals';
+} from '../../../primitives/signals';
 
 import {isSignal, Signal, ValueEqualityFn} from './api';
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {consumerDestroy, setActiveConsumer} from '@angular/core/primitives/signals';
+import {consumerDestroy, setActiveConsumer} from '../../primitives/signals';
 
 import {NotificationSource} from '../change_detection/scheduling/zoneless_scheduling';
 import {hasInSkipHydrationBlockFlag} from '../hydration/skip_hydration';
