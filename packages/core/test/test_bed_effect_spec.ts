@@ -17,8 +17,8 @@ import {
   NgZone,
   provideZoneChangeDetection,
   signal,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+} from '../src/core';
+import {TestBed} from '../testing';
 
 describe('effects in TestBed', () => {
   let prev: boolean;

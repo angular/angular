@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, Directive, forwardRef, NgModule, Pipe} from '@angular/core';
+import {Component, Directive, forwardRef, NgModule, Pipe} from '../../src/core';
 
 import {NgModuleDef} from '../../src/r3_symbols';
 import {

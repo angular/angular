@@ -7,7 +7,7 @@
  */
 import './translations';
 
-import {Component, NgModule} from '@angular/core';
+import {Component, NgModule} from '../../../src/core';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 @Component({

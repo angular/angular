@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, Directive, HostBinding, Input, NO_ERRORS_SCHEMA} from '@angular/core';
-import {ComponentFixture, getTestBed, TestBed} from '@angular/core/testing';
+import {Component, Directive, HostBinding, Input, NO_ERRORS_SCHEMA} from '../../src/core';
+import {ComponentFixture, getTestBed, TestBed} from '../../testing';
 import {DomSanitizer} from '@angular/platform-browser/src/security/dom_sanitization_service';
 
 @Component({

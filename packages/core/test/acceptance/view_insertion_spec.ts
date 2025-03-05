@@ -19,8 +19,8 @@ import {
   ViewChild,
   ViewContainerRef,
   ViewRef,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {TestBed} from '../../testing';
 import {By} from '@angular/platform-browser';
 
 describe('view insertion', () => {

@@ -9,7 +9,7 @@
 import {
   DefaultIterableDiffer,
   DefaultIterableDifferFactory,
-} from '@angular/core/src/change_detection/differs/default_iterable_differ';
+} from '../../../src/change_detection/differs/default_iterable_differ';
 
 import {TestIterable} from '../../util/iterable';
 import {iterableChangesAsString, iterableDifferToString} from '../util';

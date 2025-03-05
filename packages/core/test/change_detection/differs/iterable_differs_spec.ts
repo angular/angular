@@ -13,8 +13,8 @@ import {
   IterableDiffers,
   NgModule,
   TrackByFunction,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+} from '../../../src/core';
+import {TestBed} from '../../../testing';
 
 describe('IterableDiffers', function () {
   let factory1: jasmine.SpyObj<IterableDifferFactory>;

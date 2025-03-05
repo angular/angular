@@ -42,9 +42,9 @@ import {
   ViewChildren,
   ViewContainerRef,
   ɵsetDocument,
-} from '@angular/core';
-import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
-import {ComponentFixture, TestBed, TestComponentRenderer} from '@angular/core/testing';
+} from '../../src/core';
+import {ngDevModeResetPerfCounters} from '../../src/util/ng_dev_mode';
+import {ComponentFixture, TestBed, TestComponentRenderer} from '../../testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
 import {By, DomSanitizer} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';

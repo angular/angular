@@ -17,7 +17,7 @@ import {
   createComponent,
   provideExperimentalZonelessChangeDetection,
   signal,
-} from '@angular/core';
+} from '../src/core';
 import {
   ComponentFixtureAutoDetect,
   ComponentFixtureNoNgZone,
@@ -26,7 +26,7 @@ import {
   tick,
   waitForAsync,
   withModule,
-} from '@angular/core/testing';
+} from '../testing';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 

@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ComponentRef} from '@angular/core';
-import {ComponentFactoryResolver} from '@angular/core/src/render3/component_ref';
-import {Renderer} from '@angular/core/src/render3/interfaces/renderer';
-import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
-import {TestBed} from '@angular/core/testing';
+import {ComponentFactoryResolver} from '../../src/render3/component_ref';
+import {Renderer} from '../../src/render3/interfaces/renderer';
+import {RElement} from '../../src/render3/interfaces/renderer_dom';
+import {TestBed} from '../../testing';
 
 import {
+  ComponentRef,
   ChangeDetectionStrategy,
   Component,
   Injector,

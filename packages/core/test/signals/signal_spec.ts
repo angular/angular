@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, signal} from '@angular/core';
+import {computed, signal} from '../../src/core';
 import {
   ReactiveHookFn,
   ReactiveNode,
   setPostProducerCreatedFn,
   setPostSignalSetFn,
   SIGNAL,
-} from '@angular/core/primitives/signals';
+} from '../../primitives/signals';
 
 describe('signals', () => {
   it('should be a getter which reflects the set value', () => {

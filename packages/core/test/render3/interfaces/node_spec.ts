@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {TNodeType, toTNodeTypeAsString} from '@angular/core/src/render3/interfaces/node';
+import {TNodeType, toTNodeTypeAsString} from '../../../src/render3/interfaces/node';
 
 describe('node interfaces', () => {
   describe('TNodeType', () => {

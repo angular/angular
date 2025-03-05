@@ -14,8 +14,8 @@ import {
   NgModule,
   ViewChild,
   ViewContainerRef,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {TestBed} from '../../testing';
 
 describe('standalone injector', () => {
   it('should create one standalone injector for each parent EnvInjector', () => {

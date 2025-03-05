@@ -27,9 +27,9 @@ import {
   effect,
   inject,
   signal,
-} from '@angular/core';
-import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {NoopNgZone} from '../../src/zone/ng_zone';
+import {TestBed} from '../../testing';
 
 import {firstValueFrom} from 'rxjs';
 import {filter} from 'rxjs/operators';
