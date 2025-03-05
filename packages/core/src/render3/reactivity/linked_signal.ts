@@ -17,7 +17,7 @@ import {
   SIGNAL,
   linkedSignalSetFn,
   linkedSignalUpdateFn,
-} from '@angular/core/primitives/signals';
+} from '../../../primitives/signals';
 
 const identityFn = <T>(v: T) => v;
 

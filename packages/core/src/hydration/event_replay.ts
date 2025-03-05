@@ -16,7 +16,7 @@ import {
   getAppScopedQueuedEventInfos,
   clearAppScopedEarlyEventContract,
   EventPhase,
-} from '@angular/core/primitives/event-dispatch';
+} from '../../primitives/event-dispatch';
 
 import {APP_BOOTSTRAP_LISTENER, ApplicationRef} from '../application/application_ref';
 import {ENVIRONMENT_INITIALIZER, Injector} from '../di';
