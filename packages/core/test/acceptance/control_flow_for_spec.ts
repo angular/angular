@@ -18,8 +18,8 @@ import {
   PipeTransform,
   TemplateRef,
   ViewContainerRef,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {TestBed} from '../../testing';
 
 describe('control flow - for', () => {
   it('should create, remove and move views corresponding to items in a collection', () => {

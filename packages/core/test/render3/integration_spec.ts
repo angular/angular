@@ -7,8 +7,8 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, Directive, HostBinding} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+import {Component, Directive, HostBinding} from '../../src/core';
+import {TestBed} from '../../testing';
 
 import {getLContext, readPatchedData} from '../../src/render3/context_discovery';
 import {CONTEXT, HEADER_OFFSET} from '../../src/render3/interfaces/view';

@@ -24,11 +24,11 @@ import {
   RendererStyleFlags2,
   RendererType2,
   ViewEncapsulation,
-} from '@angular/core';
-import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
-import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
-import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {RElement} from '../../src/render3/interfaces/renderer_dom';
+import {ngDevModeResetPerfCounters} from '../../src/util/ng_dev_mode';
+import {NoopNgZone} from '../../src/zone/ng_zone';
+import {TestBed} from '../../testing';
 import {EventManager, ɵSharedStylesHost} from '@angular/platform-browser';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
 import {expect} from '@angular/platform-browser/testing/src/matchers';

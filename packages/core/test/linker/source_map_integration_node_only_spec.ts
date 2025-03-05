@@ -10,10 +10,10 @@ import {ResourceLoader, SourceMap} from '@angular/compiler';
 import {CompilerFacadeImpl} from '@angular/compiler/src/jit_compiler_facade';
 import {JitEvaluator} from '@angular/compiler/src/output/output_jit';
 import {escapeRegExp} from '@angular/compiler/src/util';
-import {Attribute, Component, Directive, ErrorHandler} from '@angular/core';
-import {CompilerFacade, ExportedCompilerFacade} from '@angular/core/src/compiler/compiler_facade';
-import {resolveComponentResources} from '@angular/core/src/metadata/resource_loading';
-import {fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {Attribute, Component, Directive, ErrorHandler} from '../../src/core';
+import {CompilerFacade, ExportedCompilerFacade} from '../../src/compiler/compiler_facade';
+import {resolveComponentResources} from '../../src/metadata/resource_loading';
+import {fakeAsync, TestBed, tick} from '../../testing';
 
 import {MockResourceLoader} from './resource_loader_mock';
 import {extractSourceMap, originalPositionFor} from './source_map_util';

@@ -14,8 +14,8 @@ import {
   resource,
   ResourceStatus,
   signal,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {TestBed} from '../../testing';
 
 abstract class MockBackend<T, R> {
   protected pending = new Map<

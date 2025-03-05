@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {Component} from '@angular/core';
-import {DeferBlockBehavior, DeferBlockState, TestBed} from '@angular/core/testing';
+import {Component} from '../../src/core';
+import {DeferBlockBehavior, DeferBlockState, TestBed} from '../../testing';
 
 import {getDeferBlocks} from '../../src/render3/util/defer';
 

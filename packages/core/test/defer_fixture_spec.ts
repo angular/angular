@@ -7,8 +7,8 @@
  */
 
 import {ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {Component, PLATFORM_ID, ɵPendingTasksInternal as PendingTasks} from '@angular/core';
-import {DeferBlockBehavior, DeferBlockState, TestBed} from '@angular/core/testing';
+import {Component, PLATFORM_ID, ɵPendingTasksInternal as PendingTasks} from '../src/core';
+import {DeferBlockBehavior, DeferBlockState, TestBed} from '../testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 @Component({

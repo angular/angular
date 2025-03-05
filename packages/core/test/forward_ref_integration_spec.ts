@@ -17,8 +17,8 @@ import {
   NgModule,
   NO_ERRORS_SCHEMA,
   QueryList,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+} from '../src/core';
+import {TestBed} from '../testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 class Frame {

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectorRef, Component, inject, Pipe, PipeTransform} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+import {ChangeDetectorRef, Component, inject, Pipe, PipeTransform} from '../../src/core';
+import {TestBed} from '../../testing';
 
 // Basic shared pipe used during testing.
 @Pipe({name: 'multiply', pure: true})

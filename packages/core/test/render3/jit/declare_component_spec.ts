@@ -17,7 +17,7 @@ import {
   Type,
   ViewEncapsulation,
   ɵɵngDeclareComponent,
-} from '@angular/core';
+} from '../../../src/core';
 
 import {
   AttributeMarker,

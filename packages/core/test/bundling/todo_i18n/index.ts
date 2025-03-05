@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectorRef, Component, Injectable, NgModule, ViewEncapsulation} from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  Injectable,
+  NgModule,
+  ViewEncapsulation,
+} from '../../../src/core';
 import {loadTranslations} from '@angular/localize';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 

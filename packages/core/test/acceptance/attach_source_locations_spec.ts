@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {TestBed} from '@angular/core/testing';
+import {TestBed} from '../../testing';
 import {
   RenderFlags,
   ɵɵadvance,
@@ -18,8 +18,8 @@ import {
   ɵɵelementStart,
   ɵɵtemplate,
   ɵɵtext,
-} from '@angular/core/src/render3';
-import {Directive} from '@angular/core';
+} from '../../src/render3';
+import {Directive} from '../../src/core';
 
 // The `ɵɵattachSourceLocation` calls are produced only in
 // AoT so these tests need to "be compiled manually".
