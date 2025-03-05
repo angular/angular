@@ -4,11 +4,6 @@
 
 ```ts
 
-import { AnimationDriver } from '@angular/animations/browser';
-import { AnimationPlayer } from '@angular/animations';
-import { NoopAnimationPlayer } from '@angular/animations';
-import { ɵStyleDataMap } from '@angular/animations';
-
 // @public (undocumented)
 export class MockAnimationDriver implements AnimationDriver {
     // (undocumented)

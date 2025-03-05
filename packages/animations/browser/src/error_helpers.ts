@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ɵRuntimeErrorCode as RuntimeErrorCode} from '@angular/animations';
+import {RuntimeErrorCode} from '../../src/errors';
 import {ɵRuntimeError as RuntimeError} from '@angular/core';
 
 const LINE_START = '\n - ';
