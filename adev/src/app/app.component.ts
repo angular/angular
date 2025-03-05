@@ -58,7 +58,7 @@ export class AppComponent implements OnInit {
 
   isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  displaySecondaryNav = input(false);
+  displaySecondaryNav = signal(false);
   displayFooter = signal(false);
   displaySearchDialog = inject(IS_SEARCH_DIALOG_OPEN);
 
@@ -75,6 +75,7 @@ export class AppComponent implements OnInit {
         // so we access it via the snapshot
         const activatedRoute = getActivatedRouteSnapshotFromRouter(this.router);
         this.displayFooter.set(!activatedRoute.data['hideFooter']);
+        this.displaySecondaryNav.set(activatedRoute.data['displaySecondaryNav']);
 
         this.displaySearchDialog.set(false);
         this.updateCanonicalLink(url);
