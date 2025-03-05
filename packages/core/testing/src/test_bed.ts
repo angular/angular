@@ -39,7 +39,7 @@ import {
   ɵsetUnknownElementStrictMode as setUnknownElementStrictMode,
   ɵsetUnknownPropertyStrictMode as setUnknownPropertyStrictMode,
   ɵstringify as stringify,
-} from '@angular/core';
+} from '../../src/core';
 
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
@@ -129,7 +129,7 @@ export interface TestBed {
   /**
    * Runs the given function in the `EnvironmentInjector` context of `TestBed`.
    *
-   * @see {@link EnvironmentInjector#runInContext}
+   * @see {@link https://angular.dev/api/core/EnvironmentInjector#runInContext}
    */
   runInInjectionContext<T>(fn: () => T): T;
 
@@ -392,7 +392,7 @@ export class TestBedImpl implements TestBed {
   /**
    * Runs the given function in the `EnvironmentInjector` context of `TestBed`.
    *
-   * @see {@link EnvironmentInjector#runInContext}
+   * @see {@link https://angular.dev/api/core/EnvironmentInjector#runInContext}
    */
   static runInInjectionContext<T>(fn: () => T): T {
     return TestBedImpl.INSTANCE.runInInjectionContext(fn);

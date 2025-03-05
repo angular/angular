@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable} from '@angular/core';
+import {Injectable} from '../../src/core';
 
 @Injectable()
 export class Log<T = string> {
