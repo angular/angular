@@ -24,13 +24,14 @@ import {
   NotFound,
   InjectionToken as PrimitivesInjectionToken,
   getCurrentInjector,
-} from '@angular/core/primitives/di';
+} from '../../primitives/di';
+
 import {InjectionToken} from './injection_token';
 
 const _THROW_IF_NOT_FOUND = {};
 export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
 
-export {getCurrentInjector, setCurrentInjector} from '@angular/core/primitives/di';
+export {getCurrentInjector, setCurrentInjector} from '../../primitives/di';
 
 /*
  * Name of a property (that we patch onto DI decorator), which is used as an annotation of which

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {setActiveConsumer} from '@angular/core/primitives/signals';
+import {setActiveConsumer} from '../../../primitives/signals';
 import {LView, TView} from '../interfaces/view';
 import {DirectiveDef, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
 import {assertDefined} from '../../util/assert';
