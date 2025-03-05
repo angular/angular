@@ -1431,6 +1431,7 @@ export class NgCompiler {
     const supportJitMode = this.options['supportJitMode'] ?? true;
     const supportTestBed = this.options['supportTestBed'] ?? true;
     const externalRuntimeStyles = this.options['externalRuntimeStyles'] ?? false;
+    const typeCheckHostBindings = this.options.typeCheckHostBindings ?? false;
 
     // Libraries compiled in partial mode could potentially be used with TestBed within an
     // application. Since this is not known at library compilation time, support is required to
@@ -1503,6 +1504,7 @@ export class NgCompiler {
         !!this.options.strictStandalone,
         this.enableHmr,
         this.implicitStandaloneValue,
+        typeCheckHostBindings,
       ),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
