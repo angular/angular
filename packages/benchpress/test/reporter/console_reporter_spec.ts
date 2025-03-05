@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {COLUMN_WIDTH} from '@angular/benchpress/src/reporter/text_reporter_base';
+import {COLUMN_WIDTH} from '../../src/reporter/text_reporter_base';
 import {StaticProvider} from '@angular/core';
 
 import {ConsoleReporter, Injector, MeasureValues, SampleDescription} from '../../index';
