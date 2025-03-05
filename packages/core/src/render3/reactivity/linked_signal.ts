@@ -14,7 +14,7 @@ import {
   linkedSignalSetFn,
   linkedSignalUpdateFn,
   SIGNAL,
-} from '@angular/core/primitives/signals';
+} from '../../../primitives/signals';
 import {Signal, ValueEqualityFn} from './api';
 import {signalAsReadonlyFn, WritableSignal} from './signal';
 

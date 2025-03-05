@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {untracked as untrackedPrimitive} from '@angular/core/primitives/signals';
+import {untracked as untrackedPrimitive} from '../../../primitives/signals';
 
 /**
  * Execute an arbitrary function in a non-reactive (non-tracking) context. The executed function

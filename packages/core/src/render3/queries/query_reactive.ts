@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ComputedNode, createComputed, SIGNAL} from '@angular/core/primitives/signals';
+import {ComputedNode, createComputed, SIGNAL} from '../../../primitives/signals';
 
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {unwrapElementRef} from '../../linker/element_ref';

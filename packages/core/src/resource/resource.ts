@@ -22,7 +22,7 @@ import {
   ResourceStreamItem,
 } from './api';
 
-import {ValueEqualityFn} from '@angular/core/primitives/signals';
+import {ValueEqualityFn} from '../../primitives/signals';
 
 import {Injector} from '../di/injector';
 import {assertInInjectionContext} from '../di/contextual';
