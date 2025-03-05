@@ -160,6 +160,7 @@ function setup(
     /* strictStandalone */ false,
     /* enableHmr */ false,
     /* implicitStandaloneValue */ true,
+    /* typeCheckHostBindings */ true,
   );
   return {reflectionHost, handler, resourceLoader, metaRegistry};
 }
