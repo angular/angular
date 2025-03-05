@@ -56,7 +56,7 @@ interface NgGlobalPublishUtils {
   ɵgetLoadedRoutes(route: any): any;
 }
 
-const globalUtilsFunctions = {
+const externalGlobalUtils = {
   /**
    * Warning: functions that start with `ɵ` are considered *INTERNAL* and should not be relied upon
    * in application's code. The contract of those functions might be changed in any release and/or a
@@ -82,8 +82,33 @@ const globalUtilsFunctions = {
   'applyChanges': applyChanges,
   'isSignal': isSignal,
 };
-type CoreGlobalUtilsFunctions = keyof typeof globalUtilsFunctions;
-type ExternalGlobalUtilsFunctions = keyof NgGlobalPublishUtils;
+
+/**
+ * The set of external (meaning outside google3) global utils implemented by `@angular/core`.
+ * Other packages may provided their own global utilities with their own types. Any functions
+ * which have *ever* been in this set exist in long-lived public Angular versions which DevTools
+ * needs to support.
+ */
+export type ExternalGlobalUtils = typeof externalGlobalUtils;
+
+/**
+ * A type of the internal (meaning inside google3) global utils. This definition needs to exist
+ * in a place where it can be used by DevTools and also synced into google3 and consumed internally.
+ *
+ * Since versioning in google3 works differently, we do not have the same constraint as
+ * {@link ExternalGlobalUtils}. We can change these definitions more or less as much as we want
+ * without fear of breaking applications on older framework versions (note that http://go/build-horizon
+ * does technically apply). The trade-off is that external Angular developers cannot use such APIs,
+ * as they would be broken whenever the APIs changed.
+ *
+ * `InternalGlobalUtils` serves as a "beta" channel for new APIs which can be implemented and supported
+ * in DevTools. We can then iterate and change these APIs, landing whatever breaking changes necessary,
+ * and update DevTools accordingly without actually breaking any users. Once a given function's design
+ * fully validated, we can move it to {@link ExternalGlobalUtils} and ship the function externally in
+ * Angular. This allows fast iteration on new global utils and only applies Angular's long-lived
+ * versioning constraint when we are ready to accept it.
+ */
+export interface InternalGlobalUtils extends ExternalGlobalUtils {}
 
 let _published = false;
 /**
@@ -101,26 +126,19 @@ export function publishDefaultGlobalUtils() {
       setupFrameworkInjectorProfiler();
     }
 
-    for (const [methodName, method] of Object.entries(globalUtilsFunctions)) {
-      publishGlobalUtil(methodName as CoreGlobalUtilsFunctions, method);
+    for (const [methodName, method] of Object.entries(externalGlobalUtils)) {
+      publishGlobalUtil(methodName as keyof ExternalGlobalUtils, method);
     }
   }
 }
 
 /**
- * Default debug tools available under `window.ng`.
- */
-export type GlobalDevModeUtils = {
-  [GLOBAL_PUBLISH_EXPANDO_KEY]: typeof globalUtilsFunctions;
-};
-
-/**
  * Publishes the given function to `window.ng` so that it can be
  * used from the browser console when an application is not in production.
  */
-export function publishGlobalUtil<K extends CoreGlobalUtilsFunctions>(
+export function publishGlobalUtil<K extends keyof ExternalGlobalUtils>(
   name: K,
-  fn: (typeof globalUtilsFunctions)[K],
+  fn: (typeof externalGlobalUtils)[K],
 ): void {
   publishUtil(name, fn);
 }
@@ -129,7 +147,7 @@ export function publishGlobalUtil<K extends CoreGlobalUtilsFunctions>(
  * Publishes the given function to `window.ng` from package other than @angular/core
  * So that it can be used from the browser console when an application is not in production.
  */
-export function publishExternalGlobalUtil<K extends ExternalGlobalUtilsFunctions>(
+export function publishExternalGlobalUtil<K extends keyof NgGlobalPublishUtils>(
   name: K,
   fn: NgGlobalPublishUtils[K],
 ): void {

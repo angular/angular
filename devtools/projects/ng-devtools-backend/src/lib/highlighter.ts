@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {ɵGlobalDevModeUtils as GlobalDevModeUtils, Type} from '@angular/core';
+import type {Type} from '@angular/core';
+import {NgGlobal} from './ng-debug-api/ng-debug-api';
 import {HydrationStatus} from 'protocol';
 
 let hydrationOverlayItems: HTMLElement[] = [];
 let selectedElementOverlay: HTMLElement | null = null;
 
-declare const ng: GlobalDevModeUtils['ng'];
+declare const ng: NgGlobal;
 
 const DEV_TOOLS_HIGHLIGHT_NODE_ID = '____ngDevToolsHighlight';
 
@@ -65,7 +66,7 @@ export function findComponentAndHost(el: Node | undefined): {
     return {component: null, host: null};
   }
   while (el) {
-    const component = el instanceof HTMLElement && ng.getComponent(el);
+    const component = el instanceof HTMLElement && ng.getComponent!(el);
     if (component) {
       return {component, host: el as HTMLElement};
     }

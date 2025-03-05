@@ -13,4 +13,8 @@ export function getLoadedRoutes(route: Route): Route[] | undefined {
   return route._loadedRoutes;
 }
 
+export type GlobalUtils = {
+  getLoadedRoutes: typeof getLoadedRoutes;
+};
+
 ɵpublishExternalGlobalUtil('ɵgetLoadedRoutes', getLoadedRoutes);

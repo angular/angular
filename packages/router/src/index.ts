@@ -143,6 +143,7 @@ export {
   mapToResolve,
 } from './utils/functional_guards';
 export {VERSION} from './version';
+export {GlobalUtils as ɵGlobalUtils} from './router_devtools';
 
 export * from './private_export';
 import './router_devtools';
