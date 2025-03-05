@@ -18,8 +18,8 @@ import {
   PipeTransform,
   TemplateRef,
   ViewContainerRef,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {TestBed} from '../../testing';
 
 // Basic shared pipe used during testing.
 @Pipe({name: 'multiply', pure: true})

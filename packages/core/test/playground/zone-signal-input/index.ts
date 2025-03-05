@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, EventEmitter, Input, input, Output, signal} from '@angular/core';
+import {Component, EventEmitter, Input, input, Output, signal} from '../../../src/core';
 import {bootstrapApplication} from '@angular/platform-browser';
 
 @Component({

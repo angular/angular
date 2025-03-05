@@ -32,9 +32,9 @@ import {
   SimpleChanges,
   Type,
   ViewChild,
-} from '@angular/core';
-import {stringifyForError} from '@angular/core/src/render3/util/stringify_utils';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {stringifyForError} from '../../src/render3/util/stringify_utils';
+import {TestBed} from '../../testing';
 
 describe('createComponent', () => {
   it('should create an instance of a standalone component', () => {

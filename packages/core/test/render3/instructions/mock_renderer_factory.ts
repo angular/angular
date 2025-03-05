@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {RendererStyleFlags2, RendererType2} from '@angular/core';
-import {Renderer, RendererFactory} from '@angular/core/src/render3/interfaces/renderer';
-import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
+import {RendererStyleFlags2, RendererType2} from '../../../src/core';
+import {Renderer, RendererFactory} from '../../../src/render3/interfaces/renderer';
+import {RElement} from '../../../src/render3/interfaces/renderer_dom';
 
 export class MockRendererFactory implements RendererFactory {
   wasCalled = false;

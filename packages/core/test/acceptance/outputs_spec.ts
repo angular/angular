@@ -15,8 +15,8 @@ import {
   OnDestroy,
   Output,
   ViewChild,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {TestBed} from '../../testing';
 
 describe('outputs', () => {
   @Component({

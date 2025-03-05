@@ -27,9 +27,9 @@ import {
   Type,
   ViewChild,
   ViewContainerRef,
-} from '@angular/core';
-import {provideExperimentalCheckNoChangesForDebug} from '@angular/core/src/change_detection/scheduling/exhaustive_check_no_changes';
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {provideExperimentalCheckNoChangesForDebug} from '../../src/change_detection/scheduling/exhaustive_check_no_changes';
+import {ComponentFixture, TestBed} from '../../testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {of} from 'rxjs';
 

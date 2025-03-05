@@ -16,16 +16,16 @@ import {
   Renderer2,
   ViewChild,
   ViewContainerRef,
-} from '@angular/core';
-import {bypassSanitizationTrustStyle} from '@angular/core/src/sanitization/bypass';
-import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {bypassSanitizationTrustStyle} from '../../src/sanitization/bypass';
+import {ngDevModeResetPerfCounters} from '../../src/util/ng_dev_mode';
+import {TestBed} from '../../testing';
 import {
   getElementClasses,
   getElementStyles,
   getSortedClassName,
   getSortedStyle,
-} from '@angular/core/testing/src/styling';
+} from '../../testing/src/styling';
 import {By, DomSanitizer, SafeStyle} from '@angular/platform-browser';
 import {expectPerfCounters} from '@angular/private/testing';
 

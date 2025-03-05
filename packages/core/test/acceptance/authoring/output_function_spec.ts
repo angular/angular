@@ -14,9 +14,9 @@ import {
   EventEmitter,
   output,
   signal,
-} from '@angular/core';
-import {outputFromObservable} from '@angular/core/rxjs-interop';
-import {TestBed} from '@angular/core/testing';
+} from '../../../src/core';
+import {outputFromObservable} from '../../../rxjs-interop';
+import {TestBed} from '../../../testing';
 import {BehaviorSubject, Observable, share, Subject} from 'rxjs';
 
 describe('output() function', () => {

@@ -24,13 +24,13 @@ import {
   ViewChildren,
   ɵNgModuleDef as NgModuleDef,
   ɵɵngDeclareComponent as ngDeclareComponent,
-} from '@angular/core';
-import {Injectable} from '@angular/core/src/di/injectable';
-import {setCurrentInjector, ɵɵinject} from '@angular/core/src/di/injector_compatibility';
-import {ɵɵdefineInjectable, ɵɵInjectorDef} from '@angular/core/src/di/interface/defs';
-import {FactoryFn} from '@angular/core/src/render3/definition_factory';
-import {ComponentDef, PipeDef} from '@angular/core/src/render3/interfaces/definition';
-import {InputFlags} from '@angular/core/src/render3/interfaces/input_flags';
+} from '../../../src/core';
+import {Injectable} from '../../../src/di/injectable';
+import {setCurrentInjector, ɵɵinject} from '../../../src/di/injector_compatibility';
+import {ɵɵdefineInjectable, ɵɵInjectorDef} from '../../../src/di/interface/defs';
+import {FactoryFn} from '../../../src/render3/definition_factory';
+import {ComponentDef, PipeDef} from '../../../src/render3/interfaces/definition';
+import {InputFlags} from '../../../src/render3/interfaces/input_flags';
 
 describe('render3 jit', () => {
   let injector: any;

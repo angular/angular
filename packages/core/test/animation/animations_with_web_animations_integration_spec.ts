@@ -14,8 +14,8 @@ import {
 } from '@angular/animations/browser';
 import {TransitionAnimationPlayer} from '@angular/animations/browser/src/render/transition_animation_engine';
 import {AnimationGroupPlayer} from '@angular/animations/src/players/animation_group_player';
-import {Component, ViewChild} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+import {Component, ViewChild} from '../../src/core';
+import {TestBed} from '../../testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 (function () {

@@ -11,7 +11,7 @@ import {
   i18nRemoveOpCodesToString,
   i18nUpdateOpCodesToString,
   icuCreateOpCodesToString,
-} from '@angular/core/src/render3/i18n/i18n_debug';
+} from '../../src/render3/i18n/i18n_debug';
 import {
   ELEMENT_MARKER,
   I18nCreateOpCode,
@@ -21,7 +21,7 @@ import {
   I18nUpdateOpCodes,
   ICU_MARKER,
   IcuCreateOpCode,
-} from '@angular/core/src/render3/interfaces/i18n';
+} from '../../src/render3/interfaces/i18n';
 
 describe('i18n debug', () => {
   describe('i18nUpdateOpCodesToString', () => {

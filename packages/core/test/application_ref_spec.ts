@@ -27,10 +27,10 @@ import {
   Type,
   ViewChild,
   ViewContainerRef,
-} from '@angular/core';
-import {ErrorHandler} from '@angular/core/src/error_handler';
-import {ComponentRef} from '@angular/core/src/linker/component_factory';
-import {createEnvironmentInjector, getLocaleId} from '@angular/core/src/render3';
+} from '../src/core';
+import {ErrorHandler} from '../src/error_handler';
+import {ComponentRef} from '../src/linker/component_factory';
+import {createEnvironmentInjector, getLocaleId} from '../src/render3';
 import {BrowserModule} from '@angular/platform-browser';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
 import {
