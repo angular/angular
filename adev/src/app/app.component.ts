@@ -14,10 +14,10 @@ import {
   OnInit,
   PLATFORM_ID,
   input,
-  linkedSignal,
+  signal,
 } from '@angular/core';
 import {NavigationEnd, NavigationSkipped, Router, RouterOutlet} from '@angular/router';
-import {filter, map, skip} from 'rxjs/operators';
+import {filter, map} from 'rxjs/operators';
 import {
   CookiePopup,
   getActivatedRouteSnapshotFromRouter,
@@ -59,8 +59,7 @@ export class AppComponent implements OnInit {
   isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   displaySecondaryNav = input(false);
-  hideFooter = input(true);
-  displayFooter = linkedSignal(() => !this.hideFooter());
+  displayFooter = signal(false);
   displaySearchDialog = inject(IS_SEARCH_DIALOG_OPEN);
 
   ngOnInit(): void {
@@ -71,6 +70,9 @@ export class AppComponent implements OnInit {
         map((event) => event.urlAfterRedirects),
       )
       .subscribe((url) => {
+        // We can't use an input binded to the route here
+        // because AppComponent itself is not a routed component
+        // so we access it via the snapshot
         const activatedRoute = getActivatedRouteSnapshotFromRouter(this.router);
         this.displayFooter.set(!activatedRoute.data['hideFooter']);
 
