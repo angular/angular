@@ -1525,11 +1525,14 @@ export class NgCompiler {
         this.delegatingPerfRecorder,
         importTracker,
         supportTestBed,
+        typeCheckScopeRegistry,
         compilationMode,
         jitDeclarationRegistry,
         resourceRegistry,
         !!this.options.strictStandalone,
         this.implicitStandaloneValue,
+        this.usePoisonedData,
+        typeCheckHostBindings,
       ) as Readonly<DecoratorHandler<unknown, unknown, SemanticSymbol | null, unknown>>,
       // Pipe handler must be before injectable handler in list so pipe factories are printed
       // before injectable factories (so injectable factories can delegate to them)
