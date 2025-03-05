@@ -21,6 +21,7 @@ import {ImportedSymbolsTracker, ReferenceEmitter} from '../../../imports';
 import {
   CompoundMetadataReader,
   DtsMetadataReader,
+  HostDirectivesResolver,
   LocalMetadataRegistry,
   ResourceRegistry,
 } from '../../../metadata';
@@ -31,7 +32,11 @@ import {
   isNamedClassDeclaration,
   TypeScriptReflectionHost,
 } from '../../../reflection';
-import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../../scope';
+import {
+  LocalModuleScopeRegistry,
+  MetadataDtsModuleScopeResolver,
+  TypeCheckScopeRegistry,
+} from '../../../scope';
 import {getDeclaration, makeProgram} from '../../../testing';
 import {CompilationMode} from '../../../transform';
 import {
@@ -201,6 +206,12 @@ runInEachFileSystem(() => {
     const importTracker = new ImportedSymbolsTracker();
     const jitDeclarationRegistry = new JitDeclarationRegistry();
     const resourceRegistry = new ResourceRegistry();
+    const hostDirectivesResolver = new HostDirectivesResolver(metaReader);
+    const typeCheckScopeRegistry = new TypeCheckScopeRegistry(
+      scopeRegistry,
+      metaReader,
+      hostDirectivesResolver,
+    );
 
     const handler = new DirectiveDecoratorHandler(
       reflectionHost,
@@ -218,11 +229,14 @@ runInEachFileSystem(() => {
       NOOP_PERF_RECORDER,
       importTracker,
       /*includeClassMetadata*/ true,
+      typeCheckScopeRegistry,
       /*compilationMode */ CompilationMode.FULL,
       jitDeclarationRegistry,
       resourceRegistry,
       /* strictStandalone */ false,
       /* implicitStandaloneValue */ true,
+      /* usePoisonedData */ false,
+      /* typeCheckHostBindings */ true,
     );
 
     const DirNode = getDeclaration(program, _('/entry.ts'), dirName, isNamedClassDeclaration);
