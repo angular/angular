@@ -52,6 +52,16 @@ describe('form', () => {
       expect(f.$.dirty()).toBe(true);
       expect(f.name.first.$.dirty()).toBe(true);
     });
+
+    it('should unmark dirty', () => {
+      const f = form(signal({name: {first: 'John', last: 'Doe'}}));
+      expect(f.$.dirty()).toBe(false);
+      f.name.first.$.markDirty();
+      expect(f.$.dirty()).toBe(true);
+      f.name.first.$.markDirty(false);
+      expect(f.name.first.$.dirty()).toBe(false);
+      expect(f.$.dirty()).toBe(true);
+    });
   });
 
   describe('with schema', () => {
@@ -72,7 +82,15 @@ describe('form', () => {
     });
 
     it('should raise errors', () => {
-      const f = form(signal({name: {first: 'John', last: 'Doe'}}), profileSchema);
+      const f = form(
+        signal({
+          name: {
+            first: 'John',
+            last: 'Doe',
+          },
+        }),
+        profileSchema,
+      );
       expect(f.$.errors()).toEqual([]);
       expect(f.name.$.errors()).toEqual([]);
       expect(f.name.first.$.errors()).toEqual([]);
@@ -81,11 +99,24 @@ describe('form', () => {
       expect(f.$.errors()).toEqual([]);
       expect(f.name.$.errors()).toEqual([]);
       expect(f.name.first.$.errors()).toEqual([]);
-      expect(f.name.last.$.errors()).toEqual([{message: 'Last name is required', type: 'custom'}]);
+      expect(f.name.last.$.errors()).toEqual([
+        {
+          message: 'Last name is required',
+          type: 'custom',
+        },
+      ]);
     });
 
     it('should validate', () => {
-      const f = form(signal({name: {first: 'John', last: 'Doe'}}), profileSchema);
+      const f = form(
+        signal({
+          name: {
+            first: 'John',
+            last: 'Doe',
+          },
+        }),
+        profileSchema,
+      );
       expect(f.$.valid()).toBe(true);
       expect(f.name.$.valid()).toBe(true);
       expect(f.name.first.$.valid()).toBe(true);
@@ -98,7 +129,15 @@ describe('form', () => {
     });
 
     it('should disable', () => {
-      const f = form(signal({name: {first: 'John', last: 'Doe'}}), profileSchema);
+      const f = form(
+        signal({
+          name: {
+            first: 'John',
+            last: 'Doe',
+          },
+        }),
+        profileSchema,
+      );
       expect(f.$.disabled()).toBe(false);
       expect(f.name.$.disabled()).toBe(false);
       expect(f.name.first.$.disabled()).toBe(false);
@@ -252,9 +291,24 @@ describe('form', () => {
       });
 
       const f = form(signal({year: 2020, month: 13, day: -2}), birthdaySchema);
-      expect(f.year.$.errors()).toEqual([{type: 'custom', message: 'Must be 18 or older'}]);
-      expect(f.month.$.errors()).toEqual([{type: 'custom', message: 'Must be between 1-12'}]);
-      expect(f.day.$.errors()).toEqual([{type: 'custom', message: 'Must be between 1-31'}]);
+      expect(f.year.$.errors()).toEqual([
+        {
+          type: 'custom',
+          message: 'Must be 18 or older',
+        },
+      ]);
+      expect(f.month.$.errors()).toEqual([
+        {
+          type: 'custom',
+          message: 'Must be between 1-12',
+        },
+      ]);
+      expect(f.day.$.errors()).toEqual([
+        {
+          type: 'custom',
+          message: 'Must be between 1-31',
+        },
+      ]);
     });
 
     it(`should throw when calling rule and each outside schema`, () => {
@@ -312,10 +366,20 @@ describe('form', () => {
       s,
     );
 
-    expect(f[0][0].$.errors()).toEqual([{type: 'custom', message: 'some error'}]);
+    expect(f[0][0].$.errors()).toEqual([
+      {
+        type: 'custom',
+        message: 'some error',
+      },
+    ]);
     expect(f[1][0].$.errors()).toEqual([]);
     expect(f[0][1].$.errors()).toEqual([]);
     expect(f[1][1].$.errors()).toEqual([]);
-    expect(f[2][2].$.errors()).toEqual([{type: 'custom', message: 'some error'}]);
+    expect(f[2][2].$.errors()).toEqual([
+      {
+        type: 'custom',
+        message: 'some error',
+      },
+    ]);
   });
 });

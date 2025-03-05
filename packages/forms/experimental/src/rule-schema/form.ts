@@ -39,7 +39,7 @@ export type FormField<T> = WritableSignal<T> & {
   readonly errors: Signal<readonly FormValidationError[]>;
   readonly metadata: Signal<FormMetadata>;
   readonly markTouched: () => void;
-  readonly markDirty: () => void;
+  readonly markDirty: (isDirty?: boolean) => void;
 };
 
 export type FormNode<T> = {
@@ -157,7 +157,7 @@ function makeForm<T>(data: WritableSignal<T>, schema?: FormSchema<T>): Form<T> {
           return false;
         });
         $.markTouched = () => form[INTERNAL].touched.set(true);
-        $.markDirty = () => form[INTERNAL].dirty.set(true);
+        $.markDirty = (isDirty = true) => form[INTERNAL].dirty.set(isDirty);
       },
     },
   ) as Form<T>;
