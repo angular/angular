@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {OutputRef, ɵgetOutputDestroyRef} from '@angular/core';
+import {OutputRef, ɵgetOutputDestroyRef} from '../../src/core';
 import {Observable} from 'rxjs';
 
 /**

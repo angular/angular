@@ -7,9 +7,9 @@
  */
 
 import {of, Observable, BehaviorSubject} from 'rxjs';
-import {TestBed} from '@angular/core/testing';
-import {ApplicationRef, Injector, signal} from '@angular/core';
-import {rxResource} from '@angular/core/rxjs-interop';
+import {TestBed} from '../../testing';
+import {ApplicationRef, Injector, signal} from '../../src/core';
+import {rxResource} from '../src';
 
 describe('rxResource()', () => {
   it('should fetch data using an observable loader', async () => {
