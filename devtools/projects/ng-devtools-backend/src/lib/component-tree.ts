@@ -64,15 +64,16 @@ export function getInjectorId() {
 }
 
 export function getInjectorMetadata(injector: Injector) {
-  return ngDebugClient().ɵgetInjectorMetadata!(injector);
+  return ngDebugClient().ɵgetInjectorMetadata?.(injector) ?? null;
 }
 
 export function getInjectorResolutionPath(injector: Injector): Injector[] {
-  if (!ngDebugApiIsSupported('ɵgetInjectorResolutionPath')) {
+  const ng = ngDebugClient();
+  if (!ngDebugApiIsSupported(ng, 'ɵgetInjectorResolutionPath')) {
     return [];
   }
 
-  return ngDebugClient().ɵgetInjectorResolutionPath!(injector);
+  return ng.ɵgetInjectorResolutionPath(injector) ?? [];
 }
 
 export function getInjectorFromElementNode(element: Node): Injector | null {
@@ -83,9 +84,10 @@ function getDirectivesFromElement(element: HTMLElement): {
   component: unknown | null;
   directives: unknown[];
 } {
+  const ng = ngDebugClient();
   let component = null;
-  if (element instanceof Element) {
-    component = ngDebugClient().getComponent!(element);
+  if (element instanceof Element && ngDebugApiIsSupported(ng, 'getComponent')) {
+    component = ng.getComponent(element);
   }
 
   return {
@@ -108,7 +110,7 @@ export const getLatestComponentState = (
 
   const directiveProperties: DirectivesProperties = {};
 
-  const injector = getInjectorFromElementNode!(node.nativeElement!);
+  const injector = getInjectorFromElementNode(node.nativeElement!);
 
   const injectors = injector ? getInjectorResolutionPath(injector) : [];
   const resolutionPathWithProviders = !ngDebugDependencyInjectionApiIsSupported()
@@ -265,12 +267,12 @@ const getDependenciesForDirective = (
   resolutionPath: {injector: Injector; providers: ProviderRecord[]}[],
   directive: any,
 ): SerializedInjectedService[] => {
-  if (!ngDebugApiIsSupported('ɵgetDependenciesFromInjectable')) {
+  const ng = ngDebugClient();
+  if (!ngDebugApiIsSupported(ng, 'ɵgetDependenciesFromInjectable')) {
     return [];
   }
 
-  let dependencies =
-    ngDebugClient().ɵgetDependenciesFromInjectable!(injector, directive)?.dependencies ?? [];
+  let dependencies = ng.ɵgetDependenciesFromInjectable(injector, directive)?.dependencies ?? [];
   const uniqueServices = new Set<string>();
   const serializedInjectedServices: SerializedInjectedService[] = [];
 
@@ -580,7 +582,9 @@ export const updateState = (updatedStateData: UpdatedStateData): void => {
   if (updatedStateData.directiveId.directive !== undefined) {
     const directive = node.directives[updatedStateData.directiveId.directive].instance;
     mutateComponentOrDirective(updatedStateData, directive);
-    ng.applyChanges?.(ng.getOwningComponent!(directive)!);
+    if (ngDebugApiIsSupported(ng, 'getOwningComponent')) {
+      ng.applyChanges?.(ng.getOwningComponent(directive)!);
+    }
     return;
   }
   if (node.component) {

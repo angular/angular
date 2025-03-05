@@ -41,6 +41,7 @@ ts_library(
     name = "highlighter",
     srcs = ["highlighter.ts"],
     deps = [
+        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
         "//devtools/projects/protocol",
         "//packages/core",
     ],
@@ -98,6 +99,10 @@ ts_library(
 ts_library(
     name = "utils",
     srcs = ["utils.ts"],
+    deps = [
+        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
+        "//packages/core",
+    ],
 )
 
 ts_library(
