@@ -14,8 +14,8 @@ import {
   ɵgetClosestComponentName as getClosestComponentName,
   ViewChild,
   ViewContainerRef,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {TestBed} from '../../testing';
 
 describe('internal utilities', () => {
   describe('getClosestComponentName', () => {

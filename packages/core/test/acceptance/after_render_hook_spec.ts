@@ -27,11 +27,11 @@ import {
   effect,
   inject,
   signal,
-} from '@angular/core';
-import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {NoopNgZone} from '../../src/zone/ng_zone';
+import {TestBed} from '../../testing';
 
-import {setUseMicrotaskEffectsByDefault} from '@angular/core/src/render3/reactivity/effect';
+import {setUseMicrotaskEffectsByDefault} from '../../src/render3/reactivity/effect';
 import {firstValueFrom} from 'rxjs';
 import {filter} from 'rxjs/operators';
 import {EnvironmentInjector, Injectable} from '../../src/di';

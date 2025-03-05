@@ -15,11 +15,11 @@ import {
   Output,
   ViewChild,
   ViewEncapsulation,
-} from '@angular/core';
-import {EventEmitter} from '@angular/core/src/event_emitter';
-import {isLView} from '@angular/core/src/render3/interfaces/type_checks';
-import {CONTEXT} from '@angular/core/src/render3/interfaces/view';
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {EventEmitter} from '../../src/event_emitter';
+import {isLView} from '../../src/render3/interfaces/type_checks';
+import {CONTEXT} from '../../src/render3/interfaces/view';
+import {ComponentFixture, TestBed} from '../../testing';
 
 import {getLContext} from '../../src/render3/context_discovery';
 import {getHostElement} from '../../src/render3/index';

@@ -12,7 +12,7 @@ import {
   NgZone,
   afterRender,
   provideZoneChangeDetection,
-} from '@angular/core';
+} from '../../src/core';
 import {
   TestBed,
   fakeAsync,
@@ -21,8 +21,8 @@ import {
   inject,
   tick,
   waitForAsync,
-} from '@angular/core/testing';
-import {Log} from '@angular/core/testing/src/testing_internal';
+} from '../../testing';
+import {Log} from '../../testing/src/testing_internal';
 import {firstValueFrom} from 'rxjs';
 
 import {scheduleCallbackWithRafRace as scheduler} from '../../src/util/callback_scheduler';

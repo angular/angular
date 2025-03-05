@@ -17,8 +17,8 @@ import {
   inject,
   ChangeDetectorRef,
   ViewChild,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {TestBed} from '../../testing';
 
 describe('@let declarations', () => {
   it('should update the value of a @let declaration over time', () => {

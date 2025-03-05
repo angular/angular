@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injector} from '@angular/core';
+import {Injector} from '../../src/core';
 
 describe('Injector.NULL', () => {
   it('should throw if no arg is given', () => {

@@ -21,9 +21,9 @@ import {
   TemplateRef,
   ViewChild,
   ViewContainerRef,
-} from '@angular/core';
-import {ReactiveNode, SIGNAL} from '@angular/core/primitives/signals';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {ReactiveNode, SIGNAL} from '../../primitives/signals';
+import {TestBed} from '../../testing';
 
 describe('CheckAlways components', () => {
   it('can read a signal', () => {

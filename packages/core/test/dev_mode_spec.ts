@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {isDevMode} from '@angular/core';
+import {isDevMode} from '../src/core';
 
 describe('dev mode', () => {
   it('is enabled in our tests by default', () => {

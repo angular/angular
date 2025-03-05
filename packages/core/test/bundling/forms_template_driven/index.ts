@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {Component, NgModule} from '@angular/core';
+import {Component, NgModule} from '../../../src/core';
 import {FormsModule} from '@angular/forms';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 

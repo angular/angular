@@ -12,8 +12,8 @@ import {
   ɵɵCopyDefinitionFeature as CopyDefinitionFeature,
   ɵɵdefineComponent as defineComponent,
   ɵɵInheritDefinitionFeature as InheritDefinitionFeature,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {TestBed} from '../../testing';
 
 describe('CopyDefinitionFeature', () => {
   it('should copy the template function of a component definition from parent to child', () => {

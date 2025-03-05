@@ -32,10 +32,10 @@ import {
   ViewChild,
   ViewContainerRef,
   ɵsetDocument,
-} from '@angular/core';
-import {HEADER_OFFSET} from '@angular/core/src/render3/interfaces/view';
-import {getComponentLView} from '@angular/core/src/render3/util/discovery_utils';
-import {DeferBlockBehavior, DeferBlockState, TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {HEADER_OFFSET} from '../../src/render3/interfaces/view';
+import {getComponentLView} from '../../src/render3/util/discovery_utils';
+import {DeferBlockBehavior, DeferBlockState, TestBed} from '../../testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';

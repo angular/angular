@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {TestBed} from '@angular/core/testing';
+import {TestBed} from '../../testing';
 import {withBody} from '@angular/private/testing';
 
 import {Component, RendererFactory2} from '../../src/core';

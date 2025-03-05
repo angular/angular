@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Sanitizer, Type} from '@angular/core';
+import {Sanitizer, Type} from '../../src/core';
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 
 import {extractDirectiveDef} from '../../src/render3/definition';
@@ -33,8 +33,8 @@ import {enterView, leaveView, specOnlyIsInstructionStateEmpty} from '../../src/r
 import {noop} from '../../src/util/noop';
 
 import {getRendererFactory2} from './imported_renderer2';
-import {createTNode} from '@angular/core/src/render3/tnode_manipulation';
-import {createLView, createTView} from '@angular/core/src/render3/view/construction';
+import {createTNode} from '../../src/render3/tnode_manipulation';
+import {createLView, createTView} from '../../src/render3/view/construction';
 
 /**
  * Fixture useful for testing operations which need `LView` / `TView`

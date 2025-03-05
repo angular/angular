@@ -7,10 +7,10 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, Input} from '@angular/core/public_api';
-import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
-import {TestBed} from '@angular/core/testing';
-import {getSortedClassName} from '@angular/core/testing/src/styling';
+import {Component, Input} from '../../src/core';
+import {ngDevModeResetPerfCounters} from '../../src/util/ng_dev_mode';
+import {TestBed} from '../../testing';
+import {getSortedClassName} from '../../testing/src/styling';
 
 import {
   ɵɵadvance,

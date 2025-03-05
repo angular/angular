@@ -17,7 +17,7 @@ import {
 } from '@angular/core';
 import {outputFromObservable} from '@angular/core/rxjs-interop';
 import {setUseMicrotaskEffectsByDefault} from '@angular/core/src/render3/reactivity/effect';
-import {TestBed} from '@angular/core/testing';
+import {TestBed} from '../../../testing';
 import {BehaviorSubject, Observable, share, Subject} from 'rxjs';
 
 describe('output() function', () => {

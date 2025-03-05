@@ -15,9 +15,9 @@ import {
   ɵɵdefineInjectable,
   ɵɵdefineInjector,
   ɵɵinject,
-} from '@angular/core';
-import {createInjector} from '@angular/core/src/di/create_injector';
-import {R3Injector} from '@angular/core/src/di/r3_injector';
+} from '../../src/core';
+import {createInjector} from '../../src/di/create_injector';
+import {R3Injector} from '../../src/di/r3_injector';
 
 describe('InjectorDef-based createInjector()', () => {
   class CircularA {

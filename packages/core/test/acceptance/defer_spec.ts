@@ -34,19 +34,12 @@ import {
   Injector,
   ElementRef,
   ViewChild,
-} from '@angular/core';
-import {getComponentDef} from '@angular/core/src/render3/def_getters';
-import {
-  ComponentFixture,
-  DeferBlockBehavior,
-  fakeAsync,
-  flush,
-  TestBed,
-  tick,
-} from '@angular/core/testing';
-import {getInjectorResolutionPath} from '@angular/core/src/render3/util/injector_discovery_utils';
+} from '../../src/core';
+import {getComponentDef} from '../../src/render3/def_getters';
+import {ComponentFixture, DeferBlockBehavior, fakeAsync, flush, TestBed, tick} from '../../testing';
+import {getInjectorResolutionPath} from '../../src/render3/util/injector_discovery_utils';
 import {ActivatedRoute, provideRouter, Router, RouterOutlet} from '@angular/router';
-import {ChainedInjector} from '@angular/core/src/render3/chained_injector';
+import {ChainedInjector} from '../../src/render3/chained_injector';
 import {global} from '../../src/util/global';
 import {TimerScheduler} from '@angular/core/src/defer/timer_scheduler';
 

@@ -34,14 +34,11 @@ import {
   TemplateRef,
   ViewChild,
   ViewContainerRef,
-} from '@angular/core';
-import {SIGNAL} from '@angular/core/primitives/signals';
-import {toObservable} from '@angular/core/rxjs-interop';
-import {
-  EffectNode,
-  setUseMicrotaskEffectsByDefault,
-} from '@angular/core/src/render3/reactivity/effect';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {SIGNAL} from '../../primitives/signals';
+import {toObservable} from '../../rxjs-interop';
+import {EffectNode, setUseMicrotaskEffectsByDefault} from '../../src/render3/reactivity/effect';
+import {TestBed} from '../../testing';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
 

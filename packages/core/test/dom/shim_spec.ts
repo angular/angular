@@ -8,7 +8,7 @@
 
 // This isn't used for anything, but for some reason Bazel won't
 // serve the file if there isn't at least one import.
-import '@angular/core/testing';
+import '../../testing';
 
 describe('Shim', () => {
   it('should provide correct function.name ', () => {

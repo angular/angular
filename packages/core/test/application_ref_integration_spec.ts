@@ -14,8 +14,8 @@ import {
   NgModule,
   OnInit,
   TestabilityRegistry,
-} from '@angular/core';
-import {getTestBed} from '@angular/core/testing';
+} from '../src/core';
+import {getTestBed} from '../testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
 

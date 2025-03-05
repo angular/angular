@@ -17,8 +17,8 @@ import {
   NgZone,
   provideZoneChangeDetection,
   signal,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+} from '../src/core';
+import {TestBed} from '../testing';
 import {setUseMicrotaskEffectsByDefault} from '../src/render3/reactivity/effect';
 
 describe('effects in TestBed', () => {
