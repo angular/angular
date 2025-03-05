@@ -16,6 +16,7 @@ import {
   makeBindingParser,
   R3ClassMetadata,
   R3DirectiveMetadata,
+  R3TargetBinder,
   WrappedNodeExpr,
 } from '@angular/compiler';
 import ts from 'typescript';
@@ -47,7 +48,7 @@ import {
   Decorator,
   ReflectionHost,
 } from '../../../reflection';
-import {LocalModuleScopeRegistry} from '../../../scope';
+import {LocalModuleScopeRegistry, TypeCheckScopeRegistry} from '../../../scope';
 import {
   AnalysisOutput,
   CompilationMode,
@@ -79,6 +80,12 @@ import {
 import {extractDirectiveMetadata, extractHostBindingResources, HostBindingNodes} from './shared';
 import {DirectiveSymbol} from './symbol';
 import {JitDeclarationRegistry} from '../../common/src/jit_declaration_registry';
+import {
+  HostBindingsContext,
+  TypeCheckableDirectiveMeta,
+  TypeCheckContext,
+} from '../../../typecheck/api';
+import {createHostElement} from '../../../typecheck';
 
 const FIELD_DECORATORS = [
   'Input',
@@ -138,11 +145,14 @@ export class DirectiveDecoratorHandler
     private perf: PerfRecorder,
     private importTracker: ImportedSymbolsTracker,
     private includeClassMetadata: boolean,
+    private typeCheckScopeRegistry: TypeCheckScopeRegistry,
     private readonly compilationMode: CompilationMode,
     private readonly jitDeclarationRegistry: JitDeclarationRegistry,
     private readonly resourceRegistry: ResourceRegistry,
     private readonly strictStandalone: boolean,
     private readonly implicitStandaloneValue: boolean,
+    private readonly usePoisonedData: boolean,
+    private readonly typeCheckHostBindings: boolean,
   ) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
@@ -303,6 +313,57 @@ export class DirectiveDecoratorHandler
     });
   }
 
+  typeCheck(
+    ctx: TypeCheckContext,
+    node: ClassDeclaration,
+    meta: Readonly<DirectiveHandlerData>,
+  ): void {
+    // Currently type checking in directives is only supported for host bindings
+    // so we can skip everything below if type checking is disabled.
+    if (!this.typeCheckHostBindings) {
+      return;
+    }
+
+    if (this.typeCheckScopeRegistry === null || !ts.isClassDeclaration(node)) {
+      return;
+    }
+
+    if (meta.isPoisoned && !this.usePoisonedData) {
+      return;
+    }
+    const scope = this.typeCheckScopeRegistry.getTypeCheckScope(node);
+    if (scope.isPoisoned && !this.usePoisonedData) {
+      // Don't type-check components that had errors in their scopes, unless requested.
+      return;
+    }
+
+    const binder = new R3TargetBinder<TypeCheckableDirectiveMeta>(scope.matcher);
+    const hostElement = createHostElement(
+      'directive',
+      meta.meta.selector,
+      node,
+      meta.hostBindingNodes.literal,
+      meta.hostBindingNodes.bindingDecorators,
+      meta.hostBindingNodes.listenerDecorators,
+    );
+
+    if (hostElement !== null) {
+      const hostBindingsContext: HostBindingsContext = {
+        node: hostElement,
+        sourceMapping: {type: 'direct', node},
+      };
+
+      ctx.addDirective(
+        new Reference(node),
+        binder,
+        scope.schemas,
+        null,
+        hostBindingsContext,
+        meta.meta.isStandalone,
+      );
+    }
+  }
+
   resolve(
     node: ClassDeclaration,
     analysis: DirectiveHandlerData,
@@ -354,7 +415,13 @@ export class DirectiveDecoratorHandler
       diagnostics.push(...hostDirectivesDiagnotics);
     }
 
-    return {diagnostics: diagnostics.length > 0 ? diagnostics : undefined};
+    if (diagnostics.length > 0) {
+      return {diagnostics};
+    }
+
+    // Note: we need to produce *some* sort of the data in order
+    // for the host binding diagnostics to be surfaced.
+    return {data: {}};
   }
 
   compileFull(
