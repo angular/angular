@@ -2,7 +2,7 @@
 
 - Tree of form nodes
 
-     *     (form root) 
+     *     (form root)
     / \
    *   *   (children of the root)
   / \
@@ -39,7 +39,7 @@
   - manage / give access to their children
     - container for children
     - tracking child nodes
-    - 
+    -
 
 */
 
@@ -53,32 +53,26 @@ export class FormNode {
 
   private _touched = signal(false);
 
-  // touched = my touched touched state + any(my children touched state)
+  // touched = my touched  state + any(my children touched state)
   readonly touched = computed(() => {
     if (this._touched()) {
       return true;
     }
 
-    for (const node of this.childrenMap().values()) {
-      if (node.touched()) {
-        return true;
-      }
-    }
-
-    return false;
+    return this.someChildren((n): boolean => n.touched());
   });
+
+  private someChildren(predicate: (n: FormNode) => boolean) {
+    return Array.from(this.childrenMap().values()).some(predicate);
+  }
 
   readonly errors = computed(() => this.logic?.errors?.(this, ...this.roots()) ?? []);
   readonly valid = computed(() => {
     if (this.errors().length > 0) {
       return false;
     }
-    for (const node of this.childrenMap().values()) {
-      if (!node.valid()) {
-        return false;
-      }
-    }
-    return true;
+
+    return this.someChildren((n): boolean => n.valid());
   });
 
   readonly disabled: Signal<boolean> = computed(
