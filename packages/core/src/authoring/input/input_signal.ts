@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {producerAccessed, SIGNAL} from '@angular/core/primitives/signals';
+import {producerAccessed, SIGNAL} from '../../../primitives/signals';
 
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {Signal} from '../../render3/reactivity/api';

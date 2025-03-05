@@ -7,8 +7,8 @@
  */
 
 // tslint:disable:no-duplicate-imports
-import {EventContract} from '@angular/core/primitives/event-dispatch';
-import {Attribute} from '@angular/core/primitives/event-dispatch';
+import {EventContract} from '../primitives/event-dispatch';
+import {Attribute} from '../primitives/event-dispatch';
 import {InjectionToken} from './di';
 import {RElement} from './render3/interfaces/renderer_dom';
 
