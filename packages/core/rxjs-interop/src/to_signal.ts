@@ -18,8 +18,8 @@ import {
   WritableSignal,
   ɵRuntimeError,
   ɵRuntimeErrorCode,
-} from '@angular/core';
-import {ValueEqualityFn} from '@angular/core/primitives/signals';
+} from '../../src/core';
+import {ValueEqualityFn} from '../../primitives/signals';
 import {Observable, Subscribable} from 'rxjs';
 
 /**
