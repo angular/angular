@@ -7,7 +7,6 @@
  */
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {provideNoopAnimations} from '@angular/platform-browser/animations';
 import {ReferenceScrollHandler} from '../services/reference-scroll-handler.service';
 import {provideRouter, withComponentInputBinding} from '@angular/router';
 import {RouterTestingHarness} from '@angular/router/testing';
@@ -34,7 +33,6 @@ describe('ApiReferenceDetailsPage', () => {
     TestBed.configureTestingModule({
       imports: [ApiReferenceDetailsPage],
       providers: [
-        provideNoopAnimations(),
         provideRouter(
           [
             {

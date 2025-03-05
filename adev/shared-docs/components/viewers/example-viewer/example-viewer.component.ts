@@ -50,7 +50,7 @@ export const HIDDEN_CLASS_NAME = 'hidden';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExampleViewer {
-  exampleMetadata = input.required<ExampleMetadata>({alias: 'metadata'});
+  exampleMetadata = input<ExampleMetadata | null>(null, {alias: 'metadata'});
 
   @Input() githubUrl: string | null = null;
   @Input() stackblitzUrl: string | null = null;
