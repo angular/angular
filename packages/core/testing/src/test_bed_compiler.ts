@@ -65,7 +65,7 @@ import {
   ɵɵInjectableDeclaration as InjectableDeclaration,
   NgZone,
   ErrorHandler,
-} from '@angular/core';
+} from '../../src/core';
 
 import {ComponentDef, ComponentType} from '../../src/render3';
 

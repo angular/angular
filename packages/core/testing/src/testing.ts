@@ -44,5 +44,5 @@ export {MetadataOverrider as ɵMetadataOverrider} from './metadata_overrider';
 export {
   ɵDeferBlockBehavior as DeferBlockBehavior,
   ɵDeferBlockState as DeferBlockState,
-} from '@angular/core';
+} from '../../src/core';
 export {DeferBlockFixture} from './defer';
