@@ -15,7 +15,7 @@ import {
   style,
   transition,
   trigger,
-} from '@angular/animations';
+} from '../../../src/animations';
 
 import {TriggerAst} from '../../src/dsl/animation_ast';
 import {buildAnimationAst} from '../../src/dsl/animation_ast_builder';

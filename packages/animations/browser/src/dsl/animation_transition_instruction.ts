@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ɵStyleDataMap} from '@angular/animations';
+import {ɵStyleDataMap} from '../../../src/animations';
 
 import {
   AnimationEngineInstruction,
