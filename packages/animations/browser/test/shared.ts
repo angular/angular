@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {trigger} from '@angular/animations';
+import {trigger} from '../../src/animations';
 
 import {TriggerAst} from '../src/dsl/animation_ast';
 import {buildAnimationAst} from '../src/dsl/animation_ast_builder';

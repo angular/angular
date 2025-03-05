@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {AnimationPlayer, ɵStyleDataMap} from '@angular/animations';
+import {AnimationPlayer, ɵStyleDataMap} from '../../../../src/animations';
 
 import {computeStyle} from '../../util';
 import {SpecialCasedStyles} from '../special_cased_styles';
