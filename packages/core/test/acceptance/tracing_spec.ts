@@ -12,8 +12,8 @@ import {
   ɵTracingAction as TracingAction,
   ɵTracingService as TracingService,
   ɵTracingSnapshot as TracingSnapshot,
-} from '@angular/core';
-import {fakeAsync, TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {fakeAsync, TestBed} from '../../testing';
 
 describe('TracingService', () => {
   let actions: TracingAction[];

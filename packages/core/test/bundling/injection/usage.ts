@@ -10,7 +10,7 @@ import {
   ɵcreateInjector as createInjector,
   ɵɵdefineInjectable,
   ɵɵdefineInjector,
-} from '@angular/core';
+} from '../../../src/core';
 
 export class RootService {
   static ɵprov = ɵɵdefineInjectable({

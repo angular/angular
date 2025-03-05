@@ -16,7 +16,7 @@ import {
   signal,
 } from '@angular/core';
 import {outputFromObservable} from '@angular/core/rxjs-interop';
-import {TestBed} from '@angular/core/testing';
+import {TestBed} from '../../../testing';
 import {BehaviorSubject, Observable, share, Subject} from 'rxjs';
 
 describe('output() function', () => {

@@ -7,7 +7,7 @@
  */
 
 import {IMAGE_LOADER, ImageLoaderConfig, NgOptimizedImage} from '@angular/common';
-import {Component} from '@angular/core';
+import {Component} from '../../../../../src/core';
 
 const imageLoader = {
   provide: IMAGE_LOADER,

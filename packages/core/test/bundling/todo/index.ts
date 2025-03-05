@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, Injectable, NgModule} from '@angular/core';
+import {Component, Injectable, NgModule} from '../../../src/core';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 class Todo {

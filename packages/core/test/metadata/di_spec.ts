@@ -15,8 +15,8 @@ import {
   QueryList,
   ViewChild,
   ViewChildren,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {TestBed} from '../../testing';
 
 describe('ViewChild', () => {
   beforeEach(() => {

@@ -21,7 +21,7 @@ import {
   ViewEncapsulation,
   ɵNoopNgZone,
   ɵZONELESS_ENABLED,
-} from '@angular/core';
+} from '../../src/core';
 import {bootstrapApplication, BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {withBody} from '@angular/private/testing';

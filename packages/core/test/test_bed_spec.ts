@@ -39,9 +39,9 @@ import {
   ɵɵelementStart as elementStart,
   ɵɵsetNgModuleScope as setNgModuleScope,
   ɵɵtext as text,
-} from '@angular/core';
-import {DeferBlockBehavior} from '@angular/core/testing';
-import {TestBed, TestBedImpl} from '@angular/core/testing/src/test_bed';
+} from '../src/core';
+import {DeferBlockBehavior} from '../testing';
+import {TestBed, TestBedImpl} from '../testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 

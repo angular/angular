@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, Input} from '@angular/core/public_api';
-import {getSortedClassName} from '@angular/core/testing/src/styling';
+import {Component, Input} from '../../src/core';
+import {getSortedClassName} from '../../testing/src/styling';
 
 import {
   ɵɵadvance,

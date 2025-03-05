@@ -32,8 +32,8 @@ import {
   Type,
   ViewChild,
   ViewContainerRef,
-} from '@angular/core';
-import {toSignal} from '@angular/core/rxjs-interop';
+} from '../src/core';
+import {toSignal} from '../rxjs-interop';
 import {
   ComponentFixture,
   ComponentFixtureAutoDetect,
@@ -41,7 +41,7 @@ import {
   fakeAsync,
   flush,
   tick,
-} from '@angular/core/testing';
+} from '../testing';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
 import {BehaviorSubject, firstValueFrom} from 'rxjs';

@@ -12,10 +12,10 @@
  * the resulting types match our expectations (via comments asserting the `.d.ts`).
  */
 
-import {input} from '@angular/core';
+import {input} from '../../src/core';
 // import preserved to simplify `.d.ts` emit and simplify the `type_tester` logic.
 // tslint:disable-next-line no-duplicate-imports
-import {InputSignal, InputSignalWithTransform} from '@angular/core';
+import {InputSignal, InputSignalWithTransform} from '../../src/core';
 
 export class InputSignatureTest {
   /** string | undefined */
