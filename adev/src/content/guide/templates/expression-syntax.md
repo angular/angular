@@ -72,7 +72,7 @@ Angular expressions additionally also support the following non-standard operato
 
 | Operator                        | Example(s)                     |
 | ------------------------------- | ------------------------------ |
-| [Pipe](/guides/templates/pipes) | `{{ total \| currency }}`      |
+| [Pipe](/guide/templates/pipes) | `{{ total \| currency }}`      |
 | Optional chaining\*             | `someObj.someProp?.nestedProp` |
 | Non-null assertion (TypeScript) | `someObj!.someProp`            |
 
