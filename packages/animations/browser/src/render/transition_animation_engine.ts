@@ -13,7 +13,7 @@ import {
   ɵAnimationGroupPlayer as AnimationGroupPlayer,
   ɵPRE_STYLE as PRE_STYLE,
   ɵStyleDataMap,
-} from '@angular/animations';
+} from '../../../src/animations';
 import {ɵWritable as Writable} from '@angular/core';
 
 import {AnimationTimelineInstruction} from '../dsl/animation_timeline_instruction';

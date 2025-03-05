@@ -10,7 +10,7 @@ import {
   AnimationMetadataType,
   AnimationOptions,
   ɵStyleDataMap,
-} from '@angular/animations';
+} from '../../../src/animations';
 
 import {buildingFailed, validationFailed} from '../error_helpers';
 import {AnimationDriver} from '../render/animation_driver';

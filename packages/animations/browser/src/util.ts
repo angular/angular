@@ -13,7 +13,7 @@ import {
   sequence,
   ɵStyleData,
   ɵStyleDataMap,
-} from '@angular/animations';
+} from '../../src/animations';
 
 import {Ast as AnimationAst, AstVisitor as AnimationAstVisitor} from './dsl/animation_ast';
 import {AnimationDslVisitor} from './dsl/animation_dsl_visitor';
