@@ -1,3 +1,63 @@
+<a name="20.0.0-next.1"></a>
+# 20.0.0-next.1 (2025-03-05)
+## Breaking Changes
+### common
+- `AsyncPipe` now directly catches unhandled errors in
+  subscriptions and promises and reports them to the application's
+  `ErrorHandler`. For Zone-based applications, these errors would have
+  been caught by ZoneJS and reported to `ErrorHandler` so the result is
+  generally the same. The change to the exact mechanism for reporting can
+  result in differences in test environments that will require test
+  updates.
+### core
+- * TypeScript versions less than 5.8 are no longer supported.
+- `PendingTasks.run` no longer returns the result of the
+  async function. If this behavior is desired, it can be re-implemented
+  manually with the `PendingTasks.add`. Be aware, however, that promise rejections
+  will need to be handled or they can cause the node process to shut down
+  when using SSR.
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [36b60a9705](https://github.com/angular/angular/commit/36b60a97059d583453888786bf2c4b456d8f2e83) | fix | clean up `onUrlChange` listener when root scope is destroyed ([#60004](https://github.com/angular/angular/pull/60004)) |
+| [739cadae62](https://github.com/angular/angular/commit/739cadae62fd7302ef5fffa7897c8c4f2701a556) | fix | Handle errors in async pipe subscriptions ([#60057](https://github.com/angular/angular/pull/60057)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [51b8ff23ce](https://github.com/angular/angular/commit/51b8ff23cefb5112937dec9727a5b5d6e913aae6) | feat | support tagged template literals in expressions ([#59947](https://github.com/angular/angular/pull/59947)) |
+| [4fe489f1b4](https://github.com/angular/angular/commit/4fe489f1b4f8d1c0840af1224ee09d44cbb9c583) | fix | exponentiation should be right-to-left associative ([#60101](https://github.com/angular/angular/pull/60101)) |
+| [b70ad3c4e6](https://github.com/angular/angular/commit/b70ad3c4e63158a72b8aea173b1268ec8ab08e2b) | fix | proper handling of typeof, void in RecursiveAstVisitor ([#60101](https://github.com/angular/angular/pull/60101)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f9043e24ac](https://github.com/angular/angular/commit/f9043e24aca276fb72ee0245d33ab8d4ea37d4b0) | fix | ensure template IDs are not reused if a source file changes ([#60152](https://github.com/angular/angular/pull/60152)) |
+| [ffb19e64f1](https://github.com/angular/angular/commit/ffb19e64f1ced7b5eb55e1c1b96b6f7c54835a1d) | fix | preserve required parens for nullish coalescing ([#60060](https://github.com/angular/angular/pull/60060)) |
+| [7c9b4892e9](https://github.com/angular/angular/commit/7c9b4892e9f6df164e4e289195bff27f2cc9a0ea) | fix | preserve required parens in exponentiation expressions ([#60101](https://github.com/angular/angular/pull/60101)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fe57332fc5](https://github.com/angular/angular/commit/fe57332fc5c4e6b44f01b9b4343385e90b3edf77) | feat | add input binding support to dynamically-created components ([#60137](https://github.com/angular/angular/pull/60137)) |
+| [82aa2c1a52](https://github.com/angular/angular/commit/82aa2c1a527be85e09f0f660ece56b594bff5a76) | feat | add the ability to apply directives to dynamically-created components ([#60137](https://github.com/angular/angular/pull/60137)) |
+| [326d48afb4](https://github.com/angular/angular/commit/326d48afb4266ef9b028860e2f845de005653d75) | feat | drop support for TypeScript older than 5.8 ([#60197](https://github.com/angular/angular/pull/60197)) |
+| [d260ca3091](https://github.com/angular/angular/commit/d260ca3091a6de215ba31f2516134d1aa11fe04c) | feat | emit template function for template related profiler hooks ([#60174](https://github.com/angular/angular/pull/60174)) |
+| [4812215a7b](https://github.com/angular/angular/commit/4812215a7b3bcb54bce3f017d89246aa39af2cc5) | feat | Expose `Injector.destroy` on `Injector` created with `Injector.create` ([#60054](https://github.com/angular/angular/pull/60054)) |
+| [809b5b4596](https://github.com/angular/angular/commit/809b5b4596cafcdabdb1c5fa92fcab539c6f637f) | feat | introduce new DI profiling event ([#60158](https://github.com/angular/angular/pull/60158)) |
+| [be44cc8f40](https://github.com/angular/angular/commit/be44cc8f40fb2364dbaf20ba24496e4355f84e78) | feat | support listening to outputs on dynamically-created components ([#60137](https://github.com/angular/angular/pull/60137)) |
+| [7eb59d3887](https://github.com/angular/angular/commit/7eb59d38872667c73e09a42e4260e8a58f102448) | fix | added @angular/compiler as a peer dependency ([#55610](https://github.com/angular/angular/pull/55610)) |
+| [af02914852](https://github.com/angular/angular/commit/af02914852cb26106090e07aee155890df1798ff) | fix | cache ComponentRef inputs and outputs ([#60156](https://github.com/angular/angular/pull/60156)) |
+| [7232ce5b17](https://github.com/angular/angular/commit/7232ce5b17c9cce87bebe41c81f55043f21e639b) | fix | Catch and report rejections in async function of `PendingTasks.run` ([#60044](https://github.com/angular/angular/pull/60044)) |
+| [fd12220a35](https://github.com/angular/angular/commit/fd12220a35665d2378b74905c998fcff6130eb91) | fix | defer block render failures should report to application error handler ([#60149](https://github.com/angular/angular/pull/60149)) |
+| [3459faadbf](https://github.com/angular/angular/commit/3459faadbfce9be7b1ca69f4d4db82a65b31de50) | fix | do not allow setInput to be used with inputBinding ([#60137](https://github.com/angular/angular/pull/60137)) |
+| [ea5eb28865](https://github.com/angular/angular/commit/ea5eb288651a87923edd86b2445d6ed32e52ed85) | fix | input targeting not checking if input exists on host ([#60137](https://github.com/angular/angular/pull/60137)) |
+| [0dbf693a4d](https://github.com/angular/angular/commit/0dbf693a4d6ea0dad6072ebad20158b9e896e4f6) | fix | prevent invoking replay listeners on disconnected nodes ([#60103](https://github.com/angular/angular/pull/60103)) |
+| [7ab0a8d1e7](https://github.com/angular/angular/commit/7ab0a8d1e719c9aee862bff0495fcd0138c00a10) | fix | prevents event replay from being called on comment nodes ([#60130](https://github.com/angular/angular/pull/60130)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d5e91e04ff](https://github.com/angular/angular/commit/d5e91e04ff32997d87bdf7386ed3822090ac6b29) | fix | Forward the tags for quick info from the type definition ([#59524](https://github.com/angular/angular/pull/59524)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.2.1"></a>
 # 19.2.1 (2025-03-05)
 ### common
