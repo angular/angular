@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {animate, style, transition, trigger} from '@angular/animations';
-import {Component, NgModule, ɵNgModuleFactory as NgModuleFactory} from '@angular/core';
+import {Component, NgModule, ɵNgModuleFactory as NgModuleFactory} from '../../../src/core';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 

@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, effect, input} from '@angular/core';
-import {SIGNAL} from '@angular/core/primitives/signals';
-import {setUseMicrotaskEffectsByDefault} from '@angular/core/src/render3/reactivity/effect';
-import {TestBed} from '@angular/core/testing';
+import {Component, computed, effect, input} from '../../src/core';
+import {SIGNAL} from '../../primitives/signals';
+import {setUseMicrotaskEffectsByDefault} from '../../src/render3/reactivity/effect';
+import {TestBed} from '../../testing';
 
 describe('input signal', () => {
   let prev: boolean;

@@ -15,7 +15,7 @@ import {
   HostBinding,
   HostListener,
   NgModule,
-} from '@angular/core';
+} from '../../../src/core';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 @Directive({

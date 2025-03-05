@@ -22,9 +22,9 @@ import {
   ViewChild,
   ViewChildren,
   ViewContainerRef,
-} from '@angular/core';
-import {ElementRef} from '@angular/core/src/core';
-import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
+  ElementRef,
+} from '../../src/core';
+import {ComponentFixture, TestBed, waitForAsync} from '../../testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {Subject} from 'rxjs';
 

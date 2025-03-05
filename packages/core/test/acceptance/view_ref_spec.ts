@@ -19,9 +19,9 @@ import {
   TemplateRef,
   ViewChild,
   ViewContainerRef,
-} from '@angular/core';
-import {ViewRef as InternalViewRef} from '@angular/core/src/render3/view_ref';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {ViewRef as InternalViewRef} from '../../src/render3/view_ref';
+import {TestBed} from '../../testing';
 
 describe('ViewRef', () => {
   it('should remove nodes from DOM when the view is detached from app ref', () => {

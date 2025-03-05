@@ -34,8 +34,8 @@ import {
   TemplateRef,
   ViewChildren,
   ViewContainerRef,
-} from '@angular/core';
-import {fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
+} from '../../src/core';
+import {fakeAsync, inject, TestBed, tick} from '../../testing';
 import {BrowserModule, By} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {expect} from '@angular/platform-browser/testing/src/matchers';

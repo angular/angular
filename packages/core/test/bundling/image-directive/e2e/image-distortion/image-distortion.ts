@@ -7,7 +7,7 @@
  */
 
 import {NgOptimizedImage} from '@angular/common';
-import {Component} from '@angular/core';
+import {Component} from '../../../../../src/core';
 
 @Component({
   selector: 'image-distortion-passing',

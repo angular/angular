@@ -12,7 +12,7 @@ import {
   inject,
   InjectionToken,
   provideAppInitializer,
-} from '@angular/core';
+} from '../src/core';
 import {EMPTY, Observable, Subscriber} from 'rxjs';
 
 import {TestBed} from '../testing';

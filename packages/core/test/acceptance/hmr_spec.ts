@@ -30,14 +30,14 @@ import {
   ɵNG_COMP_DEF,
   ɵɵreplaceMetadata,
   ɵɵsetComponentScope,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
-import {compileComponent} from '@angular/core/src/render3/jit/directive';
-import {angularCoreEnv} from '@angular/core/src/render3/jit/environment';
+} from '../../src/core';
+import {TestBed} from '../../testing';
+import {compileComponent} from '../../src/render3/jit/directive';
+import {angularCoreEnv} from '../../src/render3/jit/environment';
 import {clearTranslations, loadTranslations} from '@angular/localize';
 import {computeMsgId} from '@angular/compiler';
 import {EVENT_MANAGER_PLUGINS} from '@angular/platform-browser';
-import {ComponentType} from '@angular/core/src/render3';
+import {ComponentType} from '../../src/render3';
 
 describe('hot module replacement', () => {
   it('should recreate a single usage of a basic component', () => {

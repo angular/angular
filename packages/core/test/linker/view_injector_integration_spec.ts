@@ -33,8 +33,8 @@ import {
   TemplateRef,
   Type,
   ViewContainerRef,
-} from '@angular/core';
-import {ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {ComponentFixture, fakeAsync, TestBed} from '../../testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 @Directive({

@@ -7,7 +7,7 @@
  */
 
 import {Component, Directive, forwardRef, Host, Inject, ViewChild} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+import {TestBed} from '../../testing';
 
 // **NOTE**: More details on why tests relying on `forwardRef` are put into this
 // file can be found in the `BUILD.bazel` file declaring the forward ref test target.

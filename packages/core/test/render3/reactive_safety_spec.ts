@@ -23,11 +23,11 @@ import {
   TemplateRef,
   ViewChild,
   ViewContainerRef,
-} from '@angular/core';
-import {getActiveConsumer} from '@angular/core/primitives/signals';
-import {createInjector} from '@angular/core/src/di/create_injector';
-import {setUseMicrotaskEffectsByDefault} from '@angular/core/src/render3/reactivity/effect';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {getActiveConsumer} from '../../primitives/signals';
+import {createInjector} from '../../src/di/create_injector';
+import {setUseMicrotaskEffectsByDefault} from '../../src/render3/reactivity/effect';
+import {TestBed} from '../../testing';
 
 /*
  * Contains tests which validate that certain actions within the framework (for example, creating

@@ -37,20 +37,20 @@ import {
   ViewChild,
   ViewRef,
   ɵsetClassDebugInfo,
-} from '@angular/core';
+} from '../../src/core';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   PipeTransform,
-} from '@angular/core/src/change_detection/change_detection';
-import {ComponentFactoryResolver} from '@angular/core/src/linker/component_factory_resolver';
-import {ElementRef} from '@angular/core/src/linker/element_ref';
-import {QueryList} from '@angular/core/src/linker/query_list';
-import {TemplateRef} from '@angular/core/src/linker/template_ref';
-import {ViewContainerRef} from '@angular/core/src/linker/view_container_ref';
-import {EmbeddedViewRef} from '@angular/core/src/linker/view_ref';
-import {fakeAsync, getTestBed, TestBed, tick, waitForAsync} from '@angular/core/testing';
-import {TestBedCompiler} from '@angular/core/testing/src/test_bed_compiler';
+} from '../../src/change_detection/change_detection';
+import {ComponentFactoryResolver} from '../../src/linker/component_factory_resolver';
+import {ElementRef} from '../../src/linker/element_ref';
+import {QueryList} from '../../src/linker/query_list';
+import {TemplateRef} from '../../src/linker/template_ref';
+import {ViewContainerRef} from '../../src/linker/view_container_ref';
+import {EmbeddedViewRef} from '../../src/linker/view_ref';
+import {fakeAsync, getTestBed, TestBed, tick, waitForAsync} from '../../testing';
+import {TestBedCompiler} from '../../testing/src/test_bed_compiler';
 import {
   createMouseEvent,
   dispatchEvent,

@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {TNodeType} from '@angular/core/src/render3/interfaces/node';
-import {TViewType} from '@angular/core/src/render3/interfaces/view';
+import {TNodeType} from '../../src/render3/interfaces/node';
+import {TViewType} from '../../src/render3/interfaces/view';
 
 import {isShapeOf, ShapeOf} from './is_shape_of';
 import {matchDomElement, matchDomText, matchObjectShape, matchTNode, matchTView} from './matchers';
-import {createTNode} from '@angular/core/src/render3/tnode_manipulation';
-import {createTView} from '@angular/core/src/render3/view/construction';
+import {createTNode} from '../../src/render3/tnode_manipulation';
+import {createTView} from '../../src/render3/view/construction';
 
 describe('render3 matchers', () => {
   const fakeMatcherUtil = {equals: (a: any, b: any) => a === b} as jasmine.MatchersUtil;

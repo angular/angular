@@ -23,17 +23,17 @@ import {
   QueryList,
   ViewChild,
   ViewChildren,
-} from '@angular/core';
-import {NullInjector} from '@angular/core/src/di/null_injector';
+} from '../../src/core';
+import {NullInjector} from '../../src/di/null_injector';
 import {
   isClassProvider,
   isExistingProvider,
   isFactoryProvider,
   isTypeProvider,
   isValueProvider,
-} from '@angular/core/src/di/provider_collection';
-import {EnvironmentInjector, R3Injector} from '@angular/core/src/di/r3_injector';
-import {setupFrameworkInjectorProfiler} from '@angular/core/src/render3/debug/framework_injector_profiler';
+} from '../../src/di/provider_collection';
+import {EnvironmentInjector, R3Injector} from '../../src/di/r3_injector';
+import {setupFrameworkInjectorProfiler} from '../../src/render3/debug/framework_injector_profiler';
 import {
   getInjectorProfilerContext,
   InjectedServiceEvent,
@@ -42,16 +42,16 @@ import {
   InjectorProfilerEventType,
   ProviderConfiguredEvent,
   setInjectorProfiler,
-} from '@angular/core/src/render3/debug/injector_profiler';
-import {getNodeInjectorLView, NodeInjector} from '@angular/core/src/render3/di';
+} from '../../src/render3/debug/injector_profiler';
+import {getNodeInjectorLView, NodeInjector} from '../../src/render3/di';
 import {
   getDependenciesFromInjectable,
   getInjectorMetadata,
   getInjectorProviders,
   getInjectorResolutionPath,
-} from '@angular/core/src/render3/util/injector_discovery_utils';
-import {fakeAsync, tick} from '@angular/core/testing';
-import {TestBed} from '@angular/core/testing/src/test_bed';
+} from '../../src/render3/util/injector_discovery_utils';
+import {fakeAsync, tick} from '../../testing';
+import {TestBed} from '../../testing/src/test_bed';
 import {BrowserModule} from '@angular/platform-browser';
 import {Router, RouterModule, RouterOutlet} from '@angular/router';
 

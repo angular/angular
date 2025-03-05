@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component} from '@angular/core';
+import {Component} from '../../../../../src/core';
 
 @Component({
   selector: 'image-perf-warnings-oversized',

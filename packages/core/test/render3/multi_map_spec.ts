@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {UniqueValueMultiKeyMap} from '@angular/core/src/render3/list_reconciliation';
+import {UniqueValueMultiKeyMap} from '../../src/render3/list_reconciliation';
 
 describe('MultiMap', () => {
   it('should set, get and remove items with duplicated keys', () => {

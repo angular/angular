@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {CommonModule} from '@angular/common';
-import {Component, Directive, Input, QueryList, ViewChild, ViewChildren} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+import {Component, Directive, Input, QueryList, ViewChild, ViewChildren} from '../../src/core';
+import {TestBed} from '../../testing';
 import {By} from '@angular/platform-browser';
 
 describe('components using pure function instructions internally', () => {
