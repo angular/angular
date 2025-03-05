@@ -279,6 +279,8 @@ function normalizeRequest(
       reportProgress: unwrappedRequest.reportProgress,
       withCredentials: unwrappedRequest.withCredentials,
       responseType,
+      context: unwrappedRequest.context,
+      transferCache: unwrappedRequest.transferCache,
     },
   );
 }
