@@ -14,7 +14,7 @@ import {
   Injector,
   Signal,
   untracked,
-} from '@angular/core';
+} from '../../src/core';
 import {Observable, ReplaySubject} from 'rxjs';
 
 /**
