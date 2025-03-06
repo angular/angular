@@ -29,8 +29,8 @@ import {Clipboard} from '@angular/cdk/clipboard';
 import {CopySourceCodeButton} from '../../copy-source-code-button/copy-source-code-button.component';
 import {ExampleMetadata, Snippet} from '../../../interfaces/index';
 import {EXAMPLE_VIEWER_CONTENT_LOADER} from '../../../providers/index';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {DocViewer} from '../docs-viewer/docs-viewer.component';
+import {takeUntilDestroyed} from '../../../services/rxjs-interop';
 
 export enum CodeExampleViewMode {
   SNIPPET = 'snippet',
