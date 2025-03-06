@@ -90,7 +90,7 @@ describe('JsonpClientBackend', () => {
   describe('throws an error', () => {
     it('when request method is not JSONP', () =>
       expect(() => backend.handle(SAMPLE_REQ.clone<never>({method: 'GET'}))).toThrowError(
-        JSONP_ERR_WRONG_METHOD,
+        `NG02810: ${JSONP_ERR_WRONG_METHOD}`,
       ));
     it('when response type is not json', () =>
       expect(() =>
@@ -99,7 +99,7 @@ describe('JsonpClientBackend', () => {
             responseType: 'text',
           }),
         ),
-      ).toThrowError(JSONP_ERR_WRONG_RESPONSE_TYPE));
+      ).toThrowError(`NG02811: ${JSONP_ERR_WRONG_RESPONSE_TYPE}`));
     it('when headers are set in request', () =>
       expect(() =>
         backend.handle(
@@ -107,7 +107,7 @@ describe('JsonpClientBackend', () => {
             headers: new HttpHeaders({'Content-Type': 'application/json'}),
           }),
         ),
-      ).toThrowError(JSONP_ERR_HEADERS_NOT_SUPPORTED));
+      ).toThrowError(`NG02812: ${JSONP_ERR_HEADERS_NOT_SUPPORTED}`));
     it('when callback is never called', (done) => {
       backend.handle(SAMPLE_REQ).subscribe(undefined, (err: HttpErrorResponse) => {
         expect(err.status).toBe(0);
