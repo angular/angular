@@ -188,7 +188,7 @@ const config = {
     unknownGlobalSideEffects: false,
     annotations: false,
     propertyReadSideEffects: false,
-    moduleSideEffects: ['@angular/core'],
+    moduleSideEffects: false,
   },
   output: {
     banner: bannerContent,
