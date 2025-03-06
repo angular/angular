@@ -71,18 +71,24 @@ export class TableOfContentsLoader {
     destroyRef: DestroyRef,
     onActiveId: (id: string) => void,
   ): void {
-    this.getHeadings(element).forEach((heading) => {
+    // If we're at the top the we need the default active id to be the first heading.
+    const headings = this.getHeadings(element);
+    onActiveId(headings[0].id);
+
+    headings.forEach((heading) => {
       const ioConfiguration = {
         /**
-         * This rootMargin creates a horizontal line at 20% from the top of the viewport
+         * This rootMargin creates a horizontal line at 5% from the top of the viewport
          * that will help trigger an intersection at that the very point.
          */
-        rootMargin: '-5% 0% -95% 0%',
+        rootMargin: '0% 0% -95% 0%',
         /** 0 is the default  */
         threshold: 0,
       };
       const observer = new IntersectionObserver((entries, o) => {
-        onActiveId(entries[0].target.id);
+        if (entries[0].isIntersecting) {
+          onActiveId(entries[0].target.id);
+        }
       }, ioConfiguration);
       observer.observe(heading);
       destroyRef.onDestroy(() => observer.disconnect());
