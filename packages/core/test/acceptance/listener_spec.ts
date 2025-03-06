@@ -440,6 +440,7 @@ describe('event listeners', () => {
       }
 
       TestBed.configureTestingModule({
+        rethrowApplicationErrors: false,
         declarations: [TestCmpt, LikesClicks, ThrowsOnClicks],
         providers: [{provide: ErrorHandler, useClass: CountingErrorHandler}],
       });

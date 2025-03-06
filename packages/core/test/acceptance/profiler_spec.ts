@@ -175,6 +175,7 @@ describe('profiler', () => {
       const errorSpy = spyOn(handler, 'handleError');
 
       TestBed.configureTestingModule({
+        rethrowApplicationErrors: false,
         declarations: [MyComponent],
         providers: [{provide: ErrorHandler, useValue: handler}],
       });
