@@ -77,6 +77,13 @@ describe('ng-add schematic', () => {
                   polyfills: 'zone.js',
                 },
               },
+              testKarmaBuild: {
+                builder: '@angular/build:karma',
+                options: {
+                  tsConfig: './tsconfig.spec.json',
+                  polyfills: 'zone.js',
+                },
+              },
               server: {
                 builder: '@angular-devkit/build-angular:server',
                 options: {
@@ -170,6 +177,13 @@ describe('ng-add schematic', () => {
     host = await schematicRunner.runSchematic('ng-add', defaultOptions, host);
     const workspace = host.readJson('angular.json') as any;
     const polyfills = workspace.projects['demo'].architect.test.options.polyfills;
+    expect(polyfills).toEqual(['zone.js', '@angular/localize/init']);
+  });
+
+  it(`should add '@angular/localize/init' in 'polyfills' in karma application builder`, async () => {
+    host = await schematicRunner.runSchematic('ng-add', defaultOptions, host);
+    const workspace = host.readJson('angular.json') as any;
+    const polyfills = workspace.projects['demo'].architect.testKarmaBuild.options.polyfills;
     expect(polyfills).toEqual(['zone.js', '@angular/localize/init']);
   });
 
