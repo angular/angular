@@ -21,6 +21,7 @@ import {throwError} from '../../util/assert';
 import {
   ComputedNode,
   ReactiveNode,
+  setPostSignalSetFn,
   SIGNAL,
   SIGNAL_NODE,
   SignalNode,
@@ -28,8 +29,11 @@ import {
 
 export interface DebugSignalGraphNode {
   kind: string;
+  id: string;
+  epoch: number;
   label?: string;
   value?: unknown;
+  debuggableFn?: () => unknown;
 }
 
 export interface DebugSignalGraphEdge {
@@ -84,6 +88,12 @@ function getTemplateConsumer(injector: NodeInjector): ReactiveLViewConsumer | nu
   return templateLView[REACTIVE_TEMPLATE_CONSUMER];
 }
 
+const signalDebugMap = new WeakMap<ReactiveNode, string>();
+const loggedSignals = new Set<string>();
+let enabledLogging = false;
+const signalDebugReverseMap = new Map<string, WeakRef<ReactiveNode>>();
+let counter = 0;
+
 function getNodesAndEdgesFromSignalMap(signalMap: ReadonlyMap<ReactiveNode, ReactiveNode[]>): {
   nodes: DebugSignalGraphNode[];
   edges: DebugSignalGraphEdge[];
@@ -95,27 +105,45 @@ function getNodesAndEdgesFromSignalMap(signalMap: ReadonlyMap<ReactiveNode, Reac
   for (const [consumer, producers] of signalMap.entries()) {
     const consumerIndex = nodes.indexOf(consumer);
 
+    let id = signalDebugMap.get(consumer);
+    if (!id) {
+      counter++;
+      id = `${consumer.debugName}-${counter}`;
+      signalDebugMap.set(consumer, id);
+      signalDebugReverseMap.set(id, new WeakRef(consumer));
+    }
+
     // collect node
-    if (isComputedNode(consumer) || isSignalNode(consumer)) {
+    if (isComputedNode(consumer)) {
       debugSignalGraphNodes.push({
         label: consumer.debugName,
         value: consumer.value,
         kind: consumer.kind,
+        epoch: consumer.version,
+        debuggableFn: consumer.computation,
+        id,
+      });
+    } else if (isSignalNode(consumer)) {
+      debugSignalGraphNodes.push({
+        label: consumer.debugName,
+        value: consumer.value,
+        kind: consumer.kind,
+        epoch: consumer.version,
+        id,
       });
     } else if (isTemplateEffectNode(consumer)) {
       debugSignalGraphNodes.push({
         label: consumer.debugName ?? consumer.lView?.[HOST]?.tagName?.toLowerCase?.(),
         kind: consumer.kind,
-      });
-    } else if (isEffectNode(consumer)) {
-      debugSignalGraphNodes.push({
-        label: consumer.debugName,
-        kind: consumer.kind,
+        epoch: consumer.version,
+        id,
       });
     } else {
       debugSignalGraphNodes.push({
         label: consumer.debugName,
         kind: consumer.kind,
+        epoch: consumer.version,
+        id,
       });
     }
 
@@ -191,4 +219,58 @@ export function getSignalGraph(injector: Injector): DebugSignalGraph {
   const signalDependenciesMap = extractSignalNodesAndEdgesFromRoots(signalNodes);
 
   return getNodesAndEdgesFromSignalMap(signalDependenciesMap);
+}
+
+/**
+ * Adds a listener to the signal node so that the user can see the stack of changes
+ *
+ * @param signal the signal or computed to add the listener to
+ */
+export function toggleDebugSignal(_injector: Injector, signal: string) {
+  const node = signalDebugReverseMap.get(signal);
+  if (!node) {
+    return;
+  }
+  const signalNode = node.deref();
+  if (!signalNode) {
+    return;
+  }
+
+  // add a new layer to the postSignalSet stack, but only if we haven't already added ourselves
+  if (!enabledLogging) {
+    const prev = setPostSignalSetFn(() => {});
+    setPostSignalSetFn((node) => {
+      prev?.(node);
+      if (loggedSignals.has(signalDebugMap.get(node)!)) {
+        console.log(`Signal ${node.debugName} changed value`, (node as SignalNode<unknown>).value);
+      }
+    });
+    enabledLogging = true;
+  }
+
+  if (isSignalNode(signalNode)) {
+    if (loggedSignals.has(signal)) {
+      loggedSignals.delete(signal);
+    } else {
+      loggedSignals.add(signal);
+    }
+  } else {
+    // TODO: enable toggling logging for a computed node
+    signalNode.consumerMarkedDirty = (e: ReactiveNode) => {
+      let stack: ReactiveNode = signalNode;
+      let updateStack = `${stack.debugName ?? 'Unnamed node'}`;
+      outer: while (stack.producerNode) {
+        for (const el of stack.producerNode) {
+          if (el.dirty) {
+            stack = el;
+            updateStack = `${stack.debugName ?? 'Unnamed node'}\n${updateStack}`;
+            continue outer;
+          }
+        }
+        break;
+      }
+      console.log(`Node was marked dirty by the following path of computeds:
+${updateStack}`);
+    };
+  }
 }

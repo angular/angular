@@ -1,0 +1,93 @@
+:host {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  display: block;
+
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    ::ng-deep {
+      .node-label {
+        box-sizing: border-box;
+        contain: paint;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        word-wrap: break-word;
+        border-radius: 8px;
+        background-color: #ffaaaa;
+        transition: border-width 0.25s ease-in-out;
+        border: 0px solid black;
+        &.animating {
+          border-width: 5px;
+        }
+        .header {
+          width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          background-color: #bb6666;
+        }
+        .body {
+          flex: 1;
+        }
+      }
+      .selected {
+        border: 1px solid black;
+      }
+      .kind-signal {
+        background-color: #aaaaff;
+        .header {
+          background-color: #6666bb;
+        }
+      }
+      .kind-computed {
+        background-color: #aaffaa;
+        .header {
+          background-color: #66bb66;
+        }
+      }
+      .kind-effect {
+        background-color: #ffffaa;
+        .header {
+          background-color: #bbbb66;
+        }
+      }
+      .kind-template {
+        background-color: #aaaaaa;
+        .header {
+          background-color: #666666;
+        }
+      }
+    }
+  }
+  .overlay {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    border: 1px solid black;
+    border-radius: 8px;
+  }
+  .no-signals {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+  }
+}
