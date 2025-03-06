@@ -21,8 +21,8 @@ export interface BazelFileInfo {
 export interface EntryPointInfo {
   /** ES2022 index file for the APF entry-point. */
   index: BazelFileInfo;
-  /** Flat ES2022 ES module bundle file. */
-  fesm2022Bundle: BazelFileInfo;
+  /** Relative path to flat ES2022 ES module bundle file (also applicable in the rollup output). */
+  fesm2022RelativePath: string;
   /** Index type definition file for the APF entry-point. */
   typings: BazelFileInfo;
   /**
@@ -39,4 +39,9 @@ export interface PackageMetadata {
   npmPackageName: string;
   /** Record of entry-points (including the primary one) and their info. */
   entryPoints: Record<string, EntryPointInfo>;
+  /**
+   * Path to the Rollup bundle output directory, containing all FESM
+   * bundles and shared chunks.
+   */
+  bundlesOut: BazelFileInfo;
 }

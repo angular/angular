@@ -7,3 +7,4 @@
  */
 
 export * from './public-api';
+export {sharedBetweenEntryPoints} from '../secondary';

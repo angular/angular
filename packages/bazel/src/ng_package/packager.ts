@@ -8,6 +8,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import fastGlob from 'fast-glob';
 
 import {BazelFileInfo, PackageMetadata} from './api';
 import {analyzeFileAndEnsureNoCrossImports} from './cross_entry_points_imports';
@@ -36,6 +37,7 @@ type PackageJson = {
 } & {
   name: string;
   type?: string;
+  sideEffects?: string[] | boolean;
   exports?: Record<string, ConditionalExport>;
 };
 
@@ -71,9 +73,6 @@ function main(args: string[]): void {
     // Path to the package's LICENSE file.
     licenseFile,
 
-    // List of rolled-up flat ES2022 modules
-    fesm2022Arg,
-
     // List of individual ES2022 modules
     esm2022Arg,
 
@@ -82,13 +81,16 @@ function main(args: string[]): void {
 
     // List of all type definitions that need to packaged into the ng_package.
     typeDefinitionsArg,
+
+    // List of side-effectful entry-points
+    sideEffectEntryPointsArg,
   ] = params;
 
-  const fesm2022 = JSON.parse(fesm2022Arg) as BazelFileInfo[];
   const esm2022 = JSON.parse(esm2022Arg) as BazelFileInfo[];
   const typeDefinitions = JSON.parse(typeDefinitionsArg) as BazelFileInfo[];
   const staticFiles = JSON.parse(staticFilesArg) as BazelFileInfo[];
   const metadata = JSON.parse(metadataArg) as PackageMetadata;
+  const sideEffectEntryPoints = JSON.parse(sideEffectEntryPointsArg) as string[];
 
   if (readmeMd) {
     copyFile(readmeMd, 'README.md');
@@ -135,16 +137,6 @@ function main(args: string[]): void {
     return path.relative(owningPackageName, file.shortPath);
   }
 
-  /** Gets the output-relative path where the given flat ESM file should be written to. */
-  function getFlatEsmOutputRelativePath(file: BazelFileInfo) {
-    // Flat ESM files should be put into their owning package relative sub-path. e.g. if
-    // there is a bundle in `packages/animations/fesm2022/browser/testing.mjs` then we
-    // want the bundle to be stored in `fesm2022/browser/testing.mjs`. Same thing applies
-    // for the `fesm2022` bundles. The directory name for `fesm` is already declared as
-    // part of the Bazel action generating these files. See `ng_package.bzl`.
-    return getOwningPackageRelativePath(file);
-  }
-
   /** Gets the output-relative path where the typing file is being written to. */
   function getTypingOutputRelativePath(file: BazelFileInfo) {
     // Type definitions are intended to be copied into the package output while preserving the
@@ -181,8 +173,9 @@ function main(args: string[]): void {
     process.exit(1);
   }
 
-  // Copy all FESM files into the package output.
-  fesm2022.forEach((f) => copyFile(f.path, getFlatEsmOutputRelativePath(f)));
+  const fesmFiles = fastGlob.sync('**/*', {cwd: metadata.bundlesOut.path});
+  // Copy all FESM files (and their potential shared chunks) into the package output.
+  fesmFiles.forEach((f) => copyFile(path.join(metadata.bundlesOut.path, f), f));
 
   // Copy all type definitions into the package, preserving the sub-path from the
   // owning package. e.g. a file like `packages/animations/browser/__index.d.ts` will
@@ -288,7 +281,7 @@ function main(args: string[]): void {
       return packageJson;
     }
 
-    const fesm2022RelativeOutPath = getFlatEsmOutputRelativePath(entryPointInfo.fesm2022Bundle);
+    const fesm2022RelativeOutPath = entryPointInfo.fesm2022RelativePath;
     const typingsRelativeOutPath = getTypingOutputRelativePath(entryPointInfo.typings);
 
     packageJson.module = normalizePath(
@@ -327,7 +320,7 @@ function main(args: string[]): void {
       const subpath = isSecondaryEntryPoint(moduleName)
         ? `./${getEntryPointSubpath(moduleName)}`
         : '.';
-      const fesm2022OutRelativePath = getFlatEsmOutputRelativePath(entryPoint.fesm2022Bundle);
+      const fesm2022OutRelativePath = entryPoint.fesm2022RelativePath;
       const typesOutRelativePath = getTypingOutputRelativePath(entryPoint.typings);
 
       // Insert the export mapping for the entry-point. We set `default` to the FESM 2022
@@ -340,7 +333,61 @@ function main(args: string[]): void {
       });
     }
 
+    checkPackageJsonSideEffects(packageJson);
+
     return newPackageJson;
+  }
+
+  function checkPackageJsonSideEffects(packageJson: PackageJson): void {
+    // Convenience if there are no side effects, and it's explicitly marked.
+    // This is okay and we don't ask the developer to drop the explicit field.
+    if (packageJson.sideEffects === false && sideEffectEntryPoints.length === 0) {
+      return;
+    }
+
+    if (packageJson.sideEffects === true) {
+      throw Error(
+        'Unexpected `sideEffects` field in `package.json`. ' +
+          'Side effects should be fine-grained and marked via the Bazel `side_effect_entry_points` option.',
+      );
+    }
+
+    const sideEffects = packageJson.sideEffects as undefined | false | string[];
+    const neededSideEffects = sideEffectEntryPoints.map(
+      (entryPointModule) => `./${metadata.entryPoints[entryPointModule].fesm2022RelativePath}`,
+    );
+    const missingSideEffects = neededSideEffects.filter(
+      (p) =>
+        // It's missing, if the whole package is marked as having no side effects.
+        sideEffects === false ||
+        // Alternatively, it's missing if the explicit list doesn't contain the pattern.
+        !(sideEffects ?? []).includes(p),
+    );
+
+    if (missingSideEffects.length > 0) {
+      throw Error(
+        'Missing side effects in `package.json` `sideEffects` field. ' +
+          'Please add the following side effect file patterns:\n' +
+          missingSideEffects.join('\n - '),
+      );
+    }
+
+    // Find potential side-effects that refer to our FESM bundles, but aren't part
+    // of the `ng_package` known entry points.
+    const unexpectedExtra =
+      sideEffects !== false
+        ? (sideEffects ?? []).filter(
+            (p) => p.includes('fesm2022') && !neededSideEffects.includes(p),
+          )
+        : [];
+    if (unexpectedExtra.length > 0) {
+      throw Error(
+        'Unexpected side effects in `package.json` `sideEffects` field that is not known to `ng_package`. ' +
+          'Please add the side effect entry point to the Bazel `side_effect_entry_points` option. ' +
+          'Unexpected patterns:\n' +
+          unexpectedExtra.join('\n - '),
+      );
+    }
   }
 
   /**

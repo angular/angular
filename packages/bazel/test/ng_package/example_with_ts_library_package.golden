@@ -86,10 +86,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport
         }] });
 const a = 1;
 
-/**
- * Generated bundle index. Do not edit.
- */
-
 export { PortalModule, a };
 //# sourceMappingURL=portal.mjs.map
 
