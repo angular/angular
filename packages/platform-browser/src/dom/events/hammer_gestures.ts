@@ -67,6 +67,8 @@ const EVENT_NAMES = {
  *
  * @ngModule HammerModule
  * @publicApi
+ *
+ * @deprecated The HammerJS integration is deprecated. Replace it by your own implementation.
  */
 export const HAMMER_GESTURE_CONFIG = new InjectionToken<HammerGestureConfig>(
   typeof ngDevMode === 'undefined' || ngDevMode ? 'HammerGestureConfig' : '',
@@ -76,6 +78,8 @@ export const HAMMER_GESTURE_CONFIG = new InjectionToken<HammerGestureConfig>(
  * Function that loads HammerJS, returning a promise that is resolved once HammerJs is loaded.
  *
  * @publicApi
+ *
+ * @deprecated The hammerjs integration is deprecated. Replace it by your own implementation.
  */
 export type HammerLoader = () => Promise<void>;
 
@@ -85,6 +89,8 @@ export type HammerLoader = () => Promise<void>;
  * @see {@link HammerLoader}
  *
  * @publicApi
+ *
+ * @deprecated The HammerJS integration is deprecated. Replace it by your own implementation.
  */
 export const HAMMER_LOADER = new InjectionToken<HammerLoader>(
   typeof ngDevMode === 'undefined' || ngDevMode ? 'HammerLoader' : '',
@@ -100,6 +106,8 @@ export interface HammerInstance {
  * An injectable [HammerJS Manager](https://hammerjs.github.io/api/#hammermanager)
  * for gesture recognition. Configures specific event recognition.
  * @publicApi
+ *
+ * @deprecated The HammerJS integration is deprecated. Replace it by your own implementation.
  */
 @Injectable()
 export class HammerGestureConfig {
@@ -293,6 +301,8 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
  * simply sets up the coordination layer between HammerJS and Angular's `EventManager`.
  *
  * @publicApi
+ *
+ * @deprecated The hammer integration is deprecated. Replace it by your own implementation.
  */
 @NgModule({
   providers: [
