@@ -30,9 +30,9 @@ export const RouteTitleKey = /* @__PURE__ */ Symbol('RouteTitle');
  *
  * @publicApi
  */
-export type Params = {
+export type Params = Readonly<{
   [key: string]: any;
-};
+}>;
 
 /**
  * A map that provides access to the required and optional parameters
