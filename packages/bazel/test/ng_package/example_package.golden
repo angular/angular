@@ -12,6 +12,8 @@ fesm2022
   fesm2022/a11y.mjs.map
   fesm2022/imports.mjs
   fesm2022/imports.mjs.map
+  fesm2022/index-1e1ea2d8.mjs
+  fesm2022/index-1e1ea2d8.mjs.map
   fesm2022/secondary.mjs
   fesm2022/secondary.mjs.map
   fesm2022/waffels.mjs
@@ -137,10 +139,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport
             args: [{}]
         }] });
 
-/**
- * Generated bundle index. Do not edit.
- */
-
 export { A11yModule };
 //# sourceMappingURL=a11y.mjs.map
 
@@ -153,6 +151,7 @@ export { A11yModule };
  * License: MIT
  */
 
+export { s as sharedBetweenEntryPoints } from './index-1e1ea2d8.mjs';
 import * as i0 from '@angular/core';
 import { Injectable } from '@angular/core';
 
@@ -178,12 +177,22 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport
             args: [{ providedIn: 'root' }]
         }], ctorParameters: () => [{ type: MySecondService }] });
 
-/**
- * Generated bundle index. Do not edit.
- */
-
 export { MyService };
 //# sourceMappingURL=imports.mjs.map
+
+
+--- fesm2022/index-1e1ea2d8.mjs ---
+
+/**
+ * @license Angular v0.0.0
+ * (c) 2010-2025 Google LLC. https://angular.io/
+ * License: MIT
+ */
+
+const sharedBetweenEntryPoints = 'This export is shared between entry-points';
+
+export { sharedBetweenEntryPoints as s };
+//# sourceMappingURL=index-1e1ea2d8.mjs.map
 
 
 --- fesm2022/secondary.mjs ---
@@ -194,6 +203,7 @@ export { MyService };
  * License: MIT
  */
 
+export { s as sharedBetweenEntryPoints } from './index-1e1ea2d8.mjs';
 import * as i0 from '@angular/core';
 import { NgModule } from '@angular/core';
 
@@ -207,10 +217,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport
             args: [{}]
         }] });
 const a = 1;
-
-/**
- * Generated bundle index. Do not edit.
- */
 
 export { SecondaryModule, a };
 //# sourceMappingURL=secondary.mjs.map
@@ -236,10 +242,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport
             type: NgModule,
             args: [{}]
         }] });
-
-/**
- * Generated bundle index. Do not edit.
- */
 
 export { MyModule };
 //# sourceMappingURL=waffels.mjs.map
@@ -267,6 +269,8 @@ export declare class MyService {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyService, never>;
     static ɵprov: i0.ɵɵInjectableDeclaration<MyService>;
 }
+
+export declare const sharedBetweenEntryPoints = "This export is shared between entry-points";
 
 export { }
 
@@ -345,6 +349,8 @@ export declare class SecondaryModule {
     static ɵmod: i0.ɵɵNgModuleDeclaration<SecondaryModule, never, never, never>;
     static ɵinj: i0.ɵɵInjectorDeclaration<SecondaryModule>;
 }
+
+export declare const sharedBetweenEntryPoints = "This export is shared between entry-points";
 
 export { }
 

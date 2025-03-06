@@ -136,6 +136,8 @@ def _compute_node_modules_root(ctx):
 def _write_rollup_config(
         ctx,
         root_dir,
+        metadata_arg,
+        side_effect_entry_points,
         filename = "_%s.rollup.conf.js"):
     """Generate a rollup config file.
 
@@ -172,31 +174,23 @@ def _write_rollup_config(
             "TMPL_banner_file": "\"%s\"" % ctx.file.license_banner.path if ctx.file.license_banner else "undefined",
             "TMPL_module_mappings": str(mappings),
             "TMPL_node_modules_root": _compute_node_modules_root(ctx),
+            "TMPL_metadata": json.encode(metadata_arg),
             "TMPL_root_dir": root_dir,
             "TMPL_workspace_name": ctx.workspace_name,
             "TMPL_external": ", ".join(["'%s'" % e for e in externals]),
+            "TMPL_side_effect_entrypoints": json.encode(side_effect_entry_points),
         },
     )
 
     return config
 
-def _run_rollup(ctx, bundle_name, rollup_config, entry_point, inputs, js_output, format):
-    map_output = ctx.actions.declare_file(js_output.basename + ".map", sibling = js_output)
+def _run_rollup(ctx, rollup_config, inputs, format):
+    outdir = ctx.actions.declare_directory("%s_fesm_bundle_out" % ctx.label.name)
 
     args = ctx.actions.args()
-    args.add("--input", entry_point.path)
     args.add("--config", rollup_config)
-    args.add("--output.file", js_output)
     args.add("--output.format", format)
-
-    # After updating to build_bazel_rules_nodejs 0.27.0+, rollup has been updated to v1.3.1
-    # which tree shakes @__PURE__ annotations and const variables which are later amended by NGCC.
-    # We turn this feature off for ng_package as Angular bundles contain these and there are
-    # test failures if they are removed.
-    # See comments in:
-    # https://github.com/angular/angular/pull/29210
-    # https://github.com/angular/angular/pull/32069
-    args.add("--no-treeshake")
+    args.add("--output.dir", outdir.path + "/fesm2022")
 
     # Note: if the input has external source maps then we need to also install and use
     #   `rollup-plugin-sourcemaps`, which will require us to use rollup.config.js file instead
@@ -213,15 +207,15 @@ def _run_rollup(ctx, bundle_name, rollup_config, entry_point, inputs, js_output,
     if ctx.file.license_banner:
         other_inputs.append(ctx.file.license_banner)
     ctx.actions.run(
-        progress_message = "ng_package: Rollup %s (%s)" % (bundle_name, entry_point.short_path),
+        progress_message = "ng_package: Rollup %s" % (ctx.label),
         mnemonic = "AngularPackageRollup",
-        inputs = inputs.to_list() + other_inputs,
-        outputs = [js_output, map_output],
+        inputs = depset(other_inputs, transitive = [inputs]),
+        outputs = [outdir],
         executable = ctx.executable.rollup,
         tools = [ctx.executable.rollup],
         arguments = [args],
     )
-    return [js_output, map_output]
+    return outdir
 
 # Serializes a file into a struct that matches the `BazelFileInfo` type in the
 # packager implementation. Useful for transmission of such information.
@@ -288,9 +282,6 @@ def _ng_package_impl(ctx):
         else:
             static_files.append(file)
 
-    # These accumulators match the directory names where the files live in the
-    # Angular package format.
-    fesm2022 = []
     type_files = []
 
     # List of unscoped direct and transitive ESM sources that are provided
@@ -390,7 +381,7 @@ def _ng_package_impl(ctx):
             guessed_paths = True
 
         bundle_name = "%s.mjs" % (primary_bundle_name if is_primary_entry_point else entry_point)
-        fesm2022_file = ctx.actions.declare_file("fesm2022/%s" % bundle_name)
+        fesm2022_file = "fesm2022/%s" % bundle_name
 
         # By default, we will bundle the typings entry-point, unless explicitly opted-out
         # through the `skip_type_bundling` rule attribute.
@@ -425,28 +416,11 @@ def _ng_package_impl(ctx):
             guessed_paths = guessed_paths,
         ))
 
-        # Note: For creating the bundles, we use all the ESM2022 sources that have been
-        # collected from the dependencies. This allows for bundling of code that is not
-        # necessarily part of the owning package (with respect to the `externals` attribute)
-        rollup_inputs = unscoped_esm2022_depset
-        esm2022_config = _write_rollup_config(ctx, ctx.bin_dir.path, filename = "_%s.rollup_esm2022.conf.js")
-
-        fesm2022.extend(
-            _run_rollup(
-                ctx,
-                "fesm2022",
-                esm2022_config,
-                es2022_entry_point,
-                rollup_inputs,
-                fesm2022_file,
-                format = "esm",
-            ),
-        )
-
     # Note: Using `to_list()` is expensive but we cannot get around this here as
     # we need to filter out generated files and need to be able to iterate through
     # JavaScript files in order to capture the relevant package-owned `esm2022/` in the APF.
-    unscoped_all_entry_point_esm2022_list = depset(transitive = unscoped_all_entry_point_esm2022).to_list()
+    unscoped_all_entry_point_esm2022_depset = depset(transitive = unscoped_all_entry_point_esm2022)
+    unscoped_all_entry_point_esm2022_list = unscoped_all_entry_point_esm2022_depset.to_list()
 
     # Filter ESM2022 JavaScript inputs to files which are part of the owning package. The
     # packager should not copy external files into the package.
@@ -455,7 +429,7 @@ def _ng_package_impl(ctx):
     packager_inputs = (
         static_files +
         type_files +
-        fesm2022 + esm2022
+        esm2022
     )
 
     packager_args = ctx.actions.args()
@@ -473,12 +447,24 @@ def _ng_package_impl(ctx):
         # in the packager executable tool.
         metadata_arg[m.module_name] = {
             "index": _serialize_file(m.es2022_entry_point),
-            "fesm2022Bundle": _serialize_file(m.fesm2022_file),
+            "fesm2022RelativePath": m.fesm2022_file,
             "typings": _serialize_file(m.typings_file),
             # If the paths for that entry-point were guessed (e.g. "ts_library" rule or
             # "ng_module" without flat module bundle), we pass this information to the packager.
             "guessedPaths": m.guessed_paths,
         }
+
+    for ep in ctx.attr.side_effect_entry_points:
+        if not metadata_arg[ep]:
+            known_entry_points = ",".join([e.module_name for e in collected_entry_points])
+            fail("Unknown entry-point (%s) specified to include side effects. " % ep +
+                 "The following entry-points are known: %s" % known_entry_points)
+
+    rollup_config = _write_rollup_config(ctx, ctx.bin_dir.path, metadata_arg, ctx.attr.side_effect_entry_points)
+    rollup_inputs = depset(static_files, transitive = [unscoped_all_entry_point_esm2022_depset])
+    bundles_out = _run_rollup(ctx, rollup_config, rollup_inputs, "esm")
+
+    packager_inputs.append(bundles_out)
 
     # Encodes the package metadata with all its entry-points into JSON so that
     # it can be deserialized by the packager tool. The struct needs to match with
@@ -486,6 +472,7 @@ def _ng_package_impl(ctx):
     packager_args.add(json.encode(struct(
         npmPackageName = npm_package_name,
         entryPoints = metadata_arg,
+        bundlesOut = _serialize_file(bundles_out),
     )))
 
     if ctx.file.readme_md:
@@ -502,10 +489,11 @@ def _ng_package_impl(ctx):
         #placeholder
         packager_args.add("")
 
-    packager_args.add(_serialize_files_for_arg(fesm2022))
     packager_args.add(_serialize_files_for_arg(esm2022))
     packager_args.add(_serialize_files_for_arg(static_files))
     packager_args.add(_serialize_files_for_arg(type_files))
+
+    packager_args.add(json.encode(ctx.attr.side_effect_entry_points))
 
     ctx.actions.run(
         progress_message = "Angular Packaging: building npm package %s" % str(ctx.label),
@@ -550,6 +538,10 @@ _NG_PACKAGE_ATTRS = dict(PKG_NPM_ATTRS, **{
         These can use ES2022 syntax and ES Modules (import/export)""",
         cfg = partial_compilation_transition,
         allow_files = True,
+    ),
+    "side_effect_entry_points": attr.string_list(
+        doc = "List of entry-points that have top-level side-effects",
+        default = [],
     ),
     "externals": attr.string_list(
         doc = """List of external module that should not be bundled into the flat ESM bundles.""",

@@ -26,5 +26,7 @@
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },
-  "sideEffects": true
+  "sideEffects": [
+    "./fesm2022/compiler.mjs"
+  ]
 }
