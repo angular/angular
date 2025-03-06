@@ -23,6 +23,9 @@ ng_package(
     srcs = [
         "package.json",
     ],
+    side_effect_entry_points = [
+        "@angular/compiler",
+    ],
     tags = [
         "release-with-framework",
     ],

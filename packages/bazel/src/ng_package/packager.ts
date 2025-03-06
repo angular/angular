@@ -37,6 +37,7 @@ type PackageJson = {
 } & {
   name: string;
   type?: string;
+  sideEffects?: string[] | boolean;
   exports?: Record<string, ConditionalExport>;
 };
 
@@ -80,12 +81,16 @@ function main(args: string[]): void {
 
     // List of all type definitions that need to packaged into the ng_package.
     typeDefinitionsArg,
+
+    // List of side-effectful entry-points
+    sideEffectEntryPointsArg,
   ] = params;
 
   const esm2022 = JSON.parse(esm2022Arg) as BazelFileInfo[];
   const typeDefinitions = JSON.parse(typeDefinitionsArg) as BazelFileInfo[];
   const staticFiles = JSON.parse(staticFilesArg) as BazelFileInfo[];
   const metadata = JSON.parse(metadataArg) as PackageMetadata;
+  const sideEffectEntryPoints = JSON.parse(sideEffectEntryPointsArg) as string[];
 
   if (readmeMd) {
     copyFile(readmeMd, 'README.md');
@@ -328,7 +333,61 @@ function main(args: string[]): void {
       });
     }
 
+    checkPackageJsonSideEffects(packageJson);
+
     return newPackageJson;
+  }
+
+  function checkPackageJsonSideEffects(packageJson: PackageJson): void {
+    // Convenience if there are no side effects, and it's explicitly marked.
+    // This is okay and we don't ask the developer to drop the explicit field.
+    if (packageJson.sideEffects === false && sideEffectEntryPoints.length === 0) {
+      return;
+    }
+
+    if (packageJson.sideEffects === true) {
+      throw Error(
+        'Unexpected `sideEffects` field in `package.json`. ' +
+          'Side effects should be fine-grained and marked via the Bazel `side_effect_entry_points` option.',
+      );
+    }
+
+    const sideEffects = packageJson.sideEffects as undefined | false | string[];
+    const neededSideEffects = sideEffectEntryPoints.map(
+      (entryPointModule) => `./${metadata.entryPoints[entryPointModule].fesm2022RelativePath}`,
+    );
+    const missingSideEffects = neededSideEffects.filter(
+      (p) =>
+        // It's missing, if the whole package is marked as having no side effects.
+        sideEffects === false ||
+        // Alternatively, it's missing if the explicit list doesn't contain the pattern.
+        !(sideEffects ?? []).includes(p),
+    );
+
+    if (missingSideEffects.length > 0) {
+      throw Error(
+        'Missing side effects in `package.json` `sideEffects` field. ' +
+          'Please add the following side effect file patterns:\n' +
+          missingSideEffects.join('\n - '),
+      );
+    }
+
+    // Find potential side-effects that refer to our FESM bundles, but aren't part
+    // of the `ng_package` known entry points.
+    const unexpectedExtra =
+      sideEffects !== false
+        ? (sideEffects ?? []).filter(
+            (p) => p.includes('fesm2022') && !neededSideEffects.includes(p),
+          )
+        : [];
+    if (unexpectedExtra.length > 0) {
+      throw Error(
+        'Unexpected side effects in `package.json` `sideEffects` field that is not known to `ng_package`. ' +
+          'Please add the side effect entry point to the Bazel `side_effect_entry_points` option. ' +
+          'Unexpected patterns:\n' +
+          unexpectedExtra.join('\n - '),
+      );
+    }
   }
 
   /**

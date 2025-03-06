@@ -57,6 +57,9 @@ ng_package(
     externals = [
         "xhr2",
     ],
+    side_effect_entry_points = [
+        "@angular/platform-server/init",
+    ],
     tags = [
         "release-with-framework",
     ],

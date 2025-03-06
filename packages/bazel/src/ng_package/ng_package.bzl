@@ -137,6 +137,7 @@ def _write_rollup_config(
         ctx,
         root_dir,
         metadata_arg,
+        side_effect_entry_points,
         filename = "_%s.rollup.conf.js"):
     """Generate a rollup config file.
 
@@ -177,6 +178,7 @@ def _write_rollup_config(
             "TMPL_root_dir": root_dir,
             "TMPL_workspace_name": ctx.workspace_name,
             "TMPL_external": ", ".join(["'%s'" % e for e in externals]),
+            "TMPL_side_effect_entrypoints": json.encode(side_effect_entry_points),
         },
     )
 
@@ -207,7 +209,7 @@ def _run_rollup(ctx, rollup_config, inputs, format):
     ctx.actions.run(
         progress_message = "ng_package: Rollup %s" % (ctx.label),
         mnemonic = "AngularPackageRollup",
-        inputs = inputs.to_list() + other_inputs,
+        inputs = depset(other_inputs, transitive = [inputs]),
         outputs = [outdir],
         executable = ctx.executable.rollup,
         tools = [ctx.executable.rollup],
@@ -452,8 +454,15 @@ def _ng_package_impl(ctx):
             "guessedPaths": m.guessed_paths,
         }
 
-    rollup_config = _write_rollup_config(ctx, ctx.bin_dir.path, metadata_arg)
-    bundles_out = _run_rollup(ctx, rollup_config, unscoped_all_entry_point_esm2022_depset, "esm")
+    for ep in ctx.attr.side_effect_entry_points:
+        if not metadata_arg[ep]:
+            known_entry_points = ",".join([e.module_name for e in collected_entry_points])
+            fail("Unknown entry-point (%s) specified to include side effects. " % ep +
+                 "The following entry-points are known: %s" % known_entry_points)
+
+    rollup_config = _write_rollup_config(ctx, ctx.bin_dir.path, metadata_arg, ctx.attr.side_effect_entry_points)
+    rollup_inputs = depset(static_files, transitive = [unscoped_all_entry_point_esm2022_depset])
+    bundles_out = _run_rollup(ctx, rollup_config, rollup_inputs, "esm")
 
     packager_inputs.append(bundles_out)
 
@@ -483,6 +492,8 @@ def _ng_package_impl(ctx):
     packager_args.add(_serialize_files_for_arg(esm2022))
     packager_args.add(_serialize_files_for_arg(static_files))
     packager_args.add(_serialize_files_for_arg(type_files))
+
+    packager_args.add(json.encode(ctx.attr.side_effect_entry_points))
 
     ctx.actions.run(
         progress_message = "Angular Packaging: building npm package %s" % str(ctx.label),
@@ -527,6 +538,10 @@ _NG_PACKAGE_ATTRS = dict(PKG_NPM_ATTRS, **{
         These can use ES2022 syntax and ES Modules (import/export)""",
         cfg = partial_compilation_transition,
         allow_files = True,
+    ),
+    "side_effect_entry_points": attr.string_list(
+        doc = "List of entry-points that have top-level side-effects",
+        default = [],
     ),
     "externals": attr.string_list(
         doc = """List of external module that should not be bundled into the flat ESM bundles.""",
