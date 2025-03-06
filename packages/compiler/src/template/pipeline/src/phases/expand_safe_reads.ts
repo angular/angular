@@ -35,6 +35,7 @@ const requiresTemporary = [
   o.InvokeFunctionExpr,
   o.LiteralArrayExpr,
   o.LiteralMapExpr,
+  o.ParenthesizedExpr,
   ir.SafeInvokeFunctionExpr,
   ir.PipeBindingExpr,
 ].map((e) => e.constructor.name);
@@ -58,6 +59,8 @@ function needsTemporaryInSafeAccess(e: o.Expression): boolean {
     return needsTemporaryInSafeAccess(e.receiver);
   } else if (e instanceof o.ReadKeyExpr) {
     return needsTemporaryInSafeAccess(e.receiver) || needsTemporaryInSafeAccess(e.index);
+  } else if (e instanceof o.ParenthesizedExpr) {
+    return needsTemporaryInSafeAccess(e.expr);
   }
   // TODO: Switch to a method which is exhaustive of newly added expression subtypes.
   return (
@@ -233,9 +236,11 @@ function ternaryTransform(e: o.Expression): o.Expression {
   if (!(e instanceof ir.SafeTernaryExpr)) {
     return e;
   }
-  return new o.ConditionalExpr(
-    new o.BinaryOperatorExpr(o.BinaryOperator.Equals, e.guard, o.NULL_EXPR),
-    o.NULL_EXPR,
-    e.expr,
+  return new o.ParenthesizedExpr(
+    new o.ConditionalExpr(
+      new o.BinaryOperatorExpr(o.BinaryOperator.Equals, e.guard, o.NULL_EXPR),
+      o.NULL_EXPR,
+      e.expr,
+    ),
   );
 }
