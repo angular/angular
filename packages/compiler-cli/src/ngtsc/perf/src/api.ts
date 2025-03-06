@@ -155,11 +155,6 @@ export enum PerfPhase {
   OutliningSpans,
 
   /**
-   * Tracks the number of `PerfPhase`s, and must appear at the end of the list.
-   */
-  LAST,
-
-  /**
    * Time spent by the Angular Language Service calculating code fixes.
    */
   LsCodeFixes,
@@ -178,6 +173,16 @@ export enum PerfPhase {
    * Time spent computing changes for applying a given refactoring.
    */
   LSApplyRefactoring,
+
+  /**
+   * Time spent by the Angular Language Service calculating semantic classifications.
+   */
+  LSSemanticClassification,
+
+  /**
+   * Tracks the number of `PerfPhase`s, and must appear at the end of the list.
+   */
+  LAST,
 }
 
 /**
