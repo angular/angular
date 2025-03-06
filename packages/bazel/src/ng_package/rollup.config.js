@@ -26,6 +26,7 @@ const rootDir = 'TMPL_root_dir';
 const bannerFile = TMPL_banner_file;
 const moduleMappings = TMPL_module_mappings;
 const nodeModulesRoot = 'TMPL_node_modules_root';
+const metadata = JSON.parse(`TMPL_metadata`);
 
 log_verbose(`running with
   cwd: ${process.cwd()}
@@ -148,20 +149,12 @@ const stripBannerPlugin = {
     const pos = code.indexOf(bannerContent);
     magicString.remove(pos, pos + bannerContent.length).trimStart();
 
-    return {
-      code: magicString.toString(),
-      map: magicString.generateMap({
-        hires: true,
-      }),
-    };
+    return {code: magicString.toString(), map: magicString.generateMap({hires: true})};
   },
 };
 
 const plugins = [
-  {
-    name: 'resolveBazel',
-    resolveId: resolveBazel,
-  },
+  {name: 'resolveBazel', resolveId: resolveBazel},
   nodeResolve({
     mainFields: ['es2020', 'es2015', 'module', 'browser'],
     jail: process.cwd(),
@@ -172,11 +165,21 @@ const plugins = [
   sourcemaps(),
 ];
 
+// Rollup input option:
+// https://rollupjs.org/configuration-options/#input.
+const input = {};
+
+for (const info of Object.values(metadata)) {
+  input[info.fesm2022RelativePath.replace(/\.mjs$/, '')] = info.index.path;
+}
+
 const config = {
+  input,
   plugins,
   external: [TMPL_external],
   output: {
     banner: bannerContent,
+    entryFileNames: '[name].mjs',
   },
 };
 

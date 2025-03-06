@@ -8,6 +8,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import fastGlob from 'fast-glob';
 
 import {BazelFileInfo, PackageMetadata} from './api';
 import {analyzeFileAndEnsureNoCrossImports} from './cross_entry_points_imports';
@@ -71,9 +72,6 @@ function main(args: string[]): void {
     // Path to the package's LICENSE file.
     licenseFile,
 
-    // List of rolled-up flat ES2022 modules
-    fesm2022Arg,
-
     // List of individual ES2022 modules
     esm2022Arg,
 
@@ -84,7 +82,6 @@ function main(args: string[]): void {
     typeDefinitionsArg,
   ] = params;
 
-  const fesm2022 = JSON.parse(fesm2022Arg) as BazelFileInfo[];
   const esm2022 = JSON.parse(esm2022Arg) as BazelFileInfo[];
   const typeDefinitions = JSON.parse(typeDefinitionsArg) as BazelFileInfo[];
   const staticFiles = JSON.parse(staticFilesArg) as BazelFileInfo[];
@@ -135,16 +132,6 @@ function main(args: string[]): void {
     return path.relative(owningPackageName, file.shortPath);
   }
 
-  /** Gets the output-relative path where the given flat ESM file should be written to. */
-  function getFlatEsmOutputRelativePath(file: BazelFileInfo) {
-    // Flat ESM files should be put into their owning package relative sub-path. e.g. if
-    // there is a bundle in `packages/animations/fesm2022/browser/testing.mjs` then we
-    // want the bundle to be stored in `fesm2022/browser/testing.mjs`. Same thing applies
-    // for the `fesm2022` bundles. The directory name for `fesm` is already declared as
-    // part of the Bazel action generating these files. See `ng_package.bzl`.
-    return getOwningPackageRelativePath(file);
-  }
-
   /** Gets the output-relative path where the typing file is being written to. */
   function getTypingOutputRelativePath(file: BazelFileInfo) {
     // Type definitions are intended to be copied into the package output while preserving the
@@ -181,8 +168,9 @@ function main(args: string[]): void {
     process.exit(1);
   }
 
-  // Copy all FESM files into the package output.
-  fesm2022.forEach((f) => copyFile(f.path, getFlatEsmOutputRelativePath(f)));
+  const fesmFiles = fastGlob.sync('**/*', {cwd: metadata.bundlesOut.path});
+  // Copy all FESM files (and their potential shared chunks) into the package output.
+  fesmFiles.forEach((f) => copyFile(path.join(metadata.bundlesOut.path, f), f));
 
   // Copy all type definitions into the package, preserving the sub-path from the
   // owning package. e.g. a file like `packages/animations/browser/__index.d.ts` will
@@ -288,7 +276,7 @@ function main(args: string[]): void {
       return packageJson;
     }
 
-    const fesm2022RelativeOutPath = getFlatEsmOutputRelativePath(entryPointInfo.fesm2022Bundle);
+    const fesm2022RelativeOutPath = entryPointInfo.fesm2022RelativePath;
     const typingsRelativeOutPath = getTypingOutputRelativePath(entryPointInfo.typings);
 
     packageJson.module = normalizePath(
@@ -327,7 +315,7 @@ function main(args: string[]): void {
       const subpath = isSecondaryEntryPoint(moduleName)
         ? `./${getEntryPointSubpath(moduleName)}`
         : '.';
-      const fesm2022OutRelativePath = getFlatEsmOutputRelativePath(entryPoint.fesm2022Bundle);
+      const fesm2022OutRelativePath = entryPoint.fesm2022RelativePath;
       const typesOutRelativePath = getTypingOutputRelativePath(entryPoint.typings);
 
       // Insert the export mapping for the entry-point. We set `default` to the FESM 2022
