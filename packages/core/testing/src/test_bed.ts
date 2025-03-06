@@ -39,7 +39,6 @@ import {
   ɵsetUnknownElementStrictMode as setUnknownElementStrictMode,
   ɵsetUnknownPropertyStrictMode as setUnknownPropertyStrictMode,
   ɵstringify as stringify,
-  ɵMicrotaskEffectScheduler as MicrotaskEffectScheduler,
 } from '@angular/core';
 
 import {ComponentFixture} from './component_fixture';
@@ -856,7 +855,6 @@ export class TestBedImpl implements TestBed {
    * @developerPreview
    */
   flushEffects(): void {
-    this.inject(MicrotaskEffectScheduler).flush();
     this.inject(EffectScheduler).flush();
   }
 }

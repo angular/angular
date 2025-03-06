@@ -33,20 +33,8 @@ import {
 } from '../../change_detection/scheduling/zoneless_scheduling';
 import {setIsRefreshingViews} from '../state';
 import {EffectScheduler, SchedulableEffect} from './root_effect_scheduler';
-import {USE_MICROTASK_EFFECT_BY_DEFAULT} from './patch';
-import {microtaskEffect} from './microtask_effect';
 
-let useMicrotaskEffectsByDefault = USE_MICROTASK_EFFECT_BY_DEFAULT;
 import {emitEffectCreatedEvent, setInjectorProfilerContext} from '../debug/injector_profiler';
-
-/**
- * Toggle the flag on whether to use microtask effects (for testing).
- */
-export function setUseMicrotaskEffectsByDefault(value: boolean): boolean {
-  const prev = useMicrotaskEffectsByDefault;
-  useMicrotaskEffectsByDefault = value;
-  return prev;
-}
 
 /**
  * A global reactive effect, which can be manually destroyed.
@@ -149,14 +137,6 @@ export function effect(
   effectFn: (onCleanup: EffectCleanupRegisterFn) => void,
   options?: CreateEffectOptions,
 ): EffectRef {
-  if (useMicrotaskEffectsByDefault) {
-    if (ngDevMode && options?.forceRoot) {
-      throw new Error(`Cannot use 'forceRoot' option with microtask effects on`);
-    }
-
-    return microtaskEffect(effectFn, options);
-  }
-
   ngDevMode &&
     assertNotInReactiveContext(
       effect,

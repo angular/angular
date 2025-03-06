@@ -25,7 +25,6 @@ import {
   ɵZONELESS_ENABLED as ZONELESS_ENABLED,
   ɵPendingTasksInternal as PendingTasks,
   ɵEffectScheduler as EffectScheduler,
-  ɵMicrotaskEffectScheduler as MicrotaskEffectScheduler,
 } from '@angular/core';
 import {Subscription} from 'rxjs';
 
@@ -89,7 +88,6 @@ export class ComponentFixture<T> {
   private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
   private readonly scheduler = inject(ɵChangeDetectionScheduler);
   private readonly rootEffectScheduler = inject(EffectScheduler);
-  private readonly microtaskEffectScheduler = inject(MicrotaskEffectScheduler);
   private readonly autoDetectDefault = this.zonelessEnabled ? true : false;
   private autoDetect =
     inject(ComponentFixtureAutoDetect, {optional: true}) ?? this.autoDetectDefault;
@@ -144,7 +142,6 @@ export class ComponentFixture<T> {
    * Trigger a change detection cycle for the component.
    */
   detectChanges(checkNoChanges = true): void {
-    this.microtaskEffectScheduler.flush();
     const originalCheckNoChanges = this.componentRef.changeDetectorRef.checkNoChanges;
     try {
       if (!checkNoChanges) {
@@ -173,7 +170,6 @@ export class ComponentFixture<T> {
     } finally {
       this.componentRef.changeDetectorRef.checkNoChanges = originalCheckNoChanges;
     }
-    this.microtaskEffectScheduler.flush();
   }
 
   /**

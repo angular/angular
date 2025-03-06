@@ -31,7 +31,6 @@ import {
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {TestBed} from '@angular/core/testing';
 
-import {setUseMicrotaskEffectsByDefault} from '@angular/core/src/render3/reactivity/effect';
 import {firstValueFrom} from 'rxjs';
 import {filter} from 'rxjs/operators';
 import {EnvironmentInjector, Injectable} from '../../src/di';
@@ -46,10 +45,6 @@ function createAndAttachComponent<T>(component: Type<T>) {
 
 describe('after render hooks', () => {
   let prev: boolean;
-  beforeEach(() => {
-    prev = setUseMicrotaskEffectsByDefault(false);
-  });
-  afterEach(() => setUseMicrotaskEffectsByDefault(prev));
 
   describe('browser', () => {
     const COMMON_PROVIDERS = [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}];
