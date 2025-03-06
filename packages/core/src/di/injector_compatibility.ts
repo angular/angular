@@ -52,14 +52,11 @@ const DI_DECORATOR_FLAG = '__NG_DI_FLAG__';
 export class RetrievingInjector implements PrimitivesInjector {
   constructor(readonly injector: Injector) {}
   retrieve<T>(token: PrimitivesInjectionToken<T>, options: unknown): T | NotFound {
-    let flags: InjectFlags;
-    if (options && (options as {flags: InjectFlags}).flags) {
-      flags = (options as {flags: InjectFlags}).flags;
-    } else {
-      flags = convertToBitFlags(options as InjectOptions | undefined) || InjectFlags.Default;
-    }
+    const flags: InjectFlags =
+      convertToBitFlags(options as InjectOptions | undefined) || InjectFlags.Default;
     return this.injector.get(
       token as unknown as InjectionToken<T>,
+      // When a dependency is requested with an optional flag, DI returns null as the default value.
       flags & InjectFlags.Optional ? null : undefined,
       flags,
     ) as T;
@@ -88,7 +85,10 @@ export function injectInjectorOnly<T>(
   } else if (currentInjector === null) {
     return injectRootLimpMode(token, undefined, flags);
   } else {
-    const value = currentInjector.retrieve(token as PrimitivesInjectionToken<T>, {flags}) as T;
+    const value = currentInjector.retrieve(
+      token as PrimitivesInjectionToken<T>,
+      convertToInjectOptions(flags),
+    ) as T;
     ngDevMode && emitInjectEvent(token as Type<unknown>, value, flags);
     return value;
   }
@@ -299,6 +299,16 @@ export function convertToBitFlags(
     ((flags.host && InternalInjectFlags.Host) as number) |
     ((flags.self && InternalInjectFlags.Self) as number) |
     ((flags.skipSelf && InternalInjectFlags.SkipSelf) as number)) as InjectFlags;
+}
+
+// Converts bitflags to inject options
+function convertToInjectOptions(flags: InjectFlags): InjectOptions {
+  return {
+    optional: !!(flags & InternalInjectFlags.Optional),
+    host: !!(flags & InternalInjectFlags.Host),
+    self: !!(flags & InternalInjectFlags.Self),
+    skipSelf: !!(flags & InternalInjectFlags.SkipSelf),
+  };
 }
 
 export function injectArgs(types: (ProviderToken<any> | any[])[]): any[] {
