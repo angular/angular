@@ -34,7 +34,7 @@ import {
   LiteralMapKey,
   LiteralPrimitive,
   NonNullAssert,
-  Parenthesized,
+  ParenthesizedExpression,
   ParserError,
   ParseSpan,
   PrefixNot,
@@ -1041,7 +1041,7 @@ class _ParseAST {
       const result = this.parsePipe();
       this.rparensExpected--;
       this.expectCharacter(chars.$RPAREN);
-      return new Parenthesized(this.span(start), this.sourceSpan(start), result);
+      return new ParenthesizedExpression(this.span(start), this.sourceSpan(start), result);
     } else if (this.next.isKeywordNull()) {
       this.advance();
       return new LiteralPrimitive(this.span(start), this.sourceSpan(start), null);

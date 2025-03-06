@@ -131,9 +131,9 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
     this.recordAst(ast);
     super.visitTaggedTemplateLiteral(ast, null);
   }
-  override visitParenthesized(ast: e.Parenthesized, context: any): void {
+  override visitParenthesizedExpression(ast: e.ParenthesizedExpression, context: any): void {
     this.recordAst(ast);
-    super.visitParenthesized(ast, null);
+    super.visitParenthesizedExpression(ast, null);
   }
 
   visitTemplate(ast: t.Template) {

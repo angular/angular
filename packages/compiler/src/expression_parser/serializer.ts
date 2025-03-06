@@ -168,7 +168,7 @@ class SerializeExpressionVisitor implements expr.AstVisitor {
     return ast.tag.visit(this, context) + ast.template.visit(this, context);
   }
 
-  visitParenthesized(ast: expr.Parenthesized, context: any) {
+  visitParenthesizedExpression(ast: expr.ParenthesizedExpression, context: any) {
     return '(' + ast.expression.visit(this, context) + ')';
   }
 }
