@@ -4,7 +4,6 @@
 
 ```ts
 
-import { AnimationPlayer } from '@angular/animations';
 import * as i0 from '@angular/core';
 
 // @public (undocumented)

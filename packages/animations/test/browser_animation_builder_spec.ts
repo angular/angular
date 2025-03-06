@@ -10,9 +10,9 @@ import {
   AnimationBuilder,
   style,
   ɵBrowserAnimationBuilder as BrowserAnimationBuilder,
-} from '@angular/animations';
-import {AnimationDriver} from '@angular/animations/browser';
-import {MockAnimationDriver} from '@angular/animations/browser/testing';
+} from '../src/animations';
+import {AnimationDriver} from '../browser';
+import {MockAnimationDriver} from '../browser/testing';
 import {DOCUMENT} from '@angular/common';
 import {Component, NgZone, RendererFactory2, ViewChild} from '@angular/core';
 import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';

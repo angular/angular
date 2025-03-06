@@ -27,7 +27,7 @@ import {
   AUTO_STYLE,
   style,
   ɵStyleDataMap,
-} from '@angular/animations';
+} from '../../../src/animations';
 
 import {
   invalidDefinition,
