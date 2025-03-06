@@ -177,6 +177,19 @@ const config = {
   input,
   plugins,
   external: [TMPL_external],
+  treeshake: {
+    // After updating to build_bazel_rules_nodejs 0.27.0+, rollup has been updated to v1.3.1
+    // which tree shakes @__PURE__ annotations and const variables which are later amended by NGCC.
+    // We turn this feature off for ng_package as Angular bundles contain these and there are
+    // test failures if they are removed.
+    // See comments in:
+    // https://github.com/angular/angular/pull/29210
+    // https://github.com/angular/angular/pull/32069
+    unknownGlobalSideEffects: false,
+    annotations: false,
+    propertyReadSideEffects: false,
+    moduleSideEffects: ['@angular/core'],
+  },
   output: {
     banner: bannerContent,
     entryFileNames: '[name].mjs',
