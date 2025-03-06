@@ -19,14 +19,9 @@ import {
   signal,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {setUseMicrotaskEffectsByDefault} from '../src/render3/reactivity/effect';
 
 describe('effects in TestBed', () => {
   let prev: boolean;
-  beforeEach(() => {
-    prev = setUseMicrotaskEffectsByDefault(false);
-  });
-  afterEach(() => setUseMicrotaskEffectsByDefault(prev));
 
   it('created in the constructor should run with detectChanges()', () => {
     const log: string[] = [];
