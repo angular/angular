@@ -95,13 +95,13 @@ export abstract class EventManagerPlugin {
     abstract supports(eventName: string): boolean;
 }
 
-// @public
+// @public @deprecated
 export const HAMMER_GESTURE_CONFIG: InjectionToken<HammerGestureConfig>;
 
-// @public
+// @public @deprecated
 export const HAMMER_LOADER: InjectionToken<HammerLoader>;
 
-// @public
+// @public @deprecated
 export class HammerGestureConfig {
     buildHammer(element: HTMLElement): HammerInstance;
     events: string[];
@@ -124,10 +124,10 @@ export class HammerGestureConfig {
     static ɵprov: i0.ɵɵInjectableDeclaration<HammerGestureConfig>;
 }
 
-// @public
+// @public @deprecated
 export type HammerLoader = () => Promise<void>;
 
-// @public
+// @public @deprecated
 export class HammerModule {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<HammerModule, never>;
