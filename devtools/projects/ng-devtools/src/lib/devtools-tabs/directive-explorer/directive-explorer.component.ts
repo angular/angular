@@ -46,6 +46,7 @@ import {PropertyTabComponent} from './property-tab/property-tab.component';
 import {SplitAreaDirective} from '../../vendor/angular-split/lib/component/splitArea.directive';
 import {MatSlideToggle} from '@angular/material/slide-toggle';
 import {FormsModule} from '@angular/forms';
+import {SignalsTabComponent} from './signals-view/signals-tab.component';
 
 const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
   if ((a.component && !b.component) || (!a.component && b.component)) {
@@ -81,6 +82,7 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
     PropertyTabComponent,
     MatSlideToggle,
     FormsModule,
+    SignalsTabComponent,
   ],
 })
 export class DirectiveExplorerComponent {
@@ -93,6 +95,8 @@ export class DirectiveExplorerComponent {
   readonly directiveForestSplitArea = viewChild.required('directiveForestSplitArea', {
     read: ElementRef,
   });
+
+  readonly signalsTab = viewChild.required<SignalsTabComponent>('signalsTab');
 
   readonly currentSelectedElement = signal<IndexedNode | null>(null);
   readonly forest = signal<DevToolsNode[]>([]);
