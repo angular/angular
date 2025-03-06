@@ -188,7 +188,7 @@ def _run_rollup(ctx, rollup_config, inputs, format):
     args = ctx.actions.args()
     args.add("--config", rollup_config)
     args.add("--output.format", format)
-    args.add("--output.dir", outdir.path)
+    args.add("--output.dir", outdir.path + "/fesm2022")
 
     # After updating to build_bazel_rules_nodejs 0.27.0+, rollup has been updated to v1.3.1
     # which tree shakes @__PURE__ annotations and const variables which are later amended by NGCC.

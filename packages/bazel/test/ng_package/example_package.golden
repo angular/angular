@@ -12,14 +12,14 @@ fesm2022
   fesm2022/a11y.mjs.map
   fesm2022/imports.mjs
   fesm2022/imports.mjs.map
+  fesm2022/index-6fe4cd54.mjs
+  fesm2022/index-6fe4cd54.mjs.map
   fesm2022/secondary.mjs
   fesm2022/secondary.mjs.map
   fesm2022/waffels.mjs
   fesm2022/waffels.mjs.map
 imports
   imports/index.d.ts
-index-effb6ff1.js
-index-effb6ff1.js.map
 index.d.ts
 logo.png
 package.json
@@ -157,7 +157,7 @@ export { A11yModule };
 
 import * as i0 from '@angular/core';
 import { Injectable } from '@angular/core';
-export { s as sharedBetweenEntryPoints } from '../index-effb6ff1.js';
+export { s as sharedBetweenEntryPoints } from './index-6fe4cd54.mjs';
 
 class MySecondService {
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MySecondService, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
@@ -189,6 +189,34 @@ export { MyService };
 //# sourceMappingURL=imports.mjs.map
 
 
+--- fesm2022/index-6fe4cd54.mjs ---
+
+/**
+ * @license Angular v0.0.0
+ * (c) 2010-2025 Google LLC. https://angular.io/
+ * License: MIT
+ */
+
+import * as i0 from '@angular/core';
+import { NgModule } from '@angular/core';
+
+class SecondaryModule {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: SecondaryModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0", ngImport: i0, type: SecondaryModule });
+    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: SecondaryModule });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: SecondaryModule, decorators: [{
+            type: NgModule,
+            args: [{}]
+        }] });
+const a = 1;
+
+const sharedBetweenEntryPoints = 'This export is shared between entry-points';
+
+export { SecondaryModule as S, a, sharedBetweenEntryPoints as s };
+//# sourceMappingURL=index-6fe4cd54.mjs.map
+
+
 --- fesm2022/secondary.mjs ---
 
 /**
@@ -197,7 +225,7 @@ export { MyService };
  * License: MIT
  */
 
-export { S as SecondaryModule, a, s as sharedBetweenEntryPoints } from '../index-effb6ff1.js';
+export { S as SecondaryModule, a, s as sharedBetweenEntryPoints } from './index-6fe4cd54.mjs';
 import '@angular/core';
 
 /**
@@ -261,34 +289,6 @@ export declare class MyService {
 export declare const sharedBetweenEntryPoints = "This export is shared between entry-points";
 
 export { }
-
-
---- index-effb6ff1.js ---
-
-/**
- * @license Angular v0.0.0
- * (c) 2010-2025 Google LLC. https://angular.io/
- * License: MIT
- */
-
-import * as i0 from '@angular/core';
-import { NgModule } from '@angular/core';
-
-class SecondaryModule {
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: SecondaryModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
-    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0", ngImport: i0, type: SecondaryModule });
-    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: SecondaryModule });
-}
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: SecondaryModule, decorators: [{
-            type: NgModule,
-            args: [{}]
-        }] });
-const a = 1;
-
-const sharedBetweenEntryPoints = 'This export is shared between entry-points';
-
-export { SecondaryModule as S, a, sharedBetweenEntryPoints as s };
-//# sourceMappingURL=index-effb6ff1.js.map
 
 
 --- index.d.ts ---

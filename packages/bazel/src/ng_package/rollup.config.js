@@ -170,7 +170,7 @@ const plugins = [
 const input = {};
 
 for (const info of Object.values(metadata)) {
-  input[info.fesm2022RelativePath.replace(/\.mjs$/, '')] = info.index.path;
+  input[info.fesm2022RelativePath.replace(/\.mjs$/, '').replace('fesm2022/', '')] = info.index.path;
 }
 
 const config = {
@@ -180,6 +180,7 @@ const config = {
   output: {
     banner: bannerContent,
     entryFileNames: '[name].mjs',
+    chunkFileNames: '[name]-[hash].mjs',
   },
 };
 
