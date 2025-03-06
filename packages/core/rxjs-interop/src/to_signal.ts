@@ -18,6 +18,7 @@ import {
   WritableSignal,
   ɵRuntimeError,
   ɵRuntimeErrorCode,
+  ɵINTERNAL_APPLICATION_ERROR_HANDLER,
 } from '@angular/core';
 import {ValueEqualityFn} from '@angular/core/primitives/signals';
 import {Observable, Subscribable} from 'rxjs';
@@ -142,10 +143,12 @@ export function toSignal<T, U = undefined>(
     );
 
   const requiresCleanup = !options?.manualCleanup;
-  requiresCleanup && !options?.injector && assertInInjectionContext(toSignal);
-  const cleanupRef = requiresCleanup
-    ? (options?.injector?.get(DestroyRef) ?? inject(DestroyRef))
-    : null;
+  const requiresInjector = requiresCleanup || options?.rejectErrors;
+  if (requiresInjector && !options?.injector) {
+    assertInInjectionContext(toSignal);
+  }
+  const injector = requiresInjector ? (options?.injector ?? inject(Injector)) : Injector.NULL;
+  const cleanupRef = requiresCleanup ? injector.get(DestroyRef) : null;
 
   const equal = makeToSignalEqual(options?.equal);
 
@@ -173,11 +176,10 @@ export function toSignal<T, U = undefined>(
     next: (value) => state.set({kind: StateKind.Value, value}),
     error: (error) => {
       if (options?.rejectErrors) {
-        // Kick the error back to RxJS. It will be caught and rethrown in a macrotask, which causes
-        // the error to end up as an uncaught exception.
-        throw error;
+        injector.get(ɵINTERNAL_APPLICATION_ERROR_HANDLER)(error);
+      } else {
+        state.set({kind: StateKind.Error, error});
       }
-      state.set({kind: StateKind.Error, error});
     },
     // Completion of the Observable is meaningless to the signal. Signals don't have a concept of
     // "complete".
