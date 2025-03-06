@@ -242,14 +242,11 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
   }
 
   retrieve<T>(token: PrimitivesInjectionToken<T>, options?: unknown): T | NotFound {
-    let flags: InjectFlags;
-    if (options && (options as {flags: InjectFlags}).flags) {
-      flags = (options as {flags: InjectFlags}).flags;
-    } else {
-      flags = convertToBitFlags(options as InjectOptions | undefined) || InjectFlags.Default;
-    }
+    const flags: InjectFlags =
+      convertToBitFlags(options as InjectOptions | undefined) || InjectFlags.Default;
     return this.get(
       token as unknown as InjectionToken<T>,
+      // When a dependency is requested with an optional flag, DI returns null as the default value.
       flags & InjectFlags.Optional ? null : undefined,
       flags,
     );
