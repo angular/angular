@@ -7,7 +7,7 @@
  */
 
 import {Injector, NgModule, Type} from '@angular/core';
-import {ɵangular1 as angular, ɵconstants} from '@angular/upgrade/static';
+import {ɵangular1 as angular, ɵconstants} from '../../../static';
 
 import {UpgradeAppType} from '../../../src/common/src/util';
 

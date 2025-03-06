@@ -7,7 +7,7 @@
  */
 
 import {Inject, Injectable, NgModule} from '@angular/core';
-import {downgradeInjectable} from '@angular/upgrade/static';
+import {downgradeInjectable} from '../../../static';
 import * as ng from '../../../src/common/src/angular1';
 /*
  * This mock application code contains the following services and their dependencies:

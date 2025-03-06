@@ -35,7 +35,7 @@ import {
 import {fakeAsync, tick, waitForAsync} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {downgradeComponent, downgradeModule, UpgradeComponent} from '@angular/upgrade/static';
+import {downgradeComponent, downgradeModule, UpgradeComponent} from '../../../static';
 
 import * as angular from '../../../src/common/src/angular1';
 import {
