@@ -15,6 +15,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INVALID_PIPE_ARGUMENT = 2100,
     // (undocumented)
+    INVALID_TO_DATE_CONVERSION = 2302,
+    // (undocumented)
     LCP_IMG_MISSING_PRIORITY = 2955,
     // (undocumented)
     LCP_IMG_NGSRC_MODIFIED = 2964,
@@ -51,7 +53,13 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     UNEXPECTED_SRC_ATTR = 2950,
     // (undocumented)
-    UNEXPECTED_SRCSET_ATTR = 2951
+    UNEXPECTED_SRCSET_ATTR = 2951,
+    // (undocumented)
+    UNEXPECTED_TRANSLATION_TYPE = 2302,
+    // (undocumented)
+    UNKNOWN_DATE_TYPE_VALUE = 2301,
+    // (undocumented)
+    UNKNOWN_ZONE_WIDTH = 2302
 }
 
 // (No @packageDocumentation comment for this package)

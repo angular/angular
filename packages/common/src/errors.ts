@@ -26,6 +26,10 @@ export const enum RuntimeErrorCode {
 
   // I18n errors
   SUSPICIOUS_DATE_FORMAT = 2300,
+  UNKNOWN_DATE_TYPE_VALUE = 2301,
+  UNEXPECTED_TRANSLATION_TYPE = 2302,
+  UNKNOWN_ZONE_WIDTH = 2302,
+  INVALID_TO_DATE_CONVERSION = 2302,
 
   // Keep 2800 - 2900 for Http Errors.
 
