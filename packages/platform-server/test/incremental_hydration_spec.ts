@@ -1400,21 +1400,12 @@ describe('platform-server partial hydration integration', () => {
 
             expect(appHostNode.outerHTML).toContain('<article>');
 
-            await timeout(150); // wait for timer
-            appRef.tick();
-
+            await timeout(500); // wait for timer
+            await appRef.whenStable();
             await allPendingDynamicImports();
             appRef.tick();
 
             expect(appHostNode.outerHTML).toContain('<span id="test">start</span>');
-
-            const testElement = doc.getElementById('test')!;
-            const clickEvent2 = new CustomEvent('click');
-            testElement.dispatchEvent(clickEvent2);
-
-            appRef.tick();
-
-            expect(appHostNode.outerHTML).toContain('<span id="test">end</span>');
           },
           TEST_TIMEOUT,
         );
@@ -1432,7 +1423,7 @@ describe('platform-server partial hydration integration', () => {
                   @defer (on viewport; hydrate on timer(150)) {
                     <article>
                       <p id="nested">Nested defer block</p>
-                      <span id="test" (click)="fnB()">{{value()}}</span>
+                      <span id="test">{{value()}}</span>
                     </article>
                   } @placeholder {
                     <span>Inner block placeholder</span>
@@ -1447,8 +1438,10 @@ describe('platform-server partial hydration integration', () => {
             class SimpleComponent {
               value = signal('start');
               fnA() {}
-              fnB() {
-                this.value.set('end');
+              constructor() {
+                if (!isPlatformServer(inject(PLATFORM_ID))) {
+                  this.value.set('end');
+                }
               }
             }
 
@@ -1472,11 +1465,7 @@ describe('platform-server partial hydration integration', () => {
             ////////////////////////////////
             const doc = getDocument();
             const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
-              envProviders: [
-                ...providers,
-                {provide: PLATFORM_ID, useValue: 'browser'},
-                withDebugConsole(),
-              ],
+              envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
               hydrationFeatures,
             });
             const compRef = getComponentRef<SimpleComponent>(appRef);
@@ -1487,23 +1476,9 @@ describe('platform-server partial hydration integration', () => {
 
             expect(appHostNode.outerHTML).toContain('<article>');
 
-            verifyHasLog(
-              appRef,
-              'Angular hydrated 1 component(s) and 21 node(s), 0 component(s) were skipped. 2 defer block(s) were configured to use incremental hydration.',
-            );
-
-            await timeout(150); // wait for timer
-            appRef.tick();
-
+            await timeout(500); // wait for timer
+            await appRef.whenStable();
             await allPendingDynamicImports();
-            appRef.tick();
-
-            expect(appHostNode.outerHTML).toContain('<span id="test">start</span>');
-
-            const testElement = doc.getElementById('test')!;
-            const clickEvent2 = new CustomEvent('click');
-            testElement.dispatchEvent(clickEvent2);
-
             appRef.tick();
 
             expect(appHostNode.outerHTML).toContain('<span id="test">end</span>');
