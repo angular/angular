@@ -21,11 +21,11 @@ import {
 } from '../util/view_utils';
 import {profiler} from '../profiler';
 import {ProfilerEvent} from '../profiler_types';
-import {ErrorHandler} from '../../error_handler';
 import {markViewDirty} from '../instructions/mark_view_dirty';
 import {RElement, RNode} from '../interfaces/renderer_dom';
 import {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
 import {assertNotSame} from '../../util/assert';
+import {handleUncaughtError} from '../instructions/shared';
 
 /** Shorthand for an event listener callback function to reduce duplication. */
 export type EventCallback = (event?: any) => any;
@@ -95,25 +95,12 @@ function executeListenerWithErrorHandling(
     // Only explicitly returning false from a listener should preventDefault
     return listenerFn(e) !== false;
   } catch (error) {
-    // TODO(atscott): This should report to the application error handler, not the ErrorHandler on LView injector
-    handleError(lView, error);
+    handleUncaughtError(lView, error);
     return false;
   } finally {
     profiler(ProfilerEvent.OutputEnd, context, listenerFn);
     setActiveConsumer(prevConsumer);
   }
-}
-
-/**
- * Handles an error thrown in an LView.
- * @deprecated Use handleUncaughtError to report to application error handler
- */
-function handleError(lView: LView, error: any): void {
-  const injector = lView[INJECTOR];
-  if (!injector) {
-    return;
-  }
-  injector.get(ErrorHandler, null)?.handleError(error);
 }
 
 /**

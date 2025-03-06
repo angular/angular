@@ -1173,6 +1173,7 @@ describe('createComponent', () => {
       }
 
       TestBed.configureTestingModule({
+        rethrowApplicationErrors: false,
         providers: [
           {
             provide: ErrorHandler,
