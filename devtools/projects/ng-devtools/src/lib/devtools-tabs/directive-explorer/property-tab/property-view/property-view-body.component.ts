@@ -39,15 +39,27 @@ import {MatExpansionModule} from '@angular/material/expansion';
 export class PropertyViewBodyComponent {
   readonly controller = input.required<DirectivePropertyResolver>();
   readonly directiveInputControls = input.required<DirectiveTreeData>();
+  readonly directivePropControls = input.required<DirectiveTreeData>();
   readonly directiveOutputControls = input.required<DirectiveTreeData>();
   readonly directiveStateControls = input.required<DirectiveTreeData>();
 
   readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
 
+  protected readonly dependencies = computed(() => {
+    const metadata = this.controller().directiveMetadata;
+    if (!metadata) return [];
+    if (!('dependencies' in metadata)) return [];
+    return metadata.dependencies;
+  });
+
   protected readonly panels = signal([
     {
       title: 'Inputs',
       controls: () => this.directiveInputControls(),
+    },
+    {
+      title: 'Props',
+      controls: () => this.directivePropControls(),
     },
     {
       title: 'Outputs',
@@ -160,6 +172,10 @@ export class InjectedServicesComponent {
   readonly controller = input.required<DirectivePropertyResolver>();
 
   readonly dependencies = computed<SerializedInjectedService[]>(() => {
-    return this.controller().directiveMetadata?.dependencies ?? [];
+    const metadata = this.controller().directiveMetadata;
+    if (!metadata) return [];
+    if (!('dependencies' in metadata)) return [];
+
+    return metadata.dependencies ?? [];
   });
 }

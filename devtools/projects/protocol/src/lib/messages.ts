@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {InjectionToken, InjectOptions, Injector, Type, ViewEncapsulation} from '@angular/core';
+import {
+  ɵFramework as Framework,
+  ɵAcxViewEncapsulation as AcxViewEncapsulation,
+  InjectionToken,
+  InjectOptions,
+  Injector,
+  Type,
+  ViewEncapsulation as AngularViewEncapsulation,
+} from '@angular/core';
 
 export interface DirectiveType {
   name: string;
@@ -99,13 +107,42 @@ export interface DirectivesProperties {
   [name: string]: Properties;
 }
 
-export interface DirectiveMetadata {
+/** Directive metadata shared by all frameworks. */
+export interface BaseDirectiveMetadata {
+  framework: Framework;
+  name?: string;
+}
+
+/** Directive metadata specific to Angular. */
+export interface AngularDirectiveMetadata extends BaseDirectiveMetadata {
+  framework: Framework.Angular;
   inputs: {[name: string]: string};
   outputs: {[name: string]: string};
-  encapsulation?: ViewEncapsulation;
+  encapsulation?: AngularViewEncapsulation;
   onPush?: boolean;
   dependencies?: SerializedInjectedService[];
 }
+
+/** Directive metadata specific to ACX. */
+export interface AcxDirectiveMetadata extends BaseDirectiveMetadata {
+  framework: Framework.ACX;
+  inputs: {[name: string]: string};
+  outputs: {[name: string]: string};
+  encapsulation?: AcxViewEncapsulation;
+  onPush?: boolean;
+}
+
+/** Directive metadata specific to Wiz. */
+export interface WizComponentMetadata extends BaseDirectiveMetadata {
+  framework: Framework.Wiz;
+  props: {[name: string]: string};
+}
+
+/** Directive metadata for all supported frameworks. */
+export type DirectiveMetadata =
+  | AngularDirectiveMetadata
+  | AcxDirectiveMetadata
+  | WizComponentMetadata;
 
 export interface SerializedInjectedService {
   token: string;
