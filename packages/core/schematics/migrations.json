@@ -15,6 +15,11 @@
       "description": "Replaces `APP_INITIALIZER`, `ENVIRONMENT_INITIALIZER` & `PLATFORM_INITIALIZER` respectively with `provideAppInitializer`, `provideEnvironmentInitializer` & `providePlatformInitializer`.",
       "factory": "./bundles/provide-initializer#migrate",
       "optional": true
+    }, 
+    "http-xhr-backend": {
+      "version": "19.0.0",
+      "description": "Adds 'withXhr' to 'provideHttpClient' function calls when the 'HttpXhrBackend' is used. For more information see: https://angular.dev/api/common/http/withXhr",
+      "factory": "./bundles/http-xhr-backend#migrate"
     }
   }
 }
