@@ -8,6 +8,7 @@
 
 import {
   ApplicationRef,
+  computed,
   createEnvironmentInjector,
   EnvironmentInjector,
   Injector,
@@ -142,7 +143,11 @@ describe('resource', () => {
     expect(echoResource.status()).toBe('error');
     expect(echoResource.isLoading()).toBeFalse();
     expect(echoResource.hasValue()).toBeFalse();
-    expect(echoResource.value()).toEqual(undefined);
+    expect(() => echoResource.value()).toThrow(
+      new Error('Resource is currently in the error state', {
+        cause: new Error('Unknown error', {cause: 'Something went wrong....'}),
+      }),
+    );
     expect(echoResource.error()).toEqual(
       new Error('Unknown error', {cause: 'Something went wrong....'}),
     );
@@ -179,8 +184,73 @@ describe('resource', () => {
     expect(echoResource.status()).toBe('error');
     expect(echoResource.isLoading()).toBeFalse();
     expect(echoResource.hasValue()).toBeFalse();
-    expect(echoResource.value()).toEqual(undefined);
+    expect(() => echoResource.value()).toThrow(
+      new Error('Resource is currently in the error state', {cause: new Error('KO')}),
+    );
     expect(echoResource.error()).toEqual(Error('KO'));
+
+    counter.update((value) => value + 1);
+    TestBed.tick();
+    await backend.flush();
+
+    expect(echoResource.status()).toBe('resolved');
+    expect(echoResource.isLoading()).toBeFalse();
+    expect(echoResource.hasValue()).toBeTrue();
+    expect(echoResource.value()).toEqual('ok');
+    expect(echoResource.error()).toBe(undefined);
+  });
+
+  it('should update computed signals', async () => {
+    const backend = new MockEchoBackend();
+    const counter = signal(0);
+    const echoResource = resource({
+      params: () => ({counter: counter()}),
+      loader: (params) => {
+        if (params.params.counter % 2 === 0) {
+          return Promise.resolve(params.params.counter);
+        } else {
+          throw new Error('KO');
+        }
+      },
+      injector: TestBed.inject(Injector),
+    });
+    const computedValue = computed(() => {
+      if (!echoResource.hasValue()) {
+        return -1;
+      }
+      return echoResource.value();
+    });
+
+    TestBed.tick();
+    await backend.flush();
+
+    expect(echoResource.status()).toBe('resolved');
+    expect(echoResource.hasValue()).toBeTrue();
+    expect(echoResource.value()).toEqual(0);
+    expect(computedValue()).toEqual(0);
+    expect(echoResource.error()).toBe(undefined);
+
+    counter.update((value) => value + 1);
+    TestBed.tick();
+    await backend.flush();
+
+    expect(echoResource.status()).toBe('error');
+    expect(echoResource.hasValue()).toBeFalse();
+    expect(() => echoResource.value()).toThrow(
+      new Error('Resource is currently in the error state', {cause: new Error('KO')}),
+    );
+    expect(computedValue()).toEqual(-1);
+    expect(echoResource.error()).toEqual(Error('KO'));
+
+    counter.update((value) => value + 1);
+    TestBed.tick();
+    await backend.flush();
+
+    expect(echoResource.status()).toBe('resolved');
+    expect(echoResource.hasValue()).toBeTrue();
+    expect(echoResource.value()).toEqual(2);
+    expect(computedValue()).toEqual(2);
+    expect(echoResource.error()).toBe(undefined);
   });
 
   it('should respond to a request that changes while loading', async () => {
@@ -227,7 +297,7 @@ describe('resource', () => {
     expect(res.value()).toBe(1);
   });
 
-  it('should return a default value if provided', async () => {
+  it('should throw an error when getting a value even when provided with a default value', async () => {
     const DEFAULT: string[] = [];
     const request = signal(0);
     const res = resource({
@@ -252,7 +322,9 @@ describe('resource', () => {
     request.set(2);
     await TestBed.inject(ApplicationRef).whenStable();
     expect(res.error()).not.toBeUndefined();
-    expect(res.value()).toBe(DEFAULT);
+    expect(() => res.value()).toThrow(
+      new Error('Resource is currently in the error state', {cause: new Error('err')}),
+    );
   });
 
   it('should _not_ load if the request resolves to undefined', () => {

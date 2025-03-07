@@ -118,6 +118,10 @@ abstract class BaseWritableResource<T> implements WritableResource<T> {
   readonly isLoading = computed(() => this.status() === 'loading' || this.status() === 'reloading');
 
   hasValue(): this is ResourceRef<Exclude<T, undefined>> {
+    if (this.status() === 'error') {
+      return false;
+    }
+
     return this.value() !== undefined;
   }
 
@@ -151,7 +155,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
   constructor(
     request: () => R,
     private readonly loaderFn: ResourceStreamingLoader<T, R>,
-    private readonly defaultValue: T,
+    defaultValue: T,
     private readonly equal: ValueEqualityFn<T> | undefined,
     injector: Injector,
   ) {
@@ -161,7 +165,16 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
       computed(
         () => {
           const streamValue = this.state().stream?.();
-          return streamValue && isResolved(streamValue) ? streamValue.value : this.defaultValue;
+
+          if (!streamValue) {
+            return defaultValue;
+          }
+
+          if (!isResolved(streamValue)) {
+            throw new Error('Resource is currently in the error state', {cause: this.error()});
+          }
+
+          return streamValue.value;
         },
         {equal},
       ),
@@ -398,7 +411,7 @@ function projectStatusOfState(state: ResourceState<unknown>): ResourceStatus {
     case 'loading':
       return state.extRequest.reload === 0 ? 'loading' : 'reloading';
     case 'resolved':
-      return isResolved(untracked(state.stream!)) ? 'resolved' : 'error';
+      return isResolved(state.stream!()) ? 'resolved' : 'error';
     default:
       return state.status;
   }
