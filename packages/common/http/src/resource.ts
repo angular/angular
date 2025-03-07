@@ -19,6 +19,7 @@ import {
   type ValueEqualityFn,
   ɵRuntimeError,
   ɵRuntimeErrorCode,
+  ɵencapsulateResourceError as encapsulateResourceError,
 } from '@angular/core';
 import type {Subscription} from 'rxjs';
 
@@ -344,7 +345,7 @@ class HttpResourceImpl<T>
                 try {
                   send({value: parse ? parse(event.body) : (event.body as T)});
                 } catch (error) {
-                  send({error});
+                  send({error: encapsulateResourceError(error)});
                 }
                 break;
               case HttpEventType.DownloadProgress:
