@@ -16,7 +16,7 @@ import {isCustomElement} from '../utils';
 const extractViewTree = (
   domNode: Node | Element,
   result: ComponentTreeNode[],
-  getComponent: (element: Element) => {} | null,
+  getComponent?: (element: Element) => {} | null,
   getDirectives?: (node: Node) => {}[],
 ): ComponentTreeNode[] => {
   // Ignore DOM Node if it came from a different frame. Use instanceof Node to check this.
@@ -45,7 +45,7 @@ const extractViewTree = (
     result.push(componentTreeNode);
     return result;
   }
-  const component = getComponent(domNode);
+  const component = getComponent?.(domNode);
   if (component) {
     componentTreeNode.component = {
       instance: component,
@@ -98,7 +98,7 @@ export class RTreeStrategy {
     while (element.parentElement) {
       element = element.parentElement;
     }
-    const getComponent = ngDebugClient().getComponent!;
+    const getComponent = ngDebugClient().getComponent;
     const getDirectives = ngDebugClient().getDirectives;
     return extractViewTree(element, [], getComponent, getDirectives);
   }
