@@ -4,7 +4,7 @@
 
 ```ts
 
-// @public
+// @public (undocumented)
 export const Attribute: {
     JSACTION: "jsaction";
 };
