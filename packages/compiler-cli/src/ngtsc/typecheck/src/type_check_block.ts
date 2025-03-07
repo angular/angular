@@ -50,6 +50,7 @@ import {
   TmplAstText,
   TmplAstTextAttribute,
   TmplAstVariable,
+  TmplAstHostElement,
   TmplAstViewportDeferredTrigger,
   TransplantedType,
 } from '@angular/compiler';
@@ -81,6 +82,7 @@ import {
 } from './ts_util';
 import {requiresInlineTypeCtor} from './type_constructor';
 import {TypeParameterEmitter} from './type_parameter_emitter';
+import {createHostBindingsMarker} from './host_bindings';
 
 /**
  * Controls how generics for the component context class will be handled during TCB generation.
@@ -154,7 +156,6 @@ export function generateTypeCheckBlock(
     meta.isStandalone,
     meta.preserveWhitespaces,
   );
-  const scope = Scope.forNodes(tcb, null, null, tcb.boundTarget.target.template!, /* guard */ null);
   const ctxRawType = env.referenceType(ref);
   if (!ts.isTypeReferenceNode(ctxRawType)) {
     throw new Error(
@@ -195,15 +196,28 @@ export function generateTypeCheckBlock(
   }
 
   const paramList = [tcbThisParam(ctxRawType.typeName, typeArguments)];
+  const statements: ts.Statement[] = [];
 
-  const scopeStatements = scope.render();
-  const innerBody = ts.factory.createBlock([...env.getPreludeStatements(), ...scopeStatements]);
+  // Add the template type checking code.
+  if (tcb.boundTarget.target.template !== undefined) {
+    const templateScope = Scope.forNodes(
+      tcb,
+      null,
+      null,
+      tcb.boundTarget.target.template,
+      /* guard */ null,
+    );
 
-  // Wrap the body in an "if (true)" expression. This is unnecessary but has the effect of causing
-  // the `ts.Printer` to format the type-check block nicely.
-  const body = ts.factory.createBlock([
-    ts.factory.createIfStatement(ts.factory.createTrue(), innerBody, undefined),
-  ]);
+    statements.push(renderBlockStatements(env, templateScope, ts.factory.createTrue()));
+  }
+
+  // Add the host bindings type checking code.
+  if (tcb.boundTarget.target.host !== undefined) {
+    const hostScope = Scope.forNodes(tcb, null, tcb.boundTarget.target.host, null, null);
+    statements.push(renderBlockStatements(env, hostScope, createHostBindingsMarker()));
+  }
+
+  const body = ts.factory.createBlock(statements);
   const fnDecl = ts.factory.createFunctionDeclaration(
     /* modifiers */ undefined,
     /* asteriskToken */ undefined,
@@ -217,13 +231,28 @@ export function generateTypeCheckBlock(
   return fnDecl;
 }
 
+function renderBlockStatements(
+  env: Environment,
+  scope: Scope,
+  wrapperExpression: ts.Expression,
+): ts.Statement {
+  const scopeStatements = scope.render();
+  const innerBody = ts.factory.createBlock([...env.getPreludeStatements(), ...scopeStatements]);
+
+  // Wrap the body in an if statement. This serves two purposes:
+  // 1. It allows us to distinguish between the sections of the block (e.g. host or template).
+  // 2. It allows the `ts.Printer` to produce better-looking output.
+  return ts.factory.createIfStatement(wrapperExpression, innerBody);
+}
+
 /** Types that can referenced locally in a template. */
 type LocalSymbol =
   | TmplAstElement
   | TmplAstTemplate
   | TmplAstVariable
   | TmplAstLetDeclaration
-  | TmplAstReference;
+  | TmplAstReference
+  | TmplAstHostElement;
 
 /**
  * A code generation operation that's involved in the construction of a Type Check Block.
@@ -1104,9 +1133,9 @@ class TcbDirectiveCtorCircularFallbackOp extends TcbOp {
 class TcbDomSchemaCheckerOp extends TcbOp {
   constructor(
     private tcb: Context,
-    private element: TmplAstElement,
+    private element: TmplAstElement | TmplAstHostElement,
     private checkElement: boolean,
-    private claimedInputs: Set<string>,
+    private claimedInputs: Set<string> | null,
   ) {
     super();
   }
@@ -1116,21 +1145,25 @@ class TcbDomSchemaCheckerOp extends TcbOp {
   }
 
   override execute(): ts.Expression | null {
-    if (this.checkElement) {
+    const element = this.element;
+    const isTemplateElement = element instanceof TmplAstElement;
+    const bindings = isTemplateElement ? element.inputs : element.bindings;
+
+    if (this.checkElement && isTemplateElement) {
       this.tcb.domSchemaChecker.checkElement(
         this.tcb.id,
-        this.element,
+        element,
         this.tcb.schemas,
         this.tcb.hostIsStandalone,
       );
     }
 
     // TODO(alxhub): this could be more efficient.
-    for (const binding of this.element.inputs) {
+    for (const binding of bindings) {
       const isPropertyBinding =
         binding.type === BindingType.Property || binding.type === BindingType.TwoWay;
 
-      if (isPropertyBinding && this.claimedInputs.has(binding.name)) {
+      if (isPropertyBinding && this.claimedInputs?.has(binding.name)) {
         // Skip this binding as it was claimed by a directive.
         continue;
       }
@@ -1138,14 +1171,25 @@ class TcbDomSchemaCheckerOp extends TcbOp {
       if (isPropertyBinding && binding.name !== 'style' && binding.name !== 'class') {
         // A direct binding to a property.
         const propertyName = ATTR_TO_PROP.get(binding.name) ?? binding.name;
-        this.tcb.domSchemaChecker.checkProperty(
-          this.tcb.id,
-          this.element,
-          propertyName,
-          binding.sourceSpan,
-          this.tcb.schemas,
-          this.tcb.hostIsStandalone,
-        );
+
+        if (isTemplateElement) {
+          this.tcb.domSchemaChecker.checkTemplateElementProperty(
+            this.tcb.id,
+            element,
+            propertyName,
+            binding.sourceSpan,
+            this.tcb.schemas,
+            this.tcb.hostIsStandalone,
+          );
+        } else {
+          this.tcb.domSchemaChecker.checkHostElementProperty(
+            this.tcb.id,
+            element,
+            propertyName,
+            binding.keySpan,
+            this.tcb.schemas,
+          );
+        }
       }
     }
     return null;
@@ -1285,6 +1329,31 @@ class TcbControlFlowContentProjectionOp extends TcbOp {
 }
 
 /**
+ * A `TcbOp` which creates an expression for a the host element of a directive.
+ *
+ * Executing this operation returns a reference to the element variable.
+ */
+class TcbHostElementOp extends TcbOp {
+  override readonly optional = true;
+
+  constructor(
+    private tcb: Context,
+    private scope: Scope,
+    private element: TmplAstHostElement,
+  ) {
+    super();
+  }
+
+  override execute(): ts.Identifier {
+    const id = this.tcb.allocateId();
+    const initializer = tsCreateElement(...this.element.tagNames);
+    addParseSpanInfo(initializer, this.element.sourceSpan);
+    this.scope.addStatement(tsCreateVariable(id, initializer));
+    return id;
+  }
+}
+
+/**
  * Mapping between attributes names that don't correspond to their element property names.
  * Note: this mapping has to be kept in sync with the equally named mapping in the runtime.
  */
@@ -1313,8 +1382,9 @@ class TcbUnclaimedInputsOp extends TcbOp {
   constructor(
     private tcb: Context,
     private scope: Scope,
-    private element: TmplAstElement,
-    private claimedInputs: Set<string>,
+    private inputs: TmplAstBoundAttribute[],
+    private target: LocalSymbol,
+    private claimedInputs: Set<string> | null,
   ) {
     super();
   }
@@ -1329,11 +1399,11 @@ class TcbUnclaimedInputsOp extends TcbOp {
     let elId: ts.Expression | null = null;
 
     // TODO(alxhub): this could be more efficient.
-    for (const binding of this.element.inputs) {
+    for (const binding of this.inputs) {
       const isPropertyBinding =
         binding.type === BindingType.Property || binding.type === BindingType.TwoWay;
 
-      if (isPropertyBinding && this.claimedInputs.has(binding.name)) {
+      if (isPropertyBinding && this.claimedInputs?.has(binding.name)) {
         // Skip this binding as it was claimed by a directive.
         continue;
       }
@@ -1343,7 +1413,7 @@ class TcbUnclaimedInputsOp extends TcbOp {
       if (this.tcb.env.config.checkTypeOfDomBindings && isPropertyBinding) {
         if (binding.name !== 'style' && binding.name !== 'class') {
           if (elId === null) {
-            elId = this.scope.resolve(this.element);
+            elId = this.scope.resolve(this.target);
           }
           // A direct binding to a property.
           const propertyName = ATTR_TO_PROP.get(binding.name) ?? binding.name;
@@ -1459,8 +1529,10 @@ class TcbUnclaimedOutputsOp extends TcbOp {
   constructor(
     private tcb: Context,
     private scope: Scope,
-    private element: TmplAstElement,
-    private claimedOutputs: Set<string>,
+    private target: LocalSymbol,
+    private outputs: TmplAstBoundEvent[],
+    private inputs: TmplAstBoundAttribute[] | null,
+    private claimedOutputs: Set<string> | null,
   ) {
     super();
   }
@@ -1473,15 +1545,19 @@ class TcbUnclaimedOutputsOp extends TcbOp {
     let elId: ts.Expression | null = null;
 
     // TODO(alxhub): this could be more efficient.
-    for (const output of this.element.outputs) {
-      if (this.claimedOutputs.has(output.name)) {
+    for (const output of this.outputs) {
+      if (this.claimedOutputs?.has(output.name)) {
         // Skip this event handler as it was claimed by a directive.
         continue;
       }
 
-      if (this.tcb.env.config.checkTypeOfOutputEvents && output.name.endsWith('Change')) {
+      if (
+        this.tcb.env.config.checkTypeOfOutputEvents &&
+        this.inputs !== null &&
+        output.name.endsWith('Change')
+      ) {
         const inputName = output.name.slice(0, -6);
-        if (checkSplitTwoWayBinding(inputName, output, this.element.inputs, this.tcb)) {
+        if (checkSplitTwoWayBinding(inputName, output, this.inputs, this.tcb)) {
           // Skip this event handler as the error was already handled.
           continue;
         }
@@ -1504,7 +1580,7 @@ class TcbUnclaimedOutputsOp extends TcbOp {
         const handler = tcbCreateEventHandler(output, this.tcb, this.scope, EventParamType.Infer);
 
         if (elId === null) {
-          elId = this.scope.resolve(this.element);
+          elId = this.scope.resolve(this.target);
         }
         const propertyAccess = ts.factory.createPropertyAccessExpression(elId, 'addEventListener');
         addParseSpanInfo(propertyAccess, output.keySpan);
@@ -1993,6 +2069,12 @@ class Scope {
    * A map of `TmplAstElement`s to the index of their `TcbElementOp` in the `opQueue`
    */
   private elementOpMap = new Map<TmplAstElement, number>();
+
+  /**
+   * A map of `TmplAstHostElement`s to the index of their `TcbHostElementOp` in the `opQueue`
+   */
+  private hostElementOpMap = new Map<TmplAstHostElement, number>();
+
   /**
    * A map of maps which tracks the index of `TcbDirectiveCtorOp`s in the `opQueue` for each
    * directive on a `TmplAstElement` or `TmplAstTemplate` node.
@@ -2066,8 +2148,13 @@ class Scope {
   static forNodes(
     tcb: Context,
     parentScope: Scope | null,
-    scopedNode: TmplAstTemplate | TmplAstIfBlockBranch | TmplAstForLoopBlock | null,
-    children: TmplAstNode[],
+    scopedNode:
+      | TmplAstTemplate
+      | TmplAstIfBlockBranch
+      | TmplAstForLoopBlock
+      | TmplAstHostElement
+      | null,
+    children: TmplAstNode[] | null,
     guard: ts.Expression | null,
   ): Scope {
     const scope = new Scope(tcb, parentScope, guard);
@@ -2128,9 +2215,13 @@ class Scope {
           new TcbBlockImplicitVariableOp(tcb, scope, type, variable),
         );
       }
+    } else if (scopedNode instanceof TmplAstHostElement) {
+      scope.appendNode(scopedNode);
     }
-    for (const node of children) {
-      scope.appendNode(node);
+    if (children !== null) {
+      for (const node of children) {
+        scope.appendNode(node);
+      }
     }
     // Once everything is registered, we need to check if there are `@let`
     // declarations that conflict with other local symbols defined after them.
@@ -2301,6 +2392,8 @@ class Scope {
     } else if (ref instanceof TmplAstElement && this.elementOpMap.has(ref)) {
       // Resolving the DOM node of an element in this template.
       return this.resolveOp(this.elementOpMap.get(ref)!);
+    } else if (ref instanceof TmplAstHostElement && this.hostElementOpMap.has(ref)) {
+      return this.resolveOp(this.hostElementOpMap.get(ref)!);
     } else {
       return null;
     }
@@ -2389,6 +2482,14 @@ class Scope {
       } else {
         this.letDeclOpMap.set(node.name, {opIndex, node});
       }
+    } else if (node instanceof TmplAstHostElement) {
+      const opIndex = this.opQueue.push(new TcbHostElementOp(this.tcb, this, node)) - 1;
+      this.hostElementOpMap.set(node, opIndex);
+      this.opQueue.push(
+        new TcbUnclaimedInputsOp(this.tcb, this, node.bindings, node, null),
+        new TcbUnclaimedOutputsOp(this.tcb, this, node, node.listeners, null, null),
+        new TcbDomSchemaCheckerOp(this.tcb, node, false, null),
+      );
     }
   }
 
@@ -2427,8 +2528,8 @@ class Scope {
       // If there are no directives, then all inputs are unclaimed inputs, so queue an operation
       // to add them if needed.
       if (node instanceof TmplAstElement) {
-        this.opQueue.push(new TcbUnclaimedInputsOp(this.tcb, this, node, claimedInputs));
         this.opQueue.push(
+          new TcbUnclaimedInputsOp(this.tcb, this, node.inputs, node, claimedInputs),
           new TcbDomSchemaCheckerOp(this.tcb, node, /* checkElement */ true, claimedInputs),
         );
       }
@@ -2486,7 +2587,7 @@ class Scope {
         }
       }
 
-      this.opQueue.push(new TcbUnclaimedInputsOp(this.tcb, this, node, claimedInputs));
+      this.opQueue.push(new TcbUnclaimedInputsOp(this.tcb, this, node.inputs, node, claimedInputs));
       // If there are no directives which match this element, then it's a "plain" DOM element (or a
       // web component), and should be checked against the DOM schema. If any directives match,
       // we must assume that the element could be custom (either a component, or a directive like
@@ -2504,7 +2605,16 @@ class Scope {
       // If there are no directives, then all outputs are unclaimed outputs, so queue an operation
       // to add them if needed.
       if (node instanceof TmplAstElement) {
-        this.opQueue.push(new TcbUnclaimedOutputsOp(this.tcb, this, node, claimedOutputs));
+        this.opQueue.push(
+          new TcbUnclaimedOutputsOp(
+            this.tcb,
+            this,
+            node,
+            node.outputs,
+            node.inputs,
+            claimedOutputs,
+          ),
+        );
       }
       return;
     }
@@ -2524,7 +2634,9 @@ class Scope {
         }
       }
 
-      this.opQueue.push(new TcbUnclaimedOutputsOp(this.tcb, this, node, claimedOutputs));
+      this.opQueue.push(
+        new TcbUnclaimedOutputsOp(this.tcb, this, node, node.outputs, node.inputs, claimedOutputs),
+      );
     }
   }
 

@@ -17,6 +17,7 @@ import {FullSourceMapping, SourceLocation, TypeCheckId, SourceMapping} from '../
 import {hasIgnoreForDiagnosticsMarker, readSpanComment} from './comments';
 import {ReferenceEmitEnvironment} from './reference_emit_environment';
 import {TypeParameterEmitter} from './type_parameter_emitter';
+import {isHostBindingsMarker} from './host_bindings';
 
 /**
  * External modules/identifiers that always should exist for type check
@@ -129,14 +130,37 @@ export function getSourceMapping(
     return null;
   }
 
-  const mapping = resolver.getTemplateSourceMapping(sourceLocation.id);
+  if (isInHostBindingTcb(node)) {
+    const hostSourceMapping = resolver.getHostBindingsMapping(sourceLocation.id);
+    const span = resolver.toHostParseSourceSpan(sourceLocation.id, sourceLocation.span);
+    if (span === null) {
+      return null;
+    }
+    return {sourceLocation, sourceMapping: hostSourceMapping, span};
+  }
+
   const span = resolver.toTemplateParseSourceSpan(sourceLocation.id, sourceLocation.span);
   if (span === null) {
     return null;
   }
   // TODO(atscott): Consider adding a context span by walking up from `node` until we get a
   // different span.
-  return {sourceLocation, sourceMapping: mapping, span};
+  return {
+    sourceLocation,
+    sourceMapping: resolver.getTemplateSourceMapping(sourceLocation.id),
+    span,
+  };
+}
+
+function isInHostBindingTcb(node: ts.Node): boolean {
+  let current = node;
+  while (current && !ts.isFunctionDeclaration(current)) {
+    if (ts.isIfStatement(current) && isHostBindingsMarker(current.expression)) {
+      return true;
+    }
+    current = current.parent;
+  }
+  return false;
 }
 
 export function findTypeCheckBlock(
@@ -145,7 +169,7 @@ export function findTypeCheckBlock(
   isDiagnosticRequest: boolean,
 ): ts.Node | null {
   for (const stmt of file.statements) {
-    if (ts.isFunctionDeclaration(stmt) && getTemplateId(stmt, file, isDiagnosticRequest) === id) {
+    if (ts.isFunctionDeclaration(stmt) && getTypeCheckId(stmt, file, isDiagnosticRequest) === id) {
       return stmt;
     }
   }
@@ -174,7 +198,7 @@ export function findSourceLocation(
     if (span !== null) {
       // Once the positional information has been extracted, search further up the TCB to extract
       // the unique id that is attached with the TCB's function declaration.
-      const id = getTemplateId(node, sourceFile, isDiagnosticsRequest);
+      const id = getTypeCheckId(node, sourceFile, isDiagnosticsRequest);
       if (id === null) {
         return null;
       }
@@ -187,7 +211,7 @@ export function findSourceLocation(
   return null;
 }
 
-function getTemplateId(
+function getTypeCheckId(
   node: ts.Node,
   sourceFile: ts.SourceFile,
   isDiagnosticRequest: boolean,
