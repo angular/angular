@@ -289,4 +289,18 @@ describe('httpResource', () => {
     await TestBed.inject(ApplicationRef).whenStable();
     expect(res.value()).toBe(buffer);
   });
+
+  it('should send request on reload', async () => {
+    const backend = TestBed.inject(HttpTestingController);
+    const res = httpResource(() => '/data', {injector: TestBed.inject(Injector)});
+    TestBed.tick();
+    let req = backend.expectOne('/data');
+    req.flush([]);
+    await TestBed.inject(ApplicationRef).whenStable();
+
+    res.reload();
+    TestBed.tick();
+    req = backend.expectOne('/data');
+    req.flush([]);
+  });
 });
