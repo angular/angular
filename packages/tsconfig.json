@@ -8,7 +8,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "module": "esnext",
-    "target": "es2020",
+    "target": "es2022",
     "strict": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
@@ -29,7 +29,7 @@
     },
     "rootDir": ".",
     "inlineSourceMap": true,
-    "lib": ["es2020", "dom", "dom.iterable"],
+    "lib": ["es2020", "es2022", "dom", "dom.iterable"],
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "types": ["angular"]
