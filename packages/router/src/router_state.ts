@@ -234,7 +234,6 @@ export class ActivatedRoute {
 
 export type ParamsInheritanceStrategy = 'emptyOnly' | 'always';
 
-/** @internal */
 export type Inherited = {
   params: Params;
   data: Data;
