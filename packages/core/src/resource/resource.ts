@@ -12,14 +12,14 @@ import {signal, signalAsReadonlyFn, WritableSignal} from '../render3/reactivity/
 import {Signal} from '../render3/reactivity/api';
 import {effect, EffectRef} from '../render3/reactivity/effect';
 import {
-  ResourceOptions,
-  ResourceStatus,
-  WritableResource,
   Resource,
+  ResourceOptions,
   ResourceRef,
+  ResourceStatus,
   ResourceStreamingLoader,
-  StreamingResourceOptions,
   ResourceStreamItem,
+  StreamingResourceOptions,
+  WritableResource,
 } from './api';
 
 import {ValueEqualityFn} from '../../primitives/signals';
@@ -99,6 +99,7 @@ abstract class BaseWritableResource<T> implements WritableResource<T> {
   readonly value: WritableSignal<T>;
   abstract readonly status: Signal<ResourceStatus>;
   abstract readonly error: Signal<unknown>;
+
   abstract reload(): boolean;
 
   constructor(value: Signal<T>) {
@@ -119,6 +120,10 @@ abstract class BaseWritableResource<T> implements WritableResource<T> {
   );
 
   hasValue(): this is ResourceRef<Exclude<T, undefined>> {
+    if (this.status() === ResourceStatus.Error) {
+      return false;
+    }
+
     return this.value() !== undefined;
   }
 
@@ -152,7 +157,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
   constructor(
     request: () => R,
     private readonly loaderFn: ResourceStreamingLoader<T, R>,
-    private readonly defaultValue: T,
+    readonly defaultValue: T,
     private readonly equal: ValueEqualityFn<T> | undefined,
     injector: Injector,
   ) {
@@ -162,7 +167,16 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
       computed(
         () => {
           const streamValue = this.state().stream?.();
-          return streamValue && isResolved(streamValue) ? streamValue.value : this.defaultValue;
+
+          if (!streamValue) {
+            return defaultValue;
+          }
+
+          if (!isResolved(streamValue)) {
+            throw new Error('Resource failed to load', {cause: this.error()});
+          }
+
+          return streamValue.value;
         },
         {equal},
       ),
