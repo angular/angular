@@ -119,10 +119,15 @@ function main(args: string[]): void {
    * @param inputPath File that should be copied.
    * @param outputRelativePath Relative path in the output directory where the
    *   file is written to.
+   * @param transform Optional text content transform.
    */
-  function copyFile(inputPath: string, outputRelativePath: string) {
+  function copyFile(
+    inputPath: string,
+    outputRelativePath: string,
+    transform: (text: string) => string = (t) => t,
+  ) {
     const fileContent = fs.readFileSync(inputPath, 'utf8');
-    writeFile(outputRelativePath, fileContent);
+    writeFile(outputRelativePath, transform(fileContent));
   }
 
   /**
@@ -180,7 +185,9 @@ function main(args: string[]): void {
   // Copy all type definitions into the package, preserving the sub-path from the
   // owning package. e.g. a file like `packages/animations/browser/__index.d.ts` will
   // end up in `browser/index.d.ts`
-  typeDefinitions.forEach((f) => copyFile(f.path, getTypingOutputRelativePath(f)));
+  typeDefinitions.forEach((f) =>
+    copyFile(f.path, getTypingOutputRelativePath(f), transformRemoveAmdModules),
+  );
 
   for (const file of staticFiles) {
     // We copy all files into the package output while preserving the sub-path from
@@ -282,7 +289,7 @@ function main(args: string[]): void {
     }
 
     const fesm2022RelativeOutPath = entryPointInfo.fesm2022RelativePath;
-    const typingsRelativeOutPath = getTypingOutputRelativePath(entryPointInfo.typings);
+    const typingsRelativeOutPath = getTypingOutputRelativePath(entryPointInfo.typingsEntryPoint);
 
     packageJson.module = normalizePath(
       path.relative(packageJsonContainingDir, fesm2022RelativeOutPath),
@@ -321,7 +328,7 @@ function main(args: string[]): void {
         ? `./${getEntryPointSubpath(moduleName)}`
         : '.';
       const fesm2022OutRelativePath = entryPoint.fesm2022RelativePath;
-      const typesOutRelativePath = getTypingOutputRelativePath(entryPoint.typings);
+      const typesOutRelativePath = getTypingOutputRelativePath(entryPoint.typingsEntryPoint);
 
       // Insert the export mapping for the entry-point. We set `default` to the FESM 2022
       // output, and also set the `types` condition which will be respected by TS 4.5.
@@ -439,5 +446,14 @@ function main(args: string[]): void {
   function normalizePath(path: string): string {
     const result = path.replace(/\\/g, '/');
     return result.startsWith('.') ? result : `./${result}`;
+  }
+
+  /**
+   * Strip the named AMD module directive comments.
+   *
+   * Those are added by Bazel and aren't relevant for our users.
+   */
+  function transformRemoveAmdModules(dtsText: string): string {
+    return dtsText.replace(/^\/\/\/ <amd-module name=.*\/>[\r\n]+/gm, '');
   }
 }

@@ -2,10 +2,13 @@ LICENSE
 README.md
 _index.scss
 a11y
+  a11y/a11y.d.ts
   a11y/index.d.ts
+  a11y/public-api.d.ts
 arbitrary-npm-package-main.js
 arbitrary_bin.txt
 arbitrary_genfiles.txt
+example.d.ts
 extra-styles.css
 fesm2022
   fesm2022/a11y.mjs
@@ -19,12 +22,18 @@ fesm2022
   fesm2022/secondary.mjs
   fesm2022/secondary.mjs.map
 imports
+  imports/imports.d.ts
   imports/index.d.ts
+  imports/public-api.d.ts
+  imports/second.d.ts
 index.d.ts
 logo.png
+mymodule.d.ts
 package.json
 secondary
   secondary/index.d.ts
+  secondary/secondary.d.ts
+  secondary/secondarymodule.d.ts
 some-file.txt
 --- LICENSE ---
 
@@ -68,24 +77,34 @@ License: MIT
 /// test file which should ship as part of the NPM package.
 
 
+--- a11y/a11y.d.ts ---
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+export * from './index';
+
+
 --- a11y/index.d.ts ---
 
 /**
- * @license Angular v0.0.0
- * (c) 2010-2025 Google LLC. https://angular.io/
- * License: MIT
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
  */
+export * from './public-api';
 
 
-import * as i0 from '@angular/core';
+--- a11y/public-api.d.ts ---
 
+import * as i0 from "@angular/core";
 export declare class A11yModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<A11yModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<A11yModule, never, never, never>;
     static ɵinj: i0.ɵɵInjectorDeclaration<A11yModule>;
 }
-
-export { }
 
 
 --- arbitrary-npm-package-main.js ---
@@ -109,6 +128,14 @@ World
 --- arbitrary_genfiles.txt ---
 
 Hello
+
+
+--- example.d.ts ---
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+export * from './index';
 
 
 --- extra-styles.css ---
@@ -247,22 +274,31 @@ export { SecondaryModule, a };
 //# sourceMappingURL=secondary.mjs.map
 
 
+--- imports/imports.d.ts ---
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+export * from './index';
+
+
 --- imports/index.d.ts ---
 
 /**
- * @license Angular v0.0.0
- * (c) 2010-2025 Google LLC. https://angular.io/
- * License: MIT
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
  */
+export * from './public-api';
+export { sharedBetweenEntryPoints } from '../secondary';
 
 
-import * as i0 from '@angular/core';
+--- imports/public-api.d.ts ---
 
-declare class MySecondService {
-    static ɵfac: i0.ɵɵFactoryDeclaration<MySecondService, never>;
-    static ɵprov: i0.ɵɵInjectableDeclaration<MySecondService>;
-}
-
+import { MySecondService } from './second';
+import * as i0 from "@angular/core";
 export declare class MyService {
     secondService: MySecondService;
     constructor(secondService: MySecondService);
@@ -270,34 +306,41 @@ export declare class MyService {
     static ɵprov: i0.ɵɵInjectableDeclaration<MyService>;
 }
 
-export declare const sharedBetweenEntryPoints = "This export is shared between entry-points";
 
-export { }
+--- imports/second.d.ts ---
+
+import * as i0 from "@angular/core";
+export declare class MySecondService {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MySecondService, never>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<MySecondService>;
+}
 
 
 --- index.d.ts ---
 
 /**
- * @license Angular v0.0.0
- * (c) 2010-2025 Google LLC. https://angular.io/
- * License: MIT
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
  */
+export * from './mymodule';
 
 
-import * as i0 from '@angular/core';
+--- logo.png ---
 
+611871c1f492a69a8a5f57e01096b145
+
+--- mymodule.d.ts ---
+
+import * as i0 from "@angular/core";
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, never, never, never>;
     static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
 }
 
-export { }
-
-
---- logo.png ---
-
-611871c1f492a69a8a5f57e01096b145
 
 --- package.json ---
 
@@ -307,52 +350,60 @@ export { }
   "exports": {
     ".": {
       "sass": "./_index.scss",
-      "types": "./index.d.ts",
+      "types": "./example.d.ts",
       "default": "./fesm2022/example.mjs"
     },
     "./package.json": {
       "default": "./package.json"
     },
     "./a11y": {
-      "types": "./a11y/index.d.ts",
+      "types": "./a11y/a11y.d.ts",
       "default": "./fesm2022/a11y.mjs"
     },
     "./imports": {
-      "types": "./imports/index.d.ts",
+      "types": "./imports/imports.d.ts",
       "default": "./fesm2022/imports.mjs"
     },
     "./secondary": {
-      "types": "./secondary/index.d.ts",
+      "types": "./secondary/secondary.d.ts",
       "default": "./fesm2022/secondary.mjs"
     }
   },
   "module": "./fesm2022/example.mjs",
-  "typings": "./index.d.ts",
+  "typings": "./example.d.ts",
   "type": "module"
 }
 
 --- secondary/index.d.ts ---
 
 /**
- * @license Angular v0.0.0
- * (c) 2010-2025 Google LLC. https://angular.io/
- * License: MIT
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
  */
+export * from './secondarymodule';
+export declare const sharedBetweenEntryPoints = "This export is shared between entry-points";
 
 
-import * as i0 from '@angular/core';
+--- secondary/secondary.d.ts ---
 
-export declare const a = 1;
+/**
+ * Generated bundle index. Do not edit.
+ */
+export * from './index';
 
+
+--- secondary/secondarymodule.d.ts ---
+
+import * as i0 from "@angular/core";
 export declare class SecondaryModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<SecondaryModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<SecondaryModule, never, never, never>;
     static ɵinj: i0.ɵɵInjectorDeclaration<SecondaryModule>;
 }
-
-export declare const sharedBetweenEntryPoints = "This export is shared between entry-points";
-
-export { }
+export declare const a = 1;
 
 
 --- some-file.txt ---

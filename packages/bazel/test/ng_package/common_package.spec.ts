@@ -90,29 +90,29 @@ describe('@angular/common ng_package', () => {
       expect(actual).toEqual(
         jasmine.objectContaining({
           module: `./fesm2022/common.mjs`,
-          typings: `./index.d.ts`,
+          typings: `./common.d.ts`,
           exports: matchesObjectWithOrder({
             './locales/global/*': {default: './locales/global/*.js'},
             './locales/*': {types: './locales/*.d.ts', default: './locales/*.mjs'},
             './package.json': {default: './package.json'},
             '.': {
-              types: './index.d.ts',
+              types: './common.d.ts',
               default: './fesm2022/common.mjs',
             },
             './http': {
-              types: './http/index.d.ts',
+              types: './http/http.d.ts',
               default: './fesm2022/http.mjs',
             },
             './http/testing': {
-              types: './http/testing/index.d.ts',
+              types: './http/testing/testing.d.ts',
               default: './fesm2022/http/testing.mjs',
             },
             './testing': {
-              types: './testing/index.d.ts',
+              types: './testing/testing.d.ts',
               default: './fesm2022/testing.mjs',
             },
             './upgrade': {
-              types: './upgrade/index.d.ts',
+              types: './upgrade/upgrade.d.ts',
               default: './fesm2022/upgrade.mjs',
             },
           }),

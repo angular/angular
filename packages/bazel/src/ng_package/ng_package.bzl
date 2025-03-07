@@ -22,7 +22,6 @@ load(
     "create_package",
 )
 load("//packages/bazel/src/ng_module:partial_compilation.bzl", "partial_compilation_transition")
-load("//packages/bazel/src/types_bundle:index.bzl", "bundle_type_declaration")
 
 # Prints a debug message if "--define=VERBOSE_LOGS=true" is specified.
 def _debug(vars, *args):
@@ -280,11 +279,13 @@ def _ng_package_impl(ctx):
         else:
             static_files.append(file)
 
-    type_files = []
-
     # List of unscoped direct and transitive ESM sources that are provided
     # by all entry-points.
     unscoped_all_entry_point_esm2022 = []
+
+    # List of all `.d.ts` types (direct or transitive) that are provided
+    # by all individual entry points.
+    unscoped_all_types = []
 
     # We infer the entry points to be:
     # - ng_module rules in the deps (they have an "angular" provider)
@@ -318,6 +319,7 @@ def _ng_package_impl(ctx):
         unscoped_esm2022_depset = dep[JSEcmaScriptModuleInfo].sources
         unscoped_types_depset = dep[DeclarationInfo].transitive_declarations
         unscoped_all_entry_point_esm2022.append(unscoped_esm2022_depset)
+        unscoped_all_types.append(unscoped_types_depset)
 
         # Extract the "module_name" from either "ts_library" or "ng_module". Both
         # set the "module_name" in the provider struct.
@@ -381,36 +383,13 @@ def _ng_package_impl(ctx):
         bundle_name = "%s.mjs" % (primary_bundle_name if is_primary_entry_point else entry_point)
         fesm2022_file = "fesm2022/%s" % bundle_name
 
-        # By default, we will bundle the typings entry-point, unless explicitly opted-out
-        # through the `skip_type_bundling` rule attribute.
-        if entry_point in ctx.attr.skip_type_bundling:
-            if typings_entry_point.short_path != "%s/index.d.ts" % entry_point_package:
-                fail(("Type bundling is explicitly disabled for `%s`, expected manual " +
-                      "`%s/index.d.ts` to be provided.") % (entry_point, entry_point_package))
-
-            typings_file = typings_entry_point
-        else:
-            # Note: To avoid conflicts with source-file generated `index.d.ts` files we prefix the
-            # bundle typings file and remove the prefix later when assembling the package.
-            typings_file = ctx.actions.declare_file("%s__index.d.ts" % ("%s/" % entry_point if entry_point else ""))
-
-            bundle_type_declaration(
-                ctx = ctx,
-                output_file = typings_file,
-                entry_point = typings_entry_point,
-                license_banner_file = ctx.file.license_banner,
-                types = unscoped_types_depset,
-            )
-
-        type_files.append(typings_file)
-
         # Store the collected entry point in a list of all entry-points. This
         # can be later passed to the packager as a manifest.
         collected_entry_points.append(struct(
             module_name = module_name,
             es2022_entry_point = es2022_entry_point,
             fesm2022_file = fesm2022_file,
-            typings_file = typings_file,
+            typings_entry_point = typings_entry_point,
             guessed_paths = guessed_paths,
         ))
 
@@ -424,12 +403,13 @@ def _ng_package_impl(ctx):
     # packager should not copy external files into the package.
     esm2022 = _filter_esm_files_to_include(unscoped_all_entry_point_esm2022_list, owning_package)
 
-    packager_inputs = (
-        static_files +
-        type_files +
-        esm2022
-    )
+    # Filter out all entry-point `.d.ts` that is owned by this package.
+    filtered_all_types_list = []
+    for f in depset(transitive = unscoped_all_types).to_list():
+        if _is_part_of_package(f, owning_package):
+            filtered_all_types_list.append(f)
 
+    packager_inputs = static_files + esm2022 + filtered_all_types_list
     packager_args = ctx.actions.args()
     packager_args.use_param_file("%s", use_always = True)
 
@@ -446,7 +426,7 @@ def _ng_package_impl(ctx):
         metadata_arg[m.module_name] = {
             "index": _serialize_file(m.es2022_entry_point),
             "fesm2022RelativePath": m.fesm2022_file,
-            "typings": _serialize_file(m.typings_file),
+            "typingsEntryPoint": _serialize_file(m.typings_entry_point),
             # If the paths for that entry-point were guessed (e.g. "ts_library" rule or
             # "ng_module" without flat module bundle), we pass this information to the packager.
             "guessedPaths": m.guessed_paths,
@@ -489,7 +469,7 @@ def _ng_package_impl(ctx):
 
     packager_args.add(_serialize_files_for_arg(esm2022))
     packager_args.add(_serialize_files_for_arg(static_files))
-    packager_args.add(_serialize_files_for_arg(type_files))
+    packager_args.add(_serialize_files_for_arg(filtered_all_types_list))
 
     packager_args.add(json.encode(ctx.attr.side_effect_entry_points))
 
@@ -567,22 +547,6 @@ _NG_PACKAGE_ATTRS = dict(PKG_NPM_ATTRS, **{
         executable = True,
         cfg = "exec",
     ),
-    "skip_type_bundling": attr.string_list(
-        default = [],
-        doc = """
-          List of entry-points for which type bundle generation should be skipped. Requires a
-          self-contained `index.d.ts` to be generated (i.e. with no relative imports).
-
-          Skipping of bundling might be desirable due to limitations in Microsoft's API extractor.
-          For example when `declare global` is used: https://github.com/microsoft/rushstack/issues/2090.
-
-          ```
-              "",                # Skips the primary entry-point from bundling.
-              "testing",         # Skips the testing entry-point from type bundling
-              "select/testing",  # Skips the `select/testing` entry-point
-          ```
-        """,
-    ),
     "rollup": attr.label(
         default = Label(_DEFAULT_ROLLUP),
         executable = True,
@@ -591,11 +555,6 @@ _NG_PACKAGE_ATTRS = dict(PKG_NPM_ATTRS, **{
     "rollup_config_tmpl": attr.label(
         default = Label(_DEFAULT_ROLLUP_CONFIG_TMPL),
         allow_single_file = True,
-    ),
-    "_types_bundler_bin": attr.label(
-        default = "//packages/bazel/src/types_bundle:types_bundler",
-        cfg = "exec",
-        executable = True,
     ),
     # Needed in order to allow for the outgoing transition on the `deps` attribute.
     # https://docs.bazel.build/versions/main/skylark/config.html#user-defined-transitions.

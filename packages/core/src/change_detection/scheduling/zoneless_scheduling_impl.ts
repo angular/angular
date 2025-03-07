@@ -20,7 +20,7 @@ import {
   scheduleCallbackWithRafRace,
 } from '../../util/callback_scheduler';
 import {performanceMarkFeature} from '../../util/performance';
-import {NgZone, NgZonePrivate, NoopNgZone, angularZoneInstanceIdProperty} from '../../zone/ng_zone';
+import {NgZone, NoopNgZone, angularZoneInstanceIdProperty} from '../../zone/ng_zone';
 
 import {
   ChangeDetectionScheduler,
@@ -70,7 +70,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   private readonly schedulerTickApplyArgs = [{data: {'__scheduler_tick__': true}}];
   private readonly subscriptions = new Subscription();
   private readonly angularZoneId = this.zoneIsDefined
-    ? (this.ngZone as NgZonePrivate)._inner?.get(angularZoneInstanceIdProperty)
+    ? (this.ngZone as {_inner?: Zone})._inner?.get(angularZoneInstanceIdProperty)
     : null;
   private readonly scheduleInRootZone =
     !this.zonelessEnabled &&

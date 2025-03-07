@@ -10,7 +10,6 @@
   "bin": {
     "ngc-wrapped": "./src/ngc-wrapped/index.mjs",
     "packager": "./src/ng_package/packager.mjs",
-    "types_bundler": "./src/types_bundle/index.mjs",
     "xi18n": "./src/ngc-wrapped/extract_i18n.mjs"
   },
   "typings": "./src/ngc-wrapped/index.d.ts",
@@ -22,7 +21,6 @@
     }
   },
   "dependencies": {
-    "@microsoft/api-extractor": "^7.24.2",
     "magic-string": "^0.30.0",
     "tinyglobby": "^0.2.12",
     "tslib": "^2.3.0"

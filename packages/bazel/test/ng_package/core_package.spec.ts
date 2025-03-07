@@ -56,13 +56,13 @@ describe('@angular/core ng_package', () => {
         expect(data).toEqual(
           jasmine.objectContaining({
             module: `./fesm2022/core.mjs`,
-            typings: `./index.d.ts`,
+            typings: `./core.d.ts`,
             exports: matchesObjectWithOrder({
               './schematics/*': {default: './schematics/*.js'},
               './event-dispatch-contract.min.js': {default: './event-dispatch-contract.min.js'},
               './package.json': {default: './package.json'},
               '.': {
-                types: './index.d.ts',
+                types: './core.d.ts',
                 default: './fesm2022/core.mjs',
               },
               './primitives/di': {
@@ -78,11 +78,11 @@ describe('@angular/core ng_package', () => {
                 default: './fesm2022/primitives/signals.mjs',
               },
               './rxjs-interop': {
-                types: './rxjs-interop/index.d.ts',
+                types: './rxjs-interop/rxjs-interop.d.ts',
                 default: './fesm2022/rxjs-interop.mjs',
               },
               './testing': {
-                types: './testing/index.d.ts',
+                types: './testing/testing.d.ts',
                 default: './fesm2022/testing.mjs',
               },
             }),
@@ -107,13 +107,7 @@ describe('@angular/core ng_package', () => {
         expect(shx.cat('index.d.ts')).not.toContain('<amd-module name');
       });
       it('should have an index d.ts file', () => {
-        expect(shx.cat('index.d.ts')).toContain('export declare');
-      });
-
-      // The `r3_symbols` file was needed for View Engine ngcc processing.
-      // This test ensures we no longer ship it by accident.
-      it('should not have an r3_symbols d.ts file', () => {
-        expect(shx.test('-e', 'src/r3_symbols.d.ts')).toBe(false);
+        expect(shx.cat('index.d.ts')).toContain('export * from');
       });
     });
 
@@ -140,7 +134,7 @@ describe('@angular/core ng_package', () => {
     describe('typings', () => {
       const typingsFile = p`testing/index.d.ts`;
       it('should have a typings file', () => {
-        expect(shx.cat(typingsFile)).toContain('export declare');
+        expect(shx.cat(typingsFile)).toContain('export * from');
       });
     });
 

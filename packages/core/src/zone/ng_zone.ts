@@ -279,7 +279,7 @@ export class NgZone {
 
 const EMPTY_PAYLOAD = {};
 
-export interface NgZonePrivate extends NgZone {
+interface NgZonePrivate extends NgZone {
   _outer: Zone;
   _inner: Zone;
   _nesting: number;

@@ -904,7 +904,7 @@ describe('find references and rename locations', () => {
 
         it('should find references', () => {
           const refs = getReferencesAtPosition(file)!;
-          assertFileNames(refs, ['index.d.ts', 'prefix-pipe.ts', 'app.ts']);
+          assertFileNames(refs, ['pipe_transform.d.ts', 'prefix-pipe.ts', 'app.ts']);
           assertTextSpans(refs, ['transform', 'prefixPipe']);
         });
 

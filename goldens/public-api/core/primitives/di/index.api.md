@@ -4,7 +4,7 @@
 
 ```ts
 
-// @public
+// @public (undocumented)
 export function getCurrentInjector(): Injector | undefined | null;
 
 // @public

@@ -1031,7 +1031,10 @@ export class NgCompiler {
     // to type check signals in two-way bindings. We also allow version 0.0.0 in case somebody is
     // using Angular at head.
     let allowSignalsInTwoWayBindings =
-      coreHasSymbol(this.inputProgram, R3Identifiers.unwrapWritableSignal) ??
+      coreHasSymbol(this.inputProgram, R3Identifiers.unwrapWritableSignal, [
+        'src/render3/reactivity/signal.d.ts',
+        'index.d.ts', // For older versions with APF type bundling.
+      ]) ??
       (this.angularCoreVersion === null ||
         coreVersionSupportsFeature(this.angularCoreVersion, '>= 17.2.0'));
 
