@@ -66,7 +66,7 @@ export enum ResourceStatus {
  */
 export interface Resource<T> {
   /**
-   * The current value of the `Resource`, or `undefined` if there is no current value.
+   * The current value of the `Resource`, or throws an `Error` if there is no current value.
    */
   readonly value: Signal<T>;
 
