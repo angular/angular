@@ -7,6 +7,8 @@
  */
 
 import {
+  Consumer as InteropConsumer,
+  CONSUMER_NODE,
   consumerAfterComputation,
   consumerBeforeComputation,
   consumerPollProducersForChange,
@@ -57,7 +59,7 @@ type AfterRenderPhaseEffectHook = (
  * This node type extends `SignalNode` because `afterRenderEffect` phases effects produce a value
  * which is consumed as a `Signal` by subsequent phases.
  */
-interface AfterRenderPhaseEffectNode extends SignalNode<unknown> {
+interface AfterRenderPhaseEffectNode extends SignalNode<unknown>, InteropConsumer {
   /** The phase of the effect implemented by this node */
   phase: AfterRenderPhase;
   /** The sequence of phases to which this node belongs, used for state of the whole sequence */
@@ -76,6 +78,7 @@ interface AfterRenderPhaseEffectNode extends SignalNode<unknown> {
 
 const AFTER_RENDER_PHASE_EFFECT_NODE = /* @__PURE__ */ (() => ({
   ...SIGNAL_NODE,
+  ...CONSUMER_NODE,
   consumerIsAlwaysLive: true,
   consumerAllowSignalWrites: true,
   value: NOT_SET,
