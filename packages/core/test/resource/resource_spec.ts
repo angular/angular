@@ -8,7 +8,9 @@
 
 import {
   ApplicationRef,
+  computed,
   createEnvironmentInjector,
+  effect,
   EnvironmentInjector,
   Injector,
   resource,
@@ -140,16 +142,18 @@ describe('resource', () => {
     });
 
     TestBed.tick();
-    await backend.reject(requestParam, 'Something went wrong....');
+    await backend.reject(requestParam, new Error('Something went wrong....'));
 
     expect(echoResource.status()).toBe('error');
     expect(echoResource.isLoading()).toBeFalse();
     expect(echoResource.hasValue()).toBeFalse();
-    expect(echoResource.value()).toEqual(undefined);
-    expect(echoResource.error()).toEqual(
-      jasmine.objectContaining({cause: 'Something went wrong....'}),
-    ),
-      expect(echoResource.error()!.message).toContain('Resource');
+
+    const err = extractError(() => echoResource.value())!;
+    expect(err).not.toBeUndefined();
+    expect(err instanceof Error).toBeTrue();
+    expect(err!.message).toContain('Resource');
+    expect(err.cause).toEqual(new Error('Something went wrong....'));
+    expect(echoResource.error()).toEqual(new Error('Something went wrong....'));
   });
 
   it('should expose errors on reload', async () => {
@@ -183,8 +187,109 @@ describe('resource', () => {
     expect(echoResource.status()).toBe('error');
     expect(echoResource.isLoading()).toBeFalse();
     expect(echoResource.hasValue()).toBeFalse();
-    expect(echoResource.value()).toEqual(undefined);
+    const err = extractError(() => echoResource.value())!;
+    expect(err).not.toBeUndefined();
+    expect(err.message).toContain('Resource');
+    expect(err.message).toContain('KO');
+    expect(err.cause).toEqual(new Error('KO'));
     expect(echoResource.error()).toEqual(Error('KO'));
+
+    counter.update((value) => value + 1);
+    TestBed.tick();
+    await backend.flush();
+
+    expect(echoResource.status()).toBe('resolved');
+    expect(echoResource.isLoading()).toBeFalse();
+    expect(echoResource.hasValue()).toBeTrue();
+    expect(echoResource.value()).toEqual('ok');
+    expect(echoResource.error()).toBe(undefined);
+  });
+
+  it('should not trigger consumers on every status change via hasValue()', async () => {
+    const params = signal<number | undefined>(undefined);
+    const testResource = resource({
+      params,
+      // Hanging promise, never resolves
+      loader: () => new Promise(() => {}),
+      injector: TestBed.inject(Injector),
+    });
+
+    let effectRuns = 0;
+    effect(
+      () => {
+        testResource.hasValue();
+        effectRuns++;
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    TestBed.tick();
+    // Params are undefined, status should be idle.
+    expect(testResource.status()).toBe('idle');
+    // Effect should run the first time.
+    expect(effectRuns).toBe(1);
+
+    // Set params, causing the stauts to become 'loading'.
+    params.set(0);
+    expect(testResource.status()).toBe('loading');
+    TestBed.tick();
+    // The effect should not rerun.
+    expect(effectRuns).toBe(1);
+  });
+
+  it('should update computed signals', async () => {
+    const backend = new MockEchoBackend();
+    const counter = signal(0);
+    const echoResource = resource({
+      params: () => ({counter: counter()}),
+      loader: (params) => {
+        if (params.params.counter % 2 === 0) {
+          return Promise.resolve(params.params.counter);
+        } else {
+          throw new Error('KO');
+        }
+      },
+      injector: TestBed.inject(Injector),
+    });
+    const computedValue = computed(() => {
+      if (!echoResource.hasValue()) {
+        return -1;
+      }
+      return echoResource.value();
+    });
+
+    TestBed.tick();
+    await backend.flush();
+
+    expect(echoResource.status()).toBe('resolved');
+    expect(echoResource.hasValue()).toBeTrue();
+    expect(echoResource.value()).toEqual(0);
+    expect(computedValue()).toEqual(0);
+    expect(echoResource.error()).toBe(undefined);
+
+    counter.update((value) => value + 1);
+    TestBed.tick();
+    await backend.flush();
+
+    expect(echoResource.status()).toBe('error');
+    expect(echoResource.hasValue()).toBeFalse();
+    const err = extractError(() => echoResource.value())!;
+    expect(err).not.toBeUndefined();
+    expect(err.message).toContain('Resource');
+    expect(err.message).toContain('KO');
+    expect(err.cause).toEqual(new Error('KO'));
+    expect(computedValue()).toEqual(-1);
+    expect(echoResource.error()).toEqual(Error('KO'));
+
+    counter.update((value) => value + 1);
+    TestBed.tick();
+    await backend.flush();
+
+    expect(echoResource.status()).toBe('resolved');
+    expect(echoResource.hasValue()).toBeTrue();
+    expect(echoResource.value()).toEqual(2);
+    expect(computedValue()).toEqual(2);
+    expect(echoResource.error()).toBe(undefined);
   });
 
   it('should respond to a request that changes while loading', async () => {
@@ -231,7 +336,7 @@ describe('resource', () => {
     expect(res.value()).toBe(1);
   });
 
-  it('should return a default value if provided', async () => {
+  it('should throw an error when getting a value even when provided with a default value', async () => {
     const DEFAULT: string[] = [];
     const request = signal(0);
     const res = resource({
@@ -256,7 +361,11 @@ describe('resource', () => {
     request.set(2);
     await TestBed.inject(ApplicationRef).whenStable();
     expect(res.error()).not.toBeUndefined();
-    expect(res.value()).toBe(DEFAULT);
+    const err = extractError(() => res.value())!;
+    expect(err).not.toBeUndefined();
+    expect(err.message).toContain('Resource');
+    expect(err.message).toContain('err');
+    expect(err.cause).toEqual(new Error('err'));
   });
 
   it('should _not_ load if the request resolves to undefined', () => {
@@ -730,4 +839,13 @@ describe('resource', () => {
 
 function flushMicrotasks(): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, 0));
+}
+
+function extractError(fn: () => unknown): Error | undefined {
+  try {
+    fn();
+    return undefined;
+  } catch (err: unknown) {
+    return err as Error;
+  }
 }
