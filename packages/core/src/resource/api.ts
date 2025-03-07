@@ -46,7 +46,7 @@ export type ResourceStatus = 'idle' | 'error' | 'loading' | 'reloading' | 'resol
  */
 export interface Resource<T> {
   /**
-   * The current value of the `Resource`, or `undefined` if there is no current value.
+   * The current value of the `Resource`, or throws an error if the resource is in an error state.
    */
   readonly value: Signal<T>;
 
@@ -167,7 +167,7 @@ export interface BaseResourceOptions<T, R> {
 
   /**
    * The value which will be returned from the resource when a server value is unavailable, such as
-   * when the resource is still loading, or in an error state.
+   * when the resource is still loading.
    */
   defaultValue?: NoInfer<T>;
 
