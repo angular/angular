@@ -47,8 +47,10 @@ import {
   getParentClassDeclaration,
   getPropertyAssignmentFromValue,
 } from './utils/ts_utils';
-import {getTypeCheckInfoAtPosition, isTypeScriptFile} from './utils';
+import {getTypeCheckInfoAtPosition, isTypeScriptFile, TypeCheckInfo} from './utils';
 import {ActiveRefactoring, allRefactorings} from './refactorings/refactoring';
+import {getClassificationsForTemplate} from './semantic_tokens';
+import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
 
 type LanguageServiceConfig = Omit<PluginConfig, 'angularOnly'>;
 
@@ -288,6 +290,77 @@ export class LanguageService {
       node,
       positionDetails,
     );
+  }
+
+  getEncodedSemanticClassifications(
+    fileName: string,
+    span: ts.TextSpan,
+    format: ts.SemanticClassificationFormat | undefined,
+  ): ts.Classifications {
+    return this.withCompilerAndPerfTracing(PerfPhase.LSSemanticClassification, (compiler) => {
+      return this.getEncodedSemanticClassificationsImpl(fileName, span, format, compiler);
+    });
+  }
+
+  private getEncodedSemanticClassificationsImpl(
+    fileName: string,
+    span: ts.TextSpan,
+    format: ts.SemanticClassificationFormat | undefined,
+    compiler: NgCompiler,
+  ): ts.Classifications {
+    if (format == ts.SemanticClassificationFormat.Original) {
+      return {spans: [], endOfLineState: ts.EndOfLineState.None};
+    }
+
+    if (isTypeScriptFile(fileName)) {
+      const sf = compiler.getCurrentProgram().getSourceFile(fileName);
+      if (sf === undefined) {
+        return {spans: [], endOfLineState: ts.EndOfLineState.None};
+      }
+
+      const classDeclarations: ts.ClassDeclaration[] = [];
+      sf.forEachChild((node) => {
+        if (ts.isClassDeclaration(node)) {
+          classDeclarations.push(node);
+        }
+      });
+
+      const hasInlineTemplate = (classDecl: ts.ClassDeclaration) => {
+        const resources = compiler.getDirectiveResources(classDecl);
+        return resources && resources.template && !isExternalResource(resources.template);
+      };
+
+      const typeCheckInfos: TypeCheckInfo[] = [];
+      const templateChecker = compiler.getTemplateTypeChecker();
+
+      for (const classDecl of classDeclarations) {
+        if (!hasInlineTemplate(classDecl)) {
+          continue;
+        }
+        const template = templateChecker.getTemplate(classDecl);
+        if (template !== null) {
+          typeCheckInfos.push({
+            nodes: template,
+            declaration: classDecl,
+          });
+        }
+      }
+
+      const spans = [];
+      for (const templInfo of typeCheckInfos) {
+        const classifications = getClassificationsForTemplate(compiler, templInfo, span);
+        spans.push(...classifications.spans);
+      }
+
+      return {spans, endOfLineState: ts.EndOfLineState.None};
+    } else {
+      const typeCheckInfo = getTypeCheckInfoAtPosition(fileName, span.start, compiler);
+      if (typeCheckInfo === undefined) {
+        return {spans: [], endOfLineState: ts.EndOfLineState.None};
+      }
+
+      return getClassificationsForTemplate(compiler, typeCheckInfo, span);
+    }
   }
 
   getCompletionsAtPosition(
