@@ -64,7 +64,6 @@ import {removeEmptyBindings} from './phases/remove_empty_bindings';
 import {removeI18nContexts} from './phases/remove_i18n_contexts';
 import {removeIllegalLetReferences} from './phases/remove_illegal_let_references';
 import {removeUnusedI18nAttributesOps} from './phases/remove_unused_i18n_attrs';
-import {requiredParentheses} from './phases/required_parentheses';
 import {resolveContexts} from './phases/resolve_contexts';
 import {resolveDeferDepsFns} from './phases/resolve_defer_deps_fns';
 import {resolveDollarEvent} from './phases/resolve_dollar_event';
@@ -75,6 +74,7 @@ import {resolveSanitizers} from './phases/resolve_sanitizers';
 import {saveAndRestoreView} from './phases/save_restore_view';
 import {allocateSlots} from './phases/slot_allocation';
 import {optimizeStoreLet} from './phases/store_let_optimization';
+import {stripNonrequiredParentheses} from './phases/strip_nonrequired_parentheses';
 import {specializeStyleBindings} from './phases/style_binding_specialization';
 import {generateTemporaryVariables} from './phases/temporary_variables';
 import {optimizeTrackFns} from './phases/track_fn_optimization';
@@ -139,7 +139,7 @@ const phases: Phase[] = [
   {kind: Kind.Both, fn: resolveSanitizers},
   {kind: Kind.Tmpl, fn: liftLocalRefs},
   {kind: Kind.Both, fn: expandSafeReads},
-  {kind: Kind.Both, fn: requiredParentheses},
+  {kind: Kind.Both, fn: stripNonrequiredParentheses},
   {kind: Kind.Both, fn: generateTemporaryVariables},
   {kind: Kind.Both, fn: optimizeVariables},
   {kind: Kind.Both, fn: optimizeStoreLet},
