@@ -18,9 +18,9 @@ In addition to the default Angular application framework, you will also create a
 
 1. Create a new Angular project, *angular-custom-route-match*.
 
-    ```shell
+    <docs-code language="shell"> 
     ng new angular-custom-route-match
-    ```
+    </docs-code>
 
     When prompted with `Would you like to add Angular routing?`, select `Y`.
 
@@ -31,9 +31,9 @@ In addition to the default Angular application framework, you will also create a
 1. From your terminal, navigate to the `angular-custom-route-match` directory.
 1. Create a component, *profile*.
 
-    ```shell
+    <docs-code language="shell"> 
     ng generate component profile
-    ```
+    </docs-code>
 
 1. In your code editor, locate the file, `profile.component.html` and replace the placeholder content with the following HTML.
 
