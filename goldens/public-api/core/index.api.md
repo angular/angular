@@ -6,8 +6,6 @@
 
 import * as _angular_core from '@angular/core';
 import { Observable } from 'rxjs';
-import { SIGNAL } from '@angular/core/primitives/signals';
-import { SignalNode } from '@angular/core/primitives/signals';
 import { Subject } from 'rxjs';
 import { Subscription } from 'rxjs';
 
@@ -1030,11 +1028,11 @@ export interface InputSignal<T> extends InputSignalWithTransform<T, T> {
 // @public
 export interface InputSignalWithTransform<T, TransformT> extends Signal<T> {
     // (undocumented)
+    [SIGNAL]: InputSignalNode<T, TransformT>;
+    // (undocumented)
     [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: T;
     // (undocumented)
     [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: TransformT;
-    // (undocumented)
-    [SIGNAL]: InputSignalNode<T, TransformT>;
 }
 
 // @public
