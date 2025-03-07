@@ -71,6 +71,7 @@ class MockEchoBackend<T> extends MockBackend<T, T> {
 
 class MockResponseCountingBackend extends MockBackend<number, string> {
   counter = 0;
+
   override prepareResponse(request: number) {
     return request + ':' + this.counter++;
   }
@@ -145,7 +146,10 @@ describe('resource', () => {
     expect(echoResource.isLoading()).toBeFalse();
     expect(echoResource.hasValue()).toBeFalse();
     expect(echoResource.value()).toEqual(undefined);
-    expect(echoResource.error()).toBe('Something went wrong....');
+    expect(echoResource.error()).toEqual(
+      jasmine.objectContaining({cause: 'Something went wrong....'}),
+    ),
+      expect(echoResource.error()!.message).toContain('Resource');
   });
 
   it('should expose errors on reload', async () => {
@@ -608,18 +612,18 @@ describe('resource', () => {
   it('should error via error()', async () => {
     const appRef = TestBed.inject(ApplicationRef);
     const res = resource({
-      stream: async () => signal({error: 'fail'}),
+      stream: async () => signal({error: new Error('fail')}),
       injector: TestBed.inject(Injector),
     });
 
     await appRef.whenStable();
     expect(res.status()).toBe('error');
-    expect(res.error()).toBe('fail');
+    expect(res.error()).toEqual(new Error('fail'));
   });
 
   it('should transition across streamed states', async () => {
     const appRef = TestBed.inject(ApplicationRef);
-    const stream = signal<{value: number} | {error: unknown}>({value: 1});
+    const stream = signal<{value: number} | {error: Error}>({value: 1});
 
     const res = resource({
       stream: async () => stream,
@@ -633,8 +637,8 @@ describe('resource', () => {
     stream.set({value: 3});
     expect(res.value()).toBe(3);
 
-    stream.set({error: 'fail'});
-    expect(res.error()).toBe('fail');
+    stream.set({error: new Error('fail')});
+    expect(res.error()).toEqual(new Error('fail'));
 
     stream.set({value: 4});
     expect(res.value()).toBe(4);
@@ -642,7 +646,7 @@ describe('resource', () => {
 
   it('should not accept new values/errors after a request is cancelled', async () => {
     const appRef = TestBed.inject(ApplicationRef);
-    const stream = signal<{value: number} | {error: unknown}>({value: 0});
+    const stream = signal<{value: number} | {error: Error}>({value: 0});
     const request = signal(1);
     const res = resource({
       params: request,
@@ -666,7 +670,7 @@ describe('resource', () => {
     // The previous set/error functions should no longer result in changes to the resource.
     stream.set({value: 2});
     expect(res.value()).toBe(undefined);
-    stream.set({error: 'fail'});
+    stream.set({error: new Error('fail')});
     expect(res.value()).toBe(undefined);
   });
 
