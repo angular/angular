@@ -1919,7 +1919,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Medium,
     step: 'v16 createUrlTree',
     action:
-      'After bug fixes in `Router.createUrlTree` you may have to readjust tests which mock `ActiveRoute`. [Read further](https://github.com/angular/angular/blob/main/CHANGELOG.md#1600-next1-2023-03-01)',
+      'After bug fixes in `Router.createUrlTree` you may have to readjust tests which mock `ActivatedRoute`. [Read further](https://github.com/angular/angular/blob/main/CHANGELOG.md#1600-2023-05-03)',
   },
   {
     possibleIn: 1600,
