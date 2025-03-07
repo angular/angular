@@ -99,6 +99,7 @@ abstract class BaseWritableResource<T> implements WritableResource<T> {
   readonly value: WritableSignal<T>;
   abstract readonly status: Signal<ResourceStatus>;
   abstract readonly error: Signal<unknown>;
+
   abstract reload(): boolean;
 
   constructor(value: Signal<T>) {
@@ -119,7 +120,11 @@ abstract class BaseWritableResource<T> implements WritableResource<T> {
   );
 
   hasValue(): this is ResourceRef<Exclude<T, undefined>> {
-    return this.value() !== undefined;
+    try {
+      return this.value() !== undefined;
+    } catch (error) {
+      return false;
+    }
   }
 
   asReadonly(): Resource<T> {
@@ -152,7 +157,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
   constructor(
     request: () => R,
     private readonly loaderFn: ResourceStreamingLoader<T, R>,
-    private readonly defaultValue: T,
+    readonly defaultValue: T,
     private readonly equal: ValueEqualityFn<T> | undefined,
     injector: Injector,
   ) {
@@ -162,7 +167,20 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
       computed(
         () => {
           const streamValue = this.state().stream?.();
-          return streamValue && isResolved(streamValue) ? streamValue.value : this.defaultValue;
+
+          if (!streamValue) {
+            return defaultValue;
+          }
+
+          if (!isResolved(streamValue)) {
+            if (defaultValue !== undefined) {
+              return defaultValue;
+            }
+
+            throw new Error('Cannot read value, because it failed to resolve.');
+          }
+
+          return streamValue.value;
         },
         {equal},
       ),
