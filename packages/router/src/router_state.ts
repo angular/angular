@@ -142,11 +142,11 @@ export class ActivatedRoute {
   /** An observable of the matrix parameters scoped to this route. */
   public params: Observable<Readonly<Params>>;
   /** An observable of the query parameters shared by all the routes. */
-  public queryParams: Observable<Params>;
+  public queryParams: Observable<Readonly<Params>>;
   /** An observable of the URL fragment shared by all the routes. */
   public fragment: Observable<string | null>;
   /** An observable of the static and resolved data of this route. */
-  public data: Observable<Readonly<Data>>;
+  public data: Observable<Data>;
 
   /** @internal */
   constructor(
