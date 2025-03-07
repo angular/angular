@@ -486,7 +486,7 @@ export class TemplateLiteralElement extends AST {
   }
 }
 
-export class Parenthesized extends AST {
+export class ParenthesizedExpression extends AST {
   constructor(
     span: ParseSpan,
     sourceSpan: AbsoluteSourceSpan,
@@ -496,7 +496,7 @@ export class Parenthesized extends AST {
   }
 
   override visit(visitor: AstVisitor, context?: any) {
-    return visitor.visitParenthesized(this, context);
+    return visitor.visitParenthesizedExpression(this, context);
   }
 }
 
@@ -630,7 +630,7 @@ export interface AstVisitor {
   visitTemplateLiteral(ast: TemplateLiteral, context: any): any;
   visitTemplateLiteralElement(ast: TemplateLiteralElement, context: any): any;
   visitTaggedTemplateLiteral(ast: TaggedTemplateLiteral, context: any): any;
-  visitParenthesized(ast: Parenthesized, context: any): any;
+  visitParenthesizedExpression(ast: ParenthesizedExpression, context: any): any;
   visitASTWithSource?(ast: ASTWithSource, context: any): any;
   /**
    * This function is optionally defined to allow classes that implement this
@@ -739,7 +739,7 @@ export class RecursiveAstVisitor implements AstVisitor {
     this.visit(ast.tag, context);
     this.visit(ast.template, context);
   }
-  visitParenthesized(ast: Parenthesized, context: any) {
+  visitParenthesizedExpression(ast: ParenthesizedExpression, context: any) {
     this.visit(ast.expression, context);
   }
   // This is not part of the AstVisitor interface, just a helper method

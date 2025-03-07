@@ -23,7 +23,7 @@ import {
   LiteralMap,
   LiteralPrimitive,
   NonNullAssert,
-  Parenthesized,
+  ParenthesizedExpression,
   PrefixNot,
   PropertyRead,
   PropertyWrite,
@@ -248,7 +248,7 @@ class Unparser implements AstVisitor {
     this._visit(ast.template);
   }
 
-  visitParenthesized(ast: Parenthesized, context: any) {
+  visitParenthesizedExpression(ast: ParenthesizedExpression, context: any) {
     this._expression += '(';
     this._visit(ast.expression);
     this._expression += ')';

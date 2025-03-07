@@ -1179,7 +1179,7 @@ function convertAst(
       undefined,
       convertSourceSpan(ast.span, baseSourceSpan),
     );
-  } else if (ast instanceof e.Parenthesized) {
+  } else if (ast instanceof e.ParenthesizedExpression) {
     return new o.ParenthesizedExpr(
       convertAst(ast.expression, job, baseSourceSpan),
       undefined,
