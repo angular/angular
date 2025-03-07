@@ -140,13 +140,13 @@ export class ActivatedRoute {
   /** An observable of the URL segments matched by this route. */
   public url: Observable<UrlSegment[]>;
   /** An observable of the matrix parameters scoped to this route. */
-  public params: Observable<Params>;
+  public params: Observable<Readonly<Params>>;
   /** An observable of the query parameters shared by all the routes. */
   public queryParams: Observable<Params>;
   /** An observable of the URL fragment shared by all the routes. */
   public fragment: Observable<string | null>;
   /** An observable of the static and resolved data of this route. */
-  public data: Observable<Data>;
+  public data: Observable<Readonly<Data>>;
 
   /** @internal */
   constructor(
