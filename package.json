@@ -7,7 +7,7 @@
   "bugs": "https://github.com/angular/angular/issues",
   "license": "MIT",
   "engines": {
-    "node": "^18.19.1 || ^20.11.1",
+    "node": "^20.11.1 || ^22.11.0",
     "yarn": ">=1.22.4 <2",
     "npm": "Please use yarn instead of NPM to install dependencies"
   },
@@ -105,7 +105,7 @@
     "angular-mocks-1.8": "npm:angular-mocks@1.8",
     "bluebird": "^3.7.2",
     "canonical-path": "1.0.0",
-    "chalk": "^4.1.0",
+    "chalk": "^5.4.1",
     "chokidar": "^4.0.0",
     "convert-source-map": "^1.5.1",
     "d3": "^7.0.0",
