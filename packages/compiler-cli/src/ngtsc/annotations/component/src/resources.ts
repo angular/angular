@@ -254,6 +254,52 @@ export function extractTemplate(
   }
 }
 
+export function createEmptyTemplate(
+  componentClass: ClassDeclaration,
+  component: Map<string, ts.Expression>,
+  containingFile: string,
+): ParsedTemplateWithSource {
+  const templateUrl = component.get('templateUrl');
+  const template = component.get('template');
+
+  return {
+    content: '',
+    diagNodes: [],
+    nodes: [],
+    errors: null,
+    styles: [],
+    styleUrls: [],
+    ngContentSelectors: [],
+    file: new ParseSourceFile('', ''),
+    sourceMapping: templateUrl
+      ? {type: 'direct', node: template as ts.StringLiteral}
+      : {
+          type: 'external',
+          componentClass,
+          node: templateUrl!,
+          template: '',
+          templateUrl: 'missing.ng.html',
+        },
+    declaration: templateUrl
+      ? {
+          isInline: false,
+          interpolationConfig: InterpolationConfig.fromArray(null),
+          preserveWhitespaces: false,
+          templateUrlExpression: templateUrl,
+          templateUrl: 'missing.ng.html',
+          resolvedTemplateUrl: '/missing.ng.html',
+        }
+      : {
+          isInline: true,
+          interpolationConfig: InterpolationConfig.fromArray(null),
+          preserveWhitespaces: false,
+          expression: template!,
+          templateUrl: containingFile,
+          resolvedTemplateUrl: containingFile,
+        },
+  };
+}
+
 function parseExtractedTemplate(
   template: TemplateDeclaration,
   sourceStr: string,
