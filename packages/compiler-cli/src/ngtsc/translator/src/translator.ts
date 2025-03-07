@@ -463,7 +463,8 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
   }
 
   visitParenthesizedExpr(ast: o.ParenthesizedExpr, context: any) {
-    return this.factory.createParenthesizedExpression(ast.expr.visitExpression(this, context));
+    const result = ast.expr.visitExpression(this, context);
+    return this.factory.createParenthesizedExpression(result);
   }
 
   private visitStatements(statements: o.Statement[], context: Context): TStatement[] {

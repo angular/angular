@@ -24,6 +24,7 @@ import {
   LiteralMap,
   LiteralPrimitive,
   NonNullAssert,
+  ParenthesizedExpression,
   PrefixNot,
   PropertyRead,
   PropertyWrite,
@@ -490,6 +491,10 @@ class AstTranslator implements AstVisitor {
     );
   }
 
+  visitParenthesizedExpression(ast: ParenthesizedExpression): ts.ParenthesizedExpression {
+    return ts.factory.createParenthesizedExpression(this.translate(ast.expression));
+  }
+
   private convertToSafeCall(
     ast: Call | SafeCall,
     expr: ts.Expression,
@@ -623,5 +628,8 @@ class VeSafeLhsInferenceBugDetector implements AstVisitor {
   }
   visitTaggedTemplateLiteral(ast: TaggedTemplateLiteral, context: any) {
     return false;
+  }
+  visitParenthesizedExpression(ast: ParenthesizedExpression, context: any) {
+    return ast.expression.visit(this);
   }
 }

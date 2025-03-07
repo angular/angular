@@ -57,22 +57,22 @@ describe('type check blocks', () => {
     expect(tcb('{{ a ?? b }}')).toContain('((((this).a)) ?? (((this).b)))');
     expect(tcb('{{ a ?? b ?? c }}')).toContain('(((((this).a)) ?? (((this).b))) ?? (((this).c)))');
     expect(tcb('{{ (a ?? b) + (c ?? e) }}')).toContain(
-      '(((((this).a)) ?? (((this).b))) + ((((this).c)) ?? (((this).e))))',
+      '((((((this).a)) ?? (((this).b)))) + (((((this).c)) ?? (((this).e)))))',
     );
   });
 
   it('should handle typeof expressions', () => {
     expect(tcb('{{typeof a}}')).toContain('typeof (((this).a))');
-    expect(tcb('{{!(typeof a)}}')).toContain('!(typeof (((this).a)))');
+    expect(tcb('{{!(typeof a)}}')).toContain('!((typeof (((this).a))))');
     expect(tcb('{{!(typeof a === "object")}}')).toContain(
-      '!((typeof (((this).a))) === ("object"))',
+      '!(((typeof (((this).a))) === ("object")))',
     );
   });
 
   it('should handle void expressions', () => {
     expect(tcb('{{void a}}')).toContain('void (((this).a))');
-    expect(tcb('{{!(void a)}}')).toContain('!(void (((this).a)))');
-    expect(tcb('{{!(void a === "object")}}')).toContain('!((void (((this).a))) === ("object"))');
+    expect(tcb('{{!(void a)}}')).toContain('!((void (((this).a))))');
+    expect(tcb('{{!(void a === "object")}}')).toContain('!(((void (((this).a))) === ("object")))');
   });
 
   it('should handle exponentiation expressions', () => {
