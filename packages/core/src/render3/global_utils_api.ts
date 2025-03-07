@@ -17,7 +17,6 @@
 
 export {applyChanges} from './util/change_detection_utils';
 export {
-  ComponentDebugMetadata,
   DirectiveDebugMetadata,
   getComponent,
   getContext,
