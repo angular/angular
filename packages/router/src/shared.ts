@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {Route, UrlMatchResult} from './models';
-import type {UrlSegment, UrlSegmentGroup} from './url_tree';
+import type { Route, UrlMatchResult } from './models';
+import type { UrlSegment, UrlSegmentGroup } from './url_tree';
 
 /**
  * The primary routing outlet.
@@ -30,9 +30,9 @@ export const RouteTitleKey = /* @__PURE__ */ Symbol('RouteTitle');
  *
  * @publicApi
  */
-export type Params = Readonly<{
+export type Params = {
   [key: string]: any;
-}>;
+};
 
 /**
  * A map that provides access to the required and optional parameters
