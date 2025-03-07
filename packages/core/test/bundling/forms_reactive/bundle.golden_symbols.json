@@ -626,7 +626,7 @@
   "trackMovedView",
   "uniqueIdCounter",
   "unregisterLView",
-  "untracked2",
+  "untracked",
   "unwrapRNode",
   "updateAncestorTraversalFlagsOnAttach",
   "updateControl",
