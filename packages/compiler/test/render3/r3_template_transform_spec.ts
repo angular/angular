@@ -1544,13 +1544,13 @@ describe('R3 template transform', () => {
             @default { No case matched }
           }
         `).toEqual([
-        ['SwitchBlock', 'cond.kind'],
-        ['SwitchBlockCase', 'x()'],
+        ['SwitchBlock', '(cond.kind)'],
+        ['SwitchBlockCase', '(x())'],
         ['Text', ' X case '],
-        ['SwitchBlockCase', '"hello"'],
+        ['SwitchBlockCase', '("hello")'],
         ['Element', 'button'],
         ['Text', 'Y case'],
-        ['SwitchBlockCase', '42'],
+        ['SwitchBlockCase', '(42)'],
         ['Text', ' Z case '],
         ['SwitchBlockCase', null],
         ['Text', ' No case matched '],
@@ -1932,13 +1932,24 @@ describe('R3 template transform', () => {
         ['Variable', '$count', '$count'],
         ['BoundText', '{{ item }}'],
       ];
+      const expectedExtraParensResult = [
+        ['ForLoopBlock', 'items.foo.bar', '(item.id + foo)'],
+        ['Variable', 'item', '$implicit'],
+        ['Variable', '$index', '$index'],
+        ['Variable', '$first', '$first'],
+        ['Variable', '$last', '$last'],
+        ['Variable', '$even', '$even'],
+        ['Variable', '$odd', '$odd'],
+        ['Variable', '$count', '$count'],
+        ['BoundText', '{{ item }}'],
+      ];
 
       expectFromHtml(`
         @for (item\nof\nitems.foo.bar; track item.id +\nfoo) {{{ item }}}
       `).toEqual(expectedResult);
       expectFromHtml(`
         @for ((item\nof\nitems.foo.bar); track (item.id +\nfoo)) {{{ item }}}
-      `).toEqual(expectedResult);
+      `).toEqual(expectedExtraParensResult);
     });
 
     it('should parse for loop block expression containing new lines', () => {
@@ -2140,9 +2151,9 @@ describe('R3 template transform', () => {
         }
         `).toEqual([
         ['IfBlock'],
-        ['IfBlockBranch', 'cond.expr'],
+        ['IfBlockBranch', '(cond.expr)'],
         ['Text', ' Main case was true! '],
-        ['IfBlockBranch', 'other.expr'],
+        ['IfBlockBranch', '(other.expr)'],
         ['Text', ' Extra case was true! '],
         ['IfBlockBranch', null],
         ['Text', ' False case! '],
