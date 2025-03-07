@@ -583,7 +583,7 @@ export interface Component extends Directive {
   template?: string;
 
   /**
-   * One relative paths or an absolute URL for files containing CSS stylesheet to use
+   * One relative path or an absolute URL for file containing a CSS stylesheet to use
    * in this component.
    */
   styleUrl?: string;
