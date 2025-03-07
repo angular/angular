@@ -6,24 +6,24 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {ɵGlobalDevModeUtils as GlobalDevModeUtils} from '@angular/core';
+import type {ɵFrameworkAgnosticGlobalUtils as GlobalUtils} from '@angular/core';
 
 /**
  * Returns a handle to window.ng APIs (global angular debugging).
  *
  * @returns window.ng
  */
-export const ngDebugClient = () => (window as any).ng as Partial<GlobalDevModeUtils['ng']>;
+export const ngDebugClient = () => (window as any).ng as Partial<GlobalUtils>;
 
 /**
  * Type guard that checks whether a given debug API is supported within window.ng
  *
  * @returns whether the ng object includes the given debug API
  */
-export function ngDebugApiIsSupported<
-  T extends Partial<GlobalDevModeUtils['ng']>,
-  K extends keyof T,
->(ng: T, api: K): ng is T & Record<K, NonNullable<T[K]>> {
+export function ngDebugApiIsSupported<T extends Partial<GlobalUtils>, K extends keyof T>(
+  ng: T,
+  api: K,
+): ng is T & Record<K, NonNullable<T[K]>> {
   return typeof ng[api] === 'function';
 }
 

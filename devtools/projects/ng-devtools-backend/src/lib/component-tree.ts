@@ -15,7 +15,7 @@ import type {
   Injector,
   Type,
   ValueProvider,
-  ɵComponentDebugMetadata as ComponentDebugMetadata,
+  ɵAngularComponentDebugMetadata as AngularComponentDebugMetadata,
   ɵProviderRecord as ProviderRecord,
 } from '@angular/core';
 import {
@@ -219,7 +219,7 @@ const enum DirectiveMetadataKey {
 // the method directly interacts with the directive/component definition.
 const getDirectiveMetadata = (dir: any): DirectiveMetadata => {
   const getMetadata = ngDebugClient().getDirectiveMetadata!;
-  const metadata = getMetadata?.(dir) as ComponentDebugMetadata;
+  const metadata = getMetadata?.(dir) as AngularComponentDebugMetadata;
   if (metadata) {
     return {
       inputs: metadata.inputs,
