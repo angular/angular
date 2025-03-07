@@ -8,7 +8,7 @@
 
 import {of, Observable, BehaviorSubject} from 'rxjs';
 import {TestBed} from '@angular/core/testing';
-import {ApplicationRef, Injector, signal} from '@angular/core';
+import {ApplicationRef, Injector, signal, UnknownError} from '@angular/core';
 import {rxResource} from '@angular/core/rxjs-interop';
 
 describe('rxResource()', () => {
@@ -74,7 +74,7 @@ describe('rxResource()', () => {
     expect(res.value()).toBe(3);
 
     response.error('fail');
-    expect(res.error()).toBe('fail');
+    expect(res.error()).toEqual(new UnknownError('fail'));
   });
 });
 

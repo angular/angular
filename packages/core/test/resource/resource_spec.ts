@@ -14,6 +14,7 @@ import {
   resource,
   ResourceStatus,
   signal,
+  UnknownError,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
@@ -142,7 +143,7 @@ describe('resource', () => {
     expect(echoResource.isLoading()).toBeFalse();
     expect(echoResource.hasValue()).toBeFalse();
     expect(echoResource.value()).toEqual(undefined);
-    expect(echoResource.error()).toBe('Something went wrong....');
+    expect(echoResource.error()).toEqual(new UnknownError('Something went wrong....'));
   });
 
   it('should expose errors on reload', async () => {
@@ -611,7 +612,7 @@ describe('resource', () => {
 
     await appRef.whenStable();
     expect(res.status()).toBe(ResourceStatus.Error);
-    expect(res.error()).toBe('fail');
+    expect(res.error()).toEqual(new UnknownError('fail'));
   });
 
   it('should transition across streamed states', async () => {
@@ -631,7 +632,7 @@ describe('resource', () => {
     expect(res.value()).toBe(3);
 
     stream.set({error: 'fail'});
-    expect(res.error()).toBe('fail');
+    expect(res.error()).toEqual(new UnknownError('fail'));
 
     stream.set({value: 4});
     expect(res.value()).toBe(4);
