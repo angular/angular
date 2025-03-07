@@ -72,16 +72,6 @@ export interface Resource<T> {
    * This function is reactive.
    */
   hasValue(): this is Resource<Exclude<T, undefined>>;
-
-  /**
-   * Instructs the resource to re-load any asynchronous dependency it may have.
-   *
-   * Note that the resource will not enter its reloading state until the actual backend request is
-   * made.
-   *
-   * @returns true if a reload was initiated, false if a reload was unnecessary or unsupported
-   */
-  reload(): boolean;
 }
 
 /**
@@ -105,6 +95,16 @@ export interface WritableResource<T> extends Resource<T> {
    */
   update(updater: (value: T) => T): void;
   asReadonly(): Resource<T>;
+
+  /**
+   * Instructs the resource to re-load any asynchronous dependency it may have.
+   *
+   * Note that the resource will not enter its reloading state until the actual backend request is
+   * made.
+   *
+   * @returns true if a reload was initiated, false if a reload was unnecessary or unsupported
+   */
+  reload(): boolean;
 }
 
 /**
