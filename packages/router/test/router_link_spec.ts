@@ -45,7 +45,8 @@ describe('RouterLink', () => {
           [routerLink]="link()"
           [preserveFragment]="preserveFragment()"
           [skipLocationChange]="skipLocationChange()"
-          [replaceUrl]="replaceUrl()"></div>
+          [replaceUrl]="replaceUrl()"
+          [disableScrollToTop]="disableScrollToTop()"></div>
       `,
       standalone: false,
     })
@@ -54,6 +55,7 @@ describe('RouterLink', () => {
       preserveFragment = signal<unknown>(undefined);
       skipLocationChange = signal<unknown>(undefined);
       replaceUrl = signal<unknown>(undefined);
+      disableScrollToTop = signal<unknown>(undefined);
     }
     let fixture: ComponentFixture<LinkComponent>;
     let link: HTMLDivElement;
@@ -100,20 +102,24 @@ describe('RouterLink', () => {
         fixture.componentInstance.preserveFragment.set(truthy);
         fixture.componentInstance.skipLocationChange.set(truthy);
         fixture.componentInstance.replaceUrl.set(truthy);
+        fixture.componentInstance.disableScrollToTop.set(truthy);
         await fixture.whenStable();
         expect(dir.preserveFragment).toBeTrue();
         expect(dir.skipLocationChange).toBeTrue();
         expect(dir.replaceUrl).toBeTrue();
+        expect(dir.disableScrollToTop).toBeTrue();
       }
 
       for (const falsy of [false, null, undefined, 'false']) {
         fixture.componentInstance.preserveFragment.set(falsy);
         fixture.componentInstance.skipLocationChange.set(falsy);
         fixture.componentInstance.replaceUrl.set(falsy);
+        fixture.componentInstance.disableScrollToTop.set(falsy);
         await fixture.whenStable();
         expect(dir.preserveFragment).toBeFalse();
         expect(dir.skipLocationChange).toBeFalse();
         expect(dir.replaceUrl).toBeFalse();
+        expect(dir.disableScrollToTop).toBeFalse();
       }
     });
   });
@@ -126,7 +132,8 @@ describe('RouterLink', () => {
             [routerLink]="link()"
             [preserveFragment]="preserveFragment()"
             [skipLocationChange]="skipLocationChange()"
-            [replaceUrl]="replaceUrl()"></a>
+            [replaceUrl]="replaceUrl()"
+            [disableScrollToTop]="disableScrollToTop()"></a>
         `,
         standalone: false,
       })
@@ -135,6 +142,7 @@ describe('RouterLink', () => {
         preserveFragment = signal<unknown>(undefined);
         skipLocationChange = signal<unknown>(undefined);
         replaceUrl = signal<unknown>(undefined);
+        disableScrollToTop = signal<unknown>(undefined);
       }
       let fixture: ComponentFixture<LinkComponent>;
       let link: HTMLAnchorElement;
@@ -170,20 +178,24 @@ describe('RouterLink', () => {
           fixture.componentInstance.preserveFragment.set(truthy);
           fixture.componentInstance.skipLocationChange.set(truthy);
           fixture.componentInstance.replaceUrl.set(truthy);
+          fixture.componentInstance.disableScrollToTop.set(truthy);
           await fixture.whenStable();
           expect(dir.preserveFragment).toBeTrue();
           expect(dir.skipLocationChange).toBeTrue();
           expect(dir.replaceUrl).toBeTrue();
+          expect(dir.disableScrollToTop).toBeTrue();
         }
 
         for (const falsy of [false, null, undefined, 'false']) {
           fixture.componentInstance.preserveFragment.set(falsy);
           fixture.componentInstance.skipLocationChange.set(falsy);
           fixture.componentInstance.replaceUrl.set(falsy);
+          fixture.componentInstance.disableScrollToTop.set(falsy);
           await fixture.whenStable();
           expect(dir.preserveFragment).toBeFalse();
           expect(dir.skipLocationChange).toBeFalse();
           expect(dir.replaceUrl).toBeFalse();
+          expect(dir.disableScrollToTop).toBeFalse();
         }
       });
     });

@@ -1441,6 +1441,14 @@ export interface NavigationBehaviorOptions {
   replaceUrl?: boolean;
 
   /**
+   * When true, navigates without scrolling to the top.
+   *
+   * Angular will scroll to the top on a navigation when
+   * {@link InMemoryScrollingOptions.scrollPositionRestoration} is set to 'top' or 'enabled'.
+   */
+  readonly disableScrollToTop?: boolean;
+
+  /**
    * Developer-defined state that can be passed to any navigation.
    * Access this value through the `Navigation.extras` object
    * returned from the [Router.getCurrentNavigation()

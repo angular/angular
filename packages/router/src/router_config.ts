@@ -171,6 +171,19 @@ export interface InMemoryScrollingOptions {
    *   }
    * }
    * ```
+   *
+   * When 'top' or 'enabled' is set, if you want to disable the scroll to the top on a specific
+   * navigation, you can use {@link NavigationBehaviorOptions.disableScrollToTop}.
+   *
+   * ```ts
+   * class AppComponent {
+   *   constructor() {
+   *     const router = inject(Router);
+   *
+   *     router.navigateByUrl('/feature', { disableScrollToTop: true });
+   *   }
+   * }
+   * ```
    */
   scrollPositionRestoration?: 'disabled' | 'enabled' | 'top';
 }

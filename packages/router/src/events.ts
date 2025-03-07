@@ -601,6 +601,9 @@ export class Scroll {
 
     /** @docsNotRequired */
     readonly anchor: string | null,
+
+    /** @docsNotRequired */
+    readonly isScrollToTopDisabled: boolean,
   ) {}
 
   toString(): string {

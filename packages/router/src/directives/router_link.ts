@@ -253,6 +253,14 @@ export class RouterLink implements OnChanges, OnDestroy {
   @Input({transform: booleanAttribute}) replaceUrl: boolean = false;
 
   /**
+   * Passed to {@link Router#navigateByUrl} as part of the
+   * `NavigationBehaviorOptions`.
+   * @see {@link NavigationBehaviorOptions#disableScrollToTop}
+   * @see {@link Router#navigateByUrl}
+   */
+  @Input({transform: booleanAttribute}) disableScrollToTop: boolean = false;
+
+  /**
    * Modifies the tab index if there was not a tabindex attribute on the element during
    * instantiation.
    */
@@ -352,6 +360,7 @@ export class RouterLink implements OnChanges, OnDestroy {
       replaceUrl: this.replaceUrl,
       state: this.state,
       info: this.info,
+      disableScrollToTop: this.disableScrollToTop,
     };
     this.router.navigateByUrl(urlTree, extras).catch((e) => {
       this.applicationErrorHandler(e);

@@ -7,14 +7,7 @@
  */
 
 import {ViewportScroller} from '@angular/common';
-import {
-  EnvironmentInjector,
-  inject,
-  Injectable,
-  InjectionToken,
-  NgZone,
-  OnDestroy,
-} from '@angular/core';
+import {Injectable, InjectionToken, NgZone, OnDestroy} from '@angular/core';
 import {Unsubscribable} from 'rxjs';
 
 import {
@@ -101,7 +94,10 @@ export class RouterScroller implements OnDestroy {
       } else {
         if (e.anchor && this.options.anchorScrolling === 'enabled') {
           this.viewportScroller.scrollToAnchor(e.anchor);
-        } else if (this.options.scrollPositionRestoration !== 'disabled') {
+        } else if (
+          this.options.scrollPositionRestoration !== 'disabled' &&
+          !e.isScrollToTopDisabled
+        ) {
           this.viewportScroller.scrollToPosition([0, 0]);
         }
       }
@@ -112,6 +108,9 @@ export class RouterScroller implements OnDestroy {
     routerEvent: NavigationEnd | NavigationSkipped,
     anchor: string | null,
   ): void {
+    const isScrollToTopDisabled =
+      this.transitions.currentTransition?.extras?.disableScrollToTop === true;
+
     this.zone.runOutsideAngular(async () => {
       // The scroll event needs to be delayed until after change detection. Otherwise, we may
       // attempt to restore the scroll position before the router outlet has fully rendered the
@@ -133,6 +132,7 @@ export class RouterScroller implements OnDestroy {
             routerEvent,
             this.lastSource === 'popstate' ? this.store[this.restoredId] : null,
             anchor,
+            isScrollToTopDisabled,
           ),
         );
       });

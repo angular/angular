@@ -6,14 +6,18 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {TestBed, fakeAsync, tick} from '@angular/core/testing';
+import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {DefaultUrlSerializer, Event, NavigationEnd, NavigationStart} from '@angular/router';
 import {Subject} from 'rxjs';
 import {filter, switchMap, take} from 'rxjs/operators';
 
-import {Scroll} from '../src/events';
+import {BeforeActivateRoutes, RedirectRequest, Scroll} from '../src/events';
 import {RouterScroller} from '../src/router_scroller';
-import {ApplicationRef, ɵNoopNgZone as NoopNgZone} from '@angular/core';
+import {ɵNoopNgZone as NoopNgZone} from '@angular/core';
+import {
+  NavigationTransition,
+  NavigationTransitions,
+} from '@angular/router/src/navigation_transition';
 
 // TODO: add tests that exercise the `withInMemoryScrolling` feature of the provideRouter function
 describe('RouterScroller', () => {
@@ -40,7 +44,9 @@ describe('RouterScroller', () => {
     expect((scroller as any).options.anchorScrolling).toBe('disabled');
   });
 
-  function nextScrollEvent(events: Subject<Event>): Promise<Scroll> {
+  function nextScrollEvent(
+    events: Subject<Event | BeforeActivateRoutes | RedirectRequest>,
+  ): Promise<Scroll> {
     return events
       .pipe(
         filter((e): e is Scroll => e instanceof Scroll),
@@ -50,11 +56,12 @@ describe('RouterScroller', () => {
   }
 
   describe('scroll to top', () => {
-    it('should scroll to the top', async () => {
-      const {events, viewportScroller} = createRouterScroller({
+    it('should scroll to the top (scrollPositionRestoration is top)', async () => {
+      const {transitions, viewportScroller} = createRouterScroller({
         scrollPositionRestoration: 'top',
         anchorScrolling: 'disabled',
       });
+      const {events} = transitions;
 
       events.next(new NavigationStart(1, '/a'));
       events.next(new NavigationEnd(1, '/a', '/a'));
@@ -71,14 +78,112 @@ describe('RouterScroller', () => {
       await nextScrollEvent(events);
       expect(viewportScroller.scrollToPosition).toHaveBeenCalledWith([0, 0]);
     });
+
+    it('should not scroll to the top (scrollPositionRestoration is top) on forward navigation when disableScrollToTop is true', async () => {
+      const {transitions, viewportScroller} = createRouterScroller({
+        scrollPositionRestoration: 'top',
+        anchorScrolling: 'disabled',
+      });
+      const {events} = transitions;
+      transitions.currentTransition = {extras: {disableScrollToTop: true}} as NavigationTransition;
+
+      events.next(new NavigationStart(1, '/a'));
+      events.next(new NavigationEnd(1, '/a', '/a'));
+      await nextScrollEvent(events);
+      expect(viewportScroller.scrollToPosition).toHaveBeenCalledTimes(0);
+
+      events.next(new NavigationStart(2, '/a'));
+      events.next(new NavigationEnd(2, '/b', '/b'));
+      await nextScrollEvent(events);
+      expect(viewportScroller.scrollToPosition).toHaveBeenCalledTimes(0);
+
+      events.next(new NavigationStart(3, '/a', 'popstate'));
+      events.next(new NavigationEnd(3, '/a', '/a'));
+      await nextScrollEvent(events);
+      expect(viewportScroller.scrollToPosition).toHaveBeenCalledWith([0, 0]);
+    });
+
+    it('should scroll to the top (scrollPositionRestoration is enabled)', async () => {
+      const {transitions, viewportScroller} = createRouterScroller({
+        scrollPositionRestoration: 'enabled',
+        anchorScrolling: 'disabled',
+      });
+      const {events} = transitions;
+
+      events.next(new NavigationStart(1, '/a'));
+      events.next(new NavigationEnd(1, '/a', '/a'));
+      await nextScrollEvent(events);
+      expect(viewportScroller.scrollToPosition).toHaveBeenCalledWith([0, 0]);
+
+      events.next(new NavigationStart(2, '/a'));
+      events.next(new NavigationEnd(2, '/b', '/b'));
+      await nextScrollEvent(events);
+      expect(viewportScroller.scrollToPosition).toHaveBeenCalledWith([0, 0]);
+
+      events.next(new NavigationStart(3, '/a', 'popstate'));
+      events.next(new NavigationEnd(3, '/a', '/a'));
+      await nextScrollEvent(events);
+      expect(viewportScroller.scrollToPosition).toHaveBeenCalledWith([0, 0]);
+    });
+
+    it('should not scroll to the top (scrollPositionRestoration is enabled) on forward navigation when disableScrollToTop is true', async () => {
+      const {transitions, viewportScroller} = createRouterScroller({
+        scrollPositionRestoration: 'enabled',
+        anchorScrolling: 'disabled',
+      });
+      const {events} = transitions;
+      transitions.currentTransition = {extras: {disableScrollToTop: true}} as NavigationTransition;
+
+      events.next(new NavigationStart(1, '/a'));
+      events.next(new NavigationEnd(1, '/a', '/a'));
+      await nextScrollEvent(events);
+      expect(viewportScroller.scrollToPosition).toHaveBeenCalledTimes(0);
+
+      events.next(new NavigationStart(2, '/a'));
+      events.next(new NavigationEnd(2, '/b', '/b'));
+      await nextScrollEvent(events);
+      expect(viewportScroller.scrollToPosition).toHaveBeenCalledTimes(0);
+
+      events.next(new NavigationStart(3, '/a', 'popstate'));
+      events.next(new NavigationEnd(3, '/a', '/a'));
+      await nextScrollEvent(events);
+      expect(viewportScroller.scrollToPosition).toHaveBeenCalledWith([0, 0]);
+    });
   });
 
   describe('scroll to the stored position', () => {
     it('should scroll to the stored position on popstate', async () => {
-      const {events, viewportScroller} = createRouterScroller({
+      const {transitions, viewportScroller} = createRouterScroller({
         scrollPositionRestoration: 'enabled',
         anchorScrolling: 'disabled',
       });
+      const {events} = transitions;
+
+      events.next(new NavigationStart(1, '/a'));
+      events.next(new NavigationEnd(1, '/a', '/a'));
+      await nextScrollEvent(events);
+      setScroll(viewportScroller, 10, 100);
+      expect(viewportScroller.scrollToPosition).toHaveBeenCalledWith([0, 0]);
+
+      events.next(new NavigationStart(2, '/b'));
+      events.next(new NavigationEnd(2, '/b', '/b'));
+      await nextScrollEvent(events);
+      setScroll(viewportScroller, 20, 200);
+      expect(viewportScroller.scrollToPosition).toHaveBeenCalledWith([0, 0]);
+
+      events.next(new NavigationStart(3, '/a', 'popstate', {navigationId: 1}));
+      events.next(new NavigationEnd(3, '/a', '/a'));
+      await nextScrollEvent(events);
+      expect(viewportScroller.scrollToPosition).toHaveBeenCalledWith([10, 100]);
+    });
+
+    it('should scroll to the stored position on popstate when disableScrollToTop is true', async () => {
+      const {transitions, viewportScroller} = createRouterScroller({
+        scrollPositionRestoration: 'enabled',
+        anchorScrolling: 'disabled',
+      });
+      const {events} = transitions;
+      transitions.currentTransition = {extras: {disableScrollToTop: true}} as NavigationTransition;
 
       events.next(new NavigationStart(1, '/a'));
       events.next(new NavigationEnd(1, '/a', '/a'));
@@ -101,10 +206,39 @@ describe('RouterScroller', () => {
 
   describe('anchor scrolling', () => {
     it('should work (scrollPositionRestoration is disabled)', async () => {
-      const {events, viewportScroller} = createRouterScroller({
+      const {transitions, viewportScroller} = createRouterScroller({
         scrollPositionRestoration: 'disabled',
         anchorScrolling: 'enabled',
       });
+      const {events} = transitions;
+
+      events.next(new NavigationStart(1, '/a#anchor'));
+      events.next(new NavigationEnd(1, '/a#anchor', '/a#anchor'));
+      await nextScrollEvent(events);
+      expect(viewportScroller.scrollToAnchor).toHaveBeenCalledWith('anchor');
+
+      events.next(new NavigationStart(2, '/a#anchor2'));
+      events.next(new NavigationEnd(2, '/a#anchor2', '/a#anchor2'));
+      await nextScrollEvent(events);
+      expect(viewportScroller.scrollToAnchor).toHaveBeenCalledWith('anchor2');
+      viewportScroller.scrollToAnchor.calls.reset();
+
+      // we never scroll to anchor when navigating back.
+      events.next(new NavigationStart(3, '/a#anchor', 'popstate'));
+      events.next(new NavigationEnd(3, '/a#anchor', '/a#anchor'));
+      await nextScrollEvent(events);
+      expect(viewportScroller.scrollToAnchor).not.toHaveBeenCalled();
+      expect(viewportScroller.scrollToPosition).not.toHaveBeenCalled();
+    });
+
+    it('should work (scrollPositionRestoration is disabled and disableScrollToTop is true)', async () => {
+      const {transitions, viewportScroller} = createRouterScroller({
+        scrollPositionRestoration: 'disabled',
+        anchorScrolling: 'enabled',
+      });
+      const {events} = transitions;
+      transitions.currentTransition = {extras: {disableScrollToTop: true}} as NavigationTransition;
+
       events.next(new NavigationStart(1, '/a#anchor'));
       events.next(new NavigationEnd(1, '/a#anchor', '/a#anchor'));
       await nextScrollEvent(events);
@@ -125,10 +259,39 @@ describe('RouterScroller', () => {
     });
 
     it('should work (scrollPositionRestoration is enabled)', async () => {
-      const {events, viewportScroller} = createRouterScroller({
+      const {transitions, viewportScroller} = createRouterScroller({
         scrollPositionRestoration: 'enabled',
         anchorScrolling: 'enabled',
       });
+      const {events} = transitions;
+
+      events.next(new NavigationStart(1, '/a#anchor'));
+      events.next(new NavigationEnd(1, '/a#anchor', '/a#anchor'));
+      await nextScrollEvent(events);
+      expect(viewportScroller.scrollToAnchor).toHaveBeenCalledWith('anchor');
+
+      events.next(new NavigationStart(2, '/a#anchor2'));
+      events.next(new NavigationEnd(2, '/a#anchor2', '/a#anchor2'));
+      await nextScrollEvent(events);
+      expect(viewportScroller.scrollToAnchor).toHaveBeenCalledWith('anchor2');
+      viewportScroller.scrollToAnchor.calls.reset();
+
+      // we never scroll to anchor when navigating back
+      events.next(new NavigationStart(3, '/a#anchor', 'popstate', {navigationId: 1}));
+      events.next(new NavigationEnd(3, '/a#anchor', '/a#anchor'));
+      await nextScrollEvent(events);
+      expect(viewportScroller.scrollToAnchor).not.toHaveBeenCalled();
+      expect(viewportScroller.scrollToPosition).toHaveBeenCalledWith([0, 0]);
+    });
+
+    it('should work (scrollPositionRestoration is enabled and disableScrollToTop is true)', async () => {
+      const {transitions, viewportScroller} = createRouterScroller({
+        scrollPositionRestoration: 'enabled',
+        anchorScrolling: 'enabled',
+      });
+      const {events} = transitions;
+      transitions.currentTransition = {extras: {disableScrollToTop: true}} as NavigationTransition;
+
       events.next(new NavigationStart(1, '/a#anchor'));
       events.next(new NavigationEnd(1, '/a#anchor', '/a#anchor'));
       await nextScrollEvent(events);
@@ -151,10 +314,11 @@ describe('RouterScroller', () => {
 
   describe('extending a scroll service', () => {
     it('work', fakeAsync(() => {
-      const {events, viewportScroller} = createRouterScroller({
+      const {transitions, viewportScroller} = createRouterScroller({
         scrollPositionRestoration: 'disabled',
         anchorScrolling: 'disabled',
       });
+      const {events} = transitions;
 
       events
         .pipe(
@@ -209,8 +373,13 @@ describe('RouterScroller', () => {
     scrollPositionRestoration: 'disabled' | 'enabled' | 'top';
     anchorScrolling: 'disabled' | 'enabled';
   }) {
-    const events = new Subject<Event>();
-    const transitions: any = {events};
+    const transitions: {
+      events: Subject<Event | BeforeActivateRoutes | RedirectRequest>;
+      currentTransition: NavigationTransition | null;
+    } = {
+      events: new Subject(),
+      currentTransition: null,
+    };
 
     const viewportScroller = jasmine.createSpyObj('viewportScroller', [
       'getScrollPosition',
@@ -224,7 +393,7 @@ describe('RouterScroller', () => {
       () =>
         new RouterScroller(
           new DefaultUrlSerializer(),
-          transitions,
+          transitions as NavigationTransitions,
           viewportScroller,
           new NoopNgZone(),
           {scrollPositionRestoration, anchorScrolling},
@@ -232,7 +401,7 @@ describe('RouterScroller', () => {
     );
     scroller.init();
 
-    return {events, viewportScroller};
+    return {transitions, viewportScroller};
   }
 
   function setScroll(viewportScroller: any, x: number, y: number) {
