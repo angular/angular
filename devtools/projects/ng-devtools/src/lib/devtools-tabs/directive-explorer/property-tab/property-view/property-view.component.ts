@@ -26,13 +26,20 @@ export class PropertyViewComponent {
 
   private _nestedProps = inject(ElementPropertyResolver);
 
-  readonly controller = computed(() =>
+  protected readonly controller = computed(() =>
     this._nestedProps.getDirectiveController(this.directive().name),
   );
 
-  readonly directiveInputControls = computed(() => this.controller()?.directiveInputControls);
-
-  readonly directiveOutputControls = computed(() => this.controller()?.directiveOutputControls);
-
-  readonly directiveStateControls = computed(() => this.controller()?.directiveStateControls);
+  protected readonly directiveInputControls = computed(
+    () => this.controller()?.directiveInputControls,
+  );
+  protected readonly directivePropControls = computed(
+    () => this.controller()?.directivePropControls,
+  );
+  protected readonly directiveOutputControls = computed(
+    () => this.controller()?.directiveOutputControls,
+  );
+  protected readonly directiveStateControls = computed(
+    () => this.controller()?.directiveStateControls,
+  );
 }
