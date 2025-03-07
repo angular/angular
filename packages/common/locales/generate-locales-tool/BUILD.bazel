@@ -11,6 +11,6 @@ ts_library(
         "@npm//@types/node",
         "@npm//cldr",
         "@npm//cldrjs",
-        "@npm//fast-glob",
+        "@npm//tinyglobby",
     ],
 )

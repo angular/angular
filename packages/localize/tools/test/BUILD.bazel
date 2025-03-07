@@ -20,7 +20,7 @@ ts_library(
         "//packages/localize/tools/test/helpers",
         "@npm//@babel/generator",
         "@npm//@types/babel__generator",
-        "@npm//fast-glob",
+        "@npm//tinyglobby",
     ],
 )
 
@@ -29,6 +29,6 @@ jasmine_node_test(
     bootstrap = ["//tools/testing:node_no_angular"],
     deps = [
         ":test_lib",
-        "@npm//fast-glob",
+        "@npm//tinyglobby",
     ],
 )

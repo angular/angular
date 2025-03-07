@@ -17,7 +17,7 @@
     "@webcontainer/api": "^1.1.8",
     "diff": "~7.0.0",
     "emoji-regex": "~10.4.0",
-    "fast-glob": "~3.3.2",
+    "tinyglobby": "~3.3.2",
     "fflate": "^0.8.2",
     "html-entities": "~2.5.2",
     "jsdom": "~26.0.0",

@@ -10,7 +10,7 @@ import {join} from 'path';
 import {readFile} from 'fs/promises';
 import {copyFolder, createFolder, removeFolder} from '../shared/file-system';
 import jsdom from 'jsdom';
-import {glob} from 'fast-glob';
+import {glob} from 'tinyglobby';
 import {regionParser} from '../../guides/extensions/docs-code/regions/region-parser';
 import {appendCopyrightToFile} from '../shared/copyright';
 import {FileType} from '../../guides/extensions/docs-code/sanitizers/eslint';

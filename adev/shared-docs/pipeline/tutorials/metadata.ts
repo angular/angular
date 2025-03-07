@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {join, dirname} from 'path';
-import {glob} from 'fast-glob';
+import {join} from 'path';
+import {glob} from 'tinyglobby';
 import {
   FileAndContentRecord,
   PackageJson,
