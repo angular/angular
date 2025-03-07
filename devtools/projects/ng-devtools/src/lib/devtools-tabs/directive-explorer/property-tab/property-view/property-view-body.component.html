@@ -1,7 +1,7 @@
 @if (controlsLoaded()) {
   <mat-accordion cdkDropList (cdkDropListDropped)="drop($event)" [multi]="true">
-    @let dependencies = controller().directiveMetadata?.dependencies;
-    @if (dependencies && dependencies.length > 0) {
+    @let deps = dependencies();
+    @if (deps && deps.length > 0) {
       <div class="mat-accordion-content">
         <mat-expansion-panel [expanded]="true">
           <mat-expansion-panel-header collapsedHeight="25px" expandedHeight="25px">

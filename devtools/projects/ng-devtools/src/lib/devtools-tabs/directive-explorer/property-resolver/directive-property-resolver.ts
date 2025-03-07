@@ -7,7 +7,6 @@
  */
 
 import {FlatTreeControl} from '@angular/cdk/tree';
-import {ViewEncapsulation} from '@angular/core';
 import {
   Descriptor,
   DirectiveMetadata,
@@ -59,6 +58,7 @@ export class DirectivePropertyResolver {
   );
 
   private _inputsDataSource: PropertyDataSource;
+  private _propsDataSource: PropertyDataSource;
   private _outputsDataSource: PropertyDataSource;
   private _stateDataSource: PropertyDataSource;
 
@@ -67,15 +67,20 @@ export class DirectivePropertyResolver {
     private _props: Properties,
     private _directivePosition: DirectivePosition,
   ) {
-    const {inputs, outputs, state} = this._classifyProperties();
+    const {inputs, props, outputs, state} = this._classifyProperties();
 
     this._inputsDataSource = this._createDataSourceFromProps(inputs);
+    this._propsDataSource = this._createDataSourceFromProps(props);
     this._outputsDataSource = this._createDataSourceFromProps(outputs);
     this._stateDataSource = this._createDataSourceFromProps(state);
   }
 
   get directiveInputControls(): DirectiveTreeData {
     return getDirectiveControls(this._inputsDataSource);
+  }
+
+  get directivePropControls(): DirectiveTreeData {
+    return getDirectiveControls(this._propsDataSource);
   }
 
   get directiveOutputControls(): DirectiveTreeData {
@@ -98,17 +103,10 @@ export class DirectivePropertyResolver {
     return this._directivePosition;
   }
 
-  get directiveViewEncapsulation(): ViewEncapsulation | undefined {
-    return this._props.metadata?.encapsulation;
-  }
-
-  get directiveHasOnPushStrategy(): boolean | undefined {
-    return this._props.metadata?.onPush;
-  }
-
   getExpandedProperties(): NestedProp[] {
     return [
       ...getExpandedDirectiveProperties(this._inputsDataSource.data),
+      ...getExpandedDirectiveProperties(this._propsDataSource.data),
       ...getExpandedDirectiveProperties(this._outputsDataSource.data),
       ...getExpandedDirectiveProperties(this._stateDataSource.data),
     ];
@@ -116,9 +114,10 @@ export class DirectivePropertyResolver {
 
   updateProperties(newProps: Properties): void {
     this._props = newProps;
-    const {inputs, outputs, state} = this._classifyProperties();
+    const {inputs, props, outputs, state} = this._classifyProperties();
 
     this._inputsDataSource.update(inputs);
+    this._propsDataSource.update(props);
     this._outputsDataSource.update(outputs);
     this._stateDataSource.update(state);
   }
@@ -142,28 +141,44 @@ export class DirectivePropertyResolver {
 
   private _classifyProperties(): {
     inputs: {[name: string]: Descriptor};
+    props: {[name: string]: Descriptor};
     outputs: {[name: string]: Descriptor};
     state: {[name: string]: Descriptor};
   } {
-    const inputLabels: Set<string> = new Set(Object.values(this._props.metadata?.inputs || {}));
-    const outputLabels: Set<string> = new Set(Object.values(this._props.metadata?.outputs || {}));
+    const metadata = this._props.metadata;
+    if (!metadata) {
+      return {
+        inputs: {},
+        props: {},
+        outputs: {},
+        state: this.directiveProperties,
+      };
+    }
 
-    const inputs = {};
-    const outputs = {};
-    const state = {};
-    let propPointer: {[name: string]: Descriptor};
+    const inputLabels = new Set('inputs' in metadata ? Object.values(metadata.inputs) : []);
+    const propLabels = new Set('props' in metadata ? Object.values(metadata.props) : []);
+    const outputLabels = new Set('outputs' in metadata ? Object.values(metadata.outputs) : []);
 
-    Object.keys(this.directiveProperties).forEach((propName) => {
-      propPointer = inputLabels.has(propName)
-        ? inputs
-        : outputLabels.has(propName)
-          ? outputs
-          : state;
-      propPointer[propName] = this.directiveProperties[propName];
-    });
+    const inputs: {[name: string]: Descriptor} = {};
+    const props: {[name: string]: Descriptor} = {};
+    const outputs: {[name: string]: Descriptor} = {};
+    const state: {[name: string]: Descriptor} = {};
+
+    for (const [propName, value] of Object.entries(this.directiveProperties)) {
+      if (inputLabels.has(propName)) {
+        inputs[propName] = value;
+      } else if (propLabels.has(propName)) {
+        props[propName] = value;
+      } else if (outputLabels.has(propName)) {
+        outputs[propName] = value;
+      } else {
+        state[propName] = value;
+      }
+    }
 
     return {
       inputs,
+      props,
       outputs,
       state,
     };
