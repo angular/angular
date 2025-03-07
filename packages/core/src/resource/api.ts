@@ -59,7 +59,7 @@ export interface Resource<T> {
   /**
    * When in the `error` state, this returns the last known error from the `Resource`.
    */
-  readonly error: Signal<unknown>;
+  readonly error: Signal<Error | undefined>;
 
   /**
    * Whether this resource is loading a new value (or reloading the existing one).
@@ -225,4 +225,4 @@ export type ResourceOptions<T, R> = PromiseResourceOptions<T, R> | StreamingReso
 /**
  * @experimental
  */
-export type ResourceStreamItem<T> = {value: T} | {error: unknown};
+export type ResourceStreamItem<T> = {value: T} | {error: Error};

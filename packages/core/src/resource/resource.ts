@@ -98,7 +98,8 @@ type WrappedRequest = {request: unknown; reload: number};
 abstract class BaseWritableResource<T> implements WritableResource<T> {
   readonly value: WritableSignal<T>;
   abstract readonly status: Signal<ResourceStatus>;
-  abstract readonly error: Signal<unknown>;
+  abstract readonly error: Signal<Error | undefined>;
+
   abstract reload(): boolean;
 
   constructor(value: Signal<T>) {
@@ -343,7 +344,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
         extRequest,
         status: 'resolved',
         previousStatus: 'error',
-        stream: signal({error: err}),
+        stream: signal({error: encapsulateResourceError(err)}),
       });
     } finally {
       // Resolve the pending task now that the resource has a value.
@@ -378,7 +379,7 @@ function getLoader<T, R>(options: ResourceOptions<T, R>): ResourceStreamingLoade
     try {
       return signal({value: await options.loader(params)});
     } catch (err) {
-      return signal({error: err});
+      return signal({error: encapsulateResourceError(err)});
     }
   };
 }
@@ -405,4 +406,12 @@ function projectStatusOfState(state: ResourceState<unknown>): ResourceStatus {
 
 function isResolved<T>(state: ResourceStreamItem<T>): state is {value: T} {
   return (state as {error: unknown}).error === undefined;
+}
+
+export function encapsulateResourceError(error: unknown): Error {
+  if (error instanceof Error) {
+    return error;
+  }
+
+  return new Error('Unknown error', {cause: error});
 }

@@ -1598,7 +1598,7 @@ export function resolveForwardRef<T>(type: T): T;
 
 // @public
 export interface Resource<T> {
-    readonly error: Signal<unknown>;
+    readonly error: Signal<Error | undefined>;
     hasValue(): this is Resource<Exclude<T, undefined>>;
     readonly isLoading: Signal<boolean>;
     readonly status: Signal<ResourceStatus>;
@@ -1648,7 +1648,7 @@ export type ResourceStreamingLoader<T, R> = (param: ResourceLoaderParams<R>) => 
 export type ResourceStreamItem<T> = {
     value: T;
 } | {
-    error: unknown;
+    error: Error;
 };
 
 // @public
