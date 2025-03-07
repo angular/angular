@@ -6,8 +6,6 @@
 
 import { EnvironmentProviders as EnvironmentProviders_2 } from '@angular/core';
 import { Observable } from 'rxjs';
-import { SIGNAL } from '@angular/core/primitives/signals';
-import { SignalNode } from '@angular/core/primitives/signals';
 import { Subject } from 'rxjs';
 import { Subscription } from 'rxjs';
 
@@ -1045,7 +1043,7 @@ export interface InputSignalWithTransform<T, TransformT> extends Signal<T> {
     // (undocumented)
     [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: TransformT;
     // (undocumented)
-    [SIGNAL]: ɵInputSignalNode<T, TransformT>;
+    [ɵSIGNAL]: ɵInputSignalNode<T, TransformT>;
 }
 
 // @public
@@ -1212,7 +1210,7 @@ export interface ModelOptions {
 // @public
 export interface ModelSignal<T> extends WritableSignal<T>, InputSignal<T>, OutputRef<T> {
     // (undocumented)
-    [SIGNAL]: ɵInputSignalNode<T, T>;
+    [ɵSIGNAL]: ɵInputSignalNode<T, T>;
 }
 
 // @public @deprecated
@@ -1728,7 +1726,7 @@ export function setTestabilityGetter(getter: GetTestability): void;
 
 // @public
 export type Signal<T> = (() => T) & {
-    [SIGNAL]: unknown;
+    [ɵSIGNAL]: unknown;
 };
 
 // @public
