@@ -1257,7 +1257,8 @@ export class NgCompiler {
   }
 
   private makeCompilation(): LazyCompilationState {
-    const isCore = isAngularCorePackage(this.inputProgram);
+    const isCore =
+      this.options._isAngularCoreCompilation ?? isAngularCorePackage(this.inputProgram);
 
     // Note: If this compilation builds `@angular/core`, we always build in full compilation
     // mode. Code inside the core package is always compatible with itself, so it does not
