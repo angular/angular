@@ -11,8 +11,11 @@ index.d.ts
 package.json
 portal
   portal/index.d.ts
+  portal/portal-module.d.ts
+  portal/portal.d.ts
 utils
   utils/index.d.ts
+  utils/testing.d.ts
 --- LICENSE ---
 
 The MIT License
@@ -109,16 +112,13 @@ export { dispatchFakeEvent };
 --- index.d.ts ---
 
 /**
- * @license Angular v0.0.0
- * (c) 2010-2025 Google LLC. https://angular.io/
- * License: MIT
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
  */
-
-
-
 export declare const VERSION = "0.0.0";
-
-export { }
 
 
 --- package.json ---
@@ -139,7 +139,7 @@ export { }
       "default": "./fesm2022/example-with-ts-library.mjs"
     },
     "./portal": {
-      "types": "./portal/index.d.ts",
+      "types": "./portal/portal.d.ts",
       "default": "./fesm2022/portal.mjs"
     },
     "./utils": {
@@ -152,36 +152,54 @@ export { }
 --- portal/index.d.ts ---
 
 /**
- * @license Angular v0.0.0
- * (c) 2010-2025 Google LLC. https://angular.io/
- * License: MIT
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
  */
+export * from './portal-module';
 
 
-import * as i0 from '@angular/core';
+--- portal/portal-module.d.ts ---
 
-export declare const a = 1;
-
+import * as i0 from "@angular/core";
 export declare class PortalModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<PortalModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<PortalModule, never, never, never>;
     static ɵinj: i0.ɵɵInjectorDeclaration<PortalModule>;
 }
+export declare const a = 1;
 
-export { }
+
+--- portal/portal.d.ts ---
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+export * from './index';
 
 
 --- utils/index.d.ts ---
 
 /**
- * @license Angular v0.0.0
- * (c) 2010-2025 Google LLC. https://angular.io/
- * License: MIT
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
  */
+export * from './testing';
 
 
+--- utils/testing.d.ts ---
 
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
 export declare function dispatchFakeEvent(el: HTMLElement, ev: Event): void;
-
-export { }
 
