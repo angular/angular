@@ -29,4 +29,5 @@ export enum ExtendedTemplateDiagnosticName {
   CONTROL_FLOW_PREVENTING_CONTENT_PROJECTION = 'controlFlowPreventingContentProjection',
   UNUSED_LET_DECLARATION = 'unusedLetDeclaration',
   UNUSED_STANDALONE_IMPORTS = 'unusedStandaloneImports',
+  UNPARENTHESIZED_NULLISH_COALESCING = 'unparenthesizedNullishCoalescing',
 }
