@@ -98,7 +98,8 @@ type WrappedRequest = {request: unknown; reload: number};
 abstract class BaseWritableResource<T> implements WritableResource<T> {
   readonly value: WritableSignal<T>;
   abstract readonly status: Signal<ResourceStatus>;
-  abstract readonly error: Signal<unknown>;
+  abstract readonly error: Signal<Error | undefined>;
+
   abstract reload(): boolean;
 
   constructor(value: Signal<T>) {
@@ -220,7 +221,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
 
   override readonly error = computed(() => {
     const stream = this.state().stream?.();
-    return stream && !isResolved(stream) ? stream.error : undefined;
+    return stream && !isResolved(stream) ? encapsulateError(stream.error) : undefined;
   });
 
   /**
@@ -409,4 +410,18 @@ function projectStatusOfState(state: ResourceState<unknown>): ResourceStatus {
 
 function isResolved<T>(state: ResourceStreamItem<T>): state is {value: T} {
   return (state as {error: unknown}).error === undefined;
+}
+
+function encapsulateError(error: unknown): Error {
+  if (error instanceof Error) {
+    return error;
+  }
+
+  return new UnknownError(error);
+}
+
+export class UnknownError<T extends unknown> extends Error {
+  constructor(public readonly value: T) {
+    super(`Unknown error: ${value}`);
+  }
 }
