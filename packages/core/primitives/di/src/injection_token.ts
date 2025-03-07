@@ -49,6 +49,6 @@ export interface ɵɵInjectableDeclaration<T> {
  *
  * @publicApi
  */
-export interface InjectionToken<T> extends Type<T> {
+export interface InjectionToken<T> {
   ɵprov: ɵɵInjectableDeclaration<T>;
 }
