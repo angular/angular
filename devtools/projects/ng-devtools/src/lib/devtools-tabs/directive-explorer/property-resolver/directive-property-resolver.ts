@@ -67,11 +67,11 @@ export class DirectivePropertyResolver {
     private _props: Properties,
     private _directivePosition: DirectivePosition,
   ) {
-    const {inputProps, outputProps, stateProps} = this._classifyProperties();
+    const {inputs, outputs, state} = this._classifyProperties();
 
-    this._inputsDataSource = this._createDataSourceFromProps(inputProps);
-    this._outputsDataSource = this._createDataSourceFromProps(outputProps);
-    this._stateDataSource = this._createDataSourceFromProps(stateProps);
+    this._inputsDataSource = this._createDataSourceFromProps(inputs);
+    this._outputsDataSource = this._createDataSourceFromProps(outputs);
+    this._stateDataSource = this._createDataSourceFromProps(state);
   }
 
   get directiveInputControls(): DirectiveTreeData {
@@ -116,11 +116,11 @@ export class DirectivePropertyResolver {
 
   updateProperties(newProps: Properties): void {
     this._props = newProps;
-    const {inputProps, outputProps, stateProps} = this._classifyProperties();
+    const {inputs, outputs, state} = this._classifyProperties();
 
-    this._inputsDataSource.update(inputProps);
-    this._outputsDataSource.update(outputProps);
-    this._stateDataSource.update(stateProps);
+    this._inputsDataSource.update(inputs);
+    this._outputsDataSource.update(outputs);
+    this._stateDataSource.update(state);
   }
 
   updateValue(node: FlatNode, newValue: unknown): void {
@@ -141,31 +141,31 @@ export class DirectivePropertyResolver {
   }
 
   private _classifyProperties(): {
-    inputProps: {[name: string]: Descriptor};
-    outputProps: {[name: string]: Descriptor};
-    stateProps: {[name: string]: Descriptor};
+    inputs: {[name: string]: Descriptor};
+    outputs: {[name: string]: Descriptor};
+    state: {[name: string]: Descriptor};
   } {
     const inputLabels: Set<string> = new Set(Object.values(this._props.metadata?.inputs || {}));
     const outputLabels: Set<string> = new Set(Object.values(this._props.metadata?.outputs || {}));
 
-    const inputProps = {};
-    const outputProps = {};
-    const stateProps = {};
+    const inputs = {};
+    const outputs = {};
+    const state = {};
     let propPointer: {[name: string]: Descriptor};
 
     Object.keys(this.directiveProperties).forEach((propName) => {
       propPointer = inputLabels.has(propName)
-        ? inputProps
+        ? inputs
         : outputLabels.has(propName)
-          ? outputProps
-          : stateProps;
+          ? outputs
+          : state;
       propPointer[propName] = this.directiveProperties[propName];
     });
 
     return {
-      inputProps,
-      outputProps,
-      stateProps,
+      inputs,
+      outputs,
+      state,
     };
   }
 }
