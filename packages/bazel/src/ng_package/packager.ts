@@ -8,7 +8,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import fastGlob from 'fast-glob';
+import {globSync} from 'tinyglobby';
 
 import {BazelFileInfo, PackageMetadata} from './api';
 import {analyzeFileAndEnsureNoCrossImports} from './cross_entry_points_imports';
@@ -173,7 +173,7 @@ function main(args: string[]): void {
     process.exit(1);
   }
 
-  const fesmFiles = fastGlob.sync('**/*', {cwd: metadata.bundlesOut.path});
+  const fesmFiles = globSync('**/*', {cwd: metadata.bundlesOut.path});
   // Copy all FESM files (and their potential shared chunks) into the package output.
   fesmFiles.forEach((f) => copyFile(path.join(metadata.bundlesOut.path, f), f));
 

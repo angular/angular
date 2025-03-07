@@ -24,8 +24,8 @@
   "dependencies": {
     "@microsoft/api-extractor": "^7.24.2",
     "magic-string": "^0.30.0",
-    "tslib": "^2.3.0",
-    "fast-glob": "^3.3.3"
+    "tinyglobby": "^0.2.12",
+    "tslib": "^2.3.0"
   },
   "peerDependencies": {
     "@angular/compiler-cli": "0.0.0-PLACEHOLDER",

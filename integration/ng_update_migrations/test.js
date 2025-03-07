@@ -9,14 +9,14 @@
 const path = require('path');
 const fs = require('fs');
 const child_process = require('child_process');
-const glob = require('fast-glob');
+const {globSync} = require('tinyglobby');
 const chalk = require('chalk');
 const diff = require('diff');
 
 const projectDir = __dirname;
 const cliBinPath = path.join(projectDir, 'node_modules/@angular/cli/bin/ng');
 
-const expectationFiles = glob.sync('**/*_expected.+(ts|html)', {cwd: projectDir});
+const expectationFiles = globSync('**/*_expected.+(ts|html)', {cwd: projectDir});
 
 const fromVersion = '12.0.0';
 const toVersion = '13.0.0';

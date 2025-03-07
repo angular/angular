@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {glob} from 'fast-glob';
+import {glob} from 'tinyglobby';
 import {FileAndContentRecord, TutorialConfig} from '../../interfaces';
 import {dirname, join} from 'path';
 import {existsSync, readFileSync} from 'fs';

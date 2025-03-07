@@ -14,7 +14,7 @@ ts_library(
     tsconfig = ":tsconfig.json",
     deps = [
         "@npm//@types/node",
-        "@npm//fast-glob",
+        "@npm//tinyglobby",
         "@npm//typescript",
     ],
 )
