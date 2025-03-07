@@ -22,10 +22,9 @@ import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {PendingTasksInternal} from '../../pending_tasks';
 import {performanceMarkFeature} from '../../util/performance';
 import {NgZone} from '../../zone';
-import {InternalNgZoneOptions} from '../../zone/ng_zone';
+import {shouldTickOnMicrotaskEmpty, InternalNgZoneOptions} from '../../zone/ng_zone';
 
 import {
-  ChangeDetectionScheduler,
   ZONELESS_SCHEDULER_DISABLED,
   ZONELESS_ENABLED,
   SCHEDULE_IN_ROOT_ZONE,
@@ -36,7 +35,6 @@ import {ErrorHandler, INTERNAL_APPLICATION_ERROR_HANDLER} from '../../error_hand
 @Injectable({providedIn: 'root'})
 export class NgZoneChangeDetectionScheduler {
   private readonly zone = inject(NgZone);
-  private readonly changeDetectionScheduler = inject(ChangeDetectionScheduler);
   private readonly applicationRef = inject(ApplicationRef);
 
   private _onMicrotaskEmptySubscription?: Subscription;
@@ -48,10 +46,7 @@ export class NgZoneChangeDetectionScheduler {
 
     this._onMicrotaskEmptySubscription = this.zone.onMicrotaskEmpty.subscribe({
       next: () => {
-        // `onMicroTaskEmpty` can happen _during_ the zoneless scheduler change detection because
-        // zone.run(() => {}) will result in `checkStable` at the end of the `zone.run` closure
-        // and emit `onMicrotaskEmpty` synchronously if run coalsecing is false.
-        if (this.changeDetectionScheduler.runningTick) {
+        if (!shouldTickOnMicrotaskEmpty()) {
           return;
         }
         this.zone.run(() => {

@@ -7,6 +7,7 @@
  */
 
 import {SCHEDULE_IN_ROOT_ZONE_DEFAULT} from '../change_detection/scheduling/flags';
+import type {ApplicationRef} from '../application/application_ref';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {EventEmitter} from '../event_emitter';
 import {scheduleCallbackWithRafRace} from '../util/callback_scheduler';
@@ -540,6 +541,23 @@ function onEnter(zone: NgZonePrivate) {
 function onLeave(zone: NgZonePrivate) {
   zone._nesting--;
   checkStable(zone);
+}
+
+// Used to prevent double ApplicationRef.tick when calling `ngZone.run(() => applicationRef.tick())`
+let _tickOnMicrotaskEmpty = true;
+export function shouldTickOnMicrotaskEmpty() {
+  return _tickOnMicrotaskEmpty;
+}
+
+const schedulerTickApplyArgs = [{data: {'__scheduler_tick__': true}}];
+export function runTickInZoneAndPreventDuplicate(zone: NgZone, tickFn: () => void) {
+  const previous = _tickOnMicrotaskEmpty;
+  _tickOnMicrotaskEmpty = false;
+  try {
+    zone.run(tickFn, undefined, schedulerTickApplyArgs);
+  } finally {
+    _tickOnMicrotaskEmpty = previous;
+  }
 }
 
 /**
