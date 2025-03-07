@@ -137,7 +137,7 @@ export function runPostSignalSetFn(): void;
 // @public (undocumented)
 export function setActiveConsumer(consumer: ReactiveNode | null): ReactiveNode | null;
 
-// @public
+// @public (undocumented)
 export function setAlternateWeakRefImpl(impl: unknown): void;
 
 // @public (undocumented)
