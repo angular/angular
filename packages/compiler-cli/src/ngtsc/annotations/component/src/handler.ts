@@ -132,11 +132,11 @@ import {
   compileInputTransformFields,
   compileNgFactoryDefField,
   compileResults,
+  createForwardRefResolver,
   extractClassDebugInfo,
   extractClassMetadata,
   extractSchemas,
   findAngularDecorator,
-  forwardRefResolver,
   getDirectiveDiagnostics,
   getProviderDiagnostics,
   InjectableClassRegistry,
@@ -492,7 +492,13 @@ export class ComponentDecoratorHandler
     } = directiveResult;
     const encapsulation: number =
       (this.compilationMode !== CompilationMode.LOCAL
-        ? resolveEnumValue(this.evaluator, component, 'encapsulation', 'ViewEncapsulation')
+        ? resolveEnumValue(
+            this.evaluator,
+            component,
+            'encapsulation',
+            'ViewEncapsulation',
+            this.isCore,
+          )
         : resolveEncapsulationEnumValueLocally(component.get('encapsulation'))) ??
       ViewEncapsulation.Emulated;
 
@@ -503,6 +509,7 @@ export class ComponentDecoratorHandler
         component,
         'changeDetection',
         'ChangeDetectionStrategy',
+        this.isCore,
       );
     } else if (component.has('changeDetection')) {
       changeDetection = new o.WrappedNodeExpr(component.get('changeDetection')!);
@@ -597,7 +604,7 @@ export class ComponentDecoratorHandler
     ) {
       const importResolvers = combineResolvers([
         createModuleWithProvidersResolver(this.reflector, this.isCore),
-        forwardRefResolver,
+        createForwardRefResolver(this.isCore),
       ]);
 
       const importDiagnostics: ts.Diagnostic[] = [];

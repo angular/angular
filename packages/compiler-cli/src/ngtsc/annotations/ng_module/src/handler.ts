@@ -91,11 +91,11 @@ import {
   combineResolvers,
   compileDeclareFactory,
   compileNgFactoryDefField,
+  createForwardRefResolver,
   createValueHasWrongTypeError,
   extractClassMetadata,
   extractSchemas,
   findAngularDecorator,
-  forwardRefResolver,
   getProviderDiagnostics,
   getValidConstructorDependencies,
   InjectableClassRegistry,
@@ -348,6 +348,7 @@ export class NgModuleDecoratorHandler
       return {};
     }
 
+    const forwardRefResolver = createForwardRefResolver(this.isCore);
     const moduleResolvers = combineResolvers([
       createModuleWithProvidersResolver(this.reflector, this.isCore),
       forwardRefResolver,

@@ -22,12 +22,16 @@ export function resolveEnumValue(
   metadata: Map<string, ts.Expression>,
   field: string,
   enumSymbolName: string,
+  isCore: boolean,
 ): number | null {
   let resolved: number | null = null;
   if (metadata.has(field)) {
     const expr = metadata.get(field)!;
     const value = evaluator.evaluate(expr) as any;
-    if (value instanceof EnumValue && isAngularCoreReference(value.enumRef, enumSymbolName)) {
+    if (
+      value instanceof EnumValue &&
+      isAngularCoreReference(value.enumRef, enumSymbolName, isCore)
+    ) {
       resolved = value.resolved as number;
     } else {
       throw createValueHasWrongTypeError(

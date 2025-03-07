@@ -9,7 +9,7 @@
 /// <reference types="node" />
 
 export {
-  forwardRefResolver,
+  createForwardRefResolver,
   findAngularDecorator,
   getAngularDecorators,
   isAngularDecorator,
