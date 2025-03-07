@@ -25,6 +25,8 @@ import type {CompilationJob} from '../compilation';
  *    typescript AST, the parentheses node is removed, and then the remaining AST is printed, it
  *    incorrectly prints `a ? b : c ?? d`. This is different from how it handles the same situation
  *    with `||` and `&&` where it prints the parentheses even if they are not present in the AST.
+ *    Note: We may be able to remove this case if Typescript resolves the following issue:
+ *    https://github.com/microsoft/TypeScript/issues/61369
  */
 export function stripNonrequiredParentheses(job: CompilationJob): void {
   // Check which parentheses are required.
