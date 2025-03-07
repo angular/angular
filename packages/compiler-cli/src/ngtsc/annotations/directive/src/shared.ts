@@ -47,6 +47,7 @@ import {
 import {
   DynamicValue,
   EnumValue,
+  ForeignFunctionResolver,
   PartialEvaluator,
   ResolvedValue,
   traceDynamicValue,
@@ -65,9 +66,9 @@ import {
 import {CompilationMode} from '../../../transform';
 import {
   assertLocalCompilationUnresolvedConst,
+  createForwardRefResolver,
   createSourceSpan,
   createValueHasWrongTypeError,
-  forwardRefResolver,
   getAngularDecorators,
   getConstructorDependencies,
   isAngularDecorator,
@@ -373,7 +374,12 @@ export function extractDirectiveMetadata(
   const hostDirectives =
     rawHostDirectives === null
       ? null
-      : extractHostDirectives(rawHostDirectives, evaluator, compilationMode);
+      : extractHostDirectives(
+          rawHostDirectives,
+          evaluator,
+          compilationMode,
+          createForwardRefResolver(isCore),
+        );
 
   if (compilationMode !== CompilationMode.LOCAL && hostDirectives !== null) {
     // In global compilation mode where we do type checking, the template type-checker will need to
@@ -1672,6 +1678,7 @@ function extractHostDirectives(
   rawHostDirectives: ts.Expression,
   evaluator: PartialEvaluator,
   compilationMode: CompilationMode,
+  forwardRefResolver: ForeignFunctionResolver,
 ): HostDirectiveMeta[] {
   const resolved = evaluator.evaluate(rawHostDirectives, forwardRefResolver);
   if (!Array.isArray(resolved)) {

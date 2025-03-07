@@ -5,7 +5,6 @@
 """Run Angular's AOT template compiler
 """
 
-load("//packages/bazel/src/ng_module:partial_compilation.bzl", "NgPartialCompilationInfo")
 load(
     "//packages/bazel/src:external.bzl",
     "COMMON_ATTRIBUTES",
@@ -23,6 +22,7 @@ load(
     "ts_providers_dict_to_struct",
     "tsc_wrapped_tsconfig",
 )
+load("//packages/bazel/src/ng_module:partial_compilation.bzl", "NgPartialCompilationInfo")
 
 # enable_perf_logging controls whether Ivy's performance tracing system will be enabled for any
 # compilation which includes this provider.
@@ -180,6 +180,7 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         # for aliased exports. We disable relative paths and always use manifest paths in google3.
         "_useHostForImportGeneration": (not _is_bazel()),
         "_useManifestPathsAsModuleName": (not _is_bazel()),
+        "_isAngularCoreCompilation": ctx.attr.is_angular_core_compilation,
     }
 
     if is_perf_requested(ctx):
@@ -473,6 +474,10 @@ NG_MODULE_ATTRIBUTES = {
         default = Label(DEFAULT_NG_XI18N),
         executable = True,
         cfg = "exec",
+    ),
+    "is_angular_core_compilation": attr.bool(
+        default = False,
+        doc = "Whether this is a compilation of Angular core.",
     ),
     "_partial_compilation_flag": attr.label(
         default = "//packages/bazel/src:partial_compilation",

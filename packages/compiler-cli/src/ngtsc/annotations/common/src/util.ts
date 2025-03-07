@@ -107,8 +107,14 @@ export function isAngularCore(decorator: Decorator): decorator is Decorator & {i
   return decorator.import !== null && decorator.import.from === CORE_MODULE;
 }
 
-export function isAngularCoreReference(reference: Reference, symbolName: string): boolean {
-  return reference.ownedByModuleGuess === CORE_MODULE && reference.debugName === symbolName;
+export function isAngularCoreReference(
+  reference: Reference,
+  symbolName: string,
+  isCore: boolean,
+): boolean {
+  return (
+    (reference.ownedByModuleGuess === CORE_MODULE || isCore) && reference.debugName === symbolName
+  );
 }
 
 export function findAngularDecorator(
@@ -225,22 +231,19 @@ export function tryUnwrapForwardRef(
  * @param args the arguments to the invocation of the forwardRef expression
  * @returns an unwrapped argument if `ref` pointed to forwardRef, or null otherwise
  */
-export const forwardRefResolver: ForeignFunctionResolver = (
-  fn,
-  callExpr,
-  resolve,
-  unresolvable,
-) => {
-  if (!isAngularCoreReference(fn, 'forwardRef') || callExpr.arguments.length !== 1) {
-    return unresolvable;
-  }
-  const expanded = expandForwardRef(callExpr.arguments[0]);
-  if (expanded !== null) {
-    return resolve(expanded);
-  } else {
-    return unresolvable;
-  }
-};
+export function createForwardRefResolver(isCore: boolean): ForeignFunctionResolver {
+  return (fn, callExpr, resolve, unresolvable) => {
+    if (!isAngularCoreReference(fn, 'forwardRef', isCore) || callExpr.arguments.length !== 1) {
+      return unresolvable;
+    }
+    const expanded = expandForwardRef(callExpr.arguments[0]);
+    if (expanded !== null) {
+      return resolve(expanded);
+    } else {
+      return unresolvable;
+    }
+  };
+}
 
 /**
  * Combines an array of resolver functions into a one.
