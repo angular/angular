@@ -388,7 +388,7 @@ class HttpResourceImpl<T>
 class HttpResponseResource implements Resource<HttpResponseBase | undefined> {
   readonly status: Signal<ResourceStatus>;
   readonly value: WritableSignal<HttpResponseBase | undefined>;
-  readonly error: Signal<unknown>;
+  readonly error: Signal<Error | undefined>;
   readonly isLoading: Signal<boolean>;
 
   constructor(
