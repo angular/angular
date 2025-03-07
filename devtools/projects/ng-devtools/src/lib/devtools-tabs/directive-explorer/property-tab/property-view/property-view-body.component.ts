@@ -51,7 +51,6 @@ export class PropertyViewBodyComponent {
       title: string;
       hidden: boolean;
       controls: DirectiveTreeData;
-      documentation: string;
       class: string;
     }[]
   >(() => {
@@ -60,21 +59,18 @@ export class PropertyViewBodyComponent {
         title: 'Inputs',
         hidden: this.directiveInputControls().dataSource.data.length === 0,
         controls: this.directiveInputControls(),
-        documentation: 'https://angular.dev/api/core/input',
         class: 'cy-inputs',
       },
       {
         title: 'Outputs',
         hidden: this.directiveOutputControls().dataSource.data.length === 0,
         controls: this.directiveOutputControls(),
-        documentation: 'https://angular.dev/api/core/output',
         class: 'cy-outputs',
       },
       {
         title: 'Properties',
         hidden: this.directiveStateControls().dataSource.data.length === 0,
         controls: this.directiveStateControls(),
-        documentation: 'https://angular.dev/guide/templates/property-binding',
         class: 'cy-properties',
       },
     ];
