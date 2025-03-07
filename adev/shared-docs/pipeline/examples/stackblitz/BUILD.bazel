@@ -17,8 +17,8 @@ ts_library(
         "//adev/shared-docs/pipeline/guides",
         "@npm//@types/jsdom",
         "@npm//@types/node",
-        "@npm//fast-glob",
         "@npm//jsdom",
+        "@npm//tinyglobby",
     ],
 )
 

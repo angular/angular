@@ -12,7 +12,7 @@ ts_library(
     deps = [
         "//packages/core/schematics/utils/tsurge",
         "@npm//chalk",
-        "@npm//fast-glob",
+        "@npm//tinyglobby",
     ],
 )
 

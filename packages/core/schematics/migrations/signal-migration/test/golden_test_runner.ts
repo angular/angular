@@ -12,13 +12,13 @@
  */
 
 import fs from 'fs';
-import glob from 'fast-glob';
+import {globSync} from 'tinyglobby';
 import chalk from 'chalk';
 import path from 'path';
 import {diffText} from '../../../utils/tsurge/testing/diff';
 
 const [migratedDir, goldenPath] = process.argv.slice(2);
-const files = glob.sync('**/*', {cwd: migratedDir});
+const files = globSync('**/*', {cwd: migratedDir});
 
 let golden = '';
 for (const filePath of files) {

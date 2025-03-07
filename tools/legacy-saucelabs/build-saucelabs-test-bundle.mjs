@@ -10,7 +10,7 @@
 
 import esbuild from 'esbuild';
 import fs from 'fs';
-import glob from 'fast-glob';
+import {convertPathToPattern, globSync} from 'tinyglobby';
 import {dirname, join, isAbsolute, relative} from 'path';
 import url from 'url';
 import ts from 'typescript';
@@ -71,7 +71,7 @@ async function main() {
  * part of the legacy Saucelabs test job.
  */
 async function findSpecFiles() {
-  const baseDirPattern = glob.convertPathToPattern(legacyOutputDir);
+  const baseDirPattern = convertPathToPattern(legacyOutputDir);
   const ignore = [
     '/_testing_init/**',
     '/**/e2e_test/**',
@@ -99,7 +99,7 @@ async function findSpecFiles() {
     '/platform-browser/testing/e2e_util.js',
   ].map((partial) => baseDirPattern + partial);
 
-  return glob.sync('**/*_spec.js', {absolute: true, cwd: legacyOutputDir, ignore});
+  return globSync('**/*_spec.js', {absolute: true, cwd: legacyOutputDir, ignore});
 }
 
 /**
@@ -151,8 +151,9 @@ async function createResolveEsbuildPlugin() {
     name: 'ng-resolve-esbuild',
     setup: (build) => {
       build.onResolve({filter: /(@angular\/|angular-in-memory-web-api|zone.js)/}, async (args) => {
-        const matchedPattern =
-            Array.from(resolveMappings.keys()).find((pattern) => args.path.match(pattern));
+        const matchedPattern = Array.from(resolveMappings.keys()).find((pattern) =>
+          args.path.match(pattern),
+        );
 
         if (matchedPattern === undefined) {
           return undefined;
@@ -225,11 +226,13 @@ async function compileProjectWithTsc() {
   ];
 
   if (diagnostics.length) {
-    console.error(ts.formatDiagnosticsWithColorAndContext(diagnostics, {
-      getCanonicalFileName: (fileName) => fileName,
-      getCurrentDirectory: () => program.getCurrentDirectory(),
-      getNewLine: () => '\n',
-    }));
+    console.error(
+      ts.formatDiagnosticsWithColorAndContext(diagnostics, {
+        getCanonicalFileName: (fileName) => fileName,
+        getCurrentDirectory: () => program.getCurrentDirectory(),
+        getNewLine: () => '\n',
+      }),
+    );
 
     throw new Error('Compilation failed. See errors above.');
   }
