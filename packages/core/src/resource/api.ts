@@ -66,7 +66,7 @@ export enum ResourceStatus {
  */
 export interface Resource<T> {
   /**
-   * The current value of the `Resource`, or `undefined` if there is no current value.
+   * The current value of the `Resource`, or throws a `RuntimeError` if there is no current value.
    */
   readonly value: Signal<T>;
 
@@ -186,8 +186,8 @@ export interface BaseResourceOptions<T, R> {
   request?: () => R;
 
   /**
-   * The value which will be returned from the resource when a server value is unavailable, such as
-   * when the resource is still loading, or in an error state.
+   * The value which will be returned from the resource when a server value is unavailable and
+   * is not in the Error state.
    */
   defaultValue?: NoInfer<T>;
 

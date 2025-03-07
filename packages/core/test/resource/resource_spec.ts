@@ -68,6 +68,7 @@ class MockEchoBackend<T> extends MockBackend<T, T> {
 
 class MockResponseCountingBackend extends MockBackend<number, string> {
   counter = 0;
+
   override prepareResponse(request: number) {
     return request + ':' + this.counter++;
   }
@@ -141,7 +142,9 @@ describe('resource', () => {
     expect(echoResource.status()).toBe(ResourceStatus.Error);
     expect(echoResource.isLoading()).toBeFalse();
     expect(echoResource.hasValue()).toBeFalse();
-    expect(echoResource.value()).toEqual(undefined);
+    expect(() => echoResource.value()).toThrowError(
+      'NG0603: Cannot read value, because it failed to resolve.',
+    );
     expect(echoResource.error()).toBe('Something went wrong....');
   });
 
@@ -176,8 +179,20 @@ describe('resource', () => {
     expect(echoResource.status()).toBe(ResourceStatus.Error);
     expect(echoResource.isLoading()).toBeFalse();
     expect(echoResource.hasValue()).toBeFalse();
-    expect(echoResource.value()).toEqual(undefined);
+    expect(() => echoResource.value()).toThrowError(
+      'NG0603: Cannot read value, because it failed to resolve.',
+    );
     expect(echoResource.error()).toEqual(Error('KO'));
+
+    counter.update((value) => value + 1);
+    TestBed.flushEffects();
+    await backend.flush();
+
+    expect(echoResource.status()).toBe(ResourceStatus.Resolved);
+    expect(echoResource.isLoading()).toBeFalse();
+    expect(echoResource.hasValue()).toBeTrue();
+    expect(echoResource.value()).toEqual('ok');
+    expect(echoResource.error()).toBe(undefined);
   });
 
   it('should respond to a request that changes while loading', async () => {
@@ -224,7 +239,7 @@ describe('resource', () => {
     expect(res.value()).toBe(1);
   });
 
-  it('should return a default value if provided', async () => {
+  it('should throw an error when getting a value even when provided with a default value', async () => {
     const DEFAULT: string[] = [];
     const request = signal(0);
     const res = resource({
@@ -249,7 +264,9 @@ describe('resource', () => {
     request.set(2);
     await TestBed.inject(ApplicationRef).whenStable();
     expect(res.error()).not.toBeUndefined();
-    expect(res.value()).toBe(DEFAULT);
+    expect(() => res.value()).toThrowError(
+      'NG0603: Cannot read value, because it failed to resolve.',
+    );
   });
 
   it('should _not_ load if the request resolves to undefined', () => {
