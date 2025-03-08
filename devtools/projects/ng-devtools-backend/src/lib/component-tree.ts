@@ -5,39 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {
-  ComponentExplorerViewQuery,
-  DirectiveMetadata,
-  DirectivesProperties,
-  ElementPosition,
-  PropertyQueryTypes,
-  SerializedInjectedService,
-  SerializedInjector,
-  SerializedProviderRecord,
-  UpdatedStateData,
-} from 'protocol';
-
-import {buildDirectiveTree, getLViewFromDirectiveOrElementInstance} from './directive-forest/index';
-import {
-  ngDebugApiIsSupported,
-  ngDebugClient,
-  ngDebugDependencyInjectionApiIsSupported,
-} from './ng-debug-api/ng-debug-api';
-import {
-  deeplySerializeSelectedProperties,
-  serializeDirectiveState,
-} from './state-serializer/state-serializer';
-
-// Need to be kept in sync with Angular framework
-// We can't directly import it from framework now
-// because this also pulls up the security policies
-// for Trusted Types, which we reinstantiate.
-enum ChangeDetectionStrategy {
-  OnPush = 0,
-  Default = 1,
-}
-
-import {ComponentTreeNode, DirectiveInstanceType, ComponentInstanceType} from './interfaces';
 
 import type {
   ClassProvider,
@@ -51,7 +18,38 @@ import type {
   ɵComponentDebugMetadata as ComponentDebugMetadata,
   ɵProviderRecord as ProviderRecord,
 } from '@angular/core';
-import {isSignal} from './utils';
+import {
+  ComponentExplorerViewQuery,
+  DirectiveMetadata,
+  DirectivesProperties,
+  ElementPosition,
+  PropertyQueryTypes,
+  SerializedInjectedService,
+  SerializedInjector,
+  SerializedProviderRecord,
+  UpdatedStateData,
+} from 'protocol';
+import {buildDirectiveTree, getLViewFromDirectiveOrElementInstance} from './directive-forest/index';
+import {
+  ngDebugApiIsSupported,
+  ngDebugClient,
+  ngDebugDependencyInjectionApiIsSupported,
+} from './ng-debug-api/ng-debug-api';
+import {
+  deeplySerializeSelectedProperties,
+  serializeDirectiveState,
+} from './state-serializer/state-serializer';
+import {mutateNestedProp} from './property-mutation';
+import {ComponentTreeNode, DirectiveInstanceType, ComponentInstanceType} from './interfaces';
+
+// Need to be kept in sync with Angular framework
+// We can't directly import it from framework now
+// because this also pulls up the security policies
+// for Trusted Types, which we reinstantiate.
+enum ChangeDetectionStrategy {
+  OnPush = 0,
+  Default = 1,
+}
 
 export const injectorToId = new WeakMap<Injector | HTMLElement, string>();
 export const nodeInjectorToResolutionPath = new WeakMap<HTMLElement, SerializedInjector[]>();
@@ -581,7 +579,7 @@ export const updateState = (updatedStateData: UpdatedStateData): void => {
   }
   if (updatedStateData.directiveId.directive !== undefined) {
     const directive = node.directives[updatedStateData.directiveId.directive].instance;
-    mutateComponentOrDirective(updatedStateData, directive);
+    mutateNestedProp(directive, updatedStateData.keyPath, updatedStateData.newValue);
     if (ngDebugApiIsSupported(ng, 'getOwningComponent')) {
       ng.applyChanges?.(ng.getOwningComponent(directive)!);
     }
@@ -589,37 +587,10 @@ export const updateState = (updatedStateData: UpdatedStateData): void => {
   }
   if (node.component) {
     const comp = node.component.instance;
-    mutateComponentOrDirective(updatedStateData, comp);
+    mutateNestedProp(comp, updatedStateData.keyPath, updatedStateData.newValue);
     ng.applyChanges?.(comp);
     return;
   }
-};
-
-const mutateComponentOrDirective = (updatedStateData: UpdatedStateData, compOrDirective: any) => {
-  const valueKey = updatedStateData.keyPath.pop();
-  if (valueKey === undefined) {
-    return;
-  }
-
-  let parentObjectOfValueToUpdate = compOrDirective;
-  updatedStateData.keyPath.forEach((key) => {
-    parentObjectOfValueToUpdate = parentObjectOfValueToUpdate[key];
-  });
-
-  if (isSignal(parentObjectOfValueToUpdate)) {
-    // we don't support updating nested objects in signals yet
-    return;
-  }
-
-  // When we try to set a property which only has a getter
-  // the line below could throw an error.
-  try {
-    if (isSignal(parentObjectOfValueToUpdate[valueKey])) {
-      parentObjectOfValueToUpdate[valueKey].set(updatedStateData.newValue);
-    } else {
-      parentObjectOfValueToUpdate[valueKey] = updatedStateData.newValue;
-    }
-  } catch {}
 };
 
 export function serializeResolutionPath(resolutionPath: Injector[]): SerializedInjector[] {
