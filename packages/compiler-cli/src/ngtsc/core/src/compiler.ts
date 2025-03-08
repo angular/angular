@@ -126,6 +126,7 @@ import {coreHasSymbol} from './core_version';
 import {coreVersionSupportsFeature} from './feature_detection';
 import {angularJitApplicationTransform} from '../../transform/jit';
 import {untagAllTsFiles} from '../../shims';
+import {PackageMetadataCollector} from '../../metadata/src/package_metadata_collector';
 
 /**
  * State information about a compilation which is only generated once some data is requested from
@@ -154,6 +155,8 @@ interface LazyCompilationState {
    * Only available in local compilation mode when option `generateExtraImportsInLocalMode` is set.
    */
   localCompilationExtraImportsTracker: LocalCompilationExtraImportsTracker | null;
+
+  packageMetadataCollector: PackageMetadataCollector;
 }
 
 /**
@@ -983,6 +986,7 @@ export class NgCompiler {
       this.compilation = this.makeCompilation();
       for (const sf of this.inputProgram.getSourceFiles()) {
         if (sf.isDeclarationFile) {
+          this.compilation.packageMetadataCollector.analyze(sf);
           continue;
         }
         this.compilation.traitCompiler.analyzeSync(sf);
@@ -1598,6 +1602,14 @@ export class NgCompiler {
       },
     );
 
+    const packageMetadataCollector = new PackageMetadataCollector(
+      dtsReader,
+      reflector,
+      this.moduleResolver,
+      this.inputProgram,
+      this.adapter,
+    );
+
     const typeCheckingConfig = this.getTypeCheckingConfig();
     const templateTypeChecker = new TemplateTypeCheckerImpl(
       this.inputProgram,
@@ -1614,6 +1626,7 @@ export class NgCompiler {
       scopeReader,
       typeCheckScopeRegistry,
       this.delegatingPerfRecorder,
+      packageMetadataCollector,
     );
 
     // Only construct the extended template checker if the configuration is valid and usable.
@@ -1656,6 +1669,7 @@ export class NgCompiler {
       templateSemanticsChecker,
       sourceFileValidator,
       supportJitMode,
+      packageMetadataCollector,
     };
   }
 }
