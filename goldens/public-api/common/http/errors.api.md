@@ -15,6 +15,12 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     HTTP_ORIGIN_MAP_USED_IN_CLIENT = 2803,
     // (undocumented)
+    JSONP_HEADERS_NOT_SUPPORTED = 2812,
+    // (undocumented)
+    JSONP_WRONG_METHOD = 2810,
+    // (undocumented)
+    JSONP_WRONG_RESPONSE_TYPE = 2811,
+    // (undocumented)
     MISSING_JSONP_MODULE = -2800,
     // (undocumented)
     NOT_USING_FETCH_BACKEND_IN_SSR = 2801,

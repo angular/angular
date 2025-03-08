@@ -26,7 +26,6 @@ import {
   getLocaleNumberSymbol,
   getLocaleTimeFormat,
   NumberSymbol,
-  Time,
   TranslationWidth,
 } from './locale_data_api';
 import {RuntimeErrorCode} from '../errors';
@@ -349,7 +348,10 @@ function getDatePart(part: DateType, date: Date): number {
     case DateType.Day:
       return date.getDay();
     default:
-      throw new Error(`Unknown DateType value "${part}".`);
+      throw new RuntimeError(
+        RuntimeErrorCode.UNKNOWN_DATE_TYPE_VALUE,
+        ngDevMode && `Unknown DateType value "${part}".`,
+      );
   }
 }
 
@@ -435,7 +437,10 @@ function getDateTranslation(
       // The `throw new Error` below works around the problem, and the unexpected: never variable
       // makes sure tsc still checks this code is unreachable.
       const unexpected: never = name;
-      throw new Error(`unexpected translation type ${unexpected}`);
+      throw new RuntimeError(
+        RuntimeErrorCode.UNEXPECTED_TRANSLATION_TYPE,
+        ngDevMode && `unexpected translation type ${unexpected}`,
+      );
   }
 }
 
@@ -478,7 +483,10 @@ function timeZoneGetter(width: ZoneWidth): DateFormatter {
           );
         }
       default:
-        throw new Error(`Unknown zone width "${width}"`);
+        throw new RuntimeError(
+          RuntimeErrorCode.UNKNOWN_ZONE_WIDTH,
+          ngDevMode && `Unknown zone width "${width}"`,
+        );
     }
   };
 }
@@ -938,7 +946,10 @@ export function toDate(value: string | number | Date): Date {
 
   const date = new Date(value as any);
   if (!isDate(date)) {
-    throw new Error(`Unable to convert "${value}" into a date`);
+    throw new RuntimeError(
+      RuntimeErrorCode.INVALID_TO_DATE_CONVERSION,
+      ngDevMode && `Unable to convert "${value}" into a date`,
+    );
   }
   return date;
 }
