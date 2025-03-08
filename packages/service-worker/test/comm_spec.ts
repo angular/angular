@@ -14,17 +14,17 @@ import {
   VersionDetectedEvent,
   VersionEvent,
   VersionReadyEvent,
-} from '@angular/service-worker/src/low_level';
-import {ngswCommChannelFactory, SwRegistrationOptions} from '@angular/service-worker/src/provider';
-import {SwPush} from '@angular/service-worker/src/push';
-import {SwUpdate} from '@angular/service-worker/src/update';
+} from '../src/low_level';
+import {ngswCommChannelFactory, SwRegistrationOptions} from '../src/provider';
+import {SwPush} from '../src/push';
+import {SwUpdate} from '../src/update';
 import {
   MockPushManager,
   MockPushSubscription,
   MockServiceWorkerContainer,
   MockServiceWorkerRegistration,
   patchDecodeBase64,
-} from '@angular/service-worker/testing/mock';
+} from '../testing/mock';
 import {filter} from 'rxjs/operators';
 
 describe('ServiceWorker library', () => {
