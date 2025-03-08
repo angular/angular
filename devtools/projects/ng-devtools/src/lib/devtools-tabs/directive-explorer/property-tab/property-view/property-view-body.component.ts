@@ -7,7 +7,7 @@
  */
 
 import {CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag} from '@angular/cdk/drag-drop';
-import {Component, computed, forwardRef, input, output} from '@angular/core';
+import {Component, computed, forwardRef, input, output, signal} from '@angular/core';
 import {DirectivePosition, SerializedInjectedService} from 'protocol';
 
 import {
@@ -44,41 +44,26 @@ export class PropertyViewBodyComponent {
 
   readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
 
-  categoryOrder = [0, 1, 2];
-
-  readonly panels = computed<
+  protected readonly panels = signal([
     {
-      title: string;
-      hidden: boolean;
-      controls: DirectiveTreeData;
-      documentation: string;
-      class: string;
-    }[]
-  >(() => {
-    return [
-      {
-        title: 'Inputs',
-        hidden: this.directiveInputControls().dataSource.data.length === 0,
-        controls: this.directiveInputControls(),
-        documentation: 'https://angular.dev/api/core/input',
-        class: 'cy-inputs',
-      },
-      {
-        title: 'Outputs',
-        hidden: this.directiveOutputControls().dataSource.data.length === 0,
-        controls: this.directiveOutputControls(),
-        documentation: 'https://angular.dev/api/core/output',
-        class: 'cy-outputs',
-      },
-      {
-        title: 'Properties',
-        hidden: this.directiveStateControls().dataSource.data.length === 0,
-        controls: this.directiveStateControls(),
-        documentation: 'https://angular.dev/guide/templates/property-binding',
-        class: 'cy-properties',
-      },
-    ];
-  });
+      title: 'Inputs',
+      controls: () => this.directiveInputControls(),
+      documentation: 'https://angular.dev/api/core/input',
+      class: 'cy-inputs',
+    },
+    {
+      title: 'Outputs',
+      controls: () => this.directiveOutputControls(),
+      documentation: 'https://angular.dev/api/core/output',
+      class: 'cy-outputs',
+    },
+    {
+      title: 'Properties',
+      controls: () => this.directiveStateControls(),
+      documentation: 'https://angular.dev/guide/templates/property-binding',
+      class: 'cy-properties',
+    },
+  ]);
 
   readonly controlsLoaded = computed(() => {
     return (
@@ -93,7 +78,9 @@ export class PropertyViewBodyComponent {
   }
 
   drop(event: CdkDragDrop<any, any>): void {
-    moveItemInArray(this.categoryOrder, event.previousIndex, event.currentIndex);
+    const panels = this.panels();
+    moveItemInArray(panels, event.previousIndex, event.currentIndex);
+    this.panels.set(Array.from(panels)); // Clone array for immutable update.
   }
 
   handleInspect(node: FlatNode): void {
