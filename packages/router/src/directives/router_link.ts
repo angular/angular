@@ -130,6 +130,12 @@ import {RuntimeErrorCode} from '../errors';
  * });
  * ```
  *
+ * ### RouterLink compatible custom elements
+ *
+ * In order to make a custom element work with routerLink, the corresponding custom
+ * element must implement the `href` attribute and must list `href` in the array of
+ * the static property/getter `observedAttributes`.
+ *
  * @ngModule RouterModule
  *
  * @publicApi
@@ -140,13 +146,15 @@ import {RuntimeErrorCode} from '../errors';
 export class RouterLink implements OnChanges, OnDestroy {
   /**
    * Represents an `href` attribute value applied to a host element,
-   * when a host element is `<a>`. For other tags, the value is `null`.
+   * when a host element is an `<a>`/`<area>` tag or a compatible custom element.
+   * For other tags, the value is `null`.
    */
   href: string | null = null;
 
   /**
    * Represents the `target` attribute on a host element.
-   * This is only used when the host element is an `<a>` tag.
+   * This is only used when the host element is
+   * an `<a>`/`<area>` tag or a compatible custom element.
    */
   @HostBinding('attr.target') @Input() target?: string;
 
@@ -196,7 +204,7 @@ export class RouterLink implements OnChanges, OnDestroy {
    */
   @Input() relativeTo?: ActivatedRoute | null;
 
-  /** Whether a host element is an `<a>` tag. */
+  /** Whether a host element is an `<a>`/`<area>` tag or a compatible custom element. */
   private isAnchorElement: boolean;
 
   private subscription?: Subscription;
@@ -215,7 +223,20 @@ export class RouterLink implements OnChanges, OnDestroy {
     private locationStrategy?: LocationStrategy,
   ) {
     const tagName = el.nativeElement.tagName?.toLowerCase();
-    this.isAnchorElement = tagName === 'a' || tagName === 'area';
+    this.isAnchorElement =
+      tagName === 'a' ||
+      tagName === 'area' ||
+      !!(
+        // Avoid breaking in an SSR context where customElements might not be defined.
+        (
+          typeof customElements === 'object' &&
+          // observedAttributes is an optional static property/getter on a custom element.
+          // The spec states that this must be an array of strings.
+          (
+            customElements.get(tagName) as {observedAttributes?: string[]} | undefined
+          )?.observedAttributes?.includes?.('href')
+        )
+      );
 
     if (this.isAnchorElement) {
       this.subscription = router.events.subscribe((s: Event) => {
