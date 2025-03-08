@@ -430,6 +430,9 @@ export interface TargetOptions {
  * @publicApi
  */
 export interface MiscOptions {
+  /** Whether type checking of host bindings is enabled. */
+  typeCheckHostBindings?: boolean;
+
   /**
    * Whether the compiler should avoid generating code for classes that haven't been exported.
    * Defaults to `true`.

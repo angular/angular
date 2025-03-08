@@ -699,10 +699,10 @@ export function extractInlineStyleResources(component: Map<string, ts.Expression
   if (stylesExpr !== undefined) {
     if (ts.isArrayLiteralExpression(stylesExpr)) {
       for (const expression of stringLiteralElements(stylesExpr)) {
-        styles.add({path: null, expression});
+        styles.add({path: null, node: expression});
       }
     } else if (ts.isStringLiteralLike(stylesExpr)) {
-      styles.add({path: null, expression: stylesExpr});
+      styles.add({path: null, node: stylesExpr});
     }
   }
 

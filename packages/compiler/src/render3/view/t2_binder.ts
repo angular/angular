@@ -31,6 +31,7 @@ import {
   Element,
   ForLoopBlock,
   ForLoopBlockEmpty,
+  HostElement,
   HoverDeferredTrigger,
   Icu,
   IfBlock,
@@ -169,7 +170,7 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
    * metadata about the types referenced in the template.
    */
   bind(target: Target): BoundTarget<DirectiveT> {
-    if (!target.template) {
+    if (!target.template && !target.host) {
       throw new Error('Empty bound targets are not supported');
     }
 
@@ -212,6 +213,21 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
       TemplateBinder.applyWithScope(
         target.template,
         scope,
+        expressions,
+        symbols,
+        nestingLevel,
+        usedPipes,
+        eagerPipes,
+        deferBlocks,
+      );
+    }
+
+    // Bind the host element in a separate scope. Note that it only uses the
+    // `TemplateBinder` since directives don't apply inside a host context.
+    if (target.host) {
+      TemplateBinder.applyWithScope(
+        target.host,
+        Scope.apply(target.host),
         expressions,
         symbols,
         nestingLevel,
@@ -280,7 +296,7 @@ class Scope implements Visitor {
    * Process a template (either as a `Template` sub-template with variables, or a plain array of
    * template `Node`s) and construct its `Scope`.
    */
-  static apply(template: Node[]): Scope {
+  static apply(template: ScopedNode | Node[]): Scope {
     const scope = Scope.newRootScope();
     scope.ingest(template);
     return scope;
@@ -315,7 +331,7 @@ class Scope implements Visitor {
       nodeOrNodes instanceof Content
     ) {
       nodeOrNodes.children.forEach((node) => node.visit(this));
-    } else {
+    } else if (!(nodeOrNodes instanceof HostElement)) {
       // No overarching `Template` instance, so process the nodes directly.
       nodeOrNodes.forEach((node) => node.visit(this));
     }
@@ -702,7 +718,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   /**
    * Process a template and extract metadata about expressions and symbols within.
    *
-   * @param nodes the nodes of the template to process
+   * @param nodeOrNodes the nodes of the template to process
    * @param scope the `Scope` of the template being processed.
    * @returns three maps which contain metadata about the template: `expressions` which interprets
    * special `AST` nodes in expressions as pointing to references or variables declared within the
@@ -712,7 +728,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
    * at 1.
    */
   static applyWithScope(
-    nodes: Node[],
+    nodeOrNodes: ScopedNode | Node[],
     scope: Scope,
     expressions: Map<AST, TemplateEntity>,
     symbols: Map<TemplateEntity, Template>,
@@ -721,7 +737,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
     eagerPipes: Set<string>,
     deferBlocks: DeferBlockScopes,
   ): void {
-    const template = nodes instanceof Template ? nodes : null;
+    const template = nodeOrNodes instanceof Template ? nodeOrNodes : null;
     // The top-level template has nesting level 0.
     const binder = new TemplateBinder(
       expressions,
@@ -734,7 +750,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
       template,
       0,
     );
-    binder.ingest(nodes);
+    binder.ingest(nodeOrNodes);
   }
 
   private ingest(nodeOrNodes: ScopedNode | Node[]): void {
@@ -776,6 +792,8 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
       nodeOrNodes instanceof Content
     ) {
       nodeOrNodes.children.forEach((node) => node.visit(this));
+      this.nestingLevel.set(nodeOrNodes, this.level);
+    } else if (nodeOrNodes instanceof HostElement) {
       this.nestingLevel.set(nodeOrNodes, this.level);
     } else {
       // Visit each node from the top-level template.
@@ -967,7 +985,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
  *
  * See `BoundTarget` for documentation on the individual methods.
  */
-export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTarget<DirectiveT> {
+class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTarget<DirectiveT> {
   /** Deferred blocks, ordered as they appear in the template. */
   private deferredBlocks: DeferredBlock[];
 
