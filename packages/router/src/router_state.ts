@@ -328,9 +328,9 @@ export class ActivatedRouteSnapshot {
   /** @internal */
   _routerState!: RouterStateSnapshot;
   /** @internal */
-  _paramMap?: ParamMap;
+  _paramMap?: Readonly<ParamMap>;
   /** @internal */
-  _queryParamMap?: ParamMap;
+  _queryParamMap?: Readonly<ParamMap>;
 
   /** The resolved route title */
   get title(): string | undefined {
