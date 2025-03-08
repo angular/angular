@@ -55,6 +55,29 @@ ts_library(
     ],
 )
 
+ts_library(
+    name = "property_mutation",
+    srcs = ["property-mutation.ts"],
+    deps = [
+        ":utils",
+        "//packages/core",
+    ],
+)
+
+ts_test_library(
+    name = "property_mutation_test_lib",
+    srcs = ["property-mutation.spec.ts"],
+    deps = [
+        ":property_mutation",
+        "//packages/core",
+    ],
+)
+
+karma_web_test_suite(
+    name = "property_mutation_test",
+    deps = [":property_mutation_test_lib"],
+)
+
 karma_web_test_suite(
     name = "router_tree_test",
     deps = [
@@ -156,6 +179,7 @@ ts_library(
     srcs = ["component-tree.ts"],
     deps = [
         ":interfaces",
+        ":property_mutation",
         ":utils",
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest",
         "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
