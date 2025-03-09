@@ -5,12 +5,13 @@ import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {Validators} from '@angular/forms';
 // #enddocregion validator-imports
 import {FormArray} from '@angular/forms';
+import {JsonPipe} from '@angular/common';
 
 @Component({
   selector: 'app-profile-editor',
   templateUrl: './profile-editor.component.html',
   styleUrls: ['./profile-editor.component.css'],
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, JsonPipe],
 })
 export class ProfileEditorComponent {
   private formBuilder = inject(FormBuilder);
