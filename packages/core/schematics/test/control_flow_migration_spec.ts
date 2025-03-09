@@ -6836,5 +6836,101 @@ describe('control flow migration', () => {
           `"ng-container". Please fix and re-run the migration.`,
       );
     });
+
+    it('should not remove component reference it is used in component file with viewChild', async () => {
+      writeFile(
+        '/comp.ts',
+        `
+        import {Component, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+        import { NgIf } from '@angular/common';
+
+        @Component({
+          standalone: true
+          imports: [NgIf],
+          template: \`<h1>Hello from {{ name }}!</h1>
+                      <div *ngIf="showContent; then contentTemplate"></div>
+                      <ng-template #contentTemplate><div>test content</div></ng-template>\`
+        })
+        class Comp {
+            @ViewChild('contentTemplate') testContainer!: TemplateRef<unknown>;
+            name = 'Angular';
+            showContent = true;
+            options: { value: string; html: any }[] = [];
+
+            constructor(private viewContainerRef: ViewContainerRef) {}
+
+            ngAfterViewInit(): void {
+              this.viewContainerRef.createEmbeddedView(this.testContainer);
+            }
+        }
+      `,
+      );
+
+      await runMigration();
+      const content = tree.readContent('/comp.ts');
+      expect(content).toContain('<ng-template #contentTemplate>');
+    });
+
+    it('should not remove component reference it is used in component file with viewChildren', async () => {
+      writeFile(
+        '/comp.ts',
+        `
+        import {Component, TemplateRef, ViewChildren, ViewContainerRef, QueryList} from '@angular/core';
+        import { NgIf } from '@angular/common';
+
+        @Component({
+          standalone: true
+          imports: [NgIf],
+          template: \`<h1>Hello from {{ name }}!</h1>
+                      <div *ngIf="showContent; then contentTemplate"></div>
+                      <ng-template #contentTemplate><div>test content</div></ng-template>\`
+        })
+        class Comp {
+            @ViewChildren('contentTemplate') testContainer!: QueryList<TemplateRef<unknown>>;
+            name = 'Angular';
+            showContent = true;
+            options: { value: string; html: any }[] = [];
+
+            constructor(private viewContainerRef: ViewContainerRef) {}
+
+            ngAfterViewInit(): void {
+              this.viewContainerRef.createEmbeddedView(this.testContainer.last);
+            }
+        }
+      `,
+      );
+
+      await runMigration();
+      const content = tree.readContent('/comp.ts');
+      expect(content).toContain('<ng-template #contentTemplate>');
+    });
+
+    it('should remove component reference when viewChild is commented in component file', async () => {
+      writeFile(
+        '/comp.ts',
+        `
+        import {Component, TemplateRef, ViewChild} from '@angular/core';
+        import { NgIf } from '@angular/common';
+
+        @Component({
+          standalone: true
+          imports: [NgIf],
+          template: \`<h1>Hello from {{ name }}!</h1>
+                      <div *ngIf="showContent; then contentTemplate"></div>
+                      <ng-template #contentTemplate><div>test content</div></ng-template>\`
+        })
+        class Comp {
+            // @ViewChild('contentTemplate') testContainer!: TemplateRef<unknown>;
+            name = 'Angular';
+            showContent = true;
+            options: { value: string; html: any }[] = [];
+        }
+      `,
+      );
+
+      await runMigration();
+      const content = tree.readContent('/comp.ts');
+      expect(content).not.toContain('<ng-template #contentTemplate>');
+    });
   });
 });
