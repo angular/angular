@@ -1,25 +1,24 @@
 // #docplaster
-// #docregion form-builder
+
 import {Component, inject} from '@angular/core';
 // #docregion form-builder-imports
-import {FormBuilder} from '@angular/forms';
-// #enddocregion form-builder-imports, form-builder
+import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+// #enddocregion form-builder-imports
 // #docregion form-array-imports
 import {FormArray} from '@angular/forms';
-// #docregion form-builder-imports, form-builder
-// #enddocregion form-builder-imports, form-array-imports
+// #enddocregion form-array-imports
 
 @Component({
   selector: 'app-profile-editor',
   templateUrl: './profile-editor.component.html',
   styleUrls: ['./profile-editor.component.css'],
-  standalone: false,
+  imports: [ReactiveFormsModule],
 })
 export class ProfileEditorComponent {
   // #docregion inject-form-builder
   private formBuilder = inject(FormBuilder);
   // #enddocregion inject-form-builder
-  // #docregion formgroup-compare
+  // #docregion formgroup-compare, form-builder
   profileForm = this.formBuilder.group({
     firstName: [''],
     lastName: [''],
@@ -50,6 +49,4 @@ export class ProfileEditorComponent {
   addAlias() {
     this.aliases.push(this.formBuilder.control(''));
   }
-  // #docregion form-builder
 }
-// #enddocregion form-builder
