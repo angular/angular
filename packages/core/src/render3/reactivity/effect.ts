@@ -15,7 +15,7 @@ import {
   consumerDestroy,
   consumerPollProducersForChange,
   isInNotificationPhase,
-} from '@angular/core/primitives/signals';
+} from '../../../primitives/signals';
 import {FLAGS, LViewFlags, LView, EFFECTS} from '../interfaces/view';
 import {markAncestorsForTraversal} from '../util/view_utils';
 import {InjectionToken} from '../../di/injection_token';

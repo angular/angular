@@ -15,9 +15,9 @@ import {
   input,
   Output,
   ViewChild,
-} from '@angular/core';
-import {SIGNAL} from '@angular/core/primitives/signals';
-import {TestBed} from '@angular/core/testing';
+} from '../../../src/core';
+import {SIGNAL} from '../../../primitives/signals';
+import {TestBed} from '../../../testing';
 
 describe('signal inputs', () => {
   beforeEach(() =>

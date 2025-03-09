@@ -7,8 +7,8 @@
  */
 
 import {PLATFORM_BROWSER_ID, PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
-import {type ListenerOptions, NgZone, RendererFactory2, RendererType2} from '@angular/core';
-import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
+import {type ListenerOptions, NgZone, RendererFactory2, RendererType2} from '../../src/core';
+import {NoopNgZone} from '../../src/zone/ng_zone';
 import {EventManager, ɵDomRendererFactory2, ɵSharedStylesHost} from '@angular/platform-browser';
 import {EventManagerPlugin} from '@angular/platform-browser/src/dom/events/event_manager';
 

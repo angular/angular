@@ -16,9 +16,9 @@ import {
   DoCheck,
   OnChanges,
   OnInit,
-} from '@angular/core';
-import {inject, TestBed} from '@angular/core/testing';
-import {Log} from '@angular/core/testing/src/testing_internal';
+} from '../src/core';
+import {inject, TestBed} from '../testing';
+import {Log} from '../testing/src/testing_internal';
 
 describe('directive lifecycle integration spec', () => {
   let log: Log;

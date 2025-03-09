@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import * as core from '@angular/core';
+import * as core from '../../../src/core';
 
 // We need to something with the "core" import in order to ensure
 // that all symbols from core are preserved in the bundle.

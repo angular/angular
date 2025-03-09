@@ -13,8 +13,8 @@ import {
   importProvidersFrom,
   InjectionToken,
   NgModule,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {TestBed} from '../../testing';
 
 import {internalImportProvidersFrom} from '../../src/di/provider_collection';
 

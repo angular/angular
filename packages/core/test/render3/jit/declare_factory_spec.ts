@@ -13,9 +13,9 @@ import {
   ɵsetInjectorProfilerContext,
   ɵɵFactoryTarget,
   ɵɵngDeclareFactory,
-} from '@angular/core';
-import {ɵɵdefineInjector} from '@angular/core/src/di';
-import {RetrievingInjector, setCurrentInjector} from '@angular/core/src/di/injector_compatibility';
+} from '../../../src/core';
+import {ɵɵdefineInjector} from '../../../src/di';
+import {RetrievingInjector, setCurrentInjector} from '../../../src/di/injector_compatibility';
 
 describe('Factory declaration jit compilation', () => {
   let previousInjector: RetrievingInjector | null | undefined;

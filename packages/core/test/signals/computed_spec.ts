@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, signal} from '@angular/core';
-import {createWatch, ReactiveNode, SIGNAL, defaultEquals} from '@angular/core/primitives/signals';
+import {computed, signal} from '../../src/core';
+import {createWatch, ReactiveNode, SIGNAL, defaultEquals} from '../../primitives/signals';
 
 describe('computed', () => {
   it('should create computed', () => {

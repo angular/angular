@@ -27,16 +27,16 @@ import {
   ViewChild,
   ViewChildren,
   ViewContainerRef,
-} from '@angular/core';
-import {Inject} from '@angular/core/src/di';
-import {readPatchedLView} from '@angular/core/src/render3/context_discovery';
-import {LContainer} from '@angular/core/src/render3/interfaces/container';
-import {getLViewById} from '@angular/core/src/render3/interfaces/lview_tracking';
-import {isLView} from '@angular/core/src/render3/interfaces/type_checks';
-import {ID, LView, PARENT, TVIEW} from '@angular/core/src/render3/interfaces/view';
-import {getLView} from '@angular/core/src/render3/state';
-import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
-import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {Inject} from '../../src/di';
+import {readPatchedLView} from '../../src/render3/context_discovery';
+import {LContainer} from '../../src/render3/interfaces/container';
+import {getLViewById} from '../../src/render3/interfaces/lview_tracking';
+import {isLView} from '../../src/render3/interfaces/type_checks';
+import {ID, LView, PARENT, TVIEW} from '../../src/render3/interfaces/view';
+import {getLView} from '../../src/render3/state';
+import {ngDevModeResetPerfCounters} from '../../src/util/ng_dev_mode';
+import {fakeAsync, flushMicrotasks, TestBed} from '../../testing';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {expectPerfCounters} from '@angular/private/testing';

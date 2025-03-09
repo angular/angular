@@ -13,7 +13,7 @@ import {
   SignalNode,
   signalSetFn,
   signalUpdateFn,
-} from '@angular/core/primitives/signals';
+} from '../../../primitives/signals';
 
 import {performanceMarkFeature} from '../../util/performance';
 

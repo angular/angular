@@ -18,8 +18,8 @@ import {
   ɵɵInjectableDeclaration,
   ɵɵngDeclareInjectable,
   ɵɵngDeclareInjector,
-} from '@angular/core';
-import {RetrievingInjector} from '@angular/core/src/di/injector_compatibility';
+} from '../../../src/core';
+import {RetrievingInjector} from '../../../src/di/injector_compatibility';
 
 describe('Injectable declaration jit compilation', () => {
   let previousInjector: RetrievingInjector | null | undefined;

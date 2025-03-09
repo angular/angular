@@ -7,8 +7,8 @@
  */
 import {state, style, trigger} from '@angular/animations';
 import {CommonModule} from '@angular/common';
-import {Component, Directive, EventEmitter, Input, Output, ViewContainerRef} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+import {Component, Directive, EventEmitter, Input, Output, ViewContainerRef} from '../../src/core';
+import {TestBed} from '../../testing';
 import {By, DomSanitizer, SafeUrl} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 

@@ -21,10 +21,10 @@ import {
   NgModuleRef,
   provideEnvironmentInitializer,
   ViewContainerRef,
-} from '@angular/core';
-import {R3Injector} from '@angular/core/src/di/r3_injector';
-import {RuntimeError, RuntimeErrorCode} from '@angular/core/src/errors';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {R3Injector} from '../../src/di/r3_injector';
+import {RuntimeError, RuntimeErrorCode} from '../../src/errors';
+import {TestBed} from '../../testing';
 
 describe('environment injector', () => {
   it('should create and destroy an environment injector', () => {

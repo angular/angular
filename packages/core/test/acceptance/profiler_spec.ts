@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {setProfiler} from '@angular/core/src/render3/profiler';
-import {ProfilerEvent} from '@angular/core/src/render3/profiler_types';
-import {TestBed} from '@angular/core/testing';
+import {setProfiler} from '../../src/render3/profiler';
+import {ProfilerEvent} from '../../src/render3/profiler_types';
+import {TestBed} from '../../testing';
 
 import {
   AfterContentChecked,

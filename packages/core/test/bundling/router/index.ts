@@ -7,7 +7,7 @@
  */
 
 import {APP_BASE_HREF} from '@angular/common';
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit} from '../../../src/core';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {
   ActivatedRoute,

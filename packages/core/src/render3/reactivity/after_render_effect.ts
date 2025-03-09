@@ -14,7 +14,7 @@ import {
   SIGNAL,
   SIGNAL_NODE,
   type SignalNode,
-} from '@angular/core/primitives/signals';
+} from '../../../primitives/signals';
 
 import {type Signal} from '../reactivity/api';
 import {type EffectCleanupFn, type EffectCleanupRegisterFn} from './effect';
