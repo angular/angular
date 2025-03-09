@@ -49,7 +49,7 @@ export function migrateTemplate(
       return {migrated: template, errors: switchResult.errors};
     }
     const caseResult = migrateCase(switchResult.migrated);
-    const templateResult = processNgTemplates(caseResult.migrated);
+    const templateResult = processNgTemplates(caseResult.migrated, file.sourceFile);
     if (templateResult.err !== undefined) {
       return {migrated: template, errors: [{type: 'template', error: templateResult.err}]};
     }
