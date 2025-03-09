@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable} from '@angular/core';
+import {Injectable, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {merge, NEVER, Observable, Subject} from 'rxjs';
 import {map, switchMap, take} from 'rxjs/operators';
 
+import {RuntimeErrorCode} from './errors';
 import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, PushEvent} from './low_level';
 
 /**
@@ -200,12 +201,19 @@ export class SwPush {
 
     const doUnsubscribe = (sub: PushSubscription | null) => {
       if (sub === null) {
-        throw new Error('Not subscribed to push notifications.');
+        throw new RuntimeError(
+          RuntimeErrorCode.NOT_SUBSCRIBED_TO_PUSH_NOTIFICATIONS,
+          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+            'Not subscribed to push notifications.',
+        );
       }
 
       return sub.unsubscribe().then((success) => {
         if (!success) {
-          throw new Error('Unsubscribe failed!');
+          throw new RuntimeError(
+            RuntimeErrorCode.PUSH_SUBSCRIPTION_UNSUBSCRIBE_FAILED,
+            (typeof ngDevMode === 'undefined' || ngDevMode) && 'Unsubscribe failed!',
+          );
         }
 
         this.subscriptionChanges.next(null);
