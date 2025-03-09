@@ -1,9 +1,9 @@
 // #docregion
 import {Component} from '@angular/core';
 import {ActorFormReactiveComponent} from './reactive/actor-form-reactive.component';
-import {ActorFormComponent} from '../../../forms/src/app/actor-form/actor-form.component';
 import {ReactiveFormsModule} from '@angular/forms';
 import {FormsModule} from '@angular/forms';
+import {ActorFormTemplateComponent} from './template/actor-form-template.component';
 
 @Component({
   selector: 'app-root',
@@ -11,6 +11,11 @@ import {FormsModule} from '@angular/forms';
              <app-actor-form-template/>
              <hr>
              <app-actor-form-reactive/>`,
-  imports: [ActorFormComponent, ActorFormReactiveComponent, FormsModule, ReactiveFormsModule],
+  imports: [
+    ActorFormReactiveComponent,
+    FormsModule,
+    ReactiveFormsModule,
+    ActorFormTemplateComponent,
+  ],
 })
 export class AppComponent {}
