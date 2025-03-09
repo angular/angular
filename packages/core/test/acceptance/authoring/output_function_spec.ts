@@ -122,7 +122,10 @@ describe('output() function', () => {
     fixture.componentInstance.show = false;
     fixture.detectChanges();
 
-    expect(() => dir.onBla.emit(3)).toThrowError(/Unexpected emit for destroyed `OutputRef`/);
+    fixture.destroy();
+    const warnSpy = spyOn(console, 'warn');
+    dir.onBla.emit(3);
+    expect(warnSpy.calls.mostRecent().args[0]).toMatch(/Unexpected emit for destroyed `OutputRef`/);
   });
 
   it('should error when subscribing to a destroyed output', () => {
