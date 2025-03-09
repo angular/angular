@@ -5,10 +5,10 @@
   <button type="button" (click)="toggleEditor('profile')">Profile Editor</button>
 </nav>
 
-@if (showNameEditor) {
-  <app-name-editor></app-name-editor>
+@if (showNameEditor()) {
+  <app-name-editor />
 }
 
-@if (showProfileEditor) {
-  <app-profile-editor></app-profile-editor>
+@if (showProfileEditor()) {
+  <app-profile-editor />
 }

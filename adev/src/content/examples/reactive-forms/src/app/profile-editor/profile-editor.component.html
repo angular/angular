@@ -29,7 +29,7 @@
     <h2>Aliases</h2>
     <button type="button" (click)="addAlias()">+ Add another alias</button>
 
-    @for (alias of aliases.controls; track alias.value; let i = $index) {
+    @for (alias of aliases.controls; track $index; let i = $index) {
       <div>
         <!-- The repeated alias template -->
         <label for="alias-{{ i }}">Alias:</label>
@@ -45,7 +45,7 @@
   <!-- #enddocregion submit-button -->
 </form>
 
-<hr />
+<hr>
 
 <p>Form Value: {{ profileForm.value | json }}</p>
 

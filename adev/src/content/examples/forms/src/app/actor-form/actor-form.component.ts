@@ -4,12 +4,13 @@ import {Component} from '@angular/core';
 
 import {Actor} from '../actor';
 import {FormsModule} from '@angular/forms';
+import {JsonPipe} from '@angular/common';
 
 // #docregion imports
 @Component({
   selector: 'app-actor-form',
   templateUrl: './actor-form.component.html',
-  imports: [FormsModule],
+  imports: [FormsModule, JsonPipe],
 })
 export class ActorFormComponent {
   // #enddocregion imports
