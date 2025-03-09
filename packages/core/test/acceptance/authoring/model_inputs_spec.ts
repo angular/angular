@@ -435,7 +435,9 @@ describe('model inputs', () => {
     expect(emittedEvents).toBe(1);
 
     fixture.destroy();
-    expect(() => modelRef.set(2)).toThrowError(/Unexpected emit for destroyed `OutputRef`/);
+    const warnSpy = spyOn(console, 'warn');
+    modelRef.set(2);
+    expect(warnSpy.calls.mostRecent().args[0]).toMatch(/Unexpected emit for destroyed `OutputRef`/);
     expect(emittedEvents).toBe(1);
   });
 
