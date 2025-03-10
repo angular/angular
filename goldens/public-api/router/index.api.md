@@ -1115,6 +1115,7 @@ export interface ViewTransitionInfo {
         ready: Promise<void>;
         updateCallbackDone: Promise<void>;
         skipTransition(): void;
+        readonly types: Set<string>;
     };
 }
 
