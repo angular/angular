@@ -33,6 +33,7 @@ import {ClassDeclaration} from '../../../reflection';
 import {SubsetOfKeys} from '../../../util/src/typescript';
 
 import {ParsedTemplateWithSource, StyleUrlMeta} from './resources';
+import {HostBindingNodes} from '../../directive';
 
 /**
  * These fields of `R3ComponentMetadata` are updated in the `resolve` phase.
@@ -108,6 +109,9 @@ export interface ComponentAnalysisData {
 
   /** Raw expression that defined the host directives array. Used for diagnostics. */
   rawHostDirectives: ts.Expression | null;
+
+  /** Raw nodes representing the host bindings of the directive. */
+  hostBindingNodes: HostBindingNodes;
 }
 
 export interface ComponentResolutionData {

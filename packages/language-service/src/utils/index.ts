@@ -140,7 +140,7 @@ function getInlineTypeCheckInfoAtPosition(
     resources === null ||
     resources.template === null ||
     isExternalResource(resources.template) ||
-    expression !== resources.template.expression
+    expression !== resources.template.node
   ) {
     return undefined;
   }

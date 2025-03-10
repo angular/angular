@@ -376,7 +376,7 @@ export type SourceMapping =
  */
 export interface DirectSourceMapping {
   type: 'direct';
-  node: ts.Expression;
+  node: ts.Node;
 }
 
 /**

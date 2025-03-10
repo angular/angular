@@ -121,6 +121,7 @@ import {
   TypeCheckableDirectiveMeta,
   TypeCheckContext,
   TemplateContext,
+  HostBindingsContext,
 } from '../../../typecheck/api';
 import {ExtendedTemplateChecker} from '../../../typecheck/extended/api';
 import {TemplateSemanticsChecker} from '../../../typecheck/template_semantics/api/api';
@@ -155,7 +156,11 @@ import {
   validateHostDirectives,
   wrapFunctionExpressionsInParens,
 } from '../../common';
-import {extractDirectiveMetadata, parseDirectiveStyles} from '../../directive';
+import {
+  extractDirectiveMetadata,
+  extractHostBindingResources,
+  parseDirectiveStyles,
+} from '../../directive';
 import {createModuleWithProvidersResolver, NgModuleSymbol} from '../../ng_module';
 
 import {checkCustomElementSelectorForErrors, makeCyclicImportInfo} from './diagnostics';
@@ -184,7 +189,7 @@ import {
   collectAnimationNames,
   validateAndFlattenComponentImports,
 } from './util';
-import {getTemplateDiagnostics} from '../../../typecheck';
+import {getTemplateDiagnostics, createHostElement} from '../../../typecheck';
 import {JitDeclarationRegistry} from '../../common/src/jit_declaration_registry';
 import {extractHmrMetatadata, getHmrUpdateDeclaration} from '../../../hmr';
 import {getProjectRelativePath} from '../../../util/src/path';
@@ -266,6 +271,7 @@ export class ComponentDecoratorHandler
     private readonly strictStandalone: boolean,
     private readonly enableHmr: boolean,
     private readonly implicitStandaloneValue: boolean,
+    private readonly typeCheckHostBindings: boolean,
   ) {
     this.extractTemplateOptions = {
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
@@ -742,11 +748,11 @@ export class ComponentDecoratorHandler
         }
       }
     }
-    const templateResource = template.declaration.isInline
-      ? {path: null, expression: component.get('template')!}
+    const templateResource: Resource = template.declaration.isInline
+      ? {path: null, node: component.get('template')!}
       : {
           path: absoluteFrom(template.declaration.resolvedTemplateUrl),
-          expression: template.sourceMapping.node,
+          node: template.sourceMapping.node,
         };
     const relativeTemplatePath = getProjectRelativePath(
       templateResource.path ?? ts.getOriginalNode(node).getSourceFile().fileName,
@@ -760,6 +766,7 @@ export class ComponentDecoratorHandler
     let styles: string[] = [];
     const externalStyles: string[] = [];
 
+    const hostBindingResources = extractHostBindingResources(directiveResult.hostBindingNodes);
     const styleResources = extractInlineStyleResources(component);
     const styleUrls: StyleUrlMeta[] = [
       ...extractComponentStyleUrls(this.evaluator, component),
@@ -781,7 +788,7 @@ export class ComponentDecoratorHandler
           // Only string literal values from the decorator are considered style resources
           styleResources.add({
             path: absoluteFrom(resourceUrl),
-            expression: styleUrl.expression,
+            node: styleUrl.expression,
           });
         }
         const resourceStr = this.resourceLoader.load(resourceUrl);
@@ -934,6 +941,7 @@ export class ComponentDecoratorHandler
         resources: {
           styles: styleResources,
           template: templateResource,
+          hostBindings: hostBindingResources,
         },
         isPoisoned,
         animationTriggerNames,
@@ -944,6 +952,7 @@ export class ComponentDecoratorHandler
         explicitlyDeferredTypes,
         schemas,
         decorator: (decorator?.node as ts.Decorator | null) ?? null,
+        hostBindingNodes: directiveResult.hostBindingNodes,
       },
       diagnostics,
     };
@@ -1058,11 +1067,7 @@ export class ComponentDecoratorHandler
     node: ClassDeclaration,
     meta: Readonly<ComponentAnalysisData>,
   ): void {
-    if (this.typeCheckScopeRegistry === null || !ts.isClassDeclaration(node)) {
-      return;
-    }
-
-    if (meta.isPoisoned && !this.usePoisonedData) {
+    if (!ts.isClassDeclaration(node) || (meta.isPoisoned && !this.usePoisonedData)) {
       return;
     }
     const scope = this.typeCheckScopeRegistry.getTypeCheckScope(node);
@@ -1081,11 +1086,30 @@ export class ComponentDecoratorHandler
       preserveWhitespaces: meta.meta.template.preserveWhitespaces ?? false,
     };
 
+    const hostElement = this.typeCheckHostBindings
+      ? createHostElement(
+          'component',
+          meta.meta.selector,
+          node,
+          meta.hostBindingNodes.literal,
+          meta.hostBindingNodes.bindingDecorators,
+          meta.hostBindingNodes.listenerDecorators,
+        )
+      : null;
+    const hostBindingsContext: HostBindingsContext | null =
+      hostElement === null
+        ? null
+        : {
+            node: hostElement,
+            sourceMapping: {type: 'direct', node},
+          };
+
     ctx.addDirective(
       new Reference(node),
       binder,
       scope.schemas,
       templateContext,
+      hostBindingsContext,
       meta.meta.isStandalone,
     );
   }

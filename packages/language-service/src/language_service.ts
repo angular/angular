@@ -504,11 +504,8 @@ export class LanguageService {
           span = ts.createTextSpanFromBounds(0, 0);
           templateFileName = template.path;
         } else {
-          span = ts.createTextSpanFromBounds(
-            template.expression.getStart(),
-            template.expression.getEnd(),
-          );
-          templateFileName = template.expression.getSourceFile().fileName;
+          span = ts.createTextSpanFromBounds(template.node.getStart(), template.node.getEnd());
+          templateFileName = template.node.getSourceFile().fileName;
         }
         return {fileName: templateFileName, textSpan: span, contextSpan: span};
       },
