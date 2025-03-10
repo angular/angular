@@ -42,7 +42,7 @@ export function extractHmrDependencies(
 } | null {
   const name = ts.isClassDeclaration(node) && node.name ? node.name.text : null;
   const visitor = new PotentialTopLevelReadsVisitor();
-  const sourceFile = node.getSourceFile();
+  const sourceFile = ts.getOriginalNode(node).getSourceFile();
 
   // Visit all of the compiled expressions to look for potential
   // local references that would have to be retained.
