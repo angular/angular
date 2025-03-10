@@ -251,6 +251,7 @@
   "ViewEncapsulation",
   "ViewEngineTemplateRef",
   "ViewRef",
+  "XSS_SECURITY_URL",
   "ZONELESS_ENABLED",
   "ZONELESS_SCHEDULER_DISABLED",
   "ZoneAwareEffectScheduler",
