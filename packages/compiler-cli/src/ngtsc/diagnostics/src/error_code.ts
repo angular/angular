@@ -519,6 +519,11 @@ export enum ErrorCode {
   UNUSED_STANDALONE_IMPORTS = 8113,
 
   /**
+   * A structural directive is used in a template, but the directive is not imported.
+   */
+  MISSING_STRUCTURAL_DIRECTIVE = 8114,
+
+  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */
