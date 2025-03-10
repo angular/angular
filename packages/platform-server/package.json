@@ -11,7 +11,8 @@
     "@angular/common": "0.0.0-PLACEHOLDER",
     "@angular/compiler": "0.0.0-PLACEHOLDER",
     "@angular/core": "0.0.0-PLACEHOLDER",
-    "@angular/platform-browser": "0.0.0-PLACEHOLDER"
+    "@angular/platform-browser": "0.0.0-PLACEHOLDER",
+    "rxjs": "^6.5.3 || ^7.4.0"
   },
   "dependencies": {
     "tslib": "^2.3.0",
