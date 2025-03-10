@@ -48,6 +48,7 @@ import {JSACTION_BLOCK_ELEMENT_MAP} from '@angular/core/src/hydration/tokens';
 import {JSACTION_EVENT_CONTRACT} from '@angular/core/src/event_delegation_utils';
 import {provideRouter, RouterLink, RouterOutlet, Routes} from '@angular/router';
 import {MockPlatformLocation} from '@angular/common/testing';
+import {TimerScheduler} from '@angular/core/src/defer/timer_scheduler';
 
 /**
  * Emulates a dynamic import promise.
@@ -1341,14 +1342,19 @@ describe('platform-server partial hydration integration', () => {
       });
 
       describe('timer', () => {
-        const TEST_TIMEOUT = 10_000; // 10 seconds
+        class FakeTimerScheduler {
+          add(delay: number, callback: VoidFunction) {
+            callback();
+          }
+          remove(callback: VoidFunction) {
+            /* noop */
+          }
+        }
 
-        it(
-          'top level timer',
-          async () => {
-            @Component({
-              selector: 'app',
-              template: `
+        it('top level timer', async () => {
+          @Component({
+            selector: 'app',
+            template: `
             <main (click)="fnA()">
               @defer (hydrate on timer(150)) {
                 <article>
@@ -1360,62 +1366,56 @@ describe('platform-server partial hydration integration', () => {
               }
             </main>
           `,
-            })
-            class SimpleComponent {
-              value = signal('start');
-              fnA() {}
-              fnB() {
-                this.value.set('end');
-              }
+          })
+          class SimpleComponent {
+            value = signal('start');
+            fnA() {}
+            fnB() {
+              this.value.set('end');
             }
+          }
 
-            const appId = 'custom-app-id';
-            const providers = [{provide: APP_ID, useValue: appId}];
-            const hydrationFeatures = () => [withIncrementalHydration()];
+          const appId = 'custom-app-id';
+          const providers = [
+            {provide: APP_ID, useValue: appId},
+            {provide: TimerScheduler, useClass: FakeTimerScheduler},
+          ];
+          const hydrationFeatures = () => [withIncrementalHydration()];
 
-            const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
-            const ssrContents = getAppContents(html);
+          const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+          const ssrContents = getAppContents(html);
 
-            // <main> uses "eager" `custom-app-id` namespace.
-            expect(ssrContents).toContain('<main jsaction="click:;');
-            // <div>s inside a defer block have `d0` as a namespace.
-            expect(ssrContents).toContain('<article>');
-            // Outer defer block is rendered.
-            expect(ssrContents).toContain('defer block rendered');
+          // <main> uses "eager" `custom-app-id` namespace.
+          expect(ssrContents).toContain('<main jsaction="click:;');
+          // <div>s inside a defer block have `d0` as a namespace.
+          expect(ssrContents).toContain('<article>');
+          // Outer defer block is rendered.
+          expect(ssrContents).toContain('defer block rendered');
 
-            // Internal cleanup before we do server->client transition in this test.
-            resetTViewsFor(SimpleComponent);
+          // Internal cleanup before we do server->client transition in this test.
+          resetTViewsFor(SimpleComponent);
 
-            ////////////////////////////////
-            const doc = getDocument();
-            const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
-              envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
-              hydrationFeatures,
-            });
-            const compRef = getComponentRef<SimpleComponent>(appRef);
-            appRef.tick();
-            await appRef.whenStable();
+          ////////////////////////////////
+          const doc = getDocument();
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+            envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
+            hydrationFeatures,
+          });
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          await appRef.whenStable();
 
-            const appHostNode = compRef.location.nativeElement;
+          const appHostNode = compRef.location.nativeElement;
 
-            expect(appHostNode.outerHTML).toContain('<article>');
+          expect(appHostNode.outerHTML).toContain('<article>');
+          await allPendingDynamicImports();
 
-            await timeout(500); // wait for timer
-            await appRef.whenStable();
-            await allPendingDynamicImports();
-            appRef.tick();
+          expect(appHostNode.outerHTML).toContain('<span id="test">start</span>');
+        });
 
-            expect(appHostNode.outerHTML).toContain('<span id="test">start</span>');
-          },
-          TEST_TIMEOUT,
-        );
-
-        it(
-          'nested timer',
-          async () => {
-            @Component({
-              selector: 'app',
-              template: `
+        it('nested timer', async () => {
+          @Component({
+            selector: 'app',
+            template: `
             <main (click)="fnA()">
               @defer (on viewport; hydrate on interaction) {
                 <div id="main" (click)="fnA()">
@@ -1434,57 +1434,54 @@ describe('platform-server partial hydration integration', () => {
               }
             </main>
           `,
-            })
-            class SimpleComponent {
-              value = signal('start');
-              fnA() {}
-              constructor() {
-                if (!isPlatformServer(inject(PLATFORM_ID))) {
-                  this.value.set('end');
-                }
+          })
+          class SimpleComponent {
+            value = signal('start');
+            fnA() {}
+            constructor() {
+              if (!isPlatformServer(inject(PLATFORM_ID))) {
+                this.value.set('end');
               }
             }
+          }
 
-            const appId = 'custom-app-id';
-            const providers = [{provide: APP_ID, useValue: appId}];
-            const hydrationFeatures = () => [withIncrementalHydration()];
+          const appId = 'custom-app-id';
+          const providers = [
+            {provide: APP_ID, useValue: appId},
+            {provide: TimerScheduler, useClass: FakeTimerScheduler},
+          ];
+          const hydrationFeatures = () => [withIncrementalHydration()];
 
-            const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
-            const ssrContents = getAppContents(html);
+          const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+          const ssrContents = getAppContents(html);
 
-            // <main> uses "eager" `custom-app-id` namespace.
-            expect(ssrContents).toContain('<main jsaction="click:;');
-            // <div>s inside a defer block have `d0` as a namespace.
-            expect(ssrContents).toContain('<article>');
-            // Outer defer block is rendered.
-            expect(ssrContents).toContain('defer block rendered');
+          // <main> uses "eager" `custom-app-id` namespace.
+          expect(ssrContents).toContain('<main jsaction="click:;');
+          // <div>s inside a defer block have `d0` as a namespace.
+          expect(ssrContents).toContain('<article>');
+          // Outer defer block is rendered.
+          expect(ssrContents).toContain('defer block rendered');
 
-            // Internal cleanup before we do server->client transition in this test.
-            resetTViewsFor(SimpleComponent);
+          // Internal cleanup before we do server->client transition in this test.
+          resetTViewsFor(SimpleComponent);
 
-            ////////////////////////////////
-            const doc = getDocument();
-            const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
-              envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
-              hydrationFeatures,
-            });
-            const compRef = getComponentRef<SimpleComponent>(appRef);
-            appRef.tick();
-            await appRef.whenStable();
+          ////////////////////////////////
+          const doc = getDocument();
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+            envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
+            hydrationFeatures,
+          });
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          await appRef.whenStable();
 
-            const appHostNode = compRef.location.nativeElement;
+          const appHostNode = compRef.location.nativeElement;
 
-            expect(appHostNode.outerHTML).toContain('<article>');
+          expect(appHostNode.outerHTML).toContain('<article>');
 
-            await timeout(500); // wait for timer
-            await appRef.whenStable();
-            await allPendingDynamicImports();
-            appRef.tick();
+          await allPendingDynamicImports();
 
-            expect(appHostNode.outerHTML).toContain('<span id="test">end</span>');
-          },
-          TEST_TIMEOUT,
-        );
+          expect(appHostNode.outerHTML).toContain('<span id="test">end</span>');
+        });
       });
 
       it('when', async () => {
