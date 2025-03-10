@@ -11,7 +11,7 @@ function MyComponent_div_3_span_2_Template(rf, ctx) {
 	  const $foo$ = $r3$.ɵɵreference(1);
 	  const $baz$ = $r3$.ɵɵreference(5);
 	  $r3$.ɵɵadvance();
-	  $r3$.ɵɵtextInterpolate3("", $foo$, "-", $bar$, "-", $baz$, "");
+	  $r3$.ɵɵtextInterpolate3("", $foo$, "-", $bar$, "-", $baz$);
 	}
   }
   function MyComponent_div_3_Template(rf, ctx) {

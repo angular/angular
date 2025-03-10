@@ -3,4 +3,4 @@
 // TODO: Work out how to fix the broken segment for the last item in a template
 .ɵɵele // SOURCE: "/interpolation_basic.ts" "</h3>'"
 …
-.ɵɵtextInterpolate1("Hello ", ctx.name, "") // SOURCE: "/interpolation_basic.ts" "Hello {{ name }}"
+.ɵɵtextInterpolate1("Hello ", ctx.name) // SOURCE: "/interpolation_basic.ts" "Hello {{ name }}"

@@ -11,6 +11,6 @@ template: function MyApp_Template(rf, ctx) {
     i0.ɵɵadvance();
     i0.ɵɵtextInterpolate1("Hello, ", ctx.firstName ?? "Frodo", "!");
     i0.ɵɵadvance(2);
-    i0.ɵɵtextInterpolate1("Your last name is ", ctx.lastName ?? ctx.lastNameFallback ?? "unknown", "");
+    i0.ɵɵtextInterpolate1("Your last name is ", ctx.lastName ?? ctx.lastNameFallback ?? "unknown");
   }
 }
