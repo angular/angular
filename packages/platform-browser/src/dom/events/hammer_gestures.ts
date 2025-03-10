@@ -302,7 +302,7 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
       multi: true,
       deps: [DOCUMENT, HAMMER_GESTURE_CONFIG, Injector, [new Optional(), HAMMER_LOADER]],
     },
-    {provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig, deps: []},
+    {provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig},
   ],
 })
 export class HammerModule {}
