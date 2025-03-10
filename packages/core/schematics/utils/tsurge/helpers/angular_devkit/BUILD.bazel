@@ -1,6 +1,6 @@
 load("//tools:defaults.bzl", "ts_library")
 
-package(default_visibility = ["//packages/core/schematics/ng-generate:__subpackages__"])
+package(default_visibility = ["//packages/core/schematics:__subpackages__"])
 
 ts_library(
     name = "angular_devkit",

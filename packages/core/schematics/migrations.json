@@ -1,3 +1,9 @@
 {
-  "schematics": {}
+  "schematics": {
+    "inject-flags": {
+      "version": "20.0.0",
+      "description": "Replaces usages of the deprecated InjectFlags enum",
+      "factory": "./bundles/inject-flags#migrate"
+    }
+  }
 }
