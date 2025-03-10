@@ -24,7 +24,7 @@ export interface EntryPointInfo {
   /** Relative path to flat ES2022 ES module bundle file (also applicable in the rollup output). */
   fesm2022RelativePath: string;
   /** Index type definition file for the APF entry-point. */
-  typings: BazelFileInfo;
+  typingsEntryPoint: BazelFileInfo;
   /**
    * Whether the index or typing paths have been guessed. For entry-points built
    * through `ts_library`, there is no explicit setting that declares the entry-point

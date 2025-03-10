@@ -81,7 +81,7 @@ describe('type definitions', () => {
       expect(definitions!.length).toEqual(1);
 
       assertTextSpans(definitions, ['InputSignal']);
-      assertFileNames(definitions, ['index.d.ts']);
+      assertFileNames(definitions, ['input_signal.d.ts']);
     });
   });
 
@@ -119,7 +119,7 @@ describe('type definitions', () => {
       expect(definitions!.length).toEqual(1);
 
       assertTextSpans(definitions, ['OutputEmitterRef']);
-      assertFileNames(definitions, ['index.d.ts']);
+      assertFileNames(definitions, ['output_emitter_ref.d.ts']);
     });
   });
 
@@ -158,7 +158,7 @@ describe('type definitions', () => {
       expect(definitions!.length).toEqual(1);
 
       assertTextSpans(definitions, ['OutputRef']);
-      assertFileNames(definitions, ['index.d.ts']);
+      assertFileNames(definitions, ['output_ref.d.ts']);
     });
   });
 
@@ -198,7 +198,7 @@ describe('type definitions', () => {
 
       expect(definitions.length).toBe(1);
       assertTextSpans(definitions, ['ModelSignal']);
-      assertFileNames(definitions, ['index.d.ts']);
+      assertFileNames(definitions, ['model_signal.d.ts']);
     });
 
     it('should return the definition for the event side of a two-way binding', () => {
@@ -211,7 +211,7 @@ describe('type definitions', () => {
 
       expect(definitions.length).toBe(1);
       assertTextSpans(definitions, ['ModelSignal']);
-      assertFileNames(definitions, ['index.d.ts']);
+      assertFileNames(definitions, ['model_signal.d.ts']);
     });
 
     it('should return the definition of a two-way binding', () => {
@@ -224,7 +224,7 @@ describe('type definitions', () => {
 
       expect(definitions.length).toBe(1);
       assertTextSpans(definitions, ['ModelSignal']);
-      assertFileNames(definitions, ['index.d.ts']);
+      assertFileNames(definitions, ['model_signal.d.ts']);
     });
   });
 

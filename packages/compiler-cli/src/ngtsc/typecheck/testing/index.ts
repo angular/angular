@@ -92,6 +92,7 @@ import {TypeCheckShimGenerator} from '../src/shim';
 import {TcbGenericContextBehavior} from '../src/type_check_block';
 import {TypeCheckFile} from '../src/type_check_file';
 import {sfExtensionData} from '../../shims';
+import {globSync} from 'tinyglobby';
 
 export function typescriptLibDts(): TestFile {
   return {
@@ -153,19 +154,21 @@ export function typescriptLibDts(): TestFile {
   };
 }
 
+let _cachedAngularCoreDtsFiles: TestFile[] | null = null;
 export function angularCoreDtsFiles(): TestFile[] {
-  const directory = resolveFromRunfiles('angular/packages/core/npm_package');
+  if (_cachedAngularCoreDtsFiles !== null) {
+    return _cachedAngularCoreDtsFiles;
+  }
 
-  return [
-    {
-      name: absoluteFrom('/node_modules/@angular/core/index.d.ts'),
-      contents: readFileSync(path.join(directory, 'index.d.ts'), 'utf8'),
-    },
-    {
-      name: absoluteFrom('/node_modules/@angular/core/primitives/signals/index.d.ts'),
-      contents: readFileSync(path.join(directory, 'primitives/signals/index.d.ts'), 'utf8'),
-    },
-  ];
+  const directory = resolveFromRunfiles('angular/packages/core/npm_package');
+  const dtsFiles = globSync('**/*.d.ts', {cwd: directory});
+
+  return (_cachedAngularCoreDtsFiles = dtsFiles.map((f) => {
+    return {
+      name: absoluteFrom(`/node_modules/@angular/core/${f}`),
+      contents: readFileSync(path.join(directory, f), 'utf8'),
+    };
+  }));
 }
 
 export function angularAnimationsDts(): TestFile {

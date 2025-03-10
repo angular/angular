@@ -2,4 +2,9 @@ load("//integration:index.bzl", "ng_integration_test")
 
 ng_integration_test(
     name = "test",
+    # Disabled because our APF `.d.ts` output isn't fully compatible ESM, and
+    # it only temporarily worked due to `.d.ts` bundling mitigating the issue.
+    # We never were fully compatible and this test will be our long-term validation.
+    # TODO: Fix this https://github.com/angular/angular/issues/43886.
+    tags = ["manual"],
 )

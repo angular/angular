@@ -9,27 +9,27 @@
 import {ExternalReference} from '@angular/compiler';
 import ts from 'typescript';
 
-export function coreHasSymbol(program: ts.Program, symbol: ExternalReference): boolean | null {
+export function coreHasSymbol(
+  program: ts.Program,
+  symbol: ExternalReference,
+  coreRelativePotentialFiles: string[],
+): boolean | null {
   const checker = program.getTypeChecker();
-  for (const sf of program.getSourceFiles().filter(isMaybeCore)) {
+
+  for (const sf of program.getSourceFiles()) {
+    if (!sf.isDeclarationFile) {
+      continue;
+    }
+    if (!coreRelativePotentialFiles.some((s) => sf.fileName.endsWith(`/@angular/core/${s}`))) {
+      continue;
+    }
     const sym = checker.getSymbolAtLocation(sf);
     if (sym === undefined || sym.exports === undefined) {
       continue;
     }
-    if (!sym.exports.has('ɵɵtemplate' as ts.__String)) {
-      // This is not @angular/core.
-      continue;
+    if (sym.exports.has(symbol.name as ts.__String)) {
+      return true;
     }
-    return sym.exports.has(symbol.name as ts.__String);
   }
-  // No @angular/core file found, so we have no information.
   return null;
-}
-
-export function isMaybeCore(sf: ts.SourceFile): boolean {
-  return (
-    sf.isDeclarationFile &&
-    sf.fileName.includes('@angular/core') &&
-    sf.fileName.endsWith('index.d.ts')
-  );
 }
