@@ -46,9 +46,12 @@ export interface SignalGetter<T> extends SignalBaseGetter<T> {
 /**
  * Create a `Signal` that can be set or updated directly.
  */
-export function createSignal<T>(initialValue: T): SignalGetter<T> {
+export function createSignal<T>(initialValue: T, equal?: ValueEqualityFn<T>): SignalGetter<T> {
   const node: SignalNode<T> = Object.create(SIGNAL_NODE);
   node.value = initialValue;
+  if (equal !== undefined) {
+    node.equal = equal;
+  }
   const getter = (() => {
     producerAccessed(node);
     return node.value;
