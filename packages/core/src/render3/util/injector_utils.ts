@@ -36,10 +36,6 @@ export function getParentInjectorIndex(parentLocation: RelativeInjectorLocation)
   return parentLocation & RelativeInjectorLocationFlags.InjectorIndexMask;
 }
 
-export function getParentInjectorViewOffset(parentLocation: RelativeInjectorLocation): number {
-  return parentLocation >> RelativeInjectorLocationFlags.ViewOffsetShift;
-}
-
 /**
  * Unwraps a parent injector location number to find the view offset from the current injector,
  * then walks up the declaration view tree until the view is found that contains the parent
@@ -50,7 +46,8 @@ export function getParentInjectorViewOffset(parentLocation: RelativeInjectorLoca
  * @returns The LView instance that contains the parent injector
  */
 export function getParentInjectorView(location: RelativeInjectorLocation, startView: LView): LView {
-  let viewOffset = getParentInjectorViewOffset(location);
+  // Gets parent injector view offset.
+  let viewOffset = location >> RelativeInjectorLocationFlags.ViewOffsetShift;
   let parentView = startView;
   // For most cases, the parent injector can be found on the host node (e.g. for component
   // or container), but we must keep the loop here to support the rarer case of deeply nested

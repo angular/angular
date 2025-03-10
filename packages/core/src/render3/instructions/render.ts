@@ -135,7 +135,11 @@ export function renderView<T>(tView: TView, lView: LView<T>, context: T): void {
     // Render child component views.
     const components = tView.components;
     if (components !== null) {
-      renderChildComponents(lView, components);
+      // Renders child components in the current view (creation mode).
+      // Perf note: Do not extract this into a separate function, as it is faster this way.
+      for (let i = 0; i < components.length; i++) {
+        renderComponent(lView, components[i]);
+      }
     }
   } catch (error) {
     // If we didn't manage to get past the first template pass due to
@@ -149,12 +153,5 @@ export function renderView<T>(tView: TView, lView: LView<T>, context: T): void {
   } finally {
     lView[FLAGS] &= ~LViewFlags.CreationMode;
     leaveView();
-  }
-}
-
-/** Renders child components in the current view (creation mode). */
-function renderChildComponents(hostLView: LView, components: number[]): void {
-  for (let i = 0; i < components.length; i++) {
-    renderComponent(hostLView, components[i]);
   }
 }
