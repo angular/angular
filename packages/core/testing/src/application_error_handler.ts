@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ErrorHandler, inject, NgZone, Injectable} from '@angular/core';
+import {ErrorHandler, inject, NgZone, Injectable} from '../../src/core';
 
 export const RETHROW_APPLICATION_ERRORS_DEFAULT = true;
 

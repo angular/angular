@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DestroyRef, EnvironmentInjector, Injector, runInInjectionContext} from '@angular/core';
+import {DestroyRef, EnvironmentInjector, Injector, runInInjectionContext} from '../../src/core';
 import {BehaviorSubject} from 'rxjs';
 
 import {takeUntilDestroyed} from '../src/take_until_destroyed';

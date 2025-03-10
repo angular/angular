@@ -25,7 +25,7 @@ import {
   ɵZONELESS_ENABLED as ZONELESS_ENABLED,
   ɵPendingTasksInternal as PendingTasks,
   ɵEffectScheduler as EffectScheduler,
-} from '@angular/core';
+} from '../../src/core';
 import {Subscription} from 'rxjs';
 
 import {DeferBlockFixture} from './defer';
