@@ -35,13 +35,13 @@ export function consumerMarkDirty(node: ReactiveNode): void;
 export function consumerPollProducersForChange(node: ReactiveNode): boolean;
 
 // @public
-export function createComputed<T>(computation: () => T): ComputedGetter<T>;
+export function createComputed<T>(computation: () => T, equal?: ValueEqualityFn<T>): ComputedGetter<T>;
 
 // @public (undocumented)
 export function createLinkedSignal<S, D>(sourceFn: () => S, computationFn: ComputationFn<S, D>, equalityFn?: ValueEqualityFn<D>): LinkedSignalGetter<S, D>;
 
 // @public
-export function createSignal<T>(initialValue: T): SignalGetter<T>;
+export function createSignal<T>(initialValue: T, equal?: ValueEqualityFn<T>): SignalGetter<T>;
 
 // @public (undocumented)
 export function createWatch(fn: (onCleanup: WatchCleanupRegisterFn) => void, schedule: (watch: Watch) => void, allowSignalWrites: boolean): Watch;
