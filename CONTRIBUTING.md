@@ -243,7 +243,7 @@ The following documents can help you sort out issues with GitHub accounts and mu
 [coc]: https://github.com/angular/code-of-conduct/blob/main/CODE_OF_CONDUCT.md
 [corporate-cla]: https://cla.developers.google.com/about/google-corporate
 [dev-doc]: ./contributing-docs/building-and-testing-angular.md
-[commit-message-guidelines]: ./contributing-docs/building-and-testing-angular.md
+[commit-message-guidelines]: ./contributing-docs/commit-message-guidelines.md
 [github]: https://github.com/angular/angular
 [discord]: https://discord.gg/angular
 [individual-cla]: https://cla.developers.google.com/about/google-individual
