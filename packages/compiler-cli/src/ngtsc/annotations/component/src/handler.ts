@@ -1896,7 +1896,7 @@ export class ComponentDecoratorHandler
     const res = compileResults(fac, def, classMetadata, 'ɵcmp', null, null, debugInfo, null);
     return hmrMeta === null || res.length === 0
       ? null
-      : getHmrUpdateDeclaration(res, pool.statements, hmrMeta, node.getSourceFile());
+      : getHmrUpdateDeclaration(res, pool.statements, hmrMeta, node);
   }
 
   /**

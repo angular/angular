@@ -9,6 +9,10 @@
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
 import {NgtscTestEnvironment} from './env';
+import {CompilerOptions} from '@angular/compiler-cli/src/transformers/api';
+import {createCompilerHost} from '@angular/compiler-cli/src/transformers/compiler_host';
+import {NgtscProgram} from '@angular/compiler-cli/src/ngtsc/program';
+import ts from 'typescript';
 
 runInEachFileSystem(() => {
   describe('HMR code generation', () => {
@@ -900,6 +904,72 @@ runInEachFileSystem(() => {
       expect(hmrContents).toContain(
         'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, token, Foo, Component) {',
       );
+    });
+
+    it('should generate HMR code for a transformed class', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({template: ''})
+          export class Cmp {}
+        `,
+      );
+
+      const options: CompilerOptions = {
+        target: ts.ScriptTarget.Latest,
+        module: ts.ModuleKind.ESNext,
+        _enableHmr: true,
+      };
+
+      const program = new NgtscProgram(['/test.ts'], options, createCompilerHost({options}));
+      const transformers = program.compiler.prepareEmit().transformers;
+
+      transformers.before!.unshift((ctx) => (sourceFile) => {
+        const visitor = (node: ts.Node) => {
+          if (ts.isClassDeclaration(node) && node.name?.getText() === 'Cmp') {
+            const newMember = ctx.factory.createPropertyDeclaration(
+              undefined,
+              'newProp',
+              undefined,
+              undefined,
+              ctx.factory.createNumericLiteral(123),
+            );
+
+            return ctx.factory.updateClassDeclaration(
+              node,
+              node.modifiers,
+              node.name,
+              node.typeParameters,
+              node.heritageClauses,
+              [newMember, ...node.members],
+            );
+          }
+          return ts.visitEachChild(node, visitor, ctx);
+        };
+        return ts.visitEachChild(sourceFile, visitor, ctx);
+      });
+
+      const {diagnostics, emitSkipped} = program
+        .getTsProgram()
+        .emit(undefined, undefined, undefined, undefined, transformers);
+      const declaration = program
+        .getTsProgram()
+        .getSourceFile('/test.ts')
+        ?.statements.find(
+          (stmt) => ts.isClassDeclaration(stmt) && stmt.name?.getText() === 'Cmp',
+        ) as ts.ClassDeclaration;
+
+      const jsContents = env.getContents('/test.js');
+      const hmrContents = program.compiler.emitHmrUpdateModule(declaration);
+
+      expect(diagnostics.length).toBe(0);
+      expect(emitSkipped).toBe(false);
+
+      expect(jsContents).toContain('ɵreplaceMetadata(Cmp');
+      expect(jsContents).toContain('newProp = 123');
+      expect(hmrContents).toContain('export default function Cmp_UpdateMetadata');
     });
   });
 });
