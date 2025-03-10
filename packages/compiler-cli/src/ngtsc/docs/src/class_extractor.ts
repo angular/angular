@@ -117,6 +117,8 @@ class ClassExtractor {
       return this.extractClassProperty(memberDeclaration);
     } else if (ts.isAccessor(memberDeclaration)) {
       return this.extractGetterSetter(memberDeclaration);
+    } else if (ts.isConstructorDeclaration(memberDeclaration)) {
+      return this.extractConstructor(memberDeclaration);
     }
 
     // We only expect methods, properties, and accessors. If we encounter something else,
@@ -180,6 +182,19 @@ class ClassExtractor {
     };
   }
 
+  protected extractConstructor(constructorDeclaration: ts.ConstructorDeclaration): MethodEntry {
+    const functionExtractor = new FunctionExtractor(
+      'constructor',
+      constructorDeclaration,
+      this.typeChecker,
+    );
+    return {
+      ...functionExtractor.extract(),
+      memberType: MemberType.Method,
+      memberTags: this.getMemberTags(constructorDeclaration),
+    };
+  }
+
   protected extractInheritance(
     declaration: ClassDeclaration & ClassDeclarationLike,
   ): string | undefined {
@@ -211,7 +226,9 @@ class ClassExtractor {
   }
 
   /** Gets the tags for a member (protected, readonly, static, etc.) */
-  protected getMemberTags(member: MethodLike | PropertyLike): MemberTags[] {
+  protected getMemberTags(
+    member: MethodLike | PropertyLike | ts.ConstructorDeclaration,
+  ): MemberTags[] {
     const tags: MemberTags[] = this.getMemberTagsFromModifiers(member.modifiers ?? []);
 
     if (member.questionToken) {
@@ -248,6 +265,7 @@ class ClassExtractor {
     // classes may narrow types or add method overloads.
     const type = this.typeChecker.getTypeAtLocation(this.declaration);
     const members = type.getProperties();
+    const constructor = type.getSymbol()?.members?.get(ts.InternalSymbolName.Constructor);
 
     // While the properties of the declaration type represent the properties that exist
     // on a class *instance*, static members are properties on the class symbol itself.
@@ -255,7 +273,7 @@ class ClassExtractor {
     const staticMembers = typeOfConstructor.getProperties();
 
     const result: MemberElement[] = [];
-    for (const member of [...members, ...staticMembers]) {
+    for (const member of [...(constructor ? [constructor] : []), ...members, ...staticMembers]) {
       // A member may have multiple declarations in the case of function overloads.
       const memberDeclarations = this.filterMethodOverloads(member.getDeclarations() ?? []);
       for (const memberDeclaration of memberDeclarations) {
@@ -272,17 +290,23 @@ class ClassExtractor {
   private filterMethodOverloads(declarations: ts.Declaration[]): ts.Declaration[] {
     return declarations.filter((declaration, index) => {
       // Check if the declaration is a function or method
-      if (ts.isFunctionDeclaration(declaration) || ts.isMethodDeclaration(declaration)) {
+      if (
+        ts.isFunctionDeclaration(declaration) ||
+        ts.isMethodDeclaration(declaration) ||
+        ts.isConstructorDeclaration(declaration)
+      ) {
         // TypeScript ensures that all declarations for a given abstract method appear consecutively.
         const nextDeclaration = declarations[index + 1];
-        const isNextAbstractMethodWithSameName =
+        const isNextMethodWithSameName =
           nextDeclaration &&
-          ts.isMethodDeclaration(nextDeclaration) &&
-          nextDeclaration.name.getText() === declaration.name?.getText();
+          ((ts.isMethodDeclaration(nextDeclaration) &&
+            nextDeclaration.name.getText() === declaration.name?.getText()) ||
+            (ts.isConstructorDeclaration(nextDeclaration) &&
+              ts.isConstructorDeclaration(declaration)));
 
-        // Return only the last occurrence of an abstract method to avoid overload duplication.
+        // Return only the last occurrence of a method to avoid overload duplication.
         // Subsequent overloads or implementations are handled separately by the function extractor.
-        return !isNextAbstractMethodWithSameName;
+        return !isNextMethodWithSameName;
       }
 
       // Include non-method declarations, such as properties, without filtering.
@@ -326,6 +350,11 @@ class ClassExtractor {
    *  - The member is marked as internal via JSDoc.
    */
   private isMemberExcluded(member: MemberElement): boolean {
+    if (ts.isConstructorDeclaration(member)) {
+      // A constructor has no name
+      return false;
+    }
+
     return (
       !member.name ||
       !this.isDocumentableMember(member) ||
@@ -345,6 +374,7 @@ class ClassExtractor {
       this.isMethod(member) ||
       this.isProperty(member) ||
       ts.isAccessor(member) ||
+      ts.isConstructorDeclaration(member) ||
       // Signatures are documentable if they are part of an interface.
       ts.isCallSignatureDeclaration(member)
     );
