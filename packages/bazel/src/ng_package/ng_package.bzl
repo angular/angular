@@ -184,12 +184,12 @@ def _write_rollup_config(
 
     return config
 
-def _run_rollup(ctx, rollup_config, inputs, format):
+def _run_rollup(ctx, rollup_config, inputs):
     outdir = ctx.actions.declare_directory("%s_fesm_bundle_out" % ctx.label.name)
 
     args = ctx.actions.args()
     args.add("--config", rollup_config)
-    args.add("--output.format", format)
+    args.add("--output.format", "esm")
     args.add("--output.dir", outdir.path + "/fesm2022")
 
     # Note: if the input has external source maps then we need to also install and use
@@ -462,7 +462,7 @@ def _ng_package_impl(ctx):
 
     rollup_config = _write_rollup_config(ctx, ctx.bin_dir.path, metadata_arg, ctx.attr.side_effect_entry_points)
     rollup_inputs = depset(static_files, transitive = [unscoped_all_entry_point_esm2022_depset])
-    bundles_out = _run_rollup(ctx, rollup_config, rollup_inputs, "esm")
+    bundles_out = _run_rollup(ctx, rollup_config, rollup_inputs)
 
     packager_inputs.append(bundles_out)
 
