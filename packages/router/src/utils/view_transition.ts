@@ -80,6 +80,12 @@ export interface ViewTransitionInfo {
      * @see https://developer.mozilla.org/en-US/docs/Web/API/ViewTransition/skipTransition
      */
     skipTransition(): void;
+
+    /**
+     * @see https://developer.mozilla.org/en-US/docs/Web/API/ViewTransition#browser_compatibility
+     * @see https://developer.chrome.com/docs/web-platform/view-transitions/same-document#default_style_and_transition_reference
+     */
+    readonly types: Set<string>;
   };
   /**
    * The `ActivatedRouteSnapshot` that the navigation is transitioning from.
@@ -125,7 +131,8 @@ export function createViewTransition(
       // routes (the DOM update). This view transition waits for the next change detection to
       // complete (below), which includes the update phase of the routed components.
       return createRenderPromise(injector);
-    });
+      // TODO(atscott): Types in DefinitelyTyped are not up-to-date
+    }) as ViewTransition & {readonly types: Set<string>};
     const {onViewTransitionCreated} = transitionOptions;
     if (onViewTransitionCreated) {
       runInInjectionContext(injector, () => onViewTransitionCreated({transition, from, to}));
