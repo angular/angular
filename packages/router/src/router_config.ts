@@ -26,7 +26,7 @@ import {OnSameUrlNavigation, QueryParamsHandling, RedirectCommand} from './model
  * more control over when the router starts its initial navigation due to some complex
  * initialization logic.
  *
- * @see {@link /api/router/routerModule#forRoot forRoot}
+ * @see {@link /api/router/RouterModule#forRoot forRoot}
  *
  * @publicApi
  */
