@@ -47,7 +47,7 @@ export function extractHmrMetatadata(
     return null;
   }
 
-  const sourceFile = clazz.getSourceFile();
+  const sourceFile = ts.getOriginalNode(clazz).getSourceFile();
   const filePath =
     getProjectRelativePath(sourceFile.fileName, rootDirs, compilerHost) ||
     compilerHost.getCanonicalFileName(sourceFile.fileName);
