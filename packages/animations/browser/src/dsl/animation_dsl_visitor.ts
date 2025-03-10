@@ -19,7 +19,7 @@ import {
   AnimationStyleMetadata,
   AnimationTransitionMetadata,
   AnimationTriggerMetadata,
-} from '@angular/animations';
+} from '../../../src/animations';
 
 export interface AnimationDslVisitor {
   visitTrigger(node: AnimationTriggerMetadata, context: any): any;
