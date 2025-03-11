@@ -255,7 +255,6 @@
   "getCurrentTNodePlaceholderOk",
   "getDOM",
   "getDeclarationTNode",
-  "getDirectiveDef",
   "getFactoryDef",
   "getFirstLContainer",
   "getInitialLViewFlagsFromDef",

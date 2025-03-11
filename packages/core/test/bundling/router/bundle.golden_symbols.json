@@ -440,7 +440,6 @@
   "getData",
   "getDataKeys",
   "getDeclarationTNode",
-  "getDirectiveDef",
   "getFactoryDef",
   "getFactoryOf",
   "getFirstLContainer",
