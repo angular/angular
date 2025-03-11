@@ -18,6 +18,7 @@ import {
   PropertyRead,
   TemplateBinding,
   VariableBinding,
+  TemplateLiteral,
 } from '@angular/compiler/src/expression_parser/ast';
 import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
 import {Parser, SplitInterpolation} from '@angular/compiler/src/expression_parser/parser';
@@ -496,18 +497,34 @@ describe('parser', () => {
       expect(unparseWithSpan(ast)).toContain(['a.b = c', '[nameSpan] b']);
     });
 
-    it('should record template literal space', () => {
+    it('should record spans for untagged template literals with no interpolations', () => {
+      const ast = parseAction('`hello world`');
+      const unparsed = unparseWithSpan(ast);
+      expect(unparsed).toEqual([
+        ['`hello world`', '`hello world`'],
+        ['hello world', '`hello world`'],
+      ]);
+    });
+
+    it('should record spans for untagged template literals with interpolations', () => {
       const ast = parseAction('`before ${one} - ${two} - ${three} after`');
       const unparsed = unparseWithSpan(ast);
-      expect(unparsed).toContain(['before ', '']);
-      expect(unparsed).toContain(['one', 'one']);
-      expect(unparsed).toContain(['one', '[nameSpan] one']);
-      expect(unparsed).toContain([' - ', '']);
-      expect(unparsed).toContain(['two', 'two']);
-      expect(unparsed).toContain(['two', '[nameSpan] two']);
-      expect(unparsed).toContain(['three', 'three']);
-      expect(unparsed).toContain(['three', '[nameSpan] three']);
-      expect(unparsed).toContain([' after', '']);
+      expect(unparsed).toEqual([
+        ['`before ${one} - ${two} - ${three} after`', '`before ${one} - ${two} - ${three} after`'],
+        ['before ', '`before '],
+        ['one', 'one'],
+        ['one', '[nameSpan] one'],
+        ['', ''], // Implicit receiver
+        [' - ', ' - '],
+        ['two', 'two'],
+        ['two', '[nameSpan] two'],
+        ['', ''], // Implicit receiver
+        [' - ', ' - '],
+        ['three', 'three'],
+        ['three', '[nameSpan] three'],
+        ['', ''], // Implicit receiver
+        [' after', ' after`'],
+      ]);
     });
 
     it('should include parenthesis in spans', () => {
