@@ -18,6 +18,14 @@ import {DecoratorFlags, InternalInjectFlags} from './interface/injector';
  */
 export interface InjectDecorator {
   /**
+   * Warning: String tokens are not recommended.
+   *
+   * Use an InjectionToken or a class as a token instead.
+   */
+  (token: string): any;
+  new (token: string): Inject;
+
+  /**
    * Parameter decorator on a dependency parameter of a class constructor
    * that specifies a custom provider of the dependency.
    *
