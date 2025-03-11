@@ -16,12 +16,7 @@ import {stringify} from '../util/stringify';
 import {resolveForwardRef} from './forward_ref';
 import {getInjectImplementation, injectRootLimpMode} from './inject_switch';
 import type {Injector} from './injector';
-import {
-  DecoratorFlags,
-  InjectFlags,
-  InjectOptions,
-  InternalInjectFlags,
-} from './interface/injector';
+import {DecoratorFlags, InternalInjectFlags, InjectOptions} from './interface/injector';
 import {ProviderToken} from './provider_token';
 import type {HostAttributeToken} from './host_attribute_token';
 import {
@@ -52,12 +47,12 @@ const DI_DECORATOR_FLAG = '__NG_DI_FLAG__';
 export class RetrievingInjector implements PrimitivesInjector {
   constructor(readonly injector: Injector) {}
   retrieve<T>(token: PrimitivesInjectionToken<T>, options: unknown): T | NotFound {
-    const flags: InjectFlags =
-      convertToBitFlags(options as InjectOptions | undefined) || InjectFlags.Default;
+    const flags: InternalInjectFlags =
+      convertToBitFlags(options as InjectOptions | undefined) || InternalInjectFlags.Default;
     return (this.injector as BackwardsCompatibleInjector).get(
       token as unknown as InjectionToken<T>,
       // When a dependency is requested with an optional flag, DI returns null as the default value.
-      flags & InjectFlags.Optional ? null : undefined,
+      flags & InternalInjectFlags.Optional ? null : undefined,
       flags,
     ) as T;
   }
@@ -74,14 +69,21 @@ export const SOURCE = '__source';
  * removed once we consolidate the flags and the object literal approach.
  */
 export type BackwardsCompatibleInjector = Injector & {
-  get<T>(token: ProviderToken<T>, notFoundValue?: T, options?: InjectFlags | InjectOptions): T;
+  get<T>(
+    token: ProviderToken<T>,
+    notFoundValue?: T,
+    options?: InternalInjectFlags | InjectOptions,
+  ): T;
 };
 
 export function injectInjectorOnly<T>(token: ProviderToken<T>): T;
-export function injectInjectorOnly<T>(token: ProviderToken<T>, flags?: InjectFlags): T | null;
 export function injectInjectorOnly<T>(
   token: ProviderToken<T>,
-  flags = InjectFlags.Default,
+  flags?: InternalInjectFlags,
+): T | null;
+export function injectInjectorOnly<T>(
+  token: ProviderToken<T>,
+  flags = InternalInjectFlags.Default,
 ): T | null {
   const currentInjector = getCurrentInjector();
   if (currentInjector === undefined) {
@@ -113,16 +115,16 @@ export function injectInjectorOnly<T>(
  * @publicApi This instruction has been emitted by ViewEngine for some time and is deployed to npm.
  */
 export function ɵɵinject<T>(token: ProviderToken<T>): T;
-export function ɵɵinject<T>(token: ProviderToken<T>, flags?: InjectFlags): T | null;
+export function ɵɵinject<T>(token: ProviderToken<T>, flags?: InternalInjectFlags): T | null;
 export function ɵɵinject(token: HostAttributeToken): string;
-export function ɵɵinject(token: HostAttributeToken, flags?: InjectFlags): string | null;
+export function ɵɵinject(token: HostAttributeToken, flags?: InternalInjectFlags): string | null;
 export function ɵɵinject<T>(
   token: ProviderToken<T> | HostAttributeToken,
-  flags?: InjectFlags,
+  flags?: InternalInjectFlags,
 ): string | null;
 export function ɵɵinject<T>(
   token: ProviderToken<T> | HostAttributeToken,
-  flags = InjectFlags.Default,
+  flags = InternalInjectFlags.Default,
 ): T | null {
   return (getInjectImplementation() || injectInjectorOnly)(
     resolveForwardRef(token as Type<T>),
@@ -279,8 +281,8 @@ export function inject<T>(token: ProviderToken<T> | HostAttributeToken, options?
 
 // Converts object-based DI flags (`InjectOptions`) to bit flags (`InjectFlags`).
 export function convertToBitFlags(
-  flags: InjectOptions | InjectFlags | undefined,
-): InjectFlags | undefined {
+  flags: InjectOptions | InternalInjectFlags | undefined,
+): InternalInjectFlags | undefined {
   if (typeof flags === 'undefined' || typeof flags === 'number') {
     return flags;
   }
@@ -292,11 +294,11 @@ export function convertToBitFlags(
     ((flags.optional && InternalInjectFlags.Optional) as number) |
     ((flags.host && InternalInjectFlags.Host) as number) |
     ((flags.self && InternalInjectFlags.Self) as number) |
-    ((flags.skipSelf && InternalInjectFlags.SkipSelf) as number)) as InjectFlags;
+    ((flags.skipSelf && InternalInjectFlags.SkipSelf) as number)) as InternalInjectFlags;
 }
 
 // Converts bitflags to inject options
-function convertToInjectOptions(flags: InjectFlags): InjectOptions {
+function convertToInjectOptions(flags: InternalInjectFlags): InjectOptions {
   return {
     optional: !!(flags & InternalInjectFlags.Optional),
     host: !!(flags & InternalInjectFlags.Host),
@@ -317,7 +319,7 @@ export function injectArgs(types: (ProviderToken<any> | any[])[]): any[] {
         );
       }
       let type: Type<any> | undefined = undefined;
-      let flags: InjectFlags = InjectFlags.Default;
+      let flags: InternalInjectFlags = InternalInjectFlags.Default;
 
       for (let j = 0; j < arg.length; j++) {
         const meta = arg[j];

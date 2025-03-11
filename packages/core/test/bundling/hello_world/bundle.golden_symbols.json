@@ -42,7 +42,6 @@
   "INJECTOR_DEF_TYPES",
   "INJECTOR_SCOPE",
   "INTERNAL_APPLICATION_ERROR_HANDLER",
-  "InjectFlags",
   "InjectionToken",
   "Injector",
   "InputFlags",

@@ -6,7 +6,6 @@
   "INJECTOR",
   "INJECTOR_DEF_TYPES",
   "INJECTOR_SCOPE",
-  "InjectFlags",
   "InjectionToken",
   "NEW_LINE",
   "NG_COMP_DEF",

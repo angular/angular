@@ -94,7 +94,6 @@
   "INPUT_SIGNAL_NODE",
   "INTERNAL_APPLICATION_ERROR_HANDLER",
   "INTERNAL_BROWSER_PLATFORM_PROVIDERS",
-  "InjectFlags",
   "InjectionToken",
   "Injector",
   "InputFlags",
