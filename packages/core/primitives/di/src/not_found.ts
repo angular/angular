@@ -16,10 +16,8 @@ export const NOT_FOUND: unique symbol = Symbol('NotFound');
  * Error thrown when the key-value pair couldn't be found in the context
  * hierarchy. Context can be attached below.
  */
-export class NotFoundError extends Error {
-  constructor(message: string) {
-    super(message);
-  }
+export class NotFoundError {
+  constructor(readonly message: string) {}
 }
 
 /**
