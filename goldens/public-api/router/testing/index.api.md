@@ -4,11 +4,11 @@
 
 ```ts
 
+import * as _angular_router from '@angular/router';
 import { ComponentFixture } from '@angular/core/testing';
 import { DebugElement } from '@angular/core';
 import { ExtraOptions } from '@angular/router';
 import * as i0 from '@angular/core';
-import * as i1 from '@angular/router';
 import { ModuleWithProviders } from '@angular/core';
 import { Routes } from '@angular/router';
 import { Type } from '@angular/core';
@@ -36,7 +36,7 @@ export class RouterTestingModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<RouterTestingModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<RouterTestingModule, never, never, [typeof i1.RouterModule]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<RouterTestingModule, never, never, [typeof _angular_router.RouterModule]>;
 }
 
 // (No @packageDocumentation comment for this package)

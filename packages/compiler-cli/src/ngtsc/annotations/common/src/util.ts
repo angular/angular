@@ -107,13 +107,31 @@ export function isAngularCore(decorator: Decorator): decorator is Decorator & {i
   return decorator.import !== null && decorator.import.from === CORE_MODULE;
 }
 
-export function isAngularCoreReference(
+/**
+ * This function is used for verifying that a given reference is declared
+ * inside `@angular/core` and corresponds to the given symbol name.
+ *
+ * In some cases, due to the compiler face duplicating many symbols as
+ * an independent bridge between core and the compiler, the dts bundler may
+ * decide to alias declarations in the `.d.ts`, to avoid conflicts.
+ *
+ * e.g.
+ *
+ * ```
+ * declare enum ViewEncapsulation {} // from the facade
+ * declare enum ViewEncapsulation$1 {} // the real one exported to users.
+ * ```
+ *
+ * This function accounts for such potential re-namings.
+ */
+export function isAngularCoreReferenceWithPotentialAliasing(
   reference: Reference,
   symbolName: string,
   isCore: boolean,
 ): boolean {
   return (
-    (reference.ownedByModuleGuess === CORE_MODULE || isCore) && reference.debugName === symbolName
+    (reference.ownedByModuleGuess === CORE_MODULE || isCore) &&
+    reference.debugName?.replace(/\$\d+$/, '') === symbolName
   );
 }
 
@@ -233,7 +251,10 @@ export function tryUnwrapForwardRef(
  */
 export function createForwardRefResolver(isCore: boolean): ForeignFunctionResolver {
   return (fn, callExpr, resolve, unresolvable) => {
-    if (!isAngularCoreReference(fn, 'forwardRef', isCore) || callExpr.arguments.length !== 1) {
+    if (
+      !isAngularCoreReferenceWithPotentialAliasing(fn, 'forwardRef', isCore) ||
+      callExpr.arguments.length !== 1
+    ) {
       return unresolvable;
     }
     const expanded = expandForwardRef(callExpr.arguments[0]);

@@ -15,6 +15,7 @@ nodejs_binary(
         "@npm//@rollup/plugin-node-resolve",
         "@npm//magic-string",
         "@npm//rollup",
+        "@npm//rollup-plugin-dts",
         "@npm//rollup-plugin-sourcemaps",
         "@npm//typescript",
     ],
