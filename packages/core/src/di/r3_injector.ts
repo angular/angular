@@ -52,7 +52,7 @@ import {
   InjectorType,
   ɵɵInjectableDeclaration,
 } from './interface/defs';
-import {InjectFlags, InjectOptions} from './interface/injector';
+import {InternalInjectFlags, InjectOptions} from './interface/injector';
 import {
   ClassProvider,
   ConstructorProvider,
@@ -236,12 +236,12 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
   }
 
   retrieve<T>(token: PrimitivesInjectionToken<T>, options?: unknown): T | NotFound {
-    const flags: InjectFlags =
-      convertToBitFlags(options as InjectOptions | undefined) || InjectFlags.Default;
+    const flags: InternalInjectFlags =
+      convertToBitFlags(options as InjectOptions | undefined) || InternalInjectFlags.Default;
     return (this as BackwardsCompatibleInjector).get(
       token as unknown as InjectionToken<T>,
       // When a dependency is requested with an optional flag, DI returns null as the default value.
-      flags & InjectFlags.Optional ? null : undefined,
+      flags & InternalInjectFlags.Optional ? null : undefined,
       flags,
     )!;
   }
@@ -316,7 +316,7 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
       return (token as any)[NG_ENV_ID](this);
     }
 
-    const flags = convertToBitFlags(options) as InjectFlags;
+    const flags = convertToBitFlags(options) as InternalInjectFlags;
 
     // Set the injection context.
     let prevInjectContext: InjectorProfilerContext;
@@ -327,7 +327,7 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
     const previousInjectImplementation = setInjectImplementation(undefined);
     try {
       // Check for the SkipSelf flag.
-      if (!(flags & InjectFlags.SkipSelf)) {
+      if (!(flags & InternalInjectFlags.SkipSelf)) {
         // SkipSelf isn't set, check if the record belongs to this injector.
         let record: Record<T> | undefined | null = this.records.get(token);
         if (record === undefined) {
@@ -358,11 +358,13 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
 
       // Select the next injector based on the Self flag - if self is set, the next injector is
       // the NullInjector, otherwise it's the parent.
-      const nextInjector = !(flags & InjectFlags.Self) ? this.parent : getNullInjector();
+      const nextInjector = !(flags & InternalInjectFlags.Self) ? this.parent : getNullInjector();
       // Set the notFoundValue based on the Optional flag - if optional is set and notFoundValue
       // is undefined, the value is null, otherwise it's the notFoundValue.
       notFoundValue =
-        flags & InjectFlags.Optional && notFoundValue === THROW_IF_NOT_FOUND ? null : notFoundValue;
+        flags & InternalInjectFlags.Optional && notFoundValue === THROW_IF_NOT_FOUND
+          ? null
+          : notFoundValue;
       return nextInjector.get(token, notFoundValue);
     } catch (e: any) {
       if (e.name === 'NullInjectorError') {

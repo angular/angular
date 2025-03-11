@@ -11,7 +11,7 @@ import {TNode, TNodeType} from '../render3/interfaces/node';
 import {getCurrentTNode} from '../render3/state';
 
 import {InjectionToken} from './injection_token';
-import {InjectFlags} from './interface/injector';
+import {InternalInjectFlags} from './interface/injector';
 
 /**
  * A token that can be used to inject the tag name of the host node.
@@ -39,7 +39,7 @@ export const HOST_TAG_NAME = new InjectionToken<string>(ngDevMode ? 'HOST_TAG_NA
 // HOST_TAG_NAME should be resolved at the current node, similar to e.g. ElementRef,
 // so we manually specify __NG_ELEMENT_ID__ here, instead of using a factory.
 // tslint:disable-next-line:no-toplevel-property-access
-(HOST_TAG_NAME as any).__NG_ELEMENT_ID__ = (flags: InjectFlags) => {
+(HOST_TAG_NAME as any).__NG_ELEMENT_ID__ = (flags: InternalInjectFlags) => {
   const tNode = getCurrentTNode();
   if (tNode === null) {
     throw new RuntimeError(
@@ -52,7 +52,7 @@ export const HOST_TAG_NAME = new InjectionToken<string>(ngDevMode ? 'HOST_TAG_NA
   if (tNode.type & TNodeType.Element) {
     return tNode.value;
   }
-  if (flags & InjectFlags.Optional) {
+  if (flags & InternalInjectFlags.Optional) {
     return null;
   }
   throw new RuntimeError(

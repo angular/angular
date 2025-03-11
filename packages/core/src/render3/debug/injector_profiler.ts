@@ -10,7 +10,7 @@ import type {FactoryProvider, ProviderToken} from '../../di';
 import {resolveForwardRef} from '../../di/forward_ref';
 import {InjectionToken} from '../../di/injection_token';
 import type {Injector} from '../../di/injector';
-import {InjectFlags, InjectOptions, InternalInjectFlags} from '../../di/interface/injector';
+import {InjectOptions, InternalInjectFlags} from '../../di/interface/injector';
 import type {SingleProvider} from '../../di/provider_collection';
 import {Type} from '../../interface/type';
 import {throwError} from '../../util/assert';
@@ -163,7 +163,7 @@ export interface InjectedService {
   /**
    * Flags that this service was injected with
    */
-  flags?: InternalInjectFlags | InjectFlags | InjectOptions;
+  flags?: InternalInjectFlags | InjectOptions;
 
   /**
    * Injector that this service was provided in.
@@ -303,7 +303,11 @@ export function emitInstanceCreatedByInjectorEvent(instance: unknown): void {
  * @param value the instance of the injected service (i.e the result of `inject(token)`)
  * @param flags the flags that the token was injected with
  */
-export function emitInjectEvent(token: Type<unknown>, value: unknown, flags: InjectFlags): void {
+export function emitInjectEvent(
+  token: Type<unknown>,
+  value: unknown,
+  flags: InternalInjectFlags,
+): void {
   !ngDevMode && throwError('Injector profiler should never be called in production mode');
 
   injectorProfiler({

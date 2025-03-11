@@ -69,7 +69,6 @@
   "INTERNAL_APPLICATION_ERROR_HANDLER",
   "INTERNAL_BROWSER_PLATFORM_PROVIDERS",
   "IS_HYDRATION_DOM_REUSE_ENABLED",
-  "InjectFlags",
   "InjectionToken",
   "Injector",
   "InputFlags",

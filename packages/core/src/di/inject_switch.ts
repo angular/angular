@@ -8,10 +8,9 @@
 
 import {throwProviderNotFoundError} from '../render3/errors_di';
 import {assertNotEqual} from '../util/assert';
-import {stringify} from '../util/stringify';
 
 import {getInjectableDef, ɵɵInjectableDeclaration} from './interface/defs';
-import {InjectFlags} from './interface/injector';
+import {InternalInjectFlags} from './interface/injector';
 import {ProviderToken} from './provider_token';
 
 /**
@@ -24,7 +23,7 @@ import {ProviderToken} from './provider_token';
  *  2. To maintain tree shake-ability we don't want to bring in unnecessary code.
  */
 let _injectImplementation:
-  | (<T>(token: ProviderToken<T>, flags?: InjectFlags) => T | null)
+  | (<T>(token: ProviderToken<T>, flags?: InternalInjectFlags) => T | null)
   | undefined;
 export function getInjectImplementation() {
   return _injectImplementation;
@@ -34,8 +33,8 @@ export function getInjectImplementation() {
  * Sets the current inject implementation.
  */
 export function setInjectImplementation(
-  impl: (<T>(token: ProviderToken<T>, flags?: InjectFlags) => T | null) | undefined,
-): (<T>(token: ProviderToken<T>, flags?: InjectFlags) => T | null) | undefined {
+  impl: (<T>(token: ProviderToken<T>, flags?: InternalInjectFlags) => T | null) | undefined,
+): (<T>(token: ProviderToken<T>, flags?: InternalInjectFlags) => T | null) | undefined {
   const previous = _injectImplementation;
   _injectImplementation = impl;
   return previous;
@@ -51,7 +50,7 @@ export function setInjectImplementation(
 export function injectRootLimpMode<T>(
   token: ProviderToken<T>,
   notFoundValue: T | undefined,
-  flags: InjectFlags,
+  flags: InternalInjectFlags,
 ): T | null {
   const injectableDef: ɵɵInjectableDeclaration<T> | null = getInjectableDef(token);
   if (injectableDef && injectableDef.providedIn == 'root') {
@@ -59,7 +58,7 @@ export function injectRootLimpMode<T>(
       ? (injectableDef.value = injectableDef.factory())
       : injectableDef.value;
   }
-  if (flags & InjectFlags.Optional) return null;
+  if (flags & InternalInjectFlags.Optional) return null;
   if (notFoundValue !== undefined) return notFoundValue;
   throwProviderNotFoundError(token, 'Injector');
 }
@@ -72,7 +71,7 @@ export function injectRootLimpMode<T>(
  * @param fn Function which it should not equal to
  */
 export function assertInjectImplementationNotEqual(
-  fn: <T>(token: ProviderToken<T>, flags?: InjectFlags) => T | null,
+  fn: <T>(token: ProviderToken<T>, flags?: InternalInjectFlags) => T | null,
 ) {
   ngDevMode &&
     assertNotEqual(_injectImplementation, fn, 'Calling ɵɵinject would cause infinite recursion');
