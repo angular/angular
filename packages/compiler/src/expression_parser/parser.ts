@@ -1449,9 +1449,10 @@ class _ParseAST {
 
   private parseNoInterpolationTemplateLiteral(): TemplateLiteral {
     const text = this.next.strValue;
+    const start = this.inputIndex;
     this.advance();
-    const span = this.span(this.inputIndex);
-    const sourceSpan = this.sourceSpan(this.inputIndex);
+    const span = this.span(start);
+    const sourceSpan = this.sourceSpan(start);
     return new TemplateLiteral(
       span,
       sourceSpan,
@@ -1474,14 +1475,15 @@ class _ParseAST {
       const token = this.next;
 
       if (token.isTemplateLiteralPart() || token.isTemplateLiteralEnd()) {
+        const partStart = this.inputIndex;
+        this.advance();
         elements.push(
           new TemplateLiteralElement(
-            this.span(this.inputIndex),
-            this.sourceSpan(this.inputIndex),
+            this.span(partStart),
+            this.sourceSpan(partStart),
             token.strValue,
           ),
         );
-        this.advance();
         if (token.isTemplateLiteralEnd()) {
           break;
         }
