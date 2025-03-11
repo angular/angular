@@ -4,7 +4,7 @@
 
 ```ts
 
-// @public
+// @public (undocumented)
 export type ComputationFn<S, D> = (source: S, previous?: {
     source: S;
     value: D;
@@ -137,7 +137,7 @@ export function runPostSignalSetFn(): void;
 // @public (undocumented)
 export function setActiveConsumer(consumer: ReactiveNode | null): ReactiveNode | null;
 
-// @public (undocumented)
+// @public
 export function setAlternateWeakRefImpl(impl: unknown): void;
 
 // @public (undocumented)

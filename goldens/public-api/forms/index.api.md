@@ -580,7 +580,7 @@ export class FormsModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<FormsModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<FormsModule, [typeof i1_2.NgModel, typeof i2_2.NgModelGroup, typeof i3_2.NgForm], never, [typeof i4_2.ɵInternalFormsSharedModule, typeof i1_2.NgModel, typeof i2_2.NgModelGroup, typeof i3_2.NgForm]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<FormsModule, [typeof NgModel, typeof NgModelGroup, typeof NgForm], never, [typeof ɵInternalFormsSharedModule, typeof NgModel, typeof NgModelGroup, typeof NgForm]>;
 }
 
 // @public
@@ -847,7 +847,7 @@ export class ReactiveFormsModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<ReactiveFormsModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<ReactiveFormsModule, [typeof i5_2.FormControlDirective, typeof i6_2.FormGroupDirective, typeof i7_2.FormControlName, typeof i8_2.FormGroupName, typeof i8_2.FormArrayName], never, [typeof i4_2.ɵInternalFormsSharedModule, typeof i5_2.FormControlDirective, typeof i6_2.FormGroupDirective, typeof i7_2.FormControlName, typeof i8_2.FormGroupName, typeof i8_2.FormArrayName]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<ReactiveFormsModule, [typeof FormControlDirective, typeof FormGroupDirective, typeof FormControlName, typeof FormGroupName, typeof FormArrayName], never, [typeof ɵInternalFormsSharedModule, typeof FormControlDirective, typeof FormGroupDirective, typeof FormControlName, typeof FormGroupName, typeof FormArrayName]>;
 }
 
 // @public
