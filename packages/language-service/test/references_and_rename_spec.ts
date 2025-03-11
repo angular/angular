@@ -1708,7 +1708,7 @@ describe('find references and rename locations', () => {
 
       it('should be able to request references', () => {
         const refs = getReferencesAtPosition(file)!;
-        expect(refs.length).toBe(6);
+        expect(refs.length).toBe(7);
         assertTextSpans(refs, ['<div *ngFor="let item of items"></div>', 'NgForOf']);
         assertFileNames(refs, ['index.d.ts', 'app.ts']);
       });

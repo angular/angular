@@ -13,6 +13,7 @@ const {nodeResolve} = require('@rollup/plugin-node-resolve');
 const commonjs = require('@rollup/plugin-commonjs');
 const MagicString = require('magic-string');
 const sourcemaps = require('rollup-plugin-sourcemaps');
+const {dts} = require('rollup-plugin-dts');
 const path = require('path');
 const fs = require('fs');
 
@@ -28,6 +29,7 @@ const moduleMappings = TMPL_module_mappings;
 const nodeModulesRoot = 'TMPL_node_modules_root';
 const entrypointMetadata = JSON.parse(`TMPL_metadata`);
 const sideEffectEntryPoints = JSON.parse('TMPL_side_effect_entrypoints');
+const dtsMode = TMPL_dts_mode;
 
 log_verbose(`running with
   cwd: ${process.cwd()}
@@ -36,6 +38,7 @@ log_verbose(`running with
   bannerFile: ${bannerFile}
   moduleMappings: ${JSON.stringify(moduleMappings)}
   nodeModulesRoot: ${nodeModulesRoot}
+  dtsMode: ${dtsMode}
 `);
 
 function fileExists(filePath) {
@@ -154,23 +157,18 @@ const stripBannerPlugin = {
   },
 };
 
-const plugins = [
-  {name: 'resolveBazel', resolveId: resolveBazel},
-  nodeResolve({
-    mainFields: ['es2020', 'es2015', 'module', 'browser'],
-    jail: process.cwd(),
-    customResolveOptions: {moduleDirectory: nodeModulesRoot},
-  }),
-  stripBannerPlugin,
-  commonjs({ignoreGlobal: true}),
-  sourcemaps(),
-];
+const plugins = [stripBannerPlugin];
 
 // Rollup input option:
 // https://rollupjs.org/configuration-options/#input.
 const input = {};
 for (const info of Object.values(entrypointMetadata)) {
-  input[info.fesm2022RelativePath.replace(/\.mjs$/, '').replace('fesm2022/', '')] = info.index.path;
+  const entryFile = dtsMode ? info.typingsEntryPoint.path : info.index.path;
+  const chunkName = dtsMode
+    ? info.dtsBundleRelativePath.replace(/\.d\.ts$/, '')
+    : info.fesm2022RelativePath.replace(/\.mjs$/, '').replace('fesm2022/', '');
+
+  input[chunkName] = entryFile;
 }
 
 const sideEffectFileMatchers = sideEffectEntryPoints.map((entryPointModule) => {
@@ -182,6 +180,24 @@ const sideEffectFileMatchers = sideEffectEntryPoints.map((entryPointModule) => {
   return (file) => file.startsWith(`${entryPointDir}/`);
 });
 
+if (dtsMode) {
+  plugins.push(dts());
+} else {
+  plugins.push(
+    {name: 'resolveBazel', resolveId: resolveBazel},
+    nodeResolve({
+      mainFields: ['es2020', 'es2015', 'module', 'browser'],
+      jail: process.cwd(),
+      customResolveOptions: {moduleDirectory: nodeModulesRoot},
+    }),
+    commonjs({ignoreGlobal: true}),
+    sourcemaps(),
+  );
+}
+
+const outputExtension = dtsMode ? 'd.ts' : 'mjs';
+
+/** @type {import('rollup').RollupOptions} */
 const config = {
   input,
   plugins,
@@ -198,9 +214,10 @@ const config = {
     },
   },
   output: {
+    sourcemap: !dtsMode,
     banner: bannerContent,
-    entryFileNames: '[name].mjs',
-    chunkFileNames: '[name]-[hash].mjs',
+    entryFileNames: `[name].${outputExtension}`,
+    chunkFileNames: `[name]-[hash].${outputExtension}`,
   },
 };
 

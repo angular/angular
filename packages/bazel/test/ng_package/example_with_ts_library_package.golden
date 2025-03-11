@@ -114,11 +114,9 @@ export { dispatchFakeEvent };
  * License: MIT
  */
 
+declare const VERSION = "0.0.0";
 
-
-export declare const VERSION = "0.0.0";
-
-export { }
+export { VERSION };
 
 
 --- package.json ---
@@ -157,18 +155,16 @@ export { }
  * License: MIT
  */
 
-
 import * as i0 from '@angular/core';
 
-export declare const a = 1;
-
-export declare class PortalModule {
+declare class PortalModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<PortalModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<PortalModule, never, never, never>;
     static ɵinj: i0.ɵɵInjectorDeclaration<PortalModule>;
 }
+declare const a = 1;
 
-export { }
+export { PortalModule, a };
 
 
 --- utils/index.d.ts ---
@@ -179,9 +175,7 @@ export { }
  * License: MIT
  */
 
+declare function dispatchFakeEvent(el: HTMLElement, ev: Event): void;
 
-
-export declare function dispatchFakeEvent(el: HTMLElement, ev: Event): void;
-
-export { }
+export { dispatchFakeEvent };
 
