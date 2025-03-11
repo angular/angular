@@ -30,7 +30,6 @@ import {
   inject,
   Inject,
   Injectable,
-  InjectFlags,
   InjectionToken,
   InjectOptions,
   INJECTOR,
@@ -1353,12 +1352,12 @@ describe('di', () => {
           class MyComp {
             value: string | undefined;
             constructor(injector: Injector) {
-              this.value = injector.get(NON_EXISTING_PROVIDER, 'default', InjectFlags.Host);
+              this.value = injector.get(NON_EXISTING_PROVIDER, 'default', {host: true});
             }
           }
 
           const injector = Injector.create({providers: []});
-          expect(injector.get(NON_EXISTING_PROVIDER, 'default', InjectFlags.Host)).toBe('default');
+          expect(injector.get(NON_EXISTING_PROVIDER, 'default', {host: true})).toBe('default');
 
           const fixture = TestBed.createComponent(MyComp);
           expect(fixture.componentInstance.value).toBe('default');
@@ -2712,11 +2711,9 @@ describe('di', () => {
               public injector: Injector,
               @Inject(NON_EXISTING_PROVIDER) @Optional() public tokenViaConstructor: string,
             ) {
-              this.tokenViaInjector = this.injector.get(
-                NON_EXISTING_PROVIDER,
-                null,
-                InjectFlags.Optional,
-              );
+              this.tokenViaInjector = this.injector.get(NON_EXISTING_PROVIDER, null, {
+                optional: true,
+              });
             }
           }
           TestBed.configureTestingModule({declarations: [MyComp]});
@@ -2759,7 +2756,7 @@ describe('di', () => {
               public injector: Injector,
               @Inject(TOKEN) @SkipSelf() public tokenViaConstructor: string,
             ) {
-              this.tokenViaInjector = this.injector.get(TOKEN, null, InjectFlags.SkipSelf);
+              this.tokenViaInjector = this.injector.get(TOKEN, null, {skipSelf: true});
             }
           }
 
@@ -2787,7 +2784,7 @@ describe('di', () => {
               public injector: Injector,
               @Inject(TOKEN) @Host() public tokenViaConstructor: string,
             ) {
-              this.tokenViaInjector = this.injector.get(TOKEN, null, InjectFlags.Host);
+              this.tokenViaInjector = this.injector.get(TOKEN, null, {host: true});
             }
           }
 
@@ -2826,16 +2823,14 @@ describe('di', () => {
               @Inject(DirectiveA) @Self() @Optional() public tokenSelfViaConstructor: DirectiveA,
               @Inject(DirectiveA) @Host() @Optional() public tokenHostViaConstructor: DirectiveA,
             ) {
-              this.tokenSelfViaInjector = this.injector.get(
-                DirectiveA,
-                null,
-                InjectFlags.Self | InjectFlags.Optional,
-              );
-              this.tokenHostViaInjector = this.injector.get(
-                DirectiveA,
-                null,
-                InjectFlags.Host | InjectFlags.Optional,
-              );
+              this.tokenSelfViaInjector = this.injector.get(DirectiveA, null, {
+                self: true,
+                optional: true,
+              });
+              this.tokenHostViaInjector = this.injector.get(DirectiveA, null, {
+                host: true,
+                optional: true,
+              });
             }
           }
 
@@ -4040,7 +4035,7 @@ describe('di', () => {
       class Service {
         value: string;
         constructor() {
-          this.value = inject(TOKEN, InjectFlags.Optional) ?? 'default value';
+          this.value = inject(TOKEN, {optional: true}) ?? 'default value';
         }
       }
 
@@ -4169,12 +4164,8 @@ describe('di', () => {
         }
 
         const {nodeInjector, envInjector} = TestBed.createComponent(TestCmp).componentInstance;
-
         expect(nodeInjector.get(TOKEN, undefined, {optional: true})).toBeNull();
-        expect(nodeInjector.get(TOKEN, undefined, InjectFlags.Optional)).toBeNull();
-
         expect(envInjector.get(TOKEN, undefined, {optional: true})).toBeNull();
-        expect(envInjector.get(TOKEN, undefined, InjectFlags.Optional)).toBeNull();
       });
 
       it('should include `null` into the result type when the optional flag is used', () => {
@@ -4234,7 +4225,6 @@ describe('di', () => {
 
         expect(child.get(TOKEN)).toEqual('from child');
         expect(child.get(TOKEN, undefined, {skipSelf: true})).toEqual('from root');
-        expect(child.get(TOKEN, undefined, InjectFlags.SkipSelf)).toEqual('from root');
       });
 
       it('should be able to use self injection in NodeInjector', () => {
@@ -4261,7 +4251,6 @@ describe('di', () => {
         const child = createEnvironmentInjector([], root);
 
         expect(child.get(TOKEN, undefined, {self: true, optional: true})).toBeNull();
-        expect(child.get(TOKEN, undefined, InjectFlags.Self | InjectFlags.Optional)).toBeNull();
       });
 
       it('should be able to use host injection', () => {
@@ -4269,12 +4258,11 @@ describe('di', () => {
 
         @Component({
           selector: 'child',
-          template: '{{ a }}|{{ b }}',
+          template: '{{ value }}',
         })
         class ChildCmp {
           nodeInjector = inject(Injector);
-          a = this.nodeInjector.get(TOKEN, 'not found', {host: true, optional: true});
-          b = this.nodeInjector.get(TOKEN, 'not found', InjectFlags.Host | InjectFlags.Optional);
+          value = this.nodeInjector.get(TOKEN, 'not found', {host: true, optional: true});
         }
 
         @Component({
@@ -4287,7 +4275,7 @@ describe('di', () => {
 
         const fixture = TestBed.createComponent(ParentCmp);
         fixture.detectChanges();
-        expect(fixture.nativeElement.innerHTML).toEqual('<child>not found|not found</child>');
+        expect(fixture.nativeElement.innerHTML).toEqual('<child>not found</child>');
       });
     });
   });
@@ -4327,7 +4315,7 @@ describe('di', () => {
       const TOKEN = new InjectionToken<string>('TOKEN');
       const injector = TestBed.inject(EnvironmentInjector);
       runInInjectionContext(injector, () => {});
-      expect(() => inject(TOKEN, InjectFlags.Optional)).toThrow();
+      expect(() => inject(TOKEN, {optional: true})).toThrow();
     });
 
     it('should properly clean up after the function throws', () => {
@@ -4338,7 +4326,7 @@ describe('di', () => {
           throw new Error('crashes!');
         }),
       ).toThrow();
-      expect(() => inject(TOKEN, InjectFlags.Optional)).toThrow();
+      expect(() => inject(TOKEN, {optional: true})).toThrow();
     });
 
     it('should set the correct inject implementation', () => {
@@ -4360,7 +4348,7 @@ describe('di', () => {
         // Attempt to inject ViewContainerRef within the environment injector's context. This should
         // not be available, so the result should be `null`.
         vcrFromEnvContext = runInInjectionContext(this.envInjector, () =>
-          inject(ViewContainerRef, InjectFlags.Optional),
+          inject(ViewContainerRef, {optional: true}),
         );
       }
 

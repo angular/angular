@@ -36,6 +36,7 @@ import {setInjectImplementation} from './inject_switch';
 import {InjectionToken} from './injection_token';
 import type {Injector} from './injector';
 import {
+  BackwardsCompatibleInjector,
   catchInjectorError,
   convertToBitFlags,
   injectArgs,
@@ -153,13 +154,6 @@ export abstract class EnvironmentInjector implements Injector {
    */
   abstract get<T>(token: ProviderToken<T>, notFoundValue?: T, options?: InjectOptions): T;
   /**
-   * Retrieves an instance from the injector based on the provided token.
-   * @returns The instance from the injector if defined, otherwise the `notFoundValue`.
-   * @throws When the `notFoundValue` is `undefined` or `Injector.THROW_IF_NOT_FOUND`.
-   * @deprecated use object-based flags (`InjectOptions`) instead.
-   */
-  abstract get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
-  /**
    * @deprecated from v4.0.0 use ProviderToken<T>
    * @suppress {duplicate}
    */
@@ -238,18 +232,18 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
       this.scopes.add(record.value as InjectorScope);
     }
 
-    this.injectorDefTypes = new Set(this.get(INJECTOR_DEF_TYPES, EMPTY_ARRAY, InjectFlags.Self));
+    this.injectorDefTypes = new Set(this.get(INJECTOR_DEF_TYPES, EMPTY_ARRAY, {self: true}));
   }
 
   retrieve<T>(token: PrimitivesInjectionToken<T>, options?: unknown): T | NotFound {
     const flags: InjectFlags =
       convertToBitFlags(options as InjectOptions | undefined) || InjectFlags.Default;
-    return this.get(
+    return (this as BackwardsCompatibleInjector).get(
       token as unknown as InjectionToken<T>,
       // When a dependency is requested with an optional flag, DI returns null as the default value.
       flags & InjectFlags.Optional ? null : undefined,
       flags,
-    );
+    )!;
   }
 
   /**
@@ -314,7 +308,7 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
   override get<T>(
     token: ProviderToken<T>,
     notFoundValue: any = THROW_IF_NOT_FOUND,
-    flags: InjectFlags | InjectOptions = InjectFlags.Default,
+    options?: InjectOptions,
   ): T {
     assertNotDestroyed(this);
 
@@ -322,7 +316,7 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
       return (token as any)[NG_ENV_ID](this);
     }
 
-    flags = convertToBitFlags(flags) as InjectFlags;
+    const flags = convertToBitFlags(options) as InjectFlags;
 
     // Set the injection context.
     let prevInjectContext: InjectorProfilerContext;
@@ -403,7 +397,7 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
     }
 
     try {
-      const initializers = this.get(ENVIRONMENT_INITIALIZER, EMPTY_ARRAY, InjectFlags.Self);
+      const initializers = this.get(ENVIRONMENT_INITIALIZER, EMPTY_ARRAY, {self: true});
       if (ngDevMode && !Array.isArray(initializers)) {
         throw new RuntimeError(
           RuntimeErrorCode.INVALID_MULTI_PROVIDER,

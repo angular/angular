@@ -15,7 +15,6 @@ import {
   ElementRef,
   inject,
   Injectable,
-  InjectFlags,
   InjectionToken,
   Injector,
   NgModule,
@@ -24,6 +23,7 @@ import {
   ViewChild,
   ViewChildren,
 } from '@angular/core';
+import {InternalInjectFlags} from '@angular/core/src/di/interface/injector';
 import {NullInjector} from '@angular/core/src/di/null_injector';
 import {
   isClassProvider,
@@ -136,7 +136,7 @@ describe('setProfiler', () => {
     );
     expect(myServiceInjectEvent).toBeTruthy();
     expect(myServiceInjectEvent!.service.value).toBe(myComp.myService);
-    expect(myServiceInjectEvent!.service.flags).toBe(InjectFlags.Default);
+    expect(myServiceInjectEvent!.service.flags).toBe(InternalInjectFlags.Default);
 
     // myComp is an angular instance that is able to call `inject` in it's constructor, so a
     // create event should have been emitted for it
@@ -188,10 +188,10 @@ describe('setProfiler', () => {
       (event) => event.service.token === MyServiceC,
     );
 
-    expect(myServiceInjectEvent!.service.flags).toBe(InjectFlags.Self);
-    expect(myServiceBInjectEvent!.service.flags).toBe(InjectFlags.SkipSelf);
+    expect(myServiceInjectEvent!.service.flags).toBe(InternalInjectFlags.Self);
+    expect(myServiceBInjectEvent!.service.flags).toBe(InternalInjectFlags.SkipSelf);
     expect(myServiceBInjectEvent!.service.value).toBe(1);
-    expect(myServiceCInjectEvent!.service.flags).toBe(InjectFlags.Optional);
+    expect(myServiceCInjectEvent!.service.flags).toBe(InternalInjectFlags.Optional);
   });
 
   it('should emit correct DI events when providers are configured with useFactory, useExisting, useClass, useValue', () => {

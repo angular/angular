@@ -54,7 +54,7 @@ export class RetrievingInjector implements PrimitivesInjector {
   retrieve<T>(token: PrimitivesInjectionToken<T>, options: unknown): T | NotFound {
     const flags: InjectFlags =
       convertToBitFlags(options as InjectOptions | undefined) || InjectFlags.Default;
-    return this.injector.get(
+    return (this.injector as BackwardsCompatibleInjector).get(
       token as unknown as InjectionToken<T>,
       // When a dependency is requested with an optional flag, DI returns null as the default value.
       flags & InjectFlags.Optional ? null : undefined,
@@ -68,6 +68,14 @@ const NG_TOKEN_PATH = 'ngTokenPath';
 const NEW_LINE = /\n/gm;
 const NO_NEW_LINE = 'ɵ';
 export const SOURCE = '__source';
+
+/**
+ * Temporary type to allow internal symbols to use inject flags. This should be
+ * removed once we consolidate the flags and the object literal approach.
+ */
+export type BackwardsCompatibleInjector = Injector & {
+  get<T>(token: ProviderToken<T>, notFoundValue?: T, options?: InjectFlags | InjectOptions): T;
+};
 
 export function injectInjectorOnly<T>(token: ProviderToken<T>): T;
 export function injectInjectorOnly<T>(token: ProviderToken<T>, flags?: InjectFlags): T | null;
@@ -150,17 +158,6 @@ Please check that 1) the type for the parameter at index ${index} is correct and
  * @publicApi
  */
 export function inject<T>(token: ProviderToken<T>): T;
-/**
- * @param token A token that represents a dependency that should be injected.
- * @param flags Control how injection is executed. The flags correspond to injection strategies that
- *     can be specified with parameter decorators `@Host`, `@Self`, `@SkipSelf`, and `@Optional`.
- * @returns the injected value if operation is successful, `null` otherwise.
- * @throws if called outside of a supported context.
- *
- * @publicApi
- * @deprecated prefer an options object instead of `InjectFlags`
- */
-export function inject<T>(token: ProviderToken<T>, flags?: InjectFlags): T | null;
 /**
  * @param token A token that represents a dependency that should be injected.
  * @param options Control how injection is executed. Options correspond to injection strategies
@@ -274,13 +271,10 @@ export function inject(token: HostAttributeToken, options: {optional: false}): s
  *
  * @publicApi
  */
-export function inject<T>(
-  token: ProviderToken<T> | HostAttributeToken,
-  flags: InjectFlags | InjectOptions = InjectFlags.Default,
-) {
+export function inject<T>(token: ProviderToken<T> | HostAttributeToken, options?: InjectOptions) {
   // The `as any` here _shouldn't_ be necessary, but without it JSCompiler
   // throws a disambiguation  error due to the multiple signatures.
-  return ɵɵinject(token as any, convertToBitFlags(flags));
+  return ɵɵinject(token as any, convertToBitFlags(options));
 }
 
 // Converts object-based DI flags (`InjectOptions`) to bit flags (`InjectFlags`).

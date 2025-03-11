@@ -692,8 +692,6 @@ export abstract class EnvironmentInjector implements Injector {
     }): T;
     abstract get<T>(token: ProviderToken<T>, notFoundValue: null | undefined, options: InjectOptions): T | null;
     abstract get<T>(token: ProviderToken<T>, notFoundValue?: T, options?: InjectOptions): T;
-    // @deprecated
-    abstract get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
     // @deprecated (undocumented)
     abstract get<T>(token: string | ProviderToken<T>, notFoundValue?: any): any;
     // @deprecated
@@ -853,9 +851,6 @@ export const Inject: InjectDecorator;
 // @public (undocumented)
 export function inject<T>(token: ProviderToken<T>): T;
 
-// @public @deprecated (undocumented)
-export function inject<T>(token: ProviderToken<T>, flags?: InjectFlags): T | null;
-
 // @public (undocumented)
 export function inject<T>(token: ProviderToken<T>, options: InjectOptions & {
     optional?: false;
@@ -915,15 +910,6 @@ export interface InjectDecorator {
     new (token: any): Inject;
 }
 
-// @public @deprecated
-export enum InjectFlags {
-    Default = 0,
-    Host = 1,
-    Optional = 8,
-    Self = 2,
-    SkipSelf = 4
-}
-
 // @public
 export class InjectionToken<T> {
     constructor(_desc: string, options?: {
@@ -962,9 +948,7 @@ export abstract class Injector {
         optional?: false;
     }): T;
     abstract get<T>(token: ProviderToken<T>, notFoundValue: null | undefined, options: InjectOptions): T | null;
-    abstract get<T>(token: ProviderToken<T>, notFoundValue?: T, options?: InjectOptions | InjectFlags): T;
-    // @deprecated
-    abstract get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
+    abstract get<T>(token: ProviderToken<T>, notFoundValue?: T, options?: InjectOptions): T;
     // @deprecated (undocumented)
     abstract get<T>(token: string | ProviderToken<T>, notFoundValue?: any): any;
     // (undocumented)
