@@ -353,7 +353,8 @@ export class RouterLink implements OnChanges, OnDestroy {
       state: this.state,
       info: this.info,
     };
-    this.router.navigateByUrl(urlTree, extras).catch((e) => {
+    // navigateByUrl is mocked frequently in tests... Reduce breakages when adding `catch`
+    this.router.navigateByUrl(urlTree, extras)?.catch((e) => {
       this.applicationErrorHandler(e);
     });
 
