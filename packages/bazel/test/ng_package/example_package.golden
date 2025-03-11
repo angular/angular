@@ -14,12 +14,13 @@ fesm2022
   fesm2022/example.mjs.map
   fesm2022/imports.mjs
   fesm2022/imports.mjs.map
-  fesm2022/index-1e1ea2d8.mjs
-  fesm2022/index-1e1ea2d8.mjs.map
+  fesm2022/index-D4QyjRX7.mjs
+  fesm2022/index-D4QyjRX7.mjs.map
   fesm2022/secondary.mjs
   fesm2022/secondary.mjs.map
 imports
   imports/index.d.ts
+index.d-peWegT6k.d.ts
 index.d.ts
 logo.png
 package.json
@@ -76,16 +77,15 @@ License: MIT
  * License: MIT
  */
 
-
 import * as i0 from '@angular/core';
 
-export declare class A11yModule {
+declare class A11yModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<A11yModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<A11yModule, never, never, never>;
     static ɵinj: i0.ɵɵInjectorDeclaration<A11yModule>;
 }
 
-export { }
+export { A11yModule };
 
 
 --- arbitrary-npm-package-main.js ---
@@ -176,7 +176,7 @@ export { MyModule };
  * License: MIT
  */
 
-export { s as sharedBetweenEntryPoints } from './index-1e1ea2d8.mjs';
+export { s as sharedBetweenEntryPoints } from './index-D4QyjRX7.mjs';
 import * as i0 from '@angular/core';
 import { Injectable } from '@angular/core';
 
@@ -206,7 +206,7 @@ export { MyService };
 //# sourceMappingURL=imports.mjs.map
 
 
---- fesm2022/index-1e1ea2d8.mjs ---
+--- fesm2022/index-D4QyjRX7.mjs ---
 
 /**
  * @license Angular v0.0.0
@@ -217,7 +217,7 @@ export { MyService };
 const sharedBetweenEntryPoints = 'This export is shared between entry-points';
 
 export { sharedBetweenEntryPoints as s };
-//# sourceMappingURL=index-1e1ea2d8.mjs.map
+//# sourceMappingURL=index-D4QyjRX7.mjs.map
 
 
 --- fesm2022/secondary.mjs ---
@@ -228,7 +228,7 @@ export { sharedBetweenEntryPoints as s };
  * License: MIT
  */
 
-export { s as sharedBetweenEntryPoints } from './index-1e1ea2d8.mjs';
+export { s as sharedBetweenEntryPoints } from './index-D4QyjRX7.mjs';
 import * as i0 from '@angular/core';
 import { NgModule } from '@angular/core';
 
@@ -255,24 +255,35 @@ export { SecondaryModule, a };
  * License: MIT
  */
 
-
 import * as i0 from '@angular/core';
+export { s as sharedBetweenEntryPoints } from '../index.d-peWegT6k.js';
 
 declare class MySecondService {
     static ɵfac: i0.ɵɵFactoryDeclaration<MySecondService, never>;
     static ɵprov: i0.ɵɵInjectableDeclaration<MySecondService>;
 }
 
-export declare class MyService {
+declare class MyService {
     secondService: MySecondService;
     constructor(secondService: MySecondService);
     static ɵfac: i0.ɵɵFactoryDeclaration<MyService, never>;
     static ɵprov: i0.ɵɵInjectableDeclaration<MyService>;
 }
 
-export declare const sharedBetweenEntryPoints = "This export is shared between entry-points";
+export { MyService };
 
-export { }
+
+--- index.d-peWegT6k.d.ts ---
+
+/**
+ * @license Angular v0.0.0
+ * (c) 2010-2025 Google LLC. https://angular.io/
+ * License: MIT
+ */
+
+declare const sharedBetweenEntryPoints = "This export is shared between entry-points";
+
+export { sharedBetweenEntryPoints as s };
 
 
 --- index.d.ts ---
@@ -283,16 +294,15 @@ export { }
  * License: MIT
  */
 
-
 import * as i0 from '@angular/core';
 
-export declare class MyModule {
+declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, never, never, never>;
     static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
 }
 
-export { }
+export { MyModule };
 
 
 --- logo.png ---
@@ -339,20 +349,17 @@ export { }
  * License: MIT
  */
 
-
+export { s as sharedBetweenEntryPoints } from '../index.d-peWegT6k.js';
 import * as i0 from '@angular/core';
 
-export declare const a = 1;
-
-export declare class SecondaryModule {
+declare class SecondaryModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<SecondaryModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<SecondaryModule, never, never, never>;
     static ɵinj: i0.ɵɵInjectorDeclaration<SecondaryModule>;
 }
+declare const a = 1;
 
-export declare const sharedBetweenEntryPoints = "This export is shared between entry-points";
-
-export { }
+export { SecondaryModule, a };
 
 
 --- some-file.txt ---

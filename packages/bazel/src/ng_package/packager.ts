@@ -79,15 +79,11 @@ function main(args: string[]): void {
     // List of static files that should be copied into the package.
     staticFilesArg,
 
-    // List of all type definitions that need to packaged into the ng_package.
-    typeDefinitionsArg,
-
     // List of side-effectful entry-points
     sideEffectEntryPointsArg,
   ] = params;
 
   const esm2022 = JSON.parse(esm2022Arg) as BazelFileInfo[];
-  const typeDefinitions = JSON.parse(typeDefinitionsArg) as BazelFileInfo[];
   const staticFiles = JSON.parse(staticFilesArg) as BazelFileInfo[];
   const metadata = JSON.parse(metadataArg) as PackageMetadata;
   const sideEffectEntryPoints = JSON.parse(sideEffectEntryPointsArg) as string[];
@@ -137,16 +133,6 @@ function main(args: string[]): void {
     return path.relative(owningPackageName, file.shortPath);
   }
 
-  /** Gets the output-relative path where the typing file is being written to. */
-  function getTypingOutputRelativePath(file: BazelFileInfo) {
-    // Type definitions are intended to be copied into the package output while preserving the
-    // sub-path from the owning package. e.g. a file like `packages/animations/browser/__index.d.ts`
-    // will end up being written to `<pkg-out>/browser/index.d.ts`. Note that types are bundled
-    // as a separate action in the `ng_package` Starlark rule and prefixed with `__` to avoid
-    // conflicts with source `index.d.ts` files. We remove this prefix here.
-    return getOwningPackageRelativePath(file).replace(/__index\.d\.ts$/, 'index.d.ts');
-  }
-
   /**
    * Gets the entry-point sub-path from the package root. e.g. if the package name
    * is `@angular/cdk`, then for `@angular/cdk/a11y` just `a11y` would be returned.
@@ -173,14 +159,18 @@ function main(args: string[]): void {
     process.exit(1);
   }
 
-  const fesmFiles = globSync('**/*', {cwd: metadata.bundlesOut.path});
   // Copy all FESM files (and their potential shared chunks) into the package output.
-  fesmFiles.forEach((f) => copyFile(path.join(metadata.bundlesOut.path, f), f));
+  const fesmFiles = globSync('**/*', {cwd: metadata.fesmBundlesOut.path});
+  fesmFiles.forEach((f) =>
+    copyFile(path.join(metadata.fesmBundlesOut.path, f), path.join('fesm2022', f)),
+  );
 
-  // Copy all type definitions into the package, preserving the sub-path from the
-  // owning package. e.g. a file like `packages/animations/browser/__index.d.ts` will
-  // end up in `browser/index.d.ts`
-  typeDefinitions.forEach((f) => copyFile(f.path, getTypingOutputRelativePath(f)));
+  // Copy all dts files (and their potential shared chunks) into the package output.
+  const dtsFiles = globSync('**/*', {cwd: metadata.dtsBundlesOut.path});
+  dtsFiles.forEach((f) =>
+    // TODO(devversion): Put all types under `/types/` folder. Breaking change in v20.
+    copyFile(path.join(metadata.dtsBundlesOut.path, f), f),
+  );
 
   for (const file of staticFiles) {
     // We copy all files into the package output while preserving the sub-path from
@@ -282,7 +272,7 @@ function main(args: string[]): void {
     }
 
     const fesm2022RelativeOutPath = entryPointInfo.fesm2022RelativePath;
-    const typingsRelativeOutPath = getTypingOutputRelativePath(entryPointInfo.typings);
+    const typingsRelativeOutPath = entryPointInfo.dtsBundleRelativePath;
 
     packageJson.module = normalizePath(
       path.relative(packageJsonContainingDir, fesm2022RelativeOutPath),
@@ -321,7 +311,7 @@ function main(args: string[]): void {
         ? `./${getEntryPointSubpath(moduleName)}`
         : '.';
       const fesm2022OutRelativePath = entryPoint.fesm2022RelativePath;
-      const typesOutRelativePath = getTypingOutputRelativePath(entryPoint.typings);
+      const typesOutRelativePath = entryPoint.dtsBundleRelativePath;
 
       // Insert the export mapping for the entry-point. We set `default` to the FESM 2022
       // output, and also set the `types` condition which will be respected by TS 4.5.

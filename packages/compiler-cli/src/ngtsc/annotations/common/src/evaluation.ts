@@ -15,7 +15,7 @@ import {EnumValue, PartialEvaluator, ResolvedValue} from '../../../partial_evalu
 import {ClassDeclaration, Decorator} from '../../../reflection';
 
 import {createValueHasWrongTypeError} from './diagnostics';
-import {isAngularCoreReference, unwrapExpression} from './util';
+import {isAngularCoreReferenceWithPotentialAliasing, unwrapExpression} from './util';
 
 export function resolveEnumValue(
   evaluator: PartialEvaluator,
@@ -30,7 +30,7 @@ export function resolveEnumValue(
     const value = evaluator.evaluate(expr) as any;
     if (
       value instanceof EnumValue &&
-      isAngularCoreReference(value.enumRef, enumSymbolName, isCore)
+      isAngularCoreReferenceWithPotentialAliasing(value.enumRef, enumSymbolName, isCore)
     ) {
       resolved = value.resolved as number;
     } else {

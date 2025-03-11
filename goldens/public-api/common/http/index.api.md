@@ -8,14 +8,14 @@ import { EnvironmentInjector } from '@angular/core';
 import { EnvironmentProviders } from '@angular/core';
 import * as i0 from '@angular/core';
 import { InjectionToken } from '@angular/core';
-import type { Injector } from '@angular/core';
+import { Injector } from '@angular/core';
 import { ModuleWithProviders } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Provider } from '@angular/core';
-import type { ResourceRef } from '@angular/core';
-import type { Signal } from '@angular/core';
-import type { ValueEqualityFn } from '@angular/core';
-import type { WritableResource } from '@angular/core';
+import { ResourceRef } from '@angular/core';
+import { Signal } from '@angular/core';
+import { ValueEqualityFn } from '@angular/core';
+import { WritableResource } from '@angular/core';
 import { XhrFactory } from '@angular/common';
 
 // @public
