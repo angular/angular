@@ -16,6 +16,7 @@ import {
   producerUpdateValueVersion,
   REACTIVE_NODE,
   ReactiveNode,
+  runPostProducerCreatedFn,
   SIGNAL,
 } from './graph';
 import {signalSetFn, signalUpdateFn} from './signal';
@@ -86,7 +87,7 @@ export function createLinkedSignal<S, D>(
 
   const getter = linkedSignalGetter as LinkedSignalGetter<S, D>;
   getter[SIGNAL] = node;
-
+  runPostProducerCreatedFn(node);
   return getter;
 }
 
