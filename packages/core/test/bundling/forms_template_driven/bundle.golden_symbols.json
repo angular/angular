@@ -356,7 +356,6 @@
   "getCurrentTNodePlaceholderOk",
   "getDOM",
   "getDeclarationTNode",
-  "getDirectiveDef",
   "getFactoryDef",
   "getFactoryOf",
   "getFirstLContainer",

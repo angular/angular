@@ -300,7 +300,6 @@
   "getCurrentTNodePlaceholderOk",
   "getDOM",
   "getDeclarationTNode",
-  "getDirectiveDef",
   "getFactoryDef",
   "getFirstLContainer",
   "getFirstNativeNode",

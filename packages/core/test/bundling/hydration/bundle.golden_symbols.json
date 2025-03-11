@@ -262,7 +262,6 @@
   "getCurrentTNodePlaceholderOk",
   "getDOM",
   "getDeclarationTNode",
-  "getDirectiveDef",
   "getDocument",
   "getFactoryDef",
   "getFilteredHeaders",

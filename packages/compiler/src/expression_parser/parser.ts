@@ -1040,7 +1040,7 @@ class _ParseAST {
       this.advance();
       return new LiteralPrimitive(this.span(start), this.sourceSpan(start), value);
     } else if (this.next.isTemplateLiteralEnd()) {
-      return this.parseNoInterpolationTemplateLiteral(start);
+      return this.parseNoInterpolationTemplateLiteral();
     } else if (this.next.isTemplateLiteralPart()) {
       return this.parseTemplateLiteral();
     } else if (this.next.isString() && this.next.kind === StringTokenKind.Plain) {
@@ -1406,8 +1406,9 @@ class _ParseAST {
     return new VariableBinding(sourceSpan, key, value);
   }
 
-  private parseNoInterpolationTemplateLiteral(start: number): AST {
+  private parseNoInterpolationTemplateLiteral(): AST {
     const text = this.next.strValue;
+    const start = this.inputIndex;
     this.advance();
     const span = this.span(start);
     const sourceSpan = this.sourceSpan(start);
@@ -1428,14 +1429,15 @@ class _ParseAST {
       const token = this.next;
 
       if (token.isTemplateLiteralPart() || token.isTemplateLiteralEnd()) {
+        const partStart = this.inputIndex;
+        this.advance();
         elements.push(
           new TemplateLiteralElement(
-            this.span(this.inputIndex),
-            this.sourceSpan(this.inputIndex),
+            this.span(partStart),
+            this.sourceSpan(partStart),
             token.strValue,
           ),
         );
-        this.advance();
         if (token.isTemplateLiteralEnd()) {
           break;
         }
