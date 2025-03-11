@@ -34,6 +34,12 @@ import ts from 'typescript';
 import {createSourceSpan} from '../../annotations/common';
 import {ClassDeclaration} from '../../reflection';
 
+/**
+ * Comment attached to an AST node that serves as a guard to distinguish nodes
+ * used for type checking host bindings from ones used for templates.
+ */
+const GUARD_COMMENT_TEXT = 'hostBindingsBlockGuard';
+
 /** Node that represent a static name of a member. */
 type StaticName = ts.Identifier | ts.StringLiteralLike;
 
@@ -117,6 +123,50 @@ export function createHostElement(
   }
 
   return new TmplAstHostElement(tagNames, bindings, listeners, createSourceSpan(sourceNode.name));
+}
+
+/**
+ * Creates an AST node that can be used as a guard in `if` statements to distinguish TypeScript
+ * nodes used for checking host bindings from ones used for checking templates.
+ */
+export function createHostBindingsBlockGuard(): ts.Expression {
+  // Note that the comment text is quite generic. This doesn't really matter, because it is
+  // used only inside a TCB and there's no way for users to produce a comment there.
+  // `true /*hostBindings*/`.
+  const trueExpr = ts.addSyntheticTrailingComment(
+    ts.factory.createTrue(),
+    ts.SyntaxKind.MultiLineCommentTrivia,
+    GUARD_COMMENT_TEXT,
+  );
+  // Wrap the expression in parentheses to ensure that the comment is attached to the correct node.
+  return ts.factory.createParenthesizedExpression(trueExpr);
+}
+
+/**
+ * Determines if a given node is a guard that indicates that descendant nodes are used to check
+ * host bindings.
+ */
+export function isHostBindingsBlockGuard(node: ts.Node): boolean {
+  if (!ts.isIfStatement(node)) {
+    return false;
+  }
+
+  // Needs to be kept in sync with `createHostBindingsMarker`.
+  const expr = node.expression;
+  if (!ts.isParenthesizedExpression(expr) || expr.expression.kind !== ts.SyntaxKind.TrueKeyword) {
+    return false;
+  }
+
+  const text = expr.getSourceFile().text;
+  return (
+    ts.forEachTrailingCommentRange(
+      text,
+      expr.expression.getEnd(),
+      (pos, end, kind) =>
+        kind === ts.SyntaxKind.MultiLineCommentTrivia &&
+        text.substring(pos + 2, end - 2) === GUARD_COMMENT_TEXT,
+    ) || false
+  );
 }
 
 /**
