@@ -5,9 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {InjectFlags, resolveForwardRef} from '../../di';
+import {resolveForwardRef} from '../../di';
 import {assertInjectImplementationNotEqual} from '../../di/inject_switch';
 import {ɵɵinject} from '../../di/injector_compatibility';
+import {InjectFlags} from '../../di/interface/injector';
 import {ProviderToken} from '../../di/provider_token';
 import {Type} from '../../interface/type';
 import {emitInjectEvent} from '../debug/injector_profiler';

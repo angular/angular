@@ -19,7 +19,6 @@ import {
   inject,
   Inject,
   Injectable,
-  InjectFlags,
   InjectionToken,
   InjectOptions,
   Injector,
@@ -2234,12 +2233,8 @@ describe('TestBed', () => {
     describe('injection flags', () => {
       it('should be able to optionally inject a token', () => {
         const TOKEN = new InjectionToken<string>('TOKEN');
-
         expect(TestBed.inject(TOKEN, undefined, {optional: true})).toBeNull();
-        expect(TestBed.inject(TOKEN, undefined, InjectFlags.Optional)).toBeNull();
-
         expect(TestBed.inject(TOKEN, undefined, {optional: true})).toBeNull();
-        expect(TestBed.inject(TOKEN, undefined, InjectFlags.Optional)).toBeNull();
       });
 
       it('should include `null` into the result type when the optional flag is used', () => {
@@ -2262,11 +2257,7 @@ describe('TestBed', () => {
         });
 
         expect(TestBed.inject(TOKEN)).toBe('from TestBed');
-
         expect(TestBed.inject(TOKEN, undefined, {skipSelf: true, optional: true})).toBeNull();
-        expect(
-          TestBed.inject(TOKEN, undefined, InjectFlags.SkipSelf | InjectFlags.Optional),
-        ).toBeNull();
       });
     });
   });

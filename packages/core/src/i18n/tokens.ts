@@ -8,7 +8,6 @@
 
 import {InjectionToken} from '../di/injection_token';
 import {inject} from '../di/injector_compatibility';
-import {InjectFlags} from '../di/interface/injector';
 
 import {DEFAULT_LOCALE_ID, USD_CURRENCY_CODE} from './localization';
 
@@ -69,8 +68,7 @@ export function getGlobalLocale(): string {
  */
 export const LOCALE_ID: InjectionToken<string> = new InjectionToken(ngDevMode ? 'LocaleId' : '', {
   providedIn: 'root',
-  factory: () =>
-    inject(LOCALE_ID, InjectFlags.Optional | InjectFlags.SkipSelf) || getGlobalLocale(),
+  factory: () => inject(LOCALE_ID, {optional: true, skipSelf: true}) || getGlobalLocale(),
 });
 
 /**

@@ -12,7 +12,6 @@ import { ɵDeferBlockBehavior as DeferBlockBehavior } from '@angular/core';
 import { ɵDeferBlockState as DeferBlockState } from '@angular/core';
 import { Directive } from '@angular/core';
 import { ElementRef } from '@angular/core';
-import { InjectFlags } from '@angular/core';
 import { InjectionToken } from '@angular/core';
 import { InjectOptions } from '@angular/core';
 import { NgModule } from '@angular/core';
@@ -126,8 +125,6 @@ export interface TestBed {
     execute(tokens: any[], fn: Function, context?: any): any;
     flushEffects(): void;
     // @deprecated (undocumented)
-    get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
-    // @deprecated (undocumented)
     get(token: any, notFoundValue?: any): any;
     initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, options?: TestEnvironmentOptions): void;
     // (undocumented)
@@ -138,10 +135,6 @@ export interface TestBed {
     inject<T>(token: ProviderToken<T>, notFoundValue: null | undefined, options: InjectOptions): T | null;
     // (undocumented)
     inject<T>(token: ProviderToken<T>, notFoundValue?: T, options?: InjectOptions): T;
-    // @deprecated (undocumented)
-    inject<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
-    // @deprecated (undocumented)
-    inject<T>(token: ProviderToken<T>, notFoundValue: null, flags?: InjectFlags): T | null;
     // (undocumented)
     get ngModule(): Type<any> | Type<any>[];
     // (undocumented)

@@ -20,7 +20,6 @@ import {
   ENVIRONMENT_INITIALIZER,
   EnvironmentProviders,
   inject,
-  InjectFlags,
   InjectionToken,
   Injector,
   makeEnvironmentProviders,
@@ -239,8 +238,8 @@ export function getBootstrapListener() {
       router.initialNavigation();
     }
 
-    injector.get(ROUTER_PRELOADER, null, InjectFlags.Optional)?.setUpPreloading();
-    injector.get(ROUTER_SCROLLER, null, InjectFlags.Optional)?.init();
+    injector.get(ROUTER_PRELOADER, null, {optional: true})?.setUpPreloading();
+    injector.get(ROUTER_SCROLLER, null, {optional: true})?.init();
     router.resetRootComponentType(ref.componentTypes[0]);
     if (!bootstrapDone.closed) {
       bootstrapDone.next();

@@ -14,7 +14,6 @@
 
 export * from './metadata';
 export {assertInInjectionContext, runInInjectionContext} from './contextual';
-export {InjectFlags} from './interface/injector';
 export {
   ɵɵdefineInjectable,
   defineInjectable,

@@ -14,7 +14,6 @@ import {
   ENVIRONMENT_INITIALIZER,
   EnvironmentInjector,
   inject,
-  InjectFlags,
   InjectionToken,
   INJECTOR,
   Injector,
@@ -212,7 +211,7 @@ describe('environment injector', () => {
       const TOKEN = new InjectionToken<string>('TOKEN');
       const injector = TestBed.inject(EnvironmentInjector);
       injector.runInContext(() => {});
-      expect(() => inject(TOKEN, InjectFlags.Optional)).toThrow();
+      expect(() => inject(TOKEN, {optional: true})).toThrow();
     });
 
     it('should properly clean up after the function throws', () => {
@@ -223,7 +222,7 @@ describe('environment injector', () => {
           throw new Error('crashes!');
         }),
       ).toThrow();
-      expect(() => inject(TOKEN, InjectFlags.Optional)).toThrow();
+      expect(() => inject(TOKEN, {optional: true})).toThrow();
     });
 
     it('should set the correct inject implementation', () => {
@@ -245,7 +244,7 @@ describe('environment injector', () => {
         // Attempt to inject ViewContainerRef within the environment injector's context. This should
         // not be available, so the result should be `null`.
         vcrFromEnvContext = this.envInjector.runInContext(() =>
-          inject(ViewContainerRef, InjectFlags.Optional),
+          inject(ViewContainerRef, {optional: true}),
         );
       }
 

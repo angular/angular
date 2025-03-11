@@ -15,15 +15,11 @@ import {
   EnvironmentInjector,
   inject,
   Injectable,
-  InjectFlags,
   InjectionToken,
   NgModule,
-  RendererFactory2,
   Type,
   ViewContainerRef,
   ɵɵdefineInjectable,
-  ɵɵdefineInjector,
-  ɵɵdefineNgModule,
   ɵɵinject,
 } from '../../src/core';
 import {forwardRef} from '../../src/di/forward_ref';
@@ -1175,8 +1171,8 @@ describe('providers', () => {
         parent: {
           componentAssertion: () => {
             expect(inject(String)).toEqual('Module');
-            expect(inject(String, InjectFlags.Optional | InjectFlags.Self)).toBeNull();
-            expect(inject(String, InjectFlags.Optional | InjectFlags.Host)).toBeNull();
+            expect(inject(String, {optional: true, self: true})).toBeNull();
+            expect(inject(String, {optional: true, host: true})).toBeNull();
           },
         },
       });

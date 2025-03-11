@@ -9,7 +9,7 @@
 import {isForwardRef, resolveForwardRef} from '../di/forward_ref';
 import {injectRootLimpMode, setInjectImplementation} from '../di/inject_switch';
 import {Injector} from '../di/injector';
-import {convertToBitFlags} from '../di/injector_compatibility';
+import {BackwardsCompatibleInjector, convertToBitFlags} from '../di/injector_compatibility';
 import {InjectorMarkers} from '../di/injector_marker';
 import {InjectFlags, InjectOptions} from '../di/interface/injector';
 import {ProviderToken} from '../di/provider_token';
@@ -419,7 +419,11 @@ function lookupTokenUsingModuleInjector<T>(
     const previousInjectImplementation = setInjectImplementation(undefined);
     try {
       if (moduleInjector) {
-        return moduleInjector.get(token, notFoundValue, flags & InjectFlags.Optional);
+        return (moduleInjector as BackwardsCompatibleInjector).get(
+          token,
+          notFoundValue,
+          flags & InjectFlags.Optional,
+        );
       } else {
         return injectRootLimpMode(token, notFoundValue, flags & InjectFlags.Optional);
       }
@@ -986,7 +990,7 @@ function lookupTokenUsingEmbeddedInjector<T>(
       // Before we go to the next LView, check if the token exists on the current embedded injector.
       const embeddedViewInjector = currentLView[EMBEDDED_VIEW_INJECTOR];
       if (embeddedViewInjector) {
-        const embeddedViewInjectorValue = embeddedViewInjector.get(
+        const embeddedViewInjectorValue = (embeddedViewInjector as BackwardsCompatibleInjector).get(
           token,
           NOT_FOUND as T | {},
           flags,
