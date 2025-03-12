@@ -309,7 +309,7 @@ export class RouterLink implements OnChanges, OnDestroy {
     this.onChanges.next(this);
   }
 
-  private routerLinkInput: any[] | UrlTree | null = null;
+  private routerLinkInput: readonly any[] | UrlTree | null = null;
 
   /**
    * Commands to pass to {@link Router#createUrlTree} or a `UrlTree`.
@@ -321,7 +321,7 @@ export class RouterLink implements OnChanges, OnDestroy {
    * @see {@link Router#createUrlTree}
    */
   @Input()
-  set routerLink(commandsOrUrlTree: any[] | string | UrlTree | null | undefined) {
+  set routerLink(commandsOrUrlTree: readonly any[] | string | UrlTree | null | undefined) {
     if (commandsOrUrlTree == null) {
       this.routerLinkInput = null;
       this.setTabIndexIfNotOnNativeEl(null);
