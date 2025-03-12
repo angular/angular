@@ -1,3 +1,34 @@
+<a name="19.2.2"></a>
+# 19.2.2 (2025-03-12)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [90a16a1088](https://github.com/angular/angular/commit/90a16a10888eee37d8a61cdbfad070e002a3cfdf) | fix | support equality function in httpResource ([#60026](https://github.com/angular/angular/pull/60026)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [56b551d273](https://github.com/angular/angular/commit/56b551d273a0978e1f2e2ef914c1d7ae942a28a8) | fix | incorrect spans for template literals ([#60323](https://github.com/angular/angular/pull/60323)) ([#60331](https://github.com/angular/angular/pull/60331)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [23ca88522b](https://github.com/angular/angular/commit/23ca88522bbc23e24a2b20e48e62edcce3a42eb6) | fix | handle transformed classes when generating HMR code ([#60298](https://github.com/angular/angular/pull/60298)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6dc41265fd](https://github.com/angular/angular/commit/6dc41265fd47df3fd0462bcd8f451eb6aea972ef) | fix | check whether application is destroyed before initializing event replay ([#59789](https://github.com/angular/angular/pull/59789)) |
+| [bb12b30d52](https://github.com/angular/angular/commit/bb12b30d5213912f50f53aff60a11e6d47349c82) | fix | ensures immediate trigger fires properly with lazy loaded routes ([#60203](https://github.com/angular/angular/pull/60203)) |
+| [b144dd946e](https://github.com/angular/angular/commit/b144dd946e38e52ce716aca7c6ba7c1a1a02f13d) | fix | fix removal of a container reference used in the component file ([#60210](https://github.com/angular/angular/pull/60210)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [15c42969fc](https://github.com/angular/angular/commit/15c42969fc42c76e3bd593201164183fb82d70f6) | fix | add missing peer dependency for `rxjs` ([#60308](https://github.com/angular/angular/pull/60308)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7bcdf7c143](https://github.com/angular/angular/commit/7bcdf7c1435f766b2b0bbd383358ef2ddabf217a) | fix | update symbols ([#60233](https://github.com/angular/angular/pull/60233)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.0.0-next.1"></a>
 # 20.0.0-next.1 (2025-03-05)
 ## Breaking Changes
