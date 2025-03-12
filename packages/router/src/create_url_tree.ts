@@ -67,7 +67,7 @@ import {last, shallowEqual} from './utils/collection';
  */
 export function createUrlTreeFromSnapshot(
   relativeTo: ActivatedRouteSnapshot,
-  commands: any[],
+  commands: readonly any[],
   queryParams: Params | null = null,
   fragment: string | null = null,
 ): UrlTree {
@@ -100,7 +100,7 @@ export function createSegmentGroupFromRoute(route: ActivatedRouteSnapshot): UrlS
 
 export function createUrlTreeFromSegmentGroup(
   relativeTo: UrlSegmentGroup,
-  commands: any[],
+  commands: readonly any[],
   queryParams: Params | null,
   fragment: string | null,
 ): UrlTree {
@@ -192,7 +192,7 @@ class Navigation {
   constructor(
     public isAbsolute: boolean,
     public numberOfDoubleDots: number,
-    public commands: any[],
+    public commands: readonly any[],
   ) {
     if (isAbsolute && commands.length > 0 && isMatrixParams(commands[0])) {
       throw new RuntimeError(
@@ -218,7 +218,7 @@ class Navigation {
 }
 
 /** Transforms commands to a normalized `Navigation` */
-function computeNavigation(commands: any[]): Navigation {
+function computeNavigation(commands: readonly any[]): Navigation {
   if (typeof commands[0] === 'string' && commands.length === 1 && commands[0] === '/') {
     return new Navigation(true, 0, commands);
   }
@@ -324,7 +324,7 @@ function createPositionApplyingDoubleDots(
   return new Position(g, false, ci - dd);
 }
 
-function getOutlets(commands: unknown[]): {[k: string]: unknown[] | string} {
+function getOutlets(commands: readonly unknown[]): {[k: string]: readonly unknown[] | string} {
   if (isCommandWithOutlets(commands[0])) {
     return commands[0].outlets;
   }
@@ -335,7 +335,7 @@ function getOutlets(commands: unknown[]): {[k: string]: unknown[] | string} {
 function updateSegmentGroup(
   segmentGroup: UrlSegmentGroup | undefined,
   startIndex: number,
-  commands: any[],
+  commands: readonly any[],
 ): UrlSegmentGroup {
   segmentGroup ??= new UrlSegmentGroup([], {});
   if (segmentGroup.segments.length === 0 && segmentGroup.hasChildren()) {
@@ -365,7 +365,7 @@ function updateSegmentGroup(
 function updateSegmentGroupChildren(
   segmentGroup: UrlSegmentGroup,
   startIndex: number,
-  commands: any[],
+  commands: readonly any[],
 ): UrlSegmentGroup {
   if (commands.length === 0) {
     return new UrlSegmentGroup(segmentGroup.segments, {});
@@ -425,7 +425,7 @@ function updateSegmentGroupChildren(
   }
 }
 
-function prefixedWith(segmentGroup: UrlSegmentGroup, startIndex: number, commands: any[]) {
+function prefixedWith(segmentGroup: UrlSegmentGroup, startIndex: number, commands: readonly any[]) {
   let currentCommandIndex = 0;
   let currentPathIndex = startIndex;
 
@@ -462,7 +462,7 @@ function prefixedWith(segmentGroup: UrlSegmentGroup, startIndex: number, command
 function createNewSegmentGroup(
   segmentGroup: UrlSegmentGroup,
   startIndex: number,
-  commands: any[],
+  commands: readonly any[],
 ): UrlSegmentGroup {
   const paths = segmentGroup.segments.slice(0, startIndex);
 
@@ -495,7 +495,7 @@ function createNewSegmentGroup(
   return new UrlSegmentGroup(paths, {});
 }
 
-function createNewSegmentChildren(outlets: {[name: string]: unknown[] | string}): {
+function createNewSegmentChildren(outlets: {[name: string]: readonly unknown[] | string}): {
   [outlet: string]: UrlSegmentGroup;
 } {
   const children: {[outlet: string]: UrlSegmentGroup} = {};
