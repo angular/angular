@@ -1,32 +1,35 @@
 LICENSE
 README.md
 _index.scss
-a11y
-  a11y/index.d.ts
 arbitrary-npm-package-main.js
 arbitrary_bin.txt
 arbitrary_genfiles.txt
 extra-styles.css
 fesm2022
-  fesm2022/a11y.mjs
-  fesm2022/a11y.mjs.map
-  fesm2022/example.mjs
-  fesm2022/example.mjs.map
-  fesm2022/imports.mjs
-  fesm2022/imports.mjs.map
-  fesm2022/index-D4QyjRX7.mjs
-  fesm2022/index-D4QyjRX7.mjs.map
-  fesm2022/secondary.mjs
-  fesm2022/secondary.mjs.map
-imports
-  imports/index.d.ts
-index.d-peWegT6k.d.ts
-index.d.ts
+  a11y
+    tertiary.mjs
+    tertiary.mjs.map
+  a11y.mjs
+  a11y.mjs.map
+  example.mjs
+  example.mjs.map
+  imports.mjs
+  imports.mjs.map
+  index-D4QyjRX7.mjs
+  index-D4QyjRX7.mjs.map
+  secondary.mjs
+  secondary.mjs.map
 logo.png
 package.json
-secondary
-  secondary/index.d.ts
 some-file.txt
+types
+  a11y
+    tertiary.d.ts
+  a11y.d.ts
+  example.d.ts
+  imports.d.ts
+  index.d-peWegT6k.d.ts
+  secondary.d.ts
 --- LICENSE ---
 
 The MIT License
@@ -69,25 +72,6 @@ License: MIT
 /// test file which should ship as part of the NPM package.
 
 
---- a11y/index.d.ts ---
-
-/**
- * @license Angular v0.0.0
- * (c) 2010-2025 Google LLC. https://angular.io/
- * License: MIT
- */
-
-import * as i0 from '@angular/core';
-
-declare class A11yModule {
-    static ɵfac: i0.ɵɵFactoryDeclaration<A11yModule, never>;
-    static ɵmod: i0.ɵɵNgModuleDeclaration<A11yModule, never, never, never>;
-    static ɵinj: i0.ɵɵInjectorDeclaration<A11yModule>;
-}
-
-export { A11yModule };
-
-
 --- arbitrary-npm-package-main.js ---
 
 /**
@@ -116,6 +100,20 @@ Hello
 .special {
   color: goldenrod;
 }
+
+
+--- fesm2022/a11y/tertiary.mjs ---
+
+/**
+ * @license Angular v0.0.0
+ * (c) 2010-2025 Google LLC. https://angular.io/
+ * License: MIT
+ */
+
+const tertiary = 'works';
+
+export { tertiary };
+//# sourceMappingURL=tertiary.mjs.map
 
 
 --- fesm2022/a11y.mjs ---
@@ -247,7 +245,65 @@ export { SecondaryModule, a };
 //# sourceMappingURL=secondary.mjs.map
 
 
---- imports/index.d.ts ---
+--- logo.png ---
+
+611871c1f492a69a8a5f57e01096b145
+
+--- package.json ---
+
+{
+  "name": "example",
+  "version": "0.0.0",
+  "exports": {
+    ".": {
+      "sass": "./_index.scss",
+      "types": "./types/example.d.ts",
+      "default": "./fesm2022/example.mjs"
+    },
+    "./package.json": {
+      "default": "./package.json"
+    },
+    "./a11y": {
+      "types": "./types/a11y.d.ts",
+      "default": "./fesm2022/a11y.mjs"
+    },
+    "./a11y/tertiary": {
+      "types": "./types/a11y/tertiary.d.ts",
+      "default": "./fesm2022/a11y/tertiary.mjs"
+    },
+    "./imports": {
+      "types": "./types/imports.d.ts",
+      "default": "./fesm2022/imports.mjs"
+    },
+    "./secondary": {
+      "types": "./types/secondary.d.ts",
+      "default": "./fesm2022/secondary.mjs"
+    }
+  },
+  "module": "./fesm2022/example.mjs",
+  "typings": "./types/example.d.ts",
+  "type": "module"
+}
+
+--- some-file.txt ---
+
+This file is just copied into the package.
+
+
+--- types/a11y/tertiary.d.ts ---
+
+/**
+ * @license Angular v0.0.0
+ * (c) 2010-2025 Google LLC. https://angular.io/
+ * License: MIT
+ */
+
+declare const tertiary = "works";
+
+export { tertiary };
+
+
+--- types/a11y.d.ts ---
 
 /**
  * @license Angular v0.0.0
@@ -256,37 +312,17 @@ export { SecondaryModule, a };
  */
 
 import * as i0 from '@angular/core';
-export { s as sharedBetweenEntryPoints } from '../index.d-peWegT6k.js';
 
-declare class MySecondService {
-    static ɵfac: i0.ɵɵFactoryDeclaration<MySecondService, never>;
-    static ɵprov: i0.ɵɵInjectableDeclaration<MySecondService>;
+declare class A11yModule {
+    static ɵfac: i0.ɵɵFactoryDeclaration<A11yModule, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<A11yModule, never, never, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<A11yModule>;
 }
 
-declare class MyService {
-    secondService: MySecondService;
-    constructor(secondService: MySecondService);
-    static ɵfac: i0.ɵɵFactoryDeclaration<MyService, never>;
-    static ɵprov: i0.ɵɵInjectableDeclaration<MyService>;
-}
-
-export { MyService };
+export { A11yModule };
 
 
---- index.d-peWegT6k.d.ts ---
-
-/**
- * @license Angular v0.0.0
- * (c) 2010-2025 Google LLC. https://angular.io/
- * License: MIT
- */
-
-declare const sharedBetweenEntryPoints = "This export is shared between entry-points";
-
-export { sharedBetweenEntryPoints as s };
-
-
---- index.d.ts ---
+--- types/example.d.ts ---
 
 /**
  * @license Angular v0.0.0
@@ -305,43 +341,7 @@ declare class MyModule {
 export { MyModule };
 
 
---- logo.png ---
-
-611871c1f492a69a8a5f57e01096b145
-
---- package.json ---
-
-{
-  "name": "example",
-  "version": "0.0.0",
-  "exports": {
-    ".": {
-      "sass": "./_index.scss",
-      "types": "./index.d.ts",
-      "default": "./fesm2022/example.mjs"
-    },
-    "./package.json": {
-      "default": "./package.json"
-    },
-    "./a11y": {
-      "types": "./a11y/index.d.ts",
-      "default": "./fesm2022/a11y.mjs"
-    },
-    "./imports": {
-      "types": "./imports/index.d.ts",
-      "default": "./fesm2022/imports.mjs"
-    },
-    "./secondary": {
-      "types": "./secondary/index.d.ts",
-      "default": "./fesm2022/secondary.mjs"
-    }
-  },
-  "module": "./fesm2022/example.mjs",
-  "typings": "./index.d.ts",
-  "type": "module"
-}
-
---- secondary/index.d.ts ---
+--- types/imports.d.ts ---
 
 /**
  * @license Angular v0.0.0
@@ -349,7 +349,46 @@ export { MyModule };
  * License: MIT
  */
 
-export { s as sharedBetweenEntryPoints } from '../index.d-peWegT6k.js';
+import * as i0 from '@angular/core';
+export { s as sharedBetweenEntryPoints } from './index.d-peWegT6k.js';
+
+declare class MySecondService {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MySecondService, never>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<MySecondService>;
+}
+
+declare class MyService {
+    secondService: MySecondService;
+    constructor(secondService: MySecondService);
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyService, never>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<MyService>;
+}
+
+export { MyService };
+
+
+--- types/index.d-peWegT6k.d.ts ---
+
+/**
+ * @license Angular v0.0.0
+ * (c) 2010-2025 Google LLC. https://angular.io/
+ * License: MIT
+ */
+
+declare const sharedBetweenEntryPoints = "This export is shared between entry-points";
+
+export { sharedBetweenEntryPoints as s };
+
+
+--- types/secondary.d.ts ---
+
+/**
+ * @license Angular v0.0.0
+ * (c) 2010-2025 Google LLC. https://angular.io/
+ * License: MIT
+ */
+
+export { s as sharedBetweenEntryPoints } from './index.d-peWegT6k.js';
 import * as i0 from '@angular/core';
 
 declare class SecondaryModule {
@@ -360,9 +399,4 @@ declare class SecondaryModule {
 declare const a = 1;
 
 export { SecondaryModule, a };
-
-
---- some-file.txt ---
-
-This file is just copied into the package.
 

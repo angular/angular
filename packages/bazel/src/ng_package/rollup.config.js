@@ -165,7 +165,7 @@ const input = {};
 for (const info of Object.values(entrypointMetadata)) {
   const entryFile = dtsMode ? info.typingsEntryPoint.path : info.index.path;
   const chunkName = dtsMode
-    ? info.dtsBundleRelativePath.replace(/\.d\.ts$/, '')
+    ? info.dtsBundleRelativePath.replace(/\.d\.ts$/, '').replace('types/', '')
     : info.fesm2022RelativePath.replace(/\.mjs$/, '').replace('fesm2022/', '');
 
   input[chunkName] = entryFile;

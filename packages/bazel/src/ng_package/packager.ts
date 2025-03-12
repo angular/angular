@@ -168,8 +168,7 @@ function main(args: string[]): void {
   // Copy all dts files (and their potential shared chunks) into the package output.
   const dtsFiles = globSync('**/*', {cwd: metadata.dtsBundlesOut.path});
   dtsFiles.forEach((f) =>
-    // TODO(devversion): Put all types under `/types/` folder. Breaking change in v20.
-    copyFile(path.join(metadata.dtsBundlesOut.path, f), f),
+    copyFile(path.join(metadata.dtsBundlesOut.path, f), path.join('types', f)),
   );
 
   for (const file of staticFiles) {

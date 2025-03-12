@@ -60,10 +60,7 @@ function getIndentedDirectoryStructure(directoryPath: string, depth = 0): string
       .sort()
       .forEach((f) => {
         const filePath = path.posix.join(directoryPath, f);
-        result.push(
-          '  '.repeat(depth) + filePath,
-          ...getIndentedDirectoryStructure(filePath, depth + 1),
-        );
+        result.push('  '.repeat(depth) + f, ...getIndentedDirectoryStructure(filePath, depth + 1));
       });
   }
   return result;

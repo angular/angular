@@ -1,18 +1,17 @@
 LICENSE
 README.md
 fesm2022
-  fesm2022/example-with-ts-library.mjs
-  fesm2022/example-with-ts-library.mjs.map
-  fesm2022/portal.mjs
-  fesm2022/portal.mjs.map
-  fesm2022/utils.mjs
-  fesm2022/utils.mjs.map
-index.d.ts
+  example-with-ts-library.mjs
+  example-with-ts-library.mjs.map
+  portal.mjs
+  portal.mjs.map
+  utils.mjs
+  utils.mjs.map
 package.json
-portal
-  portal/index.d.ts
-utils
-  utils/index.d.ts
+types
+  example-with-ts-library.d.ts
+  portal.d.ts
+  utils.d.ts
 --- LICENSE ---
 
 The MIT License
@@ -106,7 +105,35 @@ export { dispatchFakeEvent };
 //# sourceMappingURL=utils.mjs.map
 
 
---- index.d.ts ---
+--- package.json ---
+
+{
+  "name": "example-with-ts-library",
+  "version": "0.0.0",
+  "schematics": "Custom property that should be preserved.",
+  "module": "./fesm2022/example-with-ts-library.mjs",
+  "typings": "./types/example-with-ts-library.d.ts",
+  "type": "module",
+  "exports": {
+    "./package.json": {
+      "default": "./package.json"
+    },
+    ".": {
+      "types": "./types/example-with-ts-library.d.ts",
+      "default": "./fesm2022/example-with-ts-library.mjs"
+    },
+    "./portal": {
+      "types": "./types/portal.d.ts",
+      "default": "./fesm2022/portal.mjs"
+    },
+    "./utils": {
+      "types": "./types/utils.d.ts",
+      "default": "./fesm2022/utils.mjs"
+    }
+  }
+}
+
+--- types/example-with-ts-library.d.ts ---
 
 /**
  * @license Angular v0.0.0
@@ -119,35 +146,7 @@ declare const VERSION = "0.0.0";
 export { VERSION };
 
 
---- package.json ---
-
-{
-  "name": "example-with-ts-library",
-  "version": "0.0.0",
-  "schematics": "Custom property that should be preserved.",
-  "module": "./fesm2022/example-with-ts-library.mjs",
-  "typings": "./index.d.ts",
-  "type": "module",
-  "exports": {
-    "./package.json": {
-      "default": "./package.json"
-    },
-    ".": {
-      "types": "./index.d.ts",
-      "default": "./fesm2022/example-with-ts-library.mjs"
-    },
-    "./portal": {
-      "types": "./portal/index.d.ts",
-      "default": "./fesm2022/portal.mjs"
-    },
-    "./utils": {
-      "types": "./utils/index.d.ts",
-      "default": "./fesm2022/utils.mjs"
-    }
-  }
-}
-
---- portal/index.d.ts ---
+--- types/portal.d.ts ---
 
 /**
  * @license Angular v0.0.0
@@ -167,7 +166,7 @@ declare const a = 1;
 export { PortalModule, a };
 
 
---- utils/index.d.ts ---
+--- types/utils.d.ts ---
 
 /**
  * @license Angular v0.0.0
