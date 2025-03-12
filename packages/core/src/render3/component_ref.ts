@@ -458,7 +458,8 @@ function getRootTViewTemplate(
 }
 
 function isInputBinding(binding: Binding): boolean {
-  return binding[BINDING].kind === 'input';
+  const kind = binding[BINDING].kind;
+  return kind === 'input' || kind === 'twoWay';
 }
 
 /**
@@ -498,7 +499,7 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
     if (this._hasInputBindings && ngDevMode) {
       throw new RuntimeError(
         RuntimeErrorCode.INVALID_SET_INPUT_CALL,
-        'Cannot call `setInput` on a component that is using the `inputBinding` function.',
+        'Cannot call `setInput` on a component that is using the `inputBinding` or `twoWayBinding` functions.',
       );
     }
 
