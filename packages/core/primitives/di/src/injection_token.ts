@@ -8,18 +8,32 @@
 
 import {Type} from './type';
 /**
- * Information about how a type or `InjectionToken` interfaces with the DI system.
+ * Information about how a type or `InjectionToken` interfaces with the DI
+ * system. This describes:
  *
- * At a minimum, this includes a `factory` which defines how to create the given type `T`, possibly
- * requesting injection of other types if necessary.
+ * 1. *How* the type is provided
+ *    The declaration must specify only one of the following:
+ *    - A `value` which is a predefined instance of the type.
+ *    - A `factory` which defines how to create the given type `T`, possibly
+ *      requesting injection of other types if necessary.
+ *    - Neither, in which case the type is expected to already be present in the
+ *      injector hierarchy. This is used for internal use cases.
  *
- * Optionally, a `providedIn` parameter specifies that the given type belongs to a particular
- * `Injector`, `NgModule`, or a special scope (e.g. `'root'`). A value of `null` indicates
- * that the injectable does not belong to any scope.
+ * 2. *Where* the type is stored (if it is stored)
+ *    - The `providedIn` parameter specifies which injector the type belongs to.
+ *    - The `token` is used as the key to store the type in the injector.
  */
 export interface ɵɵInjectableDeclaration<T> {
   /**
-   * Specifies that the given type belongs to a particular injector:
+   * Specifies that the given type belongs to a particular `Injector`,
+   * `NgModule`, or a special scope (e.g. `'root'`).
+   *
+   * `any` is deprecated and will be removed soon.
+   *
+   * A value of `null` indicates that the injectable does not belong to any
+   * scope, and won't be stored in any injector. For declarations with a
+   * factory, this will create a new instance of the type each time it is
+   * requested.
    */
   providedIn: Type<any> | 'root' | 'platform' | 'any' | null;
 
@@ -33,12 +47,12 @@ export interface ɵɵInjectableDeclaration<T> {
   /**
    * Factory method to execute to create an instance of the injectable.
    */
-  factory: (t?: Type<any>) => T;
+  factory?: (t?: Type<any>) => T;
 
   /**
    * In a case of no explicit injector, a location where the instance of the injectable is stored.
    */
-  value: T | undefined;
+  value?: T;
 }
 
 /**
