@@ -6,7 +6,7 @@ merging PRs and publishing releases. Before reading, you should understand
 
 ## Distribution tags on npm
 
-Angular's branching relates directly to versions published on npm. We will reference these [npm
+Angular's branching relates directly to versions published on npm. We will reference  athese [npm
 distribution tags](https://docs.npmjs.com/cli/v6/commands/npm-dist-tag#purpose) throughout:
 
 | Tag    | Description                                                                       |
