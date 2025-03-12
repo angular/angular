@@ -55,6 +55,7 @@
     "rxjs",
     "selenium-webdriver",
     "systemjs",
+    "typescript",
     "unist-util-filter",
     "unist-util-source",
     "unist-util-visit",
