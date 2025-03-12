@@ -502,7 +502,10 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
     removeControl(dir: FormControlName): void;
     removeFormArray(dir: FormArrayName): void;
     removeFormGroup(dir: FormGroupName): void;
-    resetForm(value?: any): void;
+    resetForm(value?: any, options?: {
+        onlySelf?: boolean;
+        emitEvent?: boolean;
+    }): void;
     get submitted(): boolean;
     updateModel(dir: FormControlName, value: any): void;
     // (undocumented)
