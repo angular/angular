@@ -104,11 +104,10 @@ We analyzed your package.json, there are some packages to update:
     rxjs                                      6.3.3 -> 6.4.0           ng update rxjs
 
     There might be additional packages that are outdated.
-    Run "ng update --all" to try to update all at the same time.
 
 </docs-code>
 
-If you pass the command a set of libraries to update \(or the `--all` flag\), it updates those libraries, their peer dependencies, and the peer dependencies that depend on them.
+If you pass the command a set of libraries to update, it updates those libraries, their peer dependencies, and the peer dependencies that depend on them.
 
 HELPFUL: If there are inconsistencies \(for example, if peer dependencies cannot be matched by a simple [semver](https://semver.io) range\), the command generates an error and does not change anything in the workspace.
 
