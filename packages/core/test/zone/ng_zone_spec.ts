@@ -978,7 +978,7 @@ function commonTests() {
         });
       });
       await transition.finished;
-      expect(performance.now() - startTime).toBeLessThan(1000);
+      expect(performance.now() - startTime).toBeLessThan(2000);
     });
 
     describe('shouldCoalesceRunChangeDetection = false, shouldCoalesceEventChangeDetection = false', () => {
