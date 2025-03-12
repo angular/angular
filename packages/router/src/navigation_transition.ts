@@ -372,7 +372,7 @@ export class NavigationTransitions {
   get hasRequestedNavigation() {
     return this.navigationId !== 0;
   }
-  private transitions?: BehaviorSubject<NavigationTransition>;
+  private transitions?: BehaviorSubject<NavigationTransition | null>;
   /**
    * Hook that enables you to pause navigation after the preactivation phase.
    * Used by `RouterModule`.
@@ -416,45 +416,21 @@ export class NavigationTransitions {
     >,
   ) {
     const id = ++this.navigationId;
-    this.transitions?.next({...this.transitions.value, ...request, id});
-  }
-
-  setupNavigations(
-    router: InternalRouterInterface,
-    initialUrlTree: UrlTree,
-    initialRouterState: RouterState,
-  ): Observable<NavigationTransition> {
-    this.transitions = new BehaviorSubject<NavigationTransition>({
-      id: 0,
-      currentUrlTree: initialUrlTree,
-      currentRawUrl: initialUrlTree,
-      extractedUrl: this.urlHandlingStrategy.extract(initialUrlTree),
-      urlAfterRedirects: this.urlHandlingStrategy.extract(initialUrlTree),
-      rawUrl: initialUrlTree,
-      extras: {},
-      resolve: () => {},
-      reject: () => {},
-      promise: Promise.resolve(true),
-      source: IMPERATIVE_NAVIGATION,
-      restoredState: null,
-      currentSnapshot: initialRouterState.snapshot,
+    this.transitions?.next({
+      ...request,
+      extractedUrl: this.urlHandlingStrategy.extract(request.rawUrl),
       targetSnapshot: null,
-      currentRouterState: initialRouterState,
       targetRouterState: null,
       guards: {canActivateChecks: [], canDeactivateChecks: []},
       guardsResult: null,
+      id,
     });
-    return this.transitions.pipe(
-      filter((t) => t.id !== 0),
+  }
 
-      // Extract URL
-      map(
-        (t) =>
-          ({
-            ...t,
-            extractedUrl: this.urlHandlingStrategy.extract(t.rawUrl),
-          }) as NavigationTransition,
-      ),
+  setupNavigations(router: InternalRouterInterface): Observable<NavigationTransition> {
+    this.transitions = new BehaviorSubject<NavigationTransition | null>(null);
+    return this.transitions.pipe(
+      filter((t): t is NavigationTransition => t !== null),
 
       // Using switchMap so we cancel executing navigations when a new one comes in
       switchMap((overallTransitionState) => {
@@ -522,7 +498,6 @@ export class NavigationTransitions {
               return of(t).pipe(
                 // Fire NavigationStart event
                 switchMap((t) => {
-                  const transition = this.transitions?.getValue();
                   this.events.next(
                     new NavigationStart(
                       t.id,
@@ -531,7 +506,7 @@ export class NavigationTransitions {
                       t.restoredState,
                     ),
                   );
-                  if (transition !== this.transitions?.getValue()) {
+                  if (t.id !== this.navigationId) {
                     return EMPTY;
                   }
 
