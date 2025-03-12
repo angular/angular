@@ -1422,6 +1422,59 @@ describe('reactive forms integration tests', () => {
       expect(events[3].source).toBe(form);
     });
 
+    it('formControl should not emit an event when resetting a form with emit:false', () => {
+      const fixture = initTest(FormGroupComp);
+      const form = new FormGroup({'login': new FormControl('', Validators.required)});
+      fixture.componentInstance.form = form;
+      fixture.detectChanges();
+
+      const formGroupDir = fixture.debugElement.children[0].injector.get(FormGroupDirective);
+
+      const events: ControlEvent[] = [];
+      fixture.componentInstance.form.events.subscribe((event) => events.push(event));
+
+      formGroupDir.resetForm(undefined, {emitEvent: false});
+
+      expect(events.length).toBe(1);
+      expect(events[0]).toBeInstanceOf(TouchedChangeEvent);
+    });
+
+    it('formControl should only update self', () => {
+      const fixture = initTest(FormGroupComp);
+      const form = new FormGroup({'login': new FormControl('', Validators.required)});
+      const parentForm = new FormGroup({form});
+      fixture.componentInstance.form = form;
+      fixture.detectChanges();
+
+      const formGroupDir = fixture.debugElement.children[0].injector.get(FormGroupDirective);
+
+      const events: ControlEvent[] = [];
+      fixture.componentInstance.form.events.subscribe((event) => events.push(event));
+      const parentEvents: ControlEvent[] = [];
+      parentForm.events.subscribe((event) => parentEvents.push(event));
+
+      formGroupDir.resetForm(undefined, {onlySelf: true});
+
+      expect(events.length).toBe(4);
+      expect(events[0]).toBeInstanceOf(TouchedChangeEvent);
+      expect(events[1]).toBeInstanceOf(ValueChangeEvent);
+      expect(events[2]).toBeInstanceOf(StatusChangeEvent);
+
+      // The event that matters
+      expect(events[3]).toBeInstanceOf(FormResetEvent);
+      expect(events[3].source).toBe(form);
+
+      // Self:false = parent won't receive the events
+      expect(parentEvents.length).toBe(0);
+
+      // Not only self
+      formGroupDir.resetForm({login: 'new value'});
+      expect(parentEvents.length).toBe(3);
+      expect(parentEvents[0]).toBeInstanceOf(TouchedChangeEvent);
+      expect(parentEvents[1]).toBeInstanceOf(ValueChangeEvent);
+      expect(parentEvents[2]).toBeInstanceOf(StatusChangeEvent);
+    });
+
     it('formControl should emit an event when submitting a form', () => {
       const fixture = initTest(FormGroupComp);
       const form = new FormGroup({'login': new FormControl('', Validators.required)});

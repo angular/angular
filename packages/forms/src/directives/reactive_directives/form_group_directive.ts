@@ -339,12 +339,14 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    * @description
    * Resets the form to an initial value and resets its submitted status.
    *
-   * @param value The new value for the form.
+   * @param value The new value for the form, `undefined` by default
    */
-  resetForm(value: any = undefined): void {
-    this.form.reset(value);
+  resetForm(value: any = undefined, options: {onlySelf?: boolean; emitEvent?: boolean} = {}): void {
+    this.form.reset(value, options);
     this._submittedReactive.set(false);
-    this.form._events.next(new FormResetEvent(this.form));
+    if (options?.emitEvent !== false) {
+      this.form._events.next(new FormResetEvent(this.form));
+    }
   }
 
   /** @internal */
