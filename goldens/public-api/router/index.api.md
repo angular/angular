@@ -244,7 +244,10 @@ export class DefaultUrlSerializer implements UrlSerializer {
 }
 
 // @public @deprecated
-export type DeprecatedGuard = ProviderToken<any> | any;
+export type DeprecatedGuard = ProviderToken<any> | string;
+
+// @public @deprecated
+export type DeprecatedResolve = DeprecatedGuard | any;
 
 // @public
 export type DetachedRouteHandle = {};
@@ -611,7 +614,7 @@ export interface Resolve<T> {
 
 // @public
 export type ResolveData = {
-    [key: string | symbol]: ResolveFn<unknown> | DeprecatedGuard;
+    [key: string | symbol]: ResolveFn<unknown> | DeprecatedResolve;
 };
 
 // @public
