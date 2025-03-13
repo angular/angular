@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {EnvironmentInjector, inject, Injectable, NgModuleRef} from '@angular/core';
+import {EnvironmentInjector, inject, Injectable} from '@angular/core';
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {provideRouter, withRouterConfig} from '@angular/router';
-import {firstValueFrom, Observable, of} from 'rxjs';
-import {delay, map, tap} from 'rxjs/operators';
+import {Observable, of} from 'rxjs';
+import {delay, tap} from 'rxjs/operators';
 
 import {Route, Routes} from '../src/models';
 import {recognize} from '../src/recognize';
@@ -584,24 +583,28 @@ describe('redirects', () => {
 
       let passedUrlSegments: UrlSegment[];
 
-      const guard = {
-        canLoad: (route: Route, urlSegments: UrlSegment[]) => {
-          passedUrlSegments = urlSegments;
-          return true;
-        },
-      };
-      const injector = {get: (token: any) => (token === 'guard' ? guard : {injector})};
-
       const config = [
         {
           path: 'a',
           component: ComponentA,
-          canLoad: ['guard'],
+          canLoad: [
+            (route: Route, urlSegments: UrlSegment[]) => {
+              passedUrlSegments = urlSegments;
+              return true;
+            },
+          ],
           loadChildren: jasmine.createSpy('children'),
         },
       ];
 
-      recognize(<any>injector, <any>loader, null, config, tree('a/b'), serializer).subscribe(
+      recognize(
+        TestBed.inject(EnvironmentInjector),
+        <any>loader,
+        null,
+        config,
+        tree('a/b'),
+        serializer,
+      ).subscribe(
         ({tree: r}) => {
           expectTreeToBe(r, '/a/b');
           expect(passedUrlSegments.length).toBe(2);
@@ -710,7 +713,7 @@ describe('redirects', () => {
       });
     });
 
-    it('should not load the configuration of a wildcard route if there is a match', () => {
+    it('should not load the configuration of a wildcard route if there is a match', async () => {
       const loadedConfig = {
         routes: [{path: '', component: ComponentB}],
         injector: TestBed.inject(EnvironmentInjector),
@@ -727,20 +730,23 @@ describe('redirects', () => {
         {path: '**', loadChildren: jasmine.createSpy('children')},
       ];
 
-      recognize(
-        TestBed.inject(EnvironmentInjector),
-        <any>loader,
-        null,
-        config,
-        tree(''),
-        serializer,
-      ).forEach(({tree: r}) => {
-        expect(loader.loadChildren.calls.count()).toEqual(1);
-        expect(loader.loadChildren.calls.first().args).not.toContain(
-          jasmine.objectContaining({
-            loadChildren: jasmine.createSpy('children'),
-          }),
-        );
+      await new Promise<void>((resolve) => {
+        recognize(
+          TestBed.inject(EnvironmentInjector),
+          <any>loader,
+          null,
+          config,
+          tree(''),
+          serializer,
+        ).forEach(({tree: r}) => {
+          expect(loader.loadChildren.calls.count()).toEqual(1);
+          expect(loader.loadChildren.calls.first().args).not.toContain(
+            jasmine.objectContaining({
+              loadChildren: jasmine.createSpy('children'),
+            }),
+          );
+          resolve();
+        });
       });
     });
 

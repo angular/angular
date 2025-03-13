@@ -52,7 +52,7 @@ describe('RouterPreloader', () => {
         providers: [
           provideLocationMocks(),
           provideRouter(
-            [{path: 'lazy', loadChildren: jasmine.createSpy('expected'), canLoad: ['someGuard']}],
+            [{path: 'lazy', loadChildren: jasmine.createSpy('expected'), canLoad: [() => true]}],
             withPreloading(PreloadAllModules),
           ),
         ],
@@ -85,7 +85,7 @@ describe('RouterPreloader', () => {
         providers: [
           provideLocationMocks(),
           provideRouter(
-            [{path: 'lazy', loadChildren: () => LoadedModule, canLoad: ['someGuard']}],
+            [{path: 'lazy', loadChildren: () => LoadedModule, canLoad: [() => true]}],
             withPreloading(PreloadAllModules),
           ),
         ],

@@ -445,31 +445,6 @@ export function navigationIntegrationTestSuite() {
 
     beforeEach(() => {
       log = [];
-
-      TestBed.configureTestingModule({
-        providers: [
-          {
-            provide: 'trueRightAway',
-            useValue: () => {
-              log.push('trueRightAway');
-              return true;
-            },
-          },
-          {
-            provide: 'trueIn2Seconds',
-            useValue: () => {
-              log.push('trueIn2Seconds-start');
-              let res: (value: boolean) => void;
-              const p = new Promise<boolean>((r) => (res = r));
-              setTimeout(() => {
-                log.push('trueIn2Seconds-end');
-                res(true);
-              }, 2000);
-              return p;
-            },
-          },
-        ],
-      });
     });
 
     describe('route activation', () => {
@@ -680,10 +655,22 @@ export function navigationIntegrationTestSuite() {
     it('should not wait for prior navigations to start a new navigation', fakeAsync(
       inject([Router, Location], (router: Router) => {
         const fixture = createRoot(router, RootCmp);
-
+        const trueRightAway = () => {
+          log.push('trueRightAway');
+          return true;
+        };
+        const trueIn2Seconds = () => {
+          log.push('trueIn2Seconds-start');
+          return new Promise<boolean>((res) => {
+            setTimeout(() => {
+              log.push('trueIn2Seconds-end');
+              res(true);
+            }, 2000);
+          });
+        };
         router.resetConfig([
-          {path: 'a', component: SimpleCmp, canActivate: ['trueRightAway', 'trueIn2Seconds']},
-          {path: 'b', component: SimpleCmp, canActivate: ['trueRightAway', 'trueIn2Seconds']},
+          {path: 'a', component: SimpleCmp, canActivate: [trueRightAway, trueIn2Seconds]},
+          {path: 'b', component: SimpleCmp, canActivate: [trueRightAway, trueIn2Seconds]},
         ]);
 
         router.navigateByUrl('/a');

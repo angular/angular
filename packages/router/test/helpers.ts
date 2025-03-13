@@ -23,14 +23,6 @@ export class Logger {
   }
 }
 
-export function provideTokenLogger(token: string, returnValue = true as boolean | UrlTree) {
-  return {
-    provide: token,
-    useFactory: (logger: Logger) => () => (logger.add(token), returnValue),
-    deps: [Logger],
-  };
-}
-
 export declare type ARSArgs = {
   url?: UrlSegment[];
   params?: Params;
