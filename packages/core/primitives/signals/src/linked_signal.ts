@@ -86,6 +86,9 @@ export function createLinkedSignal<S, D>(
 
   const getter = linkedSignalGetter as LinkedSignalGetter<S, D>;
   getter[SIGNAL] = node;
+  if (ngDevMode) {
+    getter.toString = () => `[LinkedSignal: ${getter()}]`;
+  }
 
   return getter;
 }
