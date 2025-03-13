@@ -59,7 +59,12 @@ export function createSignal<T>(initialValue: T, equal?: ValueEqualityFn<T>): Si
     return node.value;
   }) as SignalGetter<T>;
   (getter as any)[SIGNAL] = node;
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+    getter.toString = () => `[Signal: ${getter()}]`;
+  }
+
   runPostProducerCreatedFn(node);
+
   return getter;
 }
 
