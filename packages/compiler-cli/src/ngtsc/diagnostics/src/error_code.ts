@@ -23,6 +23,8 @@ export enum ErrorCode {
   VALUE_HAS_WRONG_TYPE = 1010,
   VALUE_NOT_LITERAL = 1011,
 
+  DUPLICATE_DECORATED_PROPERTIES = 1012,
+
   /**
    * Raised when an initializer API is annotated with an unexpected decorator.
    *
