@@ -11,6 +11,9 @@ export function applyChanges(component: {}): void;
 export type DirectiveDebugMetadata = AngularDirectiveDebugMetadata | AcxDirectiveDebugMetadata | AngularComponentDebugMetadata | AcxComponentDebugMetadata | WizComponentDebugMetadata;
 
 // @public
+export function enableProfiling(): () => void;
+
+// @public
 export function getComponent<T>(element: Element): T | null;
 
 // @public
