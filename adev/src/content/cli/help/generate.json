@@ -56,12 +56,6 @@
           "name": "project",
           "type": "string",
           "description": "The name of the project where the app-shell should be generated."
-        },
-        {
-          "name": "server-routing",
-          "type": "boolean",
-          "default": false,
-          "description": "Set up a server application using the Server Routing and App Engine APIs (Developer Preview)."
         }
       ],
       "aliases": [],
@@ -125,11 +119,6 @@
           "type": "boolean",
           "default": true,
           "description": "Generate an application with routing already configured. This sets up the necessary files and modules for managing navigation between different views in your application."
-        },
-        {
-          "name": "server-routing",
-          "type": "boolean",
-          "description": "Set up a server application using the Server Routing and App Engine APIs (Developer Preview)."
         },
         {
           "name": "skip-install",
