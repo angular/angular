@@ -19,6 +19,10 @@ import {
   runPostProducerCreatedFn,
 } from './graph';
 
+// Required as the signals library is in a separate package, so we need to explicitly ensure the
+// global `ngDevMode` type is defined.
+declare const ngDevMode: boolean | undefined;
+
 /**
  * A computation, which derives a value from a declarative reactive expression.
  *
@@ -76,8 +80,15 @@ export function createComputed<T>(
 
     return node.value;
   };
+
   (computed as ComputedGetter<T>)[SIGNAL] = node;
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+    const debugName = node.debugName ? ' (' + node.debugName + ')' : '';
+    computed.toString = () => `[Computed${debugName}: ${node.value}]`;
+  }
+
   runPostProducerCreatedFn(node);
+
   return computed as unknown as ComputedGetter<T>;
 }
 
