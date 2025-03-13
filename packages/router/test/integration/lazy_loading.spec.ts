@@ -769,16 +769,7 @@ export function lazyLoadingIntegrationSuite() {
       beforeEach(() => {
         log.length = 0;
         TestBed.configureTestingModule({
-          providers: [
-            {provide: PreloadingStrategy, useExisting: PreloadAllModules},
-            {
-              provide: 'loggingReturnsTrue',
-              useValue: () => {
-                log.push('loggingReturnsTrue');
-                return true;
-              },
-            },
-          ],
+          providers: [{provide: PreloadingStrategy, useExisting: PreloadAllModules}],
         });
         const preloader = TestBed.inject(RouterPreloader);
         preloader.setUpPreloading();
@@ -813,7 +804,16 @@ export function lazyLoadingIntegrationSuite() {
 
         router.resetConfig([
           {path: 'blank', component: BlankCmp},
-          {path: 'lazy', loadChildren: () => LoadedModule1, canLoad: ['loggingReturnsTrue']},
+          {
+            path: 'lazy',
+            loadChildren: () => LoadedModule1,
+            canLoad: [
+              () => {
+                log.push('loggingReturnsTrue');
+                return true;
+              },
+            ],
+          },
         ]);
 
         router.navigateByUrl('/blank');

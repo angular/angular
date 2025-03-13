@@ -49,6 +49,7 @@ import {
   CanMatchFn,
   CanActivateFn,
   CanActivateChildFn,
+  CanDeactivateFn,
 } from '../../src';
 import {wrapIntoObservable} from '../../src/utils/collection';
 import {RouterTestingHarness} from '../../testing';
@@ -117,12 +118,6 @@ export function guardsIntegrationSuite() {
       });
 
       describe('should not activate a route when CanActivate returns false', () => {
-        beforeEach(() => {
-          TestBed.configureTestingModule({
-            providers: [{provide: 'alwaysFalse', useValue: (a: any, b: any) => false}],
-          });
-        });
-
         it('works', fakeAsync(
           inject([Router, Location], (router: Router, location: Location) => {
             const fixture = createRoot(router, RootCmp);
@@ -131,7 +126,7 @@ export function guardsIntegrationSuite() {
             router.events.forEach((e) => recordedEvents.push(e));
 
             router.resetConfig([
-              {path: 'team/:id', component: TeamCmp, canActivate: ['alwaysFalse']},
+              {path: 'team/:id', component: TeamCmp, canActivate: [() => false]},
             ]);
 
             router.navigateByUrl('/team/22');
@@ -153,12 +148,6 @@ export function guardsIntegrationSuite() {
       });
 
       describe('should not activate a route when CanActivate returns false (componentless route)', () => {
-        beforeEach(() => {
-          TestBed.configureTestingModule({
-            providers: [{provide: 'alwaysFalse', useValue: (a: any, b: any) => false}],
-          });
-        });
-
         it('works', fakeAsync(
           inject([Router, Location], (router: Router, location: Location) => {
             const fixture = createRoot(router, RootCmp);
@@ -166,7 +155,7 @@ export function guardsIntegrationSuite() {
             router.resetConfig([
               {
                 path: 'parent',
-                canActivate: ['alwaysFalse'],
+                canActivate: [() => false],
                 children: [{path: 'team/:id', component: TeamCmp}],
               },
             ]);
@@ -180,24 +169,11 @@ export function guardsIntegrationSuite() {
       });
 
       describe('should activate a route when CanActivate returns true', () => {
-        beforeEach(() => {
-          TestBed.configureTestingModule({
-            providers: [
-              {
-                provide: 'alwaysTrue',
-                useValue: (a: ActivatedRouteSnapshot, s: RouterStateSnapshot) => true,
-              },
-            ],
-          });
-        });
-
         it('works', fakeAsync(
           inject([Router, Location], (router: Router, location: Location) => {
             const fixture = createRoot(router, RootCmp);
 
-            router.resetConfig([
-              {path: 'team/:id', component: TeamCmp, canActivate: ['alwaysTrue']},
-            ]);
+            router.resetConfig([{path: 'team/:id', component: TeamCmp, canActivate: [() => true]}]);
 
             router.navigateByUrl('/team/22');
             advance(fixture);
@@ -232,27 +208,21 @@ export function guardsIntegrationSuite() {
       });
 
       describe('should work when returns an observable', () => {
-        beforeEach(() => {
-          TestBed.configureTestingModule({
-            providers: [
-              {
-                provide: 'CanActivate',
-                useValue: (a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                  return new Observable<boolean>((observer) => {
-                    observer.next(false);
-                  });
-                },
-              },
-            ],
-          });
-        });
-
         it('works', fakeAsync(
           inject([Router, Location], (router: Router, location: Location) => {
             const fixture = createRoot(router, RootCmp);
 
             router.resetConfig([
-              {path: 'team/:id', component: TeamCmp, canActivate: ['CanActivate']},
+              {
+                path: 'team/:id',
+                component: TeamCmp,
+                canActivate: [
+                  () =>
+                    new Observable<boolean>((observer) => {
+                      observer.next(false);
+                    }),
+                ],
+              },
             ]);
 
             router.navigateByUrl('/team/22');
@@ -263,29 +233,24 @@ export function guardsIntegrationSuite() {
       });
 
       describe('should work when returns a promise', () => {
-        beforeEach(() => {
-          TestBed.configureTestingModule({
-            providers: [
-              {
-                provide: 'CanActivate',
-                useValue: (a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                  if (a.params['id'] === '22') {
-                    return Promise.resolve(true);
-                  } else {
-                    return Promise.resolve(false);
-                  }
-                },
-              },
-            ],
-          });
-        });
-
         it('works', fakeAsync(
           inject([Router, Location], (router: Router, location: Location) => {
             const fixture = createRoot(router, RootCmp);
 
             router.resetConfig([
-              {path: 'team/:id', component: TeamCmp, canActivate: ['CanActivate']},
+              {
+                path: 'team/:id',
+                component: TeamCmp,
+                canActivate: [
+                  (a) => {
+                    if (a.params['id'] === '22') {
+                      return Promise.resolve(true);
+                    } else {
+                      return Promise.resolve(false);
+                    }
+                  },
+                ],
+              },
             ]);
 
             router.navigateByUrl('/team/22');
@@ -302,15 +267,7 @@ export function guardsIntegrationSuite() {
       describe('should reset the location when cancelling a navigation', () => {
         beforeEach(() => {
           TestBed.configureTestingModule({
-            providers: [
-              {
-                provide: 'alwaysFalse',
-                useValue: (a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                  return false;
-                },
-              },
-              {provide: LocationStrategy, useClass: HashLocationStrategy},
-            ],
+            providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}],
           });
         });
 
@@ -320,7 +277,7 @@ export function guardsIntegrationSuite() {
 
             router.resetConfig([
               {path: 'one', component: SimpleCmp},
-              {path: 'two', component: SimpleCmp, canActivate: ['alwaysFalse']},
+              {path: 'two', component: SimpleCmp, canActivate: [() => false]},
             ]);
 
             router.navigateByUrl('/one');
@@ -336,21 +293,6 @@ export function guardsIntegrationSuite() {
       });
 
       describe('should redirect to / when guard returns false', () => {
-        beforeEach(() =>
-          TestBed.configureTestingModule({
-            providers: [
-              {
-                provide: 'returnFalseAndNavigate',
-                useFactory: (router: Router) => () => {
-                  router.navigate(['/']);
-                  return false;
-                },
-                deps: [Router],
-              },
-            ],
-          }),
-        );
-
         it('works', fakeAsync(
           inject([Router, Location], (router: Router, location: Location) => {
             router.resetConfig([
@@ -358,7 +300,16 @@ export function guardsIntegrationSuite() {
                 path: '',
                 component: SimpleCmp,
               },
-              {path: 'one', component: RouteCmp, canActivate: ['returnFalseAndNavigate']},
+              {
+                path: 'one',
+                component: RouteCmp,
+                canActivate: [
+                  () => {
+                    coreInject(Router).navigate(['/']);
+                    return false;
+                  },
+                ],
+              },
             ]);
 
             const fixture = TestBed.createComponent(RootCmp);
@@ -371,27 +322,6 @@ export function guardsIntegrationSuite() {
       });
 
       describe('should redirect when guard returns UrlTree', () => {
-        beforeEach(() =>
-          TestBed.configureTestingModule({
-            providers: [
-              {
-                provide: 'returnUrlTree',
-                useFactory: (router: Router) => () => {
-                  return router.parseUrl('/redirected');
-                },
-                deps: [Router],
-              },
-              {
-                provide: 'returnRootUrlTree',
-                useFactory: (router: Router) => () => {
-                  return router.parseUrl('/');
-                },
-                deps: [Router],
-              },
-            ],
-          }),
-        );
-
         it('works', fakeAsync(
           inject([Router, Location], (router: Router, location: Location) => {
             const recordedEvents: Event[] = [];
@@ -402,7 +332,11 @@ export function guardsIntegrationSuite() {
             });
             router.resetConfig([
               {path: '', component: SimpleCmp},
-              {path: 'one', component: RouteCmp, canActivate: ['returnUrlTree']},
+              {
+                path: 'one',
+                component: RouteCmp,
+                canActivate: [() => coreInject(Router).parseUrl('/redirected')],
+              },
               {path: 'redirected', component: SimpleCmp},
             ]);
 
@@ -448,7 +382,11 @@ export function guardsIntegrationSuite() {
             });
             router.resetConfig([
               {path: '', component: SimpleCmp},
-              {path: 'one', component: RouteCmp, canActivate: ['returnRootUrlTree']},
+              {
+                path: 'one',
+                component: RouteCmp,
+                canActivate: [() => coreInject(Router).parseUrl('/')],
+              },
             ]);
 
             const fixture = TestBed.createComponent(RootCmp);
@@ -491,7 +429,11 @@ export function guardsIntegrationSuite() {
           const location = TestBed.inject(Location);
           router.resetConfig([
             {path: '', component: SimpleCmp},
-            {path: 'one', component: RouteCmp, canActivate: ['returnUrlTree']},
+            {
+              path: 'one',
+              component: RouteCmp,
+              canActivate: [() => coreInject(Router).parseUrl('/redirected')],
+            },
             {path: 'redirected', component: SimpleCmp},
           ]);
           createRoot(router, RootCmp);
@@ -519,7 +461,11 @@ export function guardsIntegrationSuite() {
           let resolvedPath = '';
           router.resetConfig([
             {path: '', component: SimpleCmp},
-            {path: 'one', component: RouteCmp, canActivate: ['returnUrlTree']},
+            {
+              path: 'one',
+              component: RouteCmp,
+              canActivate: [() => coreInject(Router).parseUrl('/redirected')],
+            },
             {path: 'redirected', component: SimpleCmp},
           ]);
           const fixture = createRoot(router, RootCmp);
@@ -655,16 +601,7 @@ export function guardsIntegrationSuite() {
           guardRunCount = 0;
           resolverRunCount = 0;
           TestBed.configureTestingModule({
-            providers: [
-              {
-                provide: 'guard',
-                useValue: () => {
-                  guardRunCount++;
-                  return true;
-                },
-              },
-              {provide: 'resolver', useValue: () => resolverRunCount++},
-            ],
+            providers: [{provide: 'resolver', useValue: () => resolverRunCount++}],
           });
         });
 
@@ -679,7 +616,12 @@ export function guardsIntegrationSuite() {
               path: 'a',
               runGuardsAndResolvers,
               component: RouteCmp,
-              canActivate: ['guard'],
+              canActivate: [
+                () => {
+                  guardRunCount++;
+                  return true;
+                },
+              ],
               resolve: {data: 'resolver'},
             },
             {path: 'b', component: SimpleCmp, outlet: 'right'},
@@ -687,7 +629,12 @@ export function guardsIntegrationSuite() {
               path: 'c/:param',
               runGuardsAndResolvers,
               component: RouteCmp,
-              canActivate: ['guard'],
+              canActivate: [
+                () => {
+                  guardRunCount++;
+                  return true;
+                },
+              ],
               resolve: {data: 'resolver'},
             },
             {
@@ -698,7 +645,12 @@ export function guardsIntegrationSuite() {
                 {
                   path: 'e/:param',
                   component: SimpleCmp,
-                  canActivate: ['guard'],
+                  canActivate: [
+                    () => {
+                      guardRunCount++;
+                      return true;
+                    },
+                  ],
                   resolve: {data: 'resolver'},
                 },
               ],
@@ -707,7 +659,12 @@ export function guardsIntegrationSuite() {
               path: 'throwing',
               runGuardsAndResolvers,
               component: ThrowingCmp,
-              canActivate: ['guard'],
+              canActivate: [
+                () => {
+                  guardRunCount++;
+                  return true;
+                },
+              ],
               resolve: {data: 'resolver'},
             },
           ]);
@@ -978,28 +935,6 @@ export function guardsIntegrationSuite() {
 
         beforeEach(() => {
           log = [];
-          TestBed.configureTestingModule({
-            providers: [
-              {
-                provide: 'parentGuard',
-                useValue: () => {
-                  return delayPromise(10).then(() => {
-                    log.push('parent');
-                    return true;
-                  });
-                },
-              },
-              {
-                provide: 'childGuard',
-                useValue: () => {
-                  return delayPromise(5).then(() => {
-                    log.push('child');
-                    return true;
-                  });
-                },
-              },
-            ],
-          });
         });
 
         function delayPromise(delay: number): Promise<boolean> {
@@ -1016,8 +951,27 @@ export function guardsIntegrationSuite() {
             router.resetConfig([
               {
                 path: 'parent',
-                canActivate: ['parentGuard'],
-                children: [{path: 'child', component: SimpleCmp, canActivate: ['childGuard']}],
+                canActivate: [
+                  () =>
+                    delayPromise(10).then(() => {
+                      log.push('parent');
+                      return true;
+                    }),
+                ],
+                children: [
+                  {
+                    path: 'child',
+                    component: SimpleCmp,
+                    canActivate: [
+                      () => {
+                        return delayPromise(5).then(() => {
+                          log.push('child');
+                          return true;
+                        });
+                      },
+                    ],
+                  },
+                ],
               },
             ]);
 
@@ -1032,69 +986,13 @@ export function guardsIntegrationSuite() {
 
     describe('CanDeactivate', () => {
       let log: any;
+      const recordingDeactivate: CanDeactivateFn<any> = (c, a) => {
+        log.push({path: a.routeConfig!.path, component: c});
+        return true;
+      };
 
       beforeEach(() => {
         log = [];
-
-        TestBed.configureTestingModule({
-          providers: [
-            {
-              provide: 'CanDeactivateParent',
-              useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                return a.params['id'] === '22';
-              },
-            },
-            {
-              provide: 'CanDeactivateTeam',
-              useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                return c.route.snapshot.params['id'] === '22';
-              },
-            },
-            {
-              provide: 'CanDeactivateUser',
-              useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                return a.params['name'] === 'victor';
-              },
-            },
-            {
-              provide: 'RecordingDeactivate',
-              useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                log.push({path: a.routeConfig!.path, component: c});
-                return true;
-              },
-            },
-            {
-              provide: 'alwaysFalse',
-              useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                return false;
-              },
-            },
-            {
-              provide: 'alwaysFalseAndLogging',
-              useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                log.push('called');
-                return false;
-              },
-            },
-            {
-              provide: 'alwaysFalseWithDelayAndLogging',
-              useValue: () => {
-                log.push('called');
-                let resolve: (result: boolean) => void;
-                const promise = new Promise((res) => (resolve = res));
-                setTimeout(() => resolve(false), 0);
-                return promise;
-              },
-            },
-            {
-              provide: 'canActivate_alwaysTrueAndLogging',
-              useValue: () => {
-                log.push('canActivate called');
-                return true;
-              },
-            },
-          ],
-        });
       });
 
       describe('should not deactivate a route when CanDeactivate returns false', () => {
@@ -1103,7 +1001,15 @@ export function guardsIntegrationSuite() {
             const fixture = createRoot(router, RootCmp);
 
             router.resetConfig([
-              {path: 'team/:id', component: TeamCmp, canDeactivate: ['CanDeactivateTeam']},
+              {
+                path: 'team/:id',
+                component: TeamCmp,
+                canDeactivate: [
+                  (c, a) => {
+                    return a.params['id'] === '22';
+                  },
+                ],
+              },
             ]);
 
             router.navigateByUrl('/team/22');
@@ -1131,20 +1037,20 @@ export function guardsIntegrationSuite() {
             router.resetConfig([
               {
                 path: 'grandparent',
-                canDeactivate: ['RecordingDeactivate'],
+                canDeactivate: [recordingDeactivate],
                 children: [
                   {
                     path: 'parent',
-                    canDeactivate: ['RecordingDeactivate'],
+                    canDeactivate: [recordingDeactivate],
                     children: [
                       {
                         path: 'child',
-                        canDeactivate: ['RecordingDeactivate'],
+                        canDeactivate: [recordingDeactivate],
                         children: [
                           {
                             path: 'simple',
                             component: SimpleCmp,
-                            canDeactivate: ['RecordingDeactivate'],
+                            canDeactivate: [recordingDeactivate],
                           },
                         ],
                       },
@@ -1189,7 +1095,7 @@ export function guardsIntegrationSuite() {
                   {path: 'a', component: BlankCmp},
                   {
                     path: 'b',
-                    canDeactivate: ['RecordingDeactivate'],
+                    canDeactivate: [recordingDeactivate],
                     component: SimpleCmp,
                     outlet: 'aux',
                   },
@@ -1219,7 +1125,15 @@ export function guardsIntegrationSuite() {
                 component: TeamCmp,
                 children: [
                   {path: '', pathMatch: 'full', component: SimpleCmp},
-                  {path: 'user/:name', component: UserCmp, canDeactivate: ['CanDeactivateUser']},
+                  {
+                    path: 'user/:name',
+                    component: UserCmp,
+                    canDeactivate: [
+                      (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
+                        return a.params['name'] === 'victor';
+                      },
+                    ],
+                  },
                 ],
               },
             ]);
@@ -1259,7 +1173,7 @@ export function guardsIntegrationSuite() {
                 {
                   path: '',
                   component: AdminComponent,
-                  canDeactivate: ['RecordingDeactivate'],
+                  canDeactivate: [recordingDeactivate],
                 },
               ]),
             ],
@@ -1295,7 +1209,7 @@ export function guardsIntegrationSuite() {
               path: 'main',
               component: TeamCmp,
               children: [
-                {path: 'component1', component: SimpleCmp, canDeactivate: ['alwaysFalse']},
+                {path: 'component1', component: SimpleCmp, canDeactivate: [() => false]},
                 {path: 'component2', component: SimpleCmp},
               ],
             },
@@ -1325,12 +1239,25 @@ export function guardsIntegrationSuite() {
                 {
                   path: 'component1',
                   component: SimpleCmp,
-                  canDeactivate: ['alwaysFalseWithDelayAndLogging'],
+                  canDeactivate: [
+                    () => {
+                      log.push('called');
+                      let resolve: (result: boolean) => void;
+                      const promise = new Promise((res) => (resolve = res));
+                      setTimeout(() => resolve(false), 0);
+                      return promise;
+                    },
+                  ],
                 },
                 {
                   path: 'component2',
                   component: SimpleCmp,
-                  canActivate: ['canActivate_alwaysTrueAndLogging'],
+                  canActivate: [
+                    () => {
+                      log.push('canActivate called');
+                      return true;
+                    },
+                  ],
                 },
               ],
             },
@@ -1352,7 +1279,16 @@ export function guardsIntegrationSuite() {
           const fixture = createRoot(router, RootCmp);
 
           router.resetConfig([
-            {path: 'simple', component: SimpleCmp, canDeactivate: ['alwaysFalseAndLogging']},
+            {
+              path: 'simple',
+              component: SimpleCmp,
+              canDeactivate: [
+                () => {
+                  log.push('called');
+                  return false;
+                },
+              ],
+            },
             {path: 'blank', component: BlankCmp},
           ]);
 
@@ -1389,21 +1325,7 @@ export function guardsIntegrationSuite() {
         beforeEach(() => {
           log = [];
           TestBed.configureTestingModule({
-            providers: [
-              ClassWithNextState,
-              {
-                provide: 'FunctionWithNextState',
-                useValue: (
-                  cmp: any,
-                  currentRoute: ActivatedRouteSnapshot,
-                  currentState: RouterStateSnapshot,
-                  nextState: RouterStateSnapshot,
-                ) => {
-                  log.push(currentState.url, nextState.url);
-                  return true;
-                },
-              },
-            ],
+            providers: [ClassWithNextState],
           });
         });
 
@@ -1448,7 +1370,16 @@ export function guardsIntegrationSuite() {
             const fixture = createRoot(router, RootCmp);
 
             router.resetConfig([
-              {path: 'team/:id', component: TeamCmp, canDeactivate: ['FunctionWithNextState']},
+              {
+                path: 'team/:id',
+                component: TeamCmp,
+                canDeactivate: [
+                  (cmp, currentRoute, currentState, nextState) => {
+                    log.push(currentState.url, nextState.url);
+                    return true;
+                  },
+                ],
+              },
             ]);
 
             router.navigateByUrl('/team/22');
@@ -1498,27 +1429,22 @@ export function guardsIntegrationSuite() {
       });
 
       describe('should work when returns an observable', () => {
-        beforeEach(() => {
-          TestBed.configureTestingModule({
-            providers: [
-              {
-                provide: 'CanDeactivate',
-                useValue: (c: TeamCmp, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                  return new Observable<boolean>((observer) => {
-                    observer.next(false);
-                  });
-                },
-              },
-            ],
-          });
-        });
-
         it('works', fakeAsync(
           inject([Router, Location], (router: Router, location: Location) => {
             const fixture = createRoot(router, RootCmp);
 
             router.resetConfig([
-              {path: 'team/:id', component: TeamCmp, canDeactivate: ['CanDeactivate']},
+              {
+                path: 'team/:id',
+                component: TeamCmp,
+                canDeactivate: [
+                  () => {
+                    return new Observable<boolean>((observer) => {
+                      observer.next(false);
+                    });
+                  },
+                ],
+              },
             ]);
 
             router.navigateByUrl('/team/22');
@@ -1535,17 +1461,6 @@ export function guardsIntegrationSuite() {
 
     describe('CanActivateChild', () => {
       describe('should be invoked when activating a child', () => {
-        beforeEach(() => {
-          TestBed.configureTestingModule({
-            providers: [
-              {
-                provide: 'alwaysFalse',
-                useValue: (a: any, b: any) => a.paramMap.get('id') === '22',
-              },
-            ],
-          });
-        });
-
         it('works', fakeAsync(
           inject([Router, Location], (router: Router, location: Location) => {
             const fixture = createRoot(router, RootCmp);
@@ -1553,7 +1468,7 @@ export function guardsIntegrationSuite() {
             router.resetConfig([
               {
                 path: '',
-                canActivateChild: ['alwaysFalse'],
+                canActivateChild: [(a: any) => a.paramMap.get('id') === '22'],
                 children: [{path: 'team/:id', component: TeamCmp}],
               },
             ]);
@@ -1597,14 +1512,13 @@ export function guardsIntegrationSuite() {
                   children: [
                     {
                       path: '',
-                      canActivateChild: ['alwaysTrue'],
+                      canActivateChild: [() => true],
                       children: [{path: '', component: LazyLoadedComponent}],
                     },
                   ],
                 },
               ]),
             ],
-            providers: [{provide: 'alwaysTrue', useValue: () => true}],
           })
           class LazyLoadedModule {}
 
@@ -1627,24 +1541,8 @@ export function guardsIntegrationSuite() {
         canLoadRunCount = 0;
         TestBed.configureTestingModule({
           providers: [
-            {provide: 'alwaysFalse', useValue: (a: any) => false},
             {
-              provide: 'returnUrlTree',
-              useFactory: (router: Router) => () => {
-                return router.createUrlTree(['blank']);
-              },
-              deps: [Router],
-            },
-            {
-              provide: 'returnFalseAndNavigate',
-              useFactory: (router: Router) => (a: any) => {
-                router.navigate(['blank']);
-                return false;
-              },
-              deps: [Router],
-            },
-            {
-              provide: 'alwaysTrue',
+              provide: () => true,
               useValue: () => {
                 canLoadRunCount++;
                 return true;
@@ -1672,8 +1570,8 @@ export function guardsIntegrationSuite() {
           const fixture = createRoot(router, RootCmp);
 
           router.resetConfig([
-            {path: 'lazyFalse', canLoad: ['alwaysFalse'], loadChildren: () => LoadedModule},
-            {path: 'lazyTrue', canLoad: ['alwaysTrue'], loadChildren: () => LoadedModule},
+            {path: 'lazyFalse', canLoad: [() => false], loadChildren: () => LoadedModule},
+            {path: 'lazyTrue', canLoad: [() => true], loadChildren: () => LoadedModule},
           ]);
 
           const recordedEvents: Event[] = [];
@@ -1732,7 +1630,12 @@ export function guardsIntegrationSuite() {
           router.resetConfig([
             {
               path: 'lazyFalse',
-              canLoad: ['returnFalseAndNavigate'],
+              canLoad: [
+                () => {
+                  router.navigate(['blank']);
+                  return false;
+                },
+              ],
               loadChildren: jasmine.createSpy('lazyFalse'),
             },
             {path: 'blank', component: BlankCmp},
@@ -1778,7 +1681,7 @@ export function guardsIntegrationSuite() {
           router.resetConfig([
             {
               path: 'lazyFalse',
-              canLoad: ['returnUrlTree'],
+              canLoad: [() => coreInject(Router).createUrlTree(['blank'])],
               loadChildren: jasmine.createSpy('lazyFalse'),
             },
             {path: 'blank', component: BlankCmp},
@@ -1837,8 +1740,8 @@ export function guardsIntegrationSuite() {
           const fixture = createRoot(router, RootCmp);
 
           router.resetConfig([
-            {path: 'lazy-false', canLoad: ['alwaysFalse'], loadChildren: () => LazyLoadedModule},
-            {path: 'lazy-true', canLoad: ['alwaysTrue'], loadChildren: () => LazyLoadedModule},
+            {path: 'lazy-false', canLoad: [() => false], loadChildren: () => LazyLoadedModule},
+            {path: 'lazy-true', canLoad: [() => true], loadChildren: () => LazyLoadedModule},
           ]);
 
           let navFalseResult = true;
@@ -1875,7 +1778,16 @@ export function guardsIntegrationSuite() {
           const fixture = createRoot(router, RootCmp);
 
           router.resetConfig([
-            {path: 'lazy', canLoad: ['alwaysTrue'], loadChildren: () => LazyLoadedModule},
+            {
+              path: 'lazy',
+              canLoad: [
+                () => {
+                  canLoadRunCount++;
+                  return true;
+                },
+              ],
+              loadChildren: () => LazyLoadedModule,
+            },
           ]);
 
           router.navigateByUrl('/lazy/loaded');
@@ -1935,51 +1847,31 @@ export function guardsIntegrationSuite() {
       }
 
       let log: string[];
+      const guard1 = () => {
+        return delayObservable(5).pipe(tap({next: () => log.push('guard1')}));
+      };
+      const guard2 = () => {
+        return delayObservable(0).pipe(tap({next: () => log.push('guard2')}));
+      };
+      const returnFalse = () => {
+        log.push('returnFalse');
+        return false;
+      };
+      const returnFalseAndNavigate = () => {
+        log.push('returnFalseAndNavigate');
+        coreInject(Router).navigateByUrl('/redirected');
+        return false;
+      };
+      const returnUrlTree = () => {
+        const router = coreInject(Router);
+        return delayObservable(15).pipe(
+          mapTo(router.parseUrl('/redirected')),
+          tap({next: () => log.push('returnUrlTree')}),
+        );
+      };
 
       beforeEach(() => {
         log = [];
-        TestBed.configureTestingModule({
-          providers: [
-            {
-              provide: 'guard1',
-              useValue: () => {
-                return delayObservable(5).pipe(tap({next: () => log.push('guard1')}));
-              },
-            },
-            {
-              provide: 'guard2',
-              useValue: () => {
-                return delayObservable(0).pipe(tap({next: () => log.push('guard2')}));
-              },
-            },
-            {
-              provide: 'returnFalse',
-              useValue: () => {
-                log.push('returnFalse');
-                return false;
-              },
-            },
-            {
-              provide: 'returnFalseAndNavigate',
-              useFactory: (router: Router) => () => {
-                log.push('returnFalseAndNavigate');
-                router.navigateByUrl('/redirected');
-                return false;
-              },
-              deps: [Router],
-            },
-            {
-              provide: 'returnUrlTree',
-              useFactory: (router: Router) => () => {
-                return delayObservable(15).pipe(
-                  mapTo(router.parseUrl('/redirected')),
-                  tap({next: () => log.push('returnUrlTree')}),
-                );
-              },
-              deps: [Router],
-            },
-          ],
-        });
       });
 
       it('should only execute canLoad guards of routes being activated', fakeAsync(() => {
@@ -1988,14 +1880,14 @@ export function guardsIntegrationSuite() {
         router.resetConfig([
           {
             path: 'lazy',
-            canLoad: ['guard1'],
+            canLoad: [guard1],
             loadChildren: () => of(ModuleWithBlankCmpAsRoute),
           },
           {path: 'redirected', component: SimpleCmp},
           // canLoad should not run for this route because 'lazy' activates first
           {
             path: '',
-            canLoad: ['returnFalseAndNavigate'],
+            canLoad: [returnFalseAndNavigate],
             loadChildren: () => of(ModuleWithBlankCmpAsRoute),
           },
         ]);
@@ -2011,7 +1903,7 @@ export function guardsIntegrationSuite() {
           router.resetConfig([
             {
               path: 'lazy',
-              canLoad: ['guard1', 'guard2'],
+              canLoad: [guard1, guard2],
               loadChildren: () => ModuleWithBlankCmpAsRoute,
             },
           ]);
@@ -2029,7 +1921,7 @@ export function guardsIntegrationSuite() {
           router.resetConfig([
             {
               path: 'lazy',
-              canLoad: ['returnUrlTree', 'guard1', 'guard2'],
+              canLoad: [returnUrlTree, guard1, guard2],
               loadChildren: () => ModuleWithBlankCmpAsRoute,
             },
             {path: 'redirected', component: SimpleCmp},
@@ -2049,7 +1941,7 @@ export function guardsIntegrationSuite() {
           router.resetConfig([
             {
               path: 'lazy',
-              canLoad: ['guard1', 'returnUrlTree'],
+              canLoad: [guard1, returnUrlTree],
               loadChildren: () => ModuleWithBlankCmpAsRoute,
             },
             {path: 'redirected', component: SimpleCmp},
@@ -2072,48 +1964,25 @@ export function guardsIntegrationSuite() {
           this.logs.push(thing);
         }
       }
-
       beforeEach(() => {
         TestBed.configureTestingModule({
-          providers: [
-            Logger,
-            {
-              provide: 'canActivateChild_parent',
-              useFactory: (logger: Logger) => () => (logger.add('canActivateChild_parent'), true),
-              deps: [Logger],
-            },
-            {
-              provide: 'canActivate_team',
-              useFactory: (logger: Logger) => () => (logger.add('canActivate_team'), true),
-              deps: [Logger],
-            },
-            {
-              provide: 'canDeactivate_team',
-              useFactory: (logger: Logger) => () => (logger.add('canDeactivate_team'), true),
-              deps: [Logger],
-            },
-            {
-              provide: 'canDeactivate_simple',
-              useFactory: (logger: Logger) => () => (logger.add('canDeactivate_simple'), true),
-              deps: [Logger],
-            },
-          ],
+          providers: [Logger],
         });
       });
 
       it('should call guards in the right order', fakeAsync(
-        inject([Router, Location, Logger], (router: Router, location: Location, logger: Logger) => {
+        inject([Router, Logger], (router: Router, logger: Logger) => {
           const fixture = createRoot(router, RootCmp);
 
           router.resetConfig([
             {
               path: '',
-              canActivateChild: ['canActivateChild_parent'],
+              canActivateChild: [() => (logger.add('canActivateChild_parent'), true)],
               children: [
                 {
                   path: 'team/:id',
-                  canActivate: ['canActivate_team'],
-                  canDeactivate: ['canDeactivate_team'],
+                  canActivate: [() => (logger.add('canActivate_team'), true)],
+                  canDeactivate: [() => (logger.add('canDeactivate_team'), true)],
                   component: TeamCmp,
                 },
               ],
@@ -2138,7 +2007,7 @@ export function guardsIntegrationSuite() {
       ));
 
       it('should call deactivate guards from bottom to top', fakeAsync(
-        inject([Router, Location, Logger], (router: Router, location: Location, logger: Logger) => {
+        inject([Router, Logger], (router: Router, logger: Logger) => {
           const fixture = createRoot(router, RootCmp);
 
           router.resetConfig([
@@ -2147,9 +2016,13 @@ export function guardsIntegrationSuite() {
               children: [
                 {
                   path: 'team/:id',
-                  canDeactivate: ['canDeactivate_team'],
+                  canDeactivate: [() => (logger.add('canDeactivate_team'), true)],
                   children: [
-                    {path: '', component: SimpleCmp, canDeactivate: ['canDeactivate_simple']},
+                    {
+                      path: '',
+                      component: SimpleCmp,
+                      canDeactivate: [() => (logger.add('canDeactivate_simple'), true)],
+                    },
                   ],
                   component: TeamCmp,
                 },

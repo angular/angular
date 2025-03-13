@@ -53,14 +53,6 @@ export function eagerUrlUpdateStrategyIntegrationSuite() {
       const serializer = new DefaultUrlSerializer();
       TestBed.configureTestingModule({
         providers: [
-          {
-            provide: 'authGuardFail',
-            useValue: (a: any, b: any) => {
-              return new Promise((res) => {
-                setTimeout(() => res(serializer.parse('/login')), 1);
-              });
-            },
-          },
           AuthGuard,
           DelayedGuard,
           provideRouter([], withRouterConfig({urlUpdateStrategy: 'eager'})),
@@ -102,7 +94,16 @@ export function eagerUrlUpdateStrategyIntegrationSuite() {
         advance(fixture);
 
         router.resetConfig([
-          {path: 'team/:id', component: SimpleCmp, canActivate: ['authGuardFail']},
+          {
+            path: 'team/:id',
+            component: SimpleCmp,
+            canActivate: [
+              () =>
+                new Promise((res) => {
+                  setTimeout(() => res(new DefaultUrlSerializer().parse('/login')), 1);
+                }),
+            ],
+          },
           {path: 'login', component: AbsoluteSimpleLinkCmp},
         ]);
 
