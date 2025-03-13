@@ -36,7 +36,7 @@
       "name": "force-esbuild",
       "type": "boolean",
       "default": false,
-      "description": "Force the development server to use the 'browser-esbuild' builder when building. This is a developer preview option for the esbuild-based build system."
+      "description": "Force the development server to use the 'browser-esbuild' builder when building."
     },
     {
       "name": "headers",
