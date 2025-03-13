@@ -6,18 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {signalAsReadonlyFn, WritableSignal} from './signal';
-import {Signal, ValueEqualityFn} from './api';
-import {performanceMarkFeature} from '../../util/performance';
 import {
   ComputationFn,
   createLinkedSignal,
   LinkedSignalGetter,
   LinkedSignalNode,
-  SIGNAL,
   linkedSignalSetFn,
   linkedSignalUpdateFn,
+  SIGNAL,
 } from '@angular/core/primitives/signals';
+import {Signal, ValueEqualityFn} from './api';
+import {signalAsReadonlyFn, WritableSignal} from './signal';
 
 const identityFn = <T>(v: T) => v;
 

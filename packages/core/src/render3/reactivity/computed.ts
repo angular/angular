@@ -8,8 +8,6 @@
 
 import {createComputed, SIGNAL} from '@angular/core/primitives/signals';
 
-import {performanceMarkFeature} from '../../util/performance';
-
 import {Signal, ValueEqualityFn} from './api';
 
 /**
@@ -31,10 +29,7 @@ export interface CreateComputedOptions<T> {
  * Create a computed `Signal` which derives a reactive value from an expression.
  */
 export function computed<T>(computation: () => T, options?: CreateComputedOptions<T>): Signal<T> {
-  const getter = createComputed(computation);
-  if (options?.equal) {
-    getter[SIGNAL].equal = options.equal;
-  }
+  const getter = createComputed(computation, options?.equal);
 
   if (ngDevMode) {
     getter.toString = () => `[Computed: ${getter()}]`;
