@@ -664,49 +664,50 @@ export class NavigationTransitions {
 
           // --- RESOLVE ---
           switchTap((t) => {
-            if (t.guards.canActivateChecks.length) {
-              return of(t).pipe(
-                tap((t) => {
-                  const resolveStart = new ResolveStart(
-                    t.id,
-                    this.urlSerializer.serialize(t.extractedUrl),
-                    this.urlSerializer.serialize(t.urlAfterRedirects!),
-                    t.targetSnapshot!,
-                  );
-                  this.events.next(resolveStart);
-                }),
-                switchMap((t) => {
-                  let dataResolved = false;
-                  return of(t).pipe(
-                    resolveData(this.paramsInheritanceStrategy, this.environmentInjector),
-                    tap({
-                      next: () => (dataResolved = true),
-                      complete: () => {
-                        if (!dataResolved) {
-                          this.cancelNavigationTransition(
-                            t,
-                            typeof ngDevMode === 'undefined' || ngDevMode
-                              ? `At least one route resolver didn't emit any value.`
-                              : '',
-                            NavigationCancellationCode.NoDataFromResolver,
-                          );
-                        }
-                      },
-                    }),
-                  );
-                }),
-                tap((t) => {
-                  const resolveEnd = new ResolveEnd(
-                    t.id,
-                    this.urlSerializer.serialize(t.extractedUrl),
-                    this.urlSerializer.serialize(t.urlAfterRedirects!),
-                    t.targetSnapshot!,
-                  );
-                  this.events.next(resolveEnd);
-                }),
-              );
+            if (t.guards.canActivateChecks.length === 0) {
+              return undefined;
             }
-            return undefined;
+
+            return of(t).pipe(
+              tap((t) => {
+                const resolveStart = new ResolveStart(
+                  t.id,
+                  this.urlSerializer.serialize(t.extractedUrl),
+                  this.urlSerializer.serialize(t.urlAfterRedirects!),
+                  t.targetSnapshot!,
+                );
+                this.events.next(resolveStart);
+              }),
+              switchMap((t) => {
+                let dataResolved = false;
+                return of(t).pipe(
+                  resolveData(this.paramsInheritanceStrategy, this.environmentInjector),
+                  tap({
+                    next: () => (dataResolved = true),
+                    complete: () => {
+                      if (!dataResolved) {
+                        this.cancelNavigationTransition(
+                          t,
+                          typeof ngDevMode === 'undefined' || ngDevMode
+                            ? `At least one route resolver didn't emit any value.`
+                            : '',
+                          NavigationCancellationCode.NoDataFromResolver,
+                        );
+                      }
+                    },
+                  }),
+                );
+              }),
+              tap((t) => {
+                const resolveEnd = new ResolveEnd(
+                  t.id,
+                  this.urlSerializer.serialize(t.extractedUrl),
+                  this.urlSerializer.serialize(t.urlAfterRedirects!),
+                  t.targetSnapshot!,
+                );
+                this.events.next(resolveEnd);
+              }),
+            );
           }),
 
           // --- LOAD COMPONENTS ---
