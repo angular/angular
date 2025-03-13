@@ -21,7 +21,14 @@ import {assertFirstCreatePass} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
 import {ComponentTemplate} from '../interfaces/definition';
-import {LocalRefExtractor, TAttributes, TContainerNode, TNode, TNodeType} from '../interfaces/node';
+import {
+  LocalRefExtractor,
+  TAttributes,
+  TContainerNode,
+  TNode,
+  TNodeFlags,
+  TNodeType,
+} from '../interfaces/node';
 import {RComment} from '../interfaces/renderer_dom';
 import {isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView, TViewType} from '../interfaces/view';
@@ -129,6 +136,7 @@ export function declareTemplate(
   attrs?: TAttributes | null,
   localRefsIndex?: number | null,
   localRefExtractor?: LocalRefExtractor,
+  flags?: TNodeFlags[],
 ): TNode {
   const adjustedIndex = index + HEADER_OFFSET;
   const tNode = declarationTView.firstCreatePass
@@ -145,6 +153,12 @@ export function declareTemplate(
       )
     : (declarationTView.data[adjustedIndex] as TContainerNode);
   setCurrentTNode(tNode, false);
+
+  if (flags) {
+    for (const flag of flags) {
+      tNode.flags |= flag;
+    }
+  }
 
   const comment = _locateOrCreateContainerAnchor(
     declarationTView,
@@ -206,6 +220,7 @@ export function ɵɵtemplate(
   attrsIndex?: number | null,
   localRefsIndex?: number | null,
   localRefExtractor?: LocalRefExtractor,
+  flags?: TNodeFlags[],
 ): typeof ɵɵtemplate {
   const lView = getLView();
   const tView = getTView();
@@ -221,6 +236,7 @@ export function ɵɵtemplate(
     attrs,
     localRefsIndex,
     localRefExtractor,
+    flags,
   );
   return ɵɵtemplate;
 }

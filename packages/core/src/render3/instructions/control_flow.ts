@@ -18,7 +18,7 @@ import {assertLContainer, assertLView, assertTNode} from '../assert';
 import {bindingUpdated} from '../bindings';
 import {CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {ComponentTemplate} from '../interfaces/definition';
-import {TNode} from '../interfaces/node';
+import {TNode, TNodeFlags} from '../interfaces/node';
 import {
   CONTEXT,
   DECLARATION_COMPONENT_VIEW,
@@ -223,6 +223,9 @@ export function ɵɵrepeaterCreate(
     vars,
     tagName,
     getConstant(tView.consts, attrsIndex),
+    null,
+    undefined,
+    [TNodeFlags.isControlFlowStart, TNodeFlags.isInControlFlow],
   );
 
   if (hasEmptyBlock) {
@@ -240,6 +243,9 @@ export function ɵɵrepeaterCreate(
       emptyVars!,
       emptyTagName,
       getConstant(tView.consts, emptyAttrsIndex),
+      null,
+      undefined,
+      [TNodeFlags.isControlFlowStart, TNodeFlags.isInControlFlow],
     );
   }
 }

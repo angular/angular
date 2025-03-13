@@ -20,6 +20,7 @@ import {
   OpKind,
   TDeferDetailsFlags,
   TemplateKind,
+  TNodeFlags,
 } from '../enums';
 import {SlotHandle} from '../handle';
 import {Op, OpList, XrefId} from '../operations';
@@ -260,6 +261,11 @@ export interface TemplateOp extends ElementOpBase {
    * The i18n placeholder data associated with this template.
    */
   i18nPlaceholder?: i18n.TagPlaceholder | i18n.BlockPlaceholder;
+
+  /**
+   * Flags to indicate the type of TNode generated for the template
+   */
+  flags?: TNodeFlags[];
 }
 
 /**
@@ -274,6 +280,7 @@ export function createTemplateOp(
   i18nPlaceholder: i18n.TagPlaceholder | i18n.BlockPlaceholder | undefined,
   startSourceSpan: ParseSourceSpan,
   wholeSourceSpan: ParseSourceSpan,
+  flags?: TNodeFlags[],
 ): TemplateOp {
   return {
     kind: OpKind.Template,
@@ -289,6 +296,7 @@ export function createTemplateOp(
     nonBindable: false,
     namespace,
     i18nPlaceholder,
+    flags,
     startSourceSpan,
     wholeSourceSpan,
     ...TRAIT_CONSUMES_SLOT,

@@ -122,6 +122,7 @@ export function template(
   constIndex: number | null,
   localRefs: number | null,
   sourceSpan: ParseSourceSpan,
+  flags?: ir.TNodeFlags[],
 ): ir.CreateOp {
   const args = [
     o.literal(slot),
@@ -138,6 +139,10 @@ export function template(
   while (args[args.length - 1].isEquivalent(o.NULL_EXPR)) {
     args.pop();
   }
+  if (flags) {
+    args.push(o.literal(flags));
+  }
+
   return call(Identifiers.templateCreate, args, sourceSpan);
 }
 

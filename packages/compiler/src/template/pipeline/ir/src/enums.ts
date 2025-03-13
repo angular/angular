@@ -44,6 +44,16 @@ export enum OpKind {
   Template,
 
   /**
+   * An operation which declares control flow has started by creating an embedded view.
+   */
+  ControlFlowStart,
+
+  /**
+   * An operation which creates a control flow block by creating an embedded view.
+   */
+  ControlFlowBlock,
+
+  /**
    * An operation to end rendering of an element previously started with `ElementStart`.
    */
   ElementEnd,
@@ -619,4 +629,19 @@ export const enum TDeferDetailsFlags {
    * Whether or not the defer block has hydrate triggers.
    */
   HasHydrateTriggers = 1 << 0,
+}
+
+/**
+ * Specifies TNodeFlags for Control Flow templates.
+ */
+export const enum TNodeFlags {
+  /**
+   * Bit #9 - This bit is set if the node is a start of a set of control flow blocks.
+   */
+  isControlFlowStart = 0x100,
+
+  /**
+   * Bit #10 - This bit is set if the node is within a set of control flow blocks.
+   */
+  isInControlFlow = 0x200,
 }

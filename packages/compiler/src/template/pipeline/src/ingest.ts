@@ -494,6 +494,11 @@ function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
       ifCaseI18nMeta = ifCase.i18n;
     }
 
+    const flags =
+      i === 0
+        ? [ir.TNodeFlags.isControlFlowStart, ir.TNodeFlags.isInControlFlow]
+        : [ir.TNodeFlags.isInControlFlow];
+
     const templateOp = ir.createTemplateOp(
       cView.xref,
       ir.TemplateKind.Block,
@@ -503,6 +508,7 @@ function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
       ifCaseI18nMeta,
       ifCase.startSourceSpan,
       ifCase.sourceSpan,
+      flags,
     );
     unit.create.push(templateOp);
 
@@ -534,7 +540,21 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
 
   let firstXref: ir.XrefId | null = null;
   let conditions: Array<ir.ConditionalCaseExpr> = [];
-  for (const switchCase of switchBlock.cases) {
+  const templates: {
+    xrefId: ir.XrefId;
+    templateFnRef: o.Expression;
+    decls: number;
+    vars: number;
+    functionNameSuffix: string;
+    i18nPlaceholder?: i18n.TagPlaceholder | i18n.BlockPlaceholder;
+    constIndex: number | null;
+    localRefs: number | null;
+    tag: string | null;
+    namespace: ir.Namespace;
+    sourceSpan: ParseSourceSpan;
+  }[] = [];
+  for (let ix = 0; ix < switchBlock.cases.length; ix++) {
+    const switchCase = switchBlock.cases[ix];
     const cView = unit.job.allocateView(unit.xref);
     const tagName = ingestControlFlowInsertionPoint(unit, cView.xref, switchCase);
     let switchCaseI18nMeta: i18n.BlockPlaceholder | undefined = undefined;
@@ -546,6 +566,11 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
       }
       switchCaseI18nMeta = switchCase.i18n;
     }
+    const flags =
+      ix === 0
+        ? [ir.TNodeFlags.isControlFlowStart, ir.TNodeFlags.isInControlFlow]
+        : [ir.TNodeFlags.isInControlFlow];
+
     const templateOp = ir.createTemplateOp(
       cView.xref,
       ir.TemplateKind.Block,
@@ -555,6 +580,7 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
       switchCaseI18nMeta,
       switchCase.startSourceSpan,
       switchCase.sourceSpan,
+      flags,
     );
     unit.create.push(templateOp);
     if (firstXref === null) {

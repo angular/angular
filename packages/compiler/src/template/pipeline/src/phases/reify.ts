@@ -172,6 +172,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
             op.attributes,
             op.localRefs,
             op.startSourceSpan,
+            op.flags,
           ),
         );
         break;
