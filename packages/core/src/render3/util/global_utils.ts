@@ -33,6 +33,8 @@ import {
 } from './injector_discovery_utils';
 import {getSignalGraph} from './signal_debug';
 
+import {enableProfiling} from '../debug/chrome_dev_tools_performance';
+
 /**
  * This file introduces series of globally accessible debug tools
  * to allow for the Angular debugging story to function.
@@ -82,6 +84,8 @@ const globalUtilsFunctions = {
   'getDirectives': getDirectives,
   'applyChanges': applyChanges,
   'isSignal': isSignal,
+
+  'enableProfiling': enableProfiling,
 };
 type CoreGlobalUtilsFunctions = keyof typeof globalUtilsFunctions;
 type ExternalGlobalUtilsFunctions = keyof NgGlobalPublishUtils;
