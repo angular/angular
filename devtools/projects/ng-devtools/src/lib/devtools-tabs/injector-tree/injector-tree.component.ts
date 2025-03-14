@@ -91,11 +91,13 @@ export class InjectorTreeComponent {
 
   private init() {
     this._messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
-      if (view.forest[0].resolutionPath !== undefined) {
-        this.diDebugAPIsAvailable.set(true);
-        this.rawDirectiveForest = view.forest;
-        this.updateInjectorTreeVisualization(view.forest);
-      }
+      if (view.forest.length === 0) return;
+
+      if (!view.forest[0].resolutionPath) return;
+
+      this.diDebugAPIsAvailable.set(true);
+      this.rawDirectiveForest = view.forest;
+      this.updateInjectorTreeVisualization(view.forest);
     });
 
     this._messageBus.on(
