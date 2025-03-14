@@ -25,7 +25,6 @@ Start developing with the latest Angular features from our roadmap. This list re
 * [Resource API](/guide/signals/resource)
 * [Effect API](/api/core/effect)
 * [Linked Signal API](/guide/signals/linked-signal)
-* [Route-level render mode](/guide/hybrid-rendering)
 
 ### Production ready
 
@@ -38,6 +37,7 @@ Start developing with the latest Angular features from our roadmap. This list re
 * [Model inputs](/guide/signals/model)
 * [Signal queries](/guide/signals/queries)
 * [Function-based outputs](/guide/components/outputs)
+* [Route-level render mode](/guide/ssr)
 
 ## Improving the Angular developer experience
 
@@ -62,7 +62,7 @@ Start developing with the latest Angular features from our roadmap. This list re
   </docs-card>
   <docs-card title="Improve HMR (Hot Module Reload)" href="https://github.com/angular/angular/issues/39367#issuecomment-1439537306">
   We're working towards faster edit/refresh cycle by enabling hot module replacement.
-  
+
   In Angular v19 we shipped initial support for CSS and template HMR. We'll continue collecting feedback to make sure we're addressing developers' needs before we mark this project as complete.
   </docs-card>
 </docs-card-container>
@@ -98,13 +98,13 @@ Start developing with the latest Angular features from our roadmap. This list re
 <docs-card-container>
   <docs-card title="Enable incremental hydration" href="">
   In v17 we graduated hydration from developer preview and we've been consistently observing 40-50% improvements in LCP. Since then we started prototyping incremental hydration and shared a demo on stage at ng-conf.
-  
+
   In v19 we shipped the incremental hydration in developer preview mode, powered by `@defer` blocks. Give it a try and <a href="https://github.com/angular/angular/issues">share your feedback</a> with us!
   </docs-card>
   <docs-card title="Server route configuration" href="">
   We're working towards enabling a more ergonomic route configuration on the server. We want to make it trivial to declare which routes should be server-side rendered, prerendered or client-side rendered.
 
-  In Angular v19 we shipped developer preview of route-level render mode which allows you to granularly configure which routes you want Angular to prerender, server-side render or client-side render. 
+  In Angular v19 we shipped developer preview of route-level render mode which allows you to granularly configure which routes you want Angular to prerender, server-side render or client-side render.
   </docs-card>
 </docs-card-container>
 
