@@ -84,7 +84,6 @@ export interface ToSignalOptions<T> {
     initialValue?: unknown;
     injector?: Injector;
     manualCleanup?: boolean;
-    rejectErrors?: boolean;
     requireSync?: boolean;
 }
 
