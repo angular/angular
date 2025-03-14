@@ -51,12 +51,17 @@ dialog {
       padding-inline-end: 1rem;
       padding-block: 0.25rem;
 
-      mark {
-        background: #e62600;
-        background: var(--red-to-orange-horizontal-gradient);
-        background-clip: text;
-        -webkit-background-clip: text;
-        color: transparent;
+      /** 
+      * This rule needs ng-deep to be applied to elements that are created via a [innerHTML] binding
+      */ 
+      ::ng-deep {
+        mark {
+          background: #e62600;
+          background: var(--red-to-orange-horizontal-gradient);
+          background-clip: text;
+          -webkit-background-clip: text;
+          color: transparent;
+        }
       }
 
       a {
