@@ -21,7 +21,7 @@ The change of subdirectory often occurs using a menu implemented in the applicat
 
 For more information on how to deploy apps to a remote server, see [Deployment][GuideDeployment].
 
-IMPORTANT: If you are using [Hybrid rendering](guide/hybrid-rendering) with `outputMode` set to `server`, Angular automatically handles redirection dynamically based on the `Accept-Language` HTTP header. This simplifies deployment by eliminating the need for manual server or configuration adjustments.
+IMPORTANT: If you are using [Server rendering](guide/ssr) with `outputMode` set to `server`, Angular automatically handles redirection dynamically based on the `Accept-Language` HTTP header. This simplifies deployment by eliminating the need for manual server or configuration adjustments.
 
 ### Nginx example
 
