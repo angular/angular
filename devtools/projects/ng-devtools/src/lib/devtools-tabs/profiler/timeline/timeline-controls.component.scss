@@ -1,5 +1,3 @@
-@use '../../../../styles/theme' as theme;
-
 .visual-controls {
   display: flex;
   flex-direction: column;
@@ -49,12 +47,12 @@
       text-overflow: ellipsis;
 
       &.warning-label {
-        color: #d83c34;
+        color: var(--dynamic-red-01);
       }
     }
 
     .value {
-      color: #8a1882;
+      color: var(--dynamic-purple-01);
     }
   }
 
@@ -64,18 +62,5 @@
 
   .flame-details {
     min-height: 85px;
-  }
-}
-
-@include theme.dark-theme {
-  .details .value {
-    color: #5cadd3;
-  }
-
-  .warning-label {
-    color: #ff625a;
-  }
-  .details {
-    color: #ffffff;
   }
 }

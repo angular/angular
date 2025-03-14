@@ -57,7 +57,7 @@ describe('ThemeService', () => {
     const doc = TestBed.inject(DOCUMENT);
 
     expect(service.currentTheme()).toEqual('light-theme');
-    expect(doc.body.classList.contains('light-theme')).toBeTrue();
+    expect(doc.documentElement.classList.contains('light-theme')).toBeTrue();
   });
 
   it(`should enable dark mode, if it's the preferred/system one`, () => {
@@ -69,7 +69,7 @@ describe('ThemeService', () => {
     const doc = TestBed.inject(DOCUMENT);
 
     expect(service.currentTheme()).toEqual('dark-theme');
-    expect(doc.body.classList.contains('dark-theme')).toBeTrue();
+    expect(doc.documentElement.classList.contains('dark-theme')).toBeTrue();
   });
 
   it('should toggle dark mode', () => {
@@ -84,7 +84,7 @@ describe('ThemeService', () => {
     const doc = TestBed.inject(DOCUMENT);
 
     expect(service.currentTheme()).toEqual('dark-theme');
-    expect(doc.body.classList.contains('dark-theme')).toBeTrue();
+    expect(doc.documentElement.classList.contains('dark-theme')).toBeTrue();
   });
 
   it('should update the theme automatically, if the system one changes', () => {
@@ -95,7 +95,7 @@ describe('ThemeService', () => {
     // Initialize the watcher.
     service.initializeThemeWatcher();
 
-    const docClassList = TestBed.inject(DOCUMENT).body.classList;
+    const docClassList = TestBed.inject(DOCUMENT).documentElement.classList;
 
     expect(service.currentTheme()).toEqual('light-theme');
     expect(docClassList.contains('light-theme')).toBeTrue();

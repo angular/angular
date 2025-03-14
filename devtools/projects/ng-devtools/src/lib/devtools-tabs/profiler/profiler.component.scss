@@ -1,5 +1,3 @@
-@use '../../../styles/theme' as theme;
-
 :host,
 .profiler-wrapper {
   font-size: 1em;
@@ -21,7 +19,7 @@
   cursor: pointer;
 
   &.recording-button {
-    color: #d83c34;
+    color: var(--dynamic-red-01);
   }
 }
 
@@ -38,12 +36,6 @@
   }
 }
 
-@include theme.dark-theme {
-  .instructions {
-    color: #ffffff;
-  }
-}
-
 #profiler-content-wrapper {
   margin: 0;
   height: calc(100% - 30px);
@@ -53,14 +45,6 @@
 .visualization {
   margin: 0;
   height: 100%;
-}
-
-@include theme.dark-theme {
-  .profiler-control {
-    &.recording-button {
-      color: #ff625a;
-    }
-  }
 }
 
 .mdc-card {

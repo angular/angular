@@ -1,5 +1,3 @@
-@use '../../../../styles/theme' as theme;
-
 .element-header {
   display: flex;
   justify-content: space-between;
@@ -43,11 +41,5 @@
         }
       }
     }
-  }
-}
-
-@include theme.dark-theme {
-  .element-name {
-    color: #ffffff;
   }
 }

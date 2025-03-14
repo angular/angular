@@ -1,5 +1,3 @@
-@use '../../../../../styles/theme' as theme;
-
 :host {
   width: 100%;
   display: block;
@@ -38,29 +36,21 @@
   margin: 5px 5px 5px 15px;
   mat-tree-node {
     .name {
-      color: #ce271e;
+      color: var(--color-tree-node-element-name);
       font-weight: 500;
-    }
-  }
-}
-
-@include theme.dark-theme {
-  .property-list {
-    .name {
-      color: #54c9bd !important;
     }
   }
 }
 
 .property-list mat-tree-node.disabled .name,
 .disabled {
-  color: #333;
+  color: var(--secondary-contrast);
 }
 
 .arrow {
   font-family: monospace;
   font-size: 0.5em;
-  color: #6e6e6e;
+  color: var(--quaternary-contrast);
 }
 
 :host ::ng-deep .mat-tree-node,
