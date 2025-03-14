@@ -361,7 +361,6 @@
         {
           "name": "type",
           "type": "string",
-          "default": "Component",
           "description": "Append a custom type to the component's filename. For example, if you set the type to `container`, the file will be named `my-component.container.ts`."
         },
         {
