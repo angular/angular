@@ -223,13 +223,15 @@ const getRoutes = (messageBus: MessageBus<Events>) => {
     initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
     ngDebugDependencyInjectionApiIsSupported(),
   );
+  if (forest.length === 0) return;
+
   const rootInjector = (forest[0].resolutionPath ?? []).find((i) => i.name === 'Root');
-  if (rootInjector) {
-    const route = getRouterConfigFromRoot(rootInjector);
-    if (route) {
-      messageBus.emit('updateRouterTree', [[route]]);
-    }
-  }
+  if (!rootInjector) return;
+
+  const route = getRouterConfigFromRoot(rootInjector);
+  if (!route) return;
+
+  messageBus.emit('updateRouterTree', [[route]]);
 };
 
 const getSerializedProviderRecords = (injector: SerializedInjector) => {
