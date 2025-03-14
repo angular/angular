@@ -34,18 +34,7 @@ export function duplicateInFlightNavigationsIntegrationSuite() {
 
     beforeEach(() => {
       TestBed.configureTestingModule({
-        providers: [
-          {
-            provide: 'in1Second',
-            useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-              let res: any = null;
-              const p = new Promise((_) => (res = _));
-              setTimeout(() => res(true), 1000);
-              return p;
-            },
-          },
-          RedirectingGuard,
-        ],
+        providers: [RedirectingGuard],
       });
     });
 
@@ -54,7 +43,13 @@ export function duplicateInFlightNavigationsIntegrationSuite() {
       const location = TestBed.inject(Location);
       const fixture = createRoot(router, RootCmp);
 
-      router.resetConfig([{path: 'simple', component: SimpleCmp, canActivate: ['in1Second']}]);
+      router.resetConfig([
+        {
+          path: 'simple',
+          component: SimpleCmp,
+          canActivate: [() => new Promise((resolve) => setTimeout(resolve, 1000))],
+        },
+      ]);
 
       // Trigger two location changes to the same URL.
       // Because of the guard the order will look as follows:
@@ -162,8 +157,16 @@ export function duplicateInFlightNavigationsIntegrationSuite() {
     it('should accurately track currentNavigation', fakeAsync(() => {
       const router = TestBed.inject(Router);
       router.resetConfig([
-        {path: 'one', component: SimpleCmp, canActivate: ['in1Second']},
-        {path: 'two', component: BlankCmp, canActivate: ['in1Second']},
+        {
+          path: 'one',
+          component: SimpleCmp,
+          canActivate: [() => new Promise((resolve) => setTimeout(resolve, 1000))],
+        },
+        {
+          path: 'two',
+          component: BlankCmp,
+          canActivate: [() => new Promise((resolve) => setTimeout(resolve, 1000))],
+        },
       ]);
 
       router.events.subscribe((e) => {

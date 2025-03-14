@@ -70,7 +70,6 @@ describe('`restoredState#ɵrouterPageId`', () => {
     TestBed.configureTestingModule({
       imports: [TestModule],
       providers: [
-        {provide: 'alwaysFalse', useValue: (a: any) => false},
         {provide: Location, useClass: SpyLocation},
         provideRouter(
           [
@@ -106,7 +105,7 @@ describe('`restoredState#ɵrouterPageId`', () => {
             {
               path: 'loaded',
               loadChildren: () => of(ModuleWithSimpleCmpAsRoute),
-              canLoad: ['alwaysFalse'],
+              canLoad: [() => false],
             },
           ],
           withRouterConfig({
