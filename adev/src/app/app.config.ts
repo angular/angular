@@ -21,6 +21,7 @@ import {
   ENVIRONMENT,
   EXAMPLE_VIEWER_CONTENT_LOADER,
   PREVIEWS_COMPONENTS,
+  provideAlgoliaSearchClient,
   WINDOW,
   windowProvider,
 } from '@angular/docs';
@@ -76,6 +77,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withFetch()),
     provideEnvironmentInitializer(() => inject(AppScroller)),
     provideEnvironmentInitializer(() => inject(AnalyticsService)),
+    provideAlgoliaSearchClient(environment),
     {
       provide: CURRENT_MAJOR_VERSION,
       useValue: Number(VERSION.major),
