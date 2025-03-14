@@ -427,19 +427,9 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/performance/overview',
           },
           {
-            label: 'Server-side rendering',
+            label: 'Server-side and hybrid-rendering',
             path: 'guide/ssr',
             contentPath: 'guide/ssr',
-          },
-          {
-            label: 'Build-time prerendering',
-            path: 'guide/prerendering',
-            contentPath: 'guide/prerendering',
-          },
-          {
-            label: 'Hybrid rendering with server routing',
-            path: 'guide/hybrid-rendering',
-            contentPath: 'guide/hybrid-rendering',
           },
           {
             label: 'Hydration',
