@@ -115,7 +115,7 @@ build:remote --remote_cache=remotebuildexecution.googleapis.com
 build:remote --remote_executor=remotebuildexecution.googleapis.com
 
 # See: https://docs.google.com/document/d/1NgDPsCIwprDdqC1zj0qQrh5KGK2hQTSTux1DAvi4rSc/edit?tab=t.0.
-build:remote --experimental_remote_execution_keepalive
+# build:remote --experimental_remote_execution_keepalive
 
 # Use HTTP remote cache
 build:remote-cache --remote_cache=https://storage.googleapis.com/angular-team-cache
