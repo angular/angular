@@ -26,6 +26,7 @@
     "executionMode": "branch"
   },
   "ignoreDeps": [
+    "@angular/build-tooling",
     "@bazel/ibazel",
     "@bazel/runfiles",
     "@rollup/plugin-node-resolve",
@@ -100,10 +101,7 @@
     },
     {
       "groupName": "eslint dependencies",
-      "matchPackageNames": [
-        "@angular-eslint/{/,}**",
-        "@typescript-eslint/{/,}**"
-      ]
+      "matchPackageNames": ["@angular-eslint/{/,}**", "@typescript-eslint/{/,}**"]
     },
     {
       "matchPackageNames": ["typescript", "tslib"],
