@@ -9,10 +9,10 @@
 import {Injectable, afterNextRender, inject, signal} from '@angular/core';
 import {ENVIRONMENT} from '../providers/index';
 import {SearchResult} from '../interfaces/index';
+import {toObservable} from '@angular/core/rxjs-interop';
 import {debounceTime, filter, from, of, switchMap} from 'rxjs';
 import {liteClient as algoliasearch} from 'algoliasearch/lite';
 import {NavigationEnd, Router} from '@angular/router';
-import {toObservable} from './rxjs-interop';
 
 export const SEARCH_DELAY = 200;
 // Maximum number of facet values to return for each facet during a regular search.
