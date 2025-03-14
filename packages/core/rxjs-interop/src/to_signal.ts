@@ -63,16 +63,6 @@ export interface ToSignalOptions<T> {
   manualCleanup?: boolean;
 
   /**
-   * Whether `toSignal` should throw errors from the Observable error channel back to RxJS, where
-   * they'll be processed as uncaught exceptions.
-   *
-   * In practice, this means that the signal returned by `toSignal` will keep returning the last
-   * good value forever, as Observables which error produce no further values. This option emulates
-   * the behavior of the `async` pipe.
-   */
-  rejectErrors?: boolean;
-
-  /**
    * A comparison function which defines equality for values emitted by the observable.
    *
    * Equality comparisons are executed against the initial value if one is provided.
@@ -172,11 +162,6 @@ export function toSignal<T, U = undefined>(
   const sub = source.subscribe({
     next: (value) => state.set({kind: StateKind.Value, value}),
     error: (error) => {
-      if (options?.rejectErrors) {
-        // Kick the error back to RxJS. It will be caught and rethrown in a macrotask, which causes
-        // the error to end up as an uncaught exception.
-        throw error;
-      }
       state.set({kind: StateKind.Error, error});
     },
     // Completion of the Observable is meaningless to the signal. Signals don't have a concept of
