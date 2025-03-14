@@ -5,6 +5,10 @@
   <button type="button" (click)="toggleEditor('profile')">Profile Editor</button>
 </nav>
 
-<app-name-editor *ngIf="showNameEditor"></app-name-editor>
+@if (showNameEditor()) {
+  <app-name-editor />
+}
 
-<app-profile-editor *ngIf="showProfileEditor"></app-profile-editor>
+@if (showProfileEditor()) {
+  <app-profile-editor />
+}

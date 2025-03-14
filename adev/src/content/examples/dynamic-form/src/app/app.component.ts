@@ -13,7 +13,7 @@ import {Observable} from 'rxjs';
   template: `
     <div>
       <h2>Job Application for Heroes</h2>
-      <app-dynamic-form [questions]="questions$ | async"></app-dynamic-form>
+      <app-dynamic-form [questions]="questions$ | async" />
     </div>
   `,
   providers: [QuestionService],

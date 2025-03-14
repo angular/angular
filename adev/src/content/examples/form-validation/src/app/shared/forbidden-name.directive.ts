@@ -1,5 +1,5 @@
 // #docregion
-import {Directive, Input} from '@angular/core';
+import {Directive, input} from '@angular/core';
 import {
   AbstractControl,
   NG_VALIDATORS,
@@ -23,14 +23,13 @@ export function forbiddenNameValidator(nameRe: RegExp): ValidatorFn {
   selector: '[appForbiddenName]',
   // #docregion directive-providers
   providers: [{provide: NG_VALIDATORS, useExisting: ForbiddenValidatorDirective, multi: true}],
-  standalone: false,
 })
 export class ForbiddenValidatorDirective implements Validator {
-  @Input('appForbiddenName') forbiddenName = '';
+  forbiddenName = input<string>('', {alias: 'appForbiddenName'});
 
   validate(control: AbstractControl): ValidationErrors | null {
     return this.forbiddenName
-      ? forbiddenNameValidator(new RegExp(this.forbiddenName, 'i'))(control)
+      ? forbiddenNameValidator(new RegExp(this.forbiddenName(), 'i'))(control)
       : null;
   }
 }
