@@ -1,7 +1,7 @@
-load("//devtools:packages.bzl", "ANGULAR_PACKAGES")
-load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", "esbuild")
-load("@build_bazel_rules_nodejs//internal/linker:link_node_modules.bzl", "LinkerPackageMappingInfo")
 load("@build_bazel_rules_nodejs//:providers.bzl", "ExternalNpmPackageInfo", "JSModuleInfo")
+load("@build_bazel_rules_nodejs//internal/linker:link_node_modules.bzl", "LinkerPackageMappingInfo")
+load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", "esbuild")
+load("//devtools:packages.bzl", "ANGULAR_PACKAGES")
 
 """
   Starlark file exposing a definition for generating Angular linker-processed ESM bundles
@@ -56,6 +56,7 @@ def _create_bundle_targets(pkg, entry_point, module_name):
         output = "%s/index.mjs" % target_name_base,
         platform = pkg.platform,
         entry_point = "@npm//:node_modules/@angular/%s/%s" % (pkg.name, fesm_bundle_path),
+        deps = ["@npm//@angular/%s" % pkg.name],
         config = "//devtools/tools/esbuild:esbuild_config_esm",
         # List of dependencies which should never be bundled into these linker-processed bundles.
         external = ["rxjs", "@angular", "domino", "xhr2", "@material"],
