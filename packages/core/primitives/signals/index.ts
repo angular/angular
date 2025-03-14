@@ -20,6 +20,7 @@ export {setThrowInvalidWriteToSignalError} from './src/errors';
 export {
   REACTIVE_NODE,
   Reactive,
+  ReactiveHookFn,
   ReactiveNode,
   SIGNAL,
   consumerAfterComputation,
@@ -36,7 +37,9 @@ export {
   producerNotifyConsumers,
   producerUpdateValueVersion,
   producerUpdatesAllowed,
+  runPostProducerCreatedFn,
   setActiveConsumer,
+  setPostProducerCreatedFn,
 } from './src/graph';
 export {
   SIGNAL_NODE,

@@ -7,7 +7,13 @@
  */
 
 import {computed, signal} from '@angular/core';
-import {createWatch, ReactiveNode, SIGNAL, defaultEquals} from '@angular/core/primitives/signals';
+import {
+  createWatch,
+  ReactiveNode,
+  SIGNAL,
+  defaultEquals,
+  setPostProducerCreatedFn,
+} from '@angular/core/primitives/signals';
 
 describe('computed', () => {
   it('should create computed', () => {
@@ -316,5 +322,15 @@ describe('computed', () => {
       source.set(2);
       expect(derived()).toBe(2);
     });
+  });
+
+  it('should call the post-producer-created fn when signal is called', () => {
+    let producers = 0;
+    const count = signal(0);
+    const prev = setPostProducerCreatedFn(() => producers++);
+    computed(() => count() % 2 === 0);
+
+    expect(producers).toBe(1);
+    setPostProducerCreatedFn(prev);
   });
 });

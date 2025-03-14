@@ -7,7 +7,13 @@
  */
 
 import {computed, signal} from '@angular/core';
-import {ReactiveNode, setPostSignalSetFn, SIGNAL} from '@angular/core/primitives/signals';
+import {
+  ReactiveHookFn,
+  ReactiveNode,
+  setPostProducerCreatedFn,
+  setPostSignalSetFn,
+  SIGNAL,
+} from '@angular/core/primitives/signals';
 
 describe('signals', () => {
   it('should be a getter which reflects the set value', () => {
@@ -166,7 +172,7 @@ describe('signals', () => {
   });
 
   describe('post-signal-set functions', () => {
-    let prevPostSignalSetFn: (() => void) | null = null;
+    let prevPostSignalSetFn: ReactiveHookFn | null = null;
     let log: number;
     beforeEach(() => {
       log = 0;
@@ -197,5 +203,25 @@ describe('signals', () => {
       counter.set(0);
       expect(log).toBe(0);
     });
+
+    it('should pass post-signal-set fn the node that was updated', () => {
+      const counter = signal(0, {debugName: 'test-signal'});
+      let node: ReactiveNode | null = null;
+      setPostSignalSetFn((n: ReactiveNode) => {
+        node = n;
+      });
+
+      counter.set(1);
+      expect(node!.debugName).toBe('test-signal');
+    });
+  });
+
+  it('should call the post-producer-created fn when signal is called', () => {
+    let producers = 0;
+    const prev = setPostProducerCreatedFn(() => producers++);
+    signal(0);
+
+    expect(producers).toBe(1);
+    setPostProducerCreatedFn(prev);
   });
 });

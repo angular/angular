@@ -15,7 +15,9 @@ import {
   producerUpdatesAllowed,
   REACTIVE_NODE,
   ReactiveNode,
+  ReactiveHookFn,
   SIGNAL,
+  runPostProducerCreatedFn,
 } from './graph';
 
 // Required as the signals library is in a separate package, so we need to explicitly ensure the
@@ -28,7 +30,7 @@ declare const ngDevMode: boolean | undefined;
  * This hook can be used to achieve various effects, such as running effects synchronously as part
  * of setting a signal.
  */
-let postSignalSetFn: (() => void) | null = null;
+let postSignalSetFn: ReactiveHookFn | null = null;
 
 export interface SignalNode<T> extends ReactiveNode {
   value: T;
@@ -57,10 +59,11 @@ export function createSignal<T>(initialValue: T, equal?: ValueEqualityFn<T>): Si
     return node.value;
   }) as SignalGetter<T>;
   (getter as any)[SIGNAL] = node;
+  runPostProducerCreatedFn?.(node);
   return getter;
 }
 
-export function setPostSignalSetFn(fn: (() => void) | null): (() => void) | null {
+export function setPostSignalSetFn(fn: ReactiveHookFn | null): ReactiveHookFn | null {
   const prev = postSignalSetFn;
   postSignalSetFn = fn;
   return prev;
@@ -90,8 +93,8 @@ export function signalUpdateFn<T>(node: SignalNode<T>, updater: (value: T) => T)
   signalSetFn(node, updater(node.value));
 }
 
-export function runPostSignalSetFn(): void {
-  postSignalSetFn?.();
+export function runPostSignalSetFn<T>(node: SignalNode<T>): void {
+  postSignalSetFn?.(node);
 }
 
 // Note: Using an IIFE here to ensure that the spread assignment is not considered
@@ -110,5 +113,5 @@ function signalValueChanged<T>(node: SignalNode<T>): void {
   node.version++;
   producerIncrementEpoch();
   producerNotifyConsumers(node);
-  postSignalSetFn?.();
+  postSignalSetFn?.(node);
 }

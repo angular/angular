@@ -16,6 +16,7 @@ import {
   ReactiveNode,
   setActiveConsumer,
   SIGNAL,
+  runPostProducerCreatedFn,
 } from './graph';
 
 /**
@@ -76,6 +77,7 @@ export function createComputed<T>(
     return node.value;
   };
   (computed as ComputedGetter<T>)[SIGNAL] = node;
+  runPostProducerCreatedFn?.(node);
   return computed as unknown as ComputedGetter<T>;
 }
 
