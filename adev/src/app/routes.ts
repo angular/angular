@@ -215,6 +215,14 @@ const REDIRECT_ROUTES: Route[] = [
     redirectTo: '/guide/components',
   },
   {
+    path: 'guide/hybrid-rendering',
+    redirectTo: '/guide/ssr',
+  },
+  {
+    path: 'guide/prerendering',
+    redirectTo: '/guide/ssr',
+  },
+  {
     path: 'guide',
     children: [
       {

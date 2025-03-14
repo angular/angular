@@ -1,6 +1,6 @@
 // #docplaster
 import {importProvidersFrom} from '@angular/core';
-import {provideProtractorTestingSupport} from '@angular/platform-browser';
+import {provideProtractorTestingSupport, withEventReplay} from '@angular/platform-browser';
 import {provideClientHydration} from '@angular/platform-browser';
 import {ApplicationConfig} from '@angular/core';
 import {provideRouter} from '@angular/router';
@@ -15,7 +15,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideHttpClient(withFetch()),
-    provideClientHydration(),
+    provideClientHydration(withEventReplay()),
     provideProtractorTestingSupport(), // essential for e2e testing
 
     // TODO: Remove from production apps
