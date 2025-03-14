@@ -1836,6 +1836,9 @@ export const TRANSLATIONS: InjectionToken<string>;
 export const TRANSLATIONS_FORMAT: InjectionToken<string>;
 
 // @public
+export function twoWayBinding(publicName: string, value: WritableSignal<unknown>): Binding;
+
+// @public
 export const Type: FunctionConstructor;
 
 // @public (undocumented)

@@ -30,6 +30,7 @@ import {
   signal,
   SimpleChange,
   SimpleChanges,
+  twoWayBinding,
   Type,
   ViewChild,
 } from '@angular/core';
@@ -1107,7 +1108,7 @@ describe('createComponent', () => {
       expect(() => {
         ref.setInput('someInput', 'changed');
       }).toThrowError(
-        /Cannot call `setInput` on a component that is using the `inputBinding` function/,
+        /Cannot call `setInput` on a component that is using the `inputBinding` or `twoWayBinding` functions/,
       );
     });
   });
@@ -1366,6 +1367,592 @@ describe('createComponent', () => {
       ref.changeDetectorRef.detectChanges();
 
       expect(spy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('root component two-way bindings', () => {
+    it('should be able to use a two-way binding on the root component', () => {
+      @Component({template: 'Value: {{value}}'})
+      class RootComp {
+        @Input() value = '';
+        @Output() valueChange = new EventEmitter<string>();
+      }
+
+      const value = signal('initial');
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const ref = createComponent(RootComp, {
+        hostElement,
+        environmentInjector,
+        bindings: [twoWayBinding('value', value)],
+      });
+      ref.changeDetectorRef.detectChanges();
+      expect(value()).toBe('initial');
+      expect(hostElement.textContent).toBe('Value: initial');
+
+      value.set('1');
+      ref.changeDetectorRef.detectChanges();
+      expect(value()).toBe('1');
+      expect(hostElement.textContent).toBe('Value: 1');
+
+      ref.instance.value = '2';
+      ref.instance.valueChange.emit('2');
+      ref.changeDetectorRef.detectChanges();
+      expect(value()).toBe('2');
+      expect(hostElement.textContent).toBe('Value: 2');
+    });
+
+    it('should be able to two-way bind the same signal to multiple directives', () => {
+      let dirInstance!: RootDir;
+
+      @Directive()
+      class RootDir {
+        @Input() value = '';
+        @Output() valueChange = new EventEmitter<string>();
+
+        constructor() {
+          dirInstance = this;
+        }
+      }
+
+      @Component({template: ''})
+      class RootComp {
+        @Input() value = '';
+        @Output() valueChange = new EventEmitter<string>();
+      }
+
+      const value = signal('initial');
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const ref = createComponent(RootComp, {
+        hostElement,
+        environmentInjector,
+        directives: [
+          {
+            type: RootDir,
+            bindings: [twoWayBinding('value', value)],
+          },
+        ],
+        bindings: [twoWayBinding('value', value)],
+      });
+      ref.changeDetectorRef.detectChanges();
+      expect(value()).toBe('initial');
+      expect(ref.instance.value).toBe('initial');
+      expect(dirInstance.value).toBe('initial');
+
+      value.set('changed');
+      ref.changeDetectorRef.detectChanges();
+      expect(value()).toBe('changed');
+      expect(ref.instance.value).toBe('changed');
+      expect(dirInstance.value).toBe('changed');
+
+      ref.instance.value = 'root changed';
+      ref.instance.valueChange.emit('root changed');
+      ref.changeDetectorRef.detectChanges();
+      expect(value()).toBe('root changed');
+      expect(ref.instance.value).toBe('root changed');
+      expect(dirInstance.value).toBe('root changed');
+
+      dirInstance.value = 'dir changed';
+      dirInstance.valueChange.emit('dir changed');
+      ref.changeDetectorRef.detectChanges();
+      expect(value()).toBe('dir changed');
+      expect(ref.instance.value).toBe('dir changed');
+      expect(dirInstance.value).toBe('dir changed');
+    });
+
+    it('should not bind root component two-way bindings to directives', () => {
+      let dirInstance!: RootDir;
+
+      @Directive()
+      class RootDir {
+        @Input() value = '';
+        @Output() valueChange = new EventEmitter<string>();
+
+        constructor() {
+          dirInstance = this;
+        }
+      }
+
+      @Component({template: ''})
+      class RootComp {
+        @Input() value = '';
+        @Output() valueChange = new EventEmitter<string>();
+      }
+
+      const value = signal('initial');
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const ref = createComponent(RootComp, {
+        hostElement,
+        environmentInjector,
+        directives: [RootDir],
+        bindings: [twoWayBinding('value', value)],
+      });
+      ref.changeDetectorRef.detectChanges();
+      expect(value()).toBe('initial');
+      expect(ref.instance.value).toBe('initial');
+      expect(dirInstance.value).toBe('');
+
+      value.set('changed');
+      ref.changeDetectorRef.detectChanges();
+      expect(value()).toBe('changed');
+      expect(ref.instance.value).toBe('changed');
+      expect(dirInstance.value).toBe('');
+
+      ref.instance.value = 'root changed';
+      ref.instance.valueChange.emit('root changed');
+      ref.changeDetectorRef.detectChanges();
+      expect(value()).toBe('root changed');
+      expect(ref.instance.value).toBe('root changed');
+      expect(dirInstance.value).toBe('');
+
+      dirInstance.value = 'dir changed';
+      dirInstance.valueChange.emit('dir changed');
+      ref.changeDetectorRef.detectChanges();
+      expect(value()).toBe('root changed');
+      expect(ref.instance.value).toBe('root changed');
+      expect(dirInstance.value).toBe('dir changed');
+    });
+
+    it('should bind root component two-way bindings to host directives of the root component, in addition to the component itself', () => {
+      let hostDirInstance!: RootHostDir;
+      let dirInstance!: RootDir;
+
+      @Directive()
+      class RootDir {
+        @Input() value = '';
+        @Output() valueChange = new EventEmitter<string>();
+
+        constructor() {
+          dirInstance = this;
+        }
+      }
+
+      @Directive()
+      class RootHostDir {
+        @Input() value = '';
+        @Output() valueChange = new EventEmitter<string>();
+
+        constructor() {
+          hostDirInstance = this;
+        }
+      }
+
+      @Component({
+        template: '',
+        hostDirectives: [{directive: RootHostDir, inputs: ['value'], outputs: ['valueChange']}],
+      })
+      class RootComp {
+        @Input() value = '';
+        @Output() valueChange = new EventEmitter<string>();
+      }
+
+      const value = signal('initial');
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const ref = createComponent(RootComp, {
+        hostElement,
+        environmentInjector,
+        directives: [RootDir],
+        bindings: [twoWayBinding('value', value)],
+      });
+      ref.changeDetectorRef.detectChanges();
+      expect(value()).toBe('initial');
+      expect(ref.instance.value).toBe('initial');
+      expect(hostDirInstance.value).toBe('initial');
+      expect(dirInstance.value).toBe('');
+
+      value.set('changed');
+      ref.changeDetectorRef.detectChanges();
+      expect(value()).toBe('changed');
+      expect(ref.instance.value).toBe('changed');
+      expect(hostDirInstance.value).toBe('changed');
+      expect(dirInstance.value).toBe('');
+
+      hostDirInstance.value = 'host dir changed';
+      hostDirInstance.valueChange.emit('host dir changed');
+      ref.changeDetectorRef.detectChanges();
+      expect(value()).toBe('host dir changed');
+      expect(ref.instance.value).toBe('host dir changed');
+      expect(hostDirInstance.value).toBe('host dir changed');
+      expect(dirInstance.value).toBe('');
+
+      ref.instance.value = 'root changed';
+      ref.instance.valueChange.emit('root changed');
+      ref.changeDetectorRef.detectChanges();
+      expect(value()).toBe('root changed');
+      expect(ref.instance.value).toBe('root changed');
+      expect(hostDirInstance.value).toBe('root changed');
+      expect(dirInstance.value).toBe('');
+
+      dirInstance.value = 'dir changed';
+      dirInstance.valueChange.emit('dir changed');
+      ref.changeDetectorRef.detectChanges();
+      expect(value()).toBe('root changed');
+      expect(ref.instance.value).toBe('root changed');
+      expect(hostDirInstance.value).toBe('root changed');
+      expect(dirInstance.value).toBe('dir changed');
+    });
+
+    it('should two-way bind to inputs of host directives of directives applied to the root component', () => {
+      let hostDirInstance!: RootHostDir;
+
+      @Directive()
+      class RootHostDir {
+        @Input() value = '';
+        @Output() valueChange = new EventEmitter<string>();
+
+        constructor() {
+          hostDirInstance = this;
+        }
+      }
+
+      @Directive({
+        hostDirectives: [
+          {
+            directive: RootHostDir,
+            inputs: ['value: valueAlias'],
+            outputs: ['valueChange: valueAliasChange'],
+          },
+        ],
+      })
+      class RootDir {}
+
+      @Component({template: ''})
+      class RootComp {}
+
+      const value = signal('initial');
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const ref = createComponent(RootComp, {
+        hostElement,
+        environmentInjector,
+        directives: [
+          {
+            type: RootDir,
+            bindings: [twoWayBinding('valueAlias', value)],
+          },
+        ],
+      });
+      ref.changeDetectorRef.detectChanges();
+      expect(value()).toBe('initial');
+      expect(hostDirInstance.value).toBe('initial');
+
+      value.set('changed');
+      ref.changeDetectorRef.detectChanges();
+      expect(value()).toBe('changed');
+      expect(hostDirInstance.value).toBe('changed');
+
+      hostDirInstance.value = 'host dir changed';
+      hostDirInstance.valueChange.emit('host dir changed');
+      ref.changeDetectorRef.detectChanges();
+      expect(value()).toBe('host dir changed');
+      expect(hostDirInstance.value).toBe('host dir changed');
+    });
+
+    it('should two-way bind to aliased inputs of host directives of the root component', () => {
+      let dirInstance!: RootHostDir;
+
+      @Directive()
+      class RootHostDir {
+        @Input({alias: 'valueAlias'}) value = '';
+        @Output('valueAliasChange') valueChange = new EventEmitter<string>();
+
+        constructor() {
+          dirInstance = this;
+        }
+      }
+
+      @Component({
+        template: '',
+        hostDirectives: [
+          {
+            directive: RootHostDir,
+            inputs: ['valueAlias: myAlias'],
+            outputs: ['valueAliasChange: myAliasChange'],
+          },
+        ],
+      })
+      class RootComp {}
+
+      const value = signal('initial');
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const ref = createComponent(RootComp, {
+        hostElement,
+        environmentInjector,
+        bindings: [twoWayBinding('myAlias', value)],
+      });
+      ref.changeDetectorRef.detectChanges();
+      expect(value()).toBe('initial');
+      expect(dirInstance.value).toBe('initial');
+
+      value.set('changed');
+      ref.changeDetectorRef.detectChanges();
+      expect(value()).toBe('changed');
+      expect(dirInstance.value).toBe('changed');
+
+      dirInstance.value = 'host dir changed';
+      dirInstance.valueChange.emit('host dir changed');
+      ref.changeDetectorRef.detectChanges();
+      expect(value()).toBe('host dir changed');
+      expect(dirInstance.value).toBe('host dir changed');
+    });
+
+    it('should two-way bind to directive inputs, but not inputs on the root component', () => {
+      let dir1Instance!: RootDir1;
+      let dir2Instance!: RootDir2;
+
+      @Directive()
+      class RootDir1 {
+        @Input() value = '';
+        @Output() valueChange = new EventEmitter<string>();
+
+        constructor() {
+          dir1Instance = this;
+        }
+      }
+
+      @Directive()
+      class RootDir2 {
+        @Input() otherValue = '';
+        @Output() otherValueChange = new EventEmitter<string>();
+
+        constructor() {
+          dir2Instance = this;
+        }
+      }
+
+      @Component({template: ''})
+      class RootComp {
+        @Input() value = '';
+        @Output() valueChange = new EventEmitter<string>();
+
+        @Input() otherValue = '';
+        @Output() otherValueChange = new EventEmitter<string>();
+      }
+
+      const oneValue = signal('initial');
+      const twoValue = signal('initial');
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const ref = createComponent(RootComp, {
+        hostElement,
+        environmentInjector,
+        directives: [
+          {
+            type: RootDir1,
+            bindings: [twoWayBinding('value', oneValue)],
+          },
+          {
+            type: RootDir2,
+            bindings: [twoWayBinding('otherValue', twoValue)],
+          },
+        ],
+      });
+      ref.changeDetectorRef.detectChanges();
+      expect(oneValue()).toBe('initial');
+      expect(twoValue()).toBe('initial');
+      expect(ref.instance.value).toBe('');
+      expect(ref.instance.otherValue).toBe('');
+      expect(dir1Instance.value).toBe('initial');
+      expect(dir2Instance.otherValue).toBe('initial');
+
+      oneValue.set('one changed');
+      twoValue.set('two changed');
+      ref.changeDetectorRef.detectChanges();
+      expect(oneValue()).toBe('one changed');
+      expect(twoValue()).toBe('two changed');
+      expect(ref.instance.value).toBe('');
+      expect(ref.instance.otherValue).toBe('');
+      expect(dir1Instance.value).toBe('one changed');
+      expect(dir2Instance.otherValue).toBe('two changed');
+
+      ref.instance.value = 'root changed one';
+      ref.instance.valueChange.emit('root changed one');
+      ref.instance.otherValue = 'root changed two';
+      ref.instance.otherValueChange.emit('root changed two');
+      ref.changeDetectorRef.detectChanges();
+      expect(oneValue()).toBe('one changed');
+      expect(twoValue()).toBe('two changed');
+      expect(ref.instance.value).toBe('root changed one');
+      expect(ref.instance.otherValue).toBe('root changed two');
+      expect(dir1Instance.value).toBe('one changed');
+      expect(dir2Instance.otherValue).toBe('two changed');
+
+      dir1Instance.value = 'one changed again';
+      dir1Instance.valueChange.emit('one changed again');
+      ref.changeDetectorRef.detectChanges();
+      expect(oneValue()).toBe('one changed again');
+      expect(twoValue()).toBe('two changed');
+      expect(ref.instance.value).toBe('root changed one');
+      expect(ref.instance.otherValue).toBe('root changed two');
+      expect(dir1Instance.value).toBe('one changed again');
+      expect(dir2Instance.otherValue).toBe('two changed');
+
+      dir2Instance.otherValue = 'two changed again';
+      dir2Instance.otherValueChange.emit('two changed again');
+      ref.changeDetectorRef.detectChanges();
+      expect(oneValue()).toBe('one changed again');
+      expect(twoValue()).toBe('two changed again');
+      expect(ref.instance.value).toBe('root changed one');
+      expect(ref.instance.otherValue).toBe('root changed two');
+      expect(dir1Instance.value).toBe('one changed again');
+      expect(dir2Instance.otherValue).toBe('two changed again');
+    });
+
+    it('should two-way bind different values to inputs that all have the same name', () => {
+      let dir1Instance!: RootDir1;
+      let dir2Instance!: RootDir2;
+
+      @Directive()
+      class RootDir1 {
+        @Input() value = '';
+        @Output() valueChange = new EventEmitter<string>();
+
+        constructor() {
+          dir1Instance = this;
+        }
+      }
+
+      @Directive()
+      class RootDir2 {
+        @Input() value = '';
+        @Output() valueChange = new EventEmitter<string>();
+
+        constructor() {
+          dir2Instance = this;
+        }
+      }
+
+      @Component({template: ''})
+      class RootComp {
+        @Input() value = '';
+        @Output() valueChange = new EventEmitter<string>();
+      }
+
+      const rootValue = signal('initial');
+      const oneValue = signal('initial');
+      const twoValue = signal('initial');
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const ref = createComponent(RootComp, {
+        hostElement,
+        environmentInjector,
+        bindings: [twoWayBinding('value', rootValue)],
+        directives: [
+          {
+            type: RootDir1,
+            bindings: [twoWayBinding('value', oneValue)],
+          },
+          {
+            type: RootDir2,
+            bindings: [twoWayBinding('value', twoValue)],
+          },
+        ],
+      });
+      ref.changeDetectorRef.detectChanges();
+      expect(rootValue()).toBe('initial');
+      expect(oneValue()).toBe('initial');
+      expect(twoValue()).toBe('initial');
+      expect(ref.instance.value).toBe('initial');
+      expect(dir1Instance.value).toBe('initial');
+      expect(dir2Instance.value).toBe('initial');
+
+      rootValue.set('root changed');
+      oneValue.set('one changed');
+      twoValue.set('two changed');
+      ref.changeDetectorRef.detectChanges();
+      expect(rootValue()).toBe('root changed');
+      expect(oneValue()).toBe('one changed');
+      expect(twoValue()).toBe('two changed');
+      expect(ref.instance.value).toBe('root changed');
+      expect(dir1Instance.value).toBe('one changed');
+      expect(dir2Instance.value).toBe('two changed');
+
+      dir1Instance.value = 'one changed again';
+      dir1Instance.valueChange.emit('one changed again');
+      ref.changeDetectorRef.detectChanges();
+      expect(rootValue()).toBe('root changed');
+      expect(oneValue()).toBe('one changed again');
+      expect(twoValue()).toBe('two changed');
+      expect(ref.instance.value).toBe('root changed');
+      expect(dir1Instance.value).toBe('one changed again');
+      expect(dir2Instance.value).toBe('two changed');
+
+      dir2Instance.value = 'two changed again';
+      dir2Instance.valueChange.emit('two changed again');
+      ref.changeDetectorRef.detectChanges();
+      expect(rootValue()).toBe('root changed');
+      expect(oneValue()).toBe('one changed again');
+      expect(twoValue()).toBe('two changed again');
+      expect(ref.instance.value).toBe('root changed');
+      expect(dir1Instance.value).toBe('one changed again');
+      expect(dir2Instance.value).toBe('two changed again');
+    });
+
+    it('should throw if two-way binding target does not have an input with the specific name', () => {
+      @Component({template: ''})
+      class RootComp {
+        @Output() valueChange = new EventEmitter<string>();
+      }
+
+      const value = signal('initial');
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+
+      expect(() => {
+        const ref = createComponent(RootComp, {
+          hostElement,
+          environmentInjector,
+          bindings: [twoWayBinding('value', value)],
+        });
+        ref.changeDetectorRef.detectChanges();
+      }).toThrowError(/RootComp does not have an input with a public name of "value"/);
+    });
+
+    it('should throw if two-way binding target does not have an output with the specific name', () => {
+      @Component({template: ''})
+      class RootComp {
+        @Input() value = '';
+      }
+
+      const value = signal('initial');
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+
+      expect(() => {
+        createComponent(RootComp, {
+          hostElement,
+          environmentInjector,
+          bindings: [twoWayBinding('value', value)],
+        });
+      }).toThrowError(/RootComp does not have an output with a public name of "valueChange"/);
+    });
+
+    it('should throw when using setInput on a component already using twoWayBinding', () => {
+      @Component({template: ''})
+      class RootComp {
+        @Input() value = '';
+        @Output() valueChange = new EventEmitter<string>();
+      }
+
+      const value = signal('');
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const ref = createComponent(RootComp, {
+        hostElement,
+        environmentInjector,
+        bindings: [twoWayBinding('value', value)],
+      });
+      ref.changeDetectorRef.detectChanges();
+
+      expect(() => {
+        ref.setInput('value', 'changed');
+      }).toThrowError(
+        /Cannot call `setInput` on a component that is using the `inputBinding` or `twoWayBinding` functions/,
+      );
     });
   });
 
