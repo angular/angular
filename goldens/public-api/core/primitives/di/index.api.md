@@ -29,8 +29,10 @@ export const NOT_FOUND: unique symbol;
 export type NotFound = typeof NOT_FOUND | NotFoundError;
 
 // @public
-export class NotFoundError extends Error {
+export class NotFoundError {
     constructor(message: string);
+    // (undocumented)
+    readonly message: string;
 }
 
 // @public (undocumented)

@@ -24,13 +24,15 @@ import {
   NotFound,
   InjectionToken as PrimitivesInjectionToken,
   getCurrentInjector,
+  NOT_FOUND,
+  isNotFound,
 } from '@angular/core/primitives/di';
 import {InjectionToken} from './injection_token';
 
+export {getCurrentInjector, setCurrentInjector} from '@angular/core/primitives/di';
+
 const _THROW_IF_NOT_FOUND = {};
 export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
-
-export {getCurrentInjector, setCurrentInjector} from '@angular/core/primitives/di';
 
 /*
  * Name of a property (that we patch onto DI decorator), which is used as an annotation of which
@@ -51,8 +53,7 @@ export class RetrievingInjector implements PrimitivesInjector {
       convertToBitFlags(options as InjectOptions | undefined) || InternalInjectFlags.Default;
     return (this.injector as BackwardsCompatibleInjector).get(
       token as unknown as InjectionToken<T>,
-      // When a dependency is requested with an optional flag, DI returns null as the default value.
-      flags & InternalInjectFlags.Optional ? null : undefined,
+      NOT_FOUND as T,
       flags,
     ) as T;
   }
@@ -95,11 +96,17 @@ export function injectInjectorOnly<T>(
   } else if (currentInjector === null) {
     return injectRootLimpMode(token, undefined, flags);
   } else {
-    const value = currentInjector.retrieve(
-      token as PrimitivesInjectionToken<T>,
-      convertToInjectOptions(flags),
-    ) as T;
+    const options = convertToInjectOptions(flags);
+    const value = currentInjector.retrieve(token as PrimitivesInjectionToken<T>, options) as T;
     ngDevMode && emitInjectEvent(token as Type<unknown>, value, flags);
+    if (isNotFound(value)) {
+      if (options.optional) {
+        return null;
+      }
+      const error = new Error(`Inject: No provider for ${stringify(token)}!`);
+      error.name = 'Inject';
+      throw error;
+    }
     return value;
   }
 }
