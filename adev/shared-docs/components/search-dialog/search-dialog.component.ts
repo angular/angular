@@ -30,12 +30,12 @@ import {TextField} from '../text-field/text-field.component';
 import {FormsModule} from '@angular/forms';
 import {ActiveDescendantKeyManager} from '@angular/cdk/a11y';
 import {SearchItem} from '../../directives/search-item/search-item.directive';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {Router, RouterLink} from '@angular/router';
-import {fromEvent} from 'rxjs';
+import {filter, fromEvent} from 'rxjs';
 import {AlgoliaIcon} from '../algolia-icon/algolia-icon.component';
 import {RelativeLink} from '../../pipes/relative-link.pipe';
 import {SearchResult, SnippetResult} from '../../interfaces';
-import {takeUntilDestroyed} from '../../services/rxjs-interop';
 
 @Component({
   selector: 'docs-search-dialog',
