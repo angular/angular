@@ -75,7 +75,12 @@ export function createComputed<T>(
 
     return node.value;
   };
+
   (computed as ComputedGetter<T>)[SIGNAL] = node;
+  if (ngDevMode) {
+    computed.toString = () => `[Computed: ${computed()}]`;
+  }
+
   return computed as unknown as ComputedGetter<T>;
 }
 
