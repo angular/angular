@@ -17,6 +17,7 @@ import {
   SafePropertyRead,
   TemplateEntity,
   TmplAstElement,
+  TmplAstHostElement,
   TmplAstNode,
   TmplAstTemplate,
   TmplAstTextAttribute,
@@ -150,18 +151,23 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
   getTemplate(component: ts.ClassDeclaration, optimizeFor?: OptimizeFor): TmplAstNode[] | null {
     const {data} = this.getLatestComponentState(component, optimizeFor);
-    if (data === null) {
-      return null;
-    }
-    return data.template;
+    return data?.template ?? null;
+  }
+
+  getHostElement(
+    directive: ts.ClassDeclaration,
+    optimizeFor?: OptimizeFor,
+  ): TmplAstHostElement | null {
+    const {data} = this.getLatestComponentState(directive, optimizeFor);
+    return data?.hostElement ?? null;
   }
 
   getUsedDirectives(component: ts.ClassDeclaration): TypeCheckableDirectiveMeta[] | null {
-    return this.getLatestComponentState(component).data?.boundTarget.getUsedDirectives() || null;
+    return this.getLatestComponentState(component).data?.boundTarget.getUsedDirectives() ?? null;
   }
 
   getUsedPipes(component: ts.ClassDeclaration): string[] | null {
-    return this.getLatestComponentState(component).data?.boundTarget.getUsedPipes() || null;
+    return this.getLatestComponentState(component).data?.boundTarget.getUsedPipes() ?? null;
   }
 
   private getLatestComponentState(
@@ -446,7 +452,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
   getExpressionTarget(expression: AST, clazz: ts.ClassDeclaration): TemplateEntity | null {
     return (
-      this.getLatestComponentState(clazz).data?.boundTarget.getExpressionTarget(expression) || null
+      this.getLatestComponentState(clazz).data?.boundTarget.getExpressionTarget(expression) ?? null
     );
   }
 

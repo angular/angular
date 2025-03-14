@@ -61,15 +61,32 @@ export function tsCastToAny(expr: ts.Expression): ts.Expression {
  * Thanks to narrowing of `document.createElement()`, this expression will have its type inferred
  * based on the tag name, including for custom elements that have appropriate .d.ts definitions.
  */
-export function tsCreateElement(tagName: string): ts.Expression {
+export function tsCreateElement(...tagNames: string[]): ts.Expression {
   const createElement = ts.factory.createPropertyAccessExpression(
     /* expression */ ts.factory.createIdentifier('document'),
     'createElement',
   );
+
+  let arg: ts.Expression;
+
+  if (tagNames.length === 1) {
+    // If there's only one tag name, we can pass it in directly.
+    arg = ts.factory.createStringLiteral(tagNames[0]);
+  } else {
+    // If there's more than one name, we have to generate a union of all the tag names. To do so,
+    // create an expression in the form of `null! as 'tag-1' | 'tag-2' | 'tag-3'`. This allows
+    // TypeScript to infer the type as a union of the differnet tags.
+    const assertedNullExpression = ts.factory.createNonNullExpression(ts.factory.createNull());
+    const type = ts.factory.createUnionTypeNode(
+      tagNames.map((tag) => ts.factory.createLiteralTypeNode(ts.factory.createStringLiteral(tag))),
+    );
+    arg = ts.factory.createAsExpression(assertedNullExpression, type);
+  }
+
   return ts.factory.createCallExpression(
     /* expression */ createElement,
     /* typeArguments */ undefined,
-    /* argumentsArray */ [ts.factory.createStringLiteral(tagName)],
+    /* argumentsArray */ [arg],
   );
 }
 

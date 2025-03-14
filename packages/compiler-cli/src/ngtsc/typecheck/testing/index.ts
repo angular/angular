@@ -10,13 +10,11 @@ import {
   BindingPipe,
   CssSelector,
   ParseSourceFile,
-  ParseSourceSpan,
   parseTemplate,
   ParseTemplateOptions,
   PropertyRead,
   PropertyWrite,
   R3TargetBinder,
-  SchemaMetadata,
   SelectorMatcher,
   TmplAstElement,
   TmplAstLetDeclaration,
@@ -648,7 +646,7 @@ export function setup(
           preserveWhitespaces: false,
         };
 
-        ctx.addDirective(classRef, binder, [], templateContext, false);
+        ctx.addDirective(classRef, binder, [], templateContext, null, false);
       }
     }
   });
@@ -1011,20 +1009,9 @@ export class NoopSchemaChecker implements DomSchemaChecker {
     return [];
   }
 
-  checkElement(
-    id: string,
-    element: TmplAstElement,
-    schemas: SchemaMetadata[],
-    hostIsStandalone: boolean,
-  ): void {}
-  checkProperty(
-    id: string,
-    element: TmplAstElement,
-    name: string,
-    span: ParseSourceSpan,
-    schemas: SchemaMetadata[],
-    hostIsStandalone: boolean,
-  ): void {}
+  checkElement(): void {}
+  checkTemplateElementProperty(): void {}
+  checkHostElementProperty(): void {}
 }
 
 export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {

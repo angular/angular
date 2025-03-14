@@ -738,7 +738,8 @@ export class NgCompiler {
     const {resourceRegistry} = this.ensureAnalyzed();
     const styles = resourceRegistry.getStyles(classDecl);
     const template = resourceRegistry.getTemplate(classDecl);
-    return {styles, template};
+    const hostBindings = resourceRegistry.getHostBindings(classDecl);
+    return {styles, template, hostBindings};
   }
 
   getMeta(classDecl: DeclarationNode): PipeMeta | DirectiveMeta | null {
@@ -1430,6 +1431,7 @@ export class NgCompiler {
     const supportJitMode = this.options['supportJitMode'] ?? true;
     const supportTestBed = this.options['supportTestBed'] ?? true;
     const externalRuntimeStyles = this.options['externalRuntimeStyles'] ?? false;
+    const typeCheckHostBindings = this.options.typeCheckHostBindings ?? false;
 
     // Libraries compiled in partial mode could potentially be used with TestBed within an
     // application. Since this is not known at library compilation time, support is required to
@@ -1502,6 +1504,7 @@ export class NgCompiler {
         !!this.options.strictStandalone,
         this.enableHmr,
         this.implicitStandaloneValue,
+        typeCheckHostBindings,
       ),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
@@ -1522,10 +1525,14 @@ export class NgCompiler {
         this.delegatingPerfRecorder,
         importTracker,
         supportTestBed,
+        typeCheckScopeRegistry,
         compilationMode,
         jitDeclarationRegistry,
+        resourceRegistry,
         !!this.options.strictStandalone,
         this.implicitStandaloneValue,
+        this.usePoisonedData,
+        typeCheckHostBindings,
       ) as Readonly<DecoratorHandler<unknown, unknown, SemanticSymbol | null, unknown>>,
       // Pipe handler must be before injectable handler in list so pipe factories are printed
       // before injectable factories (so injectable factories can delegate to them)
