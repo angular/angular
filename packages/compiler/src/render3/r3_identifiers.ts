@@ -219,6 +219,15 @@ export class Identifiers {
 
   static templateCreate: o.ExternalReference = {name: 'ɵɵtemplate', moduleName: CORE};
 
+  static controlFlowStartCreate: o.ExternalReference = {
+    name: 'ɵɵcontrolFlowStart',
+    moduleName: CORE,
+  };
+  static controlFlowBlockCreate: o.ExternalReference = {
+    name: 'ɵɵcontrolFlowBlock',
+    moduleName: CORE,
+  };
+
   static defer: o.ExternalReference = {name: 'ɵɵdefer', moduleName: CORE};
   static deferWhen: o.ExternalReference = {name: 'ɵɵdeferWhen', moduleName: CORE};
   static deferOnIdle: o.ExternalReference = {name: 'ɵɵdeferOnIdle', moduleName: CORE};

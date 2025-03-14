@@ -138,6 +138,8 @@ export const angularCoreEnv: {[name: string]: unknown} = (() => ({
   'ɵɵclassProp': r3.ɵɵclassProp,
   'ɵɵadvance': r3.ɵɵadvance,
   'ɵɵtemplate': r3.ɵɵtemplate,
+  'ɵɵcontrolFlowStart': r3.ɵɵcontrolFlowStart,
+  'ɵɵcontrolFlowBlock': r3.ɵɵcontrolFlowBlock,
   'ɵɵconditional': r3.ɵɵconditional,
   'ɵɵdefer': r3.ɵɵdefer,
   'ɵɵdeferWhen': r3.ɵɵdeferWhen,

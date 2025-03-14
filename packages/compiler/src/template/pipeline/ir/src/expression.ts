@@ -1204,6 +1204,8 @@ export function transformExpressionsInOp(
     case OpKind.Container:
     case OpKind.ContainerEnd:
     case OpKind.ContainerStart:
+    case OpKind.ControlFlowStart:
+    case OpKind.ControlFlowBlock:
     case OpKind.DeferOn:
     case OpKind.DisableBindings:
     case OpKind.Element:

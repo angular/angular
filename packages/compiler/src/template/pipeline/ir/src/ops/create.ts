@@ -60,6 +60,8 @@ export type CreateOp =
   | ExtractedAttributeOp
   | DeferOp
   | DeferOnOp
+  | ControlFlowStartOp
+  | ControlFlowBlockOp
   | RepeaterCreateOp
   | I18nMessageOp
   | I18nOp
@@ -82,6 +84,8 @@ export type ElementOrContainerOps =
   | ContainerOp
   | ContainerStartOp
   | TemplateOp
+  | ControlFlowStartOp
+  | ControlFlowBlockOp
   | RepeaterCreateOp;
 
 /**
@@ -93,6 +97,8 @@ const elementContainerOpKinds = new Set([
   OpKind.Container,
   OpKind.ContainerStart,
   OpKind.Template,
+  OpKind.ControlFlowStart,
+  OpKind.ControlFlowBlock,
   OpKind.RepeaterCreate,
 ]);
 
@@ -166,7 +172,13 @@ export interface ElementOrContainerOpBase extends Op<CreateOp>, ConsumesSlotOpTr
 }
 
 export interface ElementOpBase extends ElementOrContainerOpBase {
-  kind: OpKind.Element | OpKind.ElementStart | OpKind.Template | OpKind.RepeaterCreate;
+  kind:
+    | OpKind.Element
+    | OpKind.ElementStart
+    | OpKind.Template
+    | OpKind.RepeaterCreate
+    | OpKind.ControlFlowStart
+    | OpKind.ControlFlowBlock;
 
   /**
    * The HTML tag name for this element.
@@ -277,6 +289,136 @@ export function createTemplateOp(
 ): TemplateOp {
   return {
     kind: OpKind.Template,
+    xref,
+    templateKind,
+    attributes: null,
+    tag,
+    handle: new SlotHandle(),
+    functionNameSuffix,
+    decls: null,
+    vars: null,
+    localRefs: [],
+    nonBindable: false,
+    namespace,
+    i18nPlaceholder,
+    startSourceSpan,
+    wholeSourceSpan,
+    ...TRAIT_CONSUMES_SLOT,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * Logical operation representing an embedded view declaration in the creation IR.
+ */
+export interface ControlFlowStartOp extends ElementOpBase {
+  kind: OpKind.ControlFlowStart;
+
+  templateKind: TemplateKind;
+
+  /**
+   * The number of declaration slots used by this template, or `null` if slots have not yet been
+   * assigned.
+   */
+  decls: number | null;
+
+  /**
+   * The number of binding variable slots used by this template, or `null` if binding variables have
+   * not yet been counted.
+   */
+  vars: number | null;
+
+  /**
+   * Suffix to add to the name of the generated template function.
+   */
+  functionNameSuffix: string;
+
+  /**
+   * The i18n placeholder data associated with this template.
+   */
+  i18nPlaceholder?: i18n.TagPlaceholder | i18n.BlockPlaceholder;
+}
+
+/**
+ * Create a `ControlFlowStartOp`.
+ */
+export function createControlFlowStartOp(
+  xref: XrefId,
+  templateKind: TemplateKind,
+  tag: string | null,
+  functionNameSuffix: string,
+  namespace: Namespace,
+  i18nPlaceholder: i18n.TagPlaceholder | i18n.BlockPlaceholder | undefined,
+  startSourceSpan: ParseSourceSpan,
+  wholeSourceSpan: ParseSourceSpan,
+): ControlFlowStartOp {
+  return {
+    kind: OpKind.ControlFlowStart,
+    xref,
+    templateKind,
+    attributes: null,
+    tag,
+    handle: new SlotHandle(),
+    functionNameSuffix,
+    decls: null,
+    vars: null,
+    localRefs: [],
+    nonBindable: false,
+    namespace,
+    i18nPlaceholder,
+    startSourceSpan,
+    wholeSourceSpan,
+    ...TRAIT_CONSUMES_SLOT,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * Logical operation representing an embedded view declaration in the creation IR.
+ */
+export interface ControlFlowBlockOp extends ElementOpBase {
+  kind: OpKind.ControlFlowBlock;
+
+  templateKind: TemplateKind;
+
+  /**
+   * The number of declaration slots used by this template, or `null` if slots have not yet been
+   * assigned.
+   */
+  decls: number | null;
+
+  /**
+   * The number of binding variable slots used by this template, or `null` if binding variables have
+   * not yet been counted.
+   */
+  vars: number | null;
+
+  /**
+   * Suffix to add to the name of the generated template function.
+   */
+  functionNameSuffix: string;
+
+  /**
+   * The i18n placeholder data associated with this template.
+   */
+  i18nPlaceholder?: i18n.TagPlaceholder | i18n.BlockPlaceholder;
+}
+
+/**
+ * Create a `ControlFlowBlockOp`.
+ */
+export function createControlFlowBlockOp(
+  xref: XrefId,
+  templateKind: TemplateKind,
+  tag: string | null,
+  functionNameSuffix: string,
+  namespace: Namespace,
+  i18nPlaceholder: i18n.TagPlaceholder | i18n.BlockPlaceholder | undefined,
+  startSourceSpan: ParseSourceSpan,
+  wholeSourceSpan: ParseSourceSpan,
+): ControlFlowBlockOp {
+  return {
+    kind: OpKind.ControlFlowBlock,
     xref,
     templateKind,
     attributes: null,

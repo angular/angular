@@ -199,6 +199,8 @@ export {
   ɵɵsyntheticHostProperty,
   ɵɵtemplate,
   ɵɵtemplateRefExtractor,
+  ɵɵcontrolFlowStart,
+  ɵɵcontrolFlowBlock,
   ɵɵdefer,
   ɵɵdeferWhen,
   ɵɵdeferOnIdle,

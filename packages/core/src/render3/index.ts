@@ -132,6 +132,8 @@ export {
   ɵɵsyntheticHostListener,
   ɵɵsyntheticHostProperty,
   ɵɵtemplate,
+  ɵɵcontrolFlowStart,
+  ɵɵcontrolFlowBlock,
   ɵɵconditional,
   ɵɵdefer,
   ɵɵdeferWhen,

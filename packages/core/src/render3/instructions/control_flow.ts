@@ -18,7 +18,7 @@ import {assertLContainer, assertLView, assertTNode} from '../assert';
 import {bindingUpdated} from '../bindings';
 import {CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {ComponentTemplate} from '../interfaces/definition';
-import {TNode} from '../interfaces/node';
+import {LocalRefExtractor, TAttributes, TNode, TNodeFlags} from '../interfaces/node';
 import {
   CONTEXT,
   DECLARATION_COMPONENT_VIEW,
@@ -108,6 +108,105 @@ export function ɵɵconditional<T>(matchingTemplateIndex: number, contextValue?:
       lView[CONTEXT] = contextValue;
     }
   }
+}
+
+/**
+ * Creates an LContainer for the templates at the start of control flow (dynamically-inserted view), e.g.
+ *
+ * <ng-template #foo>
+ *    <div></div>
+ * </ng-template>
+ *
+ * @param index The index of the container in the data array
+ * @param templateFn Inline template
+ * @param decls The number of nodes, local refs, and pipes for this template
+ * @param vars The number of bindings for this template
+ * @param tagName The name of the container element, if applicable
+ * @param attrsIndex Index of template attributes in the `consts` array.
+ * @param localRefs Index of the local references in the `consts` array.
+ * @param localRefExtractor A function which extracts local-refs values from the template.
+ *        Defaults to the current element associated with the local-ref.
+ *
+ * @codeGenApi
+ */
+export function ɵɵcontrolFlowStart(
+  index: number,
+  templateFn: ComponentTemplate<any> | null,
+  decls: number,
+  vars: number,
+  tagName?: string | null,
+  attrsIndex?: number | null,
+  localRefsIndex?: number | null,
+  localRefExtractor?: LocalRefExtractor,
+): typeof ɵɵcontrolFlowStart {
+  const lView = getLView();
+  const tView = getTView();
+  const attrs = getConstant<TAttributes>(tView.consts, attrsIndex);
+  const tNode = declareTemplate(
+    lView,
+    tView,
+    index,
+    templateFn,
+    decls,
+    vars,
+    tagName,
+    attrs,
+    localRefsIndex,
+    localRefExtractor,
+  );
+  tNode.flags |= TNodeFlags.isControlFlowStart;
+  tNode.flags |= TNodeFlags.isInControlFlow;
+
+  return ɵɵcontrolFlowStart;
+}
+
+/**
+ * Creates an LContainer for the templates inside control flow (dynamically-inserted view), e.g.
+ *
+ * <ng-template #foo>
+ *    <div></div>
+ * </ng-template>
+ *
+ * @param index The index of the container in the data array
+ * @param templateFn Inline template
+ * @param decls The number of nodes, local refs, and pipes for this template
+ * @param vars The number of bindings for this template
+ * @param tagName The name of the container element, if applicable
+ * @param attrsIndex Index of template attributes in the `consts` array.
+ * @param localRefs Index of the local references in the `consts` array.
+ * @param localRefExtractor A function which extracts local-refs values from the template.
+ *        Defaults to the current element associated with the local-ref.
+ *
+ * @codeGenApi
+ */
+export function ɵɵcontrolFlowBlock(
+  index: number,
+  templateFn: ComponentTemplate<any> | null,
+  decls: number,
+  vars: number,
+  tagName?: string | null,
+  attrsIndex?: number | null,
+  localRefsIndex?: number | null,
+  localRefExtractor?: LocalRefExtractor,
+): typeof ɵɵcontrolFlowBlock {
+  const lView = getLView();
+  const tView = getTView();
+  const attrs = getConstant<TAttributes>(tView.consts, attrsIndex);
+  const tNode = declareTemplate(
+    lView,
+    tView,
+    index,
+    templateFn,
+    decls,
+    vars,
+    tagName,
+    attrs,
+    localRefsIndex,
+    localRefExtractor,
+  );
+  tNode.flags |= TNodeFlags.isInControlFlow;
+
+  return ɵɵcontrolFlowBlock;
 }
 
 export class RepeaterContext<T> {

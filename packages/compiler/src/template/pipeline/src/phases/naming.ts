@@ -133,7 +133,7 @@ function addNamesToView(
           );
         }
         break;
-      case ir.OpKind.Template:
+      case (ir.OpKind.Template, ir.OpKind.ControlFlowStart, ir.OpKind.ControlFlowBlock):
         if (!(unit instanceof ViewCompilationUnit)) {
           throw new Error(`AssertionError: must be compiling a component`);
         }

@@ -44,6 +44,16 @@ export enum OpKind {
   Template,
 
   /**
+   * An operation which declares the start of a control flow block.
+   */
+  ControlFlowStart,
+
+  /**
+   * An operation which declares it is a block in a control flow.
+   */
+  ControlFlowBlock,
+
+  /**
    * An operation to end rendering of an element previously started with `ElementStart`.
    */
   ElementEnd,

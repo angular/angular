@@ -41,12 +41,15 @@ function resolvePlaceholdersForView(
   unit: ViewCompilationUnit,
   i18nContexts: Map<ir.XrefId, ir.I18nContextOp>,
   elements: Map<ir.XrefId, ir.ElementStartOp>,
-  pendingStructuralDirective?: ir.TemplateOp,
+  pendingStructuralDirective?: ir.TemplateOp | ir.ControlFlowStartOp | ir.ControlFlowBlockOp,
 ) {
   // Track the current i18n op and corresponding i18n context op as we step through the creation
   // IR.
   let currentOps: {i18nBlock: ir.I18nStartOp; i18nContext: ir.I18nContextOp} | null = null;
-  let pendingStructuralDirectiveCloses = new Map<ir.XrefId, ir.TemplateOp>();
+  let pendingStructuralDirectiveCloses = new Map<
+    ir.XrefId,
+    ir.TemplateOp | ir.ControlFlowStartOp | ir.ControlFlowBlockOp
+  >();
   for (const op of unit.create) {
     switch (op.kind) {
       case ir.OpKind.I18nStart:
@@ -123,7 +126,7 @@ function resolvePlaceholdersForView(
           pendingStructuralDirective = undefined;
         }
         break;
-      case ir.OpKind.Template:
+      case (ir.OpKind.Template, ir.OpKind.ControlFlowStart, ir.OpKind.ControlFlowBlock):
         const view = job.views.get(op.xref)!;
         if (op.i18nPlaceholder === undefined) {
           // If there is no i18n placeholder, just recurse into the view in case it contains i18n
@@ -251,7 +254,7 @@ function recordElementStart(
   op: ir.ElementStartOp | ir.ProjectionOp,
   i18nContext: ir.I18nContextOp,
   i18nBlock: ir.I18nStartOp,
-  structuralDirective?: ir.TemplateOp,
+  structuralDirective?: ir.TemplateOp | ir.ControlFlowStartOp | ir.ControlFlowBlockOp,
 ) {
   const {startName, closeName} = op.i18nPlaceholder!;
   let flags = ir.I18nParamValueFlags.ElementTag | ir.I18nParamValueFlags.OpenTag;
@@ -276,7 +279,7 @@ function recordElementClose(
   op: ir.ElementStartOp | ir.ProjectionOp,
   i18nContext: ir.I18nContextOp,
   i18nBlock: ir.I18nStartOp,
-  structuralDirective?: ir.TemplateOp,
+  structuralDirective?: ir.TemplateOp | ir.ControlFlowStartOp | ir.ControlFlowBlockOp,
 ) {
   const {closeName} = op.i18nPlaceholder!;
   // Self-closing tags don't have a closing tag placeholder, instead the element closing is
@@ -303,7 +306,7 @@ function recordTemplateStart(
   i18nPlaceholder: i18n.TagPlaceholder | i18n.BlockPlaceholder,
   i18nContext: ir.I18nContextOp,
   i18nBlock: ir.I18nStartOp,
-  structuralDirective?: ir.TemplateOp,
+  structuralDirective?: ir.TemplateOp | ir.ControlFlowStartOp | ir.ControlFlowBlockOp,
 ) {
   let {startName, closeName} = i18nPlaceholder;
   let flags = ir.I18nParamValueFlags.TemplateTag | ir.I18nParamValueFlags.OpenTag;
@@ -345,7 +348,7 @@ function recordTemplateClose(
   i18nPlaceholder: i18n.TagPlaceholder | i18n.BlockPlaceholder,
   i18nContext: ir.I18nContextOp,
   i18nBlock: ir.I18nStartOp,
-  structuralDirective?: ir.TemplateOp,
+  structuralDirective?: ir.TemplateOp | ir.ControlFlowStartOp | ir.ControlFlowBlockOp,
 ) {
   const {closeName} = i18nPlaceholder;
   const flags = ir.I18nParamValueFlags.TemplateTag | ir.I18nParamValueFlags.CloseTag;

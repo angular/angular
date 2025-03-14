@@ -41,7 +41,7 @@ function propagateI18nBlocksToTemplates(
         }
         i18nBlock = null;
         break;
-      case ir.OpKind.Template:
+      case (ir.OpKind.Template, ir.OpKind.ControlFlowStart, ir.OpKind.ControlFlowBlock):
         subTemplateIndex = propagateI18nBlocksForView(
           unit.job.views.get(op.xref)!,
           i18nBlock,

@@ -141,6 +141,62 @@ export function template(
   return call(Identifiers.templateCreate, args, sourceSpan);
 }
 
+export function controlFlowStart(
+  slot: number,
+  templateFnRef: o.Expression,
+  decls: number,
+  vars: number,
+  tag: string | null,
+  constIndex: number | null,
+  localRefs: number | null,
+  sourceSpan: ParseSourceSpan,
+): ir.CreateOp {
+  const args = [
+    o.literal(slot),
+    templateFnRef,
+    o.literal(decls),
+    o.literal(vars),
+    o.literal(tag),
+    o.literal(constIndex),
+  ];
+  if (localRefs !== null) {
+    args.push(o.literal(localRefs));
+    args.push(o.importExpr(Identifiers.templateRefExtractor));
+  }
+  while (args[args.length - 1].isEquivalent(o.NULL_EXPR)) {
+    args.pop();
+  }
+  return call(Identifiers.controlFlowStartCreate, args, sourceSpan);
+}
+
+export function controlFlowBlock(
+  slot: number,
+  templateFnRef: o.Expression,
+  decls: number,
+  vars: number,
+  tag: string | null,
+  constIndex: number | null,
+  localRefs: number | null,
+  sourceSpan: ParseSourceSpan,
+): ir.CreateOp {
+  const args = [
+    o.literal(slot),
+    templateFnRef,
+    o.literal(decls),
+    o.literal(vars),
+    o.literal(tag),
+    o.literal(constIndex),
+  ];
+  if (localRefs !== null) {
+    args.push(o.literal(localRefs));
+    args.push(o.importExpr(Identifiers.templateRefExtractor));
+  }
+  while (args[args.length - 1].isEquivalent(o.NULL_EXPR)) {
+    args.pop();
+  }
+  return call(Identifiers.controlFlowBlockCreate, args, sourceSpan);
+}
+
 export function disableBindings(): ir.CreateOp {
   return call(Identifiers.disableBindings, [], null);
 }

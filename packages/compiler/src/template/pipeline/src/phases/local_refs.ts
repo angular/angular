@@ -20,7 +20,7 @@ export function liftLocalRefs(job: ComponentCompilationJob): void {
     for (const op of unit.create) {
       switch (op.kind) {
         case ir.OpKind.ElementStart:
-        case ir.OpKind.Template:
+        case (ir.OpKind.Template, ir.OpKind.ControlFlowStart, ir.OpKind.ControlFlowBlock):
           if (!Array.isArray(op.localRefs)) {
             throw new Error(`AssertionError: expected localRefs to be an array still`);
           }

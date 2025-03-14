@@ -175,6 +175,54 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
           ),
         );
         break;
+      case ir.OpKind.ControlFlowStart:
+        if (!(unit instanceof ViewCompilationUnit)) {
+          throw new Error(`AssertionError: must be compiling a component`);
+        }
+        if (Array.isArray(op.localRefs)) {
+          throw new Error(
+            `AssertionError: local refs array should have been extracted into a constant`,
+          );
+        }
+        const controlFlowStartChildView = unit.job.views.get(op.xref)!;
+        ir.OpList.replace(
+          op,
+          ng.controlFlowStart(
+            op.handle.slot!,
+            o.variable(controlFlowStartChildView.fnName!),
+            controlFlowStartChildView.decls!,
+            controlFlowStartChildView.vars!,
+            op.tag,
+            op.attributes,
+            op.localRefs,
+            op.startSourceSpan,
+          ),
+        );
+        break;
+      case ir.OpKind.ControlFlowBlock:
+        if (!(unit instanceof ViewCompilationUnit)) {
+          throw new Error(`AssertionError: must be compiling a component`);
+        }
+        if (Array.isArray(op.localRefs)) {
+          throw new Error(
+            `AssertionError: local refs array should have been extracted into a constant`,
+          );
+        }
+        const controlFlowBlockChildView = unit.job.views.get(op.xref)!;
+        ir.OpList.replace(
+          op,
+          ng.controlFlowBlock(
+            op.handle.slot!,
+            o.variable(controlFlowBlockChildView.fnName!),
+            controlFlowBlockChildView.decls!,
+            controlFlowBlockChildView.vars!,
+            op.tag,
+            op.attributes,
+            op.localRefs,
+            op.startSourceSpan,
+          ),
+        );
+        break;
       case ir.OpKind.DisableBindings:
         ir.OpList.replace(op, ng.disableBindings());
         break;

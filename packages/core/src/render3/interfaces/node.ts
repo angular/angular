@@ -160,6 +160,16 @@ export const enum TNodeFlags {
    * Bit #8 - This bit is set if the node is a located inside skip hydration block.
    */
   inSkipHydrationBlock = 0x80,
+
+  /**
+   * Bit #9 - This bit is set if the node is a start of a set of control flow blocks.
+   */
+  isControlFlowStart = 0x100,
+
+  /**
+   * Bit #10 - This bit is set if the node is within a set of control flow blocks.
+   */
+  isInControlFlow = 0x200,
 }
 
 /**
