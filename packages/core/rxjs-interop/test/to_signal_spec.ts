@@ -11,6 +11,7 @@ import {
   Component,
   computed,
   EnvironmentInjector,
+  ErrorHandler,
   Injector,
   runInInjectionContext,
   Signal,
@@ -152,25 +153,33 @@ describe('toSignal()', () => {
     );
   });
 
-  it('should throw the error back to RxJS if rejectErrors is set', () => {
-    let capturedObserver: Observer<number> = null!;
-    const fake$ = {
-      subscribe(observer: Observer<number>): Unsubscribable {
-        capturedObserver = observer;
-        return {unsubscribe(): void {}};
-      },
-    } as Subscribable<number>;
+  it('should report errors to ErrorHandler if rejectErrors is set and retain old value', () => {
+    let observedError: unknown | null = null;
+    const fake$ = new Subject<number>();
+    TestBed.configureTestingModule({
+      rethrowApplicationErrors: false,
+      providers: [
+        {
+          provide: ErrorHandler,
+          useClass: class {
+            handleError(e: unknown) {
+              observedError = e;
+            }
+          },
+        },
+      ],
+    });
 
-    const s = toSignal(fake$, {initialValue: 0, rejectErrors: true, manualCleanup: true});
+    const s = TestBed.runInInjectionContext(() =>
+      toSignal(fake$, {initialValue: 0, rejectErrors: true}),
+    );
     expect(s()).toBe(0);
-    if (capturedObserver === null) {
-      return fail('Observer not captured as expected.');
-    }
 
-    capturedObserver.next(1);
+    fake$.next(1);
     expect(s()).toBe(1);
 
-    expect(() => capturedObserver.error('test')).toThrow('test');
+    fake$.error('test');
+    expect(observedError).toBe('test');
     expect(s()).toBe(1);
   });
 
