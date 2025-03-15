@@ -1596,7 +1596,7 @@ export function resolveForwardRef<T>(type: T): T;
 
 // @public
 export interface Resource<T> {
-    readonly error: Signal<unknown>;
+    readonly error: Signal<Error | undefined>;
     hasValue(): this is Resource<Exclude<T, undefined>>;
     readonly isLoading: Signal<boolean>;
     reload(): boolean;
@@ -1855,6 +1855,13 @@ export interface TypeDecorator {
 
 // @public
 export interface TypeProvider extends Type<any> {
+}
+
+// @public (undocumented)
+export class UnknownError<T extends unknown> extends Error {
+    constructor(value: T);
+    // (undocumented)
+    readonly value: T;
 }
 
 // @public
