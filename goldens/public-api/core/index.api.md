@@ -1599,7 +1599,6 @@ export interface Resource<T> {
     readonly error: Signal<unknown>;
     hasValue(): this is Resource<Exclude<T, undefined>>;
     readonly isLoading: Signal<boolean>;
-    reload(): boolean;
     readonly status: Signal<ResourceStatus>;
     readonly value: Signal<T>;
 }
@@ -2015,6 +2014,7 @@ export interface WritableResource<T> extends Resource<T> {
     asReadonly(): Resource<T>;
     // (undocumented)
     hasValue(): this is WritableResource<Exclude<T, undefined>>;
+    reload(): boolean;
     set(value: T): void;
     update(updater: (value: T) => T): void;
     // (undocumented)
