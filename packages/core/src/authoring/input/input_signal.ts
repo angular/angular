@@ -127,10 +127,12 @@ export function createInputSignal<T, TransformT>(
     producerAccessed(node);
 
     if (node.value === REQUIRED_UNSET_VALUE) {
-      throw new RuntimeError(
-        RuntimeErrorCode.REQUIRED_INPUT_NO_VALUE,
-        ngDevMode && 'Input is required but no value is available yet.',
-      );
+      let message: string | null = null;
+      if (ngDevMode) {
+        const name = options?.debugName ?? options?.alias;
+        message = `Input${name ? ` "${name}"` : ''} is required but no value is available yet.`;
+      }
+      throw new RuntimeError(RuntimeErrorCode.REQUIRED_INPUT_NO_VALUE, message);
     }
 
     return node.value;
