@@ -13,7 +13,7 @@ import {
   ɵAnimationGroupPlayer,
   ɵPRE_STYLE as PRE_STYLE,
   ɵStyleDataMap,
-} from '@angular/animations';
+} from '../../../src/animations';
 
 import {AnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer';
 import {animationFailed} from '../error_helpers';

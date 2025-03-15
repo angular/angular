@@ -10,7 +10,7 @@ import {
   AnimationMetadataType,
   AnimationOptions,
   ɵStyleDataMap,
-} from '@angular/animations';
+} from '../../../src/animations';
 
 const EMPTY_ANIMATION_OPTIONS: AnimationOptions = {};
 
