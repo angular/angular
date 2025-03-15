@@ -7,9 +7,10 @@
  */
 
 /**
- * @fileoverview An enum to control who can call certain jsaction APIs.
+ * @fileoverview This exposes constants to those who can control access to certain jsaction APIs.
+ * We're not using enum `Restriction` because it produces more code overhead;
+ * thus, using plain `const` eliminates extra bytes. We can't use `const enum` due
+ * to single-file compilation restrictions.
  */
 
-export enum Restriction {
-  I_AM_THE_JSACTION_FRAMEWORK,
-}
+export const RESTRICTION_I_AM_THE_JSACTION_FRAMEWORK = 0;
