@@ -237,8 +237,8 @@ export function createCustomElement<P>(
   }
 
   // Add getters and setters to the prototype for each property input.
-  inputs.forEach(({propName, transform}) => {
-    Object.defineProperty(NgElementImpl.prototype, propName, {
+  inputs.forEach(({propName, templateName, transform}) => {
+    Object.defineProperty(NgElementImpl.prototype, templateName, {
       get(): any {
         return this.ngElementStrategy.getInputValue(propName);
       },
