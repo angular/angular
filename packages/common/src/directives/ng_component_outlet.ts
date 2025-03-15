@@ -11,6 +11,7 @@ import {
   createNgModule,
   Directive,
   DoCheck,
+  EnvironmentInjector,
   Injector,
   Input,
   NgModuleFactory,
@@ -40,6 +41,9 @@ import {
  *
  * * `ngComponentOutletInjector`: Optional custom {@link Injector} that will be used as parent for
  * the Component. Defaults to the injector of the current view container.
+ *
+ * * `ngComponentOutletEnvironmentInjector`: Optional custom {@link EnvironmentInjector} which will
+ * provide the component's environment.
  *
  * * `ngComponentOutletContent`: Optional list of projectable nodes to insert into the content
  * section of the component, if it exists.
@@ -103,6 +107,7 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
 
   @Input() ngComponentOutletInputs?: Record<string, unknown>;
   @Input() ngComponentOutletInjector?: Injector;
+  @Input() ngComponentOutletEnvironmentInjector?: EnvironmentInjector;
   @Input() ngComponentOutletContent?: any[][];
 
   @Input() ngComponentOutletNgModule?: Type<any>;
@@ -149,6 +154,7 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
       changes['ngComponentOutlet'] !== undefined ||
       changes['ngComponentOutletContent'] !== undefined ||
       changes['ngComponentOutletInjector'] !== undefined ||
+      changes['ngComponentOutletEnvironmentInjector'] !== undefined ||
       this._needToReCreateNgModuleInstance(changes)
     );
   }
@@ -184,6 +190,7 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
           injector,
           ngModuleRef: this._moduleRef,
           projectableNodes: this.ngComponentOutletContent,
+          environmentInjector: this.ngComponentOutletEnvironmentInjector,
         });
       }
     }
