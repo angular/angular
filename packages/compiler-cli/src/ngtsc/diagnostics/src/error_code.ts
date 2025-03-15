@@ -519,6 +519,11 @@ export enum ErrorCode {
   UNUSED_STANDALONE_IMPORTS = 8113,
 
   /**
+   * An expression mixes nullish coalescing and logical and/or without parentheses.
+   */
+  UNPARENTHESIZED_NULLISH_COALESCING = 8114,
+
+  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */
