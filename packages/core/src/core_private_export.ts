@@ -22,6 +22,7 @@ export {
   type NavigationDestination as ɵNavigationDestination,
 } from '../primitives/dom-navigation';
 export {setAlternateWeakRefImpl as ɵsetAlternateWeakRefImpl} from '../primitives/signals';
+export {runTickInZoneAndPreventDuplicate as ɵrunTickInZoneAndPreventDuplicate} from './zone/ng_zone';
 export {detectChangesInViewIfRequired as ɵdetectChangesInViewIfRequired} from './application/application_ref';
 export {INTERNAL_APPLICATION_ERROR_HANDLER as ɵINTERNAL_APPLICATION_ERROR_HANDLER} from './error_handler';
 export {
