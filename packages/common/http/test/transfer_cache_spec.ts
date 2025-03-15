@@ -103,7 +103,9 @@ describe('TransferCache', () => {
 
         @Injectable()
         class ApplicationRefPatched extends ApplicationRef {
-          override isStable = new BehaviorSubject<boolean>(false);
+          override get isStable() {
+            return isStable;
+          }
         }
 
         TestBed.configureTestingModule({
@@ -120,7 +122,6 @@ describe('TransferCache', () => {
 
         const appRef = TestBed.inject(ApplicationRef);
         appRef.bootstrap(SomeComponent);
-        isStable = appRef.isStable as BehaviorSubject<boolean>;
       }),
     );
 
@@ -346,7 +347,9 @@ describe('TransferCache', () => {
 
           @Injectable()
           class ApplicationRefPatched extends ApplicationRef {
-            override isStable = new BehaviorSubject<boolean>(false);
+            override get isStable() {
+              return new BehaviorSubject<boolean>(false);
+            }
           }
 
           TestBed.configureTestingModule({
@@ -381,7 +384,9 @@ describe('TransferCache', () => {
 
           @Injectable()
           class ApplicationRefPatched extends ApplicationRef {
-            override isStable = new BehaviorSubject<boolean>(false);
+            override get isStable() {
+              return new BehaviorSubject<boolean>(false);
+            }
           }
 
           TestBed.configureTestingModule({
@@ -479,7 +484,9 @@ describe('TransferCache', () => {
 
           @Injectable()
           class ApplicationRefPatched extends ApplicationRef {
-            override isStable = new BehaviorSubject<boolean>(false);
+            override get isStable() {
+              return new BehaviorSubject<boolean>(false);
+            }
           }
 
           TestBed.configureTestingModule({
@@ -527,7 +534,9 @@ describe('TransferCache', () => {
 
             @Injectable()
             class ApplicationRefPatched extends ApplicationRef {
-              override isStable = new BehaviorSubject<boolean>(false);
+              override get isStable() {
+                return new BehaviorSubject<boolean>(false);
+              }
             }
 
             TestBed.configureTestingModule({
@@ -577,7 +586,9 @@ describe('TransferCache', () => {
 
             @Injectable()
             class ApplicationRefPatched extends ApplicationRef {
-              override isStable = new BehaviorSubject<boolean>(false);
+              override get isStable() {
+                return new BehaviorSubject<boolean>(false);
+              }
             }
 
             TestBed.configureTestingModule({
