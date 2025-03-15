@@ -13,11 +13,13 @@ import {stringify} from '../util/stringify';
 import {NG_COMP_DEF, NG_DIR_DEF, NG_MOD_DEF, NG_PIPE_DEF} from './fields';
 import type {ComponentDef, DirectiveDef, PipeDef} from './interfaces/definition';
 
-export function getNgModuleDef<T>(type: any, throwIfNotFound: true): NgModuleDef<T>;
-export function getNgModuleDef<T>(type: any): NgModuleDef<T> | null;
-export function getNgModuleDef<T>(type: any, throwIfNotFound?: boolean): NgModuleDef<T> | null {
-  const ngModuleDef = type[NG_MOD_DEF] || null;
-  if (!ngModuleDef && throwIfNotFound) {
+export function getNgModuleDef<T>(type: any): NgModuleDef<T> | null {
+  return type[NG_MOD_DEF] || null;
+}
+
+export function getNgModuleDefOrThrow<T>(type: any): NgModuleDef<T> | never {
+  const ngModuleDef = getNgModuleDef<T>(type);
+  if (!ngModuleDef) {
     throw new RuntimeError(
       RuntimeErrorCode.MISSING_NG_MODULE_DEFINITION,
       (typeof ngDevMode === 'undefined' || ngDevMode) &&
