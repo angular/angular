@@ -14,7 +14,6 @@
     .search-icon {
       display: flex;
       align-items: center;
-      padding-right: 5px;
       margin-left: 8px;
       margin-top: 8px;
 
@@ -25,10 +24,8 @@
 
     .filter-input {
       border: none;
-      border-left: 1px solid rgba(0, 0, 0, 0.12);
-      padding-left: 5px;
       width: 100%;
-      font-size: 11px;
+      font-size: 12px;
       font-family: inherit;
       font-weight: inherit;
       height: 30px;
@@ -67,6 +64,8 @@
 
 @include theme.dark-theme {
   .filter {
+    border-bottom-color: #3f3f3f;
+
     label {
       .filter-input {
         background-color: #202124;
