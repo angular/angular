@@ -85,6 +85,34 @@ describe('input signal', () => {
     });
   });
 
+  it('should include debugName in required inputs error message, if available', () => {
+    TestBed.runInInjectionContext(() => {
+      const signal = input.required({debugName: 'mySignal'});
+      const node = signal[SIGNAL];
+
+      expect(() => signal()).toThrowError(
+        /Input "mySignal" is required but no value is available yet\./,
+      );
+
+      node.applyValueToInputSignal(node, 1);
+      expect(signal()).toBe(1);
+    });
+  });
+
+  it('should include alias in required inputs error message, if available', () => {
+    TestBed.runInInjectionContext(() => {
+      const signal = input.required({alias: 'alias'});
+      const node = signal[SIGNAL];
+
+      expect(() => signal()).toThrowError(
+        /Input "alias" is required but no value is available yet\./,
+      );
+
+      node.applyValueToInputSignal(node, 1);
+      expect(signal()).toBe(1);
+    });
+  });
+
   it('should throw if a `computed` depends on an uninitialized required input', () => {
     TestBed.runInInjectionContext(() => {
       const signal = input.required<number>();
