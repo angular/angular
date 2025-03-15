@@ -14,7 +14,7 @@ import {
   Signal,
   signal,
   BaseResourceOptions,
-} from '@angular/core';
+} from '../../src/core';
 import {Observable, Subscription} from 'rxjs';
 
 /**

@@ -14,9 +14,9 @@ import {
   Injector,
   runInInjectionContext,
   Signal,
-} from '@angular/core';
-import {toSignal} from '@angular/core/rxjs-interop';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {toSignal} from '../src';
+import {TestBed} from '../../testing';
 import {
   BehaviorSubject,
   Observable,

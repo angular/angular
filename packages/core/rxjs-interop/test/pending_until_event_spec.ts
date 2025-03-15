@@ -10,7 +10,7 @@ import {
   EnvironmentInjector,
   ɵPendingTasksInternal as PendingTasks,
   ApplicationRef,
-} from '@angular/core';
+} from '../../src/core';
 import {
   BehaviorSubject,
   EMPTY,
@@ -24,8 +24,8 @@ import {
   of,
 } from 'rxjs';
 
-import {pendingUntilEvent} from '@angular/core/rxjs-interop';
-import {TestBed} from '@angular/core/testing';
+import {pendingUntilEvent} from '../src';
+import {TestBed} from '../../testing';
 
 describe('pendingUntilEvent', () => {
   let taskService: PendingTasks;

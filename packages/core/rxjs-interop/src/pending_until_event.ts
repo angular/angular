@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {assertInInjectionContext, PendingTasks, inject, Injector} from '@angular/core';
+import {assertInInjectionContext, PendingTasks, inject, Injector} from '../../src/core';
 import {MonoTypeOperatorFunction, Observable} from 'rxjs';
 
 /**
