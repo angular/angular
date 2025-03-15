@@ -147,6 +147,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     REQUIRED_QUERY_NO_VALUE = -951,
     // (undocumented)
+    RESOURCE_VALUE_READ_AFTER_ERROR = 603,
+    // (undocumented)
     RUNTIME_DEPS_INVALID_IMPORTED_TYPE = 980,
     // (undocumented)
     RUNTIME_DEPS_ORPHAN_COMPONENT = 981,
