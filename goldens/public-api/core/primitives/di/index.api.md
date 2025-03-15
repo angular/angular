@@ -31,6 +31,8 @@ export type NotFound = typeof NOT_FOUND | NotFoundError;
 // @public
 export class NotFoundError extends Error {
     constructor(message: string);
+    // (undocumented)
+    readonly name: string;
 }
 
 // @public (undocumented)

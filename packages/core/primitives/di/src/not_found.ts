@@ -17,6 +17,7 @@ export const NOT_FOUND: unique symbol = Symbol('NotFound');
  * hierarchy. Context can be attached below.
  */
 export class NotFoundError extends Error {
+  override readonly name: string = 'ɵNotFound';
   constructor(message: string) {
     super(message);
   }
@@ -26,7 +27,7 @@ export class NotFoundError extends Error {
  * Type guard for checking if an unknown value is a NotFound.
  */
 export function isNotFound(e: unknown): e is NotFound {
-  return e === NOT_FOUND || e instanceof NotFoundError;
+  return e === NOT_FOUND || (e as NotFoundError).name === 'ɵNotFound';
 }
 
 /**
