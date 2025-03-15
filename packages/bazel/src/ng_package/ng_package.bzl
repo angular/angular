@@ -369,7 +369,6 @@ def _ng_package_impl(ctx):
             guessed_paths = True
 
         bundle_name_base = primary_bundle_name if is_primary_entry_point else entry_point
-        dts_bundle_name_base = "index" if is_primary_entry_point else "%s/index" % entry_point
 
         # Store the collected entry point in a list of all entry-points. This
         # can be later passed to the packager as a manifest.
@@ -377,8 +376,7 @@ def _ng_package_impl(ctx):
             module_name = module_name,
             es2022_entry_point = es2022_entry_point,
             fesm2022_file = "fesm2022/%s.mjs" % bundle_name_base,
-            # TODO(devversion): Put all types under `/types/` folder. Breaking change in v20.
-            dts_bundle_relative_path = "%s.d.ts" % dts_bundle_name_base,
+            dts_bundle_relative_path = "types/%s.d.ts" % bundle_name_base,
             typings_entry_point = typings_entry_point,
             guessed_paths = guessed_paths,
         ))

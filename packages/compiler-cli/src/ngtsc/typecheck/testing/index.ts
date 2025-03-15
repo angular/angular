@@ -159,11 +159,11 @@ export function angularCoreDtsFiles(): TestFile[] {
   return [
     {
       name: absoluteFrom('/node_modules/@angular/core/index.d.ts'),
-      contents: readFileSync(path.join(directory, 'index.d.ts'), 'utf8'),
+      contents: readFileSync(path.join(directory, 'types/core.d.ts'), 'utf8'),
     },
     {
       name: absoluteFrom('/node_modules/@angular/core/primitives/signals/index.d.ts'),
-      contents: readFileSync(path.join(directory, 'primitives/signals/index.d.ts'), 'utf8'),
+      contents: readFileSync(path.join(directory, 'types/primitives/signals.d.ts'), 'utf8'),
     },
   ];
 }
