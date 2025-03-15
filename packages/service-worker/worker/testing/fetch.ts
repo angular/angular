@@ -122,7 +122,10 @@ export class MockRequest extends MockBody implements Request {
 
   url: string;
 
-  constructor(input: string | Request, init: RequestInit = {}) {
+  constructor(
+    input: string | Request,
+    init: RequestInit & {destination?: RequestDestination} = {},
+  ) {
     super((init.body as string | null) ?? null);
     if (typeof input !== 'string') {
       throw 'Not implemented';
@@ -149,6 +152,9 @@ export class MockRequest extends MockBody implements Request {
     }
     if (init.method !== undefined) {
       this.method = init.method;
+    }
+    if (init.destination !== undefined) {
+      this.destination = init.destination;
     }
   }
 
