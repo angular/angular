@@ -158,7 +158,6 @@ export function listener(
 ): ir.CreateOp {
   const args = [o.literal(name), handlerFn];
   if (eventTargetResolver !== null) {
-    args.push(o.literal(false)); // `useCapture` flag, defaults to `false`
     args.push(o.importExpr(eventTargetResolver));
   }
   return call(
