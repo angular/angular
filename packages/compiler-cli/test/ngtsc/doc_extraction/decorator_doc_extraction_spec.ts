@@ -98,16 +98,20 @@ runInEachFileSystem(() => {
       env.write(
         'index.ts',
         `
-        interface Query {
-          /** The read. */
-          read: string;
-        }
+        abstract class Query {};
 
         export type ViewChild = Query;
 
         export interface ViewChildDecorator {
           /** The description. */
-          (alias: string): any;
+          (
+            selector: string,
+            opts?: {read?: any; emitDistinctChangesOnly?: boolean},
+          ): any;
+          new (
+            selector: string,
+            opts?: {read?: any; emitDistinctChangesOnly?: boolean},
+          ): ViewChild;
         }
 
         function makePropDecorator(): ViewChildDecorator { return () => {}); }
@@ -126,9 +130,8 @@ runInEachFileSystem(() => {
       expect(decoratorEntry.decoratorType).toBe(DecoratorType.Member);
 
       expect(decoratorEntry.members.length).toBe(1);
-      expect(decoratorEntry.members[0].name).toBe('read');
-      expect(decoratorEntry.members[0].type).toBe('string');
-      expect(decoratorEntry.members[0].description).toBe('The read.');
+      expect(decoratorEntry.members[0].name).toBe('');
+      expect(decoratorEntry.members[0].description).toBe('The description.');
     });
 
     it('should extract param decorators', () => {
