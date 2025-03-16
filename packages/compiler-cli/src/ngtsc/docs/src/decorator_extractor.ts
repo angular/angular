@@ -9,7 +9,7 @@
 import ts from 'typescript';
 
 import {extractInterface} from './class_extractor';
-import {DecoratorEntry, DecoratorType, EntryType, PropertyEntry} from './entities';
+import {DecoratorEntry, DecoratorType, EntryType, PropertyEntry, FunctionEntry} from './entities';
 import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from './jsdoc_extractor';
 
 /** Extracts an API documentation entry for an Angular decorator. */
@@ -86,11 +86,24 @@ function getDecoratorOptions(
   }
 
   let optionsInterface: ts.InterfaceDeclaration;
+
+  let isAliasDeclaration = false;
   if (ts.isTypeAliasDeclaration(optionsDeclaration)) {
+    isAliasDeclaration = true;
+    const decoratorImplStatement = declaration
+      .getSourceFile()
+      .statements.find((node): node is ts.VariableStatement => {
+        return (
+          ts.isVariableStatement(node) &&
+          node.declarationList.declarations.at(0)!.name.getText() === name
+        );
+      });
+    const decoratorImplDeclaration = decoratorImplStatement!.declarationList.declarations.at(0)!;
+
     // We hard-code the assumption that if the decorator's option type is a type alias,
     // it resolves to a single interface (this is true for all query decorators at time of
     // this writing).
-    const aliasedType = typeChecker.getTypeAtLocation(optionsDeclaration.type);
+    const aliasedType = typeChecker.getTypeAtLocation(decoratorImplDeclaration.type!);
     optionsInterface = (aliasedType.getSymbol()?.getDeclarations() ?? []).find((d) =>
       ts.isInterfaceDeclaration(d),
     ) as ts.InterfaceDeclaration;
@@ -104,7 +117,15 @@ function getDecoratorOptions(
 
   // Take advantage of the interface extractor to pull the appropriate member info.
   // Hard code the knowledge that decorator options only have properties, never methods.
-  return extractInterface(optionsInterface, typeChecker).members as PropertyEntry[];
+  const interfaceEntries = extractInterface(optionsInterface, typeChecker)
+    .members as PropertyEntry[];
+
+  if (isAliasDeclaration) {
+    const decoratorArgs = interfaceEntries[0] as any as FunctionEntry;
+    decoratorArgs.implementation.jsdocTags = [];
+  }
+
+  return interfaceEntries;
 }
 
 /**
