@@ -40,6 +40,11 @@ import {filterLifecycleMethods, mergeGettersAndSetters} from './member-transform
 import {getLinkToModule} from './url-transforms.mjs';
 import {formatJs} from './format-code.mjs';
 
+const INDENT = '  ';
+const SPACE = ' ';
+const LN_BREAK = '\n';
+const INDENTED_NEW_LINE = `${LN_BREAK}${INDENT}`;
+
 // Allows to generate links for code lines.
 interface CodeTableOfContentsData {
   // The contents of code block.
@@ -81,7 +86,7 @@ export async function addRenderableCodeToc<T extends DocEntry & HasModuleName>(
     // Shiki requires a keyword for correct formating of Decorators
     // We use an interface and then replace it with a '@'
     codeWithSyntaxHighlighting = replaceKeywordFromShikiHtml(
-      'interface',
+      'interface|function',
       codeWithSyntaxHighlighting,
       '@',
     );
@@ -148,11 +153,12 @@ export function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
 
   if (isClassEntry(entry)) {
     const members = filterLifecycleMethods(mergeGettersAndSetters(entry.members));
-    return getCodeTocData(members, true, isDeprecated);
+    return getCodeTocData(members, isDeprecated);
   }
 
   if (isDecoratorEntry(entry)) {
-    return getCodeTocData(entry.members, true, isDeprecated);
+    const skipNewLine = entry.members[0] && (entry.members[0] as any).entryType === 'function';
+    return getCodeTocData(entry.members, isDeprecated, skipNewLine);
   }
 
   if (isConstantEntry(entry)) {
@@ -164,17 +170,18 @@ export function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
   }
 
   if (isEnumEntry(entry)) {
-    return getCodeTocData(entry.members, true, isDeprecated);
+    return getCodeTocData(entry.members, isDeprecated);
   }
 
   if (isInterfaceEntry(entry)) {
-    return getCodeTocData(mergeGettersAndSetters(entry.members), true, isDeprecated);
+    return getCodeTocData(mergeGettersAndSetters(entry.members), isDeprecated);
   }
 
   if (isFunctionEntry(entry)) {
     const codeLineNumbersWithIdentifiers = new Map<number, string>();
     const hasSingleSignature = entry.signatures.length === 1;
 
+    // Specifically handling the case of overloaded functions
     if (entry.signatures.length > 0) {
       const initialMetadata: CodeTableOfContentsData = {
         contents: '',
@@ -186,7 +193,12 @@ export function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
         (acc: CodeTableOfContentsData, curr: FunctionSignatureMetadata, index: number) => {
           const lineNumber = index;
           acc.codeLineNumbersWithIdentifiers.set(lineNumber, `${curr.name}_${index}`);
-          acc.contents += getMethodCodeLine(curr, [], hasSingleSignature, true);
+          acc.contents += getFunctionCodeLine(
+            curr,
+            [],
+            /* displayParamsInNewLines */ hasSingleSignature &&
+              entry.signatures[0].params.length > 0,
+          );
 
           // We don't want to add line break after the last item
           if (!hasSingleSignature && index < entry.signatures.length - 1) {
@@ -203,8 +215,7 @@ export function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
     }
 
     return {
-      // It is important to add the function keyword as shiki will only highlight valid ts
-      contents: `function ${getMethodCodeLine(entry.implementation, [], true)}`,
+      contents: getMethodCodeLine(entry.implementation, []),
       codeLineNumbersWithIdentifiers,
       deprecatedLineNumbers,
     };
@@ -281,25 +292,24 @@ export function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
   };
 }
 
+// TODO(matthieu): This whole part should be refactored to rely on a formatter (like prettier)
+// to handle formatting (See also #59211)
 /** Generate code ToC data for list of members. */
 function getCodeTocData(
   members: MemberEntry[],
-  hasPrefixLine: boolean,
   isDeprecated: boolean,
+  skipNewLine: boolean = false,
 ): CodeTableOfContentsData {
   const initialMetadata: CodeTableOfContentsData = {
     contents: '',
     codeLineNumbersWithIdentifiers: new Map<number, string>(),
     deprecatedLineNumbers: isDeprecated ? [0] : [],
   };
-  // In case when hasPrefixLine is true we should take it into account when we're generating
-  // `codeLineNumbersWithIdentifiers` below.
-  const skip = !!hasPrefixLine ? 1 : 0;
-  let lineNumber = skip;
+  let lineNumber = 1;
 
   return members.reduce((acc: CodeTableOfContentsData, curr: MemberEntry, index: number) => {
     const setTocData = (entry: DocEntry | MemberEntry, content: string) => {
-      acc.contents += `  ${content.trim()}\n`;
+      acc.contents += `${skipNewLine ? '' : INDENTED_NEW_LINE}${content}`;
       acc.codeLineNumbersWithIdentifiers.set(lineNumber, entry.name);
       if (isDeprecatedEntry(entry)) {
         acc.deprecatedLineNumbers.push(lineNumber);
@@ -309,14 +319,17 @@ function getCodeTocData(
     };
 
     if (isClassMethodEntry(curr)) {
+      // class methods
       if (curr.signatures.length > 0) {
         curr.signatures.forEach((signature) => {
           setTocData(signature, getMethodCodeLine(signature, curr.memberTags));
         });
       } else {
+        // Constructors, methods on interfaces, Decorators
         setTocData(curr, getMethodCodeLine(curr.implementation, curr.memberTags));
       }
     } else {
+      // class props
       setTocData(curr, getCodeLine(curr));
     }
     return acc;
@@ -337,24 +350,30 @@ function getPropertyCodeLine(member: PropertyEntry): string {
   const isOptional = isOptionalMember(member);
   const tags = getTags(member);
 
-  return `${tags.join(' ')} ${member.name}${markOptional(isOptional)}: ${member.type};`;
+  return `${tags.join(SPACE)}${tags.length ? SPACE : ''}${member.name}${markOptional(isOptional)}: ${member.type};`;
 }
 
 /** Map method entry to text */
 function getMethodCodeLine(
   member: FunctionSignatureMetadata,
-  memberTags: MemberTags[] = [],
-  displayParamsInNewLines: boolean = false,
-  isFunction: boolean = false,
+  memberTags: MemberTags[],
+  displayParamsInNewLines = false,
 ): string {
   const generics = makeGenericsText(member.generics);
+  return (
+    `${memberTags.join(SPACE)}${memberTags.length ? ' ' : ''}${member.name}${generics}(` +
+    `${displayParamsInNewLines ? '\n' + INDENT : ''}` +
+    `${member.params.map((param) => mapParamEntry(param)).join(`,${displayParamsInNewLines ? '\n' + INDENT : SPACE}`)}` +
+    `${displayParamsInNewLines ? '\n' : ''}): ${member.returnType};`
+  );
+}
 
-  displayParamsInNewLines &&= member.params.length > 0;
-  return `${isFunction ? 'function' : ''}${memberTags.join(' ')} ${member.name}${generics}(${displayParamsInNewLines ? '\n  ' : ''}${member.params
-    .map((param) => mapParamEntry(param))
-    .join(`,${displayParamsInNewLines ? '\n  ' : ' '}`)}${
-    displayParamsInNewLines ? '\n' : ''
-  }): ${member.returnType};`.trim();
+function getFunctionCodeLine(
+  member: FunctionSignatureMetadata,
+  memberTags: MemberTags[],
+  displayParamsInNewLines: boolean,
+) {
+  return `function ${getMethodCodeLine(member, memberTags, displayParamsInNewLines).trim()}`;
 }
 
 function mapParamEntry(entry: ParameterEntry) {
@@ -366,13 +385,13 @@ function mapParamEntry(entry: ParameterEntry) {
 function getGetterCodeLine(member: PropertyEntry): string {
   const tags = getTags(member);
 
-  return `${tags.join(' ')} get ${member.name}(): ${member.type};`;
+  return `${tags.join(SPACE)} get ${member.name}(): ${member.type};`;
 }
 
 function getSetterCodeLine(member: PropertyEntry): string {
   const tags = getTags(member);
 
-  return `${tags.join(' ')} set ${member.name}(value: ${member.type});`;
+  return `${tags.join(SPACE)} set ${member.name}(value: ${member.type});`;
 }
 
 function markOptional(isOptional: boolean): string {
@@ -455,7 +474,7 @@ function appendPrefixAndSuffix(entry: DocEntry, codeTocData: CodeTableOfContents
     firstLine: string,
     lastLine: string,
   ) => {
-    data.contents = `${firstLine}\n${data.contents}${lastLine}`;
+    data.contents = `${firstLine}${data.contents}${lastLine}`;
   };
 
   if (isClassEntry(entry) || isInterfaceEntry(entry)) {
@@ -468,20 +487,35 @@ function appendPrefixAndSuffix(entry: DocEntry, codeTocData: CodeTableOfContents
     const signature = `${entry.name}${generics}${extendsStr}${implementsStr}`;
     if (isClassEntry(entry)) {
       const abstractPrefix = entry.isAbstract ? 'abstract ' : '';
-      appendFirstAndLastLines(codeTocData, `${abstractPrefix}class ${signature} {`, `}`);
+      appendFirstAndLastLines(codeTocData, `${abstractPrefix}class ${signature} {`, `\n}`);
     }
 
     if (isInterfaceEntry(entry)) {
-      appendFirstAndLastLines(codeTocData, `interface ${signature} {`, `}`);
+      appendFirstAndLastLines(codeTocData, `interface ${signature} {`, `\n}`);
     }
   }
 
   if (isEnumEntry(entry)) {
-    appendFirstAndLastLines(codeTocData, `enum ${entry.name} {`, `}`);
+    appendFirstAndLastLines(codeTocData, `enum ${entry.name} {`, `\n}`);
   }
 
   if (isDecoratorEntry(entry)) {
-    appendFirstAndLastLines(codeTocData, `interface ${entry.name} ({`, `})`);
+    // Shiki requires valid TS to generate correct syntax highlighting
+    // For now we consider a decorator as an interface or a function depending
+
+    const decoratorArgumentIsObject = !codeTocData.contents.trim().startsWith('(');
+    if (decoratorArgumentIsObject) {
+      // ex: @Component({...}) => interface Component { selector: string, ... }
+      if (codeTocData.contents !== '') {
+        appendFirstAndLastLines(codeTocData, `interface ${entry.name}({`, '\n})');
+      } else {
+        // ex @Self() => function Self()
+        appendFirstAndLastLines(codeTocData, `function ${entry.name}(`, ')');
+      }
+    } else {
+      // ex @ViewChild('foo', {..}) => function('foo': string, opts: {...})
+      appendFirstAndLastLines(codeTocData, `function ${entry.name}`, '');
+    }
   }
 }
 
