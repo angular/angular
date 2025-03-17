@@ -1095,7 +1095,7 @@ describe('providers', () => {
 
       const environmentInjector = createEnvironmentInjector(
         [{provide: String, useValue: 'From module injector'}],
-        TestBed.get(EnvironmentInjector),
+        TestBed.inject(EnvironmentInjector),
       );
 
       hostComponent!.vcref.createComponent(EmbeddedComponent, {

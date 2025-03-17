@@ -218,7 +218,7 @@ describe('Integration', () => {
         declarations: [OnPushComponent, SimpleCmp],
       });
 
-      const router: Router = TestBed.get(Router);
+      const router = TestBed.inject(Router);
       const fixture = createRoot(router, OnPushComponent);
       router.navigateByUrl('/simple');
       advance(fixture);

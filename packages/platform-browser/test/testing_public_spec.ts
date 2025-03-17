@@ -527,7 +527,7 @@ describe('public testing API', () => {
             'resolveComponentFactory',
           ]);
           TestBed.overrideProvider(ComponentFactoryResolver, {useValue: componentFactoryMock});
-          expect(TestBed.get(ComponentFactoryResolver)).toEqual(componentFactoryMock);
+          expect(TestBed.inject(ComponentFactoryResolver)).toEqual(componentFactoryMock);
         });
       });
 
@@ -598,7 +598,9 @@ describe('public testing API', () => {
 
           const compiler = TestBed.inject(Compiler);
           const modFactory = compiler.compileModuleSync(MyModule);
-          expect(modFactory.create(getTestBed()).injector.get(aTok)).toBe('mockA: parentDepValue');
+          expect(modFactory.create(TestBed.inject(Injector)).injector.get(aTok)).toBe(
+            'mockA: parentDepValue',
+          );
         });
 
         it('should keep imported NgModules eager', () => {

@@ -96,7 +96,7 @@ describe('security integration tests', function () {
       const template = `<a [href]="ctxProp">Link Title</a>`;
       TestBed.overrideComponent(SecuredComponent, {set: {template}});
       const fixture = TestBed.createComponent(SecuredComponent);
-      const sanitizer: DomSanitizer = getTestBed().get(DomSanitizer);
+      const sanitizer = getTestBed().inject(DomSanitizer);
 
       const e = fixture.debugElement.children[0].nativeElement;
       const ci = fixture.componentInstance;
@@ -110,7 +110,7 @@ describe('security integration tests', function () {
       const template = `<a [href]="ctxProp">Link Title</a>`;
       TestBed.overrideComponent(SecuredComponent, {set: {template}});
       const fixture = TestBed.createComponent(SecuredComponent);
-      const sanitizer: DomSanitizer = getTestBed().get(DomSanitizer);
+      const sanitizer = getTestBed().inject(DomSanitizer);
 
       const trusted = sanitizer.bypassSecurityTrustScript('javascript:alert(1)');
       const ci = fixture.componentInstance;
@@ -122,7 +122,7 @@ describe('security integration tests', function () {
       const template = `<a href="/foo/{{ctxProp}}">Link Title</a>`;
       TestBed.overrideComponent(SecuredComponent, {set: {template}});
       const fixture = TestBed.createComponent(SecuredComponent);
-      const sanitizer: DomSanitizer = getTestBed().get(DomSanitizer);
+      const sanitizer: DomSanitizer = getTestBed().inject(DomSanitizer);
 
       const e = fixture.debugElement.children[0].nativeElement;
       const trusted = sanitizer.bypassSecurityTrustUrl('bar/baz');

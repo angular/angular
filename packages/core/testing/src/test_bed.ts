@@ -115,9 +115,6 @@ export interface TestBed {
   ): T | null;
   inject<T>(token: ProviderToken<T>, notFoundValue?: T, options?: InjectOptions): T;
 
-  /** @deprecated from v9.0.0 use TestBed.inject */
-  get(token: any, notFoundValue?: any): any;
-
   /**
    * Runs the given function in the `EnvironmentInjector` context of `TestBed`.
    *
@@ -364,17 +361,6 @@ export class TestBedImpl implements TestBed {
     return TestBedImpl.INSTANCE.inject(token, notFoundValue, options);
   }
 
-  /** @deprecated from v9.0.0 use TestBed.inject */
-  static get(token: any, notFoundValue?: any): any;
-  /** @deprecated from v9.0.0 use TestBed.inject */
-  static get(
-    token: any,
-    notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
-    options?: InjectOptions,
-  ): any {
-    return TestBedImpl.INSTANCE.inject(token, notFoundValue, options);
-  }
-
   /**
    * Runs the given function in the `EnvironmentInjector` context of `TestBed`.
    *
@@ -573,13 +559,6 @@ export class TestBedImpl implements TestBed {
     return result === UNDEFINED
       ? (this.compiler.injector.get(token, notFoundValue, options) as any)
       : result;
-  }
-
-  /** @deprecated from v9.0.0 use TestBed.inject */
-  get(token: any, notFoundValue?: any): any;
-  /** @deprecated from v9.0.0 use TestBed.inject */
-  get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND, options?: InjectOptions): any {
-    return this.inject(token, notFoundValue, options);
   }
 
   runInInjectionContext<T>(fn: () => T): T {

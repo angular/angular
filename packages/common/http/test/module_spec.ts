@@ -79,7 +79,7 @@ class ReentrantInterceptor implements HttpInterceptor {
 describe('HttpClientModule', () => {
   let injector: Injector;
   beforeEach(() => {
-    injector = TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
         {provide: HTTP_INTERCEPTORS, useClass: InterceptorA, multi: true},
@@ -87,6 +87,7 @@ describe('HttpClientModule', () => {
         {provide: HTTP_INTERCEPTORS, useClass: InterceptorC, multi: true},
       ],
     });
+    injector = TestBed.inject(Injector);
   });
   it('initializes HttpClient properly', (done) => {
     injector
@@ -132,10 +133,11 @@ describe('HttpClientModule', () => {
   });
   it('allows interceptors to inject HttpClient', (done) => {
     TestBed.resetTestingModule();
-    injector = TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [{provide: HTTP_INTERCEPTORS, useClass: ReentrantInterceptor, multi: true}],
     });
+    injector = TestBed.inject(Injector);
     injector
       .get(HttpClient)
       .get('/test')
