@@ -8,16 +8,8 @@
 
 import {REACTIVE_NODE, ReactiveNode} from '../../primitives/signals';
 
-import {
-  LView,
-  PARENT,
-  REACTIVE_TEMPLATE_CONSUMER,
-  TVIEW,
-  TView,
-  TViewType,
-} from './interfaces/view';
+import {LView, REACTIVE_TEMPLATE_CONSUMER, TVIEW, TView, TViewType} from './interfaces/view';
 import {getLViewParent, markAncestorsForTraversal, markViewForRefresh} from './util/view_utils';
-import {assertDefined} from '../util/assert';
 
 let freeConsumers: ReactiveNode[] = [];
 export interface ReactiveLViewConsumer extends ReactiveNode {
@@ -116,4 +108,8 @@ export const TEMPORARY_CONSUMER_NODE = {
  */
 export function viewShouldHaveReactiveConsumer(tView: TView) {
   return tView.type !== TViewType.Embedded;
+}
+
+export function isReactiveLViewConsumer(node: ReactiveNode): node is ReactiveLViewConsumer {
+  return node.kind === 'template';
 }
