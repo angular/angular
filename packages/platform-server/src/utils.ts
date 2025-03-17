@@ -174,17 +174,22 @@ function insertEventRecordScript(
   stopMeasuring(measuringLabel);
 }
 
-async function _render(platformRef: PlatformRef, applicationRef: ApplicationRef): Promise<string> {
-  const measuringLabel = 'whenStable';
-  startMeasuring(measuringLabel);
-
-  // Block until application is stable.
-  await applicationRef.whenStable();
-
-  stopMeasuring(measuringLabel);
-
+/**
+ * Renders an Angular application to a string.
+ *
+ * @private
+ *
+ * @param platformRef - Reference to the Angular platform.
+ * @param applicationRef - Reference to the Angular application.
+ * @returns A promise that resolves to the rendered string.
+ */
+export async function renderInternal(
+  platformRef: PlatformRef,
+  applicationRef: ApplicationRef,
+): Promise<string> {
   const platformState = platformRef.injector.get(PlatformState);
   prepareForHydration(platformState, applicationRef);
+  appendServerContextInfo(applicationRef);
 
   // Run any BEFORE_APP_SERIALIZED callbacks just before rendering to string.
   const environmentInjector = applicationRef.injector;
@@ -211,8 +216,6 @@ async function _render(platformRef: PlatformRef, applicationRef: ApplicationRef)
       }
     }
   }
-
-  appendServerContextInfo(applicationRef);
 
   return platformState.renderToString();
 }
@@ -273,7 +276,14 @@ export async function renderModule<T>(
   try {
     const moduleRef = await platformRef.bootstrapModule(moduleType);
     const applicationRef = moduleRef.injector.get(ApplicationRef);
-    return await _render(platformRef, applicationRef);
+
+    const measuringLabel = 'whenStable';
+    startMeasuring(measuringLabel);
+    // Block until application is stable.
+    await applicationRef.whenStable();
+    stopMeasuring(measuringLabel);
+
+    return await renderInternal(platformRef, applicationRef);
   } finally {
     await asyncDestroyPlatform(platformRef);
   }
@@ -315,7 +325,14 @@ export async function renderApplication<T>(
     stopMeasuring(bootstrapLabel);
 
     startMeasuring(_renderLabel);
-    const rendered = await _render(platformRef, applicationRef);
+
+    const measuringLabel = 'whenStable';
+    startMeasuring(measuringLabel);
+    // Block until application is stable.
+    await applicationRef.whenStable();
+    stopMeasuring(measuringLabel);
+
+    const rendered = await renderInternal(platformRef, applicationRef);
     stopMeasuring(_renderLabel);
     return rendered;
   } finally {
