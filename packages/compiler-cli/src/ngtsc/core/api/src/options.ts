@@ -14,7 +14,7 @@ import {
   I18nOptions,
   LegacyNgcOptions,
   MiscOptions,
-  StrictTemplateOptions,
+  TypeCheckingOptions,
   TargetOptions,
 } from './public_options';
 
@@ -148,7 +148,7 @@ export interface NgCompilerOptions
     LegacyNgcOptions,
     BazelAndG3Options,
     DiagnosticOptions,
-    StrictTemplateOptions,
+    TypeCheckingOptions,
     TestOnlyOptions,
     I18nOptions,
     TargetOptions,

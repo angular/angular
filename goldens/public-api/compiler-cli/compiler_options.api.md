@@ -60,11 +60,15 @@ export interface MiscOptions {
     compileNonExportedClasses?: boolean;
     disableTypeScriptVersionCheck?: boolean;
     forbidOrphanComponents?: boolean;
-    typeCheckHostBindings?: boolean;
 }
 
 // @public
-export interface StrictTemplateOptions {
+export interface TargetOptions {
+    compilationMode?: 'full' | 'partial' | 'experimental-local';
+}
+
+// @public
+export interface TypeCheckingOptions {
     strictAttributeTypes?: boolean;
     strictContextGenerics?: boolean;
     strictDomEventTypes?: boolean;
@@ -76,11 +80,7 @@ export interface StrictTemplateOptions {
     strictOutputEventTypes?: boolean;
     strictSafeNavigationTypes?: boolean;
     strictTemplates?: boolean;
-}
-
-// @public
-export interface TargetOptions {
-    compilationMode?: 'full' | 'partial' | 'experimental-local';
+    typeCheckHostBindings?: boolean;
 }
 
 // (No @packageDocumentation comment for this package)
