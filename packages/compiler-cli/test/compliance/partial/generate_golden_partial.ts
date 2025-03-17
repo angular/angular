@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
+import fs from 'node:fs';
 import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
 import {
   compileTest,
@@ -18,8 +19,12 @@ import {PartiallyCompiledFile, renderGoldenPartial} from '../test_helpers/golden
  * Generate the golden partial output for the tests described in the `testConfigPath` config file.
  *
  * @param testConfigPath Absolute disk path of the `TEST_CASES.json` file that describes the tests.
+ * @param outputPath Absolute disk path for the golden output.
  */
-export function generateGoldenPartial(absTestConfigPath: AbsoluteFsPath): void {
+export function generateGoldenPartial(
+  absTestConfigPath: AbsoluteFsPath,
+  outputPath: AbsoluteFsPath,
+): void {
   const files: PartiallyCompiledFile[] = [];
   const tests = getComplianceTests(absTestConfigPath);
   for (const test of tests) {
@@ -28,7 +33,7 @@ export function generateGoldenPartial(absTestConfigPath: AbsoluteFsPath): void {
       files.push(file);
     }
   }
-  writeGoldenPartial(files);
+  writeGoldenPartial(files, outputPath);
 }
 
 /**
@@ -61,11 +66,15 @@ function* compilePartials(fs: FileSystem, test: ComplianceTest): Generator<Parti
 /**
  * Write the partially compiled files to the appropriate output destination.
  *
- * For now just push the concatenated partial files to standard out.
- *
  * @param files The partially compiled files.
+ * @param outputPath absolute disk path for the golden to write to.
  */
-function writeGoldenPartial(files: PartiallyCompiledFile[]): void {
-  // tslint:disable-next-line: no-console
-  console.log(renderGoldenPartial(files));
+function writeGoldenPartial(files: PartiallyCompiledFile[], outputPath: AbsoluteFsPath): void {
+  const goldenOutput = renderGoldenPartial(files);
+  fs.writeFileSync(
+    outputPath,
+    // Note: Keeping trailing \n as otherwise many goldens need to be re-approved.
+    goldenOutput + '\n',
+    'utf8',
+  );
 }

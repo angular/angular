@@ -36,11 +36,11 @@ def partial_compliance_golden(filePath):
         name = "_generated_%s" % path,
         tool = generate_partial_name,
         testonly = True,
-        stdout = "%s/_generated.js" % path,
+        outs = ["%s/_generated.js" % path],
         link_workspace_root = True,
         # Disable the linker and rely on patched resolution which works better on Windows
         # and is less prone to race conditions when targets build concurrently.
-        args = ["--nobazel_run_linker"],
+        args = ["--nobazel_run_linker", "$@"],
         visibility = [":__pkg__"],
         data = [],
     )
