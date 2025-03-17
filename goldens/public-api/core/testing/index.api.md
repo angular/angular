@@ -124,8 +124,6 @@ export interface TestBed {
     // (undocumented)
     execute(tokens: any[], fn: Function, context?: any): any;
     flushEffects(): void;
-    // @deprecated (undocumented)
-    get(token: any, notFoundValue?: any): any;
     initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, options?: TestEnvironmentOptions): void;
     // (undocumented)
     inject<T>(token: ProviderToken<T>, notFoundValue: undefined, options: InjectOptions & {

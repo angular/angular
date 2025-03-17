@@ -17,10 +17,12 @@ import {
   Component,
   EnvironmentInjector,
   InjectionToken,
+  Injector,
   LOCALE_ID,
   NgModule,
   NgZone,
   PlatformRef,
+  ProviderToken,
   provideZoneChangeDetection,
   RendererFactory2,
   TemplateRef,
@@ -134,7 +136,7 @@ describe('bootstrap', () => {
 
       createRootEl();
       const modFactory = compiler.compileModuleSync(SomeModule);
-      const module = modFactory.create(TestBed);
+      const module = modFactory.create(TestBed.inject(Injector));
       const cmpFactory = module.componentFactoryResolver.resolveComponentFactory(SomeComponent);
       const component = app.bootstrap(cmpFactory);
 
@@ -162,7 +164,7 @@ describe('bootstrap', () => {
 
       createRootEl('custom-selector');
       const modFactory = compiler.compileModuleSync(SomeModule);
-      const module = modFactory.create(TestBed);
+      const module = modFactory.create(TestBed.inject(Injector));
       const cmpFactory = module.componentFactoryResolver.resolveComponentFactory(SomeComponent);
       const component = app.bootstrap(cmpFactory, 'custom-selector');
 
