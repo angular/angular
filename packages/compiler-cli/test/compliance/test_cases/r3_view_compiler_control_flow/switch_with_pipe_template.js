@@ -2,11 +2,11 @@ function MyApp_Template(rf, ctx) {
 	if (rf & 1) {
 	  $r3$.ɵɵelementStart(0, "div");
 	  $r3$.ɵɵtext(1);
-	  $r3$.ɵɵtemplate(2, MyApp_Case_2_Template, 1, 0);
+	  $r3$.ɵɵconditionalCreate(2, MyApp_Case_2_Template, 1, 0);
 	  $r3$.ɵɵpipe(3, "test");
 	  $r3$.ɵɵpipe(4, "test");
 	  $r3$.ɵɵpipe(5, "test");
-	  $r3$.ɵɵtemplate(6, MyApp_Case_6_Template, 1, 0)(7, MyApp_Case_7_Template, 1, 0);
+	  $r3$.ɵɵconditionalBranchCreate(6, MyApp_Case_6_Template, 1, 0)(7, MyApp_Case_7_Template, 1, 0);
 	  $r3$.ɵɵelementEnd();
 	}
 	if (rf & 2) {

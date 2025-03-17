@@ -16,7 +16,7 @@ function MyApp_Conditional_0_Conditional_0_Template(rf, ctx) {
 
 function MyApp_Conditional_0_Template(rf, ctx) {
   if (rf & 1) {
-    $r3$.ɵɵtemplate(0, MyApp_Conditional_0_Conditional_0_Template, 2, 1);
+    $r3$.ɵɵconditionalCreate(0, MyApp_Conditional_0_Conditional_0_Template, 2, 1);
     $r3$.ɵɵdeclareLet(1);
   }
   if (rf & 2) {
@@ -36,7 +36,7 @@ $r3$.ɵɵdefineComponent({
   vars: 2,
   template: function MyApp_Template(rf, ctx) {
     if (rf & 1) {
-      $r3$.ɵɵtemplate(0, MyApp_Conditional_0_Template, 2, 2);
+      $r3$.ɵɵconditionalCreate(0, MyApp_Conditional_0_Template, 2, 2);
       $r3$.ɵɵdeclareLet(1);
     }
     if (rf & 2) {

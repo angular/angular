@@ -350,6 +350,54 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
           ),
         );
         break;
+      case ir.OpKind.ConditionalCreate:
+        if (!(unit instanceof ViewCompilationUnit)) {
+          throw new Error(`AssertionError: must be compiling a component`);
+        }
+        if (Array.isArray(op.localRefs)) {
+          throw new Error(
+            `AssertionError: local refs array should have been extracted into a constant`,
+          );
+        }
+        const conditionalCreateChildView = unit.job.views.get(op.xref)!;
+        ir.OpList.replace(
+          op,
+          ng.conditionalCreate(
+            op.handle.slot!,
+            o.variable(conditionalCreateChildView.fnName!),
+            conditionalCreateChildView.decls!,
+            conditionalCreateChildView.vars!,
+            op.tag,
+            op.attributes,
+            op.localRefs,
+            op.startSourceSpan,
+          ),
+        );
+        break;
+      case ir.OpKind.ConditionalBranchCreate:
+        if (!(unit instanceof ViewCompilationUnit)) {
+          throw new Error(`AssertionError: must be compiling a component`);
+        }
+        if (Array.isArray(op.localRefs)) {
+          throw new Error(
+            `AssertionError: local refs array should have been extracted into a constant`,
+          );
+        }
+        const conditionalBranchCreateChildView = unit.job.views.get(op.xref)!;
+        ir.OpList.replace(
+          op,
+          ng.conditionalBranchCreate(
+            op.handle.slot!,
+            o.variable(conditionalBranchCreateChildView.fnName!),
+            conditionalBranchCreateChildView.decls!,
+            conditionalBranchCreateChildView.vars!,
+            op.tag,
+            op.attributes,
+            op.localRefs,
+            op.startSourceSpan,
+          ),
+        );
+        break;
       case ir.OpKind.RepeaterCreate:
         if (op.handle.slot === null) {
           throw new Error('No slot was assigned for repeater instruction');

@@ -1227,6 +1227,8 @@ export function transformExpressionsInOp(
     case OpKind.IcuPlaceholder:
     case OpKind.DeclareLet:
     case OpKind.SourceLocation:
+    case OpKind.ConditionalCreate:
+    case OpKind.ConditionalBranchCreate:
       // These operations contain no expressions.
       break;
     default:

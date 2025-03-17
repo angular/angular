@@ -41,6 +41,8 @@ function propagateI18nBlocksToTemplates(
         }
         i18nBlock = null;
         break;
+      case ir.OpKind.ConditionalCreate:
+      case ir.OpKind.ConditionalBranchCreate:
       case ir.OpKind.Template:
         subTemplateIndex = propagateI18nBlocksForView(
           unit.job.views.get(op.xref)!,

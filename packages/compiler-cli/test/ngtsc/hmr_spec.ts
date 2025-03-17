@@ -225,7 +225,9 @@ runInEachFileSystem(() => {
         'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, Component) {',
       );
       expect(hmrContents).toContain('function Cmp_Conditional_0_Template(rf, ctx) {');
-      expect(hmrContents).toContain('ɵhmr0.ɵɵtemplate(0, Cmp_Conditional_0_Template, 1, 0);');
+      expect(hmrContents).toContain(
+        'ɵhmr0.ɵɵconditionalCreate(0, Cmp_Conditional_0_Template, 1, 0);',
+      );
     });
 
     it('should generate an HMR update function for a component whose definition produces variables', () => {

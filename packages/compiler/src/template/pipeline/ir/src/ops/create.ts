@@ -60,6 +60,8 @@ export type CreateOp =
   | ExtractedAttributeOp
   | DeferOp
   | DeferOnOp
+  | ConditionalCreateOp
+  | ConditionalBranchCreateOp
   | RepeaterCreateOp
   | I18nMessageOp
   | I18nOp
@@ -82,7 +84,9 @@ export type ElementOrContainerOps =
   | ContainerOp
   | ContainerStartOp
   | TemplateOp
-  | RepeaterCreateOp;
+  | RepeaterCreateOp
+  | ConditionalCreateOp
+  | ConditionalBranchCreateOp;
 
 /**
  * The set of OpKinds that represent the creation of an element or container
@@ -94,6 +98,8 @@ const elementContainerOpKinds = new Set([
   OpKind.ContainerStart,
   OpKind.Template,
   OpKind.RepeaterCreate,
+  OpKind.ConditionalCreate,
+  OpKind.ConditionalBranchCreate,
 ]);
 
 /**
@@ -166,7 +172,13 @@ export interface ElementOrContainerOpBase extends Op<CreateOp>, ConsumesSlotOpTr
 }
 
 export interface ElementOpBase extends ElementOrContainerOpBase {
-  kind: OpKind.Element | OpKind.ElementStart | OpKind.Template | OpKind.RepeaterCreate;
+  kind:
+    | OpKind.Element
+    | OpKind.ElementStart
+    | OpKind.Template
+    | OpKind.RepeaterCreate
+    | OpKind.ConditionalCreate
+    | OpKind.ConditionalBranchCreate;
 
   /**
    * The HTML tag name for this element.
@@ -277,6 +289,130 @@ export function createTemplateOp(
 ): TemplateOp {
   return {
     kind: OpKind.Template,
+    xref,
+    templateKind,
+    attributes: null,
+    tag,
+    handle: new SlotHandle(),
+    functionNameSuffix,
+    decls: null,
+    vars: null,
+    localRefs: [],
+    nonBindable: false,
+    namespace,
+    i18nPlaceholder,
+    startSourceSpan,
+    wholeSourceSpan,
+    ...TRAIT_CONSUMES_SLOT,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * An op that creates a conditional (e.g. a if or switch).
+ */
+export interface ConditionalCreateOp extends ElementOpBase {
+  kind: OpKind.ConditionalCreate;
+
+  templateKind: TemplateKind;
+
+  /**
+   * The number of declaration slots used by this template, or `null` if slots have not yet been
+   * assigned.
+   */
+  decls: number | null;
+
+  /**
+   * The number of binding variable slots used by this template, or `null` if binding variables have
+   * not yet been counted.
+   */
+  vars: number | null;
+
+  /**
+   * Suffix to add to the name of the generated template function.
+   */
+  functionNameSuffix: string;
+
+  /**
+   * The i18n placeholder data associated with this template.
+   */
+  i18nPlaceholder?: i18n.TagPlaceholder | i18n.BlockPlaceholder;
+}
+
+export function createConditionalCreateOp(
+  xref: XrefId,
+  templateKind: TemplateKind,
+  tag: string | null,
+  functionNameSuffix: string,
+  namespace: Namespace,
+  i18nPlaceholder: i18n.TagPlaceholder | i18n.BlockPlaceholder | undefined,
+  startSourceSpan: ParseSourceSpan,
+  wholeSourceSpan: ParseSourceSpan,
+): ConditionalCreateOp {
+  return {
+    kind: OpKind.ConditionalCreate,
+    xref,
+    templateKind,
+    attributes: null,
+    tag,
+    handle: new SlotHandle(),
+    functionNameSuffix,
+    decls: null,
+    vars: null,
+    localRefs: [],
+    nonBindable: false,
+    namespace,
+    i18nPlaceholder,
+    startSourceSpan,
+    wholeSourceSpan,
+    ...TRAIT_CONSUMES_SLOT,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * An op that creates a conditional branch (e.g. an else or case).
+ */
+export interface ConditionalBranchCreateOp extends ElementOpBase {
+  kind: OpKind.ConditionalBranchCreate;
+
+  templateKind: TemplateKind;
+
+  /**
+   * The number of declaration slots used by this template, or `null` if slots have not yet been
+   * assigned.
+   */
+  decls: number | null;
+
+  /**
+   * The number of binding variable slots used by this template, or `null` if binding variables have
+   * not yet been counted.
+   */
+  vars: number | null;
+
+  /**
+   * Suffix to add to the name of the generated template function.
+   */
+  functionNameSuffix: string;
+
+  /**
+   * The i18n placeholder data associated with this template.
+   */
+  i18nPlaceholder?: i18n.TagPlaceholder | i18n.BlockPlaceholder;
+}
+
+export function createConditionalBranchCreateOp(
+  xref: XrefId,
+  templateKind: TemplateKind,
+  tag: string | null,
+  functionNameSuffix: string,
+  namespace: Namespace,
+  i18nPlaceholder: i18n.TagPlaceholder | i18n.BlockPlaceholder | undefined,
+  startSourceSpan: ParseSourceSpan,
+  wholeSourceSpan: ParseSourceSpan,
+): ConditionalBranchCreateOp {
+  return {
+    kind: OpKind.ConditionalBranchCreate,
     xref,
     templateKind,
     attributes: null,

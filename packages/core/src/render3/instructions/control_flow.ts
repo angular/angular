@@ -18,7 +18,7 @@ import {assertLContainer, assertLView, assertTNode} from '../assert';
 import {bindingUpdated} from '../bindings';
 import {CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {ComponentTemplate} from '../interfaces/definition';
-import {TNode} from '../interfaces/node';
+import {LocalRefExtractor, TAttributes, TNode, TNodeFlags} from '../interfaces/node';
 import {
   CONTEXT,
   DECLARATION_COMPONENT_VIEW,
@@ -44,6 +44,103 @@ import {
 } from '../view/container';
 
 /**
+ * Creates an LContainer for an ng-template representing a root node
+ * of control flow (@if, @switch). We use this to explicitly set
+ * flags on the TNode created to identify which nodes are in control
+ * flow or starting control flow for hydration identification and
+ * cleanup timing.
+ *
+ * @param index The index of the container in the data array
+ * @param templateFn Inline template
+ * @param decls The number of nodes, local refs, and pipes for this template
+ * @param vars The number of bindings for this template
+ * @param tagName The name of the container element, if applicable
+ * @param attrsIndex Index of template attributes in the `consts` array.
+ * @param localRefs Index of the local references in the `consts` array.
+ * @param localRefExtractor A function which extracts local-refs values from the template.
+ *        Defaults to the current element associated with the local-ref.
+ * @codeGenApi
+ */
+export function ɵɵconditionalCreate(
+  index: number,
+  templateFn: ComponentTemplate<any> | null,
+  decls: number,
+  vars: number,
+  tagName?: string | null,
+  attrsIndex?: number | null,
+  localRefsIndex?: number | null,
+  localRefExtractor?: LocalRefExtractor,
+): typeof ɵɵconditionalBranchCreate {
+  performanceMarkFeature('NgControlFlow');
+  const lView = getLView();
+  const tView = getTView();
+  const attrs = getConstant<TAttributes>(tView.consts, attrsIndex);
+  declareTemplate(
+    lView,
+    tView,
+    index,
+    templateFn,
+    decls,
+    vars,
+    tagName,
+    attrs,
+    localRefsIndex,
+    localRefExtractor,
+    TNodeFlags.isControlFlowStart,
+  );
+  return ɵɵconditionalBranchCreate;
+}
+
+/**
+ * Creates an LContainer for an ng-template representing a branch
+ * of control flow (@else, @case, @default). We use this to explicitly
+ * set flags on the TNode created to identify which nodes are in
+ * control flow or starting control flow for hydration identification
+ * and cleanup timing.
+ *
+ * @param index The index of the container in the data array
+ * @param templateFn Inline template
+ * @param decls The number of nodes, local refs, and pipes for this template
+ * @param vars The number of bindings for this template
+ * @param tagName The name of the container element, if applicable
+ * @param attrsIndex Index of template attributes in the `consts` array.
+ * @param localRefs Index of the local references in the `consts` array.
+ * @param localRefExtractor A function which extracts local-refs values from the template.
+ *        Defaults to the current element associated with the local-ref.
+ * @codeGenApi
+ */
+export function ɵɵconditionalBranchCreate(
+  index: number,
+  templateFn: ComponentTemplate<any> | null,
+  decls: number,
+  vars: number,
+  tagName?: string | null,
+  attrsIndex?: number | null,
+  localRefsIndex?: number | null,
+  localRefExtractor?: LocalRefExtractor,
+): typeof ɵɵconditionalBranchCreate {
+  performanceMarkFeature('NgControlFlow');
+  const lView = getLView();
+  const tView = getTView();
+  const attrs = getConstant<TAttributes>(tView.consts, attrsIndex);
+
+  declareTemplate(
+    lView,
+    tView,
+    index,
+    templateFn,
+    decls,
+    vars,
+    tagName,
+    attrs,
+    localRefsIndex,
+    localRefExtractor,
+    TNodeFlags.isInControlFlow,
+  );
+  return ɵɵconditionalBranchCreate;
+}
+
+/**
  * The conditional instruction represents the basic building block on the runtime side to support
  * built-in "if" and "switch". On the high level this instruction is responsible for adding and
  * removing views selected by a conditional expression.
@@ -55,6 +152,8 @@ import {
  */
 export function ɵɵconditional<T>(matchingTemplateIndex: number, contextValue?: T) {
   performanceMarkFeature('NgControlFlow');
+
+  //TODO(jessica): this is where we navigate the tree to find the right node for proper cleanup
 
   const hostLView = getLView();
   const bindingIndex = nextBindingIndex();
@@ -223,6 +322,9 @@ export function ɵɵrepeaterCreate(
     vars,
     tagName,
     getConstant(tView.consts, attrsIndex),
+    null,
+    undefined,
+    TNodeFlags.isControlFlowStart | TNodeFlags.isInControlFlow,
   );
 
   if (hasEmptyBlock) {
@@ -240,6 +342,9 @@ export function ɵɵrepeaterCreate(
       emptyVars!,
       emptyTagName,
       getConstant(tView.consts, emptyAttrsIndex),
+      null,
+      undefined,
+      TNodeFlags.isInControlFlow,
     );
   }
 }

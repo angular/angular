@@ -12,7 +12,7 @@ function MyApp_Template(rf, ctx) {
   if (rf & 1) {
     $r3$.ɵɵelementStart(0, "div");
     $r3$.ɵɵtext(1);
-    $r3$.ɵɵtemplate(2, MyApp_Conditional_2_Template, 1, 2);
+    $r3$.ɵɵconditionalCreate(2, MyApp_Conditional_2_Template, 1, 2);
     $r3$.ɵɵelementEnd();
   }
   if (rf & 2) {
