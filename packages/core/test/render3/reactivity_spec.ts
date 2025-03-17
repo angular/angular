@@ -751,6 +751,41 @@ describe('reactivity', () => {
       expect(effectRef[SIGNAL].debugName).toBe('TEST_DEBUG_NAME');
     });
 
+    it('should disallow writing to signals within computed', () => {
+      @Component({
+        selector: 'with-input',
+        template: '{{comp()}}',
+      })
+      class WriteComputed {
+        sig = signal(0);
+        comp = computed(() => {
+          this.sig.set(this.sig() + 1);
+          return this.sig();
+        });
+      }
+
+      const fixture = TestBed.createComponent(WriteComputed);
+
+      expect(() => fixture.detectChanges()).toThrowError(/NG0600.*in a `computed`/);
+    });
+
+    it('should disallow writing to signals within a template', () => {
+      @Component({
+        selector: 'with-input',
+        template: '{{func()}}',
+      })
+      class WriteComputed {
+        sig = signal(0);
+        func() {
+          this.sig.set(this.sig() + 1);
+        }
+      }
+
+      const fixture = TestBed.createComponent(WriteComputed);
+
+      expect(() => fixture.detectChanges()).toThrowError(/NG0600.*template/);
+    });
+
     describe('effects created in components should first run after ngOnInit', () => {
       it('when created during bootstrapping', () => {
         let log: string[] = [];
