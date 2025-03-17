@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ɵRuntimeError as RuntimeError} from '@angular/core';
+
 import {
   getLocaleNumberFormat,
   getLocaleNumberSymbol,
@@ -13,6 +15,7 @@ import {
   NumberFormatStyle,
   NumberSymbol,
 } from './locale_data_api';
+import {RuntimeErrorCode} from '../errors';
 
 export const NUMBER_FORMAT_REGEXP = /^(\d+)?\.((\d+)(-(\d+))?)?$/;
 const MAX_DIGITS = 22;
@@ -55,7 +58,10 @@ function formatNumberToLocaleString(
     if (digitsInfo) {
       const parts = digitsInfo.match(NUMBER_FORMAT_REGEXP);
       if (parts === null) {
-        throw new Error(`${digitsInfo} is not a valid digit info`);
+        throw new RuntimeError(
+          RuntimeErrorCode.INVALID_DIGIT_INFO,
+          ngDevMode && `${digitsInfo} is not a valid digit info`,
+        );
       }
       const minIntPart = parts[1];
       const minFractionPart = parts[3];
@@ -436,8 +442,10 @@ function parseNumber(num: number): ParsedNumber {
  */
 function roundNumber(parsedNumber: ParsedNumber, minFrac: number, maxFrac: number) {
   if (minFrac > maxFrac) {
-    throw new Error(
-      `The minimum number of digits after fraction (${minFrac}) is higher than the maximum (${maxFrac}).`,
+    throw new RuntimeError(
+      RuntimeErrorCode.INVALID_NUMBER_OF_DIGITS_AFTER_FRACTION,
+      ngDevMode &&
+        `The minimum number of digits after fraction (${minFrac}) is higher than the maximum (${maxFrac}).`,
     );
   }
 
@@ -509,7 +517,10 @@ function roundNumber(parsedNumber: ParsedNumber, minFrac: number, maxFrac: numbe
 export function parseIntAutoRadix(text: string): number {
   const result: number = parseInt(text);
   if (isNaN(result)) {
-    throw new Error('Invalid integer literal when parsing ' + text);
+    throw new RuntimeError(
+      RuntimeErrorCode.INVALID_INTEGER_LITERAL,
+      ngDevMode && 'Invalid integer literal when parsing ' + text,
+    );
   }
   return result;
 }

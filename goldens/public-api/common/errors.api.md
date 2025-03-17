@@ -9,9 +9,15 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     EQUALITY_NG_SWITCH_DIFFERENCE = 2001,
     // (undocumented)
+    INVALID_DIGIT_INFO = 2306,
+    // (undocumented)
     INVALID_INPUT = 2952,
     // (undocumented)
+    INVALID_INTEGER_LITERAL = 2305,
+    // (undocumented)
     INVALID_LOADER_ARGUMENTS = 2959,
+    // (undocumented)
+    INVALID_NUMBER_OF_DIGITS_AFTER_FRACTION = 2307,
     // (undocumented)
     INVALID_PIPE_ARGUMENT = 2100,
     // (undocumented)
@@ -21,13 +27,19 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     LCP_IMG_NGSRC_MODIFIED = 2964,
     // (undocumented)
+    LOCALE_DATA_UNDEFINED = 2304,
+    // (undocumented)
     MISSING_BUILTIN_LOADER = 2962,
+    // (undocumented)
+    MISSING_EXTRA_LOCALE_DATA_FOR_LOCALE = 2303,
     // (undocumented)
     MISSING_NECESSARY_LOADER = 2963,
     // (undocumented)
     NG_FOR_MISSING_DIFFER = -2200,
     // (undocumented)
     NG_IF_NOT_A_TEMPLATE_REF = 2020,
+    // (undocumented)
+    NO_PLURAL_MESSAGE_FOUND = 2308,
     // (undocumented)
     OVERSIZED_IMAGE = 2960,
     // (undocumented)
