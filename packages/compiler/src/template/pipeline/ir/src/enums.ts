@@ -70,6 +70,16 @@ export enum OpKind {
   DisableBindings,
 
   /**
+   * Create a conditional creation instruction op.
+   */
+  ConditionalCreate,
+
+  /**
+   * Create a conditional branch creation instruction op.
+   */
+  ConditionalBranchCreate,
+
+  /**
    * An op to conditionally render a template.
    */
   Conditional,

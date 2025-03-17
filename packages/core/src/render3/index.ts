@@ -133,6 +133,8 @@ export {
   ɵɵsyntheticHostProperty,
   ɵɵtemplate,
   ɵɵconditional,
+  ɵɵconditionalCreate,
+  ɵɵconditionalBranchCreate,
   ɵɵdefer,
   ɵɵdeferWhen,
   ɵɵdeferOnIdle,

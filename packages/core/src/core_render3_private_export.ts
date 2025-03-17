@@ -86,6 +86,8 @@ export {
   ɵɵclassProp,
   ɵɵComponentDeclaration,
   ɵɵconditional,
+  ɵɵconditionalCreate,
+  ɵɵconditionalBranchCreate,
   ɵɵcontentQuery,
   ɵɵcontentQuerySignal,
   ɵɵcomponentInstance,
