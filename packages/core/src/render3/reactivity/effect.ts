@@ -79,6 +79,9 @@ export interface CreateEffectOptions {
    *
    * If this is `false` (the default) the effect will automatically register itself to be cleaned up
    * with the current `DestroyRef`.
+   *
+   * If this is `true` and you want to use the effect outside an injection context, you still
+   * need to provide an `Injector` to the effect.
    */
   manualCleanup?: boolean;
 

@@ -290,6 +290,29 @@ describe('reactivity', () => {
       expect(log).toEqual([0, 1]);
     });
 
+    it('should cleanup effect when manualCleanup is enabled and an injector is provided', () => {
+      TestBed.configureTestingModule({});
+      const counter = signal(0);
+      const log: number[] = [];
+      // It needs the injector to be able to inject the other deps (and not just the DestroyRef).
+      const ref = effect(() => log.push(counter()), {
+        manualCleanup: true,
+        injector: TestBed.inject(Injector),
+      });
+
+      TestBed.flushEffects();
+      expect(log).toEqual([0]);
+
+      counter.set(1);
+      TestBed.flushEffects();
+      expect(log).toEqual([0, 1]);
+
+      ref.destroy();
+      counter.set(2);
+      TestBed.flushEffects();
+      expect(log).toEqual([0, 1]);
+    });
+
     it('should check components made dirty from markForCheck() from an effect', async () => {
       TestBed.configureTestingModule({
         providers: [provideExperimentalZonelessChangeDetection()],
