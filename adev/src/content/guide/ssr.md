@@ -6,13 +6,13 @@ Hybrid rendering combines the benefits of server-side rendering (SSR), pre-rende
 
 ## Setting up hybrid rendering
 
-You can create a **new** project with server-side routing with the Angular CLI:
+You can create a **new** project with server-side rendering with the Angular CLI:
 
 ```shell
 ng new --ssr
 ```
 
-You can also add server-side routing to an existing project with the `ng add` command:
+You can also add server-side rendering to an existing project with the `ng add` command:
 
 ```shell
 ng add @angular/ssr
@@ -85,11 +85,11 @@ const serverConfig: ApplicationConfig = {
 
 The server routing configuration lets you specify how each route in your application should render by setting a [`RenderMode`](api/ssr/RenderMode 'API reference'):
 
-| Rendering mode      | Description                                                                                                     |
-| ------------------- | --------------------------------------------------------------------------------------------------------------- |
-| **Server (SSR)**    | Renders the application on the server for each request, sending a fully populated HTML page to the browser.     |
-| **Client (CSR)**    | Renders the application in the browser. This is the default Angular behavior.                                   |
-| **Prerender (SSG)** | Prerenders the application at build time, generating static HTML files for each route.                          |
+| Rendering mode      | Description                                                                                                 |
+| ------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Server (SSR)**    | Renders the application on the server for each request, sending a fully populated HTML page to the browser. |
+| **Client (CSR)**    | Renders the application in the browser. This is the default Angular behavior.                               |
+| **Prerender (SSG)** | Prerenders the application at build time, generating static HTML files for each route.                      |
 
 #### Choosing a rendering mode
 
@@ -115,23 +115,21 @@ Server-side rendering generally has excellent search engine optimization (SEO), 
 
 Server-side rendering requires you to author code that does not strictly depend on browser APIs and limits your selection of JavaScript libraries that assume they run in a browser.
 
-When server-side rendering, your server runs Angular to produce an HTML response for every request. This additional cost may affect server hosting costs.
+When server-side rendering, your server runs Angular to produce an HTML response for every request which may increase server hosting costs.
 
 ##### Build-time prerendering
 
 Prerendering offers faster page loads than both client-side rendering and server-side rendering. Because prerendering creates HTML documents at _build-time_, the server can directly respond to requests with the static HTML document without any additional work.
 
-Prerendering requires that all information necessary to render a page is available at _build-time_. This means that prerendered pages cannot include any data to the specific user loading the page. This means that prerendering is primarily useful for pages that are the same for all users of your application.
+Prerendering requires that all information necessary to render a page is available at _build-time_. This means that prerendered pages cannot include any data to the specific user loading the page. Prerendering is primarily useful for pages that are the same for all users of your application.
 
 Because prerendering occurs at build-time, it may add significant time to your production builds. Using [`getPrerenderParams`](api/ssr/ServerRoutePrerenderWithParams#getPrerenderParams 'API reference') to produce a large number of HTML documents may affect the total file size of your deployments, and thus lead to slower deployments.
-
-It may also add time to your deployments based on the number of static HTML documents included in your build output.
 
 Prerendering generally has excellent search engine optimization (SEO), as search crawlers receive a fully rendered HTML document.
 
 Prerendering requires you to author code that does not strictly depend on browser APIs and limits your selection of JavaScript libraries that assume they run in a browser.
 
-Prerendering incurs extremely little overhead per server request, as your server responds with static HTML documents. Static files are also easily cached by Content Delivery Networks (CDNs), browsers, and intermediate caching layers for even faster subsequent page loads. Deploying static HTML files to a CDN improves scalability by offloading work from your application web server, which is impactful for high-traffic applications.
+Prerendering incurs extremely little overhead per server request, as your server responds with static HTML documents. Static files are also easily cached by Content Delivery Networks (CDNs), browsers, and intermediate caching layers for even faster subsequent page loads. Fully static sites can also be deployed solely through a CDN or static file server, eliminating the need to maintain a custom server runtime for your application. This enhances scalability by offloading work from an application web server, making it particularly beneficial for high-traffic applications.
 
 Note: When using Angular service worker, the first request is server-rendered, but all subsequent requests are handled by the service worker and rendered client-side.
 
@@ -158,13 +156,13 @@ export const serverRoutes: ServerRoute[] = [
 
 ### Redirects
 
-Angular handles redirects specified by the [`redirectTo`](api/ssr/ServerRoutePrerenderWithParams#getPrerenderParams 'API reference') property in route configurations, differently on the server-side.
+Angular handles redirects specified by the [`redirectTo`](api/router/Route#redirectTo 'API reference') property in route configurations, differently on the server-side.
 
 **Server-Side Rendering (SSR)**
 Redirects are performed using standard HTTP redirects (e.g., 301, 302) within the server-side rendering process.
 
 **Prerendering (SSG)**
-Redirects are implemented as "soft redirects" using `<meta http-equiv="refresh">` tags in the prerendered HTML.
+Redirects are implemented as "soft redirects" using [`<meta http-equiv="refresh">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta#refresh) tags in the prerendered HTML.
 
 ### Customizing build-time prerendering (SSG)
 
@@ -198,7 +196,7 @@ export const serverRoutes: ServerRoute[] = [
 ];
 ```
 
-Because [`getPrerenderParams`](api/ssr/ServerRoutePrerenderWithParams#getPrerenderParams 'API reference') exclusively applies to [`RenderMode.Prerender`](api/ssr/RenderMode#Prerender 'API reference'), this function always runs at _build-time_. `getPrerenderParams` must not rely on any browser-specific or server-specific APIs for data. If the route does not specify a [`fallback`](api/ssr/ServerRoutePrerenderWithParams#fallback 'API reference') option, the route falls back to [`PrerenderFallback.Server`](api/ssr/PrerenderFallback#Server 'API reference') (SSR) by default.
+Because [`getPrerenderParams`](api/ssr/ServerRoutePrerenderWithParams#getPrerenderParams 'API reference') exclusively applies to [`RenderMode.Prerender`](api/ssr/RenderMode#Prerender 'API reference'), this function always runs at _build-time_. `getPrerenderParams` must not rely on any browser-specific or server-specific APIs for data.
 
 IMPORTANT: When using [`inject`](api/core/inject 'API reference') inside `getPrerenderParams`, please remember that `inject` must be used synchronously. It cannot be invoked within asynchronous callbacks or following any `await` statements. For more information, refer to [`runInInjectionContext`](api/core/runInInjectionContext).
 
@@ -208,8 +206,8 @@ When using [`RenderMode.Prerender`](api/ssr/RenderMode#Prerender 'API reference'
 
 The available fallback strategies are:
 
-- **Server:** Fallback to server-side rendering. This is the **default** behavior if no `fallback` property is specified.
-- **Client:** Fallback to client-side rendering.
+- **Server:** Falls back to server-side rendering. This is the **default** behavior if no `fallback` property is specified.
+- **Client:** Falls back to client-side rendering.
 - **None:** No fallback. Angular will not handle requests for paths that are not prerendered.
 
 ```typescript
@@ -256,30 +254,11 @@ export class MyComponent {
 
 IMPORTANT: The above tokens will be `null` in the following scenarios:
 - During the build processes.
-- When the application is rendered in the browser (client-side rendering).
+- When the application is rendered in the browser (CSR).
 - When performing static site generation (SSG).
 - During route extraction in development (at the time of the request).
 
 ## Configuring a server
-### Non-Node.js
-
-The `@angular/ssr` provides essential APIs for server-side rendering your Angular application on platforms other than Node.js. It leverages the standard [`Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request) and [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) objects from the Web API, enabling you to integrate Angular SSR into various server environments. For detailed information and examples, refer to the [`@angular/ssr` API reference](api/ssr/AngularAppEngine).
-
-```typescript
-// server.ts
-import { AngularAppEngine, createRequestHandler } from '@angular/ssr';
-
-const angularApp = new AngularAppEngine();
-
-/**
- * This is a request handler used by the Angular CLI (dev-server and during build).
- */
-const reqHandler = createRequestHandler(async (req: Request) => {
-  const res: Response|null = await angularApp.render(req);
-
-  // ...
-});
-```
 
 ### Node.js
 
@@ -312,10 +291,27 @@ app.use('*', (req, res, next) => {
 export const reqHandler = createNodeRequestHandler(app);
 ```
 
-## Generate a fully static application
-Here’s an expanded version with more details:
+### Non-Node.js
 
----
+The `@angular/ssr` provides essential APIs for server-side rendering your Angular application on platforms other than Node.js. It leverages the standard [`Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request) and [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) objects from the Web API, enabling you to integrate Angular SSR into various server environments. For detailed information and examples, refer to the [`@angular/ssr` API reference](api/ssr/AngularAppEngine).
+
+```typescript
+// server.ts
+import { AngularAppEngine, createRequestHandler } from '@angular/ssr';
+
+const angularApp = new AngularAppEngine();
+
+/**
+ * This is a request handler used by the Angular CLI (dev-server and during build).
+ */
+export const reqHandler = createRequestHandler(async (req: Request) => {
+  const res: Response|null = await angularApp.render(req);
+
+  // ...
+});
+```
+
+## Generate a fully static application
 
 By default, Angular prerenders your entire application and generates a server file for handling requests. This allows your app to serve pre-rendered content to users. However, if you prefer a fully static site without a server, you can opt out of this behavior by setting the `outputMode` to `static` in your `angular.json` configuration file.
 
