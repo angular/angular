@@ -13,9 +13,11 @@ import {
   ɵgetLocaleCurrencyCode,
   ɵgetLocalePluralCase,
   ɵLocaleDataIndex,
+  ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 
 import {CURRENCIES_EN, CurrenciesSymbols} from './currencies';
+import {RuntimeErrorCode} from '../errors';
 
 /**
  * Format styles that can be used to represent numbers.
@@ -599,10 +601,12 @@ export const getLocalePluralCase: (locale: string) => (value: number) => Plural 
 
 function checkFullData(data: any) {
   if (!data[ɵLocaleDataIndex.ExtraData]) {
-    throw new Error(
-      `Missing extra locale data for the locale "${
-        data[ɵLocaleDataIndex.LocaleId]
-      }". Use "registerLocaleData" to load new data. See the "I18n guide" on angular.io to know more.`,
+    throw new RuntimeError(
+      RuntimeErrorCode.MISSING_EXTRA_LOCALE_DATA_FOR_LOCALE,
+      ngDevMode &&
+        `Missing extra locale data for the locale "${
+          data[ɵLocaleDataIndex.LocaleId]
+        }". Use "registerLocaleData" to load new data. See the "I18n guide" on angular.io to know more.`,
     );
   }
 }
@@ -715,7 +719,10 @@ function getLastDefinedValue<T>(data: T[], index: number): T {
       return data[i];
     }
   }
-  throw new Error('Locale data API: locale data undefined');
+  throw new RuntimeError(
+    RuntimeErrorCode.LOCALE_DATA_UNDEFINED,
+    ngDevMode && 'Locale data API: locale data undefined',
+  );
 }
 
 /**
