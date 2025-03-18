@@ -181,24 +181,12 @@ function insertEventRecordScript(
  *
  * @param platformRef - Reference to the Angular platform.
  * @param applicationRef - Reference to the Angular application.
- * @param checkWhenStable - Whether to check for stability before rendering. When false, stability should be handled by the caller of this function.
  * @returns A promise that resolves to the rendered string.
  */
 export async function renderInternal(
   platformRef: PlatformRef,
   applicationRef: ApplicationRef,
-  checkWhenStable = true,
 ): Promise<string> {
-  if (checkWhenStable) {
-    const measuringLabel = 'whenStable';
-    startMeasuring(measuringLabel);
-
-    // Block until application is stable.
-    await applicationRef.whenStable();
-
-    stopMeasuring(measuringLabel);
-  }
-
   const platformState = platformRef.injector.get(PlatformState);
   prepareForHydration(platformState, applicationRef);
   appendServerContextInfo(applicationRef);
@@ -288,6 +276,13 @@ export async function renderModule<T>(
   try {
     const moduleRef = await platformRef.bootstrapModule(moduleType);
     const applicationRef = moduleRef.injector.get(ApplicationRef);
+
+    const measuringLabel = 'whenStable';
+    startMeasuring(measuringLabel);
+    // Block until application is stable.
+    await applicationRef.whenStable();
+    stopMeasuring(measuringLabel);
+
     return await renderInternal(platformRef, applicationRef);
   } finally {
     await asyncDestroyPlatform(platformRef);
@@ -330,6 +325,13 @@ export async function renderApplication<T>(
     stopMeasuring(bootstrapLabel);
 
     startMeasuring(_renderLabel);
+
+    const measuringLabel = 'whenStable';
+    startMeasuring(measuringLabel);
+    // Block until application is stable.
+    await applicationRef.whenStable();
+    stopMeasuring(measuringLabel);
+
     const rendered = await renderInternal(platformRef, applicationRef);
     stopMeasuring(_renderLabel);
     return rendered;
