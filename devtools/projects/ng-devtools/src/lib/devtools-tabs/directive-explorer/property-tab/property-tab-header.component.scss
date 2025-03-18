@@ -1,20 +1,16 @@
+@use '../../../../styles/typography';
+
 .element-header {
   display: flex;
   justify-content: space-between;
   width: 100%;
   align-items: center;
-  font-size: 11px;
+  padding: 0.375rem 0;
+  @extend %body-bold-01;
 
-  .component-name {
-    margin-left: 10px;
-    font-weight: 700;
-    line-height: 25px;
-  }
-
+  .component-name,
   .element-name {
     margin-left: 10px;
-    line-height: 25px;
-    font-weight: 700;
   }
 }
 

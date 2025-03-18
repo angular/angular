@@ -1,3 +1,5 @@
+@use '../../../../styles/typography';
+
 .visual-controls {
   display: flex;
   flex-direction: column;
@@ -17,10 +19,10 @@
   padding: 15px 5px 5px;
 
   button {
+    @extend %body-bold-01;
     height: 50px;
     width: 75px;
     white-space: normal;
-    line-height: 18px;
   }
 
   mat-form-field {
@@ -33,7 +35,6 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    font-weight: 500;
     -moz-user-select: text;
     -khtml-user-select: text;
     -webkit-user-select: text;

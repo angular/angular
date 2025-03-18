@@ -9,6 +9,9 @@ sass_binary(
     name = "resolution_path_styles",
     src = "resolution-path.component.scss",
     visibility = ["//visibility:private"],
+    deps = [
+        "//devtools/projects/ng-devtools/src/styles:typography",
+    ],
 )
 
 ng_module(

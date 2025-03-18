@@ -1,3 +1,5 @@
+@use '../../styles/typography';
+
 :host {
   position: relative;
   width: 100%;
@@ -49,8 +51,6 @@ nav {
   align-self: center;
   margin-left: auto;
   margin-right: 8px;
-  font-size: 0.8em;
-  font-weight: bold;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -78,13 +78,11 @@ mat-icon {
 }
 
 .mat-mdc-tab-link {
+  @extend %body-medium-01;
   min-width: unset;
-  line-height: 30px;
   height: 30px;
-  font-size: 13px;
   padding: 0px 10px;
   opacity: 1;
-  font-weight: 400;
 }
 
 @media only screen and (max-width: 700px) {
@@ -118,5 +116,4 @@ mat-icon {
   padding: 2px;
   outline-offset: -2px;
   width: 100px;
-  font-size: 12px;
 }
