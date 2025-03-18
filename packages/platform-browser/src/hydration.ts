@@ -215,7 +215,7 @@ function provideZoneJsCompatibilityDetector(): Provider[] {
  * @see {@link withI18nSupport}
  * @see {@link withEventReplay}
  *
- * @param features Optional features to configure additional router behaviors.
+ * @param features Optional features to configure additional hydration behaviors.
  * @returns A set of providers to enable hydration.
  *
  * @publicApi
