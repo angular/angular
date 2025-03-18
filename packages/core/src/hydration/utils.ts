@@ -697,3 +697,65 @@ export function processBlockData(injector: Injector): Map<string, BlockSummary> 
   }
   return blockDetails;
 }
+
+function isSsrContentsIntegrity(node: ChildNode | null): boolean {
+  return (
+    !!node &&
+    node.nodeType === Node.COMMENT_NODE &&
+    node.textContent?.trim() === SSR_CONTENT_INTEGRITY_MARKER
+  );
+}
+
+function skipTextNodes(node: ChildNode | null): ChildNode | null {
+  // Ignore whitespace. Before the <body>, we shouldn't find text nodes that aren't whitespace.
+  while (node && node.nodeType === Node.TEXT_NODE) {
+    node = node.previousSibling;
+  }
+  return node;
+}
+
+/**
+ * Verifies whether the DOM contains a special marker added during SSR time to make sure
+ * there is no SSR'ed contents transformations happen after SSR is completed. Typically that
+ * happens either by CDN or during the build process as an optimization to remove comment nodes.
+ * Hydration process requires comment nodes produced by Angular to locate correct DOM segments.
+ * When this special marker is *not* present - throw an error and do not proceed with hydration,
+ * since it will not be able to function correctly.
+ *
+ * Note: this function is invoked only on the client, so it's safe to use DOM APIs.
+ */
+export function verifySsrContentsIntegrity(doc: Document): void {
+  for (const node of doc.body.childNodes) {
+    if (isSsrContentsIntegrity(node)) {
+      return;
+    }
+  }
+
+  // Check if the HTML parser may have moved the marker to just before the <body> tag,
+  // e.g. because the body tag was implicit and not present in the markup. An implicit body
+  // tag is unlikely to interfer with whitespace/comments inside of the app's root element.
+
+  // Case 1: Implicit body. Example:
+  //   <!doctype html><head><title>Hi</title></head><!--nghm--><app-root></app-root>
+  const beforeBody = skipTextNodes(doc.body.previousSibling);
+  if (isSsrContentsIntegrity(beforeBody)) {
+    return;
+  }
+
+  // Case 2: Implicit body & head. Example:
+  //   <!doctype html><head><title>Hi</title><!--nghm--><app-root></app-root>
+  let endOfHead = skipTextNodes(doc.head.lastChild);
+  if (isSsrContentsIntegrity(endOfHead)) {
+    return;
+  }
+
+  throw new RuntimeError(
+    RuntimeErrorCode.MISSING_SSR_CONTENT_INTEGRITY_MARKER,
+    typeof ngDevMode !== 'undefined' &&
+      ngDevMode &&
+      'Angular hydration logic detected that HTML content of this page was modified after it ' +
+        'was produced during server side rendering. Make sure that there are no optimizations ' +
+        'that remove comment nodes from HTML enabled on your CDN. Angular hydration ' +
+        'relies on HTML produced by the server, including whitespaces and comment nodes.',
+  );
+}
