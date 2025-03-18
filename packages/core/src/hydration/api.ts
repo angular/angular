@@ -50,7 +50,7 @@ import {
   isIncrementalHydrationEnabled,
   NGH_DATA_KEY,
   processBlockData,
-  SSR_CONTENT_INTEGRITY_MARKER,
+  verifySsrContentsIntegrity,
 } from './utils';
 import {enableFindMatchingDehydratedViewImpl} from './views';
 import {DEHYDRATED_BLOCK_REGISTRY, DehydratedBlockRegistry} from '../defer/registry';
@@ -238,7 +238,7 @@ export function withDomHydration(): EnvironmentProviders {
         }
 
         if (inject(IS_HYDRATION_DOM_REUSE_ENABLED)) {
-          verifySsrContentsIntegrity();
+          verifySsrContentsIntegrity(getDocument());
           enableHydrationRuntimeSupport();
         } else if (typeof ngDevMode !== 'undefined' && ngDevMode && !isClientRenderModeEnabled()) {
           const console = inject(Console);
@@ -396,39 +396,4 @@ function logWarningOnStableTimedout(time: number, console: Console): void {
     `as a signal to complete hydration process.`;
 
   console.warn(formatRuntimeError(RuntimeErrorCode.HYDRATION_STABLE_TIMEDOUT, message));
-}
-
-/**
- * Verifies whether the DOM contains a special marker added during SSR time to make sure
- * there is no SSR'ed contents transformations happen after SSR is completed. Typically that
- * happens either by CDN or during the build process as an optimization to remove comment nodes.
- * Hydration process requires comment nodes produced by Angular to locate correct DOM segments.
- * When this special marker is *not* present - throw an error and do not proceed with hydration,
- * since it will not be able to function correctly.
- *
- * Note: this function is invoked only on the client, so it's safe to use DOM APIs.
- */
-function verifySsrContentsIntegrity(): void {
-  const doc = getDocument();
-  let hydrationMarker: Node | undefined;
-  for (const node of doc.body.childNodes) {
-    if (
-      node.nodeType === Node.COMMENT_NODE &&
-      node.textContent?.trim() === SSR_CONTENT_INTEGRITY_MARKER
-    ) {
-      hydrationMarker = node;
-      break;
-    }
-  }
-  if (!hydrationMarker) {
-    throw new RuntimeError(
-      RuntimeErrorCode.MISSING_SSR_CONTENT_INTEGRITY_MARKER,
-      typeof ngDevMode !== 'undefined' &&
-        ngDevMode &&
-        'Angular hydration logic detected that HTML content of this page was modified after it ' +
-          'was produced during server side rendering. Make sure that there are no optimizations ' +
-          'that remove comment nodes from HTML enabled on your CDN. Angular hydration ' +
-          'relies on HTML produced by the server, including whitespaces and comment nodes.',
-    );
-  }
 }
