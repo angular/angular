@@ -260,8 +260,8 @@ describe('DirectiveExplorerComponent', () => {
         expect(messageBusMock.emit).toHaveBeenCalledWith('enableFrameConnection', [0, 123]);
         expect(applicationOperationsSpy.viewSource).toHaveBeenCalledWith(
           [0], // current selected element position
+          {name: 'test1', id: 0, url: new URL('http://localhost:4200/url')},
           0, // directive index
-          new URL('http://localhost:4200/url'), // selected frame url
         );
       });
     });
@@ -298,7 +298,7 @@ describe('DirectiveExplorerComponent', () => {
         expect(messageBusMock.emit).toHaveBeenCalledWith('enableFrameConnection', [0, 123]);
         expect(applicationOperationsSpy.selectDomElement).toHaveBeenCalledWith(
           [0], // current selected element position
-          new URL('http://localhost:4200/url'), // selected frame url
+          {name: 'test1', id: 0, url: new URL('http://localhost:4200/url')},
         );
       });
     });
@@ -355,11 +355,11 @@ describe('DirectiveExplorerComponent', () => {
 
         expect(applicationOperationsSpy.inspect).toHaveBeenCalledTimes(1);
         expect(messageBusMock.emit).toHaveBeenCalledWith('enableFrameConnection', [0, 123]);
-        expect(applicationOperationsSpy.inspect).toHaveBeenCalledWith(
-          directivePosition,
-          ['foo'],
-          new URL('http://localhost:4200/url'), // selected frame url
-        );
+        expect(applicationOperationsSpy.inspect).toHaveBeenCalledWith(directivePosition, ['foo'], {
+          name: 'test1',
+          id: 0,
+          url: new URL('http://localhost:4200/url'),
+        });
       });
     });
   });
