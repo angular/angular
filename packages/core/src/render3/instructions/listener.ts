@@ -6,30 +6,23 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {setActiveConsumer} from '@angular/core/primitives/signals';
-
-import {NotificationSource} from '../../change_detection/scheduling/zoneless_scheduling';
-import {assertIndexInRange} from '../../util/assert';
 import {TNode, TNodeType} from '../interfaces/node';
 import {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
 import {RElement, RNode} from '../interfaces/renderer_dom';
-import {isComponentHost, isDirectiveHost} from '../interfaces/type_checks';
+import {isDirectiveHost} from '../interfaces/type_checks';
 import {CLEANUP, CONTEXT, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
-import {profiler} from '../profiler';
-import {ProfilerEvent} from '../profiler_types';
 import {getCurrentDirectiveDef, getCurrentTNode, getLView, getTView} from '../state';
 import {
-  getComponentLViewByIndex,
   getNativeByTNode,
   getOrCreateLViewCleanup,
   getOrCreateTViewCleanup,
   unwrapRNode,
 } from '../util/view_utils';
 
-import {markViewDirty} from './mark_view_dirty';
-import {handleError, loadComponentRenderer} from './shared';
-import {DirectiveDef} from '../interfaces/definition';
+import {listenToOutput} from '../view/directive_outputs';
+import {wrapListener} from '../view/listeners';
+import {loadComponentRenderer} from './shared';
 
 /**
  * Contains a reference to a function that disables event replay feature
@@ -269,112 +262,4 @@ export function listenerInternal(
       }
     }
   }
-}
-
-function listenToOutput(
-  tNode: TNode,
-  tView: TView,
-  lView: LView,
-  index: number,
-  lookupName: string,
-  eventName: string,
-  listenerFn: (e?: any) => any,
-  lCleanup: any[],
-  tCleanup: any[] | null,
-) {
-  ngDevMode && assertIndexInRange(lView, index);
-  const instance = lView[index];
-  const def = tView.data[index] as DirectiveDef<unknown>;
-  const propertyName = def.outputs[lookupName];
-  const output = instance[propertyName];
-
-  if (ngDevMode && !isOutputSubscribable(output)) {
-    throw new Error(`@Output ${propertyName} not initialized in '${instance.constructor.name}'.`);
-  }
-
-  const subscription = (output as SubscribableOutput<unknown>).subscribe(listenerFn);
-  const idx = lCleanup.length;
-  lCleanup.push(listenerFn, subscription);
-  tCleanup && tCleanup.push(eventName, tNode.index, idx, -(idx + 1));
-}
-
-function executeListenerWithErrorHandling(
-  lView: LView,
-  context: {} | null,
-  listenerFn: (e?: any) => any,
-  e: any,
-): boolean {
-  const prevConsumer = setActiveConsumer(null);
-  try {
-    profiler(ProfilerEvent.OutputStart, context, listenerFn);
-    // Only explicitly returning false from a listener should preventDefault
-    return listenerFn(e) !== false;
-  } catch (error) {
-    handleError(lView, error);
-    return false;
-  } finally {
-    profiler(ProfilerEvent.OutputEnd, context, listenerFn);
-    setActiveConsumer(prevConsumer);
-  }
-}
-
-/**
- * Wraps an event listener with a function that marks ancestors dirty and prevents default behavior,
- * if applicable.
- *
- * @param tNode The TNode associated with this listener
- * @param lView The LView that contains this listener
- * @param listenerFn The listener function to call
- * @param wrapWithPreventDefault Whether or not to prevent default behavior
- * (the procedural renderer does this already, so in those cases, we should skip)
- */
-function wrapListener(
-  tNode: TNode,
-  lView: LView<{} | null>,
-  context: {} | null,
-  listenerFn: (e?: any) => any,
-): EventListener {
-  // Note: we are performing most of the work in the listener function itself
-  // to optimize listener registration.
-  return function wrapListenerIn_markDirtyAndPreventDefault(e: any) {
-    // Ivy uses `Function` as a special token that allows us to unwrap the function
-    // so that it can be invoked programmatically by `DebugNode.triggerEventHandler`.
-    if (e === Function) {
-      return listenerFn;
-    }
-
-    // In order to be backwards compatible with View Engine, events on component host nodes
-    // must also mark the component view itself dirty (i.e. the view that it owns).
-    const startView = isComponentHost(tNode) ? getComponentLViewByIndex(tNode.index, lView) : lView;
-    markViewDirty(startView, NotificationSource.Listener);
-
-    let result = executeListenerWithErrorHandling(lView, context, listenerFn, e);
-    // A just-invoked listener function might have coalesced listeners so we need to check for
-    // their presence and invoke as needed.
-    let nextListenerFn = (<any>wrapListenerIn_markDirtyAndPreventDefault).__ngNextListenerFn__;
-    while (nextListenerFn) {
-      // We should prevent default if any of the listeners explicitly return false
-      result = executeListenerWithErrorHandling(lView, context, nextListenerFn, e) && result;
-      nextListenerFn = (<any>nextListenerFn).__ngNextListenerFn__;
-    }
-
-    return result;
-  };
-}
-
-/** Describes a subscribable output field value. */
-interface SubscribableOutput<T> {
-  subscribe(listener: (v: T) => void): {unsubscribe: () => void};
-}
-
-/**
- * Whether the given value represents a subscribable output.
- *
- * For example, an `EventEmitter, a `Subject`, an `Observable` or an
- * `OutputEmitter`.
- */
-function isOutputSubscribable(value: unknown): value is SubscribableOutput<unknown> {
-  return (
-    value != null && typeof (value as Partial<SubscribableOutput<unknown>>).subscribe === 'function'
-  );
 }

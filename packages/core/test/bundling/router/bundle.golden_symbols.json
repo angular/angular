@@ -486,7 +486,6 @@
   "getTView",
   "getTokenOrFunctionIdentity",
   "getViewRefs",
-  "handleError",
   "handleStoppedNotification",
   "handleUnhandledError",
   "hasApplyArgsData",
