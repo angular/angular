@@ -33,8 +33,7 @@ import {getLinkToModule} from './url-transforms';
 import {addApiLinksToHtml} from './code-transforms';
 import {getCurrentSymbol, getModuleName, unknownSymbolMessage} from '../symbol-context';
 
-export const JS_DOC_REMARKS_TAG = 'remarks';
-export const JS_DOC_USAGE_NOTES_TAG = 'usageNotes';
+const JS_DOC_USAGE_NOTE_TAGS: Set<string> = new Set(['remarks', 'usageNotes', 'example']);
 export const JS_DOC_SEE_TAG = 'see';
 export const JS_DOC_DESCRIPTION_TAG = 'description';
 
@@ -91,10 +90,11 @@ export function addHtmlAdditionalLinks<T extends HasJsDocTags & HasModuleName>(
 }
 
 export function addHtmlUsageNotes<T extends HasJsDocTags>(entry: T): T & HasHtmlUsageNotes {
-  const usageNotesTag = entry.jsdocTags.find(
-    ({name}) => name === JS_DOC_USAGE_NOTES_TAG || name === JS_DOC_REMARKS_TAG,
-  );
-  const htmlUsageNotes = usageNotesTag ? getHtmlForJsDocText(usageNotesTag.comment) : '';
+  const usageNotesTags = entry.jsdocTags.filter(({name}) => JS_DOC_USAGE_NOTE_TAGS.has(name)) ?? [];
+  let htmlUsageNotes = '';
+  for (const {comment} of usageNotesTags) {
+    htmlUsageNotes += getHtmlForJsDocText(comment);
+  }
 
   return {
     ...entry,
