@@ -30,6 +30,10 @@ export class FrameManager {
     return this._frames().get(selectedFrameId) ?? null;
   });
 
+  readonly topLevelFrameIsActive = computed(() => {
+    return this._selectedFrameId() === TOP_LEVEL_FRAME_ID;
+  });
+
   static initialize(inspectedWindowTabIdTestOnly?: number | null) {
     const manager = new FrameManager();
     manager.initialize(inspectedWindowTabIdTestOnly);
