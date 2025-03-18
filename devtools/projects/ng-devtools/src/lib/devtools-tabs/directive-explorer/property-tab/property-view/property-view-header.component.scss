@@ -30,6 +30,11 @@ button {
   &:active {
     opacity: 1;
   }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 1;
+  }
 }
 
 :host-context(.dark-theme) {
