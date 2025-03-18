@@ -11,12 +11,11 @@ import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type, Writable} from '../interface/type';
 import {assertNotDefined} from '../util/assert';
 import {bindingUpdated} from './bindings';
-import {listenToDirectiveOutput, wrapListener} from './instructions/listener';
 import {setDirectiveInput, storePropertyBindingMetadata} from './instructions/shared';
 import {DirectiveDef} from './interfaces/definition';
-import {CONTEXT} from './interfaces/view';
 import {getCurrentTNode, getLView, getSelectedTNode, getTView, nextBindingIndex} from './state';
 import {stringifyForError} from './util/stringify_utils';
+import {createOutputListener} from './view/directive_outputs';
 
 /** Symbol used to store and retrieve metadata about a binding. */
 export const BINDING = /* @__PURE__ */ Symbol('BINDING');
@@ -152,25 +151,9 @@ export function outputBinding<T>(eventName: string, listener: (event: T) => unkn
       }
 
       const lView = getLView<{} | null>();
-      const tView = getTView();
       const tNode = getCurrentTNode()!;
-      const context = lView[CONTEXT];
-      const wrappedListener = wrapListener(tNode, lView, context, listener);
-      const hasBound = listenToDirectiveOutput(
-        tNode,
-        tView,
-        lView,
-        target,
-        eventName,
-        wrappedListener,
-      );
 
-      if (!hasBound && ngDevMode) {
-        throw new RuntimeError(
-          RuntimeErrorCode.INVALID_BINDING_TARGET,
-          `${stringifyForError(target.type)} does not have an output with a public name of "${eventName}".`,
-        );
-      }
+      createOutputListener(tNode, lView, listener, target, eventName);
     },
   };
 
