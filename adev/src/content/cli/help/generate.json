@@ -884,6 +884,11 @@
           "type": "boolean",
           "default": false,
           "description": "Skip the generation of a unit test file `spec.ts` for the service."
+        },
+        {
+          "name": "type",
+          "type": "string",
+          "description": "Append a custom type to the service's filename. For example, if you set the type to `service`, the file will be named `my-service.service.ts`."
         }
       ],
       "aliases": [
