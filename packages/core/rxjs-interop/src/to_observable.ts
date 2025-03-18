@@ -20,7 +20,7 @@ import {Observable, ReplaySubject} from 'rxjs';
 /**
  * Options for `toObservable`.
  *
- * @developerPreview
+ * @publicApi
  */
 export interface ToObservableOptions {
   /**
@@ -39,7 +39,7 @@ export interface ToObservableOptions {
  *
  * `toObservable` must be called in an injection context unless an injector is provided via options.
  *
- * @developerPreview
+ * @publicApi
  */
 export function toObservable<T>(source: Signal<T>, options?: ToObservableOptions): Observable<T> {
   !options?.injector && assertInInjectionContext(toObservable);
