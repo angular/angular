@@ -804,11 +804,51 @@ function isInTypeCheckContext(program: ts.Program, fileName: string, position: n
     return false;
   }
 
-  let asgn = getPropertyAssignmentFromValue(node, 'template');
-  if (asgn === null) {
+  const assignment = getPropertyAssignmentFromValue(node, 'template');
+  if (assignment !== null) {
+    return getClassDeclFromDecoratorProp(assignment) !== null;
+  }
+  return isHostBindingExpression(node);
+}
+
+function isHostBindingExpression(node: ts.Node): boolean {
+  if (!ts.isStringLiteralLike(node)) {
     return false;
   }
-  return getClassDeclFromDecoratorProp(asgn) !== null;
+
+  const assignment = closestAncestorNode(node, ts.isPropertyAssignment);
+  if (assignment === null || assignment.initializer !== node) {
+    return false;
+  }
+
+  const literal = closestAncestorNode(assignment, ts.isObjectLiteralExpression);
+  if (literal === null) {
+    return false;
+  }
+
+  const parentAssignment = getPropertyAssignmentFromValue(literal, 'host');
+  if (parentAssignment === null || parentAssignment.initializer !== literal) {
+    return false;
+  }
+
+  return getClassDeclFromDecoratorProp(parentAssignment) !== null;
+}
+
+function closestAncestorNode<T extends ts.Node>(
+  start: ts.Node,
+  predicate: (node: ts.Node) => node is T,
+): T | null {
+  let current = start.parent;
+
+  while (current) {
+    if (predicate(current)) {
+      return current;
+    } else {
+      current = current.parent;
+    }
+  }
+
+  return null;
 }
 
 function isInAngularContext(program: ts.Program, fileName: string, position: number) {
@@ -819,6 +859,10 @@ function isInAngularContext(program: ts.Program, fileName: string, position: num
   const node = findTightestNodeAtPosition(program, fileName, position);
   if (node === undefined) {
     return false;
+  }
+
+  if (isHostBindingExpression(node)) {
+    return true;
   }
 
   const assignment =

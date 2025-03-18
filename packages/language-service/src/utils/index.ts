@@ -136,21 +136,43 @@ function getInlineTypeCheckInfoAtPosition(
   // Return `undefined` if the position is not on the template expression or the template resource
   // is not inline.
   const resources = compiler.getDirectiveResources(classDecl);
+  if (resources === null) {
+    return undefined;
+  }
+
   if (
-    resources === null ||
-    resources.template === null ||
-    isExternalResource(resources.template) ||
-    expression !== resources.template.node
+    resources.template !== null &&
+    !isExternalResource(resources.template) &&
+    expression === resources.template.node
   ) {
-    return undefined;
+    const template = compiler.getTemplateTypeChecker().getTemplate(classDecl);
+    if (template === null) {
+      return undefined;
+    }
+
+    return {nodes: template, declaration: classDecl};
   }
 
-  const template = compiler.getTemplateTypeChecker().getTemplate(classDecl);
-  if (template === null) {
-    return undefined;
+  if (resources.hostBindings !== null) {
+    const start = expression.getStart();
+    const end = expression.getEnd();
+
+    for (const binding of resources.hostBindings) {
+      if (
+        !isExternalResource(binding) &&
+        start >= binding.node.getStart() &&
+        end <= binding.node.getEnd()
+      ) {
+        const hostElement = compiler.getTemplateTypeChecker().getHostElement(classDecl);
+
+        if (hostElement !== null) {
+          return {nodes: [hostElement], declaration: classDecl};
+        }
+      }
+    }
   }
 
-  return {nodes: template, declaration: classDecl};
+  return undefined;
 }
 
 /**

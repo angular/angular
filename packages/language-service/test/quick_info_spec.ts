@@ -107,7 +107,7 @@ function quickInfoSkeleton(): {[fileName: string]: string} {
 
         /**
          * Don't use me
-         * 
+         *
          * @deprecated use the new thing
          */
         @Directive({
@@ -921,6 +921,129 @@ describe('quick info', () => {
       template.moveCursorToText('val¦2');
       const quickInfo2 = template.getQuickInfoAtPosition();
       expect(toText(quickInfo2!.displayParts)).toEqual('(property) SomeCmp.val2: number');
+    });
+
+    describe('host bindings', () => {
+      function expectHostBindingsQuickInfo({
+        source,
+        moveTo,
+        expectedDisplayString,
+        expectedSpanText,
+      }: {
+        source: string;
+        moveTo: string;
+        expectedDisplayString: string;
+        expectedSpanText: string;
+      }) {
+        const project = env.addProject(
+          'host-bindings',
+          {'host-bindings.ts': source},
+          {
+            typeCheckHostBindings: true,
+          },
+        );
+        const appFile = project.openFile('host-bindings.ts');
+
+        appFile.moveCursorToText(moveTo);
+        const quickInfo = appFile.getQuickInfoAtPosition();
+        expect(quickInfo).toBeTruthy();
+        const {textSpan, displayParts} = quickInfo!;
+        expect(source.substring(textSpan.start, textSpan.start + textSpan.length)).toEqual(
+          expectedSpanText,
+        );
+        expect(toText(displayParts)).toEqual(expectedDisplayString);
+      }
+
+      it('should handle host property binding', () => {
+        const source = `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: '',
+            selector: 'app-cmp',
+            host: {'[title]': 'myTitle'}
+          })
+          export class AppCmp {
+            myTitle = 'hello';
+          }
+        `;
+
+        expectHostBindingsQuickInfo({
+          source,
+          moveTo: `'[title]': 'myT¦itle'`,
+          expectedSpanText: 'myTitle',
+          expectedDisplayString: '(property) AppCmp.myTitle: string',
+        });
+      });
+
+      it('should handle host listener', () => {
+        const source = `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: '',
+            selector: 'app-cmp',
+            host: {
+              '(click)': 'handleClick($event)'
+            }
+          })
+          export class AppCmp {
+            handleClick(event: MouseEvent) {}
+          }
+        `;
+
+        expectHostBindingsQuickInfo({
+          source,
+          moveTo: `'(click)': 'handleC¦lick($event)'`,
+          expectedSpanText: 'handleClick',
+          expectedDisplayString: '(method) AppCmp.handleClick(event: MouseEvent): void',
+        });
+      });
+
+      it('should handle host listener parameter', () => {
+        const source = `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: '',
+            selector: 'app-cmp',
+            host: {
+              '(click)': 'handleClick($event)'
+            }
+          })
+          export class AppCmp {
+            handleClick(event: MouseEvent) {}
+          }
+        `;
+
+        expectHostBindingsQuickInfo({
+          source,
+          moveTo: `'(click)': 'handleClick($ev¦ent)'`,
+          expectedSpanText: '$event',
+          expectedDisplayString: '(parameter) $event: MouseEvent',
+        });
+      });
+
+      it('should handle host binding on a directive', () => {
+        const source = `
+          import {Directive} from '@angular/core';
+
+          @Directive({
+            selector: '[my-dir]',
+            host: {'[title]': 'myTitle'}
+          })
+          export class MyDir {
+            myTitle = 'hello';
+          }
+        `;
+
+        expectHostBindingsQuickInfo({
+          source,
+          moveTo: `'[title]': 'myT¦itle'`,
+          expectedSpanText: 'myTitle',
+          expectedDisplayString: '(property) MyDir.myTitle: string',
+        });
+      });
     });
   });
 
