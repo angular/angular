@@ -117,8 +117,6 @@ export function toSignal<T, const U extends T>(
  * If the subscription should persist until the `Observable` itself completes, the `manualCleanup`
  * option can be specified instead, which disables the automatic subscription teardown. No injection
  * context is needed in this configuration as well.
- *
- * @developerPreview
  */
 export function toSignal<T, U = undefined>(
   source: Observable<T> | Subscribable<T>,
