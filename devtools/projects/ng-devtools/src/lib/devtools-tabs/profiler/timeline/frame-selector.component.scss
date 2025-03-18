@@ -1,3 +1,5 @@
+@use '../../../../styles/typography';
+
 .bar-graph-container {
   padding: 2px;
   height: 54px;
@@ -9,8 +11,7 @@
   margin-bottom: 10px;
 
   .txt-frames {
-    font-weight: 500;
-    line-height: 50px;
+    @extend %body-bold-01;
     padding: 0px;
     margin: 0px 10px;
     width: 150px;

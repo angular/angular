@@ -1,3 +1,5 @@
+@use '../../../../../styles/typography';
+
 .editor {
   cursor: text;
   border: none;
@@ -12,10 +14,10 @@
 }
 
 input {
+  @extend %monospaced;
+  line-height: 1rem;
+  letter-spacing: normal;
   width: fit-content;
-  font-family: Menlo, monospace;
-  font-weight: 500;
-  font-size: 1em;
   border: none;
   outline: none;
 }

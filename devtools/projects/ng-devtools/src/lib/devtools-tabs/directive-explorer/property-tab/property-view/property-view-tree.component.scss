@@ -1,3 +1,5 @@
+@use '../../../../../styles/typography';
+
 :host {
   width: 100%;
   display: block;
@@ -8,10 +10,14 @@
   }
 
   ::ng-deep {
+    .mat-tree-node,
+    .mat-nested-tree-node {
+      @extend %monospaced;
+    }
+
     .mat-tree-node {
       min-height: 20px !important;
       cursor: default;
-      font-family: Menlo, monospace;
 
       .mat-icon {
         font-size: 11px;
@@ -37,7 +43,6 @@
   mat-tree-node {
     .name {
       color: var(--color-tree-node-element-name);
-      font-weight: 500;
     }
   }
 }
@@ -45,15 +50,4 @@
 .property-list mat-tree-node.disabled .name,
 .disabled {
   color: var(--secondary-contrast);
-}
-
-.arrow {
-  font-family: monospace;
-  font-size: 0.5em;
-  color: var(--quaternary-contrast);
-}
-
-:host ::ng-deep .mat-tree-node,
-.mat-nested-tree-node {
-  font-size: 0.8em;
 }

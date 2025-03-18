@@ -1,0 +1,66 @@
+/* Default values */
+$font-family: system-ui, sans-serif;
+$font-family-mono: monospace;
+$font-size: 0.75rem; // 12px
+
+@mixin fonts {
+  :root {
+    --font-family: #{$font-family};
+    --font-family: #{$font-family-mono};
+    --font-size: #{$font-size};
+  }
+}
+
+/* Pixel equivalent comments are based on root font size of 16px */
+
+%heading-600 {
+  font-family: $font-family;
+  font-size: 1.125rem; // 18px
+  font-weight: 500;
+  line-height: 1rem;
+  letter-spacing: normal;
+  padding: 0.5rem 0.25rem;
+}
+
+%heading-500 {
+  font-family: $font-family;
+  font-size: 1rem; // 16px
+  font-weight: 500;
+  line-height: 1rem;
+  letter-spacing: normal;
+  padding: 0.5rem 0.25rem;
+}
+
+%heading-400 {
+  font-family: $font-family;
+  font-size: 0.85rem; // 13.6px
+  font-weight: 500;
+  line-height: 1rem;
+  letter-spacing: normal;
+  padding: 0.5rem 0.25rem;
+}
+
+%body-01 {
+  font-family: $font-family;
+  font-size: $font-size; // 12px
+  font-weight: 400;
+  line-height: 1rem;
+  letter-spacing: normal;
+}
+
+%body-medium-01 {
+  @extend %body-01;
+  font-weight: 500;
+}
+
+%body-bold-01 {
+  @extend %body-01;
+  font-weight: 700;
+}
+
+%monospaced {
+  font-family: $font-family-mono;
+  font-size: 0.688rem; // 13px
+  line-height: 1.125rem; // 18px
+  letter-spacing: normal;
+}

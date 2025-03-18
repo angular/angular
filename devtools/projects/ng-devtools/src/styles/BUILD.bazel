@@ -16,6 +16,7 @@ sass_library(
     deps = [
         ":colors",
         ":material_sass_deps",
+        ":typography",
     ],
 )
 
@@ -34,6 +35,14 @@ sass_library(
     srcs = ["_colors.scss"],
     deps = [
         ":theme",
+    ],
+)
+
+sass_library(
+    name = "typography",
+    srcs = [
+        "_typography.scss",
+        ":material_sass_deps",
     ],
 )
 
