@@ -490,13 +490,7 @@ groups:
     reviewers:
       users:
         - csmick # Cameron Smick
-        - lannka # Hongfei Ding
-        - eduhmc # Eduardo Huerta-Mercado
-        - ehlemur # Edward Lesmes
-        - ellenyuan # Ellen Yuan
-        - jesse-good # Jesse Costello-Good
         - mturco # Matt Turco
-        - neonstalwart # Ben Hockey
         - iteriani # Thomas Nguyen
         - tbondwilkinson # Tom Wilkinson
         - rahatarmanahmed # Rahat Ahmed
