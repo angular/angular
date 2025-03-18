@@ -339,7 +339,6 @@
   "getTStylingRangePrev",
   "getTView",
   "getViewRefs",
-  "handleError",
   "handleStoppedNotification",
   "handleUnhandledError",
   "hasApplyArgsData",

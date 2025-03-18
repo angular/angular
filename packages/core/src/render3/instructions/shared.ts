@@ -7,7 +7,6 @@
  */
 
 import {Injector} from '../../di/injector';
-import {ErrorHandler} from '../../error_handler';
 import {hasSkipHydrationAttrOnRElement} from '../../hydration/skip_hydration';
 import {PRESERVE_HOST_CONTENT, PRESERVE_HOST_CONTENT_DEFAULT} from '../../hydration/tokens';
 import {processTextNodeMarkersBeforeHydration} from '../../hydration/utils';
@@ -29,7 +28,6 @@ import {
   InitialInputData,
   InitialInputs,
   LocalRefExtractor,
-  NodeInputBindings,
   TContainerNode,
   TDirectiveHostNode,
   TElementContainerNode,
@@ -58,7 +56,6 @@ import {isNodeMatchingSelectorList} from '../node_selector_matcher';
 import {profiler} from '../profiler';
 import {ProfilerEvent} from '../profiler_types';
 import {
-  getBindingsEnabled,
   getCurrentDirectiveIndex,
   getSelectedIndex,
   isInCheckNoChangesMode,
@@ -75,6 +72,7 @@ import {createComponentLView} from '../view/construction';
 import {selectIndexInternal} from './advance';
 import {handleUnknownPropertyError, isPropertyValid, matchingSchemas} from './element_validation';
 import {writeToDirectiveInput} from './write_to_directive_input';
+import {ErrorHandler} from '../../error_handler';
 
 export function executeTemplate<T>(
   tView: TView,
