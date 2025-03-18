@@ -69,69 +69,151 @@ runInEachFileSystem(() => {
       });
 
       describe('Variable Declaration Case', () => {
-        it('should tree-shake away debug info if in prod mode', async () => {
-          env.write(
-            'test.ts',
-            `
-              import {signal} from '@angular/core';
-              const testSignal = signal('Hello World');
-            `,
-          );
-          env.driveMain();
+        describe('no existing config', () => {
+          it('should not tree-shake away debug info if in dev mode', async () => {
+            env.write(
+              'test.ts',
+              `
+                import {signal} from '@angular/core';
+                const testSignal = signal('Hello World');
+              `,
+            );
+            env.driveMain();
 
-          const jsContents = env.getContents('test.js');
-          const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
-          expect(builtContent).not.toContain('debugName');
-          expect(builtContent).toContain('signal("Hello World")');
+            const jsContents = env.getContents('test.js');
+            const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions))
+              .code;
+            expect(builtContent).toContain(`signal("Hello World", { debugName: "testSignal" });`);
+          });
+
+          it('should tree-shake away debug info if in prod mode', async () => {
+            env.write(
+              'test.ts',
+              `
+                import {signal} from '@angular/core';
+                const testSignal = signal('Hello World');
+              `,
+            );
+            env.driveMain();
+
+            const jsContents = env.getContents('test.js');
+            const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions))
+              .code;
+            expect(builtContent).not.toContain('debugName');
+            expect(builtContent).toContain('signal("Hello World")');
+          });
         });
 
-        it('should not tree-shake away debug info if in dev mode', async () => {
-          env.write(
-            'test.ts',
-            `
-              import {signal} from '@angular/core';
-              const testSignal = signal('Hello World');
-            `,
-          );
-          env.driveMain();
+        describe('has existing config', () => {
+          it('should insert debug info into signal function that has an object literal config', async () => {
+            env.write(
+              'test.ts',
+              `
+                import {signal} from '@angular/core';
+                const testSignal = signal('Hello World', { equal: () => true });
+              `,
+            );
+            env.driveMain();
 
-          const jsContents = env.getContents('test.js');
-          const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
-          expect(builtContent).toContain(`signal("Hello World", { debugName: "testSignal" });`);
-        });
+            const jsContents = env.getContents('test.js');
+            expect(jsContents).toContain(
+              `signal('Hello World', ...(ngDevMode ? [{ debugName: "testSignal", equal: () => true }] : [{ equal: () => true }]))`,
+            );
+          });
 
-        it('should insert debug info into signal function that already has custom options', async () => {
-          env.write(
-            'test.ts',
-            `
-              import {signal} from '@angular/core';
-              const testSignal = signal('Hello World', { equal: () => true });
-            `,
-          );
-          env.driveMain();
+          it('should insert debug info into signal function that has an identifier config', async () => {
+            env.write(
+              'test.ts',
+              `
+                import {signal} from '@angular/core';
+                const myConfig = { equal: () => true }
+                const testSignal = signal('Hello World', myConfig);
+              `,
+            );
+            env.driveMain();
 
-          const jsContents = env.getContents('test.js');
-          expect(jsContents).toContain(
-            `signal('Hello World', ...(ngDevMode ? [{ debugName: "testSignal", equal: () => true }] : [{ equal: () => true }]))`,
-          );
-        });
+            const jsContents = env.getContents('test.js');
+            expect(jsContents).toContain(
+              `signal('Hello World', ...(ngDevMode ? [{ debugName: "testSignal", ...(myConfig) }] : [myConfig]))`,
+            );
+          });
 
-        it('should tree-shake away debug info if in prod mode for signal function that has custom options', async () => {
-          env.write(
-            'test.ts',
-            `
-              import {signal} from '@angular/core';
-              declare function equal(): boolean;
-              const testSignal = signal('Hello World', { equal });
-            `,
-          );
-          env.driveMain();
+          it('should insert debug info into signal function that has a callExpression config', async () => {
+            env.write(
+              'test.ts',
+              `
+                import {signal} from '@angular/core';
+                function myConfig() {
+                  return { nestedConfig: () => ({ equal: () => true }) }
+                }
+                const testSignal = signal('Hello World', myConfig().nestedConfig());
+              `,
+            );
+            env.driveMain();
 
-          const jsContents = env.getContents('test.js');
-          const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
-          expect(builtContent).toContain(`signal("Hello World", { equal });`);
-          expect(builtContent).not.toContain('ngDevMode');
-          expect(builtContent).not.toContain('debugName');
+            const jsContents = env.getContents('test.js');
+            expect(jsContents).toContain(
+              `signal('Hello World', ...(ngDevMode ? [{ debugName: "testSignal", ...(myConfig().nestedConfig()) }] : [myConfig().nestedConfig()]))`,
+            );
+          });
+
+          it('should not tree-shake away debug info if in dev mode', async () => {
+            env.write(
+              'test.ts',
+              `
+                import {signal} from '@angular/core';
+                declare function equal(): boolean;
+                function myConfig() {
+                  return { nestedConfig: () => ({ equal: () => true }) }
+                }
+                const identifierConfig = { equal };
+                const testSignal1 = signal('object literal', { equal });
+                const testSignal2 = signal('call expression', myConfig().nestedConfig());
+                const testSignal3 = signal('identifier', identifierConfig);
+              `,
+            );
+            env.driveMain();
+
+            const jsContents = env.getContents('test.js');
+            const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions))
+              .code;
+            expect(builtContent).toContain(
+              `signal("object literal", { debugName: "testSignal1", equal });`,
+            );
+            expect(builtContent).toContain(
+              `signal("call expression", { debugName: "testSignal2", ...(myConfig().nestedConfig()) });`,
+            );
+            expect(builtContent).toContain(
+              `signal("identifier", { debugName: "testSignal3", ...(identifierConfig) });`,
+            );
+          });
+
+          it('should tree-shake away debug info if in prod mode', async () => {
+            env.write(
+              'test.ts',
+              `
+                import {signal} from '@angular/core';
+                declare function equal(): boolean;
+                function myConfig() {
+                  return { nestedConfig: () => ({ equal: () => true }) }
+                }
+                const identifierConfig = { equal };
+                const testSignal1 = signal('object literal', { equal });
+                const testSignal2 = signal('call expression', myConfig().nestedConfig());
+                const testSignal3 = signal('identifier', identifierConfig);
+              `,
+            );
+            env.driveMain();
+
+            const jsContents = env.getContents('test.js');
+            const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions))
+              .code;
+            expect(builtContent).toContain(`signal("object literal", { equal });`);
+            expect(builtContent).toContain(`signal("call expression", myConfig().nestedConfig());`);
+            expect(builtContent).toContain(`signal("Hello identifier", identifierConfig);`);
+            expect(builtContent).not.toContain('ngDevMode');
+            expect(builtContent).not.toContain('debugName');
+          });
         });
       });
 

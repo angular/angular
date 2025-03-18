@@ -22,20 +22,33 @@ function insertDebugNameIntoCallExpression(
     existingArgument = ts.factory.createObjectLiteralExpression([]);
   }
 
-  // Do nothing if an identifier is used as the config object
-  // Ex -
-  // const defaultObject = { equals: () => false };
-  // signal(123, defaultObject)
-  if (ts.isIdentifier(existingArgument)) {
+  // We have three valid cases: object literal, call expression, and identifier
+  const isObjectLiteral = ts.isObjectLiteralExpression(existingArgument);
+  const isCallExpression = ts.isCallExpression(existingArgument);
+  const isIdentifier = ts.isIdentifier(existingArgument);
+  if (!isObjectLiteral && !isCallExpression && !isIdentifier) {
     return callExpression;
   }
 
-  if (!ts.isObjectLiteralExpression(existingArgument)) {
-    return callExpression;
+  let transformedArg: ts.ObjectLiteralExpression;
+  // We need to handle the call expression and identifier cases by wrapping them in an object literal
+  // to prep for inserting the debugName property.
+  if (ts.isCallExpression(existingArgument) || ts.isIdentifier(existingArgument)) {
+    // wrap the existing argument in an object literal
+    // myConfig -> { ...(myConfig) }
+    // or
+    // myConfig() -> { ...(myConfig()) }
+    const wrapped = ts.factory.createParenthesizedExpression(existingArgument);
+    transformedArg = ts.factory.createObjectLiteralExpression([
+      ts.factory.createSpreadAssignment(wrapped),
+    ]);
+  } else {
+    // existing argument is already an object literal so there is no work to do
+    transformedArg = existingArgument as ts.ObjectLiteralExpression;
   }
 
   // insert debugName into the existing config object
-  const properties = Array.from(existingArgument.properties);
+  const properties = Array.from(transformedArg.properties);
   const debugNameExists = properties.some(
     (prop) =>
       ts.isPropertyAssignment(prop) && ts.isIdentifier(prop.name) && prop.name.text === 'debugName',
