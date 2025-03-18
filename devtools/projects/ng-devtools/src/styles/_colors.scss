@@ -31,10 +31,6 @@ $_colors: (
   purple-02: oklch(57.9% 0.26 295),
   purple-03: oklch(76% 0.15 305),
 
-  /* Full contrast */
-  black: oklch(0% 0 0),
-  white: oklch(100% 0 0),
-
   /* Grayscale */
   gray-1000: oklch(16.93% 0 0),
   gray-900: oklch(19.37% 0 0),
@@ -57,7 +53,7 @@ $_colors: (
 
 @mixin _light-colors {
   /* Dynamic general purpose colors */
-  --full-contrast: var(--black);
+  --full-contrast: black;
 
   --primary-contrast: var(--gray-900);
   --secondary-contrast: var(--gray-800);
@@ -78,9 +74,9 @@ $_colors: (
   --dynamic-transparent-02: var(--transparent-02);
 
   /* Main colors – general UI colors like background and text color */
-  --color-background: var(--white);
+  --color-background: white;
   --color-foreground: var(--blue-06);
-  --color-text: var(--black);
+  --color-text: black;
   --color-separator: var(--blue-05);
 
   /* Special colors – usually a single-use colors meant for specific elements */
@@ -97,7 +93,7 @@ $_colors: (
 
 @mixin _dark-colors {
   /* Dynamic general purpose colors */
-  --full-contrast: var(--white);
+  --full-contrast: white;
 
   --primary-contrast: var(--gray-50);
   --secondary-contrast: var(--gray-300);
@@ -120,7 +116,7 @@ $_colors: (
   /* Main colors – general UI colors like background and text color */
   --color-background: var(--gray-800);
   --color-foreground: var(--gray-700);
-  --color-text: var(--white);
+  --color-text: white;
   --color-separator: var(--gray-600);
 
   /* Special colors – usually a single-use colors meant for specific elements */

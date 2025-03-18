@@ -46,7 +46,7 @@
           justify-content: center;
           width: 100%;
           height: 100%;
-          color: var(--black);
+          color: black;
           font-size: 16px;
           box-sizing: border-box;
           border-radius: 2px;
@@ -55,7 +55,7 @@
           font-weight: 300;
 
           &:hover {
-            color: var(--white);
+            color: white;
           }
         }
 
@@ -63,8 +63,8 @@
           .node-container,
           .node-container:hover {
             background: var(--blue-02);
-            border-color: var(--white);
-            color: var(--white);
+            border-color: white;
+            color: white;
             font-weight: 400;
           }
 
@@ -72,7 +72,7 @@
             .node-container,
             .node-container:hover {
               color: var(--blue-02);
-              background: var(--white);
+              background: white;
               border-width: 3px;
               border-color: var(--blue-02);
               font-weight: 800;
@@ -125,15 +125,15 @@
 
         .node-null {
           border: 1px solid var(--quaternary-contrast);
-          background: var(--white);
+          background: white;
 
           &:hover {
-            color: var(--black);
+            color: black;
           }
         }
 
         .node-label {
-          color: var(--black);
+          color: black;
           font-weight: 300;
           font-size: 18px;
           text-align: center;
