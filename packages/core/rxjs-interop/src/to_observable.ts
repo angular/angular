@@ -23,7 +23,7 @@ import {TO_OBSERVABLE_SYNC} from './to_observable_flag';
 /**
  * Options for `toObservable`.
  *
- * @developerPreview
+ * @publicApi
  */
 export interface ToObservableOptions {
   /**
