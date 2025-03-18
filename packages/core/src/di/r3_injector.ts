@@ -80,6 +80,7 @@ import {
   InjectionToken as PrimitivesInjectionToken,
   NOT_FOUND,
   NotFound,
+  isNotFound,
 } from '@angular/core/primitives/di';
 
 /**
@@ -238,12 +239,19 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
   retrieve<T>(token: PrimitivesInjectionToken<T>, options?: unknown): T | NotFound {
     const flags: InternalInjectFlags =
       convertToBitFlags(options as InjectOptions | undefined) || InternalInjectFlags.Default;
-    return (this as BackwardsCompatibleInjector).get(
-      token as unknown as InjectionToken<T>,
-      // When a dependency is requested with an optional flag, DI returns null as the default value.
-      flags & InternalInjectFlags.Optional ? null : undefined,
-      flags,
-    )!;
+    try {
+      return (this as BackwardsCompatibleInjector).get(
+        token as unknown as InjectionToken<T>,
+        // When a dependency is requested with an optional flag, DI returns null as the default value.
+        THROW_IF_NOT_FOUND as T,
+        flags,
+      );
+    } catch (e: any) {
+      if (isNotFound(e)) {
+        return e;
+      }
+      throw e;
+    }
   }
 
   /**
@@ -367,7 +375,8 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
           : notFoundValue;
       return nextInjector.get(token, notFoundValue);
     } catch (e: any) {
-      if (e.name === 'NullInjectorError') {
+      if (isNotFound(e)) {
+        // @ts-ignore
         const path: any[] = (e[NG_TEMP_TOKEN_PATH] = e[NG_TEMP_TOKEN_PATH] || []);
         path.unshift(stringify(token));
         if (previousInjector) {
