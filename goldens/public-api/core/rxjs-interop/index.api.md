@@ -48,6 +48,8 @@ export function toObservable<T>(source: Signal<T>, options?: ToObservableOptions
 
 // @public
 export interface ToObservableOptions {
+    // @deprecated
+    forceAsyncFirstEmit?: true;
     injector?: Injector;
 }
 
