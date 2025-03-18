@@ -567,10 +567,116 @@ describe('definitions', () => {
     assertFileNames(Array.from(definitions), ['app.ts']);
   });
 
+  it('gets definition for a host binding value of a component', () => {
+    initMockFileSystem('Native');
+    const files = {
+      'app.html': '',
+      'app.ts': `
+        import {Component} from '@angular/core';
+        @Component({
+          template: '',
+          standalone: false,
+          host: {
+            '[title]': 'myTitle',
+          }
+        })
+        export class AppCmp {
+          myTitle = 'hello';
+        }
+       `,
+    };
+    const env = LanguageServiceTestEnv.setup();
+
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
+      typeCheckHostBindings: true,
+    });
+    const appFile = project.openFile('app.ts');
+    project.expectNoSourceDiagnostics();
+
+    appFile.moveCursorToText(`'[title]': 'myT¦itle'`);
+    const {definitions} = getDefinitionsAndAssertBoundSpan(env, appFile);
+    expect(definitions[0].name).toEqual('myTitle');
+    expect(definitions[0].kind).toBe(ts.ScriptElementKind.memberVariableElement);
+    expect(definitions[0].textSpan).toBe('myTitle');
+    assertFileNames(Array.from(definitions), ['app.ts']);
+  });
+
+  it('gets definition for a host listener of a component', () => {
+    initMockFileSystem('Native');
+    const files = {
+      'app.html': '',
+      'app.ts': `
+        import {Component} from '@angular/core';
+        @Component({
+          template: '',
+          standalone: false,
+          host: {
+            '(click)': 'handleClick($event)',
+          }
+        })
+        export class AppCmp {
+          handleClick(event: MouseEvent) {}
+        }
+       `,
+    };
+    const env = LanguageServiceTestEnv.setup();
+
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
+      typeCheckHostBindings: true,
+    });
+    const appFile = project.openFile('app.ts');
+    project.expectNoSourceDiagnostics();
+
+    appFile.moveCursorToText(`'(click)': 'handle¦Click($event)'`);
+    const {definitions} = getDefinitionsAndAssertBoundSpan(env, appFile);
+    expect(definitions[0].name).toEqual('handleClick');
+    expect(definitions[0].kind).toBe(ts.ScriptElementKind.memberFunctionElement);
+    expect(definitions[0].textSpan).toBe('handleClick');
+    assertFileNames(Array.from(definitions), ['app.ts']);
+  });
+
+  it('gets definition for a host binding value of a directive', () => {
+    initMockFileSystem('Native');
+    const files = {
+      'dir.ts': `
+        import {Directive} from '@angular/core';
+        @Directive({
+          selector: '[my-dir]',
+          standalone: false,
+          host: {
+            '[title]': 'myTitle',
+          }
+        })
+        export class MyDir {
+          myTitle = 'hello';
+        }
+       `,
+    };
+    const env = LanguageServiceTestEnv.setup();
+
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
+      typeCheckHostBindings: true,
+    });
+    const dirFile = project.openFile('dir.ts');
+    project.expectNoSourceDiagnostics();
+
+    dirFile.moveCursorToText(`'[title]': 'myT¦itle'`);
+    const {definitions} = getDefinitionsAndAssertBoundSpan(env, dirFile);
+    expect(definitions[0].name).toEqual('myTitle');
+    expect(definitions[0].kind).toBe(ts.ScriptElementKind.memberVariableElement);
+    expect(definitions[0].textSpan).toBe('myTitle');
+    assertFileNames(Array.from(definitions), ['dir.ts']);
+  });
+
   function getDefinitionsAndAssertBoundSpan(env: LanguageServiceTestEnv, file: OpenBuffer) {
     env.expectNoSourceDiagnostics();
     const definitionAndBoundSpan = file.getDefinitionAndBoundSpan();
-    const {textSpan, definitions} = definitionAndBoundSpan!;
+
+    if (!definitionAndBoundSpan) {
+      throw new Error('Could not retrieve definition');
+    }
+
+    const {textSpan, definitions} = definitionAndBoundSpan;
     expect(definitions).toBeTruthy();
     return {textSpan, definitions: definitions!.map((d) => humanizeDocumentSpanLike(d, env))};
   }

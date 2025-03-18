@@ -427,6 +427,15 @@ function getDefinitionForExpressionAtPosition(
     }
   }
 
+  if (resourceForExpression === null && resource.hostBindings !== null) {
+    for (const binding of resource.hostBindings) {
+      if (binding.node === expression) {
+        resourceForExpression = binding;
+        break;
+      }
+    }
+  }
+
   if (resourceForExpression === null || !isExternalResource(resourceForExpression)) {
     return;
   }
