@@ -48,6 +48,7 @@ import {getInjectorResolutionPath} from '@angular/core/src/render3/util/injector
 import {ActivatedRoute, provideRouter, Router, RouterOutlet} from '@angular/router';
 import {ChainedInjector} from '@angular/core/src/render3/chained_injector';
 import {global} from '../../src/util/global';
+import {TimerScheduler} from '@angular/core/src/defer/timer_scheduler';
 
 /**
  * Clears all associated directive defs from a given component class.
@@ -95,15 +96,6 @@ function allPendingDynamicImports() {
 }
 
 /**
- * Invoke a callback function after a specified amount of time (in ms).
- */
-function timer(delay: number): Promise<void> {
-  return new Promise<void>((resolve) => {
-    setTimeout(() => resolve(), delay);
-  });
-}
-
-/**
  * Allows to verify behavior of defer blocks by providing a set of
  * [time, expected output] pairs. Also allows to provide a function
  * instead of an expected output string, in which case the function
@@ -125,6 +117,22 @@ async function verifyTimeline(
     if (typeof slotValue === 'string') {
       const actual = fixture.nativeElement.textContent.trim();
       expect(actual).withContext(`${slots[i][0]}ms`).toBe(slotValue);
+    }
+  }
+}
+
+class FakeTimerScheduler {
+  cbs: VoidFunction[] = [];
+  add(delay: number, callback: VoidFunction) {
+    this.cbs.push(callback);
+  }
+  remove(callback: VoidFunction) {
+    /* noop */
+  }
+
+  invoke() {
+    for (const cb of this.cbs) {
+      cb();
     }
   }
 }
@@ -3252,8 +3260,13 @@ describe('@defer', () => {
       };
 
       TestBed.configureTestingModule({
-        providers: [{provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor}],
+        providers: [
+          {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+          {provide: TimerScheduler, useClass: FakeTimerScheduler},
+        ],
       });
+
+      const fakeScheduler = TestBed.inject(TimerScheduler) as unknown as FakeTimerScheduler;
 
       clearDirectiveDefs(RootCmp);
 
@@ -3267,7 +3280,7 @@ describe('@defer', () => {
       // Make sure loading function is not yet invoked.
       expect(loadingFnInvokedTimes).toBe(0);
 
-      await timer(1000);
+      fakeScheduler.invoke();
       await allPendingDynamicImports(); // fetching dependencies of the defer block
       fixture.detectChanges();
 
@@ -3310,24 +3323,26 @@ describe('@defer', () => {
       })
       class RootCmp {}
 
-      TestBed.configureTestingModule({});
+      TestBed.configureTestingModule({
+        providers: [{provide: TimerScheduler, useClass: FakeTimerScheduler}],
+      });
+      const fakeScheduler = TestBed.inject(TimerScheduler) as unknown as FakeTimerScheduler;
 
       clearDirectiveDefs(RootCmp);
 
       const fixture = TestBed.createComponent(RootCmp);
-      fixture.detectChanges();
 
       expect(fixture.nativeElement.outerHTML).toContain('placeholder[top]');
 
-      await timer(110);
-      fixture.detectChanges();
+      fakeScheduler.invoke();
+      await allPendingDynamicImports(); // fetching dependencies of the defer block
 
       // Verify primary blocks content after triggering top-level @defer.
       expect(fixture.nativeElement.outerHTML).toContain('primary[top]');
       expect(fixture.nativeElement.outerHTML).toContain('placeholder[nested]');
 
-      await timer(110);
-      fixture.detectChanges();
+      fakeScheduler.invoke();
+      await allPendingDynamicImports(); // fetching dependencies of the defer block
 
       // Verify that nested @defer block was triggered as well.
       expect(fixture.nativeElement.outerHTML).toContain('primary[top]');
@@ -3376,8 +3391,13 @@ describe('@defer', () => {
       };
 
       TestBed.configureTestingModule({
-        providers: [{provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor}],
+        providers: [
+          {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+          {provide: TimerScheduler, useClass: FakeTimerScheduler},
+        ],
       });
+
+      const fakeScheduler = TestBed.inject(TimerScheduler) as unknown as FakeTimerScheduler;
 
       clearDirectiveDefs(RootCmp);
 
@@ -3391,7 +3411,7 @@ describe('@defer', () => {
       // Make sure loading function is not yet invoked.
       expect(loadingFnInvokedTimes).toBe(0);
 
-      await timer(200);
+      fakeScheduler.invoke();
       await allPendingDynamicImports(); // fetching dependencies of the defer block
       fixture.detectChanges();
 
