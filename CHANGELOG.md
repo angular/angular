@@ -1,3 +1,26 @@
+<a name="19.2.3"></a>
+# 19.2.3 (2025-03-19)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [aa8ea7a5b2](https://github.com/angular/angular/commit/aa8ea7a5b227913e3f15270dac48479481c47f9a) | fix | report more accurate diagnostic for invalid import ([#60455](https://github.com/angular/angular/pull/60455)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [13a8709b2b](https://github.com/angular/angular/commit/13a8709b2ba29ef3ab7d38bfb41cdd3d44c24c51) | fix | catch hydration marker with implicit body tag ([#60429](https://github.com/angular/angular/pull/60429)) |
+| [296aded9da](https://github.com/angular/angular/commit/296aded9daaf04edd3cda623a220cbd2bf57e0f1) | fix | execute timer trigger outside zone ([#60392](https://github.com/angular/angular/pull/60392)) |
+| [0615ffb4f7](https://github.com/angular/angular/commit/0615ffb4f7a41cca2a408419830411897d1826e6) | fix | include input name in error message ([#60404](https://github.com/angular/angular/pull/60404)) |
+### platform-browser-dynamic
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1e06c8e8b6](https://github.com/angular/angular/commit/1e06c8e8b6473a19584ceb66945fd435ea4e6af9) | fix | ensure compiler is loaded before `@angular/common` ([#60458](https://github.com/angular/angular/pull/60458)) |
+### upgrade
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9e1a1030c8](https://github.com/angular/angular/commit/9e1a1030c818e9849c00ded5f79535ea56976ea8) | fix | handle output emitters when downgrading a component ([#60369](https://github.com/angular/angular/pull/60369)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.0.0-next.2"></a>
 # 20.0.0-next.2 (2025-03-12)
 ## Breaking Changes
