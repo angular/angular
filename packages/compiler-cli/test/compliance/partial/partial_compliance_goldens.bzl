@@ -42,6 +42,8 @@ def partial_compliance_golden(filePath):
         # and is less prone to race conditions when targets build concurrently.
         args = ["--nobazel_run_linker", "$@"],
         visibility = [":__pkg__"],
+        # TODO(devversion): re-enable when we figure out the RBE hanging process issue.
+        tags = ["no-remote-exec"],
         data = [],
     )
 
@@ -49,5 +51,7 @@ def partial_compliance_golden(filePath):
         visibility = ["//visibility:public"],
         name = "%s.golden" % path,
         src = "//packages/compiler-cli/test/compliance/test_cases:%s/GOLDEN_PARTIAL.js" % path,
+        # TODO(devversion): re-enable when we figure out the RBE hanging process issue.
+        tags = ["no-remote-exec"],
         generated = "_generated_%s" % path,
     )
