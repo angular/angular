@@ -4,10 +4,10 @@
 
 ```ts
 
+import * as _angular_core from '@angular/core';
 import { Compiler } from '@angular/core';
 import { CompilerFactory } from '@angular/core';
 import { CompilerOptions } from '@angular/core';
-import * as i0 from '@angular/core';
 import { Version } from '@angular/core';
 
 // @public @deprecated (undocumented)
@@ -17,7 +17,7 @@ export class JitCompilerFactory implements CompilerFactory {
 }
 
 // @public (undocumented)
-export const platformBrowserDynamic: (extraProviders?: i0.StaticProvider[]) => i0.PlatformRef;
+export const platformBrowserDynamic: (extraProviders?: _angular_core.StaticProvider[]) => _angular_core.PlatformRef;
 
 // @public (undocumented)
 export const VERSION: Version;
