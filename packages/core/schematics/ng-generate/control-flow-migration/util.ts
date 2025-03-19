@@ -385,10 +385,6 @@ export function calculateNesting(
   }
 }
 
-function escapeRegExp(val: string) {
-  return val.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
-}
-
 /**
  * determines if a given template string contains line breaks
  */
@@ -425,18 +421,39 @@ export function getTemplates(template: string): Map<string, Template> {
     const visitor = new TemplateCollector();
     visitAll(visitor, parsed.tree.rootNodes);
 
-    // count usages of each ng-template
     for (let [key, tmpl] of visitor.templates) {
-      const escapeKey = escapeRegExp(key.slice(1));
-      const regex = new RegExp(`[^a-zA-Z0-9-<(\']${escapeKey}\\W`, 'gm');
-      const matches = template.match(regex);
-      tmpl.count = matches?.length ?? 0;
+      tmpl.count = countTemplateUsage(parsed.tree.rootNodes, key);
       tmpl.generateContents(template);
     }
 
     return visitor.templates;
   }
   return new Map<string, Template>();
+}
+
+function countTemplateUsage(nodes: any[], templateName: string): number {
+  let count = 0;
+  let isReferencedInTemplateOutlet = false;
+
+  for (const node of nodes) {
+    if (node.attrs) {
+      for (const attr of node.attrs) {
+        if (attr.name === '*ngTemplateOutlet' && attr.value === templateName.slice(1)) {
+          isReferencedInTemplateOutlet = true;
+        } else {
+          if (attr.name.trim() === templateName) {
+            count++;
+          }
+        }
+      }
+    }
+
+    if (node.children) {
+      count += countTemplateUsage(node.children, templateName);
+    }
+  }
+
+  return isReferencedInTemplateOutlet ? count + 1 : count;
 }
 
 export function updateTemplates(
@@ -498,7 +515,7 @@ export function processNgTemplates(
           template = template.replace(replaceRegex, t.children);
         }
         // the +1 accounts for the t.count's counting of the original template
-        if (t.count === matches.length + 1 && safeToRemove) {
+        if (t.count === matches.length && safeToRemove) {
           const refsInComponentFile = getViewChildOrViewChildrenNames(sourceFile);
           if (refsInComponentFile?.length > 0) {
             const templateRefs = getTemplateReferences(template);
