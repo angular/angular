@@ -18,7 +18,9 @@ import {
   ɵChangeDetectionScheduler as ChangeDetectionScheduler,
   ɵChangeDetectionSchedulerImpl as ChangeDetectionSchedulerImpl,
 } from '@angular/core';
+import {TestComponentRenderer} from '@angular/core/testing';
 import {BrowserModule, ɵBrowserDomAdapter as BrowserDomAdapter} from '@angular/platform-browser';
+import {DOMTestComponentRenderer} from './dom_test_component_renderer';
 
 function initBrowserTests() {
   BrowserDomAdapter.makeCurrent();
@@ -51,6 +53,7 @@ export const platformBrowserTesting = createPlatformFactory(
     internalProvideZoneChangeDetection({}),
     {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
     {provide: PlatformLocation, useClass: MockPlatformLocation},
+    {provide: TestComponentRenderer, useClass: DOMTestComponentRenderer},
   ],
 })
 export class BrowserTestingModule {}
