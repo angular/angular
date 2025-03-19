@@ -341,7 +341,6 @@ function createNodeFromListenerDecorator(
   // manually here. Note that we use a dummy span with -1/-1 as offsets, because it isn't
   // used for type checking and constructing it accurately would take some effort.
   const span = new ParseSpan(-1, -1);
-  const [name, phase] = method.name.text.split('.');
   const argNodes: AST[] = [];
   const methodStart = method.getStart();
   const methodReceiver = new ThisReceiver(span, new AbsoluteSourceSpan(methodStart, methodStart));
@@ -387,17 +386,19 @@ function createNodeFromListenerDecorator(
   }
 
   const callNode = new Call(span, nameSpan, receiver, argNodes, span);
+  const eventNameNode = args[0];
+  const [eventName, phase] = eventNameNode.text.split('.');
 
   listeners.push(
     new TmplAstBoundEvent(
-      name,
-      name.startsWith('@') ? ParsedEventType.Animation : ParsedEventType.Regular,
+      eventName,
+      eventName.startsWith('@') ? ParsedEventType.Animation : ParsedEventType.Regular,
       callNode,
       null,
       phase,
       createSourceSpan(decorator),
       createSourceSpan(decorator),
-      createStaticExpressionSpan(method.name),
+      createStaticExpressionSpan(eventNameNode),
     ),
   );
 }

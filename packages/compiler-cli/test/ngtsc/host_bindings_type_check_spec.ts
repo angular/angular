@@ -506,7 +506,7 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(diags[0].messageText).toBe(
-        `Argument of type 'Event' is not assignable to parameter of type 'string'.`,
+        `Argument of type 'MouseEvent' is not assignable to parameter of type 'string'.`,
       );
       expect(getDiagnosticSourceCode(diags[0])).toBe('$event');
     });
