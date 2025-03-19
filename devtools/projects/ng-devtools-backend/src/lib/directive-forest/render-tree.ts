@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ɵHydratedNode as HydrationNode} from '@angular/core';
+import type {
+  ɵFrameworkAgnosticGlobalUtils as FrameworkAgnosticGlobalUtils,
+  ɵHydratedNode as HydrationNode,
+} from '@angular/core';
 import {HydrationStatus} from 'protocol';
 
 import {ComponentTreeNode} from '../interfaces';
@@ -16,8 +19,9 @@ import {isCustomElement} from '../utils';
 const extractViewTree = (
   domNode: Node | Element,
   result: ComponentTreeNode[],
-  getComponent?: (element: Element) => {} | null,
-  getDirectives?: (node: Node) => {}[],
+  getComponent?: FrameworkAgnosticGlobalUtils['getComponent'],
+  getDirectives?: FrameworkAgnosticGlobalUtils['getDirectives'],
+  getDirectiveMetadata?: FrameworkAgnosticGlobalUtils['getDirectiveMetadata'],
 ): ComponentTreeNode[] => {
   // Ignore DOM Node if it came from a different frame. Use instanceof Node to check this.
   if (!(domNode instanceof Node)) {
@@ -50,7 +54,7 @@ const extractViewTree = (
     componentTreeNode.component = {
       instance: component,
       isElement: isCustomElement(domNode),
-      name: domNode.nodeName.toLowerCase(),
+      name: getDirectiveMetadata?.(component)?.name ?? domNode.nodeName.toLowerCase(),
     };
   }
   if (component || componentTreeNode.directives.length) {
@@ -58,11 +62,17 @@ const extractViewTree = (
   }
   if (componentTreeNode.component || componentTreeNode.directives.length) {
     domNode.childNodes.forEach((node) =>
-      extractViewTree(node, componentTreeNode.children, getComponent, getDirectives),
+      extractViewTree(
+        node,
+        componentTreeNode.children,
+        getComponent,
+        getDirectives,
+        getDirectiveMetadata,
+      ),
     );
   } else {
     domNode.childNodes.forEach((node) =>
-      extractViewTree(node, result, getComponent, getDirectives),
+      extractViewTree(node, result, getComponent, getDirectives, getDirectiveMetadata),
     );
   }
   return result;
@@ -98,8 +108,8 @@ export class RTreeStrategy {
     while (element.parentElement) {
       element = element.parentElement;
     }
-    const getComponent = ngDebugClient().getComponent;
-    const getDirectives = ngDebugClient().getDirectives;
-    return extractViewTree(element, [], getComponent, getDirectives);
+
+    const ng = ngDebugClient();
+    return extractViewTree(element, [], ng.getComponent, ng.getDirectives, ng.getDirectiveMetadata);
   }
 }
