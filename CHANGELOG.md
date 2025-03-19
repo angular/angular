@@ -1,3 +1,38 @@
+<a name="20.0.0-next.3"></a>
+# 20.0.0-next.3 (2025-03-19)
+## Breaking Changes
+### core
+- * `TestBed.get` has been removed. Use `TestBed.inject` instead.
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [bec1610da2](https://github.com/angular/angular/commit/bec1610da241f24bdb9120843a91973a3823a004) | feat | add extended diagnostic for invalid nullish coalescing ([#60279](https://github.com/angular/angular/pull/60279)) |
+| [1971e57a45](https://github.com/angular/angular/commit/1971e57a457ff9fd4dc8a353b59b51364e08b443) | feat | support type checking of host bindings ([#60267](https://github.com/angular/angular/pull/60267)) |
+| [29eded6457](https://github.com/angular/angular/commit/29eded6457b72e7c8a2d53c847ec43996b73c054) | fix | report more accurate diagnostic for invalid import ([#60455](https://github.com/angular/angular/pull/60455)) |
+| [2d51a203dc](https://github.com/angular/angular/commit/2d51a203dc87d6d880c3cf6d68bf8590f5dd689b) | fix | wrong event name for host listener decorators ([#60460](https://github.com/angular/angular/pull/60460)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [22d3f0562c](https://github.com/angular/angular/commit/22d3f0562cc6c21ebf7c29ff0e01bce40dcd50a0) | feat | add hook for producer creation side effects ([#60333](https://github.com/angular/angular/pull/60333)) |
+| [b154fb3911](https://github.com/angular/angular/commit/b154fb391142db6139cddad820a9a72838f0f16c) | feat | add support for two-way bindings on dynamically-created components ([#60342](https://github.com/angular/angular/pull/60342)) |
+| [644d9f3bbd](https://github.com/angular/angular/commit/644d9f3bbdb5e77a78d95669cfd6b0f6d8cb09b9) | feat | mark the toSignal API as stable ([#60442](https://github.com/angular/angular/pull/60442)) |
+| [5e209cb560](https://github.com/angular/angular/commit/5e209cb560fdfb943169a09d35389c703fa71418) | feat | remove TestBed.get ([#60414](https://github.com/angular/angular/pull/60414)) |
+| [b461e06ecb](https://github.com/angular/angular/commit/b461e06ecb93c9c03e6f41700558731e1f0d3b70) | fix | catch hydration marker with implicit body tag ([#60429](https://github.com/angular/angular/pull/60429)) |
+| [b8daf472d8](https://github.com/angular/angular/commit/b8daf472d83b41b3d97d4014737d31c7cfc0ace0) | fix | execute timer trigger outside zone ([#60392](https://github.com/angular/angular/pull/60392)) |
+| [8953e45a43](https://github.com/angular/angular/commit/8953e45a43fcb6ea694e77fb9ae779c5d3973524) | fix | include input name in error message ([#60404](https://github.com/angular/angular/pull/60404)) |
+| [48974c3cf8](https://github.com/angular/angular/commit/48974c3cf88ab1a70411bea4950823f975994087) | fix | remove `rejectErrors` option encourages uncaught exceptions ([#60397](https://github.com/angular/angular/pull/60397)) |
+| [04d963c0a5](https://github.com/angular/angular/commit/04d963c0a5f68c93015c13973d29107fe35bb942) | fix | remove unused parameter from listener instruction ([#60406](https://github.com/angular/angular/pull/60406)) |
+### platform-browser-dynamic
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3606aabd6b](https://github.com/angular/angular/commit/3606aabd6b7b9ec9f1b7438f33505f715eeeebe5) | fix | ensure compiler is loaded before `@angular/common` ([#60458](https://github.com/angular/angular/pull/60458)) |
+### upgrade
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cd7c170763](https://github.com/angular/angular/commit/cd7c170763b9f1f0b4215bf151a431481591ce73) | fix | handle output emitters when downgrading a component ([#60369](https://github.com/angular/angular/pull/60369)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.2.3"></a>
 # 19.2.3 (2025-03-19)
 ### compiler-cli
