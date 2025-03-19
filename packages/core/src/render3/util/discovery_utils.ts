@@ -441,7 +441,7 @@ function isDirectiveDefHack(obj: any): obj is DirectiveDef<any> {
   return (
     obj.type !== undefined &&
     obj.declaredInputs !== undefined &&
-    obj.findHostDirectiveDefs !== undefined
+    obj.resolveHostDirectives !== undefined
   );
 }
 

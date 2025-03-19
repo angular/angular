@@ -380,7 +380,6 @@
   "requiresRefreshOrTraversal",
   "resetPreOrderHookFlags",
   "resolveForwardRef",
-  "resolveHostDirectivesForDef",
   "runEffectsInView",
   "runInInjectionContext",
   "saveNameToExportMap",

@@ -237,21 +237,11 @@ export interface DirectiveDef<T> {
   debugInfo: ClassDebugInfo | null;
 
   /**
-   * Function that will add the host directives to the list of matches during directive matching.
-   * Patched onto the definition by the `HostDirectivesFeature`.
-   * @param currentDef Definition that has been matched.
-   * @param matchedDefs List of all matches for a specified node. Will be mutated to include the
-   * host directives.
-   * @param hostDirectiveDefs Mapping of directive definitions to their host directive
-   * configuration. Host directives will be added to the map as they're being matched to the node.
+   * Function inteded to be called after template selector matching is done
+   * in order to resolve information about their host directives. Patched
+   * onto the definition by the `ɵɵHostDirectivesFeature`.
    */
-  findHostDirectiveDefs:
-    | ((
-        currentDef: DirectiveDef<unknown>,
-        matchedDefs: DirectiveDef<unknown>[],
-        hostDirectiveDefs: HostDirectiveDefs,
-      ) => void)
-    | null;
+  resolveHostDirectives: ((matches: DirectiveDef<unknown>[]) => HostDirectiveResolution) | null;
 
   /**
    * Additional directives to be applied whenever the directive has been matched.
@@ -260,8 +250,8 @@ export interface DirectiveDef<T> {
    * already pre-processed when the definition was created. A function needs to be resolved lazily
    * during directive matching, because it's a forward reference.
    *
-   * **Note:** we can't `HostDirectiveConfig` in the array, because there's no way to distinguish if
-   * a function in the array is a `Type` or a `() => HostDirectiveConfig[]`.
+   * **Note:** we can't use `HostDirectiveConfig` in the array, because there's no way to
+   * distinguish if a function in the array is a `Type` or a `() => HostDirectiveConfig[]`.
    */
   hostDirectives: (HostDirectiveDef | (() => HostDirectiveConfig[]))[] | null;
 
@@ -471,6 +461,20 @@ export interface DirectiveDefFeature {
    */
   ngInherit?: true;
 }
+
+/** Data produced after host directives are resolved for a node. */
+export type HostDirectiveResolution = [
+  matches: DirectiveDef<unknown>[],
+  hostDirectiveDefs: HostDirectiveDefs | null,
+  hostDirectiveRanges: HostDirectiveRanges | null,
+];
+
+/**
+ * Map that tracks a selector-matched directive to the range within which its host directives
+ * are declared. Host directives for a specific directive are always contiguous within the runtime.
+ * Note that both the start and end are inclusive and they're both **after** `tNode.directiveStart`.
+ */
+export type HostDirectiveRanges = Map<DirectiveDef<unknown>, [start: number, end: number]>;
 
 /** Runtime information used to configure a host directive. */
 export interface HostDirectiveDef<T = unknown> {
