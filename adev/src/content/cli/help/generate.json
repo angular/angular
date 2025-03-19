@@ -472,6 +472,11 @@
           "type": "boolean",
           "default": true,
           "description": "Generate a standalone directive. Standalone directives are self-contained and don't need to be declared in an NgModule. They can be used independently or imported directly into other standalone components or directives."
+        },
+        {
+          "name": "type",
+          "type": "string",
+          "description": "Append a custom type to the directive's filename. For example, if you set the type to `directive`, the file will be named `example.directive.ts`."
         }
       ],
       "aliases": [
