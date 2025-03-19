@@ -8,7 +8,6 @@ ts_library(
     ]),
     deps = [
         "//adev/shared-docs/pipeline/guides",
-        "@npm//@bazel/runfiles",
         "@npm//@types/jsdom",
         "@npm//jsdom",
         "@npm//marked",
