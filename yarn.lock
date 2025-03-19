@@ -421,10 +421,10 @@
   optionalDependencies:
     lmdb "3.2.6"
 
-"@angular/cdk@20.0.0-next.1":
-  version "20.0.0-next.1"
-  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-20.0.0-next.1.tgz#228b258a79e255cf622c0fbd829c87019595289f"
-  integrity sha512-nm71L2C13lw7zv5BQ30ZeXyUwKHErVYoR02RuDRcGQFh61/PKZNaIaJHOFqgT5bMpPrlbRvUGKgYhbbYYqc44A==
+"@angular/cdk@20.0.0-next.2":
+  version "20.0.0-next.2"
+  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-20.0.0-next.2.tgz#8a5ca13a1828b7a40dd91c6b35f8383d895e6c10"
+  integrity sha512-yq50dLK9LW8byFneLG8S37CtYCHrRE3gKz0zcW+2t4o4LgRpZw/pS9mkpzF79xGmeH+Bidgm6CgzXpKPAO+SNA==
   dependencies:
     tslib "^2.3.0"
   optionalDependencies:
@@ -467,17 +467,17 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/material@20.0.0-next.1":
-  version "20.0.0-next.1"
-  resolved "https://registry.yarnpkg.com/@angular/material/-/material-20.0.0-next.1.tgz#ad4d65d15c21f73acecf1d07477d68d170ab7aae"
-  integrity sha512-otR0S79z5JGFYVV+XbRbDJWF33BK2F/jNKQnjVaVHFaepBU6tLvjYpQL8nM34sXuzAIVrEn/wjv4bAJkxWRXOw==
+"@angular/material@20.0.0-next.2":
+  version "20.0.0-next.2"
+  resolved "https://registry.yarnpkg.com/@angular/material/-/material-20.0.0-next.2.tgz#dbc27a79a3aba8201213cee230b2ac4366f5dfd8"
+  integrity sha512-rF6JHrSPBgNWidQ6vpFrdO35lMdkb3o/yeAq7shtmV9beUdproavGqniBriviNO60aGJvRl2bXeZNFNP8zUWJQ==
   dependencies:
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#a7e1ae9d0bc35761a77df33db9aa8d5fd63114b9":
-  version "0.0.0-33d23b9b4bff48e283f0fc97e901c3374c397cc7"
-  uid a7e1ae9d0bc35761a77df33db9aa8d5fd63114b9
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#a7e1ae9d0bc35761a77df33db9aa8d5fd63114b9"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#d25ced20c12ad010c2b5b560acb78065f8d6564e":
+  version "0.0.0-27078026111b01a7202449e9788ce38f2b2e103f"
+  uid d25ced20c12ad010c2b5b560acb78065f8d6564e
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#d25ced20c12ad010c2b5b560acb78065f8d6564e"
   dependencies:
     "@google-cloud/spanner" "7.19.0"
     "@octokit/rest" "21.1.1"
