@@ -409,7 +409,6 @@
   "requiresRefreshOrTraversal",
   "resetPreOrderHookFlags",
   "resolveForwardRef",
-  "resolveHostDirectivesForDef",
   "retrieveHydrationInfo",
   "retrieveHydrationInfoImpl",
   "runEffectsInView",

@@ -847,7 +847,6 @@
   "resetPreOrderHookFlags",
   "resolveDirectives",
   "resolveForwardRef",
-  "resolveHostDirectivesForDef",
   "retrieveHydrationInfo",
   "runEffectsInView",
   "runInInjectionContext",

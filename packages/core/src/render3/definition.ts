@@ -645,7 +645,7 @@ function getNgDirectiveDef<T>(directiveDefinition: DirectiveDefinition<T>): Dire
     viewQuery: directiveDefinition.viewQuery || null,
     features: directiveDefinition.features || null,
     setInput: null,
-    findHostDirectiveDefs: null,
+    resolveHostDirectives: null,
     hostDirectives: null,
     inputs: parseAndConvertInputsForDefinition(directiveDefinition.inputs, declaredInputs),
     outputs: parseAndConvertOutputsForDefinition(directiveDefinition.outputs),

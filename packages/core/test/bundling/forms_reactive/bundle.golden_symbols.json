@@ -570,7 +570,6 @@
   "resetPreOrderHookFlags",
   "resolveDirectives",
   "resolveForwardRef",
-  "resolveHostDirectivesForDef",
   "resolveProvider",
   "runEffectsInView",
   "runInInjectionContext",
