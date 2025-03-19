@@ -2282,6 +2282,43 @@ runInEachFileSystem((os: string) => {
       );
     });
 
+    it('should report diagnostic on the exact element in the `imports` array', () => {
+      // Note: the scenario here is slightly contrived, but we want to hit the code
+      // path where TS doesn't report a type error before Angular which appears to be
+      // common with the language service.
+      env.write(
+        'test.ts',
+        `
+          import {Component, Directive} from '@angular/core';
+
+          @Directive({selector: '[hello]'})
+          export class HelloDir {}
+
+          const someVar = {} as any;
+
+          @Component({
+            template: '<div hello></div>',
+            imports: [
+              someVar,
+              HelloDir,
+            ]
+          })
+          export class TestCmp {}
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      const message = diags.length
+        ? ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')
+        : '';
+      expect(diags.length).toBe(1);
+      expect(getDiagnosticSourceCode(diags[0])).toBe('someVar');
+      expect(message).toContain(
+        `'imports' must be an array of components, directives, pipes, or NgModules.`,
+      );
+      expect(message).toContain(`Value is of type '{}'`);
+    });
+
     describe('empty and missing selectors', () => {
       it('should use default selector for Components when no selector present', () => {
         env.write(
