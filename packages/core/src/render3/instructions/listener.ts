@@ -28,7 +28,7 @@ import {
 } from '../util/view_utils';
 
 import {markViewDirty} from './mark_view_dirty';
-import {handleError, loadComponentRenderer} from './shared';
+import {handleUncaughtError, loadComponentRenderer} from './shared';
 import {DirectiveDef} from '../interfaces/definition';
 
 /**
@@ -306,8 +306,7 @@ function executeListenerWithErrorHandling(
     // Only explicitly returning false from a listener should preventDefault
     return listenerFn(e) !== false;
   } catch (error) {
-    // TODO(atscott): This should report to the application error handler, not the ErrorHandler on LView injector
-    handleError(lView, error);
+    handleUncaughtError(lView, error);
     return false;
   } finally {
     profiler(ProfilerEvent.OutputEnd, context, listenerFn);

@@ -614,18 +614,6 @@ export function handleUncaughtError(lView: LView, error: any): void {
 }
 
 /**
- * Handles an error thrown in an LView.
- * @deprecated Use handleUncaughtError to report to application error handler
- */
-export function handleError(lView: LView, error: any): void {
-  const injector = lView[INJECTOR];
-  if (!injector) {
-    return;
-  }
-  injector.get(ErrorHandler, null)?.handleError(error);
-}
-
-/**
  * Set all directive inputs with the specific public name on the node.
  *
  * @param tNode TNode on which the input is being set.
