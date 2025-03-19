@@ -16,6 +16,7 @@ import type {
   Type,
   ValueProvider,
   ɵAngularComponentDebugMetadata as AngularComponentDebugMetadata,
+  ɵAngularDirectiveDebugMetadata as AngularDirectiveDebugMetadata,
   ɵProviderRecord as ProviderRecord,
 } from '@angular/core';
 import {
@@ -219,7 +220,9 @@ const enum DirectiveMetadataKey {
 // the method directly interacts with the directive/component definition.
 const getDirectiveMetadata = (dir: any): DirectiveMetadata => {
   const getMetadata = ngDebugClient().getDirectiveMetadata!;
-  const metadata = getMetadata?.(dir) as AngularComponentDebugMetadata;
+  const metadata = getMetadata?.(dir) as
+    | (AngularDirectiveDebugMetadata & Partial<AngularComponentDebugMetadata>)
+    | null;
   if (metadata) {
     return {
       inputs: metadata.inputs,
@@ -249,7 +252,7 @@ const getDirectiveMetadata = (dir: any): DirectiveMetadata => {
 
 export function isOnPushDirective(dir: any): boolean {
   const metadata = getDirectiveMetadata(dir.instance);
-  return metadata.onPush;
+  return Boolean(metadata.onPush);
 }
 
 export function getInjectorProviders(injector: Injector) {
