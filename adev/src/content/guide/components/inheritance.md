@@ -20,9 +20,9 @@ export class CustomListbox extends ListboxBase {
 
 ## Extending other components and directives
 
-When a component extends another component or a directive, it inherits all the metadata defined in
-the base class's decorator and the base class's decorated members. This includes the selector,
-template, styles, host bindings, inputs, outputs, lifecycle methods, and any other settings.
+When a component extends another component or a directive, it inherits some the metadata defined in
+the base class's decorator and the base class's decorated members. This includes
+host bindings, inputs, outputs, lifecycle methods.
 
 ```angular-ts
 @Component({
