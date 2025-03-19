@@ -102,8 +102,8 @@ export interface DirectivesProperties {
 export interface DirectiveMetadata {
   inputs: {[name: string]: string};
   outputs: {[name: string]: string};
-  encapsulation: ViewEncapsulation;
-  onPush: boolean;
+  encapsulation?: ViewEncapsulation;
+  onPush?: boolean;
   dependencies?: SerializedInjectedService[];
 }
 
