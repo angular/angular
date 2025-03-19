@@ -11,7 +11,10 @@ import {setActiveConsumer} from '@angular/core/primitives/signals';
 import {TrackByFunction} from '../../change_detection';
 import {formatRuntimeError, RuntimeErrorCode} from '../../errors';
 import {DehydratedContainerView} from '../../hydration/interfaces';
-import {findMatchingDehydratedView} from '../../hydration/views';
+import {
+  findAndReconcileMatchingDehydratedViews,
+  findMatchingDehydratedView,
+} from '../../hydration/views';
 import {assertDefined, assertFunction} from '../../util/assert';
 import {performanceMarkFeature} from '../../util/performance';
 import {assertLContainer, assertLView, assertTNode} from '../assert';
@@ -42,6 +45,7 @@ import {
   getLViewFromLContainer,
   removeLViewFromLContainer,
 } from '../view/container';
+import {removeDehydratedViews} from '../../hydration/cleanup';
 
 /**
  * Creates an LContainer for an ng-template representing a root node
@@ -84,9 +88,9 @@ export function ɵɵconditionalCreate(
     vars,
     tagName,
     attrs,
+    TNodeFlags.isControlFlowStart,
     localRefsIndex,
     localRefExtractor,
-    TNodeFlags.isControlFlowStart,
   );
   return ɵɵconditionalBranchCreate;
 }
@@ -133,9 +137,9 @@ export function ɵɵconditionalBranchCreate(
     vars,
     tagName,
     attrs,
+    TNodeFlags.isInControlFlow,
     localRefsIndex,
     localRefExtractor,
-    TNodeFlags.isInControlFlow,
   );
   return ɵɵconditionalBranchCreate;
 }
@@ -152,8 +156,6 @@ export function ɵɵconditionalBranchCreate(
  */
 export function ɵɵconditional<T>(matchingTemplateIndex: number, contextValue?: T) {
   performanceMarkFeature('NgControlFlow');
-
-  //TODO(jessica): this is where we navigate the tree to find the right node for proper cleanup
 
   const hostLView = getLView();
   const bindingIndex = nextBindingIndex();
@@ -181,9 +183,10 @@ export function ɵɵconditional<T>(matchingTemplateIndex: number, contextValue?:
         const nextContainer = getLContainer(hostLView, nextLContainerIndex);
         const templateTNode = getExistingTNode(hostLView[TVIEW], nextLContainerIndex);
 
-        const dehydratedView = findMatchingDehydratedView(
+        const dehydratedView = findAndReconcileMatchingDehydratedViews(
           nextContainer,
-          templateTNode.tView!.ssrId,
+          templateTNode,
+          hostLView,
         );
         const embeddedLView = createAndRenderEmbeddedLView(hostLView, templateTNode, contextValue, {
           dehydratedView,
@@ -322,9 +325,7 @@ export function ɵɵrepeaterCreate(
     vars,
     tagName,
     getConstant(tView.consts, attrsIndex),
-    null,
-    undefined,
-    TNodeFlags.isControlFlowStart | TNodeFlags.isInControlFlow,
+    TNodeFlags.isControlFlowStart,
   );
 
   if (hasEmptyBlock) {
@@ -342,8 +343,6 @@ export function ɵɵrepeaterCreate(
       emptyVars!,
       emptyTagName,
       getConstant(tView.consts, emptyAttrsIndex),
-      null,
-      undefined,
       TNodeFlags.isInControlFlow,
     );
   }
@@ -526,9 +525,10 @@ export function ɵɵrepeater(collection: Iterable<unknown> | undefined | null): 
         const lContainerForEmpty = getLContainer(hostLView, emptyTemplateIndex);
         if (isCollectionEmpty) {
           const emptyTemplateTNode = getExistingTNode(hostTView, emptyTemplateIndex);
-          const dehydratedView = findMatchingDehydratedView(
+          const dehydratedView = findAndReconcileMatchingDehydratedViews(
             lContainerForEmpty,
-            emptyTemplateTNode.tView!.ssrId,
+            emptyTemplateTNode,
+            hostLView,
           );
           const embeddedLView = createAndRenderEmbeddedLView(
             hostLView,
@@ -543,6 +543,14 @@ export function ɵɵrepeater(collection: Iterable<unknown> | undefined | null): 
             shouldAddViewToDom(emptyTemplateTNode, dehydratedView),
           );
         } else {
+          // we know that an ssrId was generated for the empty template, but
+          // we were unable to match it to a dehydrated view earlier, which
+          // means that we may have changed branches between server and client.
+          // We'll need to find and remove the stale empty template view.
+          if (hostTView.firstUpdatePass) {
+            removeDehydratedViews(lContainerForEmpty);
+          }
+
           removeLViewFromLContainer(lContainerForEmpty, 0);
         }
       }

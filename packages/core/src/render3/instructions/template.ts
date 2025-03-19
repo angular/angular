@@ -134,9 +134,9 @@ export function declareTemplate(
   vars: number,
   tagName?: string | null,
   attrs?: TAttributes | null,
+  flags?: TNodeFlags,
   localRefsIndex?: number | null,
   localRefExtractor?: LocalRefExtractor,
-  flags?: TNodeFlags,
 ): TNode {
   const adjustedIndex = index + HEADER_OFFSET;
   const tNode = declarationTView.firstCreatePass
@@ -231,6 +231,7 @@ export function ɵɵtemplate(
     vars,
     tagName,
     attrs,
+    undefined,
     localRefsIndex,
     localRefExtractor,
   );
