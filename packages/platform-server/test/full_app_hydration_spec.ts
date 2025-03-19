@@ -16,6 +16,8 @@ import {
   NgComponentOutlet,
   NgFor,
   NgIf,
+  NgSwitch,
+  NgSwitchCase,
   NgTemplateOutlet,
   PlatformLocation,
 } from '@angular/common';
@@ -7089,11 +7091,19 @@ describe('platform-server full application hydration integration', () => {
         @Component({
           standalone: true,
           selector: 'app',
+          imports: [NgIf],
           template: `
-              @if (isServer) { <b>This is a SERVER-ONLY content</b> }
-              @if (!isServer) { <i>This is a CLIENT-ONLY content</i> }
-              @if (alwaysTrue) { <p>CLIENT and SERVER content</p> }
-            `,
+            <ng-container *ngIf="isServer; else elseBlock">
+              <b>This is NgIf SERVER-ONLY content</b>
+            </ng-container>
+            <ng-template #elseBlock>
+              <i>This is NgIf CLIENT-ONLY content</i>
+            </ng-template>
+
+            @if (isServer) { <b>This is new if SERVER-ONLY content</b> }
+            @else { <i id="client-only">This is new if CLIENT-ONLY content</i> }
+            @if (alwaysTrue) { <p>CLIENT and SERVER content</p> }
+          `,
         })
         class SimpleComponent {
           alwaysTrue = true;
@@ -7102,6 +7112,9 @@ describe('platform-server full application hydration integration', () => {
           // and the server: we use it to test the logic to cleanup
           // dehydrated views.
           isServer = isPlatformServer(inject(PLATFORM_ID));
+          ngOnInit() {
+            setTimeout(() => {}, 100);
+          }
         }
 
         const html = await ssr(SimpleComponent);
@@ -7109,38 +7122,48 @@ describe('platform-server full application hydration integration', () => {
 
         expect(ssrContents).toContain('<app ngh');
 
-        resetTViewsFor(SimpleComponent);
-
-        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
-        const compRef = getComponentRef<SimpleComponent>(appRef);
-        appRef.tick();
-
         ssrContents = stripExcessiveSpaces(stripUtilAttributes(ssrContents, false));
 
         // In the SSR output we expect to see SERVER content, but not CLIENT.
-        expect(ssrContents).not.toContain('<i>This is a CLIENT-ONLY content</i>');
-        expect(ssrContents).toContain('<b>This is a SERVER-ONLY content</b>');
+        expect(ssrContents).not.toContain(
+          '<i id="client-only">This is new if CLIENT-ONLY content</i>',
+        );
+        expect(ssrContents).toContain('<b>This is new if SERVER-ONLY content</b>');
+
+        expect(ssrContents).not.toContain('<i>This is NgIf CLIENT-ONLY content</i>');
+        expect(ssrContents).toContain('<b>This is NgIf SERVER-ONLY content</b>');
 
         // Content that should be rendered on both client and server should also be present.
         expect(ssrContents).toContain('<p>CLIENT and SERVER content</p>');
 
+        resetTViewsFor(SimpleComponent);
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
         const clientRootNode = compRef.location.nativeElement;
 
-        await appRef.whenStable();
+        expect(clientRootNode.outerHTML).not.toContain('<b>This is NgIf SERVER-ONLY content</b>');
+        expect(clientRootNode.outerHTML).not.toContain('<b>This is new if SERVER-ONLY content</b>');
+
+        await appRef.whenStable(); // post-hydration cleanup happens here
 
         const clientContents = stripExcessiveSpaces(
           stripUtilAttributes(clientRootNode.outerHTML, false),
         );
 
         // After the cleanup, we expect to see CLIENT content, but not SERVER.
-        expect(clientContents).toContain('<i>This is a CLIENT-ONLY content</i>');
-        expect(clientContents).not.toContain('<b>This is a SERVER-ONLY content</b>');
+        expect(clientContents).toContain(
+          '<i id="client-only">This is new if CLIENT-ONLY content</i>',
+        );
+        expect(clientContents).not.toContain('<b>This is new if SERVER-ONLY content</b>');
 
         // Content that should be rendered on both client and server should still be present.
         expect(clientContents).toContain('<p>CLIENT and SERVER content</p>');
 
-        const clientOnlyNode = clientRootNode.querySelector('i');
-        verifyAllNodesClaimedForHydration(clientRootNode, [clientOnlyNode]);
+        const clientOnlyNode1 = clientRootNode.querySelector('i');
+        const clientOnlyNode2 = clientRootNode.querySelector('#client-only');
+        verifyAllNodesClaimedForHydration(clientRootNode, [clientOnlyNode1, clientOnlyNode2]);
       });
 
       it('should support nested `if`s', async () => {
@@ -7233,10 +7256,16 @@ describe('platform-server full application hydration integration', () => {
         @Component({
           standalone: true,
           selector: 'app',
+          imports: [NgSwitch, NgSwitchCase],
           template: `
+              <ng-container [ngSwitch]="isServer">
+                <b *ngSwitchCase="true">This is NgSwitch SERVER-ONLY content</b>
+                <i *ngSwitchCase="false" id="old">This is NgSwitch CLIENT-ONLY content</i>
+              </ng-container>
+
               @switch (isServer) {
                 @case (true) { <b>This is a SERVER-ONLY content</b> }
-                @case (false) { <i>This is a CLIENT-ONLY content</i> }
+                @case (false) { <i id="new">This is a CLIENT-ONLY content</i> }
               }
             `,
         })
@@ -7245,6 +7274,9 @@ describe('platform-server full application hydration integration', () => {
           // and the server: we use it to test the logic to cleanup
           // dehydrated views.
           isServer = isPlatformServer(inject(PLATFORM_ID));
+          ngOnInit() {
+            setTimeout(() => {}, 100);
+          }
         }
 
         const html = await ssr(SimpleComponent);
@@ -7252,19 +7284,29 @@ describe('platform-server full application hydration integration', () => {
 
         expect(ssrContents).toContain('<app ngh');
 
-        resetTViewsFor(SimpleComponent);
+        ssrContents = stripExcessiveSpaces(stripUtilAttributes(ssrContents, false));
 
+        // In the SSR output we expect to see SERVER content, but not CLIENT.
+        expect(ssrContents).not.toContain('<i id="new">This is a CLIENT-ONLY content</i>');
+        expect(ssrContents).not.toContain('<i id="old">This is NgSwitch CLIENT-ONLY content</i>');
+        expect(ssrContents).toContain('<b>This is a SERVER-ONLY content</b>');
+        expect(ssrContents).toContain('<b>This is NgSwitch SERVER-ONLY content</b>');
+
+        resetTViewsFor(SimpleComponent);
         const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
         const compRef = getComponentRef<SimpleComponent>(appRef);
         appRef.tick();
 
-        ssrContents = stripExcessiveSpaces(stripUtilAttributes(ssrContents, false));
-
-        // In the SSR output we expect to see SERVER content, but not CLIENT.
-        expect(ssrContents).not.toContain('<i>This is a CLIENT-ONLY content</i>');
-        expect(ssrContents).toContain('<b>This is a SERVER-ONLY content</b>');
-
         const clientRootNode = compRef.location.nativeElement;
+
+        // NgSwitch had slower cleanup than NgIf
+        expect(clientRootNode.outerHTML).toContain('<b>This is NgSwitch SERVER-ONLY content</b>');
+
+        expect(clientRootNode.outerHTML).not.toContain('<b>This is a SERVER-ONLY content</b>');
+        expect(clientRootNode.outerHTML).toContain('<i id="new">This is a CLIENT-ONLY content</i>');
+        expect(clientRootNode.outerHTML).toContain(
+          '<i id="old">This is NgSwitch CLIENT-ONLY content</i>',
+        );
 
         await appRef.whenStable();
 
@@ -7273,11 +7315,14 @@ describe('platform-server full application hydration integration', () => {
         );
 
         // After the cleanup, we expect to see CLIENT content, but not SERVER.
-        expect(clientContents).toContain('<i>This is a CLIENT-ONLY content</i>');
+        expect(clientContents).toContain('<i id="new">This is a CLIENT-ONLY content</i>');
+        expect(clientContents).toContain('<i id="old">This is NgSwitch CLIENT-ONLY content</i>');
+        expect(clientContents).not.toContain('<b>This is NgSwitch SERVER-ONLY content</b>');
         expect(clientContents).not.toContain('<b>This is a SERVER-ONLY content</b>');
 
-        const clientOnlyNode = clientRootNode.querySelector('i');
-        verifyAllNodesClaimedForHydration(clientRootNode, [clientOnlyNode]);
+        const clientOnlyNode1 = clientRootNode.querySelector('#old');
+        const clientOnlyNode2 = clientRootNode.querySelector('#new');
+        verifyAllNodesClaimedForHydration(clientRootNode, [clientOnlyNode1, clientOnlyNode2]);
       });
 
       it('should cleanup rendered case if none of the cases match on the client', async () => {
@@ -7417,6 +7462,9 @@ describe('platform-server full application hydration integration', () => {
           })
           class SimpleComponent {
             items = isPlatformServer(inject(PLATFORM_ID)) ? [] : [1, 2, 3];
+            ngOnInit() {
+              setTimeout(() => {}, 100);
+            }
           }
 
           const html = await ssr(SimpleComponent);
@@ -7435,10 +7483,14 @@ describe('platform-server full application hydration integration', () => {
           const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
           const compRef = getComponentRef<SimpleComponent>(appRef);
           appRef.tick();
+          const clientRootNode = compRef.location.nativeElement;
+
+          expect(clientRootNode.innerHTML).toContain('Item #1');
+          expect(clientRootNode.innerHTML).toContain('Item #2');
+          expect(clientRootNode.innerHTML).toContain('Item #3');
+          expect(clientRootNode.innerHTML).not.toContain('This is an "empty" block');
 
           await appRef.whenStable();
-
-          const clientRootNode = compRef.location.nativeElement;
 
           // After hydration and post-hydration cleanup,
           // expect items to be present, but `@empty` block to be removed.
@@ -7469,6 +7521,9 @@ describe('platform-server full application hydration integration', () => {
           })
           class SimpleComponent {
             items = isPlatformServer(inject(PLATFORM_ID)) ? [1, 2, 3] : [];
+            ngOnInit() {
+              setTimeout(() => {}, 100);
+            }
           }
 
           const html = await ssr(SimpleComponent);
@@ -7476,21 +7531,26 @@ describe('platform-server full application hydration integration', () => {
 
           expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
 
-          resetTViewsFor(SimpleComponent);
-
           // Expect items to be rendered on the server.
           expect(ssrContents).toContain('Item #1');
           expect(ssrContents).toContain('Item #2');
           expect(ssrContents).toContain('Item #3');
           expect(ssrContents).not.toContain('This is an "empty" block');
 
+          resetTViewsFor(SimpleComponent);
+
           const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
           const compRef = getComponentRef<SimpleComponent>(appRef);
           appRef.tick();
 
-          await appRef.whenStable();
-
           const clientRootNode = compRef.location.nativeElement;
+
+          expect(clientRootNode.innerHTML).not.toContain('Item #1');
+          expect(clientRootNode.innerHTML).not.toContain('Item #2');
+          expect(clientRootNode.innerHTML).not.toContain('Item #3');
+          expect(clientRootNode.innerHTML).toContain('This is an "empty" block');
+
+          await appRef.whenStable();
 
           // After hydration and post-hydration cleanup,
           // expect an `@empty` block to be present and items to be removed.
