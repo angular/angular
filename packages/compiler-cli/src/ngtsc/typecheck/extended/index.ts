@@ -21,6 +21,7 @@ import {factory as textAttributeNotBindingFactory} from './checks/text_attribute
 import {factory as uninvokedFunctionInEventBindingFactory} from './checks/uninvoked_function_in_event_binding';
 import {factory as unparenthesizedNullishCoalescingFactory} from './checks/unparenthesized_nullish_coalescing';
 import {factory as unusedLetDeclarationFactory} from './checks/unused_let_declaration';
+import {factory as uninvokedTrackFunctionFactory} from './checks/uninvoked_track_function';
 
 export {ExtendedTemplateCheckerImpl} from './src/extended_template_checker';
 
@@ -40,6 +41,7 @@ export const ALL_DIAGNOSTIC_FACTORIES: readonly TemplateCheckFactory<
   unusedLetDeclarationFactory,
   skipHydrationNotStaticFactory,
   unparenthesizedNullishCoalescingFactory,
+  uninvokedTrackFunctionFactory,
 ];
 
 export const SUPPORTED_DIAGNOSTIC_NAMES = new Set<string>([
