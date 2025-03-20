@@ -20,16 +20,16 @@ class GesturesCmp {
   pinchScale: number = 1;
   rotateAngle: number = 0;
 
-  onSwipe(event: HammerInput): void {
-    this.swipeDirection = event.deltaX > 0 ? 'right' : 'left';
+  onSwipe(event: Event): void {
+    this.swipeDirection = (event as unknown as HammerInput).deltaX > 0 ? 'right' : 'left';
   }
 
-  onPinch(event: HammerInput): void {
-    this.pinchScale = event.scale;
+  onPinch(event: Event): void {
+    this.pinchScale = (event as unknown as HammerInput).scale;
   }
 
-  onRotate(event: HammerInput): void {
-    this.rotateAngle = event.rotation;
+  onRotate(event: Event): void {
+    this.rotateAngle = (event as unknown as HammerInput).rotation;
   }
 }
 

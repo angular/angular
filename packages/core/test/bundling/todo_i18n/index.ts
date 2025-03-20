@@ -88,7 +88,7 @@ class TodoStore {
       <h1>todos</h1>
       <input class="new-todo" i18n-placeholder placeholder="What needs to be done?" autofocus=""
              [value]="newTodoText"
-             (keyup)="$event.code == 'Enter' ? addTodo() : updateNewTodoValue($event.target.value)">
+             (keyup)="$event.code == 'Enter' ? addTodo() : updateNewTodoValue($event)">
     </header>
     <section *ngIf="todoStore.todos.length > 0" class="main">
       <input *ngIf="todoStore.todos.length"
@@ -110,7 +110,7 @@ class TodoStore {
                  class="edit" #editedtodo
                  [value]="todo.title"
                  (blur)="updateEditedTodoValue(todo, editedtodo.value)"
-                 (keyup)="updateEditedTodoValue(todo, $event.target.value)"
+                 (keyup)="updateEditedTodoValue(todo, $any($event.target).value)"
                  (keyup)="$event.code == 'Enter' && updateEditedTodoValue(todo, editedtodo.value)"
                  (keyup)="$event.code == 'Escape' && cancelEditingTodo(todo)">
         </li>
@@ -192,8 +192,8 @@ class ToDoAppComponent {
     this.cdr.detectChanges();
   }
 
-  updateNewTodoValue(value: string) {
-    this.newTodoText = value;
+  updateNewTodoValue(event: Event) {
+    this.newTodoText = (event.target as HTMLInputElement).value;
     this.cdr.detectChanges();
   }
 }

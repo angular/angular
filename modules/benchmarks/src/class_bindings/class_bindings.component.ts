@@ -33,5 +33,5 @@ import {Component, Input} from '@angular/core';
 })
 export class ClassBindingsComponent {
   @Input() msg: string = '';
-  @Input() list: string[] | null = null;
+  @Input() list: {i: number; text: string}[] | null = null;
 }
