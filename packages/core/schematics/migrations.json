@@ -9,6 +9,12 @@
       "version": "20.0.0",
       "description": "Replaces usages of the deprecated TestBed.get method with TestBed.inject",
       "factory": "./bundles/test-bed-get#migrate"
+    },
+    "control-flow-migration": {
+      "version": "20.0.0",
+      "description": "Converts the entire application to block control flow syntax",
+      "factory": "./bundles/control-flow-migration#migrate",
+      "optional": true
     }
   }
 }
