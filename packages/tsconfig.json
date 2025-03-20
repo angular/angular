@@ -37,6 +37,10 @@
   "bazelOptions": {
     "suppressTsconfigOverrideWarnings": true
   },
+  "angularCompilerOptions": {
+    "strictTemplates": true,
+    "typeCheckHostBindings": true
+  },
   "exclude": [
     "common/locales",
     "compiler-cli/integrationtest",

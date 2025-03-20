@@ -33,5 +33,9 @@
   },
   "bazelOptions": {
     "suppressTsconfigOverrideWarnings": true
+  },
+  "angularCompilerOptions": {
+    "strictTemplates": true,
+    "typeCheckHostBindings": true
   }
 }
