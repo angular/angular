@@ -605,6 +605,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
     constructor();
     disableOptimizedSrcset: boolean;
     fill: boolean;
+    protected generatePlaceholder(placeholderInput: string | boolean): string | boolean | null;
     height: number | undefined;
     loaderParams?: {
         [key: string]: any;
@@ -633,6 +634,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
     placeholder?: string | boolean;
     placeholderConfig?: ImagePlaceholderConfig;
     priority: boolean;
+    protected shouldBlurPlaceholder(placeholderConfig?: ImagePlaceholderConfig): boolean;
     sizes?: string;
     width: number | undefined;
     // (undocumented)

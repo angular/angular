@@ -112,11 +112,6 @@ const FIXED_SRCSET_WIDTH_LIMIT = 1920;
 const FIXED_SRCSET_HEIGHT_LIMIT = 1080;
 
 /**
- * Default blur radius of the CSS filter used on placeholder images, in pixels
- */
-export const PLACEHOLDER_BLUR_AMOUNT = 15;
-
-/**
  * Placeholder dimension (height or width) limit in pixels. Angular produces a warning
  * when this limit is crossed.
  */
@@ -279,7 +274,8 @@ export interface ImagePlaceholderConfig {
     '[style.background-position]': 'placeholder ? "50% 50%" : null',
     '[style.background-repeat]': 'placeholder ? "no-repeat" : null',
     '[style.background-image]': 'placeholder ? generatePlaceholder(placeholder) : null',
-    '[style.filter]': `placeholder && shouldBlurPlaceholder(placeholderConfig) ? "blur(${PLACEHOLDER_BLUR_AMOUNT}px)" : null`,
+    '[style.filter]':
+      'placeholder && shouldBlurPlaceholder(placeholderConfig) ? "blur(15px)" : null',
   },
 })
 export class NgOptimizedImage implements OnInit, OnChanges {
@@ -687,7 +683,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
    * * A base64 encoded image, which is wrapped and passed through.
    * * A boolean. If true, calls the image loader to generate a small placeholder url.
    */
-  private generatePlaceholder(placeholderInput: string | boolean): string | boolean | null {
+  protected generatePlaceholder(placeholderInput: string | boolean): string | boolean | null {
     const {placeholderResolution} = this.config;
     if (placeholderInput === true) {
       return `url(${this.callImageLoader({
@@ -705,7 +701,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
    * Determines if blur should be applied, based on an optional boolean
    * property `blur` within the optional configuration object `placeholderConfig`.
    */
-  private shouldBlurPlaceholder(placeholderConfig?: ImagePlaceholderConfig): boolean {
+  protected shouldBlurPlaceholder(placeholderConfig?: ImagePlaceholderConfig): boolean {
     if (!placeholderConfig || !placeholderConfig.hasOwnProperty('blur')) {
       return true;
     }
