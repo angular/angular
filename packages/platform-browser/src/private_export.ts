@@ -7,10 +7,6 @@
  */
 
 export {ɵgetDOM} from '@angular/common';
-export {
-  initDomAdapter as ɵinitDomAdapter,
-  INTERNAL_BROWSER_PLATFORM_PROVIDERS as ɵINTERNAL_BROWSER_PLATFORM_PROVIDERS,
-} from './browser';
 export {BrowserDomAdapter as ɵBrowserDomAdapter} from './browser/browser_adapter';
 export {BrowserGetTestability as ɵBrowserGetTestability} from './browser/testability';
 export {DomRendererFactory2 as ɵDomRendererFactory2} from './dom/dom_renderer';

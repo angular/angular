@@ -12,4 +12,3 @@
  * Entry point for all public APIs of the platform-browser/testing package.
  */
 export * from './browser';
-export * from './private_export_testing';
