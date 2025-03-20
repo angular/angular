@@ -48,8 +48,8 @@ const RANGE_VALUE_ACCESSOR: Provider = {
   selector:
     'input[type=range][formControlName],input[type=range][formControl],input[type=range][ngModel]',
   host: {
-    '(change)': 'onChange($event.target.value)',
-    '(input)': 'onChange($event.target.value)',
+    '(change)': 'onChange($any($event.target).value)',
+    '(input)': 'onChange($any($event.target).value)',
     '(blur)': 'onTouched()',
   },
   providers: [RANGE_VALUE_ACCESSOR],

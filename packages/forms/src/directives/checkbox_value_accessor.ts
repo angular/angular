@@ -46,7 +46,7 @@ const CHECKBOX_VALUE_ACCESSOR: Provider = {
 @Directive({
   selector:
     'input[type=checkbox][formControlName],input[type=checkbox][formControl],input[type=checkbox][ngModel]',
-  host: {'(change)': 'onChange($event.target.checked)', '(blur)': 'onTouched()'},
+  host: {'(change)': 'onChange($any($event.target).checked)', '(blur)': 'onTouched()'},
   providers: [CHECKBOX_VALUE_ACCESSOR],
   standalone: false,
 })
