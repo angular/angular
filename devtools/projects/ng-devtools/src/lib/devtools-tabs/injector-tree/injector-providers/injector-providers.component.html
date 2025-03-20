@@ -8,7 +8,7 @@
           type="text"
           matInput
           placeholder="Provider token"
-          (input)="searchToken.set($event.target.value)"
+          (input)="searchToken.set($any($event.target).value)"
           [value]="searchToken()"
         />
         <mat-icon matSuffix (click)="searchToken.set('')">close</mat-icon>

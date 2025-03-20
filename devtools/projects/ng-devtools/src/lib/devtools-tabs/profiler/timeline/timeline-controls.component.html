@@ -5,7 +5,7 @@
       <input
         matInput
         class="filter-input"
-        (keyup)="filter.emit($event.target.value)"
+        (keyup)="filter.emit($any($event.target).value)"
         placeholder="duration: >30 source: click"
       />
     </mat-form-field>

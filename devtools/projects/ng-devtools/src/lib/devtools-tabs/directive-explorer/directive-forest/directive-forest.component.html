@@ -7,6 +7,8 @@
 </ng-filter>
 <cdk-virtual-scroll-viewport class="tree-wrapper" [itemSize]="itemHeight">
   <ng-container *cdkVirtualFor="let node of dataSource; let idx = index">
+    @let hydration = node.hydration;
+
     <div
       [class]="{
         matched: isMatched(node),
@@ -48,7 +50,7 @@
           <span class="on-push">OnPush</span>
         }
 
-        @switch (node.hydration?.status) {
+        @switch (hydration?.status) {
           @case ('hydrated') {
             <mat-icon matTooltip="Hydrated" class="hydration">water_drop</mat-icon>
           }
@@ -64,19 +66,21 @@
           }
         }
       </div>
+
       @if (
         treeControl.isExpanded(node) &&
-        node.hydration?.status === 'mismatched' &&
-        (node.hydration.expectedNodeDetails || node.hydration.actualNodeDetails)
+        hydration &&
+        hydration.status === 'mismatched' &&
+        (hydration.expectedNodeDetails || hydration.actualNodeDetails)
       ) {
         <div class="hydration-error">
-          @if (node.hydration.expectedNodeDetails) {
+          @if (hydration.expectedNodeDetails) {
             <div>Expected Dom:</div>
-            <pre>{{node.hydration.expectedNodeDetails}}</pre>
+            <pre>{{hydration.expectedNodeDetails}}</pre>
           }
-          @if (node.hydration.actualNodeDetails) {
+          @if (hydration.actualNodeDetails) {
             <div>Actual Dom:</div>
-            <pre>{{node.hydration.actualNodeDetails}}</pre>
+            <pre>{{hydration.actualNodeDetails}}</pre>
           }
         </div>
       }

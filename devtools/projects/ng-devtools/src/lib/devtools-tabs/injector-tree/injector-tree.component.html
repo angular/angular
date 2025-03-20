@@ -61,7 +61,7 @@
         </as-split>
       </as-split-area>
       @if (selectedNode() && providers().length > 0) {
-        <as-split-area size="40" minSize="25">
+        <as-split-area size="40" [minSize]="25">
           <ng-injector-providers
             [injector]="selectedNode()!.data.injector"
             [providers]="providers()"

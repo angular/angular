@@ -92,7 +92,11 @@ describe('DevtoolsTabsComponent', () => {
     expect(contentScriptConnected).toEqual(jasmine.any(Function));
     contentScriptConnected(frameId, 'name', 'http://localhost:4200/url');
     spyOn(comp.frameSelected, 'emit');
-    comp.emitSelectedFrame('1');
+    comp.emitSelectedFrame({
+      target: {
+        value: '1',
+      },
+    } as unknown as Event);
 
     expect(comp.frameSelected.emit).toHaveBeenCalledWith(comp.frameManager.frames()[0]);
   });
