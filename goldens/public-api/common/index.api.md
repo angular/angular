@@ -690,7 +690,7 @@ export class NgSwitch {
     static ɵfac: i0.ɵɵFactoryDeclaration<NgSwitch, never>;
 }
 
-// @public
+// @public @deprecated
 export class NgSwitchCase implements DoCheck {
     constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>, ngSwitch: NgSwitch);
     ngDoCheck(): void;
@@ -701,7 +701,7 @@ export class NgSwitchCase implements DoCheck {
     static ɵfac: i0.ɵɵFactoryDeclaration<NgSwitchCase, [null, null, { optional: true; host: true; }]>;
 }
 
-// @public
+// @public @deprecated
 export class NgSwitchDefault {
     constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>, ngSwitch: NgSwitch);
     // (undocumented)
