@@ -22,6 +22,38 @@ export function assertFileNames(refs: Array<{fileName: string}>, expectedFileNam
   expect(new Set(actualFileNames)).toEqual(new Set(expectedFileNames));
 }
 
+/**
+ * Expect that a list of objects with a `fileName` property matches a set
+ * of file paths.
+ *
+ * This assertion is independent of the order of either list.
+ */
+export function assertFilePaths(refs: Array<{fileName: string}>, expectedPaths: RegExp[]) {
+  const actualPaths = Array.from(new Set(refs.map((r) => r.fileName)));
+
+  if (actualPaths.length !== expectedPaths.length) {
+    expect(actualPaths.length)
+      .withContext('Expected expected paths to be the same size.')
+      .toBe(expectedPaths.length);
+    return;
+  }
+
+  for (const pattern of expectedPaths) {
+    const matching = actualPaths.findIndex((p) => pattern.test(p));
+    if (matching !== -1) {
+      actualPaths.splice(matching, 1);
+    } else {
+      expect(true)
+        .withContext(
+          `Expected ${pattern} to match a file path. ` +
+            `Remaining unmatched paths: ${actualPaths.join(', ')}`,
+        )
+        .toBe(false);
+      return;
+    }
+  }
+}
+
 export function assertTextSpans(items: Array<{textSpan: string}>, expectedTextSpans: string[]) {
   const actualSpans = items.map((item) => item.textSpan);
   expect(new Set(actualSpans)).toEqual(new Set(expectedTextSpans));
@@ -97,9 +129,7 @@ export function humanizeDocumentSpanLike<T extends ts.DocumentSpan>(
       : undefined,
   };
 }
-type Stringy<T> = {
-  [P in keyof T]: string;
-};
+type Stringy<T> = {[P in keyof T]: string};
 
 export function getText(contents: string, textSpan: ts.TextSpan) {
   return contents.slice(textSpan.start, textSpan.start + textSpan.length);

@@ -22,6 +22,7 @@ import {
 import {readFileSync} from 'fs';
 import path from 'path';
 import ts from 'typescript';
+import {globSync} from 'tinyglobby';
 
 import {
   absoluteFrom,
@@ -151,19 +152,19 @@ export function typescriptLibDts(): TestFile {
   };
 }
 
+let _angularCoreDts: TestFile[] | null = null;
 export function angularCoreDtsFiles(): TestFile[] {
-  const directory = resolveFromRunfiles('angular/packages/core/npm_package');
+  if (_angularCoreDts !== null) {
+    return _angularCoreDts;
+  }
 
-  return [
-    {
-      name: absoluteFrom('/node_modules/@angular/core/index.d.ts'),
-      contents: readFileSync(path.join(directory, 'index.d.ts'), 'utf8'),
-    },
-    {
-      name: absoluteFrom('/node_modules/@angular/core/primitives/signals/index.d.ts'),
-      contents: readFileSync(path.join(directory, 'primitives/signals/index.d.ts'), 'utf8'),
-    },
-  ];
+  const directory = resolveFromRunfiles('angular/packages/core/npm_package');
+  const dtsFiles = globSync('**/*.d.ts', {cwd: directory});
+
+  return (_angularCoreDts = dtsFiles.map((fileName) => ({
+    name: absoluteFrom(`/node_modules/@angular/core/${fileName}`),
+    contents: readFileSync(path.join(directory, fileName), 'utf8'),
+  })));
 }
 
 export function angularAnimationsDts(): TestFile {
@@ -246,12 +247,7 @@ export function ngForDts(): TestFile {
 
 export function ngForTypeCheckTarget(): TypeCheckingTarget {
   const dts = ngForDts();
-  return {
-    ...dts,
-    fileName: dts.name,
-    source: dts.contents,
-    templates: {},
-  };
+  return {...dts, fileName: dts.name, source: dts.contents, templates: {}};
 }
 
 export const ALL_ENABLED_CONFIG: Readonly<TypeCheckingConfig> = {
@@ -425,9 +421,7 @@ export function tcb(
     checkTwoWayBoundEvents: true,
     ...config,
   };
-  options = options || {
-    emitSpans: false,
-  };
+  options = options || {emitSpans: false};
 
   const fileName = absoluteFrom('/type-check-file.ts');
 
@@ -518,18 +512,12 @@ export function setup(
       }
     }
 
-    files.push({
-      name: target.fileName,
-      contents,
-    });
+    files.push({name: target.fileName, contents});
 
     if (!target.fileName.endsWith('.d.ts')) {
       const shimName = TypeCheckShimGenerator.shimFor(target.fileName);
       shims.set(target.fileName, shimName);
-      files.push({
-        name: shimName,
-        contents: 'export const MODULE = true;',
-      });
+      files.push({name: shimName, contents: 'export const MODULE = true;'});
     }
   }
 
@@ -538,12 +526,7 @@ export function setup(
 
   const {program, host, options} = makeProgram(
     files,
-    {
-      strictNullChecks: true,
-      skipLibCheck: true,
-      noImplicitAny: true,
-      ...opts,
-    },
+    {strictNullChecks: true, skipLibCheck: true, noImplicitAny: true, ...opts},
     /* host */ undefined,
     /* checkForErrors */ false,
   );
@@ -585,10 +568,7 @@ export function setup(
     if (shims.has(target.fileName)) {
       const shimFileName = shims.get(target.fileName)!;
       const shimSf = getSourceFileOrError(program, shimFileName);
-      sfExtensionData(shimSf).fileShim = {
-        extension: 'ngtypecheck',
-        generatedFrom: target.fileName,
-      };
+      sfExtensionData(shimSf).fileShim = {extension: 'ngtypecheck', generatedFrom: target.fileName};
     }
 
     for (const className of Object.keys(target.templates)) {
@@ -669,10 +649,7 @@ export function setup(
         if (!scopeMap.has(clazz)) {
           // This class wasn't part of the target set of components with templates, but is
           // probably a declaration used in one of them. Return an empty scope.
-          const emptyScope: ScopeData = {
-            dependencies: [],
-            isPoisoned: false,
-          };
+          const emptyScope: ScopeData = {dependencies: [], isPoisoned: false};
           return {
             kind: ComponentScopeKind.NgModule,
             ngModule,
@@ -723,11 +700,7 @@ export function setup(
     typeCheckScopeRegistry,
     NOOP_PERF_RECORDER,
   );
-  return {
-    templateTypeChecker,
-    program,
-    programStrategy,
-  };
+  return {templateTypeChecker, program, programStrategy};
 }
 
 /**
@@ -746,14 +719,7 @@ export function diagnose(
   const sfPath = absoluteFrom('/main.ts');
   const {program, templateTypeChecker} = setup(
     [
-      {
-        fileName: sfPath,
-        templates: {
-          'TestComponent': template,
-        },
-        source,
-        declarations,
-      },
+      {fileName: sfPath, templates: {'TestComponent': template}, source, declarations},
       ...additionalSources.map((testFile) => ({
         fileName: testFile.name,
         source: testFile.contents,
@@ -908,10 +874,7 @@ function getDirectiveMetaFromDeclaration(
  * Synthesize `ScopeData` metadata from an array of `TestDeclaration`s.
  */
 function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaration[]): ScopeData {
-  const scope: ScopeData = {
-    dependencies: [],
-    isPoisoned: false,
-  };
+  const scope: ScopeData = {dependencies: [], isPoisoned: false};
 
   for (const decl of decls) {
     let declSf = sf;
