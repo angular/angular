@@ -35,26 +35,20 @@ export function wrapListener(
 ): EventListener {
   // Note: we are performing most of the work in the listener function itself
   // to optimize listener registration.
-  return function wrapListenerIn_markDirtyAndPreventDefault(e: any) {
-    // Ivy uses `Function` as a special token that allows us to unwrap the function
-    // so that it can be invoked programmatically by `DebugNode.triggerEventHandler`.
-    if (e === Function) {
-      return listenerFn;
-    }
-
+  return function wrapListenerIn_markDirtyAndPreventDefault(event: any) {
     // In order to be backwards compatible with View Engine, events on component host nodes
     // must also mark the component view itself dirty (i.e. the view that it owns).
     const startView = isComponentHost(tNode) ? getComponentLViewByIndex(tNode.index, lView) : lView;
     markViewDirty(startView, NotificationSource.Listener);
 
     const context = lView[CONTEXT];
-    let result = executeListenerWithErrorHandling(lView, context, listenerFn, e);
+    let result = executeListenerWithErrorHandling(lView, context, listenerFn, event);
     // A just-invoked listener function might have coalesced listeners so we need to check for
     // their presence and invoke as needed.
     let nextListenerFn = (<any>wrapListenerIn_markDirtyAndPreventDefault).__ngNextListenerFn__;
     while (nextListenerFn) {
       // We should prevent default if any of the listeners explicitly return false
-      result = executeListenerWithErrorHandling(lView, context, nextListenerFn, e) && result;
+      result = executeListenerWithErrorHandling(lView, context, nextListenerFn, event) && result;
       nextListenerFn = (<any>nextListenerFn).__ngNextListenerFn__;
     }
 
