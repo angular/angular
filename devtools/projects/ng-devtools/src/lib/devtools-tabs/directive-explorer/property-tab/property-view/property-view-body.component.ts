@@ -48,17 +48,14 @@ export class PropertyViewBodyComponent {
     {
       title: 'Inputs',
       controls: () => this.directiveInputControls(),
-      class: 'cy-inputs',
     },
     {
       title: 'Outputs',
       controls: () => this.directiveOutputControls(),
-      class: 'cy-outputs',
     },
     {
       title: 'Properties',
       controls: () => this.directiveStateControls(),
-      class: 'cy-properties',
     },
   ]);
 

@@ -25,7 +25,7 @@
     @for (panel of panels(); track $index) {
       <div class="mat-accordion-content" cdkDrag>
         @if (panel.controls().dataSource.data.length > 0) {
-          <mat-expansion-panel [class]="panel.class" [expanded]="true">
+          <mat-expansion-panel [expanded]="true">
             <mat-expansion-panel-header collapsedHeight="25px" expandedHeight="25px">
               <mat-panel-title>{{ panel.title }}</mat-panel-title>
             </mat-expansion-panel-header>
