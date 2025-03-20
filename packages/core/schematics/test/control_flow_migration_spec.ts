@@ -31,7 +31,7 @@ describe('control flow migration', () => {
   }
 
   beforeEach(() => {
-    runner = new SchematicTestRunner('test', runfiles.resolvePackageRelative('../collection.json'));
+    runner = new SchematicTestRunner('test', runfiles.resolvePackageRelative('../migrations.json'));
     host = new TempScopedNodeJsSyncHost();
     tree = new UnitTestTree(new HostTree(host));
 
@@ -65,100 +65,6 @@ describe('control flow migration', () => {
   afterEach(() => {
     shx.cd(previousWorkingDir);
     shx.rm('-r', tmpDirPath);
-  });
-
-  describe('path', () => {
-    it('should throw an error if no files match the passed-in path', async () => {
-      let error: string | null = null;
-
-      writeFile(
-        'dir.ts',
-        `
-        import {Directive} from '@angular/core';
-
-        @Directive({selector: '[dir]'})
-        export class MyDir {}
-      `,
-      );
-
-      try {
-        await runMigration('./foo');
-      } catch (e: any) {
-        error = e.message;
-      }
-
-      expect(error).toMatch(
-        /Could not find any files to migrate under the path .*\/foo\. Cannot run the control flow migration/,
-      );
-    });
-
-    it('should throw an error if a path outside of the project is passed in', async () => {
-      let error: string | null = null;
-
-      writeFile(
-        'dir.ts',
-        `
-        import {Directive} from '@angular/core';
-
-        @Directive({selector: '[dir]'})
-        export class MyDir {}
-      `,
-      );
-
-      try {
-        await runMigration('../foo');
-      } catch (e: any) {
-        error = e.message;
-      }
-      expect(error).toBe('Cannot run control flow migration outside of the current project.');
-    });
-
-    it('should only migrate the paths that were passed in', async () => {
-      writeFile(
-        'comp.ts',
-        `
-        import {Component} from '@angular/core';
-        import {NgIf} from '@angular/common';
-
-        @Component({
-          imports: [NgIf, NgFor,NgSwitch,NgSwitchCase ,NgSwitchDefault],
-          template: \`<div><span *ngIf="toggle">This should be hidden</span></div>\`
-        })
-        class Comp {
-          toggle = false;
-        }
-      `,
-      );
-
-      writeFile(
-        'skip.ts',
-        `
-        import {Component} from '@angular/core';
-        import {NgIf} from '@angular/common';
-
-        @Component({
-          imports: [NgIf],
-          template: \`<div *ngIf="show">Show me</div>\`
-        })
-        class Comp {
-          show = false;
-        }
-      `,
-      );
-
-      await runMigration('./comp.ts');
-      const migratedContent = tree.readContent('/comp.ts');
-      const skippedContent = tree.readContent('/skip.ts');
-
-      expect(migratedContent).toContain(
-        'template: `<div>@if (toggle) {<span>This should be hidden</span>}</div>`',
-      );
-      expect(migratedContent).toContain('imports: []');
-      expect(migratedContent).not.toContain(`import {NgIf} from '@angular/common';`);
-      expect(skippedContent).toContain('template: `<div *ngIf="show">Show me</div>`');
-      expect(skippedContent).toContain('imports: [NgIf]');
-      expect(skippedContent).toContain(`import {NgIf} from '@angular/common';`);
-    });
   });
 
   describe('ngIf', () => {
@@ -5594,48 +5500,6 @@ describe('control flow migration', () => {
       ].join('\n');
 
       expect(actual).toBe(expected);
-    });
-
-    it('should migrate an if else case and not format', async () => {
-      writeFile(
-        '/comp.ts',
-        `
-        import {Component} from '@angular/core';
-        import {NgIf} from '@angular/common';
-
-        @Component({
-          templateUrl: './comp.html'
-        })
-        class Comp {
-          show = false;
-        }
-      `,
-      );
-
-      writeFile(
-        '/comp.html',
-        [
-          `<div>`,
-          `<span *ngIf="show;else elseBlock">Content here</span>`,
-          `<ng-template #elseBlock>Else Content</ng-template>`,
-          `</div>`,
-        ].join('\n'),
-      );
-
-      await runMigration(undefined, false);
-      const content = tree.readContent('/comp.html');
-
-      expect(content).toBe(
-        [
-          `<div>`,
-          `@if (show) {`,
-          `<span>Content here</span>`,
-          `} @else {`,
-          `Else Content`,
-          `}\n`,
-          `</div>`,
-        ].join('\n'),
-      );
     });
 
     it('should ignore formatting on i18n sections', async () => {
