@@ -11,7 +11,7 @@ import {Dispatcher} from './dispatcher';
 import {EventInfo, EventInfoWrapper} from './event_info';
 import {isCaptureEventType} from './event_type';
 import {UnrenamedEventContract} from './eventcontract';
-import {Restriction} from './restriction';
+import {RESTRICTION_I_AM_THE_JSACTION_FRAMEWORK} from './restriction';
 
 /**
  * A replayer is a function that is called when there are queued events, from the `EventContract`.
@@ -184,5 +184,5 @@ export function registerDispatcher(
 ) {
   eventContract.ecrd((eventInfo: EventInfo) => {
     dispatcher.dispatch(eventInfo);
-  }, Restriction.I_AM_THE_JSACTION_FRAMEWORK);
+  }, RESTRICTION_I_AM_THE_JSACTION_FRAMEWORK);
 }
