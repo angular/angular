@@ -11,35 +11,21 @@ import {
   APP_ID,
   createPlatformFactory,
   NgModule,
-  PLATFORM_INITIALIZER,
-  platformCore,
   StaticProvider,
   ɵinternalProvideZoneChangeDetection as internalProvideZoneChangeDetection,
   ɵChangeDetectionScheduler as ChangeDetectionScheduler,
   ɵChangeDetectionSchedulerImpl as ChangeDetectionSchedulerImpl,
 } from '@angular/core';
 import {TestComponentRenderer} from '@angular/core/testing';
-import {BrowserModule, ɵBrowserDomAdapter as BrowserDomAdapter} from '@angular/platform-browser';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 import {DOMTestComponentRenderer} from './dom_test_component_renderer';
-
-function initBrowserTests() {
-  BrowserDomAdapter.makeCurrent();
-}
-
-const _TEST_BROWSER_PLATFORM_PROVIDERS: StaticProvider[] = [
-  {provide: PLATFORM_INITIALIZER, useValue: initBrowserTests, multi: true},
-];
 
 /**
  * Platform for testing
  *
  * @publicApi
  */
-export const platformBrowserTesting = createPlatformFactory(
-  platformCore,
-  'browserTesting',
-  _TEST_BROWSER_PLATFORM_PROVIDERS,
-);
+export const platformBrowserTesting = createPlatformFactory(platformBrowser, 'browserTesting');
 
 /**
  * NgModule for testing.

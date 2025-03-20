@@ -6,5 +6,4 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-export {platformCoreDynamic as ɵplatformCoreDynamic} from './platform_core_dynamic';
 export {INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS as ɵINTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS} from './platform_providers';

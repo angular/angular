@@ -4,7 +4,7 @@
 
 ```ts
 
-import * as _angular_core from '@angular/core';
+import * as i0 from '@angular/core';
 import * as i1 from '@angular/platform-browser/testing';
 import { PlatformRef } from '@angular/core';
 import { StaticProvider } from '@angular/core';
@@ -12,11 +12,11 @@ import { StaticProvider } from '@angular/core';
 // @public
 export class BrowserDynamicTestingModule {
     // (undocumented)
-    static ɵfac: _angular_core.ɵɵFactoryDeclaration<BrowserDynamicTestingModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<BrowserDynamicTestingModule, never>;
     // (undocumented)
-    static ɵinj: _angular_core.ɵɵInjectorDeclaration<BrowserDynamicTestingModule>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<BrowserDynamicTestingModule>;
     // (undocumented)
-    static ɵmod: _angular_core.ɵɵNgModuleDeclaration<BrowserDynamicTestingModule, never, never, [typeof i1.BrowserTestingModule]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<BrowserDynamicTestingModule, never, never, [typeof i1.BrowserTestingModule]>;
 }
 
 // @public (undocumented)
