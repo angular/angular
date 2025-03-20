@@ -179,7 +179,7 @@ describe('signal inputs', () => {
       template: 'input:{{input()}}',
     })
     class InputComp {
-      input = input.required<string>();
+      input = input.required<number>();
 
       constructor() {
         this.input();
