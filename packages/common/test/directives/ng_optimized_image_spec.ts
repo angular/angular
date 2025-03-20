@@ -28,13 +28,14 @@ import {
   DATA_URL_ERROR_LIMIT,
   DATA_URL_WARN_LIMIT,
   NgOptimizedImage,
-  PLACEHOLDER_BLUR_AMOUNT,
   RECOMMENDED_SRCSET_DENSITY_CAP,
   resetImagePriorityCount,
 } from '../../src/directives/ng_optimized_image/ng_optimized_image';
 import {PRECONNECT_CHECK_BLOCKLIST} from '../../src/directives/ng_optimized_image/preconnect_link_checker';
 
 describe('Image directive', () => {
+  const PLACEHOLDER_BLUR_AMOUNT = 15;
+
   describe('preload <link> element on a server', () => {
     describe('server', () => {
       beforeEach(() => {
