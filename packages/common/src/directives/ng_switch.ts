@@ -111,6 +111,7 @@ export class SwitchView {
  * @see {@link NgSwitchDefault}
  * @see [Structural Directives](guide/directives/structural-directives)
  *
+ * @deprecated Use the @switch block instead. Intent to remove in v22
  */
 @Directive({
   selector: '[ngSwitch]',
@@ -196,6 +197,7 @@ export class NgSwitch {
  * @see {@link NgSwitch}
  * @see {@link NgSwitchDefault}
  *
+ * @deprecated Use the @case block within a @switch block instead. Intent to remove in v22
  */
 @Directive({
   selector: '[ngSwitchCase]',
@@ -242,6 +244,7 @@ export class NgSwitchCase implements DoCheck {
  * @see {@link NgSwitch}
  * @see {@link NgSwitchCase}
  *
+ * @deprecated Use the @default block within a @switch block instead. Intent to remove in v22
  */
 @Directive({
   selector: '[ngSwitchDefault]',

@@ -516,7 +516,7 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
     static ɵfac: i0.ɵɵFactoryDeclaration<NgComponentOutlet<any>, never>;
 }
 
-// @public
+// @public @deprecated
 class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck {
     constructor(_viewContainer: ViewContainerRef, _template: TemplateRef<NgForOfContext<T, U>>, _differs: IterableDiffers);
     ngDoCheck(): void;
@@ -534,7 +534,7 @@ class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck {
 export { NgForOf as NgFor }
 export { NgForOf }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
     $implicit: T;
     constructor(
@@ -555,7 +555,7 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
     get odd(): boolean;
 }
 
-// @public
+// @public @deprecated
 export class NgIf<T = unknown> {
     constructor(_viewContainer: ViewContainerRef, templateRef: TemplateRef<NgIfContext<T>>);
     set ngIf(condition: T);
@@ -682,7 +682,7 @@ export class NgStyle implements DoCheck {
     static ɵfac: i0.ɵɵFactoryDeclaration<NgStyle, never>;
 }
 
-// @public
+// @public @deprecated
 export class NgSwitch {
     // (undocumented)
     set ngSwitch(newValue: any);
