@@ -23,7 +23,7 @@ export class FilterComponent {
 
   readonly hasMatched = input(false);
 
-  emitFilter(event: InputEvent): void {
+  emitFilter(event: Event): void {
     this.filter.emit((event.target as HTMLInputElement).value);
   }
 

@@ -120,7 +120,7 @@ export class PropertyViewBodyComponent {
             </mat-chip-listbox>
           </mat-panel-description>
         </mat-expansion-panel-header>
-        <ng-resolution-path [path]="dependency().resolutionPath"></ng-resolution-path>
+        <ng-resolution-path [path]="dependency().resolutionPath!"></ng-resolution-path>
       </mat-expansion-panel>
     </mat-accordion>
   `,

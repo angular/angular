@@ -65,9 +65,9 @@ export class RouterTreeComponent {
     });
   }
 
-  searchRoutes($event: InputEvent) {
+  searchRoutes(event: Event) {
     this.filterRegex = new RegExp(
-      ($event?.target as HTMLInputElement)?.value?.toLowerCase() || DEFAULT_FILTER,
+      (event?.target as HTMLInputElement)?.value?.toLowerCase() || DEFAULT_FILTER,
     );
     this.renderGraph(this.routes());
   }
