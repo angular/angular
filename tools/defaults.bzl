@@ -184,6 +184,7 @@ def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps 
         deps = deps,
         compiler = _INTERNAL_NG_MODULE_COMPILER,
         ng_xi18n = _INTERNAL_NG_MODULE_XI18N,
+        strict_templates = True,
         # `module_name` is used for AMD module names within emitted JavaScript files.
         module_name = module_name,
         # `package_name` can be set to allow for the Bazel NodeJS linker to run. This

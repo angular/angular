@@ -20,7 +20,7 @@
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "target": "es5",
-    "types": ["angular"],
+    "types": ["angular"]
   },
   "exclude": [
     "payload_tests",
@@ -28,6 +28,8 @@
     "benchmarks/"
   ],
   "angularCompilerOptions": {
-    "skipTemplateCodegen": true
+    "strictTemplates": true,
+    "skipTemplateCodegen": true,
+    "typeCheckHostBindings": true
   }
 }
