@@ -22,23 +22,23 @@ export class ClickOutside {
   private readonly document = inject(DOCUMENT);
   private readonly elementRef = inject(ElementRef<HTMLElement>);
 
-  onClick($event: PointerEvent): void {
+  onClick(event: MouseEvent): void {
     if (
-      !this.elementRef.nativeElement.contains($event.target) &&
-      !this.wasClickedOnIgnoredElement($event)
+      !this.elementRef.nativeElement.contains(event.target) &&
+      !this.wasClickedOnIgnoredElement(event)
     ) {
       this.clickOutside.emit();
     }
   }
 
-  private wasClickedOnIgnoredElement($event: PointerEvent): boolean {
+  private wasClickedOnIgnoredElement(event: MouseEvent): boolean {
     if (this.ignoredElementsIds.length === 0) {
       return false;
     }
 
     return this.ignoredElementsIds.some((elementId) => {
       const element = this.document.getElementById(elementId);
-      const target = $event.target as Node;
+      const target = event.target as Node;
       const contains = element?.contains(target);
       return contains;
     });

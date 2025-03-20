@@ -79,7 +79,7 @@ export class DocViewer implements OnChanges {
   private readonly injector = inject(Injector);
   private readonly appRef = inject(ApplicationRef);
 
-  private animateContent = false;
+  protected animateContent = false;
   private readonly pendingTasks = inject(PendingTasks);
 
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));

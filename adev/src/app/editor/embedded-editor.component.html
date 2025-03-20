@@ -1,6 +1,6 @@
 <div class="adev-editor-container" #editorContainer>
   <as-split class="docs-editor" [direction]="splitDirection" restrictMove="true" gutterSize="5">
-    <as-split-area class="adev-left-side" [size]="50">
+    <as-split-area class="adev-left-side" size="50">
       <!-- Code Editor -->
       @if (!displayOnlyTerminal()) {
       <docs-tutorial-code-editor class="adev-tutorial-code-editor" />
@@ -15,13 +15,13 @@
       }
     </as-split-area>
 
-    <as-split-area [size]="50">
+    <as-split-area size="50">
       <!-- Preview, Terminal & Console -->
       @if (!displayOnlyTerminal()) {
       <as-split class="docs-right-side" direction="vertical" restrictMove="true" gutterSize="5">
         <!-- Preview Section: for larger screens -->
         @if (!displayPreviewInMatTabGroup()) {
-        <as-split-area [size]="50">
+        <as-split-area size="50">
           <!-- Preview Section: for larger screens -->
           <div class="adev-preview-section">
             <div class="adev-preview-header">
@@ -34,7 +34,7 @@
         </as-split-area>
         }
 
-        <as-split-area class="docs-editor-tabs-and-refresh" [size]="50">
+        <as-split-area class="docs-editor-tabs-and-refresh" size="50">
           <!-- Container to hide preview, console and footer when only the interactive terminal is used  -->
           <mat-tab-group class="docs-editor-tabs" animationDuration="0ms" mat-stretch-tabs="false">
             @if (displayPreviewInMatTabGroup()) {
