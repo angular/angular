@@ -162,6 +162,9 @@ export const SIGNAL: unique symbol;
 export const SIGNAL_NODE: SignalNode<unknown>;
 
 // @public (undocumented)
+export function signalGetFn<T>(node: SignalNode<T>): T;
+
+// @public (undocumented)
 export interface SignalGetter<T> extends SignalBaseGetter<T> {
     // (undocumented)
     readonly [SIGNAL]: SignalNode<T>;

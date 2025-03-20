@@ -48,6 +48,7 @@ export {
   createSignal,
   runPostSignalSetFn,
   setPostSignalSetFn,
+  signalGetFn,
   signalSetFn,
   signalUpdateFn,
 } from './src/signal';

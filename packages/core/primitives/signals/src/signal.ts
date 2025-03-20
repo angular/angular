@@ -54,10 +54,7 @@ export function createSignal<T>(initialValue: T, equal?: ValueEqualityFn<T>): Si
   if (equal !== undefined) {
     node.equal = equal;
   }
-  const getter = (() => {
-    producerAccessed(node);
-    return node.value;
-  }) as SignalGetter<T>;
+  const getter = (() => signalGetFn(node)) as SignalGetter<T>;
   (getter as any)[SIGNAL] = node;
   if (typeof ngDevMode !== 'undefined' && ngDevMode) {
     const debugName = node.debugName ? ' (' + node.debugName + ')' : '';
@@ -75,9 +72,9 @@ export function setPostSignalSetFn(fn: ReactiveHookFn | null): ReactiveHookFn | 
   return prev;
 }
 
-export function signalGetFn<T>(this: SignalNode<T>): T {
-  producerAccessed(this);
-  return this.value;
+export function signalGetFn<T>(node: SignalNode<T>): T {
+  producerAccessed(node);
+  return node.value;
 }
 
 export function signalSetFn<T>(node: SignalNode<T>, newValue: T) {
