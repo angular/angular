@@ -7,7 +7,15 @@
  */
 
 import {CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag} from '@angular/cdk/drag-drop';
-import {Component, computed, forwardRef, input, output, signal} from '@angular/core';
+import {
+  Component,
+  ɵFramework as Framework,
+  computed,
+  forwardRef,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import {DirectivePosition, SerializedInjectedService} from 'protocol';
 
 import {
@@ -54,19 +62,20 @@ export class PropertyViewBodyComponent {
 
   protected readonly panels = signal([
     {
-      title: 'Inputs',
+      title: () => 'Inputs',
       controls: () => this.directiveInputControls(),
     },
     {
-      title: 'Props',
+      title: () => 'Props',
       controls: () => this.directivePropControls(),
     },
     {
-      title: 'Outputs',
+      title: () => 'Outputs',
       controls: () => this.directiveOutputControls(),
     },
     {
-      title: 'Properties',
+      title: () =>
+        this.controller().directiveMetadata?.framework === Framework.Wiz ? 'State' : 'Properties',
       controls: () => this.directiveStateControls(),
     },
   ]);

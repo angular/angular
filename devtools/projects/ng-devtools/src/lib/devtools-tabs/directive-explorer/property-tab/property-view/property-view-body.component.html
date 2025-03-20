@@ -27,7 +27,7 @@
         @if (panel.controls().dataSource.data.length > 0) {
           <mat-expansion-panel [expanded]="true">
             <mat-expansion-panel-header collapsedHeight="25px" expandedHeight="25px">
-              <mat-panel-title>{{ panel.title }}</mat-panel-title>
+              <mat-panel-title>{{ panel.title() }}</mat-panel-title>
             </mat-expansion-panel-header>
             <ng-property-view-tree
               [dataSource]="panel.controls().dataSource"
