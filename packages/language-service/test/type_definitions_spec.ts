@@ -10,6 +10,7 @@ import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/te
 
 import {
   assertFileNames,
+  assertFilePaths,
   assertTextSpans,
   humanizeDocumentSpanLike,
   LanguageServiceTestEnv,
@@ -119,7 +120,7 @@ describe('type definitions', () => {
       expect(definitions!.length).toEqual(1);
 
       assertTextSpans(definitions, ['OutputEmitterRef']);
-      assertFileNames(definitions, ['index.d.ts']);
+      assertFilePaths(definitions, [/node_modules\/@angular\/core\/.*\.d\.ts/]);
     });
   });
 
@@ -158,7 +159,7 @@ describe('type definitions', () => {
       expect(definitions!.length).toEqual(1);
 
       assertTextSpans(definitions, ['OutputRef']);
-      assertFileNames(definitions, ['index.d.ts']);
+      assertFilePaths(definitions, [/node_modules\/@angular\/core\/.*\.d\.ts/]);
     });
   });
 
