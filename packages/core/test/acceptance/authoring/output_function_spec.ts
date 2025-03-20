@@ -42,6 +42,8 @@ describe('output() function', () => {
     fixture.detectChanges();
 
     expect(fixture.componentInstance.values).toEqual([]);
+    expect(dir.onBla.observed).toBe(true);
+
     dir.onBla.emit(1);
     dir.onBla.emit(2);
 
@@ -362,6 +364,28 @@ describe('output() function', () => {
       expect(handledErrors.length).toBe(1);
       expect((handledErrors[0] as Error).message).toBe('first programmatic listener failure');
       expect(triggered).toBe(1);
+    });
+
+    it('should not be observed if no listeners are present', () => {
+      @Directive({
+        selector: '[dir]',
+      })
+      class Dir {
+        onBla = output();
+      }
+
+      @Component({
+        template: '<div dir></div>',
+        imports: [Dir],
+      })
+      class App {}
+
+      const fixture = TestBed.createComponent(App);
+      const dir = fixture.debugElement.children[0].injector.get(Dir);
+
+      fixture.detectChanges();
+
+      expect(dir.onBla.observed).toBe(false);
     });
   });
 });

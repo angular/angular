@@ -33,6 +33,13 @@ export class OutputEmitterRef<T> implements OutputRef<T> {
   private listeners: Array<(value: T) => void> | null = null;
   private errorHandler = inject(ErrorHandler, {optional: true});
 
+  /**
+   * Whether the output has any listeners
+   */
+  get observed(): boolean {
+    return this.listeners ? this.listeners.length > 0 : false;
+  }
+
   /** @internal */
   destroyRef: DestroyRef = inject(DestroyRef);
 
