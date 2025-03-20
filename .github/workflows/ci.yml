@@ -83,10 +83,10 @@ jobs:
         uses: angular/dev-infra/github-actions/bazel/configure-remote@27078026111b01a7202449e9788ce38f2b2e103f
       - name: Install node modules
         run: yarn install --frozen-lockfile
-      - name: Build adev in fast mode to ensure it continues to work
-        run: yarn bazel build //adev:build --config=release
       - name: Run tests
         run: yarn bazel test //adev/...
+      - name: Build adev in fast mode to ensure it continues to work
+        run: yarn bazel build //adev:build --config=release
 
   publish-snapshots:
     runs-on:
