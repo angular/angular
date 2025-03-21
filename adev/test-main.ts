@@ -8,10 +8,7 @@
 
 import {ErrorHandler, NgModule, provideExperimentalZonelessChangeDetection} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {
-  BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting,
-} from '@angular/platform-browser-dynamic/testing';
+import {BrowserTestingModule, platformBrowserTesting} from '@angular/platform-browser/testing';
 
 @NgModule({
   providers: [
@@ -19,7 +16,7 @@ import {
     {
       provide: ErrorHandler,
       useValue: {
-        handleError: (e: any) => {
+        handleError: (e: unknown) => {
           throw e;
         },
       },
@@ -28,7 +25,4 @@ import {
 })
 export class TestModule {}
 
-TestBed.initTestEnvironment(
-  [BrowserDynamicTestingModule, TestModule],
-  platformBrowserDynamicTesting(),
-);
+TestBed.initTestEnvironment([BrowserTestingModule, TestModule], platformBrowserTesting());
