@@ -26,6 +26,7 @@ module_test(
         "//packages/service-worker:npm_package": "packages/service-worker/npm_package",
         "//packages/upgrade:npm_package": "packages/upgrade/npm_package",
     },
+    shard_count = 4,
     skipped_entry_points = [
         # Core does not expose any modules and just needs to be made available.
         "@angular/core",
