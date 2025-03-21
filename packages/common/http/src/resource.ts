@@ -417,9 +417,4 @@ class HttpResponseResource implements Resource<HttpResponseBase | undefined> {
   hasValue(): this is Resource<HttpResponseBase> {
     return this.value() !== undefined;
   }
-
-  reload(): boolean {
-    // TODO: should you be able to reload this way?
-    return this.parent.reload();
-  }
 }
