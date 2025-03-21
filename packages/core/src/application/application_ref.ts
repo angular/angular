@@ -11,6 +11,7 @@ import '../util/ng_server_mode';
 
 import {
   setActiveConsumer,
+  getActiveConsumer,
   setThrowInvalidWriteToSignalError,
 } from '@angular/core/primitives/signals';
 import {Observable, Subject, Subscription} from 'rxjs';
@@ -24,7 +25,7 @@ import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
 import {EnvironmentInjector, type R3Injector} from '../di/r3_injector';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
-import {ErrorHandler, INTERNAL_APPLICATION_ERROR_HANDLER} from '../error_handler';
+import {INTERNAL_APPLICATION_ERROR_HANDLER} from '../error_handler';
 import {Type} from '../interface/type';
 import {ComponentFactory, ComponentRef} from '../linker/component_factory';
 import {ComponentFactoryResolver} from '../linker/component_factory_resolver';
@@ -46,6 +47,7 @@ import {NgZone} from '../zone/ng_zone';
 import {profiler} from '../render3/profiler';
 import {ProfilerEvent} from '../render3/profiler_types';
 import {EffectScheduler} from '../render3/reactivity/root_effect_scheduler';
+import {isReactiveLViewConsumer} from '../render3/reactive_lview_consumer';
 import {ApplicationInitStatus} from './application_init';
 import {TracingAction, TracingService, TracingSnapshot} from './tracing';
 
@@ -72,10 +74,15 @@ export function publishDefaultGlobalUtils() {
  */
 export function publishSignalConfiguration(): void {
   setThrowInvalidWriteToSignalError(() => {
-    throw new RuntimeError(
-      RuntimeErrorCode.SIGNAL_WRITE_FROM_ILLEGAL_CONTEXT,
-      ngDevMode && 'Writing to signals is not allowed in a `computed`.',
-    );
+    let errorMessage = '';
+    if (ngDevMode) {
+      const activeConsumer = getActiveConsumer();
+      errorMessage =
+        activeConsumer && isReactiveLViewConsumer(activeConsumer)
+          ? 'Writing to signals is not allowed while Angular renders the template (eg. interpolations)'
+          : 'Writing to signals is not allowed in a `computed`';
+    }
+    throw new RuntimeError(RuntimeErrorCode.SIGNAL_WRITE_FROM_ILLEGAL_CONTEXT, errorMessage);
   });
 }
 
