@@ -10,6 +10,7 @@ const path = require('path');
 
 module.exports = {
   baseDir: '../',
+  goldenFile: '../goldens/circular-deps/packages.json',
   glob: `./**/*.ts`,
   resolveModule: resolveModule,
   ignoreTypeOnlyChecks: true,
