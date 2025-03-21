@@ -21,6 +21,10 @@ import {
 } from './graph';
 import {signalSetFn, signalUpdateFn} from './signal';
 
+// Required as the signals library is in a separate package, so we need to explicitly ensure the
+// global `ngDevMode` type is defined.
+declare const ngDevMode: boolean | undefined;
+
 export type ComputationFn<S, D> = (source: S, previous?: {source: S; value: D}) => D;
 
 export interface LinkedSignalNode<S, D> extends ReactiveNode {
@@ -87,7 +91,12 @@ export function createLinkedSignal<S, D>(
 
   const getter = linkedSignalGetter as LinkedSignalGetter<S, D>;
   getter[SIGNAL] = node;
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+    getter.toString = () => `[LinkedSignal: ${getter()}]`;
+  }
+
   runPostProducerCreatedFn(node);
+
   return getter;
 }
 
