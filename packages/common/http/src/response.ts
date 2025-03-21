@@ -167,6 +167,8 @@ export abstract class HttpResponseBase {
    * Textual description of response status code, defaults to OK.
    *
    * Do not depend on this.
+   *
+   * @deprecated With HTTP/2 and later versions, this will incorrectly remain set to 'OK' even when the status code of a response is not 200.
    */
   readonly statusText: string;
 
@@ -363,9 +365,7 @@ export class HttpErrorResponse extends HttpResponseBase implements Error {
     if (this.status >= 200 && this.status < 300) {
       this.message = `Http failure during parsing for ${init.url || '(unknown url)'}`;
     } else {
-      this.message = `Http failure response for ${init.url || '(unknown url)'}: ${init.status} ${
-        init.statusText
-      }`;
+      this.message = `Http failure response for ${init.url || '(unknown url)'}: ${init.status}`;
     }
     this.error = init.error || null;
   }
