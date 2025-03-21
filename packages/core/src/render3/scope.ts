@@ -11,7 +11,7 @@ import {Type} from '../interface/type';
 import {flatten} from '../util/array_utils';
 import {noSideEffects} from '../util/closure';
 import {EMPTY_ARRAY} from '../util/empty';
-import {getNgModuleDef} from './def_getters';
+import {getNgModuleDefOrThrow} from './def_getters';
 
 import {extractDefListOrFactory} from './definition';
 import {depsTracker} from './deps_tracker/deps_tracker';
@@ -54,7 +54,7 @@ export function ɵɵsetComponentScope(
  */
 export function ɵɵsetNgModuleScope(type: any, scope: NgModuleScopeInfoFromDecorator): unknown {
   return noSideEffects(() => {
-    const ngModuleDef = getNgModuleDef(type, true);
+    const ngModuleDef = getNgModuleDefOrThrow(type);
     ngModuleDef.declarations = convertToTypeArray(scope.declarations || EMPTY_ARRAY);
     ngModuleDef.imports = convertToTypeArray(scope.imports || EMPTY_ARRAY);
     ngModuleDef.exports = convertToTypeArray(scope.exports || EMPTY_ARRAY);
