@@ -411,6 +411,7 @@
   "maybeWrapInNotSelector",
   "mergeHostAttribute",
   "mergeHostAttrs",
+  "moduleBootstrapImpl",
   "nativeAppendChild",
   "nativeAppendOrInsertBefore",
   "nativeInsertBefore",
