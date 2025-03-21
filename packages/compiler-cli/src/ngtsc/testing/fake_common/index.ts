@@ -14,6 +14,7 @@ import {
   ɵɵNgModuleDeclaration,
   ɵɵPipeDeclaration,
 } from '@angular/core';
+import {MatCard} from './public_api';
 
 export interface NgForOfContext<T, U extends NgIterable<T>> {
   $implicit: T;
@@ -121,11 +122,27 @@ export declare class IndexPipe {
   static ɵpipe: ɵɵPipeDeclaration<IndexPipe, 'index'>;
 }
 
+export * from './public_api';
+
 export declare class CommonModule {
   static ɵmod: ɵɵNgModuleDeclaration<
     CommonModule,
-    [typeof NgForOf, typeof NgIf, typeof DatePipe, typeof IndexPipe, typeof NgTemplateOutlet],
+    [
+      typeof NgForOf,
+      typeof NgIf,
+      typeof DatePipe,
+      typeof IndexPipe,
+      typeof NgTemplateOutlet,
+      typeof MatCard,
+    ],
     never,
-    [typeof NgForOf, typeof NgIf, typeof DatePipe, typeof IndexPipe, typeof NgTemplateOutlet]
+    [
+      typeof NgForOf,
+      typeof NgIf,
+      typeof DatePipe,
+      typeof IndexPipe,
+      typeof NgTemplateOutlet,
+      typeof MatCard,
+    ]
   >;
 }
