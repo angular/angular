@@ -11,7 +11,7 @@ import {setActiveConsumer} from '@angular/core/primitives/signals';
 import {NotificationSource} from '../../change_detection/scheduling/zoneless_scheduling';
 import {TNode} from '../interfaces/node';
 import {isComponentHost} from '../interfaces/type_checks';
-import {INJECTOR, LView} from '../interfaces/view';
+import {CONTEXT, INJECTOR, LView} from '../interfaces/view';
 import {getComponentLViewByIndex} from '../util/view_utils';
 import {profiler} from '../profiler';
 import {ProfilerEvent} from '../profiler_types';
@@ -31,7 +31,6 @@ import {markViewDirty} from '../instructions/mark_view_dirty';
 export function wrapListener(
   tNode: TNode,
   lView: LView<{} | null>,
-  context: {} | null,
   listenerFn: (e?: any) => any,
 ): EventListener {
   // Note: we are performing most of the work in the listener function itself
@@ -48,6 +47,7 @@ export function wrapListener(
     const startView = isComponentHost(tNode) ? getComponentLViewByIndex(tNode.index, lView) : lView;
     markViewDirty(startView, NotificationSource.Listener);
 
+    const context = lView[CONTEXT];
     let result = executeListenerWithErrorHandling(lView, context, listenerFn, e);
     // A just-invoked listener function might have coalesced listeners so we need to check for
     // their presence and invoke as needed.
