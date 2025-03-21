@@ -7,45 +7,31 @@
  */
 
 import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
-import {join, relative} from 'path';
+import {relative} from 'path';
 
-import {normalizePath} from '../../utils/change_tracker';
 import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host';
 
 import {migrateTemplate} from './migration';
 import {AnalyzedFile, MigrateError} from './types';
 import {analyze} from './util';
+import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 
-interface Options {
-  path: string;
-  format: boolean;
-}
-
-export function migrate(options: Options): Rule {
+export function migrate(): Rule {
   return async (tree: Tree, context: SchematicContext) => {
+    const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
-    const pathToMigrate = normalizePath(join(basePath, options.path));
-    let allPaths = [];
-    if (pathToMigrate.trim() !== '') {
-      allPaths.push(pathToMigrate);
-    }
+    const allPaths = [...buildPaths, ...testPaths];
 
     if (!allPaths.length) {
       throw new SchematicsException(
-        'Could not find any tsconfig file. Cannot run the control flow migration.',
+        'Could not find any tsconfig file. Cannot run the http providers migration.',
       );
     }
 
     let errors: string[] = [];
 
     for (const tsconfigPath of allPaths) {
-      const migrateErrors = runControlFlowMigration(
-        tree,
-        tsconfigPath,
-        basePath,
-        pathToMigrate,
-        options,
-      );
+      const migrateErrors = runControlFlowMigration(tree, tsconfigPath, basePath);
       errors = [...errors, ...migrateErrors];
     }
 
@@ -58,33 +44,11 @@ export function migrate(options: Options): Rule {
   };
 }
 
-function runControlFlowMigration(
-  tree: Tree,
-  tsconfigPath: string,
-  basePath: string,
-  pathToMigrate: string,
-  schematicOptions: Options,
-): string[] {
-  if (schematicOptions.path.startsWith('..')) {
-    throw new SchematicsException(
-      'Cannot run control flow migration outside of the current project.',
-    );
-  }
-
+function runControlFlowMigration(tree: Tree, tsconfigPath: string, basePath: string): string[] {
   const program = createMigrationProgram(tree, tsconfigPath, basePath);
   const sourceFiles = program
     .getSourceFiles()
-    .filter(
-      (sourceFile) =>
-        sourceFile.fileName.startsWith(pathToMigrate) &&
-        canMigrateFile(basePath, sourceFile, program),
-    );
-
-  if (sourceFiles.length === 0) {
-    throw new SchematicsException(
-      `Could not find any files to migrate under the path ${pathToMigrate}. Cannot run the control flow migration.`,
-    );
-  }
+    .filter((sourceFile) => canMigrateFile(basePath, sourceFile, program));
 
   const analysis = new Map<string, AnalyzedFile>();
   const migrateErrors = new Map<string, MigrateError[]>();
@@ -108,14 +72,7 @@ function runControlFlowMigration(
       const template = content.slice(start, end);
       const length = (end ?? content.length) - start;
 
-      const {migrated, errors} = migrateTemplate(
-        template,
-        type,
-        node,
-        file,
-        schematicOptions.format,
-        analysis,
-      );
+      const {migrated, errors} = migrateTemplate(template, type, node, file, true, analysis);
 
       if (migrated !== null) {
         update.remove(start, length);

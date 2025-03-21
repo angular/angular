@@ -156,6 +156,8 @@ import {RuntimeErrorCode} from '../errors';
  *
  * @ngModule CommonModule
  * @publicApi
+ *
+ * @deprecated Use the @if block instead. Intent to remove in v22
  */
 @Directive({
   selector: '[ngIf]',
