@@ -98,10 +98,11 @@ See [`src/content/tutorials/homepage`](/src/content/tutorials/homepage)
 To update the dependencies  of all tutorials you can run the following script
 
 ```bash 
-rm ./adev/src/content/tutorials/homepage/package-lock.json  ./adev/src/content/tutorials/first-app/common/package-lock.json ./adev/src/content/tutorials/learn-angular/common/package-lock.json ./adev/src/content/tutorials/playground/common/package-lock.json 
+rm ./adev/src/content/tutorials/homepage/package-lock.json  ./adev/src/content/tutorials/first-app/common/package-lock.json ./adev/src/content/tutorials/learn-angular/common/package-lock.json ./adev/src/content/tutorials/playground/common/package-lock.json ./adev/src/content/tutorials/deferrable-views/common/package-lock.json
 
 npm i --package-lock-only --prefix ./adev/src/content/tutorials/homepage
 npm i --package-lock-only --prefix ./adev/src/content/tutorials/first-app/common
 npm i --package-lock-only --prefix ./adev/src/content/tutorials/learn-angular/common               
 npm i --package-lock-only --prefix ./adev/src/content/tutorials/playground/common
+npm i --package-lock-only --prefix ./adev/src/content/tutorials/deferrable-views/common
 ```
