@@ -5,10 +5,10 @@
 ```ts
 
 import { ANIMATION_MODULE_TYPE } from '@angular/core';
+import { EnvironmentProviders } from '@angular/core';
 import * as i0 from '@angular/core';
 import * as i1 from '@angular/platform-browser';
 import { ModuleWithProviders } from '@angular/core';
-import { Provider } from '@angular/core';
 
 export { ANIMATION_MODULE_TYPE }
 
@@ -39,10 +39,10 @@ export class NoopAnimationsModule {
 }
 
 // @public
-export function provideAnimations(): Provider[];
+export function provideAnimations(): EnvironmentProviders;
 
 // @public
-export function provideNoopAnimations(): Provider[];
+export function provideNoopAnimations(): EnvironmentProviders;
 
 // (No @packageDocumentation comment for this package)
 
