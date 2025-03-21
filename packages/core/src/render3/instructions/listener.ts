@@ -207,7 +207,7 @@ export function listenerInternal(
       (<any>existingListener).__ngLastListenerFn__ = listenerFn;
       processOutputs = false;
     } else {
-      listenerFn = wrapListener(tNode, lView, context, listenerFn);
+      listenerFn = wrapListener(tNode, lView, listenerFn);
       stashEventListener(target as RElement, eventName, listenerFn);
       const cleanupFn = renderer.listen(target as RElement, eventName, listenerFn);
 
@@ -217,7 +217,7 @@ export function listenerInternal(
   } else {
     // Even if there is no native listener to add, we still need to wrap the listener so that OnPush
     // ancestors are marked dirty when an event occurs.
-    listenerFn = wrapListener(tNode, lView, context, listenerFn);
+    listenerFn = wrapListener(tNode, lView, listenerFn);
   }
 
   if (processOutputs) {
@@ -228,33 +228,13 @@ export function listenerInternal(
       for (let i = 0; i < hostDirectiveOutputConfig.length; i += 2) {
         const index = hostDirectiveOutputConfig[i] as number;
         const lookupName = hostDirectiveOutputConfig[i + 1] as string;
-        listenToOutput(
-          tNode,
-          tView,
-          lView,
-          index,
-          lookupName,
-          eventName,
-          listenerFn,
-          lCleanup,
-          tCleanup,
-        );
+        listenToOutput(tNode, lView, index, lookupName, eventName, listenerFn);
       }
     }
 
     if (outputConfig && outputConfig.length) {
       for (const index of outputConfig) {
-        listenToOutput(
-          tNode,
-          tView,
-          lView,
-          index,
-          eventName,
-          eventName,
-          listenerFn,
-          lCleanup,
-          tCleanup,
-        );
+        listenToOutput(tNode, lView, index, eventName, eventName, listenerFn);
       }
     }
   }

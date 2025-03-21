@@ -10,7 +10,7 @@ import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {assertIndexInRange} from '../../util/assert';
 import {DirectiveDef} from '../interfaces/definition';
 import {TNode} from '../interfaces/node';
-import {CONTEXT, LView, TVIEW, TView} from '../interfaces/view';
+import {CONTEXT, LView, TVIEW} from '../interfaces/view';
 import {stringifyForError} from '../util/stringify_utils';
 import {getOrCreateLViewCleanup, getOrCreateTViewCleanup} from '../util/view_utils';
 import {wrapListener} from './listeners';
@@ -28,17 +28,9 @@ export function createOutputListener<T = unknown>(
   eventName: string,
 ) {
   // TODO(pk): decouple checks from the actual binding
-  const wrappedListener = wrapListener(tNode, lView, lView[CONTEXT], listenerFn);
+  const wrappedListener = wrapListener(tNode, lView, listenerFn);
 
-  // TODO(pk): simplify signature of listenToDirectiveOutput
-  const hasBound = listenToDirectiveOutput(
-    tNode,
-    lView[TVIEW],
-    lView,
-    targetDef,
-    eventName,
-    wrappedListener,
-  );
+  const hasBound = listenToDirectiveOutput(tNode, lView, targetDef, eventName, wrappedListener);
 
   if (!hasBound && ngDevMode) {
     throw new RuntimeError(
@@ -51,14 +43,11 @@ export function createOutputListener<T = unknown>(
 /** Listens to an output on a specific directive. */
 function listenToDirectiveOutput(
   tNode: TNode,
-  tView: TView,
   lView: LView,
   target: DirectiveDef<unknown>,
   eventName: string,
   listenerFn: (e?: any) => any,
 ): boolean {
-  const tCleanup = tView.firstCreatePass ? getOrCreateTViewCleanup(tView) : null;
-  const lCleanup = getOrCreateLViewCleanup(lView);
   let hostIndex: number | null = null;
   let hostDirectivesStart: number | null = null;
   let hostDirectivesEnd: number | null = null;
@@ -91,14 +80,11 @@ function listenToDirectiveOutput(
         hasOutput = true;
         listenToOutput(
           tNode,
-          tView,
           lView,
           index,
           hostDirectiveOutputs[i + 1] as string,
           eventName,
           listenerFn,
-          lCleanup,
-          tCleanup,
         );
       } else if (index > hostDirectivesEnd) {
         break;
@@ -109,17 +95,7 @@ function listenToDirectiveOutput(
   if (target.outputs.hasOwnProperty(eventName)) {
     ngDevMode && assertIndexInRange(lView, hostIndex);
     hasOutput = true;
-    listenToOutput(
-      tNode,
-      tView,
-      lView,
-      hostIndex,
-      eventName,
-      eventName,
-      listenerFn,
-      lCleanup,
-      tCleanup,
-    );
+    listenToOutput(tNode, lView, hostIndex, eventName, eventName, listenerFn);
   }
 
   return hasOutput;
@@ -127,18 +103,16 @@ function listenToDirectiveOutput(
 
 export function listenToOutput(
   tNode: TNode,
-  tView: TView,
   lView: LView,
-  index: number,
+  directiveIndex: number,
   lookupName: string,
   eventName: string,
   listenerFn: (e?: any) => any,
-  lCleanup: any[],
-  tCleanup: any[] | null,
 ) {
-  ngDevMode && assertIndexInRange(lView, index);
-  const instance = lView[index];
-  const def = tView.data[index] as DirectiveDef<unknown>;
+  ngDevMode && assertIndexInRange(lView, directiveIndex);
+  const instance = lView[directiveIndex];
+  const tView = lView[TVIEW];
+  const def = tView.data[directiveIndex] as DirectiveDef<unknown>;
   const propertyName = def.outputs[lookupName];
   const output = instance[propertyName];
 
@@ -146,6 +120,9 @@ export function listenToOutput(
     throw new Error(`@Output ${propertyName} not initialized in '${instance.constructor.name}'.`);
   }
 
+  // TODO(pk): introduce utility to store cleanup or find a different way of sharing code with listener
+  const tCleanup = tView.firstCreatePass ? getOrCreateTViewCleanup(tView) : null;
+  const lCleanup = getOrCreateLViewCleanup(lView);
   const subscription = (output as SubscribableOutput<unknown>).subscribe(listenerFn);
   const idx = lCleanup.length;
   lCleanup.push(listenerFn, subscription);
