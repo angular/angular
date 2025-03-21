@@ -5,7 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {AnimationPlayer, AUTO_STYLE, NoopAnimationPlayer, ɵStyleDataMap} from '@angular/animations';
+import {
+  AnimationPlayer,
+  AUTO_STYLE,
+  NoopAnimationPlayer,
+  ɵStyleDataMap,
+} from '../../../src/animations';
 import {
   AnimationDriver,
   ɵallowPreviousPlayerStylesMerge as allowPreviousPlayerStylesMerge,
@@ -16,7 +21,7 @@ import {
   ɵnormalizeKeyframes as normalizeKeyframes,
   ɵvalidateStyleProperty as validateStyleProperty,
   ɵvalidateWebAnimatableStyleProperty,
-} from '@angular/animations/browser';
+} from '../../../browser';
 
 /**
  * @publicApi

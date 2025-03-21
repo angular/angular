@@ -5,7 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {AnimationMetadata, AnimationPlayer, AnimationTriggerMetadata} from '@angular/animations';
+import {
+  AnimationMetadata,
+  AnimationPlayer,
+  AnimationTriggerMetadata,
+} from '../../../src/animations';
 
 import {TriggerAst} from '../dsl/animation_ast';
 import {buildAnimationAst} from '../dsl/animation_ast_builder';
