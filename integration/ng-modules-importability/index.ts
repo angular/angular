@@ -17,27 +17,37 @@ async function main() {
     config.packages.map((pkgPath) => findAllEntryPointsAndExportedModules(pkgPath)),
   );
 
-  const exports = packages
+  const allExports = packages
     .map((p) => p.moduleExports)
     .flat()
     .filter((e) => !config.skipEntryPoints.includes(e.importPath));
 
-  const testFile = `
-    import {NgModule, Component} from '@angular/core';
-    ${exports.map((e) => `import {${e.symbolName}} from '${e.importPath}';`).join('\n')}
+  // Distribute the exports based on the current test shard.
+  // Controlled via Bazel's `shard_count` attribute. See:
+  // https://bazel.build/reference/test-encyclopedia#initial-conditions.
+  const testShardIndex =
+    process.env['TEST_SHARD_INDEX'] !== undefined ? Number(process.env['TEST_SHARD_INDEX']) : 0;
+  const testMaxShards =
+    process.env['TEST_TOTAL_SHARDS'] !== undefined ? Number(process.env['TEST_TOTAL_SHARDS']) : 1;
+  const testChunkSize = Math.ceil(allExports.length / testMaxShards);
+  const testChunkStart = testChunkSize * testShardIndex;
+  const shardExports = allExports.slice(testChunkStart, testChunkStart + testChunkSize);
 
-    @NgModule({
-      exports: [
-        ${exports.map((e) => e.symbolName).join(', ')}
-      ]
-    })
-    export class TestModule {}
+  const testFiles = shardExports.map((e) => ({
+    content: `
+      import {NgModule, Component} from '@angular/core';
+      import {${e.symbolName}} from '${e.importPath}';
 
-    @Component({imports: [TestModule], template: ''})
-    export class TestComponent {}
-  `;
+      @NgModule({
+        exports: [${e.symbolName}]
+      })
+      export class TestModule {}
 
-  await fs.writeFile(path.join(tmpDir, 'test.ts'), testFile);
+      @Component({imports: [TestModule], template: ''})
+      export class TestComponent {}
+  `,
+    path: path.join(tmpDir, `${e.symbolName.toLowerCase()}.ts`),
+  }));
 
   // Prepare node modules to resolve e.g. `@angular/core`
   await fs.symlink(path.resolve('./node_modules'), path.join(tmpDir, 'node_modules'));
@@ -47,26 +57,34 @@ async function main() {
     await fs.symlink(path.resolve(packagePath), `./node_modules/${name}`);
   }
 
-  const result = performCompilation({
-    options: {
-      rootDir: tmpDir,
-      skipLibCheck: true,
-      noEmit: true,
-      module: ts.ModuleKind.ESNext,
-      moduleResolution: ts.ModuleResolutionKind.Bundler,
-      strictTemplates: true,
-      preserveSymlinks: true,
-      strict: true,
-      // Note: HMR is needed as it will disable the Angular compiler's tree-shaking of used
-      // directives/components. This is critical for this test as it allows us to simply all
-      // modules and automatically validate that all symbols are reachable/importable.
-      _enableHmr: true,
-    },
-    rootNames: [path.join(tmpDir, 'test.ts')],
-  });
+  const diagnostics: ts.Diagnostic[] = [];
+
+  for (const testFile of testFiles) {
+    await fs.writeFile(testFile.path, testFile.content);
+
+    const result = performCompilation({
+      options: {
+        rootDir: tmpDir,
+        skipLibCheck: true,
+        noEmit: true,
+        module: ts.ModuleKind.ESNext,
+        moduleResolution: ts.ModuleResolutionKind.Bundler,
+        strictTemplates: true,
+        preserveSymlinks: true,
+        strict: true,
+        // Note: HMR is needed as it will disable the Angular compiler's tree-shaking of used
+        // directives/components. This is critical for this test as it allows us to simply all
+        // modules and automatically validate that all symbols are reachable/importable.
+        _enableHmr: true,
+      },
+      rootNames: [testFile.path],
+    });
+
+    diagnostics.push(...result.diagnostics);
+  }
 
   console.error(
-    ts.formatDiagnosticsWithColorAndContext(result.diagnostics, {
+    ts.formatDiagnosticsWithColorAndContext(diagnostics, {
       getCanonicalFileName: (f) => f,
       getCurrentDirectory: () => '/',
       getNewLine: () => '\n',
@@ -75,7 +93,7 @@ async function main() {
 
   await fs.rm(tmpDir, {recursive: true, force: true, maxRetries: 2});
 
-  if (result.diagnostics.length > 0) {
+  if (diagnostics.length > 0) {
     process.exitCode = 1;
   }
 }
