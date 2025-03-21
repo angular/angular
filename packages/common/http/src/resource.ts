@@ -29,6 +29,7 @@ import {HttpEventType, HttpProgressEvent, HttpResponseBase} from './response';
 import {HttpHeaders} from './headers';
 import {HttpParams} from './params';
 import {HttpResourceRef, HttpResourceOptions, HttpResourceRequest} from './resource_api';
+import {encapsulateResourceError} from '@angular/core/src/resource/resource';
 
 /**
  * Type for the `httpRequest` top-level function, which includes the call signatures for the JSON-
@@ -349,7 +350,7 @@ class HttpResourceImpl<T>
                 try {
                   send({value: parse ? parse(event.body) : (event.body as T)});
                 } catch (error) {
-                  send({error});
+                  send({error: encapsulateResourceError(error)});
                 }
                 break;
               case HttpEventType.DownloadProgress:
@@ -387,7 +388,7 @@ class HttpResourceImpl<T>
 class HttpResponseResource implements Resource<HttpResponseBase | undefined> {
   readonly status: Signal<ResourceStatus>;
   readonly value: WritableSignal<HttpResponseBase | undefined>;
-  readonly error: Signal<unknown>;
+  readonly error: Signal<Error | undefined>;
   readonly isLoading: Signal<boolean>;
 
   constructor(

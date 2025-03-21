@@ -16,6 +16,7 @@ import {
   BaseResourceOptions,
 } from '@angular/core';
 import {Observable, Subscription} from 'rxjs';
+import {encapsulateResourceError} from '@angular/core/src/resource/resource';
 
 /**
  * Like `ResourceOptions` but uses an RxJS-based `loader`.
@@ -57,11 +58,11 @@ export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T |
       params.abortSignal.addEventListener('abort', onAbort);
 
       // Start off stream as undefined.
-      const stream = signal<{value: T} | {error: unknown}>({value: undefined as T});
-      let resolve: ((value: Signal<{value: T} | {error: unknown}>) => void) | undefined;
-      const promise = new Promise<Signal<{value: T} | {error: unknown}>>((r) => (resolve = r));
+      const stream = signal<{value: T} | {error: Error}>({value: undefined as T});
+      let resolve: ((value: Signal<{value: T} | {error: Error}>) => void) | undefined;
+      const promise = new Promise<Signal<{value: T} | {error: Error}>>((r) => (resolve = r));
 
-      function send(value: {value: T} | {error: unknown}): void {
+      function send(value: {value: T} | {error: Error}): void {
         stream.set(value);
         resolve?.(stream);
         resolve = undefined;
@@ -69,7 +70,7 @@ export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T |
 
       sub = opts.loader(params).subscribe({
         next: (value) => send({value}),
-        error: (error) => send({error}),
+        error: (error: unknown) => send({error: encapsulateResourceError(error)}),
         complete: () => {
           if (resolve) {
             send({error: new Error('Resource completed before producing a value')});
