@@ -1,6 +1,6 @@
+load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
 load("//devtools/tools:ng_module.bzl", "ng_module")
 load("//devtools/tools:typescript.bzl", "ts_test_library")
-load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -38,6 +38,7 @@ ts_test_library(
         ":property-resolver",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
         "//devtools/projects/protocol",
+        "//packages/core",
         "@npm//@angular/cdk",
         "@npm//@angular/material",
     ],
