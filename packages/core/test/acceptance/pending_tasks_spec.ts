@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationRef, PendingTasks, ErrorHandler} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+import {ApplicationRef, PendingTasks, ErrorHandler} from '../../src/core';
+import {TestBed} from '../../testing';
 import {EMPTY, firstValueFrom, of} from 'rxjs';
 import {map, withLatestFrom} from 'rxjs/operators';
 

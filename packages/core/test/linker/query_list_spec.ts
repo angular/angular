@@ -7,9 +7,9 @@
  */
 
 import {ɵgetDOM as getDOM} from '@angular/common';
-import {QueryList} from '@angular/core/src/linker/query_list';
-import {iterateListLike} from '@angular/core/src/util/iterable';
-import {fakeAsync, tick} from '@angular/core/testing';
+import {QueryList} from '../../src/linker/query_list';
+import {iterateListLike} from '../../src/util/iterable';
+import {fakeAsync, tick} from '../../testing';
 
 describe('QueryList', () => {
   let queryList: QueryList<string>;

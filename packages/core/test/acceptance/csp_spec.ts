@@ -13,7 +13,7 @@ import {
   ElementRef,
   inject,
   ViewEncapsulation,
-} from '@angular/core';
+} from '../../src/core';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
 

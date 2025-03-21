@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {APP_ID as APP_ID_TOKEN, PLATFORM_ID} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+import {APP_ID as APP_ID_TOKEN, PLATFORM_ID} from '../src/core';
+import {TestBed} from '../testing';
 
 import {getDocument} from '../src/render3/interfaces/document';
 import {makeStateKey, TransferState} from '../src/transfer_state';

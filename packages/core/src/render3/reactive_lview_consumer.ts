@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {REACTIVE_NODE, ReactiveNode} from '@angular/core/primitives/signals';
+import {REACTIVE_NODE, ReactiveNode} from '../../primitives/signals';
 
 import {
   LView,

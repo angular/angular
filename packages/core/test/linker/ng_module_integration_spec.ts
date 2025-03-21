@@ -27,11 +27,11 @@ import {
   Provider,
   Self,
   Type,
-} from '@angular/core';
-import {ɵɵdefineInjectable} from '@angular/core/src/di/interface/defs';
-import {NgModuleType} from '@angular/core/src/render3';
-import {getNgModuleDef} from '@angular/core/src/render3/def_getters';
-import {ComponentFixture, inject, TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {ɵɵdefineInjectable} from '../../src/di/interface/defs';
+import {NgModuleType} from '../../src/render3';
+import {getNgModuleDef} from '../../src/render3/def_getters';
+import {ComponentFixture, inject, TestBed} from '../../testing';
 
 import {InternalNgModuleRef, NgModuleFactory} from '../../src/linker/ng_module_factory';
 import {

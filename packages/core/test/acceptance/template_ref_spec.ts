@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, Injector, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+import {Component, Injector, TemplateRef, ViewChild, ViewContainerRef} from '../../src/core';
+import {TestBed} from '../../testing';
 
 describe('TemplateRef', () => {
   describe('rootNodes', () => {

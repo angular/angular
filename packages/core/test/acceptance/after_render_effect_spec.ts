@@ -13,9 +13,9 @@ import {
   PLATFORM_ID,
   provideExperimentalZonelessChangeDetection,
   signal,
-} from '@angular/core';
-import {afterRenderEffect} from '@angular/core/src/render3/reactivity/after_render_effect';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {afterRenderEffect} from '../../src/render3/reactivity/after_render_effect';
+import {TestBed} from '../../testing';
 
 describe('afterRenderEffect', () => {
   beforeEach(() => {

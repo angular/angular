@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Type} from '@angular/core';
-import {forwardRef, resolveForwardRef} from '@angular/core/src/di';
+import {Type} from '../../src/core';
+import {forwardRef, resolveForwardRef} from '../../src/di';
 
 describe('forwardRef', () => {
   it('should wrap and unwrap the reference', () => {

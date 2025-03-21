@@ -20,8 +20,8 @@ import {
   ViewChildren,
   viewChildren,
 } from '@angular/core';
-import {SIGNAL} from '@angular/core/primitives/signals';
-import {TestBed} from '@angular/core/testing';
+import {SIGNAL} from '../../../primitives/signals';
+import {TestBed} from '../../../testing';
 import {By} from '@angular/platform-browser';
 
 describe('queries as signals', () => {

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {isSignal, linkedSignal, signal, computed} from '@angular/core';
-import {setPostProducerCreatedFn} from '@angular/core/primitives/signals';
+import {isSignal, linkedSignal, signal, computed} from '../../src/core';
+import {setPostProducerCreatedFn} from '../../primitives/signals';
 import {testingEffect} from './effect_util';
 
 describe('linkedSignal', () => {

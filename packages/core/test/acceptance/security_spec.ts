@@ -15,10 +15,10 @@ import {
   Type,
   ViewChild,
   ViewContainerRef,
-} from '@angular/core';
-import {RuntimeErrorCode} from '@angular/core/src/errors';
-import {global} from '@angular/core/src/util/global';
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {RuntimeErrorCode} from '../../src/errors';
+import {global} from '../../src/util/global';
+import {ComponentFixture, TestBed} from '../../testing';
 import {DomSanitizer} from '@angular/platform-browser';
 
 describe('comment node text escaping', () => {

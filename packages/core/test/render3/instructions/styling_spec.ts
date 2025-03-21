@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AttributeMarker, DirectiveDef} from '@angular/core/src/render3';
-import {ɵɵdefineDirective} from '@angular/core/src/render3/definition';
+import {AttributeMarker, DirectiveDef} from '../../../src/render3';
+import {ɵɵdefineDirective} from '../../../src/render3/definition';
 import {
   classStringParser,
   styleStringParser,
@@ -15,8 +15,8 @@ import {
   ɵɵclassProp,
   ɵɵstyleMap,
   ɵɵstyleProp,
-} from '@angular/core/src/render3/instructions/styling';
-import {TAttributes} from '@angular/core/src/render3/interfaces/node';
+} from '../../../src/render3/instructions/styling';
+import {TAttributes} from '../../../src/render3/interfaces/node';
 import {
   getTStylingRangeNext,
   getTStylingRangeNextDuplicate,
@@ -28,12 +28,12 @@ import {
   toTStylingRange,
   TStylingKey,
   TStylingRange,
-} from '@angular/core/src/render3/interfaces/styling';
-import {HEADER_OFFSET, TVIEW} from '@angular/core/src/render3/interfaces/view';
-import {getLView, leaveView, setBindingRootForHostBindings} from '@angular/core/src/render3/state';
-import {getNativeByIndex} from '@angular/core/src/render3/util/view_utils';
-import {keyValueArraySet} from '@angular/core/src/util/array_utils';
-import {getElementClasses, getElementStyles} from '@angular/core/testing/src/styling';
+} from '../../../src/render3/interfaces/styling';
+import {HEADER_OFFSET, TVIEW} from '../../../src/render3/interfaces/view';
+import {getLView, leaveView, setBindingRootForHostBindings} from '../../../src/render3/state';
+import {getNativeByIndex} from '../../../src/render3/util/view_utils';
+import {keyValueArraySet} from '../../../src/util/array_utils';
+import {getElementClasses, getElementStyles} from '../../../testing/src/styling';
 
 import {clearFirstUpdatePass, enterViewWithOneDiv, rewindBindingIndex} from './shared_spec';
 

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {KeyValueDiffer, KeyValueDifferFactory, KeyValueDiffers, NgModule} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+import {KeyValueDiffer, KeyValueDifferFactory, KeyValueDiffers, NgModule} from '../../../src/core';
+import {TestBed} from '../../../testing';
 
 describe('KeyValueDiffers', function () {
   it('should support .extend in root NgModule', () => {

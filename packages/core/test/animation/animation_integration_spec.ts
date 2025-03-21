@@ -35,8 +35,8 @@ import {
   RendererFactory2,
   ViewChild,
   ViewContainerRef,
-} from '@angular/core';
-import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {fakeAsync, flushMicrotasks, TestBed} from '../../testing';
 import {ɵDomRendererFactory2} from '@angular/platform-browser';
 import {
   ANIMATION_MODULE_TYPE,

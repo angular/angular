@@ -13,7 +13,7 @@ import {
   consumerPollProducersForChange,
   getActiveConsumer,
   ReactiveNode,
-} from '@angular/core/primitives/signals';
+} from '../../../primitives/signals';
 
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {assertDefined, assertEqual} from '../../util/assert';

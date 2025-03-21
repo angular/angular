@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {forwardRef, Inject, Injector, Self, SkipSelf} from '@angular/core';
+import {forwardRef, Inject, Injector, Self, SkipSelf} from '../../src/core';
 
 import {stringify} from '../../src/util/stringify';
 

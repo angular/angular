@@ -9,11 +9,11 @@
 import {
   IterableChangeRecord,
   IterableChanges,
-} from '@angular/core/src/change_detection/differs/iterable_differs';
+} from '../../src/change_detection/differs/iterable_differs';
 import {
   KeyValueChangeRecord,
   KeyValueChanges,
-} from '@angular/core/src/change_detection/differs/keyvalue_differs';
+} from '../../src/change_detection/differs/keyvalue_differs';
 
 import {stringify} from '../../src/util/stringify';
 

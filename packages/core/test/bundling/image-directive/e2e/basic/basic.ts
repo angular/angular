@@ -7,7 +7,7 @@
  */
 
 import {IMAGE_LOADER, NgOptimizedImage} from '@angular/common';
-import {Component} from '@angular/core';
+import {Component} from '../../../../../src/core';
 
 @Component({
   selector: 'basic',
