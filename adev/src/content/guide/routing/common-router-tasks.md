@@ -485,9 +485,6 @@ const routes: Routes = [
 </docs-code>
 This works as long as the loaded component is standalone.
 
-
-For more information on lazy loading and preloading see the dedicated guide [Lazy loading](guide/ngmodules/lazy-loading).
-
 ## Preventing unauthorized access
 
 Use route guards to prevent users from navigating to parts of an application without authorization.
