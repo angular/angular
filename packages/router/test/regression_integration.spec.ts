@@ -18,6 +18,7 @@ import {
   Type,
   ViewChild,
   ViewContainerRef,
+  inject,
 } from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {
@@ -294,20 +295,11 @@ describe('Integration', () => {
         imports: [
           RouterModule.forRoot([
             {path: '', component: SimpleCmp},
-            {path: 'one', component: OneCmp, canActivate: ['returnRootUrlTree']},
+            {path: 'one', component: OneCmp, canActivate: [() => inject(Router).parseUrl('/')]},
           ]),
         ],
         declarations: [SimpleCmp, RootCmp, OneCmp],
-        providers: [
-          provideLocationMocks(),
-          {
-            provide: 'returnRootUrlTree',
-            useFactory: (router: Router) => () => {
-              return router.parseUrl('/');
-            },
-            deps: [Router],
-          },
-        ],
+        providers: [provideLocationMocks()],
       });
 
       const router = TestBed.inject(Router);

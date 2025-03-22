@@ -71,13 +71,6 @@ export function routeDataIntegrationSuite() {
           {provide: 'resolveNullError', useValue: (a: any, b: any) => Promise.reject(null)},
           {provide: 'resolveEmpty', useValue: (a: any, b: any) => EMPTY},
           {provide: 'numberOfUrlSegments', useValue: (a: any, b: any) => a.url.length},
-          {
-            provide: 'overridingGuard',
-            useValue: (route: ActivatedRouteSnapshot) => {
-              route.data = {prop: 10};
-              return true;
-            },
-          },
         ],
       });
     });
@@ -596,7 +589,12 @@ export function routeDataIntegrationSuite() {
           {
             path: 'route',
             component: NestedComponentWithData,
-            canActivate: ['overridingGuard'],
+            canActivate: [
+              (route: ActivatedRouteSnapshot) => {
+                route.data = {prop: 10};
+                return true;
+              },
+            ],
           },
         ]);
 
