@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {concat, ConnectableObservable, defer, fromEvent, Observable, of, throwError} from 'rxjs';
+import {concat, ConnectableObservable, defer, Observable, of, throwError} from 'rxjs';
 import {filter, map, publish, switchMap, take, tap} from 'rxjs/operators';
 
 export const ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not supported by this browser';
@@ -129,6 +129,15 @@ function errorObservable(message: string): Observable<any> {
   return defer(() => throwError(new Error(message)));
 }
 
+// Manually creating the observable imports fewer symbols
+// from RxJS than using `fromEvent(...)`.
+const fromEvent = <T extends Event>(serviceWorker: ServiceWorkerContainer, eventName: string) =>
+  new Observable<T>((subscriber) => {
+    const onEvent: EventListener = (event) => subscriber.next(event as T);
+    serviceWorker.addEventListener(eventName, onEvent);
+    return () => serviceWorker.removeEventListener(eventName, onEvent);
+  });
+
 /**
  * @publicApi
  */
@@ -143,7 +152,7 @@ export class NgswCommChannel {
     if (!serviceWorker) {
       this.worker = this.events = this.registration = errorObservable(ERR_SW_NOT_SUPPORTED);
     } else {
-      const controllerChangeEvents = fromEvent(serviceWorker, 'controllerchange');
+      const controllerChangeEvents = fromEvent<Event>(serviceWorker, 'controllerchange');
       const controllerChanges = controllerChangeEvents.pipe(map(() => serviceWorker.controller));
       const currentController = defer(() => of(serviceWorker.controller));
       const controllerWithChanges = concat(currentController, controllerChanges);
