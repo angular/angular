@@ -616,7 +616,7 @@ describe('defaultQueryParamsHandling', () => {
 
 async function createRoot(
   tree: UrlTree,
-  commands: any[],
+  commands: readonly any[],
   queryParams?: Params,
   fragment?: string,
 ): Promise<UrlTree> {
@@ -631,7 +631,7 @@ async function createRoot(
 
 function create(
   relativeTo: ActivatedRoute,
-  commands: any[],
+  commands: readonly any[],
   queryParams?: Params,
   fragment?: string,
 ) {
