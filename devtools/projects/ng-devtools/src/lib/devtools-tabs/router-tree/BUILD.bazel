@@ -9,18 +9,29 @@ sass_binary(
     deps = ["//devtools/projects/ng-devtools/src/styles:theme"],
 )
 
+sass_binary(
+    name = "router_details_row_styles",
+    src = "route-details-row.component.scss",
+    deps = ["//devtools/projects/ng-devtools/src/styles:theme"],
+)
+
 ng_module(
     name = "router-tree",
     srcs = [
+        "route-details-row.component.ts",
         "router-tree.component.ts",
         "router-tree-visualizer.ts",
     ],
     angular_assets = [
         ":router-tree.component.html",
         ":router_tree_styles",
+        ":route-details-row.component.html",
+        ":router_details_row_styles",
     ],
     deps = [
+        "//devtools/projects/ng-devtools/src/lib/application-operations",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tree-visualizer-host",
+        "//devtools/projects/ng-devtools/src/lib/vendor/angular-split",
         "//devtools/projects/protocol",
         "//packages/common",
         "//packages/core",
