@@ -178,6 +178,11 @@ export enum PerfPhase {
    * Time spent computing changes for applying a given refactoring.
    */
   LSApplyRefactoring,
+
+  /**
+   * Time spent by the Angular Language Service calculating semantic classifications.
+   */
+  LSSemanticClassification,
 }
 
 /**
