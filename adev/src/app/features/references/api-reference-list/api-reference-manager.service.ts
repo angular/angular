@@ -30,12 +30,16 @@ export class ApiReferenceManager {
         id: module.normalizedModuleName,
         items: module.entries.map((api) => {
           const url = getApiUrl(module, api.name);
-          return {
+          const apiItem = {
             itemType: api.type,
             title: api.name,
             isDeprecated: !!api.isDeprecated,
+            isDeveloperPreview: !!api.isDeveloperPreview,
+            isExperimental: !!api.isExperimental,
             url,
           };
+
+          return apiItem;
         }),
       });
     }
