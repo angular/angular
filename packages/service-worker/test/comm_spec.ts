@@ -237,7 +237,7 @@ describe('ServiceWorker library', () => {
           await push.unsubscribe();
           throw new Error('`unsubscribe()` should fail');
         } catch (err) {
-          expect((err as Error).message).toBe('Not subscribed to push notifications.');
+          expect((err as Error).message).toContain('Not subscribed to push notifications.');
         }
       });
 
@@ -270,7 +270,7 @@ describe('ServiceWorker library', () => {
           await push.unsubscribe();
           throw new Error('`unsubscribe()` should fail');
         } catch (err) {
-          expect((err as Error).message).toBe('Unsubscribe failed!');
+          expect((err as Error).message).toContain('Unsubscribe failed!');
         }
       });
 

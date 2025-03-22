@@ -14,6 +14,7 @@ import {
   Injector,
   makeEnvironmentProviders,
   NgZone,
+  ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 import {merge, from, Observable, of} from 'rxjs';
 import {delay, take} from 'rxjs/operators';
@@ -21,6 +22,7 @@ import {delay, take} from 'rxjs/operators';
 import {NgswCommChannel} from './low_level';
 import {SwPush} from './push';
 import {SwUpdate} from './update';
+import {RuntimeErrorCode} from './errors';
 
 export const SCRIPT = new InjectionToken<string>(ngDevMode ? 'NGSW_REGISTER_SCRIPT' : '');
 
@@ -82,8 +84,10 @@ export function ngswAppInitializer(
           break;
         default:
           // Unknown strategy.
-          throw new Error(
-            `Unknown ServiceWorker registration strategy: ${options.registrationStrategy}`,
+          throw new RuntimeError(
+            RuntimeErrorCode.UNKNOWN_REGISTRATION_STRATEGY,
+            (typeof ngDevMode === 'undefined' || ngDevMode) &&
+              `Unknown ServiceWorker registration strategy: ${options.registrationStrategy}`,
           );
       }
     }
