@@ -737,3 +737,58 @@ export declare class MyApp {
     static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: let_with_pipe_optimization.js
+ ****************************************************************************************************/
+import { Component, Pipe } from '@angular/core';
+import * as i0 from "@angular/core";
+export class DoublePipe {
+    transform(value) {
+        return value * 2;
+    }
+}
+DoublePipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DoublePipe, deps: [], target: i0.ɵɵFactoryTarget.Pipe });
+DoublePipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DoublePipe, isStandalone: true, name: "double" });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DoublePipe, decorators: [{
+            type: Pipe,
+            args: [{
+                    name: 'double',
+                }]
+        }] });
+export class MyApp {
+    constructor() {
+        this.value = 1;
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    @let foo = (value | double) + 3;
+    {{foo}}
+  `, isInline: true, dependencies: [{ kind: "pipe", type: DoublePipe, name: "double" }] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    @let foo = (value | double) + 3;
+    {{foo}}
+  `,
+                    imports: [DoublePipe],
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: let_with_pipe_optimization.d.ts
+ ****************************************************************************************************/
+import { PipeTransform } from '@angular/core';
+import * as i0 from "@angular/core";
+export declare class DoublePipe implements PipeTransform {
+    transform(value: number): number;
+    static ɵfac: i0.ɵɵFactoryDeclaration<DoublePipe, never>;
+    static ɵpipe: i0.ɵɵPipeDeclaration<DoublePipe, "double", true>;
+}
+export declare class MyApp {
+    value: number;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+
