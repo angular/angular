@@ -292,6 +292,23 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should not optimize away declareLet if expression is using a pipe",
+      "inputFiles": [
+        "let_with_pipe_optimization.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "let_with_pipe_optimization_template.js",
+              "generated": "let_with_pipe_optimization.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }
