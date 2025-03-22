@@ -32,10 +32,17 @@ import {
   createElementNode,
   setupStaticAttributes,
 } from '../dom_node_manipulation';
-import {hasClassInput, hasStyleInput, TElementNode, TNode, TNodeType} from '../interfaces/node';
+import {
+  hasClassInput,
+  hasStyleInput,
+  TElementNode,
+  TNode,
+  TNodeFlags,
+  TNodeType,
+} from '../interfaces/node';
 import {Renderer} from '../interfaces/renderer';
 import {RElement} from '../interfaces/renderer_dom';
-import {isComponentHost, isDirectiveHost} from '../interfaces/type_checks';
+import {isComponentHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
@@ -120,7 +127,11 @@ export function ɵɵelementStart(
   const native = _locateOrCreateElementNode(tView, lView, tNode, renderer, name, index);
   lView[adjustedIndex] = native;
 
-  const hasDirectives = isDirectiveHost(tNode);
+  // Checks if the given `TNode` is a directive host.
+  // A directive host is an element that has one or more directives applied to it.
+  // Perf note: This is a hot-path function used in the generated code.
+  // Do not extract it into a separate function, as an inline check is faster.
+  const hasDirectives = (tNode.flags & TNodeFlags.isDirectiveHost) === TNodeFlags.isDirectiveHost;
 
   if (ngDevMode && tView.firstCreatePass) {
     validateElementIsKnown(native, lView, tNode.value, tView.schemas, hasDirectives);
