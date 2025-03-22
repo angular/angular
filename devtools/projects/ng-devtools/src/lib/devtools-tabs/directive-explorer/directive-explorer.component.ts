@@ -46,6 +46,8 @@ import {PropertyTabComponent} from './property-tab/property-tab.component';
 import {SplitAreaDirective} from '../../vendor/angular-split/lib/component/splitArea.directive';
 import {MatSlideToggle} from '@angular/material/slide-toggle';
 import {FormsModule} from '@angular/forms';
+import {Platform} from '@angular/cdk/platform';
+import {MatSnackBarModule, MatSnackBar} from '@angular/material/snack-bar';
 
 const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
   if ((a.component && !b.component) || (!a.component && b.component)) {
@@ -81,6 +83,7 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
     PropertyTabComponent,
     MatSlideToggle,
     FormsModule,
+    MatSnackBarModule,
   ],
 })
 export class DirectiveExplorerComponent {
@@ -107,6 +110,10 @@ export class DirectiveExplorerComponent {
   private readonly _messageBus = inject<MessageBus<Events>>(MessageBus);
   private readonly _propResolver = inject(ElementPropertyResolver);
   private readonly _frameManager = inject(FrameManager);
+
+  private readonly platform = inject(Platform);
+
+  private _snackBar = inject(MatSnackBar);
 
   constructor() {
     afterRenderEffect((cleanup) => {
@@ -193,35 +200,41 @@ export class DirectiveExplorerComponent {
 
     const selectedFrame = this._frameManager.selectedFrame();
     if (!this._frameManager.frameHasUniqueUrl(selectedFrame)) {
-      this._messageBus.emit('log', [
-        {
-          level: 'warn',
-          message: `The currently inspected frame does not have a unique url on this page. Cannot view source.`,
-        },
-      ]);
+      const error = `The currently inspected frame does not have a unique url on this page. Cannot view source.`;
+      this._snackBar.open(error, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
+      this._messageBus.emit('log', [{level: 'warn', message: error}]);
       return;
     }
 
-    this._appOperations.viewSource(
-      selectedEl.position,
-      directiveIndex !== -1 ? directiveIndex : undefined,
-      new URL(selectedFrame!.url),
-    );
+    if (this.platform.FIREFOX && !this._frameManager.topLevelFrameIsActive()) {
+      const error = `Viewing source is not supported in Firefox when the inspected frame is not the top-level frame.`;
+      this._snackBar.open(error, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
+      this._messageBus.emit('log', [{level: 'warn', message: error}]);
+    } else {
+      this._appOperations.viewSource(
+        selectedEl.position,
+        directiveIndex !== -1 ? directiveIndex : undefined,
+        selectedFrame!,
+      );
+    }
   }
 
   handleSelectDomElement(node: IndexedNode): void {
     const selectedFrame = this._frameManager.selectedFrame();
     if (!this._frameManager.frameHasUniqueUrl(selectedFrame)) {
-      this._messageBus.emit('log', [
-        {
-          level: 'warn',
-          message: `The currently inspected frame does not have a unique url on this page. Cannot select DOM element.`,
-        },
-      ]);
+      const error = `The currently inspected frame does not have a unique url on this page. Cannot select DOM element.`;
+      this._snackBar.open(error, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
+      this._messageBus.emit('log', [{level: 'warn', message: error}]);
       return;
     }
 
-    this._appOperations.selectDomElement(node.position, new URL(selectedFrame!.url));
+    if (this.platform.FIREFOX && !this._frameManager.topLevelFrameIsActive()) {
+      const error = `Inspecting a component's DOM element is not supported in Firefox when the inspected frame is not the top-level frame.`;
+      this._snackBar.open(error, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
+      this._messageBus.emit('log', [{level: 'warn', message: error}]);
+    } else {
+      this._appOperations.selectDomElement(node.position, selectedFrame!);
+    }
   }
 
   highlight(node: FlatNode): void {
@@ -292,16 +305,19 @@ export class DirectiveExplorerComponent {
 
     const selectedFrame = this._frameManager.selectedFrame();
     if (!this._frameManager.frameHasUniqueUrl(selectedFrame)) {
-      this._messageBus.emit('log', [
-        {
-          level: 'warn',
-          message: `The currently inspected frame does not have a unique url on this page. Cannot inspect object.`,
-        },
-      ]);
+      const error = `The currently inspected frame does not have a unique url on this page. Cannot inspect object.`;
+      this._snackBar.open(error, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
+      this._messageBus.emit('log', [{level: 'warn', message: error}]);
       return;
     }
 
-    this._appOperations.inspect(directivePosition, objectPath, new URL(selectedFrame!.url));
+    if (this.platform.FIREFOX && !this._frameManager.topLevelFrameIsActive()) {
+      const error = `Inspecting object is not supported in Firefox when the inspected frame is not the top-level frame.`;
+      this._snackBar.open(error, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
+      this._messageBus.emit('log', [{level: 'warn', message: error}]);
+    } else {
+      this._appOperations.inspect(directivePosition, objectPath, selectedFrame!);
+    }
   }
 
   hightlightHydrationNodes() {
