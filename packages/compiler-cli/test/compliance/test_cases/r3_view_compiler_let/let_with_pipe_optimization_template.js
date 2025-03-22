@@ -9,10 +9,9 @@ $r3$.ɵɵdefineComponent({
       $r3$.ɵɵtext(2);
     }
     if (rf & 2) {
-      const $one_0$ = ctx.value + 1;
-      const $result_1$ = $r3$.ɵɵpipeBind1(1, 1, $one_0$);
+      const $foo_r1$ = $r3$.ɵɵpipeBind1(1, 1, ctx.value) + 3;
       $r3$.ɵɵadvance(2);
-      $r3$.ɵɵtextInterpolate1(" The result is ", $result_1$, " ");
+      $r3$.ɵɵtextInterpolate1(" ", $foo_r1$, " ");
     }
   },
   …
