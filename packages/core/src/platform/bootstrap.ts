@@ -110,11 +110,10 @@ export function bootstrap<M>(
       }
     }
 
-    let onErrorSubscription: Subscription;
-    ngZone.runOutsideAngular(() => {
-      onErrorSubscription = ngZone.onError.subscribe({
+    const onErrorSubscription = ngZone.runOutsideAngular(() => {
+      return ngZone.onError.subscribe({
         next: (error: any) => {
-          exceptionHandler!.handleError(error);
+          exceptionHandler.handleError(error);
         },
       });
     });
