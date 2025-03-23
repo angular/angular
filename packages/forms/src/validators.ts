@@ -162,6 +162,8 @@ export class Validators {
    * @description
    * Validator that requires the control's value to be greater than or equal to the provided number.
    *
+   * See also: {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
+   *
    * @usageNotes
    *
    * ### Validate against a minimum of 3
@@ -175,7 +177,6 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * `min` property if the validation check fails, otherwise `null`.
    *
-   * @see {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
    *
    */
   static min(min: number): ValidatorFn {
@@ -185,6 +186,8 @@ export class Validators {
   /**
    * @description
    * Validator that requires the control's value to be less than or equal to the provided number.
+   *
+   * See also: {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
    *
    * @usageNotes
    *
@@ -199,7 +202,6 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * `max` property if the validation check fails, otherwise `null`.
    *
-   * @see {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
    *
    */
   static max(max: number): ValidatorFn {
@@ -209,6 +211,8 @@ export class Validators {
   /**
    * @description
    * Validator that requires the control have a non-empty value.
+   *
+   * See also: {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
    *
    * @usageNotes
    *
@@ -223,7 +227,6 @@ export class Validators {
    * @returns An error map with the `required` property
    * if the validation check fails, otherwise `null`.
    *
-   * @see {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
    *
    */
   static required(control: AbstractControl): ValidationErrors | null {
@@ -234,6 +237,8 @@ export class Validators {
    * @description
    * Validator that requires the control's value be true. This validator is commonly
    * used for required checkboxes.
+   *
+   * See also: {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
    *
    * @usageNotes
    *
@@ -248,7 +253,6 @@ export class Validators {
    * @returns An error map that contains the `required` property
    * set to `true` if the validation check fails, otherwise `null`.
    *
-   * @see {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
    *
    */
   static requiredTrue(control: AbstractControl): ValidationErrors | null {
@@ -275,6 +279,8 @@ export class Validators {
    * If this pattern does not satisfy your business needs, you can use `Validators.pattern()` to
    * validate the value against a different pattern.
    *
+   * See also: {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
+   *
    * @usageNotes
    *
    * ### Validate that the field matches a valid email pattern
@@ -288,7 +294,6 @@ export class Validators {
    * @returns An error map with the `email` property
    * if the validation check fails, otherwise `null`.
    *
-   * @see {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
    *
    */
   static email(control: AbstractControl): ValidationErrors | null {
@@ -305,6 +310,8 @@ export class Validators {
    * `size` property is 0 (for example in case of an empty string or an empty array), to support
    * optional controls. You can use the standard `required` validator if empty values should not be
    * considered valid.
+   *
+   * See also: {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
    *
    * @usageNotes
    *
@@ -323,7 +330,6 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * `minlength` property if the validation check fails, otherwise `null`.
    *
-   * @see {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
    *
    */
   static minLength(minLength: number): ValidatorFn {
@@ -337,6 +343,8 @@ export class Validators {
    * the HTML5 `maxlength` attribute. Note that the `maxLength` validator is intended to be used
    * only for types that have a numeric `length` or `size` property, such as strings, arrays or
    * sets.
+   *
+   * See also: {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
    *
    * @usageNotes
    *
@@ -355,7 +363,6 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * `maxlength` property if the validation check fails, otherwise `null`.
    *
-   * @see {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
    *
    */
   static maxLength(maxLength: number): ValidatorFn {
@@ -366,6 +373,8 @@ export class Validators {
    * @description
    * Validator that requires the control's value to match a regex pattern. This validator is also
    * provided by default if you use the HTML5 `pattern` attribute.
+   *
+   * See also: {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
    *
    * @usageNotes
    *
@@ -408,7 +417,6 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * `pattern` property if the validation check fails, otherwise `null`.
    *
-   * @see {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
    *
    */
   static pattern(pattern: string | RegExp): ValidatorFn {
@@ -419,7 +427,7 @@ export class Validators {
    * @description
    * Validator that performs no operation.
    *
-   * @see {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
+   * See also: {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
    *
    */
   static nullValidator(control: AbstractControl): ValidationErrors | null {
@@ -431,10 +439,11 @@ export class Validators {
    * Compose multiple validators into a single function that returns the union
    * of the individual error maps for the provided control.
    *
+   * See also: {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
+   *
    * @returns A validator function that returns an error map with the
    * merged error maps of the validators if the validation check fails, otherwise `null`.
    *
-   * @see {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
    *
    */
   static compose(validators: null): null;
@@ -448,10 +457,11 @@ export class Validators {
    * Compose multiple async validators into a single function that returns the union
    * of the individual error objects for the provided control.
    *
+   * See also: {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
+   *
    * @returns A validator function that returns an error map with the
    * merged error objects of the async validators if the validation check fails, otherwise `null`.
    *
-   * @see {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
    *
    */
   static composeAsync(validators: (AsyncValidatorFn | null)[]): AsyncValidatorFn | null {
