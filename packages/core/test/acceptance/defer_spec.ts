@@ -49,6 +49,8 @@ import {ActivatedRoute, provideRouter, Router, RouterOutlet} from '@angular/rout
 import {ChainedInjector} from '@angular/core/src/render3/chained_injector';
 import {global} from '../../src/util/global';
 import {TimerScheduler} from '@angular/core/src/defer/timer_scheduler';
+import {Console} from '../../src/console';
+import {formatRuntimeErrorCode, RuntimeErrorCode} from '../../src/errors';
 
 /**
  * Clears all associated directive defs from a given component class.
@@ -135,6 +137,25 @@ class FakeTimerScheduler {
       cb();
     }
   }
+}
+
+@Injectable()
+export class DebugConsole extends Console {
+  logs: string[] = [];
+  override log(message: string) {
+    this.logs.push(message);
+  }
+  override warn(message: string) {
+    this.logs.push(message);
+  }
+}
+
+/**
+ * Provides a debug console instance that allows to capture all
+ * produces messages for testing purposes.
+ */
+export function withDebugConsole() {
+  return [{provide: Console, useClass: DebugConsole}];
 }
 
 /**
@@ -531,6 +552,75 @@ describe('@defer', () => {
       fixture.detectChanges();
 
       expect(fixture.nativeElement.outerHTML).toContain('<my-lazy-cmp>main</my-lazy-cmp>');
+    });
+  });
+
+  describe('with HMR', () => {
+    beforeEach(() => {
+      globalThis['ngHmrMode'] = true;
+    });
+
+    afterEach(() => {
+      globalThis['ngHmrMode'] = undefined;
+    });
+
+    it('should produce a message into a console about eagerly loaded deps', async () => {
+      @Component({
+        selector: 'simple-app',
+        template: `
+          @defer (when true) {
+            Defer block #1
+          }
+          @defer (on immediate) {
+            Defer block #2
+          }
+          @defer (when true) {
+            Defer block #3
+          }
+        `,
+      })
+      class MyCmp {}
+
+      TestBed.configureTestingModule({providers: [withDebugConsole()]});
+      const fixture = TestBed.createComponent(MyCmp);
+      fixture.detectChanges();
+
+      // Wait for all async actions to complete.
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      // Make sure that the HMR message is present in the console and there is
+      // only a single instance of a message.
+      const console = TestBed.inject(Console) as DebugConsole;
+      const errorCode = formatRuntimeErrorCode(RuntimeErrorCode.DEFER_IN_HMR_MODE);
+      const hmrMessages = console.logs.filter((log) => log.indexOf(errorCode) > -1);
+      expect(hmrMessages.length).withContext('HMR message should be present once').toBe(1);
+
+      const textContent = fixture.nativeElement.textContent;
+      expect(textContent).toContain('Defer block #1');
+      expect(textContent).toContain('Defer block #2');
+      expect(textContent).toContain('Defer block #3');
+    });
+
+    it('should not produce a message about eagerly loaded deps if no defer blocks are present', () => {
+      @Component({
+        selector: 'simple-app',
+        template: `No defer blocks`,
+      })
+      class MyCmp {}
+
+      TestBed.configureTestingModule({providers: [withDebugConsole()]});
+      const fixture = TestBed.createComponent(MyCmp);
+      fixture.detectChanges();
+
+      // Make sure that there were no HMR messages present in the console, because
+      // there were no defer blocks in a template.
+      const console = TestBed.inject(Console) as DebugConsole;
+      const errorCode = formatRuntimeErrorCode(RuntimeErrorCode.DEFER_IN_HMR_MODE);
+      const hmrMessages = console.logs.filter((log) => log.indexOf(errorCode) > -1);
+      expect(hmrMessages.length).withContext('HMR message should *not* be present').toBe(0);
+
+      expect(fixture.nativeElement.textContent).toContain('No defer blocks');
     });
   });
 
