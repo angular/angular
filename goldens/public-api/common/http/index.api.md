@@ -1679,43 +1679,43 @@ export const httpResource: HttpResourceFn;
 
 // @public
 export interface HttpResourceFn {
-    <TResult = unknown>(url: string | (() => string | undefined), options: HttpResourceOptions<TResult, unknown> & {
+    <TResult = unknown>(url: () => string | undefined, options: HttpResourceOptions<TResult, unknown> & {
         defaultValue: NoInfer<TResult>;
     }): HttpResourceRef<TResult>;
-    <TResult = unknown>(url: string | (() => string | undefined), options?: HttpResourceOptions<TResult, unknown>): HttpResourceRef<TResult | undefined>;
-    <TResult = unknown>(request: HttpResourceRequest | (() => HttpResourceRequest | undefined), options: HttpResourceOptions<TResult, unknown> & {
+    <TResult = unknown>(url: () => string | undefined, options?: HttpResourceOptions<TResult, unknown>): HttpResourceRef<TResult | undefined>;
+    <TResult = unknown>(request: () => HttpResourceRequest | undefined, options: HttpResourceOptions<TResult, unknown> & {
         defaultValue: NoInfer<TResult>;
     }): HttpResourceRef<TResult>;
-    <TResult = unknown>(request: HttpResourceRequest | (() => HttpResourceRequest | undefined), options?: HttpResourceOptions<TResult, unknown>): HttpResourceRef<TResult | undefined>;
+    <TResult = unknown>(request: () => HttpResourceRequest | undefined, options?: HttpResourceOptions<TResult, unknown>): HttpResourceRef<TResult | undefined>;
     arrayBuffer: {
-        <TResult = ArrayBuffer>(url: string | (() => string | undefined), options: HttpResourceOptions<TResult, ArrayBuffer> & {
+        <TResult = ArrayBuffer>(url: () => string | undefined, options: HttpResourceOptions<TResult, ArrayBuffer> & {
             defaultValue: NoInfer<TResult>;
         }): HttpResourceRef<TResult>;
-        <TResult = ArrayBuffer>(url: string | (() => string | undefined), options?: HttpResourceOptions<TResult, ArrayBuffer>): HttpResourceRef<TResult | undefined>;
-        <TResult = ArrayBuffer>(request: HttpResourceRequest | (() => HttpResourceRequest | undefined), options: HttpResourceOptions<TResult, ArrayBuffer> & {
+        <TResult = ArrayBuffer>(url: () => string | undefined, options?: HttpResourceOptions<TResult, ArrayBuffer>): HttpResourceRef<TResult | undefined>;
+        <TResult = ArrayBuffer>(request: () => HttpResourceRequest | undefined, options: HttpResourceOptions<TResult, ArrayBuffer> & {
             defaultValue: NoInfer<TResult>;
         }): HttpResourceRef<TResult>;
-        <TResult = ArrayBuffer>(request: HttpResourceRequest | (() => HttpResourceRequest | undefined), options?: HttpResourceOptions<TResult, ArrayBuffer>): HttpResourceRef<TResult | undefined>;
+        <TResult = ArrayBuffer>(request: () => HttpResourceRequest | undefined, options?: HttpResourceOptions<TResult, ArrayBuffer>): HttpResourceRef<TResult | undefined>;
     };
     blob: {
-        <TResult = Blob>(url: string | (() => string | undefined), options: HttpResourceOptions<TResult, Blob> & {
+        <TResult = Blob>(url: () => string | undefined, options: HttpResourceOptions<TResult, Blob> & {
             defaultValue: NoInfer<TResult>;
         }): HttpResourceRef<TResult>;
-        <TResult = Blob>(url: string | (() => string | undefined), options?: HttpResourceOptions<TResult, Blob>): HttpResourceRef<TResult | undefined>;
-        <TResult = Blob>(request: HttpResourceRequest | (() => HttpResourceRequest | undefined), options: HttpResourceOptions<TResult, Blob> & {
+        <TResult = Blob>(url: () => string | undefined, options?: HttpResourceOptions<TResult, Blob>): HttpResourceRef<TResult | undefined>;
+        <TResult = Blob>(request: () => HttpResourceRequest | undefined, options: HttpResourceOptions<TResult, Blob> & {
             defaultValue: NoInfer<TResult>;
         }): HttpResourceRef<TResult>;
-        <TResult = Blob>(request: HttpResourceRequest | (() => HttpResourceRequest | undefined), options?: HttpResourceOptions<TResult, Blob>): HttpResourceRef<TResult | undefined>;
+        <TResult = Blob>(request: () => HttpResourceRequest | undefined, options?: HttpResourceOptions<TResult, Blob>): HttpResourceRef<TResult | undefined>;
     };
     text: {
-        <TResult = string>(url: string | (() => string | undefined), options: HttpResourceOptions<TResult, string> & {
+        <TResult = string>(url: () => string | undefined, options: HttpResourceOptions<TResult, string> & {
             defaultValue: NoInfer<TResult>;
         }): HttpResourceRef<TResult>;
-        <TResult = string>(url: string | (() => string | undefined), options?: HttpResourceOptions<TResult, string>): HttpResourceRef<TResult | undefined>;
-        <TResult = string>(request: HttpResourceRequest | (() => HttpResourceRequest | undefined), options: HttpResourceOptions<TResult, string> & {
+        <TResult = string>(url: () => string | undefined, options?: HttpResourceOptions<TResult, string>): HttpResourceRef<TResult | undefined>;
+        <TResult = string>(request: () => HttpResourceRequest | undefined, options: HttpResourceOptions<TResult, string> & {
             defaultValue: NoInfer<TResult>;
         }): HttpResourceRef<TResult>;
-        <TResult = string>(request: HttpResourceRequest | (() => HttpResourceRequest | undefined), options?: HttpResourceOptions<TResult, string>): HttpResourceRef<TResult | undefined>;
+        <TResult = string>(request: () => HttpResourceRequest | undefined, options?: HttpResourceOptions<TResult, string>): HttpResourceRef<TResult | undefined>;
     };
 }
 
