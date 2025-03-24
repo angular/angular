@@ -34,7 +34,7 @@ describe('profiler', () => {
             deps: [],
           },
         ],
-      }),
+      }) as Injector,
     } as ComponentRef<any>);
   });
 

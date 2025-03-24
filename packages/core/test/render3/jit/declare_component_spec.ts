@@ -23,7 +23,6 @@ import {
   AttributeMarker,
   ComponentDef,
   ɵɵInheritDefinitionFeature,
-  ɵɵInputTransformsFeature,
   ɵɵNgOnChangesFeature,
 } from '../../../src/render3';
 
@@ -71,8 +70,8 @@ describe('component declaration jit compilation', () => {
 
     expectComponentDef(def, {
       inputs: {
-        'property': 'minifiedProperty',
-        'bindingName': 'minifiedClassProperty',
+        'property': ['minifiedProperty', InputFlags.None, null],
+        'bindingName': ['minifiedClassProperty', InputFlags.None, null],
       },
       declaredInputs: {
         'property': 'property',
@@ -97,15 +96,15 @@ describe('component declaration jit compilation', () => {
 
     expectComponentDef(def, {
       inputs: {
-        'bindingName': ['minifiedClassProperty', InputFlags.HasDecoratorInputTransform],
-      },
-      inputTransforms: {
-        'minifiedClassProperty': transformFn,
+        'bindingName': [
+          'minifiedClassProperty',
+          InputFlags.HasDecoratorInputTransform,
+          transformFn,
+        ],
       },
       declaredInputs: {
         'bindingName': 'classProperty',
       },
-      features: [ɵɵInputTransformsFeature],
     });
   });
 
@@ -587,7 +586,6 @@ type ComponentDefExpectations = jasmine.Expected<
     | 'onPush'
     | 'styles'
     | 'data'
-    | 'inputTransforms'
   >
 > & {
   directives: Type<unknown>[] | null;
@@ -608,7 +606,6 @@ function expectComponentDef(
     template: jasmine.any(Function),
     inputs: {},
     declaredInputs: {},
-    inputTransforms: null,
     outputs: {},
     features: null,
     hostAttrs: null,
@@ -634,9 +631,6 @@ function expectComponentDef(
   expect(actual.template).withContext('template').toEqual(expectation.template);
   expect(actual.inputs).withContext('inputs').toEqual(expectation.inputs);
   expect(actual.declaredInputs).withContext('declaredInputs').toEqual(expectation.declaredInputs);
-  expect(actual.inputTransforms)
-    .withContext('inputTransforms')
-    .toEqual(expectation.inputTransforms);
   expect(actual.outputs).withContext('outputs').toEqual(expectation.outputs);
   expect(actual.features).withContext('features').toEqual(expectation.features);
   expect(actual.hostAttrs).withContext('hostAttrs').toEqual(expectation.hostAttrs);

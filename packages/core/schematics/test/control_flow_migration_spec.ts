@@ -6479,6 +6479,72 @@ describe('control flow migration', () => {
 
       expect(actual).toBe(expected);
     });
+
+    it('should not remove common module if symbols are used inside new control flow', async () => {
+      writeFile(
+        '/comp.ts',
+        [
+          `import {CommonModule} from '@angular/common';`,
+          `import {Component} from '@angular/core';\n`,
+          `@Component({`,
+          `  imports: [CommonModule],`,
+          `  template: \`@if (toggle) {<div>{{ d | date }}</div>} <span *ngIf="toggle">hi</span>\``,
+          `})`,
+          `class Comp {`,
+          `  toggle = false;`,
+          `}`,
+        ].join('\n'),
+      );
+
+      await runMigration();
+      const actual = tree.readContent('/comp.ts');
+      const expected = [
+        `import {CommonModule} from '@angular/common';`,
+        `import {Component} from '@angular/core';\n`,
+        `@Component({`,
+        `  imports: [CommonModule],`,
+        `  template: \`@if (toggle) {<div>{{ d | date }}</div>} @if (toggle) {<span>hi</span>}\``,
+        `})`,
+        `class Comp {`,
+        `  toggle = false;`,
+        `}`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
+    it('should not remove common module if symbols are used inside @let', async () => {
+      writeFile(
+        '/comp.ts',
+        [
+          `import {CommonModule} from '@angular/common';`,
+          `import {Component} from '@angular/core';\n`,
+          `@Component({`,
+          `  imports: [CommonModule],`,
+          `  template: \`@let foo = 123 | date; <span *ngIf="foo">{{foo}}</span>\``,
+          `})`,
+          `class Comp {`,
+          `  toggle = false;`,
+          `}`,
+        ].join('\n'),
+      );
+
+      await runMigration();
+      const actual = tree.readContent('/comp.ts');
+      const expected = [
+        `import {CommonModule} from '@angular/common';`,
+        `import {Component} from '@angular/core';\n`,
+        `@Component({`,
+        `  imports: [CommonModule],`,
+        `  template: \`@let foo = 123 | date; @if (foo) {<span>{{foo}}</span>}\``,
+        `})`,
+        `class Comp {`,
+        `  toggle = false;`,
+        `}`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
   });
 
   describe('no migration needed', () => {
@@ -6769,6 +6835,135 @@ describe('control flow migration', () => {
         `Element with i18n attribute "ng-container" would result having a child of element with i18n attribute ` +
           `"ng-container". Please fix and re-run the migration.`,
       );
+    });
+
+    it('should not remove component reference it is used in component file with viewChild', async () => {
+      writeFile(
+        '/comp.ts',
+        `
+        import {Component, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+        import { NgIf } from '@angular/common';
+
+        @Component({
+          standalone: true
+          imports: [NgIf],
+          template: \`<h1>Hello from {{ name }}!</h1>
+                      <div *ngIf="showContent; then contentTemplate"></div>
+                      <ng-template #contentTemplate><div>test content</div></ng-template>\`
+        })
+        class Comp {
+            @ViewChild('contentTemplate') testContainer!: TemplateRef<unknown>;
+            name = 'Angular';
+            showContent = true;
+            options: { value: string; html: any }[] = [];
+
+            constructor(private viewContainerRef: ViewContainerRef) {}
+
+            ngAfterViewInit(): void {
+              this.viewContainerRef.createEmbeddedView(this.testContainer);
+            }
+        }
+      `,
+      );
+
+      await runMigration();
+      const content = tree.readContent('/comp.ts');
+      expect(content).toContain('<ng-template #contentTemplate>');
+    });
+
+    it('should not remove component reference it is used in component file with viewChildren', async () => {
+      writeFile(
+        '/comp.ts',
+        `
+        import {Component, TemplateRef, ViewChildren, ViewContainerRef, QueryList} from '@angular/core';
+        import { NgIf } from '@angular/common';
+
+        @Component({
+          standalone: true
+          imports: [NgIf],
+          template: \`<h1>Hello from {{ name }}!</h1>
+                      <div *ngIf="showContent; then contentTemplate"></div>
+                      <ng-template #contentTemplate><div>test content</div></ng-template>\`
+        })
+        class Comp {
+            @ViewChildren('contentTemplate') testContainer!: QueryList<TemplateRef<unknown>>;
+            name = 'Angular';
+            showContent = true;
+            options: { value: string; html: any }[] = [];
+
+            constructor(private viewContainerRef: ViewContainerRef) {}
+
+            ngAfterViewInit(): void {
+              this.viewContainerRef.createEmbeddedView(this.testContainer.last);
+            }
+        }
+      `,
+      );
+
+      await runMigration();
+      const content = tree.readContent('/comp.ts');
+      expect(content).toContain('<ng-template #contentTemplate>');
+    });
+
+    it('should remove component reference when viewChild is commented in component file', async () => {
+      writeFile(
+        '/comp.ts',
+        `
+        import {Component, TemplateRef, ViewChild} from '@angular/core';
+        import { NgIf } from '@angular/common';
+
+        @Component({
+          standalone: true
+          imports: [NgIf],
+          template: \`<h1>Hello from {{ name }}!</h1>
+                      <div *ngIf="showContent; then contentTemplate"></div>
+                      <ng-template #contentTemplate><div>test content</div></ng-template>\`
+        })
+        class Comp {
+            // @ViewChild('contentTemplate') testContainer!: TemplateRef<unknown>;
+            name = 'Angular';
+            showContent = true;
+            options: { value: string; html: any }[] = [];
+        }
+      `,
+      );
+
+      await runMigration();
+      const content = tree.readContent('/comp.ts');
+      expect(content).not.toContain('<ng-template #contentTemplate>');
+    });
+
+    it('should remove ng-template reference when use in if-else block', async () => {
+      writeFile(
+        '/comp.ts',
+        `
+        import {Component} from '@angular/core';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+        }
+      `,
+      );
+
+      writeFile(
+        '/comp.html',
+        [
+          `<div>`,
+          `<div *ngIf="param; else loading">`,
+          `<div>content</div>`,
+          `</div>`,
+          `<ng-template #loading>`,
+          `<div>loading</div>`,
+          `</ng-template>`,
+          `</div>`,
+        ].join('\n'),
+      );
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+      expect(content).not.toContain('<ng-template #loading>');
     });
   });
 });

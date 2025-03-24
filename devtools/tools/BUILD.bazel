@@ -1,3 +1,19 @@
+load("//devtools/tools/linking:index.bzl", "link_package")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
 exports_files([
     "bazel-karma-local-config.js",
 ])
+
+link_package(
+    name = "angular_cdk",
+    package_name = "@angular/cdk",
+    npm_package = "@npm//@angular/cdk",
+)
+
+link_package(
+    name = "angular_material",
+    package_name = "@angular/material",
+    npm_package = "@npm//@angular/material",
+)

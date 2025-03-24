@@ -7,3 +7,5 @@
  */
 
 export * from './secondarymodule';
+
+export const sharedBetweenEntryPoints = 'This export is shared between entry-points';

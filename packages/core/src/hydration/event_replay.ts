@@ -23,7 +23,7 @@ import {ENVIRONMENT_INITIALIZER, Injector} from '../di';
 import {inject} from '../di/injector_compatibility';
 import {Provider} from '../di/interface/provider';
 import {setStashFn} from '../render3/instructions/listener';
-import {RElement} from '../render3/interfaces/renderer_dom';
+import {RElement, RNode} from '../render3/interfaces/renderer_dom';
 import {CLEANUP, LView, TView} from '../render3/interfaces/view';
 import {unwrapRNode} from '../render3/util/view_utils';
 
@@ -98,17 +98,21 @@ export function withEventReplay(): Provider[] {
       {
         provide: ENVIRONMENT_INITIALIZER,
         useValue: () => {
-          const injector = inject(Injector);
-          const appRef = injector.get(ApplicationRef);
+          const appRef = inject(ApplicationRef);
+          const {injector} = appRef;
           // We have to check for the appRef here due to the possibility of multiple apps
           // being present on the same page. We only want to enable event replay for the
           // apps that actually want it.
           if (!appsWithEventReplay.has(appRef)) {
             const jsActionMap = inject(JSACTION_BLOCK_ELEMENT_MAP);
             if (shouldEnableEventReplay(injector)) {
-              setStashFn((rEl: RElement, eventName: string, listenerFn: VoidFunction) => {
-                sharedStashFunction(rEl, eventName, listenerFn);
-                sharedMapFunction(rEl, jsActionMap);
+              setStashFn((rEl: RNode, eventName: string, listenerFn: VoidFunction) => {
+                // If a user binds to a ng-container and uses a directive that binds using a host listener,
+                // this element could be a comment node. So we need to ensure we have an actual element
+                // node before stashing anything.
+                if ((rEl as Node).nodeType !== Node.ELEMENT_NODE) return;
+                sharedStashFunction(rEl as RElement, eventName, listenerFn);
+                sharedMapFunction(rEl as RElement, jsActionMap);
               });
             }
           }
@@ -119,8 +123,8 @@ export function withEventReplay(): Provider[] {
         provide: APP_BOOTSTRAP_LISTENER,
         useFactory: () => {
           const appId = inject(APP_ID);
-          const injector = inject(Injector);
           const appRef = inject(ApplicationRef);
+          const {injector} = appRef;
 
           return () => {
             // We have to check for the appRef here due to the possibility of multiple apps
@@ -151,6 +155,16 @@ export function withEventReplay(): Provider[] {
             // of the application is completed. This timing is similar to the unclaimed
             // dehydrated views cleanup timing.
             appRef.whenStable().then(() => {
+              // Note: we have to check whether the application is destroyed before
+              // performing other operations with the `injector`.
+              // The application may be destroyed **before** it becomes stable, so when
+              // the `whenStable` resolves, the injector might already be in
+              // a destroyed state. Thus, calling `injector.get` would throw an error
+              // indicating that the injector has already been destroyed.
+              if (appRef.destroyed) {
+                return;
+              }
+
               const eventContractDetails = injector.get(JSACTION_EVENT_CONTRACT);
               initEventReplay(eventContractDetails, injector);
               const jsActionMap = injector.get(JSACTION_BLOCK_ELEMENT_MAP);

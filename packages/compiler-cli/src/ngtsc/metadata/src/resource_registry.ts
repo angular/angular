@@ -20,7 +20,7 @@ import {ClassDeclaration} from '../../reflection';
  */
 export interface Resource {
   path: AbsoluteFsPath | null;
-  expression: ts.Expression;
+  node: ts.Node;
 }
 
 export interface ExternalResource extends Resource {
@@ -32,17 +32,19 @@ export function isExternalResource(resource: Resource): resource is ExternalReso
 }
 
 /**
- * Represents the either inline or external resources of a component.
+ * Represents the either inline or external resources of a directive.
  *
  * A resource with a `path` of `null` is considered inline.
+ * The template will be present for components, but will be null for directives.
  */
-export interface ComponentResources {
-  template: Resource;
-  styles: ReadonlySet<Resource>;
+export interface DirectiveResources {
+  template: Resource | null;
+  styles: ReadonlySet<Resource> | null;
+  hostBindings: ReadonlySet<Resource> | null;
 }
 
 /**
- * Tracks the mapping between external template/style files and the component(s) which use them.
+ * Tracks the mapping between external resources and the directives(s) which use them.
  *
  * This information is produced during analysis of the program and is used mainly to support
  * external tooling, for which such a mapping is challenging to determine without compiler
@@ -53,6 +55,7 @@ export class ResourceRegistry {
   private componentToTemplateMap = new Map<ClassDeclaration, Resource>();
   private componentToStylesMap = new Map<ClassDeclaration, Set<Resource>>();
   private externalStyleToComponentsMap = new Map<AbsoluteFsPath, Set<ClassDeclaration>>();
+  private directiveToHostBindingsMap = new Map<ClassDeclaration, ReadonlySet<Resource>>();
 
   getComponentsWithTemplate(template: AbsoluteFsPath): ReadonlySet<ClassDeclaration> {
     if (!this.externalTemplateToComponentsMap.has(template)) {
@@ -62,16 +65,21 @@ export class ResourceRegistry {
     return this.externalTemplateToComponentsMap.get(template)!;
   }
 
-  registerResources(resources: ComponentResources, component: ClassDeclaration) {
+  registerResources(resources: DirectiveResources, directive: ClassDeclaration) {
     if (resources.template !== null) {
-      this.registerTemplate(resources.template, component);
+      this.registerTemplate(resources.template, directive);
     }
-    for (const style of resources.styles) {
-      this.registerStyle(style, component);
+    if (resources.styles !== null) {
+      for (const style of resources.styles) {
+        this.registerStyle(style, directive);
+      }
+    }
+    if (resources.hostBindings !== null) {
+      this.directiveToHostBindingsMap.set(directive, resources.hostBindings);
     }
   }
 
-  registerTemplate(templateResource: Resource, component: ClassDeclaration): void {
+  private registerTemplate(templateResource: Resource, component: ClassDeclaration): void {
     const {path} = templateResource;
     if (path !== null) {
       if (!this.externalTemplateToComponentsMap.has(path)) {
@@ -89,7 +97,7 @@ export class ResourceRegistry {
     return this.componentToTemplateMap.get(component)!;
   }
 
-  registerStyle(styleResource: Resource, component: ClassDeclaration): void {
+  private registerStyle(styleResource: Resource, component: ClassDeclaration): void {
     const {path} = styleResource;
     if (!this.componentToStylesMap.has(component)) {
       this.componentToStylesMap.set(component, new Set());
@@ -116,5 +124,9 @@ export class ResourceRegistry {
     }
 
     return this.externalStyleToComponentsMap.get(styleUrl)!;
+  }
+
+  getHostBindings(directive: ClassDeclaration): ReadonlySet<Resource> | null {
+    return this.directiveToHostBindingsMap.get(directive) ?? null;
   }
 }

@@ -30,6 +30,8 @@ ng_module(
     ),
     deps = [
         "//packages:types",
+        "//packages/core/primitives/di",
+        "//packages/core/primitives/dom-navigation",
         "//packages/core/primitives/event-dispatch",
         "//packages/core/primitives/signals",
         "//packages/core/src/compiler",
@@ -78,6 +80,7 @@ ng_package(
     ],
     deps = [
         ":core",
+        "//packages/core/primitives/di",
         "//packages/core/primitives/event-dispatch",
         "//packages/core/primitives/signals",
         "//packages/core/rxjs-interop",
@@ -142,6 +145,7 @@ generate_api_docs(
     entry_point = ":index.ts",
     module_name = "@angular/core",
     private_modules = [
+        "//packages/core/primitives/di",
         "core/primitives/signals",
         "core/primitives/event-dispatch",
     ],

@@ -178,6 +178,8 @@ export class EmitterVisitorContext {
 }
 
 export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.ExpressionVisitor {
+  private lastIfCondition: o.Expression | null = null;
+
   constructor(private _escapeDollarInStrings: boolean) {}
 
   protected printLeadingComments(stmt: o.Statement, ctx: EmitterVisitorContext): void {
@@ -217,7 +219,9 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   visitIfStmt(stmt: o.IfStmt, ctx: EmitterVisitorContext): any {
     this.printLeadingComments(stmt, ctx);
     ctx.print(stmt, `if (`);
+    this.lastIfCondition = stmt.condition; // We can skip redundant parentheses for the condition.
     stmt.condition.visitExpression(this, ctx);
+    this.lastIfCondition = null;
     ctx.print(stmt, `) {`);
     const hasElseCase = stmt.falseCase != null && stmt.falseCase.length > 0;
     if (stmt.trueCase.length <= 1 && !hasElseCase) {
@@ -330,6 +334,10 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     ctx.print(expr, 'typeof ');
     expr.expr.visitExpression(this, ctx);
   }
+  visitVoidExpr(expr: o.VoidExpr, ctx: EmitterVisitorContext): any {
+    ctx.print(expr, 'void ');
+    expr.expr.visitExpression(this, ctx);
+  }
   visitReadVarExpr(ast: o.ReadVarExpr, ctx: EmitterVisitorContext): any {
     ctx.print(ast, ast.name);
     return null;
@@ -403,10 +411,11 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
       default:
         throw new Error(`Unknown operator ${ast.operator}`);
     }
-    if (ast.parens) ctx.print(ast, `(`);
+    const parens = ast !== this.lastIfCondition;
+    if (parens) ctx.print(ast, `(`);
     ctx.print(ast, opStr);
     ast.expr.visitExpression(this, ctx);
-    if (ast.parens) ctx.print(ast, `)`);
+    if (parens) ctx.print(ast, `)`);
     return null;
   }
 
@@ -452,6 +461,9 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
       case o.BinaryOperator.Modulo:
         opStr = '%';
         break;
+      case o.BinaryOperator.Exponentiation:
+        opStr = '**';
+        break;
       case o.BinaryOperator.Lower:
         opStr = '<';
         break;
@@ -470,11 +482,12 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
       default:
         throw new Error(`Unknown operator ${ast.operator}`);
     }
-    if (ast.parens) ctx.print(ast, `(`);
+    const parens = ast !== this.lastIfCondition;
+    if (parens) ctx.print(ast, `(`);
     ast.lhs.visitExpression(this, ctx);
     ctx.print(ast, ` ${opStr} `);
     ast.rhs.visitExpression(this, ctx);
-    if (ast.parens) ctx.print(ast, `)`);
+    if (parens) ctx.print(ast, `)`);
     return null;
   }
 
@@ -519,6 +532,12 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     this.visitAllExpressions(ast.parts, ctx, ',');
     ctx.print(ast, ')');
     return null;
+  }
+  visitParenthesizedExpr(ast: o.ParenthesizedExpr, ctx: EmitterVisitorContext): any {
+    // We parenthesize everything regardless of an explicit ParenthesizedExpr, so we can just visit
+    // the inner expression.
+    // TODO: Do we *need* to parenthesize everything?
+    ast.expr.visitExpression(this, ctx);
   }
   visitAllExpressions(
     expressions: o.Expression[],

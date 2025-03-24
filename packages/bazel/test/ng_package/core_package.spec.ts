@@ -65,6 +65,10 @@ describe('@angular/core ng_package', () => {
                 types: './index.d.ts',
                 default: './fesm2022/core.mjs',
               },
+              './primitives/di': {
+                types: './primitives/di/index.d.ts',
+                default: './fesm2022/primitives/di.mjs',
+              },
               './primitives/event-dispatch': {
                 types: './primitives/event-dispatch/index.d.ts',
                 default: './fesm2022/primitives/event-dispatch.mjs',
@@ -103,7 +107,7 @@ describe('@angular/core ng_package', () => {
         expect(shx.cat('index.d.ts')).not.toContain('<amd-module name');
       });
       it('should have an index d.ts file', () => {
-        expect(shx.cat('index.d.ts')).toContain('export declare');
+        expect(shx.cat('index.d.ts')).toContain('export ');
       });
 
       // The `r3_symbols` file was needed for View Engine ngcc processing.
@@ -136,7 +140,7 @@ describe('@angular/core ng_package', () => {
     describe('typings', () => {
       const typingsFile = p`testing/index.d.ts`;
       it('should have a typings file', () => {
-        expect(shx.cat(typingsFile)).toContain('export declare');
+        expect(shx.cat(typingsFile)).toContain('export ');
       });
     });
 

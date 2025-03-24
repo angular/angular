@@ -9,7 +9,7 @@
 import {
   InternalOptions,
   LegacyNgcOptions,
-  StrictTemplateOptions,
+  TypeCheckingOptions,
 } from '@angular/compiler-cli/src/ngtsc/core/api';
 import {
   absoluteFrom,
@@ -63,7 +63,7 @@ function writeTsconfig(
   );
 }
 
-export type TestableOptions = StrictTemplateOptions &
+export type TestableOptions = TypeCheckingOptions &
   InternalOptions &
   Pick<LegacyNgcOptions, 'fullTemplateTypeCheck'>;
 

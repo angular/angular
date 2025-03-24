@@ -9,7 +9,10 @@ sass_binary(
     include_paths = [
         "external/npm/node_modules",
     ],
-    deps = ["//devtools:material_sass_deps"],
+    deps = [
+        "//devtools/projects/ng-devtools/src/styles:material_sass_deps",
+        "//devtools/projects/ng-devtools/src/styles:theme",
+    ],
 )
 
 ng_module(
@@ -22,7 +25,7 @@ ng_module(
         ":injector_providers_component_styles",
     ],
     deps = [
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection:resolution_path",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection/resolution-path",
         "//devtools/projects/protocol",
         "//packages/animations",
         "//packages/common",

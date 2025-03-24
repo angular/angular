@@ -30,7 +30,6 @@ import {
   inject,
   Inject,
   Injectable,
-  InjectFlags,
   InjectionToken,
   InjectOptions,
   INJECTOR,
@@ -60,6 +59,7 @@ import {
   ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID,
   ɵINJECTOR_SCOPE,
   ɵInternalEnvironmentProviders as InternalEnvironmentProviders,
+  DestroyRef,
 } from '@angular/core';
 import {RuntimeError, RuntimeErrorCode} from '@angular/core/src/errors';
 import {ViewRef as ViewRefInternal} from '@angular/core/src/render3/view_ref';
@@ -309,7 +309,6 @@ describe('importProvidersFrom', () => {
     class ModuleA {}
 
     @Component({
-      standalone: true,
       template: '',
       imports: [ModuleA],
     })
@@ -1353,12 +1352,12 @@ describe('di', () => {
           class MyComp {
             value: string | undefined;
             constructor(injector: Injector) {
-              this.value = injector.get(NON_EXISTING_PROVIDER, 'default', InjectFlags.Host);
+              this.value = injector.get(NON_EXISTING_PROVIDER, 'default', {host: true});
             }
           }
 
           const injector = Injector.create({providers: []});
-          expect(injector.get(NON_EXISTING_PROVIDER, 'default', InjectFlags.Host)).toBe('default');
+          expect(injector.get(NON_EXISTING_PROVIDER, 'default', {host: true})).toBe('default');
 
           const fixture = TestBed.createComponent(MyComp);
           expect(fixture.componentInstance.value).toBe('default');
@@ -2712,11 +2711,9 @@ describe('di', () => {
               public injector: Injector,
               @Inject(NON_EXISTING_PROVIDER) @Optional() public tokenViaConstructor: string,
             ) {
-              this.tokenViaInjector = this.injector.get(
-                NON_EXISTING_PROVIDER,
-                null,
-                InjectFlags.Optional,
-              );
+              this.tokenViaInjector = this.injector.get(NON_EXISTING_PROVIDER, null, {
+                optional: true,
+              });
             }
           }
           TestBed.configureTestingModule({declarations: [MyComp]});
@@ -2759,7 +2756,7 @@ describe('di', () => {
               public injector: Injector,
               @Inject(TOKEN) @SkipSelf() public tokenViaConstructor: string,
             ) {
-              this.tokenViaInjector = this.injector.get(TOKEN, null, InjectFlags.SkipSelf);
+              this.tokenViaInjector = this.injector.get(TOKEN, null, {skipSelf: true});
             }
           }
 
@@ -2787,7 +2784,7 @@ describe('di', () => {
               public injector: Injector,
               @Inject(TOKEN) @Host() public tokenViaConstructor: string,
             ) {
-              this.tokenViaInjector = this.injector.get(TOKEN, null, InjectFlags.Host);
+              this.tokenViaInjector = this.injector.get(TOKEN, null, {host: true});
             }
           }
 
@@ -2826,16 +2823,14 @@ describe('di', () => {
               @Inject(DirectiveA) @Self() @Optional() public tokenSelfViaConstructor: DirectiveA,
               @Inject(DirectiveA) @Host() @Optional() public tokenHostViaConstructor: DirectiveA,
             ) {
-              this.tokenSelfViaInjector = this.injector.get(
-                DirectiveA,
-                null,
-                InjectFlags.Self | InjectFlags.Optional,
-              );
-              this.tokenHostViaInjector = this.injector.get(
-                DirectiveA,
-                null,
-                InjectFlags.Host | InjectFlags.Optional,
-              );
+              this.tokenSelfViaInjector = this.injector.get(DirectiveA, null, {
+                self: true,
+                optional: true,
+              });
+              this.tokenHostViaInjector = this.injector.get(DirectiveA, null, {
+                host: true,
+                optional: true,
+              });
             }
           }
 
@@ -2878,7 +2873,7 @@ describe('di', () => {
         constructor(public injector: Injector) {}
       }
 
-      const testBedInjector: Injector = TestBed.get(Injector);
+      const testBedInjector = TestBed.inject(Injector);
       const childInjector = Injector.create({providers: [], parent: testBedInjector});
 
       const anyService = childInjector.get(AnyService);
@@ -3924,7 +3919,6 @@ describe('di', () => {
       const TOKEN = new InjectionToken<string>('TOKEN');
 
       @Component({
-        standalone: true,
         selector: 'test-cmp',
         template: '{{value}}',
         providers: [{provide: TOKEN, useValue: 'injected value'}],
@@ -3953,7 +3947,6 @@ describe('di', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'test-cmp',
         template: '{{service.value}}',
         providers: [Service, {provide: TOKEN, useValue: 'injected value'}],
@@ -3971,7 +3964,6 @@ describe('di', () => {
       const TOKEN = new InjectionToken<string>('TOKEN');
 
       @Component({
-        standalone: true,
         selector: 'test-cmp',
         template: '{{value}}',
       })
@@ -4043,12 +4035,11 @@ describe('di', () => {
       class Service {
         value: string;
         constructor() {
-          this.value = inject(TOKEN, InjectFlags.Optional) ?? 'default value';
+          this.value = inject(TOKEN, {optional: true}) ?? 'default value';
         }
       }
 
       @Component({
-        standalone: true,
         selector: 'test-cmp',
         template: '{{service.value}}',
         providers: [{provide: TOKEN, useValue: 'injected value'}],
@@ -4074,7 +4065,6 @@ describe('di', () => {
         const TOKEN = new InjectionToken<string>('TOKEN');
 
         @Component({
-          standalone: true,
           template: '',
         })
         class TestCmp {
@@ -4090,7 +4080,6 @@ describe('di', () => {
           factory: () => 'from root',
         });
         @Component({
-          standalone: true,
           template: '',
           providers: [{provide: TOKEN, useValue: 'from component'}],
         })
@@ -4108,7 +4097,6 @@ describe('di', () => {
         });
 
         @Component({
-          standalone: true,
           template: '',
         })
         class TestCmp {
@@ -4122,7 +4110,6 @@ describe('di', () => {
         const TOKEN = new InjectionToken<string>('TOKEN');
 
         @Component({
-          standalone: true,
           selector: 'child',
           template: '{{value}}',
         })
@@ -4131,7 +4118,6 @@ describe('di', () => {
         }
 
         @Component({
-          standalone: true,
           imports: [ChildCmp],
           template: '<child></child>',
           providers: [{provide: TOKEN, useValue: 'from parent'}],
@@ -4151,7 +4137,6 @@ describe('di', () => {
         });
 
         @Component({
-          standalone: true,
           template: '',
         })
         class TestCmp {
@@ -4171,7 +4156,6 @@ describe('di', () => {
         const TOKEN = new InjectionToken<string>('TOKEN');
 
         @Component({
-          standalone: true,
           template: '',
         })
         class TestCmp {
@@ -4180,19 +4164,14 @@ describe('di', () => {
         }
 
         const {nodeInjector, envInjector} = TestBed.createComponent(TestCmp).componentInstance;
-
         expect(nodeInjector.get(TOKEN, undefined, {optional: true})).toBeNull();
-        expect(nodeInjector.get(TOKEN, undefined, InjectFlags.Optional)).toBeNull();
-
         expect(envInjector.get(TOKEN, undefined, {optional: true})).toBeNull();
-        expect(envInjector.get(TOKEN, undefined, InjectFlags.Optional)).toBeNull();
       });
 
       it('should include `null` into the result type when the optional flag is used', () => {
         const TOKEN = new InjectionToken<string>('TOKEN');
 
         @Component({
-          standalone: true,
           template: '',
         })
         class TestCmp {
@@ -4227,7 +4206,6 @@ describe('di', () => {
           factory: () => 'from root',
         });
         @Component({
-          standalone: true,
           template: '',
           providers: [{provide: TOKEN, useValue: 'from component'}],
         })
@@ -4247,7 +4225,6 @@ describe('di', () => {
 
         expect(child.get(TOKEN)).toEqual('from child');
         expect(child.get(TOKEN, undefined, {skipSelf: true})).toEqual('from root');
-        expect(child.get(TOKEN, undefined, InjectFlags.SkipSelf)).toEqual('from root');
       });
 
       it('should be able to use self injection in NodeInjector', () => {
@@ -4257,7 +4234,6 @@ describe('di', () => {
         });
 
         @Component({
-          standalone: true,
           template: '',
         })
         class TestCmp {
@@ -4275,25 +4251,21 @@ describe('di', () => {
         const child = createEnvironmentInjector([], root);
 
         expect(child.get(TOKEN, undefined, {self: true, optional: true})).toBeNull();
-        expect(child.get(TOKEN, undefined, InjectFlags.Self | InjectFlags.Optional)).toBeNull();
       });
 
       it('should be able to use host injection', () => {
         const TOKEN = new InjectionToken<string>('TOKEN');
 
         @Component({
-          standalone: true,
           selector: 'child',
-          template: '{{ a }}|{{ b }}',
+          template: '{{ value }}',
         })
         class ChildCmp {
           nodeInjector = inject(Injector);
-          a = this.nodeInjector.get(TOKEN, 'not found', {host: true, optional: true});
-          b = this.nodeInjector.get(TOKEN, 'not found', InjectFlags.Host | InjectFlags.Optional);
+          value = this.nodeInjector.get(TOKEN, 'not found', {host: true, optional: true});
         }
 
         @Component({
-          standalone: true,
           imports: [ChildCmp],
           template: '<child></child>',
           providers: [{provide: TOKEN, useValue: 'from parent'}],
@@ -4303,7 +4275,7 @@ describe('di', () => {
 
         const fixture = TestBed.createComponent(ParentCmp);
         fixture.detectChanges();
-        expect(fixture.nativeElement.innerHTML).toEqual('<child>not found|not found</child>');
+        expect(fixture.nativeElement.innerHTML).toEqual('<child>not found</child>');
       });
     });
   });
@@ -4343,7 +4315,7 @@ describe('di', () => {
       const TOKEN = new InjectionToken<string>('TOKEN');
       const injector = TestBed.inject(EnvironmentInjector);
       runInInjectionContext(injector, () => {});
-      expect(() => inject(TOKEN, InjectFlags.Optional)).toThrow();
+      expect(() => inject(TOKEN, {optional: true})).toThrow();
     });
 
     it('should properly clean up after the function throws', () => {
@@ -4354,7 +4326,7 @@ describe('di', () => {
           throw new Error('crashes!');
         }),
       ).toThrow();
-      expect(() => inject(TOKEN, InjectFlags.Optional)).toThrow();
+      expect(() => inject(TOKEN, {optional: true})).toThrow();
     });
 
     it('should set the correct inject implementation', () => {
@@ -4364,7 +4336,6 @@ describe('di', () => {
       });
 
       @Component({
-        standalone: true,
         template: '',
         providers: [{provide: TOKEN, useValue: 'from component'}],
       })
@@ -4377,7 +4348,7 @@ describe('di', () => {
         // Attempt to inject ViewContainerRef within the environment injector's context. This should
         // not be available, so the result should be `null`.
         vcrFromEnvContext = runInInjectionContext(this.envInjector, () =>
-          inject(ViewContainerRef, InjectFlags.Optional),
+          inject(ViewContainerRef, {optional: true}),
         );
       }
 
@@ -4389,7 +4360,6 @@ describe('di', () => {
 
     it('should support node injectors', () => {
       @Component({
-        standalone: true,
         template: '',
       })
       class TestCmp {
@@ -4905,13 +4875,12 @@ describe('di', () => {
 
   describe('HostAttributeToken', () => {
     it('should inject an attribute on an element node', () => {
-      @Directive({selector: '[dir]', standalone: true})
+      @Directive({selector: '[dir]'})
       class Dir {
         value = inject(new HostAttributeToken('some-attr'));
       }
 
       @Component({
-        standalone: true,
         template: '<div dir some-attr="foo" other="ignore"></div>',
         imports: [Dir],
       })
@@ -4925,13 +4894,12 @@ describe('di', () => {
     });
 
     it('should inject an attribute on <ng-template>', () => {
-      @Directive({selector: '[dir]', standalone: true})
+      @Directive({selector: '[dir]'})
       class Dir {
         value = inject(new HostAttributeToken('some-attr'));
       }
 
       @Component({
-        standalone: true,
         template: '<ng-template dir some-attr="foo" other="ignore"></ng-template>',
         imports: [Dir],
       })
@@ -4945,13 +4913,12 @@ describe('di', () => {
     });
 
     it('should inject an attribute on <ng-container>', () => {
-      @Directive({selector: '[dir]', standalone: true})
+      @Directive({selector: '[dir]'})
       class Dir {
         value = inject(new HostAttributeToken('some-attr'));
       }
 
       @Component({
-        standalone: true,
         template: '<ng-container dir some-attr="foo" other="ignore"></ng-container>',
         imports: [Dir],
       })
@@ -4965,7 +4932,7 @@ describe('di', () => {
     });
 
     it('should be able to inject different kinds of attributes', () => {
-      @Directive({selector: '[dir]', standalone: true})
+      @Directive({selector: '[dir]'})
       class Dir {
         className = inject(new HostAttributeToken('class'));
         inlineStyles = inject(new HostAttributeToken('style'));
@@ -4973,7 +4940,6 @@ describe('di', () => {
       }
 
       @Component({
-        standalone: true,
         template: `
           <div
             dir
@@ -4999,13 +4965,12 @@ describe('di', () => {
     });
 
     it('should throw a DI error when injecting a non-existent attribute', () => {
-      @Directive({selector: '[dir]', standalone: true})
+      @Directive({selector: '[dir]'})
       class Dir {
         value = inject(new HostAttributeToken('some-attr'));
       }
 
       @Component({
-        standalone: true,
         template: '<div dir other="ignore"></div>',
         imports: [Dir],
       })
@@ -5019,13 +4984,12 @@ describe('di', () => {
     });
 
     it('should not throw a DI error when injecting a non-existent attribute with optional: true', () => {
-      @Directive({selector: '[dir]', standalone: true})
+      @Directive({selector: '[dir]'})
       class Dir {
         value = inject(new HostAttributeToken('some-attr'), {optional: true});
       }
 
       @Component({
-        standalone: true,
         template: '<div dir other="ignore"></div>',
         imports: [Dir],
       })
@@ -5039,7 +5003,7 @@ describe('di', () => {
     });
 
     it('should not inject attributes with namespace', () => {
-      @Directive({selector: '[dir]', standalone: true})
+      @Directive({selector: '[dir]'})
       class Dir {
         value = inject(new HostAttributeToken('some-attr'), {optional: true});
         namespaceExists = inject(new HostAttributeToken('svg:exist'), {optional: true});
@@ -5047,7 +5011,6 @@ describe('di', () => {
       }
 
       @Component({
-        standalone: true,
         template: `
           <div dir some-attr="foo" svg:exists="testExistValue" other="otherValue"></div>
         `,
@@ -5067,7 +5030,7 @@ describe('di', () => {
     });
 
     it('should not inject attributes representing bindings and outputs', () => {
-      @Directive({selector: '[dir]', standalone: true})
+      @Directive({selector: '[dir]'})
       class Dir {
         @Input() binding!: string;
         @Output() output = new EventEmitter();
@@ -5079,7 +5042,6 @@ describe('di', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [Dir],
         template: `
           <div
@@ -5107,13 +5069,12 @@ describe('di', () => {
     });
 
     it('should not inject data-bound attributes', () => {
-      @Directive({selector: '[dir]', standalone: true})
+      @Directive({selector: '[dir]'})
       class Dir {
         value = inject(new HostAttributeToken('title'), {optional: true});
       }
 
       @Component({
-        standalone: true,
         template: '<div dir title="foo {{value}}" other="ignore"></div>',
         imports: [Dir],
       })
@@ -5132,13 +5093,12 @@ describe('di', () => {
     it('should inject an attribute using @Inject', () => {
       const TOKEN = new HostAttributeToken('some-attr');
 
-      @Directive({selector: '[dir]', standalone: true})
+      @Directive({selector: '[dir]'})
       class Dir {
         constructor(@Inject(TOKEN) readonly value: string) {}
       }
 
       @Component({
-        standalone: true,
         template: '<div dir some-attr="foo" other="ignore"></div>',
         imports: [Dir],
       })
@@ -5154,13 +5114,12 @@ describe('di', () => {
     it('should throw when injecting a non-existent attribute using @Inject', () => {
       const TOKEN = new HostAttributeToken('some-attr');
 
-      @Directive({selector: '[dir]', standalone: true})
+      @Directive({selector: '[dir]'})
       class Dir {
         constructor(@Inject(TOKEN) readonly value: string) {}
       }
 
       @Component({
-        standalone: true,
         template: '<div dir other="ignore"></div>',
         imports: [Dir],
       })
@@ -5176,13 +5135,12 @@ describe('di', () => {
     it('should not throw when injecting a non-existent attribute using @Inject @Optional', () => {
       const TOKEN = new HostAttributeToken('some-attr');
 
-      @Directive({selector: '[dir]', standalone: true})
+      @Directive({selector: '[dir]'})
       class Dir {
         constructor(@Inject(TOKEN) @Optional() readonly value: string | null) {}
       }
 
       @Component({
-        standalone: true,
         template: '<div dir other="ignore"></div>',
         imports: [Dir],
       })
@@ -5198,13 +5156,12 @@ describe('di', () => {
 
   describe('HOST_TAG_NAME', () => {
     it('should inject the tag name on an element node', () => {
-      @Directive({selector: '[dir]', standalone: true})
+      @Directive({selector: '[dir]'})
       class Dir {
         value = inject(HOST_TAG_NAME);
       }
 
       @Component({
-        standalone: true,
         template: `
           <div dir #v1></div>
           <span dir #v2></span>
@@ -5232,13 +5189,12 @@ describe('di', () => {
     });
 
     it('should throw a DI error when injecting into non-DOM nodes', () => {
-      @Directive({selector: '[dir]', standalone: true})
+      @Directive({selector: '[dir]'})
       class Dir {
         value = inject(HOST_TAG_NAME);
       }
 
       @Component({
-        standalone: true,
         template: '<ng-container dir></ng-container>',
         imports: [Dir],
       })
@@ -5247,7 +5203,6 @@ describe('di', () => {
       }
 
       @Component({
-        standalone: true,
         template: '<ng-template dir></ng-template>',
         imports: [Dir],
       })
@@ -5265,13 +5220,12 @@ describe('di', () => {
     });
 
     it('should not throw a DI error when injecting into non-DOM nodes with optional: true', () => {
-      @Directive({selector: '[dir]', standalone: true})
+      @Directive({selector: '[dir]'})
       class Dir {
         value = inject(HOST_TAG_NAME, {optional: true});
       }
 
       @Component({
-        standalone: true,
         template: '<ng-container dir></ng-container>',
         imports: [Dir],
       })
@@ -6528,5 +6482,27 @@ describe('di', () => {
     ]);
 
     expect(injector.get(token)).toBe('module');
+  });
+
+  it('should be able to destroy programmatically created injectors', () => {
+    @Injectable()
+    class Service {
+      ngOnDestroy() {}
+    }
+
+    const parentInjector = Injector.create({
+      providers: [Service],
+      parent: TestBed.inject(Injector),
+    });
+
+    const childInjector = Injector.create({providers: [Service], parent: parentInjector});
+
+    const instance = childInjector.get(Service);
+    const destroySpy = spyOn(instance, 'ngOnDestroy');
+
+    parentInjector.get(DestroyRef).onDestroy(() => childInjector.destroy());
+    parentInjector.destroy();
+
+    expect(destroySpy).toHaveBeenCalled();
   });
 });

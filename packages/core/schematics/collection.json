@@ -51,6 +51,12 @@
       "description": "Removes unused imports from standalone components.",
       "factory": "./bundles/cleanup-unused-imports#migrate",
       "schema": "./ng-generate/cleanup-unused-imports/schema.json"
+    },
+    "self-closing-tags-migration": {
+      "description": "Updates the components templates to use self-closing tags where possible",
+      "factory": "./bundles/self-closing-tags-migration#migrate",
+      "schema": "./ng-generate/self-closing-tags-migration/schema.json",
+      "aliases": ["self-closing-tag"]
     }
   }
 }

@@ -89,11 +89,14 @@ export interface LegacyNgcOptions {
 }
 
 /**
- * Options related to template type-checking and its strictness.
+ * Options related to Angular-specific type-checking and its strictness.
  *
  * @publicApi
  */
-export interface StrictTemplateOptions {
+export interface TypeCheckingOptions {
+  /** Whether type checking of host bindings is enabled. */
+  typeCheckHostBindings?: boolean;
+
   /**
    * If `true`, implies all template strictness flags below (unless individually disabled).
    *

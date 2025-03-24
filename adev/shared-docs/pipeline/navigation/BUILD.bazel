@@ -16,7 +16,7 @@ ts_library(
         "//adev/shared-docs/interfaces",
         "@npm//@types/node",
         "@npm//@webcontainer/api",
-        "@npm//fast-glob",
+        "@npm//tinyglobby",
     ],
 )
 

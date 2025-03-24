@@ -91,6 +91,10 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
     this.recordAst(ast);
     super.visitTypeofExpression(ast, null);
   }
+  override visitVoidExpression(ast: e.VoidExpression) {
+    this.recordAst(ast);
+    super.visitVoidExpression(ast, null);
+  }
   override visitPropertyRead(ast: e.PropertyRead) {
     this.recordAst(ast);
     super.visitPropertyRead(ast, null);
@@ -122,6 +126,14 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
   override visitTemplateLiteralElement(ast: e.TemplateLiteralElement, context: any): void {
     this.recordAst(ast);
     super.visitTemplateLiteralElement(ast, null);
+  }
+  override visitTaggedTemplateLiteral(ast: e.TaggedTemplateLiteral, context: any): void {
+    this.recordAst(ast);
+    super.visitTaggedTemplateLiteral(ast, null);
+  }
+  override visitParenthesizedExpression(ast: e.ParenthesizedExpression, context: any): void {
+    this.recordAst(ast);
+    super.visitParenthesizedExpression(ast, null);
   }
 
   visitTemplate(ast: t.Template) {

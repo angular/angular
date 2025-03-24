@@ -1,5 +1,5 @@
-load("//devtools/tools:ng_module.bzl", "ng_module")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//devtools/tools:ng_module.bzl", "ng_module")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -17,6 +17,7 @@ _STYLE_LABELS = [
     sass_binary(
         name = label,
         src = src,
+        deps = ["//devtools/projects/ng-devtools/src/styles:theme"],
     )
     for label, src in zip(_STYLE_LABELS, _STYLE_SRCS)
 ]

@@ -22,7 +22,7 @@ import {
   TemplateLocationDetails,
 } from './references_and_rename_utils';
 import {collectMemberMethods, findTightestNode} from './utils/ts_utils';
-import {getTemplateInfoAtPosition, TemplateInfo} from './utils';
+import {getTypeCheckInfoAtPosition, TypeCheckInfo} from './utils';
 
 export class ReferencesBuilder {
   private readonly ttc: TemplateTypeChecker;
@@ -36,18 +36,18 @@ export class ReferencesBuilder {
 
   getReferencesAtPosition(filePath: string, position: number): ts.ReferenceEntry[] | undefined {
     this.ttc.generateAllTypeCheckBlocks();
-    const templateInfo = getTemplateInfoAtPosition(filePath, position, this.compiler);
-    if (templateInfo === undefined) {
+    const typeCheckInfo = getTypeCheckInfoAtPosition(filePath, position, this.compiler);
+    if (typeCheckInfo === undefined) {
       return this.getReferencesAtTypescriptPosition(filePath, position);
     }
-    return this.getReferencesAtTemplatePosition(templateInfo, position);
+    return this.getReferencesAtTemplatePosition(typeCheckInfo, position);
   }
 
   private getReferencesAtTemplatePosition(
-    templateInfo: TemplateInfo,
+    typeCheckInfo: TypeCheckInfo,
     position: number,
   ): ts.ReferenceEntry[] | undefined {
-    const allTargetDetails = getTargetDetailsAtTemplatePosition(templateInfo, position, this.ttc);
+    const allTargetDetails = getTargetDetailsAtTemplatePosition(typeCheckInfo, position, this.ttc);
     if (allTargetDetails === null) {
       return undefined;
     }
@@ -177,10 +177,10 @@ export class RenameBuilder {
     position: number,
   ): Omit<ts.RenameInfoSuccess, 'kind' | 'kindModifiers'> | ts.RenameInfoFailure {
     return this.compiler.perfRecorder.inPhase(PerfPhase.LsReferencesAndRenames, () => {
-      const templateInfo = getTemplateInfoAtPosition(filePath, position, this.compiler);
+      const typeCheckInfo = getTypeCheckInfoAtPosition(filePath, position, this.compiler);
       // We could not get a template at position so we assume the request came from outside the
       // template.
-      if (templateInfo === undefined) {
+      if (typeCheckInfo === undefined) {
         const renameRequest = this.buildRenameRequestAtTypescriptPosition(filePath, position);
         if (renameRequest === null) {
           return {
@@ -206,7 +206,11 @@ export class RenameBuilder {
         }
       }
 
-      const allTargetDetails = getTargetDetailsAtTemplatePosition(templateInfo, position, this.ttc);
+      const allTargetDetails = getTargetDetailsAtTemplatePosition(
+        typeCheckInfo,
+        position,
+        this.ttc,
+      );
       if (allTargetDetails === null) {
         return {
           canRename: false,
@@ -231,25 +235,25 @@ export class RenameBuilder {
   findRenameLocations(filePath: string, position: number): readonly ts.RenameLocation[] | null {
     this.ttc.generateAllTypeCheckBlocks();
     return this.compiler.perfRecorder.inPhase(PerfPhase.LsReferencesAndRenames, () => {
-      const templateInfo = getTemplateInfoAtPosition(filePath, position, this.compiler);
+      const typeCheckInfo = getTypeCheckInfoAtPosition(filePath, position, this.compiler);
       // We could not get a template at position so we assume the request came from outside the
       // template.
-      if (templateInfo === undefined) {
+      if (typeCheckInfo === undefined) {
         const renameRequest = this.buildRenameRequestAtTypescriptPosition(filePath, position);
         if (renameRequest === null) {
           return null;
         }
         return this.findRenameLocationsAtTypescriptPosition(renameRequest);
       }
-      return this.findRenameLocationsAtTemplatePosition(templateInfo, position);
+      return this.findRenameLocationsAtTemplatePosition(typeCheckInfo, position);
     });
   }
 
   private findRenameLocationsAtTemplatePosition(
-    templateInfo: TemplateInfo,
+    typeCheckInfo: TypeCheckInfo,
     position: number,
   ): readonly ts.RenameLocation[] | null {
-    const allTargetDetails = getTargetDetailsAtTemplatePosition(templateInfo, position, this.ttc);
+    const allTargetDetails = getTargetDetailsAtTemplatePosition(typeCheckInfo, position, this.ttc);
     if (allTargetDetails === null) {
       return null;
     }

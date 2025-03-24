@@ -13,15 +13,17 @@ import type {ɵGlobalDevModeUtils as GlobalDevModeUtils} from '@angular/core';
  *
  * @returns window.ng
  */
-export const ngDebugClient = () => (window as any as GlobalDevModeUtils).ng;
+export const ngDebugClient = () => (window as any).ng as Partial<GlobalDevModeUtils['ng']>;
 
 /**
- * Checks whether a given debug API is supported within window.ng
+ * Type guard that checks whether a given debug API is supported within window.ng
  *
- * @returns boolean
+ * @returns whether the ng object includes the given debug API
  */
-export function ngDebugApiIsSupported(api: keyof GlobalDevModeUtils['ng']): boolean {
-  const ng = ngDebugClient();
+export function ngDebugApiIsSupported<
+  T extends Partial<GlobalDevModeUtils['ng']>,
+  K extends keyof T,
+>(ng: T, api: K): ng is T & Record<K, NonNullable<T[K]>> {
   return typeof ng[api] === 'function';
 }
 
@@ -31,16 +33,20 @@ export function ngDebugApiIsSupported(api: keyof GlobalDevModeUtils['ng']): bool
  * @returns boolean
  */
 export function ngDebugDependencyInjectionApiIsSupported(): boolean {
-  if (!ngDebugApiIsSupported('ɵgetInjectorResolutionPath')) {
+  const ng = ngDebugClient();
+  if (!ngDebugApiIsSupported(ng, 'getInjector')) {
     return false;
   }
-  if (!ngDebugApiIsSupported('ɵgetDependenciesFromInjectable')) {
+  if (!ngDebugApiIsSupported(ng, 'ɵgetInjectorResolutionPath')) {
     return false;
   }
-  if (!ngDebugApiIsSupported('ɵgetInjectorProviders')) {
+  if (!ngDebugApiIsSupported(ng, 'ɵgetDependenciesFromInjectable')) {
     return false;
   }
-  if (!ngDebugApiIsSupported('ɵgetInjectorMetadata')) {
+  if (!ngDebugApiIsSupported(ng, 'ɵgetInjectorProviders')) {
+    return false;
+  }
+  if (!ngDebugApiIsSupported(ng, 'ɵgetInjectorMetadata')) {
     return false;
   }
 

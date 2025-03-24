@@ -17,6 +17,7 @@ import {
   SafePropertyRead,
   TemplateEntity,
   TmplAstElement,
+  TmplAstHostElement,
   TmplAstNode,
   TmplAstTemplate,
   TmplAstTextAttribute,
@@ -50,7 +51,7 @@ import {isShim} from '../../shims';
 import {getSourceFileOrNull, isSymbolWithValueDeclaration} from '../../util/src/typescript';
 import {
   ElementSymbol,
-  FullTemplateMapping,
+  FullSourceMapping,
   GlobalCompletion,
   NgTemplateDiagnostic,
   OptimizeFor,
@@ -63,7 +64,6 @@ import {
   Symbol,
   TcbLocation,
   TemplateDiagnostic,
-  TemplateId,
   TemplateSymbol,
   TemplateTypeChecker,
   TypeCheckableDirectiveMeta,
@@ -75,14 +75,14 @@ import {CompletionEngine} from './completion';
 import {
   InliningMode,
   ShimTypeCheckingData,
-  TemplateData,
+  TypeCheckData,
   TypeCheckContextImpl,
   TypeCheckingHost,
 } from './context';
 import {shouldReportDiagnostic, translateDiagnostic} from './diagnostics';
 import {TypeCheckShimGenerator} from './shim';
-import {TemplateSourceManager} from './source';
-import {findTypeCheckBlock, getTemplateMapping, TemplateSourceResolver} from './tcb_util';
+import {DirectiveSourceManager} from './source';
+import {findTypeCheckBlock, getSourceMapping, TypeCheckSourceResolver} from './tcb_util';
 import {SymbolBuilder} from './template_symbol_builder';
 
 const REGISTRY = new DomElementSchemaRegistry();
@@ -151,25 +151,30 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
   getTemplate(component: ts.ClassDeclaration, optimizeFor?: OptimizeFor): TmplAstNode[] | null {
     const {data} = this.getLatestComponentState(component, optimizeFor);
-    if (data === null) {
-      return null;
-    }
-    return data.template;
+    return data?.template ?? null;
+  }
+
+  getHostElement(
+    directive: ts.ClassDeclaration,
+    optimizeFor?: OptimizeFor,
+  ): TmplAstHostElement | null {
+    const {data} = this.getLatestComponentState(directive, optimizeFor);
+    return data?.hostElement ?? null;
   }
 
   getUsedDirectives(component: ts.ClassDeclaration): TypeCheckableDirectiveMeta[] | null {
-    return this.getLatestComponentState(component).data?.boundTarget.getUsedDirectives() || null;
+    return this.getLatestComponentState(component).data?.boundTarget.getUsedDirectives() ?? null;
   }
 
   getUsedPipes(component: ts.ClassDeclaration): string[] | null {
-    return this.getLatestComponentState(component).data?.boundTarget.getUsedPipes() || null;
+    return this.getLatestComponentState(component).data?.boundTarget.getUsedPipes() ?? null;
   }
 
   private getLatestComponentState(
     component: ts.ClassDeclaration,
     optimizeFor: OptimizeFor = OptimizeFor.SingleFile,
   ): {
-    data: TemplateData | null;
+    data: TypeCheckData | null;
     tcb: ts.Node | null;
     tcbPath: AbsoluteFsPath;
     tcbIsShim: boolean;
@@ -193,9 +198,8 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       return {data: null, tcb: null, tcbPath: shimPath, tcbIsShim: true};
     }
 
-    const templateId = fileRecord.sourceManager.getTemplateId(component);
+    const id = fileRecord.sourceManager.getTypeCheckId(component);
     const shimRecord = fileRecord.shimData.get(shimPath)!;
-    const id = fileRecord.sourceManager.getTemplateId(component);
 
     const program = this.programDriver.getProgram();
     const shimSf = getSourceFileOrNull(program, shimPath);
@@ -217,9 +221,9 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       }
     }
 
-    let data: TemplateData | null = null;
-    if (shimRecord.templates.has(templateId)) {
-      data = shimRecord.templates.get(templateId)!;
+    let data: TypeCheckData | null = null;
+    if (shimRecord.data.has(id)) {
+      data = shimRecord.data.get(id)!;
     }
 
     return {data, tcb, tcbPath, tcbIsShim: tcbPath === shimPath};
@@ -264,7 +268,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return null;
   }
 
-  getTemplateMappingAtTcbLocation(tcbLocation: TcbLocation): FullTemplateMapping | null {
+  getSourceMappingAtTcbLocation(tcbLocation: TcbLocation): FullSourceMapping | null {
     const fileRecord = this.getFileRecordForTcbLocation(tcbLocation);
     if (fileRecord === null) {
       return null;
@@ -274,7 +278,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     if (shimSf === undefined) {
       return null;
     }
-    return getTemplateMapping(
+    return getSourceMapping(
       shimSf,
       tcbLocation.positionInFile,
       fileRecord.sourceManager,
@@ -325,8 +329,8 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
         );
         diagnostics.push(...shimRecord.genesisDiagnostics);
 
-        for (const templateData of shimRecord.templates.values()) {
-          diagnostics.push(...templateData.templateDiagnostics);
+        for (const templateData of shimRecord.data.values()) {
+          diagnostics.push(...templateData.templateParsingDiagnostics);
         }
       }
 
@@ -350,7 +354,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
         return [];
       }
 
-      const templateId = fileRecord.sourceManager.getTemplateId(component);
+      const id = fileRecord.sourceManager.getTypeCheckId(component);
       const shimRecord = fileRecord.shimData.get(shimPath)!;
 
       const typeCheckProgram = this.programDriver.getProgram();
@@ -373,13 +377,13 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       );
       diagnostics.push(...shimRecord.genesisDiagnostics);
 
-      for (const templateData of shimRecord.templates.values()) {
-        diagnostics.push(...templateData.templateDiagnostics);
+      for (const templateData of shimRecord.data.values()) {
+        diagnostics.push(...templateData.templateParsingDiagnostics);
       }
 
       return diagnostics.filter(
         (diag: TemplateDiagnostic | null): diag is TemplateDiagnostic =>
-          diag !== null && diag.templateId === templateId,
+          diag !== null && diag.typeCheckId === id,
       );
     });
   }
@@ -438,7 +442,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     const sfPath = absoluteFromSourceFile(sf);
     const shimPath = TypeCheckShimGenerator.shimFor(sfPath);
     const fileData = this.getFileData(sfPath);
-    const templateId = fileData.sourceManager.getTemplateId(clazz);
+    const id = fileData.sourceManager.getTypeCheckId(clazz);
 
     fileData.shimData.delete(shimPath);
     fileData.isComplete = false;
@@ -448,7 +452,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
   getExpressionTarget(expression: AST, clazz: ts.ClassDeclaration): TemplateEntity | null {
     return (
-      this.getLatestComponentState(clazz).data?.boundTarget.getExpressionTarget(expression) || null
+      this.getLatestComponentState(clazz).data?.boundTarget.getExpressionTarget(expression) ?? null
     );
   }
 
@@ -467,12 +471,12 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   ): NgTemplateDiagnostic<T> {
     const sfPath = absoluteFromSourceFile(clazz.getSourceFile());
     const fileRecord = this.state.get(sfPath)!;
-    const templateId = fileRecord.sourceManager.getTemplateId(clazz);
-    const mapping = fileRecord.sourceManager.getSourceMapping(templateId);
+    const id = fileRecord.sourceManager.getTypeCheckId(clazz);
+    const mapping = fileRecord.sourceManager.getTemplateSourceMapping(id);
 
     return {
       ...makeTemplateDiagnostic(
-        templateId,
+        id,
         mapping,
         sourceSpan,
         category,
@@ -650,7 +654,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     if (!this.state.has(path)) {
       this.state.set(path, {
         hasInlines: false,
-        sourceManager: new TemplateSourceManager(),
+        sourceManager: new DirectiveSourceManager(),
         isComplete: false,
         shimData: new Map(),
       });
@@ -1012,7 +1016,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
 function convertDiagnostic(
   diag: ts.Diagnostic,
-  sourceResolver: TemplateSourceResolver,
+  sourceResolver: TypeCheckSourceResolver,
 ): TemplateDiagnostic | null {
   if (!shouldReportDiagnostic(diag)) {
     return null;
@@ -1032,10 +1036,10 @@ export interface FileTypeCheckingData {
   hasInlines: boolean;
 
   /**
-   * Source mapping information for mapping diagnostics from inlined type check blocks back to the
-   * original template.
+   * Information for mapping diagnostics from inlined type check blocks
+   * back to their original sources.
    */
-  sourceManager: TemplateSourceManager;
+  sourceManager: DirectiveSourceManager;
 
   /**
    * Data for each shim generated from this input file.
@@ -1058,11 +1062,11 @@ export interface FileTypeCheckingData {
 class WholeProgramTypeCheckingHost implements TypeCheckingHost {
   constructor(private impl: TemplateTypeCheckerImpl) {}
 
-  getSourceManager(sfPath: AbsoluteFsPath): TemplateSourceManager {
+  getSourceManager(sfPath: AbsoluteFsPath): DirectiveSourceManager {
     return this.impl.getFileData(sfPath).sourceManager;
   }
 
-  shouldCheckComponent(node: ts.ClassDeclaration): boolean {
+  shouldCheckClass(node: ts.ClassDeclaration): boolean {
     const sfPath = absoluteFromSourceFile(node.getSourceFile());
     const shimPath = TypeCheckShimGenerator.shimFor(sfPath);
     const fileData = this.impl.getFileData(sfPath);
@@ -1101,12 +1105,12 @@ class SingleFileTypeCheckingHost implements TypeCheckingHost {
     }
   }
 
-  getSourceManager(sfPath: AbsoluteFsPath): TemplateSourceManager {
+  getSourceManager(sfPath: AbsoluteFsPath): DirectiveSourceManager {
     this.assertPath(sfPath);
     return this.fileData.sourceManager;
   }
 
-  shouldCheckComponent(node: ts.ClassDeclaration): boolean {
+  shouldCheckClass(node: ts.ClassDeclaration): boolean {
     if (this.sfPath !== absoluteFromSourceFile(node.getSourceFile())) {
       return false;
     }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ComponentType, DevToolsNode} from 'protocol';
+import {DevToolsNode, SerializedInjector} from 'protocol';
 import {
   InjectorTreeD3Node,
   InjectorTreeNode,
@@ -75,19 +75,19 @@ describe('generateEdgeIdsFromNodeIds', () => {
 
 describe('equalInjector', () => {
   it('should be able to compare injectors', () => {
-    const injector1 = {
+    const injector1: SerializedInjector = {
       id: '1',
       name: 'A',
       type: 'environment',
     };
 
-    const injector2 = {
+    const injector2: SerializedInjector = {
       id: '1',
       name: 'B',
       type: 'environment',
     };
 
-    const injector3 = {
+    const injector3: SerializedInjector = {
       id: '2',
       name: 'C',
       type: 'environment',

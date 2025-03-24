@@ -21,6 +21,7 @@ _STYLE_LABELS = [
     sass_binary(
         name = label,
         src = src,
+        deps = ["//devtools/projects/ng-devtools/src/styles:theme"],
     )
     for label, src in zip(_STYLE_LABELS, _STYLE_SRCS)
 ]
@@ -45,7 +46,7 @@ ng_module(
         "execution-details.component.html",
     ] + _STYLE_LABELS,
     deps = [
-        "//devtools/projects/ng-devtools/src/lib:theme",
+        "//devtools/projects/ng-devtools/src/lib/application-services:theme",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/bargraph-formatter",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/flamegraph-formatter",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/tree-map-formatter",

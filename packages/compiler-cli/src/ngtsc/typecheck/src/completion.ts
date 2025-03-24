@@ -10,7 +10,6 @@ import {
   AST,
   EmptyExpr,
   ImplicitReceiver,
-  LetDeclaration,
   LiteralPrimitive,
   PropertyRead,
   PropertyWrite,
@@ -34,7 +33,7 @@ import {
 } from '../api';
 
 import {ExpressionIdentifier, findFirstMatchingNode} from './comments';
-import {TemplateData} from './context';
+import {TypeCheckData} from './context';
 
 /**
  * Powers autocompletion for a specific component.
@@ -61,7 +60,7 @@ export class CompletionEngine {
 
   constructor(
     private tcb: ts.Node,
-    private data: TemplateData,
+    private data: TypeCheckData,
     private tcbPath: AbsoluteFsPath,
     private tcbIsShim: boolean,
   ) {

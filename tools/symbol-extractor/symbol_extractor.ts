@@ -44,7 +44,9 @@ export class SymbolExtractor {
           // by omitting the initializer completely. We capture such declarations as well.
           // https://github.com/terser/terser/blob/86ea74d5c12ae51b64468/CHANGELOG.md#v540.
           if (fnRecurseDepth !== 0) {
-            symbols.push(stripSuffix(varDecl.name.getText()));
+            if (!isEsmInitFunction(varDecl)) {
+              symbols.push(stripSuffix(varDecl.name.getText()));
+            }
           }
           break;
         case ts.SyntaxKind.FunctionDeclaration:
@@ -119,4 +121,27 @@ export class SymbolExtractor {
 function stripSuffix(text: string): string {
   const index = text.lastIndexOf('$');
   return index > -1 ? text.substring(0, index) : text;
+}
+
+/**
+ * This function detects a specific pattern that represents ESM modules
+ * in the generated code. Those symbols are not really needed for the purposes
+ * of symbol checking, since they only represent a module graph and all
+ * nested symbols are being captured by the logic already. The pattern that
+ * this function detects looks like this:
+ * ```
+ * var init_testability = __esm({
+ *   "packages/core/src/testability/testability.mjs"() {
+ *     // ...
+ *   }
+ * });
+ * ```
+ */
+function isEsmInitFunction(varDecl: ts.VariableDeclaration) {
+  return (
+    varDecl.name.getText().startsWith('init_') &&
+    varDecl.initializer &&
+    ts.isCallExpression(varDecl.initializer) &&
+    (varDecl.initializer.expression as ts.Identifier).escapedText === '___esm'
+  );
 }

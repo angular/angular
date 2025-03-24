@@ -19,15 +19,3 @@ export const normalizePath = (path: string): string => {
   }
   return path;
 };
-
-export const normalizeTabUrl = (tabName: string): string => {
-  return tabName
-    .toLowerCase()
-    .replace(/<code>(.*?)<\/code>/g, '$1') // remove <code>
-    .replace(/<strong>(.*?)<\/strong>/g, '$1') // remove <strong>
-    .replace(/<em>(.*?)<\/em>/g, '$1') // remove <em>
-    .replace(/\s|\//g, '-') // remove spaces and slashes
-    .replace(/gt;|lt;/g, '') // remove escaped < and >
-    .replace(/&#\d+;/g, '') // remove HTML entities
-    .replace(/[^0-9a-zA-Z\-]/g, ''); // only keep letters, digits & dashes
-};

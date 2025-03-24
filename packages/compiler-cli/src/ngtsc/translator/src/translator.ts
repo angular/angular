@@ -43,6 +43,7 @@ const BINARY_OPERATORS = new Map<o.BinaryOperator, BinaryOperator>([
   [o.BinaryOperator.Or, '||'],
   [o.BinaryOperator.Plus, '+'],
   [o.BinaryOperator.NullishCoalesce, '??'],
+  [o.BinaryOperator.Exponentiation, '**'],
 ]);
 
 export type RecordWrappedNodeFn<TExpression> = (node: o.WrappedNodeExpr<TExpression>) => void;
@@ -321,36 +322,8 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
   }
 
   visitConditionalExpr(ast: o.ConditionalExpr, context: Context): TExpression {
-    let cond: TExpression = ast.condition.visitExpression(this, context);
-
-    // Ordinarily the ternary operator is right-associative. The following are equivalent:
-    //   `a ? b : c ? d : e` => `a ? b : (c ? d : e)`
-    //
-    // However, occasionally Angular needs to produce a left-associative conditional, such as in
-    // the case of a null-safe navigation production: `{{a?.b ? c : d}}`. This template produces
-    // a ternary of the form:
-    //   `a == null ? null : rest of expression`
-    // If the rest of the expression is also a ternary though, this would produce the form:
-    //   `a == null ? null : a.b ? c : d`
-    // which, if left as right-associative, would be incorrectly associated as:
-    //   `a == null ? null : (a.b ? c : d)`
-    //
-    // In such cases, the left-associativity needs to be enforced with parentheses:
-    //   `(a == null ? null : a.b) ? c : d`
-    //
-    // Such parentheses could always be included in the condition (guaranteeing correct behavior) in
-    // all cases, but this has a code size cost. Instead, parentheses are added only when a
-    // conditional expression is directly used as the condition of another.
-    //
-    // TODO(alxhub): investigate better logic for precendence of conditional operators
-    if (ast.condition instanceof o.ConditionalExpr) {
-      // The condition of this ternary needs to be wrapped in parentheses to maintain
-      // left-associativity.
-      cond = this.factory.createParenthesizedExpression(cond);
-    }
-
     return this.factory.createConditional(
-      cond,
+      ast.condition.visitExpression(this, context),
       ast.trueCase.visitExpression(this, context),
       ast.falseCase!.visitExpression(this, context),
     );
@@ -447,6 +420,10 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
     return this.factory.createTypeOfExpression(ast.expr.visitExpression(this, context));
   }
 
+  visitVoidExpr(ast: o.VoidExpr, context: Context): TExpression {
+    return this.factory.createVoidExpression(ast.expr.visitExpression(this, context));
+  }
+
   visitUnaryOperatorExpr(ast: o.UnaryOperatorExpr, context: Context): TExpression {
     if (!UNARY_OPERATORS.has(ast.operator)) {
       throw new Error(`Unknown unary operator: ${o.UnaryOperator[ast.operator]}`);
@@ -455,6 +432,11 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
       UNARY_OPERATORS.get(ast.operator)!,
       ast.expr.visitExpression(this, context),
     );
+  }
+
+  visitParenthesizedExpr(ast: o.ParenthesizedExpr, context: any) {
+    const result = ast.expr.visitExpression(this, context);
+    return this.factory.createParenthesizedExpression(result);
   }
 
   private visitStatements(statements: o.Statement[], context: Context): TStatement[] {

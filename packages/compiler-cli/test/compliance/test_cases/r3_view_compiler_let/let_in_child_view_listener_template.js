@@ -31,7 +31,7 @@ function MyApp_ng_template_1_Conditional_1_Case_1_Template(rf, ctx) {
 function MyApp_ng_template_1_Conditional_1_Template(rf, ctx) {
   if (rf & 1) {
     $r3$.ɵɵdeclareLet(0);
-    $r3$.ɵɵtemplate(1, MyApp_ng_template_1_Conditional_1_Case_1_Template, 2, 1, "button");
+    $r3$.ɵɵconditionalCreate(1, MyApp_ng_template_1_Conditional_1_Case_1_Template, 2, 1, "button");
   }
   if (rf & 2) {
     let $tmp_5_0$;
@@ -48,7 +48,7 @@ function MyApp_ng_template_1_Conditional_1_Template(rf, ctx) {
 function MyApp_ng_template_1_Template(rf, ctx) {
   if (rf & 1) {
     $r3$.ɵɵdeclareLet(0);
-    $r3$.ɵɵtemplate(1, MyApp_ng_template_1_Conditional_1_Template, 2, 2);
+    $r3$.ɵɵconditionalCreate(1, MyApp_ng_template_1_Conditional_1_Template, 2, 2);
   }
   if (rf & 2) {
     $r3$.ɵɵnextContext();

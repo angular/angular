@@ -183,7 +183,7 @@ export function _document(): any {
   return document;
 }
 
-export const INTERNAL_BROWSER_PLATFORM_PROVIDERS: StaticProvider[] = [
+const INTERNAL_BROWSER_PLATFORM_PROVIDERS: StaticProvider[] = [
   {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
   {provide: PLATFORM_INITIALIZER, useValue: initDomAdapter, multi: true},
   {provide: DOCUMENT, useFactory: _document, deps: []},

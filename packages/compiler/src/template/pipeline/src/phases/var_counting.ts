@@ -83,7 +83,12 @@ export function countVariables(job: CompilationJob): void {
     // an embedded view).
     for (const unit of job.units) {
       for (const op of unit.create) {
-        if (op.kind !== ir.OpKind.Template && op.kind !== ir.OpKind.RepeaterCreate) {
+        if (
+          op.kind !== ir.OpKind.Template &&
+          op.kind !== ir.OpKind.RepeaterCreate &&
+          op.kind !== ir.OpKind.ConditionalCreate &&
+          op.kind !== ir.OpKind.ConditionalBranchCreate
+        ) {
           continue;
         }
 

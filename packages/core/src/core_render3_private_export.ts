@@ -86,6 +86,8 @@ export {
   ɵɵclassProp,
   ɵɵComponentDeclaration,
   ɵɵconditional,
+  ɵɵconditionalCreate,
+  ɵɵconditionalBranchCreate,
   ɵɵcontentQuery,
   ɵɵcontentQuerySignal,
   ɵɵcomponentInstance,
@@ -116,7 +118,6 @@ export {
   ɵɵi18nPostprocess,
   ɵɵi18nStart,
   ɵɵInheritDefinitionFeature,
-  ɵɵInputTransformsFeature,
   ɵɵinjectAttribute,
   ɵɵInjectorDeclaration,
   ɵɵinvalidFactory,
@@ -282,7 +283,11 @@ export {compilePipe as ɵcompilePipe} from './render3/jit/pipe';
 export {isNgModule as ɵisNgModule} from './render3/jit/util';
 export {Profiler as ɵProfiler, ProfilerEvent as ɵProfilerEvent} from './render3/profiler_types';
 export {GlobalDevModeUtils as ɵGlobalDevModeUtils} from './render3/util/global_utils';
-export {ViewRef as ɵViewRef} from './render3/view_ref';
+export {
+  ViewRef as ɵViewRef,
+  isViewDirty as ɵisViewDirty,
+  markForRefresh as ɵmarkForRefresh,
+} from './render3/view_ref';
 export {
   bypassSanitizationTrustHtml as ɵbypassSanitizationTrustHtml,
   bypassSanitizationTrustResourceUrl as ɵbypassSanitizationTrustResourceUrl,

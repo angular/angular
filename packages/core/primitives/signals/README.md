@@ -65,6 +65,23 @@ counter.set(1);
 
 Effects do not execute synchronously with the set (see the section on glitch-free execution below), but are scheduled and resolved by the framework. The exact timing of effects is unspecified.
 
+## Untracked
+
+`untracked` executes an arbitrary function in a non-reactive (non-tracking) context. All signals read inside of the function are not added as a dependency to a surrounding `effect`.
+
+```typescript
+const counter = signal(0);
+const untrackedCounter = signal(0);
+effect(() => console.log(`counter: ${counter()}, untrackedCounter: ${untracked(untrackedCounter)}`));
+// counter: 0, untrackedCounter: 0
+
+untrackedCounter.set(1);
+// effect does not rerun because untrackedCounter was untracked 
+
+counter.set(1);
+// counter: 1, untrackedCounter: 1
+```
+
 ## Producer and Consumer
 
 Internally, the signals implementation is defined in terms of two abstractions, producers and consumers. Producers represents values which can deliver change notifications, such as the various flavors of `Signal`s. Consumers represents a reactive context which may depend on some number of producers. In other words, producers produce reactivity, and consumers consume it.

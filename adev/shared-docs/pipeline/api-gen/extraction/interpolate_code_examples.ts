@@ -43,6 +43,7 @@ const MD_CTYPE_MAP: {[key in FileType]: string} = {
 export function interpolateCodeExamples(entries: DocEntry[]): void {
   for (const entry of entries) {
     entry.rawComment = replaceExample(entry.rawComment);
+    entry.description = replaceExample(entry.description);
 
     for (const jsdocTag of entry.jsdocTags) {
       jsdocTag.comment = replaceExample(jsdocTag.comment);
@@ -51,7 +52,10 @@ export function interpolateCodeExamples(entries: DocEntry[]): void {
 }
 
 function replaceExample(text: string): string {
-  const examplesTagRegex = /{@example (\S+) region=(['"])([^'"]+)\2\s*}/g;
+  // To generate a valid markdown code block, there should not be any leading spaces
+  // The regex includes the leading spaces to make sure to remove them.
+  // It shouldn't include line break because it create the code block at the end of the previous line
+  const examplesTagRegex = /[ \t]*{@example (\S+) region=(['"])([^'"]+)\2\s*}/g;
 
   return text.replace(examplesTagRegex, (_: string, path: string, __: string, region: string) => {
     const example = getExample(path, region);

@@ -15,11 +15,16 @@ circular_dependency_test(
 
 ts_library(
     name = "dom_utils",
-    srcs = ["dom_utils.ts"],
+    srcs = [
+        "dom_utils.ts",
+        "hydration_utils.ts",
+    ],
     deps = [
         "//packages/common",
         "//packages/core",
+        "//packages/core/testing",
         "//packages/platform-browser",
+        "//packages/platform-server",
     ],
 )
 
@@ -30,6 +35,7 @@ ts_library(
         ["*.ts"],
         exclude = [
             "event_replay_spec.ts",
+            "hydration_utils.ts",
             "dom_utils.ts",
         ],
     ),

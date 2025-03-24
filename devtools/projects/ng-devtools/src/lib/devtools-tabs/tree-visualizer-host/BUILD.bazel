@@ -1,0 +1,22 @@
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//devtools/tools:ng_module.bzl", "ng_module")
+
+package(default_visibility = ["//:__subpackages__"])
+
+sass_binary(
+    name = "tree_visualizer_host_styles",
+    src = "tree-visualizer-host.component.scss",
+)
+
+ng_module(
+    name = "tree-visualizer-host",
+    srcs = [
+        "tree-visualizer-host.component.ts",
+    ],
+    angular_assets = [
+        ":tree_visualizer_host_styles",
+    ],
+    deps = [
+        "//packages/core",
+    ],
+)

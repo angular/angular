@@ -7,8 +7,7 @@
  */
 
 import {Injector} from '../di/injector';
-import {convertToBitFlags} from '../di/injector_compatibility';
-import {InjectFlags, InjectOptions} from '../di/interface/injector';
+import {InjectOptions} from '../di/interface/injector';
 import {ProviderToken} from '../di/provider_token';
 import {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from '../view/provider_flags';
 
@@ -22,12 +21,11 @@ export class ChainedInjector implements Injector {
     public parentInjector: Injector,
   ) {}
 
-  get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags | InjectOptions): T {
-    flags = convertToBitFlags(flags);
+  get<T>(token: ProviderToken<T>, notFoundValue?: T, options?: InjectOptions): T {
     const value = this.injector.get<T | typeof NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR>(
       token,
       NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR,
-      flags,
+      options,
     );
 
     if (
@@ -42,6 +40,6 @@ export class ChainedInjector implements Injector {
       return value as T;
     }
 
-    return this.parentInjector.get(token, notFoundValue, flags);
+    return this.parentInjector.get(token, notFoundValue, options);
   }
 }

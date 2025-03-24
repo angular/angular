@@ -41,6 +41,7 @@ describe('indexForest', () => {
               ],
               component: null,
               children: [],
+              onPush: false,
             },
             {
               element: 'Child1_2',
@@ -52,8 +53,10 @@ describe('indexForest', () => {
                 id: 1,
               },
               children: [],
+              onPush: false,
             },
           ],
+          onPush: false,
         },
         {
           element: 'Parent2',
@@ -72,6 +75,7 @@ describe('indexForest', () => {
               hydration: null,
               component: null,
               children: [],
+              onPush: true,
             },
             {
               element: 'Child2_2',
@@ -88,8 +92,10 @@ describe('indexForest', () => {
               component: null,
               hydration: null,
               children: [],
+              onPush: true,
             },
           ],
+          onPush: true,
         },
       ]),
     ).toEqual([
@@ -120,6 +126,7 @@ describe('indexForest', () => {
             component: null,
             hydration: null,
             children: [],
+            onPush: false,
           },
           {
             element: 'Child1_2',
@@ -132,8 +139,10 @@ describe('indexForest', () => {
             },
             hydration: null,
             children: [],
+            onPush: false,
           },
         ],
+        onPush: false,
       },
       {
         element: 'Parent2',
@@ -154,6 +163,7 @@ describe('indexForest', () => {
             component: null,
             hydration: null,
             children: [],
+            onPush: true,
           },
           {
             element: 'Child2_2',
@@ -171,8 +181,10 @@ describe('indexForest', () => {
             component: null,
             children: [],
             hydration: null,
+            onPush: true,
           },
         ],
+        onPush: true,
       },
     ]);
   });

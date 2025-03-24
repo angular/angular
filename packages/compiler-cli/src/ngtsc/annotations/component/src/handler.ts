@@ -116,7 +116,13 @@ import {
   HandlerPrecedence,
   ResolveResult,
 } from '../../../transform';
-import {TemplateId, TypeCheckableDirectiveMeta, TypeCheckContext} from '../../../typecheck/api';
+import {
+  TypeCheckId,
+  TypeCheckableDirectiveMeta,
+  TypeCheckContext,
+  TemplateContext,
+  HostBindingsContext,
+} from '../../../typecheck/api';
 import {ExtendedTemplateChecker} from '../../../typecheck/extended/api';
 import {TemplateSemanticsChecker} from '../../../typecheck/template_semantics/api/api';
 import {getSourceFile} from '../../../util/src/typescript';
@@ -127,11 +133,11 @@ import {
   compileInputTransformFields,
   compileNgFactoryDefField,
   compileResults,
+  createForwardRefResolver,
   extractClassDebugInfo,
   extractClassMetadata,
   extractSchemas,
   findAngularDecorator,
-  forwardRefResolver,
   getDirectiveDiagnostics,
   getProviderDiagnostics,
   InjectableClassRegistry,
@@ -150,7 +156,11 @@ import {
   validateHostDirectives,
   wrapFunctionExpressionsInParens,
 } from '../../common';
-import {extractDirectiveMetadata, parseDirectiveStyles} from '../../directive';
+import {
+  extractDirectiveMetadata,
+  extractHostBindingResources,
+  parseDirectiveStyles,
+} from '../../directive';
 import {createModuleWithProvidersResolver, NgModuleSymbol} from '../../ng_module';
 
 import {checkCustomElementSelectorForErrors, makeCyclicImportInfo} from './diagnostics';
@@ -161,6 +171,7 @@ import {
 } from './metadata';
 import {
   _extractTemplateStyleUrls,
+  createEmptyTemplate,
   extractComponentStyleUrls,
   extractInlineStyleResources,
   extractTemplate,
@@ -178,7 +189,7 @@ import {
   collectAnimationNames,
   validateAndFlattenComponentImports,
 } from './util';
-import {getTemplateDiagnostics} from '../../../typecheck';
+import {getTemplateDiagnostics, createHostElement} from '../../../typecheck';
 import {JitDeclarationRegistry} from '../../common/src/jit_declaration_registry';
 import {extractHmrMetatadata, getHmrUpdateDeclaration} from '../../../hmr';
 import {getProjectRelativePath} from '../../../util/src/path';
@@ -260,6 +271,7 @@ export class ComponentDecoratorHandler
     private readonly strictStandalone: boolean,
     private readonly enableHmr: boolean,
     private readonly implicitStandaloneValue: boolean,
+    private readonly typeCheckHostBindings: boolean,
   ) {
     this.extractTemplateOptions = {
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
@@ -487,7 +499,13 @@ export class ComponentDecoratorHandler
     } = directiveResult;
     const encapsulation: number =
       (this.compilationMode !== CompilationMode.LOCAL
-        ? resolveEnumValue(this.evaluator, component, 'encapsulation', 'ViewEncapsulation')
+        ? resolveEnumValue(
+            this.evaluator,
+            component,
+            'encapsulation',
+            'ViewEncapsulation',
+            this.isCore,
+          )
         : resolveEncapsulationEnumValueLocally(component.get('encapsulation'))) ??
       ViewEncapsulation.Emulated;
 
@@ -498,6 +516,7 @@ export class ComponentDecoratorHandler
         component,
         'changeDetection',
         'ChangeDetectionStrategy',
+        this.isCore,
       );
     } else if (component.has('changeDetection')) {
       changeDetection = new o.WrappedNodeExpr(component.get('changeDetection')!);
@@ -592,7 +611,7 @@ export class ComponentDecoratorHandler
     ) {
       const importResolvers = combineResolvers([
         createModuleWithProvidersResolver(this.reflector, this.isCore),
-        forwardRefResolver,
+        createForwardRefResolver(this.isCore),
       ]);
 
       const importDiagnostics: ts.Diagnostic[] = [];
@@ -663,57 +682,77 @@ export class ComponentDecoratorHandler
 
       template = preanalyzed;
     } else {
-      const templateDecl = parseTemplateDeclaration(
-        node,
-        decorator,
-        component,
-        containingFile,
-        this.evaluator,
-        this.depTracker,
-        this.resourceLoader,
-        this.defaultPreserveWhitespaces,
-      );
-      template = extractTemplate(
-        node,
-        templateDecl,
-        this.evaluator,
-        this.depTracker,
-        this.resourceLoader,
-        {
-          enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
-          i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
-          usePoisonedData: this.usePoisonedData,
-          enableBlockSyntax: this.enableBlockSyntax,
-          enableLetSyntax: this.enableLetSyntax,
-          preserveSignificantWhitespace: this.i18nPreserveSignificantWhitespace,
-        },
-        this.compilationMode,
-      );
-
-      if (
-        this.compilationMode === CompilationMode.LOCAL &&
-        template.errors &&
-        template.errors.length > 0
-      ) {
-        // Template errors are handled at the type check phase. But we skip this phase in local compilation mode. As a result we need to handle the errors now and add them to the diagnostics.
-        if (diagnostics === undefined) {
-          diagnostics = [];
-        }
-
-        diagnostics.push(
-          ...getTemplateDiagnostics(
-            template.errors,
-            '' as TemplateId, // Template ID is required as part of the template type check, mainly for mapping the template to its component class. But here we are generating the diagnostic outside of the type check context, and so we skip the template ID.
-            template.sourceMapping,
-          ),
+      try {
+        const templateDecl = parseTemplateDeclaration(
+          node,
+          decorator,
+          component,
+          containingFile,
+          this.evaluator,
+          this.depTracker,
+          this.resourceLoader,
+          this.defaultPreserveWhitespaces,
         );
+        template = extractTemplate(
+          node,
+          templateDecl,
+          this.evaluator,
+          this.depTracker,
+          this.resourceLoader,
+          {
+            enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
+            i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
+            usePoisonedData: this.usePoisonedData,
+            enableBlockSyntax: this.enableBlockSyntax,
+            enableLetSyntax: this.enableLetSyntax,
+            preserveSignificantWhitespace: this.i18nPreserveSignificantWhitespace,
+          },
+          this.compilationMode,
+        );
+
+        if (
+          this.compilationMode === CompilationMode.LOCAL &&
+          template.errors &&
+          template.errors.length > 0
+        ) {
+          // Template errors are handled at the type check phase. But we skip this phase in local
+          // compilation mode. As a result we need to handle the errors now and add them to the diagnostics.
+          if (diagnostics === undefined) {
+            diagnostics = [];
+          }
+
+          diagnostics.push(
+            ...getTemplateDiagnostics(
+              template.errors,
+              // Type check ID is required as part of the ype check, mainly for mapping the
+              // diagnostic back to its source. But here we are generating the diagnostic outside
+              // of the type check context, and so we skip the template ID.
+              '' as TypeCheckId,
+              template.sourceMapping,
+            ),
+          );
+        }
+      } catch (e) {
+        if (e instanceof FatalDiagnosticError) {
+          diagnostics ??= [];
+          diagnostics.push(e.toDiagnostic());
+          isPoisoned = true;
+          // Create an empty template for the missing/invalid template.
+          // A build will still fail in this case. However, for the language service,
+          // this allows the component to exist in the compiler registry and prevents
+          // cascading diagnostics within an IDE due to "missing" components. The
+          // originating template related errors will still be reported in the IDE.
+          template = createEmptyTemplate(node, component, containingFile);
+        } else {
+          throw e;
+        }
       }
     }
-    const templateResource = template.declaration.isInline
-      ? {path: null, expression: component.get('template')!}
+    const templateResource: Resource = template.declaration.isInline
+      ? {path: null, node: component.get('template')!}
       : {
           path: absoluteFrom(template.declaration.resolvedTemplateUrl),
-          expression: template.sourceMapping.node,
+          node: template.sourceMapping.node,
         };
     const relativeTemplatePath = getProjectRelativePath(
       templateResource.path ?? ts.getOriginalNode(node).getSourceFile().fileName,
@@ -727,6 +766,7 @@ export class ComponentDecoratorHandler
     let styles: string[] = [];
     const externalStyles: string[] = [];
 
+    const hostBindingResources = extractHostBindingResources(directiveResult.hostBindingNodes);
     const styleResources = extractInlineStyleResources(component);
     const styleUrls: StyleUrlMeta[] = [
       ...extractComponentStyleUrls(this.evaluator, component),
@@ -748,7 +788,7 @@ export class ComponentDecoratorHandler
           // Only string literal values from the decorator are considered style resources
           styleResources.add({
             path: absoluteFrom(resourceUrl),
-            expression: styleUrl.expression,
+            node: styleUrl.expression,
           });
         }
         const resourceStr = this.resourceLoader.load(resourceUrl);
@@ -901,6 +941,7 @@ export class ComponentDecoratorHandler
         resources: {
           styles: styleResources,
           template: templateResource,
+          hostBindings: hostBindingResources,
         },
         isPoisoned,
         animationTriggerNames,
@@ -911,6 +952,7 @@ export class ComponentDecoratorHandler
         explicitlyDeferredTypes,
         schemas,
         decorator: (decorator?.node as ts.Decorator | null) ?? null,
+        hostBindingNodes: directiveResult.hostBindingNodes,
       },
       diagnostics,
     };
@@ -1025,11 +1067,7 @@ export class ComponentDecoratorHandler
     node: ClassDeclaration,
     meta: Readonly<ComponentAnalysisData>,
   ): void {
-    if (this.typeCheckScopeRegistry === null || !ts.isClassDeclaration(node)) {
-      return;
-    }
-
-    if (meta.isPoisoned && !this.usePoisonedData) {
+    if (!ts.isClassDeclaration(node) || (meta.isPoisoned && !this.usePoisonedData)) {
       return;
     }
     const scope = this.typeCheckScopeRegistry.getTypeCheckScope(node);
@@ -1039,17 +1077,40 @@ export class ComponentDecoratorHandler
     }
 
     const binder = new R3TargetBinder<TypeCheckableDirectiveMeta>(scope.matcher);
-    ctx.addTemplate(
+    const templateContext: TemplateContext = {
+      nodes: meta.template.diagNodes,
+      pipes: scope.pipes,
+      sourceMapping: meta.template.sourceMapping,
+      file: meta.template.file,
+      parseErrors: meta.template.errors,
+      preserveWhitespaces: meta.meta.template.preserveWhitespaces ?? false,
+    };
+
+    const hostElement = this.typeCheckHostBindings
+      ? createHostElement(
+          'component',
+          meta.meta.selector,
+          node,
+          meta.hostBindingNodes.literal,
+          meta.hostBindingNodes.bindingDecorators,
+          meta.hostBindingNodes.listenerDecorators,
+        )
+      : null;
+    const hostBindingsContext: HostBindingsContext | null =
+      hostElement === null
+        ? null
+        : {
+            node: hostElement,
+            sourceMapping: {type: 'direct', node},
+          };
+
+    ctx.addDirective(
       new Reference(node),
       binder,
-      meta.template.diagNodes,
-      scope.pipes,
       scope.schemas,
-      meta.template.sourceMapping,
-      meta.template.file,
-      meta.template.errors,
+      templateContext,
+      hostBindingsContext,
       meta.meta.isStandalone,
-      meta.meta.template.preserveWhitespaces ?? false,
     );
   }
 
@@ -1859,7 +1920,7 @@ export class ComponentDecoratorHandler
     const res = compileResults(fac, def, classMetadata, 'ɵcmp', null, null, debugInfo, null);
     return hmrMeta === null || res.length === 0
       ? null
-      : getHmrUpdateDeclaration(res, pool.statements, hmrMeta, node.getSourceFile());
+      : getHmrUpdateDeclaration(res, pool.statements, hmrMeta, node);
   }
 
   /**
@@ -1888,22 +1949,32 @@ export class ComponentDecoratorHandler
   private resolveAllDeferredDependencies(
     resolution: Readonly<ComponentResolutionData>,
   ): R3DeferPerComponentDependency[] {
+    const seenDeps = new Set<ClassDeclaration>();
     const deferrableTypes: R3DeferPerComponentDependency[] = [];
     // Go over all dependencies of all defer blocks and update the value of
     // the `isDeferrable` flag and the `importPath` to reflect the current
     // state after visiting all components during the `resolve` phase.
     for (const [_, deps] of resolution.deferPerBlockDependencies) {
       for (const deferBlockDep of deps) {
-        const importDecl =
-          resolution.deferrableDeclToImportDecl.get(deferBlockDep.declaration.node) ?? null;
+        const node = deferBlockDep.declaration.node;
+        const importDecl = resolution.deferrableDeclToImportDecl.get(node) ?? null;
         if (importDecl !== null && this.deferredSymbolTracker.canDefer(importDecl)) {
           deferBlockDep.isDeferrable = true;
           deferBlockDep.importPath = (importDecl.moduleSpecifier as ts.StringLiteral).text;
           deferBlockDep.isDefaultImport = isDefaultImport(importDecl);
-          deferrableTypes.push(deferBlockDep as R3DeferPerComponentDependency);
+
+          // The same dependency may be used across multiple deferred blocks. De-duplicate it
+          // because it can throw off other logic further down the compilation pipeline.
+          // Note that the logic above needs to run even if the dependency is seen before,
+          // because the object literals are different between each block.
+          if (!seenDeps.has(node)) {
+            seenDeps.add(node);
+            deferrableTypes.push(deferBlockDep as R3DeferPerComponentDependency);
+          }
         }
       }
     }
+
     return deferrableTypes;
   }
 

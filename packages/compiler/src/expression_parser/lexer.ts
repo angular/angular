@@ -37,6 +37,7 @@ const KEYWORDS = [
   'else',
   'this',
   'typeof',
+  'void',
 ];
 
 export class Lexer {
@@ -112,6 +113,10 @@ export class Token {
 
   isKeywordTypeof(): boolean {
     return this.type === TokenType.Keyword && this.strValue === 'typeof';
+  }
+
+  isKeywordVoid(): boolean {
+    return this.type === TokenType.Keyword && this.strValue === 'void';
   }
 
   isError(): boolean {
@@ -286,11 +291,12 @@ class _Scanner {
         return this.scanPrivateIdentifier();
       case chars.$PLUS:
       case chars.$MINUS:
-      case chars.$STAR:
       case chars.$SLASH:
       case chars.$PERCENT:
       case chars.$CARET:
         return this.scanOperator(start, String.fromCharCode(peek));
+      case chars.$STAR:
+        return this.scanComplexOperator(start, '*', chars.$STAR, '*');
       case chars.$QUESTION:
         return this.scanQuestion(start);
       case chars.$LT:

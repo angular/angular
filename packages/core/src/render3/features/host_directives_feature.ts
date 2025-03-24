@@ -10,6 +10,7 @@ import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {assertEqual} from '../../util/assert';
 import {EMPTY_OBJ} from '../../util/empty';
 import {getComponentDef, getDirectiveDef} from '../def_getters';
+import {isComponentDef} from '../interfaces/type_checks';
 import type {
   DirectiveDef,
   DirectiveDefFeature,
@@ -17,6 +18,8 @@ import type {
   HostDirectiveConfig,
   HostDirectiveDef,
   HostDirectiveDefs,
+  HostDirectiveRanges,
+  HostDirectiveResolution,
 } from '../interfaces/definition';
 
 /**
@@ -46,7 +49,7 @@ export function ɵɵHostDirectivesFeature(
     const isEager = Array.isArray(rawHostDirectives);
 
     if (definition.hostDirectives === null) {
-      definition.findHostDirectiveDefs = findHostDirectiveDefs;
+      definition.resolveHostDirectives = resolveHostDirectives;
       definition.hostDirectives = isEager
         ? rawHostDirectives.map(createHostDirectiveDef)
         : [rawHostDirectives];
@@ -58,6 +61,59 @@ export function ɵɵHostDirectivesFeature(
   };
   feature.ngInherit = true;
   return feature;
+}
+
+/**
+ * Function that will be patched onto a definition to enable host directives. It is intended to
+ * be called once during directive matching and is the same for all definitions.
+ * @param matches Directives resolved through selector matching.
+ */
+function resolveHostDirectives(matches: DirectiveDef<unknown>[]): HostDirectiveResolution {
+  const allDirectiveDefs: DirectiveDef<unknown>[] = [];
+  let hasComponent = false;
+  let hostDirectiveDefs: HostDirectiveDefs | null = null;
+  let hostDirectiveRanges: HostDirectiveRanges | null = null;
+
+  // Components are inserted at the front of the matches array so that their lifecycle
+  // hooks run before any directive lifecycle hooks. This appears to be for ViewEngine
+  // compatibility. This logic doesn't make sense with host directives, because it
+  // would allow the host directives to undo any overrides the host may have made.
+  // To handle this case, the host directives of components are inserted at the beginning
+  // of the array, followed by the component. As such, the insertion order is as follows:
+  // 1. Host directives belonging to the selector-matched component.
+  // 2. Selector-matched component.
+  // 3. Host directives belonging to selector-matched directives.
+  // 4. Selector-matched dir
+  for (let i = 0; i < matches.length; i++) {
+    const def = matches[i];
+
+    if (def.hostDirectives !== null) {
+      const start = allDirectiveDefs.length;
+
+      hostDirectiveDefs ??= new Map();
+      hostDirectiveRanges ??= new Map();
+
+      // TODO(pk): probably could return matches instead of taking in an array to fill in?
+      findHostDirectiveDefs(def, allDirectiveDefs, hostDirectiveDefs);
+
+      // Note that these indexes are within the offset by `directiveStart`. We can't do the
+      // offsetting here, because `directiveStart` hasn't been initialized on the TNode yet.
+      hostDirectiveRanges.set(def, [start, allDirectiveDefs.length - 1]);
+    }
+
+    // Component definition is always first and needs to be
+    // pushed early to maintain the correct ordering.
+    if (i === 0 && isComponentDef(def)) {
+      hasComponent = true;
+      allDirectiveDefs.push(def);
+    }
+  }
+
+  for (let i = hasComponent ? 1 : 0; i < matches.length; i++) {
+    allDirectiveDefs.push(matches[i]);
+  }
+
+  return [allDirectiveDefs, hostDirectiveDefs, hostDirectiveRanges];
 }
 
 function findHostDirectiveDefs(

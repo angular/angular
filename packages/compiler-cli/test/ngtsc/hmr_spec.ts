@@ -9,6 +9,10 @@
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
 import {NgtscTestEnvironment} from './env';
+import {CompilerOptions} from '@angular/compiler-cli/src/transformers/api';
+import {createCompilerHost} from '@angular/compiler-cli/src/transformers/compiler_host';
+import {NgtscProgram} from '@angular/compiler-cli/src/ngtsc/program';
+import ts from 'typescript';
 
 runInEachFileSystem(() => {
   describe('HMR code generation', () => {
@@ -104,18 +108,19 @@ runInEachFileSystem(() => {
       const hmrContents = env.driveHmr('test.ts', 'Cmp');
 
       expect(jsContents).toContain(`import * as i0 from "@angular/core";`);
+      expect(jsContents).toContain('const id = "test.ts%40Cmp";');
       expect(jsContents).toContain('function Cmp_HmrLoad(t) {');
       expect(jsContents).toContain(
-        'import(/* @vite-ignore */\nnew URL("./@ng/component?c=test.ts%40Cmp&t=" + encodeURIComponent(t), import.meta.url).href)',
+        'import(/* @vite-ignore */\nnew URL("./@ng/component?c=" + id + "&t=" + encodeURIComponent(t), import.meta.url).href)',
       );
       expect(jsContents).toContain(
         ').then(m => m.default && i0.ɵɵreplaceMetadata(Cmp, m.default, [i0], ' +
-          '[Dep, transformValue, TOKEN, Component, Inject, ViewChild, Input]));',
+          '[Dep, transformValue, TOKEN, Component, Inject, ViewChild, Input], import.meta, id));',
       );
       expect(jsContents).toContain('Cmp_HmrLoad(Date.now());');
       expect(jsContents).toContain(
         'import.meta.hot && import.meta.hot.on("angular:component-update", ' +
-          'd => d.id === "test.ts%40Cmp" && Cmp_HmrLoad(d.timestamp)',
+          'd => d.id === id && Cmp_HmrLoad(d.timestamp)',
       );
 
       expect(hmrContents).toContain(
@@ -171,18 +176,19 @@ runInEachFileSystem(() => {
       const hmrContents = env.driveHmr('test.ts', 'Cmp');
       expect(jsContents).toContain(`import * as i0 from "@angular/core";`);
       expect(jsContents).toContain(`import * as i1 from "./dep";`);
+      expect(jsContents).toContain('const id = "test.ts%40Cmp";');
       expect(jsContents).toContain('function Cmp_HmrLoad(t) {');
       expect(jsContents).toContain(
-        'import(/* @vite-ignore */\nnew URL("./@ng/component?c=test.ts%40Cmp&t=" + encodeURIComponent(t), import.meta.url).href)',
+        'import(/* @vite-ignore */\nnew URL("./@ng/component?c=" + id + "&t=" + encodeURIComponent(t), import.meta.url).href)',
       );
       expect(jsContents).toContain(
         ').then(m => m.default && i0.ɵɵreplaceMetadata(Cmp, m.default, [i0, i1], ' +
-          '[DepModule, Component]));',
+          '[DepModule, Component], import.meta, id));',
       );
       expect(jsContents).toContain('Cmp_HmrLoad(Date.now());');
       expect(jsContents).toContain(
         'import.meta.hot && import.meta.hot.on("angular:component-update", ' +
-          'd => d.id === "test.ts%40Cmp" && Cmp_HmrLoad(d.timestamp)',
+          'd => d.id === id && Cmp_HmrLoad(d.timestamp)',
       );
 
       expect(hmrContents).toContain(
@@ -219,7 +225,9 @@ runInEachFileSystem(() => {
         'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, Component) {',
       );
       expect(hmrContents).toContain('function Cmp_Conditional_0_Template(rf, ctx) {');
-      expect(hmrContents).toContain('ɵhmr0.ɵɵtemplate(0, Cmp_Conditional_0_Template, 1, 0);');
+      expect(hmrContents).toContain(
+        'ɵhmr0.ɵɵconditionalCreate(0, Cmp_Conditional_0_Template, 1, 0);',
+      );
     });
 
     it('should generate an HMR update function for a component whose definition produces variables', () => {
@@ -340,7 +348,9 @@ runInEachFileSystem(() => {
       expect(jsContents).toContain('const Cmp_Defer_1_DepsFn = () => [Dep];');
       expect(jsContents).toContain('function Cmp_Defer_0_Template(rf, ctx) { if (rf & 1) {');
       expect(jsContents).toContain('i0.ɵɵdefer(1, 0, Cmp_Defer_1_DepsFn);');
-      expect(jsContents).toContain('ɵɵreplaceMetadata(Cmp, m.default, [i0], [Dep]));');
+      expect(jsContents).toContain(
+        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [Dep], import.meta, id));',
+      );
       expect(jsContents).not.toContain('setClassMetadata');
 
       expect(hmrContents).toContain(
@@ -422,7 +432,9 @@ runInEachFileSystem(() => {
       const jsContents = env.getContents('test.js');
       const hmrContents = env.driveHmr('test.ts', 'Cmp');
       expect(jsContents).toContain('dependencies: [Cmp]');
-      expect(jsContents).toContain('ɵɵreplaceMetadata(Cmp, m.default, [i0], [Component]));');
+      expect(jsContents).toContain(
+        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [Component], import.meta, id));',
+      );
       expect(hmrContents).toContain(
         'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, Component) {',
       );
@@ -445,7 +457,9 @@ runInEachFileSystem(() => {
       const jsContents = env.getContents('test.js');
       const hmrContents = env.driveHmr('test.ts', 'Cmp');
       expect(jsContents).not.toContain('dependencies');
-      expect(jsContents).toContain('ɵɵreplaceMetadata(Cmp, m.default, [i0], [Component]));');
+      expect(jsContents).toContain(
+        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [Component], import.meta, id));',
+      );
       expect(hmrContents).toContain(
         'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, Component) {',
       );
@@ -471,7 +485,7 @@ runInEachFileSystem(() => {
       const hmrContents = env.driveHmr('test.ts', 'Cmp');
 
       expect(jsContents).toContain(
-        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [providers, Component]));',
+        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [providers, Component], import.meta, id));',
       );
       expect(hmrContents).toContain(
         'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, providers, Component) {',
@@ -508,7 +522,7 @@ runInEachFileSystem(() => {
       const hmrContents = env.driveHmr('test.ts', 'Cmp');
 
       expect(jsContents).toContain(
-        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [token, value, Component]));',
+        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [token, value, Component], import.meta, id));',
       );
       expect(hmrContents).toContain(
         'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, token, value, Component) {',
@@ -542,7 +556,7 @@ runInEachFileSystem(() => {
       const hmrContents = env.driveHmr('test.ts', 'Cmp');
 
       expect(jsContents).toContain(
-        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [token, value, Component]));',
+        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [token, value, Component], import.meta, id));',
       );
       expect(hmrContents).toContain(
         'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, token, value, Component) {',
@@ -574,7 +588,7 @@ runInEachFileSystem(() => {
       const hmrContents = env.driveHmr('test.ts', 'Cmp');
 
       expect(jsContents).toContain(
-        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [condition, providersA, providersB, Component]));',
+        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [condition, providersA, providersB, Component], import.meta, id));',
       );
       expect(hmrContents).toContain(
         'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, condition, providersA, providersB, Component) {',
@@ -608,7 +622,7 @@ runInEachFileSystem(() => {
       const jsContents = env.getContents('test.js');
       const hmrContents = env.driveHmr('test.ts', 'Cmp');
       expect(jsContents).toContain(
-        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [token, value, otherValue, Component]));',
+        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [token, value, otherValue, Component], import.meta, id));',
       );
       expect(jsContents).toContain('useFactory: () => [(value), ((((otherValue))))]');
       expect(hmrContents).toContain(
@@ -646,7 +660,7 @@ runInEachFileSystem(() => {
       const hmrContents = env.driveHmr('test.ts', 'Cmp');
 
       expect(jsContents).toContain(
-        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [token, value, Optional, dep, Component]));',
+        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [token, value, Optional, dep, Component], import.meta, id));',
       );
       expect(hmrContents).toContain(
         'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, token, value, Optional, dep, Component) {',
@@ -697,7 +711,9 @@ runInEachFileSystem(() => {
       const hmrContents = env.driveHmr('test.ts', 'Cmp');
 
       expect(jsContents).toContain('dependencies: [Dep]');
-      expect(jsContents).toContain('ɵɵreplaceMetadata(Cmp, m.default, [i0], [Dep]));');
+      expect(jsContents).toContain(
+        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [Dep], import.meta, id));',
+      );
       expect(hmrContents).toContain('function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, Dep) {');
     });
 
@@ -741,7 +757,9 @@ runInEachFileSystem(() => {
       const hmrContents = env.driveHmr('test.ts', 'Cmp');
 
       expect(jsContents).toContain('dependencies: [DepModule, i1.Dep]');
-      expect(jsContents).toContain('ɵɵreplaceMetadata(Cmp, m.default, [i0, i1], [DepModule]));');
+      expect(jsContents).toContain(
+        'ɵɵreplaceMetadata(Cmp, m.default, [i0, i1], [DepModule], import.meta, id));',
+      );
       expect(hmrContents).toContain('function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, DepModule) {');
     });
 
@@ -797,7 +815,9 @@ runInEachFileSystem(() => {
       const hmrContents = env.driveHmr('test.ts', 'Cmp');
 
       expect(jsContents).toContain('dependencies: [i1.Dep]');
-      expect(jsContents).toContain('ɵɵreplaceMetadata(Cmp, m.default, [i0, i1], []));');
+      expect(jsContents).toContain(
+        'ɵɵreplaceMetadata(Cmp, m.default, [i0, i1], [], import.meta, id));',
+      );
       expect(hmrContents).toContain('function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces) {');
     });
 
@@ -834,7 +854,7 @@ runInEachFileSystem(() => {
       const jsContents = env.getContents('test.js');
       const hmrContents = env.driveHmr('test.ts', 'Cmp');
       expect(jsContents).toContain(
-        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [token, { one: 0, two: "2", three: 3 }, Component]));',
+        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [token, { one: 0, two: "2", three: 3 }, Component], import.meta, id));',
       );
       expect(hmrContents).toContain(
         'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, token, Foo, Component) {',
@@ -881,11 +901,77 @@ runInEachFileSystem(() => {
       const jsContents = env.getContents('test.js');
       const hmrContents = env.driveHmr('test.ts', 'Cmp');
       expect(jsContents).toContain(
-        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [token, { one: 0, two: "2", three: 3 }, Component]));',
+        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [token, { one: 0, two: "2", three: 3 }, Component], import.meta, id));',
       );
       expect(hmrContents).toContain(
         'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, token, Foo, Component) {',
       );
+    });
+
+    it('should generate HMR code for a transformed class', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({template: ''})
+          export class Cmp {}
+        `,
+      );
+
+      const options: CompilerOptions = {
+        target: ts.ScriptTarget.Latest,
+        module: ts.ModuleKind.ESNext,
+        _enableHmr: true,
+      };
+
+      const program = new NgtscProgram(['/test.ts'], options, createCompilerHost({options}));
+      const transformers = program.compiler.prepareEmit().transformers;
+
+      transformers.before!.unshift((ctx) => (sourceFile) => {
+        const visitor = (node: ts.Node) => {
+          if (ts.isClassDeclaration(node) && node.name?.getText() === 'Cmp') {
+            const newMember = ctx.factory.createPropertyDeclaration(
+              undefined,
+              'newProp',
+              undefined,
+              undefined,
+              ctx.factory.createNumericLiteral(123),
+            );
+
+            return ctx.factory.updateClassDeclaration(
+              node,
+              node.modifiers,
+              node.name,
+              node.typeParameters,
+              node.heritageClauses,
+              [newMember, ...node.members],
+            );
+          }
+          return ts.visitEachChild(node, visitor, ctx);
+        };
+        return ts.visitEachChild(sourceFile, visitor, ctx);
+      });
+
+      const {diagnostics, emitSkipped} = program
+        .getTsProgram()
+        .emit(undefined, undefined, undefined, undefined, transformers);
+      const declaration = program
+        .getTsProgram()
+        .getSourceFile('/test.ts')
+        ?.statements.find(
+          (stmt) => ts.isClassDeclaration(stmt) && stmt.name?.getText() === 'Cmp',
+        ) as ts.ClassDeclaration;
+
+      const jsContents = env.getContents('/test.js');
+      const hmrContents = program.compiler.emitHmrUpdateModule(declaration);
+
+      expect(diagnostics.length).toBe(0);
+      expect(emitSkipped).toBe(false);
+
+      expect(jsContents).toContain('ɵreplaceMetadata(Cmp');
+      expect(jsContents).toContain('newProp = 123');
+      expect(hmrContents).toContain('export default function Cmp_UpdateMetadata');
     });
   });
 });

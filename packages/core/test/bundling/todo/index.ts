@@ -95,7 +95,7 @@ class TodoStore {
       <h1>todos</h1>
       <input class="new-todo" placeholder="What needs to be done?" autofocus=""
              [value]="newTodoText"
-             (keyup)="$event.code == 'Enter' ? addTodo() : newTodoText = $event.target.value">
+             (keyup)="$event.code == 'Enter' ? addTodo() : newTodoText = $any($event.target).value">
     </header>
     <section *ngIf="todoStore.todos.length > 0" class="main">
       <input *ngIf="todoStore.todos.length"
@@ -117,7 +117,7 @@ class TodoStore {
                  class="edit" #editedtodo
                  [value]="todo.title"
                  (blur)="stopEditing(todo, editedtodo.value)"
-                 (keyup)="todo.title = $event.target.value"
+                 (keyup)="todo.title = $any($event.target).value"
                  (keyup)="$event.code == 'Enter' && updateEditingTodo(todo, editedtodo.value)"
                  (keyup)="$event.code == 'Escape' && cancelEditingTodo(todo)">
         </li>

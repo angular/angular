@@ -30,6 +30,7 @@ import {setCurrentInjector, ɵɵinject} from '@angular/core/src/di/injector_comp
 import {ɵɵdefineInjectable, ɵɵInjectorDef} from '@angular/core/src/di/interface/defs';
 import {FactoryFn} from '@angular/core/src/render3/definition_factory';
 import {ComponentDef, PipeDef} from '@angular/core/src/render3/interfaces/definition';
+import {InputFlags} from '@angular/core/src/render3/interfaces/input_flags';
 
 describe('render3 jit', () => {
   let injector: any;
@@ -379,7 +380,7 @@ describe('render3 jit', () => {
     }
 
     const InputCompAny = InputComp as any;
-    expect(InputCompAny.ɵcmp.inputs).toEqual({publicName: 'privateName'});
+    expect(InputCompAny.ɵcmp.inputs).toEqual({publicName: ['privateName', InputFlags.None, null]});
     expect(InputCompAny.ɵcmp.declaredInputs).toEqual({publicName: 'privateName'});
   });
 
@@ -393,7 +394,7 @@ describe('render3 jit', () => {
     }
 
     const InputDirAny = InputDir as any;
-    expect(InputDirAny.ɵdir.inputs).toEqual({publicName: 'privateName'});
+    expect(InputDirAny.ɵdir.inputs).toEqual({publicName: ['privateName', InputFlags.None, null]});
     expect(InputDirAny.ɵdir.declaredInputs).toEqual({publicName: 'privateName'});
   });
 

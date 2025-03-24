@@ -49,7 +49,7 @@ describe('HttpClient Backend Service', () => {
         ],
       });
 
-      http = TestBed.get(HttpClient);
+      http = TestBed.inject(HttpClient);
     });
 
     it('can get heroes', waitForAsync(() => {
@@ -62,7 +62,7 @@ describe('HttpClient Backend Service', () => {
     }));
 
     it('GET should be a "cold" observable', waitForAsync(() => {
-      const httpBackend = TestBed.get(HttpBackend);
+      const httpBackend = TestBed.inject<any>(HttpBackend);
       const spy = spyOn(httpBackend, 'collectionHandler').and.callThrough();
       const get$ = http.get<Hero[]>('api/heroes');
 
@@ -88,7 +88,7 @@ describe('HttpClient Backend Service', () => {
     }));
 
     it('Should only initialize the db once', waitForAsync(() => {
-      const httpBackend = TestBed.get(HttpBackend);
+      const httpBackend = TestBed.inject<any>(HttpBackend);
       const spy = spyOn(httpBackend, 'resetDb').and.callThrough();
 
       // Simultaneous backend.handler calls
@@ -252,7 +252,7 @@ describe('HttpClient Backend Service', () => {
         ],
       });
 
-      http = TestBed.get(HttpClient);
+      http = TestBed.inject(HttpClient);
     });
 
     it('can get heroes', waitForAsync(() => {
@@ -377,7 +377,7 @@ describe('HttpClient Backend Service', () => {
       let heroService: HeroService;
 
       beforeEach(() => {
-        heroService = TestBed.get(HeroService);
+        heroService = TestBed.inject(HeroService);
       });
 
       it('can get heroes', waitForAsync(() => {
@@ -499,9 +499,9 @@ describe('HttpClient Backend Service', () => {
         ],
       });
 
-      http = TestBed.get(HttpClient);
-      httpBackend = TestBed.get(HttpBackend);
-      interceptors = TestBed.get(HTTP_INTERCEPTORS);
+      http = TestBed.inject(HttpClient);
+      httpBackend = TestBed.inject<any>(HttpBackend);
+      interceptors = TestBed.inject<any>(HTTP_INTERCEPTORS);
     });
 
     // sanity test
@@ -560,8 +560,8 @@ describe('HttpClient Backend Service', () => {
         ],
       });
 
-      http = TestBed.get(HttpClient);
-      httpBackend = TestBed.get(HttpBackend);
+      http = TestBed.inject(HttpClient);
+      httpBackend = TestBed.inject<any>(HttpBackend);
       createPassThruBackend = spyOn(<any>httpBackend, 'createPassThruBackend').and.callThrough();
     });
 
@@ -623,7 +623,7 @@ describe('HttpClient Backend Service', () => {
         ],
       });
 
-      http = TestBed.get(HttpClient);
+      http = TestBed.inject(HttpClient);
     });
 
     it('can get heroes (encapsulated)', waitForAsync(() => {

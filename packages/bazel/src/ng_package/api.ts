@@ -21,10 +21,14 @@ export interface BazelFileInfo {
 export interface EntryPointInfo {
   /** ES2022 index file for the APF entry-point. */
   index: BazelFileInfo;
-  /** Flat ES2022 ES module bundle file. */
-  fesm2022Bundle: BazelFileInfo;
-  /** Index type definition file for the APF entry-point. */
-  typings: BazelFileInfo;
+  /** Entry-point type definition file for the APF entry-point (unbundled). */
+  typingsEntryPoint: BazelFileInfo;
+
+  /** Relative path to flat ES2022 ES module bundle file. */
+  fesm2022RelativePath: string;
+  /** Relative path to the dts bundle for the entry-point. */
+  dtsBundleRelativePath: string;
+
   /**
    * Whether the index or typing paths have been guessed. For entry-points built
    * through `ts_library`, there is no explicit setting that declares the entry-point
@@ -39,4 +43,14 @@ export interface PackageMetadata {
   npmPackageName: string;
   /** Record of entry-points (including the primary one) and their info. */
   entryPoints: Record<string, EntryPointInfo>;
+  /**
+   * Path to the Rollup FESM bundle output directory, containing all FESM
+   * bundles and shared chunks.
+   */
+  fesmBundlesOut: BazelFileInfo;
+  /**
+   * Path to the Rollup dts bundle output directory, containing all `d.ts`
+   * bundles and shared chunks.
+   */
+  dtsBundlesOut: BazelFileInfo;
 }

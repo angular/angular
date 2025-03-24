@@ -54,6 +54,7 @@ const BINARY_OPERATORS: Record<BinaryOperator, ts.BinaryOperator> = {
   '-': ts.SyntaxKind.MinusToken,
   '%': ts.SyntaxKind.PercentToken,
   '*': ts.SyntaxKind.AsteriskToken,
+  '**': ts.SyntaxKind.AsteriskAsteriskToken,
   '!=': ts.SyntaxKind.ExclamationEqualsToken,
   '!==': ts.SyntaxKind.ExclamationEqualsEqualsToken,
   '||': ts.SyntaxKind.BarBarToken,
@@ -290,6 +291,8 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
   createThrowStatement = ts.factory.createThrowStatement;
 
   createTypeOfExpression = ts.factory.createTypeOfExpression;
+
+  createVoidExpression = ts.factory.createVoidExpression;
 
   createUnaryExpression(operator: UnaryOperator, operand: ts.Expression): ts.Expression {
     return ts.factory.createPrefixUnaryExpression(UNARY_OPERATORS[operator], operand);

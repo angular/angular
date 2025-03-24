@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {FactoryProvider} from '../../di';
+import type {FactoryProvider, ProviderToken} from '../../di';
 import {resolveForwardRef} from '../../di/forward_ref';
 import {InjectionToken} from '../../di/injection_token';
 import type {Injector} from '../../di/injector';
-import {InjectFlags, InjectOptions, InternalInjectFlags} from '../../di/interface/injector';
+import {InjectOptions, InternalInjectFlags} from '../../di/interface/injector';
 import type {SingleProvider} from '../../di/provider_collection';
 import {Type} from '../../interface/type';
 import {throwError} from '../../util/assert';
@@ -41,6 +41,11 @@ export const enum InjectorProfilerEventType {
    * Emits when an effect is created.
    */
   EffectCreated,
+
+  /**
+   * Emits when an Angular DI system is about to create an instance corresponding to a given token.
+   */
+  InjectorToCreateInstanceEvent,
 }
 
 /**
@@ -68,6 +73,12 @@ export interface InjectedServiceEvent {
   service: InjectedService;
 }
 
+export interface InjectorToCreateInstanceEvent {
+  type: InjectorProfilerEventType.InjectorToCreateInstanceEvent;
+  context: InjectorProfilerContext;
+  token: ProviderToken<unknown>;
+}
+
 export interface InjectorCreatedInstanceEvent {
   type: InjectorProfilerEventType.InstanceCreatedByInjector;
   context: InjectorProfilerContext;
@@ -92,6 +103,7 @@ export interface EffectCreatedEvent {
 
 export type InjectorProfilerEvent =
   | InjectedServiceEvent
+  | InjectorToCreateInstanceEvent
   | InjectorCreatedInstanceEvent
   | ProviderConfiguredEvent
   | EffectCreatedEvent;
@@ -151,7 +163,7 @@ export interface InjectedService {
   /**
    * Flags that this service was injected with
    */
-  flags?: InternalInjectFlags | InjectFlags | InjectOptions;
+  flags?: InternalInjectFlags | InjectOptions;
 
   /**
    * Injector that this service was provided in.
@@ -255,6 +267,22 @@ export function emitProviderConfiguredEvent(
 }
 
 /**
+ * Emits an event to the injector profiler when an instance corresponding to a given token is about to be created be an injector. Note that
+ * the injector associated with this emission can be accessed by using getDebugInjectContext()
+ *
+ * @param instance an object created by an injector
+ */
+export function emitInjectorToCreateInstanceEvent(token: ProviderToken<unknown>): void {
+  !ngDevMode && throwError('Injector profiler should never be called in production mode');
+
+  injectorProfiler({
+    type: InjectorProfilerEventType.InjectorToCreateInstanceEvent,
+    context: getInjectorProfilerContext(),
+    token: token,
+  });
+}
+
+/**
  * Emits an event to the injector profiler with the instance that was created. Note that
  * the injector associated with this emission can be accessed by using getDebugInjectContext()
  *
@@ -275,7 +303,11 @@ export function emitInstanceCreatedByInjectorEvent(instance: unknown): void {
  * @param value the instance of the injected service (i.e the result of `inject(token)`)
  * @param flags the flags that the token was injected with
  */
-export function emitInjectEvent(token: Type<unknown>, value: unknown, flags: InjectFlags): void {
+export function emitInjectEvent(
+  token: Type<unknown>,
+  value: unknown,
+  flags: InternalInjectFlags,
+): void {
   !ngDevMode && throwError('Injector profiler should never be called in production mode');
 
   injectorProfiler({

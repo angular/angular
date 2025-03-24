@@ -21,7 +21,6 @@ ts_library(
         "//packages/compiler-cli",
         "//packages/compiler-cli/private",
         "//packages/compiler-cli/src/ngtsc/core:api",
-        "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tsurge",
         "//packages/core/schematics/utils/tsurge/helpers/angular_devkit",

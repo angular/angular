@@ -1497,6 +1497,127 @@ describe('find references and rename locations', () => {
     });
   });
 
+  describe('when cursor is on symbol referenced in host bindings', () => {
+    let appFile: OpenBuffer;
+
+    beforeEach(() => {
+      const files = {
+        'app.ts': `
+          import {Component, Directive} from '@angular/core';
+
+          @Component({
+            template: '',
+            standalone: false,
+            host: {
+              '[attr.id]': 'getCompId()',
+              '(click)': 'handleCompClick()',
+            }
+          })
+          export class AppCmp {
+            getCompId() {
+              return 'my-id';
+            }
+
+            handleCompClick() {}
+          }
+
+          @Component({
+            template: '',
+            standalone: false,
+            host: {
+              '[attr.title]': 'getDirTitle()',
+              '(keydown)': 'handleDirKeydown()',
+            }
+          })
+          export class Dir {
+            getDirTitle() {
+              return 'my title';
+            }
+
+            handleDirKeydown() {}
+          }
+        `,
+      };
+      env = LanguageServiceTestEnv.setup();
+      const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
+        typeCheckHostBindings: true,
+      });
+      appFile = project.openFile('app.ts');
+    });
+
+    it('gets component member reference in property binding', () => {
+      appFile.moveCursorToText('get¦CompId() {');
+      const refs = getReferencesAtPosition(appFile)!;
+      expect(refs.length).toBe(2);
+
+      assertFileNames(refs, ['app.ts']);
+      assertTextSpans(refs, ['getCompId']);
+    });
+
+    it('gets component rename location in property binding', () => {
+      appFile.moveCursorToText('get¦CompId() {');
+      const renameLocations = getRenameLocationsAtPosition(appFile)!;
+      expect(renameLocations.length).toBe(2);
+
+      assertFileNames(renameLocations, ['app.ts']);
+      assertTextSpans(renameLocations, ['getCompId']);
+    });
+
+    it('gets component member reference listener', () => {
+      appFile.moveCursorToText('handle¦CompClick() {');
+      const refs = getReferencesAtPosition(appFile)!;
+      expect(refs.length).toBe(2);
+
+      assertFileNames(refs, ['app.ts']);
+      assertTextSpans(refs, ['handleCompClick']);
+    });
+
+    it('gets component rename location listener', () => {
+      appFile.moveCursorToText('handle¦CompClick() {');
+      const renameLocations = getRenameLocationsAtPosition(appFile)!;
+      expect(renameLocations.length).toBe(2);
+
+      assertFileNames(renameLocations, ['app.ts']);
+      assertTextSpans(renameLocations, ['handleCompClick']);
+    });
+
+    it('gets directive member reference in property binding', () => {
+      appFile.moveCursorToText('getDir¦Title() {');
+      const refs = getReferencesAtPosition(appFile)!;
+      expect(refs.length).toBe(2);
+
+      assertFileNames(refs, ['app.ts']);
+      assertTextSpans(refs, ['getDirTitle']);
+    });
+
+    it('gets directive rename location in property binding', () => {
+      appFile.moveCursorToText('getDir¦Title() {');
+      const renameLocations = getRenameLocationsAtPosition(appFile)!;
+      expect(renameLocations.length).toBe(2);
+
+      assertFileNames(renameLocations, ['app.ts']);
+      assertTextSpans(renameLocations, ['getDirTitle']);
+    });
+
+    it('gets directive member reference listener', () => {
+      appFile.moveCursorToText('handle¦DirKeydown() {');
+      const refs = getReferencesAtPosition(appFile)!;
+      expect(refs.length).toBe(2);
+
+      assertFileNames(refs, ['app.ts']);
+      assertTextSpans(refs, ['handleDirKeydown']);
+    });
+
+    it('gets directive rename location listener', () => {
+      appFile.moveCursorToText('handleDir¦Keydown() {');
+      const renameLocations = getRenameLocationsAtPosition(appFile)!;
+      expect(renameLocations.length).toBe(2);
+
+      assertFileNames(renameLocations, ['app.ts']);
+      assertTextSpans(renameLocations, ['handleDirKeydown']);
+    });
+  });
+
   it('should get references to both input and output for two-way binding', () => {
     const files = {
       'dir.ts': `
@@ -1708,7 +1829,7 @@ describe('find references and rename locations', () => {
 
       it('should be able to request references', () => {
         const refs = getReferencesAtPosition(file)!;
-        expect(refs.length).toBe(6);
+        expect(refs.length).toBe(7);
         assertTextSpans(refs, ['<div *ngFor="let item of items"></div>', 'NgForOf']);
         assertFileNames(refs, ['index.d.ts', 'app.ts']);
       });
@@ -1814,6 +1935,14 @@ describe('find references and rename locations', () => {
       });
 
       it('finds rename locations', () => {
+        env.expectNoSourceDiagnostics();
+        const result = file.getRenameInfo() as ts.RenameInfoSuccess;
+        // Note that although we do not provide rename locations, we must _not_ respond with
+        // a result that indicates the item cannot be renamed when info is requested or we will prevent
+        // other rename providers from performing the rename.
+        expect(result.canRename).toBeTrue();
+        expect(result.displayName).toEqual('my-comp');
+        expect(result.kind).toEqual('component');
         const renameLocations = getRenameLocationsAtPosition(file)!;
         expect(renameLocations).toBeUndefined();
         // TODO(atscott): We may consider supporting rename of component selector in the future

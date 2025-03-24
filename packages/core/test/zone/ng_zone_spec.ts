@@ -935,7 +935,6 @@ function commonTests() {
       }
 
       @Component({
-        standalone: true,
         template: `
           <div class="clickable" (click)="clicked = true"></div>
           {{clicked ? 'clicked' : '' }}
@@ -978,7 +977,7 @@ function commonTests() {
         });
       });
       await transition.finished;
-      expect(performance.now() - startTime).toBeLessThan(1000);
+      expect(performance.now() - startTime).toBeLessThan(2000);
     });
 
     describe('shouldCoalesceRunChangeDetection = false, shouldCoalesceEventChangeDetection = false', () => {

@@ -32,11 +32,10 @@ import {
   createElementNode,
   setupStaticAttributes,
 } from '../dom_node_manipulation';
-import {registerPostOrderHooks} from '../hooks';
 import {hasClassInput, hasStyleInput, TElementNode, TNode, TNodeType} from '../interfaces/node';
 import {Renderer} from '../interfaces/renderer';
 import {RElement} from '../interfaces/renderer_dom';
-import {isComponentHost, isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
+import {isComponentHost, isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
@@ -66,7 +65,7 @@ import {elementEndFirstCreatePass, elementStartFirstCreatePass} from '../view/el
 import {validateElementIsKnown} from './element_validation';
 import {setDirectiveInputsWhichShadowsStyling} from './property';
 import {
-  createDirectivesInstancesInInstruction,
+  createDirectivesInstances,
   findDirectiveDefMatches,
   saveResolvedLocalsInData,
 } from './shared';
@@ -139,13 +138,13 @@ export function ɵɵelementStart(
   // any immediate children of a component or template container must be pre-emptively
   // monkey-patched with the component view data so that the element can be inspected
   // later on using any element discovery utility methods (see `element_discovery.ts`)
-  if (getElementDepthCount() === 0) {
+  if (getElementDepthCount() === 0 || hasDirectives) {
     attachPatchData(native, lView);
   }
   increaseElementDepthCount();
 
   if (hasDirectives) {
-    createDirectivesInstancesInInstruction(tView, lView, tNode);
+    createDirectivesInstances(tView, lView, tNode);
     executeContentQueries(tView, tNode, lView);
   }
   if (localRefsIndex !== null) {

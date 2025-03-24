@@ -51,7 +51,7 @@ class NullishCoalescingNotNullableCheck extends TemplateCheckWithVisitor<ErrorCo
     if (symbol.kind !== SymbolKind.Expression) {
       return [];
     }
-    const templateMapping = ctx.templateTypeChecker.getTemplateMappingAtTcbLocation(
+    const templateMapping = ctx.templateTypeChecker.getSourceMappingAtTcbLocation(
       symbol.tcbLocation,
     );
     if (templateMapping === null) {

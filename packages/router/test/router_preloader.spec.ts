@@ -60,7 +60,7 @@ describe('RouterPreloader', () => {
     });
 
     it('being destroyed before expected', () => {
-      const preloader: RouterPreloader = TestBed.get(RouterPreloader);
+      const preloader = TestBed.inject(RouterPreloader);
       // Calling the RouterPreloader's ngOnDestroy method is done to simulate what would happen if
       // the containing NgModule is destroyed.
       expect(() => preloader.ngOnDestroy()).not.toThrow();

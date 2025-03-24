@@ -24,25 +24,25 @@ import {
   LiteralMap,
   LiteralPrimitive,
   NonNullAssert,
+  ParenthesizedExpression,
   PrefixNot,
-  TypeofExpression,
   PropertyRead,
   PropertyWrite,
   SafeCall,
   SafeKeyedRead,
   SafePropertyRead,
-  ThisReceiver,
-  Unary,
+  TaggedTemplateLiteral,
   TemplateLiteral,
   TemplateLiteralElement,
+  ThisReceiver,
+  TypeofExpression,
+  Unary,
+  VoidExpression,
 } from '@angular/compiler';
 import ts from 'typescript';
-
 import {TypeCheckingConfig} from '../api';
-
 import {addParseSpanInfo, wrapForDiagnostics, wrapForTypeChecker} from './diagnostics';
 import {tsCastToAny, tsNumericExpression} from './ts_util';
-
 /**
  * Expression that is cast to any. Currently represented as `0 as any`.
  *
@@ -75,6 +75,7 @@ const BINARY_OPS = new Map<string, ts.BinaryOperator>([
   ['==', ts.SyntaxKind.EqualsEqualsToken],
   ['===', ts.SyntaxKind.EqualsEqualsEqualsToken],
   ['*', ts.SyntaxKind.AsteriskToken],
+  ['**', ts.SyntaxKind.AsteriskAsteriskToken],
   ['/', ts.SyntaxKind.SlashToken],
   ['%', ts.SyntaxKind.PercentToken],
   ['!=', ts.SyntaxKind.ExclamationEqualsToken],
@@ -285,6 +286,13 @@ class AstTranslator implements AstVisitor {
     return node;
   }
 
+  visitVoidExpression(ast: VoidExpression): ts.Expression {
+    const expression = wrapForDiagnostics(this.translate(ast.expression));
+    const node = ts.factory.createVoidExpression(expression);
+    addParseSpanInfo(node, ast.sourceSpan);
+    return node;
+  }
+
   visitPropertyRead(ast: PropertyRead): ts.Expression {
     // This is a normal property read - convert the receiver to an expression and emit the correct
     // TypeScript expression to read the property.
@@ -475,6 +483,18 @@ class AstTranslator implements AstVisitor {
     throw new Error('Method not implemented');
   }
 
+  visitTaggedTemplateLiteral(ast: TaggedTemplateLiteral): ts.TaggedTemplateExpression {
+    return ts.factory.createTaggedTemplateExpression(
+      this.translate(ast.tag),
+      undefined,
+      this.visitTemplateLiteral(ast.template),
+    );
+  }
+
+  visitParenthesizedExpression(ast: ParenthesizedExpression): ts.ParenthesizedExpression {
+    return ts.factory.createParenthesizedExpression(this.translate(ast.expression));
+  }
+
   private convertToSafeCall(
     ast: Call | SafeCall,
     expr: ts.Expression,
@@ -579,10 +599,13 @@ class VeSafeLhsInferenceBugDetector implements AstVisitor {
   visitPrefixNot(ast: PrefixNot): boolean {
     return ast.expression.visit(this);
   }
-  visitTypeofExpression(ast: PrefixNot): boolean {
+  visitTypeofExpression(ast: TypeofExpression): boolean {
     return ast.expression.visit(this);
   }
-  visitNonNullAssert(ast: PrefixNot): boolean {
+  visitVoidExpression(ast: VoidExpression): boolean {
+    return ast.expression.visit(this);
+  }
+  visitNonNullAssert(ast: NonNullAssert): boolean {
     return ast.expression.visit(this);
   }
   visitPropertyRead(ast: PropertyRead): boolean {
@@ -602,5 +625,11 @@ class VeSafeLhsInferenceBugDetector implements AstVisitor {
   }
   visitTemplateLiteralElement(ast: TemplateLiteralElement, context: any) {
     return false;
+  }
+  visitTaggedTemplateLiteral(ast: TaggedTemplateLiteral, context: any) {
+    return false;
+  }
+  visitParenthesizedExpression(ast: ParenthesizedExpression, context: any) {
+    return ast.expression.visit(this);
   }
 }

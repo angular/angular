@@ -26,22 +26,17 @@ import {
   LView,
   LViewFlags,
   PARENT,
-  REACTIVE_TEMPLATE_CONSUMER,
   TVIEW,
 } from './interfaces/view';
-import {
-  destroyLView,
-  detachMovedView,
-  detachView,
-  detachViewFromDOM,
-  trackMovedView,
-} from './node_manipulation';
+import {destroyLView, detachMovedView, detachViewFromDOM} from './node_manipulation';
 import {CheckNoChangesMode} from './state';
 import {
   markViewForRefresh,
   storeLViewOnDestroy,
   updateAncestorTraversalFlagsOnAttach,
+  requiresRefreshOrTraversal,
 } from './util/view_utils';
+import {detachView, trackMovedView} from './view/container';
 
 // Needed due to tsickle downleveling where multiple `implements` with classes creates
 // multiple @extends in Closure annotations, which is illegal. This workaround fixes
@@ -79,23 +74,10 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
      * This may be different from `_lView` if the `_cdRefInjectingView` is an embedded view.
      */
     private _cdRefInjectingView?: LView,
-    readonly notifyErrorHandler = true,
   ) {}
 
   get context(): T {
     return this._lView[CONTEXT] as unknown as T;
-  }
-
-  /**
-   * Reports whether the given view is considered dirty according to the different marking mechanisms.
-   */
-  get dirty(): boolean {
-    return (
-      !!(
-        this._lView[FLAGS] &
-        (LViewFlags.Dirty | LViewFlags.RefreshView | LViewFlags.HasChildViewsToRefresh)
-      ) || !!this._lView[REACTIVE_TEMPLATE_CONSUMER]?.dirty
-    );
   }
 
   /**
@@ -180,10 +162,6 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
    */
   markForCheck(): void {
     markViewDirty(this._cdRefInjectingView || this._lView, NotificationSource.MarkForCheck);
-  }
-
-  markForRefresh(): void {
-    markViewForRefresh(this._cdRefInjectingView || this._lView);
   }
 
   /**
@@ -332,7 +310,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
     // until the end of the refresh. Using `RefreshView` prevents creating a potential difference
     // in the state of the LViewFlags during template execution.
     this._lView[FLAGS] |= LViewFlags.RefreshView;
-    detectChangesInternal(this._lView, this.notifyErrorHandler);
+    detectChangesInternal(this._lView);
   }
 
   /**
@@ -343,11 +321,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
    */
   checkNoChanges(): void {
     if (ngDevMode) {
-      checkNoChangesInternal(
-        this._lView,
-        CheckNoChangesMode.OnlyDirtyViews,
-        this.notifyErrorHandler,
-      );
+      checkNoChangesInternal(this._lView, CheckNoChangesMode.OnlyDirtyViews);
     }
   }
 
@@ -386,4 +360,15 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
     }
     updateAncestorTraversalFlagsOnAttach(this._lView);
   }
+}
+
+/**
+ * Reports whether the given view is considered dirty according to the different marking mechanisms.
+ */
+export function isViewDirty(view: ViewRef<unknown>): boolean {
+  return requiresRefreshOrTraversal(view._lView) || !!(view._lView[FLAGS] & LViewFlags.Dirty);
+}
+
+export function markForRefresh(view: ViewRef<unknown>): void {
+  markViewForRefresh(view['_cdRefInjectingView'] || view._lView);
 }

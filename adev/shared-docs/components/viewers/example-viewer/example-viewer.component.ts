@@ -7,18 +7,21 @@
  */
 
 import {
+  afterNextRender,
   ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  Input,
-  Type,
-  computed,
-  inject,
   ChangeDetectorRef,
-  ViewChild,
-  signal,
+  Component,
+  computed,
+  DestroyRef,
   ElementRef,
   forwardRef,
+  inject,
+  Injector,
+  input,
+  Input,
+  signal,
+  Type,
+  ViewChild,
 } from '@angular/core';
 import {CommonModule, DOCUMENT} from '@angular/common';
 import {MatTabGroup, MatTabsModule} from '@angular/material/tabs';
@@ -47,10 +50,7 @@ export const HIDDEN_CLASS_NAME = 'hidden';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExampleViewer {
-  // TODO: replace by signal-based input when it'll be available
-  @Input({required: true}) set metadata(value: ExampleMetadata) {
-    this.exampleMetadata.set(value);
-  }
+  exampleMetadata = input<ExampleMetadata | null>(null, {alias: 'metadata'});
 
   @Input() githubUrl: string | null = null;
   @Input() stackblitzUrl: string | null = null;
@@ -60,6 +60,7 @@ export class ExampleViewer {
   private readonly clipboard = inject(Clipboard);
   private readonly destroyRef = inject(DestroyRef);
   private readonly document = inject(DOCUMENT);
+  private readonly injector = inject(Injector);
   private readonly elementRef = inject(ElementRef<HTMLElement>);
   private readonly exampleViewerContentLoader = inject(EXAMPLE_VIEWER_CONTENT_LOADER);
 
@@ -74,8 +75,8 @@ export class ExampleViewer {
   CodeExampleViewMode = CodeExampleViewMode;
   exampleComponent?: Type<unknown>;
 
+  expandable = signal<boolean>(false);
   expanded = signal<boolean>(false);
-  exampleMetadata = signal<ExampleMetadata | null>(null);
   snippetCode = signal<Snippet | undefined>(undefined);
   tabs = computed(() =>
     this.exampleMetadata()?.files.map((file) => ({
@@ -89,9 +90,6 @@ export class ExampleViewer {
       ? CodeExampleViewMode.SNIPPET
       : CodeExampleViewMode.MULTI_FILE,
   );
-  expandable = computed(() =>
-    this.exampleMetadata()?.files.some((file) => !!file.visibleLinesRange),
-  );
 
   async renderExample(): Promise<void> {
     // Lazy load live example component
@@ -103,18 +101,27 @@ export class ExampleViewer {
 
     this.snippetCode.set(this.exampleMetadata()?.files[0]);
 
-    this.changeDetector.detectChanges();
+    afterNextRender(
+      () => {
+        // Several function below query the DOM directly, we need to wait until the DOM is rendered.
+        this.setCodeLinesVisibility();
 
-    this.setCodeLinesVisibility();
+        this.elementRef.nativeElement.setAttribute(
+          'id',
+          `example-${this.exampleMetadata()?.id.toString()!}`,
+        );
 
-    this.elementRef.nativeElement.setAttribute(
-      'id',
-      `example-${this.exampleMetadata()?.id.toString()!}`,
+        this.matTabGroup?.realignInkBar();
+
+        this.listenToMatTabIndexChange();
+
+        const lines = this.getHiddenCodeLines();
+        const lineNumbers = this.getHiddenCodeLineNumbers();
+
+        this.expandable.set(lines.length > 0 || lineNumbers.length > 0);
+      },
+      {injector: this.injector},
     );
-
-    this.matTabGroup?.realignInkBar();
-
-    this.listenToMatTabIndexChange();
   }
 
   toggleExampleVisibility(): void {
@@ -157,21 +164,9 @@ export class ExampleViewer {
   }
 
   private handleExpandedStateForCodeBlock(): void {
-    const lines = <HTMLDivElement[]>(
-      Array.from(
-        this.elementRef.nativeElement.querySelectorAll(
-          `.${CODE_LINE_CLASS_NAME}.${HIDDEN_CLASS_NAME}`,
-        ),
-      )
-    );
+    const lines = this.getHiddenCodeLines();
 
-    const lineNumbers = <HTMLSpanElement[]>(
-      Array.from(
-        this.elementRef.nativeElement.querySelectorAll(
-          `.${CODE_LINE_NUMBER_CLASS_NAME}.${HIDDEN_CLASS_NAME}`,
-        ),
-      )
-    );
+    const lineNumbers = this.getHiddenCodeLineNumbers();
 
     const gapLines = <HTMLDivElement[]>(
       Array.from(
@@ -238,5 +233,25 @@ export class ExampleViewer {
       separator.classList.add(GAP_CODE_LINE_CLASS_NAME);
       element.parentNode?.insertBefore(separator, element);
     }
+  }
+
+  private getHiddenCodeLines(): HTMLDivElement[] {
+    return <HTMLDivElement[]>(
+      Array.from(
+        this.elementRef.nativeElement.querySelectorAll(
+          `.${CODE_LINE_CLASS_NAME}.${HIDDEN_CLASS_NAME}`,
+        ),
+      )
+    );
+  }
+
+  private getHiddenCodeLineNumbers(): HTMLSpanElement[] {
+    return <HTMLSpanElement[]>(
+      Array.from(
+        this.elementRef.nativeElement.querySelectorAll(
+          `.${CODE_LINE_NUMBER_CLASS_NAME}.${HIDDEN_CLASS_NAME}`,
+        ),
+      )
+    );
   }
 }

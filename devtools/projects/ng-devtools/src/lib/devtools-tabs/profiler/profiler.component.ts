@@ -110,7 +110,7 @@ export class ProfilerComponent {
     this._fileApiService.saveObjectAsJSON(fileToExport);
   }
 
-  importProfilerResults(event: InputEvent): void {
+  importProfilerResults(event: Event): void {
     this._fileApiService.publishFileUpload(event);
   }
 

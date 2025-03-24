@@ -79,7 +79,7 @@ export class DocViewer implements OnChanges {
   private readonly injector = inject(Injector);
   private readonly appRef = inject(ApplicationRef);
 
-  private animateContent = false;
+  protected animateContent = false;
   private readonly pendingTasks = inject(PendingTasks);
 
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
@@ -196,13 +196,13 @@ export class DocViewer implements OnChanges {
     const exampleRef = this.viewContainer.createComponent(ExampleViewer);
 
     this.countOfExamples++;
-    exampleRef.instance.metadata = {
+    exampleRef.setInput('metadata', {
       title: title ?? firstCodeSnippetTitle,
       path,
       files: snippets,
       preview,
       id: this.countOfExamples,
-    };
+    });
 
     exampleRef.instance.githubUrl = `${GITHUB_CONTENT_URL}/${snippets[0].name}`;
     exampleRef.instance.stackblitzUrl = `${ASSETS_EXAMPLES_PATH}/${snippets[0].name}.html`;
@@ -293,9 +293,6 @@ export class DocViewer implements OnChanges {
       }
     }
 
-    // Trigger change detection after setting inputs.
-    componentRef.changeDetectorRef.detectChanges();
-
     // Attach a view to the ApplicationRef for change detection
     // purposes and for hydration serialization to pick it up
     // during SSG.
@@ -343,7 +340,12 @@ export class DocViewer implements OnChanges {
             relativeUrl = hrefAttr;
           }
 
-          handleHrefClickEventWithRouter(e, this.router, relativeUrl);
+          // Unless this is a link to an element within the same page, use the Angular router.
+          // https://github.com/angular/angular/issues/30139
+          const scrollToElementExists = relativeUrl.startsWith(this.location.path() + '#');
+          if (!scrollToElementExists) {
+            handleHrefClickEventWithRouter(e, this.router, relativeUrl);
+          }
         });
     });
   }

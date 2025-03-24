@@ -215,6 +215,14 @@ const REDIRECT_ROUTES: Route[] = [
     redirectTo: '/guide/components',
   },
   {
+    path: 'guide/hybrid-rendering',
+    redirectTo: '/guide/ssr',
+  },
+  {
+    path: 'guide/prerendering',
+    redirectTo: '/guide/ssr',
+  },
+  {
     path: 'guide',
     children: [
       {
@@ -237,10 +245,6 @@ export const routes: Route[] = [
       {
         path: PagePrefix.DOCS,
         redirectTo: DefaultPage.DOCS,
-      },
-      {
-        path: PagePrefix.TUTORIALS,
-        redirectTo: DefaultPage.TUTORIALS,
       },
       {
         path: PagePrefix.REFERENCE,

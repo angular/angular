@@ -15,6 +15,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INVALID_PIPE_ARGUMENT = 2100,
     // (undocumented)
+    INVALID_TO_DATE_CONVERSION = 2302,
+    // (undocumented)
     LCP_IMG_MISSING_PRIORITY = 2955,
     // (undocumented)
     LCP_IMG_NGSRC_MODIFIED = 2964,
@@ -24,6 +26,8 @@ export const enum RuntimeErrorCode {
     MISSING_NECESSARY_LOADER = 2963,
     // (undocumented)
     NG_FOR_MISSING_DIFFER = -2200,
+    // (undocumented)
+    NG_IF_NOT_A_TEMPLATE_REF = 2020,
     // (undocumented)
     OVERSIZED_IMAGE = 2960,
     // (undocumented)
@@ -37,6 +41,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     REQUIRED_INPUT_MISSING = 2954,
     // (undocumented)
+    SUSPICIOUS_DATE_FORMAT = 2300,
+    // (undocumented)
     TOO_MANY_PRELOADED_IMAGES = 2961,
     // (undocumented)
     TOO_MANY_PRIORITY_ATTRIBUTES = 2966,
@@ -47,7 +53,13 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     UNEXPECTED_SRC_ATTR = 2950,
     // (undocumented)
-    UNEXPECTED_SRCSET_ATTR = 2951
+    UNEXPECTED_SRCSET_ATTR = 2951,
+    // (undocumented)
+    UNEXPECTED_TRANSLATION_TYPE = 2302,
+    // (undocumented)
+    UNKNOWN_DATE_TYPE_VALUE = 2301,
+    // (undocumented)
+    UNKNOWN_ZONE_WIDTH = 2302
 }
 
 // (No @packageDocumentation comment for this package)

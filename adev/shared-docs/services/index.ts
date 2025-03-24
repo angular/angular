@@ -8,5 +8,4 @@
 
 export * from './navigation-state.service';
 export {TOC_SKIP_CONTENT_MARKER, TableOfContentsLoader} from './table-of-contents-loader.service';
-export {TableOfContentsScrollSpy} from './table-of-contents-scroll-spy.service';
 export * from './search.service';

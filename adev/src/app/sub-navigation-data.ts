@@ -437,19 +437,9 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/performance/overview',
           },
           {
-            label: 'Server-side rendering',
+            label: 'Server-side and hybrid-rendering',
             path: 'guide/ssr',
             contentPath: 'guide/ssr',
-          },
-          {
-            label: 'Build-time prerendering',
-            path: 'guide/prerendering',
-            contentPath: 'guide/prerendering',
-          },
-          {
-            label: 'Hybrid rendering with server routing',
-            path: 'guide/hybrid-rendering',
-            contentPath: 'guide/hybrid-rendering',
           },
           {
             label: 'Hydration',
@@ -870,6 +860,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'ecosystem/web-workers',
       },
       {
+        label: 'Custom build pipeline',
+        path: 'ecosystem/custom-build-pipeline',
+        contentPath: 'ecosystem/custom-build-pipeline',
+      },
+      {
         label: 'Angular Fire',
         path: 'https://github.com/angular/angularfire#readme',
       },
@@ -1242,6 +1237,11 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'Clean up unused imports',
         path: 'reference/migrations/cleanup-unused-imports',
         contentPath: 'reference/migrations/cleanup-unused-imports',
+      },
+      {
+        label: 'Self-closing tags',
+        path: 'reference/migrations/self-closing-tags',
+        contentPath: 'reference/migrations/self-closing-tags',
       },
     ],
   },

@@ -5,39 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {
-  ComponentExplorerViewQuery,
-  DirectiveMetadata,
-  DirectivesProperties,
-  ElementPosition,
-  PropertyQueryTypes,
-  SerializedInjectedService,
-  SerializedInjector,
-  SerializedProviderRecord,
-  UpdatedStateData,
-} from 'protocol';
-
-import {buildDirectiveTree, getLViewFromDirectiveOrElementInstance} from './directive-forest/index';
-import {
-  ngDebugApiIsSupported,
-  ngDebugClient,
-  ngDebugDependencyInjectionApiIsSupported,
-} from './ng-debug-api/ng-debug-api';
-import {
-  deeplySerializeSelectedProperties,
-  serializeDirectiveState,
-} from './state-serializer/state-serializer';
-
-// Need to be kept in sync with Angular framework
-// We can't directly import it from framework now
-// because this also pulls up the security policies
-// for Trusted Types, which we reinstantiate.
-enum ChangeDetectionStrategy {
-  OnPush = 0,
-  Default = 1,
-}
-
-import {ComponentTreeNode, DirectiveInstanceType, ComponentInstanceType} from './interfaces';
 
 import type {
   ClassProvider,
@@ -51,7 +18,38 @@ import type {
   ɵComponentDebugMetadata as ComponentDebugMetadata,
   ɵProviderRecord as ProviderRecord,
 } from '@angular/core';
-import {isSignal} from './utils';
+import {
+  ComponentExplorerViewQuery,
+  DirectiveMetadata,
+  DirectivesProperties,
+  ElementPosition,
+  PropertyQueryTypes,
+  SerializedInjectedService,
+  SerializedInjector,
+  SerializedProviderRecord,
+  UpdatedStateData,
+} from 'protocol';
+import {buildDirectiveTree, getLViewFromDirectiveOrElementInstance} from './directive-forest/index';
+import {
+  ngDebugApiIsSupported,
+  ngDebugClient,
+  ngDebugDependencyInjectionApiIsSupported,
+} from './ng-debug-api/ng-debug-api';
+import {
+  deeplySerializeSelectedProperties,
+  serializeDirectiveState,
+} from './state-serializer/state-serializer';
+import {mutateNestedProp} from './property-mutation';
+import {ComponentTreeNode, DirectiveInstanceType, ComponentInstanceType} from './interfaces';
+
+// Need to be kept in sync with Angular framework
+// We can't directly import it from framework now
+// because this also pulls up the security policies
+// for Trusted Types, which we reinstantiate.
+enum ChangeDetectionStrategy {
+  OnPush = 0,
+  Default = 1,
+}
 
 export const injectorToId = new WeakMap<Injector | HTMLElement, string>();
 export const nodeInjectorToResolutionPath = new WeakMap<HTMLElement, SerializedInjector[]>();
@@ -64,33 +62,35 @@ export function getInjectorId() {
 }
 
 export function getInjectorMetadata(injector: Injector) {
-  return ngDebugClient().ɵgetInjectorMetadata(injector);
+  return ngDebugClient().ɵgetInjectorMetadata?.(injector) ?? null;
 }
 
 export function getInjectorResolutionPath(injector: Injector): Injector[] {
-  if (!ngDebugApiIsSupported('ɵgetInjectorResolutionPath')) {
+  const ng = ngDebugClient();
+  if (!ngDebugApiIsSupported(ng, 'ɵgetInjectorResolutionPath')) {
     return [];
   }
 
-  return ngDebugClient().ɵgetInjectorResolutionPath(injector);
+  return ng.ɵgetInjectorResolutionPath(injector) ?? [];
 }
 
 export function getInjectorFromElementNode(element: Node): Injector | null {
-  return ngDebugClient().getInjector(element);
+  return ngDebugClient().getInjector?.(element) ?? null;
 }
 
 function getDirectivesFromElement(element: HTMLElement): {
   component: unknown | null;
   directives: unknown[];
 } {
+  const ng = ngDebugClient();
   let component = null;
-  if (element instanceof Element) {
-    component = ngDebugClient().getComponent(element);
+  if (element instanceof Element && ngDebugApiIsSupported(ng, 'getComponent')) {
+    component = ng.getComponent(element);
   }
 
   return {
     component,
-    directives: ngDebugClient().getDirectives(element),
+    directives: ngDebugClient().getDirectives?.(element) ?? [],
   };
 }
 
@@ -108,9 +108,9 @@ export const getLatestComponentState = (
 
   const directiveProperties: DirectivesProperties = {};
 
-  const injector = ngDebugClient().getInjector(node.nativeElement!);
+  const injector = getInjectorFromElementNode(node.nativeElement!);
 
-  const injectors = getInjectorResolutionPath(injector);
+  const injectors = injector ? getInjectorResolutionPath(injector) : [];
   const resolutionPathWithProviders = !ngDebugDependencyInjectionApiIsSupported()
     ? []
     : injectors.map((injector) => ({
@@ -120,11 +120,13 @@ export const getLatestComponentState = (
   const populateResultSet = (dir: DirectiveInstanceType | ComponentInstanceType) => {
     const {instance, name} = dir;
     const metadata = getDirectiveMetadata(instance);
-    metadata.dependencies = getDependenciesForDirective(
-      injector,
-      resolutionPathWithProviders,
-      instance.constructor,
-    );
+    if (injector) {
+      metadata.dependencies = getDependenciesForDirective(
+        injector,
+        resolutionPathWithProviders,
+        instance.constructor,
+      );
+    }
 
     if (query.propertyQuery.type === PropertyQueryTypes.All) {
       directiveProperties[dir.name] = {
@@ -216,7 +218,7 @@ const enum DirectiveMetadataKey {
 // the global `getDirectiveMetadata`. For prior versions of the framework
 // the method directly interacts with the directive/component definition.
 const getDirectiveMetadata = (dir: any): DirectiveMetadata => {
-  const getMetadata = ngDebugClient().getDirectiveMetadata;
+  const getMetadata = ngDebugClient().getDirectiveMetadata!;
   const metadata = getMetadata?.(dir) as ComponentDebugMetadata;
   if (metadata) {
     return {
@@ -245,12 +247,17 @@ const getDirectiveMetadata = (dir: any): DirectiveMetadata => {
   };
 };
 
+export function isOnPushDirective(dir: any): boolean {
+  const metadata = getDirectiveMetadata(dir.instance);
+  return metadata.onPush;
+}
+
 export function getInjectorProviders(injector: Injector) {
   if (isNullInjector(injector)) {
     return [];
   }
 
-  return ngDebugClient().ɵgetInjectorProviders(injector);
+  return ngDebugClient().ɵgetInjectorProviders!(injector);
 }
 
 const getDependenciesForDirective = (
@@ -258,12 +265,12 @@ const getDependenciesForDirective = (
   resolutionPath: {injector: Injector; providers: ProviderRecord[]}[],
   directive: any,
 ): SerializedInjectedService[] => {
-  if (!ngDebugApiIsSupported('ɵgetDependenciesFromInjectable')) {
+  const ng = ngDebugClient();
+  if (!ngDebugApiIsSupported(ng, 'ɵgetDependenciesFromInjectable')) {
     return [];
   }
 
-  let dependencies =
-    ngDebugClient().ɵgetDependenciesFromInjectable(injector, directive)?.dependencies ?? [];
+  let dependencies = ng.ɵgetDependenciesFromInjectable(injector, directive)?.dependencies ?? [];
   const uniqueServices = new Set<string>();
   const serializedInjectedServices: SerializedInjectedService[] = [];
 
@@ -294,8 +301,12 @@ const getDependenciesForDirective = (
       // (2)
       // We slice the import path to remove the first element because this is the same
       // injector as the last injector in the resolution path.
-      ...(foundProvider?.importPath ?? []).slice(1).map((node) => {
-        return {type: 'imported-module', name: valueToLabel(node), id: getInjectorId()};
+      ...(foundProvider?.importPath ?? []).slice(1).map((node): SerializedInjector => {
+        return {
+          type: 'imported-module',
+          name: valueToLabel(node),
+          id: getInjectorId(),
+        };
       }),
     ];
 
@@ -568,43 +579,18 @@ export const updateState = (updatedStateData: UpdatedStateData): void => {
   }
   if (updatedStateData.directiveId.directive !== undefined) {
     const directive = node.directives[updatedStateData.directiveId.directive].instance;
-    mutateComponentOrDirective(updatedStateData, directive);
-    ng.applyChanges(ng.getOwningComponent(directive)!);
+    mutateNestedProp(directive, updatedStateData.keyPath, updatedStateData.newValue);
+    if (ngDebugApiIsSupported(ng, 'getOwningComponent')) {
+      ng.applyChanges?.(ng.getOwningComponent(directive)!);
+    }
     return;
   }
   if (node.component) {
     const comp = node.component.instance;
-    mutateComponentOrDirective(updatedStateData, comp);
-    ng.applyChanges(comp);
+    mutateNestedProp(comp, updatedStateData.keyPath, updatedStateData.newValue);
+    ng.applyChanges?.(comp);
     return;
   }
-};
-
-const mutateComponentOrDirective = (updatedStateData: UpdatedStateData, compOrDirective: any) => {
-  const valueKey = updatedStateData.keyPath.pop();
-  if (valueKey === undefined) {
-    return;
-  }
-
-  let parentObjectOfValueToUpdate = compOrDirective;
-  updatedStateData.keyPath.forEach((key) => {
-    parentObjectOfValueToUpdate = parentObjectOfValueToUpdate[key];
-  });
-
-  if (isSignal(parentObjectOfValueToUpdate)) {
-    // we don't support updating nested objects in signals yet
-    return;
-  }
-
-  // When we try to set a property which only has a getter
-  // the line below could throw an error.
-  try {
-    if (isSignal(parentObjectOfValueToUpdate[valueKey])) {
-      parentObjectOfValueToUpdate[valueKey].set(updatedStateData.newValue);
-    } else {
-      parentObjectOfValueToUpdate[valueKey] = updatedStateData.newValue;
-    }
-  } catch {}
 };
 
 export function serializeResolutionPath(resolutionPath: Injector[]): SerializedInjector[] {

@@ -50,7 +50,8 @@ export type Expression =
   | ConstCollectedExpr
   | TwoWayBindingSetExpr
   | ContextLetReferenceExpr
-  | StoreLetExpr;
+  | StoreLetExpr
+  | TrackContextExpr;
 
 /**
  * Transformer type which converts expressions into general `o.Expression`s (which may be an
@@ -1153,7 +1154,13 @@ export function transformExpressionsInOp(
         op.trustedValueFn && transformExpressionsInExpression(op.trustedValueFn, transform, flags);
       break;
     case OpKind.RepeaterCreate:
-      op.track = transformExpressionsInExpression(op.track, transform, flags);
+      if (op.trackByOps === null) {
+        op.track = transformExpressionsInExpression(op.track, transform, flags);
+      } else {
+        for (const innerOp of op.trackByOps) {
+          transformExpressionsInOp(innerOp, transform, flags | VisitorContextFlag.InChildOperation);
+        }
+      }
       if (op.trackByFn !== null) {
         op.trackByFn = transformExpressionsInExpression(op.trackByFn, transform, flags);
       }
@@ -1220,6 +1227,8 @@ export function transformExpressionsInOp(
     case OpKind.IcuPlaceholder:
     case OpKind.DeclareLet:
     case OpKind.SourceLocation:
+    case OpKind.ConditionalCreate:
+    case OpKind.ConditionalBranchCreate:
       // These operations contain no expressions.
       break;
     default:
@@ -1282,6 +1291,8 @@ export function transformExpressionsInExpression(
     }
   } else if (expr instanceof o.TypeofExpr) {
     expr.expr = transformExpressionsInExpression(expr.expr, transform, flags);
+  } else if (expr instanceof o.VoidExpr) {
+    expr.expr = transformExpressionsInExpression(expr.expr, transform, flags);
   } else if (expr instanceof o.WriteVarExpr) {
     expr.value = transformExpressionsInExpression(expr.value, transform, flags);
   } else if (expr instanceof o.LocalizedString) {
@@ -1309,6 +1320,8 @@ export function transformExpressionsInExpression(
     for (let i = 0; i < expr.expressions.length; i++) {
       expr.expressions[i] = transformExpressionsInExpression(expr.expressions[i], transform, flags);
     }
+  } else if (expr instanceof o.ParenthesizedExpr) {
+    expr.expr = transformExpressionsInExpression(expr.expr, transform, flags);
   } else if (
     expr instanceof o.ReadVarExpr ||
     expr instanceof o.ExternalExpr ||

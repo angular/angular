@@ -198,6 +198,12 @@ describe('lexer', () => {
       expect(tokens[0].isKeywordTypeof()).toBe(true);
     });
 
+    it('should tokenize void', () => {
+      const tokens: Token[] = lex('void');
+      expectKeywordToken(tokens[0], 0, 4, 'void');
+      expect(tokens[0].isKeywordVoid()).toBe(true);
+    });
+
     it('should ignore whitespace', () => {
       const tokens: Token[] = lex('a \t \n \r b');
       expectIdentifierToken(tokens[0], 0, 1, 'a');
@@ -295,6 +301,15 @@ describe('lexer', () => {
 
     it('should tokenize number', () => {
       expectNumberToken(lex('0.5')[0], 0, 3, 0.5);
+    });
+
+    it('should tokenize multiplication and exponentiation', () => {
+      const tokens: Token[] = lex('1 * 2 ** 3');
+      expectNumberToken(tokens[0], 0, 1, 1);
+      expectOperatorToken(tokens[1], 2, 3, '*');
+      expectNumberToken(tokens[2], 4, 5, 2);
+      expectOperatorToken(tokens[3], 6, 8, '**');
+      expectNumberToken(tokens[4], 9, 10, 3);
     });
 
     it('should tokenize number with exponent', () => {
@@ -604,6 +619,25 @@ describe('lexer', () => {
           15,
           'Lexer Error: Unterminated template literal at column 15 in expression [`hello ${name!`]',
         );
+      });
+
+      it('should tokenize tagged template literal with no interpolations', () => {
+        const tokens: Token[] = lex('tag`hello world`');
+        expect(tokens.length).toBe(2);
+        expectIdentifierToken(tokens[0], 0, 3, 'tag');
+        expectStringToken(tokens[1], 3, 16, 'hello world', StringTokenKind.TemplateLiteralEnd);
+      });
+
+      it('should tokenize nested tagged template literals', () => {
+        const tokens: Token[] = lex('tag`hello ${tag`world`}`');
+        expect(tokens.length).toBe(7);
+        expectIdentifierToken(tokens[0], 0, 3, 'tag');
+        expectStringToken(tokens[1], 3, 10, 'hello ', StringTokenKind.TemplateLiteralPart);
+        expectOperatorToken(tokens[2], 10, 12, '${');
+        expectIdentifierToken(tokens[3], 12, 15, 'tag');
+        expectStringToken(tokens[4], 15, 22, 'world', StringTokenKind.TemplateLiteralEnd);
+        expectOperatorToken(tokens[5], 22, 23, '}');
+        expectStringToken(tokens[6], 23, 24, '', StringTokenKind.TemplateLiteralEnd);
       });
     });
   });

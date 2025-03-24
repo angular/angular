@@ -2,8 +2,6 @@ load("//integration:index.bzl", "ng_integration_test")
 
 ng_integration_test(
     name = "test",
-    # TODO(crisbeto): Pinned temporarily until the CLI is updated to support TS 5.5.
-    pinned_npm_packages = ["typescript"],
     setup_chromium = True,
     track_payload_paths = [
         "/browser",

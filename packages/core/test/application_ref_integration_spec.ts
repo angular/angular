@@ -69,7 +69,7 @@ describe('ApplicationRef bootstrap', () => {
       expect(helloWorldComponent.log).toEqual(['OnInit', 'DoCheck', 'DoCheck']);
 
       // Cleanup TestabilityRegistry
-      const registry: TestabilityRegistry = getTestBed().get(TestabilityRegistry);
+      const registry = getTestBed().inject(TestabilityRegistry);
       registry.unregisterAllApplications();
     }),
   );

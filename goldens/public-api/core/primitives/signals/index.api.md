@@ -4,7 +4,7 @@
 
 ```ts
 
-// @public
+// @public (undocumented)
 export type ComputationFn<S, D> = (source: S, previous?: {
     source: S;
     value: D;
@@ -35,13 +35,13 @@ export function consumerMarkDirty(node: ReactiveNode): void;
 export function consumerPollProducersForChange(node: ReactiveNode): boolean;
 
 // @public
-export function createComputed<T>(computation: () => T): ComputedGetter<T>;
+export function createComputed<T>(computation: () => T, equal?: ValueEqualityFn<T>): ComputedGetter<T>;
 
 // @public (undocumented)
 export function createLinkedSignal<S, D>(sourceFn: () => S, computationFn: ComputationFn<S, D>, equalityFn?: ValueEqualityFn<D>): LinkedSignalGetter<S, D>;
 
 // @public
-export function createSignal<T>(initialValue: T): SignalGetter<T>;
+export function createSignal<T>(initialValue: T, equal?: ValueEqualityFn<T>): SignalGetter<T>;
 
 // @public (undocumented)
 export function createWatch(fn: (onCleanup: WatchCleanupRegisterFn) => void, schedule: (watch: Watch) => void, allowSignalWrites: boolean): Watch;
@@ -107,6 +107,9 @@ export interface Reactive {
 // @public (undocumented)
 export const REACTIVE_NODE: ReactiveNode;
 
+// @public (undocumented)
+export type ReactiveHookFn = (node: ReactiveNode) => void;
+
 // @public
 export interface ReactiveNode {
     consumerAllowSignalWrites: boolean;
@@ -132,19 +135,25 @@ export interface ReactiveNode {
 }
 
 // @public (undocumented)
-export function runPostSignalSetFn(): void;
+export function runPostProducerCreatedFn(node: ReactiveNode): void;
+
+// @public (undocumented)
+export function runPostSignalSetFn<T>(node: SignalNode<T>): void;
 
 // @public (undocumented)
 export function setActiveConsumer(consumer: ReactiveNode | null): ReactiveNode | null;
 
-// @public (undocumented)
+// @public
 export function setAlternateWeakRefImpl(impl: unknown): void;
 
 // @public (undocumented)
-export function setPostSignalSetFn(fn: (() => void) | null): (() => void) | null;
+export function setPostProducerCreatedFn(fn: ReactiveHookFn | null): ReactiveHookFn | null;
 
 // @public (undocumented)
-export function setThrowInvalidWriteToSignalError(fn: () => never): void;
+export function setPostSignalSetFn(fn: ReactiveHookFn | null): ReactiveHookFn | null;
+
+// @public (undocumented)
+export function setThrowInvalidWriteToSignalError(fn: <T>(node: SignalNode<T>) => never): void;
 
 // @public
 export const SIGNAL: unique symbol;
@@ -171,6 +180,9 @@ export function signalSetFn<T>(node: SignalNode<T>, newValue: T): void;
 
 // @public (undocumented)
 export function signalUpdateFn<T>(node: SignalNode<T>, updater: (value: T) => T): void;
+
+// @public
+export function untracked<T>(nonReactiveReadsFn: () => T): T;
 
 // @public
 export type ValueEqualityFn<T> = (a: T, b: T) => boolean;

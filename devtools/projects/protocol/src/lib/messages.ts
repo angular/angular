@@ -36,12 +36,13 @@ export interface DevToolsNode<DirType = DirectiveType, CmpType = ComponentType> 
   nativeElement?: Node;
   resolutionPath?: SerializedInjector[];
   hydration: HydrationStatus;
+  onPush?: boolean;
 }
 
 export interface SerializedInjector {
   id: string;
   name: string;
-  type: string;
+  type: 'imported-module' | 'environment' | 'element' | 'null' | 'hidden';
   node?: DevToolsNode;
   providers?: number;
 }

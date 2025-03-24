@@ -33,7 +33,6 @@ import {HEADER_OFFSET, TVIEW} from '@angular/core/src/render3/interfaces/view';
 import {getLView, leaveView, setBindingRootForHostBindings} from '@angular/core/src/render3/state';
 import {getNativeByIndex} from '@angular/core/src/render3/util/view_utils';
 import {keyValueArraySet} from '@angular/core/src/util/array_utils';
-import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {getElementClasses, getElementStyles} from '@angular/core/testing/src/styling';
 
 import {clearFirstUpdatePass, enterViewWithOneDiv, rewindBindingIndex} from './shared_spec';
@@ -79,58 +78,40 @@ describe('styling', () => {
   });
 
   it('should set style based on priority', () => {
-    ngDevModeResetPerfCounters();
     ɵɵstyleProp('color', 'red');
     ɵɵstyleProp('color', 'blue'); // Higher priority, should win.
     expectStyle(div).toEqual({color: 'blue'});
-    // The intermediate value has to set since it does not know if it is last one.
-    expect(ngDevMode!.rendererSetStyle).toEqual(2);
-    ngDevModeResetPerfCounters();
 
     clearFirstUpdatePass();
     rewindBindingIndex();
     ɵɵstyleProp('color', 'red'); // no change
     ɵɵstyleProp('color', 'green'); // change to green
     expectStyle(div).toEqual({color: 'green'});
-    expect(ngDevMode!.rendererSetStyle).toEqual(1);
-    ngDevModeResetPerfCounters();
 
     rewindBindingIndex();
     ɵɵstyleProp('color', 'black'); // First binding update
     expectStyle(div).toEqual({color: 'green'}); // Green still has priority.
-    expect(ngDevMode!.rendererSetStyle).toEqual(0);
-    ngDevModeResetPerfCounters();
 
     rewindBindingIndex();
     ɵɵstyleProp('color', 'black'); // no change
     ɵɵstyleProp('color', undefined); // Clear second binding
     expectStyle(div).toEqual({color: 'black'}); // default to first binding
-    expect(ngDevMode!.rendererSetStyle).toEqual(1);
-    ngDevModeResetPerfCounters();
 
     rewindBindingIndex();
     ɵɵstyleProp('color', null);
     expectStyle(div).toEqual({}); // default to first binding
-    expect(ngDevMode!.rendererSetStyle).toEqual(0);
-    expect(ngDevMode!.rendererRemoveStyle).toEqual(1);
   });
 
   it('should set class based on priority', () => {
-    ngDevModeResetPerfCounters();
     ɵɵclassProp('foo', false);
     ɵɵclassProp('foo', true); // Higher priority, should win.
     expectClass(div).toEqual({foo: true});
-    expect(ngDevMode!.rendererAddClass).toEqual(1);
-    ngDevModeResetPerfCounters();
 
     clearFirstUpdatePass();
     rewindBindingIndex();
     ɵɵclassProp('foo', false); // no change
     ɵɵclassProp('foo', undefined); // change (have no opinion)
     expectClass(div).toEqual({});
-    expect(ngDevMode!.rendererAddClass).toEqual(0);
-    expect(ngDevMode!.rendererRemoveClass).toEqual(1);
-    ngDevModeResetPerfCounters();
 
     rewindBindingIndex();
     ɵɵclassProp('foo', false); // no change
@@ -145,67 +126,41 @@ describe('styling', () => {
 
   describe('styleMap', () => {
     it('should work with maps', () => {
-      ngDevModeResetPerfCounters();
       ɵɵstyleMap({});
       expectStyle(div).toEqual({});
-      expect(ngDevMode!.rendererSetStyle).toEqual(0);
-      expect(ngDevMode!.rendererRemoveStyle).toEqual(0);
-      ngDevModeResetPerfCounters();
 
       clearFirstUpdatePass();
 
       rewindBindingIndex();
       ɵɵstyleMap({color: 'blue'});
       expectStyle(div).toEqual({color: 'blue'});
-      expect(ngDevMode!.rendererSetStyle).toEqual(1);
-      expect(ngDevMode!.rendererRemoveStyle).toEqual(0);
-      ngDevModeResetPerfCounters();
 
       rewindBindingIndex();
       ɵɵstyleMap({color: 'red'});
       expectStyle(div).toEqual({color: 'red'});
-      expect(ngDevMode!.rendererSetStyle).toEqual(1);
-      expect(ngDevMode!.rendererRemoveStyle).toEqual(0);
-      ngDevModeResetPerfCounters();
 
       rewindBindingIndex();
       ɵɵstyleMap({color: null, width: '100px'});
       expectStyle(div).toEqual({width: '100px'});
-      expect(ngDevMode!.rendererSetStyle).toEqual(1);
-      expect(ngDevMode!.rendererRemoveStyle).toEqual(1);
-      ngDevModeResetPerfCounters();
     });
 
     it('should work with object literal and strings', () => {
-      ngDevModeResetPerfCounters();
       ɵɵstyleMap('');
       expectStyle(div).toEqual({});
-      expect(ngDevMode!.rendererSetStyle).toEqual(0);
-      expect(ngDevMode!.rendererRemoveStyle).toEqual(0);
-      ngDevModeResetPerfCounters();
 
       clearFirstUpdatePass();
 
       rewindBindingIndex();
       ɵɵstyleMap('color: blue');
       expectStyle(div).toEqual({color: 'blue'});
-      expect(ngDevMode!.rendererSetStyle).toEqual(1);
-      expect(ngDevMode!.rendererRemoveStyle).toEqual(0);
-      ngDevModeResetPerfCounters();
 
       rewindBindingIndex();
       ɵɵstyleMap('color: red');
       expectStyle(div).toEqual({color: 'red'});
-      expect(ngDevMode!.rendererSetStyle).toEqual(1);
-      expect(ngDevMode!.rendererRemoveStyle).toEqual(0);
-      ngDevModeResetPerfCounters();
 
       rewindBindingIndex();
       ɵɵstyleMap('width: 100px');
       expectStyle(div).toEqual({width: '100px'});
-      expect(ngDevMode!.rendererSetStyle).toEqual(1);
-      expect(ngDevMode!.rendererRemoveStyle).toEqual(1);
-      ngDevModeResetPerfCounters();
     });
 
     it('should collaborate with properties', () => {

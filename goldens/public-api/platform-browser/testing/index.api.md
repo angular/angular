@@ -6,7 +6,6 @@
 
 import * as i0 from '@angular/core';
 import * as i1 from '@angular/platform-browser';
-import { PlatformRef } from '@angular/core';
 import { StaticProvider } from '@angular/core';
 
 // @public
@@ -20,7 +19,7 @@ export class BrowserTestingModule {
 }
 
 // @public
-export const platformBrowserTesting: (extraProviders?: StaticProvider[]) => PlatformRef;
+export const platformBrowserTesting: (extraProviders?: StaticProvider[]) => i0.PlatformRef;
 
 // (No @packageDocumentation comment for this package)
 

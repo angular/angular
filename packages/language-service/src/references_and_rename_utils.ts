@@ -16,6 +16,7 @@ import {
   TmplAstBoundEvent,
   TmplAstLetDeclaration,
   TmplAstNode,
+  TmplAstElement,
   TmplAstReference,
   TmplAstTextAttribute,
   TmplAstVariable,
@@ -43,7 +44,7 @@ import {
   getDirectiveMatchesForElementTag,
   getTemplateLocationFromTcbLocation,
   isWithin,
-  TemplateInfo,
+  TypeCheckInfo,
   toTextSpan,
 } from './utils';
 
@@ -83,12 +84,12 @@ export interface TemplateLocationDetails {
  * the targeted template node.
  */
 export function getTargetDetailsAtTemplatePosition(
-  {template, component}: TemplateInfo,
+  info: TypeCheckInfo,
   position: number,
   templateTypeChecker: TemplateTypeChecker,
 ): TemplateLocationDetails[] | null {
   // Find the AST node in the template at the position.
-  const positionDetails = getTargetAtPosition(template, position);
+  const positionDetails = getTargetAtPosition(info.nodes, position);
   if (positionDetails === null) {
     return null;
   }
@@ -102,7 +103,7 @@ export function getTargetDetailsAtTemplatePosition(
 
   for (const node of nodes) {
     // Get the information about the TCB at the template position.
-    const symbol = templateTypeChecker.getSymbolOfNode(node, component);
+    const symbol = templateTypeChecker.getSymbolOfNode(node, info.declaration);
     if (symbol === null) {
       continue;
     }
@@ -341,9 +342,7 @@ export function getRenameTextAndSpanAtPosition(
     } else if (node.valueSpan && isWithin(position, node.valueSpan)) {
       return {text: node.valueSpan.toString(), span: toTextSpan(node.valueSpan)};
     }
-  }
-
-  if (
+  } else if (
     node instanceof PropertyRead ||
     node instanceof PropertyWrite ||
     node instanceof SafePropertyRead ||
@@ -359,6 +358,8 @@ export function getRenameTextAndSpanAtPosition(
       span.length -= 2;
     }
     return {text, span};
+  } else if (node instanceof TmplAstElement) {
+    return {text: node.name, span: toTextSpan(node.startSourceSpan)};
   }
 
   return null;

@@ -35,7 +35,7 @@ export class KeyEventsApp {
     event.preventDefault();
   }
 
-  onShiftEnter(event: KeyboardEvent): void {
+  onShiftEnter(event: Event): void {
     this.shiftEnter = true;
     event.preventDefault();
   }

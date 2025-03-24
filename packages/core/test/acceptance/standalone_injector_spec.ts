@@ -30,7 +30,6 @@ describe('standalone injector', () => {
 
     @Component({
       selector: 'standalone',
-      standalone: true,
       imports: [ModuleWithAService],
       template: `({{service.value}})`,
     })
@@ -81,7 +80,6 @@ describe('standalone injector', () => {
 
     @Component({
       selector: 'standalone',
-      standalone: true,
       imports: [ModuleWithAService],
       template: `{{service.value}}`,
     })

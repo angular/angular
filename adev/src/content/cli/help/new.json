@@ -133,11 +133,6 @@
       "description": "Enable routing in the initial application project. This sets up the necessary files and modules for managing navigation between different views in your application."
     },
     {
-      "name": "server-routing",
-      "type": "boolean",
-      "description": "Create a server application in the initial project using the Server Routing and App Engine APIs (Developer Preview)."
-    },
-    {
       "name": "skip-git",
       "type": "boolean",
       "aliases": [

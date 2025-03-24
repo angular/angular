@@ -101,7 +101,7 @@ export class CommonModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<CommonModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<CommonModule, never, [typeof i1.NgClass, typeof i2.NgComponentOutlet, typeof i3.NgForOf, typeof i4.NgIf, typeof i5.NgTemplateOutlet, typeof i6.NgStyle, typeof i7.NgSwitch, typeof i7.NgSwitchCase, typeof i7.NgSwitchDefault, typeof i8.NgPlural, typeof i8.NgPluralCase, typeof i9.AsyncPipe, typeof i10.UpperCasePipe, typeof i10.LowerCasePipe, typeof i11.JsonPipe, typeof i12.SlicePipe, typeof i13.DecimalPipe, typeof i13.PercentPipe, typeof i10.TitleCasePipe, typeof i13.CurrencyPipe, typeof i14.DatePipe, typeof i15.I18nPluralPipe, typeof i16.I18nSelectPipe, typeof i17.KeyValuePipe], [typeof i1.NgClass, typeof i2.NgComponentOutlet, typeof i3.NgForOf, typeof i4.NgIf, typeof i5.NgTemplateOutlet, typeof i6.NgStyle, typeof i7.NgSwitch, typeof i7.NgSwitchCase, typeof i7.NgSwitchDefault, typeof i8.NgPlural, typeof i8.NgPluralCase, typeof i9.AsyncPipe, typeof i10.UpperCasePipe, typeof i10.LowerCasePipe, typeof i11.JsonPipe, typeof i12.SlicePipe, typeof i13.DecimalPipe, typeof i13.PercentPipe, typeof i10.TitleCasePipe, typeof i13.CurrencyPipe, typeof i14.DatePipe, typeof i15.I18nPluralPipe, typeof i16.I18nSelectPipe, typeof i17.KeyValuePipe]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<CommonModule, never, [typeof NgClass, typeof NgComponentOutlet, typeof NgForOf, typeof NgIf, typeof NgTemplateOutlet, typeof NgStyle, typeof NgSwitch, typeof NgSwitchCase, typeof NgSwitchDefault, typeof NgPlural, typeof NgPluralCase, typeof AsyncPipe, typeof UpperCasePipe, typeof LowerCasePipe, typeof JsonPipe, typeof SlicePipe, typeof DecimalPipe, typeof PercentPipe, typeof TitleCasePipe, typeof CurrencyPipe, typeof DatePipe, typeof I18nPluralPipe, typeof I18nSelectPipe, typeof KeyValuePipe], [typeof NgClass, typeof NgComponentOutlet, typeof NgForOf, typeof NgIf, typeof NgTemplateOutlet, typeof NgStyle, typeof NgSwitch, typeof NgSwitchCase, typeof NgSwitchDefault, typeof NgPlural, typeof NgPluralCase, typeof AsyncPipe, typeof UpperCasePipe, typeof LowerCasePipe, typeof JsonPipe, typeof SlicePipe, typeof DecimalPipe, typeof PercentPipe, typeof TitleCasePipe, typeof CurrencyPipe, typeof DatePipe, typeof I18nPluralPipe, typeof I18nSelectPipe, typeof KeyValuePipe]>;
 }
 
 // @public
@@ -605,6 +605,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
     constructor();
     disableOptimizedSrcset: boolean;
     fill: boolean;
+    protected generatePlaceholder(placeholderInput: string | boolean): string | boolean | null;
     height: number | undefined;
     loaderParams?: {
         [key: string]: any;
@@ -633,6 +634,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
     placeholder?: string | boolean;
     placeholderConfig?: ImagePlaceholderConfig;
     priority: boolean;
+    protected shouldBlurPlaceholder(placeholderConfig?: ImagePlaceholderConfig): boolean;
     sizes?: string;
     width: number | undefined;
     // (undocumented)
@@ -874,16 +876,16 @@ export { PopStateEvent_2 as PopStateEvent }
 export const PRECONNECT_CHECK_BLOCKLIST: InjectionToken<(string | string[])[]>;
 
 // @public
-export const provideCloudflareLoader: (path: string) => Provider[];
+export const provideCloudflareLoader: (path: string) => i0.Provider[];
 
 // @public
-export const provideCloudinaryLoader: (path: string) => Provider[];
+export const provideCloudinaryLoader: (path: string) => i0.Provider[];
 
 // @public
-export const provideImageKitLoader: (path: string) => Provider[];
+export const provideImageKitLoader: (path: string) => i0.Provider[];
 
 // @public
-export const provideImgixLoader: (path: string) => Provider[];
+export const provideImgixLoader: (path: string) => i0.Provider[];
 
 // @public
 export function provideNetlifyLoader(path?: string): Provider[];

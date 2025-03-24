@@ -25,7 +25,6 @@ import {
   ɵZONELESS_ENABLED as ZONELESS_ENABLED,
   ɵPendingTasksInternal as PendingTasks,
   ɵEffectScheduler as EffectScheduler,
-  ɵMicrotaskEffectScheduler as MicrotaskEffectScheduler,
 } from '@angular/core';
 import {Subscription} from 'rxjs';
 
@@ -89,7 +88,6 @@ export class ComponentFixture<T> {
   private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
   private readonly scheduler = inject(ɵChangeDetectionScheduler);
   private readonly rootEffectScheduler = inject(EffectScheduler);
-  private readonly microtaskEffectScheduler = inject(MicrotaskEffectScheduler);
   private readonly autoDetectDefault = this.zonelessEnabled ? true : false;
   private autoDetect =
     inject(ComponentFixtureAutoDetect, {optional: true}) ?? this.autoDetectDefault;
@@ -122,6 +120,17 @@ export class ComponentFixture<T> {
       this.subscriptions.add(
         this._ngZone.onError.subscribe({
           next: (error: any) => {
+            // The rethrow here is to ensure that errors don't go unreported. Since `NgZone.onHandleError` returns `false`,
+            // ZoneJS will not throw the error coming out of a task. Instead, the handling is defined by
+            // the chain of parent delegates and whether they indicate the error is handled in some way (by returning `false`).
+            // Unfortunately, 'onError' does not forward the information about whether the error was handled by a parent zone
+            // so cannot know here whether throwing is appropriate. As a half-solution, we can check to see if we're inside
+            // a fakeAsync context, which we know has its own error handling.
+            // https://github.com/angular/angular/blob/db2f2d99c82aae52d8a0ae46616c6411d070b35e/packages/zone.js/lib/zone-spec/fake-async-test.ts#L783-L784
+            // https://github.com/angular/angular/blob/db2f2d99c82aae52d8a0ae46616c6411d070b35e/packages/zone.js/lib/zone-spec/fake-async-test.ts#L473-L478
+            if (typeof Zone === 'undefined' || Zone.current.get('FakeAsyncTestZoneSpec')) {
+              return;
+            }
             throw error;
           },
         }),
@@ -133,7 +142,6 @@ export class ComponentFixture<T> {
    * Trigger a change detection cycle for the component.
    */
   detectChanges(checkNoChanges = true): void {
-    this.microtaskEffectScheduler.flush();
     const originalCheckNoChanges = this.componentRef.changeDetectorRef.checkNoChanges;
     try {
       if (!checkNoChanges) {
@@ -162,7 +170,6 @@ export class ComponentFixture<T> {
     } finally {
       this.componentRef.changeDetectorRef.checkNoChanges = originalCheckNoChanges;
     }
-    this.microtaskEffectScheduler.flush();
   }
 
   /**

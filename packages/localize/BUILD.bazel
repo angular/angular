@@ -1,5 +1,4 @@
 load("//tools:defaults.bzl", "api_golden_test_npm_package", "generate_api_docs", "ng_package", "ts_library")
-load("//packages/bazel:index.bzl", "types_bundle")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -18,33 +17,18 @@ ts_library(
     ],
 )
 
-types_bundle(
-    name = "api_type_definitions",
-    entry_point = "localize.d.ts",
-    output_name = "localize/index.d.ts",
-    deps = [":localize"],
-)
-
 ng_package(
     name = "npm_package",
     package_name = "@angular/localize",
     srcs = [
         "package.json",
-        ":api_type_definitions",
     ],
     nested_packages = [
         "//packages/localize/schematics:npm_package",
         "//packages/localize/tools:npm_package",
     ],
-    skip_type_bundling = [
-        # For the primary entry-point we disable automatic type bundling because API extractor
-        # does not properly handle module augmentation.
-        # To workaround this issue, type bundling is done as a separate step for all types
-        # except the main `index.d.ts` file which contains the module augmentation. The main
-        # file is reference in the package.json and also imports the bundle types. The bundled
-        # types are created via `api_type_definitions` above.
-        # TODO: Remove once https://github.com/microsoft/rushstack/issues/2090 is solved.
-        "",
+    side_effect_entry_points = [
+        "@angular/localize/init",
     ],
     tags = [
         "release-with-framework",

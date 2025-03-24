@@ -1,0 +1,42 @@
+load("@io_bazel_rules_sass//:defs.bzl", "npm_sass_library", "sass_binary", "sass_library")
+
+package(default_visibility = ["//visibility:public"])
+
+npm_sass_library(
+    name = "material_sass_deps",
+    deps = [
+        "@npm//@angular/cdk",
+        "@npm//@angular/material",
+    ],
+)
+
+sass_library(
+    name = "global",
+    srcs = ["_global.scss"],
+    deps = [":material_sass_deps"],
+)
+
+sass_library(
+    name = "theme",
+    srcs = ["_theme.scss"],
+)
+
+sass_library(
+    name = "browser",
+    srcs = ["_browser.scss"],
+)
+
+sass_library(
+    name = "colors",
+    srcs = ["_colors.scss"],
+)
+
+sass_binary(
+    name = "firefox",
+    src = "firefox.scss",
+)
+
+sass_binary(
+    name = "chrome",
+    src = "chrome.scss",
+)

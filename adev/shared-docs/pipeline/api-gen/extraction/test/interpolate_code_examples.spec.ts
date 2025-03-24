@@ -15,7 +15,7 @@ const tsMdBlock = (code: string) => '```angular-ts\n' + code + '\n```';
 const htmlMdBlock = (code: string) => '```angular-html\n' + code + '\n```';
 
 const entriesBuilder = (comment: string): DocEntry[] => [
-  {jsdocTags: [], rawComment: comment} as unknown as DocEntry,
+  {jsdocTags: [], rawComment: comment, description: ''} as unknown as DocEntry,
 ];
 
 const getComment = (entries: DocEntry[]) => entries[0].rawComment;
@@ -35,6 +35,7 @@ describe('interpolate_code_examples', () => {
           },
         ],
         rawComment: `{@example dummy/jsdocs_raw.ts region='function'}`,
+        description: `{@example dummy/jsdocs_raw.ts region='function'}`,
       },
     ];
 
@@ -51,18 +52,18 @@ describe('interpolate_code_examples', () => {
 
     interpolateCodeExamples(entries);
 
-    expect(getComment(entries)).toEqual('Code: ' + tsMdBlock("foo('Hello world!');"));
+    expect(getComment(entries)).toEqual('Code:' + tsMdBlock("foo('Hello world!');"));
   });
 
   it('should interpolate multiple examples', () => {
     const entries = entriesBuilder(
-      `First: {@example dummy/multi.ts region='example-1'} Second: {@example dummy/multi.ts region='example-2'}`,
+      `First:{@example dummy/multi.ts region='example-1'} Second:{@example dummy/multi.ts region='example-2'}`,
     );
 
     interpolateCodeExamples(entries);
 
     expect(getComment(entries)).toEqual(
-      `First: ${tsMdBlock('foo(null);')} Second: ${tsMdBlock("type Test = 'a' | 'b';")}`,
+      `First:${tsMdBlock('foo(null);')} Second:${tsMdBlock("type Test = 'a' | 'b';")}`,
     );
   });
 
@@ -78,7 +79,7 @@ describe('interpolate_code_examples', () => {
 }`;
 
     expect(getComment(entries)).toEqual(
-      `Outer: ${tsMdBlock(outer)} Inner: ${tsMdBlock('const leet = 1337;')}`,
+      `Outer:${tsMdBlock(outer)} Inner:${tsMdBlock('const leet = 1337;')}`,
     );
   });
 
@@ -87,12 +88,12 @@ describe('interpolate_code_examples', () => {
 
     interpolateCodeExamples(entries);
 
-    expect(getComment(entries)).toEqual('Code: ' + tsMdBlock('function baz() {\n}'));
+    expect(getComment(entries)).toEqual('Code:' + tsMdBlock('function baz() {\n}'));
   });
 
   it('should support examples defined by overlapping regions', () => {
     const entries = entriesBuilder(
-      `1st: {@example dummy/overlap.ts region='1st'} 2nd: {@example dummy/overlap.ts region='2nd'}`,
+      `1st:{@example dummy/overlap.ts region='1st'} 2nd:{@example dummy/overlap.ts region='2nd'}`,
     );
 
     interpolateCodeExamples(entries);
@@ -108,7 +109,7 @@ class Baz {
   example () {}
 }`;
 
-    expect(getComment(entries)).toEqual(`1st: ${tsMdBlock(first)} 2nd: ${tsMdBlock(second)}`);
+    expect(getComment(entries)).toEqual(`1st:${tsMdBlock(first)} 2nd:${tsMdBlock(second)}`);
   });
 
   it('should support multiple region combinations simultaneously', () => {
@@ -123,14 +124,14 @@ class Baz {
 
     interpolateCodeExamples(entries);
 
-    const output = `1: ${tsMdBlock("import {baz} from 'foo';")}
-2: ${tsMdBlock('function test() {}\nbaz();')}
-3: ${tsMdBlock(`function test2() {
+    const output = `1:${tsMdBlock("import {baz} from 'foo';")}
+2:${tsMdBlock('function test() {}\nbaz();')}
+3:${tsMdBlock(`function test2() {
   const leet = 1337;
 }`)}
-4: ${tsMdBlock('const leet = 1337;')}
-5: ${tsMdBlock("const A = 'a';\nconst B = 'b';")}
-6: ${tsMdBlock("const B = 'b';\nconst C = 'c';")}`;
+4:${tsMdBlock('const leet = 1337;')}
+5:${tsMdBlock("const A = 'a';\nconst B = 'b';")}
+6:${tsMdBlock("const B = 'b';\nconst C = 'c';")}`;
 
     expect(getComment(entries)).toEqual(output);
   });
@@ -140,6 +141,19 @@ class Baz {
 
     interpolateCodeExamples(entries);
 
-    expect(getComment(entries)).toEqual(`HTML: ${htmlMdBlock('    <i>Foo</i>\n    <p>Baz</p>')}`);
+    expect(getComment(entries)).toEqual(`HTML:${htmlMdBlock('    <i>Foo</i>\n    <p>Baz</p>')}`);
+  });
+
+  it('should interpolate an example and remove leading spaces', () => {
+    // To generate a valid markdown code block, there should not be any leanding spaces
+    const entries = entriesBuilder(`
+      Code: 
+      
+      {@example dummy/single.ts region='foo'}
+    `);
+
+    interpolateCodeExamples(entries);
+
+    expect(getComment(entries)).toMatch(/^\`\`\`/m);
   });
 });

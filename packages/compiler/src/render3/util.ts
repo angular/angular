@@ -75,7 +75,6 @@ export function guardedExpression(guard: string, expr: o.Expression): o.Expressi
     guardExpr,
     /* type */ undefined,
     /* sourceSpan */ undefined,
-    true,
   );
   return new o.BinaryOperatorExpr(o.BinaryOperator.And, guardUndefinedOrTrue, expr);
 }

@@ -1578,7 +1578,7 @@ describe('integration tests', function () {
     });
     const template = '<div><div *someImpvp="ctxBoolProp">hello</div></div>';
     TestBed.overrideComponent(MyComp, {set: {template}});
-    const anchorElement = getTestBed().get(ANCHOR_ELEMENT);
+    const anchorElement = getTestBed().inject(ANCHOR_ELEMENT);
     const fixture = TestBed.createComponent(MyComp);
 
     fixture.detectChanges();

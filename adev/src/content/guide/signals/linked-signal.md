@@ -92,7 +92,7 @@ The `computation` is a function that receives the new value of `source` and a `p
 ```typescript
 const activeUser = signal({id: 123, name: 'Morgan', isAdmin: true});
 
-const activeUserEditCopy = linkedSignal(() => activeUser()), {
+const activeUserEditCopy = linkedSignal(() => activeUser(), {
   // Consider the user as the same if it's the same `id`.
   equal: (a, b) => a.id === b.id,
 });

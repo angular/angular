@@ -34,6 +34,13 @@ describe('markdown to html', () => {
     const symbols = new Map<string, string>([
       ['AfterRenderPhase', 'core'],
       ['afterRender', 'core'],
+      ['EmbeddedViewRef', 'core'],
+      ['ChangeDetectionStrategy', 'core'],
+      ['ChangeDetectorRef', 'core'],
+      ['withNoHttpTransferCache', 'platform-browser'],
+      ['withHttpTransferCacheOptions', 'platform-browser'],
+      ['withI18nSupport', 'platform-browser'],
+      ['withEventReplay', 'platform-browser'],
     ]);
     setSymbols(symbols);
     for (const entry of entryJson.entries) {

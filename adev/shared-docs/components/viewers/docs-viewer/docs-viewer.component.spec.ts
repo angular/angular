@@ -8,7 +8,6 @@
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {provideNoopAnimations} from '@angular/platform-browser/animations';
 import {provideRouter} from '@angular/router';
 import {ExampleViewerContentLoader} from '../../../interfaces';
 import {EXAMPLE_VIEWER_CONTENT_LOADER} from '../../../providers';
@@ -82,7 +81,6 @@ describe('DocViewer', () => {
     await TestBed.configureTestingModule({
       imports: [DocViewer],
       providers: [
-        provideNoopAnimations(),
         provideRouter([]),
         provideExperimentalZonelessChangeDetection(),
         {provide: EXAMPLE_VIEWER_CONTENT_LOADER, useValue: exampleContentSpy},
@@ -121,7 +119,7 @@ describe('DocViewer', () => {
     expect(checkIcon.nativeElement.innerHTML).toBe('check');
   });
 
-  it('should display example viewer in multi file mode when user clicks expand', async () => {
+  it('should display example viewer in multi file mode when provided example is multi file snippet', async () => {
     const fixture = TestBed.createComponent(DocViewer);
     fixture.componentRef.setInput(
       'docContent',
@@ -131,10 +129,6 @@ describe('DocViewer', () => {
     await fixture.whenStable();
 
     const exampleViewer = fixture.debugElement.query(By.directive(ExampleViewer));
-    const expandButton = fixture.debugElement.query(
-      By.css('button[aria-label="Expand code example"]'),
-    );
-    expandButton.nativeElement.click();
 
     expect(exampleViewer).not.toBeNull();
     expect(exampleViewer.componentInstance.view()).toBe(CodeExampleViewMode.MULTI_FILE);

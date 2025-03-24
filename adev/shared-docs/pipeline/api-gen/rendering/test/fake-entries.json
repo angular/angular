@@ -754,6 +754,536 @@
         "startLine": 112,
         "endLine": 115
       }
+    },
+    {
+      "name": "HttpRequest",
+      "isAbstract": false,
+      "entryType": "undecorated_class",
+      "members": [
+        {
+          "name": "constructor",
+          "signatures": [
+            {
+              "name": "constructor",
+              "params": [
+                {
+                  "name": "method",
+                  "description": "",
+                  "type": "\"GET\" | \"HEAD\"",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "url",
+                  "description": "",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "init",
+                  "description": "",
+                  "type": "{ headers?: HttpHeaders | undefined; context?: HttpContext | undefined; reportProgress?: boolean | undefined; params?: HttpParams | undefined; responseType?: \"arraybuffer\" | \"blob\" | \"text\" | \"json\" | undefined; withCredentials?: boolean | undefined; transferCache?: boolean | { includeHeaders?: string[] | undefined; } | undefined; } | undefined",
+                  "isOptional": true,
+                  "isRestParam": false
+                }
+              ],
+              "returnType": "foobar",
+              "description": "",
+              "entryType": "function",
+              "jsdocTags": [],
+              "rawComment": "",
+              "generics": [],
+              "isNewType": false
+            },
+            {
+              "name": "constructor",
+              "params": [
+                {
+                  "name": "method",
+                  "description": "",
+                  "type": "\"DELETE\" | \"JSONP\" | \"OPTIONS\"",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "url",
+                  "description": "",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "init",
+                  "description": "",
+                  "type": "{ headers?: HttpHeaders | undefined; context?: HttpContext | undefined; reportProgress?: boolean | undefined; params?: HttpParams | undefined; responseType?: \"arraybuffer\" | \"blob\" | \"text\" | \"json\" | undefined; withCredentials?: boolean | undefined; } | undefined",
+                  "isOptional": true,
+                  "isRestParam": false
+                }
+              ],
+              "returnType": "foobar",
+              "description": "",
+              "entryType": "function",
+              "jsdocTags": [],
+              "rawComment": "",
+              "generics": [],
+              "isNewType": false
+            },
+            {
+              "name": "constructor",
+              "params": [
+                {
+                  "name": "method",
+                  "description": "",
+                  "type": "\"POST\"",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "url",
+                  "description": "",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "body",
+                  "description": "",
+                  "type": "T | null",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "init",
+                  "description": "",
+                  "type": "{ headers?: HttpHeaders | undefined; context?: HttpContext | undefined; reportProgress?: boolean | undefined; params?: HttpParams | undefined; responseType?: \"arraybuffer\" | \"blob\" | \"text\" | \"json\" | undefined; withCredentials?: boolean | undefined; transferCache?: boolean | { includeHeaders?: string[] | undefined; } | undefined; } | undefined",
+                  "isOptional": true,
+                  "isRestParam": false
+                }
+              ],
+              "returnType": "foobar",
+              "description": "",
+              "entryType": "function",
+              "jsdocTags": [],
+              "rawComment": "",
+              "generics": [],
+              "isNewType": false
+            },
+            {
+              "name": "constructor",
+              "params": [
+                {
+                  "name": "method",
+                  "description": "",
+                  "type": "\"PUT\" | \"PATCH\"",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "url",
+                  "description": "",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "body",
+                  "description": "",
+                  "type": "T | null",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "init",
+                  "description": "",
+                  "type": "{ headers?: HttpHeaders | undefined; context?: HttpContext | undefined; reportProgress?: boolean | undefined; params?: HttpParams | undefined; responseType?: \"arraybuffer\" | \"blob\" | \"text\" | \"json\" | undefined; withCredentials?: boolean | undefined; } | undefined",
+                  "isOptional": true,
+                  "isRestParam": false
+                }
+              ],
+              "returnType": "foobar",
+              "description": "",
+              "entryType": "function",
+              "jsdocTags": [],
+              "rawComment": "",
+              "generics": [],
+              "isNewType": false
+            },
+            {
+              "name": "constructor",
+              "params": [
+                {
+                  "name": "method",
+                  "description": "",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "url",
+                  "description": "",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "body",
+                  "description": "",
+                  "type": "T | null",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "init",
+                  "description": "",
+                  "type": "{ headers?: HttpHeaders | undefined; context?: HttpContext | undefined; reportProgress?: boolean | undefined; params?: HttpParams | undefined; responseType?: \"arraybuffer\" | \"blob\" | \"text\" | \"json\" | undefined; withCredentials?: boolean | undefined; transferCache?: boolean | { includeHeaders?: string[] | undefined; } | undefined; } | undefined",
+                  "isOptional": true,
+                  "isRestParam": false
+                }
+              ],
+              "returnType": "foobar",
+              "description": "",
+              "entryType": "function",
+              "jsdocTags": [],
+              "rawComment": "",
+              "generics": [],
+              "isNewType": false
+            },
+            {
+              "name": "constructor",
+              "params": [
+                {
+                  "name": "method",
+                  "description": "",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "url",
+                  "description": "",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "third",
+                  "description": "",
+                  "type": "T | { headers?: HttpHeaders | undefined; context?: HttpContext | undefined; reportProgress?: boolean | undefined; params?: HttpParams | undefined; responseType?: \"arraybuffer\" | \"blob\" | \"text\" | \"json\" | undefined; withCredentials?: boolean | undefined; transferCache?: boolean | { includeHeaders?: string[] | undefined; } | undefined; } | null | undefined",
+                  "isOptional": true,
+                  "isRestParam": false
+                },
+                {
+                  "name": "fourth",
+                  "description": "",
+                  "type": "{ headers?: HttpHeaders | undefined; context?: HttpContext | undefined; reportProgress?: boolean | undefined; params?: HttpParams | undefined; responseType?: \"arraybuffer\" | \"blob\" | \"text\" | \"json\" | undefined; withCredentials?: boolean | undefined; transferCache?: boolean | { includeHeaders?: string[] | undefined; } | undefined; } | undefined",
+                  "isOptional": true,
+                  "isRestParam": false
+                }
+              ],
+              "returnType": "foobar",
+              "description": "",
+              "entryType": "function",
+              "jsdocTags": [],
+              "rawComment": "",
+              "generics": [],
+              "isNewType": false
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "method",
+                "description": "",
+                "type": "string",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "url",
+                "description": "",
+                "type": "string",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "third",
+                "description": "",
+                "type": "T | { headers?: HttpHeaders | undefined; context?: HttpContext | undefined; reportProgress?: boolean | undefined; params?: HttpParams | undefined; responseType?: \"arraybuffer\" | \"blob\" | \"text\" | \"json\" | undefined; withCredentials?: boolean | undefined; transferCache?: boolean | { includeHeaders?: string[] | undefined; } | undefined; } | null | undefined",
+                "isOptional": true,
+                "isRestParam": false
+              },
+              {
+                "name": "fourth",
+                "description": "",
+                "type": "{ headers?: HttpHeaders | undefined; context?: HttpContext | undefined; reportProgress?: boolean | undefined; params?: HttpParams | undefined; responseType?: \"arraybuffer\" | \"blob\" | \"text\" | \"json\" | undefined; withCredentials?: boolean | undefined; transferCache?: boolean | { includeHeaders?: string[] | undefined; } | undefined; } | undefined",
+                "isOptional": true,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "HttpRequest<T>",
+            "generics": [],
+            "name": "constructor",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "body",
+          "type": "T | null",
+          "memberType": "property",
+          "memberTags": ["readonly"],
+          "description": "The request body, or `null` if one isn't set.\n\nBodies are not enforced to be immutable, as they can include a reference to any\nuser-defined data type. However, interceptors should take care to preserve\nidempotence by treating them as such.",
+          "jsdocTags": []
+        },
+        {
+          "name": "headers",
+          "type": "HttpHeaders",
+          "memberType": "property",
+          "memberTags": ["readonly"],
+          "description": "Outgoing headers for this request.",
+          "jsdocTags": []
+        },
+        {
+          "name": "context",
+          "type": "HttpContext",
+          "memberType": "property",
+          "memberTags": ["readonly"],
+          "description": "Shared and mutable context that can be used by interceptors",
+          "jsdocTags": []
+        },
+        {
+          "name": "reportProgress",
+          "type": "boolean",
+          "memberType": "property",
+          "memberTags": ["readonly"],
+          "description": "Whether this request should be made in a way that exposes progress events.\n\nProgress events are expensive (change detection runs on each event) and so\nthey should only be requested if the consumer intends to monitor them.\n\nNote: The `FetchBackend` doesn't support progress report on uploads.",
+          "jsdocTags": []
+        },
+        {
+          "name": "withCredentials",
+          "type": "boolean",
+          "memberType": "property",
+          "memberTags": ["readonly"],
+          "description": "Whether this request should be sent with outgoing credentials (cookies).",
+          "jsdocTags": []
+        },
+        {
+          "name": "responseType",
+          "type": "\"arraybuffer\" | \"blob\" | \"text\" | \"json\"",
+          "memberType": "property",
+          "memberTags": ["readonly"],
+          "description": "The expected response type of the server.\n\nThis is used to parse the response appropriately before returning it to\nthe requestee.",
+          "jsdocTags": []
+        },
+        {
+          "name": "method",
+          "type": "string",
+          "memberType": "property",
+          "memberTags": ["readonly"],
+          "description": "The outgoing HTTP request method.",
+          "jsdocTags": []
+        },
+        {
+          "name": "params",
+          "type": "HttpParams",
+          "memberType": "property",
+          "memberTags": ["readonly"],
+          "description": "Outgoing URL parameters.\n\nTo pass a string representation of HTTP parameters in the URL-query-string format,\nthe `HttpParamsOptions`' `fromString` may be used. For example:\n\n```ts\nnew HttpParams({fromString: 'angular=awesome'})\n```",
+          "jsdocTags": []
+        },
+        {
+          "name": "urlWithParams",
+          "type": "string",
+          "memberType": "property",
+          "memberTags": ["readonly"],
+          "description": "The outgoing URL with all URL parameters set.",
+          "jsdocTags": []
+        },
+        {
+          "name": "transferCache",
+          "type": "boolean | { includeHeaders?: string[] | undefined; } | undefined",
+          "memberType": "property",
+          "memberTags": ["readonly", "optional"],
+          "description": "The HttpTransferCache option for the request",
+          "jsdocTags": []
+        },
+        {
+          "name": "serializeBody",
+          "signatures": [
+            {
+              "name": "serializeBody",
+              "entryType": "function",
+              "description": "Transform the free-form body into a serialized format suitable for\ntransmission to the server.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/**\n   * Transform the free-form body into a serialized format suitable for\n   * transmission to the server.\n   */",
+              "returnType": "string | ArrayBuffer | Blob | FormData | URLSearchParams | null"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "string | ArrayBuffer | Blob | FormData | URLSearchParams | null",
+            "generics": [],
+            "name": "serializeBody",
+            "description": "Transform the free-form body into a serialized format suitable for\ntransmission to the server.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/**\n   * Transform the free-form body into a serialized format suitable for\n   * transmission to the server.\n   */"
+          },
+          "entryType": "function",
+          "description": "Transform the free-form body into a serialized format suitable for\ntransmission to the server.",
+          "jsdocTags": [],
+          "rawComment": "/**\n   * Transform the free-form body into a serialized format suitable for\n   * transmission to the server.\n   */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "detectContentTypeHeader",
+          "signatures": [
+            {
+              "name": "detectContentTypeHeader",
+              "entryType": "function",
+              "description": "Examine the body and attempt to infer an appropriate MIME type\nfor it.\n\nIf no such type can be inferred, this method will return `null`.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/**\n   * Examine the body and attempt to infer an appropriate MIME type\n   * for it.\n   *\n   * If no such type can be inferred, this method will return `null`.\n   */",
+              "returnType": "string | null"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "string | null",
+            "generics": [],
+            "name": "detectContentTypeHeader",
+            "description": "Examine the body and attempt to infer an appropriate MIME type\nfor it.\n\nIf no such type can be inferred, this method will return `null`.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/**\n   * Examine the body and attempt to infer an appropriate MIME type\n   * for it.\n   *\n   * If no such type can be inferred, this method will return `null`.\n   */"
+          },
+          "entryType": "function",
+          "description": "Examine the body and attempt to infer an appropriate MIME type\nfor it.\n\nIf no such type can be inferred, this method will return `null`.",
+          "jsdocTags": [],
+          "rawComment": "/**\n   * Examine the body and attempt to infer an appropriate MIME type\n   * for it.\n   *\n   * If no such type can be inferred, this method will return `null`.\n   */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "clone",
+          "signatures": [
+            {
+              "name": "clone",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "HttpRequest<T>"
+            },
+            {
+              "name": "clone",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "update",
+                  "description": "",
+                  "type": "{ headers?: HttpHeaders | undefined; context?: HttpContext | undefined; reportProgress?: boolean | undefined; params?: HttpParams | undefined; responseType?: \"arraybuffer\" | \"blob\" | \"text\" | \"json\" | undefined; withCredentials?: boolean | undefined; transferCache?: boolean | { includeHeaders?: string[] | undefined; } | undefined; body?: T | null | undefined; method?: string | undefined; url?: string | undefined; setHeaders?: { [name: string]: string | string[]; } | undefined; setParams?: { [param: string]: string; } | undefined; }",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "",
+              "returnType": "HttpRequest<T>"
+            },
+            {
+              "name": "clone",
+              "entryType": "function",
+              "description": "",
+              "generics": [{"name": "V"}],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "update",
+                  "description": "",
+                  "type": "{ headers?: HttpHeaders | undefined; context?: HttpContext | undefined; reportProgress?: boolean | undefined; params?: HttpParams | undefined; responseType?: \"arraybuffer\" | \"blob\" | \"text\" | \"json\" | undefined; withCredentials?: boolean | undefined; transferCache?: boolean | { includeHeaders?: string[] | undefined; } | undefined; body?: V | null | undefined; method?: string | undefined; url?: string | undefined; setHeaders?: { [name: string]: string | string[]; } | undefined; setParams?: { [param: string]: string; } | undefined; }",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "",
+              "returnType": "HttpRequest<V>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "update",
+                "description": "",
+                "type": "{ headers?: HttpHeaders | undefined; context?: HttpContext | undefined; reportProgress?: boolean | undefined; params?: HttpParams | undefined; responseType?: \"arraybuffer\" | \"blob\" | \"text\" | \"json\" | undefined; withCredentials?: boolean | undefined; transferCache?: boolean | { includeHeaders?: string[] | undefined; } | undefined; body?: any; method?: string | undefined; url?: string | undefined; setHeaders?: { [name: string]: string | string[]; } | undefined; setParams?: { [param: string]: string; } | undefined; }",
+                "isOptional": true,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "HttpRequest<any>",
+            "generics": [],
+            "name": "clone",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        }
+      ],
+      "generics": [{"name": "T"}],
+      "description": "An outgoing HTTP request with an optional typed body.\n\n`HttpRequest` represents an outgoing request, including URL, method,\nheaders, body, and other request configuration options. Instances should be\nassumed to be immutable. To modify a `HttpRequest`, the `clone`\nmethod should be used.",
+      "jsdocTags": [{"name": "publicApi", "comment": ""}],
+      "rawComment": "/**\n * An outgoing HTTP request with an optional typed body.\n *\n * `HttpRequest` represents an outgoing request, including URL, method,\n * headers, body, and other request configuration options. Instances should be\n * assumed to be immutable. To modify a `HttpRequest`, the `clone`\n * method should be used.\n *\n * @publicApi\n */",
+      "implements": [],
+      "source": {
+        "filePath": "/packages/common/http/src/request.ts",
+        "startLine": 131,
+        "endLine": 578
+      }
     }
+  ],
+  "symbols": [
+    ["AfterRenderPhase", "core"],
+    ["afterRender", "core"],
+    ["EmbeddedViewRef", "core"],
+    ["ChangeDetectionStrategy", "core"],
+    ["ChangeDetectorRef", "core"],
+    ["withNoHttpTransferCache", "platform-browser"],
+    ["withHttpTransferCacheOptions", "platform-browser"],
+    ["withI18nSupport", "platform-browser"],
+    ["withEventReplay", "platform-browser"]
   ]
 }

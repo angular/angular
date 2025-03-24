@@ -11,13 +11,13 @@ import {
   Component,
   DestroyRef,
   input,
-  computed,
   inject,
+  afterNextRender,
+  signal,
 } from '@angular/core';
-import {RouterLink} from '@angular/router';
+import {Location, ViewportScroller} from '@angular/common';
 import {TableOfContentsLevel} from '../../interfaces/index';
 import {TableOfContentsLoader} from '../../services/table-of-contents-loader.service';
-import {TableOfContentsScrollSpy} from '../../services/table-of-contents-scroll-spy.service';
 import {IconComponent} from '../icon/icon.component';
 
 @Component({
@@ -25,28 +25,44 @@ import {IconComponent} from '../icon/icon.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './table-of-contents.component.html',
   styleUrls: ['./table-of-contents.component.scss'],
-  imports: [RouterLink, IconComponent],
+  imports: [IconComponent],
 })
 export class TableOfContents {
   // Element that contains the content from which the Table of Contents is built
   readonly contentSourceElement = input.required<HTMLElement>();
+  readonly location = inject(Location);
 
-  private readonly scrollSpy = inject(TableOfContentsScrollSpy);
   private readonly tableOfContentsLoader = inject(TableOfContentsLoader);
+  private readonly viewportScroller = inject(ViewportScroller);
   private readonly destroyRef = inject(DestroyRef);
 
   tableOfContentItems = this.tableOfContentsLoader.tableOfContentItems;
 
-  activeItemId = this.scrollSpy.activeItemId;
-  shouldDisplayScrollToTop = computed(() => !this.scrollSpy.scrollbarThumbOnTop());
+  activeItemId = signal<string | null>(null);
   TableOfContentsLevel = TableOfContentsLevel;
 
-  ngAfterViewInit() {
-    this.tableOfContentsLoader.buildTableOfContent(this.contentSourceElement());
-    this.scrollSpy.startListeningToScroll(this.contentSourceElement(), this.destroyRef);
+  constructor() {
+    afterNextRender({
+      read: () => {
+        this.tableOfContentsLoader.buildTableOfContent(this.contentSourceElement());
+        this.setupActiveItemListener(this.contentSourceElement());
+      },
+    });
   }
 
   scrollToTop(): void {
-    this.scrollSpy.scrollToTop();
+    this.viewportScroller.scrollToPosition([0, 0]);
+  }
+
+  setupActiveItemListener(contentSourceElement: HTMLElement): void {
+    if (contentSourceElement) {
+      this.tableOfContentsLoader.setupIntersectionObserver(
+        contentSourceElement,
+        this.destroyRef,
+        (id) => {
+          this.activeItemId.set(id);
+        },
+      );
+    }
   }
 }

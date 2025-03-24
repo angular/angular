@@ -17,6 +17,7 @@ import {
 
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {assertDefined, assertEqual} from '../../util/assert';
+import {addAfterRenderSequencesForView} from '../after_render/view';
 import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags} from '../hooks';
 import {CONTAINER_HEADER_OFFSET, LContainerFlags, MOVED_VIEWS} from '../interfaces/container';
 import {ComponentTemplate, HostBindingsFunction, RenderFlags} from '../interfaces/definition';
@@ -33,8 +34,8 @@ import {
   TView,
 } from '../interfaces/view';
 import {
-  getOrCreateTemporaryConsumer,
   getOrBorrowReactiveLViewConsumer,
+  getOrCreateTemporaryConsumer,
   maybeReturnReactiveLViewConsumer,
   ReactiveLViewConsumer,
   viewShouldHaveReactiveConsumer,
@@ -64,22 +65,18 @@ import {
 } from '../util/view_utils';
 
 import {isDestroyed} from '../interfaces/type_checks';
-import {ProfilerEvent} from '../profiler_types';
 import {profiler} from '../profiler';
-import {runEffectsInView} from '../reactivity/view_effect_runner';
-import {executeTemplate, handleError} from './shared';
+import {ProfilerEvent} from '../profiler_types';
 import {executeViewQueryFn, refreshContentQueries} from '../queries/query_execution';
+import {runEffectsInView} from '../reactivity/view_effect_runner';
+import {executeTemplate} from './shared';
 
 /**
  * The maximum number of times the change detection traversal will rerun before throwing an error.
  */
 export const MAXIMUM_REFRESH_RERUNS = 100;
 
-export function detectChangesInternal(
-  lView: LView,
-  notifyErrorHandler = true,
-  mode = ChangeDetectionMode.Global,
-) {
+export function detectChangesInternal(lView: LView, mode = ChangeDetectionMode.Global) {
   const environment = lView[ENVIRONMENT];
   const rendererFactory = environment.rendererFactory;
 
@@ -94,11 +91,6 @@ export function detectChangesInternal(
 
   try {
     detectChangesInViewWhileDirty(lView, mode);
-  } catch (error) {
-    if (notifyErrorHandler) {
-      handleError(lView, error);
-    }
-    throw error;
   } finally {
     if (!checkNoChangesMode) {
       rendererFactory.end?.();
@@ -145,14 +137,10 @@ function detectChangesInViewWhileDirty(lView: LView, mode: ChangeDetectionMode) 
   }
 }
 
-export function checkNoChangesInternal(
-  lView: LView,
-  mode: CheckNoChangesMode,
-  notifyErrorHandler = true,
-) {
+export function checkNoChangesInternal(lView: LView, mode: CheckNoChangesMode) {
   setIsInCheckNoChangesMode(mode);
   try {
-    detectChangesInternal(lView, notifyErrorHandler);
+    detectChangesInternal(lView);
   } finally {
     setIsInCheckNoChangesMode(CheckNoChangesMode.Off);
   }
@@ -354,6 +342,8 @@ export function refreshView<T>(
     // no changes cycle, the component would be not be dirty for the next update pass. This would
     // be different in production mode where the component dirty state is not reset.
     if (!isInCheckNoChangesPass) {
+      addAfterRenderSequencesForView(lView);
+
       lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
     }
   } catch (e) {
@@ -498,11 +488,16 @@ function detectChangesInView(lView: LView, mode: ChangeDetectionMode) {
   if (shouldRefreshView) {
     refreshView(tView, lView, tView.template, lView[CONTEXT]);
   } else if (flags & LViewFlags.HasChildViewsToRefresh) {
-    runEffectsInView(lView);
+    if (!isInCheckNoChangesPass) {
+      runEffectsInView(lView);
+    }
     detectChangesInEmbeddedViews(lView, ChangeDetectionMode.Targeted);
     const components = tView.components;
     if (components !== null) {
       detectChangesInChildComponents(lView, components, ChangeDetectionMode.Targeted);
+    }
+    if (!isInCheckNoChangesPass) {
+      addAfterRenderSequencesForView(lView);
     }
   }
 }

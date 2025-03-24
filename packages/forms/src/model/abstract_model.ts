@@ -475,7 +475,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    *
    * @internal
    */
-  _hasOwnPendingAsyncValidator: null | {emitEvent: boolean} = null;
+  _hasOwnPendingAsyncValidator: null | {emitEvent: boolean; shouldHaveEmitted: boolean} = null;
 
   /** @internal */
   _pendingTouched = false;
@@ -759,8 +759,6 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * accessing a value of a parent control (using the `value` property) from the callback of this
    * event might result in getting a value that has not been updated yet. Subscribe to the
    * `valueChanges` event of the parent control instead.
-   *
-   * TODO: this should be piped from events() but is breaking in G3
    */
   public readonly valueChanges!: Observable<TValue>;
 
@@ -770,8 +768,6 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    *
    * @see {@link FormControlStatus}
    * @see {@link AbstractControl.status}
-   *
-   * TODO: this should be piped from events() but is breaking in G3
    */
   public readonly statusChanges!: Observable<FormControlStatus>;
 
@@ -1391,7 +1387,10 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
   private _runAsyncValidator(shouldHaveEmitted: boolean, emitEvent?: boolean): void {
     if (this.asyncValidator) {
       this.status = PENDING;
-      this._hasOwnPendingAsyncValidator = {emitEvent: emitEvent !== false};
+      this._hasOwnPendingAsyncValidator = {
+        emitEvent: emitEvent !== false,
+        shouldHaveEmitted: shouldHaveEmitted !== false,
+      };
       const obs = toObservable(this.asyncValidator(this));
       this._asyncValidationSubscription = obs.subscribe((errors: ValidationErrors | null) => {
         this._hasOwnPendingAsyncValidator = null;
@@ -1409,7 +1408,10 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
 
       // we're cancelling the validator subscribtion, we keep if it should have emitted
       // because we want to emit eventually if it was required at least once.
-      const shouldHaveEmitted = this._hasOwnPendingAsyncValidator?.emitEvent ?? false;
+      const shouldHaveEmitted =
+        (this._hasOwnPendingAsyncValidator?.emitEvent ||
+          this._hasOwnPendingAsyncValidator?.shouldHaveEmitted) ??
+        false;
       this._hasOwnPendingAsyncValidator = null;
       return shouldHaveEmitted;
     }
@@ -1626,6 +1628,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
 
   /** @internal */
   _initObservables() {
+    // TODO: this should be piped from events() but is breaking in G3
     (this as Writable<this>).valueChanges = new EventEmitter();
     (this as Writable<this>).statusChanges = new EventEmitter();
   }

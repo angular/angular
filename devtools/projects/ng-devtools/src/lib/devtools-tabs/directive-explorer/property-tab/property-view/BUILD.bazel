@@ -22,6 +22,7 @@ _STYLE_LABELS = [
     sass_binary(
         name = label,
         src = src,
+        deps = ["//devtools/projects/ng-devtools/src/styles:theme"],
     )
     for label, src in zip(_STYLE_LABELS, _STYLE_SRCS)
 ]
@@ -47,10 +48,10 @@ ng_module(
         "property-tab-body.component.html",
     ] + _STYLE_LABELS,
     deps = [
-        "//devtools/projects/ng-devtools/src/lib:frame_manager",
         "//devtools/projects/ng-devtools/src/lib/application-environment",
+        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection:injector_tree_visualizer",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection:resolution_path",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection/resolution-path",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
         "//devtools/projects/protocol",

@@ -10,7 +10,7 @@
           (removeComponentHighlight)="removeComponentHighlight()"
           (toggleInspector)="toggleInspector.emit()"
           [forest]="forest()"
-          [currentSelectedElement]="currentSelectedElement()"
+          [currentSelectedElement]="currentSelectedElement()!"
           [showCommentNodes]="showCommentNodes()"
         />
       </as-split-area>
@@ -20,7 +20,7 @@
             (mouseLeaveNode)="unhighlight()"
             (mouseOverNode)="highlight($event)"
             (handleSelect)="handleSelect($event)"
-            [parents]="parents()"
+            [parents]="parents()!"
           />
         }
       </as-split-area>
@@ -29,7 +29,7 @@
   <as-split-area size="40" minSize="25" class="prop-split">
     <div class="property-tab-wrapper">
       <ng-property-tab
-        [currentSelectedElement]="currentSelectedElement()"
+        [currentSelectedElement]="currentSelectedElement()!"
         (inspect)="inspect($event)"
         (viewSource)="viewSource($event)"
       />

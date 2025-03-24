@@ -1,3 +1,5 @@
+@use '../../../../styles/theme' as theme;
+
 .bar-graph-container {
   padding: 2px;
   height: 54px;
@@ -62,7 +64,7 @@
   }
 }
 
-:host-context(.dark-theme) {
+@include theme.dark-theme {
   .bar-graph-container .bar-container .frame-bar {
     &:hover {
       background-color: #262d36;

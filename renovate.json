@@ -26,6 +26,7 @@
     "executionMode": "branch"
   },
   "ignoreDeps": [
+    "@angular/build-tooling",
     "@bazel/ibazel",
     "@bazel/runfiles",
     "@rollup/plugin-node-resolve",
@@ -55,6 +56,7 @@
     "rxjs",
     "selenium-webdriver",
     "systemjs",
+    "typescript",
     "unist-util-filter",
     "unist-util-source",
     "unist-util-visit",
@@ -100,10 +102,7 @@
     },
     {
       "groupName": "eslint dependencies",
-      "matchPackageNames": [
-        "@angular-eslint/{/,}**",
-        "@typescript-eslint/{/,}**"
-      ]
+      "matchPackageNames": ["@angular-eslint/{/,}**", "@typescript-eslint/{/,}**"]
     },
     {
       "matchPackageNames": ["typescript", "tslib"],

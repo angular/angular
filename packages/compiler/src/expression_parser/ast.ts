@@ -386,6 +386,19 @@ export class TypeofExpression extends AST {
   }
 }
 
+export class VoidExpression extends AST {
+  constructor(
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    public expression: AST,
+  ) {
+    super(span, sourceSpan);
+  }
+  override visit(visitor: AstVisitor, context: any = null): any {
+    return visitor.visitVoidExpression(this, context);
+  }
+}
+
 export class NonNullAssert extends AST {
   constructor(
     span: ParseSpan,
@@ -429,6 +442,21 @@ export class SafeCall extends AST {
   }
 }
 
+export class TaggedTemplateLiteral extends AST {
+  constructor(
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    public tag: AST,
+    public template: TemplateLiteral,
+  ) {
+    super(span, sourceSpan);
+  }
+
+  override visit(visitor: AstVisitor, context?: any) {
+    return visitor.visitTaggedTemplateLiteral(this, context);
+  }
+}
+
 export class TemplateLiteral extends AST {
   constructor(
     span: ParseSpan,
@@ -443,6 +471,7 @@ export class TemplateLiteral extends AST {
     return visitor.visitTemplateLiteral(this, context);
   }
 }
+
 export class TemplateLiteralElement extends AST {
   constructor(
     span: ParseSpan,
@@ -454,6 +483,20 @@ export class TemplateLiteralElement extends AST {
 
   override visit(visitor: AstVisitor, context?: any) {
     return visitor.visitTemplateLiteralElement(this, context);
+  }
+}
+
+export class ParenthesizedExpression extends AST {
+  constructor(
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    public expression: AST,
+  ) {
+    super(span, sourceSpan);
+  }
+
+  override visit(visitor: AstVisitor, context?: any) {
+    return visitor.visitParenthesizedExpression(this, context);
   }
 }
 
@@ -576,6 +619,7 @@ export interface AstVisitor {
   visitPipe(ast: BindingPipe, context: any): any;
   visitPrefixNot(ast: PrefixNot, context: any): any;
   visitTypeofExpression(ast: TypeofExpression, context: any): any;
+  visitVoidExpression(ast: TypeofExpression, context: any): any;
   visitNonNullAssert(ast: NonNullAssert, context: any): any;
   visitPropertyRead(ast: PropertyRead, context: any): any;
   visitPropertyWrite(ast: PropertyWrite, context: any): any;
@@ -585,6 +629,8 @@ export interface AstVisitor {
   visitSafeCall(ast: SafeCall, context: any): any;
   visitTemplateLiteral(ast: TemplateLiteral, context: any): any;
   visitTemplateLiteralElement(ast: TemplateLiteralElement, context: any): any;
+  visitTaggedTemplateLiteral(ast: TaggedTemplateLiteral, context: any): any;
+  visitParenthesizedExpression(ast: ParenthesizedExpression, context: any): any;
   visitASTWithSource?(ast: ASTWithSource, context: any): any;
   /**
    * This function is optionally defined to allow classes that implement this
@@ -648,6 +694,9 @@ export class RecursiveAstVisitor implements AstVisitor {
   visitTypeofExpression(ast: TypeofExpression, context: any) {
     this.visit(ast.expression, context);
   }
+  visitVoidExpression(ast: VoidExpression, context: any) {
+    this.visit(ast.expression, context);
+  }
   visitNonNullAssert(ast: NonNullAssert, context: any): any {
     this.visit(ast.expression, context);
   }
@@ -686,6 +735,13 @@ export class RecursiveAstVisitor implements AstVisitor {
     }
   }
   visitTemplateLiteralElement(ast: TemplateLiteralElement, context: any) {}
+  visitTaggedTemplateLiteral(ast: TaggedTemplateLiteral, context: any) {
+    this.visit(ast.tag, context);
+    this.visit(ast.template, context);
+  }
+  visitParenthesizedExpression(ast: ParenthesizedExpression, context: any) {
+    this.visit(ast.expression, context);
+  }
   // This is not part of the AstVisitor interface, just a helper method
   visitAll(asts: AST[], context: any): any {
     for (const ast of asts) {

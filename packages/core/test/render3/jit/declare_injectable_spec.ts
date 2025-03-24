@@ -18,16 +18,19 @@ import {
   ɵɵInjectableDeclaration,
   ɵɵngDeclareInjectable,
   ɵɵngDeclareInjector,
-  ɵɵngDeclareNgModule,
 } from '@angular/core';
+import {RetrievingInjector} from '@angular/core/src/di/injector_compatibility';
 
 describe('Injectable declaration jit compilation', () => {
-  let previousInjector: Injector | null | undefined;
+  let previousInjector: RetrievingInjector | null | undefined;
   let previousInjectorProfilerContext: ɵInjectorProfilerContext;
   beforeEach(() => {
-    const injector = ɵcreateInjector(TestInjector);
-    previousInjector = ɵsetCurrentInjector(injector);
-    previousInjectorProfilerContext = ɵsetInjectorProfilerContext({injector, token: null});
+    const injector = new RetrievingInjector(ɵcreateInjector(TestInjector));
+    previousInjector = ɵsetCurrentInjector(injector) as RetrievingInjector;
+    previousInjectorProfilerContext = ɵsetInjectorProfilerContext({
+      injector: injector.injector,
+      token: null,
+    });
   });
   afterEach(() => {
     ɵsetCurrentInjector(previousInjector);

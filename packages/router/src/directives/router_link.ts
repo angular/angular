@@ -21,6 +21,8 @@ import {
   ɵRuntimeError as RuntimeError,
   SimpleChanges,
   ɵɵsanitizeUrlOrResourceUrl,
+  ɵINTERNAL_APPLICATION_ERROR_HANDLER,
+  inject,
 } from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
 
@@ -202,6 +204,8 @@ export class RouterLink implements OnChanges, OnDestroy {
   /** @internal */
   onChanges = new Subject<RouterLink>();
 
+  private readonly applicationErrorHandler = inject(ɵINTERNAL_APPLICATION_ERROR_HANDLER);
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -349,7 +353,10 @@ export class RouterLink implements OnChanges, OnDestroy {
       state: this.state,
       info: this.info,
     };
-    this.router.navigateByUrl(urlTree, extras);
+    // navigateByUrl is mocked frequently in tests... Reduce breakages when adding `catch`
+    this.router.navigateByUrl(urlTree, extras)?.catch((e) => {
+      this.applicationErrorHandler(e);
+    });
 
     // Return `false` for `<a>` elements to prevent default action
     // and cancel the native behavior, since the navigation is handled

@@ -7,7 +7,6 @@
  */
 
 import {inject, InjectionToken} from './di';
-import {NgZone} from './zone';
 
 /**
  * Provides a hook for centralized exception handling.
@@ -53,18 +52,14 @@ export class ErrorHandler {
 
 /**
  * `InjectionToken` used to configure how to call the `ErrorHandler`.
- *
- * `NgZone` is provided by default today so the default (and only) implementation for this
- * is calling `ErrorHandler.handleError` outside of the Angular zone.
  */
 export const INTERNAL_APPLICATION_ERROR_HANDLER = new InjectionToken<(e: any) => void>(
   typeof ngDevMode === 'undefined' || ngDevMode ? 'internal error handler' : '',
   {
     providedIn: 'root',
     factory: () => {
-      const zone = inject(NgZone);
       const userErrorHandler = inject(ErrorHandler);
-      return (e: unknown) => zone.runOutsideAngular(() => userErrorHandler.handleError(e));
+      return (e: unknown) => userErrorHandler.handleError(e);
     },
   },
 );

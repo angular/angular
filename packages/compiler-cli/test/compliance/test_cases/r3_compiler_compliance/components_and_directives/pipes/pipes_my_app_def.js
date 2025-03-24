@@ -20,7 +20,7 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
     if (rf & 2) {
       $r3$.ɵɵtextInterpolate($r3$.ɵɵpipeBind2(2, 6, $r3$.ɵɵpipeBind2(1, 3, ctx.name, ctx.size), ctx.size));
       $r3$.ɵɵadvance(4);
-      $r3$.ɵɵtextInterpolate2("", $r3$.ɵɵpipeBindV(5, 9, $r3$.ɵɵpureFunction1(18, $c0$, ctx.name)), " ", ctx.name ? 1 : $r3$.ɵɵpipeBind1(6, 16, 2), "");
+      $r3$.ɵɵtextInterpolate2("", $r3$.ɵɵpipeBindV(5, 9, $r3$.ɵɵpureFunction1(18, $c0$, ctx.name)), " ", ctx.name ? 1 : $r3$.ɵɵpipeBind1(6, 16, 2));
     }
   },
   dependencies: [MyPipe, MyPurePipe],

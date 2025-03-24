@@ -13,19 +13,20 @@ import {
   presetImportManagerForceNamespaceImports,
   translateStatement,
 } from '../../translator';
+import {ClassDeclaration} from '../../reflection';
 import ts from 'typescript';
 
 /**
  * Gets the declaration for the function that replaces the metadata of a class during HMR.
  * @param compilationResults Code generated for the class during compilation.
  * @param meta HMR metadata about the class.
- * @param sourceFile File in which the class is defined.
+ * @param declaration Class for which the update declaration is being generated.
  */
 export function getHmrUpdateDeclaration(
   compilationResults: CompileResult[],
   constantStatements: o.Statement[],
   meta: R3HmrMetadata,
-  sourceFile: ts.SourceFile,
+  declaration: ClassDeclaration,
 ): ts.FunctionDeclaration {
   const namespaceSpecifiers = meta.namespaceDependencies.reduce((result, current) => {
     result.set(current.moduleName, current.assignedName);
@@ -37,6 +38,7 @@ export function getHmrUpdateDeclaration(
     rewriter: importRewriter,
   });
   const callback = compileHmrUpdateCallback(compilationResults, constantStatements, meta);
+  const sourceFile = ts.getOriginalNode(declaration).getSourceFile();
   const node = translateStatement(sourceFile, callback, importManager) as ts.FunctionDeclaration;
 
   // The output AST doesn't support modifiers so we have to emit to

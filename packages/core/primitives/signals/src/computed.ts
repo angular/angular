@@ -16,6 +16,7 @@ import {
   ReactiveNode,
   setActiveConsumer,
   SIGNAL,
+  runPostProducerCreatedFn,
 } from './graph';
 
 /**
@@ -51,9 +52,16 @@ export type ComputedGetter<T> = (() => T) & {
 /**
  * Create a computed signal which derives a reactive value from an expression.
  */
-export function createComputed<T>(computation: () => T): ComputedGetter<T> {
+export function createComputed<T>(
+  computation: () => T,
+  equal?: ValueEqualityFn<T>,
+): ComputedGetter<T> {
   const node: ComputedNode<T> = Object.create(COMPUTED_NODE);
   node.computation = computation;
+
+  if (equal !== undefined) {
+    node.equal = equal;
+  }
 
   const computed = () => {
     // Check if the value needs updating before returning it.
@@ -69,6 +77,7 @@ export function createComputed<T>(computation: () => T): ComputedGetter<T> {
     return node.value;
   };
   (computed as ComputedGetter<T>)[SIGNAL] = node;
+  runPostProducerCreatedFn(node);
   return computed as unknown as ComputedGetter<T>;
 }
 

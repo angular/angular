@@ -73,6 +73,15 @@ describe('TypeScriptAstFactory', () => {
       const assignment = factory.createBinaryExpression(left, '+', right);
       expect(generate(assignment)).toEqual('17 + 42');
     });
+
+    it('should create a binary operation node for exponentiation', () => {
+      const {
+        items: [left, right],
+        generate,
+      } = setupExpressions(`2`, `3`);
+      const assignment = factory.createBinaryExpression(left, '**', right);
+      expect(generate(assignment)).toEqual('2 ** 3');
+    });
   });
 
   describe('createDynamicImport()', () => {
@@ -406,6 +415,17 @@ describe('TypeScriptAstFactory', () => {
       } = setupExpressions(`42`);
       const typeofExpr = factory.createTypeOfExpression(expr);
       expect(generate(typeofExpr)).toEqual('typeof 42');
+    });
+  });
+
+  describe('createVoidExpression()', () => {
+    it('should create a void expression node', () => {
+      const {
+        items: [expr],
+        generate,
+      } = setupExpressions(`42`);
+      const voidExpr = factory.createVoidExpression(expr);
+      expect(generate(voidExpr)).toEqual('void 42');
     });
   });
 

@@ -7,7 +7,7 @@
  */
 
 import {EnvironmentInjector, ProviderToken, runInInjectionContext} from '@angular/core';
-import {EMPTY, from, MonoTypeOperatorFunction, Observable, of, throwError} from 'rxjs';
+import {defer, EMPTY, from, MonoTypeOperatorFunction, Observable, of, throwError} from 'rxjs';
 import {catchError, concatMap, first, map, mergeMap, takeLast, tap} from 'rxjs/operators';
 
 import {RedirectCommand, ResolveData} from '../models';
@@ -89,13 +89,16 @@ function runResolve(
   if (config?.title !== undefined && !hasStaticTitle(config)) {
     resolve[RouteTitleKey] = config.title;
   }
-  return resolveNode(resolve, futureARS, futureRSS, injector).pipe(
-    map((resolvedData: any) => {
-      futureARS._resolvedData = resolvedData;
-      futureARS.data = getInherited(futureARS, futureARS.parent, paramsInheritanceStrategy).resolve;
-      return null;
-    }),
-  );
+  return defer(() => {
+    futureARS.data = getInherited(futureARS, futureARS.parent, paramsInheritanceStrategy).resolve;
+    return resolveNode(resolve, futureARS, futureRSS, injector).pipe(
+      map((resolvedData: any) => {
+        futureARS._resolvedData = resolvedData;
+        futureARS.data = {...futureARS.data, ...resolvedData};
+        return null;
+      }),
+    );
+  });
 }
 
 function resolveNode(

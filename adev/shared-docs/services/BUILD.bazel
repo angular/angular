@@ -25,7 +25,6 @@ ng_module(
         ],
     ),
     deps = [
-        "//adev/shared-docs/constants",
         "//adev/shared-docs/interfaces",
         "//adev/shared-docs/providers",
         "//adev/shared-docs/utils",

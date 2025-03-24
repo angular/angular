@@ -21,7 +21,14 @@ import {assertFirstCreatePass} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
 import {ComponentTemplate} from '../interfaces/definition';
-import {LocalRefExtractor, TAttributes, TContainerNode, TNode, TNodeType} from '../interfaces/node';
+import {
+  LocalRefExtractor,
+  TAttributes,
+  TContainerNode,
+  TNode,
+  TNodeFlags,
+  TNodeType,
+} from '../interfaces/node';
 import {RComment} from '../interfaces/renderer_dom';
 import {isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView, TViewType} from '../interfaces/view';
@@ -38,13 +45,12 @@ import {
 import {getOrCreateTNode} from '../tnode_manipulation';
 import {mergeHostAttrs} from '../util/attrs_utils';
 import {getConstant} from '../util/view_utils';
+import {addToEndOfViewTree, createTView} from '../view/construction';
+import {createLContainer} from '../view/container';
 import {resolveDirectives} from '../view/directives';
 
 import {
-  addToEndOfViewTree,
-  createDirectivesInstancesInInstruction,
-  createLContainer,
-  createTView,
+  createDirectivesInstances,
   findDirectiveDefMatches,
   saveResolvedLocalsInData,
 } from './shared';
@@ -128,6 +134,7 @@ export function declareTemplate(
   vars: number,
   tagName?: string | null,
   attrs?: TAttributes | null,
+  flags?: TNodeFlags,
   localRefsIndex?: number | null,
   localRefExtractor?: LocalRefExtractor,
 ): TNode {
@@ -145,6 +152,10 @@ export function declareTemplate(
         localRefsIndex,
       )
     : (declarationTView.data[adjustedIndex] as TContainerNode);
+
+  if (flags) {
+    tNode.flags |= flags;
+  }
   setCurrentTNode(tNode, false);
 
   const comment = _locateOrCreateContainerAnchor(
@@ -169,7 +180,7 @@ export function declareTemplate(
   populateDehydratedViewsInLContainer(lContainer, tNode, declarationLView);
 
   if (isDirectiveHost(tNode)) {
-    createDirectivesInstancesInInstruction(declarationTView, declarationLView, tNode);
+    createDirectivesInstances(declarationTView, declarationLView, tNode);
   }
 
   if (localRefsIndex != null) {
@@ -220,6 +231,7 @@ export function ɵɵtemplate(
     vars,
     tagName,
     attrs,
+    undefined,
     localRefsIndex,
     localRefExtractor,
   );

@@ -42,6 +42,8 @@ function recursivelyProcessView(view: ViewCompilationUnit, parentScope: Scope | 
 
   for (const op of view.create) {
     switch (op.kind) {
+      case ir.OpKind.ConditionalCreate:
+      case ir.OpKind.ConditionalBranchCreate:
       case ir.OpKind.Template:
         // Descend into child embedded views.
         recursivelyProcessView(view.job.views.get(op.xref)!, scope);
@@ -56,6 +58,9 @@ function recursivelyProcessView(view: ViewCompilationUnit, parentScope: Scope | 
         recursivelyProcessView(view.job.views.get(op.xref)!, scope);
         if (op.emptyView) {
           recursivelyProcessView(view.job.views.get(op.emptyView)!, scope);
+        }
+        if (op.trackByOps !== null) {
+          op.trackByOps.prepend(generateVariablesInScopeForView(view, scope, false));
         }
         break;
       case ir.OpKind.Listener:
@@ -174,6 +179,8 @@ function getScopeForView(view: ViewCompilationUnit, parent: Scope | null): Scope
   for (const op of view.create) {
     switch (op.kind) {
       case ir.OpKind.ElementStart:
+      case ir.OpKind.ConditionalCreate:
+      case ir.OpKind.ConditionalBranchCreate:
       case ir.OpKind.Template:
         if (!Array.isArray(op.localRefs)) {
           throw new Error(`AssertionError: expected localRefs to be an array`);

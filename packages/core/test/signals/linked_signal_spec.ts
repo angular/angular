@@ -7,6 +7,7 @@
  */
 
 import {isSignal, linkedSignal, signal, computed} from '@angular/core';
+import {setPostProducerCreatedFn} from '@angular/core/primitives/signals';
 import {testingEffect} from './effect_util';
 
 describe('linkedSignal', () => {
@@ -274,5 +275,15 @@ describe('linkedSignal', () => {
 
     choice.set('explicit');
     expect(choice()).toBe('explicit');
+  });
+
+  it('should call the post-producer-created fn when signal is called', () => {
+    let producers = 0;
+    const prev = setPostProducerCreatedFn(() => producers++);
+    const options = signal(['apple', 'banana', 'fig']);
+    linkedSignal(() => options()[0]);
+
+    expect(producers).toBe(2);
+    setPostProducerCreatedFn(prev);
   });
 });

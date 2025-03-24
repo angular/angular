@@ -140,6 +140,10 @@ class SerializeExpressionVisitor implements expr.AstVisitor {
     return `typeof ${ast.expression.visit(this, context)}`;
   }
 
+  visitVoidExpression(ast: expr.VoidExpression, context: any) {
+    return `void ${ast.expression.visit(this, context)}`;
+  }
+
   visitASTWithSource(ast: expr.ASTWithSource, context: any): string {
     return ast.ast.visit(this, context);
   }
@@ -158,6 +162,14 @@ class SerializeExpressionVisitor implements expr.AstVisitor {
 
   visitTemplateLiteralElement(ast: expr.TemplateLiteralElement, context: any) {
     return ast.text;
+  }
+
+  visitTaggedTemplateLiteral(ast: expr.TaggedTemplateLiteral, context: any) {
+    return ast.tag.visit(this, context) + ast.template.visit(this, context);
+  }
+
+  visitParenthesizedExpression(ast: expr.ParenthesizedExpression, context: any) {
+    return '(' + ast.expression.visit(this, context) + ')';
   }
 }
 

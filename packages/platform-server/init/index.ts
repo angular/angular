@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-// This file is not used to build this module. It is only used during editing
-// by the TypeScript language service and during build for verifcation. `ngc`
-// replaces this file with production index.ts when it rewrites private symbol
-// names.
+import './src/init';
 
-export * from './public_api';
+// This ensures this is still a module and can be imported.
+export const ɵɵmoduleMarker = true;

@@ -14,7 +14,6 @@ import {
   Injector,
   Signal,
   untracked,
-  ɵmicrotaskEffect as microtaskEffect,
 } from '@angular/core';
 import {Observable, ReplaySubject} from 'rxjs';
 
@@ -48,36 +47,6 @@ export function toObservable<T>(source: Signal<T>, options?: ToObservableOptions
   const subject = new ReplaySubject<T>(1);
 
   const watcher = effect(
-    () => {
-      let value: T;
-      try {
-        value = source();
-      } catch (err) {
-        untracked(() => subject.error(err));
-        return;
-      }
-      untracked(() => subject.next(value));
-    },
-    {injector, manualCleanup: true},
-  );
-
-  injector.get(DestroyRef).onDestroy(() => {
-    watcher.destroy();
-    subject.complete();
-  });
-
-  return subject.asObservable();
-}
-
-export function toObservableMicrotask<T>(
-  source: Signal<T>,
-  options?: ToObservableOptions,
-): Observable<T> {
-  !options?.injector && assertInInjectionContext(toObservable);
-  const injector = options?.injector ?? inject(Injector);
-  const subject = new ReplaySubject<T>(1);
-
-  const watcher = microtaskEffect(
     () => {
       let value: T;
       try {

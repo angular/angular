@@ -7,7 +7,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {NodeJSFileSystem, setFileSystem} from '@angular/compiler-cli/private/localize';
-import glob from 'fast-glob';
+import {globSync} from 'tinyglobby';
 import yargs from 'yargs';
 
 import {DiagnosticHandlingStrategy, Diagnostics} from '../diagnostics';
@@ -94,7 +94,7 @@ const fs = new NodeJSFileSystem();
 setFileSystem(fs);
 
 const sourceRootPath = options.r;
-const sourceFilePaths = glob.sync(options.s, {cwd: sourceRootPath, onlyFiles: true});
+const sourceFilePaths = globSync(options.s, {cwd: sourceRootPath, onlyFiles: true});
 const translationFilePaths: (string | string[])[] = convertArraysFromArgs(options.t);
 const outputPathFn = getOutputPathFn(fs, fs.resolve(options.o));
 const diagnostics = new Diagnostics();

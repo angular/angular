@@ -117,7 +117,7 @@ export class DebugNgZoneForCheckNoChanges extends NgZone {
     this.applicationRef ||= this.injector.get(ApplicationRef);
     for (const view of this.applicationRef.allViews) {
       try {
-        checkNoChangesInternal(view._lView, this.checkNoChangesMode, view.notifyErrorHandler);
+        checkNoChangesInternal(view._lView, this.checkNoChangesMode);
       } catch (e) {
         this.errorHandler ||= this.injector.get(ErrorHandler);
         this.errorHandler.handleError(e);
@@ -153,7 +153,7 @@ function exhaustiveCheckNoChangesInterval(
 
               for (const view of applicationRef.allViews) {
                 try {
-                  checkNoChangesInternal(view._lView, checkNoChangesMode, view.notifyErrorHandler);
+                  checkNoChangesInternal(view._lView, checkNoChangesMode);
                 } catch (e) {
                   errorHandler.handleError(e);
                 }

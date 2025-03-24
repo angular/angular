@@ -1,6 +1,5 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
 load("//tools:defaults.bzl", "esbuild_config")
-load(":index.bzl", "create_angular_bundle_targets")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -46,5 +45,3 @@ esbuild_config(
         ":esbuild_base",
     ],
 )
-
-create_angular_bundle_targets()

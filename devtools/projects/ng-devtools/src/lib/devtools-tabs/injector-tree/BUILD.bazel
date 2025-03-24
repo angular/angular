@@ -8,6 +8,7 @@ package(default_visibility = ["//:__subpackages__"])
 sass_binary(
     name = "injector_tree_styles",
     src = "injector-tree.component.scss",
+    deps = ["//devtools/projects/ng-devtools/src/styles:theme"],
 )
 
 ng_module(
@@ -22,8 +23,9 @@ ng_module(
     deps = [
         ":injector_tree_fns",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection:injector_tree_visualizer",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection:resolution_path",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection/resolution-path",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/injector-tree/injector-providers",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tree-visualizer-host",
         "//devtools/projects/ng-devtools/src/lib/vendor/angular-split",
         "//devtools/projects/protocol",
         "//packages/common",

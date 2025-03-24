@@ -12,18 +12,18 @@ import ts from 'typescript';
 import {addDiagnosticChain, makeDiagnosticChain} from '../../../diagnostics';
 import {
   ExternalTemplateSourceMapping,
-  IndirectTemplateSourceMapping,
+  IndirectSourceMapping,
   TemplateDiagnostic,
-  TemplateId,
-  TemplateSourceMapping,
+  TypeCheckId,
+  SourceMapping,
 } from '../../api';
 
 /**
  * Constructs a `ts.Diagnostic` for a given `ParseSourceSpan` within a template.
  */
 export function makeTemplateDiagnostic(
-  templateId: TemplateId,
-  mapping: TemplateSourceMapping,
+  id: TypeCheckId,
+  mapping: SourceMapping,
   span: ParseSourceSpan,
   category: ts.DiagnosticCategory,
   code: number,
@@ -59,8 +59,8 @@ export function makeTemplateDiagnostic(
       category,
       messageText,
       file: mapping.node.getSourceFile(),
-      componentFile: mapping.node.getSourceFile(),
-      templateId,
+      sourceFile: mapping.node.getSourceFile(),
+      typeCheckId: id,
       start: span.start.offset,
       length: span.end.offset - span.start.offset,
       relatedInformation,
@@ -107,8 +107,8 @@ export function makeTemplateDiagnostic(
         code,
         messageText: addDiagnosticChain(messageText, [failureChain]),
         file: componentSf,
-        componentFile: componentSf,
-        templateId,
+        sourceFile: componentSf,
+        typeCheckId: id,
         // mapping.node represents either the 'template' or 'templateUrl' expression. getStart()
         // and getEnd() are used because they don't include surrounding whitespace.
         start: mapping.node.getStart(),
@@ -134,8 +134,8 @@ export function makeTemplateDiagnostic(
       code,
       messageText,
       file: sf,
-      componentFile: componentSf,
-      templateId,
+      sourceFile: componentSf,
+      typeCheckId: id,
       start: span.start.offset,
       length: span.end.offset - span.start.offset,
       // Show a secondary message indicating the component whose template contains the error.
@@ -150,7 +150,7 @@ const TemplateSourceFile = Symbol('TemplateSourceFile');
 
 type TemplateSourceMappingWithSourceFile = (
   | ExternalTemplateSourceMapping
-  | IndirectTemplateSourceMapping
+  | IndirectSourceMapping
 ) & {
   [TemplateSourceFile]?: ts.SourceFile;
 };

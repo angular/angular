@@ -16,15 +16,15 @@ import {isCustomElement} from '../utils';
 const extractViewTree = (
   domNode: Node | Element,
   result: ComponentTreeNode[],
-  getComponent: (element: Element) => {} | null,
-  getDirectives: (node: Node) => {}[],
+  getComponent?: (element: Element) => {} | null,
+  getDirectives?: (node: Node) => {}[],
 ): ComponentTreeNode[] => {
   // Ignore DOM Node if it came from a different frame. Use instanceof Node to check this.
   if (!(domNode instanceof Node)) {
     return result;
   }
 
-  const directives = getDirectives(domNode);
+  const directives = getDirectives?.(domNode) ?? [];
   if (!directives.length && !(domNode instanceof Element)) {
     return result;
   }
@@ -45,7 +45,7 @@ const extractViewTree = (
     result.push(componentTreeNode);
     return result;
   }
-  const component = getComponent(domNode);
+  const component = getComponent?.(domNode);
   if (component) {
     componentTreeNode.component = {
       instance: component,
@@ -87,7 +87,7 @@ function hydrationStatus(node: HydrationNode): HydrationStatus {
 
 export class RTreeStrategy {
   supports(): boolean {
-    return (['getDirectiveMetadata', 'getComponent', 'getDirectives'] as const).every(
+    return (['getDirectiveMetadata', 'getComponent'] as const).every(
       (method) => typeof ngDebugClient()[method] === 'function',
     );
   }

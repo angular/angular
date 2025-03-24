@@ -10,7 +10,6 @@ import {DOCS_VIEWER_SELECTOR, DocViewer, WINDOW, TutorialConfig, TutorialType} f
 
 import {Component, Input, signal} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {provideNoopAnimations} from '@angular/platform-browser/animations';
 import {provideRouter} from '@angular/router';
 import {of} from 'rxjs';
 
@@ -91,7 +90,6 @@ describe('Tutorial', () => {
     TestBed.configureTestingModule({
       imports: [Tutorial, EmbeddedEditor, DocViewer],
       providers: [
-        provideNoopAnimations(),
         provideRouter([]),
         {
           provide: WINDOW,

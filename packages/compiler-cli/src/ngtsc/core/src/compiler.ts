@@ -65,7 +65,7 @@ import {
 import {SemanticSymbol} from '../../incremental/semantic_graph';
 import {generateAnalysis, IndexedComponent, IndexingContext} from '../../indexer';
 import {
-  ComponentResources,
+  DirectiveResources,
   CompoundMetadataReader,
   CompoundMetadataRegistry,
   DirectiveMeta,
@@ -729,20 +729,17 @@ export class NgCompiler {
   }
 
   /**
-   * Retrieves external resources for the given component.
+   * Retrieves external resources for the given directive.
    */
-  getComponentResources(classDecl: DeclarationNode): ComponentResources | null {
+  getDirectiveResources(classDecl: DeclarationNode): DirectiveResources | null {
     if (!isNamedClassDeclaration(classDecl)) {
       return null;
     }
     const {resourceRegistry} = this.ensureAnalyzed();
     const styles = resourceRegistry.getStyles(classDecl);
     const template = resourceRegistry.getTemplate(classDecl);
-    if (template === null) {
-      return null;
-    }
-
-    return {styles, template};
+    const hostBindings = resourceRegistry.getHostBindings(classDecl);
+    return {styles, template, hostBindings};
   }
 
   getMeta(classDecl: DeclarationNode): PipeMeta | DirectiveMeta | null {
@@ -1261,7 +1258,8 @@ export class NgCompiler {
   }
 
   private makeCompilation(): LazyCompilationState {
-    const isCore = isAngularCorePackage(this.inputProgram);
+    const isCore =
+      this.options._isAngularCoreCompilation ?? isAngularCorePackage(this.inputProgram);
 
     // Note: If this compilation builds `@angular/core`, we always build in full compilation
     // mode. Code inside the core package is always compatible with itself, so it does not
@@ -1433,6 +1431,7 @@ export class NgCompiler {
     const supportJitMode = this.options['supportJitMode'] ?? true;
     const supportTestBed = this.options['supportTestBed'] ?? true;
     const externalRuntimeStyles = this.options['externalRuntimeStyles'] ?? false;
+    const typeCheckHostBindings = this.options.typeCheckHostBindings ?? false;
 
     // Libraries compiled in partial mode could potentially be used with TestBed within an
     // application. Since this is not known at library compilation time, support is required to
@@ -1505,6 +1504,7 @@ export class NgCompiler {
         !!this.options.strictStandalone,
         this.enableHmr,
         this.implicitStandaloneValue,
+        typeCheckHostBindings,
       ),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
@@ -1525,10 +1525,14 @@ export class NgCompiler {
         this.delegatingPerfRecorder,
         importTracker,
         supportTestBed,
+        typeCheckScopeRegistry,
         compilationMode,
         jitDeclarationRegistry,
+        resourceRegistry,
         !!this.options.strictStandalone,
         this.implicitStandaloneValue,
+        this.usePoisonedData,
+        typeCheckHostBindings,
       ) as Readonly<DecoratorHandler<unknown, unknown, SemanticSymbol | null, unknown>>,
       // Pipe handler must be before injectable handler in list so pipe factories are printed
       // before injectable factories (so injectable factories can delegate to them)

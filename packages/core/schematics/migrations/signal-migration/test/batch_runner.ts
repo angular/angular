@@ -14,7 +14,7 @@
  */
 
 import * as childProcess from 'child_process';
-import glob from 'fast-glob';
+import {globSync} from 'tinyglobby';
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
@@ -28,7 +28,7 @@ main().catch((e) => {
 
 async function main() {
   const [mode, sourceDir] = process.argv.slice(2);
-  const files = glob.sync('**/*', {cwd: sourceDir}).filter((f) => f.endsWith('.ts'));
+  const files = globSync('**/*', {cwd: sourceDir}).filter((f) => f.endsWith('.ts'));
 
   if (mode === 'analyze') {
     const tsconfig = path.join(sourceDir, 'tsconfig.json');

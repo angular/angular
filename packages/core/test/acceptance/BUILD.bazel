@@ -24,6 +24,7 @@ ts_library(
         "//packages/compiler",
         "//packages/core",
         "//packages/core/primitives/signals",
+        "//packages/core/src/di/interface",
         "//packages/core/src/util",
         "//packages/core/test/render3:matchers",
         "//packages/core/testing",

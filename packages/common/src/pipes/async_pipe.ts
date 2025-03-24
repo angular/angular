@@ -15,6 +15,8 @@ import {
   untracked,
   ɵisPromise,
   ɵisSubscribable,
+  ɵINTERNAL_APPLICATION_ERROR_HANDLER as INTERNAL_APPLICATION_ERROR_HANDLER,
+  inject,
 } from '@angular/core';
 import {Observable, Subscribable, Unsubscribable} from 'rxjs';
 
@@ -24,12 +26,17 @@ interface SubscriptionStrategy {
   createSubscription(
     async: Subscribable<any> | Promise<any>,
     updateLatestValue: any,
+    onError: (e: unknown) => void,
   ): Unsubscribable | Promise<any>;
   dispose(subscription: Unsubscribable | Promise<any>): void;
 }
 
 class SubscribableStrategy implements SubscriptionStrategy {
-  createSubscription(async: Subscribable<any>, updateLatestValue: any): Unsubscribable {
+  createSubscription(
+    async: Subscribable<any>,
+    updateLatestValue: any,
+    onError: (e: unknown) => void,
+  ): Unsubscribable {
     // Subscription can be side-effectful, and we don't want any signal reads which happen in the
     // side effect of the subscription to be tracked by a component's template when that
     // subscription is triggered via the async pipe. So we wrap the subscription in `untracked` to
@@ -40,9 +47,7 @@ class SubscribableStrategy implements SubscriptionStrategy {
     return untracked(() =>
       async.subscribe({
         next: updateLatestValue,
-        error: (e: any) => {
-          throw e;
-        },
+        error: onError,
       }),
     );
   }
@@ -54,10 +59,12 @@ class SubscribableStrategy implements SubscriptionStrategy {
 }
 
 class PromiseStrategy implements SubscriptionStrategy {
-  createSubscription(async: Promise<any>, updateLatestValue: (v: any) => any): Promise<any> {
-    return async.then(updateLatestValue, (e) => {
-      throw e;
-    });
+  createSubscription(
+    async: Promise<any>,
+    updateLatestValue: (v: any) => any,
+    onError: (e: unknown) => void,
+  ): Promise<any> {
+    return async.then(updateLatestValue, onError);
   }
 
   dispose(subscription: Promise<any>): void {}
@@ -106,6 +113,7 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
   private _subscription: Unsubscribable | Promise<any> | null = null;
   private _obj: Subscribable<any> | Promise<any> | EventEmitter<any> | null = null;
   private _strategy: SubscriptionStrategy | null = null;
+  private readonly applicationErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
 
   constructor(ref: ChangeDetectorRef) {
     // Assign `ref` into `this._ref` manually instead of declaring `_ref` in the constructor
@@ -158,8 +166,10 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
   private _subscribe(obj: Subscribable<any> | Promise<any> | EventEmitter<any>): void {
     this._obj = obj;
     this._strategy = this._selectStrategy(obj);
-    this._subscription = this._strategy.createSubscription(obj, (value: Object) =>
-      this._updateLatestValue(obj, value),
+    this._subscription = this._strategy.createSubscription(
+      obj,
+      (value: Object) => this._updateLatestValue(obj, value),
+      (e) => this.applicationErrorHandler(e),
     );
   }
 

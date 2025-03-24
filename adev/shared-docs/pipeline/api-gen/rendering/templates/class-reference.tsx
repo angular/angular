@@ -10,26 +10,26 @@ import {Fragment, h} from 'preact';
 import {ClassEntryRenderable, DecoratorEntryRenderable} from '../entities/renderables';
 import {ClassMemberList} from './class-member-list';
 import {HeaderApi} from './header-api';
-import {REFERENCE_MEMBERS_CONTAINER} from '../styling/css-classes';
-import {TabDescription} from './tab-description';
-import {TabUsageNotes} from './tab-usage-notes';
-import {TabApi} from './tab-api';
+import {API_REFERENCE_CONTAINER, REFERENCE_MEMBERS} from '../styling/css-classes';
+import {SectionDescription} from './section-description';
+import {SectionUsageNotes} from './section-usage-notes';
+import {SectionApi} from './section-api';
 
 /** Component to render a class API reference document. */
 export function ClassReference(entry: ClassEntryRenderable | DecoratorEntryRenderable) {
   return (
-    <div class="api">
+    <div className={API_REFERENCE_CONTAINER}>
       <HeaderApi entry={entry} />
-      <TabApi entry={entry} />
-      <TabDescription entry={entry} />
-      <TabUsageNotes entry={entry} />
+      <SectionApi entry={entry} />
       {entry.members.length > 0 ? (
-        <div class={REFERENCE_MEMBERS_CONTAINER}>
+        <div class={REFERENCE_MEMBERS}>
           <ClassMemberList members={entry.members} />
         </div>
       ) : (
         <></>
       )}
+      <SectionDescription entry={entry} />
+      <SectionUsageNotes entry={entry} />
     </div>
   );
 }

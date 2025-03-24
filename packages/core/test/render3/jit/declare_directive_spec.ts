@@ -16,6 +16,7 @@ import {
 } from '../../../src/render3';
 
 import {functionContaining} from './matcher';
+import {InputFlags} from '@angular/core/src/render3/interfaces/input_flags';
 
 describe('directive declaration jit compilation', () => {
   it('should compile a minimal directive declaration', () => {
@@ -54,8 +55,8 @@ describe('directive declaration jit compilation', () => {
 
     expectDirectiveDef(def, {
       inputs: {
-        'property': 'minifiedProperty',
-        'bindingName': 'minifiedClassProperty',
+        'property': ['minifiedProperty', InputFlags.None, null],
+        'bindingName': ['minifiedClassProperty', InputFlags.None, null],
       },
       declaredInputs: {
         'property': 'property',

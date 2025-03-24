@@ -13,7 +13,7 @@ import {global} from './global';
  *
  * By default, this is true, unless `enableProdMode` is invoked prior to calling this method or the
  * application is built using the Angular CLI with the `optimization` option.
- * @see {@link cli/build ng build}
+ * @see {@link /cli/build ng build}
  *
  * @publicApi
  */
@@ -31,7 +31,7 @@ export function isDevMode(): boolean {
  *
  * Using this method is discouraged as the Angular CLI will set production mode when using the
  * `optimization` option.
- * @see {@link cli/build ng build}
+ * @see {@link /cli/build ng build}
  *
  * @publicApi
  */

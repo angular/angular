@@ -31,10 +31,9 @@ import {
 
 import {getLinkToModule} from './url-transforms';
 import {addApiLinksToHtml} from './code-transforms';
-import {getCurrentSymbol, getModuleName, logUnknownSymbol} from '../symbol-context';
+import {getCurrentSymbol, getModuleName, unknownSymbolMessage} from '../symbol-context';
 
-export const JS_DOC_REMARKS_TAG = 'remarks';
-export const JS_DOC_USAGE_NOTES_TAG = 'usageNotes';
+const JS_DOC_USAGE_NOTE_TAGS: Set<string> = new Set(['remarks', 'usageNotes', 'example']);
 export const JS_DOC_SEE_TAG = 'see';
 export const JS_DOC_DESCRIPTION_TAG = 'description';
 
@@ -58,16 +57,10 @@ export function addHtmlDescription<T extends HasDescription & HasModuleName>(
 
   const description = !!entry.description ? entry.description : jsDocDescription;
   const shortTextMatch = description.match(firstParagraphRule);
-  const htmlDescription = getHtmlForJsDocText(description, entry).trim();
-  const shortHtmlDescription = getHtmlForJsDocText(
-    shortTextMatch ? shortTextMatch[0] : '',
-    entry,
-  ).trim();
-  return {
-    ...entry,
-    htmlDescription,
-    shortHtmlDescription,
-  };
+  const htmlDescription = getHtmlForJsDocText(description).trim();
+  const shortHtmlDescription = getHtmlForJsDocText(shortTextMatch ? shortTextMatch[0] : '').trim();
+
+  return {...entry, htmlDescription, shortHtmlDescription};
 }
 
 /**
@@ -81,7 +74,7 @@ export function addHtmlJsDocTagComments<T extends HasJsDocTags & HasModuleName>(
     ...entry,
     jsdocTags: entry.jsdocTags.map((tag) => ({
       ...tag,
-      htmlComment: getHtmlForJsDocText(tag.comment, entry),
+      htmlComment: getHtmlForJsDocText(tag.comment),
     })),
   };
 }
@@ -97,23 +90,20 @@ export function addHtmlAdditionalLinks<T extends HasJsDocTags & HasModuleName>(
 }
 
 export function addHtmlUsageNotes<T extends HasJsDocTags>(entry: T): T & HasHtmlUsageNotes {
-  const usageNotesTag = entry.jsdocTags.find(
-    ({name}) => name === JS_DOC_USAGE_NOTES_TAG || name === JS_DOC_REMARKS_TAG,
-  );
-  const htmlUsageNotes = usageNotesTag
-    ? (marked.parse(wrapExampleHtmlElementsWithCode(usageNotesTag.comment)) as string)
-    : '';
-
-  const transformedHtml = addApiLinksToHtml(htmlUsageNotes);
+  const usageNotesTags = entry.jsdocTags.filter(({name}) => JS_DOC_USAGE_NOTE_TAGS.has(name)) ?? [];
+  let htmlUsageNotes = '';
+  for (const {comment} of usageNotesTags) {
+    htmlUsageNotes += getHtmlForJsDocText(comment);
+  }
 
   return {
     ...entry,
-    htmlUsageNotes: transformedHtml,
+    htmlUsageNotes,
   };
 }
 
 /** Given a markdown JsDoc text, gets the rendered HTML. */
-function getHtmlForJsDocText<T extends HasModuleName>(text: string, entry: T): string {
+function getHtmlForJsDocText(text: string): string {
   const parsed = marked.parse(convertLinks(wrapExampleHtmlElementsWithCode(text))) as string;
   return addApiLinksToHtml(parsed);
 }
@@ -126,7 +116,7 @@ export function setEntryFlags<T extends HasJsDocTags & HasModuleName>(
     ...entry,
     isDeprecated: isDeprecatedEntry(entry),
     deprecationMessage: deprecationMessage
-      ? getHtmlForJsDocText(deprecationMessage, entry)
+      ? getHtmlForJsDocText(deprecationMessage)
       : deprecationMessage,
     isDeveloperPreview: isDeveloperPreview(entry),
     isExperimental: isExperimental(entry),
@@ -195,10 +185,16 @@ function parseAtLink(link: string): {label: string; url: string} {
   let [rawSymbol, description] = link.split(/\s(.+)/);
   if (rawSymbol.startsWith('#')) {
     rawSymbol = rawSymbol.substring(1);
-  } else if (rawSymbol.startsWith('http://') || rawSymbol.startsWith('https://')) {
+  } else if (rawSymbol.includes('/')) {
+    if (!rawSymbol.startsWith('/') && !rawSymbol.startsWith('http')) {
+      throw Error(
+        `Forbidden relative link: ${link}. Links should be absolute and start with a slash`,
+      );
+    }
+
     return {
       url: rawSymbol,
-      label: rawSymbol.split('/').pop()!,
+      label: description ?? rawSymbol.split('/').pop()!,
     };
   }
 
@@ -214,11 +210,9 @@ function parseAtLink(link: string): {label: string; url: string} {
     moduleName = getModuleName(`${currentSymbol}.${symbol}`);
 
     if (!moduleName || !currentSymbol) {
-      // TODO: remove the links that generate this error
-      // TODO: throw an error when there are no more warning generated
-      logUnknownSymbol(link, symbol);
-      return {label, url: '#'};
+      throw unknownSymbolMessage(link, symbol);
     }
+
     subSymbol = symbol;
     symbol = currentSymbol;
   }

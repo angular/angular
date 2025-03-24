@@ -66,6 +66,14 @@ describe('jsdoc transforms', () => {
           name: 'see',
           comment: '{@link https://angular.dev}',
         },
+        {
+          name: 'see',
+          comment: '{@link /cli/build ng build}',
+        },
+        {
+          name: 'see',
+          comment: '{@link /ecosystem/rxjs-interop/output-interop Output Interop}',
+        },
       ],
       moduleName: 'test',
     });
@@ -117,5 +125,30 @@ describe('jsdoc transforms', () => {
       label: 'angular.dev',
       url: 'https://angular.dev',
     });
+
+    expect(entry.additionalLinks[10]).toEqual({
+      label: 'ng build',
+      url: '/cli/build',
+    });
+
+    expect(entry.additionalLinks[11]).toEqual({
+      label: 'Output Interop',
+      url: '/ecosystem/rxjs-interop/output-interop',
+    });
+  });
+
+  it('should throw on invalid relatie @link', () => {
+    const entryFn = () =>
+      addHtmlAdditionalLinks({
+        jsdocTags: [
+          {
+            name: 'see',
+            comment: '{@link cli/build ng build}',
+          },
+        ],
+        moduleName: 'test',
+      });
+
+    expect(entryFn).toThrowError(/Forbidden relative link: cli\/build ng build/);
   });
 });

@@ -22,7 +22,7 @@
   <select
     matTooltip="Select a frame to inspect with Angular Devtools"
     class="frame-selector"
-    (change)="emitSelectedFrame($event.target.value)"
+    (change)="emitSelectedFrame($event)"
   >
     @for (frame of frameManager.frames(); track frame.id) {
       <option [value]="frame.id" [selected]="frameManager.isSelectedFrame(frame)">

@@ -36,10 +36,8 @@
                   <mat-icon matTooltip="Open docs reference"> open_in_new </mat-icon>
                 </a>
               </h2>
-              <section #injectorTree class="environment-injectors injector-graph">
-                <svg #svgContainer>
-                  <g #mainGroup></g>
-                </svg>
+              <section class="injector-graph">
+                <ng-tree-visualizer-host #environmentTree />
               </section>
             </div>
           </as-split-area>
@@ -55,17 +53,15 @@
                   <mat-icon matTooltip="Open docs reference"> open_in_new </mat-icon>
                 </a>
               </h2>
-              <section #elementInjectorTree class="element-injectors injector-graph">
-                <svg #elementSvgContainer>
-                  <g #elementMainGroup></g>
-                </svg>
+              <section class="injector-graph">
+                <ng-tree-visualizer-host #elementTree />
               </section>
             </div>
           </as-split-area>
         </as-split>
       </as-split-area>
       @if (selectedNode() && providers().length > 0) {
-        <as-split-area size="40" minSize="25">
+        <as-split-area size="40" [minSize]="25">
           <ng-injector-providers
             [injector]="selectedNode()!.data.injector"
             [providers]="providers()"

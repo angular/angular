@@ -11,14 +11,15 @@ import {
   ParseSourceSpan,
   SchemaMetadata,
   TmplAstElement,
+  TmplAstHostElement,
 } from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
-import {TemplateDiagnostic, TemplateId} from '../api';
+import {TemplateDiagnostic, TypeCheckId} from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
-import {TemplateSourceResolver} from './tcb_util';
+import {TypeCheckSourceResolver} from './tcb_util';
 
 const REGISTRY = new DomElementSchemaRegistry();
 const REMOVE_XHTML_REGEX = /^:xhtml:/;
@@ -59,7 +60,7 @@ export interface DomSchemaChecker {
   /**
    * Check a property binding on an element and record any diagnostics about it.
    *
-   * @param id the template ID, suitable for resolution with a `TcbSourceResolver`.
+   * @param id the type check ID, suitable for resolution with a `TcbSourceResolver`.
    * @param element the element node in question.
    * @param name the name of the property being checked.
    * @param span the source span of the binding. This is redundant with `element.attributes` but is
@@ -67,13 +68,30 @@ export interface DomSchemaChecker {
    * @param schemas any active schemas for the template, which might affect the validity of the
    * property.
    */
-  checkProperty(
+  checkTemplateElementProperty(
     id: string,
     element: TmplAstElement,
     name: string,
     span: ParseSourceSpan,
     schemas: SchemaMetadata[],
     hostIsStandalone: boolean,
+  ): void;
+
+  /**
+   * Check a property binding on a host element and record any diagnostics about it.
+   * @param id the type check ID, suitable for resolution with a `TcbSourceResolver`.
+   * @param element the element node in question.
+   * @param name the name of the property being checked.
+   * @param span the source span of the binding.
+   * @param schemas any active schemas for the template, which might affect the validity of the
+   * property.
+   */
+  checkHostElementProperty(
+    id: string,
+    element: TmplAstHostElement,
+    name: string,
+    span: ParseSourceSpan,
+    schemas: SchemaMetadata[],
   ): void;
 }
 
@@ -88,10 +106,10 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
     return this._diagnostics;
   }
 
-  constructor(private resolver: TemplateSourceResolver) {}
+  constructor(private resolver: TypeCheckSourceResolver) {}
 
   checkElement(
-    id: TemplateId,
+    id: TypeCheckId,
     element: TmplAstElement,
     schemas: SchemaMetadata[],
     hostIsStandalone: boolean,
@@ -102,7 +120,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
     const name = element.name.replace(REMOVE_XHTML_REGEX, '');
 
     if (!REGISTRY.hasElement(name, schemas)) {
-      const mapping = this.resolver.getSourceMapping(id);
+      const mapping = this.resolver.getTemplateSourceMapping(id);
 
       const schemas = `'${hostIsStandalone ? '@Component' : '@NgModule'}.schemas'`;
       let errorMsg = `'${name}' is not a known element:\n`;
@@ -129,8 +147,8 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
     }
   }
 
-  checkProperty(
-    id: TemplateId,
+  checkTemplateElementProperty(
+    id: TypeCheckId,
     element: TmplAstElement,
     name: string,
     span: ParseSourceSpan,
@@ -138,7 +156,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
     hostIsStandalone: boolean,
   ): void {
     if (!REGISTRY.hasProperty(element.name, name, schemas)) {
-      const mapping = this.resolver.getSourceMapping(id);
+      const mapping = this.resolver.getTemplateSourceMapping(id);
 
       const decorator = hostIsStandalone ? '@Component' : '@NgModule';
       const schemas = `'${decorator}.schemas'`;
@@ -169,6 +187,33 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
         errorMsg,
       );
       this._diagnostics.push(diag);
+    }
+  }
+
+  checkHostElementProperty(
+    id: TypeCheckId,
+    element: TmplAstHostElement,
+    name: string,
+    span: ParseSourceSpan,
+    schemas: SchemaMetadata[],
+  ): void {
+    for (const tagName of element.tagNames) {
+      if (REGISTRY.hasProperty(tagName, name, schemas)) {
+        continue;
+      }
+
+      const errorMessage = `Can't bind to '${name}' since it isn't a known property of '${tagName}'.`;
+      const mapping = this.resolver.getHostBindingsMapping(id);
+      const diag = makeTemplateDiagnostic(
+        id,
+        mapping,
+        span,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.SCHEMA_INVALID_ATTRIBUTE),
+        errorMessage,
+      );
+      this._diagnostics.push(diag);
+      break;
     }
   }
 }

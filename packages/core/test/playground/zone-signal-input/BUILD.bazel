@@ -3,7 +3,6 @@ load("//tools:defaults.bzl", "app_bundle", "http_server", "ng_module")
 ng_module(
     name = "test_lib",
     srcs = ["index.ts"],
-    strict_templates = True,
     tags = ["no-cache"],
     deps = [
         "//packages/core",

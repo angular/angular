@@ -1,3 +1,5 @@
+@use '../../../../../styles/theme' as theme;
+
 .filter {
   display: flex;
   padding: 0px;
@@ -63,7 +65,7 @@
   }
 }
 
-:host-context(.dark-theme) {
+@include theme.dark-theme {
   .filter {
     label {
       .filter-input {

@@ -8,7 +8,6 @@
 
 import {InjectionToken} from '../di/injection_token';
 import {inject} from '../di/injector_compatibility';
-import {InjectFlags} from '../di/interface/injector';
 
 import {DEFAULT_LOCALE_ID, USD_CURRENCY_CODE} from './localization';
 
@@ -69,8 +68,7 @@ export function getGlobalLocale(): string {
  */
 export const LOCALE_ID: InjectionToken<string> = new InjectionToken(ngDevMode ? 'LocaleId' : '', {
   providedIn: 'root',
-  factory: () =>
-    inject(LOCALE_ID, InjectFlags.Optional | InjectFlags.SkipSelf) || getGlobalLocale(),
+  factory: () => inject(LOCALE_ID, {optional: true, skipSelf: true}) || getGlobalLocale(),
 });
 
 /**
@@ -82,11 +80,7 @@ export const LOCALE_ID: InjectionToken<string> = new InjectionToken(ngDevMode ? 
  *
  * <div class="docs-alert docs-alert-helpful">
  *
- * **Deprecation notice:**
- *
- * The default currency code is currently always `USD` but this is deprecated from v9.
- *
- * **In v10 the default currency code will be taken from the current locale.**
+ * The default currency code is currently always `USD`.
  *
  * If you need the previous behavior then set it by creating a `DEFAULT_CURRENCY_CODE` provider in
  * your application `NgModule`:

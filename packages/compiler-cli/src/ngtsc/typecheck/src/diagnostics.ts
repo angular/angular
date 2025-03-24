@@ -8,10 +8,10 @@
 import {AbsoluteSourceSpan, ParseSourceSpan} from '@angular/compiler';
 import ts from 'typescript';
 
-import {TemplateDiagnostic, TemplateId} from '../api';
+import {TemplateDiagnostic, TypeCheckId} from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
-import {getTemplateMapping, TemplateSourceResolver} from './tcb_util';
+import {getSourceMapping, TypeCheckSourceResolver} from './tcb_util';
 
 /**
  * Wraps the node in parenthesis such that inserted span comments become attached to the proper
@@ -58,10 +58,10 @@ export function addParseSpanInfo(node: ts.Node, span: AbsoluteSourceSpan | Parse
 }
 
 /**
- * Adds a synthetic comment to the function declaration that contains the template id
+ * Adds a synthetic comment to the function declaration that contains the type checking ID
  * of the class declaration.
  */
-export function addTemplateId(tcb: ts.FunctionDeclaration, id: TemplateId): void {
+export function addTypeCheckId(tcb: ts.FunctionDeclaration, id: TypeCheckId): void {
   ts.addSyntheticLeadingComment(tcb, ts.SyntaxKind.MultiLineCommentTrivia, id, true);
 }
 
@@ -94,12 +94,12 @@ export function shouldReportDiagnostic(diagnostic: ts.Diagnostic): boolean {
  */
 export function translateDiagnostic(
   diagnostic: ts.Diagnostic,
-  resolver: TemplateSourceResolver,
+  resolver: TypeCheckSourceResolver,
 ): TemplateDiagnostic | null {
   if (diagnostic.file === undefined || diagnostic.start === undefined) {
     return null;
   }
-  const fullMapping = getTemplateMapping(
+  const fullMapping = getSourceMapping(
     diagnostic.file,
     diagnostic.start,
     resolver,
@@ -109,7 +109,7 @@ export function translateDiagnostic(
     return null;
   }
 
-  const {sourceLocation, templateSourceMapping, span} = fullMapping;
+  const {sourceLocation, sourceMapping: templateSourceMapping, span} = fullMapping;
   return makeTemplateDiagnostic(
     sourceLocation.id,
     templateSourceMapping,

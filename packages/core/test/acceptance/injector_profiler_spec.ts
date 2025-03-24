@@ -15,7 +15,6 @@ import {
   ElementRef,
   inject,
   Injectable,
-  InjectFlags,
   InjectionToken,
   Injector,
   NgModule,
@@ -24,6 +23,7 @@ import {
   ViewChild,
   ViewChildren,
 } from '@angular/core';
+import {InternalInjectFlags} from '@angular/core/src/di/interface/injector';
 import {NullInjector} from '@angular/core/src/di/null_injector';
 import {
   isClassProvider,
@@ -37,6 +37,7 @@ import {setupFrameworkInjectorProfiler} from '@angular/core/src/render3/debug/fr
 import {
   getInjectorProfilerContext,
   InjectedServiceEvent,
+  InjectorToCreateInstanceEvent,
   InjectorCreatedInstanceEvent,
   InjectorProfilerEvent,
   InjectorProfilerEventType,
@@ -57,6 +58,7 @@ import {Router, RouterModule, RouterOutlet} from '@angular/router';
 
 describe('setProfiler', () => {
   let injectEvents: InjectedServiceEvent[] = [];
+  let aboutToCreateEvents: InjectorToCreateInstanceEvent[] = [];
   let createEvents: InjectorCreatedInstanceEvent[] = [];
   let providerConfiguredEvents: ProviderConfiguredEvent[] = [];
 
@@ -69,6 +71,7 @@ describe('setProfiler', () => {
 
   beforeEach(() => {
     injectEvents = [];
+    aboutToCreateEvents = [];
     createEvents = [];
     providerConfiguredEvents = [];
 
@@ -80,20 +83,22 @@ describe('setProfiler', () => {
           context: getInjectorProfilerContext(),
           type,
         });
-      }
-      if (type === InjectorProfilerEventType.InstanceCreatedByInjector) {
+      } else if (type === InjectorProfilerEventType.InstanceCreatedByInjector) {
         createEvents.push({
           instance: injectorProfilerEvent.instance,
           context: getInjectorProfilerContext(),
           type,
         });
-      }
-      if (type === InjectorProfilerEventType.ProviderConfigured) {
+      } else if (type === InjectorProfilerEventType.ProviderConfigured) {
         providerConfiguredEvents.push({
           providerRecord: injectorProfilerEvent.providerRecord,
           context: getInjectorProfilerContext(),
           type,
         });
+      } else if (type === InjectorProfilerEventType.InjectorToCreateInstanceEvent) {
+        aboutToCreateEvents.push(injectorProfilerEvent);
+      } else {
+        throw new Error('Unexpected event type: ' + type);
       }
     });
   });
@@ -131,7 +136,7 @@ describe('setProfiler', () => {
     );
     expect(myServiceInjectEvent).toBeTruthy();
     expect(myServiceInjectEvent!.service.value).toBe(myComp.myService);
-    expect(myServiceInjectEvent!.service.flags).toBe(InjectFlags.Default);
+    expect(myServiceInjectEvent!.service.flags).toBe(InternalInjectFlags.Default);
 
     // myComp is an angular instance that is able to call `inject` in it's constructor, so a
     // create event should have been emitted for it
@@ -139,6 +144,11 @@ describe('setProfiler', () => {
       createEvents,
       (event) => event.instance.value === myComp,
     );
+    const componentAboutToCreateEvent = searchForProfilerEvent<InjectorToCreateInstanceEvent>(
+      aboutToCreateEvents,
+      (event) => event.token === MyComponent,
+    );
+    expect(componentAboutToCreateEvent).toBeDefined();
     expect(componentCreateEvent).toBeTruthy();
   });
 
@@ -178,10 +188,10 @@ describe('setProfiler', () => {
       (event) => event.service.token === MyServiceC,
     );
 
-    expect(myServiceInjectEvent!.service.flags).toBe(InjectFlags.Self);
-    expect(myServiceBInjectEvent!.service.flags).toBe(InjectFlags.SkipSelf);
+    expect(myServiceInjectEvent!.service.flags).toBe(InternalInjectFlags.Self);
+    expect(myServiceBInjectEvent!.service.flags).toBe(InternalInjectFlags.SkipSelf);
     expect(myServiceBInjectEvent!.service.value).toBe(1);
-    expect(myServiceCInjectEvent!.service.flags).toBe(InjectFlags.Optional);
+    expect(myServiceCInjectEvent!.service.flags).toBe(InternalInjectFlags.Optional);
   });
 
   it('should emit correct DI events when providers are configured with useFactory, useExisting, useClass, useValue', () => {
@@ -385,7 +395,6 @@ describe('getInjectorMetadata', () => {
     @Component({
       selector: 'lazy-comp',
       template: `lazy component`,
-      standalone: true,
       imports: [ModuleB],
     })
     class LazyComponent {
@@ -398,7 +407,6 @@ describe('getInjectorMetadata', () => {
     }
 
     @Component({
-      standalone: true,
       imports: [RouterOutlet, ModuleA],
       template: `<router-outlet/>`,
     })
@@ -667,7 +675,6 @@ describe('getInjectorProviders', () => {
       selector: 'my-comp-c',
       template: 'hello world',
       imports: [ModuleE, ModuleC],
-      standalone: true,
     })
     class MyStandaloneComponentC {}
 
@@ -675,7 +682,6 @@ describe('getInjectorProviders', () => {
       selector: 'my-comp-b',
       template: 'hello world',
       imports: [ModuleD, ModuleF],
-      standalone: true,
     })
     class MyStandaloneComponentB {}
 
@@ -686,7 +692,6 @@ describe('getInjectorProviders', () => {
          <my-comp-c/>
         `,
       imports: [ModuleD, MyStandaloneComponentB, MyStandaloneComponentC],
-      standalone: true,
     })
     class MyStandaloneComponent {}
 
@@ -743,7 +748,6 @@ describe('getInjectorProviders', () => {
       selector: 'my-comp-b',
       template: 'hello world',
       imports: [ModuleA],
-      standalone: true,
     })
     class MyStandaloneComponentB {
       injector = inject(Injector);
@@ -753,7 +757,6 @@ describe('getInjectorProviders', () => {
       selector: 'my-comp',
       template: `<router-outlet/>`,
       imports: [MyStandaloneComponentB, RouterOutlet],
-      standalone: true,
     })
     class MyStandaloneComponent {
       injector = inject(Injector);
@@ -809,7 +812,7 @@ describe('getInjectorProviders', () => {
   it('should be able to determine providers in a lazy route that has providers', fakeAsync(() => {
     class MyService {}
 
-    @Component({selector: 'my-comp-b', template: 'hello world', standalone: true})
+    @Component({selector: 'my-comp-b', template: 'hello world'})
     class MyStandaloneComponentB {
       injector = inject(Injector);
     }
@@ -818,7 +821,6 @@ describe('getInjectorProviders', () => {
       selector: 'my-comp',
       template: `<router-outlet/>`,
       imports: [MyStandaloneComponentB, RouterOutlet],
-      standalone: true,
     })
     class MyStandaloneComponent {
       injector = inject(Injector);
@@ -871,7 +873,7 @@ describe('getInjectorProviders', () => {
   it('should be able to get injector providers for element injectors created by components rendering in an ngFor', () => {
     class MyService {}
 
-    @Component({selector: 'item-cmp', template: 'item', standalone: true, providers: [MyService]})
+    @Component({selector: 'item-cmp', template: 'item', providers: [MyService]})
     class ItemComponent {
       injector = inject(Injector);
     }
@@ -882,7 +884,6 @@ describe('getInjectorProviders', () => {
         <item-cmp *ngFor="let item of items"></item-cmp>
        `,
       imports: [ItemComponent, NgForOf],
-      standalone: true,
     })
     class MyStandaloneComponent {
       injector = inject(Injector);
@@ -911,7 +912,7 @@ describe('getInjectorProviders', () => {
   it('should be able to get injector providers for element injectors created by components rendering in a @for', () => {
     class MyService {}
 
-    @Component({selector: 'item-cmp', template: 'item', standalone: true, providers: [MyService]})
+    @Component({selector: 'item-cmp', template: 'item', providers: [MyService]})
     class ItemComponent {
       injector = inject(Injector);
     }
@@ -924,7 +925,6 @@ describe('getInjectorProviders', () => {
         }
        `,
       imports: [ItemComponent],
-      standalone: true,
     })
     class MyStandaloneComponent {
       injector = inject(Injector);
@@ -978,7 +978,6 @@ describe('getDependenciesFromInjectable', () => {
 
     @Directive({
       selector: '[my-directive]',
-      standalone: true,
     })
     class MyStandaloneDirective {
       serviceFromHost = inject(MyServiceH, {host: true, optional: true});
@@ -993,7 +992,6 @@ describe('getDependenciesFromInjectable', () => {
       selector: 'my-comp-c',
       template: 'hello world',
       imports: [],
-      standalone: true,
     })
     class MyStandaloneComponentC {}
 
@@ -1001,7 +999,6 @@ describe('getDependenciesFromInjectable', () => {
       selector: 'my-comp-b',
       template: '<my-comp-c my-directive/>',
       imports: [MyStandaloneComponentC, MyStandaloneDirective],
-      standalone: true,
     })
     class MyStandaloneComponentB {
       myService = inject(MyService, {optional: true});
@@ -1019,7 +1016,6 @@ describe('getDependenciesFromInjectable', () => {
       template: `<router-outlet/>`,
       imports: [RouterOutlet, ModuleA],
       providers: [MyServiceG, {provide: MyServiceH, useValue: 'MyStandaloneComponent'}],
-      standalone: true,
     })
     class MyStandaloneComponent {
       injector = inject(Injector);
@@ -1182,7 +1178,7 @@ describe('getDependenciesFromInjectable', () => {
     @NgModule({imports: [ModuleB, ModuleC]})
     class ModuleD {}
 
-    @Component({selector: 'my-comp', template: 'hello world', imports: [ModuleD], standalone: true})
+    @Component({selector: 'my-comp', template: 'hello world', imports: [ModuleD]})
     class MyStandaloneComponent {
       myService = inject(MyService);
     }
@@ -1262,7 +1258,6 @@ describe('getInjectorResolutionPath', () => {
     @Component({
       selector: 'lazy-comp',
       template: `lazy component`,
-      standalone: true,
       imports: [ModuleB],
     })
     class LazyComponent {
@@ -1272,7 +1267,6 @@ describe('getInjectorResolutionPath', () => {
     }
 
     @Component({
-      standalone: true,
       imports: [RouterOutlet, ModuleA],
       template: `<router-outlet/>`,
     })

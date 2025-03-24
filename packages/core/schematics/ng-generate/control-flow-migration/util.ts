@@ -385,10 +385,6 @@ export function calculateNesting(
   }
 }
 
-function escapeRegExp(val: string) {
-  return val.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
-}
-
 /**
  * determines if a given template string contains line breaks
  */
@@ -425,18 +421,46 @@ export function getTemplates(template: string): Map<string, Template> {
     const visitor = new TemplateCollector();
     visitAll(visitor, parsed.tree.rootNodes);
 
-    // count usages of each ng-template
     for (let [key, tmpl] of visitor.templates) {
-      const escapeKey = escapeRegExp(key.slice(1));
-      const regex = new RegExp(`[^a-zA-Z0-9-<(\']${escapeKey}\\W`, 'gm');
-      const matches = template.match(regex);
-      tmpl.count = matches?.length ?? 0;
+      tmpl.count = countTemplateUsage(parsed.tree.rootNodes, key);
       tmpl.generateContents(template);
     }
-
     return visitor.templates;
   }
   return new Map<string, Template>();
+}
+
+function countTemplateUsage(nodes: any[], templateName: string): number {
+  let count = 0;
+  let isReferencedInTemplateOutlet = false;
+
+  for (const node of nodes) {
+    if (node.attrs) {
+      for (const attr of node.attrs) {
+        if (attr.name === '*ngTemplateOutlet' && attr.value === templateName.slice(1)) {
+          isReferencedInTemplateOutlet = true;
+          break;
+        }
+
+        if (attr.name.trim() === templateName) {
+          count++;
+        }
+      }
+    }
+
+    if (node.children) {
+      if (node.name === 'for') {
+        for (const child of node.children) {
+          if (child.value?.includes(templateName.slice(1))) {
+            count++;
+          }
+        }
+      }
+      count += countTemplateUsage(node.children, templateName);
+    }
+  }
+
+  return isReferencedInTemplateOutlet ? count + 2 : count;
 }
 
 export function updateTemplates(
@@ -466,7 +490,10 @@ function generatei18nContainer(
 /**
  * Counts, replaces, and removes any necessary ng-templates post control flow migration
  */
-export function processNgTemplates(template: string): {migrated: string; err: Error | undefined} {
+export function processNgTemplates(
+  template: string,
+  sourceFile: ts.SourceFile,
+): {migrated: string; err: Error | undefined} {
   // count usage
   try {
     const templates = getTemplates(template);
@@ -494,9 +521,23 @@ export function processNgTemplates(template: string): {migrated: string; err: Er
         } else {
           template = template.replace(replaceRegex, t.children);
         }
-        // the +1 accounts for the t.count's counting of the original template
-        if (t.count === matches.length + 1 && safeToRemove) {
-          template = template.replace(t.contents, `${startMarker}${endMarker}`);
+
+        const dist = matches.filter(
+          (obj, index, self) => index === self.findIndex((t) => t.input === obj.input),
+        );
+
+        if ((t.count === dist.length || t.count - matches.length === 1) && safeToRemove) {
+          const refsInComponentFile = getViewChildOrViewChildrenNames(sourceFile);
+          if (refsInComponentFile?.length > 0) {
+            const templateRefs = getTemplateReferences(template);
+            for (const ref of refsInComponentFile) {
+              if (!templateRefs.includes(ref)) {
+                template = template.replace(t.contents, `${startMarker}${endMarker}`);
+              }
+            }
+          } else {
+            template = template.replace(t.contents, `${startMarker}${endMarker}`);
+          }
         }
         // templates may have changed structure from nested replaced templates
         // so we need to reprocess them before the next loop.
@@ -512,6 +553,53 @@ export function processNgTemplates(template: string): {migrated: string; err: Er
   } catch (err) {
     return {migrated: template, err: err as Error};
   }
+}
+
+function getViewChildOrViewChildrenNames(sourceFile: ts.SourceFile): Array<string> {
+  const names: Array<string> = [];
+
+  function visit(node: ts.Node) {
+    if (ts.isDecorator(node) && ts.isCallExpression(node.expression)) {
+      const expr = node.expression;
+      if (
+        ts.isIdentifier(expr.expression) &&
+        (expr.expression.text === 'ViewChild' || expr.expression.text === 'ViewChildren')
+      ) {
+        const firstArg = expr.arguments[0];
+        if (firstArg && ts.isStringLiteral(firstArg)) {
+          names.push(firstArg.text);
+        }
+        return;
+      }
+    }
+    ts.forEachChild(node, visit);
+  }
+
+  visit(sourceFile);
+  return names;
+}
+
+function getTemplateReferences(template: string): string[] {
+  const parsed = parseTemplate(template);
+  if (parsed.tree === undefined) {
+    return [];
+  }
+
+  const references: string[] = [];
+
+  function visitNodes(nodes: any) {
+    for (const node of nodes) {
+      if (node?.name === 'ng-template') {
+        references.push(...node.attrs?.map((ref: any) => ref?.name?.slice(1)));
+      }
+      if (node.children) {
+        visitNodes(node.children);
+      }
+    }
+  }
+
+  visitNodes(parsed.tree.rootNodes);
+  return references;
 }
 
 function replaceRemainingPlaceholders(template: string): string {

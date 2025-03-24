@@ -17,15 +17,15 @@ import {isDetachedByI18n} from '../../i18n/utils';
 import {assertEqual, assertIndexInRange, assertNumber} from '../../util/assert';
 import {assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
+import {createCommentNode} from '../dom_node_manipulation';
 import {registerPostOrderHooks} from '../hooks';
 import {TAttributes, TElementContainerNode, TNode, TNodeType} from '../interfaces/node';
 import {RComment} from '../interfaces/renderer_dom';
 import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
-import {executeContentQueries} from '../queries/query_execution';
 import {appendChild} from '../node_manipulation';
-import {createCommentNode} from '../dom_node_manipulation';
+import {executeContentQueries} from '../queries/query_execution';
 import {
   getBindingIndex,
   getBindingsEnabled,
@@ -43,13 +43,13 @@ import {computeStaticStyling} from '../styling/static_styling';
 import {mergeHostAttrs} from '../util/attrs_utils';
 import {getConstant} from '../util/view_utils';
 
+import {getOrCreateTNode} from '../tnode_manipulation';
+import {resolveDirectives} from '../view/directives';
 import {
-  createDirectivesInstancesInInstruction,
+  createDirectivesInstances,
   findDirectiveDefMatches,
   saveResolvedLocalsInData,
 } from './shared';
-import {getOrCreateTNode} from '../tnode_manipulation';
-import {resolveDirectives} from '../view/directives';
 
 function elementContainerStartFirstCreatePass(
   index: number,
@@ -131,7 +131,7 @@ export function ɵɵelementContainerStart(
   attachPatchData(comment, lView);
 
   if (isDirectiveHost(tNode)) {
-    createDirectivesInstancesInInstruction(tView, lView, tNode);
+    createDirectivesInstances(tView, lView, tNode);
     executeContentQueries(tView, tNode, lView);
   }
 

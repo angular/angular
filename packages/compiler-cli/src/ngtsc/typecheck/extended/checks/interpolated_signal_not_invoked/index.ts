@@ -96,7 +96,7 @@ function buildDiagnosticForSignal(
   // check for `{{ mySignal }}`
   const symbol = ctx.templateTypeChecker.getSymbolOfNode(node, component);
   if (symbol !== null && symbol.kind === SymbolKind.Expression && isSignalReference(symbol)) {
-    const templateMapping = ctx.templateTypeChecker.getTemplateMappingAtTcbLocation(
+    const templateMapping = ctx.templateTypeChecker.getSourceMappingAtTcbLocation(
       symbol.tcbLocation,
     )!;
     const errorString = `${node.name} is a function and should be invoked: ${node.name}()`;
@@ -116,7 +116,7 @@ function buildDiagnosticForSignal(
     symbolOfReceiver.kind === SymbolKind.Expression &&
     isSignalReference(symbolOfReceiver)
   ) {
-    const templateMapping = ctx.templateTypeChecker.getTemplateMappingAtTcbLocation(
+    const templateMapping = ctx.templateTypeChecker.getSourceMappingAtTcbLocation(
       symbolOfReceiver.tcbLocation,
     )!;
 

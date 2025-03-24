@@ -1,3 +1,5 @@
+@use '../../../styles/theme' as theme;
+
 .router-tree-wrapper {
   font-size: 1em;
   width: 100%;
@@ -18,15 +20,7 @@
   color: rgba(0, 0, 0, 0.87);
 }
 
-.router-tree-container {
-  height: 100%;
-}
-
-.svg-container {
-  max-height: inherit;
-}
-
-:host-context(.dark-theme) {
+@include theme.dark-theme {
   .filter-input {
     border: 1px solid rgba(255, 255, 255, 0.12);
     color: rgba(255, 255, 255, 0.87);

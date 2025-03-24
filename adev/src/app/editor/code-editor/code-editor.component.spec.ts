@@ -53,6 +53,8 @@ describe('CodeEditor', () => {
     await TestBed.configureTestingModule({
       imports: [CodeEditor],
       providers: [
+        // Removing the noop animations makes the test VERY flaky.
+        // TODO: understand why and fix the flakiness.
         provideNoopAnimations(),
         {
           provide: CodeMirrorEditor,

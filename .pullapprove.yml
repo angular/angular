@@ -133,6 +133,7 @@ groups:
         - devversion
         - kirjs
         - JoostK
+        - mmalerba
 
   # =========================================================
   #  Framework: General (most code in our packages)
@@ -143,7 +144,6 @@ groups:
       - >
         contains_any_globs(files.exclude('packages/core/primitives/*'), [
           'contributing-docs/public-api-surface.md',
-          'goldens/circular-deps/packages.json',
           'integration/**/{*,.*}',
           'modules/**/{*,.*}',
           'packages/animations/**/{*,.*}',
@@ -175,6 +175,7 @@ groups:
         - ~jelbourn
         - thePunderWoman
         - pkozlowski-opensource
+        - mmalerba
 
   # =========================================================
   #  Framework: Security-sensitive files which require extra review
@@ -227,9 +228,9 @@ groups:
     <<: *defaults
     conditions:
       - >
-        contains_any_globs(files, [
+        contains_any_globs(files.exclude('yarn.lock'), [
           'packages/zone.js/**/{*,.*}',
-          ])
+        ])
     reviewers:
       users:
         - JiaLiPassion
@@ -285,6 +286,7 @@ groups:
         - mgechev
         - MarkTechson
         - kirjs
+        - mmalerba
 
   # =========================================================
   #  Angular DevTools
@@ -391,6 +393,9 @@ groups:
         - thePunderWoman
         - pkozlowski-opensource
         - kirjs
+        - mmalerba
+        - crisbeto
+        - devversion
         - ~iteriani
         - ~tbondwilkinson
         - ~rahatarmanahmed
@@ -420,32 +425,11 @@ groups:
         - ~jelbourn
         - thePunderWoman
         - pkozlowski-opensource
+        - mmalerba
     reviews:
       request: 2 # Request reviews from 2 people
       required: 1 # Require that 1 person approve
       reviewed_for: required
-
-  # ================================================
-  #  Circular dependencies
-  # ================================================
-  circular-dependencies:
-    <<: *defaults
-    conditions:
-      - *no-groups-above-this-pending
-      - *no-groups-above-this-rejected
-      - >
-        contains_any_globs(files, [
-          'goldens/circular-deps/packages.json'
-        ])
-    reviewers:
-      users:
-        - alxhub
-        - AndrewKushnir
-        - atscott
-        - ~jelbourn
-        - thePunderWoman
-        - pkozlowski-opensource
-        - kirjs
 
   ####################################################################################
   #  Special Cases
@@ -506,13 +490,7 @@ groups:
     reviewers:
       users:
         - csmick # Cameron Smick
-        - lannka # Hongfei Ding
-        - eduhmc # Eduardo Huerta-Mercado
-        - ehlemur # Edward Lesmes
-        - ellenyuan # Ellen Yuan
-        - jesse-good # Jesse Costello-Good
         - mturco # Matt Turco
-        - neonstalwart # Ben Hockey
         - iteriani # Thomas Nguyen
         - tbondwilkinson # Tom Wilkinson
         - rahatarmanahmed # Rahat Ahmed

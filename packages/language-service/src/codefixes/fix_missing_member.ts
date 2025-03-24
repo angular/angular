@@ -9,7 +9,7 @@
 import tss from 'typescript';
 
 import {getTcbNodesOfTemplateAtPosition} from '../template_target';
-import {getTemplateInfoAtPosition} from '../utils';
+import {getTypeCheckInfoAtPosition} from '../utils';
 
 import {CodeActionMeta, convertFileTextChangeInTcb, FixIdForCodeFixesAll} from './utils';
 
@@ -25,7 +25,7 @@ const errorCodes: number[] = [
 export const missingMemberMeta: CodeActionMeta = {
   errorCodes,
   getCodeActions: function ({
-    templateInfo,
+    typeCheckInfo,
     start,
     compiler,
     formatOptions,
@@ -34,7 +34,9 @@ export const missingMemberMeta: CodeActionMeta = {
     tsLs,
   }) {
     const tcbNodesInfo =
-      templateInfo === null ? null : getTcbNodesOfTemplateAtPosition(templateInfo, start, compiler);
+      typeCheckInfo === null
+        ? null
+        : getTcbNodesOfTemplateAtPosition(typeCheckInfo, start, compiler);
     if (tcbNodesInfo === null) {
       return [];
     }
@@ -87,16 +89,16 @@ export const missingMemberMeta: CodeActionMeta = {
       if (diag.start === undefined) {
         continue;
       }
-      const componentClass = getTemplateInfoAtPosition(fileName, diag.start, compiler)?.component;
-      if (componentClass === undefined) {
+      const declaration = getTypeCheckInfoAtPosition(fileName, diag.start, compiler)?.declaration;
+      if (declaration === undefined) {
         continue;
       }
-      if (seen.has(componentClass)) {
+      if (seen.has(declaration)) {
         continue;
       }
-      seen.add(componentClass);
+      seen.add(declaration);
 
-      const tcb = compiler.getTemplateTypeChecker().getTypeCheckBlock(componentClass);
+      const tcb = compiler.getTemplateTypeChecker().getTypeCheckBlock(declaration);
       if (tcb === null) {
         continue;
       }

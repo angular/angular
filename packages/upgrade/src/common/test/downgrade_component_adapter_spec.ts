@@ -168,9 +168,10 @@ withEachNg1Version(() => {
         class NewModule {}
 
         const modFactory = compiler.compileModuleSync(NewModule);
-        const module = modFactory.create(TestBed);
+        const testBedInjector = TestBed.inject(Injector);
+        const module = modFactory.create(testBedInjector);
         componentFactory = module.componentFactoryResolver.resolveComponentFactory(NewComponent)!;
-        parentInjector = TestBed;
+        parentInjector = testBedInjector;
 
         return new DowngradeComponentAdapter(
           element,

@@ -1,10 +1,11 @@
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
+load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library", "pkg_web")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 load("//devtools/tools:ng_module.bzl", "ng_module")
 load("//devtools/tools:typescript.bzl", "ts_library")
-load("//tools:defaults.bzl", "esbuild")
 load("//devtools/tools/esbuild:index.bzl", "LINKER_PROCESSED_FW_PACKAGES")
-load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
+load("//tools:defaults.bzl", "esbuild")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -13,17 +14,19 @@ sass_binary(
     src = "styles.scss",
     include_paths = ["external/npm/node_modules"],
     sourcemap = False,
-    deps = ["//devtools:global_styles"],
+    deps = ["//devtools/projects/ng-devtools/src/styles:global"],
 )
 
-sass_binary(
-    name = "shell_firefox_styles",
-    src = "styles/firefox_styles.scss",
-)
-
-sass_binary(
-    name = "shell_chrome_styles",
-    src = "styles/chrome_styles.scss",
+copy_to_directory(
+    name = "browser_specific_styles",
+    srcs = [
+        "//devtools/projects/ng-devtools/src/styles:chrome",
+        "//devtools/projects/ng-devtools/src/styles:firefox",
+    ],
+    out = "styles",
+    replace_prefixes = {
+        "devtools/projects/ng-devtools/src/styles": "",
+    },
 )
 
 ts_library(
@@ -95,10 +98,9 @@ exports_files(["index.html"])
 filegroup(
     name = "prod_app_static_files",
     srcs = [
+        ":browser_specific_styles",
         ":index.html",
-        ":shell_chrome_styles",
         ":shell_common_styles",
-        ":shell_firefox_styles",
         "//packages/zone.js/bundles:zone.umd.js",
     ],
 )

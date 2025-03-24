@@ -108,11 +108,11 @@ The type of `heroService` is `HeroService`.
 Angular recognizes the `HeroService` type as a dependency, since that class was previously annotated with the `@Injectable` decorator:
 
 <docs-code header="src/app/heroes/hero-list.component.ts" language="typescript">
-  import { inject } from "@angular/core";
+import { inject } from "@angular/core";
 
-  export class HeroListComponent {
-    private heroService = inject(HeroService);
-  }
+export class HeroListComponent {
+  private heroService = inject(HeroService);
+}
 </docs-code>
 
 It is also possible to inject a service into a component using the component's constructor:

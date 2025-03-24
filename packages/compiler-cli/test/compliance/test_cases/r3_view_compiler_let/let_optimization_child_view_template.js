@@ -20,7 +20,7 @@ $r3$.ɵɵdefineComponent({
       $r3$.ɵɵtext(0);
       $r3$.ɵɵdeclareLet(1)(2)(3)(4);
       $r3$.ɵɵtext(5);
-      $r3$.ɵɵtemplate(6, MyApp_Conditional_6_Template, 1, 1);
+      $r3$.ɵɵconditionalCreate(6, MyApp_Conditional_6_Template, 1, 1);
     }
     if (rf & 2) {
       $r3$.ɵɵtextInterpolate1(" ", ctx.value, " ");

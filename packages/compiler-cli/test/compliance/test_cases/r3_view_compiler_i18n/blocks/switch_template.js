@@ -70,7 +70,7 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
     if (rf & 1) {
       $r3$.ɵɵelementStart(0, "div");
       $r3$.ɵɵi18nStart(1, 0);
-      $r3$.ɵɵtemplate(2, MyApp_Case_2_Template, 2, 0)(3, MyApp_Case_3_Template, 2, 0)(4, MyApp_Case_4_Template, 2, 0);
+      $r3$.ɵɵconditionalCreate(2, MyApp_Case_2_Template, 2, 0)(3, MyApp_Case_3_Template, 2, 0)(4, MyApp_Case_4_Template, 2, 0);
       $r3$.ɵɵi18nEnd();
       $r3$.ɵɵelementEnd();
     }

@@ -60,7 +60,7 @@ import {
   findFirstMatchingNode,
   hasExpressionIdentifier,
 } from './comments';
-import {TemplateData} from './context';
+import {TypeCheckData} from './context';
 import {isAccessExpression} from './ts_util';
 
 /**
@@ -76,7 +76,7 @@ export class SymbolBuilder {
     private readonly tcbPath: AbsoluteFsPath,
     private readonly tcbIsShim: boolean,
     private readonly typeCheckBlock: ts.Node,
-    private readonly templateData: TemplateData,
+    private readonly typeCheckData: TypeCheckData,
     private readonly componentScopeReader: ComponentScopeReader,
     // The `ts.TypeChecker` depends on the current type-checking program, and so must be requested
     // on-demand instead of cached.
@@ -257,7 +257,7 @@ export class SymbolBuilder {
     host: TmplAstTemplate | TmplAstElement,
     directiveDeclaration: ts.Declaration,
   ): TypeCheckableDirectiveMeta | null {
-    let directives = this.templateData.boundTarget.getDirectivesOfNode(host);
+    let directives = this.typeCheckData.boundTarget.getDirectivesOfNode(host);
 
     // `getDirectivesOfNode` will not return the directives intended for an element
     // on a microsyntax template, for example `<div *ngFor="let user of users;" dir>`,
@@ -267,7 +267,7 @@ export class SymbolBuilder {
       const isMicrosyntaxTemplate =
         host instanceof TmplAstTemplate && sourceSpanEqual(firstChild.sourceSpan, host.sourceSpan);
       if (isMicrosyntaxTemplate) {
-        const firstChildDirectives = this.templateData.boundTarget.getDirectivesOfNode(firstChild);
+        const firstChildDirectives = this.typeCheckData.boundTarget.getDirectivesOfNode(firstChild);
         if (firstChildDirectives !== null && directives !== null) {
           directives = directives.concat(firstChildDirectives);
         } else {
@@ -291,7 +291,7 @@ export class SymbolBuilder {
   }
 
   private getSymbolOfBoundEvent(eventBinding: TmplAstBoundEvent): OutputBindingSymbol | null {
-    const consumer = this.templateData.boundTarget.getConsumerOfBinding(eventBinding);
+    const consumer = this.typeCheckData.boundTarget.getConsumerOfBinding(eventBinding);
     if (consumer === null) {
       return null;
     }
@@ -402,7 +402,7 @@ export class SymbolBuilder {
   private getSymbolOfInputBinding(
     binding: TmplAstBoundAttribute | TmplAstTextAttribute,
   ): InputBindingSymbol | DomBindingSymbol | null {
-    const consumer = this.templateData.boundTarget.getConsumerOfBinding(binding);
+    const consumer = this.typeCheckData.boundTarget.getConsumerOfBinding(binding);
     if (consumer === null) {
       return null;
     }
@@ -568,7 +568,7 @@ export class SymbolBuilder {
   }
 
   private getSymbolOfReference(ref: TmplAstReference): ReferenceSymbol | null {
-    const target = this.templateData.boundTarget.getReferenceTarget(ref);
+    const target = this.typeCheckData.boundTarget.getReferenceTarget(ref);
     // Find the node for the reference declaration, i.e. `var _t2 = _t1;`
     let node = findFirstMatchingNode(this.typeCheckBlock, {
       withSpan: ref.sourceSpan,
@@ -702,7 +702,7 @@ export class SymbolBuilder {
       expression = expression.ast;
     }
 
-    const expressionTarget = this.templateData.boundTarget.getExpressionTarget(expression);
+    const expressionTarget = this.typeCheckData.boundTarget.getExpressionTarget(expression);
     if (expressionTarget !== null) {
       return this.getSymbol(expressionTarget);
     }

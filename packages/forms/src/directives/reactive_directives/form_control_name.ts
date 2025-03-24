@@ -213,28 +213,23 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     return this._parent ? this._parent.formDirective : null;
   }
 
-  private _checkParentType(): void {
-    if (typeof ngDevMode === 'undefined' || ngDevMode) {
-      if (
-        !(this._parent instanceof FormGroupName) &&
-        this._parent instanceof AbstractFormGroupDirective
-      ) {
-        throw ngModelGroupException();
-      } else if (
-        !(this._parent instanceof FormGroupName) &&
-        !(this._parent instanceof FormGroupDirective) &&
-        !(this._parent instanceof FormArrayName)
-      ) {
-        throw controlParentException(this.name);
-      }
-    }
-  }
-
   private _setUpControl() {
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
-      this._checkParentType();
+      checkParentType(this._parent, this.name);
     }
     (this as Writable<this>).control = this.formDirective.addControl(this);
     this._added = true;
+  }
+}
+
+function checkParentType(parent: ControlContainer | null, name: string | number | null) {
+  if (!(parent instanceof FormGroupName) && parent instanceof AbstractFormGroupDirective) {
+    throw ngModelGroupException();
+  } else if (
+    !(parent instanceof FormGroupName) &&
+    !(parent instanceof FormGroupDirective) &&
+    !(parent instanceof FormArrayName)
+  ) {
+    throw controlParentException(name);
   }
 }

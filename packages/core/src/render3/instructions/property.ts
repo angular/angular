@@ -13,7 +13,7 @@ import {getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
 
 import {
   elementPropertyInternal,
-  setInputsForProperty,
+  setAllInputsForProperty,
   storePropertyBindingMetadata,
 } from './shared';
 
@@ -71,8 +71,6 @@ export function setDirectiveInputsWhichShadowsStyling(
   value: any,
   isClassBased: boolean,
 ) {
-  const inputs = tNode.inputs!;
-  const property = isClassBased ? 'class' : 'style';
   // We support both 'class' and `className` hence the fallback.
-  setInputsForProperty(tView, lView, inputs[property], property, value);
+  setAllInputsForProperty(tNode, tView, lView, isClassBased ? 'class' : 'style', value);
 }

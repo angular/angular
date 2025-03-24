@@ -12,7 +12,6 @@
 
 export * from './directives/index';
 export * from './components/index';
-export * from './constants/index';
 export * from './interfaces/index';
 export * from './providers/index';
 export * from './services/index';

@@ -4,7 +4,7 @@
 
 ```ts
 
-import { EnvironmentProviders as EnvironmentProviders_2 } from '@angular/core';
+import * as _angular_core from '@angular/core';
 import { Observable } from 'rxjs';
 import { SIGNAL } from '@angular/core/primitives/signals';
 import { SignalNode } from '@angular/core/primitives/signals';
@@ -116,20 +116,20 @@ export class ApplicationInitStatus {
     // (undocumented)
     readonly donePromise: Promise<any>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<ApplicationInitStatus, never>;
+    static ɵfac: ɵɵFactoryDeclaration<ApplicationInitStatus, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<ApplicationInitStatus>;
+    static ɵprov: ɵɵInjectableDeclaration<ApplicationInitStatus>;
 }
 
 // @public
 export class ApplicationModule {
     constructor(appRef: ApplicationRef);
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<ApplicationModule, never>;
+    static ɵfac: ɵɵFactoryDeclaration<ApplicationModule, never>;
     // (undocumented)
-    static ɵinj: i0.ɵɵInjectorDeclaration<ApplicationModule>;
+    static ɵinj: ɵɵInjectorDeclaration<ApplicationModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<ApplicationModule, never, never, never>;
+    static ɵmod: ɵɵNgModuleDeclaration<ApplicationModule, never, never, never>;
 }
 
 // @public
@@ -152,9 +152,9 @@ export class ApplicationRef {
     // (undocumented)
     whenStable(): Promise<void>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<ApplicationRef, never>;
+    static ɵfac: ɵɵFactoryDeclaration<ApplicationRef, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<ApplicationRef>;
+    static ɵprov: ɵɵInjectableDeclaration<ApplicationRef>;
 }
 
 // @public (undocumented)
@@ -241,9 +241,9 @@ export class Compiler {
     compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T>;
     getModuleId(moduleType: Type<any>): string | undefined;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<Compiler, never>;
+    static ɵfac: ɵɵFactoryDeclaration<Compiler, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<Compiler>;
+    static ɵprov: ɵɵInjectableDeclaration<Compiler>;
 }
 
 // @public
@@ -295,7 +295,7 @@ export interface ComponentDecorator {
 // @public @deprecated
 export abstract class ComponentFactory<C> {
     abstract get componentType(): Type<any>;
-    abstract create(injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string | any, environmentInjector?: EnvironmentInjector | NgModuleRef<any>): ComponentRef<C>;
+    abstract create(injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string | any, environmentInjector?: EnvironmentInjector | NgModuleRef<any>, directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[], bindings?: Binding[]): ComponentRef<C>;
     abstract get inputs(): {
         propName: string;
         templateName: string;
@@ -454,6 +454,8 @@ export function createComponent<C>(component: Type<C>, options: {
     hostElement?: Element;
     elementInjector?: Injector;
     projectableNodes?: Node[][];
+    directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
+    bindings?: Binding[];
 }): ComponentRef<C>;
 
 // @public
@@ -589,6 +591,12 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
 export const defineInjectable: typeof ɵɵdefineInjectable;
 
 // @public
+export interface DestroyableInjector extends Injector {
+    // (undocumented)
+    destroy(): void;
+}
+
+// @public
 export function destroyPlatform(): void;
 
 // @public
@@ -684,10 +692,8 @@ export abstract class EnvironmentInjector implements Injector {
     }): T;
     abstract get<T>(token: ProviderToken<T>, notFoundValue: null | undefined, options: InjectOptions): T | null;
     abstract get<T>(token: ProviderToken<T>, notFoundValue?: T, options?: InjectOptions): T;
-    // @deprecated
-    abstract get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
     // @deprecated (undocumented)
-    abstract get(token: any, notFoundValue?: any): any;
+    abstract get<T>(token: string | ProviderToken<T>, notFoundValue?: any): any;
     // @deprecated
     abstract runInContext<ReturnT>(fn: () => ReturnT): ReturnT;
 }
@@ -845,9 +851,6 @@ export const Inject: InjectDecorator;
 // @public (undocumented)
 export function inject<T>(token: ProviderToken<T>): T;
 
-// @public @deprecated (undocumented)
-export function inject<T>(token: ProviderToken<T>, flags?: InjectFlags): T | null;
-
 // @public (undocumented)
 export function inject<T>(token: ProviderToken<T>, options: InjectOptions & {
     optional?: false;
@@ -902,18 +905,12 @@ export interface InjectableType<T> extends Type<T> {
 
 // @public
 export interface InjectDecorator {
+    (token: string): any;
     (token: any): any;
     // (undocumented)
+    new (token: string): Inject;
+    // (undocumented)
     new (token: any): Inject;
-}
-
-// @public @deprecated
-export enum InjectFlags {
-    Default = 0,
-    Host = 1,
-    Optional = 8,
-    Self = 2,
-    SkipSelf = 4
 }
 
 // @public
@@ -949,16 +946,14 @@ export abstract class Injector {
         providers: Array<Provider | StaticProvider>;
         parent?: Injector;
         name?: string;
-    }): Injector;
+    }): DestroyableInjector;
     abstract get<T>(token: ProviderToken<T>, notFoundValue: undefined, options: InjectOptions & {
         optional?: false;
     }): T;
     abstract get<T>(token: ProviderToken<T>, notFoundValue: null | undefined, options: InjectOptions): T | null;
-    abstract get<T>(token: ProviderToken<T>, notFoundValue?: T, options?: InjectOptions | InjectFlags): T;
-    // @deprecated
-    abstract get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
+    abstract get<T>(token: ProviderToken<T>, notFoundValue?: T, options?: InjectOptions): T;
     // @deprecated (undocumented)
-    abstract get(token: any, notFoundValue?: any): any;
+    abstract get<T>(token: string | ProviderToken<T>, notFoundValue?: any): any;
     // (undocumented)
     static NULL: Injector;
     // (undocumented)
@@ -987,6 +982,9 @@ export const Input: InputDecorator;
 
 // @public
 export const input: InputFunction;
+
+// @public
+export function inputBinding(publicName: string, value: () => unknown): Binding;
 
 // @public (undocumented)
 export interface InputDecorator {
@@ -1034,7 +1032,7 @@ export interface InputSignalWithTransform<T, TransformT> extends Signal<T> {
     // (undocumented)
     [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: TransformT;
     // (undocumented)
-    [SIGNAL]: ɵInputSignalNode<T, TransformT>;
+    [SIGNAL]: InputSignalNode<T, TransformT>;
 }
 
 // @public
@@ -1201,7 +1199,7 @@ export interface ModelOptions {
 // @public
 export interface ModelSignal<T> extends WritableSignal<T>, InputSignal<T>, OutputRef<T> {
     // (undocumented)
-    [SIGNAL]: ɵInputSignalNode<T, T>;
+    [SIGNAL]: InputSignalNode<T, T>;
 }
 
 // @public @deprecated
@@ -1353,6 +1351,9 @@ export const Output: OutputDecorator;
 export function output<T = void>(opts?: OutputOptions): OutputEmitterRef<T>;
 
 // @public
+export function outputBinding<T>(eventName: string, listener: (event: T) => unknown): Binding;
+
+// @public
 export interface OutputDecorator {
     (alias?: string): any;
     // (undocumented)
@@ -1390,7 +1391,7 @@ export const PACKAGE_ROOT_URL: InjectionToken<string>;
 // @public
 export class PendingTasks {
     add(): () => void;
-    run<T>(fn: () => Promise<T>): Promise<T>;
+    run<T>(fn: () => Promise<T>): void;
     // (undocumented)
     static ɵprov: unknown;
 }
@@ -1436,9 +1437,9 @@ export class PlatformRef {
     get injector(): Injector;
     onDestroy(callback: () => void): void;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<PlatformRef, never>;
+    static ɵfac: ɵɵFactoryDeclaration<PlatformRef, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<PlatformRef>;
+    static ɵprov: ɵɵInjectableDeclaration<PlatformRef>;
 }
 
 // @public
@@ -1461,7 +1462,7 @@ export function provideExperimentalCheckNoChangesForDebug(options: {
     interval?: number;
     useNgZoneOnStable?: boolean;
     exhaustive?: boolean;
-}): EnvironmentProviders_2;
+}): _angular_core.EnvironmentProviders;
 
 // @public
 export function provideExperimentalZonelessChangeDetection(): EnvironmentProviders;
@@ -1792,9 +1793,9 @@ export class Testability implements PublicTestability {
     isStable(): boolean;
     whenStable(doneCb: Function, timeout?: number, updateCb?: Function): void;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<Testability, never>;
+    static ɵfac: ɵɵFactoryDeclaration<Testability, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<Testability>;
+    static ɵprov: ɵɵInjectableDeclaration<Testability>;
 }
 
 // @public
@@ -1807,9 +1808,9 @@ export class TestabilityRegistry {
     unregisterAllApplications(): void;
     unregisterApplication(token: any): void;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<TestabilityRegistry, never>;
+    static ɵfac: ɵɵFactoryDeclaration<TestabilityRegistry, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<TestabilityRegistry>;
+    static ɵprov: ɵɵInjectableDeclaration<TestabilityRegistry>;
 }
 
 // @public
@@ -1836,6 +1837,9 @@ export const TRANSLATIONS: InjectionToken<string>;
 
 // @public
 export const TRANSLATIONS_FORMAT: InjectionToken<string>;
+
+// @public
+export function twoWayBinding(publicName: string, value: WritableSignal<unknown>): Binding;
 
 // @public
 export const Type: FunctionConstructor;
@@ -1974,9 +1978,11 @@ export abstract class ViewContainerRef {
         ngModuleRef?: NgModuleRef<unknown>;
         environmentInjector?: EnvironmentInjector | NgModuleRef<unknown>;
         projectableNodes?: Node[][];
+        directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
+        bindings?: Binding[];
     }): ComponentRef<C>;
     // @deprecated
-    abstract createComponent<C>(componentFactory: ComponentFactory<C>, index?: number, injector?: Injector, projectableNodes?: any[][], environmentInjector?: EnvironmentInjector | NgModuleRef<any>): ComponentRef<C>;
+    abstract createComponent<C>(componentFactory: ComponentFactory<C>, index?: number, injector?: Injector, projectableNodes?: any[][], environmentInjector?: EnvironmentInjector | NgModuleRef<any>, directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[], bindings?: Binding[]): ComponentRef<C>;
     abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, options?: {
         index?: number;
         injector?: Injector;

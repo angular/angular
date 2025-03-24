@@ -10,20 +10,15 @@
   "deprecated": false,
   "options": [
     {
+      "name": "aot",
+      "type": "boolean",
+      "default": false,
+      "description": "Run tests using Ahead of Time compilation."
+    },
+    {
       "name": "browsers",
       "type": "string",
       "description": "Override which browsers tests are run against. Set to `false` to not use any browser."
-    },
-    {
-      "name": "builder-mode",
-      "type": "string",
-      "default": "browser",
-      "enum": [
-        "detect",
-        "browser",
-        "application"
-      ],
-      "description": "Determines how to build the code under test. If set to 'detect', attempts to follow the development builder."
     },
     {
       "name": "code-coverage",
@@ -45,9 +40,24 @@
       "description": "One or more named builder configurations as a comma-separated list as specified in the \"configurations\" section in angular.json.\nThe builder uses the named configurations to run the given target.\nFor more information, see https://angular.dev/reference/configs/workspace-config#alternate-build-configurations."
     },
     {
+      "name": "define",
+      "type": "array",
+      "description": "Defines global identifiers that will be replaced with a specified constant value when found in any JavaScript or TypeScript code including libraries. The value will be used directly. String values must be put in quotes. Identifiers within Angular metadata such as Component Decorators will not be replaced."
+    },
+    {
+      "name": "define",
+      "type": "string",
+      "description": "Defines global identifiers that will be replaced with a specified constant value when found in any JavaScript or TypeScript code including libraries. The value will be used directly. String values must be put in quotes. Identifiers within Angular metadata such as Component Decorators will not be replaced."
+    },
+    {
       "name": "exclude",
       "type": "array",
       "description": "Globs of files to exclude, relative to the project root."
+    },
+    {
+      "name": "external-dependencies",
+      "type": "array",
+      "description": "Exclude the listed external dependencies from being bundled into the bundle. Instead, the created bundle relies on these dependencies to be available during runtime."
     },
     {
       "name": "help",
@@ -88,8 +98,8 @@
     },
     {
       "name": "polyfills",
-      "type": "string",
-      "description": "Polyfills to be included in the build."
+      "type": "array",
+      "description": "A list of polyfills to include in the build. Can be a full path for a file, relative to the current workspace or module specifier. Example: 'zone.js'."
     },
     {
       "name": "preserve-symlinks",

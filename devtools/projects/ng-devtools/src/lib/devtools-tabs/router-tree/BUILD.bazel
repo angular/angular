@@ -6,6 +6,7 @@ package(default_visibility = ["//:__subpackages__"])
 sass_binary(
     name = "router_tree_styles",
     src = "router-tree.component.scss",
+    deps = ["//devtools/projects/ng-devtools/src/styles:theme"],
 )
 
 ng_module(
@@ -19,6 +20,7 @@ ng_module(
         ":router_tree_styles",
     ],
     deps = [
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tree-visualizer-host",
         "//devtools/projects/protocol",
         "//packages/common",
         "//packages/core",

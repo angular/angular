@@ -331,7 +331,6 @@ describe('styling', () => {
     it('should allow null in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', null, 'c']" [class.extra]="true"></div>`,
-        standalone: true,
       })
       class Cmp {}
 
@@ -344,7 +343,6 @@ describe('styling', () => {
     it('should allow undefined in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', undefined, 'c']" [class.extra]="true"></div>`,
-        standalone: true,
       })
       class Cmp {}
 
@@ -357,7 +355,6 @@ describe('styling', () => {
     it('should allow zero in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', 0, 'c']" [class.extra]="true"></div>`,
-        standalone: true,
       })
       class Cmp {}
 
@@ -370,7 +367,6 @@ describe('styling', () => {
     it('should allow false in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', false, 'c']" [class.extra]="true"></div>`,
-        standalone: true,
       })
       class Cmp {}
 
@@ -383,7 +379,6 @@ describe('styling', () => {
     it('should ignore an empty string in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', '', 'c']" [class.extra]="true"></div>`,
-        standalone: true,
       })
       class Cmp {}
 
@@ -396,7 +391,6 @@ describe('styling', () => {
     it('should ignore a string containing spaces in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', 'hello there', 'c']" [class.extra]="true"></div>`,
-        standalone: true,
       })
       class Cmp {}
 
@@ -409,7 +403,6 @@ describe('styling', () => {
     it('should ignore a string containing spaces in a class object literal binding', () => {
       @Component({
         template: `<div [class]="{a: true, 'hello there': true, c: true}" [class.extra]="true"></div>`,
-        standalone: true,
       })
       class Cmp {}
 
@@ -422,7 +415,6 @@ describe('styling', () => {
     it('should ignore an object literal in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', {foo: true}, 'c']" [class.extra]="true"></div>`,
-        standalone: true,
       })
       class Cmp {}
 
@@ -435,7 +427,6 @@ describe('styling', () => {
     it('should handle a string array in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', ['foo', 'bar'], 'c']" [class.extra]="true"></div>`,
-        standalone: true,
       })
       class Cmp {}
 
@@ -932,11 +923,6 @@ describe('styling', () => {
 
     const div = fixture.nativeElement.querySelector('div') as HTMLDivElement;
     expect(div.style.backgroundImage).toBe('url("#test")');
-
-    expectPerfCounters({
-      rendererSetStyle: 1,
-      tNode: 2,
-    });
   });
 
   it('should set !important on a single property', () => {
@@ -957,11 +943,6 @@ describe('styling', () => {
     // We have to check the `style` attribute, because `element.style.prop` doesn't include
     // `!important`. Use a regex, because the different renderers produce different whitespace.
     expect(html).toMatch(/style=["|']width:\s*50px\s*!important/);
-
-    expectPerfCounters({
-      rendererSetStyle: 1,
-      tNode: 2,
-    });
   });
 
   it('should set !important that is not preceded by a space', () => {
@@ -982,11 +963,6 @@ describe('styling', () => {
     // We have to check the `style` attribute, because `element.style.prop` doesn't include
     // `!important`. Use a regex, because the different renderers produce different whitespace.
     expect(html).toMatch(/style=["|']width:\s*50px\s*!important/);
-
-    expectPerfCounters({
-      rendererSetStyle: 1,
-      tNode: 2,
-    });
   });
 
   it('should set !important on a dash-case property', () => {
@@ -1007,11 +983,6 @@ describe('styling', () => {
     // We have to check the `style` attribute, because `element.style.prop` doesn't include
     // `!important`. Use a regex, because the different renderers produce different whitespace.
     expect(html).toMatch(/style=["|']margin-right:\s*5px\s*!important/);
-
-    expectPerfCounters({
-      rendererSetStyle: 1,
-      tNode: 2,
-    });
   });
 
   it('should set !important on multiple properties', () => {
@@ -1032,11 +1003,6 @@ describe('styling', () => {
     // We have to check the `style` attribute, because `element.style.prop` doesn't include
     // `!important`. Use a regex, because the different renderers produce different whitespace.
     expect(html).toMatch(/style=["|']height:\s*25px\s*!important;\s*width:\s*50px\s*!important/);
-
-    expectPerfCounters({
-      rendererSetStyle: 2,
-      tNode: 2,
-    });
   });
 
   it('should set !important if some properties are !important and other are not', () => {
@@ -1057,11 +1023,6 @@ describe('styling', () => {
     // We have to check the `style` attribute, because `element.style.prop` doesn't include
     // `!important`. Use a regex, because the different renderers produce different whitespace.
     expect(html).toMatch(/style=["|']height:\s*25px;\s*width:\s*50px\s*!important/);
-
-    expectPerfCounters({
-      rendererSetStyle: 2,
-      tNode: 2,
-    });
   });
 
   it('should not write to the native element if a directive shadows the class input', () => {
@@ -1957,7 +1918,6 @@ describe('styling', () => {
     expect(element.style.fontSize).toEqual('100px');
 
     // once for the template flush and again for the host bindings
-    expect(ngDevMode!.rendererSetStyle).toEqual(4);
     ngDevModeResetPerfCounters();
 
     component.opacity = '0.6';
@@ -1970,9 +1930,6 @@ describe('styling', () => {
     expect(element.style.width).toEqual('100px');
     expect(element.style.height).toEqual('100px');
     expect(element.style.fontSize).toEqual('50px');
-
-    // once for the template flush and again for the host bindings
-    expect(ngDevMode!.rendererSetStyle).toEqual(4);
   });
 
   it('should combine all styling across the template, directive and component host bindings', () => {
@@ -2264,7 +2221,6 @@ describe('styling', () => {
     fixture.detectChanges();
     const element = fixture.nativeElement.querySelector('div');
 
-    assertStyleCounters(4, 0);
     assertStyle(element, 'width', '111px');
     assertStyle(element, 'height', '111px');
 
@@ -2272,7 +2228,6 @@ describe('styling', () => {
     ngDevModeResetPerfCounters();
     fixture.detectChanges();
 
-    assertStyleCounters(1, 0);
     assertStyle(element, 'width', '222px');
     assertStyle(element, 'height', '111px');
 
@@ -2280,7 +2235,6 @@ describe('styling', () => {
     ngDevModeResetPerfCounters();
     fixture.detectChanges();
 
-    assertStyleCounters(1, 0);
     assertStyle(element, 'width', '222px');
     assertStyle(element, 'height', '222px');
 
@@ -2288,7 +2242,6 @@ describe('styling', () => {
     ngDevModeResetPerfCounters();
     fixture.detectChanges();
 
-    assertStyleCounters(1, 0);
     assertStyle(element, 'width', '555px');
     assertStyle(element, 'height', '222px');
 
@@ -2305,7 +2258,6 @@ describe('styling', () => {
     fixture.detectChanges();
 
     // No change, hence no write
-    assertStyleCounters(0, 0);
     assertStyle(element, 'width', '123px');
     assertStyle(element, 'height', '123px');
 
@@ -2313,7 +2265,6 @@ describe('styling', () => {
     ngDevModeResetPerfCounters();
     fixture.detectChanges();
 
-    assertStyleCounters(1, 0);
     assertStyle(element, 'width', '999px');
     assertStyle(element, 'height', '123px');
 
@@ -2322,7 +2273,6 @@ describe('styling', () => {
     fixture.detectChanges();
 
     // the width is only applied once
-    assertStyleCounters(1, 0);
     assertStyle(element, 'width', '0px');
     assertStyle(element, 'height', '123px');
 
@@ -2330,7 +2280,6 @@ describe('styling', () => {
     ngDevModeResetPerfCounters();
     fixture.detectChanges();
 
-    assertStyleCounters(2, 0);
     assertStyle(element, 'width', '1000px');
     assertStyle(element, 'height', '123px');
     assertStyle(element, 'color', 'red');
@@ -2341,7 +2290,6 @@ describe('styling', () => {
 
     // height gets applied twice and all other
     // values get applied
-    assertStyleCounters(1, 0);
     assertStyle(element, 'width', '1000px');
     assertStyle(element, 'height', '1100px');
     assertStyle(element, 'color', 'red');
@@ -2350,7 +2298,6 @@ describe('styling', () => {
     ngDevModeResetPerfCounters();
     fixture.detectChanges();
 
-    assertStyleCounters(3, 0);
     assertStyle(element, 'width', '2000px');
     assertStyle(element, 'height', '1100px');
     assertStyle(element, 'color', 'blue');
@@ -2361,7 +2308,6 @@ describe('styling', () => {
     fixture.detectChanges();
 
     // all four are applied because the map was altered
-    assertStyleCounters(0, 1);
     assertStyle(element, 'width', '2000px');
     assertStyle(element, 'height', '1100px');
     assertStyle(element, 'color', 'blue');
@@ -4152,11 +4098,6 @@ describe('styling', () => {
     });
   });
 });
-
-function assertStyleCounters(countForSet: number, countForRemove: number) {
-  expect(ngDevMode!.rendererSetStyle).toEqual(countForSet);
-  expect(ngDevMode!.rendererRemoveStyle).toEqual(countForRemove);
-}
 
 function assertStyle(element: HTMLElement, prop: string, value: any) {
   expect((element.style as any)[prop]).toEqual(value);

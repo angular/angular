@@ -16,10 +16,11 @@ import {stringifyForError} from './util/stringify_utils';
 
 /** Called when directives inject each other (creating a circular dependency) */
 export function throwCyclicDependencyError(token: string, path?: string[]): never {
-  const depPath = path ? `. Dependency path: ${path.join(' > ')} > ${token}` : '';
   throw new RuntimeError(
     RuntimeErrorCode.CYCLIC_DI_DEPENDENCY,
-    ngDevMode ? `Circular dependency in DI detected for ${token}${depPath}` : token,
+    ngDevMode
+      ? `Circular dependency in DI detected for ${token}${path ? `. Dependency path: ${path.join(' > ')} > ${token}` : ''}`
+      : token,
   );
 }
 

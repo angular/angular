@@ -25,21 +25,21 @@ import {BrowserModule, platformBrowser} from '@angular/platform-browser';
   standalone: false,
 })
 class MakeColorGreyDirective {
-  @HostBinding('style.background-color') private _backgroundColor: string | null = null;
-  @HostBinding('style.color') private _textColor: string | null = null;
+  @HostBinding('style.background-color') protected backgroundColor: string | null = null;
+  @HostBinding('style.color') protected textColor: string | null = null;
 
   on() {
-    this._backgroundColor = 'grey';
-    this._textColor = 'black';
+    this.backgroundColor = 'grey';
+    this.textColor = 'black';
   }
 
   off() {
-    this._backgroundColor = null;
-    this._textColor = null;
+    this.backgroundColor = null;
+    this.textColor = null;
   }
 
   toggle() {
-    this._backgroundColor ? this.off() : this.on();
+    this.backgroundColor ? this.off() : this.on();
   }
 }
 
@@ -57,7 +57,7 @@ class BoxWithOverriddenStylesComponent {
     this.onInActive();
   }
 
-  @HostListener('click', ['$event'])
+  @HostListener('click')
   toggle() {
     if (this.active) {
       this.onInActive();

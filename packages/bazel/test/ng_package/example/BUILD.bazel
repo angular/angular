@@ -28,7 +28,6 @@ ng_package(
     nested_packages = [
         ":arbitrary_npm_package",
     ],
-    primary_bundle_name = "waffels",
     deps = [
         ":example",
         "//packages/bazel/test/ng_package/example/a11y",

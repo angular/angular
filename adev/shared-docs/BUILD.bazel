@@ -10,7 +10,6 @@ ng_module(
     module_name = "@angular/docs",
     deps = [
         "//adev/shared-docs/components",
-        "//adev/shared-docs/constants",
         "//adev/shared-docs/directives",
         "//adev/shared-docs/interfaces",
         "//adev/shared-docs/pipes",

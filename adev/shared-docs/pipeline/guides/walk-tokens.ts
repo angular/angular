@@ -25,12 +25,14 @@ function isDocsCodeToken(token: Token): token is DocsCodeToken {
  * Handle the provided token based on the token itself replacing its content/data in place
  * as appropriate.
  */
+let mermaid: typeof import('./mermaid');
 export async function walkTokens(token: Token): Promise<void> {
   if (!isDocsCodeToken(token) || token.language !== 'mermaid') {
     return;
   }
 
   if (HANDLE_MERMAID) {
-    return (await import('./mermaid')).processMermaidCodeBlock(token);
+    mermaid ??= await import('./mermaid');
+    return mermaid.processMermaidCodeBlock(token);
   }
 }

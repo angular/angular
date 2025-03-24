@@ -2,6 +2,8 @@ dialog {
   background-color: transparent;
   border: none;
   padding-block-end: 3rem;
+  margin: 0 auto;
+  top: 15vh;
 
   &::backdrop {
     backdrop-filter: blur(5px);

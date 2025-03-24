@@ -53,11 +53,10 @@ export interface R3HmrNamespaceDependency {
  * @param meta HMR metadata extracted from the class.
  */
 export function compileHmrInitializer(meta: R3HmrMetadata): o.Expression {
-  const id = encodeURIComponent(`${meta.filePath}@${meta.className}`);
-  const urlPartial = `./@ng/component?c=${id}&t=`;
   const moduleName = 'm';
   const dataName = 'd';
   const timestampName = 't';
+  const idName = 'id';
   const importCallbackName = `${meta.className}_HmrLoad`;
   const namespaces = meta.namespaceDependencies.map((dep) => {
     return new o.ExternalExpr({moduleName: dep.moduleName, name: null});
@@ -66,7 +65,7 @@ export function compileHmrInitializer(meta: R3HmrMetadata): o.Expression {
   // m.default
   const defaultRead = o.variable(moduleName).prop('default');
 
-  // ɵɵreplaceMetadata(Comp, m.default, [...namespaces], [...locals]);
+  // ɵɵreplaceMetadata(Comp, m.default, [...namespaces], [...locals], import.meta, id);
   const replaceCall = o
     .importExpr(R3.replaceMetadata)
     .callFn([
@@ -74,14 +73,18 @@ export function compileHmrInitializer(meta: R3HmrMetadata): o.Expression {
       defaultRead,
       o.literalArr(namespaces),
       o.literalArr(meta.localDependencies.map((l) => l.runtimeRepresentation)),
+      o.variable('import').prop('meta'),
+      o.variable(idName),
     ]);
 
   // (m) => m.default && ɵɵreplaceMetadata(...)
   const replaceCallback = o.arrowFn([new o.FnParam(moduleName)], defaultRead.and(replaceCall));
 
-  // '<urlPartial>' + encodeURIComponent(t)
+  // '<url>?c=' + id + '&t=' + encodeURIComponent(t)
   const urlValue = o
-    .literal(urlPartial)
+    .literal(`./@ng/component?c=`)
+    .plus(o.variable(idName))
+    .plus(o.literal('&t='))
     .plus(o.variable('encodeURIComponent').callFn([o.variable(timestampName)]));
 
   // import.meta.url
@@ -109,13 +112,13 @@ export function compileHmrInitializer(meta: R3HmrMetadata): o.Expression {
     o.StmtModifier.Final,
   );
 
-  // (d) => d.id === <id> && Cmp_HmrLoad(d.timestamp)
+  // (d) => d.id === id && Cmp_HmrLoad(d.timestamp)
   const updateCallback = o.arrowFn(
     [new o.FnParam(dataName)],
     o
       .variable(dataName)
       .prop('id')
-      .identical(o.literal(id))
+      .identical(o.variable(idName))
       .and(o.variable(importCallbackName).callFn([o.variable(dataName).prop('timestamp')])),
   );
 
@@ -139,6 +142,13 @@ export function compileHmrInitializer(meta: R3HmrMetadata): o.Expression {
     .arrowFn(
       [],
       [
+        // const id = <id>;
+        new o.DeclareVarStmt(
+          idName,
+          o.literal(encodeURIComponent(`${meta.filePath}@${meta.className}`)),
+          null,
+          o.StmtModifier.Final,
+        ),
         // function Cmp_HmrLoad() {...}.
         importCallback,
         // ngDevMode && Cmp_HmrLoad(Date.now());

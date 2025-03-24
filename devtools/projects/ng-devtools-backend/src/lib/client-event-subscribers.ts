@@ -39,6 +39,7 @@ import {
   idToInjector,
   injectorsSeen,
   isElementInjector,
+  isOnPushDirective,
   nodeInjectorToResolutionPath,
   queryDirectiveForest,
   serializeProviderRecord,
@@ -155,6 +156,9 @@ const getLatestComponentExplorerViewCallback =
     if (state) {
       const {directiveProperties} = state;
       messageBus.emit('latestComponentExplorerView', [{forest, properties: directiveProperties}]);
+    } else {
+      // if the node is not found in the tree, we assume its gone and send the tree as is.
+      messageBus.emit('latestComponentExplorerView', [{forest}]);
     }
   };
 
@@ -219,11 +223,15 @@ const getRoutes = (messageBus: MessageBus<Events>) => {
     initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
     ngDebugDependencyInjectionApiIsSupported(),
   );
+  if (forest.length === 0) return;
+
   const rootInjector = (forest[0].resolutionPath ?? []).find((i) => i.name === 'Root');
-  if (rootInjector) {
-    const route = getRouterConfigFromRoot(rootInjector);
-    messageBus.emit('updateRouterTree', [[route]]);
-  }
+  if (!rootInjector) return;
+
+  const route = getRouterConfigFromRoot(rootInjector);
+  if (!route) return;
+
+  messageBus.emit('updateRouterTree', [[route]]);
 };
 
 const getSerializedProviderRecords = (injector: SerializedInjector) => {
@@ -290,12 +298,17 @@ const getProviderValue = (
   }
 };
 
-const getRouterConfigFromRoot = (injector: SerializedInjector): Route => {
+const getRouterConfigFromRoot = (injector: SerializedInjector): Route | void => {
   const serializedProviderRecords = getSerializedProviderRecords(injector) ?? [];
-  const routerInstance = serializedProviderRecords.filter(
+  const routerInstance = serializedProviderRecords.find(
     (provider) => provider.token === 'Router', // get the instance of router using token
   );
-  const routerProvider = getProviderValue(injector, routerInstance[0]);
+
+  if (!routerInstance) {
+    return;
+  }
+
+  const routerProvider = getProviderValue(injector, routerInstance);
 
   return parseRoutes(routerProvider);
 };
@@ -384,6 +397,7 @@ const prepareForestForSerialization = (
       })),
       children: prepareForestForSerialization(node.children, includeResolutionPath),
       hydration: node.hydration,
+      onPush: node.component ? isOnPushDirective(node.component) : false,
     };
     serializedNodes.push(serializedNode);
 
