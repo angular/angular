@@ -313,6 +313,34 @@ describe('reactivity', () => {
       expect(log).toEqual([0, 1]);
     });
 
+    it('should run root effects in creation order independent of dirty order', async () => {
+      TestBed.configureTestingModule({
+        providers: [provideExperimentalZonelessChangeDetection()],
+      });
+      const appRef = TestBed.inject(ApplicationRef);
+
+      const sourceA = signal(0);
+      const sourceB = signal(0);
+
+      const log: string[] = [];
+
+      // Creation order: A, B
+      effect(() => log.push(`A: ${sourceA()}`), {injector: appRef.injector});
+      effect(() => log.push(`B: ${sourceB()}`), {injector: appRef.injector});
+      await appRef.whenStable();
+
+      expect(log).toEqual(['A: 0', 'B: 0']);
+      log.length = 0;
+
+      // Dirty order: B, A
+      sourceB.set(1);
+      sourceA.set(2);
+      await appRef.whenStable();
+
+      // Effects should still run in A, B creation order.
+      expect(log).toEqual(['A: 2', 'B: 1']);
+    });
+
     it('should check components made dirty from markForCheck() from an effect', async () => {
       TestBed.configureTestingModule({
         providers: [provideExperimentalZonelessChangeDetection()],
