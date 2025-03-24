@@ -421,10 +421,10 @@
   optionalDependencies:
     lmdb "3.2.6"
 
-"@angular/cdk@20.0.0-next.2":
-  version "20.0.0-next.2"
-  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-20.0.0-next.2.tgz#8a5ca13a1828b7a40dd91c6b35f8383d895e6c10"
-  integrity sha512-yq50dLK9LW8byFneLG8S37CtYCHrRE3gKz0zcW+2t4o4LgRpZw/pS9mkpzF79xGmeH+Bidgm6CgzXpKPAO+SNA==
+"@angular/cdk@20.0.0-next.3":
+  version "20.0.0-next.3"
+  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-20.0.0-next.3.tgz#a0e944a7e5b4dafdf28ce7ad315d1b3a149b659b"
+  integrity sha512-xO5UPD1jsnS5NWU8XiUoU99MRkZiHozPPcPvQxF46j7O/MED5JJLDgGdmFa4DOPX018SmRFHKw2PVLvmgM7FKA==
   dependencies:
     tslib "^2.3.0"
   optionalDependencies:
@@ -467,18 +467,19 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/material@20.0.0-next.2":
-  version "20.0.0-next.2"
-  resolved "https://registry.yarnpkg.com/@angular/material/-/material-20.0.0-next.2.tgz#dbc27a79a3aba8201213cee230b2ac4366f5dfd8"
-  integrity sha512-rF6JHrSPBgNWidQ6vpFrdO35lMdkb3o/yeAq7shtmV9beUdproavGqniBriviNO60aGJvRl2bXeZNFNP8zUWJQ==
+"@angular/material@20.0.0-next.3":
+  version "20.0.0-next.3"
+  resolved "https://registry.yarnpkg.com/@angular/material/-/material-20.0.0-next.3.tgz#9a3e6fa19d316a4819af511f98e9b4c242e9e572"
+  integrity sha512-TtwuOA8E9+G+ttNnhNL9S6dwphXQHf22os5/5HjfPBanBl/yEv4JypmW9FnrqSMCBRE4H4o2m4Tq0Jr7A3q45Q==
   dependencies:
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#3e60055cec07598ad7160ba36dd08bf57ae2be98":
-  version "0.0.0-78bd12c8526c396fc85e5ac3d72c039dc7e0a51a"
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#3e60055cec07598ad7160ba36dd08bf57ae2be98"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#8fa14ab7d073e40ffa90fbecf684cc11f9e6a816":
+  version "0.0.0-be69a70efc9f2331083d76073427c0c81ec15a1e"
+  uid "8fa14ab7d073e40ffa90fbecf684cc11f9e6a816"
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#8fa14ab7d073e40ffa90fbecf684cc11f9e6a816"
   dependencies:
-    "@google-cloud/spanner" "7.19.0"
+    "@google-cloud/spanner" "7.19.1"
     "@octokit/rest" "21.1.1"
     "@types/semver" "^7.3.6"
     "@types/supports-color" "^10.0.0"
@@ -2027,6 +2028,11 @@
   resolved "https://registry.yarnpkg.com/@google-cloud/projectify/-/projectify-4.0.0.tgz#d600e0433daf51b88c1fa95ac7f02e38e80a07be"
   integrity sha512-MmaX6HeSvyPbWGwFq7mXdo0uQZLGBYCwziiLIGq5JVX+/bdI3SAq6bP98trV5eTWfLuvsMcIC1YJOF2vfteLFA==
 
+"@google-cloud/promisify@4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@google-cloud/promisify/-/promisify-4.0.0.tgz#a906e533ebdd0f754dca2509933334ce58b8c8b1"
+  integrity sha512-Orxzlfb9c67A15cq2JQEyVc7wEsmFBmHjZWZYQMUyJ1qivXyMwdyNOs9odi79hze+2zqdTtu1E19IM/FtqZ10g==
+
 "@google-cloud/promisify@^4.0.0":
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/@google-cloud/promisify/-/promisify-4.1.0.tgz#df8b060f0121c6462233f5420738dcda09c6df4a"
@@ -2052,15 +2058,15 @@
     lodash.snakecase "^4.1.1"
     p-defer "^3.0.0"
 
-"@google-cloud/spanner@7.19.0":
-  version "7.19.0"
-  resolved "https://registry.yarnpkg.com/@google-cloud/spanner/-/spanner-7.19.0.tgz#9b192d737fb66376ed1adddec20c17f0b143279a"
-  integrity sha512-EQUGFc6l5h4spSbVKtURt+6OY+vFkACkXvdcDFISwB2++VWigeTOE0gFVJMUrko0HaKxOKfWW80+GYZCUToTcA==
+"@google-cloud/spanner@7.19.1":
+  version "7.19.1"
+  resolved "https://registry.yarnpkg.com/@google-cloud/spanner/-/spanner-7.19.1.tgz#f4a81ebffe2cd6b07cae12c5ae1eccd9a8d1f031"
+  integrity sha512-a7WlM4T3g5hslSBxQpsCxlH2IGgeVVEnDP5/v51kNlKv/W5PhBMqaHanodkUjbjegsQNlWAkqLClzIwtldfSXg==
   dependencies:
     "@google-cloud/common" "^5.0.0"
     "@google-cloud/precise-date" "^4.0.0"
     "@google-cloud/projectify" "^4.0.0"
-    "@google-cloud/promisify" "^4.0.0"
+    "@google-cloud/promisify" "4.0.0"
     "@grpc/proto-loader" "^0.7.0"
     "@opentelemetry/api" "^1.9.0"
     "@opentelemetry/context-async-hooks" "^1.26.0"
