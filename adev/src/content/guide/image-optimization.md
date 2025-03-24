@@ -90,7 +90,7 @@ For **responsive images** (images which you've styled to grow and shrink relativ
 
 For **fixed size images**, the `width` and `height` attributes should reflect the desired rendered size of the image. The aspect ratio of these attributes should always match the intrinsic aspect ratio of the image.
 
-Note: If you don't know the size of your images, consider using "fill mode" to inherit the size of the parent container, as described below.
+NOTE: If you don't know the size of your images, consider using "fill mode" to inherit the size of the parent container, as described below.
 </docs-step>
 </docs-workflow>
 
@@ -376,7 +376,7 @@ providers: [
 
 A loader function for the `NgOptimizedImage` directive takes an object with the `ImageLoaderConfig` type (from `@angular/common`) as its argument and returns the absolute URL of the image asset. The `ImageLoaderConfig` object contains the `src` property, and optional `width` and `loaderParams` properties.
 
-Note: even though the `width` property may not always be present, a custom loader must use it to support requesting images at various widths in order for `ngSrcset` to work properly.
+NOTE: even though the `width` property may not always be present, a custom loader must use it to support requesting images at various widths in order for `ngSrcset` to work properly.
 
 ### The `loaderParams` Property
 

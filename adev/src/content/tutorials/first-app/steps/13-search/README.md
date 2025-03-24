@@ -75,7 +75,7 @@ The template has been updated to bind the `filterResults` function to the `click
 
 </docs-workflow>
 
-Summary: In this lesson, you updated your app to use template variables to interact with template values, and add search functionality using event binding and array functions.
+SUMMARY: In this lesson, you updated your app to use template variables to interact with template values, and add search functionality using event binding and array functions.
 
 For more information about the topics covered in this lesson, visit:
 

@@ -18,7 +18,7 @@ You can also add server-side rendering to an existing project with the `ng add` 
 ng add @angular/ssr
 ```
 
-Note: By default, Angular prerenders your entire application and generates a server file. To disable this and create a fully static app, set `outputMode` to `static`. To enable SSR, update the server routes to use `RenderMode.Server`.
+NOTE: By default, Angular prerenders your entire application and generates a server file. To disable this and create a fully static app, set `outputMode` to `static`. To enable SSR, update the server routes to use `RenderMode.Server`.
 For more details, see [`Server routing`](#server-routing) and [`Generate a fully static application`](#generate-a-fully-static-application).
 
 ## Server routing
@@ -133,7 +133,7 @@ Prerendering requires you to author code that does not strictly depend on browse
 
 Prerendering incurs extremely little overhead per server request, as your server responds with static HTML documents. Static files are also easily cached by Content Delivery Networks (CDNs), browsers, and intermediate caching layers for even faster subsequent page loads. Fully static sites can also be deployed solely through a CDN or static file server, eliminating the need to maintain a custom server runtime for your application. This enhances scalability by offloading work from an application web server, making it particularly beneficial for high-traffic applications.
 
-Note: When using Angular service worker, the first request is server-rendered, but all subsequent requests are handled by the service worker and rendered client-side.
+NOTE: When using Angular service worker, the first request is server-rendered, but all subsequent requests are handled by the service worker and rendered client-side.
 
 ### Setting headers and status codes
 

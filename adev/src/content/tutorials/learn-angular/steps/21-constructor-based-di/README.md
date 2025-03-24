@@ -33,7 +33,7 @@ Alright, now you give this a try:
 
 In `app.component.ts`, update the constructor code to match the code below:
 
-Tip: Remember, if you get stuck refer to the example on this activity page.
+TIP: Remember, if you get stuck refer to the example on this activity page.
 
 ```ts
 constructor(private carService: CarService) {
