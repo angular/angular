@@ -316,7 +316,7 @@ export function withFetch(): HttpFeature<HttpFeatureKind.Fetch> {
 /**
  * Configures the current `HttpClient` instance to make requests using the Xhr API.
  *
- * Use this feature if you want to report progress on uploads as Xhr API supports it.
+ * Use this feature if you want to report progress on uploads as the Xhr API supports it.
  *
  * @see {@link provideHttpClient}
  * @publicApi
