@@ -4,18 +4,9 @@
 
 ```ts
 
-import { BaseResourceOptions } from '@angular/core';
-import { DestroyRef } from '@angular/core';
-import { Injector } from '@angular/core';
 import { MonoTypeOperatorFunction } from 'rxjs';
 import { Observable } from 'rxjs';
-import { OutputOptions } from '@angular/core';
-import { OutputRef } from '@angular/core';
-import { ResourceLoaderParams } from '@angular/core';
-import { ResourceRef } from '@angular/core';
-import { Signal } from '@angular/core';
 import { Subscribable } from 'rxjs';
-import { ValueEqualityFn } from '@angular/core/primitives/signals';
 
 // @public
 export function outputFromObservable<T>(observable: Observable<T>, opts?: OutputOptions): OutputRef<T>;
@@ -80,7 +71,7 @@ export function toSignal<T, const U extends T>(source: Observable<T> | Subscriba
 
 // @public
 export interface ToSignalOptions<T> {
-    equal?: ValueEqualityFn<T>;
+    equal?: ValueEqualityFn_2<T>;
     initialValue?: unknown;
     injector?: Injector;
     manualCleanup?: boolean;
