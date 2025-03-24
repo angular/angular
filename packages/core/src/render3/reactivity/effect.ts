@@ -83,12 +83,6 @@ export interface CreateEffectOptions {
   manualCleanup?: boolean;
 
   /**
-   * Always create a root effect (which is scheduled as a microtask) regardless of whether `effect`
-   * is called within a component.
-   */
-  forceRoot?: true;
-
-  /**
    * @deprecated no longer required, signal writes are allowed by default.
    */
   allowSignalWrites?: boolean;
@@ -122,7 +116,7 @@ export type EffectCleanupRegisterFn = (cleanupFn: EffectCleanupFn) => void;
  * Angular has two different kinds of effect: component effects and root effects. Component effects
  * are created when `effect()` is called from a component, directive, or within a service of a
  * component/directive. Root effects are created when `effect()` is called from outside the
- * component tree, such as in a root service, or when the `forceRoot` option is provided.
+ * component tree, such as in a root service.
  *
  * The two effect types differ in their timing. Component effects run as a component lifecycle
  * event during Angular's synchronization (change detection) process, and can safely read input
@@ -159,7 +153,7 @@ export function effect(
 
   const viewContext = injector.get(ViewContext, null, {optional: true});
   const notifier = injector.get(ChangeDetectionScheduler);
-  if (viewContext !== null && !options?.forceRoot) {
+  if (viewContext !== null) {
     // This effect was created in the context of a view, and will be associated with the view.
     node = createViewEffect(viewContext.view, notifier, effectFn);
     if (destroyRef instanceof NodeInjectorDestroyRef && destroyRef._lView === viewContext.view) {

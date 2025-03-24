@@ -467,7 +467,6 @@ export interface CreateEffectOptions {
     // @deprecated (undocumented)
     allowSignalWrites?: boolean;
     debugName?: string;
-    forceRoot?: true;
     injector?: Injector;
     manualCleanup?: boolean;
 }
