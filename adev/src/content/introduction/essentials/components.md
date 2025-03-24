@@ -111,7 +111,7 @@ export class UserProfile {
 }
 ```
 
-Tip: Want to know more about Angular components? See the [In-depth Components guide](guide/components) for the full details.
+TIP: Want to know more about Angular components? See the [In-depth Components guide](guide/components) for the full details.
 
 ## Next Step
 

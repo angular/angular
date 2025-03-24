@@ -51,7 +51,7 @@ Now the app has a dataset that you can use to display the entries in the browser
 
 </docs-workflow>
 
-Summary: In this lesson, you used the `ngFor` directive to repeat data dynamically in Angular templates. You also added a new array of data to be used in the Angular app. The application now dynamically renders a list of housing locations in the browser.
+SUMMARY: In this lesson, you used the `ngFor` directive to repeat data dynamically in Angular templates. You also added a new array of data to be used in the Angular app. The application now dynamically renders a list of housing locations in the browser.
 
 The app is taking shape, great job.
 

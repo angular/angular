@@ -1,6 +1,6 @@
 # Component host elements
 
-Tip: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
 
 Angular creates an instance of a component for every HTML element that matches the component's
 selector. The DOM element that matches a component's selector is that component's **host element**.

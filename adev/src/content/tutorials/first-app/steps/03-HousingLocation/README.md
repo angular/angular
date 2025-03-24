@@ -76,4 +76,4 @@ In this step, you will copy over the pre-written styles for the `HousingLocation
 
 </docs-workflow>
 
-Summary: In this lesson, you created a new component for your app and added it to the app's layout.
+SUMMARY: In this lesson, you created a new component for your app and added it to the app's layout.
