@@ -181,6 +181,7 @@
   "StandaloneService",
   "StatusChangeEvent",
   "Subject",
+  "Subscribable",
   "Subscriber",
   "Subscription",
   "TEMPORARY_CONSUMER_NODE",
