@@ -83,12 +83,6 @@ export interface CreateEffectOptions {
   manualCleanup?: boolean;
 
   /**
-   * Always create a root effect (which is scheduled as a microtask) regardless of whether `effect`
-   * is called within a component.
-   */
-  forceRoot?: true;
-
-  /**
    * @deprecated no longer required, signal writes are allowed by default.
    */
   allowSignalWrites?: boolean;
@@ -159,7 +153,7 @@ export function effect(
 
   const viewContext = injector.get(ViewContext, null, {optional: true});
   const notifier = injector.get(ChangeDetectionScheduler);
-  if (viewContext !== null && !options?.forceRoot) {
+  if (viewContext !== null) {
     // This effect was created in the context of a view, and will be associated with the view.
     node = createViewEffect(viewContext.view, notifier, effectFn);
     if (destroyRef instanceof NodeInjectorDestroyRef && destroyRef._lView === viewContext.view) {
