@@ -290,31 +290,6 @@ describe('reactivity', () => {
       expect(log).toEqual([0, 1]);
     });
 
-    it('should create root effects inside a component when specified', () => {
-      TestBed.configureTestingModule({});
-      const counter = signal(0);
-      const log: number[] = [];
-
-      @Component({
-        template: '',
-      })
-      class TestCmp {
-        constructor() {
-          effect(() => log.push(counter()), {forceRoot: true});
-        }
-      }
-
-      // Running this creates the effect. Note: we never CD this component.
-      TestBed.createComponent(TestCmp);
-
-      TestBed.flushEffects();
-      expect(log).toEqual([0]);
-
-      counter.set(1);
-      TestBed.flushEffects();
-      expect(log).toEqual([0, 1]);
-    });
-
     it('should check components made dirty from markForCheck() from an effect', async () => {
       TestBed.configureTestingModule({
         providers: [provideExperimentalZonelessChangeDetection()],
@@ -426,33 +401,6 @@ describe('reactivity', () => {
     });
 
     describe('destruction', () => {
-      it('should still destroy root effects with the DestroyRef of the component', () => {
-        TestBed.configureTestingModule({});
-        const counter = signal(0);
-        const log: number[] = [];
-
-        @Component({
-          template: '',
-        })
-        class TestCmp {
-          constructor() {
-            effect(() => log.push(counter()), {forceRoot: true});
-          }
-        }
-
-        const fix = TestBed.createComponent(TestCmp);
-
-        TestBed.flushEffects();
-        expect(log).toEqual([0]);
-
-        // Destroy the effect.
-        fix.destroy();
-
-        counter.set(1);
-        TestBed.flushEffects();
-        expect(log).toEqual([0]);
-      });
-
       it('should destroy effects when the parent component is destroyed', () => {
         let destroyed = false;
         @Component({})
