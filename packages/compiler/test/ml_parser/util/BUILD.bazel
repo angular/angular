@@ -1,0 +1,12 @@
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "util",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    visibility = ["//visibility:public"],
+    deps = [
+        "//packages:types",
+        "//packages/compiler",
+    ],
+)

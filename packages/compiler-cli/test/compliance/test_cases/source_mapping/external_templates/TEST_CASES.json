@@ -1,0 +1,121 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should create external template source-mapping (full compile)",
+      "inputFiles": [
+        "external_template.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile"
+      ],
+      "compilerOptions": {
+        "sourceMap": true,
+        "inlineSources": true
+      }
+    },
+    {
+      "description": "should create external template source-mapping (linked compile)",
+      "inputFiles": [
+        "external_template.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "external_template.js",
+              "expected": "external_template_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile"
+      ],
+      "compilerOptions": {
+        "sourceMap": true,
+        "inlineSources": true
+      }
+    },
+    {
+      "description": "should create correct mappings when templateUrl is in a different rootDir (full compile)",
+      "inputFiles": [
+        "extra_root_dir.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile"
+      ],
+      "compilerOptions": {
+        "sourceMap": true,
+        "inlineSources": true,
+        "rootDirs": [
+          ".",
+          "extraRootDir"
+        ]
+      }
+    },
+    {
+      "description": "should create correct mappings when templateUrl is in a different rootDir (linked compile)",
+      "inputFiles": [
+        "extra_root_dir.ts"
+      ],
+      "compilationModeFilter": [
+        "linked compile"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "extra_root_dir.js",
+              "expected": "extra_root_dir_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilerOptions": {
+        "sourceMap": true,
+        "inlineSources": true,
+        "rootDirs": [
+          ".",
+          "extraRootDir"
+        ]
+      }
+    },
+    {
+      "description": "should handle unusual escaped chars when source-mapping (full compile)",
+      "inputFiles": [
+        "escaped_chars.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile"
+      ],
+      "compilerOptions": {
+        "sourceMap": true,
+        "inlineSources": true
+      }
+    },
+    {
+      "description": "should handle unusual escaped chars when source-mapping (linked compile)",
+      "inputFiles": [
+        "escaped_chars.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "escaped_chars.js",
+              "expected": "escaped_chars_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile"
+      ],
+      "compilerOptions": {
+        "sourceMap": true,
+        "inlineSources": true
+      }
+    }
+  ]
+}

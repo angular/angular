@@ -1,0 +1,33 @@
+{
+  "$schema": "../../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should properly compile a signal component",
+      "inputFiles": [
+        "component.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid component definition",
+          "files": [
+            "component.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should properly compile a signal directive",
+      "inputFiles": [
+        "directive.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid directive definition",
+          "files": [
+            "directive.js"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+@use '../../../../../styles/theme' as theme;
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+th,
+td {
+  border-bottom: 1px solid #ddd;
+}
+
+@include theme.dark-theme {
+  .name,
+  .method,
+  .value {
+    color: #ffffff;
+  }
+}

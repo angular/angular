@@ -1,0 +1,35 @@
+load("//tools:defaults.bzl", "app_bundle", "http_server", "ng_module")
+
+package(default_visibility = ["//modules/playground:__subpackages__"])
+
+ng_module(
+    name = "relative_assets",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "app/style.css",
+        "app/tpl.html",
+    ],
+    tsconfig = "//modules/playground:tsconfig-build.json",
+    deps = [
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+    ],
+)
+
+app_bundle(
+    name = "app_bundle",
+    entry_point = ":index.ts",
+    deps = [":relative_assets"],
+)
+
+http_server(
+    name = "devserver",
+    srcs = [
+        "index.html",
+    ],
+    deps = [
+        ":app_bundle",
+        "//packages/zone.js/bundles:zone.umd.js",
+    ],
+)

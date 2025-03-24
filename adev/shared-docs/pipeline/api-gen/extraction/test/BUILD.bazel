@@ -1,0 +1,60 @@
+load("//adev/shared-docs/pipeline/api-gen/extraction:extract_api_to_json.bzl", "extract_api_to_json")
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+package(default_visibility = ["//adev/shared-docs/pipeline/api-gen:__subpackages__"])
+
+extract_api_to_json(
+    name = "test",
+    srcs = [
+        "fake-source.ts",
+        "//adev/shared-docs/pipeline/api-gen/extraction/test/dummy-entry-point:dummy_package",
+    ],
+    entry_point = "fake-source.ts",
+    import_map = {
+        "//adev/shared-docs/pipeline/api-gen/extraction/test/dummy-entry-point:index.ts": "@angular/dummy-package",
+    },
+    module_name = "@angular/core",
+    output_name = "api.json",
+    private_modules = [""],
+)
+
+extract_api_to_json(
+    name = "test_with_extra_entries",
+    srcs = [
+        "fake-source.ts",
+        "//adev/shared-docs/pipeline/api-gen/extraction/test/dummy-entry-point:dummy_package",
+    ],
+    entry_point = "fake-source.ts",
+    extra_entries = [
+        "extra.json",
+    ],
+    import_map = {
+        "//adev/shared-docs/pipeline/api-gen/extraction/test/dummy-entry-point:index.ts": "@angular/dummy-package",
+    },
+    module_name = "@angular/core",
+    output_name = "extra_api.json",
+    private_modules = [""],
+)
+
+filegroup(
+    name = "source_files",
+    srcs = ["fake-source.ts"],
+)
+
+ts_library(
+    name = "unit_test_lib",
+    testonly = True,
+    srcs =
+        glob(["*.spec.ts"]) + [
+            "fake-examples.ts",
+        ],
+    deps = [
+        "//adev/shared-docs/pipeline/api-gen/extraction:extract_api_to_json_lib",
+        "@angular//packages/compiler-cli",
+    ],
+)
+
+jasmine_node_test(
+    name = "unit_tests",
+    deps = [":unit_test_lib"],
+)

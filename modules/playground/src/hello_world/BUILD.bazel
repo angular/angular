@@ -1,0 +1,31 @@
+load("//tools:defaults.bzl", "app_bundle", "http_server", "ng_module")
+
+package(default_visibility = ["//modules/playground:__subpackages__"])
+
+ng_module(
+    name = "hello_world",
+    srcs = glob(["**/*.ts"]),
+    tsconfig = "//modules/playground:tsconfig-build.json",
+    deps = [
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+    ],
+)
+
+app_bundle(
+    name = "app_bundle",
+    entry_point = ":index.ts",
+    deps = [":hello_world"],
+)
+
+http_server(
+    name = "devserver",
+    srcs = [
+        "index.html",
+    ],
+    deps = [
+        ":app_bundle",
+        "//packages/zone.js/bundles:zone.umd.js",
+    ],
+)

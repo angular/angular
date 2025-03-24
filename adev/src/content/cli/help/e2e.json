@@ -1,0 +1,30 @@
+{
+  "name": "e2e",
+  "command": "ng e2e [project]",
+  "shortDescription": "Builds and serves an Angular application, then runs end-to-end tests.",
+  "aliases": [
+    "e"
+  ],
+  "deprecated": false,
+  "options": [
+    {
+      "name": "configuration",
+      "type": "string",
+      "aliases": [
+        "c"
+      ],
+      "description": "One or more named builder configurations as a comma-separated list as specified in the \"configurations\" section in angular.json.\nThe builder uses the named configurations to run the given target.\nFor more information, see https://angular.dev/reference/configs/workspace-config#alternate-build-configurations."
+    },
+    {
+      "name": "help",
+      "type": "boolean",
+      "description": "Shows a help message for this command in the console."
+    },
+    {
+      "name": "project",
+      "type": "string",
+      "description": "The name of the project to build. Can be an application or a library.",
+      "positional": 0
+    }
+  ]
+}

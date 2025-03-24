@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- Prevent the browser from requesting any favicon. -->
+    <link rel="icon" href="data:," />
+  </head>
+
+  <body>
+    <h2>Styling bindings benchmark</h2>
+    <p>
+      <select id="scenario-select">
+        <!-- *Note*: When adding/removing scenarios, ensure the e2e test is also updated. -->
+        <option value="0">(0) [title]="exp" (no styling involved)</option>
+        <option value="1">(1) class="foo" (static class)</option>
+        <option value="2">(2) class="foo {{exp}}" (class interpolation)</option>
+        <option value="3">(3) [class.foo]="boolExp" binding</option>
+        <option value="4">
+          (4) class="foo" [class.bar]="boolExp" (mix of static and class. bindings
+        </option>
+        <option value="5">
+          (5) class="foo" [ngClass]="{bar: boolExp}" (mix of static class and ngClass binding)
+        </option>
+        <option value="6">
+          (6) class="foo" [ngStyle]="{width: 10px}" [style.background-color]="exp" (Sierpinski's
+          triangle)
+        </option>
+        <option value="7">(7) style="color: red" (static styling)</option>
+        <option value="8">
+          (8) [style.width.px]="widthExp" [style.color]="exp" (style property bindings)
+        </option>
+        <option value="9">
+          (9) style="width: 10px" [style.color]="exp" ((mix of static and class property bindings)
+        </option>
+        <option value="10">
+          (10) [ngStyle]="{width.px: widthExp, color: exp}" (ngStyle with units)
+        </option>
+      </select>
+
+      <button id="create">create</button>
+      <button id="update">update</button>
+      <button id="detect_changes">detect changes</button>
+      <button id="destroy">destroy</button>
+      <button id="profile_update">profile update</button>
+      <button id="profile_detect_changes">profile detect changes</button>
+      <button id="modify">modify externally</button>
+    </p>
+
+    <div>
+      <styling-bindings id="root">Loading...</styling-bindings>
+    </div>
+
+    <!-- BEGIN-EXTERNAL -->
+    <script src="/angular/packages/zone.js/bundles/zone.umd.js"></script>
+    <!-- END-EXTERNAL -->
+
+    <!-- Needs to be named `app_bundle` for sync into Google. -->
+    <script src="/app_bundle.js"></script>
+  </body>
+</html>

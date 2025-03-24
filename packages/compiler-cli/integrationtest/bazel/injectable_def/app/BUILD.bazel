@@ -1,0 +1,23 @@
+load("//tools:defaults.bzl", "ng_module")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "app",
+    testonly = True,
+    srcs = glob(
+        [
+            "src/**/*.ts",
+        ],
+    ),
+    module_name = "app_built",
+    deps = [
+        "//packages/compiler-cli/integrationtest/bazel/injectable_def/lib2",
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/platform-server",
+        "//packages/router",
+        "@npm//reflect-metadata",
+        "@npm//rxjs",
+    ],
+)

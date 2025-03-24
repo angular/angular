@@ -1,0 +1,13 @@
+iframe {
+  height: 100%;
+  width: 100%;
+  border: 0;
+}
+
+.devtools-wrapper {
+  height: 100%;
+}
+:host {
+  display: block;
+  height: 100vh;
+}

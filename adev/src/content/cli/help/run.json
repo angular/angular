@@ -1,0 +1,22 @@
+{
+  "name": "run",
+  "command": "ng run <target>",
+  "shortDescription": "Runs an Architect target with an optional custom builder configuration defined in your project.",
+  "longDescriptionRelativePath": "@angular/cli/src/commands/run/long-description.md",
+  "longDescription": "Architect is the tool that the CLI uses to perform complex tasks such as compilation, according to provided configurations.\nThe CLI commands run Architect targets such as `build`, `serve`, `test`, and `lint`.\nEach named target has a default configuration, specified by an `options` object,\nand an optional set of named alternate configurations in the `configurations` object.\n\nFor example, the `serve` target for a newly generated app has a predefined\nalternate configuration named `production`.\n\nYou can define new targets and their configuration options in the `architect` section\nof the `angular.json` file which you can run them from the command line using the `ng run` command.\n",
+  "aliases": [],
+  "deprecated": false,
+  "options": [
+    {
+      "name": "help",
+      "type": "boolean",
+      "description": "Shows a help message for this command in the console."
+    },
+    {
+      "name": "target",
+      "type": "string",
+      "description": "The Architect target to run provided in the following format `project:target[:configuration]`.",
+      "positional": 0
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+load("//tools:defaults.bzl", "karma_web_test_suite", "ng_module", "ts_library")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+
+package(default_visibility = ["//visibility:private"])
+
+ng_module(
+    name = "text-field",
+    srcs = [
+        "text-field.component.ts",
+    ],
+    assets = [
+        ":text-field.component.css",
+        "text-field.component.html",
+    ],
+    visibility = [
+        "//adev/shared-docs/components:__pkg__",
+        "//adev/shared-docs/components/search-dialog:__pkg__",
+    ],
+    deps = [
+        "//adev/shared-docs/components/icon",
+        "//packages/common",
+        "//packages/core",
+        "//packages/forms",
+    ],
+)
+
+sass_binary(
+    name = "style",
+    src = "text-field.component.scss",
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["*.spec.ts"],
+    ),
+    deps = [
+        ":text-field",
+        "//packages/core",
+        "//packages/core/testing",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    deps = [":test_lib"],
+)

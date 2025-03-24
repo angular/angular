@@ -1,0 +1,170 @@
+# Enable debugging tests with --config=debug
+test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test_strategy=exclusive --test_timeout=9999 --nocache_test_results --spawn_strategy=local
+
+# Do not attempt to de-flake locally.
+# On CI we might set this to `3` to run with deflaking.
+test --flaky_test_attempts=1
+
+###############################
+# Filesystem interactions     #
+###############################
+
+# Create symlinks in the project:
+# - dist/bin for outputs
+# - dist/testlogs, dist/genfiles
+# - bazel-out
+# NB: bazel-out should be excluded from the editor configuration.
+# The checked-in /.vscode/settings.json does this for VSCode.
+# Other editors may require manual config to ignore this directory.
+# In the past, we say a problem where VSCode traversed a massive tree, opening file handles and
+# eventually a surprising failure with auto-discovery of the C++ toolchain in
+# MacOS High Sierra.
+# See https://github.com/bazelbuild/bazel/issues/4603
+build --symlink_prefix=dist/
+
+# Turn off legacy external runfiles
+build --nolegacy_external_runfiles
+run --nolegacy_external_runfiles
+test --nolegacy_external_runfiles
+
+# Turn on --incompatible_strict_action_env which was on by default
+# in Bazel 0.21.0 but turned off again in 0.22.0. Follow
+# https://github.com/bazelbuild/bazel/issues/7026 for more details.
+# This flag is needed to so that the bazel cache is not invalidated
+# when running bazel via `yarn bazel`.
+# See https://github.com/angular/angular/issues/27514.
+build --incompatible_strict_action_env
+run --incompatible_strict_action_env
+test --incompatible_strict_action_env
+
+# Do not build runfile trees by default. If an execution strategy relies on runfile
+# symlink teee, the tree is created on-demand. See: https://github.com/bazelbuild/bazel/issues/6627
+# and https://github.com/bazelbuild/bazel/commit/03246077f948f2790a83520e7dccc2625650e6df
+build --nobuild_runfile_links
+
+build --enable_runfiles
+
+###############################
+# Release support             #
+# Turn on these settings with #
+#  --config=release           #
+###############################
+
+# Releases should always be stamped with version control info
+# This command assumes node on the path and is a workaround for
+# https://github.com/bazelbuild/bazel/issues/4802
+build:release --workspace_status_command="yarn -s ng-dev release build-env-stamp --mode=release"
+build:release --stamp
+
+# Snapshots should also be stamped with version control information.
+build:snapshot-build --workspace_status_command="yarn -s ng-dev release build-env-stamp --mode=snapshot"
+build:snapshot-build --stamp
+
+# Angular DevTools for Firefox releases *cannot* be stamped and `--config snapshot-build-firefox` is a no-op.
+# This is because Mozilla requires add-on source code to be uploaded and then they manually reproduce the build.
+# If we stamp the build based on Git information such as the current commit, then reproducing the build would require
+# uploading the entire `.git` directory. We already must upload the entire monorepo, and uploading `.git` as well
+# exceeds the max source file size. To address this, we just *don't* stamp Firefox builds of Angular DevTools.
+build:snapshot-build-firefox --nostamp
+
+###############################
+# Output                      #
+###############################
+
+# A more useful default output mode for bazel query
+# Prints eg. "ng_module rule //foo:bar" rather than just "//foo:bar"
+query --output=label_kind
+
+# By default, failing tests don't print any output, it goes to the log file
+test --test_output=errors
+
+##################################
+# Remote Build Execution support #
+# Turn on these settings with    #
+#  --config=remote               #
+##################################
+
+# The following --define=EXECUTOR=remote will be able to be removed
+# once https://github.com/bazelbuild/bazel/issues/7254 is fixed
+build:remote --define=EXECUTOR=remote
+
+# Set a higher timeout value, just in case.
+build:remote --remote_timeout=600
+
+# Bazel detects maximum number of jobs based on host resources.
+# Since we run remotely, we can increase this number significantly.
+common:remote --jobs=200
+
+build:remote --google_default_credentials
+
+# Force remote exeuctions to consider the entire run as linux
+build:remote --cpu=k8
+build:remote --host_cpu=k8
+
+# Toolchain and platform related flags
+build:remote --crosstool_top=@npm//@angular/build-tooling/bazel/remote-execution/cpp:cc_toolchain_suite
+build:remote --extra_toolchains=@npm//@angular/build-tooling/bazel/remote-execution/cpp:cc_toolchain
+build:remote --extra_execution_platforms=@npm//@angular/build-tooling/bazel/remote-execution:platform
+build:remote --host_platform=@npm//@angular/build-tooling/bazel/remote-execution:platform
+build:remote --platforms=@npm//@angular/build-tooling/bazel/remote-execution:platform
+
+# Remote instance and caching
+build:remote --remote_instance_name=projects/internal-200822/instances/primary_instance
+build:remote --bes_instance_name=internal-200822
+build:remote --remote_cache=remotebuildexecution.googleapis.com
+build:remote --remote_executor=remotebuildexecution.googleapis.com
+
+build:remote --experimental_remote_grpc_log=/tmp/rbe-grpc.log
+
+# See: https://docs.google.com/document/d/1NgDPsCIwprDdqC1zj0qQrh5KGK2hQTSTux1DAvi4rSc/edit?tab=t.0.
+build:remote --experimental_remote_execution_keepalive
+
+# Use HTTP remote cache
+build:remote-cache --remote_cache=https://storage.googleapis.com/angular-team-cache
+build:remote-cache --remote_accept_cached=true
+build:remote-cache --remote_upload_local_results=true
+build:remote-cache --google_default_credentials
+
+# Ensure that tags like "no-remote-exec" get propagated to actions created by rules,
+# even if the rule implementation does not explicitly pass them to the execution requirements.
+# https://bazel.build/reference/command-line-reference#flag--experimental_allow_tags_propagation
+common --experimental_allow_tags_propagation
+
+# Disable network access in the sandbox by default. To enable network access
+# for a particular target, use:
+#
+# load("@npm//@angular/build-tooling/bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
+# my_target(
+#   ...,
+#   exec_properties = ENABLE_NETWORK,   # Enables network in remote exec
+#   tags = ["requires-network"]         # Enables network in sandbox
+# )
+build --nosandbox_default_allow_network
+
+##################################
+# Saucelabs tests settings       #
+# Turn on these settings with    #
+#  --config=saucelabs            #
+##################################
+
+# For saucelabs tests we don't want to enable flaky test attempts. Karma has its own integrated
+# retry mechanism and we do not want to retry unnecessarily if Karma already tried multiple times.
+test:saucelabs --flaky_test_attempts=1
+
+################
+# Flag Aliases #
+################
+
+# --ng_perf will ask the Ivy compiler to produce performance results for each build.
+build --flag_alias=ng_perf=//packages/compiler-cli:ng_perf
+# --full_build_adev will run adev build/serve in a full mode, performing prerendering and DCE.
+build --flag_alias=full_build_adev=//adev:full_build_adev
+
+####################################################
+# User bazel configuration
+# NOTE: This needs to be the *last* entry in the config.
+####################################################
+
+# Load any settings which are specific to the current user. Needs to be *last* statement
+# in this config, as the user configuration should be able to overwrite flags from this file.
+try-import %workspace%/.bazelrc.user

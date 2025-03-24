@@ -1,0 +1,9 @@
+/** Root tsconfig file for checking Angular packages with tsec. */
+{
+  "extends": "./tsconfig-build.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "lib": ["es2020", "es2022", "dom", "dom.iterable"],
+    "plugins": [{"name": "tsec", "exemptionConfig": "./tsec-exemption.json"}]
+  }
+}

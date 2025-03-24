@@ -1,0 +1,17 @@
+{
+  "name": "terser",
+  "version": "0.0.0",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/compiler": "file:../../dist/packages-dist/compiler",
+    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
+    "@angular/core": "file:../../dist/packages-dist/core",
+    "rxjs": "file:../../node_modules/rxjs",
+    "terser": "file:../../node_modules/terser",
+    "typescript": "file:../../node_modules/typescript",
+    "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
+  }
+}

@@ -1,0 +1,49 @@
+diff --git a/node_modules/@bazel/esbuild/BUILD b/node_modules/@bazel/esbuild/BUILD
+index 7d84b1d..d008b4b 100755
+--- a/node_modules/@bazel/esbuild/BUILD
++++ b/node_modules/@bazel/esbuild/BUILD
+@@ -1 +1 @@
+-exports_files(["launcher.js"])
++exports_files(["launcher.mjs"])
+diff --git a/node_modules/@bazel/esbuild/esbuild.bzl b/node_modules/@bazel/esbuild/esbuild.bzl
+index 9600076..8a0cace 100755
+--- a/node_modules/@bazel/esbuild/esbuild.bzl
++++ b/node_modules/@bazel/esbuild/esbuild.bzl
+@@ -4,7 +4,7 @@ esbuild rule
+ 
+ load("@rules_nodejs//nodejs:providers.bzl", "JSModuleInfo", "STAMP_ATTR")
+ load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
+-load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
++load("@angular//tools/esm-interop:index.bzl", "nodejs_binary")
+ load("@build_bazel_rules_nodejs//:providers.bzl", "ExternalNpmPackageInfo", "JSEcmaScriptModuleInfo", "node_modules_aspect", "run_node")
+ load("@build_bazel_rules_nodejs//internal/linker:link_node_modules.bzl", "LinkerPackageMappingInfo", "module_mappings_aspect")
+ load("@build_bazel_rules_nodejs//internal/common:expand_variables.bzl", "expand_variables")
+@@ -420,7 +420,8 @@ def esbuild_macro(name, output_dir = False, splitting = False, **kwargs):
+     _launcher = "_%s_esbuild_launcher" % name
+     nodejs_binary(
+         name = _launcher,
+-        entry_point = Label("//@bazel/esbuild:launcher.js"),
++        entry_point = Label("//@bazel/esbuild:launcher.mjs"),
++        linker_enabled = True,
+     )
+ 
+     srcs = kwargs.pop("srcs", [])
+diff --git a/node_modules/@bazel/esbuild/launcher.js b/node_modules/@bazel/esbuild/launcher.mjs
+similarity index 95%
+rename from node_modules/@bazel/esbuild/launcher.js
+rename to node_modules/@bazel/esbuild/launcher.mjs
+index cd0e606..8dd8299 100755
+--- a/node_modules/@bazel/esbuild/launcher.js
++++ b/node_modules/@bazel/esbuild/launcher.mjs
+@@ -1,7 +1,7 @@
+-const {readFileSync, writeFileSync} = require('fs');
+-const {pathToFileURL} = require('url');
+-const {join} = require('path');
+-const esbuild = require('esbuild');
++import {readFileSync, writeFileSync} from 'fs';
++import {pathToFileURL} from 'url';
++import {join} from 'path';
++import esbuild from 'esbuild';
+ 
+ function getFlag(flag, required = true) {
+   const argvFlag = process.argv.find(arg => arg.startsWith(`${flag}=`));

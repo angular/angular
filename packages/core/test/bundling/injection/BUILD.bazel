@@ -1,0 +1,49 @@
+load("//tools/symbol-extractor:index.bzl", "js_expected_symbol_test")
+load("//tools:defaults.bzl", "app_bundle", "jasmine_node_test", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "injection",
+    srcs = [
+        "index.ts",
+        "usage.ts",
+    ],
+    deps = [
+        "//packages/core",
+    ],
+)
+
+app_bundle(
+    name = "bundle",
+    entry_point = ":index.ts",
+    deps = [
+        ":injection",
+        "//packages/core",
+        "@npm//rxjs",
+    ],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["*_spec.ts"]),
+    deps = [
+        ":injection",
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/core/testing",
+        "//packages/private/testing",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    deps = [":test_lib"],
+)
+
+js_expected_symbol_test(
+    name = "symbol_test",
+    src = ":bundle.debug.min.js",
+    golden = ":bundle.golden_symbols.json",
+)

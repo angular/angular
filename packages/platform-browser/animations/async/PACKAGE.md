@@ -1,0 +1,1 @@
+Provides a lazy loaded infrastructure for the rendering of animations in supported browsers.

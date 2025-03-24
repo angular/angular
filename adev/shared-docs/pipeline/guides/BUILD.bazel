@@ -1,0 +1,46 @@
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "guides",
+    srcs = glob(
+        [
+            "**/*.ts",
+        ],
+        exclude = ["index.ts"],
+    ),
+    visibility = [
+        "//adev/shared-docs:__subpackages__",
+    ],
+    deps = [
+        "@npm//@bazel/runfiles",
+        "@npm//@types/diff",
+        "@npm//@types/jsdom",
+        "@npm//@types/node",
+        "@npm//diff",
+        "@npm//emoji-regex",
+        "@npm//html-entities",
+        "@npm//jsdom",
+        "@npm//marked",
+        "@npm//mermaid",
+        "@npm//playwright-core",
+        "@npm//shiki",
+    ],
+)
+
+ts_library(
+    name = "index",
+    srcs = [
+        "index.ts",
+    ],
+    visibility = [
+        "//adev/shared-docs:__subpackages__",
+    ],
+    deps = [
+        ":guides",
+        "@npm//@types/node",
+    ],
+)
+
+exports_files([
+    "index.ts",
+])
