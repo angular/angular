@@ -339,7 +339,7 @@ export function createRootEffect(
   node.scheduler = scheduler;
   node.notifier = notifier;
   node.zone = typeof Zone !== 'undefined' ? Zone.current : null;
-  node.scheduler.schedule(node);
+  node.scheduler.add(node);
   node.notifier.notify(NotificationSource.RootEffect);
   return node;
 }
