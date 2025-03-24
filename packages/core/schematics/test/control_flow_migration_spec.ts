@@ -6932,5 +6932,38 @@ describe('control flow migration', () => {
       const content = tree.readContent('/comp.ts');
       expect(content).not.toContain('<ng-template #contentTemplate>');
     });
+
+    it('should remove ng-template reference when use in if-else block', async () => {
+      writeFile(
+        '/comp.ts',
+        `
+        import {Component} from '@angular/core';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+        }
+      `,
+      );
+
+      writeFile(
+        '/comp.html',
+        [
+          `<div>`,
+          `<div *ngIf="param; else loading">`,
+          `<div>content</div>`,
+          `</div>`,
+          `<ng-template #loading>`,
+          `<div>loading</div>`,
+          `</ng-template>`,
+          `</div>`,
+        ].join('\n'),
+      );
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+      expect(content).not.toContain('<ng-template #loading>');
+    });
   });
 });
