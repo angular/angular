@@ -396,6 +396,8 @@
   "producerMarkClean",
   "producerRemoveLiveConsumerAtIndex",
   "producerUpdateValueVersion",
+  "profiler",
+  "profilerCallbacks",
   "readableStreamLikeToAsyncGenerator",
   "refreshContentQueries",
   "refreshView",

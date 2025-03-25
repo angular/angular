@@ -433,6 +433,7 @@
   "producerRemoveLiveConsumerAtIndex",
   "producerUpdateValueVersion",
   "profiler",
+  "profilerCallbacks",
   "refreshContentQueries",
   "refreshView",
   "registerPostOrderHooks",

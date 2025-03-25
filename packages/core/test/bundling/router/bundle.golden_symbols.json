@@ -633,6 +633,8 @@
   "producerNotifyConsumers",
   "producerRemoveLiveConsumerAtIndex",
   "producerUpdateValueVersion",
+  "profiler",
+  "profilerCallbacks",
   "readableStreamLikeToAsyncGenerator",
   "redirectIfUrlTree",
   "redirectingNavigationError",
