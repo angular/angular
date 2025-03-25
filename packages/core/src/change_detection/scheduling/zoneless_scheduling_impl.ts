@@ -20,7 +20,13 @@ import {
   scheduleCallbackWithRafRace,
 } from '../../util/callback_scheduler';
 import {performanceMarkFeature} from '../../util/performance';
-import {NgZone, NgZonePrivate, NoopNgZone, angularZoneInstanceIdProperty} from '../../zone/ng_zone';
+import {
+  NgZone,
+  NgZonePrivate,
+  NoopNgZone,
+  angularZoneInstanceIdProperty,
+  runTickInZoneAndPreventDuplicate,
+} from '../../zone/ng_zone';
 
 import {
   ChangeDetectionScheduler,
@@ -67,7 +73,6 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   private readonly disableScheduling =
     inject(ZONELESS_SCHEDULER_DISABLED, {optional: true}) ?? false;
   private readonly zoneIsDefined = typeof Zone !== 'undefined' && !!Zone.root.run;
-  private readonly schedulerTickApplyArgs = [{data: {'__scheduler_tick__': true}}];
   private readonly subscriptions = new Subscription();
   private readonly angularZoneId = this.zoneIsDefined
     ? (this.ngZone as NgZonePrivate)._inner?.get(angularZoneInstanceIdProperty)
@@ -284,14 +289,8 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
 
     const task = this.taskService.add();
     try {
-      this.ngZone.run(
-        () => {
-          this.runningTick = true;
-          this.appRef._tick();
-        },
-        undefined,
-        this.schedulerTickApplyArgs,
-      );
+      this.runningTick = true;
+      runTickInZoneAndPreventDuplicate(this.ngZone, () => this.appRef._tick());
     } catch (e: unknown) {
       this.taskService.remove(task);
       this.applicationErrorHandler(e);
