@@ -65,6 +65,16 @@
   ],
   "packageRules": [
     {
+      "matchDepNames": ["node"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupSlug": "node"
+    },
+    {
+      "enabled": false,
+      "matchDepNames": ["node"],
+      "matchUpdateTypes": ["major"]
+    },
+    {
       "matchPackageNames": ["*"],
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "all non-major dependencies",
