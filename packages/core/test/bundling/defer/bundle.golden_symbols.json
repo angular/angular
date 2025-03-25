@@ -385,7 +385,6 @@
   "isLView",
   "isNodeMatchingSelector",
   "isNodeMatchingSelectorList",
-  "isPlatformServer",
   "isPositive",
   "isPromise",
   "isRefreshingViews",
