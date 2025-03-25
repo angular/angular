@@ -10,13 +10,27 @@ import {setActiveConsumer} from '@angular/core/primitives/signals';
 
 import {NotificationSource} from '../../change_detection/scheduling/zoneless_scheduling';
 import {TNode} from '../interfaces/node';
-import {isComponentHost} from '../interfaces/type_checks';
-import {CONTEXT, INJECTOR, LView} from '../interfaces/view';
-import {getComponentLViewByIndex} from '../util/view_utils';
+import {isComponentHost, isDirectiveHost} from '../interfaces/type_checks';
+import {CLEANUP, CONTEXT, INJECTOR, LView, TView} from '../interfaces/view';
+import {getComponentLViewByIndex, getNativeByTNode, unwrapRNode} from '../util/view_utils';
 import {profiler} from '../profiler';
 import {ProfilerEvent} from '../profiler_types';
 import {ErrorHandler} from '../../error_handler';
 import {markViewDirty} from '../instructions/mark_view_dirty';
+import {RElement, RNode} from '../interfaces/renderer_dom';
+import {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
+
+/**
+ * Contains a reference to a function that disables event replay feature
+ * for server-side rendered applications. This function is overridden with
+ * an actual implementation when the event replay feature is enabled via
+ * `withEventReplay()` call.
+ */
+let stashEventListener = (el: RNode, eventName: string, listenerFn: (e?: any) => any) => {};
+
+export function setStashFn(fn: typeof stashEventListener) {
+  stashEventListener = fn;
+}
 
 /**
  * Wraps an event listener with a function that marks ancestors dirty and prevents default behavior,
@@ -87,4 +101,102 @@ function handleError(lView: LView, error: any): void {
     return;
   }
   injector.get(ErrorHandler, null)?.handleError(error);
+}
+
+export function listenToDomEvent(
+  tNode: TNode,
+  lView: LView<{} | null>,
+  eventTargetResolver: GlobalTargetResolver | undefined,
+  lCleanup: any[],
+  tView: TView,
+  eventName: string,
+  wrappedListener: (e?: any) => any,
+  originalListener: (e?: any) => any,
+  renderer: Renderer,
+  tCleanup: any[] | null,
+) {
+  const isTNodeDirectiveHost = isDirectiveHost(tNode);
+  const native = getNativeByTNode(tNode, lView) as RElement;
+  const target = eventTargetResolver ? eventTargetResolver(native) : native;
+  const lCleanupIndex = lCleanup.length;
+  const idxOrTargetGetter = eventTargetResolver
+    ? (_lView: LView) => eventTargetResolver(unwrapRNode(_lView[tNode.index]))
+    : tNode.index;
+  let hasCoalesced = false;
+
+  // In order to match current behavior, native DOM event listeners must be added for all
+  // events (including outputs).
+  // There might be cases where multiple directives on the same element try to register an event
+  // handler function for the same event. In this situation we want to avoid registration of
+  // several native listeners as each registration would be intercepted by NgZone and
+  // trigger change detection. This would mean that a single user action would result in several
+  // change detections being invoked. To avoid this situation we want to have only one call to
+  // native handler registration (for the same element and same type of event).
+  //
+  // In order to have just one native event handler in presence of multiple handler functions,
+  // we just register a first handler function as a native event listener and then chain
+  // (coalesce) other handler functions on top of the first native handler function.
+  let existingListener: any = null;
+  // Please note that the coalescing described here doesn't happen for events specifying an
+  // alternative target (ex. (document:click)) - this is to keep backward compatibility with the
+  // view engine.
+  // Also, we don't have to search for existing listeners if there are no directives
+  // matching on a given node as we can't register multiple event handlers for the same event in
+  // a template (this would mean having duplicate attributes).
+  if (!eventTargetResolver && isTNodeDirectiveHost) {
+    existingListener = findExistingListener(tView, lView, eventName, tNode.index);
+  }
+  if (existingListener !== null) {
+    // Attach a new listener to coalesced listeners list, maintaining the order in which
+    // listeners are registered. For performance reasons, we keep a reference to the last
+    // listener in that list (in `__ngLastListenerFn__` field), so we can avoid going through
+    // the entire set each time we need to add a new listener.
+    const lastListenerFn = existingListener.__ngLastListenerFn__ || existingListener;
+    lastListenerFn.__ngNextListenerFn__ = originalListener;
+    existingListener.__ngLastListenerFn__ = originalListener;
+    hasCoalesced = true;
+  } else {
+    stashEventListener(target as RElement, eventName, wrappedListener);
+    const cleanupFn = renderer.listen(target as RElement, eventName, wrappedListener);
+
+    lCleanup.push(wrappedListener, cleanupFn);
+    tCleanup && tCleanup.push(eventName, idxOrTargetGetter, lCleanupIndex, lCleanupIndex + 1);
+  }
+  return hasCoalesced;
+}
+
+/**
+ * A utility function that checks if a given element has already an event handler registered for an
+ * event with a specified name. The TView.cleanup data structure is used to find out which events
+ * are registered for a given element.
+ */
+function findExistingListener(
+  tView: TView,
+  lView: LView,
+  eventName: string,
+  tNodeIndex: number,
+): ((e?: any) => any) | null {
+  const tCleanup = tView.cleanup;
+  if (tCleanup != null) {
+    for (let i = 0; i < tCleanup.length - 1; i += 2) {
+      const cleanupEventName = tCleanup[i];
+      if (cleanupEventName === eventName && tCleanup[i + 1] === tNodeIndex) {
+        // We have found a matching event name on the same node but it might not have been
+        // registered yet, so we must explicitly verify entries in the LView cleanup data
+        // structures.
+        const lCleanup = lView[CLEANUP]!;
+        const listenerIdxInLCleanup = tCleanup[i + 2];
+        return lCleanup.length > listenerIdxInLCleanup ? lCleanup[listenerIdxInLCleanup] : null;
+      }
+      // TView.cleanup can have a mix of 4-elements entries (for event handler cleanups) or
+      // 2-element entries (for directive and queries destroy hooks). As such we can encounter
+      // blocks of 4 or 2 items in the tView.cleanup and this is why we iterate over 2 elements
+      // first and jump another 2 elements if we detect listeners cleanup (4 elements). Also check
+      // documentation of TView.cleanup for more details of this data structure layout.
+      if (typeof cleanupEventName === 'string') {
+        i += 2;
+      }
+    }
+  }
+  return null;
 }

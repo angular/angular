@@ -22,7 +22,6 @@ import {APP_BOOTSTRAP_LISTENER, ApplicationRef} from '../application/application
 import {ENVIRONMENT_INITIALIZER, Injector} from '../di';
 import {inject} from '../di/injector_compatibility';
 import {Provider} from '../di/interface/provider';
-import {setStashFn} from '../render3/instructions/listener';
 import {RElement, RNode} from '../render3/interfaces/renderer_dom';
 import {CLEANUP, LView, TView} from '../render3/interfaces/view';
 import {unwrapRNode} from '../render3/util/view_utils';
@@ -45,6 +44,7 @@ import {APP_ID} from '../application/application_tokens';
 import {performanceMarkFeature} from '../util/performance';
 import {triggerHydrationFromBlockName} from '../defer/triggering';
 import {isIncrementalHydrationEnabled} from './utils';
+import {setStashFn} from '../render3/view/listeners';
 
 /** Apps in which we've enabled event replay.
  *  This is to prevent initializing event replay more than once per app.
