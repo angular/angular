@@ -12,7 +12,7 @@ import {DirectiveDef} from '../interfaces/definition';
 import {TNode} from '../interfaces/node';
 import {LView, TVIEW} from '../interfaces/view';
 import {stringifyForError} from '../util/stringify_utils';
-import {storeListenerCleanup, wrapListener} from './listeners';
+import {EventCallback, storeListenerCleanup, wrapListener, WrappedEventCallback} from './listeners';
 
 /** Describes a subscribable output field value. */
 interface SubscribableOutput<T> {
@@ -21,16 +21,15 @@ interface SubscribableOutput<T> {
   };
 }
 
-export function createOutputListener<T = unknown>(
+export function createOutputListener(
   tNode: TNode,
   lView: LView<{} | null>,
-  listenerFn: (e?: any) => any,
+  listenerFn: EventCallback,
   targetDef: DirectiveDef<unknown>,
   eventName: string,
 ) {
   // TODO(pk): decouple checks from the actual binding
   const wrappedListener = wrapListener(tNode, lView, listenerFn);
-
   const hasBound = listenToDirectiveOutput(tNode, lView, targetDef, eventName, wrappedListener);
 
   if (!hasBound && ngDevMode) {
@@ -47,7 +46,7 @@ function listenToDirectiveOutput(
   lView: LView,
   target: DirectiveDef<unknown>,
   eventName: string,
-  listenerFn: (e?: any) => any,
+  listenerFn: WrappedEventCallback,
 ): boolean {
   let hostIndex: number | null = null;
   let hostDirectivesStart: number | null = null;
@@ -108,7 +107,7 @@ export function listenToOutput(
   directiveIndex: number,
   lookupName: string,
   eventName: string,
-  listenerFn: (e?: any) => any,
+  listenerFn: WrappedEventCallback,
 ) {
   ngDevMode && assertIndexInRange(lView, directiveIndex);
   const instance = lView[directiveIndex];

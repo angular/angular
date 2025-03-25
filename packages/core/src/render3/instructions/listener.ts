@@ -13,7 +13,12 @@ import {assertTNodeType} from '../node_assert';
 import {getCurrentDirectiveDef, getCurrentTNode, getLView, getTView} from '../state';
 
 import {listenToOutput} from '../view/directive_outputs';
-import {listenToDomEvent, wrapListener} from '../view/listeners';
+import {
+  EventCallback,
+  listenToDomEvent,
+  wrapListener,
+  WrappedEventCallback,
+} from '../view/listeners';
 import {loadComponentRenderer} from './shared';
 
 /**
@@ -31,7 +36,7 @@ import {loadComponentRenderer} from './shared';
  */
 export function ɵɵlistener(
   eventName: string,
-  listenerFn: (e?: any) => any,
+  listenerFn: EventCallback,
   eventTargetResolver?: GlobalTargetResolver,
 ): typeof ɵɵlistener {
   const lView = getLView<{} | null>();
@@ -72,7 +77,7 @@ export function ɵɵlistener(
  */
 export function ɵɵsyntheticHostListener(
   eventName: string,
-  listenerFn: (e?: any) => any,
+  listenerFn: EventCallback,
 ): typeof ɵɵsyntheticHostListener {
   const tNode = getCurrentTNode()!;
   const lView = getLView<{} | null>();
@@ -89,13 +94,13 @@ export function listenerInternal(
   renderer: Renderer,
   tNode: TNode,
   eventName: string,
-  listenerFn: (e?: any) => any,
+  listenerFn: EventCallback,
   eventTargetResolver?: GlobalTargetResolver,
 ): void {
   ngDevMode && assertTNodeType(tNode, TNodeType.AnyRNode | TNodeType.AnyContainer);
 
   let processOutputs = true;
-  let wrappedListener: ((e?: any) => any) | null = null;
+  let wrappedListener: WrappedEventCallback | null = null;
 
   // Adding a native event listener is applicable when:
   // - The corresponding TNode represents a DOM element.
