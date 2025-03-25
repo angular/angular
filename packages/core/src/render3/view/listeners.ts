@@ -143,11 +143,6 @@ export function listenToDomEvent(
     );
 
   const isTNodeDirectiveHost = isDirectiveHost(tNode);
-  const native = getNativeByTNode(tNode, lView) as RElement;
-  const target = eventTargetResolver ? eventTargetResolver(native) : native;
-  const idxOrTargetGetter = eventTargetResolver
-    ? (_lView: LView) => eventTargetResolver(unwrapRNode(_lView[tNode.index]))
-    : tNode.index;
   let hasCoalesced = false;
 
   // In order to match current behavior, native DOM event listeners must be added for all
@@ -182,13 +177,24 @@ export function listenToDomEvent(
     existingListener.__ngLastListenerFn__ = originalListener;
     hasCoalesced = true;
   } else {
+    const native = getNativeByTNode(tNode, lView) as RElement;
+    const target = eventTargetResolver ? eventTargetResolver(native) : native;
     stashEventListener(target as RElement, eventName, wrappedListener);
+
     const cleanupFn = renderer.listen(target as RElement, eventName, wrappedListener);
-    const tCleanup = tView.firstCreatePass ? getOrCreateTViewCleanup(tView) : null;
-    const lCleanup = getOrCreateLViewCleanup(lView);
-    const lCleanupIndex = lCleanup.length;
-    lCleanup.push(wrappedListener, cleanupFn);
-    tCleanup && tCleanup.push(eventName, idxOrTargetGetter, lCleanupIndex, lCleanupIndex + 1);
+    const idxOrTargetGetter = eventTargetResolver
+      ? (_lView: LView) => eventTargetResolver(unwrapRNode(_lView[tNode.index]))
+      : tNode.index;
+
+    storeListenerCleanup(
+      idxOrTargetGetter,
+      tView,
+      lView,
+      eventName,
+      wrappedListener,
+      cleanupFn,
+      false,
+    );
   }
   return hasCoalesced;
 }
@@ -212,9 +218,11 @@ function findExistingListener(
         // We have found a matching event name on the same node but it might not have been
         // registered yet, so we must explicitly verify entries in the LView cleanup data
         // structures.
-        const lCleanup = lView[CLEANUP]!;
+        const lCleanup = lView[CLEANUP];
         const listenerIdxInLCleanup = tCleanup[i + 2];
-        return lCleanup.length > listenerIdxInLCleanup ? lCleanup[listenerIdxInLCleanup] : null;
+        return lCleanup && lCleanup.length > listenerIdxInLCleanup
+          ? lCleanup[listenerIdxInLCleanup]
+          : null;
       }
       // TView.cleanup can have a mix of 4-elements entries (for event handler cleanups) or
       // 2-element entries (for directive and queries destroy hooks). As such we can encounter
@@ -227,4 +235,32 @@ function findExistingListener(
     }
   }
   return null;
+}
+
+/**
+ * Stores a cleanup function for an event listener.
+ * @param indexOrTargetGetter Either the index of the TNode on which the event is bound or a
+ *  function that when invoked will return the event target.
+ * @param tView TView in which the event is bound.
+ * @param lView LView in which the event is bound.
+ * @param eventName Name of the event.
+ * @param listenerFn Final callback of the event.
+ * @param cleanup Function to invoke during cleanup.
+ * @param isOutput Whether this is an output listener or a native DOM listener.
+ */
+export function storeListenerCleanup(
+  indexOrTargetGetter: number | ((lView: LView) => EventTarget),
+  tView: TView,
+  lView: LView,
+  eventName: string,
+  listenerFn: (e?: any) => any,
+  cleanup: (() => void) | {unsubscribe: () => void},
+  isOutput: boolean,
+) {
+  const tCleanup = tView.firstCreatePass ? getOrCreateTViewCleanup(tView) : null;
+  const lCleanup = getOrCreateLViewCleanup(lView);
+  const index = lCleanup.length;
+  lCleanup.push(listenerFn, cleanup);
+  tCleanup &&
+    tCleanup.push(eventName, indexOrTargetGetter, index, (index + 1) * (isOutput ? -1 : 1));
 }

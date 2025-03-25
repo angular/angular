@@ -691,6 +691,7 @@
   "squashSegmentGroup",
   "standardizeConfig",
   "storeLViewOnDestroy",
+  "storeListenerCleanup",
   "stringify",
   "stringify13",
   "stringifyCSSSelector",

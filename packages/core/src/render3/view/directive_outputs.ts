@@ -10,14 +10,15 @@ import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {assertIndexInRange} from '../../util/assert';
 import {DirectiveDef} from '../interfaces/definition';
 import {TNode} from '../interfaces/node';
-import {CONTEXT, LView, TVIEW} from '../interfaces/view';
+import {LView, TVIEW} from '../interfaces/view';
 import {stringifyForError} from '../util/stringify_utils';
-import {getOrCreateLViewCleanup, getOrCreateTViewCleanup} from '../util/view_utils';
-import {wrapListener} from './listeners';
+import {storeListenerCleanup, wrapListener} from './listeners';
 
 /** Describes a subscribable output field value. */
 interface SubscribableOutput<T> {
-  subscribe(listener: (v: T) => void): {unsubscribe: () => void};
+  subscribe(listener: (v: T) => void): {
+    unsubscribe: () => void;
+  };
 }
 
 export function createOutputListener<T = unknown>(
@@ -120,13 +121,8 @@ export function listenToOutput(
     throw new Error(`@Output ${propertyName} not initialized in '${instance.constructor.name}'.`);
   }
 
-  // TODO(pk): introduce utility to store cleanup or find a different way of sharing code with listener
-  const tCleanup = tView.firstCreatePass ? getOrCreateTViewCleanup(tView) : null;
-  const lCleanup = getOrCreateLViewCleanup(lView);
   const subscription = (output as SubscribableOutput<unknown>).subscribe(listenerFn);
-  const idx = lCleanup.length;
-  lCleanup.push(listenerFn, subscription);
-  tCleanup && tCleanup.push(eventName, tNode.index, idx, -(idx + 1));
+  storeListenerCleanup(tNode.index, tView, lView, eventName, listenerFn, subscription, true);
 }
 
 /**
