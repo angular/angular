@@ -9,7 +9,7 @@
 import {Component, inject, signal, provideExperimentalZonelessChangeDetection} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {Router, RouterLink, RouterModule, provideRouter} from '@angular/router';
+import {Router, RouterLink, RouterModule, provideRouter} from '../index';
 
 describe('RouterLink', () => {
   beforeEach(() => {

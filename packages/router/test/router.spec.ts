@@ -9,7 +9,7 @@
 import {Location} from '@angular/common';
 import {EnvironmentInjector} from '@angular/core';
 import {inject, TestBed} from '@angular/core/testing';
-import {RouterModule} from '@angular/router';
+import {RouterModule} from '../index';
 import {of} from 'rxjs';
 
 import {ChildActivationStart} from '../src/events';

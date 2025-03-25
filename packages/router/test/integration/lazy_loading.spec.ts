@@ -45,8 +45,8 @@ import {
   provideRouter,
   withRouterConfig,
   RouterLink,
-} from '@angular/router/src';
-import {getLoadedRoutes} from '@angular/router/src/router_devtools';
+} from '../../index';
+import {getLoadedRoutes} from '../../src/router_devtools';
 import {
   createRoot,
   RootCmp,

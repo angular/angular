@@ -8,7 +8,7 @@
 
 import {EnvironmentInjector, inject, Injectable, NgModuleRef} from '@angular/core';
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {provideRouter, withRouterConfig} from '@angular/router';
+import {provideRouter, withRouterConfig} from '../index';
 import {firstValueFrom, Observable, of} from 'rxjs';
 import {delay, map, tap} from 'rxjs/operators';
 

@@ -7,7 +7,7 @@
  */
 import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {Router, RouterLink, RouterLinkActive, provideRouter} from '@angular/router';
+import {Router, RouterLink, RouterLinkActive, provideRouter} from '../index';
 
 describe('RouterLinkActive', () => {
   it('removes initial active class even if never active', async () => {

@@ -9,7 +9,7 @@
 import {Component, Injectable, NgModule} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {provideRoutes, Router, RouterModule, ROUTES} from '@angular/router';
+import {provideRoutes, Router, RouterModule, ROUTES} from '../index';
 
 @Component({template: '<div>simple standalone</div>'})
 export class SimpleStandaloneComponent {}

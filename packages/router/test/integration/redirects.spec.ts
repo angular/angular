@@ -7,7 +7,7 @@
  */
 import {LocationStrategy, Location, HashLocationStrategy} from '@angular/common';
 import {fakeAsync, TestBed, inject} from '@angular/core/testing';
-import {Router, NavigationStart, RoutesRecognized} from '@angular/router/src';
+import {Router, NavigationStart, RoutesRecognized} from '../../src';
 import {createRoot, RootCmp, BlankCmp, TeamCmp, advance} from './integration_helpers';
 
 export function redirectsIntegrationSuite() {

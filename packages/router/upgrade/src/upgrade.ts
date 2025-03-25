@@ -8,7 +8,7 @@
 
 import {Location} from '@angular/common';
 import {APP_BOOTSTRAP_LISTENER, ComponentRef, InjectionToken} from '@angular/core';
-import {Router, ɵRestoredState as RestoredState} from '@angular/router';
+import {Router, ɵRestoredState as RestoredState} from '../../index';
 import {UpgradeModule} from '@angular/upgrade/static';
 
 /**
