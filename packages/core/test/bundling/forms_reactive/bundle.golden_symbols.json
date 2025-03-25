@@ -552,6 +552,8 @@
   "producerRemoveLiveConsumerAtIndex",
   "producerUpdateValueVersion",
   "producerUpdatesAllowed",
+  "profiler",
+  "profilerCallbacks",
   "providerToFactory",
   "readableStreamLikeToAsyncGenerator",
   "refreshContentQueries",

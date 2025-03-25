@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {setProfiler} from '../../src/render3/profiler';
+import {setProfiler, profiler} from '../../src/render3/profiler';
 import {ProfilerEvent} from '../../src/render3/profiler_types';
 import {TestBed} from '../../testing';
 
@@ -538,5 +538,56 @@ describe('profiler', () => {
         p.hasEvents(ProfilerEvent.DeferBlockStateStart, ProfilerEvent.DeferBlockStateEnd),
       ).toBeTrue();
     });
+  });
+});
+
+describe('profiler activation and removal', () => {
+  it('should allow adding and removing multiple profilers', () => {
+    const events: string[] = [];
+    const r1 = setProfiler((e) => events.push('P1: ' + e));
+    const r2 = setProfiler((e) => events.push('P2: ' + e));
+
+    profiler(ProfilerEvent.TemplateCreateStart);
+    expect(events).toEqual(['P1: 0', 'P2: 0']);
+
+    r1();
+    profiler(ProfilerEvent.TemplateCreateEnd);
+    expect(events).toEqual(['P1: 0', 'P2: 0', 'P2: 1']);
+
+    r2();
+    profiler(ProfilerEvent.TemplateCreateStart);
+    expect(events).toEqual(['P1: 0', 'P2: 0', 'P2: 1']);
+  });
+
+  it('should not add / remove the same profiler twice', () => {
+    const events: string[] = [];
+    const p1 = (e: ProfilerEvent) => events.push('P1: ' + e);
+    const r1 = setProfiler(p1);
+    const r2 = setProfiler(p1);
+
+    profiler(ProfilerEvent.TemplateCreateStart);
+    expect(events).toEqual(['P1: 0']);
+
+    r1();
+    profiler(ProfilerEvent.TemplateCreateStart);
+    expect(events).toEqual(['P1: 0']);
+
+    // subsequent removals should be noop
+    r1();
+    r2();
+  });
+
+  it('should clear all profilers when passing null', () => {
+    const events: string[] = [];
+    setProfiler((e) => events.push('P1: ' + e));
+    setProfiler((e) => events.push('P2: ' + e));
+
+    profiler(ProfilerEvent.TemplateCreateStart);
+    expect(events).toEqual(['P1: 0', 'P2: 0']);
+
+    // clear all profilers
+    setProfiler(null);
+    profiler(ProfilerEvent.TemplateCreateEnd);
+    expect(events).toEqual(['P1: 0', 'P2: 0']);
   });
 });

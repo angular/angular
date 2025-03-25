@@ -429,6 +429,8 @@
   "producerMarkClean",
   "producerRemoveLiveConsumerAtIndex",
   "producerUpdateValueVersion",
+  "profiler",
+  "profilerCallbacks",
   "refreshContentQueries",
   "refreshView",
   "rememberChangeHistoryAndInvokeOnChangesHook",
