@@ -8,7 +8,7 @@
 
 import {Component} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {Router, RouterModule} from '@angular/router';
+import {Router, RouterModule} from '../index';
 import {getLoadedRoutes} from '../src/router_devtools';
 
 @Component({template: '<div>simple standalone</div>'})
