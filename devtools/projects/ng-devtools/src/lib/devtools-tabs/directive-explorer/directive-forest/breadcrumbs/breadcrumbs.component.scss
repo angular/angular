@@ -62,6 +62,9 @@
       }
 
       .breadcrumbs {
+        flex: 1;
+        scrollbar-width: none;
+
         button {
           &.selected {
             background-color: rgb(41, 42, 45);
