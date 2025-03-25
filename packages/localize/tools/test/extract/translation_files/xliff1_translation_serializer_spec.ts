@@ -7,7 +7,7 @@
  */
 import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
+import {ɵParsedMessage, ɵSourceLocation} from '../../../../index';
 
 import {FormatOptions} from '../../../src/extract/translation_files/format_options';
 import {Xliff1TranslationSerializer} from '../../../src/extract/translation_files/xliff1_translation_serializer';
