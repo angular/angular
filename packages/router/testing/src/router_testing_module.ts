@@ -17,7 +17,7 @@ import {
   Routes,
   withPreloading,
   ɵROUTER_PROVIDERS as ROUTER_PROVIDERS,
-} from '@angular/router';
+} from '../../index';
 
 /**
  * @description

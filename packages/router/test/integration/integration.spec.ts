@@ -36,8 +36,8 @@ import {
   Router,
   RouterModule,
   RoutesRecognized,
-} from '@angular/router';
-import {RouterTestingHarness} from '@angular/router/testing';
+} from '../../index';
+import {RouterTestingHarness} from '../../testing';
 
 import {RedirectCommand} from '../../src/models';
 import {

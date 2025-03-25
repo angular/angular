@@ -24,8 +24,8 @@ import {
   RouterOutlet,
   withComponentInputBinding,
   ROUTER_OUTLET_DATA,
-} from '@angular/router/src';
-import {RouterTestingHarness} from '@angular/router/testing';
+} from '../../index';
+import {RouterTestingHarness} from '../../testing';
 import {InjectionToken} from '../../../core/src/di';
 
 describe('router outlet name', () => {
