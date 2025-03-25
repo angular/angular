@@ -6,7 +6,7 @@
 
 import { ANIMATION_MODULE_TYPE } from '@angular/core';
 import * as i0 from '@angular/core';
-import * as i1 from '@angular/platform-browser';
+import * as i1 from '@angular/common';
 import { ModuleWithProviders } from '@angular/core';
 import { Provider } from '@angular/core';
 
@@ -20,7 +20,7 @@ export class BrowserAnimationsModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<BrowserAnimationsModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<BrowserAnimationsModule, never, never, [typeof i1.BrowserModule]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<BrowserAnimationsModule, never, never, [typeof BrowserModule]>;
 }
 
 // @public
@@ -35,7 +35,7 @@ export class NoopAnimationsModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<NoopAnimationsModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<NoopAnimationsModule, never, never, [typeof i1.BrowserModule]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<NoopAnimationsModule, never, never, [typeof BrowserModule]>;
 }
 
 // @public
