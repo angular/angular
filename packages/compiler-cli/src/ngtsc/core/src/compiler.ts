@@ -1300,10 +1300,7 @@ export class NgCompiler {
       // namespace" and the logic of `LogicalProjectStrategy` is required to generate correct
       // imports which may cross these multiple directories. Otherwise, plain relative imports are
       // sufficient.
-      if (
-        this.options.rootDir !== undefined ||
-        (this.options.rootDirs !== undefined && this.options.rootDirs.length > 0)
-      ) {
+      if (this.options.rootDirs !== undefined && this.options.rootDirs.length > 0) {
         // rootDirs logic is in effect - use the `LogicalProjectStrategy` for in-project relative
         // imports.
         localImportStrategy = new LogicalProjectStrategy(
