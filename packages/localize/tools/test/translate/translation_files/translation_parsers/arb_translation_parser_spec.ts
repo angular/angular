@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {ɵmakeTemplateObject} from '@angular/localize';
+import {ɵmakeTemplateObject} from '../../../../../index';
 
 import {ArbTranslationParser} from '../../../../src/translate/translation_files/translation_parsers/arb_translation_parser';
 

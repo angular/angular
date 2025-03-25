@@ -10,7 +10,7 @@ import {
   getFileSystem,
   PathManipulation,
 } from '@angular/compiler-cli/src/ngtsc/file_system';
-import {ɵmakeTemplateObject} from '@angular/localize';
+import {ɵmakeTemplateObject} from '../../index';
 import babel, {NodePath, TransformOptions, template, types as t} from '@babel/core';
 import _generate from '@babel/generator';
 

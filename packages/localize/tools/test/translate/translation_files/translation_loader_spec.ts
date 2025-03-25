@@ -12,7 +12,7 @@ import {
   getFileSystem,
 } from '@angular/compiler-cli/src/ngtsc/file_system';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-import {ɵParsedTranslation, ɵparseTranslation} from '@angular/localize';
+import {ɵParsedTranslation, ɵparseTranslation} from '../../../../index';
 
 import {DiagnosticHandlingStrategy, Diagnostics} from '../../../src/diagnostics';
 import {TranslationLoader} from '../../../src/translate/translation_files/translation_loader';
