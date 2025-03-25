@@ -11,7 +11,7 @@ import {provideLocationMocks, SpyLocation} from '@angular/common/testing';
 import {Component, Injectable, NgModule, Type} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {Router, RouterModule, RouterOutlet, UrlTree, withRouterConfig} from '@angular/router';
+import {Router, RouterModule, RouterOutlet, UrlTree, withRouterConfig} from '../index';
 import {EMPTY, of} from 'rxjs';
 
 import {provideRouter} from '../src/provide_router';

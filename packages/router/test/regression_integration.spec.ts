@@ -30,7 +30,7 @@ import {
   RouterOutlet,
   UrlSerializer,
   UrlTree,
-} from '@angular/router';
+} from '../index';
 import {of} from 'rxjs';
 import {delay, filter, mapTo, take} from 'rxjs/operators';
 
