@@ -27,13 +27,19 @@ import {RElement, RNode} from '../interfaces/renderer_dom';
 import {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
 import {assertNotSame} from '../../util/assert';
 
+/** Shorthand for an event listener callback function to reduce duplication. */
+export type EventCallback = (event?: any) => any;
+
+/** Utility type used to make it harder to swap a wrapped and unwrapped callback. */
+export type WrappedEventCallback = EventCallback & {__wrapped: boolean};
+
 /**
  * Contains a reference to a function that disables event replay feature
  * for server-side rendered applications. This function is overridden with
  * an actual implementation when the event replay feature is enabled via
  * `withEventReplay()` call.
  */
-let stashEventListener = (el: RNode, eventName: string, listenerFn: (e?: any) => any) => {};
+let stashEventListener = (el: RNode, eventName: string, listenerFn: EventCallback) => {};
 
 export function setStashFn(fn: typeof stashEventListener) {
   stashEventListener = fn;
@@ -52,8 +58,8 @@ export function setStashFn(fn: typeof stashEventListener) {
 export function wrapListener(
   tNode: TNode,
   lView: LView<{} | null>,
-  listenerFn: (e?: any) => any,
-): EventListener {
+  listenerFn: EventCallback,
+): WrappedEventCallback {
   // Note: we are performing most of the work in the listener function itself
   // to optimize listener registration.
   return function wrapListenerIn_markDirtyAndPreventDefault(event: any) {
@@ -74,13 +80,13 @@ export function wrapListener(
     }
 
     return result;
-  };
+  } as WrappedEventCallback;
 }
 
 function executeListenerWithErrorHandling(
   lView: LView,
   context: {} | null,
-  listenerFn: (e?: any) => any,
+  listenerFn: EventCallback,
   e: any,
 ): boolean {
   const prevConsumer = setActiveConsumer(null);
@@ -132,8 +138,8 @@ export function listenToDomEvent(
   eventTargetResolver: GlobalTargetResolver | undefined,
   renderer: Renderer,
   eventName: string,
-  originalListener: (e?: any) => any,
-  wrappedListener: (e?: any) => any,
+  originalListener: EventCallback,
+  wrappedListener: WrappedEventCallback,
 ): boolean {
   ngDevMode &&
     assertNotSame(
@@ -209,7 +215,7 @@ function findExistingListener(
   lView: LView,
   eventName: string,
   tNodeIndex: number,
-): ((e?: any) => any) | null {
+): EventCallback | null {
   const tCleanup = tView.cleanup;
   if (tCleanup != null) {
     for (let i = 0; i < tCleanup.length - 1; i += 2) {
@@ -253,7 +259,7 @@ export function storeListenerCleanup(
   tView: TView,
   lView: LView,
   eventName: string,
-  listenerFn: (e?: any) => any,
+  listenerFn: WrappedEventCallback,
   cleanup: (() => void) | {unsubscribe: () => void},
   isOutput: boolean,
 ) {
