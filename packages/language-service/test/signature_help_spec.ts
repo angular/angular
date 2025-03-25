@@ -7,7 +7,7 @@
  */
 
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-import {getText} from '@angular/language-service/testing/src/util';
+import {getText} from '../testing/src/util';
 
 import {LanguageServiceTestEnv, OpenBuffer} from '../testing';
 
