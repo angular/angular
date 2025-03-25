@@ -7,7 +7,7 @@
  */
 
 import {createPlatformFactory, NgModule, PlatformRef, StaticProvider} from '@angular/core';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {platformBrowserDynamic} from '../../index';
 import {BrowserTestingModule} from '@angular/platform-browser/testing';
 
 /**
