@@ -9,8 +9,8 @@
 import {AsyncPipe} from '@angular/common';
 import {Component, inject} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {ActivatedRoute, provideRouter, Router} from '@angular/router';
-import {RouterTestingHarness} from '@angular/router/testing';
+import {ActivatedRoute, provideRouter, Router} from '../../index';
+import {RouterTestingHarness} from '../../testing';
 import {of} from 'rxjs';
 import {delay} from 'rxjs/operators';
 

@@ -31,7 +31,7 @@ import {
   RouterModule,
   RouterOutlet,
   withEnabledBlockingInitialNavigation,
-} from '@angular/router';
+} from '../index';
 
 // This is needed, because all files under `packages/` are compiled together as part of the
 // [legacy-unit-tests-saucelabs][1] CI job, including the `lib.webworker.d.ts` typings brought in by

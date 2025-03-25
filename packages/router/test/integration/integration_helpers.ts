@@ -21,7 +21,7 @@ import {
   RouterModule,
   RouterOutlet,
   UrlSegment,
-} from '@angular/router';
+} from '../../index';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
