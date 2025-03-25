@@ -75,8 +75,8 @@ bootstrapApplication(App, {
 });
 ```
 
-### Event Replay
-Event Replay is a feature that improves user experience by capturing user events triggered before hydration finishes and replaying them afterward.
+### How event replay works
+Event Replay is a feature that improves user experience by capturing user events that were triggered before the hydration process is complete. Then those events are replayed, ensuring none of that interaction was lost.
 
 The Event Replay is divided into three main phases:
 
@@ -87,11 +87,13 @@ Prior to **Hydration**, Event Replay captures and stores all interactions that t
 The **Event Contract** keeps in memory all the interactions recorded in the previous step, ensuring that they are not lost for later replay.
 
 - **Relaunch of events**<br>
-Once **Hydration** is complete, Angular re-invokes the captured events, ensuring none of those user actions were lost.
+Once **Hydration** is complete, Angular re-invokes the captured events.
+
+Event replay supports _native browser events_, for example `click`, `mouseover`, and `focusin`. If you'd like to learn more about JSAction, the library that powers event replay, you can read more [on the readme](https://github.com/angular/angular/tree/main/packages/core/primitives/event-dispatch#readme).
 
 ---
 
-This feature ensures a consistent user experience, preventing user actions performed before Hydration from being ignored.
+This feature ensures a consistent user experience, preventing user actions performed before Hydration from being ignored. Note: if you have [incremental hydration](guide/incremental-hydration) enabled, event replay is automatically enabled under the hood.
 
 ## Constraints
 
