@@ -29,7 +29,7 @@ bootstrapApplication(AppComponent, {
 });
 ```
 
-Incremental Hydration depends on and enables event replay automatically. If you already have `withEventReplay()` in your list, you can safely remove it after enabling incremental hydration.
+Incremental Hydration depends on and enables [event replay](guide/hydration#capturing-and-replaying-events) automatically. If you already have `withEventReplay()` in your list, you can safely remove it after enabling incremental hydration.
 
 ## How does incremental hydration work?
 
