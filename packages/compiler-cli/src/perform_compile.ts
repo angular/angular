@@ -48,7 +48,7 @@ export function formatDiagnostics(
 export type ConfigurationHost = Pick<
   ReadonlyFileSystem,
   'readFile' | 'exists' | 'lstat' | 'resolve' | 'join' | 'dirname' | 'extname' | 'pwd' | 'readdir'
->;
+> & {trace?: (output: string) => void};
 
 export interface ParsedConfiguration {
   project: string;
@@ -186,6 +186,7 @@ function createParseConfigHost(host: ConfigurationHost, fs = getFileSystem()): t
     readDirectory: createFileSystemTsReadDirectoryFn(fs),
     readFile: host.readFile.bind(host),
     useCaseSensitiveFileNames: fs.isCaseSensitive(),
+    trace: host.trace,
   };
 }
 
