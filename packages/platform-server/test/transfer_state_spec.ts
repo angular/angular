@@ -8,7 +8,7 @@
 
 import {Component, makeStateKey, NgModule, TransferState} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
-import {renderModule, ServerModule} from '@angular/platform-server';
+import {renderModule, ServerModule} from '../index';
 
 describe('transfer_state', () => {
   const defaultExpectedOutput =
