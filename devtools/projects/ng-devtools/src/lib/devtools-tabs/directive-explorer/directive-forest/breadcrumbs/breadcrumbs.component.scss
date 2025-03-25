@@ -23,6 +23,8 @@
     // width: calc(100% - 50px);
     height: 100%;
     scroll-behavior: smooth;
+    scrollbar-width: none;
+    flex: 1;
 
     &::-webkit-scrollbar {
       display: none;
