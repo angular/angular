@@ -12,7 +12,7 @@ import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/tes
 import {
   ɵINTERNAL_SERVER_PLATFORM_PROVIDERS as INTERNAL_SERVER_PLATFORM_PROVIDERS,
   ɵSERVER_RENDER_PROVIDERS as SERVER_RENDER_PROVIDERS,
-} from '@angular/platform-server';
+} from '../../index';
 
 const INTERNAL_SERVER_DYNAMIC_PLATFORM_TESTING_PROVIDERS: StaticProvider[] = [
   ...INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS,
