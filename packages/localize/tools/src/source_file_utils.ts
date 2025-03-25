@@ -16,7 +16,7 @@ import {
   ɵParsedTranslation,
   ɵSourceLocation,
   ɵtranslate,
-} from '@angular/localize';
+} from '../../index';
 import {BabelFile, NodePath, types as t} from '@babel/core';
 
 import {DiagnosticHandlingStrategy, Diagnostics} from './diagnostics';

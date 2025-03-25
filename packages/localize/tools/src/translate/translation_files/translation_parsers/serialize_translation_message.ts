@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {Element, ParseError} from '@angular/compiler';
-import {ɵParsedTranslation} from '@angular/localize';
+import {ɵParsedTranslation} from '../../../../../index';
 
 import {
   MessageSerializer,

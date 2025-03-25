@@ -9,7 +9,7 @@ import {
   ɵ$localize as $localize,
   ɵLocalizeFn as LocalizeFn,
   ɵTranslateFn as TranslateFn,
-} from '@angular/localize';
+} from '../index';
 
 export {$localize, LocalizeFn, TranslateFn};
 

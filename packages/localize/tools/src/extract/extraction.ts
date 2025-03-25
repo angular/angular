@@ -12,7 +12,7 @@ import {
   SourceFile,
   SourceFileLoader,
 } from '@angular/compiler-cli/private/localize';
-import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
+import {ɵParsedMessage, ɵSourceLocation} from '../../../index';
 import {transformSync} from '@babel/core';
 
 import {makeEs2015ExtractPlugin} from './source_files/es2015_extract_plugin';
