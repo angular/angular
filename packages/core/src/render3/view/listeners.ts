@@ -12,13 +12,20 @@ import {NotificationSource} from '../../change_detection/scheduling/zoneless_sch
 import {TNode} from '../interfaces/node';
 import {isComponentHost, isDirectiveHost} from '../interfaces/type_checks';
 import {CLEANUP, CONTEXT, INJECTOR, LView, TView} from '../interfaces/view';
-import {getComponentLViewByIndex, getNativeByTNode, unwrapRNode} from '../util/view_utils';
+import {
+  getComponentLViewByIndex,
+  getNativeByTNode,
+  getOrCreateLViewCleanup,
+  getOrCreateTViewCleanup,
+  unwrapRNode,
+} from '../util/view_utils';
 import {profiler} from '../profiler';
 import {ProfilerEvent} from '../profiler_types';
 import {ErrorHandler} from '../../error_handler';
 import {markViewDirty} from '../instructions/mark_view_dirty';
 import {RElement, RNode} from '../interfaces/renderer_dom';
 import {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
+import {assertNotSame} from '../../util/assert';
 
 /**
  * Contains a reference to a function that disables event replay feature
@@ -103,22 +110,41 @@ function handleError(lView: LView, error: any): void {
   injector.get(ErrorHandler, null)?.handleError(error);
 }
 
+/**
+ * Listen to a DOM event on a specific node.
+ * @param tNode TNode on which to listen.
+ * @param tView TView in which the node is placed.
+ * @param lView LView in which the node instance is placed.
+ * @param eventTargetResolver Resolver for global event targets.
+ * @param renderer Renderer to use for listening to the event.
+ * @param eventName Name of the event.
+ * @param originalListener Original listener as it was created by the compiler. Necessary for event
+ *   coalescing.
+ * @param wrappedListener Listener wrapped with additional logic like marking for check and error
+ *   handling.
+ * @returns Boolean indicating whether the event was bound or was coalesced into an existing
+ *   listener.
+ */
 export function listenToDomEvent(
   tNode: TNode,
+  tView: TView,
   lView: LView<{} | null>,
   eventTargetResolver: GlobalTargetResolver | undefined,
-  lCleanup: any[],
-  tView: TView,
-  eventName: string,
-  wrappedListener: (e?: any) => any,
-  originalListener: (e?: any) => any,
   renderer: Renderer,
-  tCleanup: any[] | null,
-) {
+  eventName: string,
+  originalListener: (e?: any) => any,
+  wrappedListener: (e?: any) => any,
+): boolean {
+  ngDevMode &&
+    assertNotSame(
+      wrappedListener,
+      originalListener,
+      'Expected wrapped and original listeners to be different.',
+    );
+
   const isTNodeDirectiveHost = isDirectiveHost(tNode);
   const native = getNativeByTNode(tNode, lView) as RElement;
   const target = eventTargetResolver ? eventTargetResolver(native) : native;
-  const lCleanupIndex = lCleanup.length;
   const idxOrTargetGetter = eventTargetResolver
     ? (_lView: LView) => eventTargetResolver(unwrapRNode(_lView[tNode.index]))
     : tNode.index;
@@ -158,7 +184,9 @@ export function listenToDomEvent(
   } else {
     stashEventListener(target as RElement, eventName, wrappedListener);
     const cleanupFn = renderer.listen(target as RElement, eventName, wrappedListener);
-
+    const tCleanup = tView.firstCreatePass ? getOrCreateTViewCleanup(tView) : null;
+    const lCleanup = getOrCreateLViewCleanup(lView);
+    const lCleanupIndex = lCleanup.length;
     lCleanup.push(wrappedListener, cleanupFn);
     tCleanup && tCleanup.push(eventName, idxOrTargetGetter, lCleanupIndex, lCleanupIndex + 1);
   }

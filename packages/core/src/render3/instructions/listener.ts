@@ -11,7 +11,6 @@ import {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
 import {LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
 import {getCurrentDirectiveDef, getCurrentTNode, getLView, getTView} from '../state';
-import {getOrCreateLViewCleanup, getOrCreateTViewCleanup} from '../util/view_utils';
 
 import {listenToOutput} from '../view/directive_outputs';
 import {listenToDomEvent, wrapListener} from '../view/listeners';
@@ -93,13 +92,6 @@ export function listenerInternal(
   listenerFn: (e?: any) => any,
   eventTargetResolver?: GlobalTargetResolver,
 ): void {
-  const tCleanup = tView.firstCreatePass ? getOrCreateTViewCleanup(tView) : null;
-
-  // When the ɵɵlistener instruction was generated and is executed we know that there is either a
-  // native listener or a directive output on this element. As such we we know that we will have to
-  // register a listener and store its cleanup function on LView.
-  const lCleanup = getOrCreateLViewCleanup(lView);
-
   ngDevMode && assertTNodeType(tNode, TNodeType.AnyRNode | TNodeType.AnyContainer);
 
   let processOutputs = true;
@@ -113,17 +105,16 @@ export function listenerInternal(
     wrappedListener ??= wrapListener(tNode, lView, listenerFn);
     const hasCoalescedDomEvent = listenToDomEvent(
       tNode,
+      tView,
       lView,
       eventTargetResolver,
-      lCleanup,
-      tView,
-      eventName,
-      wrappedListener,
-      listenerFn,
       renderer,
-      tCleanup,
+      eventName,
+      listenerFn,
+      wrappedListener,
     );
 
+    // Context: https://github.com/angular/angular/pull/30144
     if (hasCoalescedDomEvent) {
       processOutputs = false;
     }
