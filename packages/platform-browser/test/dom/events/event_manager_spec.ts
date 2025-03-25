@@ -8,11 +8,8 @@
 
 import {ɵgetDOM as getDOM} from '@angular/common';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
-import {DomEventsPlugin} from '@angular/platform-browser/src/dom/events/dom_events';
-import {
-  EventManager,
-  EventManagerPlugin,
-} from '@angular/platform-browser/src/dom/events/event_manager';
+import {DomEventsPlugin} from '../../../src/dom/events/dom_events';
+import {EventManager, EventManagerPlugin} from '../../../src/dom/events/event_manager';
 
 import {createMouseEvent, el} from '../../../testing/src/browser_util';
 import {TestBed} from '@angular/core/testing';

@@ -7,11 +7,8 @@
  */
 import {ApplicationRef, Injector, NgZone} from '@angular/core';
 import {fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
-import {EventManager} from '@angular/platform-browser';
-import {
-  HammerGestureConfig,
-  HammerGesturesPlugin,
-} from '@angular/platform-browser/src/dom/events/hammer_gestures';
+import {EventManager} from '../../../index';
+import {HammerGestureConfig, HammerGesturesPlugin} from '../../../src/dom/events/hammer_gestures';
 
 describe('HammerGesturesPlugin', () => {
   let plugin: HammerGesturesPlugin;
