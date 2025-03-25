@@ -17,7 +17,7 @@ import {
   ɵChangeDetectionSchedulerImpl as ChangeDetectionSchedulerImpl,
 } from '@angular/core';
 import {TestComponentRenderer} from '@angular/core/testing';
-import {BrowserModule, platformBrowser} from '@angular/platform-browser';
+import {BrowserModule, platformBrowser} from '../../index';
 import {DOMTestComponentRenderer} from './dom_test_component_renderer';
 
 /**

@@ -7,13 +7,13 @@
  */
 import {Component, Renderer2, ViewEncapsulation} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {By} from '@angular/platform-browser/src/dom/debug/by';
+import {By} from '../../src/dom/debug/by';
 import {
   addBaseHrefToCssSourceMap,
   NAMESPACE_URIS,
   REMOVE_STYLES_ON_COMPONENT_DESTROY,
-} from '@angular/platform-browser/src/dom/dom_renderer';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+} from '../../src/dom/dom_renderer';
+import {expect} from '../../testing/src/matchers';
 
 describe('DefaultDomRendererV2', () => {
   if (isNode) {
