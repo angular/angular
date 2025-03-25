@@ -67,7 +67,7 @@
     {
       "matchDepNames": ["node"],
       "matchUpdateTypes": ["minor", "patch"],
-      "groupSlug": "node"
+      "groupName": "node"
     },
     {
       "enabled": false,
