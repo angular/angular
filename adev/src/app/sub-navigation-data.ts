@@ -787,6 +787,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             path: 'guide/animations/route-animations',
             contentPath: 'guide/animations/route-animations',
           },
+          {
+            label: 'Migrating to Native CSS',
+            path: 'guide/animations/migration',
+            contentPath: 'guide/animations/migration',
+          },
         ],
       },
       {
