@@ -6,26 +6,29 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, signal, effect, computed, Injectable, inject} from '../../src/core';
+import {Component, computed, effect, inject, Injectable, signal} from '../../src/core';
 import {
-  setupFrameworkInjectorProfiler,
   getFrameworkDIDebugData,
+  setupFrameworkInjectorProfiler,
 } from '../../src/render3/debug/framework_injector_profiler';
+import {setInjectorProfiler} from '../../src/render3/debug/injector_profiler';
 import {
   DebugSignalGraphEdge,
   DebugSignalGraphNode,
   getSignalGraph,
 } from '../../src/render3/util/signal_debug';
-import {TestBed, fakeAsync, tick} from '../../testing';
+import {fakeAsync, TestBed, tick} from '../../testing';
 
 describe('getSignalGraph', () => {
   beforeEach(() => {
     // Effect detection depends on the framework injector profiler being enabled
+    setInjectorProfiler(null);
     setupFrameworkInjectorProfiler();
   });
 
   afterEach(() => {
     getFrameworkDIDebugData().reset();
+    setInjectorProfiler(null);
     TestBed.resetTestingModule();
   });
 
