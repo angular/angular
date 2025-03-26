@@ -257,6 +257,30 @@ runInEachFileSystem(() => {
       expect(getDiagnosticSourceCode(diags[0])).toBe('$event');
     });
 
+    it('should check @HostListener with a target', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component, HostListener} from '@angular/core';
+
+        @Component({
+          template: '',
+          selector: 'button[foo]',
+        })
+        export class Comp {
+          @HostListener('document:click', ['$event']) handleEvent(event: KeyboardEvent) {}
+        }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText).toBe(
+        `Argument of type 'MouseEvent' is not assignable to parameter of type 'KeyboardEvent'.`,
+      );
+      expect(getDiagnosticSourceCode(diags[0])).toBe('$event');
+    });
+
     it('should check host animation event listeners', () => {
       env.write(
         'test.ts',
