@@ -113,6 +113,7 @@ build:remote --remote_instance_name=projects/internal-200822/instances/primary_i
 build:remote --bes_instance_name=internal-200822
 build:remote --remote_cache=remotebuildexecution.googleapis.com
 build:remote --remote_executor=remotebuildexecution.googleapis.com
+build:remote --remote_upload_local_results=false
 
 build:remote --experimental_remote_grpc_log=/tmp/rbe-grpc.log
 
@@ -122,7 +123,7 @@ build:remote --experimental_remote_execution_keepalive
 # Use HTTP remote cache
 build:remote-cache --remote_cache=https://storage.googleapis.com/angular-team-cache
 build:remote-cache --remote_accept_cached=true
-build:remote-cache --remote_upload_local_results=true
+build:remote-cache --remote_upload_local_results=false
 build:remote-cache --google_default_credentials
 
 # Ensure that tags like "no-remote-exec" get propagated to actions created by rules,
