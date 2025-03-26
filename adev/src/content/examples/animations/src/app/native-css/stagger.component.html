@@ -1,0 +1,10 @@
+<!-- #docplaster -->
+<h1>Stagger Example</h1>
+<button type="button" (click)="refresh()">Refresh</button>
+@if (show()) {
+  <ul class="items">
+    @for(item of items; track item) {
+      <li class="item" style="--index: {{ item }}">{{item}}</li>
+    }
+  </ul>
+}

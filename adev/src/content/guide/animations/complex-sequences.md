@@ -1,5 +1,7 @@
 # Complex animation sequences
 
+IMPORTANT: The Angular team recommends using native CSS for animations instead of the Animations package for all new code. Use this guide to understand existing code built with the Animations Package. See [Migrating away from Angular's Animations package](guide/animations/migration#complex-sequences) to learn how you can start using pure CSS animations in your apps.
+
 So far, we've learned simple animations of single HTML elements.
 Angular also lets you animate coordinated sequences, such as an entire grid or list of elements as they enter and leave a page.
 You can choose to run multiple animations in parallel, or run discrete animations sequentially, one following another.

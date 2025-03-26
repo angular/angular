@@ -1,0 +1,9 @@
+<!-- #docplaster -->
+<h1>Reordering List Example</h1>
+<button type="button" (click)="randomize()">Randomize</button>
+
+<ul class="items">
+  @for(item of items; track item) {
+    <li class="item">{{ item }}</li>
+  }
+</ul>
