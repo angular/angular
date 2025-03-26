@@ -583,6 +583,21 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
           },
         ],
       },
+      {
+        label: 'Animations',
+        children: [
+          {
+            label: 'Animating your content',
+            path: 'guide/animations/css',
+            contentPath: 'guide/animations/css',
+          },
+          {
+            label: 'Route transition animations',
+            path: 'guide/animations/route-animations',
+            contentPath: 'guide/animations/route-animations',
+          },
+        ],
+      },
     ],
   },
   {
@@ -788,9 +803,9 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/animations/reusable-animations',
           },
           {
-            label: 'Route transition animations',
-            path: 'guide/animations/route-animations',
-            contentPath: 'guide/animations/route-animations',
+            label: 'Migrating to Native CSS Animations',
+            path: 'guide/animations/migration',
+            contentPath: 'guide/animations/migration',
           },
         ],
       },
