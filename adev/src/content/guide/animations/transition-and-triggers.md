@@ -1,5 +1,7 @@
 # Animation transitions and triggers
 
+IMPORTANT: The Angular team recommends using native CSS for animations instead of the Animations package for all new code. Use this guide to understand existing code built with the Animations Package. See [Migrating away from Angular's Animations package](guide/animations/migration#transition-and-triggers) to learn how you can start using pure CSS animations in your apps.
+
 This guide goes into depth on special transition states such as the `*` wildcard and `void`. It shows how these special states are used for elements entering and leaving a view.
 This section also explores multiple animation triggers, animation callbacks, and sequence-based animation using keyframes.
 
