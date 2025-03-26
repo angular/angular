@@ -140,7 +140,7 @@ did not match a `select` attribute:
     <card-title>Hello</card-title>
     <div class="card-divider"></div>
     <img src="..." />
-    <p>Welcome to the example></p>
+    <p>Welcome to the example</p>
   </div>
 </custom-card>
 ```
@@ -210,7 +210,7 @@ placeholder, Angular compares against the `ngProjectAs` value instead of the ele
   <div class="card-shadow">
     <h3>Hello</h3>
     <div class="card-divider"></div>
-    <p>Welcome to the example></p>
+    <p>Welcome to the example</p>
   </div>
 </custom-card>
 ```
