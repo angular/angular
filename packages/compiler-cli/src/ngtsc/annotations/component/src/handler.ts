@@ -1213,20 +1213,26 @@ export class ComponentDecoratorHandler
         }
       }
 
-      // Set up the R3TargetBinder, as well as a 'directives' array and a 'pipes' map that are
-      // later fed to the TemplateDefinitionBuilder.
+      // Set up the R3TargetBinder.
       const binder = createTargetBinder(dependencies);
-      const pipes = extractPipes(dependencies);
 
       let allDependencies = dependencies;
       let deferBlockBinder = binder;
 
       // If there are any explicitly deferred dependencies (via `@Component.deferredImports`),
-      // re-compute the list of dependencies and create a new binder for defer blocks.
+      // re-compute the list of dependencies and create a new binder for defer blocks. This
+      // is because we have deferred dependencies that are not in the standard imports list
+      // and need to be referenced later when determining what dependencies need to be in a
+      // defer function / instruction call. Otherwise they end up treated as a standard
+      // import, which is wrong.
       if (explicitlyDeferredDependencies.length > 0) {
         allDependencies = [...explicitlyDeferredDependencies, ...dependencies];
         deferBlockBinder = createTargetBinder(allDependencies);
       }
+
+      // Set up the pipes map that is later used to determine which dependencies are used in
+      // the template.
+      const pipes = extractPipes(allDependencies);
 
       // Next, the component template AST is bound using the R3TargetBinder. This produces a
       // BoundTarget, which is similar to a ts.TypeChecker.
@@ -1272,10 +1278,10 @@ export class ComponentDecoratorHandler
       // including all defer blocks.
       const wholeTemplateUsed = new Set<ClassDeclaration>(eagerlyUsed);
       for (const bound of deferBlocks.values()) {
-        for (const dir of bound.getEagerlyUsedDirectives()) {
+        for (const dir of bound.getUsedDirectives()) {
           wholeTemplateUsed.add(dir.ref.node);
         }
-        for (const name of bound.getEagerlyUsedPipes()) {
+        for (const name of bound.getUsedPipes()) {
           if (!pipes.has(name)) {
             continue;
           }
