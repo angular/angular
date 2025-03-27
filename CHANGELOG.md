@@ -1,3 +1,20 @@
+<a name="19.2.4"></a>
+# 19.2.4 (2025-03-26)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [081f5f5a83f](https://github.com/angular/angular/commit/081f5f5a83fef99718952519bed9fe39005d6d37) | fix | fix used templates are not deleted ([#60459](https://github.com/angular/angular/pull/60459)) |
+### localize
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a2f622d82d6](https://github.com/angular/angular/commit/a2f622d82d6c0f93a5fdf34fc8e5829db04c7380) | fix | handle @angular/build:karma in ng add ([#60513](https://github.com/angular/angular/pull/60513)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8e8ccc79279](https://github.com/angular/angular/commit/8e8ccc792790c876cf5831f3d7a504290c665a1b) | fix | ensure `platformBrowserTesting` includes `platformBrowser` providers ([#60480](https://github.com/angular/angular/pull/60480)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.2.3"></a>
 # 19.2.3 (2025-03-19)
 ### compiler-cli
