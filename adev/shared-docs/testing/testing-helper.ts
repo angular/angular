@@ -85,33 +85,29 @@ export class FakeWebContainer extends WebContainer {
     if (fakeOptions?.spawn) this.fakeSpawn = fakeOptions.spawn;
   }
 
-  override spawn(
+  override async spawn(
     command: unknown,
     args?: unknown,
     options?: unknown,
   ): Promise<FakeWebContainerProcess> {
-    if (this.fakeSpawn) return Promise.resolve(this.fakeSpawn);
+    if (this.fakeSpawn) return this.fakeSpawn;
 
-    const fakeProcess = new FakeWebContainerProcess();
-
-    return Promise.resolve(fakeProcess);
+    return new FakeWebContainerProcess();
   }
-  override on(event: 'port', listener: PortListener): Unsubscribe;
-  override on(event: 'server-ready', listener: ServerReadyListener): Unsubscribe;
-  override on(event: 'error', listener: ErrorListener): Unsubscribe;
-  override on(event: 'preview-message', listener: PreviewMessageListener): Unsubscribe;
+
   override on(event: unknown, listener: unknown): Unsubscribe {
     return () => {};
   }
-  override mount(
+
+  override async mount(
     tree: FileSystemTree,
     options?: {mountPoint?: string | undefined} | undefined,
-  ): Promise<void> {
-    return Promise.resolve();
-  }
+  ): Promise<void> {}
+
   override get path() {
     return '/fake-path';
   }
+
   override get workdir() {
     return '/fake-workdir';
   }
