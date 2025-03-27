@@ -9103,10 +9103,10 @@ fined@^2.0.0:
     object.pick "^1.3.0"
     parse-filepath "^1.0.2"
 
-firebase-tools@^13.0.0:
-  version "13.34.0"
-  resolved "https://registry.yarnpkg.com/firebase-tools/-/firebase-tools-13.34.0.tgz#eea53c3d22c074e4da1382d9f282a942574a3c8b"
-  integrity sha512-1j3nJin7hgFu0mTWRejI1ZOS1JaXCe0TpgUNCyYrCX4yetdOCOxdFPbLJsgAc9TKaXkREYElj1X6G6UL+9Xfuw==
+firebase-tools@^14.0.0:
+  version "14.0.0"
+  resolved "https://registry.yarnpkg.com/firebase-tools/-/firebase-tools-14.0.0.tgz#81e0211765361bc728890e9b202c4c2922d692e4"
+  integrity sha512-pyQfgHf01x3RTP1lB6fDq5+sn5z5rMcvQhP97EEFDUJh/9zSJ6Q6ru62sgIiJ7Uhx90OQ86/aO6jDhTk4Jp5Og==
   dependencies:
     "@electric-sql/pglite" "^0.2.16"
     "@google-cloud/cloud-sql-connector" "^1.3.3"
