@@ -126,6 +126,9 @@ build:remote-cache --remote_accept_cached=true
 build:remote-cache --remote_upload_local_results=false
 build:remote-cache --google_default_credentials
 
+# Additional flags added when running a "trusted build" with additional access
+build:trusted-build --remote_upload_local_results=true
+
 # Ensure that tags like "no-remote-exec" get propagated to actions created by rules,
 # even if the rule implementation does not explicitly pass them to the execution requirements.
 # https://bazel.build/reference/command-line-reference#flag--experimental_allow_tags_propagation
