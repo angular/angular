@@ -25,8 +25,8 @@ ts_library(
     name = "identity_tracker",
     srcs = ["identity-tracker.ts"],
     deps = [
-        "//devtools/projects/ng-devtools-backend/src/lib:component_tree",
         "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
         "//devtools/projects/protocol",
     ],
 )

@@ -30,38 +30,23 @@ import {
   SerializedProviderRecord,
   UpdatedStateData,
 } from 'protocol';
-import {buildDirectiveTree, getLViewFromDirectiveOrElementInstance} from './directive-forest/index';
+import {
+  buildDirectiveTree,
+  getLViewFromDirectiveOrElementInstance,
+} from '../directive-forest/index';
 import {
   ngDebugApiIsSupported,
   ngDebugClient,
   ngDebugDependencyInjectionApiIsSupported,
-} from './ng-debug-api/ng-debug-api';
+} from '../ng-debug-api/ng-debug-api';
 import {
   deeplySerializeSelectedProperties,
   serializeDirectiveState,
-} from './state-serializer/state-serializer';
-import {mutateNestedProp} from './property-mutation';
-import {ComponentTreeNode, DirectiveInstanceType, ComponentInstanceType} from './interfaces';
-
-// Need to be kept in sync with Angular framework
-// We can't directly import it from framework now
-// because this also pulls up the security policies
-// for Trusted Types, which we reinstantiate.
-enum ChangeDetectionStrategy {
-  OnPush = 0,
-  Default = 1,
-}
-
-enum AcxChangeDetectionStrategy {
-  Default = 0,
-  OnPush = 1,
-}
-
-enum Framework {
-  Angular = 'angular',
-  ACX = 'acx',
-  Wiz = 'wiz',
-}
+} from '../state-serializer/state-serializer';
+import {mutateNestedProp} from '../property-mutation';
+import {ComponentTreeNode, DirectiveInstanceType, ComponentInstanceType} from '../interfaces';
+import {getRoots} from './get-roots';
+import {AcxChangeDetectionStrategy, ChangeDetectionStrategy, Framework} from './types';
 
 export const injectorToId = new WeakMap<Injector | HTMLElement, string>();
 export const nodeInjectorToResolutionPath = new WeakMap<HTMLElement, SerializedInjector[]>();
@@ -557,25 +542,6 @@ const getRootLViewsHelper = (element: Element, rootLViews = new Set<any>()): Set
     getRootLViewsHelper(element.children[i], rootLViews);
   }
   return rootLViews;
-};
-
-const getRoots = () => {
-  const roots = Array.from(document.documentElement.querySelectorAll('[ng-version]'));
-
-  const isTopLevel = (element: Element) => {
-    let parent: Element | null = element;
-
-    while (parent?.parentElement) {
-      parent = parent.parentElement;
-      if (parent.hasAttribute('ng-version')) {
-        return false;
-      }
-    }
-
-    return true;
-  };
-
-  return roots.filter(isTopLevel);
 };
 
 export const buildDirectiveForest = (): ComponentTreeNode[] => {

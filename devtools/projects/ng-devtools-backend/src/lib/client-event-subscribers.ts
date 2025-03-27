@@ -45,7 +45,7 @@ import {
   serializeProviderRecord,
   serializeResolutionPath,
   updateState,
-} from './component-tree';
+} from './component-tree/component-tree';
 import {unHighlight} from './highlighter';
 import {disableTimingAPI, enableTimingAPI, initializeOrGetDirectiveForestHooks} from './hooks';
 import {start as startProfiling, stop as stopProfiling} from './hooks/capture';
@@ -56,6 +56,7 @@ import {setConsoleReference} from './set-console-reference';
 import {serializeDirectiveState} from './state-serializer/state-serializer';
 import {runOutsideAngular, unwrapSignal} from './utils';
 import {DirectiveForestHooks} from './hooks/hooks';
+import {getSupportedApis} from './ng-debug-api/supported-apis';
 
 export const subscribeToClientEvents = (
   messageBus: MessageBus<Events>,
@@ -331,6 +332,7 @@ const checkForAngular = (messageBus: MessageBus<Events>): void => {
       devMode: appIsAngularInDevMode(),
       ivy: appIsIvy,
       hydration: isHydrationEnabled(),
+      supportedApis: getSupportedApis(),
     },
   ]);
 };
