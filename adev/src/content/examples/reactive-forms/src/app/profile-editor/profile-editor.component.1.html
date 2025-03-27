@@ -31,11 +31,13 @@
     <h2>Aliases</h2>
     <button type="button" (click)="addAlias()">+ Add another alias</button>
 
-    <div *ngFor="let address of aliases.controls; let i=index">
+    @for (address of aliases.controls; track $index) {
+    <div>
       <!-- The repeated alias template -->
-      <label for="alias-{{ i }}">Alias: </label>
-      <input id="alias-{{ i }}" type="text" [formControlName]="i">
+      <label for="alias-{{ $index }}">Alias: </label>
+      <input id="alias-{{ $index }}" type="text" [formControlName]="$index">
     </div>
+    }
   </div>
 <!-- #docregion formgroup -->
 </form>
