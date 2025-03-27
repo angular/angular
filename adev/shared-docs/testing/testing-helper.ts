@@ -138,19 +138,15 @@ class FakeFileSystemAPI implements FileSystemAPI {
     path: string,
     options: {encoding?: string | null | undefined; withFileTypes: true},
   ): Promise<DirEnt<string>[]>;
-  readdir(
+  async readdir(
     path: unknown,
     options?: {encoding?: string | null | undefined; withFileTypes?: boolean} | string | null,
-  ):
-    | Promise<Uint8Array[]>
-    | Promise<string[]>
-    | Promise<DirEnt<Uint8Array>[]>
-    | Promise<DirEnt<string>[]> {
+  ): Promise<Uint8Array[] | string[] | DirEnt<Uint8Array>[] | DirEnt<string>[]> {
     if (typeof options === 'object' && options?.withFileTypes === true) {
-      return Promise.resolve([{name: 'fake-file', isFile: () => true, isDirectory: () => false}]);
+      return [{name: 'fake-file', isFile: () => true, isDirectory: () => false}];
     }
 
-    return Promise.resolve(['/fake-dirname']);
+    return ['/fake-dirname'];
   }
 
   readFile(path: string, encoding?: null | undefined): Promise<Uint8Array>;
@@ -158,28 +154,25 @@ class FakeFileSystemAPI implements FileSystemAPI {
   readFile(path: unknown, encoding?: unknown): Promise<Uint8Array> | Promise<string> {
     return Promise.resolve('fake file content');
   }
-  writeFile(
+  async writeFile(
     path: string,
     data: string | Uint8Array,
     options?: string | {encoding?: string | null | undefined} | null | undefined,
-  ): Promise<void> {
-    return Promise.resolve();
-  }
+  ): Promise<void> {}
+
   mkdir(path: string, options?: {recursive?: false | undefined} | undefined): Promise<void>;
   mkdir(path: string, options: {recursive: true}): Promise<string>;
-  mkdir(path: unknown, options?: unknown): Promise<void> | Promise<string> {
-    return Promise.resolve();
-  }
-  rm(
+  async mkdir(path: unknown, options?: unknown): Promise<void | string> {}
+
+  async rm(
     path: string,
     options?: {force?: boolean | undefined; recursive?: boolean | undefined} | undefined,
-  ): Promise<void> {
-    return Promise.resolve();
-  }
+  ): Promise<void> {}
 
   rename(oldPath: string, newPath: string): Promise<void> {
     throw Error('Not implemented');
   }
+
   watch(
     filename: string,
     options?: FSWatchOptions | undefined,
