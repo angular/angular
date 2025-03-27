@@ -6,35 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {load} from '@angular/core/src/render3/util/view_utils';
 import {Route} from '../../../protocol';
+import type {Route as AngularRoute} from '@angular/router';
 
-export type RoutePropertyType =
-  | 'canActivate'
-  | 'canActivateChild'
-  | 'canDeactivate'
-  | 'canMatch'
-  | 'providers'
-  | 'component';
+export type RoutePropertyType = RouteGuard | 'providers' | 'component';
 
-// todo(sumitarora): type these properly in another PR
-type AngularRoute = {
-  title?: string;
-  path?: string;
-  pathMatch?: 'prefix' | 'full' | undefined;
-  component?: any;
-  redirectTo?: any;
-  outlet?: string | undefined;
-  canActivate?: any[];
-  canMatch?: any[];
-  canActivateChild?: any[];
-  canDeactivate?: any[];
-  providers?: any[];
-  data?: any;
-  children?: Routes;
-  loadChildren?: any;
-  loadComponent?: any;
-  _loadedRoutes?: any;
-};
+export type RouteGuard = 'canActivate' | 'canActivateChild' | 'canDeactivate' | 'canMatch';
+
 type Routes = any;
 type Router = any;
 
@@ -56,8 +35,9 @@ export function parseRoutes(router: Router): Route {
   return root;
 }
 
-function getGuardNames(child: AngularRoute, type: RoutePropertyType): string[] {
+function getGuardNames(child: AngularRoute, type: RouteGuard): string[] {
   const guards = child?.[type] || [];
+
   const names = guards.map((g: any) => g.name);
   return names || [];
 }
@@ -89,7 +69,7 @@ function assignChildrenToParent(
     const isActive = currentUrl?.startsWith(pathWithoutParams);
 
     const routeConfig: Route = {
-      title: child.title,
+      title: typeof child.title === 'string' ? child.title : '[Function]',
       pathMatch: child.pathMatch,
       component: childName,
       canActivateGuards: getGuardNames(child, 'canActivate'),
@@ -148,16 +128,20 @@ export function getElementRefByName(
   name: string,
 ): any | null {
   for (const element of routes) {
-    if (element[type]) {
-      for (const guard of element[type]) {
-        if (guard.name === name) {
+    const routeGuard = type as RouteGuard;
+    if (element[routeGuard]) {
+      for (const guard of element[routeGuard]) {
+        // TODO: improve this, not every guard has a name property
+        if ((guard as any).name === name) {
           return guard;
         }
       }
     }
 
-    if (element?._loadedRoutes) {
-      const result = getElementRefByName(type, element._loadedRoutes, name);
+    // _loadedRoutes is internal, we can't acess it with the dot notation
+    const loadedRoutes = (element as any)?.['_loadedRoutes'] as AngularRoute[] | undefined;
+    if (loadedRoutes) {
+      const result = getElementRefByName(type, loadedRoutes, name);
       if (result !== null) {
         return result;
       }
@@ -184,8 +168,10 @@ export function getComponentRefByName(routes: AngularRoute[], name: string): any
       return element.component;
     }
 
-    if (element?._loadedRoutes) {
-      const result = getComponentRefByName(element._loadedRoutes, name);
+    // _loadedRoutes is internal, we can't acess it with the dot notation
+    const loadedRoutes = (element as any)?.['_loadedRoutes'] as AngularRoute[] | undefined;
+    if (loadedRoutes) {
+      const result = getComponentRefByName(loadedRoutes, name);
       if (result !== null) {
         return result;
       }
