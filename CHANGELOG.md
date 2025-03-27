@@ -1,3 +1,29 @@
+<a name="20.0.0-next.4"></a>
+# 20.0.0-next.4 (2025-03-26)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [785a1110e60](https://github.com/angular/angular/commit/785a1110e603a3573261528f2fda28718f548b4a) | fix | resolve host binding type issues ([#60481](https://github.com/angular/angular/pull/60481)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cf5c61c8490](https://github.com/angular/angular/commit/cf5c61c8490cdb9a7633905eb5ab55ca76d72e77) | fix | fix used templates are not deleted ([#60459](https://github.com/angular/angular/pull/60459)) |
+| [13d1c8ab387](https://github.com/angular/angular/commit/13d1c8ab38707b06dbed4941a556f982665b3304) | fix | fixes timing of hydration cleanup on control flow ([#60425](https://github.com/angular/angular/pull/60425)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [bdd5e204233](https://github.com/angular/angular/commit/bdd5e204233eeb79e04a782a51c08429991eb03e) | fix | resolve host binding type issues ([#60481](https://github.com/angular/angular/pull/60481)) |
+### localize
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7408a1f58b3](https://github.com/angular/angular/commit/7408a1f58b3d0b4c535217875412573fb4f34bdd) | fix | handle @angular/build:karma in ng add ([#60513](https://github.com/angular/angular/pull/60513)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [70bdb88b0c9](https://github.com/angular/angular/commit/70bdb88b0c9937ecb6d1adce5f02da32681782b3) | fix | ensure `platformBrowserTesting` includes `platformBrowser` providers ([#60480](https://github.com/angular/angular/pull/60480)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.2.4"></a>
 # 19.2.4 (2025-03-26)
 ### core
