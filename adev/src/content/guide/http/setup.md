@@ -31,9 +31,8 @@ You can then inject the `HttpClient` service as a dependency of your components,
 <docs-code language="ts">
 @Injectable({providedIn: 'root'})
 export class ConfigService {
-  constructor(private http: HttpClient) {
-    // This service can now make HTTP requests via `this.http`.
-  }
+  private http = inject(HttpClient);
+  // This service can now make HTTP requests via `this.http`.
 }
 </docs-code>
 

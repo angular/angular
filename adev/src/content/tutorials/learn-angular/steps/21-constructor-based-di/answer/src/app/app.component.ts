@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {CarService} from './car.service';
 
 @Component({
@@ -8,9 +8,7 @@ import {CarService} from './car.service';
   `,
 })
 export class AppComponent {
-  display = '';
+  private carService = inject(CarService);
 
-  constructor(private carService: CarService) {
-    this.display = this.carService.getCars().join(' ⭐️ ');
-  }
+  display = this.carService.getCars().join(' ⭐️ ');
 }

@@ -1,6 +1,6 @@
 // #docplaster
 // #docregion
-import {Component, OnInit} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {forbiddenNameValidator} from '../shared/forbidden-name.directive';
 import {UniqueRoleValidator} from '../shared/role.directive';
@@ -51,6 +51,6 @@ export class HeroFormReactiveComponent implements OnInit {
   }
 
   // #docregion async-validator-inject
-  constructor(private roleValidator: UniqueRoleValidator) {}
+  private roleValidator = inject(UniqueRoleValidator);
   // #enddocregion async-validator-inject
 }

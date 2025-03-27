@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -8,7 +8,7 @@ import {HeroService} from '../model/hero.service';
 // #docregion prototype
 @Injectable({providedIn: 'root'})
 export class HeroDetailService {
-  constructor(private heroService: HeroService) {}
+  private heroService = inject(HeroService);
   // #enddocregion prototype
 
   // Returns a clone which caller may modify safely

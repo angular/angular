@@ -234,7 +234,7 @@ While `HttpClient` can be injected and used directly from components, generally 
 <docs-code language="ts">
 @Injectable({providedIn: 'root'})
 export class UserService {
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   getUser(id: string): Observable<User> {
     return this.http.get<User>(`/api/user/${id}`);
@@ -259,9 +259,9 @@ export class UserProfileComponent {
   @Input() userId!: string;
   user$!: Observable<User>;
 
-  constructor(private userService: UserService) {}
+  private userService = inject(UserService);
 
-  ngOnInit(): void {
+  constructor(): void {
     this.user$ = this.userService.getUser(this.userId);
   }
 }

@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {FlowerService} from '../flower.service';
 import {HostComponent} from '../host/host.component';
 
@@ -10,5 +10,5 @@ import {HostComponent} from '../host/host.component';
   imports: [HostComponent],
 })
 export class HostParentComponent {
-  constructor(public flower: FlowerService) {}
+  public flower = inject(FlowerService);
 }
