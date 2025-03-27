@@ -114,11 +114,16 @@
         Show comment nodes
       </mat-slide-toggle>
     </label>
-    <label mat-menu-item disableRipple>
-      <mat-slide-toggle [checked]="routerGraphEnabled()" (change)="setRouterGraph($event.checked)">
-        Enable Router Graph</mat-slide-toggle
-      >
-    </label>
+    @if (supportedApis().routes) {
+      <label mat-menu-item disableRipple>
+        <mat-slide-toggle
+          [checked]="routerGraphEnabled()"
+          (change)="setRouterGraph($event.checked)"
+        >
+          Enable Router Graph</mat-slide-toggle
+        >
+      </label>
+    }
   </div>
 </mat-menu>
 

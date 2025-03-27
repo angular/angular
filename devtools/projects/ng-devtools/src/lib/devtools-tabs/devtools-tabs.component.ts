@@ -12,7 +12,7 @@ import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
 import {MatSlideToggle} from '@angular/material/slide-toggle';
 import {MatTabLink, MatTabNav, MatTabNavPanel} from '@angular/material/tabs';
 import {MatTooltip} from '@angular/material/tooltip';
-import {Events, MessageBus, Route} from 'protocol';
+import {Events, MessageBus, Route, SupportedApis} from 'protocol';
 
 import {ApplicationEnvironment, Frame, TOP_LEVEL_FRAME_ID} from '../application-environment/index';
 import {FrameManager} from '../application-services/frame_manager';
@@ -24,7 +24,17 @@ import {ProfilerComponent} from './profiler/profiler.component';
 import {RouterTreeComponent} from './router-tree/router-tree.component';
 import {TabUpdate} from './tab-update/index';
 
-type Tabs = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree';
+type Tab = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree';
+
+// Static tabs represent all tabs/APIs that are available upon app initialization.
+const STATIC_TABS: Tab[] = ['Components', 'Profiler', 'Injector Tree'];
+
+const TAB_TO_API: {[key in Tab]: keyof SupportedApis} = {
+  Components: 'directiveInspector',
+  Profiler: 'profiler',
+  'Injector Tree': 'dependencyInjection',
+  'Router Tree': 'routes',
+};
 
 @Component({
   selector: 'ng-devtools-tabs',
@@ -49,10 +59,11 @@ type Tabs = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree';
 })
 export class DevToolsTabsComponent {
   readonly isHydrationEnabled = input(false);
+  readonly supportedApis = input.required<SupportedApis>();
   readonly frameSelected = output<Frame>();
 
   readonly applicationEnvironment = inject(ApplicationEnvironment);
-  readonly activeTab = signal<Tabs>('Components');
+  readonly activeTab = signal<Tab>('Components');
   readonly inspectorRunning = signal(false);
   readonly showCommentNodes = signal(false);
   readonly routerGraphEnabled = signal(false);
@@ -63,11 +74,14 @@ export class DevToolsTabsComponent {
 
   readonly snapToRoot = signal(false);
 
-  readonly tabs = computed<Tabs[]>(() => {
-    const alwaysShown: Tabs[] = ['Components', 'Profiler', 'Injector Tree'];
-    return this.routerGraphEnabled() && this.routes().length > 0
-      ? [...alwaysShown, 'Router Tree']
-      : alwaysShown;
+  readonly tabs = computed<Tab[]>(() => {
+    const supported = this.supportedApis();
+    const tabs: Tab[] = STATIC_TABS.filter((tab) => supported[TAB_TO_API[tab]]);
+
+    // Handle dynamic tabs
+    return supported.routes && this.routerGraphEnabled() && this.routes().length > 0
+      ? [...tabs, 'Router Tree']
+      : tabs;
   });
 
   profilingNotificationsSupported = Boolean(
@@ -106,7 +120,7 @@ export class DevToolsTabsComponent {
     this.frameSelected.emit(frame!);
   }
 
-  changeTab(tab: Tabs): void {
+  changeTab(tab: Tab): void {
     this.activeTab.set(tab);
     this.tabUpdate.notify(tab);
     if (tab === 'Router Tree') {

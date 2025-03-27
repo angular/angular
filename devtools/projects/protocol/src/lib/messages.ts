@@ -241,6 +241,13 @@ export interface InjectorGraphViewQuery {
   paramIndex: number;
 }
 
+export interface SupportedApis {
+  directiveInspector: boolean;
+  profiler: boolean;
+  dependencyInjection: boolean;
+  routes: boolean;
+}
+
 export interface Events {
   handshake: () => void;
   shutdown: () => void;
@@ -250,6 +257,7 @@ export interface Events {
     devMode: boolean;
     ivy: boolean;
     hydration: boolean;
+    supportedApis: SupportedApis;
   }) => void;
 
   inspectorStart: () => void;
