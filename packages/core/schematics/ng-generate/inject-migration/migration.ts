@@ -773,17 +773,19 @@ function applyInternalOnlyChanges(
 
   result.toCombine.forEach(({declaration, initializer}) => {
     const initializerStatement = closestNode(initializer, ts.isStatement);
-    const newProperty = ts.factory.createPropertyDeclaration(
-      cloneModifiers(declaration.modifiers),
-      cloneName(declaration.name),
-      declaration.questionToken,
-      declaration.type,
-      initializer,
-    );
 
     // If the initialization order is being preserved, we have to remove the original
     // declaration and re-declare it. Otherwise we can do the replacement in-place.
     if (preserveInitOrder) {
+      // Preserve comment in the new property since we are removing the entire node.
+      const newProperty = ts.factory.createPropertyDeclaration(
+        declaration.modifiers,
+        declaration.name,
+        declaration.questionToken,
+        declaration.type,
+        initializer,
+      );
+
       tracker.removeNode(declaration, true);
       removedMembers.add(declaration);
       afterInjectCalls.push(
@@ -791,6 +793,16 @@ function applyInternalOnlyChanges(
           printer.printNode(ts.EmitHint.Unspecified, newProperty, declaration.getSourceFile()),
       );
     } else {
+      // Strip comments from the declaration since we are replacing just
+      // the node, not the leading comment.
+      const newProperty = ts.factory.createPropertyDeclaration(
+        cloneModifiers(declaration.modifiers),
+        cloneName(declaration.name),
+        declaration.questionToken,
+        declaration.type,
+        initializer,
+      );
+
       tracker.replaceNode(declaration, newProperty);
     }
 
