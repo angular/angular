@@ -2361,6 +2361,14 @@ describe('R3 template transform', () => {
         `),
         ).toThrowError(/@else block must be last inside the conditional/);
       });
+
+      it('should throw if "as" expression is not a valid identifier', () => {
+        expect(() =>
+          parse(`
+          @if (foo; as foo && bar) {hello}
+        `),
+        ).toThrowError(/"as" expression must be a valid JavaScript identifier/);
+      });
     });
   });
 
