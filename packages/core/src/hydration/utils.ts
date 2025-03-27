@@ -611,8 +611,8 @@ function gatherDeferBlocksByJSActionAttribute(doc: Document): Set<HTMLElement> {
 
 export function appendDeferBlocksToJSActionMap(doc: Document, injector: Injector) {
   const blockMap = gatherDeferBlocksByJSActionAttribute(doc);
+  const jsActionMap = injector.get(JSACTION_BLOCK_ELEMENT_MAP);
   for (let rNode of blockMap) {
-    const jsActionMap = injector.get(JSACTION_BLOCK_ELEMENT_MAP);
     sharedMapFunction(rNode, jsActionMap);
   }
 }
