@@ -37,23 +37,28 @@ describe('toObservable()', () => {
     fixture.detectChanges();
   }
 
-  it('should produce an observable that tracks a signal', async () => {
+  it('should produce an observable that tracks a signal', () => {
     const counter = signal(0);
-    const counterValues = toObservable(counter, {injector}).pipe(take(3), toArray()).toPromise();
+    const values: number[] = [];
+    toObservable(counter, {injector}).subscribe((value) => values.push(value));
 
-    // Initial effect execution, emits 0.
+    expect(values).toEqual([0]);
+
+    // Initial effect execution, emits nothing.
     flushEffects();
+    expect(values).toEqual([0]);
 
     counter.set(1);
     // Emits 1.
     flushEffects();
+    expect(values).toEqual([0, 1]);
 
     counter.set(2);
     counter.set(3);
     // Emits 3 (ignores 2 as it was batched by the effect).
     flushEffects();
 
-    expect(await counterValues).toEqual([0, 1, 3]);
+    expect(values).toEqual([0, 1, 3]);
   });
 
   it('should propagate errors from the signal', () => {
@@ -87,7 +92,7 @@ describe('toObservable()', () => {
     sub.unsubscribe();
   });
 
-  it('monitors the signal even if the Observable is never subscribed', () => {
+  it('does not monitor the signal if the Observable is never subscribed', () => {
     let counterRead = false;
     const counter = computed(() => {
       counterRead = true;
@@ -99,12 +104,12 @@ describe('toObservable()', () => {
     // Simply creating the Observable shouldn't trigger a signal read.
     expect(counterRead).toBeFalse();
 
-    // The signal is read after effects have run.
+    // And no effects should be created which would read the signal.
     flushEffects();
-    expect(counterRead).toBeTrue();
+    expect(counterRead).toBeFalse();
   });
 
-  it('should still monitor the signal if the Observable has no active subscribers', () => {
+  it('should not watch the signal when the Observable has no active subscribers', () => {
     const counter = signal(0);
 
     // Tracks how many reads of `counter()` there have been.
@@ -116,10 +121,8 @@ describe('toObservable()', () => {
 
     const counter$ = toObservable(trackedCounter, {injector});
 
+    // Verify that an effect is created
     const sub = counter$.subscribe();
-    expect(readCount).toBe(0);
-
-    flushEffects();
     expect(readCount).toBe(1);
 
     // Sanity check of the read tracker - updating the counter should cause it to be read again
@@ -131,10 +134,40 @@ describe('toObservable()', () => {
     // Tear down the only subscription.
     sub.unsubscribe();
 
-    // Now, setting the signal still triggers additional reads
+    // Now, setting the signal should not trigger additional reads.
     counter.set(2);
     flushEffects();
-    expect(readCount).toBe(3);
+    expect(readCount).toBe(2);
+  });
+
+  it('should not watch the signal if the first value is an error', () => {
+    let gotError = false;
+    let readCount = 0;
+    const source = signal(0);
+    const alwaysErrors = computed(() => {
+      source();
+      readCount++;
+      throw 'fail';
+    });
+
+    toObservable(alwaysErrors, {injector}).subscribe({
+      next: () => {},
+      error: () => {
+        gotError = true;
+      },
+    });
+
+    expect(gotError).toBeTrue();
+    expect(readCount).toBe(1);
+
+    // Dirty the `alwaysErrors` computed. Also reset the `gotError` flag to validate that the error
+    // is never sent more than once.
+    gotError = false;
+    source.set(1);
+    flushEffects();
+
+    expect(readCount).toBe(1);
+    expect(gotError).toBeFalse();
   });
 
   it('stops monitoring the signal once injector is destroyed', () => {
@@ -148,10 +181,7 @@ describe('toObservable()', () => {
     });
 
     const childInjector = createEnvironmentInjector([], injector);
-    toObservable(trackedCounter, {injector: childInjector});
-
-    expect(readCount).toBe(0);
-
+    toObservable(trackedCounter, {injector: childInjector}).subscribe();
     flushEffects();
     expect(readCount).toBe(1);
 
