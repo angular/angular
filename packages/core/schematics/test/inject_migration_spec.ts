@@ -2221,6 +2221,48 @@ describe('inject migration', () => {
       ]);
     });
 
+    it('should account for doc strings when inlining initializers and combining in initialization order', async () => {
+      writeFile(
+        '/dir.ts',
+        [
+          `import { Directive } from '@angular/core';`,
+          `import { Foo } from 'foo';`,
+          ``,
+          `@Directive()`,
+          `class MyDir {`,
+          `  /** Value of Foo */`,
+          `  private readonly value: number;`,
+          ``,
+          `  /** ID of Foo */`,
+          `  id: string;`,
+          ``,
+          `  constructor(private foo: Foo) {`,
+          `    this.value = this.foo.getValue();`,
+          `    this.id = this.value.toString();`,
+          `  }`,
+          `}`,
+        ].join('\n'),
+      );
+
+      await runInternalMigration();
+
+      expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+        `import { Directive, inject } from '@angular/core';`,
+        `import { Foo } from 'foo';`,
+        ``,
+        `@Directive()`,
+        `class MyDir {`,
+        `  private foo = inject(Foo);`,
+        // The indentation of the members here is slightly off,
+        // but it's not a problem because this code is internal-only.
+        `  /** Value of Foo */`,
+        `private readonly value: number = this.foo.getValue();`,
+        `  /** ID of Foo */`,
+        `id: string = this.value.toString();`,
+        `}`,
+      ]);
+    });
+
     it('should hoist property declarations that were not combined above the inject() calls', async () => {
       writeFile(
         '/dir.ts',
