@@ -598,12 +598,10 @@ export function getParentBlockHydrationQueue(
 function gatherDeferBlocksByJSActionAttribute(doc: Document): Set<HTMLElement> {
   const jsactionNodes = doc.body.querySelectorAll('[jsaction]');
   const blockMap = new Set<HTMLElement>();
+  const eventTypes = [hoverEventNames.join(':;'), interactionEventNames.join(':;')].join('|');
   for (let node of jsactionNodes) {
     const attr = node.getAttribute('jsaction');
     const blockId = node.getAttribute('ngb');
-    const eventTypes = [...hoverEventNames.join(':;'), ...interactionEventNames.join(':;')].join(
-      '|',
-    );
     if (attr?.match(eventTypes) && blockId !== null) {
       blockMap.add(node as HTMLElement);
     }
