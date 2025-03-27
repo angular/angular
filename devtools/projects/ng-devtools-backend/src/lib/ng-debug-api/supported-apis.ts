@@ -24,7 +24,6 @@ export function getSupportedApis(): SupportedApis {
   const routes = ngDebugRoutesApiIsSupported();
 
   return {
-    directiveInspector: true, // At this stage, the directive/component inspector is available in all cases.
     profiler,
     dependencyInjection,
     routes,

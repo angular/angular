@@ -62,7 +62,6 @@ export class DevToolsComponent implements OnInit, OnDestroy {
   readonly angularIsInDevMode = signal(true);
   readonly hydration = signal(false);
   readonly supportedApis = signal<SupportedApis>({
-    directiveInspector: false,
     profiler: false,
     dependencyInjection: false,
     routes: false,

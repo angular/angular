@@ -24,13 +24,12 @@ import {ProfilerComponent} from './profiler/profiler.component';
 import {RouterTreeComponent} from './router-tree/router-tree.component';
 import {TabUpdate} from './tab-update/index';
 
-type Tab = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree';
+type ApiBoundTab = 'Profiler' | 'Router Tree' | 'Injector Tree';
+type Tab = 'Components' | ApiBoundTab;
 
-// Static tabs represent all tabs/APIs that are available upon app initialization.
-const STATIC_TABS: Tab[] = ['Components', 'Profiler', 'Injector Tree'];
+const API_BOUND_TABS: ApiBoundTab[] = ['Profiler', 'Injector Tree'];
 
-const TAB_TO_API: {[key in Tab]: keyof SupportedApis} = {
-  Components: 'directiveInspector',
+const TAB_TO_API: {[key in ApiBoundTab]: keyof SupportedApis} = {
   Profiler: 'profiler',
   'Injector Tree': 'dependencyInjection',
   'Router Tree': 'routes',
@@ -75,11 +74,11 @@ export class DevToolsTabsComponent {
   readonly snapToRoot = signal(false);
 
   readonly tabs = computed<Tab[]>(() => {
-    const supported = this.supportedApis();
-    const tabs: Tab[] = STATIC_TABS.filter((tab) => supported[TAB_TO_API[tab]]);
+    const supportedApis = this.supportedApis();
+    const apiBound: ApiBoundTab[] = API_BOUND_TABS.filter((tab) => supportedApis[TAB_TO_API[tab]]);
+    const tabs: Tab[] = ['Components', ...apiBound];
 
-    // Handle dynamic tabs
-    return supported.routes && this.routerGraphEnabled() && this.routes().length > 0
+    return supportedApis.routes && this.routerGraphEnabled() && this.routes().length > 0
       ? [...tabs, 'Router Tree']
       : tabs;
   });

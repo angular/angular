@@ -242,7 +242,6 @@ export interface InjectorGraphViewQuery {
 }
 
 export interface SupportedApis {
-  directiveInspector: boolean;
   profiler: boolean;
   dependencyInjection: boolean;
   routes: boolean;
