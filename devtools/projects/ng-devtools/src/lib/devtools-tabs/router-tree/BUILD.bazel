@@ -1,5 +1,7 @@
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
 load("//devtools/tools:ng_module.bzl", "ng_module")
+load("//devtools/tools:typescript.bzl", "ts_test_library")
 
 package(default_visibility = ["//:__subpackages__"])
 
@@ -8,18 +10,29 @@ sass_binary(
     src = "router-tree.component.scss",
 )
 
+sass_binary(
+    name = "router_details_row_styles",
+    src = "route-details-row.component.scss",
+    deps = ["//devtools/projects/ng-devtools/src/styles:theme"],
+)
+
 ng_module(
     name = "router-tree",
     srcs = [
+        "route-details-row.component.ts",
         "router-tree.component.ts",
         "router-tree-visualizer.ts",
     ],
     angular_assets = [
         ":router-tree.component.html",
         ":router_tree_styles",
+        ":route-details-row.component.html",
+        ":router_details_row_styles",
     ],
     deps = [
+        "//devtools/projects/ng-devtools/src/lib/application-operations",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tree-visualizer-host",
+        "//devtools/projects/ng-devtools/src/lib/vendor/angular-split",
         "//devtools/projects/protocol",
         "//packages/common",
         "//packages/core",
@@ -27,5 +40,33 @@ ng_module(
         "@npm//@types",
         "@npm//d3",
         "@npm//rxjs",
+    ],
+)
+
+ts_test_library(
+    name = "router_tree_test",
+    srcs = [
+        "route-details-row.component.spec.ts",
+        "router-tree.component.spec.ts",
+    ],
+    visibility = [
+        "//visibility:private",
+    ],
+    deps = [
+        ":router-tree",
+        "//devtools/projects/ng-devtools",
+        "//devtools/projects/protocol",
+        "//packages/common",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/forms",
+        "//packages/platform-browser",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    deps = [
+        ":router_tree_test",
     ],
 )
