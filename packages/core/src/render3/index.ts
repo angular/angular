@@ -84,7 +84,7 @@ export {
   ɵɵelementEnd,
   ɵɵelementStart,
   ɵɵgetCurrentView,
-  ɵɵhostProperty,
+  ɵɵdomProperty,
   ɵɵinjectAttribute,
   ɵɵinvalidFactory,
   ɵɵlistener,

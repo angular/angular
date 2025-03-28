@@ -14,7 +14,7 @@ function kindTest(kind: ir.OpKind): (op: ir.UpdateOp) => boolean {
 }
 
 function kindWithInterpolationTest(
-  kind: ir.OpKind.Attribute | ir.OpKind.Property | ir.OpKind.HostProperty,
+  kind: ir.OpKind.Attribute | ir.OpKind.Property | ir.OpKind.DomProperty,
   interpolation: boolean,
 ): (op: ir.UpdateOp) => boolean {
   return (op: ir.UpdateOp) => {
@@ -70,8 +70,8 @@ const UPDATE_ORDERING: Array<Rule<ir.UpdateOp>> = [
  * Host bindings have their own update ordering.
  */
 const UPDATE_HOST_ORDERING: Array<Rule<ir.UpdateOp>> = [
-  {test: kindWithInterpolationTest(ir.OpKind.HostProperty, true)},
-  {test: kindWithInterpolationTest(ir.OpKind.HostProperty, false)},
+  {test: kindWithInterpolationTest(ir.OpKind.DomProperty, true)},
+  {test: kindWithInterpolationTest(ir.OpKind.DomProperty, false)},
   {test: kindTest(ir.OpKind.Attribute)},
   {test: kindTest(ir.OpKind.StyleMap), transform: keepLast},
   {test: kindTest(ir.OpKind.ClassMap), transform: keepLast},
@@ -91,7 +91,7 @@ const handledOpKinds = new Set([
   ir.OpKind.ClassProp,
   ir.OpKind.Property,
   ir.OpKind.TwoWayProperty,
-  ir.OpKind.HostProperty,
+  ir.OpKind.DomProperty,
   ir.OpKind.Attribute,
 ]);
 

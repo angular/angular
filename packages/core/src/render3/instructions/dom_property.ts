@@ -20,24 +20,21 @@ import {NO_CHANGE} from '../tokens';
 import {loadComponentRenderer, setDomProperty, storePropertyBindingMetadata} from './shared';
 
 /**
- * Update a property on a host element. Only applies to native node properties, not inputs.
+ * Update a DOM property on an element.
  *
- * Operates on the element selected by index via the {@link select} instruction.
- *
- * @param propName Name of property. Because it is going to DOM, this is not subject to
- *        renaming as part of minification.
+ * @param propName Name of property..
  * @param value New value to write.
  * @param sanitizer An optional function used to sanitize the value.
  * @returns This function returns itself so that it may be chained
- * (e.g. `property('name', ctx.name)('title', ctx.title)`)
+ *  (e.g. `domProperty('name', ctx.name)('title', ctx.title)`)
  *
  * @codeGenApi
  */
-export function ɵɵhostProperty<T>(
+export function ɵɵdomProperty<T>(
   propName: string,
   value: T,
   sanitizer?: SanitizerFn | null,
-): typeof ɵɵhostProperty {
+): typeof ɵɵdomProperty {
   const lView = getLView();
   const bindingIndex = nextBindingIndex();
   if (bindingUpdated(lView, bindingIndex, value)) {
@@ -46,9 +43,10 @@ export function ɵɵhostProperty<T>(
     setDomProperty(tNode, lView, propName, value, lView[RENDERER], sanitizer);
     ngDevMode && storePropertyBindingMetadata(tView.data, tNode, propName, bindingIndex);
   }
-  return ɵɵhostProperty;
+  return ɵɵdomProperty;
 }
 
+// TODO(crisbeto): try to fold this into `domProperty`. Main difference is the renderer.
 /**
  * Updates a synthetic host binding (e.g. `[@foo]`) on a component or directive.
  *
