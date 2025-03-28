@@ -409,7 +409,7 @@ export function buildAttributeCompletionTable(
 }
 
 function buildSnippet(insertSnippet: true | undefined, text: string): string | undefined {
-  return insertSnippet ? `${text}="$1"` : undefined;
+  return insertSnippet ? `${text.replace(/\$/gi, '\\$')}="$1"` : undefined;
 }
 
 /**
