@@ -255,7 +255,7 @@ export class SymbolBuilder {
 
   private getDirectiveMeta(
     host: TmplAstTemplate | TmplAstElement,
-    directiveDeclaration: ts.Declaration,
+    directiveDeclaration: ts.ClassDeclaration,
   ): TypeCheckableDirectiveMeta | null {
     let directives = this.typeCheckData.boundTarget.getDirectivesOfNode(host);
 
@@ -279,7 +279,22 @@ export class SymbolBuilder {
       return null;
     }
 
-    return directives.find((m) => m.ref.node === directiveDeclaration) ?? null;
+    debugger;
+    return (
+      directives.find((m) => {
+        if (m.ref.node === directiveDeclaration) {
+          return true;
+        }
+
+        if (ts.isSourceFile(directiveDeclaration.parent)) {
+          return (
+            directiveDeclaration.name && directiveDeclaration.name.text === m.ref.node.name?.text
+          );
+        }
+
+        return false;
+      }) ?? null
+    );
   }
 
   private getDirectiveModule(declaration: ts.ClassDeclaration): ClassDeclaration | null {
