@@ -12,7 +12,7 @@ import {Observable, of} from 'rxjs';
 // #docregion async-validator
 @Injectable({providedIn: 'root'})
 export class UniqueRoleValidator implements AsyncValidator {
-  actorsService = inject(ActorsService);
+  private readonly actorsService = inject(ActorsService);
 
   validate(control: AbstractControl): Observable<ValidationErrors | null> {
     return this.actorsService.isRoleTaken(control.value).pipe(
@@ -35,7 +35,7 @@ export class UniqueRoleValidator implements AsyncValidator {
   ],
 })
 export class UniqueRoleValidatorDirective implements AsyncValidator {
-  validator = inject(UniqueRoleValidator);
+  private readonly validator = inject(UniqueRoleValidator);
 
   validate(control: AbstractControl): Observable<ValidationErrors | null> {
     return this.validator.validate(control);
