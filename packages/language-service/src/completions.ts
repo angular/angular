@@ -904,6 +904,14 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
       // Nothing to do without an element to process.
       return undefined;
     }
+    if (
+      element.endSourceSpan &&
+      isWithin(this.position, element.endSourceSpan) &&
+      // start and end spans are the same for self closing tags
+      element.endSourceSpan.start !== element.startSourceSpan.start
+    ) {
+      return undefined;
+    }
 
     let replacementSpan: ts.TextSpan | undefined = undefined;
     if (
