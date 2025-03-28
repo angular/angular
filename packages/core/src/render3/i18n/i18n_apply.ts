@@ -21,7 +21,7 @@ import {
 } from '../../util/assert';
 import {assertIndexInExpandoRange, assertTIcu} from '../assert';
 import {attachPatchData} from '../context_discovery';
-import {elementPropertyInternal, setElementAttribute} from '../instructions/shared';
+import {setPropertyAndInputs, setElementAttribute} from '../instructions/shared';
 import {
   ELEMENT_MARKER,
   I18nCreateOpCode,
@@ -439,15 +439,13 @@ export function applyUpdateOpCodes(
                     sanitizeFn,
                   );
                 } else {
-                  elementPropertyInternal(
-                    tView,
+                  setPropertyAndInputs(
                     tNodeOrTagName,
                     lView,
                     propName,
                     value,
                     lView[RENDERER],
                     sanitizeFn,
-                    false,
                   );
                 }
                 break;

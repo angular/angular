@@ -14,7 +14,7 @@ import {getCurrentTNode, getLView, getSelectedTNode, getTView, nextBindingIndex}
 import {EventCallback} from '../view/listeners';
 
 import {listenerInternal} from './listener';
-import {elementPropertyInternal, storePropertyBindingMetadata} from './shared';
+import {setPropertyAndInputs, storePropertyBindingMetadata} from './shared';
 
 /**
  * Update a two-way bound property on a selected element.
@@ -44,16 +44,7 @@ export function ɵɵtwoWayProperty<T>(
   if (bindingUpdated(lView, bindingIndex, value)) {
     const tView = getTView();
     const tNode = getSelectedTNode();
-    elementPropertyInternal(
-      tView,
-      tNode,
-      lView,
-      propName,
-      value,
-      lView[RENDERER],
-      sanitizer,
-      false,
-    );
+    setPropertyAndInputs(tNode, lView, propName, value, lView[RENDERER], sanitizer);
     ngDevMode && storePropertyBindingMetadata(tView.data, tNode, propName, bindingIndex);
   }
 
