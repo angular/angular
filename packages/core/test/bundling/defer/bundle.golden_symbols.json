@@ -607,6 +607,7 @@
   "init_namespaces",
   "init_next_context",
   "init_ng_dev_mode",
+  "init_ng_hmr_mode",
   "init_ng_i18n_closure_mode",
   "init_ng_jit_mode",
   "init_ng_module",
