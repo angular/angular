@@ -225,9 +225,6 @@ export function provideClientHydration(
 ): EnvironmentProviders {
   const providers: Provider[] = [];
   const featuresKind = new Set<HydrationFeatureKind>();
-  const hasHttpTransferCacheOptions = featuresKind.has(
-    HydrationFeatureKind.HttpTransferCacheOptions,
-  );
 
   for (const {ɵproviders, ɵkind} of features) {
     featuresKind.add(ɵkind);
@@ -236,6 +233,10 @@ export function provideClientHydration(
       providers.push(ɵproviders);
     }
   }
+
+  const hasHttpTransferCacheOptions = featuresKind.has(
+    HydrationFeatureKind.HttpTransferCacheOptions,
+  );
 
   if (
     typeof ngDevMode !== 'undefined' &&
