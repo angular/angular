@@ -304,7 +304,9 @@ export function getSuperParameters(
           usedParams.add(decl);
         }
       });
-    } else {
+      // Parameters referenced inside callbacks can be used directly
+      // within `super` so don't descend into inline functions.
+    } else if (!isInlineFunction(node)) {
       node.forEachChild(walk);
     }
   });
@@ -422,4 +424,13 @@ function findSuperCall(root: ts.Node): ts.CallExpression | null {
   });
 
   return result;
+}
+
+/** Checks whether a node is an inline function. */
+export function isInlineFunction(
+  node: ts.Node,
+): node is ts.FunctionDeclaration | ts.FunctionExpression | ts.ArrowFunction {
+  return (
+    ts.isFunctionDeclaration(node) || ts.isFunctionExpression(node) || ts.isArrowFunction(node)
+  );
 }
