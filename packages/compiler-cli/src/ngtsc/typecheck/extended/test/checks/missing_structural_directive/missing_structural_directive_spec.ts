@@ -91,6 +91,55 @@ runInEachFileSystem(() => {
           fileName,
           templates: {
             'TestCmp': `<div *foo="exp"></div>`,
+            'BarCmp': '',
+          },
+          source: `
+          export class TestCmp {}
+          export class Foo {}
+
+          class BarCmp{}
+        `,
+          declarations: [
+            {
+              type: 'directive',
+              name: 'Foo',
+              selector: `[foo]`,
+            },
+            {
+              name: 'TestCmp',
+              type: 'directive',
+              selector: `[test-cmp]`,
+              isStandalone: true,
+            },
+            {
+              name: 'BarCmp',
+              type: 'directive',
+              selector: `[bar-cmp]`,
+              isStandalone: true,
+            },
+          ],
+        },
+      ]);
+      const sf = getSourceFileOrError(program, fileName);
+      const component = getClass(sf, 'TestCmp');
+      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [missingStructuralDirectiveCheck],
+        {strictNullChecks: true} /* options */,
+      );
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+      // No diagnostic messages are expected.
+      expect(diags.length).toBe(0);
+    });
+
+    it('should *not* produce a warning for custom structural directives that are imported', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = setup([
+        {
+          fileName,
+          templates: {
+            'TestCmp': `<div *foo="exp"></div>`,
           },
           source: `
           export class TestCmp {}
