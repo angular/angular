@@ -124,6 +124,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     NO_BINDING_TARGET = 315,
     // (undocumented)
+    NO_COMPONENT_FACTORY_FOUND = 917,
+    // (undocumented)
     NO_SUPPORTING_DIFFER_FACTORY = 901,
     // (undocumented)
     OUTPUT_REF_DESTROYED = 953,
