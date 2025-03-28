@@ -264,6 +264,14 @@ describe('AsyncPipe', () => {
     });
   });
 
+  describe('PromiseLike', () => {
+    it('should infer the type from the subscribable', () => {
+      const promiseLike = {then: (resolve) => resolve!({name: 'T'})} as PromiseLike<{name: 'T'}>;
+      // The following line will fail to compile if the type cannot be inferred.
+      const name = pipe.transform(promiseLike)?.name;
+    });
+  });
+
   describe('null', () => {
     it('should return null when given null', () => {
       expect(pipe.transform(null)).toEqual(null);

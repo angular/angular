@@ -24,11 +24,11 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 interface SubscriptionStrategy {
   createSubscription(
-    async: Subscribable<any> | Promise<any>,
+    async: Subscribable<any> | PromiseLike<any>,
     updateLatestValue: any,
     onError: (e: unknown) => void,
-  ): Unsubscribable | Promise<any>;
-  dispose(subscription: Unsubscribable | Promise<any>): void;
+  ): Unsubscribable | PromiseLike<any>;
+  dispose(subscription: Unsubscribable | PromiseLike<any>): void;
 }
 
 class SubscribableStrategy implements SubscriptionStrategy {
@@ -60,14 +60,14 @@ class SubscribableStrategy implements SubscriptionStrategy {
 
 class PromiseStrategy implements SubscriptionStrategy {
   createSubscription(
-    async: Promise<any>,
+    async: PromiseLike<any>,
     updateLatestValue: (v: any) => any,
     onError: (e: unknown) => void,
-  ): Promise<any> {
+  ): PromiseLike<any> {
     return async.then(updateLatestValue, onError);
   }
 
-  dispose(subscription: Promise<any>): void {}
+  dispose(subscription: PromiseLike<any>): void {}
 }
 
 const _promiseStrategy = new PromiseStrategy();
@@ -110,8 +110,8 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
   private _latestValue: any = null;
   private markForCheckOnValueUpdate = true;
 
-  private _subscription: Unsubscribable | Promise<any> | null = null;
-  private _obj: Subscribable<any> | Promise<any> | EventEmitter<any> | null = null;
+  private _subscription: Unsubscribable | PromiseLike<any> | null = null;
+  private _obj: Subscribable<any> | PromiseLike<any> | EventEmitter<any> | null = null;
   private _strategy: SubscriptionStrategy | null = null;
   private readonly applicationErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
 
@@ -136,10 +136,10 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
   // TypeScript has a hard time matching Observable to Subscribable, for more information
   // see https://github.com/microsoft/TypeScript/issues/43643
 
-  transform<T>(obj: Observable<T> | Subscribable<T> | Promise<T>): T | null;
+  transform<T>(obj: Observable<T> | Subscribable<T> | PromiseLike<T>): T | null;
   transform<T>(obj: null | undefined): null;
-  transform<T>(obj: Observable<T> | Subscribable<T> | Promise<T> | null | undefined): T | null;
-  transform<T>(obj: Observable<T> | Subscribable<T> | Promise<T> | null | undefined): T | null {
+  transform<T>(obj: Observable<T> | Subscribable<T> | PromiseLike<T> | null | undefined): T | null;
+  transform<T>(obj: Observable<T> | Subscribable<T> | PromiseLike<T> | null | undefined): T | null {
     if (!this._obj) {
       if (obj) {
         try {
@@ -163,7 +163,7 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
     return this._latestValue;
   }
 
-  private _subscribe(obj: Subscribable<any> | Promise<any> | EventEmitter<any>): void {
+  private _subscribe(obj: Subscribable<any> | PromiseLike<any> | EventEmitter<any>): void {
     this._obj = obj;
     this._strategy = this._selectStrategy(obj);
     this._subscription = this._strategy.createSubscription(
@@ -174,7 +174,7 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
   }
 
   private _selectStrategy(
-    obj: Subscribable<any> | Promise<any> | EventEmitter<any>,
+    obj: Subscribable<any> | PromiseLike<any> | EventEmitter<any>,
   ): SubscriptionStrategy {
     if (ɵisPromise(obj)) {
       return _promiseStrategy;
