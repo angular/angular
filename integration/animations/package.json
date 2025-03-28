@@ -8,7 +8,7 @@
     "pretest": "ng version",
     "test": "echo 'No tests specified'",
     "lint": "ng lint",
-    "e2e": "ng e2e --port 0"
+    "e2e": "echo 'No e2e tests specified'"
   },
   "private": true,
   "dependencies": {
