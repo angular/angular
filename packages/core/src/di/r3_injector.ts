@@ -680,9 +680,7 @@ function hasOnDestroy(value: any): value is OnDestroy {
 }
 
 function couldBeInjectableType(value: any): value is ProviderToken<any> {
-  return (
-    typeof value === 'function' || (typeof value === 'object' && value instanceof InjectionToken)
-  );
+  return typeof value === 'function' || (typeof value === 'object' && value.ɵprov);
 }
 
 function forEachSingleProvider(
