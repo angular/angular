@@ -52,3 +52,34 @@ export function ngDebugDependencyInjectionApiIsSupported(): boolean {
 
   return true;
 }
+
+/**
+ * Checks whether Profiler API is supported within window.ng
+ *
+ * @returns boolean
+ */
+export function ngDebugProfilerApiIsSupported(): boolean {
+  const ng = ngDebugClient();
+
+  if (!ngDebugApiIsSupported(ng, 'ɵsetProfiler')) {
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Checks whether Router API is supported within window.ng
+ *
+ * @returns boolean
+ */
+export function ngDebugRoutesApiIsSupported(): boolean {
+  const ng = ngDebugClient();
+
+  // Currently not available
+  // if (!ngDebugApiIsSupported(ng, 'ɵgetLoadedRoutes')) {
+  //   return false;
+  // }
+
+  return true;
+}
