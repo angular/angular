@@ -83,26 +83,24 @@ export abstract class StateManager {
     return this.rawUrlTree;
   }
 
-  protected createBrowserPath(currentTransition: Navigation): string {
+  protected createBrowserPath({finalUrl, initialUrl, targetBrowserUrl}: Navigation): string {
     const rawUrl =
-      currentTransition.finalUrl !== undefined
-        ? this.urlHandlingStrategy.merge(currentTransition.finalUrl!, currentTransition.initialUrl)
-        : currentTransition.initialUrl;
-    const url = currentTransition.targetBrowserUrl ?? rawUrl;
+      finalUrl !== undefined ? this.urlHandlingStrategy.merge(finalUrl!, initialUrl) : initialUrl;
+    const url = targetBrowserUrl ?? rawUrl;
     const path = url instanceof UrlTree ? this.urlSerializer.serialize(url) : url;
     return path;
   }
 
-  protected commitTransition(transition: Navigation) {
+  protected commitTransition({targetRouterState, finalUrl, initialUrl}: Navigation) {
     // If we are committing the transition after having a final URL and target state, we're updating
     // all pieces of the state. Otherwise, we likely skipped the transition (due to URL handling strategy)
     // and only want to update the rawUrlTree, which represents the browser URL (and doesn't necessarily match router state).
-    if (transition.finalUrl && transition.targetRouterState) {
-      this.currentUrlTree = transition.finalUrl;
-      this.rawUrlTree = this.urlHandlingStrategy.merge(transition.finalUrl, transition.initialUrl);
-      this.routerState = transition.targetRouterState;
+    if (finalUrl && targetRouterState) {
+      this.currentUrlTree = finalUrl;
+      this.rawUrlTree = this.urlHandlingStrategy.merge(finalUrl, initialUrl);
+      this.routerState = targetRouterState;
     } else {
-      this.rawUrlTree = transition.initialUrl;
+      this.rawUrlTree = initialUrl;
     }
   }
 
@@ -127,7 +125,7 @@ export abstract class StateManager {
     };
   }
 
-  protected resetInternalState(navigation: Navigation): void {
+  protected resetInternalState({finalUrl}: Navigation): void {
     this.routerState = this.stateMemento.routerState;
     this.currentUrlTree = this.stateMemento.currentUrlTree;
     // Note here that we use the urlHandlingStrategy to get the reset `rawUrlTree` because it may be
@@ -137,7 +135,7 @@ export abstract class StateManager {
     // when merging, such as the query params so they are not lost on a refresh.
     this.rawUrlTree = this.urlHandlingStrategy.merge(
       this.currentUrlTree,
-      navigation.finalUrl ?? this.rawUrlTree,
+      finalUrl ?? this.rawUrlTree,
     );
   }
 
@@ -241,21 +239,22 @@ export class HistoryStateManager extends StateManager {
     }
   }
 
-  private setBrowserUrl(path: string, transition: Navigation) {
-    if (this.location.isCurrentPathEqualTo(path) || !!transition.extras.replaceUrl) {
+  private setBrowserUrl(path: string, {extras, id}: Navigation) {
+    const {replaceUrl, state} = extras;
+    if (this.location.isCurrentPathEqualTo(path) || !!replaceUrl) {
       // replacements do not update the target page
       const currentBrowserPageId = this.browserPageId;
-      const state = {
-        ...transition.extras.state,
-        ...this.generateNgRouterState(transition.id, currentBrowserPageId),
+      const newState = {
+        ...state,
+        ...this.generateNgRouterState(id, currentBrowserPageId),
       };
-      this.location.replaceState(path, '', state);
+      this.location.replaceState(path, '', newState);
     } else {
-      const state = {
-        ...transition.extras.state,
-        ...this.generateNgRouterState(transition.id, this.browserPageId + 1),
+      const newState = {
+        ...state,
+        ...this.generateNgRouterState(id, this.browserPageId + 1),
       };
-      this.location.go(path, '', state);
+      this.location.go(path, '', newState);
     }
   }
 
