@@ -20,7 +20,7 @@ const CHAIN_COMPATIBILITY = new Map<o.ExternalReference, o.ExternalReference>([
   [R3.elementContainerStart, R3.elementContainerStart],
   [R3.elementEnd, R3.elementEnd],
   [R3.elementStart, R3.elementStart],
-  [R3.hostProperty, R3.hostProperty],
+  [R3.domProperty, R3.domProperty],
   [R3.i18nExp, R3.i18nExp],
   [R3.listener, R3.listener],
   [R3.listener, R3.listener],

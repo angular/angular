@@ -110,7 +110,7 @@ function varsUsedByOp(op: (ir.CreateOp | ir.UpdateOp) & ir.ConsumesVarsTrait): n
   let slots: number;
   switch (op.kind) {
     case ir.OpKind.Property:
-    case ir.OpKind.HostProperty:
+    case ir.OpKind.DomProperty:
     case ir.OpKind.Attribute:
       // All of these bindings use 1 variable slot, plus 1 slot for every interpolated expression,
       // if any.

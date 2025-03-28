@@ -111,7 +111,7 @@ export function ingestHostBinding(
         bindingKind === ir.BindingKind.Attribute,
       )
       .filter((context) => context !== SecurityContext.NONE);
-    ingestHostProperty(job, property, bindingKind, securityContexts);
+    ingestDomProperty(job, property, bindingKind, securityContexts);
   }
   for (const [name, expr] of Object.entries(input.attributes) ?? []) {
     const securityContexts = bindingParser
@@ -127,7 +127,7 @@ export function ingestHostBinding(
 
 // TODO: We should refactor the parser to use the same types and structures for host bindings as
 // with ordinary components. This would allow us to share a lot more ingestion code.
-export function ingestHostProperty(
+export function ingestDomProperty(
   job: HostBindingCompilationJob,
   property: e.ParsedProperty,
   bindingKind: ir.BindingKind,

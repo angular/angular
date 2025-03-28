@@ -118,7 +118,7 @@ export {
   ɵɵFactoryDeclaration,
   ɵɵgetCurrentView,
   ɵɵgetInheritedFactory,
-  ɵɵhostProperty,
+  ɵɵdomProperty,
   ɵɵi18n,
   ɵɵi18nApply,
   ɵɵi18nAttributes,

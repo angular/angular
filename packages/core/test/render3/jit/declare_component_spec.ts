@@ -259,7 +259,7 @@ describe('component declaration jit compilation', () => {
       ],
       hostBindings: functionContaining([
         'return ctx.handleEvent($event)',
-        /hostProperty[^(]*\('foo',ctx\.foo\.prop\)/,
+        /domProperty[^(]*\('foo',ctx\.foo\.prop\)/,
         /attribute[^(]*\('bar',ctx\.bar\.prop\)/,
       ]),
       hostVars: 2,
