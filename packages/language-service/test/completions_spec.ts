@@ -970,6 +970,27 @@ describe('completions', () => {
           expectContain(completions, DisplayInfoKind.EVENT, ['(click)']);
         });
 
+        it('should return event completion for self closing tag', () => {
+          const {templateFile} = setup(`<br />`, ``);
+          templateFile.moveCursorToText(`<br ¦`);
+          const completions = templateFile.getCompletionsAtPosition();
+          expectContain(completions, DisplayInfoKind.EVENT, ['(click)']);
+        });
+
+        it('should not return element completions in end tag', () => {
+          const {templateFile} = setup(`<button ></button>`, ``);
+          templateFile.moveCursorToText(`</¦button>`);
+          const completions = templateFile.getCompletionsAtPosition();
+          expect(completions).not.toBeDefined();
+        });
+
+        it('should not return element completions in between start and end tag', () => {
+          const {templateFile} = setup(`<button></button>`, ``);
+          templateFile.moveCursorToText(`<button>¦</button>`);
+          const completions = templateFile.getCompletionsAtPosition();
+          expect(completions).not.toBeDefined();
+        });
+
         it('should return event completion with empty parens', () => {
           const {templateFile} = setup(`<button ()></button>`, ``);
           templateFile.moveCursorToText(`<button (¦)>`);
