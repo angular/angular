@@ -17,7 +17,7 @@ import {
   Router,
   withDisabledInitialNavigation,
   withViewTransitions,
-} from '@angular/router';
+} from '../index';
 
 describe('view transitions', () => {
   if (isNode) {

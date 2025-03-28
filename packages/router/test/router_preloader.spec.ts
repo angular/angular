@@ -26,11 +26,15 @@ import {
   RouterPreloader,
   ROUTES,
   withPreloading,
-} from '@angular/router';
+  Route,
+  RouteConfigLoadEnd,
+  RouteConfigLoadStart,
+  Router,
+  RouterModule,
+} from '../index';
 import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
 import {catchError, delay, filter, switchMap, take} from 'rxjs/operators';
 
-import {Route, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouterModule} from '../index';
 import {provideRouter} from '../src/provide_router';
 import {
   getLoadedComponent,

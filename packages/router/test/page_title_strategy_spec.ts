@@ -20,8 +20,8 @@ import {
   RouterStateSnapshot,
   TitleStrategy,
   withRouterConfig,
-} from '@angular/router';
-import {RouterTestingHarness} from '@angular/router/testing';
+} from '../index';
+import {RouterTestingHarness} from '../testing';
 
 describe('title strategy', () => {
   describe('DefaultTitleStrategy', () => {

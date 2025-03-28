@@ -24,7 +24,7 @@ import {
   NavigationCancellationCode,
   RouterModule,
   ResolveFn,
-} from '@angular/router/src';
+} from '../../src';
 import {map} from 'rxjs/operators';
 import {EMPTY, Observer, Observable, of} from 'rxjs';
 import {By} from '@angular/platform-browser/src/dom/debug/by';

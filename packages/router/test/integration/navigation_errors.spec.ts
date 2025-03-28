@@ -32,7 +32,7 @@ import {
   NavigationCancel,
   NavigationCancellationCode,
 } from '../../src';
-import {RouterTestingHarness} from '@angular/router/testing';
+import {RouterTestingHarness} from '../../testing';
 import {
   createRoot,
   RootCmp,

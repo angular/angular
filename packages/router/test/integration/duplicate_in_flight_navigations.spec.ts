@@ -17,7 +17,7 @@ import {
   withRouterConfig,
   NavigationStart,
   GuardsCheckEnd,
-} from '@angular/router/src';
+} from '../../index';
 import {createRoot, SimpleCmp, advance, RootCmp, BlankCmp} from './integration_helpers';
 
 export function duplicateInFlightNavigationsIntegrationSuite() {

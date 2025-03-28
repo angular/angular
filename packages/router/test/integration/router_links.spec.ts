@@ -9,7 +9,7 @@ import {Component} from '@angular/core';
 import {Location} from '@angular/common';
 import {fakeAsync, TestBed, inject, ComponentFixture} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
-import {Router} from '@angular/router/src';
+import {Router} from '../../src';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {
   advance,
