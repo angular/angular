@@ -17,11 +17,7 @@ import {
 } from '../state';
 import {NO_CHANGE} from '../tokens';
 
-import {
-  elementPropertyInternal,
-  loadComponentRenderer,
-  storePropertyBindingMetadata,
-} from './shared';
+import {loadComponentRenderer, setDomProperty, storePropertyBindingMetadata} from './shared';
 
 /**
  * Update a property on a host element. Only applies to native node properties, not inputs.
@@ -47,7 +43,7 @@ export function ɵɵhostProperty<T>(
   if (bindingUpdated(lView, bindingIndex, value)) {
     const tView = getTView();
     const tNode = getSelectedTNode();
-    elementPropertyInternal(tView, tNode, lView, propName, value, lView[RENDERER], sanitizer, true);
+    setDomProperty(tNode, lView, propName, value, lView[RENDERER], sanitizer);
     ngDevMode && storePropertyBindingMetadata(tView.data, tNode, propName, bindingIndex);
   }
   return ɵɵhostProperty;
@@ -86,7 +82,7 @@ export function ɵɵsyntheticHostProperty<T>(
     const tNode = getSelectedTNode();
     const currentDef = getCurrentDirectiveDef(tView.data);
     const renderer = loadComponentRenderer(currentDef, tNode, lView);
-    elementPropertyInternal(tView, tNode, lView, propName, value, renderer, sanitizer, true);
+    setDomProperty(tNode, lView, propName, value, renderer, sanitizer);
     ngDevMode && storePropertyBindingMetadata(tView.data, tNode, propName, bindingIndex);
   }
   return ɵɵsyntheticHostProperty;

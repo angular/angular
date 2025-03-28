@@ -50,6 +50,7 @@ import {
   LViewFlags,
   RENDERER,
   TData,
+  TVIEW,
   TView,
 } from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
@@ -236,35 +237,51 @@ function mapPropName(name: string): string {
   return name;
 }
 
-export function elementPropertyInternal<T>(
-  tView: TView,
+export function setPropertyAndInputs<T>(
   tNode: TNode,
   lView: LView,
   propName: string,
   value: T,
   renderer: Renderer,
   sanitizer: SanitizerFn | null | undefined,
-  nativeOnly: boolean,
 ): void {
   ngDevMode && assertNotSame(value, NO_CHANGE as any, 'Incoming value should never be NO_CHANGE.');
+  const tView = lView[TVIEW];
+  const hasSetInput = setAllInputsForProperty(tNode, tView, lView, propName, value);
 
-  if (!nativeOnly) {
-    const hasSetInput = setAllInputsForProperty(tNode, tView, lView, propName, value);
-
-    if (hasSetInput) {
-      isComponentHost(tNode) && markDirtyIfOnPush(lView, tNode.index);
-      ngDevMode && setNgReflectProperties(lView, tView, tNode, propName, value);
-      return; // Stop propcessing if we've matched at least one input.
-    }
+  if (hasSetInput) {
+    isComponentHost(tNode) && markDirtyIfOnPush(lView, tNode.index);
+    ngDevMode && setNgReflectProperties(lView, tView, tNode, propName, value);
+    return; // Stop propcessing if we've matched at least one input.
   }
 
+  setDomProperty(tNode, lView, propName, value, renderer, sanitizer);
+}
+
+/**
+ * Sets a DOM property on a specific node.
+ * @param tNode TNode on which to set the value.
+ * @param lView View in which the node is located.
+ * @param propName Name of the property.
+ * @param value Value to set on the property.
+ * @param renderer Renderer to use when setting the property.
+ * @param sanitizer Function used to sanitize the value before setting it.
+ */
+export function setDomProperty<T>(
+  tNode: TNode,
+  lView: LView,
+  propName: string,
+  value: T,
+  renderer: Renderer,
+  sanitizer: SanitizerFn | null | undefined,
+) {
   if (tNode.type & TNodeType.AnyRNode) {
     const element = getNativeByTNode(tNode, lView) as RElement | RComment;
     propName = mapPropName(propName);
 
     if (ngDevMode) {
       validateAgainstEventProperties(propName);
-      if (!isPropertyValid(element, propName, tNode.value, tView.schemas)) {
+      if (!isPropertyValid(element, propName, tNode.value, lView[TVIEW].schemas)) {
         handleUnknownPropertyError(propName, tNode.value, tNode.type, lView);
       }
     }
@@ -276,7 +293,7 @@ export function elementPropertyInternal<T>(
   } else if (tNode.type & TNodeType.AnyContainer) {
     // If the node is a container and the property didn't
     // match any of the inputs or schemas we should throw.
-    if (ngDevMode && !matchingSchemas(tView.schemas, tNode.value)) {
+    if (ngDevMode && !matchingSchemas(lView[TVIEW].schemas, tNode.value)) {
       handleUnknownPropertyError(propName, tNode.value, tNode.type, lView);
     }
   }
