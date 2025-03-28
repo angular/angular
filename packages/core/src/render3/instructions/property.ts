@@ -12,7 +12,7 @@ import {LView, RENDERER, TView} from '../interfaces/view';
 import {getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
 
 import {
-  elementPropertyInternal,
+  setPropertyAndInputs,
   setAllInputsForProperty,
   storePropertyBindingMetadata,
 } from './shared';
@@ -45,16 +45,7 @@ export function ɵɵproperty<T>(
   if (bindingUpdated(lView, bindingIndex, value)) {
     const tView = getTView();
     const tNode = getSelectedTNode();
-    elementPropertyInternal(
-      tView,
-      tNode,
-      lView,
-      propName,
-      value,
-      lView[RENDERER],
-      sanitizer,
-      false,
-    );
+    setPropertyAndInputs(tNode, lView, propName, value, lView[RENDERER], sanitizer);
     ngDevMode && storePropertyBindingMetadata(tView.data, tNode, propName, bindingIndex);
   }
   return ɵɵproperty;

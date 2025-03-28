@@ -747,7 +747,7 @@ export function classMapInterpolate(
   );
 }
 
-export function hostProperty(
+export function domProperty(
   name: string,
   expression: o.Expression,
   sanitizer: o.Expression | null,
@@ -757,7 +757,7 @@ export function hostProperty(
   if (sanitizer !== null) {
     args.push(sanitizer);
   }
-  return call(Identifiers.hostProperty, args, sourceSpan);
+  return call(Identifiers.domProperty, args, sourceSpan);
 }
 
 export function syntheticHostProperty(

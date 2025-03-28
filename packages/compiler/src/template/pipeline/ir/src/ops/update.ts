@@ -27,7 +27,7 @@ import {
   TRAIT_CONSUMES_VARS,
   TRAIT_DEPENDS_ON_SLOT_CONTEXT,
 } from '../traits';
-import type {HostPropertyOp} from './host';
+import type {DomPropertyOp} from './host';
 import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
 
 /**
@@ -47,7 +47,7 @@ export type UpdateOp =
   | AdvanceOp
   | VariableOp<UpdateOp>
   | BindingOp
-  | HostPropertyOp
+  | DomPropertyOp
   | ConditionalOp
   | I18nExpressionOp
   | I18nApplyOp

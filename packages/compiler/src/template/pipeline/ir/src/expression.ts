@@ -1099,7 +1099,7 @@ export function transformExpressionsInOp(
       }
       break;
     case OpKind.Property:
-    case OpKind.HostProperty:
+    case OpKind.DomProperty:
     case OpKind.Attribute:
       if (op.expression instanceof Interpolation) {
         transformExpressionsInInterpolation(op.expression, transform, flags);

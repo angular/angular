@@ -339,7 +339,7 @@ export class Identifiers {
   static pipeBind4: o.ExternalReference = {name: 'ɵɵpipeBind4', moduleName: CORE};
   static pipeBindV: o.ExternalReference = {name: 'ɵɵpipeBindV', moduleName: CORE};
 
-  static hostProperty: o.ExternalReference = {name: 'ɵɵhostProperty', moduleName: CORE};
+  static domProperty: o.ExternalReference = {name: 'ɵɵdomProperty', moduleName: CORE};
 
   static property: o.ExternalReference = {name: 'ɵɵproperty', moduleName: CORE};
 
