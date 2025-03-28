@@ -7,7 +7,7 @@
  */
 
 import ts from 'typescript';
-import {isAccessedViaThis, parameterDeclaresProperty} from './analysis';
+import {isAccessedViaThis, isInlineFunction, parameterDeclaresProperty} from './analysis';
 
 /** Property that is a candidate to be combined. */
 interface CombineCandidate {
@@ -299,11 +299,7 @@ function isInsideInlineFunction(startNode: ts.Node, boundary: ts.Node): boolean 
       return false;
     }
 
-    if (
-      ts.isFunctionDeclaration(current) ||
-      ts.isFunctionExpression(current) ||
-      ts.isArrowFunction(current)
-    ) {
+    if (isInlineFunction(current)) {
       return true;
     }
 
