@@ -280,12 +280,8 @@ export class Router {
     // already patch onPopState, so location change callback will
     // run into ngZone
     this.nonRouterCurrentEntryChangeSubscription ??=
-      this.stateManager.registerNonRouterCurrentEntryChangeListener((url, state) => {
-        // The `setTimeout` was added in #12160 and is likely to support Angular/AngularJS
-        // hybrid apps.
-        setTimeout(() => {
-          this.navigateToSyncWithBrowser(url, 'popstate', state);
-        }, 0);
+      this.stateManager.registerNonRouterCurrentEntryChangeListener((url, state, source) => {
+        this.navigateToSyncWithBrowser(url, source, state);
       });
   }
 
