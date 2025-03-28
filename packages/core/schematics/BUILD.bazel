@@ -47,6 +47,7 @@ rollup_bundle(
         "//packages/core/schematics/ng-generate/self-closing-tags-migration:index.ts": "self-closing-tags-migration",
         "//packages/core/schematics/migrations/inject-flags:index.ts": "inject-flags",
         "//packages/core/schematics/migrations/test-bed-get:index.ts": "test-bed-get",
+        "//packages/core/schematics/migrations/http-xhr-backend:index.ts": "http-xhr-backend",
     },
     format = "cjs",
     link_workspace_root = True,
@@ -58,6 +59,7 @@ rollup_bundle(
     deps = [
         "//packages/core/schematics/migrations/inject-flags",
         "//packages/core/schematics/migrations/test-bed-get",
+        "//packages/core/schematics/migrations/http-xhr-backend",
         "//packages/core/schematics/ng-generate/cleanup-unused-imports",
         "//packages/core/schematics/ng-generate/control-flow-migration",
         "//packages/core/schematics/ng-generate/inject-migration",
