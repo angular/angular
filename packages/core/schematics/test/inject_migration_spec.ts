@@ -1835,6 +1835,45 @@ describe('inject migration', () => {
     ]);
   });
 
+  it('should handle super parameter used in shorthand assignment', async () => {
+    writeFile(
+      '/dir.ts',
+      [
+        `import { Directive } from '@angular/core';`,
+        `import { Service } from './service';`,
+        `import { Parent } from './parent';`,
+        ``,
+        `@Directive()`,
+        `export class MyDir extends Parent {`,
+        `  constructor(private service: Service) {`,
+        `    super({service});`,
+        `  }`,
+        `}`,
+      ].join('\n'),
+    );
+
+    await runMigration();
+
+    expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+      `import { Directive, inject } from '@angular/core';`,
+      `import { Service } from './service';`,
+      `import { Parent } from './parent';`,
+      ``,
+      `@Directive()`,
+      `export class MyDir extends Parent {`,
+      `  private service: Service;`,
+      ``,
+      `  constructor() {`,
+      `    const service = inject(Service);`,
+      ``,
+      `    super({service});`,
+      `  `,
+      `    this.service = service;`,
+      `  }`,
+      `}`,
+    ]);
+  });
+
   describe('internal-only behavior', () => {
     function runInternalMigration() {
       return runMigration({_internalCombineMemberInitializers: true});
