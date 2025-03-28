@@ -11,7 +11,6 @@ import {
   afterRender,
   ClassProvider,
   Component,
-  createEnvironmentInjector,
   Directive,
   ElementRef,
   inject,
@@ -44,8 +43,6 @@ import {
   InjectorProfilerEventType,
   ProviderConfiguredEvent,
   setInjectorProfiler,
-  injectorProfiler,
-  InjectorProfilerContext,
 } from '../../src/render3/debug/injector_profiler';
 import {getNodeInjectorLView, NodeInjector} from '../../src/render3/di';
 import {
@@ -106,7 +103,7 @@ describe('setProfiler', () => {
     });
   });
 
-  afterEach(() => setInjectorProfiler(null));
+  afterAll(() => setInjectorProfiler(null));
 
   it('should emit DI events when a component contains a provider and injects it', () => {
     class MyService {}
@@ -385,70 +382,6 @@ describe('setProfiler', () => {
   });
 });
 
-describe('profiler activation and removal', () => {
-  class SomeClass {}
-
-  const fakeContext: InjectorProfilerContext = {
-    injector: Injector.create({providers: []}),
-    token: SomeClass,
-  };
-
-  const fakeEvent: InjectorCreatedInstanceEvent = {
-    type: InjectorProfilerEventType.InstanceCreatedByInjector,
-    context: fakeContext,
-    instance: {value: new SomeClass()},
-  };
-
-  it('should allow adding and removing multiple profilers', () => {
-    const events: string[] = [];
-    const r1 = setInjectorProfiler((e) => events.push('P1: ' + e.type));
-    const r2 = setInjectorProfiler((e) => events.push('P2: ' + e.type));
-
-    injectorProfiler(fakeEvent);
-    expect(events).toEqual(['P1: 1', 'P2: 1']);
-
-    r1();
-    injectorProfiler(fakeEvent);
-    expect(events).toEqual(['P1: 1', 'P2: 1', 'P2: 1']);
-
-    r2();
-    injectorProfiler(fakeEvent);
-    expect(events).toEqual(['P1: 1', 'P2: 1', 'P2: 1']);
-  });
-
-  it('should not add / remove the same profiler twice', () => {
-    const events: string[] = [];
-    const p1 = (e: InjectorProfilerEvent) => events.push('P1: ' + e.type);
-    const r1 = setInjectorProfiler(p1);
-    const r2 = setInjectorProfiler(p1);
-
-    injectorProfiler(fakeEvent);
-    expect(events).toEqual(['P1: 1']);
-
-    r1();
-    injectorProfiler(fakeEvent);
-    expect(events).toEqual(['P1: 1']);
-
-    // subsequent removals should be noop
-    r1();
-    r2();
-  });
-
-  it('should clear all profilers when passing null', () => {
-    const events: string[] = [];
-    setInjectorProfiler((e) => events.push('P1: ' + e.type));
-    setInjectorProfiler((e) => events.push('P2: ' + e.type));
-
-    injectorProfiler(fakeEvent);
-    expect(events).toEqual(['P1: 1', 'P2: 1']);
-
-    // clear all profilers
-    setInjectorProfiler(null);
-    injectorProfiler(fakeEvent);
-    expect(events).toEqual(['P1: 1', 'P2: 1']);
-  });
-});
-
 describe('getInjectorMetadata', () => {
   it('should be able to determine injector type and name', fakeAsync(() => {
     class MyServiceA {}
@@ -554,7 +487,7 @@ describe('getInjectorMetadata', () => {
 
 describe('getInjectorProviders', () => {
   beforeEach(() => setupFrameworkInjectorProfiler());
-  afterEach(() => setInjectorProfiler(null));
+  afterAll(() => setInjectorProfiler(null));
 
   it('should be able to get the providers from a components injector', () => {
     class MyService {}
@@ -1020,7 +953,7 @@ describe('getInjectorProviders', () => {
 
 describe('getDependenciesFromInjectable', () => {
   beforeEach(() => setupFrameworkInjectorProfiler());
-  afterEach(() => setInjectorProfiler(null));
+  afterAll(() => setInjectorProfiler(null));
 
   it('should be able to determine which injector dependencies come from', fakeAsync(() => {
     class MyService {}
@@ -1311,7 +1244,7 @@ describe('getDependenciesFromInjectable', () => {
 
 describe('getInjectorResolutionPath', () => {
   beforeEach(() => setupFrameworkInjectorProfiler());
-  afterEach(() => setInjectorProfiler(null));
+  afterAll(() => setInjectorProfiler(null));
 
   it('should be able to inspect injector hierarchy structure', fakeAsync(() => {
     class MyServiceA {}
