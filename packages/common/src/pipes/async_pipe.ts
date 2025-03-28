@@ -136,14 +136,10 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
   // TypeScript has a hard time matching Observable to Subscribable, for more information
   // see https://github.com/microsoft/TypeScript/issues/43643
 
-  transform<T>(obj: Observable<T> | Subscribable<T> | Promise<T> | PromiseLike<T>): T | null;
+  transform<T>(obj: Observable<T> | Subscribable<T> | PromiseLike<T>): T | null;
   transform<T>(obj: null | undefined): null;
-  transform<T>(
-    obj: Observable<T> | Subscribable<T> | Promise<T> | PromiseLike<T> | null | undefined,
-  ): T | null;
-  transform<T>(
-    obj: Observable<T> | Subscribable<T> | Promise<T> | PromiseLike<T> | null | undefined,
-  ): T | null {
+  transform<T>(obj: Observable<T> | Subscribable<T> | PromiseLike<T> | null | undefined): T | null;
+  transform<T>(obj: Observable<T> | Subscribable<T> | PromiseLike<T> | null | undefined): T | null {
     if (!this._obj) {
       if (obj) {
         try {
