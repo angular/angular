@@ -14,7 +14,7 @@ import {QuestionControlService} from './question-control.service';
   imports: [DynamicFormQuestionComponent, ReactiveFormsModule],
 })
 export class DynamicFormComponent {
-  qcs = inject(QuestionControlService);
+  private readonly qcs = inject(QuestionControlService);
 
   questions = input<QuestionBase<string>[] | null>([]);
   form: FormGroup = this.qcs.toFormGroup(this.questions() as QuestionBase<string>[]);
