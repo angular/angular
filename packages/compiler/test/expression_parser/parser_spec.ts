@@ -117,6 +117,11 @@ describe('parser', () => {
       checkAction('(1 + 2) * 3');
     });
 
+    it('should parse in expressions', () => {
+      checkAction(`'key' in obj`, `"key" in obj`);
+      checkAction(`('key' in obj) && true`, `("key" in obj) && true`);
+    });
+
     it('should ignore comments in expressions', () => {
       checkAction('a //comment', 'a');
     });
