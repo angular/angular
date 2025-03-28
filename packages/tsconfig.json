@@ -30,7 +30,7 @@
     },
     "rootDir": ".",
     "inlineSourceMap": true,
-    "lib": ["es2020", "dom", "dom.iterable"],
+    "lib": ["es2022", "dom", "dom.iterable"],
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "types": ["angular"]
