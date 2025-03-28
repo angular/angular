@@ -161,7 +161,7 @@ export class ProductListComponent implements OnInit {
     // Access query parameters reactively
     this.route.queryParams.subscribe(params => {
       const sort = params['sort'] || 'price';
-      const page = params['page'] || 1;
+      const page = Number(params['page']) || 1;
       this.loadProducts(sort, page);
     });
   }
