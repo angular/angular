@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
 import {stringify} from '../util/stringify';
 
@@ -13,7 +14,12 @@ import type {ComponentFactory} from './component_factory';
 
 class _NullComponentFactoryResolver implements ComponentFactoryResolver {
   resolveComponentFactory<T>(component: {new (...args: any[]): T}): ComponentFactory<T> {
-    throw Error(`No component factory found for ${stringify(component)}.`);
+    throw new RuntimeError(
+      RuntimeErrorCode.NO_COMPONENT_FACTORY_FOUND,
+      typeof ngDevMode !== 'undefined' &&
+        ngDevMode &&
+        `No component factory found for ${stringify(component)}.`,
+    );
   }
 }
 
