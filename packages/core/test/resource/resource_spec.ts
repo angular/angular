@@ -8,6 +8,7 @@
 
 import {
   ApplicationRef,
+  computed,
   createEnvironmentInjector,
   EnvironmentInjector,
   Injector,
@@ -68,6 +69,7 @@ class MockEchoBackend<T> extends MockBackend<T, T> {
 
 class MockResponseCountingBackend extends MockBackend<number, string> {
   counter = 0;
+
   override prepareResponse(request: number) {
     return request + ':' + this.counter++;
   }
@@ -141,8 +143,14 @@ describe('resource', () => {
     expect(echoResource.status()).toBe(ResourceStatus.Error);
     expect(echoResource.isLoading()).toBeFalse();
     expect(echoResource.hasValue()).toBeFalse();
-    expect(echoResource.value()).toEqual(undefined);
-    expect(echoResource.error()).toBe('Something went wrong....');
+    expect(() => echoResource.value()).toThrow(
+      new Error('Resource failed to load', {
+        cause: new Error('Unknown error', {cause: 'Something went wrong....'}),
+      }),
+    );
+    expect(echoResource.error()).toEqual(
+      new Error('Unknown error', {cause: 'Something went wrong....'}),
+    );
   });
 
   it('should expose errors on reload', async () => {
@@ -176,8 +184,73 @@ describe('resource', () => {
     expect(echoResource.status()).toBe(ResourceStatus.Error);
     expect(echoResource.isLoading()).toBeFalse();
     expect(echoResource.hasValue()).toBeFalse();
-    expect(echoResource.value()).toEqual(undefined);
+    expect(() => echoResource.value()).toThrow(
+      new Error('Resource failed to load', {cause: new Error('KO')}),
+    );
     expect(echoResource.error()).toEqual(Error('KO'));
+
+    counter.update((value) => value + 1);
+    TestBed.flushEffects();
+    await backend.flush();
+
+    expect(echoResource.status()).toBe(ResourceStatus.Resolved);
+    expect(echoResource.isLoading()).toBeFalse();
+    expect(echoResource.hasValue()).toBeTrue();
+    expect(echoResource.value()).toEqual('ok');
+    expect(echoResource.error()).toBe(undefined);
+  });
+
+  it('should update computed signals', async () => {
+    const backend = new MockEchoBackend();
+    const counter = signal(0);
+    const echoResource = resource({
+      request: () => ({counter: counter()}),
+      loader: (params) => {
+        if (params.request.counter % 2 === 0) {
+          return Promise.resolve(params.request.counter);
+        } else {
+          throw new Error('KO');
+        }
+      },
+      injector: TestBed.inject(Injector),
+    });
+    const computedValue = computed(() => {
+      if (!echoResource.hasValue()) {
+        return -1;
+      }
+      return echoResource.value();
+    });
+
+    TestBed.flushEffects();
+    await backend.flush();
+
+    expect(echoResource.status()).toBe(ResourceStatus.Resolved);
+    expect(echoResource.hasValue()).toBeTrue();
+    expect(echoResource.value()).toEqual(0);
+    expect(computedValue()).toEqual(0);
+    expect(echoResource.error()).toBe(undefined);
+
+    counter.update((value) => value + 1);
+    TestBed.flushEffects();
+    await backend.flush();
+
+    expect(echoResource.status()).toBe(ResourceStatus.Error);
+    expect(echoResource.hasValue()).toBeFalse();
+    expect(() => echoResource.value()).toThrow(
+      new Error('Resource failed to load', {cause: new Error('KO')}),
+    );
+    expect(computedValue()).toEqual(-1);
+    expect(echoResource.error()).toEqual(Error('KO'));
+
+    counter.update((value) => value + 1);
+    TestBed.flushEffects();
+    await backend.flush();
+
+    expect(echoResource.status()).toBe(ResourceStatus.Resolved);
+    expect(echoResource.hasValue()).toBeTrue();
+    expect(echoResource.value()).toEqual(2);
+    expect(computedValue()).toEqual(2);
+    expect(echoResource.error()).toBe(undefined);
   });
 
   it('should respond to a request that changes while loading', async () => {
@@ -224,7 +297,7 @@ describe('resource', () => {
     expect(res.value()).toBe(1);
   });
 
-  it('should return a default value if provided', async () => {
+  it('should throw an error when getting a value even when provided with a default value', async () => {
     const DEFAULT: string[] = [];
     const request = signal(0);
     const res = resource({
@@ -249,7 +322,9 @@ describe('resource', () => {
     request.set(2);
     await TestBed.inject(ApplicationRef).whenStable();
     expect(res.error()).not.toBeUndefined();
-    expect(res.value()).toBe(DEFAULT);
+    expect(() => res.value()).toThrow(
+      new Error('Resource failed to load', {cause: new Error('err')}),
+    );
   });
 
   it('should _not_ load if the request resolves to undefined', () => {
@@ -605,18 +680,18 @@ describe('resource', () => {
   it('should error via error()', async () => {
     const appRef = TestBed.inject(ApplicationRef);
     const res = resource({
-      stream: async () => signal({error: 'fail'}),
+      stream: async () => signal({error: new Error('fail')}),
       injector: TestBed.inject(Injector),
     });
 
     await appRef.whenStable();
     expect(res.status()).toBe(ResourceStatus.Error);
-    expect(res.error()).toBe('fail');
+    expect(res.error()).toEqual(new Error('fail'));
   });
 
   it('should transition across streamed states', async () => {
     const appRef = TestBed.inject(ApplicationRef);
-    const stream = signal<{value: number} | {error: unknown}>({value: 1});
+    const stream = signal<{value: number} | {error: Error}>({value: 1});
 
     const res = resource({
       stream: async () => stream,
@@ -630,8 +705,8 @@ describe('resource', () => {
     stream.set({value: 3});
     expect(res.value()).toBe(3);
 
-    stream.set({error: 'fail'});
-    expect(res.error()).toBe('fail');
+    stream.set({error: new Error('fail')});
+    expect(res.error()).toEqual(new Error('fail'));
 
     stream.set({value: 4});
     expect(res.value()).toBe(4);
@@ -639,7 +714,7 @@ describe('resource', () => {
 
   it('should not accept new values/errors after a request is cancelled', async () => {
     const appRef = TestBed.inject(ApplicationRef);
-    const stream = signal<{value: number} | {error: unknown}>({value: 0});
+    const stream = signal<{value: number} | {error: Error}>({value: 0});
     const request = signal(1);
     const res = resource({
       request,
@@ -663,7 +738,7 @@ describe('resource', () => {
     // The previous set/error functions should no longer result in changes to the resource.
     stream.set({value: 2});
     expect(res.value()).toBe(undefined);
-    stream.set({error: 'fail'});
+    stream.set({error: new Error('fail')});
     expect(res.value()).toBe(undefined);
   });
 
