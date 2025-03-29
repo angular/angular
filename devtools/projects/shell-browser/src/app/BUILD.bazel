@@ -35,6 +35,7 @@ ng_module(
         "//packages/core",
         "//packages/platform-browser",
         "//packages/platform-browser/animations",
+        "@npm//@angular/cdk",
         "@npm//@angular/material",
         "@npm//rxjs",
     ],
@@ -85,6 +86,7 @@ ts_library(
         "//devtools/projects/ng-devtools",
         "//devtools/projects/protocol",
         "//packages/core",
+        "@npm//@angular/cdk",
         "@npm//@types",
     ],
 )

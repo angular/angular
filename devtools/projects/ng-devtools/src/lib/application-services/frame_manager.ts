@@ -30,6 +30,14 @@ export class FrameManager {
     return this._frames().get(selectedFrameId) ?? null;
   });
 
+  readonly topLevelFrameIsActive = computed(() => {
+    return this._selectedFrameId() === TOP_LEVEL_FRAME_ID;
+  });
+
+  readonly activeFrameHasUniqueUrl = computed(() => {
+    return this.frameHasUniqueUrl(this.selectedFrame());
+  });
+
   static initialize(inspectedWindowTabIdTestOnly?: number | null) {
     const manager = new FrameManager();
     manager.initialize(inspectedWindowTabIdTestOnly);
@@ -104,7 +112,7 @@ export class FrameManager {
     this._messageBus.emit('enableFrameConnection', [frame.id, this._inspectedWindowTabId]);
   }
 
-  frameHasUniqueUrl(frame: Frame | null): boolean {
+  private frameHasUniqueUrl(frame: Frame | null): boolean {
     if (frame === null) {
       return false;
     }
