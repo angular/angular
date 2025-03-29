@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CurrencyPipe, DecimalPipe, PercentPipe} from '@angular/common';
-import localeAr from '@angular/common/locales/ar';
-import localeDa from '@angular/common/locales/da';
-import localeDeAt from '@angular/common/locales/de-AT';
-import localeEn from '@angular/common/locales/en';
-import localeEsUS from '@angular/common/locales/es-US';
-import localeFr from '@angular/common/locales/fr';
+import {CurrencyPipe, DecimalPipe, PercentPipe} from '../../index';
+import localeAr from '../../locales/ar';
+import localeDa from '../../locales/da';
+import localeDeAt from '../../locales/de-AT';
+import localeEn from '../../locales/en';
+import localeEsUS from '../../locales/es-US';
+import localeFr from '../../locales/fr';
 import {Component, ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 

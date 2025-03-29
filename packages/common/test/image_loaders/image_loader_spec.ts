@@ -11,13 +11,13 @@ import {
   ImageLoader,
   ImageLoaderConfig,
   provideNetlifyLoader,
-} from '@angular/common/src/directives/ng_optimized_image';
-import {provideCloudflareLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/cloudflare_loader';
-import {provideCloudinaryLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/cloudinary_loader';
-import {provideImageKitLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/imagekit_loader';
-import {provideImgixLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/imgix_loader';
-import {isValidPath} from '@angular/common/src/directives/ng_optimized_image/url';
-import {RuntimeErrorCode} from '@angular/common/src/errors';
+} from '../../src/directives/ng_optimized_image';
+import {provideCloudflareLoader} from '../../src/directives/ng_optimized_image/image_loaders/cloudflare_loader';
+import {provideCloudinaryLoader} from '../../src/directives/ng_optimized_image/image_loaders/cloudinary_loader';
+import {provideImageKitLoader} from '../../src/directives/ng_optimized_image/image_loaders/imagekit_loader';
+import {provideImgixLoader} from '../../src/directives/ng_optimized_image/image_loaders/imgix_loader';
+import {isValidPath} from '../../src/directives/ng_optimized_image/url';
+import {RuntimeErrorCode} from '../../src/errors';
 import {createEnvironmentInjector, EnvironmentInjector} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 

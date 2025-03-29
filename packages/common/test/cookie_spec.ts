@@ -14,7 +14,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {parseCookieValue} from '@angular/common/src/cookie';
+import {parseCookieValue} from '../src/cookie';
 
 describe('cookies', () => {
   it('parses cookies', () => {

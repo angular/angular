@@ -12,8 +12,8 @@ import {
   Location,
   LocationStrategy,
   PlatformLocation,
-} from '@angular/common';
-import {MockPlatformLocation} from '@angular/common/testing';
+} from '../../index';
+import {MockPlatformLocation} from '../../testing';
 import {Inject, InjectionToken, ModuleWithProviders, NgModule, Optional} from '@angular/core';
 import {UpgradeModule} from '@angular/upgrade/static';
 

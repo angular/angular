@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule} from '@angular/common';
-import {NgComponentOutlet} from '@angular/common/src/directives/ng_component_outlet';
+import {CommonModule} from '../../index';
+import {NgComponentOutlet} from '../../src/directives/ng_component_outlet';
 import {
   Compiler,
   Component,
