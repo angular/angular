@@ -64,6 +64,13 @@ describe('HttpRequest', () => {
       const req = new HttpRequest('GET', TEST_URL);
       expect(req.responseType).toBe('json');
     });
+    it('should allow setting keepalive option', () => {
+      const req = new HttpRequest('GET', '/test', {keepalive: true});
+      expect(req.keepalive).toBe(true);
+
+      const req2 = new HttpRequest('GET', '/test', {keepalive: false});
+      expect(req2.keepalive).toBe(false);
+    });
   });
   describe('clone() copies the request', () => {
     const headers = new HttpHeaders({
@@ -77,6 +84,7 @@ describe('HttpRequest', () => {
       responseType: 'text',
       withCredentials: true,
       transferCache: true,
+      keepalive: true,
     });
     it('in the base case', () => {
       const clone = req.clone();
@@ -89,6 +97,7 @@ describe('HttpRequest', () => {
 
       expect(clone.context).toBe(context);
       expect(clone.transferCache).toBe(true);
+      expect(clone.keepalive).toBe(true);
     });
     it('and updates the url', () => {
       expect(req.clone({url: '/changed'}).url).toBe('/changed');
@@ -105,6 +114,9 @@ describe('HttpRequest', () => {
     });
     it('and updates the transferCache', () => {
       expect(req.clone({transferCache: false}).transferCache).toBe(false);
+    });
+    it('and updates the keepalive', () => {
+      expect(req.clone({keepalive: false}).keepalive).toBe(false);
     });
   });
   describe('content type detection', () => {

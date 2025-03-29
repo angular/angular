@@ -88,7 +88,6 @@ export class FetchBackend implements HttpBackend {
   ): Promise<void> {
     const init = this.createRequestInit(request);
     let response;
-
     try {
       // Run fetch outside of Angular zone.
       // This is due to Node.js fetch implementation (Undici) which uses a number of setTimeouts to check if
@@ -281,7 +280,8 @@ export class FetchBackend implements HttpBackend {
       body: req.serializeBody(),
       method: req.method,
       headers,
-      credentials,
+      credentials, 
+      keepalive : req.keepalive
     };
   }
 
