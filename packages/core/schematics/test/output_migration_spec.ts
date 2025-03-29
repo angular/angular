@@ -69,4 +69,46 @@ describe('output migration', () => {
     const content = tree.readContent('/index.ts').replace(/\s+/g, ' ');
     expect(content).toContain('readonly out = output<string>();');
   });
+
+  it('should keep type also without initializer', async () => {
+    writeFile(
+      '/foo.ts',
+      [
+        `import { Component, EventEmitter, OnInit, Output } from '@angular/core';`,
+        ``,
+        `@Directive()`,
+        `class MyDir {`,
+        `  constructor() {}`,
+        `@Output() eventMovement: EventEmitter<IResponse> = new EventEmitter();`,
+        `}`,
+      ].join('\n'),
+    );
+
+    await runMigration();
+
+    const content = tree.readContent('/foo.ts').replace(/\s+/g, ' ');
+    expect(content).toContain('readonly eventMovement = output<IResponse>();');
+  });
+
+  it('should keep type also without initializer and with alias', async () => {
+    writeFile(
+      '/foo.ts',
+      [
+        `import { Component, EventEmitter, OnInit, Output } from '@angular/core';`,
+        ``,
+        `@Component({`,
+          `template: 'Hi foo'`,
+        `})`,
+        `class MyDir {`,
+        `  constructor() {}`,
+        `@Output('customEvent') eventMovement: EventEmitter<IResponse> = new EventEmitter();`,
+        `}`,
+      ].join('\n'),
+    );
+
+    await runMigration();
+
+    const content = tree.readContent('/foo.ts').replace(/\s+/g, ' ');
+    expect(content).toContain('readonly eventMovement = output<IResponse>({ alias: \'customEvent\' });');
+  });
 });

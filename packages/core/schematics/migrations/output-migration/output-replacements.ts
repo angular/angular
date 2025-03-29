@@ -28,10 +28,16 @@ export function calculateDeclarationReplacement(
   aliasParam?: string,
 ): Replacement {
   const sf = node.getSourceFile();
-  const payloadTypes =
-    node.initializer !== undefined && ts.isNewExpression(node.initializer)
-      ? node.initializer?.typeArguments
-      : undefined;
+
+  let payloadTypes: ts.NodeArray<ts.TypeNode> | undefined;
+
+  if (node.initializer && ts.isNewExpression(node.initializer)) {
+    payloadTypes = node.initializer.typeArguments;
+  }
+
+  if (!payloadTypes && node.type && ts.isTypeReferenceNode(node.type) && node.type.typeArguments) {
+    payloadTypes = ts.factory.createNodeArray(node.type.typeArguments.map(arg => arg as ts.TypeNode));
+  }
 
   const outputCall = ts.factory.createCallExpression(
     ts.factory.createIdentifier('output'),
