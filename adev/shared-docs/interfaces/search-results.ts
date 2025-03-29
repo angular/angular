@@ -54,3 +54,14 @@ export interface Hierarchy {
   lvl5: string | null;
   lvl6: string | null;
 }
+
+/** Parsed & Structured search results */
+export interface SearchResultItem {
+  type: 'doc' | 'code';
+  labelHtml: string | null;
+  subLabelHtml: string | null;
+  url: string;
+
+  id: string;
+  category: string | null;
+}
