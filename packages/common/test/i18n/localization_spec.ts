@@ -188,7 +188,7 @@ describe('l10n', () => {
           const l10n = new NgLocaleLocalization('ro');
           // 2 -> 'few'
           getPluralCategory(2, ['one'], l10n);
-        }).toThrowError('No plural message found for value "2"');
+        }).toThrowError('NG02308: No plural message found for value "2"');
       });
     });
   });

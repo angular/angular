@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Inject, Injectable, LOCALE_ID} from '@angular/core';
+import {Inject, Injectable, LOCALE_ID, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {getLocalePluralCase, Plural} from './locale_data_api';
+import {RuntimeErrorCode} from '../errors';
 
 /**
  * @publicApi
@@ -49,7 +50,10 @@ export function getPluralCategory(
     return 'other';
   }
 
-  throw new Error(`No plural message found for value "${value}"`);
+  throw new RuntimeError(
+    RuntimeErrorCode.NO_PLURAL_MESSAGE_FOUND,
+    ngDevMode && `No plural message found for value "${value}"`,
+  );
 }
 
 /**
