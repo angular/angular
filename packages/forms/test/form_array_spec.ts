@@ -14,8 +14,8 @@ import {
   FormGroup,
   ValidationErrors,
   ValidatorFn,
-} from '@angular/forms';
-import {Validators} from '@angular/forms/src/validators';
+} from '../index';
+import {Validators} from '../src/validators';
 import {of} from 'rxjs';
 
 import {asyncValidator} from './util';

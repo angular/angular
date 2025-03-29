@@ -16,7 +16,7 @@ import {
   ValidationErrors,
   Validators,
   ValueChangeEvent,
-} from '@angular/forms';
+} from '../index';
 import {of} from 'rxjs';
 
 import {
