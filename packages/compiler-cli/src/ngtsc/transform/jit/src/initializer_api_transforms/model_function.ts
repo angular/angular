@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Decorator} from '@angular/compiler-cli/src/ngtsc/reflection';
+import {Decorator} from '../../../../reflection';
 import ts from 'typescript';
 
 import {isAngularDecorator, tryParseSignalModelMapping} from '../../../../annotations';
