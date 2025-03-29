@@ -292,6 +292,91 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should not optimize away declareLet if expression is using a pipe",
+      "inputFiles": [
+        "let_with_pipe_optimization.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "let_with_pipe_optimization_template.js",
+              "generated": "let_with_pipe_optimization.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should handle an @let used only directly inside i18n",
+      "inputFiles": [
+        "let_in_i18n.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "let_in_i18n_template.js",
+              "generated": "let_in_i18n.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should handle an @let referenced inside a child view inside i18n",
+      "inputFiles": [
+        "let_in_child_view_inside_i18n.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "let_in_child_view_inside_i18n_template.js",
+              "generated": "let_in_child_view_inside_i18n.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should handle an @let referenced inside i18n and in a child view",
+      "inputFiles": [
+        "let_in_i18n_and_child_view.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "let_in_i18n_and_child_view_template.js",
+              "generated": "let_in_i18n_and_child_view.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should handle an @let preceded by an element with i18n",
+      "inputFiles": [
+        "let_preceded_by_i18n.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "let_preceded_by_i18n_template.js",
+              "generated": "let_preceded_by_i18n.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }
