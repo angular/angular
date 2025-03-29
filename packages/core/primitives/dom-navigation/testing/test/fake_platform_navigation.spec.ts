@@ -434,15 +434,19 @@ describe('navigation', () => {
       const handlerFinished = new Promise<undefined>((resolve) => {
         handlerFinishedResolve = resolve;
       });
+      let precommitHandlerFinishedResolve!: () => void;
+      const precommitHandlerFinished = new Promise<void>((resolve) => {
+        precommitHandlerFinishedResolve = resolve;
+      });
       locals.pendingInterceptOptions.push({
         handler: () => handlerFinished,
-        commit: 'after-transition',
+        precommitHandler: () => precommitHandlerFinished,
       });
       const {committed, finished} = locals.navigation.navigate('/test');
       expect(locals.navigateEvents.length).toBe(1);
       await expectAsync(committed).toBePending();
       expect(locals.navigation.currentEntry.url).toBe('https://test.com/');
-      locals.navigateEvents[0].commit();
+      precommitHandlerFinishedResolve();
       const committedEntry = await committed;
       expect(committedEntry).toEqual(
         jasmine.objectContaining({
@@ -467,8 +471,7 @@ describe('navigation', () => {
         handlerFinishedResolve = resolve;
       });
       locals.pendingInterceptOptions.push({
-        handler: () => handlerFinished,
-        commit: 'after-transition',
+        precommitHandler: () => handlerFinished,
       });
       const {committed, finished} = locals.navigation.navigate('/test');
       expect(locals.navigateEvents.length).toBe(1);
@@ -491,72 +494,25 @@ describe('navigation', () => {
       await expectAsync(finished).toBeResolvedTo(committedEntry);
     });
 
-    it('deferred commit during dispatch throws', async () => {
-      locals.pendingInterceptOptions.push({
-        commit: 'after-transition',
-      });
-      let called = false;
-      locals.setExtraNavigateCallback((event: FakeNavigateEvent) => {
-        expect(() => {
-          called = true;
-          event.commit();
-        }).toThrowError(DOMException);
-      });
-      const {finished} = locals.navigation.navigate('/test');
-      expect(locals.navigateEvents.length).toBe(1);
-      const navigateEvent = locals.navigateEvents[0];
-      navigateEvent.commit();
-      await finished;
-      expect(called).toBeTrue();
-    });
-
-    it('deferred commit with immediate throws', async () => {
-      locals.pendingInterceptOptions.push({});
-      const {finished} = locals.navigation.navigate('/test');
-      expect(locals.navigateEvents.length).toBe(1);
-      const navigateEvent = locals.navigateEvents[0];
-      expect(() => {
-        navigateEvent.commit();
-      }).toThrowError(DOMException);
-      await finished;
-    });
-
-    it('deferred commit twice throws', async () => {
-      let handlerFinishedResolve!: (value: Promise<undefined> | undefined) => void;
-      const handlerFinished = new Promise<undefined>((resolve) => {
-        handlerFinishedResolve = resolve;
-      });
-      locals.pendingInterceptOptions.push({
-        handler: () => handlerFinished,
-        commit: 'after-transition',
-      });
-      const {committed, finished} = locals.navigation.navigate('/test');
-      expect(locals.navigateEvents.length).toBe(1);
-      const navigateEvent = locals.navigateEvents[0];
-      await expectAsync(committed).toBePending();
-      expect(locals.navigation.currentEntry.url).toBe('https://test.com/');
-      navigateEvent.commit();
-      expect(() => {
-        navigateEvent.commit();
-      }).toThrowError(DOMException);
-      handlerFinishedResolve(undefined);
-      await finished;
-    });
-
     it('deferred commit resolves on finished', async () => {
-      let handlerFinishedResolve!: (value: Promise<undefined> | undefined) => void;
-      const handlerFinished = new Promise<undefined>((resolve) => {
+      let handlerFinishedResolve!: () => void;
+      let precommitHandlerResolve!: () => void;
+      const handlerFinished = new Promise<void>((resolve) => {
         handlerFinishedResolve = resolve;
+      });
+      const precommitHandlerFinished = new Promise<void>((resolve) => {
+        precommitHandlerResolve = resolve;
       });
       locals.pendingInterceptOptions.push({
         handler: () => handlerFinished,
-        commit: 'after-transition',
+        precommitHandler: () => precommitHandlerFinished,
       });
       const {committed, finished} = locals.navigation.navigate('/test');
       expect(locals.navigateEvents.length).toBe(1);
       await expectAsync(committed).toBePending();
       expect(locals.navigation.currentEntry.url).toBe('https://test.com/');
-      handlerFinishedResolve(undefined);
+      precommitHandlerResolve();
+      handlerFinishedResolve();
       const committedEntry = await committed;
       expect(committedEntry).toEqual(
         jasmine.objectContaining({
