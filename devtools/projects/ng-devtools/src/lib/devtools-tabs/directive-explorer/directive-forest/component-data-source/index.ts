@@ -46,6 +46,12 @@ const getId = (node: IndexedNode) => {
     .sort((a, b) => {
       return a - b;
     });
+  if (node.hydration && node.hydration.status === 'hydration-boundary') {
+    return node.hydration.id;
+  } else if (node.hydration && node.hydration.status === 'dehydrated') {
+    return node.position.join('-');
+  }
+
   return prefix + '-' + dirIds.join('-');
 };
 

@@ -16,15 +16,81 @@ import {ComponentTreeNode} from '../interfaces';
 import {ngDebugClient} from '../ng-debug-api/ng-debug-api';
 import {isCustomElement} from '../utils';
 
+type HydrationInfo = ReturnType<
+  FrameworkAgnosticGlobalUtils['ɵgetIncrementalHydrationInfo']
+> | null;
+
 const extractViewTree = (
   domNode: Node | Element,
+  hydrationBoundaries: Map<string, HydrationBoundary>,
   result: ComponentTreeNode[],
+  hydrationInfo: HydrationInfo | undefined,
   getComponent?: FrameworkAgnosticGlobalUtils['getComponent'],
   getDirectives?: FrameworkAgnosticGlobalUtils['getDirectives'],
   getDirectiveMetadata?: FrameworkAgnosticGlobalUtils['getDirectiveMetadata'],
 ): ComponentTreeNode[] => {
   // Ignore DOM Node if it came from a different frame. Use instanceof Node to check this.
   if (!(domNode instanceof Node)) {
+    return result;
+  }
+
+  // Dehydrated nodes are not component/directive yet
+  // They are regular DOM nodes attached to a hydration boundary "ngb"
+  if (hydrationInfo?.dehydratedNodes.has(domNode as Element)) {
+    const blockId = (domNode as Element).getAttribute('ngb')!;
+    if (!hydrationBoundaries.has(blockId)) {
+      const siblingNodes = [...(domNode.parentElement?.childNodes ?? [])];
+      const nghPattern = 'ngh=';
+      const hydrationBoundaryNode = siblingNodes.find(
+        (node) => node.nodeType == Node.COMMENT_NODE && node.textContent?.includes(nghPattern),
+      )!;
+
+      const hydratedInfo = hydrationInfo.boundariesInfo.get(blockId) ?? {
+        idle: false,
+        immediate: false,
+        viewport: false,
+        timer: null,
+        hover: false,
+        interaction: false,
+      };
+
+      const deferedTreeNode: ComponentTreeNode = {
+        children: [],
+        component: null,
+        directives: [],
+        element: '@defer',
+        nativeElement: hydrationBoundaryNode,
+        hydration: {id: blockId, status: 'hydration-boundary', hydrate: hydratedInfo},
+      };
+
+      hydrationBoundaries.set(blockId, {tree: deferedTreeNode.children});
+      result.push(deferedTreeNode);
+    }
+
+    const hydrationBoundaryNode = hydrationBoundaries.get(blockId)?.tree;
+    if (hydrationBoundaryNode) {
+      const deferedTreeNode: ComponentTreeNode = {
+        children: [],
+        component: null,
+        directives: [],
+        element: domNode.nodeName.toLowerCase(),
+        nativeElement: domNode,
+        hydration: {status: 'dehydrated'},
+      };
+      hydrationBoundaryNode.push(deferedTreeNode);
+
+      domNode.childNodes.forEach((node) => {
+        extractViewTree(
+          node,
+          hydrationBoundaries,
+          deferedTreeNode.children,
+          hydrationInfo,
+          getComponent,
+          getDirectives,
+          getDirectiveMetadata,
+        );
+      });
+    }
     return result;
   }
 
@@ -61,19 +127,29 @@ const extractViewTree = (
     result.push(componentTreeNode);
   }
   if (componentTreeNode.component || componentTreeNode.directives.length) {
-    domNode.childNodes.forEach((node) =>
+    domNode.childNodes.forEach((node) => {
       extractViewTree(
         node,
+        hydrationBoundaries,
         componentTreeNode.children,
+        hydrationInfo,
         getComponent,
         getDirectives,
         getDirectiveMetadata,
-      ),
-    );
+      );
+    });
   } else {
-    domNode.childNodes.forEach((node) =>
-      extractViewTree(node, result, getComponent, getDirectives, getDirectiveMetadata),
-    );
+    domNode.childNodes.forEach((node) => {
+      extractViewTree(
+        node,
+        hydrationBoundaries,
+        result,
+        hydrationInfo,
+        getComponent,
+        getDirectives,
+        getDirectiveMetadata,
+      );
+    });
   }
   return result;
 };
@@ -95,6 +171,10 @@ function hydrationStatus(node: HydrationNode): HydrationStatus {
   }
 }
 
+interface HydrationBoundary {
+  tree: ComponentTreeNode[];
+}
+
 export class RTreeStrategy {
   supports(): boolean {
     return (['getDirectiveMetadata', 'getComponent'] as const).every(
@@ -102,14 +182,24 @@ export class RTreeStrategy {
     );
   }
 
-  build(element: Element): ComponentTreeNode[] {
+  build(appRootElement: Element): ComponentTreeNode[] {
     // We want to start from the root element so that we can find components which are attached to
     // the application ref and which host elements have been inserted with DOM APIs.
-    while (element.parentElement) {
-      element = element.parentElement;
+    let topMostElement = appRootElement;
+    while (topMostElement.parentElement) {
+      topMostElement = topMostElement.parentElement;
     }
 
     const ng = ngDebugClient();
-    return extractViewTree(element, [], ng.getComponent, ng.getDirectives, ng.getDirectiveMetadata);
+    const hydrationInfo = ng.ɵgetIncrementalHydrationInfo?.(appRootElement);
+    return extractViewTree(
+      topMostElement,
+      new Map(),
+      [],
+      hydrationInfo,
+      ng.getComponent,
+      ng.getDirectives,
+      ng.getDirectiveMetadata,
+    );
   }
 }

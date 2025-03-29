@@ -486,6 +486,8 @@ function serializeHydrateTriggers(
     DeferBlockTrigger.Immediate,
     DeferBlockTrigger.Viewport,
     DeferBlockTrigger.Timer,
+    DeferBlockTrigger.Interaction,
+    DeferBlockTrigger.Hover,
   ]);
   let triggers: (DeferBlockTrigger | SerializedTriggerDetails)[] = [];
   for (let [trigger, details] of triggerMap) {

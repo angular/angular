@@ -595,7 +595,7 @@ export function getParentBlockHydrationQueue(
   return {parentBlockPromise, hydrationQueue};
 }
 
-function gatherDeferBlocksByJSActionAttribute(doc: Document): Set<HTMLElement> {
+export function gatherDeferBlocksByJSActionAttribute(doc: Document): Set<HTMLElement> {
   const jsactionNodes = doc.body.querySelectorAll('[jsaction]');
   const blockMap = new Set<HTMLElement>();
   const eventTypes = [hoverEventNames.join(':;'), interactionEventNames.join(':;')].join('|');
@@ -680,6 +680,8 @@ function createBlockSummary(blockInfo: SerializedDeferBlock): BlockSummary {
       immediate: hasHydrateTrigger(blockInfo, DeferBlockTrigger.Immediate),
       timer: getHydrateTimerTrigger(blockInfo),
       viewport: hasHydrateTrigger(blockInfo, DeferBlockTrigger.Viewport),
+      hover: hasHydrateTrigger(blockInfo, DeferBlockTrigger.Hover),
+      interaction: hasHydrateTrigger(blockInfo, DeferBlockTrigger.Interaction),
     },
   };
 }
@@ -755,5 +757,20 @@ export function verifySsrContentsIntegrity(doc: Document): void {
         'was produced during server side rendering. Make sure that there are no optimizations ' +
         'that remove comment nodes from HTML enabled on your CDN. Angular hydration ' +
         'relies on HTML produced by the server, including whitespaces and comment nodes.',
+  );
+}
+
+export function hydrationBoundariesInfo(injector: Injector) {
+  const blockData = processBlockData(injector);
+
+  return new Map(
+    [...blockData.entries()].map(([blockId, blockSummary]: [string, BlockSummary]) => {
+      return [
+        blockId,
+        {
+          ...blockSummary.hydrate,
+        },
+      ];
+    }),
   );
 }

@@ -26,7 +26,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import {DevToolsNode, ElementPosition, Events, MessageBus} from 'protocol';
+import {DevToolsNode, ElementPosition, Events, HydrationStatus, MessageBus} from 'protocol';
 
 import {TabUpdate} from '../../tab-update/index';
 
@@ -190,6 +190,32 @@ export class DirectiveForestComponent {
     this.selectedNode = null;
     this.parents = [];
     this.setParents.emit(null);
+  }
+
+  hydrateOn(hydration: HydrationStatus): string {
+    if (hydration?.status === 'hydration-boundary') {
+      const triggers = [];
+      if (hydration.hydrate.idle) {
+        triggers.push('idle');
+      }
+      if (hydration.hydrate.immediate) {
+        triggers.push('immediate');
+      }
+      if (hydration.hydrate.viewport) {
+        triggers.push('viewport');
+      }
+      if (hydration.hydrate.timer) {
+        triggers.push(`timer(${hydration.hydrate.timer}ms)`);
+      }
+      if (hydration.hydrate.hover) {
+        triggers.push('hover');
+      }
+      if (hydration.hydrate.interaction) {
+        triggers.push('interaction');
+      }
+      return `hydrate on ${triggers.join(', ')}`;
+    }
+    return '';
   }
 
   private _reselectNodeOnUpdate(): void {

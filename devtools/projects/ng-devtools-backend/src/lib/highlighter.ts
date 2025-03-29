@@ -56,7 +56,7 @@ function createOverlay(color: RgbColor): {overlay: HTMLElement; overlayContent: 
   return {overlay, overlayContent};
 }
 
-export function findComponentAndHost(el: Node | undefined): {
+export function findComponentAndHost(el: Element | undefined): {
   component: any;
   host: HTMLElement | null;
 } {
@@ -64,6 +64,11 @@ export function findComponentAndHost(el: Node | undefined): {
   if (!el) {
     return {component: null, host: null};
   }
+  const dehydratedNodes = ng.ɵgetIncrementalHydrationInfo?.(el).dehydratedNodes ?? new Set();
+  if (dehydratedNodes.has(el)) {
+    return {component: null, host: null};
+  }
+
   while (el) {
     const component = el instanceof HTMLElement && ng.getComponent!(el);
     if (component) {
@@ -82,12 +87,12 @@ export function getDirectiveName(dir: Type<unknown> | undefined | null): string 
   return dir ? dir.constructor.name : 'unknown';
 }
 
-export function highlightSelectedElement(el: Node): void {
+export function highlightSelectedElement(el: Element): void {
   unHighlight();
   selectedElementOverlay = addHighlightForElement(el);
 }
 
-export function highlightHydrationElement(el: Node, status: HydrationStatus) {
+export function highlightHydrationElement(el: Element, status: HydrationStatus) {
   let overlay: HTMLElement | null = null;
   if (status?.status === 'skipped') {
     overlay = addHighlightForElement(el, COLORS.grey, status?.status);
@@ -137,7 +142,7 @@ export function inDoc(node: any): boolean {
 }
 
 function addHighlightForElement(
-  el: Node,
+  el: Element,
   color: RgbColor = COLORS.blue,
   overlayType?: NonNullable<HydrationStatus>['status'],
 ): HTMLElement | null {

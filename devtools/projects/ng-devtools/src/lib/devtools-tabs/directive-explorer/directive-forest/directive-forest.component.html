@@ -39,10 +39,16 @@
         }
         <span class="element-name" [class.angular-element]="isElement(node)">{{ node.name }}</span>
 
+        @if (hydration?.status === 'hydration-boundary') {
+          <span class="console-reference">
+            {{hydrateOn(hydration)}}
+          </span>
+        }
+
         @if (node.directives) {
           <span class="dir-names">[{{ node.directives }}]</span>
         }
-        @if (isSelected(node)) {
+        @if (isSelected(node) && !hydration) {
           <span class="console-reference"> == $ng0 </span>
         }
 
@@ -53,6 +59,14 @@
         @switch (hydration?.status) {
           @case ('hydrated') {
             <mat-icon matTooltip="Hydrated" class="hydration">water_drop</mat-icon>
+          }
+          @case ('dehydrated') {
+            <mat-icon matTooltip="Dehydrated" class="hydration skipped">pending</mat-icon>
+          }
+          @case ('hydration-boundary') {
+            <mat-icon matTooltip="Hydration boundary" class="hydration skipped"
+              >data_object</mat-icon
+            >
           }
           @case ('skipped') {
             <mat-icon matTooltip="Hydration skipped" class="hydration skipped"

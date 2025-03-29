@@ -285,7 +285,14 @@ export interface DehydratedIcuData {
  */
 export interface BlockSummary {
   data: SerializedDeferBlock;
-  hydrate: {idle: boolean; immediate: boolean; viewport: boolean; timer: number | null};
+  hydrate: {
+    idle: boolean;
+    immediate: boolean;
+    viewport: boolean;
+    timer: number | null;
+    hover: boolean;
+    interaction: boolean;
+  };
 }
 
 /**

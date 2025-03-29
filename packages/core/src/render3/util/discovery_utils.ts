@@ -8,6 +8,7 @@
 
 import {ChangeDetectionStrategy} from '../../change_detection/constants';
 import {Injector} from '../../di/injector';
+import {hydrationBoundariesInfo} from '../../hydration/utils';
 import {ViewEncapsulation} from '../../metadata/view';
 import {assertLView} from '../assert';
 import {
@@ -222,6 +223,16 @@ export function getDirectives(node: Node): {}[] {
   // The `directives` in this case are a named array called `LComponentView`. Clone the
   // result so we don't expose an internal data structure in the user's console.
   return context.directives === null ? [] : [...context.directives];
+}
+
+export function getIncrementalHydrationInfo(rootElement: Element) {
+  const injector = getInjector(rootElement);
+  const boundariesInfo = hydrationBoundariesInfo(injector);
+
+  return {
+    boundariesInfo,
+    dehydratedNodes: new Set(document.body.querySelectorAll('[jsaction]')),
+  };
 }
 
 /** The framework used to author a particular application or component. */

@@ -444,7 +444,10 @@ export function serializeInjector(injector: Injector): Omit<SerializedInjector, 
 
   if (metadata.type === 'element') {
     const source = metadata.source as HTMLElement;
-    const name = stripUnderscore(elementToDirectiveNames(source)[0]);
+
+    const directiveNames = elementToDirectiveNames(source);
+    const name = '';
+    stripUnderscore(directiveNames[0] ?? '');
 
     return {type: 'element', name, providers};
   }

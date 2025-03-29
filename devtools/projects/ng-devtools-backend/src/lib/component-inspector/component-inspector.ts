@@ -140,11 +140,11 @@ export class ComponentInspector {
  */
 function findNodesForHydrationOverlay(
   forest: ComponentTreeNode[],
-): {node: Node; status: HydrationStatus}[] {
+): {node: Element; status: HydrationStatus}[] {
   return forest.flatMap((node) => {
     if (node?.hydration?.status) {
       // We highlight first level
-      return {node: node.nativeElement!, status: node.hydration};
+      return {node: node.nativeElement! as Element, status: node.hydration};
     }
     if (node.children.length) {
       return findNodesForHydrationOverlay(node.children);
@@ -155,11 +155,11 @@ function findNodesForHydrationOverlay(
 
 function findErrorNodesForHydrationOverlay(
   forest: ComponentTreeNode[],
-): {node: Node; status: HydrationStatus}[] {
+): {node: Element; status: HydrationStatus}[] {
   return forest.flatMap((node) => {
     if (node?.hydration?.status === 'mismatched') {
       // We highlight first level
-      return {node: node.nativeElement!, status: node.hydration};
+      return {node: node.nativeElement! as Element, status: node.hydration};
     }
     if (node.children.length) {
       return findNodesForHydrationOverlay(node.children);

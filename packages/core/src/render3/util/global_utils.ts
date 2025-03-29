@@ -17,6 +17,7 @@ import {
   DirectiveDebugMetadata,
   getComponent,
   getContext,
+  getIncrementalHydrationInfo,
   getDirectiveMetadata,
   getDirectives,
   getHostElement,
@@ -70,6 +71,7 @@ const globalUtilsFunctions = {
   'ɵsetProfiler': setProfiler,
   'ɵgetSignalGraph': getSignalGraph,
   'ɵgetDeferBlocks': getDeferBlocks,
+  'ɵgetIncrementalHydrationInfo': getIncrementalHydrationInfo,
 
   'getDirectiveMetadata': getDirectiveMetadata,
   'getComponent': getComponent,

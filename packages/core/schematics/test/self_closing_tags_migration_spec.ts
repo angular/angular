@@ -104,4 +104,36 @@ describe('self-closing-tags migration', () => {
       '  -> Migrated 1 components to self-closing tags in 1 component files.',
     );
   });
+
+  it('should handle elements within a defer block', async () => {
+    writeFile(
+      '/app.component.ts',
+      `
+      import {Component} from '@angular/core';
+      @Component({ 
+       imports: [MyCmp],
+        template: \`
+          @for (category of categories(); track category.id; let i = $index) {
+            @defer (on immediate; hydrate on hover) {
+              <my-cmp></my-cmp>
+            } @placeholder {
+              <my-placeholder></my-placeholder>
+            }
+          }
+
+        \`
+      })
+      export class Cmp {}
+      `,
+    );
+
+    await runMigration();
+
+    const content = tree.readContent('/app.component.ts').replace(/\s+/g, ' ');
+    expect(content).toContain('<my-cmp />');
+    expect(content).toContain('<my-placeholder />');
+    expect(logs.pop()).toBe(
+      '  -> Migrated 2 components to self-closing tags in 1 component files.',
+    );
+  });
 });

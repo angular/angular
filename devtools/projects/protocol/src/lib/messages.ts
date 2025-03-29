@@ -29,11 +29,24 @@ export interface ComponentType {
 
 export type HydrationStatus =
   | null
-  | {status: 'hydrated' | 'skipped'}
+  | {status: 'hydrated' | 'skipped' | 'dehydrated'}
   | {
       status: 'mismatched';
       expectedNodeDetails: string | null;
       actualNodeDetails: string | null;
+    }
+  | {
+      status: 'hydration-boundary';
+      id: string;
+      // defer: 'idle' | 'interaction' | 'hover' | 'timer' | 'when';
+      hydrate: {
+        idle: boolean;
+        immediate: boolean;
+        viewport: boolean;
+        timer: number | null;
+        hover: boolean;
+        interaction: boolean;
+      };
     };
 
 export interface DevToolsNode<DirType = DirectiveType, CmpType = ComponentType> {
