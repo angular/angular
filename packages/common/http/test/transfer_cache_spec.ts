@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT} from '@angular/common';
+import {DOCUMENT} from '../../index';
 import {ApplicationRef, Component, Injectable, PLATFORM_ID} from '@angular/core';
 import {makeStateKey, TransferState} from '@angular/core/src/transfer_state';
 import {fakeAsync, flush, TestBed} from '@angular/core/testing';

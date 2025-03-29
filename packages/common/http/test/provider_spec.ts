@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT, XhrFactory} from '@angular/common';
+import {DOCUMENT, XhrFactory} from '../../index';
 import {
   FetchBackend,
   HTTP_INTERCEPTORS,
@@ -20,12 +20,8 @@ import {
   HttpResponse,
   HttpXhrBackend,
   JsonpClientBackend,
-} from '@angular/common/http';
-import {
-  HttpClientTestingModule,
-  HttpTestingController,
-  provideHttpClientTesting,
-} from '@angular/common/http/testing';
+} from '../index';
+import {HttpClientTestingModule, HttpTestingController, provideHttpClientTesting} from '../testing';
 import {
   ApplicationRef,
   createEnvironmentInjector,

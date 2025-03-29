@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule, NgTemplateOutlet} from '@angular/common';
+import {CommonModule, NgTemplateOutlet} from '../../index';
 import {
   Component,
   ContentChildren,

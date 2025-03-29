@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {XhrFactory} from '@angular/common';
-import {HttpHeaders} from '@angular/common/http/src/headers';
+import {XhrFactory} from '../../index';
+import {HttpHeaders} from '../src/headers';
 
 export class MockXhrFactory implements XhrFactory {
   // TODO(issue/24571): remove '!'.
