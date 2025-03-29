@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {NgtscProgram} from '@angular/compiler-cli/src/ngtsc/program';
-import {CompilerOptions} from '@angular/compiler-cli/src/transformers/api';
-import {createCompilerHost} from '@angular/compiler-cli/src/transformers/compiler_host';
+import {NgtscProgram} from '../../src/ngtsc/program';
+import {CompilerOptions} from '../../src/transformers/api';
+import {createCompilerHost} from '../../src/transformers/compiler_host';
 import {platform} from 'os';
 import ts from 'typescript';
 

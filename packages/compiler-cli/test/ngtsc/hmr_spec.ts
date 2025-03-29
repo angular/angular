@@ -9,9 +9,9 @@
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
 import {NgtscTestEnvironment} from './env';
-import {CompilerOptions} from '@angular/compiler-cli/src/transformers/api';
-import {createCompilerHost} from '@angular/compiler-cli/src/transformers/compiler_host';
-import {NgtscProgram} from '@angular/compiler-cli/src/ngtsc/program';
+import {CompilerOptions} from '../../src/transformers/api';
+import {createCompilerHost} from '../../src/transformers/compiler_host';
+import {NgtscProgram} from '../../src/ngtsc/program';
 import ts from 'typescript';
 
 runInEachFileSystem(() => {
