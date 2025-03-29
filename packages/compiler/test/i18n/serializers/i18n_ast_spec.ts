@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import * as i18n from '@angular/compiler/src/i18n/i18n_ast';
+import * as i18n from '../../../src/i18n/i18n_ast';
 
 import {serializeNodes} from '../../../src/i18n/digest';
 import {_extractMessages} from '../i18n_parser_spec';

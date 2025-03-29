@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
+import {DomElementSchemaRegistry} from '../../src/schema/dom_element_schema_registry';
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SecurityContext} from '@angular/core';
 
 import {Element} from '../../src/ml_parser/ast';
