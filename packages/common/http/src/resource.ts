@@ -223,13 +223,21 @@ export const httpResource: HttpResourceFn = (() => {
   return jsonFn;
 })();
 
+/**
+ * The expected response type of the server.
+ *
+ * This is used to parse the response appropriately before returning it to
+ * the requestee.
+ */
+type responseType= 'arraybuffer' | 'blob' | 'json' | 'text';
+
 type RawRequestType =
   | string
   | (() => string | undefined)
   | HttpResourceRequest
   | (() => HttpResourceRequest | undefined);
 
-function makeHttpResourceFn<TRaw>(responseType: 'arraybuffer' | 'blob' | 'json' | 'text') {
+function makeHttpResourceFn<TRaw>(responseType: responseType) {
   return function httpResourceRef<TResult = TRaw>(
     request: RawRequestType,
     options?: HttpResourceOptions<TResult, TRaw>,
@@ -248,7 +256,7 @@ function makeHttpResourceFn<TRaw>(responseType: 'arraybuffer' | 'blob' | 'json' 
 
 function normalizeRequest(
   request: RawRequestType,
-  responseType: 'arraybuffer' | 'blob' | 'json' | 'text',
+  responseType: responseType,
 ): HttpRequest<unknown> | undefined {
   let unwrappedRequest = typeof request === 'function' ? request() : request;
   if (unwrappedRequest === undefined) {
