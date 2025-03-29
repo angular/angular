@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CssRule, processRules} from '@angular/compiler/src/shadow_css';
+import {CssRule, processRules} from '../../src/shadow_css';
 
 describe('ShadowCss, processRules', () => {
   describe('parse rules', () => {
