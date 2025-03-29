@@ -1,3 +1,5 @@
+@use '../../../../../styles/typography';
+
 .web-tree {
   height: calc(100% - 25px);
   width: calc(100% - 25px);
@@ -10,8 +12,7 @@
       background: var(--primary-contrast);
     }
     .webtreemap-caption {
-      font-size: 0.9em;
-      // color: white;
+      @extend %body-01;
     }
     .webtreemap-node:hover {
       background: var(--septenary-contrast);

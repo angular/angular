@@ -1,3 +1,5 @@
+@use '../../../../../styles/typography';
+
 :host {
   display: block;
   overflow: auto;
@@ -14,13 +16,12 @@
   height: 100%;
 
   mat-toolbar {
+    @extend %body-medium-01;
     padding-left: 9px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
     line-height: 25px;
-    font-size: 11px;
-    font-weight: 500;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -30,7 +31,6 @@
   section {
     height: 100%;
     overflow: auto;
-    font-family: Roboto, 'Helvetica Neue', sans-serif;
     padding: 10px;
   }
 }
@@ -50,7 +50,7 @@
 }
 
 .txt-total-time {
-  font-weight: bold;
+  @extend %body-bold-01;
 }
 
 ul {
