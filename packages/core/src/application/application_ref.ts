@@ -411,7 +411,11 @@ export class ApplicationRef {
    *
    * {@example core/ts/platform/platform.ts region='domNode'}
    */
-  bootstrap<C>(component: Type<C>, rootSelectorOrNode?: string | any): ComponentRef<C>;
+  bootstrap<C>(
+    component: Type<C>,
+    rootSelectorOrNode?: string | any,
+    injector?: Injector,
+  ): ComponentRef<C>;
 
   /**
    * Bootstrap a component onto the element identified by its selector or, optionally, to a
@@ -456,6 +460,7 @@ export class ApplicationRef {
   bootstrap<C>(
     componentFactory: ComponentFactory<C>,
     rootSelectorOrNode?: string | any,
+    injector?: Injector,
   ): ComponentRef<C>;
 
   /**
@@ -498,6 +503,7 @@ export class ApplicationRef {
   bootstrap<C>(
     componentOrFactory: ComponentFactory<C> | Type<C>,
     rootSelectorOrNode?: string | any,
+    injector: Injector = Injector.NULL,
   ): ComponentRef<C> {
     profiler(ProfilerEvent.BootstrapComponentStart);
 
@@ -532,7 +538,7 @@ export class ApplicationRef {
       ? undefined
       : this._injector.get(NgModuleRef);
     const selectorOrNode = rootSelectorOrNode || componentFactory.selector;
-    const compRef = componentFactory.create(Injector.NULL, [], selectorOrNode, ngModule);
+    const compRef = componentFactory.create(injector, [], selectorOrNode, ngModule);
     const nativeElement = compRef.location.nativeElement;
     const testability = compRef.injector.get(TESTABILITY, null);
     testability?.registerApplication(nativeElement);
