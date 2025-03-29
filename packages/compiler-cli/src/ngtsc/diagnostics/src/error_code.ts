@@ -526,6 +526,23 @@ export enum ErrorCode {
   UNPARENTHESIZED_NULLISH_COALESCING = 8114,
 
   /**
+   * The function passed to `@for` track is not invoked.
+   *
+   * For example:
+   * ```angular-html
+   * @for (item of items; track trackByName) {}
+   * ```
+   *
+   * For the track function to work properly, it must be invoked.
+   *
+   * For example:
+   * ```angular-html
+   * @for (item of items; track trackByName(item)) {}
+   * ```
+   */
+  UNINVOKED_TRACK_FUNCTION = 8115,
+
+  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */
