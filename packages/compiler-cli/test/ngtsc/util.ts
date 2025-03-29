@@ -5,10 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {
-  ClassDeclaration,
-  isNamedClassDeclaration,
-} from '@angular/compiler-cli/src/ngtsc/reflection';
+import {ClassDeclaration, isNamedClassDeclaration} from '../../src/ngtsc/reflection';
 import ts from 'typescript';
 
 export function getClass(sf: ts.SourceFile, name: string): ClassDeclaration<ts.ClassDeclaration> {

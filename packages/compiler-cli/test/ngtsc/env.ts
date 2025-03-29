@@ -6,12 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CustomTransformers, defaultGatherDiagnostics, Program} from '@angular/compiler-cli';
-import {DocEntry} from '@angular/compiler-cli/src/ngtsc/docs';
-import * as api from '@angular/compiler-cli/src/transformers/api';
+import {
+  CustomTransformers,
+  defaultGatherDiagnostics,
+  Program,
+  createCompilerHost,
+  createProgram,
+} from '../../index';
+import {DocEntry} from '../../src/ngtsc/docs';
+import * as api from '../../src/transformers/api';
 import ts from 'typescript';
 
-import {createCompilerHost, createProgram} from '../../index';
 import {mainXi18n} from '../../src/extract_i18n';
 import {main, mainDiagnosticsForTest, readNgcCommandLineAndConfiguration} from '../../src/main';
 import {
