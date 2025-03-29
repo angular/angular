@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {HttpRequest} from '@angular/common/http';
+import {HttpRequest} from '../../index';
 
 import {TestRequest} from './request';
 

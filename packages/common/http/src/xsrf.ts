@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT, ɵparseCookieValue as parseCookieValue} from '@angular/common';
+import {DOCUMENT, ɵparseCookieValue as parseCookieValue} from '../../index';
 import {
   EnvironmentInjector,
   Inject,

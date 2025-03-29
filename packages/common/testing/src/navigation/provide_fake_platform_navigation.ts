@@ -10,7 +10,7 @@ import {
   DOCUMENT,
   PlatformLocation,
   ɵPlatformNavigation as PlatformNavigation,
-} from '@angular/common';
+} from '../../../index';
 import {inject, Provider} from '@angular/core';
 
 import {

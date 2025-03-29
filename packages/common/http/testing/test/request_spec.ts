@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {HttpClient} from '@angular/common/http';
-import {HttpClientTestingBackend} from '@angular/common/http/testing/src/backend';
+import {HttpClient} from '../../index';
+import {HttpClientTestingBackend} from '../../testing/src/backend';
 
 describe('HttpClient TestRequest', () => {
   it('accepts a null body', () => {

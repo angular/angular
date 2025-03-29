@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Location, LocationStrategy, PlatformLocation} from '@angular/common';
+import {Location, LocationStrategy, PlatformLocation} from '../../index';
 import {ɵisPromise as isPromise} from '@angular/core';
 import {UpgradeModule} from '@angular/upgrade/static';
 import {ReplaySubject} from 'rxjs';

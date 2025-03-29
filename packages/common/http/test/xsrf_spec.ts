@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {HttpHeaders} from '@angular/common/http/src/headers';
-import {HttpRequest} from '@angular/common/http/src/request';
+import {HttpHeaders} from '../src/headers';
+import {HttpRequest} from '../src/request';
 import {
   HttpXsrfCookieExtractor,
   HttpXsrfInterceptor,
   HttpXsrfTokenExtractor,
   XSRF_ENABLED,
   XSRF_HEADER_NAME,
-} from '@angular/common/http/src/xsrf';
-import {HttpClientTestingBackend} from '@angular/common/http/testing/src/backend';
+} from '../src/xsrf';
+import {HttpClientTestingBackend} from '../testing/src/backend';
 import {TestBed} from '@angular/core/testing';
 
 class SampleTokenExtractor extends HttpXsrfTokenExtractor {

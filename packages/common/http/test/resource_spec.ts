@@ -14,8 +14,8 @@ import {
   httpResource,
   HttpContext,
   HttpContextToken,
-} from '@angular/common/http';
-import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+} from '../index';
+import {HttpTestingController, provideHttpClientTesting} from '../testing';
 
 describe('httpResource', () => {
   beforeEach(() => {

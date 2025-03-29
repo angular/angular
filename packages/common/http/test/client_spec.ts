@@ -6,14 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {HttpClient} from '@angular/common/http/src/client';
-import {
-  HttpErrorResponse,
-  HttpEventType,
-  HttpResponse,
-  HttpStatusCode,
-} from '@angular/common/http/src/response';
-import {HttpClientTestingBackend} from '@angular/common/http/testing/src/backend';
+import {HttpClient} from '../src/client';
+import {HttpErrorResponse, HttpEventType, HttpResponse, HttpStatusCode} from '../src/response';
+import {HttpClientTestingBackend} from '../testing/src/backend';
 import {toArray} from 'rxjs/operators';
 
 describe('HttpClient', () => {
