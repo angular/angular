@@ -39,6 +39,8 @@ Now the app has a dataset that you can use to display the entries in the browser
 
     Note, in the code `[housingLocation] = "housingLocation"` the `housingLocation` value now refers to the variable used in the `ngFor` directive. Before this change, it referred to the property on the `HomeComponent` class.
 
+    IMPORTANT: Don't forget to import the `NgFor` directive in your `HomeComponent` class.
+
 1. Save all changes.
 
 1. Refresh the browser and confirm that the app now renders a grid of housing locations.
