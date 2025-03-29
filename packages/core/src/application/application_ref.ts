@@ -334,12 +334,15 @@ export class ApplicationRef {
    */
   public readonly components: ComponentRef<any>[] = [];
 
+  private internalPendingTask = inject(PendingTasksInternal);
+
   /**
    * Returns an Observable that indicates when the application is stable or unstable.
    */
-  public readonly isStable: Observable<boolean> = inject(PendingTasksInternal).hasPendingTasks.pipe(
-    map((pending) => !pending),
-  );
+  public get isStable(): Observable<boolean> {
+    // This might get invoked after the application has been destroyed.
+    return this.internalPendingTask.hasPendingTasksObservable.pipe(map((pending) => !pending));
+  }
 
   constructor() {
     // Inject the tracing service to initialize it.
