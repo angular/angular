@@ -30,9 +30,9 @@ import {
   ValidationErrors,
   Validator,
   Validators,
-} from '@angular/forms';
-import {selectValueAccessor} from '@angular/forms/src/directives/shared';
-import {composeValidators} from '@angular/forms/src/validators';
+} from '../index';
+import {selectValueAccessor} from '../src/directives/shared';
+import {composeValidators} from '../src/validators';
 
 import {asyncValidator} from './util';
 
