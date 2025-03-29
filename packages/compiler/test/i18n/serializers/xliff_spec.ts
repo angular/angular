@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {escapeRegExp} from '@angular/compiler/src/util';
+import {escapeRegExp} from '../../../src/util';
 
 import {serializeNodes} from '../../../src/i18n/digest';
 import {MessageBundle} from '../../../src/i18n/message_bundle';

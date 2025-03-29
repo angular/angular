@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AbsoluteSourceSpan} from '@angular/compiler';
+import {AbsoluteSourceSpan} from '../../index';
 
 import {humanizeExpressionSource} from './util/expression';
 import {parseR3 as parse} from './view/util';
