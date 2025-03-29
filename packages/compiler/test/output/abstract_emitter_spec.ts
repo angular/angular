@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {escapeIdentifier} from '@angular/compiler/src/output/abstract_emitter';
+import {escapeIdentifier} from '../../src/output/abstract_emitter';
 
 describe('AbstractEmitter', () => {
   describe('escapeIdentifier', () => {

@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {EmitterVisitorContext} from '@angular/compiler/src/output/abstract_emitter';
-import * as o from '@angular/compiler/src/output/output_ast';
-import {JitEmitterVisitor, JitEvaluator} from '@angular/compiler/src/output/output_jit';
-import {R3JitReflector} from '@angular/compiler/src/render3/r3_jit';
-import {newArray} from '@angular/compiler/src/util';
+import {EmitterVisitorContext} from '../../src/output/abstract_emitter';
+import * as o from '../../src/output/output_ast';
+import {JitEmitterVisitor, JitEvaluator} from '../../src/output/output_jit';
+import {R3JitReflector} from '../../src/render3/r3_jit';
+import {newArray} from '../../src/util';
 
 describe('Output JIT', () => {
   describe('regression', () => {

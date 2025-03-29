@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DEFAULT_INTERPOLATION_CONFIG, HtmlParser} from '@angular/compiler';
+import {DEFAULT_INTERPOLATION_CONFIG, HtmlParser} from '../../index';
 import {MissingTranslationStrategy} from '@angular/core';
 
 import {digest, serializeNodes as serializeI18nNodes} from '../../src/i18n/digest';
