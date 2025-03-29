@@ -1,0 +1,41 @@
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//devtools/tools:ng_module.bzl", "ng_module")
+
+package(default_visibility = ["//visibility:public"])
+
+_STYLE_SRCS = [
+    "signals-tab.component.scss",
+]
+
+_STYLE_LABELS = [
+    src[:-len(".component.scss")].replace("-", "_") + "_styles"
+    for src in _STYLE_SRCS
+]
+
+[
+    sass_binary(
+        name = label,
+        src = src,
+        deps = ["//devtools/projects/ng-devtools/src/styles:theme"],
+    )
+    for label, src in zip(_STYLE_LABELS, _STYLE_SRCS)
+]
+
+ng_module(
+    name = "signals-tab",
+    srcs = [
+        "signals-tab.component.ts",
+        "signals-visualizer.ts",
+    ],
+    angular_assets = [
+        "signals-tab.component.html",
+    ] + _STYLE_LABELS,
+    deps = [
+        "//devtools/projects/protocol",
+        "//packages/common",
+        "//packages/core",
+        "@npm//@angular/material",
+        "@npm//@types",
+        "@npm//rxjs",
+    ],
+)
