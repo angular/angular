@@ -13,7 +13,7 @@ import {
   ReactiveFormsModule,
   UntypedFormBuilder,
   Validators,
-} from '@angular/forms';
+} from '../index';
 import {of} from 'rxjs';
 
 (function () {
