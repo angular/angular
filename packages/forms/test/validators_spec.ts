@@ -16,7 +16,7 @@ import {
   ValidationErrors,
   ValidatorFn,
   Validators,
-} from '@angular/forms';
+} from '../index';
 import {Observable, of, timer} from 'rxjs';
 import {first, map} from 'rxjs/operators';
 
