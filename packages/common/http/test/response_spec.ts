@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {HttpHeaders} from '@angular/common/http/src/headers';
-import {HttpResponse, HttpStatusCode} from '@angular/common/http/src/response';
+import {HttpHeaders} from '../src/headers';
+import {HttpResponse, HttpStatusCode} from '../src/response';
 
 describe('HttpResponse', () => {
   describe('constructor()', () => {

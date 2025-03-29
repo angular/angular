@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {XhrFactory} from '@angular/common';
+import {XhrFactory} from '../../index';
 import {Injectable, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {from, Observable, Observer, of} from 'rxjs';
 import {switchMap} from 'rxjs/operators';

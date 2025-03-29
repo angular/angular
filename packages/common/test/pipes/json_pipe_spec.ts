@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule, JsonPipe} from '@angular/common';
+import {CommonModule, JsonPipe} from '../../index';
 import {Component} from '@angular/core';
 import {TestBed, waitForAsync} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';

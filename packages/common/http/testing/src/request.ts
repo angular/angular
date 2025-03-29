@@ -13,7 +13,7 @@ import {
   HttpRequest,
   HttpResponse,
   HttpStatusCode,
-} from '@angular/common/http';
+} from '../../index';
 import {Observer} from 'rxjs';
 
 /**

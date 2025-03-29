@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {LowerCasePipe, TitleCasePipe, UpperCasePipe} from '@angular/common';
+import {LowerCasePipe, TitleCasePipe, UpperCasePipe} from '../../index';
 import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
