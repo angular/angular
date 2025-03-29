@@ -46,14 +46,13 @@ export function codeToHtml(code: string, language: string | undefined): string {
 export function replaceKeywordFromShikiHtml(
   keyword: string,
   shikiHtml: string,
-  replaceWith = '',
+  replaceWith: string,
 ): string {
   return (
     shikiHtml
       // remove the leading space of the element after the "function" element
-      .replace(new RegExp(`(<[^>]*>${keyword}<\\/\\w+><[^>]*>)(\\s)(\\w+<\\/\\w+>)`, 'g'), '$1$3')
-      // Shiki requires the keyword function for highlighting functions signatures
-      // We don't want to display it so we remove elements with the keyword
-      .replace(new RegExp(`<[^>]*>${keyword}<\\/\\w+>`, 'g'), replaceWith)
+      .replace(new RegExp(`(<[^>]*>(?:${keyword})<\\/\\w+><[^>]*>)(\\s)(\\w+<\\/\\w+>)`, 'g'), '$1$3')
+      // Shiki requires the keywords (eg. function,interface) for highlighting signatures
+      .replace(new RegExp(`<[^>]*>(?:${keyword})<\\/\\w+>`, 'g'), replaceWith)
   );
 }
