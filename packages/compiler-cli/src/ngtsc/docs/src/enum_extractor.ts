@@ -6,18 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  EntryType,
-  EnumEntry,
-  EnumMemberEntry,
-  MemberType,
-} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
-import {
-  extractJsDocDescription,
-  extractJsDocTags,
-  extractRawJsDoc,
-} from '@angular/compiler-cli/src/ngtsc/docs/src/jsdoc_extractor';
-import {extractResolvedTypeString} from '@angular/compiler-cli/src/ngtsc/docs/src/type_extractor';
+import {EntryType, EnumEntry, EnumMemberEntry, MemberType} from './entities';
+import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from './jsdoc_extractor';
+import {extractResolvedTypeString} from './type_extractor';
 import ts from 'typescript';
 
 /** Extracts documentation entry for an enum. */
