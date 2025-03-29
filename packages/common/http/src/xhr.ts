@@ -79,6 +79,12 @@ export class HttpXhrBackend implements HttpBackend {
       );
     }
 
+    if (req.keepalive && ngDevMode) {
+      console.warn(
+        `Angular detected that HttpClient keepalive with XHR does not function reliably. It is strongly recommended to enable the fetch API for proper keepalive support. To enable fetch, include \`withFetch()\` in the \`provideHttpClient()\` call at the application's root.`,
+      );
+    }
+
     // Check whether this factory has a special function to load an XHR implementation
     // for various non-browser environments. We currently limit it to only `ServerXhr`
     // class, which needs to load an XHR implementation.
