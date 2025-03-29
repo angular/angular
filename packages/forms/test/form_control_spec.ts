@@ -7,7 +7,7 @@
  */
 
 import {fakeAsync, tick} from '@angular/core/testing';
-import {AsyncValidatorFn, FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
+import {AsyncValidatorFn, FormArray, FormControl, FormGroup, Validators} from '../index';
 
 import {asyncValidator, asyncValidatorReturningObservable} from './util';
 

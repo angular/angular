@@ -31,7 +31,7 @@ import {
   NgModel,
   ReactiveFormsModule,
   Validators,
-} from '@angular/forms';
+} from '../index';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 

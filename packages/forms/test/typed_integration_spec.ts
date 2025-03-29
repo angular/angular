@@ -9,7 +9,7 @@
 // These tests mainly check the types of strongly typed form controls, which is generally enforced
 // at compile time.
 
-import {ɵRawValue} from '@angular/forms';
+import {ɵRawValue} from '../index';
 import {FormBuilder, NonNullableFormBuilder, UntypedFormBuilder} from '../src/form_builder';
 import {
   AbstractControl,
