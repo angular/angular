@@ -7,15 +7,8 @@
  */
 
 import {AnimationTriggerNames} from '@angular/compiler';
-import {
-  isResolvedModuleWithProviders,
-  ResolvedModuleWithProviders,
-} from '@angular/compiler-cli/src/ngtsc/annotations/ng_module';
-import {
-  ErrorCode,
-  FatalDiagnosticError,
-  makeDiagnostic,
-} from '@angular/compiler-cli/src/ngtsc/diagnostics';
+import {isResolvedModuleWithProviders, ResolvedModuleWithProviders} from '../../ng_module';
+import {ErrorCode, FatalDiagnosticError, makeDiagnostic} from '../../../diagnostics';
 import ts from 'typescript';
 
 import {Reference} from '../../../imports';
