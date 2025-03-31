@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {PLATFORM_ID} from '@angular/core';
+import {Injector, PLATFORM_ID} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
   NgswCommChannel,
@@ -79,7 +79,7 @@ describe('ServiceWorker library', () => {
             {
               provide: NgswCommChannel,
               useFactory: ngswCommChannelFactory,
-              deps: [SwRegistrationOptions, PLATFORM_ID],
+              deps: [SwRegistrationOptions, Injector],
             },
           ],
         });
@@ -96,7 +96,7 @@ describe('ServiceWorker library', () => {
           {
             provide: NgswCommChannel,
             useFactory: ngswCommChannelFactory,
-            deps: [SwRegistrationOptions, PLATFORM_ID],
+            deps: [SwRegistrationOptions, Injector],
           },
         ],
       });
@@ -111,7 +111,7 @@ describe('ServiceWorker library', () => {
           {
             provide: NgswCommChannel,
             useFactory: ngswCommChannelFactory,
-            deps: [SwRegistrationOptions, PLATFORM_ID],
+            deps: [SwRegistrationOptions, Injector],
           },
         ],
       });
@@ -140,7 +140,7 @@ describe('ServiceWorker library', () => {
           {
             provide: NgswCommChannel,
             useFactory: ngswCommChannelFactory,
-            deps: [SwRegistrationOptions, PLATFORM_ID],
+            deps: [SwRegistrationOptions, Injector],
           },
         ],
       });
