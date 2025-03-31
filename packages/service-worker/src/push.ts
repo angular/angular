@@ -7,7 +7,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import {merge, NEVER, Observable, Subject} from 'rxjs';
+import {NEVER, Observable, Subject} from 'rxjs';
 import {map, switchMap, take} from 'rxjs/operators';
 
 import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, PushEvent} from './low_level';
@@ -153,7 +153,14 @@ export class SwPush {
     const workerDrivenSubscriptions = this.pushManager.pipe(
       switchMap((pm) => pm.getSubscription()),
     );
-    this.subscription = merge(workerDrivenSubscriptions, this.subscriptionChanges);
+    this.subscription = new Observable((subscriber) => {
+      const workerDrivenSubscription = workerDrivenSubscriptions.subscribe(subscriber);
+      const subscriptionChanges = this.subscriptionChanges.subscribe(subscriber);
+      return () => {
+        workerDrivenSubscription.unsubscribe();
+        subscriptionChanges.unsubscribe();
+      };
+    });
   }
 
   /**
@@ -175,16 +182,18 @@ export class SwPush {
     }
     pushOptions.applicationServerKey = applicationServerKey;
 
-    return this.pushManager
-      .pipe(
+    return new Promise((resolve, reject) => {
+      this.pushManager!.pipe(
         switchMap((pm) => pm.subscribe(pushOptions)),
         take(1),
-      )
-      .toPromise()
-      .then((sub) => {
-        this.subscriptionChanges.next(sub!);
-        return sub!;
+      ).subscribe({
+        next: (sub) => {
+          this.subscriptionChanges.next(sub);
+          resolve(sub);
+        },
+        error: reject,
       });
+    });
   }
 
   /**
@@ -212,7 +221,11 @@ export class SwPush {
       });
     };
 
-    return this.subscription.pipe(take(1), switchMap(doUnsubscribe)).toPromise();
+    return new Promise((resolve, reject) => {
+      this.subscription
+        .pipe(take(1), switchMap(doUnsubscribe))
+        .subscribe({next: resolve, error: reject});
+    });
   }
 
   private decodeBase64(input: string): string {
