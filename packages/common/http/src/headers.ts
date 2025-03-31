@@ -23,7 +23,6 @@ export class HttpHeaders {
   /**
    * Internal map of lowercase header names to values.
    */
-  // TODO(issue/24571): remove '!'.
   private headers!: Map<string, string[]>;
 
   /**
