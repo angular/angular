@@ -30,7 +30,6 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
    *
    * @internal
    */
-  // TODO(issue/24571): remove '!'.
   _parent!: ControlContainer;
 
   /** @nodoc */

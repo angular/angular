@@ -96,7 +96,6 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    * @description
    * Tracks the `FormControl` instance bound to the directive.
    */
-  // TODO(issue/24571): remove '!'.
   override readonly control!: FormControl;
 
   /**

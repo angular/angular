@@ -214,7 +214,6 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
   private _ngForOf: U | undefined | null = null;
   private _ngForOfDirty: boolean = true;
   private _differ: IterableDiffer<T> | null = null;
-  // TODO(issue/24571): remove '!'
   // waiting for microsoft/typescript#43662 to allow the return type `TrackByFunction|undefined` for
   // the getter
   private _trackByFn!: TrackByFunction<T>;

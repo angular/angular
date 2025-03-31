@@ -186,7 +186,6 @@ export class HttpRequest<T> {
    * new HttpParams({fromString: 'angular=awesome'})
    * ```
    */
-  // TODO(issue/24571): remove '!'.
   readonly params!: HttpParams;
 
   /**
