@@ -474,10 +474,10 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#a9c31fd9ab657d25fec2f1f1a7feba60c57a0f19":
-  version "0.0.0-3281d9bc91f6ce814e541533577cc5ca472da7f0"
-  uid a9c31fd9ab657d25fec2f1f1a7feba60c57a0f19
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#a9c31fd9ab657d25fec2f1f1a7feba60c57a0f19"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#ed42486b53051d486c6f3295543df6c55771e8ed":
+  version "0.0.0-a9c1c54ac3921fa2dcb3498712b2aa778a56dd7a"
+  uid ed42486b53051d486c6f3295543df6c55771e8ed
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#ed42486b53051d486c6f3295543df6c55771e8ed"
   dependencies:
     "@google-cloud/spanner" "7.19.1"
     "@octokit/rest" "21.1.1"
@@ -490,7 +490,7 @@
     typed-graphqlify "^3.1.1"
     typescript "~4.9.0"
     which "^5.0.0"
-    yaml "2.7.0"
+    yaml "2.7.1"
 
 "@angular/ssr@20.0.0-next.3":
   version "20.0.0-next.3"
@@ -18533,12 +18533,7 @@ yallist@^5.0.0:
   resolved "https://registry.yarnpkg.com/yallist/-/yallist-5.0.0.tgz#00e2de443639ed0d78fd87de0d27469fbcffb533"
   integrity sha512-YgvUTfwqyc7UXVMrB+SImsVYSmTS8X/tSrtdNZMImM+n7+QTriRXyXim0mBrTXNeqzVF0KWGgHPeiyViFFrNDw==
 
-yaml@2.7.0:
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/yaml/-/yaml-2.7.0.tgz#aef9bb617a64c937a9a748803786ad8d3ffe1e98"
-  integrity sha512-+hSoy/QHluxmC9kCIJyL/uyFmLmc+e5CFR5Wa+bpIhIj85LVb9ZH2nVnqrHoSvKogwODv0ClqZkmiSSaIH5LTA==
-
-yaml@^2.2.1, yaml@^2.2.2, yaml@^2.4.1:
+yaml@2.7.1, yaml@^2.2.1, yaml@^2.2.2, yaml@^2.4.1:
   version "2.7.1"
   resolved "https://registry.yarnpkg.com/yaml/-/yaml-2.7.1.tgz#44a247d1b88523855679ac7fa7cda6ed7e135cf6"
   integrity sha512-10ULxpnOCQXxJvBgxsn9ptjq6uviG/htZKk9veJGhlqn3w/DxQ631zFF+nlQXLwmImeS5amR2dl2U8sg6U9jsQ==
