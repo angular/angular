@@ -176,4 +176,56 @@ describe('toObservable()', () => {
     flushEffects();
     expect(emits()).toBe(1);
   });
+
+  describe('synchronous emit', () => {
+    it('emits synchronously when requested', () => {
+      const counter = signal(0);
+      const log: number[] = [];
+      toObservable(counter, {injector, forceSyncFirstEmit: true}).subscribe((value) =>
+        log.push(value),
+      );
+
+      expect(log).toEqual([0]);
+
+      // Expect no emit after the effect.
+      flushEffects();
+      expect(log).toEqual([0]);
+
+      counter.set(1);
+      flushEffects();
+      expect(log).toEqual([0, 1]);
+    });
+
+    it('emits new values if they happen before the first effect run', () => {
+      const counter = signal(0);
+      const log: number[] = [];
+      toObservable(counter, {injector, forceSyncFirstEmit: true}).subscribe((value) =>
+        log.push(value),
+      );
+
+      expect(log).toEqual([0]);
+      counter.set(1);
+
+      // Expect new emit after the effect.
+      flushEffects();
+      expect(log).toEqual([0, 1]);
+    });
+
+    it('emits new values based on version, not identity', () => {
+      // Disable value equality checking.
+      const counter = signal(0, {equal: () => false});
+      const log: number[] = [];
+      toObservable(counter, {injector, forceSyncFirstEmit: true}).subscribe((value) =>
+        log.push(value),
+      );
+
+      expect(log).toEqual([0]);
+      // Because of the `equal` function, this will be treated as a new value.
+      counter.set(0);
+
+      // Expect new emit after the effect.
+      flushEffects();
+      expect(log).toEqual([0, 0]);
+    });
+  });
 });
