@@ -16,7 +16,6 @@ import { ResourceRef } from '@angular/core';
 import { Signal } from '@angular/core';
 import { ValueEqualityFn } from '@angular/core';
 import { WritableResource } from '@angular/core';
-import { XhrFactory } from '@angular/common';
 
 // @public
 export class FetchBackend implements HttpBackend {

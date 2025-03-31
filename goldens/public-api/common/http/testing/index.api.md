@@ -4,11 +4,7 @@
 
 ```ts
 
-import { HttpEvent } from '@angular/common/http';
-import { HttpHeaders } from '@angular/common/http';
-import { HttpRequest } from '@angular/common/http';
 import * as i0 from '@angular/core';
-import * as i1 from '@angular/common/http';
 import { Observer } from 'rxjs';
 import { Provider } from '@angular/core';
 
@@ -19,7 +15,7 @@ export class HttpClientTestingModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<HttpClientTestingModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<HttpClientTestingModule, never, [typeof i1.HttpClientModule], never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<HttpClientTestingModule, never, [typeof HttpClientModule], never>;
 }
 
 // @public
