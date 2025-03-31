@@ -7,9 +7,7 @@
 import * as i0 from '@angular/core';
 import { InjectionToken } from '@angular/core';
 import { Location as Location_2 } from '@angular/common';
-import { LocationChangeListener } from '@angular/common';
 import { LocationStrategy } from '@angular/common';
-import { PlatformLocation } from '@angular/common';
 import { Provider } from '@angular/core';
 import { SubscriptionLike } from 'rxjs';
 
