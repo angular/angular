@@ -4,14 +4,30 @@
 
 ```ts
 
+import { ChangeDetectorRef } from '@angular/core';
+import { DoCheck } from '@angular/core';
+import { ElementRef } from '@angular/core';
 import * as i0 from '@angular/core';
-import * as i1 from '@angular/common';
 import { InjectionToken } from '@angular/core';
-import { Location as Location_2 } from '@angular/common';
-import { LocationStrategy } from '@angular/common';
+import { Injector } from '@angular/core';
+import { IterableDiffers } from '@angular/core';
+import { KeyValueDiffers } from '@angular/core';
 import { ModuleWithProviders } from '@angular/core';
-import { PlatformLocation } from '@angular/common';
+import { NgIterable } from '@angular/core';
+import { NgModuleFactory } from '@angular/core';
+import { Observable } from 'rxjs';
+import { OnChanges } from '@angular/core';
+import { OnDestroy } from '@angular/core';
+import { PipeTransform } from '@angular/core';
+import { Renderer2 } from '@angular/core';
+import { SimpleChanges } from '@angular/core';
+import { Subscribable } from 'rxjs';
+import { SubscriptionLike } from 'rxjs';
+import { TemplateRef } from '@angular/core';
+import { TrackByFunction } from '@angular/core';
+import { Type } from '@angular/core';
 import { UpgradeModule } from '@angular/upgrade/static';
+import { ViewContainerRef } from '@angular/core';
 
 // @public
 export class $locationShim {
@@ -117,7 +133,7 @@ export class LocationUpgradeModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<LocationUpgradeModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<LocationUpgradeModule, never, [typeof i1.CommonModule], never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<LocationUpgradeModule, never, [typeof CommonModule], never>;
 }
 
 // @public
