@@ -7,7 +7,11 @@
  */
 
 import {XhrFactory} from '../../index';
-import {Injectable, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {
+  Injectable,
+  ɵRuntimeError as RuntimeError,
+  ɵformatRuntimeError as formatRuntimeError,
+} from '@angular/core';
 import {from, Observable, Observer, of} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
 
@@ -81,7 +85,10 @@ export class HttpXhrBackend implements HttpBackend {
 
     if (req.keepalive && ngDevMode) {
       console.warn(
-        `Angular detected that HttpClient keepalive with XHR does not function reliably. It is strongly recommended to enable the fetch API for proper keepalive support. To enable fetch, include \`withFetch()\` in the \`provideHttpClient()\` call at the application's root.`,
+        formatRuntimeError(
+          RuntimeErrorCode.KEEPALIVE_NOT_SUPPORTED_WITH_XHR,
+          `Angular detected that a \`HttpClient\` request with the \`keepalive\` option was sent using XHR, which does not support it. To use the \`keepalive\` option, enable Fetch API support by passing \`withFetch()\` as an argument to \`provideHttpClient()\`.`,
+        ),
       );
     }
 

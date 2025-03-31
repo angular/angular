@@ -54,7 +54,7 @@ function addBody<T>(
     responseType: options.responseType,
     withCredentials: options.withCredentials,
     transferCache: options.transferCache,
-    keepalive : options.keepalive
+    keepalive: options.keepalive,
   };
 }
 

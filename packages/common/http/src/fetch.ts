@@ -280,8 +280,8 @@ export class FetchBackend implements HttpBackend {
       body: req.serializeBody(),
       method: req.method,
       headers,
-      credentials, 
-      keepalive : req.keepalive
+      credentials,
+      keepalive: req.keepalive,
     };
   }
 
