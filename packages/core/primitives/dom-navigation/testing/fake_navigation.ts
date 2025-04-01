@@ -493,13 +493,17 @@ export class FakeNavigation implements Navigation {
    * @internal
    */
   userAgentTraverse(navigateEvent: InternalFakeNavigateEvent) {
+    const oldUrl = this.currentEntry.url!;
     this.updateNavigationEntriesForSameDocumentNavigation(navigateEvent);
     // Happens as part of "updating the document" steps https://whatpr.org/html/10919/browsing-the-web.html#updating-the-document
     const popStateEvent = createPopStateEvent({
       state: navigateEvent.destination.getHistoryState(),
     });
     this.window.dispatchEvent(popStateEvent);
-    // TODO(atscott): If oldURL's fragment is not equal to entry's URL's fragment, then queue a global task to fire an event named hashchange
+    if (navigateEvent.hashChange) {
+      const hashchangeEvent = createHashChangeEvent(oldUrl, this.currentEntry.url!);
+      this.window.dispatchEvent(hashchangeEvent);
+    }
   }
 
   /**
@@ -1059,6 +1063,16 @@ function createPopStateEvent({state}: {state: unknown}) {
   }) as {-readonly [P in keyof PopStateEvent]: PopStateEvent[P]};
   event.state = state;
   return event as PopStateEvent;
+}
+
+function createHashChangeEvent(newURL: string, oldURL: string) {
+  const event = new Event('hashchange', {
+    bubbles: false,
+    cancelable: false,
+  }) as {-readonly [P in keyof HashChangeEvent]: HashChangeEvent[P]};
+  event.newURL = newURL;
+  event.oldURL = oldURL;
+  return event as HashChangeEvent;
 }
 
 /**
