@@ -77,7 +77,6 @@ export function createTView(
   constsOrFactory: TConstantsOrFactory | null,
   ssrId: string | null,
 ): TView {
-  ngDevMode && ngDevMode.tView++;
   const bindingStartIndex = HEADER_OFFSET + decls;
   // This length does not yet contain host bindings from child directives because at this point,
   // we don't know which directives are active on this template. As soon as a directive is matched

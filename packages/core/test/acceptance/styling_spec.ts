@@ -18,7 +18,6 @@ import {
   ViewContainerRef,
 } from '../../src/core';
 import {bypassSanitizationTrustStyle} from '../../src/sanitization/bypass';
-import {ngDevModeResetPerfCounters} from '../../src/util/ng_dev_mode';
 import {TestBed} from '../../testing';
 import {
   getElementClasses,
@@ -27,11 +26,8 @@ import {
   getSortedStyle,
 } from '../../testing/src/styling';
 import {By, DomSanitizer, SafeStyle} from '@angular/platform-browser';
-import {expectPerfCounters} from '@angular/private/testing';
 
 describe('styling', () => {
-  beforeEach(ngDevModeResetPerfCounters);
-
   describe('apply in prioritization order', () => {
     it('should perform static bindings', () => {
       @Component({
@@ -1917,9 +1913,6 @@ describe('styling', () => {
     expect(element.style.height).toEqual('900px');
     expect(element.style.fontSize).toEqual('100px');
 
-    // once for the template flush and again for the host bindings
-    ngDevModeResetPerfCounters();
-
     component.opacity = '0.6';
     component.compWithStyling!.height = '100px';
     component.compWithStyling!.width = '100px';
@@ -2217,7 +2210,6 @@ describe('styling', () => {
     const fixture = TestBed.createComponent(Cmp);
     const comp = fixture.componentInstance;
 
-    ngDevModeResetPerfCounters();
     fixture.detectChanges();
     const element = fixture.nativeElement.querySelector('div');
 
@@ -2225,21 +2217,18 @@ describe('styling', () => {
     assertStyle(element, 'height', '111px');
 
     comp.width = '222px';
-    ngDevModeResetPerfCounters();
     fixture.detectChanges();
 
     assertStyle(element, 'width', '222px');
     assertStyle(element, 'height', '111px');
 
     comp.height = '222px';
-    ngDevModeResetPerfCounters();
     fixture.detectChanges();
 
     assertStyle(element, 'width', '222px');
     assertStyle(element, 'height', '222px');
 
     comp.width = undefined;
-    ngDevModeResetPerfCounters();
     fixture.detectChanges();
 
     assertStyle(element, 'width', '555px');
@@ -2247,14 +2236,12 @@ describe('styling', () => {
 
     comp.width = '123px';
     comp.height = '123px';
-    ngDevModeResetPerfCounters();
     fixture.detectChanges();
 
     assertStyle(element, 'width', '123px');
     assertStyle(element, 'height', '123px');
 
     comp.map = {};
-    ngDevModeResetPerfCounters();
     fixture.detectChanges();
 
     // No change, hence no write
@@ -2262,14 +2249,12 @@ describe('styling', () => {
     assertStyle(element, 'height', '123px');
 
     comp.width = undefined;
-    ngDevModeResetPerfCounters();
     fixture.detectChanges();
 
     assertStyle(element, 'width', '999px');
     assertStyle(element, 'height', '123px');
 
     comp.dir.map = null;
-    ngDevModeResetPerfCounters();
     fixture.detectChanges();
 
     // the width is only applied once
@@ -2277,7 +2262,6 @@ describe('styling', () => {
     assertStyle(element, 'height', '123px');
 
     comp.dir.map = {width: '1000px', height: '1100px', color: 'red'};
-    ngDevModeResetPerfCounters();
     fixture.detectChanges();
 
     assertStyle(element, 'width', '1000px');
@@ -2285,7 +2269,6 @@ describe('styling', () => {
     assertStyle(element, 'color', 'red');
 
     comp.height = undefined;
-    ngDevModeResetPerfCounters();
     fixture.detectChanges();
 
     // height gets applied twice and all other
@@ -2295,7 +2278,6 @@ describe('styling', () => {
     assertStyle(element, 'color', 'red');
 
     comp.map = {color: 'blue', width: '2000px', opacity: '0.5'};
-    ngDevModeResetPerfCounters();
     fixture.detectChanges();
 
     assertStyle(element, 'width', '2000px');
@@ -2304,7 +2286,6 @@ describe('styling', () => {
     assertStyle(element, 'opacity', '0.5');
 
     comp.map = {color: 'blue', width: '2000px'};
-    ngDevModeResetPerfCounters();
     fixture.detectChanges();
 
     // all four are applied because the map was altered

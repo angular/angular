@@ -28,7 +28,6 @@ export function elementStartFirstCreatePass(
   localRefsIndex?: number,
 ): TElementNode {
   ngDevMode && assertFirstCreatePass(tView);
-  ngDevMode && ngDevMode.firstCreatePass++;
 
   const tViewConsts = tView.consts;
   const attrs = getConstant<TAttributes>(tViewConsts, attrsIndex);

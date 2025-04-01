@@ -26,7 +26,6 @@ import {
   ViewEncapsulation,
 } from '../../src/core';
 import {RElement} from '../../src/render3/interfaces/renderer_dom';
-import {ngDevModeResetPerfCounters} from '../../src/util/ng_dev_mode';
 import {NoopNgZone} from '../../src/zone/ng_zone';
 import {TestBed} from '../../testing';
 import {EventManager, ɵSharedStylesHost} from '@angular/platform-browser';
@@ -477,10 +476,6 @@ describe('Renderer2 destruction hooks', () => {
   }
 
   beforeEach(() => {
-    // Tests below depend on perf counters when running with Ivy. In order to have
-    // clean perf counters at the beginning of a test, we reset those here.
-    ngDevModeResetPerfCounters();
-
     TestBed.configureTestingModule({
       declarations: [SimpleApp, AppWithComponents, BasicComponent],
       providers: [
