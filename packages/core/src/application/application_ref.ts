@@ -499,6 +499,14 @@ export class ApplicationRef {
     componentOrFactory: ComponentFactory<C> | Type<C>,
     rootSelectorOrNode?: string | any,
   ): ComponentRef<C> {
+    return this.bootstrapImpl(componentOrFactory, rootSelectorOrNode);
+  }
+
+  private bootstrapImpl<C>(
+    componentOrFactory: ComponentFactory<C> | Type<C>,
+    rootSelectorOrNode?: string | any,
+    injector: Injector = Injector.NULL,
+  ): ComponentRef<C> {
     profiler(ProfilerEvent.BootstrapComponentStart);
 
     (typeof ngDevMode === 'undefined' || ngDevMode) && warnIfDestroyed(this._destroyed);
@@ -532,7 +540,7 @@ export class ApplicationRef {
       ? undefined
       : this._injector.get(NgModuleRef);
     const selectorOrNode = rootSelectorOrNode || componentFactory.selector;
-    const compRef = componentFactory.create(Injector.NULL, [], selectorOrNode, ngModule);
+    const compRef = componentFactory.create(injector, [], selectorOrNode, ngModule);
     const nativeElement = compRef.location.nativeElement;
     const testability = compRef.injector.get(TESTABILITY, null);
     testability?.registerApplication(nativeElement);
