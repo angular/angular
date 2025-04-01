@@ -420,7 +420,8 @@ class _TreeBuilder {
       end,
       startTagToken.sourceSpan.fullStart,
     );
-    const el = new html.Element(fullName, attrs, [], span, startSpan, undefined);
+    // TODO: capture directives.
+    const el = new html.Element(fullName, attrs, [], [], span, startSpan, undefined);
     const parentEl = this._getContainer();
     this._pushContainer(
       el,
