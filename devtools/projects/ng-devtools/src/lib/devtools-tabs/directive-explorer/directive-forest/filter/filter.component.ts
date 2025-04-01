@@ -21,7 +21,8 @@ export class FilterComponent {
   readonly nextMatched = output<void>();
   readonly prevMatched = output<void>();
 
-  readonly hasMatched = input(false);
+  readonly matchesCount = input<number>(0);
+  readonly currentMatch = input<number>(0);
 
   emitFilter(event: Event): void {
     this.filter.emit((event.target as HTMLInputElement).value);
