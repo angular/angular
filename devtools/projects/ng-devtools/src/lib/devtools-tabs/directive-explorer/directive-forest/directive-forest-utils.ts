@@ -35,3 +35,12 @@ export const parentCollapsed = (
   }
   return false;
 };
+
+/** Returns the full node name string as rendered by the tree-node component. */
+export const getFullNodeName = (node: FlatNode) => {
+  const cmp = node.original.component;
+  if (cmp && cmp.isElement) {
+    return `<${node.name}/>`;
+  }
+  return node.name + (node.directives ? `[${node.directives}]` : '');
+};

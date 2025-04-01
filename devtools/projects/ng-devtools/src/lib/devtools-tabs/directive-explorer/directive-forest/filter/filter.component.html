@@ -12,7 +12,14 @@
       placeholder="Search components"
     />
   </label>
-  @if (hasMatched()) {
+  @if (matchesCount()) {
+    <div class="matches-count">
+      @if (currentMatch(); as currentMatch) {
+        {{ currentMatch }} of {{ matchesCount() }}
+      } @else {
+        {{ matchesCount() }} match{{ matchesCount() !== 1 ? 'es' : '' }}
+      }
+    </div>
     <div class="up-down-buttons">
       <button matTooltip="Select previous element" (click)="emitPrevMatched()">
         <mat-icon class="mat-icon-rtl-mirror"> expand_less </mat-icon>
