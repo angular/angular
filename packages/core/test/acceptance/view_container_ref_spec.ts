@@ -43,7 +43,6 @@ import {
   ViewContainerRef,
   ɵsetDocument,
 } from '../../src/core';
-import {ngDevModeResetPerfCounters} from '../../src/util/ng_dev_mode';
 import {ComponentFixture, TestBed, TestComponentRenderer} from '../../testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
 import {By, DomSanitizer} from '@angular/platform-browser';
@@ -880,10 +879,6 @@ describe('ViewContainerRef', () => {
   describe('detach', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({declarations: [EmbeddedViewInsertionComp, VCRefDirective]});
-
-      // Tests depend on perf counters. In order to have clean perf counters at the beginning of a
-      // test, we reset those here.
-      ngDevModeResetPerfCounters();
     });
 
     it('should detach the right embedded view when an index is specified', () => {
@@ -978,10 +973,6 @@ describe('ViewContainerRef', () => {
         renderer.destroyNode = () => {};
         return renderer;
       };
-
-      // Tests depend on perf counters. In order to have clean perf counters at the beginning of a
-      // test, we reset those here.
-      ngDevModeResetPerfCounters();
     });
 
     it('should remove the right embedded view when an index is specified', () => {

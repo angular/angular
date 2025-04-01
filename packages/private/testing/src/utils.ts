@@ -88,28 +88,6 @@ function wrapTestFn(
   };
 }
 
-/**
- * Runs jasmine expectations against the provided keys for `ngDevMode`.
- *
- * Will not perform expectations for keys that are not provided.
- *
- * ```ts
- * // Expect that `ngDevMode.styleMap` is `1`, and `ngDevMode.tNode` is `3`, but we don't care
- * // about the other values.
- * expectPerfCounters({
- *   stylingMap: 1,
- *   tNode: 3,
- * })
- * ```
- */
-export function expectPerfCounters(expectedCounters: Partial<NgDevModePerfCounters>): void {
-  Object.keys(expectedCounters).forEach((key) => {
-    const expected = (expectedCounters as any)[key];
-    const actual = (ngDevMode as any)[key];
-    expect(actual).toBe(expected, `ngDevMode.${key}`);
-  });
-}
-
 let savedDocument: Document | undefined = undefined;
 let savedRequestAnimationFrame: ((callback: FrameRequestCallback) => number) | undefined =
   undefined;

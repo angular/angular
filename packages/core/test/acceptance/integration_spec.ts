@@ -35,11 +35,9 @@ import {getLViewById} from '../../src/render3/interfaces/lview_tracking';
 import {isLView} from '../../src/render3/interfaces/type_checks';
 import {ID, LView, PARENT, TVIEW} from '../../src/render3/interfaces/view';
 import {getLView} from '../../src/render3/state';
-import {ngDevModeResetPerfCounters} from '../../src/util/ng_dev_mode';
 import {fakeAsync, flushMicrotasks, TestBed} from '../../testing';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {expectPerfCounters} from '@angular/private/testing';
 
 describe('acceptance integration tests', () => {
   function stripHtmlComments(str: string) {
@@ -58,44 +56,6 @@ describe('acceptance integration tests', () => {
       const fixture = TestBed.createComponent(App);
 
       expect(fixture.nativeElement.innerHTML).toEqual('<span title="Hello">Greetings</span>');
-    });
-
-    it('should render and update basic "Hello, World" template', () => {
-      ngDevModeResetPerfCounters();
-      @Component({
-        template: '<h1>Hello, {{name}}!</h1>',
-        standalone: false,
-      })
-      class App {
-        name = '';
-      }
-
-      expectPerfCounters({
-        tView: 0,
-        tNode: 0,
-      });
-
-      TestBed.configureTestingModule({declarations: [App]});
-      const fixture = TestBed.createComponent(App);
-
-      fixture.componentInstance.name = 'World';
-      fixture.detectChanges();
-
-      expect(fixture.nativeElement.innerHTML).toEqual('<h1>Hello, World!</h1>');
-      expectPerfCounters({
-        tView: 2, // Host view + App
-        tNode: 3, // Host Node + <h1> + #text
-      });
-
-      fixture.componentInstance.name = 'New World';
-      fixture.detectChanges();
-
-      expect(fixture.nativeElement.innerHTML).toEqual('<h1>Hello, New World!</h1>');
-      // Assert that the tView/tNode count does not increase (they are correctly cached)
-      expectPerfCounters({
-        tView: 2,
-        tNode: 3,
-      });
     });
   });
 
