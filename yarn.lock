@@ -474,10 +474,10 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#1f3caa69331f8272286f9fd3b4599a1d64adf432":
-  version "0.0.0-78f80fa56155b444bf8a41d82cc16a33982ee4cf"
-  uid "1f3caa69331f8272286f9fd3b4599a1d64adf432"
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#1f3caa69331f8272286f9fd3b4599a1d64adf432"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#12652e1dd11af737ce6dd4fc410fcf30a26f1c46":
+  version "0.0.0-43024bdae56884804dfb2cde88cfac210e28d4f4"
+  uid "12652e1dd11af737ce6dd4fc410fcf30a26f1c46"
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#12652e1dd11af737ce6dd4fc410fcf30a26f1c46"
   dependencies:
     "@google-cloud/spanner" "7.19.1"
     "@octokit/rest" "21.1.1"
