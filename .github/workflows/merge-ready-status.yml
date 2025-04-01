@@ -9,6 +9,6 @@ jobs:
   status:
     runs-on: ubuntu-latest
     steps:
-      - uses: angular/dev-infra/github-actions/unified-status-check@2a3cbd4a4cfef4ec277820234c0f423c66a78b54
+      - uses: angular/dev-infra/github-actions/unified-status-check@b3b3466509babc50fd7f00b90e8bc607e7fe41aa
         with:
           angular-robot-key: ${{ secrets.ANGULAR_ROBOT_PRIVATE_KEY }}
