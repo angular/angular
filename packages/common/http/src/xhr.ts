@@ -8,7 +8,7 @@
 
 import {XhrFactory} from '@angular/common';
 import {Injectable, ɵRuntimeError as RuntimeError} from '@angular/core';
-import {from, Observable, Observer, of} from 'rxjs';
+import {Observable, type Observer, of} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
 
 import {HttpBackend} from './backend';
@@ -83,8 +83,16 @@ export class HttpXhrBackend implements HttpBackend {
     // for various non-browser environments. We currently limit it to only `ServerXhr`
     // class, which needs to load an XHR implementation.
     const xhrFactory: XhrFactory & {ɵloadImpl?: () => Promise<void>} = this.xhrFactory;
-    const source: Observable<void | null> = xhrFactory.ɵloadImpl
-      ? from(xhrFactory.ɵloadImpl())
+    const {ɵloadImpl} = xhrFactory;
+    const source: Observable<void | null> = ɵloadImpl
+      ? // Manually creating the observable imports fewer symbols
+        // from RxJS than using `from(ɵloadImpl())`.
+        new Observable((subscriber) => {
+          ɵloadImpl()
+            .then((impl) => subscriber.next(impl))
+            .catch((error) => subscriber.error(error))
+            .finally(() => subscriber.complete());
+        })
       : of(null);
 
     return source.pipe(
