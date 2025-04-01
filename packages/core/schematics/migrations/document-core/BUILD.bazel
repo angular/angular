@@ -1,0 +1,25 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(
+    default_visibility = [
+        "//packages/core/schematics:__pkg__",
+        "//packages/core/schematics/migrations/google3:__pkg__",
+        "//packages/core/schematics/test:__pkg__",
+    ],
+)
+
+ts_library(
+    name = "document-core",
+    srcs = glob(["**/*.ts"]),
+    tsconfig = "//packages/core/schematics:tsconfig.json",
+    deps = [
+        "//packages/compiler-cli/private",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/core/schematics/utils",
+        "//packages/core/schematics/utils/tsurge",
+        "//packages/core/schematics/utils/tsurge/helpers/angular_devkit",
+        "@npm//@angular-devkit/schematics",
+        "@npm//@types/node",
+        "@npm//typescript",
+    ],
+)

@@ -15,6 +15,11 @@
       "description": "Converts the entire application to block control flow syntax",
       "factory": "./bundles/control-flow-migration#migrate",
       "optional": true
+    },
+    "document-core": {
+      "version": "20.0.0",
+      "description": "Moves imports of `DOCUMENT` from `@angular/common` to `@angular/core`",
+      "factory": "./bundles/document-core#migrate"
     }
   }
 }
