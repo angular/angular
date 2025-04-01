@@ -22,7 +22,7 @@ export interface FlatNode {
   id: string;
   expandable: boolean;
   name: string;
-  directives: string;
+  directives: string[];
   position: number[];
   level: number;
   original: IndexedNode;
@@ -91,7 +91,7 @@ export class ComponentDataSource extends DataSource<FlatNode> {
         // and the reference is preserved after transformation.
         position: node.position,
         name: node.component ? node.component.name : node.element,
-        directives: node.directives.map((d) => d.name).join(', '),
+        directives: node.directives.map((d) => d.name),
         original: node,
         level,
         hydration: node.hydration,
