@@ -8,7 +8,7 @@
 
 import {EnvironmentInjector, ProviderToken, runInInjectionContext} from '@angular/core';
 import {defer, EMPTY, from, MonoTypeOperatorFunction, Observable, of, throwError} from 'rxjs';
-import {catchError, concatMap, first, map, mergeMap, takeLast, tap} from 'rxjs/operators';
+import {catchError, concatMap, map, mergeMap, take, takeLast, tap} from 'rxjs/operators';
 
 import {RedirectCommand, ResolveData} from '../models';
 import type {NavigationTransition} from '../navigation_transition';
@@ -115,7 +115,7 @@ function resolveNode(
   return from(keys).pipe(
     mergeMap((key) =>
       getResolver(resolve[key], futureARS, futureRSS, injector).pipe(
-        first(),
+        take(1),
         tap((value: any) => {
           if (value instanceof RedirectCommand) {
             throw redirectingNavigationError(new DefaultUrlSerializer(), value);

@@ -12,12 +12,13 @@ import {
   catchError,
   concatMap,
   defaultIfEmpty,
-  first,
+  filter,
   last,
   map,
   mergeMap,
   scan,
   switchMap,
+  take,
   tap,
 } from 'rxjs/operators';
 
@@ -272,7 +273,8 @@ export class Recognizer {
           }),
         );
       }),
-      first((x): x is TreeNode<ActivatedRouteSnapshot> | NoLeftoversInUrl => !!x),
+      filter((x): x is TreeNode<ActivatedRouteSnapshot> | NoLeftoversInUrl => !!x),
+      take(1),
       catchError((e) => {
         if (isEmptyError(e)) {
           if (noLeftoversInUrl(segmentGroup, segments, outlet)) {

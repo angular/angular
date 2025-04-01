@@ -17,7 +17,7 @@ import {
   OperatorFunction,
   pipe,
 } from 'rxjs';
-import {concatMap, first, map, mergeMap, tap} from 'rxjs/operators';
+import {concatMap, defaultIfEmpty, filter, map, mergeMap, take, tap} from 'rxjs/operators';
 
 import {ActivationStart, ChildActivationStart, Event} from '../events';
 import {
@@ -92,9 +92,9 @@ function runCanDeactivateChecks(
     mergeMap((check) =>
       runCanDeactivate(check.component, check.route, currRSS, futureRSS, injector),
     ),
-    first((result) => {
-      return result !== true;
-    }, true),
+    filter((result) => result !== true),
+    take(1),
+    defaultIfEmpty(true),
   );
 }
 
@@ -113,9 +113,9 @@ function runCanActivateChecks(
         runCanActivate(futureSnapshot, check.route, injector),
       );
     }),
-    first((result) => {
-      return result !== true;
-    }, true),
+    filter((result) => result !== true),
+    take(1),
+    defaultIfEmpty(true),
   );
 }
 
@@ -175,7 +175,7 @@ function runCanActivate(
         : runInInjectionContext(closestInjector, () =>
             (guard as CanActivateFn)(futureARS, futureRSS),
           );
-      return wrapIntoObservable(guardVal).pipe(first());
+      return wrapIntoObservable(guardVal).pipe(take(1));
     });
   });
   return of(canActivateObservables).pipe(prioritizedGuardValue());
@@ -208,7 +208,7 @@ function runCanActivateChild(
             : runInInjectionContext(closestInjector, () =>
                 (guard as CanActivateChildFn)(futureARS, futureRSS),
               );
-          return wrapIntoObservable(guardVal).pipe(first());
+          return wrapIntoObservable(guardVal).pipe(take(1));
         },
       );
       return of(guardsMapped).pipe(prioritizedGuardValue());
@@ -234,7 +234,7 @@ function runCanDeactivate(
       : runInInjectionContext(closestInjector, () =>
           (guard as CanDeactivateFn<any>)(component, currARS, currRSS, futureRSS),
         );
-    return wrapIntoObservable(guardVal).pipe(first());
+    return wrapIntoObservable(guardVal).pipe(take(1));
   });
   return of(canDeactivateObservables).pipe(prioritizedGuardValue());
 }
