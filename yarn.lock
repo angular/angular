@@ -479,6 +479,13 @@
   dependencies:
     tslib "^2.3.0"
 
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#10732a822895b3d11cf2366f4e8dea25f1303c55":
+  version "0.0.0-b3b3466509babc50fd7f00b90e8bc607e7fe41aa"
+  uid "10732a822895b3d11cf2366f4e8dea25f1303c55"
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#10732a822895b3d11cf2366f4e8dea25f1303c55"
+  dependencies:
+    tslib "^2.3.0"
+
 "@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#252589f7bc8fe6ca13b31e02d506ec52e826cdd2":
   version "0.0.0-0ad6a370f70638e785d6ef1f90dc6ede34684a47"
   resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#252589f7bc8fe6ca13b31e02d506ec52e826cdd2"

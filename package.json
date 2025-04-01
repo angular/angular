@@ -163,7 +163,7 @@
     "@angular/animations": "^19.2.0-next",
     "@angular/build-tooling": "https://github.com/angular/dev-infra-private-build-tooling-builds.git#ce04ec6cf7604014191821a637e60964a1a3bb4a",
     "@angular/core": "^19.2.0-next",
-    "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#252589f7bc8fe6ca13b31e02d506ec52e826cdd2",
+    "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#10732a822895b3d11cf2366f4e8dea25f1303c55",
     "@babel/plugin-proposal-async-generator-functions": "7.20.7",
     "@bazel/bazelisk": "^1.7.5",
     "@bazel/buildifier": "^8.0.0",
