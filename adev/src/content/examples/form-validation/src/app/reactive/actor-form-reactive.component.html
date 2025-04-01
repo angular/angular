@@ -1,0 +1,105 @@
+<!-- #docregion -->
+<div class="container">
+
+  <h2>Reactive Form</h2>
+
+  <form [formGroup]="actorForm" #formDir="ngForm">
+
+    <div [hidden]="formDir.submitted">
+
+      <div class="cross-validation"
+           [class.cross-validation-error]="actorForm.hasError('unambiguousRole') && (actorForm.touched || actorForm.dirty)">
+        <div class="form-group">
+
+          <label for="name">Name</label>
+          <!-- #docregion name-with-error-msg -->
+          <input type="text" id="name" class="form-control"
+                 formControlName="name" required>
+
+          @if (name.invalid && (name.dirty || name.touched)) {
+            <div class="alert alert-danger">
+
+              @if (name.hasError('required')) {
+                <div>
+                  Name is required.
+                </div>
+              }
+              @if (name.hasError('minlength')) {
+                <div>
+                  Name must be at least 4 characters long.
+                </div>
+              }
+              @if (name.hasError('forbiddenName')) {
+                <div>
+                  Name cannot be Bob.
+                </div>
+              }
+            </div>
+          }
+          <!-- #enddocregion name-with-error-msg -->
+        </div>
+
+        <div class="form-group">
+          <label for="role">Role</label>
+          <input type="text" id="role" class="form-control"
+                 formControlName="role">
+
+          @if (role.pending) {
+            <div>Validating...</div>
+          }
+          @if (role.invalid) {
+            <div class="alert alert-danger role-errors">
+              @if (role.hasError('uniqueRole')) {
+                <div>
+                  Role is already taken.
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- #docregion cross-validation-error-message -->
+        @if (actorForm.hasError('unambiguousRole') && (actorForm.touched || actorForm.dirty)) {
+          <div class="cross-validation-error-message alert alert-danger">
+            Name cannot match role or audiences will be confused.
+          </div>
+        }
+        <!-- #enddocregion cross-validation-error-message -->
+      </div>
+
+      <div class="form-group">
+        <label for="skill">Skill</label>
+        <select id="skill" class="form-control"
+                formControlName="skill" required>
+          @for (skill of skills; track $index) {
+            <option [value]="skill">{{ skill }}</option>
+          }
+        </select>
+
+        @if (skill.invalid && skill.touched) {
+          <div class="alert alert-danger">
+            @if (skill.hasError('required')) {
+              <div>Skill is required.</div>
+            }
+          </div>
+        }
+      </div>
+
+      <p>Complete the form to enable the Submit button.</p>
+      <button type="submit"
+              class="btn btn-default"
+              [disabled]="actorForm.invalid">Submit
+      </button>
+      <button type="button" class="btn btn-default"
+              (click)="formDir.resetForm({})">Reset
+      </button>
+    </div>
+  </form>
+
+  @if (formDir.submitted) {
+    <div class="submitted-message">
+      <p>You've submitted your actor, {{ actorForm.value.name }}!</p>
+      <button type="button" (click)="formDir.resetForm({})">Add new actor</button>
+    </div>
+  }
+</div>

@@ -1,0 +1,39 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+ts_library(
+    name = "unit_test_lib",
+    testonly = True,
+    srcs = glob([
+        "**/*.spec.ts",
+    ]),
+    deps = [
+        "//adev/shared-docs/pipeline/guides",
+        "@npm//@bazel/runfiles",
+        "@npm//@types/jsdom",
+        "@npm//jsdom",
+    ],
+)
+
+ts_library(
+    name = "bootstrap",
+    testonly = True,
+    srcs = [
+        "bootstrap.init.ts",
+    ],
+)
+
+jasmine_node_test(
+    name = "unit_tests",
+    bootstrap = [
+        ":bootstrap",
+    ],
+    data = [
+        "@npm//jsdom",
+    ] + glob([
+        "**/*.html",
+        "**/*.md",
+        "**/*.svg",
+        "**/*.ts",
+    ]),
+    deps = [":unit_test_lib"],
+)

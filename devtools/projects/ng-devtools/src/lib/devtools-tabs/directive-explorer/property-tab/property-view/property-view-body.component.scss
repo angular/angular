@@ -1,0 +1,54 @@
+:host {
+  ::ng-deep {
+    mat-expansion-panel {
+      border-radius: unset !important;
+    }
+
+    .mat-expansion-panel {
+      box-shadow:
+        0 -2px 5px -2px var(--dynamic-transparent-02),
+        0 2px 5px 0 var(--dynamic-transparent-02);
+    }
+
+    .mat-expansion-panel-body {
+      padding: 0;
+    }
+
+    .mat-expansion-panel-spacing {
+      margin: 0;
+    }
+
+    .mat-expansion-panel-header {
+      padding: 0 15px;
+
+      .documentation {
+        display: flex;
+        align-self: center;
+        text-decoration: none;
+      }
+
+      .docs-link {
+        height: inherit;
+        width: fit-content;
+        font-size: initial;
+        padding-left: 0.1rem;
+
+        &:active {
+          color: var(--blue-02);
+        }
+      }
+    }
+
+    .mat-expansion-panel-header-title {
+      font-size: 0.8em;
+      font-family: Menlo, monospace;
+    }
+
+    .mat-expansion-indicator {
+      &::after {
+        padding: 2.5px;
+        margin-bottom: 4.5px;
+      }
+    }
+  }
+}

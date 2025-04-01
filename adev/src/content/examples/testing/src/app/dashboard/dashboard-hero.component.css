@@ -1,0 +1,30 @@
+.hero {
+  padding: 20px;
+  position: relative;
+  text-align: center;
+  color: #eee;
+  max-height: 120px;
+  width: 100%;
+  min-width: 120px;
+  background-color: #607d8b;
+  border-radius: 2px;
+}
+
+.hero:hover {
+  background-color: #eee;
+  cursor: pointer;
+  color: #607d8b;
+}
+
+@media (max-width: 600px) {
+  .hero {
+    font-size: 10px;
+    max-height: 75px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .hero {
+    min-width: 60px;
+  }
+}

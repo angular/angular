@@ -1,0 +1,75 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Attach to bazel test ... --config=debug",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "address": "localhost",
+      "restart": false,
+      "sourceMaps": true,
+      "localRoot": "${workspaceRoot}",
+      "remoteRoot": "${workspaceRoot}",
+      "stopOnEntry": false,
+      "timeout": 600000,
+      "outFiles": ["${workspaceFolder}/dist/out/**/packages/**/*.js"]
+    },
+    {
+      "name": "Attach to bazel test ... --config=debug (no source maps)",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "address": "localhost",
+      "restart": false,
+      "sourceMaps": false,
+      "localRoot": "${workspaceRoot}",
+      "remoteRoot": "${workspaceRoot}",
+      "stopOnEntry": false,
+      "timeout": 600000,
+      "outFiles": ["${workspaceFolder}/dist/out/**/packages/**/*.js"]
+    },
+    {
+      "name": "IVY:packages/core/test/acceptance",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/.bin/bazelisk",
+      "args": ["test", "packages/core/test/acceptance", "--config=debug"],
+      "port": 9229,
+      "address": "localhost",
+      "restart": true,
+      "sourceMaps": true,
+      "timeout": 600000,
+      "outFiles": ["${workspaceFolder}/dist/out/**/packages/**/*.js"]
+    },
+    {
+      "name": "IVY:packages/core/test/render3",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/.bin/bazelisk",
+      "args": ["test", "packages/core/test/render3", "--config=debug"],
+      "port": 9229,
+      "address": "localhost",
+      "restart": true,
+      "sourceMaps": true,
+      "timeout": 600000,
+      "outFiles": ["${workspaceFolder}/dist/out/**/packages/**/*.js"]
+    },
+    {
+      "name": "IVY:packages/core/test",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/.bin/bazelisk",
+      "args": ["test", "packages/core/test", "--config=debug"],
+      "port": 9229,
+      "address": "localhost",
+      "restart": true,
+      "sourceMaps": true,
+      "timeout": 600000,
+      "outFiles": ["${workspaceFolder}/dist/out/**/packages/**/*.js"]
+    }
+  ]
+}

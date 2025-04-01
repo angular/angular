@@ -1,0 +1,24 @@
+<div [attr.id]="SECONDARY_NAV_ID" class="adev-secondary-nav-mask" [class.docs-nav-secondary--open]="isSecondaryNavVisible()" (docsClickOutside)="close()" [docsClickOutsideIgnore]="[PRIMARY_NAV_ID]">
+  <div class="docs-nav-secondary docs-scroll-track-transparent" [style.transform]="translateX()" [style.transition]="transition()">
+    <!-- Secondary Nav -->
+    @if (navigationItems && navigationItems.length > 0) {
+      <docs-navigation-list
+        [navigationItems]="navigationItems"
+        [displayItemsToLevel]="maxVisibleLevelsOnSecondaryNav()"
+        [expandableLevel]="maxVisibleLevelsOnSecondaryNav()"
+        (linkClicked)="close()"
+      />
+    }
+
+    <!-- Third, fourth and next levels of navigation -->
+    @for (item of navigationItemsSlides(); track item; let level = $index) {
+      <docs-navigation-list
+        [collapsableLevel]="level + maxVisibleLevelsOnSecondaryNav()"
+        [expandableLevel]="level + maxVisibleLevelsOnSecondaryNav() + 1"
+        [navigationItems]="[item]"
+        [displayItemsToLevel]="level + maxVisibleLevelsOnSecondaryNav() + 1"
+        (linkClicked)="close()"
+      />
+    }
+  </div>
+</div>

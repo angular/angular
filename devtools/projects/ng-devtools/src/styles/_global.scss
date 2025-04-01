@@ -1,0 +1,82 @@
+/* Global styles imported in the main styles.scss of the app wrapper (shell, demo apps). */
+
+@use 'sass:map';
+@use 'external/npm/node_modules/@angular/material/index' as mat;
+@use './colors' as clr;
+
+@include mat.all-component-typographies();
+@include mat.core();
+@include clr.root-colors();
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  background: var(--color-background);
+  color: var(--color-text);
+}
+
+input,
+select {
+  color: var(--primary-contrast);
+  background: var(--color-foreground);
+}
+
+// Light theme
+$light-primary: mat.m2-define-palette(mat.$m2-grey-palette, 700, 200);
+$light-accent: mat.m2-define-palette(mat.$m2-blue-palette, 800);
+$light-theme: mat.m2-define-light-theme($light-primary, $light-accent);
+
+// Dark theme
+$dark-primary: mat.m2-define-palette(mat.$m2-blue-grey-palette, 50);
+$dark-accent: mat.m2-define-palette(mat.$m2-blue-palette, 200);
+$dark-theme: map.deep-merge(
+  mat.m2-define-dark-theme($dark-primary, $dark-accent),
+  (
+    'color': (
+      'background': (
+        background: map.get(clr.$colors, gray-800),
+        card: map.get(clr.$colors, gray-800),
+      ),
+      'foreground': (
+        text: map.get(clr.$colors, gray-200),
+      ),
+    ),
+    'background': (
+      background: map.get(clr.$colors, gray-800),
+      card: map.get(clr.$colors, gray-800),
+    ),
+    'foreground': (
+      'text': map.get(clr.$colors, gray-200),
+    ),
+  )
+);
+
+/* Keep class name in sync with ThemeService */
+.light-theme {
+  @include mat.all-component-themes($light-theme);
+
+  .mat-mdc-chip.mat-mdc-standard-chip {
+    --mdc-chip-container-height: 24px;
+  }
+}
+
+/* Keep class name in sync with ThemeService */
+.dark-theme {
+  color-scheme: dark;
+  @include mat.all-component-themes($dark-theme);
+
+  .mat-mdc-chip.mat-mdc-standard-chip {
+    --mdc-chip-container-height: 24px;
+  }
+}
+
+ng-devtools {
+  .mdc-card {
+    padding: 4px;
+  }
+}
+
+.mat-mdc-menu-content {
+  padding: 0 !important;
+}

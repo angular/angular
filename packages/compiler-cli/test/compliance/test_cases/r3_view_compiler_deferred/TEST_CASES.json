@@ -1,0 +1,314 @@
+{
+  "$schema": "../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should generate a basic deferred block",
+      "inputFiles": ["basic_deferred.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "basic_deferred_template.js",
+              "generated": "basic_deferred.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a deferred block with secondary blocks",
+      "inputFiles": ["deferred_secondary_blocks.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_secondary_blocks_template.js",
+              "generated": "deferred_secondary_blocks.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a deferred block with placeholder block parameters",
+      "inputFiles": ["deferred_with_placeholder_params.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_with_placeholder_params_template.js",
+              "generated": "deferred_with_placeholder_params.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a deferred block with loading block parameters",
+      "inputFiles": ["deferred_with_loading_params.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_with_loading_params_template.js",
+              "generated": "deferred_with_loading_params.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a deferred block with local dependencies",
+      "inputFiles": ["deferred_with_local_deps.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_with_local_deps_template.js",
+              "generated": "deferred_with_local_deps.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a deferred block with no dependencies followed by one that has dependencies",
+      "inputFiles": ["deferred_without_deps_followed_by_one_with.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_without_deps_followed_by_one_with_template.js",
+              "generated": "deferred_without_deps_followed_by_one_with.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a deferred block with external dependencies",
+      "inputFiles": [
+        "deferred_with_external_deps.ts",
+        "deferred_with_external_deps_eager.ts",
+        "deferred_with_external_deps_lazy.ts",
+        "deferred_with_external_deps_loading.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_with_external_deps_template.js",
+              "generated": "deferred_with_external_deps.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a deferred block with triggers",
+      "inputFiles": ["deferred_with_triggers.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_with_triggers_template.js",
+              "generated": "deferred_with_triggers.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a deferred block with prefetch triggers",
+      "inputFiles": ["deferred_with_prefetch_triggers.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_with_prefetch_triggers_template.js",
+              "generated": "deferred_with_prefetch_triggers.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a deferred block with hydrate triggers",
+      "inputFiles": ["defer_with_hydrate_triggers.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "defer_with_hydrate_triggers_template.js",
+              "generated": "defer_with_hydrate_triggers.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should insert hydrate triggers before all other triggers",
+      "inputFiles": ["defer_hydrate_order.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "defer_hydrate_order_template.js",
+              "generated": "defer_hydrate_order.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a deferred block with a `when` trigger that has a pipe",
+      "inputFiles": ["deferred_when_with_pipe.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_when_with_pipe_template.js",
+              "generated": "deferred_when_with_pipe.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a deferred block with an interaction trigger in the same view",
+      "inputFiles": ["deferred_interaction_same_view_trigger.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_interaction_same_view_trigger_template.js",
+              "generated": "deferred_interaction_same_view_trigger.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a deferred block with an interaction trigger in a parent view",
+      "inputFiles": ["deferred_interaction_parent_view_trigger.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_interaction_parent_view_trigger_template.js",
+              "generated": "deferred_interaction_parent_view_trigger.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a deferred block with an interaction trigger inside the placeholder",
+      "inputFiles": ["deferred_interaction_placeholder_trigger.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_interaction_placeholder_trigger_template.js",
+              "generated": "deferred_interaction_placeholder_trigger.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a deferred block with implicit trigger references",
+      "inputFiles": ["deferred_with_implicit_triggers.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_with_implicit_triggers_template.js",
+              "generated": "deferred_with_implicit_triggers.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a deferred block with implicit trigger references",
+      "inputFiles": ["defer_deps.ts", "defer_deps_ext.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "defer_deps_template.js",
+              "generated": "defer_deps.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a deferred block with default imports",
+      "inputFiles": ["defer_default_deps.ts", "defer_default_deps_ext.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "defer_default_deps_template.js",
+              "generated": "defer_default_deps.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a lazy deferred block with empty and placeholder",
+      "inputFiles": ["lazy_with_blocks.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "lazy_with_blocks_template.js",
+              "generated": "lazy_with_blocks.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should handle a component with deferred blocks that share the same dependency",
+      "inputFiles": [
+        "deferred_with_duplicate_external_dep.ts",
+        "deferred_with_duplicate_external_dep_lazy.ts",
+        "deferred_with_duplicate_external_dep_other.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_with_duplicate_external_dep_template.js",
+              "generated": "deferred_with_duplicate_external_dep.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    }
+  ]
+}

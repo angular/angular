@@ -1,0 +1,13 @@
+.version {
+  font-weight: 400;
+  font-size: 16px;
+}
+
+.profiler-version {
+  color: var(--green-01);
+}
+
+.imported-version,
+.error {
+  color: var(--dynamic-red-01);
+}

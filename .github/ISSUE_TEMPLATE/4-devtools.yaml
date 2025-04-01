@@ -1,0 +1,54 @@
+name: 'Angular DevTools'
+description: Report an issue or suggest a feature for Angular DevTools
+
+body:
+  - type: checkboxes
+    id: bug-report-or-feature-request
+    attributes:
+      label: Is this a bug report or a feature request?
+      description: Select one.
+      options:
+        - label: Bug Report
+        - label: Feature Request
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Please provide the steps to reproduce the issue [Bug Report only]
+
+  - type: textarea
+    id: expected-vs-actual-behavior
+    attributes:
+      label: Please provide the expected behavior vs the actual behavior you encountered [Bug Report only]
+
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Please provide a screenshot if possible [Bug Report only]
+
+  - type: textarea
+    id: exception-or-error
+    attributes:
+      label: Please provide the exception or error you saw [Bug Report only]
+      render: true
+
+  - type: textarea
+    id: browser-info
+    attributes:
+      label: Is this a browser-specific issue? If so, please specify the device, browser, and version. [Bug Report only]
+      render: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description [Feature Request only]
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed solution [Feature Request only]
+
+  - type: textarea
+    id: alternatives-considered
+    attributes:
+      label: Alternatives considered [Feature Request only]

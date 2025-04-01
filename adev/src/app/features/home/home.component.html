@@ -1,0 +1,17 @@
+<adev-home-animation [isUwu]="isUwu" (ready)="onAnimationReady($event)" />
+
+<!-- This spacer is purely added to keep Lighthouse rating high by maintaining 0
+  cumulative layout shift until the animation renders it's own spacer. -->
+@if (!animationReady()) {
+  <div class="spacer"></div>
+}
+
+<div class="adev-editor-scroll-container">
+  <div class="adev-code-editor">
+    @defer (when showEditor(); prefetch when prefetchEditor()) {
+      <adev-code-editor [tutorialFiles]="tutorialFiles" />
+    } @loading {
+      <img alt="Code editor" />
+    }
+  </div>
+</div>

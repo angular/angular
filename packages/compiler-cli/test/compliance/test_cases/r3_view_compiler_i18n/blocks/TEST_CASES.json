@@ -1,0 +1,85 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should support @if blocks",
+      "inputFiles": [
+        "conditional.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "conditional.js",
+              "expected": "conditional_template.js"
+            }
+          ],
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support @switch blocks",
+      "inputFiles": [
+        "switch.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "switch.js",
+              "expected": "switch_template.js"
+            }
+          ],
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support @for blocks",
+      "inputFiles": [
+        "for.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "for.js",
+              "expected": "for_template.js"
+            }
+          ],
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support @defer blocks",
+      "inputFiles": [
+        "defer.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "defer.js",
+              "expected": "defer_template.js"
+            }
+          ],
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
+    }
+  ]
+}

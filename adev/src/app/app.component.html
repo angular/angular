@@ -1,0 +1,32 @@
+<button (click)="focusFirstHeading()" class="adev-skip">Skip to main content</button>
+
+@defer (when isBrowser) {
+  <adev-progress-bar />
+  <docs-top-level-banner expiry="2024-12-10" id="state-of-js-2024" link="https://survey.devographics.com/en-US/survey/state-of-js/2024?source=angular_homepage" text="Share your experience with Angular in The State of JavaScript 2024 survey"  />
+}
+
+<div class="adev-nav"></div>
+@if (displaySecondaryNav()) {
+  <adev-secondary-navigation />
+}
+<div class="docs-app-main-content">
+  <!--
+    Avoid rendering cookies popup on the server,
+    since there is no benefit of doing this and
+    it requires additional state management.
+  -->
+  @defer (when isBrowser) {
+    <docs-cookie-popup />
+
+    @defer (when displaySearchDialog(); prefetch on idle) {
+      @if (displaySearchDialog()) {
+        <docs-search-dialog (onClose)="displaySearchDialog.set(false)" />
+      }
+    }
+  }
+  <router-outlet />
+
+  @if (displayFooter()) {
+    <footer adev-footer></footer>
+  }
+</div>

@@ -1,0 +1,32 @@
+load("//tools:defaults.bzl", "ng_module", "ts_library")
+
+package(default_visibility = ["//visibility:private"])
+
+ts_library(
+    name = "pipes",
+    srcs = [
+        "index.ts",
+    ],
+    visibility = ["//adev/shared-docs:__subpackages__"],
+    deps = [
+        ":lib",
+    ],
+)
+
+ng_module(
+    name = "lib",
+    srcs = glob(
+        [
+            "**/*.ts",
+        ],
+        exclude = [
+            "index.ts",
+            "**/*.spec.ts",
+        ],
+    ),
+    deps = [
+        "//adev/shared-docs/interfaces",
+        "//adev/shared-docs/utils",
+        "//packages/core",
+    ],
+)

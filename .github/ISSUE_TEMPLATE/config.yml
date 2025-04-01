@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security issue disclosure
+    url: https://angular.dev/best-practices/security#report-issues
+    about: Report a security issue in Angular Framework, CDK, Material, or CLI
+  - name: Angular CLI
+    url: https://github.com/angular/angular-cli/issues/new/choose
+    about: Issues and feature requests for Angular CLI
+  - name: Angular Material and Components Development Kit (CDK)
+    url: https://github.com/angular/components/issues/new/choose
+    about: Issues and feature requests for Angular Material
+  - name: Support Request
+    url: https://github.com/angular/angular/blob/main/CONTRIBUTING.md#question
+    about: Questions and requests for support

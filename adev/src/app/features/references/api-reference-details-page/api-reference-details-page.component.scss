@@ -1,0 +1,45 @@
+@use '@angular/docs/styles/media-queries' as mq;
+@use '@angular/docs/styles/reference' as ref;
+
+:host {
+  display: block;
+  width: 100%;
+  max-width: var(--page-width);
+  padding: var(--layout-padding) 0 1rem var(--layout-padding);
+  box-sizing: border-box;
+
+  @include mq.for-desktop-down {
+    padding: var(--layout-padding);
+    max-width: none;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--septenary-contrast);
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+  h2 {
+    font-size: 1.25rem;
+  }
+  h3 {
+    font-size: 1rem;
+  }
+  h4 {
+    font-size: 0.95rem;
+  }
+  h5 {
+    font-size: 0.875rem;
+  }
+  h6 {
+    font-size: 0.6rem;
+  }
+}
+
+::ng-deep {
+  @include ref.reference-common();
+  @include ref.api-reference();
+}

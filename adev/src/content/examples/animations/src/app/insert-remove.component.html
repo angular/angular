@@ -1,0 +1,15 @@
+<!-- #docplaster -->
+
+<h2>Insert/Remove</h2>
+
+<nav>
+  <button type="button" (click)="toggle()">Toggle Insert/Remove</button>
+</nav>
+
+<!-- #docregion insert-remove-->
+@if (isShown) {
+  <div @myInsertRemoveTrigger class="insert-remove-container">
+    <p>The box is inserted</p>
+  </div>
+}
+<!-- #enddocregion insert-remove-->

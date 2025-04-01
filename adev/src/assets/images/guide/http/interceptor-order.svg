@@ -1,0 +1,50 @@
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 54 94" width="300">
+  <style>
+    #interceptor-exec-order {
+      fill: none;
+      stroke: black;
+      stroke-width: .3;
+    }
+    #interceptor-exec-order > text {
+      dominant-baseline: central;
+      fill: black;
+      font-size: 4px;
+      font-weight: lighter;
+      letter-spacing: .2px;
+      text-anchor: middle;
+    }
+    #interceptor-exec-order > .dashed {
+      stroke-dasharray: 2 1;
+    }
+  </style>
+
+  <defs>
+    <rect id="textbox" x="2" width="50" height="10" rx="2" />
+    <path id="arrow" d="M12,0 v10 l-2,-4 m2,4 l2,-4" />
+    <g id="arrows">
+      <use href="#arrow" />
+      <use href="#arrow" style="transform: rotateZ(180deg); transform-origin: 27px 5px;" />
+    </g>
+  </defs>
+
+  <g id="interceptor-exec-order">
+    <text x="27" y="7">HttpClient</text>
+    <use href="#textbox" y="02" class="dashed" />
+    <use href="#arrows"  y="12" class="dashed" />
+
+    <text x="27" y="27">AuthInterceptor</text>
+    <use href="#textbox" y="22" />
+    <use href="#arrows"  y="32" />
+
+    <text x="27" y="47">LoggingInterceptor</text>
+    <use href="#textbox" y="42" />
+    <use href="#arrows"  y="52" />
+
+    <text x="27" y="67">HttpBackend</text>
+    <use href="#textbox" y="62" />
+    <use href="#arrows"  y="72" class="dashed" />
+
+    <text x="27" y="87">Server</text>
+    <use href="#textbox" y="82" class="dashed" />
+  </g>
+</svg>

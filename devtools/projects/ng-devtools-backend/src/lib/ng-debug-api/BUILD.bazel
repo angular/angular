@@ -1,0 +1,31 @@
+load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
+load("//devtools/tools:ng_module.bzl", "ng_module")
+load("//devtools/tools:typescript.bzl", "ts_test_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "ng-debug-api",
+    srcs = glob(
+        include = ["*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    deps = [
+        "//packages/core",
+    ],
+)
+
+ts_test_library(
+    name = "ng-debug-api_test_lib",
+    srcs = ["ng-debug-api.spec.ts"],
+    deps = [
+        ":ng-debug-api",
+        "//packages/core",
+        "@npm//jasmine",
+    ],
+)
+
+karma_web_test_suite(
+    name = "ng-debug-api_test",
+    deps = [":ng-debug-api_test_lib"],
+)

@@ -1,0 +1,50 @@
+{
+  "$schema": "../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should capture input/output pair in a directive definition",
+      "inputFiles": ["model_directive_definition.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "model_directive_definition.js",
+              "generated": "model_directive_definition.js"
+            }
+          ],
+          "failureMessage": "Incorrect definition"
+        }
+      ]
+    },
+    {
+      "description": "should capture input/output pair in a component definition",
+      "inputFiles": ["model_component_definition.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "model_component_definition.js",
+              "generated": "model_component_definition.js"
+            }
+          ],
+          "failureMessage": "Incorrect definition"
+        }
+      ]
+    },
+    {
+      "description": "should handle a mix of zone and model inputs",
+      "inputFiles": ["mixed_model_types.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "mixed_model_types.js",
+              "generated": "mixed_model_types.js"
+            }
+          ],
+          "failureMessage": "Incorrect definition"
+        }
+      ]
+    }
+  ]
+}

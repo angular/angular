@@ -1,0 +1,60 @@
+load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
+load("//devtools/tools:ng_module.bzl", "ng_module")
+load("//devtools/tools:typescript.bzl", "ts_test_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "browser_styles",
+    srcs = ["browser_styles_service.ts"],
+    deps = [
+        "//packages/common",
+        "//packages/core",
+        "@npm//@angular/cdk",
+    ],
+)
+
+ng_module(
+    name = "frame_manager",
+    srcs = ["frame_manager.ts"],
+    deps = [
+        "//devtools/projects/ng-devtools/src/lib/application-environment",
+        "//devtools/projects/protocol",
+        "//packages/core",
+    ],
+)
+
+ng_module(
+    name = "theme",
+    srcs = ["theme_service.ts"],
+    deps = [
+        "//devtools/projects/ng-devtools/src/lib/application-providers:window",
+        "//packages/common",
+        "//packages/core",
+        "@npm//@types",
+        "@npm//rxjs",
+    ],
+)
+
+ts_test_library(
+    name = "test_application_services_lib",
+    srcs = glob(["*_spec.ts"]),
+    deps = [
+        ":browser_styles",
+        ":frame_manager",
+        ":theme",
+        "//devtools/projects/ng-devtools/src/lib/application-environment",
+        "//devtools/projects/ng-devtools/src/lib/application-providers:window",
+        "//devtools/projects/protocol",
+        "//packages/common",
+        "//packages/core/testing",
+        "@npm//@angular/cdk",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test_application_services",
+    deps = [
+        ":test_application_services_lib",
+    ],
+)

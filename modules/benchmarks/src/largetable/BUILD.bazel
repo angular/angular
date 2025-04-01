@@ -1,0 +1,32 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "util_lib",
+    srcs = ["util.ts"],
+    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
+    deps = ["//modules/benchmarks/src:util_lib"],
+)
+
+ts_library(
+    name = "perf_tests_lib",
+    testonly = 1,
+    srcs = ["largetable.perf-spec.ts"],
+    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
+    deps = [
+        "@npm//@angular/build-tooling/bazel/benchmark/driver-utilities",
+        "@npm//protractor",
+    ],
+)
+
+ts_library(
+    name = "e2e_tests_lib",
+    testonly = 1,
+    srcs = ["largetable.e2e-spec.ts"],
+    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
+    deps = [
+        "@npm//@angular/build-tooling/bazel/benchmark/driver-utilities",
+        "@npm//protractor",
+    ],
+)

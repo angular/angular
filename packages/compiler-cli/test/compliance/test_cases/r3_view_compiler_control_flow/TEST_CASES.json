@@ -1,0 +1,713 @@
+{
+  "$schema": "../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should generate a basic switch block",
+      "inputFiles": ["basic_switch.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "basic_switch_template.js",
+              "generated": "basic_switch.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a switch block without a default block",
+      "inputFiles": ["switch_without_default.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "switch_without_default_template.js",
+              "generated": "switch_without_default.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate nested switch blocks",
+      "inputFiles": ["nested_switch.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "nested_switch_template.js",
+              "generated": "nested_switch.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate switch block with a pipe in its expression",
+      "inputFiles": ["switch_with_pipe.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "switch_with_pipe.js",
+              "expected": "switch_with_pipe_template.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should not generate code for empty switch blocks",
+      "inputFiles": ["empty_switch.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "empty_switch_template.js",
+              "generated": "empty_switch.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a basic if block",
+      "inputFiles": ["basic_if.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "basic_if_template.js",
+              "generated": "basic_if.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a basic if/else block",
+      "inputFiles": ["basic_if_else.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "basic_if_else_template.js",
+              "generated": "basic_if_else.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a basic if/else if block",
+      "inputFiles": ["basic_if_else_if.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "basic_if_else_if_template.js",
+              "generated": "basic_if_else_if.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a nested if block",
+      "inputFiles": ["nested_if.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "nested_if_template.js",
+              "generated": "nested_if.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate an if block using pipes in its conditions",
+      "inputFiles": ["if_with_pipe.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "if_with_pipe.js",
+              "expected": "if_with_pipe_template.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate an if block with an aliased expression",
+      "inputFiles": ["if_with_alias.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "if_with_alias_template.js",
+              "generated": "if_with_alias.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should expose the alias to nested conditional blocks",
+      "inputFiles": ["if_nested_alias.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "if_nested_alias_template.js",
+              "generated": "if_nested_alias.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should expose the alias to nested event listeners",
+      "inputFiles": ["if_nested_alias_listeners.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "if_nested_alias_listeners_template.js",
+              "generated": "if_nested_alias_listeners.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a basic for block",
+      "inputFiles": ["basic_for.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "basic_for_template.js",
+              "generated": "basic_for.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a for block with an empty block",
+      "inputFiles": ["for_with_empty.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_with_empty_template.js",
+              "generated": "for_with_empty.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a for block that tracks by index",
+      "inputFiles": ["for_track_by_index.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_track_by_index_template.js",
+              "generated": "for_track_by_index.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a for block that tracks by a field on the item",
+      "inputFiles": ["for_track_by_field.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_track_by_field_template.js",
+              "generated": "for_track_by_field.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a nested for block",
+      "inputFiles": ["nested_for.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "nested_for_template.js",
+              "generated": "nested_for.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a for block with template variables",
+      "inputFiles": ["for_template_variables.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_template_variables_template.js",
+              "generated": "for_template_variables.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a for block with aliased template variables",
+      "inputFiles": ["for_aliased_template_variables.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_aliased_template_variables_template.js",
+              "generated": "for_aliased_template_variables.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a for block with references both to original and aliased template variables",
+      "inputFiles": ["for_both_aliased_and_original_variables.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_both_aliased_and_original_variables_template.js",
+              "generated": "for_both_aliased_and_original_variables.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should be able to refer to aliased template variables in nested for blocks",
+      "inputFiles": ["nested_for_template_variables.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "nested_for_template_variables_template.js",
+              "generated": "nested_for_template_variables.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should be able to use for loop variables in an event listener",
+      "inputFiles": ["for_template_variables_listener.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_template_variables_listener_template.js",
+              "generated": "for_template_variables_listener.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should parenthesize context variables used in an expression",
+      "inputFiles": ["for_variables_expression.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_variables_expression_template.js",
+              "generated": "for_variables_expression.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should implicitly allocate data slots for primary and empty block",
+      "inputFiles": ["for_data_slots.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_data_slots_template.js",
+              "generated": "for_data_slots.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should not expose for loop variables to the surrounding scope",
+      "inputFiles": ["for_template_variables_scope.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_template_variables_scope_template.js",
+              "generated": "for_template_variables_scope.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should optimize tracking function that calls a method on the component with $index and the item from the root template",
+      "inputFiles": ["for_template_track_method_root.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_template_track_method_root_template.js",
+              "generated": "for_template_track_method_root.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should optimize tracking function that calls a method on the component with $index and the item from a nested template",
+      "inputFiles": ["for_template_track_method_nested.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_template_track_method_nested_template.js",
+              "generated": "for_template_track_method_nested.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should optimize tracking function that calls a method on the component only with $index from the root template",
+      "inputFiles": ["for_template_track_method_only_index.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_template_track_method_only_index_template.js",
+              "generated": "for_template_track_method_only_index.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should reuse identical pure tracking functions",
+      "inputFiles": ["for_pure_track_reuse.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_pure_track_reuse_template.js",
+              "generated": "for_pure_track_reuse.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should reuse identical impure tracking functions",
+      "inputFiles": ["for_impure_track_reuse.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_impure_track_reuse_template.js",
+              "generated": "for_impure_track_reuse.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should preserve object and array literals inside tracking expressions",
+      "inputFiles": ["for_track_literals.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_track_literals_template.js",
+              "generated": "for_track_literals.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate an for loop block using a pipe in its expression",
+      "inputFiles": ["for_with_pipe.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_with_pipe_template.js",
+              "generated": "for_with_pipe.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate an if block with an element root node",
+      "inputFiles": ["if_element_root_node.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "if_element_root_node_template.js",
+              "generated": "if_element_root_node.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate an if block with an ng-template root node",
+      "inputFiles": ["if_template_root_node.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "if_template_root_node_template.js",
+              "generated": "if_template_root_node.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate an if block with an element root node preceded by non-element node",
+      "inputFiles": ["if_element_root_node_at_end.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "if_element_root_node_at_end_template.js",
+              "generated": "if_element_root_node_at_end.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a for block with an element root node",
+      "inputFiles": ["for_element_root_node.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_element_root_node_template.js",
+              "generated": "for_element_root_node.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a for block with an ng-template root node",
+      "inputFiles": ["for_template_root_node.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_template_root_node_template.js",
+              "generated": "for_template_root_node.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a for block with an element root node preceded by non-element node",
+      "inputFiles": ["for_element_root_node_at_end.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_element_root_node_at_end_template.js",
+              "generated": "for_element_root_node_at_end.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a switch block with cases that have element root nodes",
+      "inputFiles": ["switch_element_root_node.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "switch_element_root_node_template.js",
+              "generated": "switch_element_root_node.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a switch block with cases that have element root nodes preceded by non-element node",
+      "inputFiles": ["switch_element_root_node_at_end.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "switch_element_root_node_at_end_template.js",
+              "generated": "switch_element_root_node_at_end.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a switch block with cases that have ng-template root nodes",
+      "inputFiles": ["switch_template_root_node.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "switch_template_root_node_template.js",
+              "generated": "switch_template_root_node.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate computed for loop variables that depend on shadowed $index and $count",
+      "inputFiles": ["nested_for_computed_template_variables.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "nested_for_computed_template_variables_template.js",
+              "generated": "nested_for_computed_template_variables.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate computed for loop variables that depend on shadowed $index and $count inside of listeners",
+      "inputFiles": ["nested_for_listener_computed_template_variables.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "nested_for_listener_computed_template_variables_template.js",
+              "generated": "nested_for_listener_computed_template_variables.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate tracking function in a nested for loop",
+      "inputFiles": ["nested_for_tracking_function.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "nested_for_tracking_function_template.js",
+              "generated": "nested_for_tracking_function.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should support multiple control flow components with same name",
+      "inputFiles": ["conditional_same_component_names.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect generated output.",
+          "files": [
+            {
+              "expected": "conditional_same_component_names.js",
+              "generated": "conditional_same_component_names.js"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support expressions requiring temporary variables inside `track`",
+      "inputFiles": ["for_track_by_temporary_variables.ts"],
+      "compilerOptions": {
+        "target": "es2020"
+      },
+      "expectations": [
+        {
+          "failureMessage": "Incorrect generated output.",
+          "files": [
+            {
+              "expected": "for_track_by_temporary_variables_template.js",
+              "generated": "for_track_by_temporary_variables.js"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

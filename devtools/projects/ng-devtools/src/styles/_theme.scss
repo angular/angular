@@ -1,0 +1,30 @@
+/* Keep class names in sync with ThemeService */
+$dark-theme-class: 'dark-theme';
+$light-theme-class: 'light-theme';
+
+/* $browser expects 'chrome', 'firefox' or 'safari' */
+@mixin _theme($theme, $browser: '') {
+  @if $browser == '' {
+    :host-context(:root.#{$theme}) {
+      @content;
+    }
+  } @else {
+    /* Keep browser class name in sync with BrowserService. */
+    $browser-class: $browser + '-ui';
+    :host-context(:root.#{$theme}.#{$browser-class}) {
+      @content;
+    }
+  }
+}
+
+@mixin dark-theme($browser: '') {
+  @include _theme($dark-theme-class, $browser) {
+    @content;
+  }
+}
+
+@mixin light-theme($browser: '') {
+  @include _theme($light-theme-class, $browser) {
+    @content;
+  }
+}

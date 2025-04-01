@@ -1,0 +1,90 @@
+#mermaid-generated-diagram {
+  --fontFamily: 'sans-serif';
+  --primaryColor: '#fff';
+  --primaryBorderColor: '#000';
+  --pie1: '#0546ff';
+  --pie2: '#f637e3';
+  --pie3: '#f11653';
+  --pie4: '#8001c6';
+  --pie5: '#00c572';
+  --pie6: '#fe3700';
+
+  background-color: var(--page-background) !important; // svg background color
+  g {
+    rect {
+      stroke: black !important; // border around the rectangles, same for dark/light theme
+      filter: drop-shadow(5px 5px 0px var(--primary-contrast));
+    }
+  }
+  .messageText,
+  .pieTitleText {
+    fill: var(--primary-contrast) !important; // pie chart title text and line labels
+  }
+  .pieOuterCircle {
+    stroke-width: 1px;
+  }
+  .pieCircle {
+    stroke-width: 1.5px;
+  }
+  .legend {
+    rect {
+      filter: none;
+      opacity: 0.7;
+    }
+    text {
+      fill: var(--primary-contrast) !important; // legend label text color
+    }
+  }
+  .slice {
+    // e.g. text on the pie charts
+    fill: var(--primary-contrast) !important;
+  }
+  .flowchart-link,
+  line {
+    // lines
+    stroke: var(--primary-contrast) !important;
+  }
+  .marker,
+  #statediagram-barbEnd,
+  .transition,
+  #arrowhead path {
+    // arrows
+    stroke: var(--primary-contrast) !important;
+    fill: var(--primary-contrast) !important;
+  }
+  .cluster rect,
+  .nodes rect {
+    stroke: var(--primary-contrast) !important;
+    fill: var(--page-background) !important;
+  }
+
+  .nodeLabel:not(.node:has(polygon) .nodeLabel):not(.eventNode .nodeLabel) {
+    fill: var(--primary-contrast) !important;
+    color: var(--primary-contrast) !important;
+  }
+
+  .eventNode {
+    polygon {
+      fill: var(--hot-pink) !important;
+      filter: none;
+      stroke: var(--hot-pink) !important;
+    }
+
+    .nodeLabel p {
+      font-weight: 800 !important;
+    }
+  }
+
+  .checkedNode {
+    rect {
+      color: white !important;
+      filter: drop-shadow(5px 5px 0px var(--hot-pink));
+      stroke: var(--hot-pink) !important;
+    }
+
+    .nodeLabel p {
+      color: var(--hot-pink) !important;
+      font-weight: 800 !important;
+    }
+  }
+}

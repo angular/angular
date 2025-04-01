@@ -1,0 +1,9 @@
+/* To learn more about this file see: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../out-tsc/spec",
+    "types": ["jasmine"]
+  },
+  "include": ["src/app/**/*.spec.ts", "src/app/**/*.d.ts", "test-main.ts"]
+}

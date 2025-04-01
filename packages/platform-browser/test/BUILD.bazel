@@ -1,0 +1,70 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ts_library")
+load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
+
+exports_files([
+    "browser/static_assets/200.html",
+    "static_assets/test.html",
+])
+
+circular_dependency_test(
+    name = "circular_deps_test",
+    entry_point = "angular/packages/platform-browser/index.mjs",
+    deps = ["//packages/platform-browser"],
+)
+
+circular_dependency_test(
+    name = "testing_circular_deps_test",
+    entry_point = "angular/packages/platform-browser/testing/index.mjs",
+    deps = ["//packages/platform-browser/testing"],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages:types",
+        "//packages/animations",
+        "//packages/animations/browser",
+        "//packages/animations/browser/testing",
+        "//packages/common",
+        "//packages/common/http",
+        "//packages/common/http/testing",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser/animations",
+        "//packages/platform-browser/testing",
+        "//packages/private/testing",
+        "@npm//rxjs",
+    ],
+)
+
+js_library(
+    name = "zone_event_unpatched_init_lib",
+    srcs = ["dom/events/zone_event_unpatched.init.mjs"],
+)
+
+jasmine_node_test(
+    name = "test",
+    bootstrap = ["//tools/testing:node"],
+    deps = [
+        ":test_lib",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test_web",
+    bootstrap = [
+        ":zone_event_unpatched_init_lib",
+    ],
+    static_files = [
+        ":static_assets/test.html",
+    ],
+    deps = [
+        ":test_lib",
+    ],
+)

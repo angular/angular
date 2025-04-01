@@ -1,0 +1,22 @@
+load("//tools:defaults.bzl", "ng_module")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "router",
+    srcs = glob(
+        ["**/*.ts"],
+    ),
+    deps = [
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/router",
+    ],
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "**/*.ts",
+    ]),
+)

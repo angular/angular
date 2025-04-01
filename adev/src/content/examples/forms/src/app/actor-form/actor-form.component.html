@@ -1,0 +1,201 @@
+<!-- #docplaster -->
+<!-- #docregion final -->
+<div class="container">
+  <!-- #docregion edit-div -->
+  <div [hidden]="submitted">
+    <h1>Actor Form</h1>
+    <!-- #docregion ngSubmit -->
+    <form (ngSubmit)="onSubmit()" #actorForm="ngForm">
+      <!-- #enddocregion ngSubmit, edit-div -->
+      <div class="form-group">
+        <!-- #docregion name-with-error-msg -->
+        <label for="name">Name</label>
+        <input type="text" class="form-control" id="name"
+               required [(ngModel)]="model.name" name="name"
+               #name="ngModel">
+        <!-- #docregion hidden-error-msg -->
+        <div [hidden]="name.valid || name.pristine"
+             class="alert alert-danger">
+        <!-- #enddocregion hidden-error-msg -->
+          Name is required
+        </div>
+        <!-- #enddocregion name-with-error-msg -->
+      </div>
+
+      <div class="form-group">
+        <label for="studio">Studio Affiliation</label>
+        <input type="text" class="form-control" id="studio"
+               [(ngModel)]="model.studio" name="studio">
+      </div>
+
+      <div class="form-group">
+        <label for="skill">Skill</label>
+        <select class="form-control" id="skill"
+                required [(ngModel)]="model.skill" name="skill"
+                #skill="ngModel">
+          @for (skill of skills; track $index) {
+            <option [value]="skill">{{ skill }}</option>
+          }
+        </select>
+        <div [hidden]="skill.valid || skill.pristine" class="alert alert-danger">
+          skill is required
+        </div>
+      </div>
+
+      <!-- #docregion submit-button -->
+      <button type="submit" class="btn btn-success"
+        [disabled]="!actorForm.form.valid">Submit</button>
+      <!-- #enddocregion submit-button -->
+      <!-- #docregion new-actor-button-form-reset -->
+      <button type="button" class="btn btn-default"
+        (click)="newActor(); actorForm.reset()">New Actor</button>
+      <!-- #enddocregion new-actor-button-form-reset -->
+ <!-- #enddocregion final -->
+      <em>with</em> reset
+
+      &nbsp;&nbsp;
+      <!-- #docregion new-actor-button-no-reset -->
+      <button type="button" class="btn btn-default"
+        (click)="newActor()">New Actor</button>
+      <!-- #enddocregion new-actor-button-no-reset -->
+      <em>without</em> reset
+
+     <!-- NOT SHOWN IN DOCS -->
+      <div>
+        <hr>
+        Name via form.controls = {{ showFormControls(actorForm) }}
+      </div>
+     <!-- - -->
+<!-- #docregion final -->
+    </form>
+  </div>
+
+  <!-- #docregion submitted -->
+  <div [hidden]="!submitted">
+    <h2>You submitted the following:</h2>
+    <div class="row">
+      <div class="col-xs-3">Name</div>
+      <div class="col-xs-9">{{ model.name }}</div>
+    </div>
+    <div class="row">
+      <div class="col-xs-3">Studio</div>
+      <div class="col-xs-9">{{ model.studio }}</div>
+    </div>
+    <div class="row">
+      <div class="col-xs-3">Skill</div>
+      <div class="col-xs-9">{{ model.skill }}</div>
+    </div>
+    <br>
+    <button type="button" class="btn btn-primary" (click)="submitted=false">
+      Edit
+    </button>
+  </div>
+  <!-- #enddocregion submitted -->
+</div>
+ <!-- #enddocregion final -->
+
+<!-- ====================================================  -->
+  <div>
+    <form>
+<!-- #docregion edit-div -->
+
+       <!-- ... all of the form ... -->
+
+    </form>
+  </div>
+<!-- #enddocregion edit-div -->
+
+<!-- ====================================================  -->
+<hr>
+<style>
+  .no-style .ng-valid {
+  border-left: 1px  solid #CCC
+}
+
+  .no-style .ng-invalid {
+  border-left: 1px  solid #CCC
+}
+</style>
+<div class="no-style" style="margin-left: 4px">
+  <div class="container">
+      <h1>Actor Form</h1>
+      <form>
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input type="text" class="form-control" id="name" required>
+        </div>
+
+        <div class="form-group">
+          <label for="studio">Studio</label>
+          <input type="text" class="form-control" id="studio">
+        </div>
+
+        <!-- #docregion skills -->
+        <div class="form-group">
+          <label for="skill">Skill</label>
+          <select class="form-control" id="skill" required>
+            @for(skill of skills; track $index) {
+              <option [value]="skill">{{ skill }}</option>
+            }
+          </select>
+        </div>
+        <!-- #enddocregion skills -->
+        <button type="submit" class="btn btn-success">Submit</button>
+
+      </form>
+  </div>
+
+  <!-- ====================================================  -->
+  <hr>
+  <div class="container">
+      <h1>Actor Form</h1>
+      <!-- #docregion template-variable-->
+      <form #actorForm="ngForm">
+      <!-- #enddocregion template-variable-->
+    <!-- #docregion ngModel-2-->
+        {{ model | json }}
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input type="text" class="form-control" id="name"
+                 required
+                 [(ngModel)]="model.name" name="name">
+        </div>
+
+        <div class="form-group">
+          <label for="studio">Studio</label>
+          <input type="text"  class="form-control" id="studio"
+                 [(ngModel)]="model.studio" name="studio">
+        </div>
+
+        <div class="form-group">
+          <label for="skill">Skill</label>
+          <select class="form-control"  id="skill"
+                  required
+                  [(ngModel)]="model.skill" name="skill">
+            @for (skill of skills; track $index) {
+              <option [value]="skill">{{ skill }}</option>
+            }
+          </select>
+        </div>
+
+    <!-- #enddocregion ngModel-2-->
+        <button type="submit" class="btn btn-success">Submit</button>
+
+      </form>
+  </div>
+
+  <!-- EXTRA MATERIAL FOR DOCUMENTATION -->
+  <hr>
+  <!-- #docregion ngModelName-1 -->
+    <input type="text" class="form-control" id="name"
+           required
+           [(ngModel)]="model.name" name="name">
+    TODO: remove this: {{ model.name}}
+  <!-- #enddocregion ngModelName-1 -->
+  <hr>
+    <input type="text" class="form-control" id="name"
+           required
+           [ngModel]="model.name" name="name"
+           (ngModelChange)="model.name = $event">
+    TODO: remove this: {{ model.name}}
+</div>

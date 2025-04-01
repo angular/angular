@@ -1,0 +1,15 @@
+{
+  "$schema": "../../../node_modules/@angular-devkit/schematics/collection-schema.json",
+  "schematics": {
+    "ng-add": {
+      "description": "Add my library to the project.",
+      "factory": "./ng-add/index#ngAdd",
+      "schema": "./ng-add/schema.json"
+    },
+    "my-service": {
+      "description": "Generate a service in the project.",
+      "factory": "./my-service/index#myService",
+      "schema": "./my-service/schema.json"
+    }
+  }
+}

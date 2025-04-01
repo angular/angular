@@ -1,0 +1,100 @@
+.page {
+  padding: var(--layout-padding);
+  max-width: var(--page-width);
+  container: update-guide-page / inline-size;
+}
+
+h3,
+h4 {
+  margin-block-start: 2em;
+}
+
+.wizard {
+  padding-inline: 1rem;
+
+  .show-button {
+    display: block;
+    margin-block-start: 2rem;
+  }
+}
+
+.adev-version-selector {
+  display: flex;
+  gap: 1rem;
+}
+
+.adev-template-dropdown {
+  border: 1px solid var(--senary-contrast);
+  border-radius: 0.25rem;
+  padding: 0;
+  transform: translateY(-0.7rem);
+  max-height: 200px;
+  overflow-y: auto;
+
+  li {
+    list-style: none;
+    width: 198px;
+    box-sizing: border-box;
+
+    button {
+      background: var(--page-background);
+      font-size: 0.875rem;
+      width: 100%;
+      text-align: left;
+      padding-block: 0.5rem;
+      color: var(--quaternary-contrast);
+      transition:
+        color 0.3s ease,
+        background 0.3s ease;
+      font-weight: 400;
+
+      &:hover {
+        background: var(--senary-contrast);
+        color: var(--primary-contrast);
+      }
+    }
+  }
+}
+
+.adev-template-select {
+  margin-block-end: 0.5rem;
+
+  // cdk select button
+  button {
+    font-size: 0.875rem;
+    border: 1px solid var(--senary-contrast);
+    border-radius: 0.25rem;
+    width: 200px;
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-block: 0.5rem;
+    font-weight: 400;
+    transition: border 0.3s ease;
+    span {
+      color: var(--primary-contrast);
+      transition: color 0.3s ease;
+      margin-inline-start: 0.1rem;
+    }
+
+    docs-icon {
+      font-size: 1.3rem;
+      color: var(--quaternary-contrast);
+      transition: color 0.3s ease;
+    }
+  }
+}
+
+.adev-recommentation-item {
+  display: flex;
+  align-items: center;
+
+  > div {
+    margin-inline-start: 2rem;
+  }
+
+  // Code blocks are generable from the markdown, we need to opt-out of the scoping
+  ::ng-deep code {
+    cursor: pointer;
+  }
+}

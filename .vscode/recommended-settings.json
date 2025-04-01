@@ -1,0 +1,27 @@
+{
+  "[javascript]": {
+    "editor.formatOnSave": true
+  },
+  "[typescript]": {
+    "editor.formatOnSave": true
+  },
+  // Exclude third party modules and build artifacts from the editor watchers/searches.
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true,
+    "**/bazel-out/**": true,
+    "**/dist/**": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/bazel-out": true,
+    "**/dist": true,
+    ".history": true
+  },
+  "git.ignoreLimitWarning": true,
+  "gitlens.advanced.blame.customArguments": [
+    "--ignore-revs-file .git-blame-ignore-revs"
+  ]
+}

@@ -1,0 +1,181 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
+
+# BEGIN-DEV-ONLY
+# This section is only used here in the dev-infra repo as the resulting bundle is published in
+# the package.
+load("//tools:defaults.bzl", "esbuild_esm_bundle")
+
+package(default_visibility = ["//adev/shared-docs/pipeline:__subpackages__"])
+
+esbuild_esm_bundle(
+    name = "guides",
+    define = {
+        "HANDLE_MERMAID": "true",
+    },
+    entry_point = "//adev/shared-docs/pipeline/guides:index.ts",
+    # JSDOM should not be bundled because it has workers and dynamic imports.
+    # playwright-core cannot be bundled because of its cjs usage.
+    external = [
+        "jsdom",
+        "playwright-core",
+    ],
+    output = "guides.mjs",
+    platform = "node",
+    target = "es2022",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//adev/shared-docs/pipeline/guides:index",
+    ],
+)
+
+esbuild_esm_bundle(
+    name = "guides_no_mermaid",
+    define = {
+        "HANDLE_MERMAID": "false",
+    },
+    entry_point = "//adev/shared-docs/pipeline/guides:index.ts",
+    # JSDOM should not be bundled because it has workers and dynamic imports.
+    external = [
+        "jsdom",
+    ],
+    output = "guides-no-mermaid.mjs",
+    platform = "node",
+    target = "es2022",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//adev/shared-docs/pipeline/guides:index",
+    ],
+)
+
+esbuild_esm_bundle(
+    name = "stackblitz-bundle",
+    entry_point = "//adev/shared-docs/pipeline/examples/stackblitz:index.ts",
+    # JSDOM should not be bundled because it has workers and dynamic imports.
+    external = ["jsdom"],
+    output = "stackblitz.mjs",
+    platform = "node",
+    target = "es2022",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//adev/shared-docs/pipeline/examples/stackblitz:index",
+    ],
+)
+
+esbuild_esm_bundle(
+    name = "zip-bundle",
+    entry_point = "//adev/shared-docs/pipeline/examples/zip:index.ts",
+    output = "zip.mjs",
+    platform = "node",
+    target = "es2022",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//adev/shared-docs/pipeline/examples/zip:index",
+    ],
+)
+
+esbuild_esm_bundle(
+    name = "playground-bundle",
+    entry_point = "//adev/shared-docs/pipeline/tutorials:playground.ts",
+    output = "playground.mjs",
+    platform = "node",
+    target = "es2022",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//adev/shared-docs/pipeline/tutorials:playground",
+    ],
+)
+
+esbuild_esm_bundle(
+    name = "tutorial-bundle",
+    entry_point = "//adev/shared-docs/pipeline/tutorials:tutorial.ts",
+    output = "tutorial.mjs",
+    platform = "node",
+    target = "es2022",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//adev/shared-docs/pipeline/tutorials",
+    ],
+)
+
+esbuild_esm_bundle(
+    name = "navigation-bundle",
+    entry_point = "//adev/shared-docs/pipeline/navigation:index.ts",
+    output = "navigation.mjs",
+    platform = "node",
+    target = "es2022",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//adev/shared-docs/pipeline/navigation",
+    ],
+)
+
+exports_files([
+    "_guides.bzl",
+    "_stackblitz.bzl",
+    "_playground.bzl",
+    "_tutorial.bzl",
+    "_navigation.bzl",
+    "BUILD.bazel",
+])
+
+# END-DEV-ONLY
+
+nodejs_binary(
+    name = "stackblitz",
+    data = [
+        "@npm//jsdom",
+    ],
+    entry_point = "//adev/shared-docs/pipeline:stackblitz.mjs",
+    visibility = ["//visibility:public"],
+)
+
+nodejs_binary(
+    name = "zip",
+    entry_point = "//adev/shared-docs/pipeline:zip.mjs",
+    visibility = ["//visibility:public"],
+)
+
+nodejs_binary(
+    name = "markdown",
+    data = [
+        "@npm//@angular/build-tooling/bazel/browsers/chromium:chromium-for-generation",
+        "@npm//jsdom",
+        "@npm//mermaid",
+        "@npm//playwright-core",
+    ],
+    entry_point = "//adev/shared-docs/pipeline:guides.mjs",
+    env = {
+        "CHROME_BIN": "$(CHROMIUM)",
+    },
+    toolchains = [
+        "@npm//@angular/build-tooling/bazel/browsers/chromium:toolchain_alias",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+nodejs_binary(
+    name = "markdown_no_mermaid",
+    data = [
+        "@npm//jsdom",
+    ],
+    entry_point = "//adev/shared-docs/pipeline:guides-no-mermaid.mjs",
+    visibility = ["//visibility:public"],
+)
+
+nodejs_binary(
+    name = "playground",
+    entry_point = "//adev/shared-docs/pipeline:playground.mjs",
+    visibility = ["//visibility:public"],
+)
+
+nodejs_binary(
+    name = "tutorial",
+    entry_point = "//adev/shared-docs/pipeline:tutorial.mjs",
+    visibility = ["//visibility:public"],
+)
+
+nodejs_binary(
+    name = "navigation",
+    entry_point = "//adev/shared-docs/pipeline:navigation.mjs",
+    visibility = ["//visibility:public"],
+)

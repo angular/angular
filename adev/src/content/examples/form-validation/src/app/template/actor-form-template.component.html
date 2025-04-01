@@ -1,0 +1,114 @@
+<!-- #docregion -->
+<div>
+
+  <h2>Template-Driven Form</h2>
+  <!-- #docregion cross-validation-register-validator -->
+  <form #actorForm="ngForm" appUnambiguousRole>
+    <!-- #enddocregion cross-validation-register-validator -->
+    <div [hidden]="actorForm.submitted">
+      <div class="cross-validation"
+           [class.cross-validation-error]="actorForm.hasError('unambiguousRole') && (actorForm.touched || actorForm.dirty)">
+        <div class="form-group">
+          <label for="name">Name</label>
+          <!-- #docregion name-with-error-msg -->
+          <!-- #docregion name-input -->
+          <input type="text" id="name" name="name" class="form-control"
+                 required minlength="4" appForbiddenName="bob"
+                 [(ngModel)]="actor.name" #name="ngModel">
+          <!-- #enddocregion name-input -->
+
+          @if (name.invalid && (name.dirty || name.touched)) {
+            <div class="alert">
+
+              @if (name.hasError('required')) {
+                <div>
+                  Name is required.
+                </div>
+              }
+              @if (name.hasError('minlength')) {
+                <div>
+                  Name must be at least 4 characters long.
+                </div>
+              }
+              @if (name.hasError('forbiddenName')) {
+                <div>
+                  Name cannot be Bob.
+                </div>
+              }
+
+            </div>
+          }
+          <!-- #enddocregion name-with-error-msg -->
+        </div>
+
+        <div class="form-group">
+          <label for="role">Role</label>
+          <!-- #docregion role-input -->
+          <input type="text"
+                 id="role"
+                 name="role"
+                 #role="ngModel"
+                 [(ngModel)]="actor.role"
+                 [ngModelOptions]="{ updateOn: 'blur' }"
+                 appUniqueRole>
+          <!-- #enddocregion role-input -->
+          @if (role.pending) {
+            <div>Validating...</div>
+          }
+          @if (role.invalid) {
+            <div class="alert role-errors">
+              @if (role.hasError('uniqueRole')) {
+                <div>
+                  Role is already taken.
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- #docregion cross-validation-error-message -->
+        @if (actorForm.hasError('unambiguousRole') && (actorForm.touched || actorForm.dirty)) {
+          <div class="cross-validation-error-message alert">
+            Name cannot match role.
+          </div>
+        }
+        <!-- #enddocregion cross-validation-error-message -->
+      </div>
+
+      <div class="form-group">
+        <label for="skill">Skill</label>
+        <select id="skill"
+                name="skill"
+                required [(ngModel)]="actor.skill"
+                #skill="ngModel">
+          @for (skill of skills; track $index) {
+            <option [value]="skill">{{ skill }}</option>
+          }
+        </select>
+
+        @if (skill.errors && skill.touched) {
+          <div class="alert">
+            @if (skill.errors['required']) {
+              <div>Skill is required.</div>
+            }
+          </div>
+        }
+      </div>
+
+      <p>Complete the form to enable the Submit button.</p>
+      <button type="submit"
+              [disabled]="actorForm.invalid">Submit
+      </button>
+      <button type="button"
+              (click)="actorForm.resetForm({})">Reset
+      </button>
+    </div>
+
+    @if (actorForm.submitted) {
+      <div class="submitted-message">
+        <p>You've submitted your actor, {{ actorForm.value.name }}!</p>
+        <button type="button" (click)="actorForm.resetForm({})">Add new actor</button>
+      </div>
+    }
+  </form>
+</div>

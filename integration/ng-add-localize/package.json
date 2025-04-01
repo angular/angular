@@ -1,0 +1,30 @@
+{
+  "name": "ng-add-localize",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng add @angular/localize && yarn ng build"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/common": "file:../../dist/packages-dist/common",
+    "@angular/compiler": "file:../../dist/packages-dist/compiler",
+    "@angular/core": "file:../../dist/packages-dist/core",
+    "@angular/localize": "file:../../dist/packages-dist/localize",
+    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
+    "@angular/router": "file:../../dist/packages-dist/router",
+    "rxjs": "~7.4.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.11.4"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "file:../../node_modules/@angular-devkit/build-angular",
+    "@angular/cli": "file:../../node_modules/@angular/cli",
+    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
+    "@types/node": "^12.11.1",
+    "typescript": "file:../../node_modules/typescript"
+  }
+}

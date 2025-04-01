@@ -1,0 +1,35 @@
+@if (treeControl()) {
+  <mat-tree class="property-list" [dataSource]="dataSource()" [treeControl]="treeControl()">
+    <mat-tree-node matTreeNodePaddingIndent="14" *matTreeNodeDef="let node" matTreeNodePadding>
+      <span class="name non-expandable">{{ node.prop.name }}</span
+      >:&nbsp;
+      @if (!node.prop.descriptor.editable) {
+        <ng-property-preview (inspect)="inspect.emit(node)" [node]="node"></ng-property-preview>
+      } @else {
+        <ng-property-editor
+          [key]="node.prop.name"
+          [initialValue]="node.prop.descriptor.value || node.prop.descriptor.preview"
+          [containerType]="node.prop.descriptor.containerType"
+          (updateValue)="handleUpdate(node, $event)"
+        />
+      }
+    </mat-tree-node>
+    <mat-tree-node
+      matTreeNodePaddingIndent="14"
+      *matTreeNodeDef="let node; when: hasChild"
+      matTreeNodePadding
+    >
+      <div (click)="toggle(node)">
+        <mat-icon class="mat-icon-rtl-mirror">
+          {{ treeControl().isExpanded(node) ? 'expand_more' : 'chevron_right' }}
+        </mat-icon>
+        &nbsp;
+        <span class="name">{{ node.prop.name }}</span
+        >:
+        <span class="value">
+          {{ node.prop.descriptor.preview }}
+        </span>
+      </div>
+    </mat-tree-node>
+  </mat-tree>
+}

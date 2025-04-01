@@ -1,0 +1,12 @@
+<div class="router-tree-wrapper">
+  <div>
+    <input
+      matInput
+      (input)="searchRoutes($event)"
+      placeholder="Search routes"
+      class="filter-input"
+    />
+    <mat-checkbox (change)="togglePathSettings()">Show Full Path </mat-checkbox>
+  </div>
+  <ng-tree-visualizer-host #routerTree />
+</div>

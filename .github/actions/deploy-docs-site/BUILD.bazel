@@ -1,0 +1,18 @@
+load("//tools:defaults.bzl", "esbuild_checked_in")
+
+exports_files([
+    "tsconfig.json",
+])
+
+esbuild_checked_in(
+    name = "main",
+    entry_point = "//.github/actions/deploy-docs-site/lib:main.ts",
+    external = [
+        "undici",
+    ],
+    platform = "node",
+    target = "node14",
+    deps = [
+        "//.github/actions/deploy-docs-site/lib",
+    ],
+)

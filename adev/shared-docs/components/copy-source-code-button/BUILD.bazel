@@ -1,0 +1,43 @@
+load("//tools:defaults.bzl", "karma_web_test_suite", "ng_module", "ts_library")
+
+package(default_visibility = ["//visibility:private"])
+
+ng_module(
+    name = "copy-source-code-button",
+    srcs = [
+        "copy-source-code-button.component.ts",
+    ],
+    assets = [
+        "copy-source-code-button.component.html",
+    ],
+    visibility = [
+        "//adev/shared-docs/components:__pkg__",
+        "//adev/shared-docs/components/viewers:__pkg__",
+    ],
+    deps = [
+        "//adev/shared-docs/components/icon",
+        "//packages/common",
+        "//packages/core",
+        "@npm//@angular/cdk",
+    ],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["*.spec.ts"],
+    ),
+    deps = [
+        ":copy-source-code-button",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "@npm//@angular/cdk",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    deps = [":test_lib"],
+)

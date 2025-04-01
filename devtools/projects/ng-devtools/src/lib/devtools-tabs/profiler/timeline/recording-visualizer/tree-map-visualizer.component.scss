@@ -1,0 +1,20 @@
+.web-tree {
+  height: calc(100% - 25px);
+  width: calc(100% - 25px);
+  margin: auto;
+}
+
+:host {
+  ::ng-deep {
+    .webtreemap-node {
+      background: var(--primary-contrast);
+    }
+    .webtreemap-caption {
+      font-size: 0.9em;
+      // color: white;
+    }
+    .webtreemap-node:hover {
+      background: var(--septenary-contrast);
+    }
+  }
+}
