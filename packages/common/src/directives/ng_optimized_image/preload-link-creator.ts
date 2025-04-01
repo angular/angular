@@ -6,9 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, Injectable, Renderer2, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {
+  inject,
+  Injectable,
+  Renderer2,
+  ɵRuntimeError as RuntimeError,
+  DOCUMENT,
+} from '@angular/core';
 
-import {DOCUMENT} from '../../dom_tokens';
 import {RuntimeErrorCode} from '../../errors';
 
 import {DEFAULT_PRELOADED_IMAGES_LIMIT, PRELOADED_IMAGES} from './tokens';

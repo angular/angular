@@ -117,6 +117,7 @@ export {ApplicationConfig, mergeApplicationConfig} from './application/applicati
 export {makeStateKey, StateKey, TransferState} from './transfer_state';
 export {booleanAttribute, numberAttribute} from './util/coercion';
 export {REQUEST, REQUEST_CONTEXT, RESPONSE_INIT} from './application/platform_tokens';
+export {DOCUMENT} from './document';
 
 import {global} from './util/global';
 if (typeof ngDevMode !== 'undefined' && ngDevMode) {

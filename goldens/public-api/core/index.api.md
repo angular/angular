@@ -649,6 +649,9 @@ export interface DoCheck {
 }
 
 // @public
+export const DOCUMENT: InjectionToken<Document>;
+
+// @public
 export function effect(effectFn: (onCleanup: EffectCleanupRegisterFn) => void, options?: CreateEffectOptions): EffectRef;
 
 // @public

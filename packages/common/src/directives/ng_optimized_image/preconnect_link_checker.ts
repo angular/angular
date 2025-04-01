@@ -11,9 +11,9 @@ import {
   Injectable,
   InjectionToken,
   ɵformatRuntimeError as formatRuntimeError,
+  DOCUMENT,
 } from '@angular/core';
 
-import {DOCUMENT} from '../../dom_tokens';
 import {RuntimeErrorCode} from '../../errors';
 
 import {assertDevMode} from './asserts';
