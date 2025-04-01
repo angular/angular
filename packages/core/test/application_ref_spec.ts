@@ -256,6 +256,34 @@ describe('bootstrap', () => {
         ),
       );
     });
+
+    describe('bootstrapImpl', () => {
+      it('should use a provided injector', inject([ApplicationRef], (ref: ApplicationRef) => {
+        class MyService {}
+        const myService = new MyService();
+
+        @Component({
+          selector: 'injecting-component',
+          template: `<div>Hello, World!</div>`,
+        })
+        class InjectingComponent {
+          constructor(readonly myService: MyService) {}
+        }
+
+        const injector = Injector.create({
+          providers: [{provide: MyService, useValue: myService}],
+        });
+
+        createRootEl('injecting-component');
+        const appRef = ref as unknown as {bootstrapImpl: ApplicationRef['bootstrapImpl']};
+        const compRef = appRef.bootstrapImpl(
+          InjectingComponent,
+          /* rootSelectorOrNode */ undefined,
+          injector,
+        );
+        expect(compRef.instance.myService).toBe(myService);
+      }));
+    });
   });
 
   describe('destroy', () => {
