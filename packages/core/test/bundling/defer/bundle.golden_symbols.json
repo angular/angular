@@ -282,6 +282,7 @@
   "enterView",
   "epoch",
   "errorContext",
+  "errorHandlerEnvironmentInitializer",
   "execFinalizer",
   "executeCheckHooks",
   "executeContentQueries",

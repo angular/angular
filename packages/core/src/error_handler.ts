@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, InjectionToken} from './di';
+import {ENVIRONMENT_INITIALIZER, EnvironmentInjector, inject, InjectionToken} from './di';
 
 /**
  * Provides a hook for centralized exception handling.
@@ -58,8 +58,20 @@ export const INTERNAL_APPLICATION_ERROR_HANDLER = new InjectionToken<(e: any) =>
   {
     providedIn: 'root',
     factory: () => {
-      const userErrorHandler = inject(ErrorHandler);
-      return (e: unknown) => userErrorHandler.handleError(e);
+      // The user's error handler may depend on things that create a circular dependency
+      // so we inject it lazily.
+      const injector = inject(EnvironmentInjector);
+      let userErrorHandler: ErrorHandler;
+      return (e: unknown) => {
+        userErrorHandler ??= injector.get(ErrorHandler);
+        userErrorHandler.handleError(e);
+      };
     },
   },
 );
+
+export const errorHandlerEnvironmentInitializer = {
+  provide: ENVIRONMENT_INITIALIZER,
+  useValue: () => void inject(ErrorHandler),
+  multi: true,
+};

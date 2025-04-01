@@ -11,11 +11,11 @@ import {Subscription} from 'rxjs';
 import {ApplicationRef} from '../../application/application_ref';
 import {
   ENVIRONMENT_INITIALIZER,
+  EnvironmentInjector,
   EnvironmentProviders,
   inject,
   Injectable,
   InjectionToken,
-  Injector,
   makeEnvironmentProviders,
   StaticProvider,
 } from '../../di';
@@ -39,7 +39,7 @@ export class NgZoneChangeDetectionScheduler {
   private readonly zone = inject(NgZone);
   private readonly changeDetectionScheduler = inject(ChangeDetectionScheduler);
   private readonly applicationRef = inject(ApplicationRef);
-  private readonly injector = inject(Injector);
+  private readonly applicationErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
 
   private _onMicrotaskEmptySubscription?: Subscription;
 
@@ -60,8 +60,7 @@ export class NgZoneChangeDetectionScheduler {
           try {
             this.applicationRef.tick();
           } catch (e) {
-            const applicationErrorHandler = this.injector.get(INTERNAL_APPLICATION_ERROR_HANDLER);
-            applicationErrorHandler(e);
+            this.applicationErrorHandler(e);
           }
         });
       },
@@ -136,8 +135,12 @@ export function internalProvideZoneChangeDetection({
       provide: INTERNAL_APPLICATION_ERROR_HANDLER,
       useFactory: () => {
         const zone = inject(NgZone);
-        const userErrorHandler = inject(ErrorHandler);
-        return (e: unknown) => zone.runOutsideAngular(() => userErrorHandler.handleError(e));
+        const injector = inject(EnvironmentInjector);
+        let userErrorHandler: ErrorHandler;
+        return (e: unknown) => {
+          userErrorHandler ??= injector.get(ErrorHandler);
+          zone.runOutsideAngular(() => userErrorHandler.handleError(e));
+        };
       },
     },
   ];

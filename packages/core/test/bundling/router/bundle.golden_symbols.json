@@ -399,6 +399,7 @@
   "equalParamsAndUrlSegments",
   "equalPath",
   "errorContext",
+  "errorHandlerEnvironmentInitializer",
   "exactMatchOptions",
   "execFinalizer",
   "executeCheckHooks",

@@ -1005,39 +1005,6 @@ describe('AppRef', () => {
       }));
     });
   });
-
-  it('should not instantiate the ErrorHandler while creating the ApplicationRef', async () => {
-    let errorHandlerInstantiated = false;
-    class MockErrorHandler {
-      constructor() {
-        errorHandlerInstantiated = true;
-      }
-
-      handleError() {}
-    }
-
-    TestBed.resetTestingModule();
-    TestBed.configureTestingModule({
-      providers: [{provide: ErrorHandler, useClass: MockErrorHandler}],
-      rethrowApplicationErrors: false,
-    });
-
-    let shouldThrow = false;
-    const appRef = TestBed.inject(ApplicationRef);
-    effect(
-      () => {
-        throw new Error('fail!');
-      },
-      {injector: appRef.injector},
-    );
-
-    expect(errorHandlerInstantiated).toBe(false);
-
-    // This makes sure the effect runs, and the error is thrown on the handler
-    await appRef.whenStable();
-
-    expect(errorHandlerInstantiated).toBe(true);
-  });
 });
 
 describe('injector', () => {

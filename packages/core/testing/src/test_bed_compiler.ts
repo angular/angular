@@ -65,6 +65,7 @@ import {
   ɵɵInjectableDeclaration as InjectableDeclaration,
   NgZone,
   ErrorHandler,
+  ENVIRONMENT_INITIALIZER,
 } from '../../src/core';
 
 import {ComponentDef, ComponentType} from '../../src/render3';
@@ -943,6 +944,13 @@ export class TestBedCompiler {
         internalProvideZoneChangeDetection({}),
         TestBedApplicationErrorHandler,
         {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
+        {
+          provide: ENVIRONMENT_INITIALIZER,
+          multi: true,
+          useValue: () => {
+            inject(ErrorHandler);
+          },
+        },
       ],
     });
 
