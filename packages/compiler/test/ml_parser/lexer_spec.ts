@@ -283,6 +283,103 @@ describe('HtmlLexer', () => {
       });
     });
 
+    describe('component tags', () => {
+      const options: TokenizeOptions = {selectorlessEnabled: true};
+
+      it('should parse a basic component tag', () => {
+        expect(tokenizeAndHumanizeParts('<MyComp>hello</MyComp>', options)).toEqual([
+          [TokenType.COMPONENT_OPEN_START, 'MyComp', '', ''],
+          [TokenType.COMPONENT_OPEN_END],
+          [TokenType.TEXT, 'hello'],
+          [TokenType.COMPONENT_CLOSE, 'MyComp', '', ''],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should parse a component tag with a tag name', () => {
+        expect(tokenizeAndHumanizeParts('<MyComp:button>hello</MyComp:button>', options)).toEqual([
+          [TokenType.COMPONENT_OPEN_START, 'MyComp', '', 'button'],
+          [TokenType.COMPONENT_OPEN_END],
+          [TokenType.TEXT, 'hello'],
+          [TokenType.COMPONENT_CLOSE, 'MyComp', '', 'button'],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should parse a component tag with a tag name and namespace', () => {
+        expect(
+          tokenizeAndHumanizeParts('<MyComp:svg:title>hello</MyComp:svg:title>', options),
+        ).toEqual([
+          [TokenType.COMPONENT_OPEN_START, 'MyComp', 'svg', 'title'],
+          [TokenType.COMPONENT_OPEN_END],
+          [TokenType.TEXT, 'hello'],
+          [TokenType.COMPONENT_CLOSE, 'MyComp', 'svg', 'title'],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should parse a self-closing component tag', () => {
+        expect(tokenizeAndHumanizeParts('<MyComp/>', options)).toEqual([
+          [TokenType.COMPONENT_OPEN_START, 'MyComp', '', ''],
+          [TokenType.COMPONENT_OPEN_END_VOID],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should produce spans for component tags', () => {
+        expect(
+          tokenizeAndHumanizeSourceSpans('<MyComp:svg:title>hello</MyComp:svg:title>', options),
+        ).toEqual([
+          [TokenType.COMPONENT_OPEN_START, '<MyComp:svg:title'],
+          [TokenType.COMPONENT_OPEN_END, '>'],
+          [TokenType.TEXT, 'hello'],
+          [TokenType.COMPONENT_CLOSE, '</MyComp:svg:title>'],
+          [TokenType.EOF, ''],
+        ]);
+      });
+
+      it('should parse an incomplete component open tag', () => {
+        expect(
+          tokenizeAndHumanizeParts('<MyComp:span class="hi" sty<span></span>', options),
+        ).toEqual([
+          [TokenType.INCOMPLETE_COMPONENT_OPEN, 'MyComp', '', 'span'],
+          [TokenType.ATTR_NAME, '', 'class'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_VALUE_TEXT, 'hi'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_NAME, '', 'sty'],
+          [TokenType.TAG_OPEN_START, '', 'span'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.TAG_CLOSE, '', 'span'],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should parse a component tag with raw text', () => {
+        expect(
+          tokenizeAndHumanizeParts(`<MyComp:script>t\ne\rs\r\nt</MyComp:script>`, options),
+        ).toEqual([
+          [TokenType.COMPONENT_OPEN_START, 'MyComp', '', 'script'],
+          [TokenType.COMPONENT_OPEN_END],
+          [TokenType.RAW_TEXT, 't\ne\ns\nt'],
+          [TokenType.COMPONENT_CLOSE, 'MyComp', '', 'script'],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should parse a component tag with escapable raw text', () => {
+        expect(
+          tokenizeAndHumanizeParts(`<MyComp:title>t\ne\rs\r\nt</MyComp:title>`, options),
+        ).toEqual([
+          [TokenType.COMPONENT_OPEN_START, 'MyComp', '', 'title'],
+          [TokenType.COMPONENT_OPEN_END],
+          [TokenType.ESCAPABLE_RAW_TEXT, 't\ne\ns\nt'],
+          [TokenType.COMPONENT_CLOSE, 'MyComp', '', 'title'],
+          [TokenType.EOF],
+        ]);
+      });
+    });
+
     describe('escapable raw text', () => {
       it('should parse text', () => {
         expect(tokenizeAndHumanizeParts(`<title>t\ne\rs\r\nt</title>`)).toEqual([

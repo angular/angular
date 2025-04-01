@@ -12,7 +12,14 @@ import {ParseError, ParseLocation, ParseSourceFile, ParseSourceSpan} from '../pa
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './defaults';
 import {NAMED_ENTITIES} from './entities';
 import {TagContentType, TagDefinition} from './tags';
-import {IncompleteTagOpenToken, TagOpenStartToken, Token, TokenType} from './tokens';
+import {
+  ComponentOpenStartToken,
+  IncompleteComponentOpenToken,
+  IncompleteTagOpenToken,
+  TagOpenStartToken,
+  Token,
+  TokenType,
+} from './tokens';
 
 export class TokenError extends ParseError {
   constructor(
@@ -107,6 +114,9 @@ export interface TokenizeOptions {
    * text or an incomplete block, depending on whether `tokenizeBlocks` is enabled.
    */
   tokenizeLet?: boolean;
+
+  /** Whether the selectorless syntax is enabled. */
+  selectorlessEnabled?: boolean;
 }
 
 export function tokenize(
@@ -162,6 +172,7 @@ class _Tokenizer {
   private readonly _i18nNormalizeLineEndingsInICUs: boolean;
   private readonly _tokenizeBlocks: boolean;
   private readonly _tokenizeLet: boolean;
+  private readonly _selectorlessEnabled: boolean;
   tokens: Token[] = [];
   errors: TokenError[] = [];
   nonNormalizedIcuExpressions: Token[] = [];
@@ -193,6 +204,7 @@ class _Tokenizer {
     this._i18nNormalizeLineEndingsInICUs = options.i18nNormalizeLineEndingsInICUs || false;
     this._tokenizeBlocks = options.tokenizeBlocks ?? true;
     this._tokenizeLet = options.tokenizeLet ?? true;
+    this._selectorlessEnabled = options.selectorlessEnabled ?? false;
     try {
       this._cursor.init();
     } catch (e) {
@@ -754,19 +766,41 @@ class _Tokenizer {
   private _consumeTagOpen(start: CharacterCursor) {
     let tagName: string;
     let prefix: string;
-    let openTagToken: TagOpenStartToken | IncompleteTagOpenToken | undefined;
+    let closingTagName: string;
+    let openToken:
+      | TagOpenStartToken
+      | IncompleteTagOpenToken
+      | ComponentOpenStartToken
+      | IncompleteComponentOpenToken
+      | undefined;
+
     try {
-      if (!chars.isAsciiLetter(this._cursor.peek())) {
-        throw this._createError(
-          _unexpectedCharacterErrorMsg(this._cursor.peek()),
-          this._cursor.getSpan(start),
-        );
+      if (this._selectorlessEnabled && isSelectorlessNameStart(this._cursor.peek())) {
+        openToken = this._consumeComponentOpenStart(start);
+        prefix = openToken.parts[1];
+        tagName = openToken.parts[2];
+        closingTagName = openToken.parts[0];
+        if (prefix) {
+          closingTagName += `:${prefix}`;
+        }
+        if (tagName) {
+          closingTagName += `:${tagName}`;
+        }
+        this._attemptCharCodeUntilFn(isNotWhitespace);
+      } else {
+        if (!chars.isAsciiLetter(this._cursor.peek())) {
+          throw this._createError(
+            _unexpectedCharacterErrorMsg(this._cursor.peek()),
+            this._cursor.getSpan(start),
+          );
+        }
+
+        openToken = this._consumeTagOpenStart(start);
+        prefix = openToken.parts[0];
+        tagName = closingTagName = openToken.parts[1];
+        this._attemptCharCodeUntilFn(isNotWhitespace);
       }
 
-      openTagToken = this._consumeTagOpenStart(start);
-      prefix = openTagToken.parts[0];
-      tagName = openTagToken.parts[1];
-      this._attemptCharCodeUntilFn(isNotWhitespace);
       while (
         this._cursor.peek() !== chars.$SLASH &&
         this._cursor.peek() !== chars.$GT &&
@@ -781,12 +815,20 @@ class _Tokenizer {
         }
         this._attemptCharCodeUntilFn(isNotWhitespace);
       }
-      this._consumeTagOpenEnd();
+
+      if (openToken.type === TokenType.COMPONENT_OPEN_START) {
+        this._consumeComponentOpenEnd();
+      } else {
+        this._consumeTagOpenEnd();
+      }
     } catch (e) {
       if (e instanceof _ControlFlowError) {
-        if (openTagToken) {
+        if (openToken) {
           // We errored before we could close the opening tag, so it is incomplete.
-          openTagToken.type = TokenType.INCOMPLETE_TAG_OPEN;
+          openToken.type =
+            openToken.type === TokenType.COMPONENT_OPEN_START
+              ? TokenType.INCOMPLETE_COMPONENT_OPEN
+              : TokenType.INCOMPLETE_TAG_OPEN;
         } else {
           // When the start tag is invalid, assume we want a "<" as text.
           // Back to back text tokens are merged at the end.
@@ -802,13 +844,17 @@ class _Tokenizer {
     const contentTokenType = this._getTagDefinition(tagName).getContentType(prefix);
 
     if (contentTokenType === TagContentType.RAW_TEXT) {
-      this._consumeRawTextWithTagClose(prefix, tagName, false);
+      this._consumeRawTextWithTagClose(openToken, closingTagName, false);
     } else if (contentTokenType === TagContentType.ESCAPABLE_RAW_TEXT) {
-      this._consumeRawTextWithTagClose(prefix, tagName, true);
+      this._consumeRawTextWithTagClose(openToken, closingTagName, true);
     }
   }
 
-  private _consumeRawTextWithTagClose(prefix: string, tagName: string, consumeEntities: boolean) {
+  private _consumeRawTextWithTagClose(
+    openToken: TagOpenStartToken | ComponentOpenStartToken,
+    tagName: string,
+    consumeEntities: boolean,
+  ) {
     this._consumeRawText(consumeEntities, () => {
       if (!this._attemptCharCode(chars.$LT)) return false;
       if (!this._attemptCharCode(chars.$SLASH)) return false;
@@ -817,16 +863,41 @@ class _Tokenizer {
       this._attemptCharCodeUntilFn(isNotWhitespace);
       return this._attemptCharCode(chars.$GT);
     });
-    this._beginToken(TokenType.TAG_CLOSE);
+    this._beginToken(
+      openToken.type === TokenType.COMPONENT_OPEN_START
+        ? TokenType.COMPONENT_CLOSE
+        : TokenType.TAG_CLOSE,
+    );
     this._requireCharCodeUntilFn((code) => code === chars.$GT, 3);
     this._cursor.advance(); // Consume the `>`
-    this._endToken([prefix, tagName]);
+    this._endToken(openToken.parts);
   }
 
   private _consumeTagOpenStart(start: CharacterCursor): TagOpenStartToken {
     this._beginToken(TokenType.TAG_OPEN_START, start);
     const parts = this._consumePrefixAndName();
     return this._endToken(parts) as TagOpenStartToken;
+  }
+
+  private _consumeComponentOpenStart(start: CharacterCursor): ComponentOpenStartToken {
+    this._beginToken(TokenType.COMPONENT_OPEN_START, start);
+    const parts = this._consumeComponentName();
+    return this._endToken(parts) as ComponentOpenStartToken;
+  }
+
+  private _consumeComponentName(): string[] {
+    const nameStart = this._cursor.clone();
+    while (isSelectorlessNameChar(this._cursor.peek())) {
+      this._cursor.advance();
+    }
+    const name = this._cursor.getChars(nameStart);
+    let prefix = '';
+    let tagName = '';
+    if (this._cursor.peek() === chars.$COLON) {
+      this._cursor.advance();
+      [prefix, tagName] = this._consumePrefixAndName();
+    }
+    return [name, prefix, tagName];
   }
 
   private _consumeAttributeName() {
@@ -879,7 +950,31 @@ class _Tokenizer {
     this._endToken([]);
   }
 
+  private _consumeComponentOpenEnd() {
+    const tokenType = this._attemptCharCode(chars.$SLASH)
+      ? TokenType.COMPONENT_OPEN_END_VOID
+      : TokenType.COMPONENT_OPEN_END;
+    this._beginToken(tokenType);
+    this._requireCharCode(chars.$GT);
+    this._endToken([]);
+  }
+
   private _consumeTagClose(start: CharacterCursor) {
+    if (this._selectorlessEnabled) {
+      const clone = start.clone();
+      while (clone.peek() !== chars.$GT && !isSelectorlessNameStart(clone.peek())) {
+        clone.advance();
+      }
+      if (isSelectorlessNameStart(clone.peek())) {
+        this._beginToken(TokenType.COMPONENT_CLOSE, start);
+        const parts = this._consumeComponentName();
+        this._attemptCharCodeUntilFn(isNotWhitespace);
+        this._requireCharCode(chars.$GT);
+        this._endToken(parts);
+        return;
+      }
+    }
+
     this._beginToken(TokenType.TAG_CLOSE, start);
     this._attemptCharCodeUntilFn(isNotWhitespace);
     const prefixAndName = this._consumePrefixAndName();
@@ -1212,6 +1307,17 @@ function isBlockNameChar(code: number): boolean {
 
 function isBlockParameterChar(code: number): boolean {
   return code !== chars.$SEMICOLON && isNotWhitespace(code);
+}
+
+function isSelectorlessNameStart(code: number): boolean {
+  // TODO(crisbeto): assumption about which characters we allow here.
+  // This is much more limited to what TS allows.
+  return code === chars.$_ || (code >= chars.$A && code <= chars.$Z);
+}
+
+function isSelectorlessNameChar(code: number): boolean {
+  // TODO(crisbeto): this is identical to isBlockNameChar?
+  return chars.isAsciiLetter(code) || chars.isDigit(code) || code === chars.$_;
 }
 
 function mergeTextTokens(srcTokens: Token[]): Token[] {
