@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, Injectable, InjectionToken} from '@angular/core';
+import {inject, Injectable, InjectionToken, DOCUMENT} from '@angular/core';
 
 import {getDOM} from '../dom_adapter';
-import {DOCUMENT} from '../dom_tokens';
 
 /**
  * This class should not be used directly by an application developer. Instead, use

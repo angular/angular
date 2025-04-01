@@ -6,6 +6,7 @@
 
 import { ChangeDetectorRef } from '@angular/core';
 import { DoCheck } from '@angular/core';
+import { DOCUMENT } from '@angular/core';
 import { ElementRef } from '@angular/core';
 import * as i0 from '@angular/core';
 import { ɵIMAGE_CONFIG as IMAGE_CONFIG } from '@angular/core';
@@ -163,8 +164,7 @@ export class DecimalPipe implements PipeTransform {
     static ɵpipe: i0.ɵɵPipeDeclaration<DecimalPipe, "number", true>;
 }
 
-// @public
-export const DOCUMENT: InjectionToken<Document>;
+export { DOCUMENT }
 
 // @public
 export function formatCurrency(value: number, locale: string, currency: string, currencyCode?: string, digitsInfo?: string): string;
