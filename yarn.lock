@@ -4199,10 +4199,10 @@
   resolved "https://registry.yarnpkg.com/@types/caseless/-/caseless-0.12.5.tgz#db9468cb1b1b5a925b8f34822f1669df0c5472f5"
   integrity sha512-hWtVTC2q7hc7xZ/RLbxapMvDMgUnDvKvMOpKal4DrMyfGBUfB1oKaZlIRr6mJL+If3bAP6sV/QneGzF6tJjZDg==
 
-"@types/chrome@^0.0.312":
-  version "0.0.312"
-  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.312.tgz#d5542be84020644a81981bc2b77ebcfe05cde53e"
-  integrity sha512-m204djOoU/YqF1dRw3YLk2L3tcDTYREUERDQDUAmROK3Rv94nLbMJ4uvjzr/Yj/A7SyEpTrpoCuXBKTuerEdqg==
+"@types/chrome@^0.0.313":
+  version "0.0.313"
+  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.313.tgz#86487f51072c181a12495ae3e63a6701ade1a296"
+  integrity sha512-9R5T7gTaYZhkxlu+Ho4wk9FL+y/werWQY2yjGWSqCuiTsqS7nL/BE5UMTP6rU7J+oIG2FRKqrEycHhJATeltVA==
   dependencies:
     "@types/filesystem" "*"
     "@types/har-format" "*"
@@ -6737,10 +6737,10 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
-cldr@7.7.0:
-  version "7.7.0"
-  resolved "https://registry.yarnpkg.com/cldr/-/cldr-7.7.0.tgz#ae63fe3ad8af60a7f32ec361434033809845e1b8"
-  integrity sha512-msq6/WPgHphmZwuxrjr4oAsVUSYc572/5EFn5LBf6waDsMWGg8Fx1PbGHgN8OoWN2NdNXluoL4VkmU2/oIyuSw==
+cldr@7.8.0:
+  version "7.8.0"
+  resolved "https://registry.yarnpkg.com/cldr/-/cldr-7.8.0.tgz#c4394ba5055f6e73666a89ec439921d0d4717db0"
+  integrity sha512-9adDEXm2GNuOas66+p7hSb1nwwaWiAGkE3qcJZebcmK2WdwzbTfWnom2mPkX+wIgUnuCHFRwIuKaJ929Z2JnHw==
   dependencies:
     "@xmldom/xmldom" "^0.8.3"
     escodegen "^2.0.0"
