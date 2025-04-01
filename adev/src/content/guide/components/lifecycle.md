@@ -8,7 +8,7 @@ components and checking them for updates over time.
 
 In your components, you can implement **lifecycle hooks** to run code during these steps.
 Lifecycle hooks that relate to a specific component instance are implemented as methods on your
-component class. Lifecycle hooks that relate the Angular application as a whole are implemented
+component class. Lifecycle hooks that relate to the Angular application as a whole are implemented
 as functions that accept a callback.
 
 A component's lifecycle is tightly connected to how Angular checks your components for changes over
