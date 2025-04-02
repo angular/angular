@@ -27,7 +27,7 @@ export default class MainComponent {
         const search = this.search();
         if (search !== undefined) {
           this.displaySearchDialog.set(true);
-          this.searchService.updateSearchQuery(search);
+          this.searchService.searchQuery.set(search);
         }
       },
       {allowSignalWrites: true},
