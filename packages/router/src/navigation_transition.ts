@@ -281,12 +281,8 @@ export interface Navigation {
   targetRouterState?: RouterState;
   /**
    * Identifies how this navigation was triggered.
-   *
-   * * 'imperative'--Triggered by `router.navigateByUrl` or `router.navigate`.
-   * * 'popstate'--Triggered by a popstate event.
-   * * 'hashchange'--Triggered by a hashchange event.
    */
-  trigger: 'imperative' | 'popstate' | 'hashchange';
+  trigger: NavigationTrigger;
   /**
    * Options that controlled the strategy used for this navigation.
    * See `NavigationExtras`.
