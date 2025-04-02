@@ -239,7 +239,15 @@ class HtmlAstToIvyAst implements html.Visitor {
     if (preparsedElement.type === PreparsedElementType.NG_CONTENT) {
       const selector = preparsedElement.selectAttr;
       const attrs: t.TextAttribute[] = element.attrs.map((attr) => this.visitAttribute(attr));
-      parsedElement = new t.Content(selector, attrs, children, element.sourceSpan, element.i18n);
+      parsedElement = new t.Content(
+        selector,
+        attrs,
+        children,
+        element.sourceSpan,
+        element.startSourceSpan,
+        element.endSourceSpan,
+        element.i18n,
+      );
       this.ngContentSelectors.push(selector);
     } else if (isTemplateElement) {
       // `<ng-template>`

@@ -610,6 +610,8 @@ export class Content implements Node {
     public attributes: TextAttribute[],
     public children: Node[],
     public sourceSpan: ParseSourceSpan,
+    public startSourceSpan: ParseSourceSpan,
+    public endSourceSpan: ParseSourceSpan | null,
     public i18n?: I18nMeta,
   ) {}
   visit<Result>(visitor: Visitor<Result>): Result {
