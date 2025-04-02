@@ -71,7 +71,9 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     UNKNOWN_DATE_TYPE_VALUE = 2301,
     // (undocumented)
-    UNKNOWN_ZONE_WIDTH = 2302
+    UNKNOWN_ZONE_WIDTH = 2302,
+    // (undocumented)
+    VALUE_NOT_A_NUMBER = 2309
 }
 
 // (No @packageDocumentation comment for this package)

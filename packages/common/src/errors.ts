@@ -36,6 +36,7 @@ export const enum RuntimeErrorCode {
   INVALID_DIGIT_INFO = 2306,
   INVALID_NUMBER_OF_DIGITS_AFTER_FRACTION = 2307,
   NO_PLURAL_MESSAGE_FOUND = 2308,
+  VALUE_NOT_A_NUMBER = 2309,
 
   // Keep 2800 - 2900 for Http Errors.
 
