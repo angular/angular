@@ -153,6 +153,7 @@ describe('di', () => {
           rendererFactory: {} as any,
           sanitizer: null,
           changeDetectionScheduler: null,
+          ngReflect: false,
         },
         {} as any,
         null,

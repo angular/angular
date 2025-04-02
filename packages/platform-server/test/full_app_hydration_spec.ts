@@ -2598,9 +2598,7 @@ describe('platform-server full application hydration integration', () => {
           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
 
           const clientContents = stripExcessiveSpaces(clientRootNode.innerHTML);
-          expect(clientContents).toBe(
-            '<ol><li>1</li><li>2</li><li>3</li><!--bindings={ "ng-reflect-ng-for-of": "1,2,3" }--></ol>',
-          );
+          expect(clientContents).toBe('<ol><li>1</li><li>2</li><li>3</li><!--container--></ol>');
         });
 
         it('should hydrate when using @for control flow', async () => {
@@ -4754,16 +4752,14 @@ describe('platform-server full application hydration integration', () => {
         // Post-cleanup should *not* contain dehydrated views.
         const postCleanupContents = stripExcessiveSpaces(clientRootNode.outerHTML);
         expect(postCleanupContents).not.toContain(
-          '<span> 5 <b>is bigger than 15!</b><!--bindings={ "ng-reflect-ng-if": "false" }--></span>',
+          '<span> 5 <b>is bigger than 15!</b><!--container--></span>',
         );
         expect(postCleanupContents).toContain(
-          '<span> 30 <b>is bigger than 15!</b><!--bindings={ "ng-reflect-ng-if": "true" }--></span>',
+          '<span> 30 <b>is bigger than 15!</b><!--container--></span>',
         );
+        expect(postCleanupContents).toContain('<span> 5 <!--container--></span>');
         expect(postCleanupContents).toContain(
-          '<span> 5 <!--bindings={ "ng-reflect-ng-if": "false" }--></span>',
-        );
-        expect(postCleanupContents).toContain(
-          '<span> 50 <b>is bigger than 15!</b><!--bindings={ "ng-reflect-ng-if": "true" }--></span>',
+          '<span> 50 <b>is bigger than 15!</b><!--container--></span>',
         );
       });
 

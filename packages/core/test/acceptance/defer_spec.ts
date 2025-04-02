@@ -44,6 +44,7 @@ import {global} from '../../src/util/global';
 import {TimerScheduler} from '@angular/core/src/defer/timer_scheduler';
 import {Console} from '../../src/console';
 import {formatRuntimeErrorCode, RuntimeErrorCode} from '../../src/errors';
+import {provideNgReflectAttributes} from '../../src/ng_reflect';
 
 /**
  * Clears all associated directive defs from a given component class.
@@ -213,7 +214,10 @@ function createFixture(template: string) {
 
 // Set `PLATFORM_ID` to a browser platform value to trigger defer loading
 // while running tests in Node.
-const COMMON_PROVIDERS = [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}];
+const COMMON_PROVIDERS = [
+  {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
+  provideNgReflectAttributes(),
+];
 
 describe('@defer', () => {
   beforeEach(() => {
