@@ -278,25 +278,6 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
         retrieveHydrationInfo(hostElement, rootViewInjector, true /* isRootView */),
       );
 
-      const directivesToApply: DirectiveDef<unknown>[] = [this.componentDef];
-
-      if (directives) {
-        for (const directive of directives) {
-          const directiveType = typeof directive === 'function' ? directive : directive.type;
-          const directiveDef = getDirectiveDef(directiveType, true);
-
-          if (ngDevMode && !directiveDef.standalone) {
-            throw new RuntimeError(
-              RuntimeErrorCode.TYPE_IS_NOT_STANDALONE,
-              `The ${stringifyForError(directiveType)} directive must be standalone in ` +
-                `order to be applied to a dynamically-created component.`,
-            );
-          }
-
-          directivesToApply.push(directiveDef);
-        }
-      }
-
       rootLView[HEADER_OFFSET] = hostElement;
 
       // rootView is the parent when bootstrapping
@@ -314,7 +295,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
           rootTView,
           rootLView,
           '#host',
-          () => directivesToApply,
+          () => rootTView.directiveRegistry,
           true,
           0,
         );
@@ -384,36 +365,55 @@ function createRootTView(
       varsToAllocate += binding[BINDING].requiredVars;
 
       if (binding.create) {
-        (binding as Writable<Binding>).target = componentDef;
+        (binding as Writable<Binding>).targetIdx = 0;
         (creationBindings ??= []).push(binding);
       }
 
       if (binding.update) {
-        (binding as Writable<Binding>).target = componentDef;
+        (binding as Writable<Binding>).targetIdx = 0;
         (updateBindings ??= []).push(binding);
       }
     }
   }
 
   if (directives) {
-    for (const directive of directives) {
+    for (let i = 0; i < directives.length; i++) {
+      const directive = directives[i];
       if (typeof directive !== 'function') {
         const def: DirectiveDef<unknown> = getDirectiveDef(directive.type, true);
 
         for (const binding of directive.bindings) {
           varsToAllocate += binding[BINDING].requiredVars;
-
+          const targetDirectiveIdx = i + 1;
           if (binding.create) {
-            (binding as Writable<Binding>).target = def;
+            (binding as Writable<Binding>).targetIdx = targetDirectiveIdx;
             (creationBindings ??= []).push(binding);
           }
 
           if (binding.update) {
-            (binding as Writable<Binding>).target = def;
+            (binding as Writable<Binding>).targetIdx = targetDirectiveIdx;
             (updateBindings ??= []).push(binding);
           }
         }
       }
+    }
+  }
+
+  const directivesToApply: DirectiveDef<unknown>[] = [componentDef];
+  if (directives) {
+    for (const directive of directives) {
+      const directiveType = typeof directive === 'function' ? directive : directive.type;
+      const directiveDef = getDirectiveDef(directiveType, true);
+
+      if (ngDevMode && !directiveDef.standalone) {
+        throw new RuntimeError(
+          RuntimeErrorCode.TYPE_IS_NOT_STANDALONE,
+          `The ${stringifyForError(directiveType)} directive must be standalone in ` +
+            `order to be applied to a dynamically-created component.`,
+        );
+      }
+
+      directivesToApply.push(directiveDef);
     }
   }
 
@@ -423,7 +423,7 @@ function createRootTView(
     getRootTViewTemplate(creationBindings, updateBindings),
     1,
     varsToAllocate,
-    null,
+    directivesToApply,
     null,
     null,
     null,
