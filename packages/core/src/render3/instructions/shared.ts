@@ -251,7 +251,7 @@ export function setPropertyAndInputs<T>(
 
   if (hasSetInput) {
     isComponentHost(tNode) && markDirtyIfOnPush(lView, tNode.index);
-    ngDevMode && setNgReflectProperties(lView, tView, tNode, propName, value);
+    // ngDevMode && setNgReflectProperties(lView, tView, tNode, propName, value);
     return; // Stop propcessing if we've matched at least one input.
   }
 
