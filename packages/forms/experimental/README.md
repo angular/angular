@@ -26,6 +26,5 @@ If we decide to make any changes to forms, then yes.
 
 We don't know, it depends on what we learn through this process!
 
-### How can I follow what's happening?
-
-Our [Github project tracker](https://github.com/orgs/angular/projects/60) is where we track the active work.
+### Running tests
+yarn bazel test //packages/forms/experimental/test:test_web_chromium
