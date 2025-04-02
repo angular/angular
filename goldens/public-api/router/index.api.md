@@ -784,7 +784,7 @@ export interface RouterFeature<FeatureKind extends RouterFeatureKind> {
     // (undocumented)
     ɵkind: FeatureKind;
     // (undocumented)
-    ɵproviders: Provider[];
+    ɵproviders: Array<Provider | EnvironmentProviders>;
 }
 
 // @public
