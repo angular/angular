@@ -440,7 +440,10 @@ export class FakeNavigation implements Navigation {
     return this.disposed;
   }
 
-  /** Implementation for all navigations and traversals. */
+  /**
+   * Implementation for all navigations and traversals.
+   * @returns true if the event was intercepted, otherwise false
+   */
   private userAgentNavigate(
     destination: FakeNavigationDestination,
     result: InternalNavigationResult,
@@ -725,7 +728,6 @@ export interface NavigationPrecommitController {
   redirect: (url: string) => void;
 }
 
-/** `NavigateEvent` with experimental commit function. */
 export interface ExperimentalNavigateEvent extends NavigateEvent {
   intercept(options?: ExperimentalNavigationInterceptOptions): void;
 
@@ -875,8 +877,7 @@ function dispatchNavigateEvent({
     }
     if (event.interceptionState !== 'none') {
       event.interceptionState = 'committed';
-      const fromNHE = navigation.currentEntry;
-      if (fromNHE === null) {
+      if (!navigation.currentEntry) {
         throw new Error('from history entry should not be null');
       }
       navigation.transition = new InternalNavigationTransition(
