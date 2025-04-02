@@ -286,7 +286,6 @@
   "isLContainer",
   "isLView",
   "isNotFound",
-  "isPlatformServer",
   "isPositive",
   "isPromise",
   "isRefreshingViews",
