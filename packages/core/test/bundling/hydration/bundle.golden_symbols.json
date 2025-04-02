@@ -341,7 +341,6 @@
   "isLContainer",
   "isLView",
   "isNotFound",
-  "isPlatformServer",
   "isPositive",
   "isPromise",
   "isPromise2",

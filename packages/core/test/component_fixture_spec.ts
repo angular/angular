@@ -27,7 +27,7 @@ import {
   waitForAsync,
   withModule,
 } from '../testing';
-import {dispatchEvent} from '@angular/private/testing';
+import {dispatchEvent, isNode} from '@angular/private/testing';
 import {expect} from '@angular/private/testing/matchers';
 
 @Component({
@@ -155,6 +155,14 @@ class NestedAsyncTimeoutComp {
 }
 
 describe('ComponentFixture', () => {
+  beforeEach(() => {
+    globalThis['ngServerMode'] = isNode;
+  });
+
+  afterEach(() => {
+    globalThis['ngServerMode'] = undefined;
+  });
+
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
