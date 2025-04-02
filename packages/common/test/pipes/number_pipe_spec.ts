@@ -63,10 +63,10 @@ describe('Number pipes', () => {
 
       it('should not support other objects', () => {
         expect(() => pipe.transform({} as any)).toThrowError(
-          `NG02100: InvalidPipeArgument: '[object Object] is not a number' for pipe 'DecimalPipe'`,
+          `NG02100: InvalidPipeArgument: 'NG02309: [object Object] is not a number' for pipe 'DecimalPipe'`,
         );
         expect(() => pipe.transform('123abc')).toThrowError(
-          `NG02100: InvalidPipeArgument: '123abc is not a number' for pipe 'DecimalPipe'`,
+          `NG02100: InvalidPipeArgument: 'NG02309: 123abc is not a number' for pipe 'DecimalPipe'`,
         );
       });
     });
@@ -125,7 +125,7 @@ describe('Number pipes', () => {
 
       it('should not support other objects', () => {
         expect(() => pipe.transform({} as any)).toThrowError(
-          `NG02100: InvalidPipeArgument: '[object Object] is not a number' for pipe 'PercentPipe'`,
+          `NG02100: InvalidPipeArgument: 'NG02309: [object Object] is not a number' for pipe 'PercentPipe'`,
         );
       });
     });
@@ -214,7 +214,7 @@ describe('Number pipes', () => {
 
       it('should not support other objects', () => {
         expect(() => pipe.transform({} as any)).toThrowError(
-          `NG02100: InvalidPipeArgument: '[object Object] is not a number' for pipe 'CurrencyPipe'`,
+          `NG02100: InvalidPipeArgument: 'NG02309: [object Object] is not a number' for pipe 'CurrencyPipe'`,
         );
       });
 
