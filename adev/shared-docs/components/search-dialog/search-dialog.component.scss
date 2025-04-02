@@ -51,9 +51,9 @@ dialog {
       padding-inline-end: 1rem;
       padding-block: 0.25rem;
 
-      /** 
+      /**
       * This rule needs ng-deep to be applied to elements that are created via a [innerHTML] binding
-      */ 
+      */
       ::ng-deep {
         mark {
           background: #e62600;
@@ -155,8 +155,8 @@ dialog {
   border-radius: 0 0 0.25rem 0.25rem;
 
   docs-algolia-icon {
-    display: inline-flex;
-    margin-block-start: 0.12rem;
+    display: block;
+    margin-block-start: 5px;
     margin-inline-start: 0.15rem;
     width: 4rem;
   }
