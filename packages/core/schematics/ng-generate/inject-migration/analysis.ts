@@ -40,6 +40,27 @@ export interface MigrationOptions {
    * ```
    */
   _internalCombineMemberInitializers?: boolean;
+
+  /**
+   * Internal-only option that determines whether the migration should
+   * replace constructor parameter references with `this.param` property
+   * references. Only applies to references to readonly properties in
+   * initializers.
+   *
+   * ```
+   * // Before
+   * private foo;
+   *
+   * constructor(readonly service: Service) {
+   *   this.foo = service.getFoo();
+   * }
+   *
+   * // After
+   * readonly service = inject(Service);
+   * private foo = this.service.getFoo();
+   * ```
+   */
+  _internalReplaceParameterReferencesInInitializers?: boolean;
 }
 
 /** Names of decorators that enable DI on a class declaration. */
