@@ -408,7 +408,7 @@ export interface Navigation {
     id: number;
     initialUrl: UrlTree;
     previousNavigation: Navigation | null;
-    trigger: 'imperative' | 'popstate' | 'hashchange';
+    trigger: NavigationTrigger;
 }
 
 // @public

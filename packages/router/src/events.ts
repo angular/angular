@@ -624,6 +624,9 @@ export class RedirectRequest {
   ) {}
 }
 export type PrivateRouterEvents = BeforeActivateRoutes | RedirectRequest;
+export function isPublicRouterEvent(e: Event | PrivateRouterEvents): e is Event {
+  return !(e instanceof BeforeActivateRoutes) && !(e instanceof RedirectRequest);
+}
 
 /**
  * Router events that allow you to track the lifecycle of the router.
