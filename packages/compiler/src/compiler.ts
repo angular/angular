@@ -175,6 +175,8 @@ export {
   Variable as TmplAstVariable,
   ViewportDeferredTrigger as TmplAstViewportDeferredTrigger,
   HostElement as TmplAstHostElement,
+  Component as TmplAstComponent,
+  Directive as TmplAstDirective,
   visitAll as tmplAstVisitAll,
   Visitor as TmplAstVisitor,
 } from './render3/r3_ast';
