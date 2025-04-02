@@ -7,7 +7,7 @@
  */
 
 import {EnvironmentInjector, ProviderToken, runInInjectionContext} from '@angular/core';
-import {defer, EMPTY, from, MonoTypeOperatorFunction, Observable, of, throwError} from 'rxjs';
+import {EMPTY, from, MonoTypeOperatorFunction, Observable, of, throwError} from 'rxjs';
 import {catchError, concatMap, first, map, mergeMap, takeLast, tap} from 'rxjs/operators';
 
 import {RedirectCommand, ResolveData} from '../models';
@@ -25,6 +25,7 @@ import {getTokenOrFunctionIdentity} from '../utils/preactivation';
 import {isEmptyError} from '../utils/type_guards';
 import {redirectingNavigationError} from '../navigation_canceling_error';
 import {DefaultUrlSerializer} from '../url_tree';
+import {defer} from '../utils/defer';
 
 export function resolveData(
   paramsInheritanceStrategy: 'emptyOnly' | 'always',

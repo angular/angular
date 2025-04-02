@@ -7,16 +7,7 @@
  */
 
 import {EnvironmentInjector, ProviderToken, runInInjectionContext} from '@angular/core';
-import {
-  concat,
-  defer,
-  from,
-  MonoTypeOperatorFunction,
-  Observable,
-  of,
-  OperatorFunction,
-  pipe,
-} from 'rxjs';
+import {concat, from, MonoTypeOperatorFunction, Observable, of, OperatorFunction, pipe} from 'rxjs';
 import {concatMap, first, map, mergeMap, tap} from 'rxjs/operators';
 
 import {ActivationStart, ChildActivationStart, Event} from '../events';
@@ -33,6 +24,7 @@ import {redirectingNavigationError} from '../navigation_canceling_error';
 import type {NavigationTransition} from '../navigation_transition';
 import type {ActivatedRouteSnapshot, RouterStateSnapshot} from '../router_state';
 import {UrlSegment, UrlSerializer} from '../url_tree';
+import {defer} from '../utils/defer';
 import {wrapIntoObservable} from '../utils/collection';
 import {getClosestRouteInjector} from '../utils/config';
 import {
