@@ -30,6 +30,7 @@ describe('inject migration', () => {
     migrateAbstractClasses?: boolean;
     nonNullableOptional?: boolean;
     _internalCombineMemberInitializers?: boolean;
+    _internalReplaceParameterReferencesInInitializers?: boolean;
   }) {
     return runner.runSchematic('inject-migration', options, tree);
   }
@@ -1875,8 +1876,13 @@ describe('inject migration', () => {
   });
 
   describe('internal-only behavior', () => {
-    function runInternalMigration() {
-      return runMigration({_internalCombineMemberInitializers: true});
+    function runInternalMigration(
+      {replaceParameterReferences} = {replaceParameterReferences: true},
+    ) {
+      return runMigration({
+        _internalCombineMemberInitializers: true,
+        _internalReplaceParameterReferencesInInitializers: replaceParameterReferences,
+      });
     }
 
     it('should inline initializers that depend on DI', async () => {
@@ -1918,7 +1924,7 @@ describe('inject migration', () => {
       ]);
     });
 
-    it('should not inline initializers that access injected parameters without `this`', async () => {
+    it('should inline initializers that access injected parameters without `this` if possible', async () => {
       writeFile(
         '/dir.ts',
         [
@@ -1952,13 +1958,7 @@ describe('inject migration', () => {
         `  readonly bar = inject<Bar>(BAR_TOKEN);`,
         ``,
         `  private value: number = this.foo.getValue();`,
-        `  private otherValue: string;`,
-        ``,
-        `  constructor() {`,
-        `    const bar = this.bar;`,
-        ``,
-        `    this.otherValue = bar.getOtherValue();`,
-        `  }`,
+        `  private otherValue: string = this.bar.getOtherValue();`,
         `}`,
       ]);
     });
@@ -2198,7 +2198,7 @@ describe('inject migration', () => {
         `  private foo = inject(Foo);`,
         ``,
         `  private ids: number[] = this.foo.getValue().map(val => val.id);`,
-        `  private names: string[] = this.foo.getValue().map(function (current) { return current.name; });`,
+        `  private names: string[] = this.foo.getValue().map(function(current) { return current.name; });`,
         `}`,
       ]);
     });
@@ -2242,13 +2242,13 @@ describe('inject migration', () => {
         // The indentation of the closing braces here is slightly off,
         // but it's not a problem because this code is internal-only.
         `  private ids: number[] = this.foo.getValue().map(val => {`,
-        `    const id = val.id;`,
-        `    return id;`,
-        `});`,
-        `  private names: string[] = this.foo.getValue().map(function (current) {`,
-        `    const name = current.name;`,
-        `    return name;`,
-        `});`,
+        `       const id = val.id;`,
+        `       return id;`,
+        `    });`,
+        `  private names: string[] = this.foo.getValue().map(function(current) {`,
+        `      const name = current.name;`,
+        `      return name;`,
+        `    });`,
         `}`,
       ]);
     });
@@ -2506,13 +2506,7 @@ describe('inject migration', () => {
         `export class SomeService {`,
         `  readonly differentName = inject(OtherService);`,
         ``,
-        `  readonly otherService: OtherService;`,
-        ``,
-        `  constructor() {`,
-        `    const differentName = this.differentName;`,
-        ``,
-        `    this.otherService = differentName;`,
-        `  }`,
+        `  readonly otherService: OtherService = this.differentName;`,
         `}`,
       ]);
     });
@@ -2735,6 +2729,152 @@ describe('inject migration', () => {
         `    super(foo, bar);`,
         `  `,
         `    this.foo = foo;`,
+        `  }`,
+        `}`,
+      ]);
+    });
+
+    it('should replace parameter references with property references when possible.', async () => {
+      writeFile(
+        '/dir.ts',
+        [
+          `import { Directive } from '@angular/core';`,
+          `import { Foo } from 'foo';`,
+          ``,
+          `@Directive()`,
+          `class MyDir {`,
+          `  uninit: string;`,
+          `  constructor(readonly foo: Foo) {`,
+          `    this.uninit = foo.get();`,
+          // Replacing the param in other statements is out of scope for now,
+          // only change initializers.
+          `    console.log(foo);`,
+          `  }`,
+          `}`,
+        ].join('\n'),
+      );
+
+      await runInternalMigration();
+
+      expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+        `import { Directive, inject } from '@angular/core';`,
+        `import { Foo } from 'foo';`,
+        ``,
+        `@Directive()`,
+        `class MyDir {`,
+        `  readonly foo = inject(Foo);`,
+        ``,
+        `  uninit: string = this.foo.get();`,
+        `  constructor() {`,
+        `    const foo = this.foo;`,
+        ``,
+        `    console.log(foo);`,
+        `  }`,
+        `}`,
+      ]);
+    });
+
+    it('should respect the replace parameter references flag', async () => {
+      writeFile(
+        '/dir.ts',
+        [
+          `import { Directive } from '@angular/core';`,
+          `import { Foo } from 'foo';`,
+          ``,
+          `@Directive()`,
+          `class MyDir {`,
+          `  uninit: string;`,
+          `  constructor(readonly foo: Foo) {`,
+          `    this.uninit = foo.get();`,
+          // Replacing the param in other statements is out of scope for now,
+          // only change initializers.
+          `    console.log(foo);`,
+          `  }`,
+          `}`,
+        ].join('\n'),
+      );
+
+      await runInternalMigration({replaceParameterReferences: false});
+
+      expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+        `import { Directive, inject } from '@angular/core';`,
+        `import { Foo } from 'foo';`,
+        ``,
+        `@Directive()`,
+        `class MyDir {`,
+        `  readonly foo = inject(Foo);`,
+        ``,
+        `  uninit: string;`,
+        `  constructor() {`,
+        `    const foo = this.foo;`,
+        ``,
+        `    this.uninit = foo.get();`,
+        // Replacing the param in other statements is out of scope for now,
+        // only change initializers.
+        `    console.log(foo);`,
+        `  }`,
+        `}`,
+      ]);
+    });
+
+    it('should not replace parameter references with property references in nested contexts where `this` is different', async () => {
+      writeFile(
+        '/dir.ts',
+        [
+          `import { Directive } from '@angular/core';`,
+          `import { Foo } from 'foo';`,
+          ``,
+          `@Directive()`,
+          `class MyDir {`,
+          `  uninit1: {};`,
+          `  uninit2: {};`,
+          `  uninit3: {};`,
+          ``,
+          `  constructor(readonly foo: Foo, readonly bar: Bar, readonly baz: Baz) {`,
+          `    this.uninit1 = function() {`,
+          `      foo;`,
+          `    };`,
+          `    this.uninit2 = class {`,
+          `      static a = bar;`,
+          `    };`,
+          `    this.uninit3 = {`,
+          `      method() { baz; }`,
+          `    };`,
+          `  }`,
+          `}`,
+        ].join('\n'),
+      );
+
+      await runInternalMigration();
+
+      expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+        `import { Directive, inject } from '@angular/core';`,
+        `import { Foo } from 'foo';`,
+        ``,
+        `@Directive()`,
+        `class MyDir {`,
+        `  readonly foo = inject(Foo);`,
+        `  readonly bar = inject(Bar);`,
+        `  readonly baz = inject(Baz);`,
+        ``,
+        `  uninit1: {};`,
+        `  uninit2: {};`,
+        `  uninit3: {};`,
+        ``,
+        `  constructor() {`,
+        `    const foo = this.foo;`,
+        `    const bar = this.bar;`,
+        `    const baz = this.baz;`,
+        ``,
+        `    this.uninit1 = function() {`,
+        `      foo;`,
+        `    };`,
+        `    this.uninit2 = class {`,
+        `      static a = bar;`,
+        `    };`,
+        `    this.uninit3 = {`,
+        `      method() { baz; }`,
+        `    };`,
         `  }`,
         `}`,
       ]);
