@@ -26,9 +26,11 @@
       font-size: 1.3rem;
     }
 
-    p {
+    p, header {
       margin-inline-start: 1.65rem;
+    }
 
+    p {
       &:first-child {
         margin-block-start: 0;
       }
