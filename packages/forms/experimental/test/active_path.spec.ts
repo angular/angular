@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {signal} from '@angular/core';
 import {apply, applyEach, applyWhen, form} from '../src/api/structure';
 import {validate} from '../src/api/logic';
