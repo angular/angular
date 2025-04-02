@@ -1,3 +1,94 @@
+<a name="20.0.0-next.5"></a>
+# 20.0.0-next.5 (2025-04-02)
+## Breaking Changes
+### core
+- - Angular no longer supports Node.js v18.
+  - Node.js versions 22.0 to 22.10 are also no longer supported.
+  
+  Before upgrading to Angular v20, ensure the Node.js version is at least 20.11.1.
+  For the full list of supported versions, visit: https://angular.dev/reference/versions
+- Uncaught errors in listeners which were previously only reported to
+  `ErrorHandler` are now also reported to Angular's internal error
+  handling machinery. For tests, this means that the error will be
+  rethrown by default rather than only logging the error. Developers
+  should fix these errors, catch them in the test if the test is
+  intentionally covering an error case, or use `rethrowApplicationErrors:
+  false` in `configureTestingModule` as a last resort.
+### router
+- The guards arrays on `Route` no longer include `any` in
+  the type union. The union includes functions for the functional guards
+  as well as a type matching `Injector.get`: `ProviderToken<T>|string`.
+  Note that string is still deprecated on both the route guards and
+  `Injector.get`.
+## Deprecations
+### core
+- `ngIf`/`ngFor`/`ngSwitch` are deprecated. Use the control flow blocks instead (`@for`/`@if`/`@switch`).
+### 
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a7d1293f75](https://github.com/angular/angular/commit/a7d1293f7571568d242ceab2ec934bb4b331fc67) | fix | step 6 tutorial docs ([#60630](https://github.com/angular/angular/pull/60630)) |
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5eccf3a5e5](https://github.com/angular/angular/commit/5eccf3a5e5903e48546c3e2fdb62e938bbdae179) | fix | add missing peer dependency on `@angular/common` ([#60660](https://github.com/angular/angular/pull/60660)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8b990a31c3](https://github.com/angular/angular/commit/8b990a31c3f9b27e096c4ac63a7fa1873fadbe72) | fix | error if rawText isn't estimated correctly ([#60529](https://github.com/angular/angular/pull/60529)) |
+| [e6d2afbfb9](https://github.com/angular/angular/commit/e6d2afbfb9114274eb4374b1ae0683d8f62f3a9f) | fix | throw for invalid "as" expression in if block ([#60580](https://github.com/angular/angular/pull/60580)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1e6faad479](https://github.com/angular/angular/commit/1e6faad479e879083550424f92b6501fe09d48ba) | fix | correctly parse event name in HostListener ([#60561](https://github.com/angular/angular/pull/60561)) |
+| [5948cd03c5](https://github.com/angular/angular/commit/5948cd03c505c252602e80d09d5c63ea8fd38f70) | fix | Produce fatal diagnostic on duplicate decorated properties ([#60376](https://github.com/angular/angular/pull/60376)) |
+| [7e03af898e](https://github.com/angular/angular/commit/7e03af898e5144eb3a64b17dd6470874467d9133) | fix | set correct target when type checking events ([#60561](https://github.com/angular/angular/pull/60561)) |
+| [9f18c7cc74](https://github.com/angular/angular/commit/9f18c7cc74d1e31b566e6f18153079721b81c41c) | fix | support relative imports to symbols outside `rootDir` ([#60555](https://github.com/angular/angular/pull/60555)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a4bad8d361](https://github.com/angular/angular/commit/a4bad8d361e8a65b52df8c3d5436401343abace7) | feat | export signalGetFn from signal primitives ([#60497](https://github.com/angular/angular/pull/60497)) |
+| [7ccec1494f](https://github.com/angular/angular/commit/7ccec1494f864a485d2188da62d2006c31849f3f) | feat | move DOCUMENT token into core ([#60663](https://github.com/angular/angular/pull/60663)) |
+| [fe9b79b615](https://github.com/angular/angular/commit/fe9b79b615bb72989498c2dc9e84a89e618ebeb4) | feat | update Node.js version support ([#60545](https://github.com/angular/angular/pull/60545)) |
+| [5f7f04634f](https://github.com/angular/angular/commit/5f7f04634f57c0fb669e2b81c85a0dff972868d8) | fix | call `DestroyRef` on destroy callback if view is destroyed ([#58008](https://github.com/angular/angular/pull/58008)) |
+| [765ba1e181](https://github.com/angular/angular/commit/765ba1e181442079c25387bb869ed576388e839c) | fix | check ngDevMode for undefined ([#60565](https://github.com/angular/angular/pull/60565)) |
+| [7b819be83f](https://github.com/angular/angular/commit/7b819be83fc3c5ced7a7d14f777cad0691eef709) | fix | Ensure errors in listeners report to the application error handler ([#60251](https://github.com/angular/angular/pull/60251)) |
+| [cdbc6e8ec1](https://github.com/angular/angular/commit/cdbc6e8ec1ebacaee1862ed3da69bef41d214792) | fix | fix ng generate @angular/core:output-migration ([#60626](https://github.com/angular/angular/pull/60626)) |
+| [fd5c981a29](https://github.com/angular/angular/commit/fd5c981a290a69f3b34a6a189ec6e3d4989b1d20) | fix | fix regexp for event types ([#60592](https://github.com/angular/angular/pull/60592)) |
+| [6acce7ca2a](https://github.com/angular/angular/commit/6acce7ca2add13a25456c5bacbcf5a21ac8f77e3) | fix | fixes [#592882](https://github.com/angular/angular/pull/592882) ng generate @angular/core:signal-queries-migration ([#60688](https://github.com/angular/angular/pull/60688)) |
+| [0cd7d3bdf0](https://github.com/angular/angular/commit/0cd7d3bdf0a9c0aeb514998a248e913fe49b5410) | fix | preserve comments in internal inject migration ([#60588](https://github.com/angular/angular/pull/60588)) |
+| [005ad65b1f](https://github.com/angular/angular/commit/005ad65b1fbefdb34b03507c1720fa93e2a17cad) | fix | prevent omission of deferred pipes in full compilation ([#60571](https://github.com/angular/angular/pull/60571)) |
+| [1c7b356625](https://github.com/angular/angular/commit/1c7b35662587de8c3245ca26ba7a04aba2c0a341) | fix | release `hasPendingTasks` observers ([#59723](https://github.com/angular/angular/pull/59723)) |
+| [43cbc58254](https://github.com/angular/angular/commit/43cbc58254ecb8a1a6a938479b6c388cc00143d7) | fix | remove `forceRoot` flag for effects ([#60535](https://github.com/angular/angular/pull/60535)) |
+| [a611b234d7](https://github.com/angular/angular/commit/a611b234d7405f3a06389d66860a139cd9202c60) | fix | run root effects in creation order ([#60534](https://github.com/angular/angular/pull/60534)) |
+| [b407157ee8](https://github.com/angular/angular/commit/b407157ee848296cd264891b1d7cc9c57c719418) | refactor | Deprecate the structural directives `ngIf`/`ngFor`/`ngSwitch`. ([#60492](https://github.com/angular/angular/pull/60492)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a07ee60989](https://github.com/angular/angular/commit/a07ee60989441c38e6539fd25cad5166622e9f9e) | feat | add markAllAsDirty to AbstractControl ([#58663](https://github.com/angular/angular/pull/58663)) |
+| [bdfbd54932](https://github.com/angular/angular/commit/bdfbd5493240869e9a25fa10a0f6c21510e12492) | feat | Allow to reset a form without emitting events ([#60354](https://github.com/angular/angular/pull/60354)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ea62a4f317](https://github.com/angular/angular/commit/ea62a4f3172d0618a33e8e95b49e133cfee6b15d) | fix | Update adapter to log instead of throw errors ([#60651](https://github.com/angular/angular/pull/60651)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0c53970aeb](https://github.com/angular/angular/commit/0c53970aeb54033cce880bd9a8b51d8c67513f74) | fix | handle shorthand assignments in super call ([#60602](https://github.com/angular/angular/pull/60602)) |
+| [3ff48b6467](https://github.com/angular/angular/commit/3ff48b64670645a70c69706c4b20ee11e8f61306) | fix | inject migration not handling super parameter referenced via this ([#60602](https://github.com/angular/angular/pull/60602)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0bb4bd661e](https://github.com/angular/angular/commit/0bb4bd661e8fafe3228692181397272898fb9e9a) | feat | Add ability to directly abort a navigation ([#60380](https://github.com/angular/angular/pull/60380)) |
+| [ff98ccb193](https://github.com/angular/angular/commit/ff98ccb19391ed4e04528b82771c04ad67067d68) | feat | support custom elements for RouterLink ([#60290](https://github.com/angular/angular/pull/60290)) |
+| [1226eaad51](https://github.com/angular/angular/commit/1226eaad516ec9736422d5500af130222b8c77d9) | fix | Add missing types to transition ([#60307](https://github.com/angular/angular/pull/60307)) |
+| [c57951d58f](https://github.com/angular/angular/commit/c57951d58f3c1c9287349d40687715b631a1b25e) | fix | Remove 'any' type from route guards ([#60378](https://github.com/angular/angular/pull/60378)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4546d4fb39](https://github.com/angular/angular/commit/4546d4fb39145bd8723495fc0035a37b30b47d1f) | fix | assign initializing client's app version, when a request is for worker script ([#58131](https://github.com/angular/angular/pull/58131)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.2.5"></a>
 # 19.2.5 (2025-04-02)
 ### 
