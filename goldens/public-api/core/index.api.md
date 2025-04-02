@@ -1455,6 +1455,9 @@ export interface PromiseResourceOptions<T, R> extends BaseResourceOptions<T, R> 
 export function provideAppInitializer(initializerFn: () => Observable<unknown> | Promise<unknown> | void): EnvironmentProviders;
 
 // @public
+export function provideBrowserGlobalErrorListeners(): EnvironmentProviders;
+
+// @public
 export function provideEnvironmentInitializer(initializerFn: () => void): EnvironmentProviders;
 
 // @public
