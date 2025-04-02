@@ -1,7 +1,6 @@
 @use '@angular/docs/styles/media-queries' as mq;
 
 :host {
-  max-width: 2560px;
   margin-inline: auto;
   display: flex;
   flex-direction: row;
@@ -21,7 +20,7 @@
     }
 
     // show it under the navbar.
-    @include mq.for-tablet-landscape-down{
+    @include mq.for-tablet-landscape-down {
       z-index: calc(var(--z-index-nav) - 1);
     }
   }
@@ -96,6 +95,7 @@
   flex-direction: column;
   min-height: 100vh;
   width: 100%;
+  max-width: 2560px;
 
   // If navs are open, render a blurry background over content
   ::after {

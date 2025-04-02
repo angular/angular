@@ -12,15 +12,19 @@ export function dashCaseToCamelCase(input: string): string {
   return input.replace(DASH_CASE_REGEXP, (...m: any[]) => m[1].toUpperCase());
 }
 
-export function splitAtColon(input: string, defaultValues: string[]): string[] {
+export function splitAtColon(input: string, defaultValues: (string | null)[]): (string | null)[] {
   return _splitAt(input, ':', defaultValues);
 }
 
-export function splitAtPeriod(input: string, defaultValues: string[]): string[] {
+export function splitAtPeriod(input: string, defaultValues: (string | null)[]): (string | null)[] {
   return _splitAt(input, '.', defaultValues);
 }
 
-function _splitAt(input: string, character: string, defaultValues: string[]): string[] {
+function _splitAt(
+  input: string,
+  character: string,
+  defaultValues: (string | null)[],
+): (string | null)[] {
   const characterIndex = input.indexOf(character);
   if (characterIndex == -1) return defaultValues;
   return [input.slice(0, characterIndex).trim(), input.slice(characterIndex + 1).trim()];

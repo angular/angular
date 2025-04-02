@@ -17,7 +17,7 @@ import {
   ValidationErrors,
   Validators,
   ValueChangeEvent,
-} from '@angular/forms';
+} from '../index';
 import {delay, filter, map, of, startWith, timer} from 'rxjs';
 
 import {

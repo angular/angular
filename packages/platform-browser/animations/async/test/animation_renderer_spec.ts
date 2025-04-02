@@ -35,9 +35,9 @@ import {
   ViewChild,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
-import {InjectableAnimationEngine} from '@angular/platform-browser/animations/src/providers';
-import {el} from '@angular/platform-browser/testing/src/browser_util';
+import {ɵDomRendererFactory2 as DomRendererFactory2} from '../../../index';
+import {InjectableAnimationEngine} from '../../../animations/src/providers';
+import {el} from '../../../testing/src/browser_util';
 
 import {
   AsyncAnimationRendererFactory,

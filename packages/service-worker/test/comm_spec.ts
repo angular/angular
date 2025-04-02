@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {PLATFORM_ID} from '@angular/core';
+import {Injector, PLATFORM_ID} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
   NgswCommChannel,
@@ -14,17 +14,17 @@ import {
   VersionDetectedEvent,
   VersionEvent,
   VersionReadyEvent,
-} from '@angular/service-worker/src/low_level';
-import {ngswCommChannelFactory, SwRegistrationOptions} from '@angular/service-worker/src/provider';
-import {SwPush} from '@angular/service-worker/src/push';
-import {SwUpdate} from '@angular/service-worker/src/update';
+} from '../src/low_level';
+import {ngswCommChannelFactory, SwRegistrationOptions} from '../src/provider';
+import {SwPush} from '../src/push';
+import {SwUpdate} from '../src/update';
 import {
   MockPushManager,
   MockPushSubscription,
   MockServiceWorkerContainer,
   MockServiceWorkerRegistration,
   patchDecodeBase64,
-} from '@angular/service-worker/testing/mock';
+} from '../testing/mock';
 import {filter} from 'rxjs/operators';
 
 describe('ServiceWorker library', () => {
@@ -79,7 +79,7 @@ describe('ServiceWorker library', () => {
             {
               provide: NgswCommChannel,
               useFactory: ngswCommChannelFactory,
-              deps: [SwRegistrationOptions, PLATFORM_ID],
+              deps: [SwRegistrationOptions, Injector],
             },
           ],
         });
@@ -96,7 +96,7 @@ describe('ServiceWorker library', () => {
           {
             provide: NgswCommChannel,
             useFactory: ngswCommChannelFactory,
-            deps: [SwRegistrationOptions, PLATFORM_ID],
+            deps: [SwRegistrationOptions, Injector],
           },
         ],
       });
@@ -111,7 +111,7 @@ describe('ServiceWorker library', () => {
           {
             provide: NgswCommChannel,
             useFactory: ngswCommChannelFactory,
-            deps: [SwRegistrationOptions, PLATFORM_ID],
+            deps: [SwRegistrationOptions, Injector],
           },
         ],
       });
@@ -140,7 +140,7 @@ describe('ServiceWorker library', () => {
           {
             provide: NgswCommChannel,
             useFactory: ngswCommChannelFactory,
-            deps: [SwRegistrationOptions, PLATFORM_ID],
+            deps: [SwRegistrationOptions, Injector],
           },
         ],
       });

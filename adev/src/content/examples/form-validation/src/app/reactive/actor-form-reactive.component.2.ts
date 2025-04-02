@@ -1,7 +1,7 @@
 // #docplaster
 // #docregion
-import {Component, OnInit} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {Component, inject} from '@angular/core';
+import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {forbiddenNameValidator} from '../shared/forbidden-name.directive';
 import {UniqueRoleValidator} from '../shared/role.directive';
 
@@ -9,9 +9,13 @@ import {UniqueRoleValidator} from '../shared/role.directive';
   selector: 'app-actor-form-reactive',
   templateUrl: './actor-form-reactive.component.html',
   styleUrls: ['./actor-form-reactive.component.css'],
-  standalone: false,
+  imports: [ReactiveFormsModule],
 })
-export class HeroFormReactiveComponent implements OnInit {
+export class HeroFormReactiveComponent {
+  // #docregion async-validator-inject
+  roleValidator = inject(UniqueRoleValidator);
+  // #enddocregion async-validator-inject
+
   skills = ['Method Acting', 'Singing', 'Dancing', 'Swordfighting'];
 
   actor = {name: 'Tom Cruise', role: 'Romeo', skill: this.skills[3]};
@@ -49,8 +53,4 @@ export class HeroFormReactiveComponent implements OnInit {
   get role() {
     return this.actorForm.get('role');
   }
-
-  // #docregion async-validator-inject
-  constructor(private roleValidator: UniqueRoleValidator) {}
-  // #enddocregion async-validator-inject
 }

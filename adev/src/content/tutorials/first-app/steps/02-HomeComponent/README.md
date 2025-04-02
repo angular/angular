@@ -117,7 +117,7 @@ In the **Edit** pane of your IDE:
 
 </docs-workflow>
 
-Summary: In this lesson, you created a new component for your app and gave it a filter edit control and button.
+SUMMARY: In this lesson, you created a new component for your app and gave it a filter edit control and button.
 
 For more information about the topics covered in this lesson, visit:
 

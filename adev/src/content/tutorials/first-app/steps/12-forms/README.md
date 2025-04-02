@@ -96,7 +96,7 @@ This step tests the new form to see that when the form data is submitted to the 
 
 </docs-workflow>
 
-Summary: In this lesson, you updated your app to add a form using Angular's forms feature, and connect the data captured in the form to a component using an event handler.
+SUMMARY: In this lesson, you updated your app to add a form using Angular's forms feature, and connect the data captured in the form to a component using an event handler.
 
 For more information about the topics covered in this lesson, visit:
 

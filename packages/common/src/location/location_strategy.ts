@@ -6,9 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Inject, inject, Injectable, InjectionToken, OnDestroy, Optional} from '@angular/core';
-
-import {DOCUMENT} from '../dom_tokens';
+import {
+  Inject,
+  inject,
+  Injectable,
+  InjectionToken,
+  OnDestroy,
+  Optional,
+  DOCUMENT,
+} from '@angular/core';
 
 import {LocationChangeListener, PlatformLocation} from './platform_location';
 import {joinWithSlash, normalizeQueryParams} from './util';

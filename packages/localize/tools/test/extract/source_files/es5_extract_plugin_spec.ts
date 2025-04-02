@@ -11,7 +11,7 @@ import {
   PathSegment,
   relativeFrom,
 } from '@angular/compiler-cli/src/ngtsc/file_system';
-import {ɵParsedMessage} from '@angular/localize/private';
+import {ɵParsedMessage} from '../../../../private';
 import {transformSync} from '@babel/core';
 
 import {makeEs5ExtractPlugin} from '../../../src/extract/source_files/es5_extract_plugin';

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {I18nPluralPipe, NgLocalization} from '@angular/common';
+import {I18nPluralPipe, NgLocalization} from '../../index';
 import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 

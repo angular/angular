@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule, NgIf, ɵgetDOM as getDOM} from '@angular/common';
+import {CommonModule, NgIf, ɵgetDOM as getDOM} from '../../index';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';

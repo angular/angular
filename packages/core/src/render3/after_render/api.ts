@@ -32,7 +32,7 @@ export enum AfterRenderPhase {
    * Use `AfterRenderPhase.EarlyRead` for callbacks that only need to **read** from the
    * DOM before a subsequent `AfterRenderPhase.Write` callback, for example to perform
    * custom layout that the browser doesn't natively support. Prefer the
-   * `AfterRenderPhase.EarlyRead` phase if reading can wait until after the write phase.
+   * `AfterRenderPhase.Read` phase if reading can wait until after the write phase.
    * **Never** write to the DOM in this phase.
    *
    * <div class="docs-alert docs-alert-important">

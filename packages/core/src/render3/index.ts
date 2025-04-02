@@ -30,7 +30,15 @@ import {
 } from './interfaces/public_definitions';
 import {ɵɵsetComponentScope, ɵɵsetNgModuleScope} from './scope';
 import {
-  ComponentDebugMetadata,
+  Framework,
+  BaseDirectiveDebugMetadata,
+  AngularDirectiveDebugMetadata,
+  AngularComponentDebugMetadata,
+  AcxChangeDetectionStrategy,
+  AcxViewEncapsulation,
+  AcxDirectiveDebugMetadata,
+  AcxComponentDebugMetadata,
+  WizComponentDebugMetadata,
   DirectiveDebugMetadata,
   getComponent,
   getDirectiveMetadata,
@@ -76,7 +84,7 @@ export {
   ɵɵelementEnd,
   ɵɵelementStart,
   ɵɵgetCurrentView,
-  ɵɵhostProperty,
+  ɵɵdomProperty,
   ɵɵinjectAttribute,
   ɵɵinvalidFactory,
   ɵɵlistener,
@@ -223,10 +231,18 @@ export {ɵsetClassDebugInfo} from './debug/set_debug_info';
 export {ɵɵreplaceMetadata} from './hmr';
 
 export {
-  ComponentDebugMetadata,
   ComponentDef,
   ComponentTemplate,
   ComponentType,
+  Framework,
+  BaseDirectiveDebugMetadata,
+  AngularDirectiveDebugMetadata,
+  AngularComponentDebugMetadata,
+  AcxChangeDetectionStrategy,
+  AcxViewEncapsulation,
+  AcxDirectiveDebugMetadata,
+  AcxComponentDebugMetadata,
+  WizComponentDebugMetadata,
   DirectiveDebugMetadata,
   DirectiveDef,
   DirectiveType,

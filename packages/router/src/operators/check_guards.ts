@@ -163,20 +163,21 @@ function runCanActivate(
   const canActivate = futureARS.routeConfig ? futureARS.routeConfig.canActivate : null;
   if (!canActivate || canActivate.length === 0) return of(true);
 
-  const canActivateObservables = canActivate.map(
-    (canActivate: CanActivateFn | ProviderToken<unknown>) => {
-      return defer(() => {
-        const closestInjector = getClosestRouteInjector(futureARS) ?? injector;
-        const guard = getTokenOrFunctionIdentity<CanActivate>(canActivate, closestInjector);
-        const guardVal = isCanActivate(guard)
-          ? guard.canActivate(futureARS, futureRSS)
-          : runInInjectionContext(closestInjector, () =>
-              (guard as CanActivateFn)(futureARS, futureRSS),
-            );
-        return wrapIntoObservable(guardVal).pipe(first());
-      });
-    },
-  );
+  const canActivateObservables = canActivate.map((canActivate) => {
+    return defer(() => {
+      const closestInjector = getClosestRouteInjector(futureARS) ?? injector;
+      const guard = getTokenOrFunctionIdentity<CanActivate>(
+        canActivate as ProviderToken<CanActivate>,
+        closestInjector,
+      );
+      const guardVal = isCanActivate(guard)
+        ? guard.canActivate(futureARS, futureRSS)
+        : runInInjectionContext(closestInjector, () =>
+            (guard as CanActivateFn)(futureARS, futureRSS),
+          );
+      return wrapIntoObservable(guardVal).pipe(first());
+    });
+  });
   return of(canActivateObservables).pipe(prioritizedGuardValue());
 }
 
@@ -281,7 +282,7 @@ export function runCanMatchGuards(
   if (!canMatch || canMatch.length === 0) return of(true);
 
   const canMatchObservables = canMatch.map((injectionToken) => {
-    const guard = getTokenOrFunctionIdentity(injectionToken, injector);
+    const guard = getTokenOrFunctionIdentity(injectionToken as ProviderToken<any>, injector);
     const guardVal = isCanMatch(guard)
       ? guard.canMatch(route, segments)
       : runInInjectionContext(injector, () => (guard as CanMatchFn)(route, segments));

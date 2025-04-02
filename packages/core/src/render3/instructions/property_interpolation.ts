@@ -21,7 +21,7 @@ import {
   interpolation8,
   interpolationV,
 } from './interpolation';
-import {elementPropertyInternal, storePropertyBindingMetadata} from './shared';
+import {setPropertyAndInputs, storePropertyBindingMetadata} from './shared';
 
 /**
  *
@@ -101,16 +101,7 @@ export function ɵɵpropertyInterpolate1(
   if (interpolatedValue !== NO_CHANGE) {
     const tView = getTView();
     const tNode = getSelectedTNode();
-    elementPropertyInternal(
-      tView,
-      tNode,
-      lView,
-      propName,
-      interpolatedValue,
-      lView[RENDERER],
-      sanitizer,
-      false,
-    );
+    setPropertyAndInputs(tNode, lView, propName, interpolatedValue, lView[RENDERER], sanitizer);
     ngDevMode &&
       storePropertyBindingMetadata(
         tView.data,
@@ -168,16 +159,7 @@ export function ɵɵpropertyInterpolate2(
   if (interpolatedValue !== NO_CHANGE) {
     const tView = getTView();
     const tNode = getSelectedTNode();
-    elementPropertyInternal(
-      tView,
-      tNode,
-      lView,
-      propName,
-      interpolatedValue,
-      lView[RENDERER],
-      sanitizer,
-      false,
-    );
+    setPropertyAndInputs(tNode, lView, propName, interpolatedValue, lView[RENDERER], sanitizer);
     ngDevMode &&
       storePropertyBindingMetadata(
         tView.data,
@@ -241,16 +223,7 @@ export function ɵɵpropertyInterpolate3(
   if (interpolatedValue !== NO_CHANGE) {
     const tView = getTView();
     const tNode = getSelectedTNode();
-    elementPropertyInternal(
-      tView,
-      tNode,
-      lView,
-      propName,
-      interpolatedValue,
-      lView[RENDERER],
-      sanitizer,
-      false,
-    );
+    setPropertyAndInputs(tNode, lView, propName, interpolatedValue, lView[RENDERER], sanitizer);
     ngDevMode &&
       storePropertyBindingMetadata(
         tView.data,
@@ -319,16 +292,7 @@ export function ɵɵpropertyInterpolate4(
   if (interpolatedValue !== NO_CHANGE) {
     const tView = getTView();
     const tNode = getSelectedTNode();
-    elementPropertyInternal(
-      tView,
-      tNode,
-      lView,
-      propName,
-      interpolatedValue,
-      lView[RENDERER],
-      sanitizer,
-      false,
-    );
+    setPropertyAndInputs(tNode, lView, propName, interpolatedValue, lView[RENDERER], sanitizer);
     ngDevMode &&
       storePropertyBindingMetadata(
         tView.data,
@@ -415,16 +379,7 @@ export function ɵɵpropertyInterpolate5(
   if (interpolatedValue !== NO_CHANGE) {
     const tView = getTView();
     const tNode = getSelectedTNode();
-    elementPropertyInternal(
-      tView,
-      tNode,
-      lView,
-      propName,
-      interpolatedValue,
-      lView[RENDERER],
-      sanitizer,
-      false,
-    );
+    setPropertyAndInputs(tNode, lView, propName, interpolatedValue, lView[RENDERER], sanitizer);
     ngDevMode &&
       storePropertyBindingMetadata(
         tView.data,
@@ -518,16 +473,7 @@ export function ɵɵpropertyInterpolate6(
   if (interpolatedValue !== NO_CHANGE) {
     const tView = getTView();
     const tNode = getSelectedTNode();
-    elementPropertyInternal(
-      tView,
-      tNode,
-      lView,
-      propName,
-      interpolatedValue,
-      lView[RENDERER],
-      sanitizer,
-      false,
-    );
+    setPropertyAndInputs(tNode, lView, propName, interpolatedValue, lView[RENDERER], sanitizer);
     ngDevMode &&
       storePropertyBindingMetadata(
         tView.data,
@@ -628,16 +574,7 @@ export function ɵɵpropertyInterpolate7(
   if (interpolatedValue !== NO_CHANGE) {
     const tView = getTView();
     const tNode = getSelectedTNode();
-    elementPropertyInternal(
-      tView,
-      tNode,
-      lView,
-      propName,
-      interpolatedValue,
-      lView[RENDERER],
-      sanitizer,
-      false,
-    );
+    setPropertyAndInputs(tNode, lView, propName, interpolatedValue, lView[RENDERER], sanitizer);
     ngDevMode &&
       storePropertyBindingMetadata(
         tView.data,
@@ -745,16 +682,7 @@ export function ɵɵpropertyInterpolate8(
   if (interpolatedValue !== NO_CHANGE) {
     const tView = getTView();
     const tNode = getSelectedTNode();
-    elementPropertyInternal(
-      tView,
-      tNode,
-      lView,
-      propName,
-      interpolatedValue,
-      lView[RENDERER],
-      sanitizer,
-      false,
-    );
+    setPropertyAndInputs(tNode, lView, propName, interpolatedValue, lView[RENDERER], sanitizer);
     ngDevMode &&
       storePropertyBindingMetadata(
         tView.data,
@@ -815,16 +743,7 @@ export function ɵɵpropertyInterpolateV(
   if (interpolatedValue !== NO_CHANGE) {
     const tView = getTView();
     const tNode = getSelectedTNode();
-    elementPropertyInternal(
-      tView,
-      tNode,
-      lView,
-      propName,
-      interpolatedValue,
-      lView[RENDERER],
-      sanitizer,
-      false,
-    );
+    setPropertyAndInputs(tNode, lView, propName, interpolatedValue, lView[RENDERER], sanitizer);
     if (ngDevMode) {
       const interpolationInBetween = [values[0]]; // prefix
       for (let i = 2; i < values.length; i += 2) {

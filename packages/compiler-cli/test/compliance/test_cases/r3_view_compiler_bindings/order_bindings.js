@@ -5,7 +5,7 @@ function MyCmp_HostBindings(rf, ctx) {
 		i0.ɵɵlistener("event1", function MyCmp_event1_HostBindingHandler() { return ctx.foo(); });
 	}
 	if (rf & 2) {
-		i0.ɵɵhostProperty("prop1", ctx.foo);
+		i0.ɵɵdomProperty("prop1", ctx.foo);
 		i0.ɵɵattribute("attr1", ctx.foo);
 		i0.ɵɵstyleMap(ctx.foo);
         i0.ɵɵclassMap(ctx.foo);

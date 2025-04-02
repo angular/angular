@@ -13,7 +13,10 @@ npm_sass_library(
 sass_library(
     name = "global",
     srcs = ["_global.scss"],
-    deps = [":material_sass_deps"],
+    deps = [
+        ":colors",
+        ":material_sass_deps",
+    ],
 )
 
 sass_library(
@@ -29,6 +32,9 @@ sass_library(
 sass_library(
     name = "colors",
     srcs = ["_colors.scss"],
+    deps = [
+        ":theme",
+    ],
 )
 
 sass_binary(

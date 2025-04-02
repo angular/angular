@@ -33,6 +33,28 @@ describe('outputs', () => {
         });
       });
 
+      it('should keep type without initializer', async () => {
+        await verifyDeclaration({
+          before: '@Output() eventMovement: EventEmitter<IResponse> = new EventEmitter();',
+          after: 'readonly eventMovement = output<IResponse>();',
+        });
+      });
+
+      it('should keep type with initializer', async () => {
+        await verifyDeclaration({
+          before: '@Output() eventMovement: EventEmitter = new EventEmitter<IResponse>();',
+          after: 'readonly eventMovement = output<IResponse>();',
+        });
+      });
+
+      it('should keep type without initializer and with alias', async () => {
+        await verifyDeclaration({
+          before:
+            "@Output('customEvent') eventMovement: EventEmitter<IResponse> = new EventEmitter();",
+          after: "readonly eventMovement = output<IResponse>({ alias: 'customEvent' });",
+        });
+      });
+
       it('should migrate declaration without type hint', async () => {
         await verifyDeclaration({
           before: '@Output() readonly someChange = new EventEmitter();',

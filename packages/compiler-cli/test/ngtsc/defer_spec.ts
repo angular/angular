@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ErrorCode, ngErrorCode} from '@angular/compiler-cli/src/ngtsc/diagnostics';
+import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
 
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
@@ -884,7 +884,6 @@ runInEachFileSystem(() => {
           'deferred-a.ts',
           `
           import {Component} from '@angular/core';
-
           @Component({
             standalone: true,
             selector: 'deferred-cmp-a',
@@ -899,7 +898,6 @@ runInEachFileSystem(() => {
           'deferred-b.ts',
           `
           import {Component} from '@angular/core';
-
           @Component({
             standalone: true,
             selector: 'deferred-cmp-b',
@@ -911,26 +909,44 @@ runInEachFileSystem(() => {
         );
 
         env.write(
+          'pipe-a.ts',
+          `
+          import {Pipe} from '@angular/core';
+          @Pipe({
+            name: 'pipea',
+          })
+          export class PipeA {
+          }
+        `,
+        );
+
+        env.write(
           'test.ts',
           `
           import {Component} from '@angular/core';
           import {DeferredCmpA} from './deferred-a';
           import {DeferredCmpB} from './deferred-b';
-
+          import {PipeA} from './pipe-a';
           @Component({
             standalone: true,
             // @ts-ignore
-            deferredImports: [DeferredCmpA, DeferredCmpB],
+            deferredImports: [DeferredCmpA, DeferredCmpB, PipeA],
             template: \`
-              @defer {
-                <deferred-cmp-a />
-              }
-              @defer {
-                <deferred-cmp-b />
+              @for (item of items; track item) {
+                @if (true) {
+                  @defer {
+                    {{ 'Hi!' | pipea }}
+                    <deferred-cmp-a />
+                  }
+                  @defer {
+                    <deferred-cmp-b />
+                  }
+                }
               }
             \`,
           })
           export class AppCmp {
+             items = [1,2,3];
           }
         `,
         );
@@ -938,30 +954,35 @@ runInEachFileSystem(() => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
 
-        // Expect that all deferrableImports become dynamic imports.
+        // Expect that all deferrableImports in local compilation mode
+        // are located in a single function (since we can't detect in
+        // the local mode which components belong to which block).
         expect(jsContents).toContain(
-          'const AppCmp_Defer_1_DepsFn = () => [' +
-            'import("./deferred-a").then(m => m.DeferredCmpA)];',
+          'const AppCmp_For_1_Conditional_0_Defer_1_DepsFn = () => [' +
+            'import("./deferred-a").then(m => m.DeferredCmpA), ' +
+            'import("./pipe-a").then(m => m.PipeA)];',
         );
         expect(jsContents).toContain(
-          'const AppCmp_Defer_4_DepsFn = () => [' +
+          'const AppCmp_For_1_Conditional_0_Defer_4_DepsFn = () => [' +
             'import("./deferred-b").then(m => m.DeferredCmpB)];',
         );
 
         // Make sure there are no eager imports present in the output.
         expect(jsContents).not.toContain(`from './deferred-a'`);
         expect(jsContents).not.toContain(`from './deferred-b'`);
+        expect(jsContents).not.toContain(`from './pipe-a'`);
 
-        // Defer instructions have different dependency functions in full mode.
-        expect(jsContents).toContain('ɵɵdefer(1, 0, AppCmp_Defer_1_DepsFn);');
-        expect(jsContents).toContain('ɵɵdefer(4, 3, AppCmp_Defer_4_DepsFn);');
+        // There's 2 separate defer instructions due to the two separate defer blocks
+        expect(jsContents).toContain('ɵɵdefer(1, 0, AppCmp_For_1_Conditional_0_Defer_1_DepsFn);');
+        expect(jsContents).toContain('ɵɵdefer(4, 3, AppCmp_For_1_Conditional_0_Defer_4_DepsFn);');
 
         // Expect `ɵsetClassMetadataAsync` to contain dynamic imports too.
         expect(jsContents).toContain(
           'ɵsetClassMetadataAsync(AppCmp, () => [' +
             'import("./deferred-a").then(m => m.DeferredCmpA), ' +
+            'import("./pipe-a").then(m => m.PipeA), ' +
             'import("./deferred-b").then(m => m.DeferredCmpB)], ' +
-            '(DeferredCmpA, DeferredCmpB) => {',
+            '(DeferredCmpA, PipeA, DeferredCmpB) => {',
         );
       });
 

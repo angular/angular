@@ -71,7 +71,7 @@ export function specializeBindings(job: CompilationJob): void {
           if (job.kind === CompilationJobKind.Host) {
             ir.OpList.replace<ir.UpdateOp>(
               op,
-              ir.createHostPropertyOp(
+              ir.createDomPropertyOp(
                 op.name,
                 op.expression,
                 op.bindingKind === ir.BindingKind.Animation,

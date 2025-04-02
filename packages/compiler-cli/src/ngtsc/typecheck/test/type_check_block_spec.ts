@@ -357,6 +357,20 @@ describe('type check blocks', () => {
     );
   });
 
+  it('should generate code for event targeting `window`', () => {
+    const block = tcb(`<button (window:scroll)="handle()"></button>`);
+    expect(block).toContain(
+      'window.addEventListener("scroll", ($event): any => { (this).handle(); });',
+    );
+  });
+
+  it('should generate code for event targeting `document`', () => {
+    const block = tcb(`<button (document:click)="handle()"></button>`);
+    expect(block).toContain(
+      'document.addEventListener("click", ($event): any => { (this).handle(); });',
+    );
+  });
+
   it('should only generate directive declarations that have bindings or are referenced', () => {
     const TEMPLATE = `
       <div

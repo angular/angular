@@ -136,7 +136,7 @@ You can repeat part of a template multiple times with Angular's `@for` block:
 
 Angular's uses the `track` keyword, shown in the example above, to associate data with the DOM elements created by `@for`. See [_Why is track in @for blocks important?_](guide/templates/control-flow#why-is-track-in-for-blocks-important) for more info.
 
-Tip: Want to know more about Angular templates? See the [In-depth Templates guide](guide/templates) for the full details.
+TIP: Want to know more about Angular templates? See the [In-depth Templates guide](guide/templates) for the full details.
 
 ## Next Step
 

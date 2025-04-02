@@ -266,7 +266,6 @@ export function createTNode(
     // `view_engine_compatibility` for additional context.
     assertGreaterThanOrEqual(index, HEADER_OFFSET, "TNodes can't be in the LView header.");
   ngDevMode && assertNotSame(attrs, undefined, "'undefined' is not valid value for 'attrs'");
-  ngDevMode && ngDevMode.tNode++;
   ngDevMode && tParent && assertTNodeForTView(tParent, tView);
   let injectorIndex = tParent ? tParent.injectorIndex : -1;
   let flags = 0;

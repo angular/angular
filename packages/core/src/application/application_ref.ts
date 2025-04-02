@@ -6,13 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import '../util/ng_hmr_mode';
 import '../util/ng_jit_mode';
 import '../util/ng_server_mode';
 
-import {
-  setActiveConsumer,
-  setThrowInvalidWriteToSignalError,
-} from '@angular/core/primitives/signals';
+import {setActiveConsumer, setThrowInvalidWriteToSignalError} from '../../primitives/signals';
 import {Observable, Subject, Subscription} from 'rxjs';
 import {map} from 'rxjs/operators';
 

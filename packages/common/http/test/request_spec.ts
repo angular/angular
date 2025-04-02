@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {HttpContext} from '@angular/common/http/src/context';
-import {HttpHeaders} from '@angular/common/http/src/headers';
-import {HttpParams} from '@angular/common/http/src/params';
-import {HttpRequest} from '@angular/common/http/src/request';
+import {HttpContext} from '../src/context';
+import {HttpHeaders} from '../src/headers';
+import {HttpParams} from '../src/params';
+import {HttpRequest} from '../src/request';
 
 const TEST_URL = 'https://angular.io/';
 const TEST_STRING = `I'm a body!`;

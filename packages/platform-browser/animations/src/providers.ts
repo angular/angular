@@ -27,7 +27,7 @@ import {
   RendererFactory2,
   ɵChangeDetectionScheduler as ChangeDetectionScheduler,
 } from '@angular/core';
-import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
+import {ɵDomRendererFactory2 as DomRendererFactory2} from '../../index';
 
 @Injectable()
 export class InjectableAnimationEngine extends AnimationEngine implements OnDestroy {

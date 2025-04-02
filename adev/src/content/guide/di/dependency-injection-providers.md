@@ -63,7 +63,7 @@ In this example, `EvenBetterLogger` displays the user name in the log message. T
            highlight="[[3],[6]]">
 @Injectable()
 export class EvenBetterLogger extends Logger {
-  constructor(private userService: UserService) {}
+  private userService = inject(UserService);
 
   override log(message: string) {
     const name = this.userService.user.name;
@@ -90,7 +90,7 @@ In this way, `OldLogger` is an alias for `NewLogger`.
 ]
 </docs-code>
 
-Note: Ensure you do not alias `OldLogger` to `NewLogger` with `useClass`, as this creates two different `NewLogger` instances.
+NOTE: Ensure you do not alias `OldLogger` to `NewLogger` with `useClass`, as this creates two different `NewLogger` instances.
 
 ### Factory providers: useFactory
 
@@ -180,11 +180,12 @@ const MY_APP_CONFIG_VARIABLE: AppConfig = {
 providers: [{ provide: APP_CONFIG, useValue: MY_APP_CONFIG_VARIABLE }]
 </docs-code>
 
-Now, inject the configuration object into the constructor with the `@Inject()` parameter decorator:
+Now, inject the configuration object in the constructor body with the `inject` function:
 
 <docs-code header="src/app/app.component.ts" language="typescript" highlight="[2]">
 export class AppComponent {
-  constructor(@Inject(APP_CONFIG) config: AppConfig) {
+  constructor() {
+    const config = inject(APP_CONFIG);
     this.title = config.title;
   }
 }
@@ -206,6 +207,6 @@ Because there is no interface for Angular to find at runtime, the interface cann
 <docs-code header="src/app/app.component.ts" language="typescript" highlight="[3]">
 export class AppComponent {
   // Can't inject using the interface as the parameter type
-  constructor(private config: AppConfig) {}
+  private config = inject(AppConfig);
 }
 </docs-code>

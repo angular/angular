@@ -302,9 +302,21 @@ export function getSuperParameters(
       localTypeChecker.getSymbolAtLocation(node)?.declarations?.forEach((decl) => {
         if (ts.isParameter(decl) && topLevelParameters.has(decl)) {
           usedParams.add(decl);
+        } else if (
+          ts.isShorthandPropertyAssignment(decl) &&
+          topLevelParameterNames.has(decl.name.text)
+        ) {
+          for (const param of topLevelParameters) {
+            if (ts.isIdentifier(param.name) && decl.name.text === param.name.text) {
+              usedParams.add(param);
+              break;
+            }
+          }
         }
       });
-    } else {
+      // Parameters referenced inside callbacks can be used directly
+      // within `super` so don't descend into inline functions.
+    } else if (!isInlineFunction(node)) {
       node.forEachChild(walk);
     }
   });
@@ -422,4 +434,13 @@ function findSuperCall(root: ts.Node): ts.CallExpression | null {
   });
 
   return result;
+}
+
+/** Checks whether a node is an inline function. */
+export function isInlineFunction(
+  node: ts.Node,
+): node is ts.FunctionDeclaration | ts.FunctionExpression | ts.ArrowFunction {
+  return (
+    ts.isFunctionDeclaration(node) || ts.isFunctionExpression(node) || ts.isArrowFunction(node)
+  );
 }

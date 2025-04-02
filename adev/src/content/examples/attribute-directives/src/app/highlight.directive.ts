@@ -1,10 +1,10 @@
-import {Directive, ElementRef, HostListener, Input} from '@angular/core';
+import {Directive, ElementRef, HostListener, inject, Input} from '@angular/core';
 
 @Directive({
   selector: '[appHighlight]',
 })
 export class HighlightDirective {
-  constructor(private el: ElementRef) {}
+  private el = inject(ElementRef);
 
   // #docregion defaultColor
   @Input() defaultColor = '';

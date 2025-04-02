@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, Directive, Self} from '@angular/core';
-import {NodeInjectorOffset} from '@angular/core/src/render3/interfaces/injector';
-import {TestBed} from '@angular/core/testing';
+import {Component, Directive, Self} from '../../src/core';
+import {NodeInjectorOffset} from '../../src/render3/interfaces/injector';
+import {TestBed} from '../../testing';
 
 import {
   bloomAdd,
@@ -19,8 +19,8 @@ import {
 import {TNodeType} from '../../src/render3/interfaces/node';
 import {HEADER_OFFSET, LViewFlags, TVIEW, TViewType} from '../../src/render3/interfaces/view';
 import {enterView, leaveView} from '../../src/render3/state';
-import {getOrCreateTNode} from '@angular/core/src/render3/tnode_manipulation';
-import {createLView, createTView} from '@angular/core/src/render3/view/construction';
+import {getOrCreateTNode} from '../../src/render3/tnode_manipulation';
+import {createLView, createTView} from '../../src/render3/view/construction';
 
 describe('di', () => {
   describe('directive injection', () => {

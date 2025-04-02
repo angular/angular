@@ -7,7 +7,7 @@
  */
 
 import {TestBed, fakeAsync, tick} from '@angular/core/testing';
-import {DefaultUrlSerializer, Event, NavigationEnd, NavigationStart} from '@angular/router';
+import {DefaultUrlSerializer, Event, NavigationEnd, NavigationStart} from '../index';
 import {Subject} from 'rxjs';
 import {filter, switchMap, take} from 'rxjs/operators';
 

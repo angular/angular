@@ -387,14 +387,31 @@ function createNodeFromListenerDecorator(
 
   const callNode = new Call(span, nameSpan, receiver, argNodes, span);
   const eventNameNode = args[0];
-  const [eventName, phase] = eventNameNode.text.split('.');
+  let type: ParsedEventType;
+  let eventName: string;
+  let phase: string | null;
+  let target: string | null;
+
+  if (eventNameNode.text.startsWith('@')) {
+    const parsedName = parser.parseAnimationEventName(eventNameNode.text);
+    type = ParsedEventType.Animation;
+    eventName = parsedName.eventName;
+    phase = parsedName.phase;
+    target = null;
+  } else {
+    const parsedName = parser.parseEventListenerName(eventNameNode.text);
+    type = ParsedEventType.Regular;
+    eventName = parsedName.eventName;
+    target = parsedName.target;
+    phase = null;
+  }
 
   listeners.push(
     new TmplAstBoundEvent(
       eventName,
-      eventName.startsWith('@') ? ParsedEventType.Animation : ParsedEventType.Regular,
+      type,
       callNode,
-      null,
+      target,
       phase,
       createSourceSpan(decorator),
       createSourceSpan(decorator),

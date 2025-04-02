@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
+import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
+import {loadStandardTestFiles} from '../../src/ngtsc/testing';
 import {NgtscTestEnvironment} from './env';
 import ts from 'typescript';
 
@@ -245,6 +245,30 @@ runInEachFileSystem(() => {
         })
         export class Comp {
           handleEvent(event: KeyboardEvent) {}
+        }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText).toBe(
+        `Argument of type 'MouseEvent' is not assignable to parameter of type 'KeyboardEvent'.`,
+      );
+      expect(getDiagnosticSourceCode(diags[0])).toBe('$event');
+    });
+
+    it('should check @HostListener with a target', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component, HostListener} from '@angular/core';
+
+        @Component({
+          template: '',
+          selector: 'button[foo]',
+        })
+        export class Comp {
+          @HostListener('document:click', ['$event']) handleEvent(event: KeyboardEvent) {}
         }
       `,
       );

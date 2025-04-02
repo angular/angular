@@ -11,7 +11,6 @@ sass_binary(
     ],
     deps = [
         "//devtools/projects/ng-devtools/src/styles:material_sass_deps",
-        "//devtools/projects/ng-devtools/src/styles:theme",
     ],
 )
 

@@ -28,7 +28,7 @@ import {
   type ListenerOptions,
   Injector,
 } from '@angular/core';
-import {ɵRuntimeErrorCode as RuntimeErrorCode} from '@angular/platform-browser';
+import {ɵRuntimeErrorCode as RuntimeErrorCode} from '../../../index';
 
 const ANIMATION_PREFIX = '@';
 

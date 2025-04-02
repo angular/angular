@@ -58,7 +58,7 @@ export function resolveSanitizers(job: CompilationJob): void {
       switch (op.kind) {
         case ir.OpKind.Property:
         case ir.OpKind.Attribute:
-        case ir.OpKind.HostProperty:
+        case ir.OpKind.DomProperty:
           let sanitizerFn: o.ExternalReference | null = null;
           if (
             Array.isArray(op.securityContext) &&
@@ -82,7 +82,7 @@ export function resolveSanitizers(job: CompilationJob): void {
           // <iframe>).
           if (op.sanitizer === null) {
             let isIframe = false;
-            if (job.kind === CompilationJobKind.Host || op.kind === ir.OpKind.HostProperty) {
+            if (job.kind === CompilationJobKind.Host || op.kind === ir.OpKind.DomProperty) {
               // Note: for host bindings defined on a directive, we do not try to find all
               // possible places where it can be matched, so we can not determine whether
               // the host element is an <iframe>. In this case, we just assume it is and append a

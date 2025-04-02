@@ -15,7 +15,7 @@ import {
   OutputRefSubscription,
   ɵRuntimeError,
   ɵRuntimeErrorCode,
-} from '@angular/core';
+} from '../../src/core';
 import {Observable} from 'rxjs';
 
 import {takeUntilDestroyed} from './take_until_destroyed';

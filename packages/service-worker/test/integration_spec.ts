@@ -6,21 +6,21 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {NgswCommChannel} from '@angular/service-worker/src/low_level';
-import {SwPush} from '@angular/service-worker/src/push';
-import {SwUpdate} from '@angular/service-worker/src/update';
-import {MockServiceWorkerContainer} from '@angular/service-worker/testing/mock';
-import {CacheDatabase} from '@angular/service-worker/worker/src/db-cache';
-import {Driver} from '@angular/service-worker/worker/src/driver';
-import {Manifest} from '@angular/service-worker/worker/src/manifest';
-import {MockRequest} from '@angular/service-worker/worker/testing/fetch';
+import {NgswCommChannel} from '../src/low_level';
+import {SwPush} from '../src/push';
+import {SwUpdate} from '../src/update';
+import {MockServiceWorkerContainer} from '../testing/mock';
+import {CacheDatabase} from '../worker/src/db-cache';
+import {Driver} from '../worker/src/driver';
+import {Manifest} from '../worker/src/manifest';
+import {MockRequest} from '../worker/testing/fetch';
 import {
   MockFileSystemBuilder,
   MockServerStateBuilder,
   tmpHashTableForFs,
-} from '@angular/service-worker/worker/testing/mock';
-import {SwTestHarness, SwTestHarnessBuilder} from '@angular/service-worker/worker/testing/scope';
-import {envIsSupported} from '@angular/service-worker/worker/testing/utils';
+} from '../worker/testing/mock';
+import {SwTestHarness, SwTestHarnessBuilder} from '../worker/testing/scope';
+import {envIsSupported} from '../worker/testing/utils';
 import {Observable} from 'rxjs';
 import {take} from 'rxjs/operators';
 

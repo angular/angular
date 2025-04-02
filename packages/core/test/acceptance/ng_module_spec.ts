@@ -25,9 +25,9 @@ import {
   ɵɵdefineNgModule as defineNgModule,
   ɵɵelement as element,
   ɵɵproperty as property,
-} from '@angular/core';
-import {KNOWN_CONTROL_FLOW_DIRECTIVES} from '@angular/core/src/render3/instructions/element_validation';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {KNOWN_CONTROL_FLOW_DIRECTIVES} from '../../src/render3/instructions/element_validation';
+import {TestBed} from '../../testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {withBody} from '@angular/private/testing';

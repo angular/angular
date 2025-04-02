@@ -574,9 +574,9 @@ The `:id` is a route parameter whose value is the `id` of the hero to edit.
 The `Router` matches that URL to a route to the `HeroDetailComponent`.
 It creates an `ActivatedRoute` object with the routing information and injects it into a new instance of the `HeroDetailComponent`.
 
-Here's the `HeroDetailComponent` constructor:
+Here are the services injected into `HeroDetailComponent`:
 
-<docs-code header="app/hero/hero-detail.component.ts (constructor)" path="adev/src/content/examples/testing/src/app/hero/hero-detail.component.ts" visibleRegion="ctor"/>
+<docs-code header="app/hero/hero-detail.component.ts (inject)" path="adev/src/content/examples/testing/src/app/hero/hero-detail.component.ts" visibleRegion="ctor"/>
 
 The `HeroDetail` component needs the `id` parameter so it can fetch the corresponding hero using the `HeroDetailService`.
 The component has to get the `id` from the `ActivatedRoute.paramMap` property which is an `Observable`.
@@ -584,7 +584,7 @@ The component has to get the `id` from the `ActivatedRoute.paramMap` property wh
 It can't just reference the `id` property of the `ActivatedRoute.paramMap`.
 The component has to *subscribe* to the `ActivatedRoute.paramMap` observable and be prepared for the `id` to change during its lifetime.
 
-<docs-code header="app/hero/hero-detail.component.ts (ngOnInit)" path="adev/src/content/examples/testing/src/app/hero/hero-detail.component.ts" visibleRegion="ng-on-init"/>
+<docs-code header="app/hero/hero-detail.component.ts (constructor)" path="adev/src/content/examples/testing/src/app/hero/hero-detail.component.ts" visibleRegion="ctor"/>
 
 Tests can explore how the `HeroDetailComponent` responds to different `id` parameter values by navigating to different routes.
 

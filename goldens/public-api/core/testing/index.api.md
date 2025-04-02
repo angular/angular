@@ -4,24 +4,9 @@
 
 ```ts
 
-import { ChangeDetectorRef } from '@angular/core';
-import { Component } from '@angular/core';
-import { ComponentRef } from '@angular/core';
-import { DebugElement } from '@angular/core';
-import { ɵDeferBlockBehavior as DeferBlockBehavior } from '@angular/core';
-import { ɵDeferBlockState as DeferBlockState } from '@angular/core';
-import { Directive } from '@angular/core';
-import { ElementRef } from '@angular/core';
-import { InjectionToken } from '@angular/core';
-import { InjectOptions } from '@angular/core';
-import { NgModule } from '@angular/core';
-import { NgZone } from '@angular/core';
-import { Pipe } from '@angular/core';
-import { PlatformRef } from '@angular/core';
-import { ProviderToken } from '@angular/core';
-import { SchemaMetadata } from '@angular/core';
-import { Type } from '@angular/core';
-import { ɵDeferBlockDetails } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Subject } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 // @public
 export const __core_private_testing_placeholder__ = "";
@@ -54,16 +39,26 @@ export const ComponentFixtureAutoDetect: InjectionToken<boolean>;
 // @public (undocumented)
 export const ComponentFixtureNoNgZone: InjectionToken<boolean>;
 
-export { DeferBlockBehavior }
+// @public
+export enum DeferBlockBehavior {
+    Manual = 0,
+    Playthrough = 1
+}
 
 // @public
 export class DeferBlockFixture {
-    constructor(block: ɵDeferBlockDetails, componentFixture: ComponentFixture<unknown>);
+    constructor(block: DeferBlockDetails, componentFixture: ComponentFixture<unknown>);
     getDeferBlocks(): Promise<DeferBlockFixture[]>;
     render(state: DeferBlockState): Promise<void>;
 }
 
-export { DeferBlockState }
+// @public
+export enum DeferBlockState {
+    Complete = 2,
+    Error = 3,
+    Loading = 1,
+    Placeholder = 0
+}
 
 // @public
 export function discardPeriodicTasks(): void;

@@ -1,6 +1,6 @@
 # Component Lifecycle
 
-Tip: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
 
 A component's **lifecycle** is the sequence of steps that happen between the component's creation
 and its destruction. Each step represents a different part of Angular's process for rendering
@@ -146,8 +146,8 @@ of `DestroyRef`.
   /* ... */
 })
 export class UserProfile {
-  constructor(private destroyRef: DestroyRef) {
-    destroyRef.onDestroy(() => {
+  constructor() {
+    inject(DestroyRef).onDestroy(() => {
       console.log('UserProfile destruction');
     });
   }
@@ -254,7 +254,8 @@ export class UserProfile {
   private prevPadding = 0;
   private elementHeight = 0;
 
-  constructor(elementRef: ElementRef) {
+  constructor() {
+    private elementRef = inject(ElementRef);
     const nativeElement = elementRef.nativeElement;
 
     afterNextRender({

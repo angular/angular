@@ -575,7 +575,7 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
           ir.OpList.replace(op, ng.attribute(op.name, op.expression, op.sanitizer, op.namespace));
         }
         break;
-      case ir.OpKind.HostProperty:
+      case ir.OpKind.DomProperty:
         if (op.expression instanceof ir.Interpolation) {
           throw new Error('not yet handled');
         } else {
@@ -584,7 +584,7 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
           } else {
             ir.OpList.replace(
               op,
-              ng.hostProperty(op.name, op.expression, op.sanitizer, op.sourceSpan),
+              ng.domProperty(op.name, op.expression, op.sanitizer, op.sourceSpan),
             );
           }
         }

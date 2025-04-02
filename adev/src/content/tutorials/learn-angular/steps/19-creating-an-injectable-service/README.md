@@ -36,7 +36,7 @@ The values in the object passed to the decorator are considered to be the config
 <br>
 Update the `@Injectable` decorator in `car.service.ts` to include the configuration for `providedIn: 'root'`.
 
-Tip: Use the above example to find the correct syntax.
+TIP: Use the above example to find the correct syntax.
 
 </docs-step>
 

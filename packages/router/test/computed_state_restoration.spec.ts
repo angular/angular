@@ -11,7 +11,7 @@ import {provideLocationMocks, SpyLocation} from '@angular/common/testing';
 import {Component, Injectable, NgModule, Type} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {Router, RouterModule, RouterOutlet, UrlTree, withRouterConfig} from '@angular/router';
+import {Router, RouterModule, RouterOutlet, UrlTree, withRouterConfig} from '../index';
 import {EMPTY, of} from 'rxjs';
 
 import {provideRouter} from '../src/provide_router';
@@ -70,7 +70,6 @@ describe('`restoredState#ɵrouterPageId`', () => {
     TestBed.configureTestingModule({
       imports: [TestModule],
       providers: [
-        {provide: 'alwaysFalse', useValue: (a: any) => false},
         {provide: Location, useClass: SpyLocation},
         provideRouter(
           [
@@ -106,7 +105,7 @@ describe('`restoredState#ɵrouterPageId`', () => {
             {
               path: 'loaded',
               loadChildren: () => of(ModuleWithSimpleCmpAsRoute),
-              canLoad: ['alwaysFalse'],
+              canLoad: [() => false],
             },
           ],
           withRouterConfig({

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {isPlatformServer} from '@angular/common';
+import {isPlatformServer} from '../../index';
 import {
   EnvironmentInjector,
   inject,

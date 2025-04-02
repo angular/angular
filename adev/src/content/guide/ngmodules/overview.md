@@ -107,7 +107,7 @@ export class CustomMenuModule { }
 
 ## `NgModule` providers
 
-Tip: See the [Dependency Injection guide](guide/di) for information on dependency injection and providers.
+TIP: See the [Dependency Injection guide](guide/di) for information on dependency injection and providers.
 
 An `NgModule` can specify `providers` for injected dependencies. These providers are available to:
 * Any standalone component, directive, or pipe that imports the NgModule, and

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, isSignal, signal} from '@angular/core';
+import {computed, isSignal, signal} from '../../src/core';
 
 describe('isSignal', () => {
   it('should return true for writable signal', () => {

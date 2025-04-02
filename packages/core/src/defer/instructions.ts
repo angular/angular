@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {setActiveConsumer} from '@angular/core/primitives/signals';
+import {setActiveConsumer} from '../../primitives/signals';
 
 import {
   DEFER_BLOCK_ID,
@@ -65,6 +65,35 @@ import {
   triggerResourceLoading,
   shouldAttachTrigger,
 } from './triggering';
+import {formatRuntimeError, RuntimeErrorCode} from '../errors';
+import {Console} from '../console';
+import {Injector} from '../di';
+
+/**
+ * Indicates whether we've already produced a warning,
+ * prevents the logic from producing it multiple times.
+ */
+let _hmrWarningProduced = false;
+
+/**
+ * Logs a message into the console to indicate that `@defer` block
+ * dependencies are loaded eagerly when the HMR mode is enabled.
+ */
+function logHmrWarning(injector: Injector) {
+  if (!_hmrWarningProduced) {
+    _hmrWarningProduced = true;
+    const console = injector.get(Console);
+    // tslint:disable-next-line:no-console
+    console.log(
+      formatRuntimeError(
+        RuntimeErrorCode.DEFER_IN_HMR_MODE,
+        'Angular has detected that this application contains `@defer` blocks ' +
+          'and the hot module replacement (HMR) mode is enabled. All `@defer` ' +
+          'block dependencies will be loaded eagerly.',
+      ),
+    );
+  }
+}
 
 /**
  * Creates runtime data structures for defer blocks.
@@ -107,6 +136,10 @@ export function ɵɵdefer(
 
   if (tView.firstCreatePass) {
     performanceMarkFeature('NgDefer');
+
+    if (ngDevMode && typeof ngHmrMode !== 'undefined' && ngHmrMode) {
+      logHmrWarning(injector);
+    }
 
     const tDetails: TDeferBlockDetails = {
       primaryTmplIndex,

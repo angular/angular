@@ -61,7 +61,7 @@ import {
   provideServerRendering,
   renderModule,
   ServerModule,
-} from '@angular/platform-server';
+} from '../index';
 import {provideRouter, RouterOutlet, Routes} from '@angular/router';
 import {Observable} from 'rxjs';
 

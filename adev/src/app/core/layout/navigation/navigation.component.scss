@@ -19,6 +19,14 @@
       z-index: 50;
     }
   }
+
+  @include mq.for-tablet-landscape-down {
+    width: 100%;
+
+    .wrapper {
+      width: 100%;
+    }
+  }
 }
 
 .adev-mobile-nav-bar {
@@ -27,7 +35,7 @@
   backdrop-filter: blur(16px);
   background-color: color-mix(in srgb, var(--page-background) 70%, transparent);
   position: relative;
-  width: 100vw;
+  width: 100%;
   padding-block: 0.75rem;
   padding-inline: var(--layout-padding);
   border-block-end: 1px solid var(--septenary-contrast);
@@ -74,7 +82,7 @@
   // Add a subtle border for the home page
   border-block-end: 1px solid var(--septenary-contrast);
 
-  @include mq.for-tablet-up {
+  @include mq.for-tablet-landscape-up {
     border-inline-end: 1px solid var(--septenary-contrast);
   }
 
@@ -84,7 +92,7 @@
 
   @include mq.for-tablet {
     flex-direction: row;
-    width: 100vw;
+    width: 100%;
     padding-inline: calc(var(--layout-padding) - 1.25rem);
     height: auto;
     padding-block: 0;
@@ -293,6 +301,7 @@
   transition:
     background-color 0.3s ease,
     border-color 0.3s ease;
+
   button {
     display: flex;
     gap: 0.5rem;
@@ -301,6 +310,7 @@
     padding: 0;
     font-weight: 500;
   }
+
   @include mq.for-tablet-landscape-up {
     display: none;
   }

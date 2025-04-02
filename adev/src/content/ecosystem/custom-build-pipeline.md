@@ -14,7 +14,7 @@ There are some niche use cases when you may want to maintain a custom build pipe
 
 ## What are the options?
 
-Currently, there are two well supported community tools that enable you to create a custom build pipeline with a [Vite plugin](https://www.npmjs.com/package/@analogjs/vite-plugin-angular) and [Rspack plugin](https://www.npmjs.com/package/@ng-rspack/build). Both of them use underlying abstractions that power the Angular CLI. They allow you to create a flexible build pipeline and require manual maintenance and no automated update experience.
+Currently, there are two well supported community tools that enable you to create a custom build pipeline with a [Vite plugin](https://www.npmjs.com/package/@analogjs/vite-plugin-angular) and [Rspack plugin](https://www.npmjs.com/package/@nx/angular-rspack). Both of them use underlying abstractions that power the Angular CLI. They allow you to create a flexible build pipeline and require manual maintenance and no automated update experience.
 
 ### Rspack
 
@@ -22,7 +22,7 @@ Rspack is a Rust-based bundler that aims to provide compatibility with the webpa
 
 If your project is tightly coupled to the webpack ecosystem, heavily relying on a custom webpack configuration you can leverage Rspack to improve your build times.
 
-You can find more about Angular Rspack on the project’s [documentation website](https://angular-rspack.dev/guide/migration/from-webpack).
+You can find more about Angular Rspack on the project’s [documentation website](https://nx.dev/recipes/angular/rspack/introduction).
 
 ### Vite
 

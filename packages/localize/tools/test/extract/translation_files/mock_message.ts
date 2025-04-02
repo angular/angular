@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {ɵParsedMessage} from '@angular/localize';
-import {MessageId, SourceLocation} from '@angular/localize/src/utils';
+import {ɵParsedMessage} from '../../../../index';
+import {MessageId, SourceLocation} from '../../../../src/utils';
 
 export interface MockMessageOptions {
   customId?: string;

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {ɵcomputeMsgId, ɵparseTranslation} from '@angular/localize';
-import {ɵParsedTranslation} from '@angular/localize/private';
+import {ɵcomputeMsgId, ɵparseTranslation} from '../../../../index';
+import {ɵParsedTranslation} from '../../../../private';
 import {transformSync} from '@babel/core';
 
 import {Diagnostics} from '../../../src/diagnostics';

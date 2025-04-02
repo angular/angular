@@ -32,13 +32,14 @@ import {
   signal,
   SimpleChanges,
   TemplateRef,
+  untracked,
   ViewChild,
   ViewContainerRef,
-} from '@angular/core';
-import {SIGNAL} from '@angular/core/primitives/signals';
-import {toObservable} from '@angular/core/rxjs-interop';
-import {EffectNode} from '@angular/core/src/render3/reactivity/effect';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {SIGNAL} from '../../primitives/signals';
+import {toObservable} from '../../rxjs-interop';
+import {EffectNode} from '../../src/render3/reactivity/effect';
+import {TestBed} from '../../testing';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
 
@@ -192,6 +193,49 @@ describe('reactivity', () => {
       expect(cleanupCount).toBe(2);
     });
 
+    it('should run effect cleanup as untracked', async () => {
+      @Component({
+        template: '',
+      })
+      class Cmp {
+        counter = signal(0);
+        effectTrigger = signal(0);
+
+        effectRef = effect((onCleanup) => {
+          this.effectTrigger();
+
+          untracked(() => {
+            if (this.counter() > 1) {
+              // This is an early bailout in case the effect loops infinitely
+              throw new Error('Updated consummers in cleanup for not re-trigger the effect');
+            }
+          });
+
+          onCleanup(() => {
+            this.counter(); // A signal read but not consummed
+            this.counter.update((v) => v + 1);
+          });
+        });
+      }
+
+      const fixture = TestBed.createComponent(Cmp);
+      fixture.detectChanges();
+      await fixture.whenStable();
+      // initially an effect runs but the default cleanup function is noop
+      expect(fixture.componentInstance.counter()).toBe(0);
+
+      // Triggers a cleanup
+      fixture.componentInstance.effectTrigger.update((v) => v + 1);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(fixture.componentInstance.counter()).toBe(1);
+
+      // Destroy triggers a cleanup
+      fixture.destroy();
+      expect(fixture.componentInstance.counter()).toBe(2);
+    });
+
     it('should run effects created in ngAfterViewInit', () => {
       let didRun = false;
 
@@ -246,27 +290,25 @@ describe('reactivity', () => {
       expect(log).toEqual([0, 1]);
     });
 
-    it('should create root effects inside a component when specified', () => {
+    it('should cleanup effect when manualCleanup is enabled and an injector is provided', () => {
       TestBed.configureTestingModule({});
       const counter = signal(0);
       const log: number[] = [];
-
-      @Component({
-        template: '',
-      })
-      class TestCmp {
-        constructor() {
-          effect(() => log.push(counter()), {forceRoot: true});
-        }
-      }
-
-      // Running this creates the effect. Note: we never CD this component.
-      TestBed.createComponent(TestCmp);
+      // It needs the injector to be able to inject the other deps (and not just the DestroyRef).
+      const ref = effect(() => log.push(counter()), {
+        manualCleanup: true,
+        injector: TestBed.inject(Injector),
+      });
 
       TestBed.flushEffects();
       expect(log).toEqual([0]);
 
       counter.set(1);
+      TestBed.flushEffects();
+      expect(log).toEqual([0, 1]);
+
+      ref.destroy();
+      counter.set(2);
       TestBed.flushEffects();
       expect(log).toEqual([0, 1]);
     });
@@ -382,33 +424,6 @@ describe('reactivity', () => {
     });
 
     describe('destruction', () => {
-      it('should still destroy root effects with the DestroyRef of the component', () => {
-        TestBed.configureTestingModule({});
-        const counter = signal(0);
-        const log: number[] = [];
-
-        @Component({
-          template: '',
-        })
-        class TestCmp {
-          constructor() {
-            effect(() => log.push(counter()), {forceRoot: true});
-          }
-        }
-
-        const fix = TestBed.createComponent(TestCmp);
-
-        TestBed.flushEffects();
-        expect(log).toEqual([0]);
-
-        // Destroy the effect.
-        fix.destroy();
-
-        counter.set(1);
-        TestBed.flushEffects();
-        expect(log).toEqual([0]);
-      });
-
       it('should destroy effects when the parent component is destroyed', () => {
         let destroyed = false;
         @Component({})

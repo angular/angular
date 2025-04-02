@@ -6,17 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, signal, effect, computed, Injectable, inject} from '@angular/core/public_api';
+import {Component, signal, effect, computed, Injectable, inject} from '../../src/core';
 import {
   setupFrameworkInjectorProfiler,
   getFrameworkDIDebugData,
-} from '@angular/core/src/render3/debug/framework_injector_profiler';
+} from '../../src/render3/debug/framework_injector_profiler';
 import {
   DebugSignalGraphEdge,
   DebugSignalGraphNode,
   getSignalGraph,
-} from '@angular/core/src/render3/util/signal_debug';
-import {TestBed, fakeAsync, tick} from '@angular/core/testing';
+} from '../../src/render3/util/signal_debug';
+import {TestBed, fakeAsync, tick} from '../../testing';
 
 describe('getSignalGraph', () => {
   beforeEach(() => {

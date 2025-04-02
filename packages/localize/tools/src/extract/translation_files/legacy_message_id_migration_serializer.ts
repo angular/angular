@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {ɵParsedMessage as ParsedMessage} from '@angular/localize';
+import {ɵParsedMessage as ParsedMessage} from '../../../../index';
 import {Diagnostics} from '../../diagnostics';
 import {TranslationSerializer} from './translation_serializer';
 

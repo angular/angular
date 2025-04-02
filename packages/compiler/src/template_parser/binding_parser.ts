@@ -660,6 +660,16 @@ export class BindingParser {
     return calcPossibleSecurityContexts(this._schemaRegistry, selector, prop, isAttribute);
   }
 
+  parseEventListenerName(rawName: string): {eventName: string; target: string | null} {
+    const [target, eventName] = splitAtColon(rawName, [null, rawName]);
+    return {eventName: eventName!, target};
+  }
+
+  parseAnimationEventName(rawName: string): {eventName: string; phase: string | null} {
+    const matches = splitAtPeriod(rawName, [rawName, null]);
+    return {eventName: matches[0]!, phase: matches[1] === null ? null : matches[1].toLowerCase()};
+  }
+
   private _parseAnimationEvent(
     name: string,
     expression: string,
@@ -668,9 +678,7 @@ export class BindingParser {
     targetEvents: ParsedEvent[],
     keySpan: ParseSourceSpan,
   ) {
-    const matches = splitAtPeriod(name, [name, '']);
-    const eventName = matches[0];
-    const phase = matches[1].toLowerCase();
+    const {eventName, phase} = this.parseAnimationEventName(name);
     const ast = this._parseAction(expression, handlerSpan);
     targetEvents.push(
       new ParsedEvent(
@@ -713,7 +721,7 @@ export class BindingParser {
     keySpan: ParseSourceSpan,
   ): void {
     // long format: 'target: eventName'
-    const [target, eventName] = splitAtColon(name, [null!, name]);
+    const {eventName, target} = this.parseEventListenerName(name);
     const prevErrorCount = this.errors.length;
     const ast = this._parseAction(expression, handlerSpan);
     const isValid = this.errors.length === prevErrorCount;

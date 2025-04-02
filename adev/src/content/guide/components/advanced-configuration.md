@@ -1,6 +1,6 @@
 # Advanced component configuration
 
-Tip: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
 
 ## ChangeDetectionStrategy
 

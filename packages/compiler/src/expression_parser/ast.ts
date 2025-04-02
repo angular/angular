@@ -790,7 +790,7 @@ export class ParsedEvent {
   // Animation events have a phase
   constructor(
     name: string,
-    targetOrPhase: string,
+    targetOrPhase: string | null,
     type: ParsedEventType.TwoWay,
     handler: ASTWithSource<NonNullAssert | PropertyRead | KeyedRead>,
     sourceSpan: ParseSourceSpan,
@@ -800,7 +800,7 @@ export class ParsedEvent {
 
   constructor(
     name: string,
-    targetOrPhase: string,
+    targetOrPhase: string | null,
     type: ParsedEventType,
     handler: ASTWithSource,
     sourceSpan: ParseSourceSpan,
@@ -810,7 +810,7 @@ export class ParsedEvent {
 
   constructor(
     public name: string,
-    public targetOrPhase: string,
+    public targetOrPhase: string | null,
     public type: ParsedEventType,
     public handler: ASTWithSource,
     public sourceSpan: ParseSourceSpan,

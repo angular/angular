@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {filter, tap, first} from 'rxjs/operators';
-import {Event} from '@angular/router';
+import {Event} from '../../index';
 import {fakeAsync, inject} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {
@@ -23,7 +23,7 @@ import {
   ResolveEnd,
   NavigationEnd,
   NavigationError,
-} from '@angular/router/src';
+} from '../../src';
 import {createRoot, RootCmp, BlankCmp, UserCmp, advance, expectEvents} from './integration_helpers';
 
 export function routerEventsIntegrationSuite() {

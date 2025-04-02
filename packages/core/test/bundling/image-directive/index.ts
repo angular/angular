@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, importProvidersFrom} from '@angular/core';
+import {Component, importProvidersFrom} from '../../../src/core';
 import {bootstrapApplication, provideProtractorTestingSupport} from '@angular/platform-browser';
 import {RouterModule} from '@angular/router';
 

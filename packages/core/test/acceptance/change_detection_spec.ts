@@ -38,9 +38,8 @@ import {
   afterRender,
   PLATFORM_ID,
   provideZoneChangeDetection,
-} from '@angular/core';
-import {} from '@angular/core/src/errors';
-import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+} from '../../src/core';
+import {ComponentFixture, fakeAsync, TestBed, tick} from '../../testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {BehaviorSubject} from 'rxjs';
 

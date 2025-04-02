@@ -18,8 +18,8 @@ import {
   WritableSignal,
   ɵRuntimeError,
   ɵRuntimeErrorCode,
-} from '@angular/core';
-import {ValueEqualityFn} from '@angular/core/primitives/signals';
+} from '../../src/core';
+import {ValueEqualityFn} from '../../primitives/signals';
 import {Observable, Subscribable} from 'rxjs';
 
 /**
@@ -122,7 +122,8 @@ export function toSignal<T, U = undefined>(
   source: Observable<T> | Subscribable<T>,
   options?: ToSignalOptions<T | U> & {initialValue?: U},
 ): Signal<T | U> {
-  ngDevMode &&
+  typeof ngDevMode !== 'undefined' &&
+    ngDevMode &&
     assertNotInReactiveContext(
       toSignal,
       'Invoking `toSignal` causes new subscriptions every time. ' +

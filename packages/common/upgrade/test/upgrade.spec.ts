@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule, PathLocationStrategy} from '@angular/common';
+import {CommonModule, PathLocationStrategy} from '../../index';
 import {inject, TestBed} from '@angular/core/testing';
 import {UpgradeModule} from '@angular/upgrade/static';
 

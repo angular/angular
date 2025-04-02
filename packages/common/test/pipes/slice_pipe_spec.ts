@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule, SlicePipe} from '@angular/common';
+import {CommonModule, SlicePipe} from '../../index';
 import {Component} from '@angular/core';
 import {TestBed, waitForAsync} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';

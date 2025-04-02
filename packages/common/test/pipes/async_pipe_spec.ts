@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AsyncPipe} from '@angular/common';
+import {AsyncPipe} from '../../index';
 import {
   ChangeDetectorRef,
   Component,
@@ -261,6 +261,14 @@ describe('AsyncPipe', () => {
           expect(pipe.transform(promise)).toBe(null);
         });
       });
+    });
+  });
+
+  describe('PromiseLike', () => {
+    it('should infer the type from the subscribable', () => {
+      const promiseLike = {then: (resolve) => resolve!({name: 'T'})} as PromiseLike<{name: 'T'}>;
+      // The following line will fail to compile if the type cannot be inferred.
+      const name = pipe.transform(promiseLike)?.name;
     });
   });
 

@@ -750,6 +750,7 @@ MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-
     <div>No interpolations: {{ \`hello world \` }}</div>
     <span>With interpolations: {{ \`hello \${name}, it is currently \${timeOfDay}!\` }}</span>
     <p>With pipe: {{\`hello \${name}\` | uppercase}}</p>
+    <h4>@let insideLet = \`Hello \${name}\`; Inside let: {{insideLet}}</h4>
   `, isInline: true, dependencies: [{ kind: "pipe", type: UppercasePipe, name: "uppercase" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
@@ -759,6 +760,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <div>No interpolations: {{ \`hello world \` }}</div>
     <span>With interpolations: {{ \`hello \${name}, it is currently \${timeOfDay}!\` }}</span>
     <p>With pipe: {{\`hello \${name}\` | uppercase}}</p>
+    <h4>@let insideLet = \`Hello \${name}\`; Inside let: {{insideLet}}</h4>
   `,
                     imports: [UppercasePipe],
                 }]

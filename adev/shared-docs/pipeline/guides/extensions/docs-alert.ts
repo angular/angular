@@ -39,7 +39,7 @@ export const docsAlertExtension = {
   level: 'block' as const,
   tokenizer(this: TokenizerThis, src: string): DocsAlertToken | undefined {
     let match: DocsAlert | undefined;
-    for (let level in AlertSeverityLevel) {
+    for (let level of Object.values(AlertSeverityLevel)) {
       // Capture group 1: all alert text content after the severity level
       const rule = new RegExp('^s*' + level + ': (.*?)\n(\n|$)', 's');
       const possibleMatch = rule.exec(src);

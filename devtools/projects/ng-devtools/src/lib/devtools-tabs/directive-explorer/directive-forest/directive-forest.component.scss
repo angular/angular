@@ -1,5 +1,3 @@
-@use '../../../../styles/theme' as theme;
-
 :host {
   width: 100%;
   height: 100%;
@@ -7,7 +5,7 @@
 
   .tree-node {
     position: relative;
-    color: #8a1882;
+    color: var(--color-tree-node-element-name);
 
     cursor: default;
     font-family: Menlo, monospace;
@@ -35,50 +33,47 @@
       width: 16px;
       height: 13px;
       display: inline-block;
+      color: var(--primary-contrast);
     }
 
     .dir-names {
-      color: #9b4807;
+      color: var(--color-tree-node-dir-name);
     }
 
     .console-reference,
     .on-push {
-      color: #748591;
+      color: var(--color-tree-node-console-ref);
       padding-left: 8px;
       font-style: italic;
     }
 
     &:hover {
-      background-color: #ebf1fb;
+      background-color: var(--color-tree-node-hovered);
     }
 
     &.matched {
-      background-color: #ebf1fb;
-
-      &:hover {
-        background-color: #cfe8fc;
-      }
+      background-color: var(--color-tree-node-matched);
     }
 
     &.selected,
     &.highlighted {
-      background-color: #cfe8fc;
+      background-color: var(--color-tree-node-highlighted);
     }
 
     .hydration {
       margin: auto 8px auto auto;
       font-size: 14px;
-      color: #60a6fc;
+      color: var(--blue-02);
 
       position: sticky;
       right: 0;
 
       &.skipped {
-        color: #9a9a9a;
+        color: var(--senary-contrast);
       }
 
       &.mismatched {
-        color: #ff0040;
+        color: var(--red-04);
       }
     }
   }
@@ -89,7 +84,7 @@
     background-color: transparent;
   }
   50% {
-    background-color: #cfe8fc;
+    background-color: var(--blue-04);
   }
   100% {
     background-color: transparent;
@@ -98,29 +93,6 @@
 
 .new-node {
   animation: appear 1.5s;
-}
-
-.filter {
-  display: flex;
-
-  .icon {
-    width: 20px;
-    height: 20px;
-    margin: auto 12px;
-    opacity: 0.7;
-  }
-
-  .filter-input {
-    border: none;
-    background: rgba(0, 0, 0, 0.003);
-    box-shadow: inset 0 -2px 1px rgba(0, 0, 0, 0.03);
-    width: 100%;
-    font-size: 2em;
-    font-family: inherit;
-    font-weight: inherit;
-    line-height: 1.4em;
-    padding: 12px 6px;
-  }
 }
 
 .up-down-buttons {
@@ -135,7 +107,7 @@
 
 .angular-element {
   content: '';
-  color: #1b1aa5;
+  color: var(--color-tree-node-ng-element);
 
   &::before {
     content: '<';
@@ -147,72 +119,18 @@
 }
 
 .hydration-error {
-  color: #e62222;
+  color: var(--dynamic-red-01);
   margin-left: 16px;
   padding: 0 8px 8px 0px;
 
   pre {
     margin: 0;
-    background: rgba(1, 1, 1, 0.05);
+    background: var(--dynamic-transparent-01);
     padding: 8px;
     border-radius: 8px;
 
     &:not(:last-child) {
       margin-bottom: 16px;
-    }
-  }
-}
-
-@include theme.dark-theme {
-  .tree-node {
-    color: #5cadd3;
-
-    .mat-icon {
-      color: #bcc5ce;
-    }
-
-    .dir-names {
-      color: #91adcb;
-    }
-
-    .angular-element {
-      color: #dc8c61;
-    }
-
-    &:hover {
-      background-color: #262d36;
-    }
-
-    &.matched {
-      background-color: #262d36;
-
-      &:hover {
-        background-color: #073d69;
-      }
-    }
-
-    &.selected,
-    &.highlighted {
-      background-color: #073d69;
-    }
-
-    .hydration {
-      color: #60a6fc;
-
-      &.skipped {
-        color: #9a9a9a;
-      }
-
-      &.mismatched {
-        color: #ff0040;
-      }
-    }
-
-    .hydration-error {
-      color: #ea7171;
-      pre {
-        background: rgb(1, 1, 1, 0.2);
-      }
     }
   }
 }

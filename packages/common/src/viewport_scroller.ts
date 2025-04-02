@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, ɵɵdefineInjectable} from '@angular/core';
-
-import {DOCUMENT} from './dom_tokens';
+import {inject, ɵɵdefineInjectable, DOCUMENT} from '@angular/core';
 
 /**
  * Defines a scroll position manager. Implemented by `BrowserViewportScroller`.

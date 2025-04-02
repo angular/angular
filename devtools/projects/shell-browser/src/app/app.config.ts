@@ -15,6 +15,7 @@ import {ChromeApplicationOperations} from './chrome-application-operations';
 import {ZoneAwareChromeMessageBus} from './zone-aware-chrome-message-bus';
 import {Events, MessageBus, PriorityAwareMessageBus} from 'protocol';
 import {FrameManager} from '../../../ng-devtools/src/lib/application-services/frame_manager';
+import {Platform} from '@angular/cdk/platform';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -23,6 +24,7 @@ export const appConfig: ApplicationConfig = {
     {
       provide: ApplicationOperations,
       useClass: ChromeApplicationOperations,
+      deps: [Platform],
     },
     {
       provide: ApplicationEnvironment,

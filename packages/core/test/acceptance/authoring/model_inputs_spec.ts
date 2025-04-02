@@ -19,8 +19,8 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import {SIGNAL} from '@angular/core/primitives/signals';
-import {TestBed} from '@angular/core/testing';
+import {SIGNAL} from '../../../primitives/signals';
+import {TestBed} from '../../../testing';
 
 describe('model inputs', () => {
   it('should support two-way binding to a signal', () => {

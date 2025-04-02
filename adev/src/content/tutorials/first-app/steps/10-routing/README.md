@@ -75,7 +75,7 @@ In the previous step you removed the reference to the `<app-home>` component in 
 
 </docs-workflow>
 
-Summary: In this lesson, you enabled routing in your app as well as defined new routes. Now your app can support navigation between views. In the next lesson, you will learn to navigate to the "details" page for a given housing location.
+SUMMARY: In this lesson, you enabled routing in your app as well as defined new routes. Now your app can support navigation between views. In the next lesson, you will learn to navigate to the "details" page for a given housing location.
 
 You are making great progress with your app, well done.
 

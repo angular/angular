@@ -1578,11 +1578,19 @@ class TcbUnclaimedOutputsOp extends TcbOp {
         // `$event` depending on the event name. For unknown event names, TypeScript resorts to the
         // base `Event` type.
         const handler = tcbCreateEventHandler(output, this.tcb, this.scope, EventParamType.Infer);
-
-        if (elId === null) {
-          elId = this.scope.resolve(this.target);
+        let target: ts.Expression;
+        // Only check for `window` and `document` since in theory any target can be passed.
+        if (output.target === 'window' || output.target === 'document') {
+          target = ts.factory.createIdentifier(output.target);
+        } else if (elId === null) {
+          target = elId = this.scope.resolve(this.target);
+        } else {
+          target = elId;
         }
-        const propertyAccess = ts.factory.createPropertyAccessExpression(elId, 'addEventListener');
+        const propertyAccess = ts.factory.createPropertyAccessExpression(
+          target,
+          'addEventListener',
+        );
         addParseSpanInfo(propertyAccess, output.keySpan);
         const call = ts.factory.createCallExpression(
           /* expression */ propertyAccess,

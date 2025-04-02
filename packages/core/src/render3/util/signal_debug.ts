@@ -24,7 +24,7 @@ import {
   SIGNAL,
   SIGNAL_NODE,
   SignalNode,
-} from '@angular/core/primitives/signals';
+} from '../../../primitives/signals';
 
 export interface DebugSignalGraphNode {
   kind: string;

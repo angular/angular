@@ -7,6 +7,9 @@
 // @public
 export function formatRuntimeError<T extends number = RuntimeErrorCode>(code: T, message: null | false | string): string;
 
+// @public (undocumented)
+export function formatRuntimeErrorCode<T extends number = RuntimeErrorCode>(code: T): string;
+
 // @public
 export class RuntimeError<T extends number = RuntimeErrorCode> extends Error {
     constructor(code: T, message: null | false | string);
@@ -28,6 +31,8 @@ export const enum RuntimeErrorCode {
     COMPONENT_ID_COLLISION = -912,
     // (undocumented)
     CYCLIC_DI_DEPENDENCY = -200,
+    // (undocumented)
+    DEFER_IN_HMR_MODE = -751,
     // (undocumented)
     DEFER_LOADING_FAILED = -750,
     // (undocumented)
@@ -118,6 +123,8 @@ export const enum RuntimeErrorCode {
     MULTIPLE_PLATFORMS = 400,
     // (undocumented)
     NO_BINDING_TARGET = 315,
+    // (undocumented)
+    NO_COMPONENT_FACTORY_FOUND = 917,
     // (undocumented)
     NO_SUPPORTING_DIFFER_FACTORY = 901,
     // (undocumented)

@@ -169,14 +169,14 @@ describe('FrameManager', () => {
     contentScriptConnected(topLevelFrameId, 'name', 'https://angular.dev/');
     contentScriptConnected(otherFrameId, 'name2', 'https://angular.dev/');
     expect(frameManager.selectedFrame()?.url.toString()).toBe('https://angular.dev/');
-    expect(frameManager.frameHasUniqueUrl(frameManager.selectedFrame()!)).toBe(false);
+    expect(frameManager.activeFrameHasUniqueUrl()).toBe(false);
   });
 
   it('frameHasUniqueUrl should return true when only one frame has a given url', () => {
     contentScriptConnected(topLevelFrameId, 'name', 'https://angular.dev/');
     contentScriptConnected(otherFrameId, 'name', 'https://angular.dev/overview');
     expect(frameManager.selectedFrame()?.url.toString()).toBe('https://angular.dev/');
-    expect(frameManager.frameHasUniqueUrl(frameManager.selectedFrame()!)).toBe(true);
+    expect(frameManager.activeFrameHasUniqueUrl()).toBe(true);
   });
 
   it('frameHasUniqueUrl should not consider url fragments as part of the url comparison', () => {
@@ -189,10 +189,10 @@ describe('FrameManager', () => {
     expect(frameManager.selectedFrame()?.url.toString()).toBe(
       'https://angular.dev/guide/components',
     );
-    expect(frameManager.frameHasUniqueUrl(frameManager.selectedFrame()!)).toBe(false);
+    expect(frameManager.activeFrameHasUniqueUrl()).toBe(false);
   });
 
   it('frameHasUniqueUrl should return false when frame is null', () => {
-    expect(frameManager.frameHasUniqueUrl(null)).toBe(false);
+    expect(frameManager.activeFrameHasUniqueUrl()).toBe(false);
   });
 });

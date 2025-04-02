@@ -25,8 +25,8 @@ import {
   PipeTransform,
   ViewChild,
   ViewContainerRef,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {TestBed} from '../../testing';
 
 describe('standalone components, directives, and pipes', () => {
   it('should render a standalone component', () => {

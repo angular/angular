@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {SwUpdate} from '@angular/service-worker';
 
 function notifyUser(message: string): void {}
@@ -6,8 +6,9 @@ function notifyUser(message: string): void {}
 // #docregion sw-unrecoverable-state
 @Injectable({providedIn: 'root'})
 export class HandleUnrecoverableStateService {
-  constructor(updates: SwUpdate) {
-    updates.unrecoverable.subscribe((event) => {
+  private updates = inject(SwUpdate);
+  constructor() {
+    this.updates.unrecoverable.subscribe((event) => {
       notifyUser(
         'An error occurred that we cannot recover from:\n' +
           event.reason +

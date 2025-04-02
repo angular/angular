@@ -39,9 +39,10 @@ import {
   ɵɵelementStart as elementStart,
   ɵɵsetNgModuleScope as setNgModuleScope,
   ɵɵtext as text,
-} from '@angular/core';
-import {DeferBlockBehavior} from '@angular/core/testing';
-import {TestBed, TestBedImpl} from '@angular/core/testing/src/test_bed';
+  DOCUMENT,
+} from '../src/core';
+import {DeferBlockBehavior} from '../testing';
+import {TestBed, TestBedImpl} from '../testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -53,7 +54,6 @@ import {
   THROW_ON_UNKNOWN_ELEMENTS_DEFAULT,
   THROW_ON_UNKNOWN_PROPERTIES_DEFAULT,
 } from '../testing/src/test_bed_common';
-import {DOCUMENT} from '@angular/common/src/dom_tokens';
 
 const NAME = new InjectionToken<string>('name');
 

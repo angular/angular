@@ -1,6 +1,6 @@
 # Using DOM APIs
 
-Tip: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
 
 Angular handles most DOM creation, updates, and removals for you. However, you might rarely need to
 directly interact with a component's DOM. Components can inject ElementRef to get a reference to the
@@ -9,7 +9,8 @@ component's host element:
 ```ts
 @Component({...})
 export class ProfilePhoto {
-  constructor(elementRef: ElementRef) {
+  constructor() {
+    const elementRef = inject(ElementRef);
     console.log(elementRef.nativeElement);
   }
 }
@@ -24,7 +25,8 @@ callback** that runs when Angular has finished rendering the page.
 ```ts
 @Component({...})
 export class ProfilePhoto {
-  constructor(elementRef: ElementRef) {
+  constructor() {
+    const elementRef = inject(ElementRef);
     afterRender(() => {
       // Focus the first input element in this component.
       elementRef.nativeElement.querySelector('input')?.focus();

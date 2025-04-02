@@ -10,7 +10,7 @@ import {
   getFileSystem,
   PathManipulation,
 } from '@angular/compiler-cli/private/localize';
-import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
+import {ɵParsedMessage, ɵSourceLocation} from '../../../../index';
 
 import {extractIcuPlaceholders} from './icu_parsing';
 import {TranslationSerializer} from './translation_serializer';

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {ɵmakeTemplateObject} from '@angular/localize';
+import {ɵmakeTemplateObject} from '../../../../../index';
 
 import {SimpleJsonTranslationParser} from '../../../../src/translate/translation_files/translation_parsers/simple_json_translation_parser';
 import {ParsedTranslationBundle} from '../../../../src/translate/translation_files/translation_parsers/translation_parser';

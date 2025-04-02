@@ -15,9 +15,10 @@ import {
   ElementRef,
   EnvironmentInjector,
   OnDestroy,
-  ViewChild,
+  afterRenderEffect,
   inject,
   signal,
+  viewChild,
 } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {MatTabGroup, MatTabsModule} from '@angular/material/tabs';
@@ -60,28 +61,13 @@ const ANGULAR_DEV = 'https://angular.dev';
   ],
 })
 export class CodeEditor implements AfterViewInit, OnDestroy {
-  @ViewChild('codeEditorWrapper') private codeEditorWrapperRef!: ElementRef<HTMLDivElement>;
-  @ViewChild(MatTabGroup) private matTabGroup!: MatTabGroup;
+  readonly codeEditorWrapperRef =
+    viewChild.required<ElementRef<HTMLDivElement>>('codeEditorWrapper');
+  readonly matTabGroup = viewChild.required(MatTabGroup);
 
-  private createFileInputRef?: ElementRef<HTMLInputElement>;
-  @ViewChild('createFileInput') protected set setFileInputRef(
-    element: ElementRef<HTMLInputElement>,
-  ) {
-    if (element) {
-      element.nativeElement.focus();
-      this.createFileInputRef = element;
-    }
-  }
+  readonly createFileInputRef = viewChild<ElementRef<HTMLInputElement>>('createFileInput');
 
-  private renameFileInputRef?: ElementRef<HTMLInputElement>;
-  @ViewChild('renameFileInput') protected set setRenameFileInputRef(
-    element: ElementRef<HTMLInputElement>,
-  ) {
-    if (element) {
-      element.nativeElement.focus();
-      this.renameFileInputRef = element;
-    }
-  }
+  readonly renameFileInputRef = viewChild<ElementRef<HTMLInputElement>>('renameFileInput');
 
   private readonly destroyRef = inject(DestroyRef);
 
@@ -117,8 +103,20 @@ export class CodeEditor implements AfterViewInit, OnDestroy {
   readonly isCreatingFile = signal<boolean>(false);
   readonly isRenamingFile = signal<boolean>(false);
 
+  constructor() {
+    afterRenderEffect(() => {
+      const createFileInput = this.createFileInputRef();
+      createFileInput?.nativeElement.focus();
+    });
+
+    afterRenderEffect(() => {
+      const renameFileInput = this.renameFileInputRef();
+      renameFileInput?.nativeElement.focus();
+    });
+  }
+
   ngAfterViewInit() {
-    this.codeMirrorEditor.init(this.codeEditorWrapperRef.nativeElement);
+    this.codeMirrorEditor.init(this.codeEditorWrapperRef().nativeElement);
     this.listenToDiagnosticsChange();
 
     this.listenToTabChange();
@@ -164,12 +162,12 @@ export class CodeEditor implements AfterViewInit, OnDestroy {
 
   async deleteFile(filename: string) {
     await this.codeMirrorEditor.deleteFile(filename);
-    this.matTabGroup.selectedIndex = 0;
+    this.matTabGroup().selectedIndex = 0;
   }
 
   onAddButtonClick() {
     this.isCreatingFile.set(true);
-    this.matTabGroup.selectedIndex = this.files().length;
+    this.matTabGroup().selectedIndex = this.files().length;
   }
 
   onRenameButtonClick() {
@@ -177,11 +175,12 @@ export class CodeEditor implements AfterViewInit, OnDestroy {
   }
 
   async renameFile(event: SubmitEvent, oldPath: string) {
-    if (!this.renameFileInputRef) return;
+    const renameFileInput = this.renameFileInputRef();
+    if (!renameFileInput) return;
 
     event.preventDefault();
 
-    const renameFileInputValue = this.renameFileInputRef.nativeElement.value;
+    const renameFileInputValue = renameFileInput.nativeElement.value;
 
     if (renameFileInputValue) {
       if (renameFileInputValue.includes('..')) {
@@ -204,11 +203,12 @@ export class CodeEditor implements AfterViewInit, OnDestroy {
   }
 
   async createFile(event: SubmitEvent) {
-    if (!this.createFileInputRef) return;
+    const fileInput = this.createFileInputRef();
+    if (!fileInput) return;
 
     event.preventDefault();
 
-    const newFileInputValue = this.createFileInputRef.nativeElement.value;
+    const newFileInputValue = fileInput.nativeElement.value;
 
     if (newFileInputValue) {
       if (newFileInputValue.includes('..')) {
@@ -248,13 +248,13 @@ export class CodeEditor implements AfterViewInit, OnDestroy {
       )
       .subscribe(() => {
         // selected file on project change is always the first
-        this.matTabGroup.selectedIndex = 0;
+        this.matTabGroup().selectedIndex = 0;
       });
   }
 
   private listenToTabChange() {
-    this.matTabGroup.selectedIndexChange
-      .pipe(takeUntilDestroyed(this.destroyRef))
+    this.matTabGroup()
+      .selectedIndexChange.pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((index) => {
         const selectedFile = this.files()[index];
 

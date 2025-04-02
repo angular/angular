@@ -10,7 +10,7 @@
 // about state in an instruction are correct before implementing any logic.
 // They are meant only to be called in dev mode as sanity checks.
 
-import {getActiveConsumer} from '@angular/core/primitives/signals';
+import {getActiveConsumer} from '../../primitives/signals';
 
 import {stringify} from './stringify';
 

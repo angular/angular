@@ -1800,6 +1800,80 @@ describe('inject migration', () => {
     ]);
   });
 
+  it('should handle parameter referenced through `this` inside a callback within super()', async () => {
+    writeFile(
+      '/dir.ts',
+      [
+        `import { Directive } from '@angular/core';`,
+        `import { Service } from './service';`,
+        `import { Parent } from './parent';`,
+        ``,
+        `@Directive()`,
+        `export class MyDir extends Parent {`,
+        `  constructor(private service: Service) {`,
+        `    super({callback: () => this.service.doStuff()});`,
+        `  }`,
+        `}`,
+      ].join('\n'),
+    );
+
+    await runMigration();
+
+    expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+      `import { Directive, inject } from '@angular/core';`,
+      `import { Service } from './service';`,
+      `import { Parent } from './parent';`,
+      ``,
+      `@Directive()`,
+      `export class MyDir extends Parent {`,
+      `  private service = inject(Service);`,
+      ``,
+      `  constructor() {`,
+      `    super({callback: () => this.service.doStuff()});`,
+      `  }`,
+      `}`,
+    ]);
+  });
+
+  it('should handle super parameter used in shorthand assignment', async () => {
+    writeFile(
+      '/dir.ts',
+      [
+        `import { Directive } from '@angular/core';`,
+        `import { Service } from './service';`,
+        `import { Parent } from './parent';`,
+        ``,
+        `@Directive()`,
+        `export class MyDir extends Parent {`,
+        `  constructor(private service: Service) {`,
+        `    super({service});`,
+        `  }`,
+        `}`,
+      ].join('\n'),
+    );
+
+    await runMigration();
+
+    expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+      `import { Directive, inject } from '@angular/core';`,
+      `import { Service } from './service';`,
+      `import { Parent } from './parent';`,
+      ``,
+      `@Directive()`,
+      `export class MyDir extends Parent {`,
+      `  private service: Service;`,
+      ``,
+      `  constructor() {`,
+      `    const service = inject(Service);`,
+      ``,
+      `    super({service});`,
+      `  `,
+      `    this.service = service;`,
+      `  }`,
+      `}`,
+    ]);
+  });
+
   describe('internal-only behavior', () => {
     function runInternalMigration() {
       return runMigration({_internalCombineMemberInitializers: true});
@@ -2217,6 +2291,48 @@ describe('inject migration', () => {
         ``,
         `  /** ID of Foo */`,
         `  id: string = this.foo.getId();`,
+        `}`,
+      ]);
+    });
+
+    it('should account for doc strings when inlining initializers and combining in initialization order', async () => {
+      writeFile(
+        '/dir.ts',
+        [
+          `import { Directive } from '@angular/core';`,
+          `import { Foo } from 'foo';`,
+          ``,
+          `@Directive()`,
+          `class MyDir {`,
+          `  /** Value of Foo */`,
+          `  private readonly value: number;`,
+          ``,
+          `  /** ID of Foo */`,
+          `  id: string;`,
+          ``,
+          `  constructor(private foo: Foo) {`,
+          `    this.value = this.foo.getValue();`,
+          `    this.id = this.value.toString();`,
+          `  }`,
+          `}`,
+        ].join('\n'),
+      );
+
+      await runInternalMigration();
+
+      expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+        `import { Directive, inject } from '@angular/core';`,
+        `import { Foo } from 'foo';`,
+        ``,
+        `@Directive()`,
+        `class MyDir {`,
+        `  private foo = inject(Foo);`,
+        // The indentation of the members here is slightly off,
+        // but it's not a problem because this code is internal-only.
+        `  /** Value of Foo */`,
+        `private readonly value: number = this.foo.getValue();`,
+        `  /** ID of Foo */`,
+        `id: string = this.value.toString();`,
         `}`,
       ]);
     });

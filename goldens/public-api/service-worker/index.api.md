@@ -6,6 +6,7 @@
 
 import { EnvironmentProviders } from '@angular/core';
 import * as i0 from '@angular/core';
+import { Injector } from '@angular/core';
 import { ModuleWithProviders } from '@angular/core';
 import { Observable } from 'rxjs';
 

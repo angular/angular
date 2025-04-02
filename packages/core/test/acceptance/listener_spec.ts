@@ -21,8 +21,8 @@ import {
   ViewChild,
   ViewChildren,
   ViewContainerRef,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {TestBed} from '../../testing';
 import {By} from '@angular/platform-browser';
 
 describe('event listeners', () => {
@@ -440,6 +440,7 @@ describe('event listeners', () => {
       }
 
       TestBed.configureTestingModule({
+        rethrowApplicationErrors: false,
         declarations: [TestCmpt, LikesClicks, ThrowsOnClicks],
         providers: [{provide: ErrorHandler, useClass: CountingErrorHandler}],
       });

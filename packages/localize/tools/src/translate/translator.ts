@@ -10,7 +10,7 @@ import {
   PathSegment,
   ReadonlyFileSystem,
 } from '@angular/compiler-cli/private/localize';
-import {MessageId, ɵParsedTranslation} from '@angular/localize';
+import {MessageId, ɵParsedTranslation} from '../../../index';
 
 import {Diagnostics} from '../diagnostics';
 

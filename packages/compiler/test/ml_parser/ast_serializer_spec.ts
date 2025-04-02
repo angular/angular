@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
+import {HtmlParser} from '../../src/ml_parser/html_parser';
 
 import {serializeNodes} from './util/util';
 

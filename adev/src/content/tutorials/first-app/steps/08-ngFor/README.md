@@ -39,6 +39,8 @@ Now the app has a dataset that you can use to display the entries in the browser
 
     Note, in the code `[housingLocation] = "housingLocation"` the `housingLocation` value now refers to the variable used in the `ngFor` directive. Before this change, it referred to the property on the `HomeComponent` class.
 
+    IMPORTANT: Don't forget to import the `NgFor` directive in your `HomeComponent` class.
+
 1. Save all changes.
 
 1. Refresh the browser and confirm that the app now renders a grid of housing locations.
@@ -51,7 +53,7 @@ Now the app has a dataset that you can use to display the entries in the browser
 
 </docs-workflow>
 
-Summary: In this lesson, you used the `ngFor` directive to repeat data dynamically in Angular templates. You also added a new array of data to be used in the Angular app. The application now dynamically renders a list of housing locations in the browser.
+SUMMARY: In this lesson, you used the `ngFor` directive to repeat data dynamically in Angular templates. You also added a new array of data to be used in the Angular app. The application now dynamically renders a list of housing locations in the browser.
 
 The app is taking shape, great job.
 

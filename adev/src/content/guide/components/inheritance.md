@@ -1,6 +1,6 @@
 # Inheritance
 
-Tip: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
 
 Angular components are TypeScript classes and participate in standard JavaScript inheritance
 semantics.
@@ -67,8 +67,7 @@ and their own.
 
 ### Forwarding injected dependencies
 
-If a base class relies on dependency injection, the child class must explicitly pass these
-dependencies to `super`.
+If a base class injects dependencies as constructor parameters, the child class must explicitly class these dependencies to `super`.
 
 ```ts
 @Component({ ... })

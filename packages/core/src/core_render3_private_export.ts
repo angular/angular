@@ -39,7 +39,6 @@ export {
 export {
   AttributeMarker as ɵAttributeMarker,
   ComponentDef as ɵComponentDef,
-  ComponentDebugMetadata as ɵComponentDebugMetadata,
   ComponentFactory as ɵRender3ComponentFactory,
   ComponentRef as ɵRender3ComponentRef,
   ComponentType as ɵComponentType,
@@ -62,6 +61,16 @@ export {
   ɵDeferBlockDependencyInterceptor,
   ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
   ɵDEFER_BLOCK_CONFIG,
+  Framework as ɵFramework,
+  BaseDirectiveDebugMetadata as ɵBaseDirectiveDebugMetadata,
+  AngularDirectiveDebugMetadata as ɵAngularDirectiveDebugMetadata,
+  AngularComponentDebugMetadata as ɵAngularComponentDebugMetadata,
+  AcxChangeDetectionStrategy as ɵAcxChangeDetectionStrategy,
+  AcxViewEncapsulation as ɵAcxViewEncapsulation,
+  AcxDirectiveDebugMetadata as ɵAcxDirectiveDebugMetadata,
+  AcxComponentDebugMetadata as ɵAcxComponentDebugMetadata,
+  WizComponentDebugMetadata as ɵWizComponentDebugMetadata,
+  DirectiveDebugMetadata as ɵDirectiveDebugMetadata,
   ɵɵadvance,
   ɵɵattribute,
   ɵɵattributeInterpolate1,
@@ -109,7 +118,7 @@ export {
   ɵɵFactoryDeclaration,
   ɵɵgetCurrentView,
   ɵɵgetInheritedFactory,
-  ɵɵhostProperty,
+  ɵɵdomProperty,
   ɵɵi18n,
   ɵɵi18nApply,
   ɵɵi18nAttributes,
@@ -282,7 +291,10 @@ export {
 export {compilePipe as ɵcompilePipe} from './render3/jit/pipe';
 export {isNgModule as ɵisNgModule} from './render3/jit/util';
 export {Profiler as ɵProfiler, ProfilerEvent as ɵProfilerEvent} from './render3/profiler_types';
-export {GlobalDevModeUtils as ɵGlobalDevModeUtils} from './render3/util/global_utils';
+export {
+  FrameworkAgnosticGlobalUtils as ɵFrameworkAgnosticGlobalUtils,
+  GlobalDevModeUtils as ɵGlobalDevModeUtils,
+} from './render3/util/global_utils';
 export {
   ViewRef as ɵViewRef,
   isViewDirty as ɵisViewDirty,

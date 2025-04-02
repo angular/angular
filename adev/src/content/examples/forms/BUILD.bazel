@@ -6,7 +6,6 @@ exports_files([
     "src/app/actor-form/actor-form.component.ts",
     "src/app/app.component.html",
     "src/app/app.component.ts",
-    "src/app/app.module.ts",
     "src/assets/forms.css",
     "src/index.html",
     "src/main.ts",

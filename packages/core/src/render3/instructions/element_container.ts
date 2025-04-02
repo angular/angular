@@ -58,8 +58,6 @@ function elementContainerStartFirstCreatePass(
   attrsIndex?: number | null,
   localRefsIndex?: number,
 ): TElementContainerNode {
-  ngDevMode && ngDevMode.firstCreatePass++;
-
   const tViewConsts = tView.consts;
   const attrs = getConstant<TAttributes>(tViewConsts, attrsIndex);
   const tNode = getOrCreateTNode(tView, index, TNodeType.ElementContainer, 'ng-container', attrs);

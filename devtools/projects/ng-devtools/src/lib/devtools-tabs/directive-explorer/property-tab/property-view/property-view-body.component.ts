@@ -7,7 +7,15 @@
  */
 
 import {CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag} from '@angular/cdk/drag-drop';
-import {Component, computed, forwardRef, input, output, signal} from '@angular/core';
+import {
+  Component,
+  ɵFramework as Framework,
+  computed,
+  forwardRef,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import {DirectivePosition, SerializedInjectedService} from 'protocol';
 
 import {
@@ -39,26 +47,36 @@ import {MatExpansionModule} from '@angular/material/expansion';
 export class PropertyViewBodyComponent {
   readonly controller = input.required<DirectivePropertyResolver>();
   readonly directiveInputControls = input.required<DirectiveTreeData>();
+  readonly directivePropControls = input.required<DirectiveTreeData>();
   readonly directiveOutputControls = input.required<DirectiveTreeData>();
   readonly directiveStateControls = input.required<DirectiveTreeData>();
 
   readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
 
+  protected readonly dependencies = computed(() => {
+    const metadata = this.controller().directiveMetadata;
+    if (!metadata) return [];
+    if (!('dependencies' in metadata)) return [];
+    return metadata.dependencies;
+  });
+
   protected readonly panels = signal([
     {
-      title: 'Inputs',
+      title: () => 'Inputs',
       controls: () => this.directiveInputControls(),
-      class: 'cy-inputs',
     },
     {
-      title: 'Outputs',
+      title: () => 'Props',
+      controls: () => this.directivePropControls(),
+    },
+    {
+      title: () => 'Outputs',
       controls: () => this.directiveOutputControls(),
-      class: 'cy-outputs',
     },
     {
-      title: 'Properties',
+      title: () =>
+        this.controller().directiveMetadata?.framework === Framework.Wiz ? 'State' : 'Properties',
       controls: () => this.directiveStateControls(),
-      class: 'cy-properties',
     },
   ]);
 
@@ -152,7 +170,6 @@ export class DependencyViewerComponent {
   styles: [
     `
       ng-dependency-viewer {
-        border-bottom: 1px solid color-mix(in srgb, currentColor, #bdbdbd 85%);
         display: block;
       }
     `,
@@ -163,6 +180,10 @@ export class InjectedServicesComponent {
   readonly controller = input.required<DirectivePropertyResolver>();
 
   readonly dependencies = computed<SerializedInjectedService[]>(() => {
-    return this.controller().directiveMetadata?.dependencies ?? [];
+    const metadata = this.controller().directiveMetadata;
+    if (!metadata) return [];
+    if (!('dependencies' in metadata)) return [];
+
+    return metadata.dependencies ?? [];
   });
 }

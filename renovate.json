@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "baseBranches": ["main"],
-  "enabledManagers": ["npm", "bazel", "github-actions"],
+  "enabledManagers": ["npm", "bazel", "github-actions", "nvm"],
   "rangeStrategy": "replace",
   "pinDigests": true,
   "semanticCommits": "enabled",
@@ -64,6 +64,16 @@
     "watchr"
   ],
   "packageRules": [
+    {
+      "matchDepNames": ["node"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "node"
+    },
+    {
+      "enabled": false,
+      "matchDepNames": ["node"],
+      "matchUpdateTypes": ["major"]
+    },
     {
       "matchPackageNames": ["*"],
       "matchUpdateTypes": ["minor", "patch"],

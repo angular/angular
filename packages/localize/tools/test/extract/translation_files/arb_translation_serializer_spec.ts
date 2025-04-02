@@ -11,7 +11,7 @@ import {
   PathManipulation,
 } from '@angular/compiler-cli/src/ngtsc/file_system';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-import {ɵParsedMessage} from '@angular/localize';
+import {ɵParsedMessage} from '../../../../index';
 
 import {ArbTranslationSerializer} from '../../../src/extract/translation_files/arb_translation_serializer';
 

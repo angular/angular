@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import * as html from '@angular/compiler/src/ml_parser/ast';
-import {getHtmlTagDefinition} from '@angular/compiler/src/ml_parser/html_tags';
+import * as html from '../../../src/ml_parser/ast';
+import {getHtmlTagDefinition} from '../../../src/ml_parser/html_tags';
 
 class _SerializerVisitor implements html.Visitor {
   visitElement(element: html.Element, context: any): any {

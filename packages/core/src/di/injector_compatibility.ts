@@ -21,16 +21,18 @@ import {ProviderToken} from './provider_token';
 import type {HostAttributeToken} from './host_attribute_token';
 import {
   Injector as PrimitivesInjector,
+  isNotFound,
   NotFound,
   InjectionToken as PrimitivesInjectionToken,
   getCurrentInjector,
-} from '@angular/core/primitives/di';
+} from '../../primitives/di';
+
 import {InjectionToken} from './injection_token';
 
 const _THROW_IF_NOT_FOUND = {};
 export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
 
-export {getCurrentInjector, setCurrentInjector} from '@angular/core/primitives/di';
+export {getCurrentInjector, setCurrentInjector} from '../../primitives/di';
 
 /*
  * Name of a property (that we patch onto DI decorator), which is used as an annotation of which
@@ -49,12 +51,19 @@ export class RetrievingInjector implements PrimitivesInjector {
   retrieve<T>(token: PrimitivesInjectionToken<T>, options: unknown): T | NotFound {
     const flags: InternalInjectFlags =
       convertToBitFlags(options as InjectOptions | undefined) || InternalInjectFlags.Default;
-    return (this.injector as BackwardsCompatibleInjector).get(
-      token as unknown as InjectionToken<T>,
-      // When a dependency is requested with an optional flag, DI returns null as the default value.
-      flags & InternalInjectFlags.Optional ? null : undefined,
-      flags,
-    ) as T;
+    try {
+      return (this.injector as BackwardsCompatibleInjector).get(
+        token as unknown as InjectionToken<T>,
+        // When a dependency is requested with an optional flag, DI returns null as the default value.
+        (flags & InternalInjectFlags.Optional ? null : THROW_IF_NOT_FOUND) as T,
+        flags,
+      ) as T;
+    } catch (e: any) {
+      if (isNotFound(e)) {
+        return e;
+      }
+      throw e;
+    }
   }
 }
 
@@ -95,11 +104,15 @@ export function injectInjectorOnly<T>(
   } else if (currentInjector === null) {
     return injectRootLimpMode(token, undefined, flags);
   } else {
-    const value = currentInjector.retrieve(
-      token as PrimitivesInjectionToken<T>,
-      convertToInjectOptions(flags),
-    ) as T;
+    const options = convertToInjectOptions(flags);
+    const value = currentInjector.retrieve(token as PrimitivesInjectionToken<T>, options) as T;
     ngDevMode && emitInjectEvent(token as Type<unknown>, value, flags);
+    if (isNotFound(value)) {
+      if (options.optional) {
+        return null;
+      }
+      throw value;
+    }
     return value;
   }
 }

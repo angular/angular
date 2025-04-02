@@ -67,7 +67,6 @@ function templateFirstCreatePass(
   localRefsIndex?: number | null,
 ): TContainerNode {
   ngDevMode && assertFirstCreatePass(tView);
-  ngDevMode && ngDevMode.firstCreatePass++;
   const tViewConsts = tView.consts;
 
   // TODO(pk): refactor getOrCreateTNode to have the "create" only version

@@ -30,14 +30,14 @@ import {
   ViewChild,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {bootstrapApplication} from '@angular/platform-browser';
+import {bootstrapApplication} from '../../index';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {
   BrowserAnimationsModule,
   ɵInjectableAnimationEngine as InjectableAnimationEngine,
-} from '@angular/platform-browser/animations';
-import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
-import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
+} from '../index';
+import {provideAnimationsAsync} from '../async';
+import {DomRendererFactory2} from '../../src/dom/dom_renderer';
 import {withBody} from '@angular/private/testing';
 
 import {el} from '../../testing/src/browser_util';

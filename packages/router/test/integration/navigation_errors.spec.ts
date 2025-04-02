@@ -32,7 +32,7 @@ import {
   NavigationCancel,
   NavigationCancellationCode,
 } from '../../src';
-import {RouterTestingHarness} from '@angular/router/testing';
+import {RouterTestingHarness} from '../../testing';
 import {
   createRoot,
   RootCmp,
@@ -352,10 +352,6 @@ export function navigationErrorsIntegrationSuite() {
   });
 
   it('should dispatch NavigationCancel after the url has been reset back', fakeAsync(() => {
-    TestBed.configureTestingModule({
-      providers: [{provide: 'returnsFalse', useValue: () => false}],
-    });
-
     const router: Router = TestBed.inject(Router);
     const location = TestBed.inject(Location);
 
@@ -366,7 +362,7 @@ export function navigationErrorsIntegrationSuite() {
       {
         path: 'throwing',
         loadChildren: jasmine.createSpy('doesnotmatter'),
-        canLoad: ['returnsFalse'],
+        canLoad: [() => false],
       },
     ]);
 

@@ -109,7 +109,7 @@ In your IDE:
 
 </docs-workflow>
 
-Summary: In this lesson, you updated a default Angular app to display *Hello world*.
+SUMMARY: In this lesson, you updated a default Angular app to display *Hello world*.
 In the process, you learned about the `ng serve` command to serve your app locally for testing.
 
 For more information about the topics covered in this lesson, visit:

@@ -12,9 +12,9 @@ import {
   OnDestroy,
   ɵformatRuntimeError as formatRuntimeError,
   PLATFORM_ID,
+  DOCUMENT,
 } from '@angular/core';
 
-import {DOCUMENT} from '../../dom_tokens';
 import {RuntimeErrorCode} from '../../errors';
 
 import {assertDevMode} from './asserts';

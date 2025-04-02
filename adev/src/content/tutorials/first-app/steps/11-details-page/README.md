@@ -113,7 +113,7 @@ In a previous lesson you updated the `AppComponent` template to include a `route
 
 </docs-workflow>
 
-Summary: In this lesson you added routing to show details pages.
+SUMMARY: In this lesson you added routing to show details pages.
 
 You now know how to:
 

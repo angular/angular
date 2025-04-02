@@ -29,8 +29,8 @@ import {TransitionAnimationPlayer} from '@angular/animations/browser/src/render/
 import {ENTER_CLASSNAME, LEAVE_CLASSNAME} from '@angular/animations/browser/src/util';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {CommonModule} from '@angular/common';
-import {Component, HostBinding, ViewChild} from '@angular/core';
-import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
+import {Component, HostBinding, ViewChild} from '../../src/core';
+import {fakeAsync, flushMicrotasks, TestBed} from '../../testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 import {HostListener} from '../../src/metadata/directives';

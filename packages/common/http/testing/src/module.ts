@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {HttpClientModule} from '@angular/common/http';
+import {HttpClientModule} from '../../index';
 import {NgModule} from '@angular/core';
 
 import {provideHttpClientTesting} from './provider';

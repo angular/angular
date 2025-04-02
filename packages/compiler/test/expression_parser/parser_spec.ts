@@ -19,9 +19,9 @@ import {
   TemplateBinding,
   VariableBinding,
   TemplateLiteral,
-} from '@angular/compiler/src/expression_parser/ast';
-import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
-import {Parser, SplitInterpolation} from '@angular/compiler/src/expression_parser/parser';
+} from '../../src/expression_parser/ast';
+import {Lexer} from '../../src/expression_parser/lexer';
+import {Parser, SplitInterpolation} from '../../src/expression_parser/parser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {unparse, unparseWithSpan} from './utils/unparser';

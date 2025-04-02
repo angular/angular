@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {PathManipulation} from '@angular/compiler-cli/private/localize';
-import {ɵParsedMessage, ɵparseMessage} from '@angular/localize';
+import {ɵParsedMessage, ɵparseMessage} from '../../../../index';
 import {NodePath, PluginObj, types as t} from '@babel/core';
 
 import {

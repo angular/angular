@@ -1,5 +1,5 @@
 // #docregion example
-import {Component, OnInit} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 
 import {Hero, HeroService} from '../shared';
 
@@ -9,7 +9,8 @@ import {Hero, HeroService} from '../shared';
 })
 export class HeroListComponent implements OnInit {
   heroes: Hero[] = [];
-  constructor(private heroService: HeroService) {}
+  private heroService = inject(HeroService);
+
   getHeroes() {
     this.heroes = [];
     this.heroService.getHeroes().subscribe((heroes) => (this.heroes = heroes));

@@ -9,7 +9,7 @@
 import {ResourceLoader} from '@angular/compiler';
 import {Compiler, Component, NgModule} from '@angular/core';
 import {fakeAsync, inject, TestBed, tick, waitForAsync} from '@angular/core/testing';
-import {ResourceLoaderImpl} from '@angular/platform-browser-dynamic/src/resource_loader/resource_loader_impl';
+import {ResourceLoaderImpl} from '../src/resource_loader/resource_loader_impl';
 
 // Components for the tests.
 class FancyService {

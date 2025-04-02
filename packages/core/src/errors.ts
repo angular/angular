@@ -101,6 +101,7 @@ export const enum RuntimeErrorCode {
 
   // Defer errors (750-799 range)
   DEFER_LOADING_FAILED = -750,
+  DEFER_IN_HMR_MODE = -751,
 
   // standalone errors
   IMPORT_PROVIDERS_FROM_STANDALONE = 800,
@@ -124,6 +125,7 @@ export const enum RuntimeErrorCode {
   UNEXPECTED_ZONEJS_PRESENT_IN_ZONELESS_MODE = 914,
   MISSING_NG_MODULE_DEFINITION = 915,
   MISSING_DIRECTIVE_DEFINITION = 916,
+  NO_COMPONENT_FACTORY_FOUND = 917,
 
   // Signal integration errors
   REQUIRED_INPUT_NO_VALUE = -950,
@@ -169,6 +171,13 @@ export class RuntimeError<T extends number = RuntimeErrorCode> extends Error {
   }
 }
 
+export function formatRuntimeErrorCode<T extends number = RuntimeErrorCode>(code: T): string {
+  // Error code might be a negative number, which is a special marker that instructs the logic to
+  // generate a link to the error details page on angular.io.
+  // We also prepend `0` to non-compile-time errors.
+  return `NG0${Math.abs(code)}`;
+}
+
 /**
  * Called to format a runtime error.
  * See additional info on the `message` argument type in the `RuntimeError` class description.
@@ -177,10 +186,7 @@ export function formatRuntimeError<T extends number = RuntimeErrorCode>(
   code: T,
   message: null | false | string,
 ): string {
-  // Error code might be a negative number, which is a special marker that instructs the logic to
-  // generate a link to the error details page on angular.io.
-  // We also prepend `0` to non-compile-time errors.
-  const fullCode = `NG0${Math.abs(code)}`;
+  const fullCode = formatRuntimeErrorCode(code);
 
   let errorMessage = `${fullCode}${message ? ': ' + message : ''}`;
 
