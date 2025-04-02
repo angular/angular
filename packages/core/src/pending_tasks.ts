@@ -83,7 +83,6 @@ export class PendingTasksInternal implements OnDestroy {
  * ```
  *
  * @publicApi
- * @developerPreview
  */
 export class PendingTasks {
   private readonly internalPendingTasks = inject(PendingTasksInternal);
@@ -117,8 +116,9 @@ export class PendingTasks {
    * ```
    *
    * @param fn The asynchronous function to execute
+   * @developerPreview
    */
-  run<T>(fn: () => Promise<T>): void {
+  run(fn: () => Promise<unknown>): void {
     const removeTask = this.add();
     fn().catch(this.errorHandler).finally(removeTask);
   }
