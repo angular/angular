@@ -71,9 +71,9 @@ export class ChangeTracker {
   }
 
   /**
-   * Replaces the text of an AST node with a new one.
+   * Replaces the text of an AST node with a new node or string.
    * @param oldNode Node to be replaced.
-   * @param newNode New node to be inserted.
+   * @param newContents New node or string to be inserted.
    * @param emitHint Hint when formatting the text of the new node.
    * @param sourceFileWhenPrinting File to use when printing out the new node. This is important
    * when copying nodes from one file to another, because TypeScript might not output literal nodes
@@ -81,17 +81,17 @@ export class ChangeTracker {
    */
   replaceNode(
     oldNode: ts.Node,
-    newNode: ts.Node,
+    newContents: ts.Node | string,
     emitHint = ts.EmitHint.Unspecified,
     sourceFileWhenPrinting?: ts.SourceFile,
   ): void {
     const sourceFile = oldNode.getSourceFile();
-    this.replaceText(
-      sourceFile,
-      oldNode.getStart(),
-      oldNode.getWidth(),
-      this._printer.printNode(emitHint, newNode, sourceFileWhenPrinting || sourceFile),
-    );
+    const text =
+      typeof newContents === 'string'
+        ? newContents
+        : this._printer.printNode(emitHint, newContents, sourceFileWhenPrinting || sourceFile);
+
+    this.replaceText(sourceFile, oldNode.getStart(), oldNode.getWidth(), text);
   }
 
   /**
