@@ -12,7 +12,7 @@ import {
   ɵisSubscribable as isSubscribable,
   ɵRuntimeError as RuntimeError,
 } from '@angular/core';
-import {forkJoin, from, Observable} from 'rxjs';
+import {forkJoin, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import type {
@@ -603,8 +603,18 @@ function isPresent(o: any): boolean {
 }
 
 export function toObservable(value: any): Observable<any> {
-  const obs = isPromise(value) ? from(value) : value;
-  if ((typeof ngDevMode === 'undefined' || ngDevMode) && !isSubscribable(obs)) {
+  const observable = isPromise(value)
+    ? // Manually creating the observable imports fewer symbols
+      // from RxJS than using `from(value)`.
+      new Observable((subscriber) => {
+        value
+          .then((v) => subscriber.next(v))
+          .catch((error) => subscriber.error(error))
+          .finally(() => subscriber.complete());
+      })
+    : value;
+
+  if ((typeof ngDevMode === 'undefined' || ngDevMode) && !isSubscribable(observable)) {
     let errorMessage = `Expected async validator to return Promise or Observable.`;
     // A synchronous validator will return object or null.
     if (typeof value === 'object') {
@@ -613,7 +623,7 @@ export function toObservable(value: any): Observable<any> {
     }
     throw new RuntimeError(RuntimeErrorCode.WRONG_VALIDATOR_RETURN_TYPE, errorMessage);
   }
-  return obs;
+  return observable;
 }
 
 function mergeErrors(arrayOfErrors: (ValidationErrors | null)[]): ValidationErrors | null {
