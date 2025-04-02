@@ -150,8 +150,17 @@ export function computeReplacementsToMigrateQuery(
     resolvedReadType === null && type !== undefined ? [type] : undefined,
     args,
   );
+
+  const accessibilityModifier = getAccessibilityModifier(node);
+  let modifiers: (ts.ModifierLike | ts.ModifierToken<ts.SyntaxKind.ReadonlyKeyword>)[] = [
+    ts.factory.createModifier(ts.SyntaxKind.ReadonlyKeyword),
+  ];
+  if (accessibilityModifier) {
+    modifiers = [accessibilityModifier, ...modifiers];
+  }
+
   const updated = ts.factory.createPropertyDeclaration(
-    [ts.factory.createModifier(ts.SyntaxKind.ReadonlyKeyword)],
+    modifiers,
     node.name,
     undefined,
     undefined,
@@ -168,4 +177,13 @@ export function computeReplacementsToMigrateQuery(
       }),
     ),
   ];
+}
+
+function getAccessibilityModifier(node: ts.PropertyDeclaration): ts.ModifierLike | undefined {
+  return node.modifiers?.find(
+    (mod) =>
+      mod.kind === ts.SyntaxKind.PublicKeyword ||
+      mod.kind === ts.SyntaxKind.PrivateKeyword ||
+      mod.kind === ts.SyntaxKind.ProtectedKeyword,
+  );
 }
