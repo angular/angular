@@ -71,6 +71,7 @@ export function migrateFile(sourceFile: ts.SourceFile, options: MigrationOptions
         prependToClass,
         afterInjectCalls,
         memberIndentation,
+        options,
       );
     }
 
@@ -755,8 +756,9 @@ function applyInternalOnlyChanges(
   prependToClass: string[],
   afterInjectCalls: string[],
   memberIndentation: string,
+  options: MigrationOptions,
 ) {
-  const result = findUninitializedPropertiesToCombine(node, constructor, localTypeChecker);
+  const result = findUninitializedPropertiesToCombine(node, constructor, localTypeChecker, options);
 
   if (result === null) {
     return;
@@ -774,36 +776,46 @@ function applyInternalOnlyChanges(
   result.toCombine.forEach(({declaration, initializer}) => {
     const initializerStatement = closestNode(initializer, ts.isStatement);
 
+    // Strip comments if we are just going modify the node in-place.
+    const modifiers = preserveInitOrder
+      ? declaration.modifiers
+      : cloneModifiers(declaration.modifiers);
+    const name = preserveInitOrder ? declaration.name : cloneName(declaration.name);
+
+    const newProperty = ts.factory.createPropertyDeclaration(
+      modifiers,
+      name,
+      declaration.questionToken,
+      declaration.type,
+      undefined,
+    );
+
+    const propText = printer.printNode(
+      ts.EmitHint.Unspecified,
+      newProperty,
+      declaration.getSourceFile(),
+    );
+    const initializerText = replaceParameterReferencesInInitializer(
+      initializer,
+      constructor,
+      localTypeChecker,
+    );
+    const withInitializer = `${propText.slice(0, -1)} = ${initializerText};`;
+
     // If the initialization order is being preserved, we have to remove the original
     // declaration and re-declare it. Otherwise we can do the replacement in-place.
     if (preserveInitOrder) {
-      // Preserve comment in the new property since we are removing the entire node.
-      const newProperty = ts.factory.createPropertyDeclaration(
-        declaration.modifiers,
-        declaration.name,
-        declaration.questionToken,
-        declaration.type,
-        initializer,
-      );
-
       tracker.removeNode(declaration, true);
       removedMembers.add(declaration);
-      afterInjectCalls.push(
-        memberIndentation +
-          printer.printNode(ts.EmitHint.Unspecified, newProperty, declaration.getSourceFile()),
-      );
+      afterInjectCalls.push(memberIndentation + withInitializer);
     } else {
-      // Strip comments from the declaration since we are replacing just
-      // the node, not the leading comment.
-      const newProperty = ts.factory.createPropertyDeclaration(
-        cloneModifiers(declaration.modifiers),
-        cloneName(declaration.name),
-        declaration.questionToken,
-        declaration.type,
-        initializer,
+      const sourceFile = declaration.getSourceFile();
+      tracker.replaceText(
+        sourceFile,
+        declaration.getStart(),
+        declaration.getWidth(),
+        withInitializer,
       );
-
-      tracker.replaceNode(declaration, newProperty);
     }
 
     // This should always be defined, but null check it just in case.
@@ -825,4 +837,42 @@ function applyInternalOnlyChanges(
   if (prependToClass.length > 0) {
     prependToClass.push('');
   }
+}
+
+function replaceParameterReferencesInInitializer(
+  initializer: ts.Expression,
+  constructor: ts.ConstructorDeclaration,
+  localTypeChecker: ts.TypeChecker,
+): string {
+  // 1. Collect the locations of identifier nodes that reference constructor parameters.
+  // 2. Add `this.` to those locations.
+  const insertLocations = [0];
+
+  function walk(node: ts.Node) {
+    if (
+      ts.isIdentifier(node) &&
+      !(ts.isPropertyAccessExpression(node.parent) && node === node.parent.name) &&
+      localTypeChecker
+        .getSymbolAtLocation(node)
+        ?.declarations?.some((decl) =>
+          constructor.parameters.includes(decl as ts.ParameterDeclaration),
+        )
+    ) {
+      insertLocations.push(node.getStart() - initializer.getStart());
+    }
+    ts.forEachChild(node, walk);
+  }
+  walk(initializer);
+
+  const initializerText = initializer.getText();
+  insertLocations.push(initializerText.length);
+
+  insertLocations.sort((a, b) => a - b);
+
+  const result: string[] = [];
+  for (let i = 0; i < insertLocations.length - 1; i++) {
+    result.push(initializerText.slice(insertLocations[i], insertLocations[i + 1]));
+  }
+
+  return result.join('this.');
 }
