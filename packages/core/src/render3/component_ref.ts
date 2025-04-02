@@ -75,6 +75,7 @@ import {elementEndFirstCreatePass, elementStartFirstCreatePass} from './view/ele
 import {ViewRef} from './view_ref';
 import {createLView, createTView, getInitialLViewFlagsFromDef} from './view/construction';
 import {BINDING, Binding, DirectiveWithBindings} from './dynamic_bindings';
+import {NG_REFLECT_ATTRS_FLAG, NG_REFLECT_ATTRS_FLAG_DEFAULT} from '../ng_reflect';
 
 export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
   /**
@@ -163,10 +164,16 @@ function createRootLViewEnvironment(rootLViewInjector: Injector): LViewEnvironme
   const sanitizer = rootLViewInjector.get(Sanitizer, null);
   const changeDetectionScheduler = rootLViewInjector.get(ChangeDetectionScheduler, null);
 
+  let ngReflect = false;
+  if (typeof ngDevMode === 'undefined' || ngDevMode) {
+    ngReflect = rootLViewInjector.get(NG_REFLECT_ATTRS_FLAG, NG_REFLECT_ATTRS_FLAG_DEFAULT);
+  }
+
   return {
     rendererFactory,
     sanitizer,
     changeDetectionScheduler,
+    ngReflect,
   };
 }
 

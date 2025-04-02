@@ -18,7 +18,7 @@ import {
 } from '../../sanitization/sanitization';
 import {assertIndexInRange, assertNotSame} from '../../util/assert';
 import {escapeCommentText} from '../../util/dom';
-import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
+import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../ng_reflect';
 import {stringify} from '../../util/stringify';
 import {assertFirstCreatePass, assertLView} from '../assert';
 import {attachPatchData} from '../context_discovery';
@@ -43,6 +43,7 @@ import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentDef, isComponentHost} from '../interfaces/type_checks';
 import {
   CONTEXT,
+  ENVIRONMENT,
   FLAGS,
   HEADER_OFFSET,
   INJECTOR,
@@ -309,6 +310,10 @@ export function markDirtyIfOnPush(lView: LView, viewIndex: number): void {
 }
 
 function setNgReflectProperty(lView: LView, tNode: TNode, attrName: string, value: any) {
+  const environment = lView[ENVIRONMENT];
+  if (!environment.ngReflect) {
+    return;
+  }
   const element = getNativeByTNode(tNode, lView) as RElement | RComment;
   const renderer = lView[RENDERER];
   attrName = normalizeDebugBindingName(attrName);
@@ -334,7 +339,8 @@ function setNgReflectProperties(
   publicName: string,
   value: any,
 ) {
-  if (!(tNode.type & (TNodeType.AnyRNode | TNodeType.Container))) {
+  const environment = lView[ENVIRONMENT];
+  if (!environment.ngReflect || !(tNode.type & (TNodeType.AnyRNode | TNodeType.Container))) {
     return;
   }
 

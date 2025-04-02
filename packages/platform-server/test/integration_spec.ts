@@ -44,6 +44,7 @@ import {
   APP_INITIALIZER,
   inject,
   getPlatform,
+  provideNgReflectAttributes,
 } from '@angular/core';
 import {SSR_CONTENT_INTEGRITY_MARKER} from '@angular/core/src/hydration/utils';
 import {TestBed} from '@angular/core/testing';
@@ -76,7 +77,11 @@ function getStandaloneBootstrapFn(
   component: Type<unknown>,
   providers: Array<Provider | EnvironmentProviders> = [],
 ): () => Promise<ApplicationRef> {
-  return () => bootstrapApplication(component, mergeApplicationConfig(APP_CONFIG, {providers}));
+  return () =>
+    bootstrapApplication(
+      component,
+      mergeApplicationConfig(APP_CONFIG, {providers: [...providers, provideNgReflectAttributes()]}),
+    );
 }
 
 function createMyServerApp(standalone: boolean) {
@@ -558,6 +563,7 @@ const MyHostComponentStandalone = getStandaloneBootstrapFn(
   declarations: [MyHostComponent, MyChildComponent],
   bootstrap: [MyHostComponent],
   imports: [ServerModule, BrowserModule],
+  providers: [provideNgReflectAttributes()],
 })
 class FalseAttributesModule {}
 

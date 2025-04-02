@@ -69,6 +69,7 @@ export function enterViewWithOneDiv() {
       rendererFactory,
       sanitizer: null,
       changeDetectionScheduler: null,
+      ngReflect: false,
     },
     renderer,
     null,

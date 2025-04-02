@@ -89,7 +89,7 @@ describe('router outlet name', () => {
     expect(fixture.nativeElement.innerHTML).toContain('hello');
     expect(fixture.nativeElement.innerHTML).not.toContain('goodbye');
 
-    fixture.componentInstance.name = 'goodbye';
+    fixture.componentInstance.name = 'farewell';
     advance(fixture);
     expect(fixture.nativeElement.innerHTML).toContain('goodbye');
     expect(fixture.nativeElement.innerHTML).not.toContain('hello');

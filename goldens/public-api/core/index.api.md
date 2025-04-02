@@ -1460,6 +1460,9 @@ export function provideExperimentalCheckNoChangesForDebug(options: {
 }): _angular_core.EnvironmentProviders;
 
 // @public
+export function provideNgReflectAttributes(): EnvironmentProviders;
+
+// @public
 export function providePlatformInitializer(initializerFn: () => void): EnvironmentProviders;
 
 // @public

@@ -32,6 +32,7 @@ import {
   OnDestroy,
   Output,
   Pipe,
+  provideNgReflectAttributes,
   reflectComponentType,
   SkipSelf,
   ViewChild,
@@ -50,7 +51,6 @@ import {TemplateRef} from '../../src/linker/template_ref';
 import {ViewContainerRef} from '../../src/linker/view_container_ref';
 import {EmbeddedViewRef} from '../../src/linker/view_ref';
 import {fakeAsync, getTestBed, TestBed, tick, waitForAsync} from '../../testing';
-import {TestBedCompiler} from '../../testing/src/test_bed_compiler';
 import {
   createMouseEvent,
   dispatchEvent,
@@ -1816,8 +1816,45 @@ describe('integration tests', function () {
   });
 
   describe('logging property updates', () => {
+    describe('by default, when provideNgReflectAttributes() is not provided', () => {
+      it('should not reflect properties', () => {
+        TestBed.configureTestingModule({
+          declarations: [MyComp, MyDir],
+        });
+        TestBed.overrideComponent(MyComp, {
+          set: {template: `<div my-dir [elprop]="ctxProp"></div>`},
+        });
+        const fixture = TestBed.createComponent(MyComp);
+
+        fixture.componentInstance.ctxProp = 'hello';
+        fixture.detectChanges();
+
+        const html = fixture.nativeElement.innerHTML;
+        expect(html).not.toContain('ng-reflect');
+      });
+
+      it('should not reflect property values on template comments', () => {
+        const fixture = TestBed.configureTestingModule({
+          declarations: [MyComp],
+        })
+          .overrideComponent(MyComp, {
+            set: {template: `<ng-template [ngIf]="ctxBoolProp"></ng-template>`},
+          })
+          .createComponent(MyComp);
+
+        fixture.componentInstance.ctxBoolProp = true;
+        fixture.detectChanges();
+
+        const html = fixture.nativeElement.innerHTML;
+        expect(html).not.toContain('ng-reflect');
+      });
+    });
+
     it('should reflect property values as attributes', () => {
-      TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
+      TestBed.configureTestingModule({
+        declarations: [MyComp, MyDir],
+        providers: [provideNgReflectAttributes()],
+      });
       TestBed.overrideComponent(MyComp, {set: {template: `<div my-dir [elprop]="ctxProp"></div>`}});
       const fixture = TestBed.createComponent(MyComp);
 
@@ -1829,7 +1866,10 @@ describe('integration tests', function () {
     });
 
     it('should reflect property values on unbound inputs', () => {
-      TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
+      TestBed.configureTestingModule({
+        declarations: [MyComp, MyDir],
+        providers: [provideNgReflectAttributes()],
+      });
       TestBed.overrideComponent(MyComp, {
         set: {template: `<div my-dir elprop="hello" title="Reflect test"></div>`},
       });
@@ -1842,7 +1882,10 @@ describe('integration tests', function () {
     });
 
     it(`should work with prop names containing '$'`, () => {
-      TestBed.configureTestingModule({declarations: [ParentCmp, SomeCmpWithInput]});
+      TestBed.configureTestingModule({
+        declarations: [ParentCmp, SomeCmpWithInput],
+        providers: [provideNgReflectAttributes()],
+      });
       const fixture = TestBed.createComponent(ParentCmp);
       fixture.detectChanges();
 
@@ -1851,7 +1894,10 @@ describe('integration tests', function () {
     });
 
     it('should reflect property values on template comments', () => {
-      const fixture = TestBed.configureTestingModule({declarations: [MyComp]})
+      const fixture = TestBed.configureTestingModule({
+        declarations: [MyComp],
+        providers: [provideNgReflectAttributes()],
+      })
         .overrideComponent(MyComp, {
           set: {template: `<ng-template [ngIf]="ctxBoolProp"></ng-template>`},
         })
@@ -1865,7 +1911,10 @@ describe('integration tests', function () {
     });
 
     it('should reflect property values on ng-containers', () => {
-      const fixture = TestBed.configureTestingModule({declarations: [MyComp]})
+      const fixture = TestBed.configureTestingModule({
+        declarations: [MyComp],
+        providers: [provideNgReflectAttributes()],
+      })
         .overrideComponent(MyComp, {
           set: {template: `<ng-container *ngIf="ctxBoolProp">content</ng-container>`},
         })
@@ -1879,7 +1928,10 @@ describe('integration tests', function () {
     });
 
     it('should reflect property values of multiple directive bound to the same input name', () => {
-      TestBed.configureTestingModule({declarations: [MyComp, MyDir, MyDir2]});
+      TestBed.configureTestingModule({
+        declarations: [MyComp, MyDir, MyDir2],
+        providers: [provideNgReflectAttributes()],
+      });
       TestBed.overrideComponent(MyComp, {
         set: {template: `<div my-dir my-dir2 [elprop]="ctxProp"></div>`},
       });
@@ -1894,7 +1946,10 @@ describe('integration tests', function () {
     });
 
     it('should indicate when toString() throws', () => {
-      TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
+      TestBed.configureTestingModule({
+        declarations: [MyComp, MyDir],
+        providers: [provideNgReflectAttributes()],
+      });
       const template = '<div my-dir [elprop]="toStringThrow"></div>';
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
@@ -1904,7 +1959,10 @@ describe('integration tests', function () {
     });
 
     it('should not reflect undefined values', () => {
-      TestBed.configureTestingModule({declarations: [MyComp, MyDir, MyDir2]});
+      TestBed.configureTestingModule({
+        declarations: [MyComp, MyDir, MyDir2],
+        providers: [provideNgReflectAttributes()],
+      });
       TestBed.overrideComponent(MyComp, {set: {template: `<div my-dir [elprop]="ctxProp"></div>`}});
       const fixture = TestBed.createComponent(MyComp);
 
@@ -1920,7 +1978,10 @@ describe('integration tests', function () {
     });
 
     it('should not reflect null values', () => {
-      TestBed.configureTestingModule({declarations: [MyComp, MyDir, MyDir2]});
+      TestBed.configureTestingModule({
+        declarations: [MyComp, MyDir, MyDir2],
+        providers: [provideNgReflectAttributes()],
+      });
       TestBed.overrideComponent(MyComp, {set: {template: `<div my-dir [elprop]="ctxProp"></div>`}});
       const fixture = TestBed.createComponent(MyComp);
 
@@ -1936,7 +1997,10 @@ describe('integration tests', function () {
     });
 
     it('should reflect empty strings', () => {
-      TestBed.configureTestingModule({declarations: [MyComp, MyDir, MyDir2]});
+      TestBed.configureTestingModule({
+        declarations: [MyComp, MyDir, MyDir2],
+        providers: [provideNgReflectAttributes()],
+      });
       TestBed.overrideComponent(MyComp, {set: {template: `<div my-dir [elprop]="ctxProp"></div>`}});
       const fixture = TestBed.createComponent(MyComp);
 
@@ -1947,7 +2011,10 @@ describe('integration tests', function () {
     });
 
     it('should not reflect in comment nodes when the value changes to undefined', () => {
-      const fixture = TestBed.configureTestingModule({declarations: [MyComp]})
+      const fixture = TestBed.configureTestingModule({
+        declarations: [MyComp],
+        providers: [provideNgReflectAttributes()],
+      })
         .overrideComponent(MyComp, {
           set: {template: `<ng-template [ngIf]="ctxBoolProp"></ng-template>`},
         })
@@ -1969,7 +2036,10 @@ describe('integration tests', function () {
     });
 
     it('should reflect in comment nodes when the value changes to null', () => {
-      const fixture = TestBed.configureTestingModule({declarations: [MyComp]})
+      const fixture = TestBed.configureTestingModule({
+        declarations: [MyComp],
+        providers: [provideNgReflectAttributes()],
+      })
         .overrideComponent(MyComp, {
           set: {template: `<ng-template [ngIf]="ctxBoolProp"></ng-template>`},
         })
