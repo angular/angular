@@ -526,7 +526,7 @@ export class BindingParser {
   }
 
   createBoundElementProperty(
-    elementSelector: string,
+    elementSelector: string | null,
     boundProp: ParsedProperty,
     skipValidation: boolean = false,
     mapPropertyName: boolean = true,
@@ -854,28 +854,29 @@ function isAnimationLabel(name: string): boolean {
 
 export function calcPossibleSecurityContexts(
   registry: ElementSchemaRegistry,
-  selector: string,
+  selector: string | null,
   propName: string,
   isAttribute: boolean,
 ): SecurityContext[] {
-  const ctxs: SecurityContext[] = [];
-  CssSelector.parse(selector).forEach((selector) => {
-    const elementNames = selector.element ? [selector.element] : registry.allKnownElementNames();
-    const notElementNames = new Set(
-      selector.notSelectors
-        .filter((selector) => selector.isElementSelector())
-        .map((selector) => selector.element),
-    );
-    const possibleElementNames = elementNames.filter(
-      (elementName) => !notElementNames.has(elementName),
-    );
+  let ctxs: SecurityContext[];
+  const nameToContext = (elName: string) => registry.securityContext(elName, propName, isAttribute);
 
-    ctxs.push(
-      ...possibleElementNames.map((elementName) =>
-        registry.securityContext(elementName, propName, isAttribute),
-      ),
-    );
-  });
+  if (selector === null) {
+    ctxs = registry.allKnownElementNames().map(nameToContext);
+  } else {
+    ctxs = [];
+    CssSelector.parse(selector).forEach((selector) => {
+      const elementNames = selector.element ? [selector.element] : registry.allKnownElementNames();
+      const notElementNames = new Set(
+        selector.notSelectors
+          .filter((selector) => selector.isElementSelector())
+          .map((selector) => selector.element),
+      );
+      const possibleElementNames = elementNames.filter((elName) => !notElementNames.has(elName));
+
+      ctxs.push(...possibleElementNames.map(nameToContext));
+    });
+  }
   return ctxs.length === 0 ? [SecurityContext.NONE] : Array.from(new Set(ctxs)).sort();
 }
 
