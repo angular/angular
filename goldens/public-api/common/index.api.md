@@ -876,6 +876,9 @@ export { PopStateEvent_2 as PopStateEvent }
 export const PRECONNECT_CHECK_BLOCKLIST: InjectionToken<(string | string[])[]>;
 
 // @public
+export function provideBrowserUnhandledErrorListeners(): i0.EnvironmentProviders;
+
+// @public
 export const provideCloudflareLoader: (path: string) => i0.Provider[];
 
 // @public
