@@ -406,6 +406,14 @@ class HtmlAstToIvyAst implements html.Visitor {
     return new t.LetDeclaration(decl.name, value, decl.sourceSpan, decl.nameSpan, decl.valueSpan);
   }
 
+  visitComponent(component: html.Component, context: any) {
+    throw new Error('TODO');
+  }
+
+  visitDirective(directive: html.Directive, context: any) {
+    throw new Error('TODO');
+  }
+
   visitBlockParameter() {
     return null;
   }
@@ -913,6 +921,14 @@ class NonBindableVisitor implements html.Visitor {
 
   visitLetDeclaration(decl: html.LetDeclaration, context: any) {
     return new t.Text(`@let ${decl.name} = ${decl.value};`, decl.sourceSpan);
+  }
+
+  visitComponent(ast: html.Component, context: any) {
+    throw new Error('TODO');
+  }
+
+  visitDirective(directive: html.Directive, context: any) {
+    throw new Error('TODO');
   }
 }
 

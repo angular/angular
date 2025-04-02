@@ -73,6 +73,7 @@ export class WhitespaceVisitor implements html.Visitor {
       const newElement = new html.Element(
         element.name,
         visitAllWithSiblings(this, element.attrs),
+        visitAllWithSiblings(this, element.directives),
         element.children,
         element.sourceSpan,
         element.startSourceSpan,
@@ -86,6 +87,7 @@ export class WhitespaceVisitor implements html.Visitor {
     const newElement = new html.Element(
       element.name,
       element.attrs,
+      element.directives,
       visitAllWithSiblings(this, element.children),
       element.sourceSpan,
       element.startSourceSpan,
@@ -202,6 +204,49 @@ export class WhitespaceVisitor implements html.Visitor {
 
   visitLetDeclaration(decl: html.LetDeclaration, context: any) {
     return decl;
+  }
+
+  visitComponent(node: html.Component, context: any): any {
+    if (
+      (node.tagName && SKIP_WS_TRIM_TAGS.has(node.tagName)) ||
+      hasPreserveWhitespacesAttr(node.attrs)
+    ) {
+      // don't descent into elements where we need to preserve whitespaces
+      // but still visit all attributes to eliminate one used as a market to preserve WS
+      const newElement = new html.Component(
+        node.componentName,
+        node.tagName,
+        node.fullName,
+        visitAllWithSiblings(this, node.attrs),
+        visitAllWithSiblings(this, node.directives),
+        node.children,
+        node.sourceSpan,
+        node.startSourceSpan,
+        node.endSourceSpan,
+        node.i18n,
+      );
+      this.originalNodeMap?.set(newElement, node);
+      return newElement;
+    }
+
+    const newElement = new html.Component(
+      node.componentName,
+      node.tagName,
+      node.fullName,
+      node.attrs,
+      node.directives,
+      visitAllWithSiblings(this, node.children),
+      node.sourceSpan,
+      node.startSourceSpan,
+      node.endSourceSpan,
+      node.i18n,
+    );
+    this.originalNodeMap?.set(newElement, node);
+    return newElement;
+  }
+
+  visitDirective(directive: html.Directive, context: any) {
+    return directive;
   }
 
   visit(_node: html.Node, context: any) {
