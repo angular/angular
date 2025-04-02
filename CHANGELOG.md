@@ -1,3 +1,51 @@
+<a name="19.2.5"></a>
+# 19.2.5 (2025-04-02)
+### 
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e61d06afb5](https://github.com/angular/angular/commit/e61d06afb5f68268b204bb2630930bb213620811) | fix | step 6 tutorial docs ([#60630](https://github.com/angular/angular/pull/60630)) |
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fa48f98d9f](https://github.com/angular/angular/commit/fa48f98d9f7e7b74deba65bea9bc90843b1c283b) | fix | add missing peer dependency on `@angular/common` ([#60660](https://github.com/angular/angular/pull/60660)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ca5aa4d55b](https://github.com/angular/angular/commit/ca5aa4d55b352d1ead43d78b6a74d9e3b57f8777) | fix | throw for invalid "as" expression in if block ([#60580](https://github.com/angular/angular/pull/60580)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f4c4b10ea8](https://github.com/angular/angular/commit/f4c4b10ea8dc263c30d1051a83a72486344d81e4) | fix | Produce fatal diagnostic on duplicate decorated properties ([#60376](https://github.com/angular/angular/pull/60376)) |
+| [22a0e54ac4](https://github.com/angular/angular/commit/22a0e54ac4ae7b943740dc314ff7f26ee7530ee5) | fix | support relative imports to symbols outside `rootDir` ([#60555](https://github.com/angular/angular/pull/60555)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [64da69f7b6](https://github.com/angular/angular/commit/64da69f7b68c906544b3cb76b2fc7ec42cc434a8) | fix | check ngDevMode for undefined ([#60565](https://github.com/angular/angular/pull/60565)) |
+| [8f68d1bec3](https://github.com/angular/angular/commit/8f68d1bec320c8af4c28ad6c8dbeda4581e8299b) | fix | fix ng generate @angular/core:output-migration ([#60626](https://github.com/angular/angular/pull/60626)) |
+| [bc79985c65](https://github.com/angular/angular/commit/bc79985c65c38dee17f5cb53f2a14768632f72dc) | fix | fix regexp for event types ([#60592](https://github.com/angular/angular/pull/60592)) |
+| [006ac7f22f](https://github.com/angular/angular/commit/006ac7f22f47b110129ca603cfa34f5514d7b4dd) | fix | fixes [#592882](https://github.com/angular/angular/pull/592882) ng generate @angular/core:signal-queries-migration ([#60688](https://github.com/angular/angular/pull/60688)) |
+| [da6e93f434](https://github.com/angular/angular/commit/da6e93f4341804cd16327596c30d8f9258b40d7e) | fix | preserve comments in internal inject migration ([#60588](https://github.com/angular/angular/pull/60588)) |
+| [dbbddd1617](https://github.com/angular/angular/commit/dbbddd161721990f29a037f88f930b333712550e) | fix | prevent omission of deferred pipes in full compilation ([#60571](https://github.com/angular/angular/pull/60571)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0e9e0348dd](https://github.com/angular/angular/commit/0e9e0348dd972c96ecee8bb990aba8c604dc704f) | fix | Update adapter to log instead of throw errors ([#60651](https://github.com/angular/angular/pull/60651)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [15f53f035b](https://github.com/angular/angular/commit/15f53f035ba64fa761db64d48dd9daa1499370e3) | fix | handle shorthand assignments in super call ([#60602](https://github.com/angular/angular/pull/60602)) |
+| [4b161e6234](https://github.com/angular/angular/commit/4b161e62344a51e87f1b5c5778fd72e56fc37922) | fix | inject migration not handling super parameter referenced via this ([#60602](https://github.com/angular/angular/pull/60602)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [958e98e4f7](https://github.com/angular/angular/commit/958e98e4f7ab8e708440f03eb68612d1802b9a71) | fix | Add missing types to transition ([#60307](https://github.com/angular/angular/pull/60307)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7cd89ad2c6](https://github.com/angular/angular/commit/7cd89ad2c66adeb625f75d23fea32e762162d3d5) | fix | assign initializing client's app version, when a request is for worker script ([#58131](https://github.com/angular/angular/pull/58131)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.0.0-next.4"></a>
 # 20.0.0-next.4 (2025-03-26)
 ### common
