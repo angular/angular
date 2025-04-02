@@ -1,3 +1,10 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 import {FormPath, LogicArgument, LogicFn} from './api/types';
 import {FormFieldImpl} from './field_node';
 import {FormLogic, INDEX} from './logic_node';
