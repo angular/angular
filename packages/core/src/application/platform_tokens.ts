@@ -22,9 +22,9 @@ import {InjectionToken} from '../di/injection_token';
  * * When performing static site generation (SSG).
  * * During route extraction in development (at the time of the request).
  *
- * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Request | `Request` on MDN}
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Request `Request` on MDN}
  *
- * @developerPreview
+ * @publicApi
  */
 export const REQUEST = new InjectionToken<Request | null>(
   typeof ngDevMode === 'undefined' || ngDevMode ? 'REQUEST' : '',
@@ -48,9 +48,9 @@ export const REQUEST = new InjectionToken<Request | null>(
  * * When performing static site generation (SSG).
  * * During route extraction in development (at the time of the request).
  *
- * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Response/Response | `ResponseInit` on MDN}
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Response/Response `ResponseInit` on MDN}
  *
- * @developerPreview
+ * @publicApi
  */
 export const RESPONSE_INIT = new InjectionToken<ResponseInit | null>(
   typeof ngDevMode === 'undefined' || ngDevMode ? 'RESPONSE_INIT' : '',
@@ -68,7 +68,7 @@ export const RESPONSE_INIT = new InjectionToken<ResponseInit | null>(
  * @remarks
  * This token is only available during server-side rendering and will be `null` in other contexts.
  *
- * @developerPreview
+ * @publicApi
  */
 export const REQUEST_CONTEXT = new InjectionToken<unknown>(
   typeof ngDevMode === 'undefined' || ngDevMode ? 'REQUEST_CONTEXT' : '',
