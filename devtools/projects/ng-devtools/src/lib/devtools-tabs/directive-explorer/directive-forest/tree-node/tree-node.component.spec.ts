@@ -62,17 +62,30 @@ describe('TreeNodeComponent', () => {
     expect(name.nativeElement.innerText).toEqual('app-test');
   });
 
-  it('should include directive names, if any', () => {
+  it('should include directive name, if any', () => {
     fixture.componentRef.setInput('node', {
       ...srcNode,
       name: 'app-test',
-      directives: 'TooltipDirective',
+      directives: ['TooltipDirective'],
     } as FlatNode);
     fixture.detectChanges();
 
     const name = fixture.debugElement.query(By.css('.node-name'));
 
     expect(name.nativeElement.innerText).toEqual('app-test[TooltipDirective]');
+  });
+
+  it('should include directive names (multiple), if any', () => {
+    fixture.componentRef.setInput('node', {
+      ...srcNode,
+      name: 'app-test',
+      directives: ['TooltipDirective', 'CtxMenuDirective'],
+    } as FlatNode);
+    fixture.detectChanges();
+
+    const name = fixture.debugElement.query(By.css('.node-name'));
+
+    expect(name.nativeElement.innerText).toEqual('app-test[TooltipDirective][CtxMenuDirective]');
   });
 
   it('should render "OnPush" label, if OnPush', () => {
@@ -131,6 +144,30 @@ describe('TreeNodeComponent', () => {
 
     const marked = fixture.debugElement.query(By.css('mark'));
     expect(marked.nativeElement.innerText).toEqual('long-component-name[With');
+  });
+
+  it('should mark the text that matches the filter (beginning of the string)', () => {
+    fixture.componentRef.setInput('textMatch', {startIdx: 0, endIdx: 9});
+    fixture.componentRef.setInput('node', {
+      ...srcNode,
+      name: 'app-large-component',
+    } as FlatNode);
+    fixture.detectChanges();
+
+    const marked = fixture.debugElement.query(By.css('mark'));
+    expect(marked.nativeElement.innerText).toEqual('app-large');
+  });
+
+  it('should mark the text that matches the filter (end of the string)', () => {
+    fixture.componentRef.setInput('textMatch', {startIdx: 10, endIdx: 19});
+    fixture.componentRef.setInput('node', {
+      ...srcNode,
+      name: 'app-large-component',
+    } as FlatNode);
+    fixture.detectChanges();
+
+    const marked = fixture.debugElement.query(By.css('mark'));
+    expect(marked.nativeElement.innerText).toEqual('component');
   });
 
   it('should mark the whole text, if it matches completely the filter', () => {

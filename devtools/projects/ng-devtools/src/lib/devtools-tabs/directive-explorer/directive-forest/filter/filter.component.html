@@ -17,7 +17,7 @@
       @if (currentMatch(); as currentMatch) {
         {{ currentMatch }} of {{ matchesCount() }}
       } @else {
-        {{ matchesCount() }} match{{ matchesCount() !== 1 ? 'es' : '' }}
+        {{ matchesCount() === 1 ? "1 match" : `${matchesCount()} matches` }}
       }
     </div>
     <div class="up-down-buttons">

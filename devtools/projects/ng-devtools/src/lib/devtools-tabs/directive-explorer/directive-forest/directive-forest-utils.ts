@@ -36,11 +36,15 @@ export const parentCollapsed = (
   return false;
 };
 
+/** Returns the `FlatNode`'s directive array string. */
+export const getDirectivesArrayString = (node: FlatNode): string =>
+  node.directives ? node.directives.map((dir) => `[${dir}]`).join('') : '';
+
 /** Returns the full node name string as rendered by the tree-node component. */
-export const getFullNodeName = (node: FlatNode) => {
+export const getFullNodeNameString = (node: FlatNode): string => {
   const cmp = node.original.component;
   if (cmp && cmp.isElement) {
     return `<${node.name}/>`;
   }
-  return node.name + (node.directives ? `[${node.directives}]` : '');
+  return node.name + getDirectivesArrayString(node);
 };
