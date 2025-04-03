@@ -9,7 +9,7 @@
 import {DISABLED_REASON, MetadataKey, REQUIRED} from '../logic_node';
 import {FormPathImpl} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
-import type {FormError, FormPath, LogicFn} from './types';
+import type {FieldPath, FormError, LogicFn} from './types';
 import {ValidationResult} from './types';
 
 /**
@@ -23,7 +23,7 @@ import {ValidationResult} from './types';
  * @param reason A user-facing message describing why the field is disabled.
  */
 export function disabled<T>(
-  path: FormPath<T>,
+  path: FieldPath<T>,
   predicate: NoInfer<LogicFn<T, boolean>>,
   reason?: string,
 ): void {
@@ -45,7 +45,7 @@ export function disabled<T>(
  * 1) The value of the field that may be hidden.
  * 2..n) The `Form` nodes for each of the roots available on the path.
  */
-export function hidden<T>(path: FormPath<T>, predicate: NoInfer<LogicFn<T, boolean>>): void {
+export function hidden<T>(path: FieldPath<T>, predicate: NoInfer<LogicFn<T, boolean>>): void {
   assertPathIsCurrent(path);
 
   const pathImpl = FormPathImpl.extractFromPath(path);
@@ -63,7 +63,7 @@ export function hidden<T>(path: FormPath<T>, predicate: NoInfer<LogicFn<T, boole
  * 2..n) The `Form` nodes for each of the roots available on the path.
  */
 export function validate<T>(
-  path: FormPath<T>,
+  path: FieldPath<T>,
   validator: NoInfer<LogicFn<T, ValidationResult>>,
 ): void {
   assertPathIsCurrent(path);
@@ -92,7 +92,7 @@ export function validate<T>(
  * empty.
  */
 export function required<T>(
-  path: FormPath<T>,
+  path: FieldPath<T>,
   requiredPredicate: NoInfer<LogicFn<T, boolean>> = () => true,
   message?: string | NoInfer<LogicFn<T, string>>,
   emptyPredicate: (value: T) => boolean = (value) => value == null || value === '',
@@ -121,7 +121,7 @@ export function required<T>(
  * 2..n) The `Form` nodes for each of the roots available on the path.
  */
 export function metadata<T, M>(
-  path: FormPath<T>,
+  path: FieldPath<T>,
   key: MetadataKey<M>,
   data: NoInfer<LogicFn<T, M>>,
 ): void {
@@ -146,7 +146,7 @@ export function metadata<T, M>(
  * 2..n) The `Form` nodes for each of the roots available on the path.
  */
 export function error<T>(
-  path: FormPath<T>,
+  path: FieldPath<T>,
   predicate: NoInfer<LogicFn<T, boolean>>,
   message?: string | NoInfer<LogicFn<T, string>>,
 ): void {

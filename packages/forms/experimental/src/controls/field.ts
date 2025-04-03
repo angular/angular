@@ -22,7 +22,7 @@ import {
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
 import {FormUiControl} from '../api/control';
-import {Form} from '../api/types';
+import {Field} from '../api/types';
 import {
   illegallyGetComponentInstance,
   illegallyIsModelInput,
@@ -37,7 +37,7 @@ import {InteropNgControl} from './interop_ng_control';
 })
 export class Field<T> {
   readonly injector = inject(Injector);
-  readonly field = input.required<Form<T>>();
+  readonly field = input.required<Field<T>>();
   readonly el = inject(ElementRef);
   readonly cvaArray = inject<ControlValueAccessor[]>(NG_VALUE_ACCESSOR, {optional: true});
 
@@ -45,7 +45,7 @@ export class Field<T> {
 
   get ngControl(): NgControl {
     return (this._ngControl ??= new InteropNgControl(
-      () => this.field().$api,
+      () => this.field().$state,
     )) as unknown as NgControl;
   }
 
@@ -63,16 +63,16 @@ export class Field<T> {
       const isCheckbox = i.type === 'checkbox';
 
       i.addEventListener('input', () => {
-        this.field().$api.value.set((!isCheckbox ? i.value : i.checked) as T);
+        this.field().$state.value.set((!isCheckbox ? i.value : i.checked) as T);
       });
-      i.addEventListener('blur', () => this.field().$api.markAsTouched());
+      i.addEventListener('blur', () => this.field().$state.markAsTouched());
 
       effect(
         () => {
           if (!isCheckbox) {
-            i.value = this.field().$api.value() as string;
+            i.value = this.field().$state.value() as string;
           } else {
-            i.checked = this.field().$api.value() as boolean;
+            i.checked = this.field().$state.value() as boolean;
           }
         },
         {injector},
@@ -81,12 +81,12 @@ export class Field<T> {
       const cva = this.cva;
       // Binding to a Control Value Accessor
 
-      cva.registerOnChange((value: T) => this.field().$api.value.set(value));
-      cva.registerOnTouched(() => this.field().$api.markAsTouched());
+      cva.registerOnChange((value: T) => this.field().$state.value.set(value));
+      cva.registerOnTouched(() => this.field().$state.markAsTouched());
 
       effect(
         () => {
-          const value = this.field().$api.value();
+          const value = this.field().$state.value();
           untracked(() => {
             cva.writeValue(value);
           });
@@ -97,15 +97,17 @@ export class Field<T> {
       // Binding to a custom UI component.
 
       // Input bindings:
-      maybeSynchronize(injector, () => this.field().$api.value(), cmp.value);
-      maybeSynchronize(injector, () => this.field().$api.disabled(), cmp.disabled);
-      maybeSynchronize(injector, () => this.field().$api.errors(), cmp.errors);
-      maybeSynchronize(injector, () => this.field().$api.touched(), cmp.touched);
-      maybeSynchronize(injector, () => this.field().$api.valid(), cmp.valid);
+      maybeSynchronize(injector, () => this.field().$state.value(), cmp.value);
+      maybeSynchronize(injector, () => this.field().$state.disabled(), cmp.disabled);
+      maybeSynchronize(injector, () => this.field().$state.errors(), cmp.errors);
+      maybeSynchronize(injector, () => this.field().$state.touched(), cmp.touched);
+      maybeSynchronize(injector, () => this.field().$state.valid(), cmp.valid);
 
       // Output bindings:
-      const cleanupValue = cmp.value.subscribe((newValue) => this.field().$api.value.set(newValue));
-      const cleanupTouch = cmp.touch?.subscribe(() => this.field().$api.markAsTouched());
+      const cleanupValue = cmp.value.subscribe((newValue) =>
+        this.field().$state.value.set(newValue),
+      );
+      const cleanupTouch = cmp.touch?.subscribe(() => this.field().$state.markAsTouched());
 
       // Cleanup for output binding subscriptions:
       injector.get(DestroyRef).onDestroy(() => {
@@ -116,7 +118,7 @@ export class Field<T> {
       throw new Error(`Unhandled control?`);
     }
     if (this.cva) {
-      this.cva.writeValue(this.field().$api.value());
+      this.cva.writeValue(this.field().$state.value());
     }
   }
 }

@@ -8,17 +8,17 @@
 
 import {computed, linkedSignal, Signal, signal, untracked, WritableSignal} from '@angular/core';
 import type {
-  Form,
+  Field,
+  FieldContext,
+  FieldPath,
+  FieldState,
   FormError,
-  FormField,
-  FormPath,
-  LogicArgument,
   SubmittedStatus,
   ValidationResult,
 } from './api/types';
 import {FormLogic, MetadataKey} from './logic_node';
-import {deepSignal} from './util/deep_signal';
 import {FormPathImpl} from './path_node';
+import {deepSignal} from './util/deep_signal';
 
 /**
  * Internal node in the form graph for a given field.
@@ -30,7 +30,7 @@ import {FormPathImpl} from './path_node';
  *  - they act as the public API for the field (they implement the `FormField` interface)
  *  - they implement navigation of the form graph via `.parent` and `.getChild()`.
  */
-export class FormFieldImpl implements FormField<unknown> {
+export class FormFieldImpl implements FieldState<unknown> {
   /**
    * Whether this specific field has been touched.
    */
@@ -46,16 +46,16 @@ export class FormFieldImpl implements FormField<unknown> {
   /**
    * Lazily initialized value of `logicArgument`.
    */
-  private _logicArgument: LogicArgument<unknown> | undefined = undefined;
+  private _logicArgument: FieldContext<unknown> | undefined = undefined;
 
   /**
    * Value of the "context" argument passed to all logic functions, which supports e.g. resolving
    * paths in relation to this field.
    */
-  get logicArgument(): LogicArgument<unknown> {
+  get logicArgument(): FieldContext<unknown> {
     return (this._logicArgument ??= {
       value: this.value,
-      resolve: <U>(target: FormPath<U>): Form<U> => {
+      resolve: <U>(target: FieldPath<U>): Field<U> => {
         const currentPath = this.logic.pathParts;
         const targetPath = FormPathImpl.extractFromPath(target).logic.pathParts;
 
@@ -82,7 +82,7 @@ export class FormFieldImpl implements FormField<unknown> {
           field = field.getChild(targetPath[idx])!;
         }
 
-        return field.formFieldProxy as Form<U>;
+        return field.formFieldProxy as Field<U>;
       },
     });
   }
@@ -202,7 +202,7 @@ export class FormFieldImpl implements FormField<unknown> {
   /**
    * Proxy to this node which allows navigation of the form graph below it.
    */
-  readonly formFieldProxy = new Proxy(this, FORM_PROXY_HANDLER) as unknown as Form<any>;
+  readonly formFieldProxy = new Proxy(this, FORM_PROXY_HANDLER) as unknown as Field<any>;
 
   /**
    * Resets the submitted status of this field and all of its children.

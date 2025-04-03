@@ -14,7 +14,7 @@ import {
   type ValidationErrors,
   type ValidatorFn,
 } from '@angular/forms';
-import type {FormField} from '../api/types';
+import type {FieldState} from '../api/types';
 import {REQUIRED} from '../logic_node';
 
 export type InteropSharedKeys =
@@ -34,7 +34,7 @@ export class InteropNgControl
     Pick<NgControl, InteropSharedKeys | 'control' | 'valueAccessor'>,
     Pick<AbstractControl<unknown>, InteropSharedKeys | 'hasValidator'>
 {
-  constructor(protected field: () => FormField<unknown>) {}
+  constructor(protected field: () => FieldState<unknown>) {}
 
   readonly control: AbstractControl<any, any> = this as unknown as AbstractControl<any, any>;
 
