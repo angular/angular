@@ -8,6 +8,7 @@
 
 import * as eventLib from './event';
 import {EventHandlerInfo} from './event_handler';
+import {userAgent} from './user_agent';
 
 /**
  * An `EventContractContainerManager` provides the common interface for managing
@@ -26,7 +27,7 @@ export interface EventContractContainerManager {
 /**
  * Whether the user agent is running on iOS.
  */
-const isIos = typeof navigator !== 'undefined' && /iPhone|iPad|iPod/.test(navigator.userAgent);
+const isIos = /iPhone|iPad|iPod/.test(userAgent);
 
 /**
  * A class representing a container node and all the event handlers
