@@ -18,11 +18,13 @@ import {
   TmplAstBoundDeferredTrigger,
   TmplAstBoundEvent,
   TmplAstBoundText,
+  TmplAstComponent,
   TmplAstDeferredBlock,
   TmplAstDeferredBlockError,
   TmplAstDeferredBlockLoading,
   TmplAstDeferredBlockPlaceholder,
   TmplAstDeferredTrigger,
+  TmplAstDirective,
   TmplAstElement,
   TmplAstForLoopBlock,
   TmplAstForLoopBlockEmpty,
@@ -242,6 +244,7 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
     this.visitAll(element.references);
     this.visitAll(element.inputs);
     this.visitAll(element.attributes);
+    this.visitAll(element.directives);
     this.visitAll(element.children);
     this.visitAll(element.outputs);
   }
@@ -253,6 +256,7 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
       this.identifiers.add(templateIdentifier);
     }
 
+    this.visitAll(template.directives);
     this.visitAll(template.variables);
     this.visitAll(template.attributes);
     this.visitAll(template.templateAttrs);
@@ -361,6 +365,14 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
     }
 
     this.visitExpression(decl.value);
+  }
+
+  override visitComponent(component: TmplAstComponent): void {
+    throw new Error('TODO');
+  }
+
+  override visitDirective(directive: TmplAstDirective): void {
+    throw new Error('TODO');
   }
 
   /** Creates an identifier for a template element or template node. */

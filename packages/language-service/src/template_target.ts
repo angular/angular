@@ -21,12 +21,14 @@ import {
   TmplAstBoundDeferredTrigger,
   TmplAstBoundEvent,
   TmplAstBoundText,
+  TmplAstComponent,
   TmplAstContent,
   TmplAstDeferredBlock,
   TmplAstDeferredBlockError,
   TmplAstDeferredBlockLoading,
   TmplAstDeferredBlockPlaceholder,
   TmplAstDeferredTrigger,
+  TmplAstDirective,
   TmplAstElement,
   TmplAstForLoopBlock,
   TmplAstForLoopBlockEmpty,
@@ -480,7 +482,11 @@ class TemplateTargetVisitor implements TmplAstVisitor {
   }
 
   visitElementOrTemplate(element: TmplAstTemplate | TmplAstElement) {
+    const isTemplate = element instanceof TmplAstTemplate;
     this.visitAll(element.attributes);
+    if (!isTemplate) {
+      this.visitAll(element.directives);
+    }
     this.visitAll(element.inputs);
     // We allow the path to contain both the `TmplAstBoundAttribute` and `TmplAstBoundEvent` for
     // two-way bindings but do not want the path to contain both the `TmplAstBoundAttribute` with
@@ -495,11 +501,11 @@ class TemplateTargetVisitor implements TmplAstVisitor {
       return;
     }
     this.visitAll(element.outputs);
-    if (element instanceof TmplAstTemplate) {
+    if (isTemplate) {
       this.visitAll(element.templateAttrs);
     }
     this.visitAll(element.references);
-    if (element instanceof TmplAstTemplate) {
+    if (isTemplate) {
       this.visitAll(element.variables);
     }
 
@@ -618,6 +624,14 @@ class TemplateTargetVisitor implements TmplAstVisitor {
 
   visitLetDeclaration(decl: TmplAstLetDeclaration) {
     this.visitBinding(decl.value);
+  }
+
+  visitComponent(component: TmplAstComponent) {
+    throw new Error('TODO');
+  }
+
+  visitDirective(directive: TmplAstDirective) {
+    throw new Error('TODO');
   }
 
   visitAll(nodes: TmplAstNode[]) {

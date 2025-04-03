@@ -33,6 +33,8 @@ import type {
   TmplAstVariable,
   TmplAstUnknownBlock,
   TmplAstLetDeclaration,
+  TmplAstComponent,
+  TmplAstDirective,
 } from '@angular/compiler';
 
 /**
@@ -81,6 +83,8 @@ export class TemplateAstVisitor implements TmplAstRecursiveVisitor {
   visitIfBlock(block: TmplAstIfBlock): void {}
   visitIfBlockBranch(block: TmplAstIfBlockBranch): void {}
   visitLetDeclaration(decl: TmplAstLetDeclaration): void {}
+  visitComponent(component: TmplAstComponent): void {}
+  visitDirective(directive: TmplAstDirective): void {}
 
   /**
    * Visits all the provided nodes in order using this Visitor's visit methods.
