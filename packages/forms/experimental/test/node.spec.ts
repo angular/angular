@@ -1,7 +1,7 @@
 import {computed, signal} from '@angular/core';
-import {disabled, error, required, validate} from './forms/api/logic';
-import {apply, applyEach, form, schema, submit} from './forms/api/structure';
-import {REQUIRED} from './forms/logic_node';
+import {disabled, error, required, validate} from '../src/api/logic';
+import {apply, applyEach, form, schema, submit} from '../src/api/structure';
+import {REQUIRED} from '../src/logic_node';
 
 describe('Node', () => {
   it('is untouched initially', () => {
