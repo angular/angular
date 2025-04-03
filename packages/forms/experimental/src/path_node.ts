@@ -1,6 +1,6 @@
 import {FieldContext, FieldPath, LogicFn} from './api/types';
-import {FormFieldImpl} from './field_node';
-import {FormLogic, INDEX} from './logic_node';
+import {FieldNode} from './field_node';
+import {FieldLogicNode, INDEX} from './logic_node';
 
 /**
  * Special key which is used to retrieve the `FormLogic` instance from its `FormPath` proxy wrapper.
@@ -12,20 +12,20 @@ export interface Predicate {
   readonly path: FieldPath<any>;
 }
 
-export class FormPathImpl {
-  private readonly children = new Map<PropertyKey, FormPathImpl>();
+export class FieldPathNode {
+  private readonly children = new Map<PropertyKey, FieldPathNode>();
 
   readonly formPathProxy: FieldPath<any> = new Proxy(
     this,
     FORM_PATH_PROXY_HANDLER,
   ) as unknown as FieldPath<any>;
   private constructor(
-    readonly logic: FormLogic,
+    readonly logic: FieldLogicNode,
     readonly key: symbol,
     readonly predicate: Predicate | undefined,
   ) {}
 
-  get element(): FormPathImpl {
+  get element(): FieldPathNode {
     return this.getChild(INDEX);
   }
 
@@ -39,7 +39,7 @@ export class FormPathImpl {
     }
 
     return (arg: FieldContext<any>): TReturn => {
-      const predicateField = arg.resolve(predicate.path).$state as FormFieldImpl;
+      const predicateField = arg.resolve(predicate.path).$state as FieldNode;
       if (!predicate.fn(predicateField.logicArgument)) {
         // don't actually run the user function
         return defaultValue;
@@ -48,35 +48,35 @@ export class FormPathImpl {
     };
   }
 
-  getChild(key: PropertyKey): FormPathImpl {
+  getChild(key: PropertyKey): FieldPathNode {
     if (!this.children.has(key)) {
-      this.children.set(key, new FormPathImpl(this.logic.getChild(key), this.key, this.predicate));
+      this.children.set(key, new FieldPathNode(this.logic.getChild(key), this.key, this.predicate));
     }
     return this.children.get(key)!;
   }
 
-  withPredicate(predicate: Predicate): FormPathImpl {
-    return new FormPathImpl(this.logic, Symbol(), predicate);
+  withPredicate(predicate: Predicate): FieldPathNode {
+    return new FieldPathNode(this.logic, Symbol(), predicate);
   }
 
-  withNewKey(): FormPathImpl {
-    return new FormPathImpl(this.logic, Symbol(), this.predicate);
+  withNewKey(): FieldPathNode {
+    return new FieldPathNode(this.logic, Symbol(), this.predicate);
   }
 
-  static extractFromPath(formPath: FieldPath<unknown>): FormPathImpl {
-    return (formPath as any)[LOGIC] as FormPathImpl;
+  static extractFromPath(formPath: FieldPath<unknown>): FieldPathNode {
+    return (formPath as any)[LOGIC] as FieldPathNode;
   }
 
-  static newRoot(): FormPathImpl {
-    return new FormPathImpl(FormLogic.newRoot(), Symbol(), undefined);
+  static newRoot(): FieldPathNode {
+    return new FieldPathNode(FieldLogicNode.newRoot(), Symbol(), undefined);
   }
 }
 
 /**
  * Proxy handler which implements `FormPath` on top of a `LogicNode`.
  */
-export const FORM_PATH_PROXY_HANDLER: ProxyHandler<FormPathImpl> = {
-  get(node: FormPathImpl, property: string | symbol) {
+export const FORM_PATH_PROXY_HANDLER: ProxyHandler<FieldPathNode> = {
+  get(node: FieldPathNode, property: string | symbol) {
     if (property === LOGIC) {
       return node;
     }

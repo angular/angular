@@ -7,14 +7,14 @@
  */
 
 import {FieldPath, Schema, SchemaFn} from './api/types';
-import {FormPathImpl} from './path_node';
+import {FieldPathNode} from './path_node';
 
 let currentKey: symbol | undefined = undefined;
 
 export class SchemaImpl {
   constructor(readonly schemaFn: SchemaFn<any>) {}
 
-  apply(path: FormPathImpl): void {
+  apply(path: FieldPathNode): void {
     let prevKey = currentKey;
     try {
       currentKey = path.key;
@@ -38,7 +38,7 @@ export class SchemaImpl {
 }
 
 export function assertPathIsCurrent(path: FieldPath<unknown>): void {
-  if (currentKey !== FormPathImpl.extractFromPath(path).key) {
+  if (currentKey !== FieldPathNode.extractFromPath(path).key) {
     throw new Error(`Wrong path!`);
   }
 }

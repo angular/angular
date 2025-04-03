@@ -16,8 +16,8 @@ import type {
   SubmittedStatus,
   ValidationResult,
 } from './api/types';
-import {FormLogic, MetadataKey} from './logic_node';
-import {FormPathImpl} from './path_node';
+import {FieldLogicNode, MetadataKey} from './logic_node';
+import {FieldPathNode} from './path_node';
 import {deepSignal} from './util/deep_signal';
 
 /**
@@ -30,7 +30,7 @@ import {deepSignal} from './util/deep_signal';
  *  - they act as the public API for the field (they implement the `FormField` interface)
  *  - they implement navigation of the form graph via `.parent` and `.getChild()`.
  */
-export class FormFieldImpl implements FieldState<unknown> {
+export class FieldNode implements FieldState<unknown> {
   /**
    * Whether this specific field has been touched.
    */
@@ -40,7 +40,7 @@ export class FormFieldImpl implements FieldState<unknown> {
   /**
    * Computed map of child fields, based on the current value of this field.
    */
-  private readonly childrenMap: Signal<Map<PropertyKey, FormFieldImpl> | undefined>;
+  private readonly childrenMap: Signal<Map<PropertyKey, FieldNode> | undefined>;
   private serverErrors: WritableSignal<ValidationResult>;
 
   /**
@@ -57,7 +57,7 @@ export class FormFieldImpl implements FieldState<unknown> {
       value: this.value,
       resolve: <U>(target: FieldPath<U>): Field<U> => {
         const currentPath = this.logic.pathParts;
-        const targetPath = FormPathImpl.extractFromPath(target).logic.pathParts;
+        const targetPath = FieldPathNode.extractFromPath(target).logic.pathParts;
 
         // Navigate from `currentPath` to `targetPath`. As an example, suppose that:
         // currentPath = [A, B, C, D]
@@ -71,7 +71,7 @@ export class FormFieldImpl implements FieldState<unknown> {
         // there is no shared prefix. In our example, this will require 2 up steps, navigating from
         // D to B.
         let requiredUpSteps = currentPath.length - sharedPrefixLength;
-        let field: FormFieldImpl = this;
+        let field: FieldNode = this;
         while (requiredUpSteps-- > 0) {
           field = field.parent!;
         }
@@ -89,12 +89,12 @@ export class FormFieldImpl implements FieldState<unknown> {
 
   private constructor(
     readonly value: WritableSignal<unknown>,
-    private readonly logic: FormLogic,
-    readonly parent: FormFieldImpl | undefined,
+    private readonly logic: FieldLogicNode,
+    readonly parent: FieldNode | undefined,
   ) {
     // We use a `linkedSignal` to preserve the instances of `FieldNode` for each child field even if
     // the value of this field changes its object identity.
-    this.childrenMap = linkedSignal<unknown, Map<PropertyKey, FormFieldImpl> | undefined>({
+    this.childrenMap = linkedSignal<unknown, Map<PropertyKey, FieldNode> | undefined>({
       source: this.value,
       computation: (data, previous) => this.computeChildrenMap(data, previous?.value),
       equal: () => false,
@@ -224,7 +224,7 @@ export class FormFieldImpl implements FieldState<unknown> {
   /**
    * Retrieve a child `FieldNode` of this node by property key.
    */
-  getChild(key: PropertyKey): FormFieldImpl | undefined {
+  getChild(key: PropertyKey): FieldNode | undefined {
     return this.childrenMap()?.get(typeof key === 'number' ? key.toString() : key);
   }
 
@@ -244,7 +244,7 @@ export class FormFieldImpl implements FieldState<unknown> {
    */
   private reduceChildren<T>(
     initialValue: T,
-    fn: (child: FormFieldImpl, value: T) => T,
+    fn: (child: FieldNode, value: T) => T,
     shortCircuit?: (value: T) => boolean,
   ): T {
     const childrenMap = this.childrenMap();
@@ -266,8 +266,8 @@ export class FormFieldImpl implements FieldState<unknown> {
    */
   private computeChildrenMap(
     value: unknown,
-    prevMap: Map<PropertyKey, FormFieldImpl> | undefined,
-  ): Map<PropertyKey, FormFieldImpl> | undefined {
+    prevMap: Map<PropertyKey, FieldNode> | undefined,
+  ): Map<PropertyKey, FieldNode> | undefined {
     // We may or may not have a previous map. If there isn't one, then `childrenMap` will be lazily
     // initialized to a new map instance if needed.
     let childrenMap = prevMap;
@@ -293,7 +293,7 @@ export class FormFieldImpl implements FieldState<unknown> {
       }
 
       // Determine the logic for the field that we're defining.
-      let childLogic: FormLogic | undefined;
+      let childLogic: FieldLogicNode | undefined;
       if (Array.isArray(value)) {
         // Fields for array elements have their logic defined by the `element` mechanism.
         // TODO: other dynamic data
@@ -302,18 +302,15 @@ export class FormFieldImpl implements FieldState<unknown> {
         // Fields for plain properties exist in our logic node's child map.
         childLogic = this.logic.getChild(key);
       }
-      childrenMap ??= new Map<PropertyKey, FormFieldImpl>();
-      childrenMap.set(
-        key,
-        new FormFieldImpl(deepSignal(this.value, key as never), childLogic, this),
-      );
+      childrenMap ??= new Map<PropertyKey, FieldNode>();
+      childrenMap.set(key, new FieldNode(deepSignal(this.value, key as never), childLogic, this));
     }
 
     return childrenMap;
   }
 
-  static newRoot<T>(value: WritableSignal<T>, logic: FormLogic): FormFieldImpl {
-    return new FormFieldImpl(value, logic, undefined);
+  static newRoot<T>(value: WritableSignal<T>, logic: FieldLogicNode): FieldNode {
+    return new FieldNode(value, logic, undefined);
   }
 }
 
@@ -344,10 +341,10 @@ function normalizeErrors(error: ValidationResult): FormError[] {
 /**
  * Proxy handler which implements `Form<T>` on top of `FieldNode`.
  */
-const FORM_PROXY_HANDLER: ProxyHandler<FormFieldImpl> = {
-  get(tgt: FormFieldImpl, p: string | symbol) {
-    // From a `Form<T>`, developers can navigate to `FormControl<T>` via the special `$api` property.
-    if (p === '$api') {
+const FORM_PROXY_HANDLER: ProxyHandler<FieldNode> = {
+  get(tgt: FieldNode, p: string | symbol) {
+    // From a `Form<T>`, developers can navigate to `FormControl<T>` via the special `$state` property.
+    if (p === '$state') {
       return tgt;
     }
 

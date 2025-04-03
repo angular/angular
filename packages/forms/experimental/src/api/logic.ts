@@ -7,99 +7,84 @@
  */
 
 import {DISABLED_REASON, MetadataKey, REQUIRED} from '../logic_node';
-import {FormPathImpl} from '../path_node';
+import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
 import type {FieldPath, FormError, LogicFn} from './types';
 import {ValidationResult} from './types';
 
 /**
- * Adds logic to a from to conditionally disable a field.
+ * Adds logic to a field to conditionally disable it.
  *
- * @param path The path of the field that may be disabled.
- * @param predicate A prdicate function that returns `true` if the field should be disabled.
- * The predicate recevies the following arguments:
- * 1) The value of the field that may be disabled.
- * 2..n) The `Form` nodes for each of the roots available on the path.
+ * @param path The target path to add the disabled logic to.
+ * @param logic A `LogicFn<T, boolean>` that returns `true` when the field is disabled.
  * @param reason A user-facing message describing why the field is disabled.
+ * @template T The data type of the field the logic is being added to.
  */
 export function disabled<T>(
   path: FieldPath<T>,
-  predicate: NoInfer<LogicFn<T, boolean>>,
+  logic: NoInfer<LogicFn<T, boolean>>,
   reason?: string,
 ): void {
   assertPathIsCurrent(path);
 
-  const pathImpl = FormPathImpl.extractFromPath(path);
-  const reasonFn: LogicFn<T, string> = (ctx) => (predicate(ctx) ? (reason ?? '') : '');
-  pathImpl.logic.disabled.push(pathImpl.maybeWrapWithPredicate(predicate, false));
+  const pathImpl = FieldPathNode.extractFromPath(path);
+  const reasonFn: LogicFn<T, string> = (ctx) => (logic(ctx) ? (reason ?? '') : '');
+  pathImpl.logic.disabled.push(pathImpl.maybeWrapWithPredicate(logic, false));
   pathImpl.logic.getMetadata(DISABLED_REASON).push(pathImpl.maybeWrapWithPredicate(reasonFn, ''));
 }
 
 /**
- * Adds logic to a from to conditionally hide a field. A hidden field does not contribute to the
- * validation, tocuhed/dirty state, or other logic of the form in any way.
+ * Adds logic to a field to conditionally hide it. A hidden field does not contribute to the
+ * validation, touched/dirty, or other state of its parent field.
  *
- * @param path The path of the field that may be hidden.
- * @param predicate A prdicate function that returns `true` if the field should be hidden.
- * The predicate recevies the following arguments:
- * 1) The value of the field that may be hidden.
- * 2..n) The `Form` nodes for each of the roots available on the path.
+ * @param path The target path to add the hidden logic to.
+ * @param logic A `LogicFn<T, boolean>` that returns `true` when the field is hidden.
+ * @template T The data type of the field the logic is being added to.
  */
-export function hidden<T>(path: FieldPath<T>, predicate: NoInfer<LogicFn<T, boolean>>): void {
+export function hidden<T>(path: FieldPath<T>, logic: NoInfer<LogicFn<T, boolean>>): void {
   assertPathIsCurrent(path);
 
-  const pathImpl = FormPathImpl.extractFromPath(path);
-  pathImpl.logic.hidden.push(pathImpl.maybeWrapWithPredicate(predicate, false));
+  const pathImpl = FieldPathNode.extractFromPath(path);
+  pathImpl.logic.hidden.push(pathImpl.maybeWrapWithPredicate(logic, false));
 }
 
 /**
- * Adds logic to a from to conditionally add validation errors to a field.
+ * Adds logic to a field to conditionally add validation errors to it.
  *
- * @param path The path of the field that may be hidden.
- * @param fn A function that returns a validation result representing 0 or more errors to associate
- * with the field. The function
- * recevies the following arguments:
- * 1) The value of the field that may have errors.
- * 2..n) The `Form` nodes for each of the roots available on the path.
+ * @param path The target path to add the validation logic to.
+ * @param logic A `LogicFn<T, ValidationResult>` that returns the current validation errors.
+ * @template T The data type of the field the logic is being added to.
  */
 export function validate<T>(
   path: FieldPath<T>,
-  validator: NoInfer<LogicFn<T, ValidationResult>>,
+  logic: NoInfer<LogicFn<T, ValidationResult>>,
 ): void {
   assertPathIsCurrent(path);
 
-  const pathImpl = FormPathImpl.extractFromPath(path);
-  pathImpl.logic.errors.push(
-    pathImpl.maybeWrapWithPredicate(validator, /* default value */ undefined),
-  );
+  const pathImpl = FieldPathNode.extractFromPath(path);
+  pathImpl.logic.errors.push(pathImpl.maybeWrapWithPredicate(logic, /* default value */ undefined));
 }
 
 /**
- * Adds logic to a from to conditionally make a field required. A required field has metadata to
+ * Adds logic to a field to conditionally make it required. A required field has metadata to
  * indicate that it is required, and has a validation error if its value is empty.
  *
- * @param path The path of the field that may be required.
- * @param requiredPredicate An optional prdicate function that returns `true` if the field should be
- * required. The predicate recevies the following arguments:
- * 1) The value of the field that may be required.
- * 2..n) The `Form` nodes for each of the roots available on the path.
- * If the predicate function is not provided, the field is always required.
- * @param message An optional user-facing message to add to the error, or a function to generate the
- * user-facing message. The function recevies the following arguments
- * 1) The value of the field that has an error.
- * 2..n) The `Form` nodes for each of the roots available on the path.
- * @param emptyPredicate An optional function that specifies custom logic to determine if a value is
- * empty.
+ * @param path The target path to add the required logic to.
+ * @param logic A `LogicFn<T, boolean>` that returns `true` when the field is required.
+ * @param message An optional user-facing message to add to the error, or a `LogicFn<T, string>`
+ *   that returns the user-facing message
+ * @param emptyPredicate An optional custom predicate to determine if a value is considered empty.
+ * @template T The data type of the field the logic is being added to.
  */
 export function required<T>(
   path: FieldPath<T>,
-  requiredPredicate: NoInfer<LogicFn<T, boolean>> = () => true,
+  logic: NoInfer<LogicFn<T, boolean>> = () => true,
   message?: string | NoInfer<LogicFn<T, string>>,
   emptyPredicate: (value: T) => boolean = (value) => value == null || value === '',
 ): void {
-  metadata(path, REQUIRED, requiredPredicate);
+  metadata(path, REQUIRED, logic);
   validate(path, (arg) => {
-    if (requiredPredicate(arg) && emptyPredicate(arg.value())) {
+    if (logic(arg) && emptyPredicate(arg.value())) {
       message = typeof message === 'function' ? message(arg) : message;
       const result = {kind: 'required'} as FormError;
       if (message) {
@@ -114,47 +99,42 @@ export function required<T>(
 /**
  * Adds metadata to a field.
  *
- * @param path The path of the field to receive the metadata.
+ * @param path The target path to add metadata to.
  * @param key The metadata key
- * @param data A function that returns the metadata value. The function receives the following arguments:
- * 1) The value of the field to receive the metadata.
- * 2..n) The `Form` nodes for each of the roots available on the path.
+ * @param logic A `LogicFn<T, M>` that returns the metadata value for the given key.
+ * @template T The data type of the field the logic is being added to.
+ * @template M The type of metadata.
  */
 export function metadata<T, M>(
   path: FieldPath<T>,
   key: MetadataKey<M>,
-  data: NoInfer<LogicFn<T, M>>,
+  logic: NoInfer<LogicFn<T, M>>,
 ): void {
   assertPathIsCurrent(path);
 
-  const pathImpl = FormPathImpl.extractFromPath(path);
-  pathImpl.logic.getMetadata(key).push(pathImpl.maybeWrapWithPredicate(data, key.defaultValue));
+  const pathImpl = FieldPathNode.extractFromPath(path);
+  pathImpl.logic.getMetadata(key).push(pathImpl.maybeWrapWithPredicate(logic, key.defaultValue));
 }
 
 /**
- * Adds logic to a from to conditionally add a validation error to a field.
+ * Adds logic to a field to conditionally add a validation error to it.
  * The added FormError will be of `kind: 'custom'`
  *
- * @param path The path of the field that may have an error.
- * @param predicate An optional prdicate function that returns `true` if the field should have an
- * error. The predicate recevies the following arguments:
- * 1) The value of the field that may have an error.
- * 2..n) The `Form` nodes for each of the roots available on the path.
- * @param message An optional user-facing message to add to the error, or a function to generate the
- * user-facing message. The function recevies the following arguments
- * 1) The value of the field that has an error.
- * 2..n) The `Form` nodes for each of the roots available on the path.
+ * @param path The target path to add the error logic to.
+ * @param logic A `LogicFn<T, boolean>` that returns `true` when the error should be added.
+ * @param message An optional user-facing message to add to the error, or a `LogicFn<T, string>`
+ *   that returns the user-facing message
  */
 export function error<T>(
   path: FieldPath<T>,
-  predicate: NoInfer<LogicFn<T, boolean>>,
+  logic: NoInfer<LogicFn<T, boolean>>,
   message?: string | NoInfer<LogicFn<T, string>>,
 ): void {
   assertPathIsCurrent(path);
 
   if (typeof message === 'function') {
     validate(path, (arg) => {
-      return predicate(arg)
+      return logic(arg)
         ? {
             kind: 'custom',
             message: message(arg),
@@ -170,7 +150,7 @@ export function error<T>(
             message,
           };
     validate(path, (arg) => {
-      return predicate(arg) ? err : undefined;
+      return logic(arg) ? err : undefined;
     });
   }
 }
