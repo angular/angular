@@ -19,7 +19,7 @@
   <div class="node-name" #nodeName>
     <span class="element-name" [class.angular-element]="isElement()">{{ node().name }}</span>
     @if (node().directives) {
-      <span class="dir-names">[{{ node().directives }}]</span>
+      <span class="dir-names">{{ directivesArrayString() }}</span>
     }
   </div>
 
@@ -55,11 +55,11 @@
 ) {
   <div class="hydration-error">
     @if (hydration.expectedNodeDetails) {
-      <div>Expected Dom:</div>
+      <div>Expected DOM:</div>
       <pre>{{hydration.expectedNodeDetails}}</pre>
     }
     @if (hydration.actualNodeDetails) {
-      <div>Actual Dom:</div>
+      <div>Actual DOM:</div>
       <pre>{{hydration.actualNodeDetails}}</pre>
     }
   </div>

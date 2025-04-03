@@ -31,9 +31,9 @@ import {DevToolsNode, ElementPosition, Events, MessageBus} from 'protocol';
 import {TabUpdate} from '../../tab-update/index';
 
 import {ComponentDataSource, FlatNode} from './component-data-source';
-import {getFullNodeName, isChildOf, parentCollapsed} from './directive-forest-utils';
+import {getFullNodeNameString, isChildOf, parentCollapsed} from './directive-forest-utils';
 import {IndexedNode} from './index-forest';
-import {FilterComponent} from './filter/filter.component';
+import {FilterComponent, FilterFn} from './filter/filter.component';
 import {TreeNodeComponent, NodeTextMatch} from './tree-node/tree-node.component';
 
 const NODE_ITEM_HEIGHT = 18; // px; Required for CDK Virtual Scroll
@@ -256,24 +256,16 @@ export class DirectiveForestComponent {
     return (event.target as Element).tagName === 'INPUT' || !this.selectedNode;
   }
 
-  handleFilter(filterText: string): void {
+  handleFilter(filterFn: FilterFn): void {
     this.currentlyMatchedIndex.set(-1);
     this.matchedNodes.set(new Map());
 
-    if (!filterText.length) {
-      return;
-    }
-
     for (let i = 0; i < this.dataSource.data.length; i++) {
       const node = this.dataSource.data[i];
-      const fullName = getFullNodeName(node).toLowerCase();
-      const startIdx = fullName.indexOf(filterText.toLowerCase());
+      const fullName = getFullNodeNameString(node);
+      const match = filterFn(fullName);
 
-      if (startIdx > -1) {
-        const match: NodeTextMatch = {
-          startIdx,
-          endIdx: startIdx + filterText.length,
-        };
+      if (match) {
         this.matchedNodes.update((matched) => {
           const map = new Map(matched);
           map.set(i, match);

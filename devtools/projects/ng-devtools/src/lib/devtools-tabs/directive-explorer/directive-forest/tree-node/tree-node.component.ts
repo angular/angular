@@ -12,8 +12,6 @@ import {
   Component,
   computed,
   ElementRef,
-  HostBinding,
-  HostListener,
   inject,
   input,
   output,
@@ -27,7 +25,7 @@ import {MatTooltip} from '@angular/material/tooltip';
 import {FlatTreeControl} from '@angular/cdk/tree';
 
 import {FlatNode} from '../component-data-source';
-import {getFullNodeName} from '../directive-forest-utils';
+import {getDirectivesArrayString, getFullNodeNameString} from '../directive-forest-utils';
 
 const PADDING_LEFT_STEP = 15; // px
 
@@ -42,82 +40,59 @@ export type NodeTextMatch = {
   styleUrls: ['./tree-node.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatIcon, MatTooltip],
+  host: {
+    '[style.padding-left]': 'paddingLeft()',
+    '[class.selected]': 'isSelected',
+    '[class.highlighted]': 'isHighlighted',
+    '[class.new-node]': 'node().newItem',
+    '(click)': 'selectNode.emit(this.node())',
+    '(dblclick)': 'selectDomElement.emit(this.node())',
+    '(mouseenter)': 'highlightNode.emit(this.node())',
+    '(mouseleave)': 'removeHighlight.emit()',
+  },
 })
 export class TreeNodeComponent {
-  private readonly elementRef = inject(ElementRef);
   private readonly renderer = inject(Renderer2);
   private readonly doc = inject(DOCUMENT);
 
-  readonly nodeName = viewChild.required<ElementRef>('nodeName');
+  protected readonly nodeName = viewChild.required<ElementRef>('nodeName');
 
-  readonly node = input.required<FlatNode>();
-  readonly selectedNode = input.required<FlatNode | null>();
-  readonly highlightedId = input.required<number | null>();
-  readonly treeControl = input.required<FlatTreeControl<FlatNode>>();
-  readonly textMatch = input<NodeTextMatch | undefined>();
+  protected readonly node = input.required<FlatNode>();
+  protected readonly selectedNode = input.required<FlatNode | null>();
+  protected readonly highlightedId = input.required<number | null>();
+  protected readonly treeControl = input.required<FlatTreeControl<FlatNode>>();
+  protected readonly textMatch = input<NodeTextMatch | undefined>();
 
-  readonly selectNode = output<FlatNode>();
-  readonly selectDomElement = output<FlatNode>();
-  readonly highlightNode = output<FlatNode>();
-  readonly removeHighlight = output<void>();
+  protected readonly selectNode = output<FlatNode>();
+  protected readonly selectDomElement = output<FlatNode>();
+  protected readonly highlightNode = output<FlatNode>();
+  protected readonly removeHighlight = output<void>();
 
-  readonly isElement = computed(() => {
+  protected readonly paddingLeft = computed(
+    () => (this.node().level + 1) * PADDING_LEFT_STEP + 'px',
+  );
+  protected readonly isElement = computed(() => {
     const cmp = this.node().original.component;
     return cmp && cmp.isElement;
   });
-  private readonly nodeNameString = computed(() => getFullNodeName(this.node()));
+  protected readonly directivesArrayString = computed(() => getDirectivesArrayString(this.node()));
+  private readonly nodeNameString = computed(() => getFullNodeNameString(this.node()));
 
   private matchedText: HTMLElement | null = null;
 
-  PADDING_LEFT_STEP = PADDING_LEFT_STEP;
+  protected readonly PADDING_LEFT_STEP = PADDING_LEFT_STEP;
 
   constructor() {
-    afterRenderEffect({
-      write: () =>
-        this.renderer.setStyle(
-          this.elementRef.nativeElement,
-          'padding-left',
-          (this.node().level + 1) * PADDING_LEFT_STEP + 'px',
-        ),
-    });
-
     afterRenderEffect({write: () => this.handleMatchedText()});
   }
 
-  @HostBinding('class.selected')
-  get isSelected(): boolean {
+  protected get isSelected(): boolean {
     const selectedNode = this.selectedNode();
     return !!selectedNode && selectedNode.id === this.node().id;
   }
 
-  @HostBinding('class.highlighted')
-  get isHighlighted(): boolean {
+  protected get isHighlighted(): boolean {
     return !!this.highlightedId() && this.highlightedId() === this.node().original.component?.id;
-  }
-
-  @HostBinding('class.new-node')
-  get isNew() {
-    return this.node().newItem;
-  }
-
-  @HostListener('click')
-  onNodeClick() {
-    this.selectNode.emit(this.node());
-  }
-
-  @HostListener('dblclick')
-  onNodeDoubleClick() {
-    this.selectDomElement.emit(this.node());
-  }
-
-  @HostListener('mouseenter')
-  onNodeMouseEnter() {
-    this.highlightNode.emit(this.node());
-  }
-
-  @HostListener('mouseleave')
-  onNodeMouseLeave() {
-    this.removeHighlight.emit();
   }
 
   private handleMatchedText() {

@@ -1,6 +1,7 @@
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
 load("//devtools/tools:ng_module.bzl", "ng_module")
-load("//devtools/tools:typescript.bzl", "ts_library")
+load("//devtools/tools:typescript.bzl", "ts_library", "ts_test_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -39,5 +40,21 @@ ts_library(
     deps = [
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/component-data-source",
         "@npm//@angular/cdk",
+    ],
+)
+
+ts_test_library(
+    name = "directive_forest_utils_test",
+    srcs = ["directive-forest-utils.spec.ts"],
+    deps = [
+        ":directive_forest_utils",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/component-data-source",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    deps = [
+        ":directive_forest_utils_test",
     ],
 )
