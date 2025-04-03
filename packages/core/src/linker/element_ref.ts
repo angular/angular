@@ -54,7 +54,7 @@ export class ElementRef<T = any> {
    *   <p>
    *    Use this API as the last resort when direct access to DOM is needed. Use templating and
    *    data-binding provided by Angular instead. If used, it is recommended in combination with
-   *    {@link /best-practices/security#direct-use-of-the-dom-apis-and-explicit-sanitization-calls}
+   *    {@link /best-practices/security#direct-use-of-the-dom-apis-and-explicit-sanitization-calls DomSanitizer}
    *    for maxiumum security;
    *   </p>
    * </div>
