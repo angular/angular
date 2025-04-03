@@ -27,7 +27,7 @@ import {deepSignal} from './util/deep_signal';
  *  - they track instance state for the particular field (touched)
  *  - they compute signals for derived state (valid, disabled, etc) based on their associated
  *    `LogicNode`
- *  - they act as the public API for the field (they implement the `FormField` interface)
+ *  - they act as the public API for the field (they implement the `FieldState` interface)
  *  - they implement navigation of the form graph via `.parent` and `.getChild()`.
  */
 export class FieldNode implements FieldState<unknown> {
@@ -46,18 +46,18 @@ export class FieldNode implements FieldState<unknown> {
   /**
    * Lazily initialized value of `logicArgument`.
    */
-  private _logicArgument: FieldContext<unknown> | undefined = undefined;
+  private _fieldContext: FieldContext<unknown> | undefined = undefined;
 
   /**
    * Value of the "context" argument passed to all logic functions, which supports e.g. resolving
    * paths in relation to this field.
    */
-  get logicArgument(): FieldContext<unknown> {
-    return (this._logicArgument ??= {
+  get fieldContext(): FieldContext<unknown> {
+    return (this._fieldContext ??= {
       value: this.value,
       resolve: <U>(target: FieldPath<U>): Field<U> => {
-        const currentPath = this.logic.pathParts;
-        const targetPath = FieldPathNode.extractFromPath(target).logic.pathParts;
+        const currentPath = this.logic.pathKeys;
+        const targetPath = FieldPathNode.extractFromPath(target).logic.pathKeys;
 
         // Navigate from `currentPath` to `targetPath`. As an example, suppose that:
         // currentPath = [A, B, C, D]
@@ -82,7 +82,7 @@ export class FieldNode implements FieldState<unknown> {
           field = field.getChild(targetPath[idx])!;
         }
 
-        return field.formFieldProxy as Field<U>;
+        return field.fieldProxy as Field<U>;
       },
     });
   }
@@ -155,7 +155,7 @@ export class FieldNode implements FieldState<unknown> {
    * disabled.
    */
   readonly disabled: Signal<boolean> = computed(
-    () => (this.parent?.disabled() || this.logic.disabled.compute(this.logicArgument)) ?? false,
+    () => (this.parent?.disabled() || this.logic.disabled.compute(this.fieldContext)) ?? false,
   );
 
   /**
@@ -174,7 +174,7 @@ export class FieldNode implements FieldState<unknown> {
    * hidden.
    */
   readonly hidden: Signal<boolean> = computed(
-    () => (this.parent?.hidden() || this.logic.hidden.compute(this.logicArgument)) ?? false,
+    () => (this.parent?.hidden() || this.logic.hidden.compute(this.fieldContext)) ?? false,
   );
 
   /**
@@ -189,20 +189,20 @@ export class FieldNode implements FieldState<unknown> {
     }
 
     return [
-      ...(this.logic.errors.compute(this.logicArgument) ?? []),
+      ...(this.logic.errors.compute(this.fieldContext) ?? []),
       ...normalizeErrors(this.serverErrors()),
     ];
   });
 
   metadata<M>(key: MetadataKey<M>): M {
     // TODO: make this computed()
-    return this.logic.readMetadata(key, this.logicArgument) ?? key.defaultValue;
+    return this.logic.readMetadata(key, this.fieldContext) ?? key.defaultValue;
   }
 
   /**
    * Proxy to this node which allows navigation of the form graph below it.
    */
-  readonly formFieldProxy = new Proxy(this, FORM_PROXY_HANDLER) as unknown as Field<any>;
+  readonly fieldProxy = new Proxy(this, FIELD_PROXY_HANDLER) as unknown as Field<any>;
 
   /**
    * Resets the submitted status of this field and all of its children.
@@ -339,11 +339,11 @@ function normalizeErrors(error: ValidationResult): FormError[] {
 }
 
 /**
- * Proxy handler which implements `Form<T>` on top of `FieldNode`.
+ * Proxy handler which implements `Field<T>` on top of `FieldNode`.
  */
-const FORM_PROXY_HANDLER: ProxyHandler<FieldNode> = {
+const FIELD_PROXY_HANDLER: ProxyHandler<FieldNode> = {
   get(tgt: FieldNode, p: string | symbol) {
-    // From a `Form<T>`, developers can navigate to `FormControl<T>` via the special `$state` property.
+    // From a `Field<T>`, developers can navigate to `FieldState<T>` via the special `$state` property.
     if (p === '$state') {
       return tgt;
     }
@@ -351,9 +351,9 @@ const FORM_PROXY_HANDLER: ProxyHandler<FieldNode> = {
     // First, check whether the requested property is a defined child node of this node.
     const child = tgt.getChild(p);
     if (child !== undefined) {
-      // If so, return the child node's `Form` proxy, allowing the developer to continue navigating
+      // If so, return the child node's `Field` proxy, allowing the developer to continue navigating
       // the form structure.
-      return child.formFieldProxy;
+      return child.fieldProxy;
     }
 
     // Otherwise, we need to consider whether the properties they're accessing are related to array
