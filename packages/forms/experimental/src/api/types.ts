@@ -124,21 +124,9 @@ export type FieldPath<T> = {
     : {});
 
 /**
- * Contains logic form a `Field` of type `T`.
+ * A function that binds logic to the given `FieldPath`.
  */
-export interface Schema<T> {
-  readonly [ɵɵTYPE]: T;
-}
-
-/**
- * A function that binds schema logic to the given `FieldPath`.
- */
-export type SchemaFn<T> = (p: FieldPath<T>) => void;
-
-/**
- * A predefined schema, or a function used to bind schema logic.
- */
-export type SchemaOrSchemaFn<T> = Schema<T> | SchemaFn<T>;
+export type Schema<T> = (p: FieldPath<T>) => void;
 
 /**
  * A function that recevies the `FieldContext` for the field the logic is bound to and returns

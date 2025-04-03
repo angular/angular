@@ -11,37 +11,7 @@ import {WritableSignal} from '@angular/core';
 import {FieldNode} from '../field_node';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent, SchemaImpl} from '../schema';
-import type {
-  Field,
-  FieldPath,
-  LogicFn,
-  Schema,
-  SchemaFn,
-  SchemaOrSchemaFn,
-  ServerError,
-} from './types';
-
-/**
- * Creates a predefined set of logic that can be applied to a field of type `T`. `schema` accepts a
- * function that recevies the root `FieldPath` for the field and binds logic to it. This creates a
- * set of logic that can be eaily reused by binding it to a root-level field (see `form`), a
- * sub-field (see `apply`, `applyWhen`, `applyWhenValue`), or each element of a field array
- * (see `array`).
- *
- * @example ```
- * const nameSchema = schema<{first: string, last: string}>((name) => {
- *   required(name.first);
- *   required(name.last);
- * });
- * const nameForm = form(signal({first: '', last: ''}), nameSchema);
- * ```
- *
- * @param fn A function that recevies the root `FieldPath` for the form and binds logic to it.
- * @return A schema that can be applied to a Field of type `T`.
- */
-export function schema<T>(fn: SchemaFn<T>): Schema<T> {
-  return new SchemaImpl(fn).asSchema();
-}
+import type {Field, FieldPath, LogicFn, Schema, ServerError} from './types';
 
 /**
  * Creates a form wrapped around the given model data. A form is represented as simply a `Field` of
@@ -76,18 +46,15 @@ export function schema<T>(fn: SchemaFn<T>): Schema<T> {
  * @param model A writable signal that contains the model data for the form. The resulting field
  * structure will match the shape of the model and any changes to the form data will be written to
  * the model.
- * @param schemaOrFn A schema or a function that binds logic to the form. This can be optionally
+ * @param schema A schema or a function that binds logic to the form. This can be optionally
  * included to specify logic for the form (e.g. validation, disabled fields, etc.)
  * @return A `Field` representing a form around the data model.
  * @template The type of the data model.
  */
-export function form<T>(
-  model: WritableSignal<T>,
-  schemaOrFn?: NoInfer<SchemaOrSchemaFn<T>>,
-): Field<T> {
+export function form<T>(model: WritableSignal<T>, schema?: NoInfer<Schema<T>>): Field<T> {
   const pathImpl = FieldPathNode.newRoot();
-  if (schemaOrFn !== undefined) {
-    extractSchema(schemaOrFn).apply(pathImpl);
+  if (schema !== undefined) {
+    new SchemaImpl(schema).apply(pathImpl);
   }
   const fieldRoot = FieldNode.newRoot(model, pathImpl.logic);
   return fieldRoot.fieldProxy as Field<T>;
@@ -122,16 +89,15 @@ export function form<T>(
  * ```
  *
  * @param path The target path for an array field whose items the schema will be applied to.
- * @param schemaOrFn A schema for an element of the array, or function that binds logic to an
+ * @param schema A schema for an element of the array, or function that binds logic to an
  * element of the array.
  * @template T The data type of an element in the array.
  */
-export function applyEach<T>(path: FieldPath<T[]>, schemaOrFn: NoInfer<SchemaOrSchemaFn<T>>): void {
-  // applyEach(p, schema) = apply(p.element, schema)
+export function applyEach<T>(path: FieldPath<T[]>, schema: NoInfer<Schema<T>>): void {
   assertPathIsCurrent(path);
 
   const elementPath = FieldPathNode.extractFromPath(path).element.fieldPathProxy;
-  apply(elementPath, schemaOrFn);
+  apply(elementPath, schema);
 }
 
 /**
@@ -150,11 +116,11 @@ export function applyEach<T>(path: FieldPath<T[]>, schemaOrFn: NoInfer<SchemaOrS
  * @param path The target path to apply the schema to.
  * @param schema The schema to apply to the property
  */
-export function apply<T>(path: FieldPath<T>, schemaOrFn: NoInfer<SchemaOrSchemaFn<T>>): void {
+export function apply<T>(path: FieldPath<T>, schema: NoInfer<Schema<T>>): void {
   assertPathIsCurrent(path);
 
   const childPathImpl = FieldPathNode.extractFromPath(path).withNewKey();
-  extractSchema(schemaOrFn).apply(childPathImpl);
+  new SchemaImpl(schema).apply(childPathImpl);
 }
 
 /**
@@ -167,16 +133,15 @@ export function apply<T>(path: FieldPath<T>, schemaOrFn: NoInfer<SchemaOrSchemaF
 export function applyWhen<T>(
   path: FieldPath<T>,
   logic: LogicFn<T, boolean>,
-  schemaOrFn: NoInfer<SchemaOrSchemaFn<T>>,
+  schema: NoInfer<Schema<T>>,
 ): void {
   assertPathIsCurrent(path);
 
-  const schema = extractSchema(schemaOrFn);
   const predicatedPathImpl = FieldPathNode.extractFromPath(path).withPredicate({
     fn: logic,
     path,
   });
-  schema.apply(predicatedPathImpl);
+  new SchemaImpl(schema).apply(predicatedPathImpl);
 }
 
 /**
@@ -190,7 +155,7 @@ export function applyWhen<T>(
 export function applyWhenValue<T, TNarrowed extends T>(
   path: FieldPath<T>,
   predicate: (value: T) => value is TNarrowed,
-  schemaOrFn: NoInfer<SchemaOrSchemaFn<TNarrowed>>,
+  schema: NoInfer<Schema<TNarrowed>>,
 ): void;
 /**
  * Conditionally applies a predefined schema to a given `FieldPath`.
@@ -203,14 +168,14 @@ export function applyWhenValue<T, TNarrowed extends T>(
 export function applyWhenValue<T>(
   path: FieldPath<T>,
   predicate: (value: T) => boolean,
-  schemaOrFn: NoInfer<SchemaOrSchemaFn<T>>,
+  schema: NoInfer<Schema<T>>,
 ): void;
 export function applyWhenValue(
   path: FieldPath<unknown>,
   predicate: (value: unknown) => boolean,
-  schemaOrFn: SchemaOrSchemaFn<unknown>,
+  schema: Schema<unknown>,
 ) {
-  applyWhen(path, ({value}) => predicate(value()), schemaOrFn);
+  applyWhen(path, ({value}) => predicate(value()), schema);
 }
 
 /**
@@ -252,11 +217,4 @@ export async function submit<T>(
     (error.field.$state as FieldNode).setServerErrors(error.error);
   }
   api.setSubmittedStatus('submitted');
-}
-
-function extractSchema(schemaOrFn: SchemaOrSchemaFn<any>): SchemaImpl {
-  if (typeof schemaOrFn === 'function') {
-    schemaOrFn = schema(schemaOrFn);
-  }
-  return SchemaImpl.extractFromSchema(schemaOrFn);
 }
