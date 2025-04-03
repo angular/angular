@@ -8,12 +8,12 @@
 
 import {Signal, signal} from '@angular/core';
 import {validate} from '../../src/api/logic';
-import {applyEach, applyWhen, applyWhenValue, form, schema} from '../../src/api/structure';
+import {applyEach, applyWhen, applyWhenValue, form} from '../../src/api/structure';
+import {Schema} from '../../src/api/types';
 
 export interface User {
   first: string;
   last: string;
-  needLastName: boolean;
 }
 
 const needsLastNamePredicate = ({value}: {value: Signal<{needLastName: boolean}>}) =>
@@ -39,7 +39,7 @@ describe('when', () => {
     const data = signal({first: '', needLastName: false, last: ''});
 
     const f = form(data, (path) => {
-      applyWhen(path, needsLastNamePredicate, (namePath /* NO USING THIS ONE */) => {
+      applyWhen(path, needsLastNamePredicate, (/* UNUSED */) => {
         expect(() => {
           validate(path.last, ({value}) => (value().length > 0 ? undefined : {kind: 'required'}));
         }).toThrowError();
@@ -50,17 +50,17 @@ describe('when', () => {
   it('supports merging two array schemas', () => {
     const data = signal({needLastName: true, items: [{first: '', last: ''}]});
 
-    const s = schema<User>((namePath) => {
+    const s: Schema<User> = (namePath) => {
       validate(namePath.last, ({value}) => {
         return value().length > 0 ? undefined : {kind: 'required1'};
       });
-    });
+    };
 
-    const s2 = schema<User>((namePath) => {
+    const s2: Schema<User> = (namePath) => {
       validate(namePath.last, ({value}) => {
         return value.length > 0 ? undefined : {kind: 'required2'};
       });
-    });
+    };
 
     const f = form(data, (path) => {
       applyEach(path.items, s);
@@ -77,9 +77,9 @@ describe('when', () => {
   it('accepts a schema', () => {
     const data = signal({first: '', needLastName: false, last: ''});
 
-    const s = schema<User>((namePath) => {
+    const s: Schema<User> = (namePath) => {
       validate(namePath.last, ({value}) => (value().length > 0 ? undefined : {kind: 'required'}));
-    });
+    };
     const f = form(data, (path) => {
       applyWhen(path, needsLastNamePredicate, s);
     });
@@ -108,11 +108,11 @@ describe('when', () => {
 
   it('supports array schema', () => {
     const data = signal({needLastName: true, items: [{first: '', last: ''}]});
-    const s = schema<{first: string; last: string}>((i) => {
+    const s: Schema<User> = (i) => {
       validate(i.last, ({value}) => {
         return value().length > 0 ? undefined : {kind: 'required'};
       });
-    });
+    };
 
     const f = form(data, (path) => {
       applyWhen(path, needsLastNamePredicate, (names /* Path */) => {

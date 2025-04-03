@@ -1,6 +1,7 @@
 import {computed, signal} from '@angular/core';
 import {disabled, error, required, validate} from '../src/api/logic';
-import {apply, applyEach, form, schema, submit} from '../src/api/structure';
+import {apply, applyEach, form, submit} from '../src/api/structure';
+import {Schema} from '../src/api/types';
 import {DISABLED_REASON, REQUIRED} from '../src/logic_node';
 
 describe('Node', () => {
@@ -477,9 +478,9 @@ describe('Node', () => {
         city: string;
       }
 
-      const addressSchema = schema<Address>((p) => {
+      const addressSchema: Schema<Address> = (p) => {
         disabled(p.street, () => true);
-      });
+      };
 
       const data = signal<{name: string; address: Address}>({
         name: '',

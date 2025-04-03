@@ -7,8 +7,8 @@
  */
 
 import {signal} from '@angular/core';
-import {apply, applyEach, applyWhen, form} from '../src/api/structure';
 import {validate} from '../src/api/logic';
+import {apply, applyEach, applyWhen, form} from '../src/api/structure';
 
 describe('Active path', () => {
   it('Disallows using parent paths for applyWhen', () => {
@@ -18,7 +18,7 @@ describe('Active path', () => {
       applyWhen(
         path,
         ({value}) => value().needLastName,
-        (namePath /* NO USING THIS ONE */) => {
+        (/* UNUSED */) => {
           expect(() => {
             validate(path.last, ({value}) => (value().length > 0 ? undefined : {kind: 'required'}));
           }).toThrowError();
