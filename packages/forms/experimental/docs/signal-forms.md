@@ -15,7 +15,7 @@ In Angular Signal Forms, this concept is modeled by breaking it down into four d
 
 A key principle of Angular Signal Forms is that it **does not maintain its own internal data**. Instead, **you, the developer, own the data model**. The data model is represented as a `WritableSignal` which the library uses directly as the source of truth for the values of its fields.
 
-To create a root **field** instance bound to your data model, pass your model to the `form()` factory function:
+To create a root `Field` instance representing your form, pass your model to the `form()` factory function:
 
 ```typescript
 // Define the data structure.
@@ -27,22 +27,22 @@ interface User {
 // Create a model containing the initial form data.
 const userModel = signal<User>({name: '', username: ''});
 
-// Create the field instance, linking it to the model.
-const userField = form(userModel);
+// Create the form, linking it to the model.
+const userForm = form(userModel);
 ```
 
 This establishes the model as the source of truth for the UI values, meaning:
 
-- Any updates made to the `userModel` will update the field structure's value (as it reads from the same signal).
-- Any changes the user makes via the `userField` **directly modify** the model.
+- Any updates made to the `userModel` will update the field's value (as it reads from the same signal).
+- Any changes the user makes via the `userForm` **directly modify** the model.
 
 ## Accessing the field state
 
-Calling `form()` on your data model gives you a **`Field`** object which contains the field state for each field. Via this object, you can access the value, validation status, and other metadata for any field in the **field structure**.
+Calling `form()` on your data model gives you a `Field` object which contains the field state for each field. Via this object, you can access the value, validation status, and other metadata for any field in the field structure.
 
 ### Navigating the field tree
 
-To access a field's state, you first navigate to the field you're interested in. The **`Field`** object is structured as a tree wrapped around your data. The **`Field`** tree mirrors the structure of the data, allowing you to access a sub-**field** for part of the data by accessing the corresponding property on the **`Field`**, the same way you would navigate through the data itself.
+To access a field's state, you first navigate to the field you're interested in. The `Field` object is structured as a tree wrapped around your data. The `Field` tree mirrors the structure of the data, allowing you to access a sub-field for part of the data by accessing the corresponding property on the `Field`, the same way you would navigate through the data itself.
 
 Consider this example:
 
@@ -67,23 +67,23 @@ const orderModel = signal<Order>({
 });
 
 // Create a `Field` for the order.
-const orderField: Field<Order> = form(orderModel);
+const orderForm: Field<Order> = form(orderModel);
 
 // Navigate the field structure to access sub-fields.
-const itemsField: Field<LineItem[]> = orderField.items;
-const firstItemField: Field<LineItem> = orderField.items[0];
-const firstItemQuantityField: Field<number> = orderField.items[0].quantity;
+const itemsField: Field<LineItem[]> = orderForm.items;
+const firstItemField: Field<LineItem> = orderForm.items[0];
+const firstItemQuantityField: Field<number> = orderForm.items[0].quantity;
 ```
 
-As you can see, navigating the `orderField` structure (`orderField.items[0].quantity`) directly corresponds to how you would access the data in the `orderModel` (`orderModel().items[0].quantity`). Each step in this navigation gives you a more specific **`Field`** instance, typed according to the part of the data model it represents (e.g., **`Field`**`<LineItem[]>`, **`Field`**`<LineItem>`, **`Field`**`<number>`).
+As you can see, navigating the `orderForm` structure (`orderForm.items[0].quantity`) directly corresponds to how you would access the data in the `orderModel` (`orderModel().items[0].quantity`). Each step in this navigation gives you a more specific `Field` instance, typed according to the part of the data model it represents (e.g., `Field<LineItem[]>`, `Field<LineItem>`, `Field<number>`).
 
-However, these navigated **`Field`** objects only represent the _structure_ and _grouping_ of the fields. To access the state for a specific field, you use the special **`$state`** property to get the **`FieldState`** for that location in the **`Field`** structure.
+However, these navigated `Field` objects only represent the _structure_ and _grouping_ of the fields. To access the state for a specific field, you use the special `$state` property to get the `FieldState` for that location in the `Field` structure.
 
 ### Getting the `FieldState` for a node
 
-Every **`Field`** instance, whether it's the root **field** or a sub-**field** obtained through navigation, has a **`$state`** property. Accessing **`$state`** provides you with the underlying **`FieldState`** instance for that specific node in the **field** tree.
+Every `Field` instance, whether it's the root field or a sub-field obtained through navigation, has a `$state` property. Accessing `$state` provides you with the underlying `FieldState` instance for that specific node in the field tree.
 
-The **`FieldState`** gives you access to the reactive state of that part of the **field structure**, including:
+The `FieldState` gives you access to the reactive state of that part of the field structure, including:
 
 - **`value`**: A `WritableSignal` representing the current value of the field.
 - **`valid`**: A `Signal` indicating whether the field _and its descendants_ are currently valid.
@@ -91,7 +91,7 @@ The **`FieldState`** gives you access to the reactive state of that part of the 
 - **`disabled`**: A `Signal` indicating whether the field _or any of its parents_ are disabled.
 - **`touched`**: A `Signal` indicating whether the user has interacted with the field _or any of its descendants_.
 
-Here's how you can use **`$state`** in the previous example:
+Here's how you can use `$state` in the previous example:
 
 ```typescript
 // Update the quantity for the first item. (This updates `orderModel` as well!)
@@ -101,7 +101,7 @@ firstItemQuantityField.$state.value.set(2);
 firstItemField.$state.value();  // {description: 'Ergonomic Mouse', quantity: 2}
 
 // Check whether the order is disabled.
-orderField.$state.disabled();  // false
+orderForm.$state.disabled();  // false
 
 // Check if there are any errors on the items list.
 itemsField.$state.errors();   // [];
@@ -109,24 +109,24 @@ itemsField.$state.errors();   // [];
 
 ## Adding field logic
 
-As previously shown, **`FieldState`** instances expose reactive state signals like `valid`, `errors`, and `disabled`. This state isn't set directly; instead, it's _derived_ from the **field logic** you define.
+As previously shown, `FieldState` instances expose reactive state signals like `valid`, `errors`, and `disabled`. This state isn't set directly; instead, it's _derived_ from the **field logic** you define.
 
-Another key principle of Angular Signal Forms is that all **field** logic, such as validation rules or conditions for disabling fields, is defined **declaratively using TypeScript**. This means you specify the rules and conditions that determine a field's state upfront, when the **field** structure is defined. You don't imperatively command a field to change state later (e.g. there is no imperative `.disable()` method on **field states**). Instead, you define _when_ `someField` should be disabled based on other signals or static conditions.
+Another key principle of Angular Signal Forms is that all field logic, such as validation rules or conditions for disabling fields, is defined **declaratively using TypeScript**. This means you specify the rules and conditions that determine a field's state upfront, when the field structure is defined. You don't imperatively command a field to change state later (e.g. there is no imperative `.disable()` method on the field state). Instead, you define _when_ `someField` should be disabled based on other signals or static conditions.
 
-The mechanism for defining this declarative logic is the `Schema`. Think of a `Schema` as a **blueprint** containing the rules (validators, disabled conditions, etc.) for a **`Field`** that manages a specific data type.
+The mechanism for defining this declarative logic is the `Schema`. Think of a `Schema` as a **blueprint** containing the rules (validators, disabled conditions, etc.) for a `Field` that manages a specific data type.
 
 ### Creating and applying a schema
 
 You create a `Schema` using the `schema()` factory function, providing the data type the schema applies to as a generic argument. For example:
 
-- `schema<string>(...)` defines rules for a **`Field`**`<string>`.
-- `schema<User>(...)` defines rules for a **`Field`**`<User>`.
+- `schema<string>(...)` defines rules for a `Field<string>`.
+- `schema<User>(...)` defines rules for a `Field<User>`.
 
-This ensures that your logic rules align with the structure of your **field** and your data model.
+This ensures that your logic rules align with the structure of your field and your data model.
 
-The `schema()` factory accepts a single argument: a configuration function. Inside this function, you'll define the specific validation rules, disabled conditions, and other logic for the **field structure**. _How_ to define these rules will be covered shortly.
+The `schema()` factory accepts a single argument: a configuration function. Inside this function, you'll define the specific validation rules, disabled conditions, and other logic for the field structure. _How_ to define these rules will be covered shortly.
 
-Once you have defined a `Schema`, you associate it with your **`Field`** structure by passing it as the second argument to the `form()` function:
+Once you have defined a `Schema`, you associate it with your `Field` structure by passing it as the second argument to the `form()` function:
 
 ```typescript
 // Define the data type for the form.
@@ -145,9 +145,9 @@ const passwordSchema = schema<ConfirmedPassword>(() => {
 });
 
 // Create the field structure, adding the logic from the schema.
-const passwordField = form(passwordModel, passwordSchema);
+const passwordForm = form(passwordModel, passwordSchema);
 
-// Now, passwordField's state (e.g. passwordField.$state.errors)
+// Now, passwordForm's state (e.g. passwordForm.$state.errors)
 // will be determined by the rules defined in passwordSchema.
 ```
 
@@ -155,11 +155,11 @@ In this example, `passwordSchema` is created but doesn't contain any specific ru
 
 ### Defining logic rules within a schema
 
-The configuration function passed to `schema()` is where you can bind logic to specific fields in the **field structure**. The configuration function receives a single argument, a **`FieldPath`**`<T>`, where `T` is the data type of the schema (e.g., **`FieldPath`**`<ConfirmedPassword>` in the example above).
+The configuration function passed to `schema()` is where you can bind logic to specific fields in the field structure. The configuration function receives a single argument, a `FieldPath<T>`, where `T` is the data type of the schema (e.g., `FieldPath<ConfirmedPassword>` in the example above).
 
-The **`FieldPath`** acts as your tool for navigating the structure of your data model within the schema definition. It allows you to precisely target _where_ specific logic rules should apply. Navigating the **`FieldPath`** mirrors how you access properties on your data object or **`Field`** object.
+The `FieldPath` acts as your tool for navigating the structure of your data model within the schema definition. It allows you to precisely target _where_ specific logic rules should apply. Navigating the `FieldPath` mirrors how you access properties on your data object or `Field` object.
 
-You use these navigated paths as the first argument to the built-in logic binding functions to specify which part of the **field structure** the logic applies to. For example:
+You use these navigated paths as the first argument to the built-in logic binding functions to specify which part of the field structure the logic applies to. For example:
 
 ```typescript
 const passwordSchema = schema<ConfirmedPassword>((path: FieldPath<ConfirmedPassword>) => {
@@ -172,7 +172,7 @@ const passwordSchema = schema<ConfirmedPassword>((path: FieldPath<ConfirmedPassw
 
 #### Logic binding functions
 
-Angular Signal Forms provides several functions designed to be called within the `schema()` configuration function to bind logic rules to parts of your **field structure**. These functions all take a **`FieldPath`** as the first argument to indicate which field the logic applies to.
+Angular Signal Forms provides several functions designed to be called within the `schema()` configuration function to bind logic rules to parts of your field structure. These functions all take a `FieldPath` as the first argument to indicate which field the logic applies to.
 
 The currently supported logic binding functions are:
 
@@ -206,25 +206,25 @@ const passwordSchema = schema<ConfirmedPassword>((path: FieldPath<ConfirmedPassw
     });
 });
 
-const passwordField = form(signal({password: '', confirm: ''}), passwordSchema);
+const passwordForm = form(signal({password: '', confirm: ''}), passwordSchema);
 
 // Password is currently invalid.
-passwordField.password.$state.valid(); // false
-passwordField.password.$state.errors(); // [{kind: 'too-short', message: 'Password is too short'}]
+passwordForm.password.$state.valid(); // false
+passwordForm.password.$state.errors(); // [{kind: 'too-short', message: 'Password is too short'}]
 
 // Update to a valid password.
-passwordField.password.$state.value.set('password');
+passwordForm.password.$state.value.set('password');
 
 // Password is now valid.
-passwordField.password.$state.valid(); // true
-passwordField.password.$state.errors(); // [];
+passwordForm.password.$state.valid(); // true
+passwordForm.password.$state.errors(); // [];
 ```
 
-The logic function passed as the second argument to `validate` in the example above receives a **`FieldContext`** which contains a `Signal` of the current field value. By reading this signal it sets up a reactive binding that defines the field's errors in terms of its value.
+The logic function passed as the second argument to `validate` in the example above receives a `FieldContext` which contains a `Signal` of the current field value. By reading this signal it sets up a reactive binding that defines the field's errors in terms of its value.
 
 #### Defining cross-field logic
 
-Often, the logic for one part of your **field structure** depends on the state or value of _another_ part. Common examples of this include:
+Often, the logic for one part of your field structure depends on the state or value of _another_ part. Common examples of this include:
 
 - Ensuring a "confirm password" field matches the "password" field.
 - Disabling a "shipping address" section if a "use billing address" checkbox is checked.
@@ -234,7 +234,7 @@ There are two primary approaches to implement this type of logic in Angular Sign
 
 ##### Approach #1: Define the logic on a common parent path
 
-In some cases you may want to associate the logic with a common parent node in your data structure, you can define the logic on the **`FieldPath`** corresponding to that parent object. The **`FieldContext`**'s `value` signal will then give you the entire parent object's value, allowing you to compare its child properties.
+In some cases you may want to associate the logic with a common parent node in your data structure, you can define the logic on the `FieldPath` corresponding to that parent object. The `FieldContext`'s `value` signal will then give you the entire parent object's value, allowing you to compare its child properties.
 
 Looking at the previous `ConfirmedPassword` example, password matching logic can be implemented by adding validation to the root `path`:
 
@@ -253,22 +253,22 @@ const passwordSchema = schema<ConfirmedPassword>((path: FieldPath<ConfirmedPassw
     });
 });
 
-const passwordField = form(signal({password: 'first', confirm: 'second'}), passwordSchema);
+const passwordForm = form(signal({password: 'first', confirm: 'second'}), passwordSchema);
 ```
 
 An important thing to notice with this approach, is that the `non-matching` error is associated with the _root field_, not specifically with the `password` or `confirm` fields themselves. This might be suitable for displaying a general error message, but less ideal if you want to highlight the specific field the user needs to change.
 
 ```typescript
-passwordField.$state.errors(); // [{kind: 'non-matching', message: 'Password and confirm must match'}]
-passwordField.password.$state.errors(); // []
-passwordField.confirm.$state.errors(); // []
+passwordForm.$state.errors(); // [{kind: 'non-matching', message: 'Password and confirm must match'}]
+passwordForm.password.$state.errors(); // []
+passwordForm.confirm.$state.errors(); // []
 ```
 
 ##### Approach #2: Use `resolve` to access other fields' values
 
-If you need to access other fields' values but don't want to move the logic to a common parent node, you can define the logic on the desired field and then use the `resolve` function provided in the **`FieldContext`** to access the state of _other_ fields.
+If you need to access other fields' values but don't want to move the logic to a common parent node, you can define the logic on the desired field and then use the `resolve` function provided in the `FieldContext` to access the state of _other_ fields.
 
-The `resolve()` function takes another **`FieldPath`** from anywhere in your **field** structure and returns the corresponding **`Field`** instance for that path. You can then access its **`$state`** to get its value, state, etc.
+The `resolve()` function takes another `FieldPath` from anywhere in your field structure and returns the corresponding `Field` instance for that path. You can then access its `$state` to get its value, state, etc.
 
 Here's the same password matching validation, but associating the error with the `confirm` field instead:
 
@@ -288,23 +288,23 @@ const passwordSchema = schema<ConfirmedPassword>((path: FieldPath<ConfirmedPassw
     });
 });
 
-const passwordField = form(signal({password: 'first', confirm: 'second'}), passwordSchema);
+const passwordForm = form(signal({password: 'first', confirm: 'second'}), passwordSchema);
 
-passwordField.$state.errors(); // []
-passwordField.password.$state.errors(); // []
-passwordField.confirm.$state.errors(); // [{kind: 'non-matching', message: 'Password and confirm must match'}]
+passwordForm.$state.errors(); // []
+passwordForm.password.$state.errors(); // []
+passwordForm.confirm.$state.errors(); // [{kind: 'non-matching', message: 'Password and confirm must match'}]
 ```
 
 Note that because `value()` in `resolve(path.password).$state.value()` is a signal read, this establishes a reactive dependency on the value of `password` as well as the value of `confirm`, ensuring that the validation is recomputed if either one changes.
 
 ### Composing logic from multiple schemas
 
-As your **field structures** become more complex, or when you have common data structures used across multiple forms (like addresses, dates, or reusable components), you'll often want to reuse validation and logic rules without duplication. Angular Signal Forms enables this through **schema composition**.
+As your field structures become more complex, or when you have common data structures used across multiple forms (like addresses, dates, or reusable components), you'll often want to reuse validation and logic rules without duplication. Angular Signal Forms enables this through **schema composition**.
 
 This is accomplished by using the `apply` function, which binds the logic from a child schema to a path in the parent schema. The `apply` function takes two arguments:
 
-1.  **`path`**: A **`FieldPath`** within the parent schema where you want to apply the logic from the child schema.
-2.  **`childSchema`**: The child `Schema` to add logic from. The data type of the `childSchema` (e.g., `Schema<Address>`) must match the data type of the `path` (e.g., **`FieldPath`**`<Address>`).
+1.  **`path`**: A `FieldPath` within the parent schema where you want to apply the logic from the child schema.
+2.  **`childSchema`**: The child `Schema` to add logic from. The data type of the `childSchema` (e.g., `Schema<Address>`) must match the data type of the `path` (e.g., `FieldPath<Address>`).
 
 When you call `apply`, the logic rules defined within `childSchema` are effectively merged into the current schema at the specified `path`.
 
@@ -345,7 +345,7 @@ const tripModel = signal<Trip>({
   end: defaultDate,
 });
 
-const tripField = form(tripModel, tripSchema);
+const tripForm = form(tripModel, tripSchema);
 ```
 
 Because the logic is _merged_ rather than _overwritten_, the parent schema can set up additional logic for the path with the applied schema if necessary.
@@ -369,16 +369,16 @@ const tripSchema = schema<Trip>((tripPath: FieldPath<Trip>) => {
 
 #### Applying schema logic to an array
 
-**Field structures** sometimes contain arrays of items, such as line items in an order, tags, or multiple addresses. The challenge with arrays is that their length is dynamic – you don't know ahead of time how many elements there will be, and elements can be added or removed. This makes it impossible to statically bind logic to a specific index like `itemsPath[0]` within the schema definition, as that element might not exist.
+Field structures sometimes contain arrays of items, such as line items in an order, tags, or multiple addresses. The challenge with arrays is that their length is dynamic – you don't know ahead of time how many elements there will be, and elements can be added or removed. This makes it impossible to statically bind logic to a specific index like `itemsPath[0]` within the schema definition, as that element might not exist.
 
 Instead of targeting a single element, use the `applyEach` function which applies a given schema to **every element** currently present in the array, and ensures that the logic is also applied to any elements added later.
 
 The `applyEach` function takes two arguments:
 
-1.  **`arrayPath`**: A **`FieldPath`** for an array in the parent schema whose elements you want to apply logic to.
-2.  **`elementSchema`**: A `Schema` defining the logic for a single element of the array. The data type of the `elementSchema` (e.g., `Schema<User>`) must match the data type of a single element of the `arrayPath` (e.g., **`FieldPath`**`<User[]>`).
+1.  **`arrayPath`**: A `FieldPath` for an array in the parent schema whose elements you want to apply logic to.
+2.  **`elementSchema`**: A `Schema` defining the logic for a single element of the array. The data type of the `elementSchema` (e.g., `Schema<User>`) must match the data type of a single element of the `arrayPath` (e.g., `FieldPath<User[]>`).
 
-When you call `applyEach`, the logic rules defined within `elementSchema` are automatically applied to every corresponding **`Field`** node representing an element within the target array **field**.
+When you call `applyEach`, the logic rules defined within `elementSchema` are automatically applied to every corresponding `Field` node representing an element within the target array field.
 
 ```typescript
 interface User {
@@ -392,26 +392,26 @@ const userSchema = schema<User>((userPath: FieldPath<User>) => {
 
 const usersModel = signal<User[]>([]);
 
-const usersField = form(usersModel, (usersPath: FieldPath<User[]>) => {
+const usersForm = form(usersModel, (usersPath: FieldPath<User[]>) => {
   applyEach(usersPath, userSchema);
 });
 
 usersModel.set([{username: 'newuser', name: 'John Doe'}]);
 
-usersField[0].$state.disabled(); // true
+usersForm[0].$state.disabled(); // true
 ```
 
 #### Conditionally applying schema logic
 
 We've established that the `schema()` configuration function runs only once to define the static structure of the logic. You cannot use dynamic `if` statements _within_ the configuration function to conditionally call logic binding functions like `validate` or `disabled`.
 
-However, **field structures** often require logic that should only be active under certain conditions. For example, validation rules for billing details might only apply if the user hasn't selected "Same as shipping address".
+However, field structures often require logic that should only be active under certain conditions. For example, validation rules for billing details might only apply if the user hasn't selected "Same as shipping address".
 
 Schema composition provides a reactive solution for this using the `applyWhen` function. This function allows you to apply the logic from a child schema to a specific path, but only when a reactive condition evaluates to `true`. The `applyWhen` function takes three arguments:
 
-1.  **`path`**: A **`FieldPath`** within the parent schema where the conditional logic should be applied.
-2.  **`condition`**: A function that receives the **`FieldContext`**`<T>` for the `path` and must return a `boolean` indicating whether the child schema's logic is currently active.
-3.  **`schema`**: The child `Schema` whose logic should be applied _when_ the `condition` is `true`. The data type `T` of this schema (`Schema<T>`) must match the data type of the `path` (**`FieldPath`**`<T>`).
+1.  **`path`**: A `FieldPath` within the parent schema where the conditional logic should be applied.
+2.  **`condition`**: A function that receives the `FieldContext<T>` for the `path` and must return a `boolean` indicating whether the child schema's logic is currently active.
+3.  **`schema`**: The child `Schema` whose logic should be applied _when_ the `condition` is `true`. The data type `T` of this schema (`Schema<T>`) must match the data type of the `path` (`FieldPath<T>`).
 
 The following example shows using `applyWhen` to conditionally apply validation based on a user's subscription tier:
 
@@ -434,17 +434,17 @@ const accountSchema = schema<Account>((accountPath: FieldPath<Account>) => {
   applyWhen(accountPath, ({value}) => !value().premiumTier, basicAccountSchema);
 });
 
-const accountField = form(signal({
+const accountForm = form(signal({
   premiumTier: true,
   quality: '4K',
   friendsAndFamily: []
 }), accountSchema);
 
-accountField.quality.$state.valid(); // true
+accountForm.quality.$state.valid(); // true
 
-accountField.premiumTier.$state.value.set(false);
+accountForm.premiumTier.$state.value.set(false);
 
-accountField.quality.$state.valid(); // false
+accountForm.quality.$state.valid(); // false
 ```
 
 ##### Conditionally applying logic with a narrowed type
@@ -453,7 +453,7 @@ Sometimes, you need to apply logic only when a field's value matches a specific 
 
 Angular Signal Forms provides `applyWhenValue` for this scenario. It works similarly to `applyWhen`, but its condition is a **type guard function** that operates directly on the field's _value_. The arguments to `applyWhenValue` are:
 
-1.  **`path`**: A **`FieldPath`**`<T>` within the parent schema where the conditional logic should be applied.
+1.  **`path`**: A `FieldPath<T>` within the parent schema where the conditional logic should be applied.
 2.  **`condition`**: A **type guard function** (`(value: T) => value is NarrowedType`) that receives the current _value_ `T` from the `path`. It should return `true` if the value matches the desired narrowed type.
 3.  **`schema`**: The child `Schema` whose logic should be applied _when_ the `condition` type guard returns `true`. The data type of this schema (`Schema<NarrowedType>`) must match the **narrowed type** specified in the type guard's return signature.
 
@@ -494,7 +494,7 @@ const tripModel = signal<Trip>({
   end: null,
 });
 
-const tripField = form(tripModel, tripSchema);
+const tripForm = form(tripModel, tripSchema);
 ```
 
 ## Submitting a form
@@ -503,37 +503,37 @@ Once the user has filled out the form, the typical next step is to submit the da
 
 Angular Signal Forms provides a `submit()` helper function to manage this workflow. It orchestrates the asynchronous submission action and updates the form's status accordingly. The `submit` function takes two arguments:
 
-1.  **`field`**: The **`Field`** instance to submit. This can be the root field or any sub-field node.
-2.  **`action`**: An asynchronous function that performs the submission action. It receives the **`field`** being submitted as an argument and returns a `Promise`.
+1.  **`field`**: The `Field` instance to submit. This can be the root field or any sub-field node.
+2.  **`action`**: An asynchronous function that performs the submission action. It receives the `field` being submitted as an argument and returns a `Promise`.
     - The returned `Promise` resolves with `void` (or `undefined`, or `[]`) if the action completes successfully without server-side validation errors.
     - It resolves with an array of `ServerError` if the submission fails due to server-side validation or other issues that need to be reported back onto the form fields. The `ServerError` structure is detailed in the next section.
 
-All **`FieldState`** objects have a `submittedStatus` signal that indicates their current submit state. The status can be `'unsubmitted'`, `'submitting'`, or `'submitted'`. There is no status to indicate that the submit errored because errors are reported through the `errors()` state the same way as client validation errors. (This is discussed more in the next section). **`FieldState`** objects also have a `resetSubmittedStatus()` method which sets the `submittedStatus` back to `'unsubmitted'`.
+All `FieldState` objects have a `submittedStatus` signal that indicates their current submit state. The status can be `'unsubmitted'`, `'submitting'`, or `'submitted'`. There is no status to indicate that the submit errored because errors are reported through the `errors()` state the same way as client validation errors. (This is discussed more in the next section). `FieldState` objects also have a `resetSubmittedStatus()` method which sets the `submittedStatus` back to `'unsubmitted'`.
 
-When a **`Field`** is submitted it updates the `submittedStatus` of the **field** _and_ all of its descendants in the **field** tree. Likewise when a **field**'s status is reset via `resetSubmittedStatus()` it resets the status of the **field** _and_ all of its descendants.
+When a `Field` is submitted it updates the `submittedStatus` of the field _and_ all of its descendants in the field tree. Likewise when a field's status is reset via `resetSubmittedStatus()` it resets the status of the field _and_ all of its descendants.
 
 ```typescript
 // Create the field structure.
-const userField = form(signal({username: '', name: ''}));
+const userForm = form(signal({username: '', name: ''}));
 let resolve: () => void;
 
-userField.$state.submittedStatus(); // 'unsubmitted'
+userForm.$state.submittedStatus(); // 'unsubmitted'
 
 // Start a submit action.
-const submitFinished = submit(userField, () => new Promise<void>(r => resolve = r));
+const submitFinished = submit(userForm, () => new Promise<void>(r => resolve = r));
 
-userField.$state.submittedStatus(); // 'submitting'
+userForm.$state.submittedStatus(); // 'submitting'
 
 // Simulate the submit finishing.
 resolve();
 await submitFinished;
 
-userField.$state.submittedStatus(); // 'submitted'
+userForm.$state.submittedStatus(); // 'submitted'
 
 // Reset to unsubmitted.
-userField.$state.resetSubmittedStatus();
+userForm.$state.resetSubmittedStatus();
 
-userField.$state.submittedStatus(); // 'unsubmitted'
+userForm.$state.submittedStatus(); // 'unsubmitted'
 ```
 
 ### Adding server errors to the form
@@ -542,47 +542,44 @@ Client-side validation defined in your `Schema` catches many errors, but some va
 
 When the `action` function provided to `submit()` detects such server-side errors, it should communicate them back by resolving its `Promise` with an array of `ServerError` objects (`Promise<ServerError[]>`).
 
-A `ServerError` object links a `FormError` to a specific field within the submitted **field** structure. A `ServerError` is any object with the following properties:
+A `ServerError` object links a `FormError` to a specific field within the submitted field structure. A `ServerError` is any object with the following properties:
 
 - `error: FormError`: The validation error to add to the form.
-- `field: Field<any>`: A reference to the specific **`Field`** node where this error should be displayed.
+- `field: Field<any>`: A reference to the specific `Field` node where this error should be displayed.
 
 The `submit()` function takes this array of `ServerError` objects and automatically adds the specified `error` to the `errors` state of the corresponding `field`.
 
-Its up to the developer to decide which field makes most sense to associate the error with. For a non-unique username error, associating the error with the `username` field makes sense. For a general server issue (e.g. "Internal error"), you might associate it with the **field** root instead.
+Its up to the developer to decide which field makes most sense to associate the error with. For a non-unique username error, associating the error with the `username` field makes sense. For a general server issue (e.g. "Internal error"), you might associate it with the field root instead.
 
 ```typescript
-const userField = form(signal({username: '', name: ''}));
+const userForm = form(signal({username: '', name: ''}));
 
 const myClient = /* ... create server client */;
 
-await submit(userField, async (field) => { // `field` is userField here
+await submit(userForm, async (field) => { // `field` is the same as userForm here
   const error = await myClient.addUser(field.$state.value());
   if (error.code === myClient.Errors.NON_UNIQUE_USERNAME) {
-    return [{ // Must return an array
+    return [{
       error: {kind: 'non-unique-username', message: 'That username is already taken'},
-      field: field.username // Access sub-field via the passed field
+      field: field.username
     }];
   }
-  return []; // Resolve with empty array for success
 });
 
-userField.$state.submittedStatus(); // 'submitted'
-userField.username.$state.errors(); // [{kind: 'non-unique-username', message: 'That username is already taken'}]
+userForm.$state.submittedStatus(); // 'submitted'
+userForm.username.$state.errors(); // [{kind: 'non-unique-username', message: 'That username is already taken'}]
 ```
 
 ## Binding form fields to UI elements
 
-So far, we've defined the data model, the field structure with the reactive state for each field, and the declarative logic. The final piece is connecting this logical **field** representation to the actual UI elements (like `<input>`, `<select>`, custom components) that the user interacts with in the template.
+So far, we've defined the data model, the field structure with the reactive state for each field, and the declarative logic. The final piece is connecting this logical field representation to the actual UI elements (like `<input>`, `<select>`, custom components) that the user interacts with in the template.
 
-Angular Signal Forms provides the `FieldDirective` directive (`[field]`) to seamlessly bridge this gap. The `[field]` directive is how you link a specific **`Field`** node from your component's class to a compatible form control element in your HTML template.
+Angular Signal Forms provides the `FieldDirective` directive (`[field]`) to seamlessly bridge this gap. The `[field]` directive is how you link a specific `Field` node from your component's class to a compatible form control element in your HTML template.
 
-You apply the directive to a form control element and bind it to the corresponding **`Field`** instance representing that field.
+You apply the directive to a form control element and bind it to the corresponding `Field` instance representing that field.
 
 ```typescript
-import { FieldDirective } from 'angular-signal-forms'; // Example import
-
-type User = {
+interface User {
   username: string;
   name: string;
   age: number;
@@ -590,20 +587,19 @@ type User = {
 
 @Component({
   selector: 'user-form',
-  standalone: true, // Assuming standalone
-  imports: [FieldDirective], // Import the directive
+  imports: [FieldDirective],
   template: `
   <form>
-    <label>Username: <input [field]="userField.username" /></label>
-    <label>Name: <input [field]="userField.name" /></label>
-    <label>Age: <input type="number" [field]="userField.age" /></label>
+    <label>Username: <input [field]="userForm.username" /></label>
+    <label>Name: <input [field]="userForm.name" /></label>
+    <label>Age: <input type="number" [field]="userForm.age" /></label>
   </form>
   `
 })
 class UserFormComponent {
-  // Use the new 'Field' type and updated variable name
-  readonly userField: Field<User> = form<User>(signal({username: '', name: '', age: 0}), (userPath: FieldPath<User>) => {
-    disabled(userPath.username, () => true); // Message is optional
+  const userModel = signal({username: '', name: '', age: 0})
+  readonly userForm: Field<User> = form<User>(userModel, (userPath: FieldPath<User>) => {
+    disabled(userPath.username, () => true, 'Username cannot be changed');
     required(userPath.name);
     error(userPath.age, ({value}) => value() < 18, 'Must be 18 or older');
   });
@@ -612,18 +608,18 @@ class UserFormComponent {
 
 ### Automatic State Synchronization
 
-The `[field]` directive handles the two-way synchronization between the **`Field`** node's state and the UI control, including:
+The `[field]` directive handles the two-way synchronization between the `Field` node's state and the UI control, including:
 
 - **Value Synchronization:**
   - Reads the field's current value (`fieldNode.$state.value()`) and sets the initial value of the UI control.
-  - Listens for changes from the UI control (e.g., `input` event) and updates the **field**'s value signal (`fieldNode.$state.value.set(...)`), which in turn updates your underlying data model signal.
+  - Listens for changes from the UI control (e.g., `input` event) and updates the field's value signal (`fieldNode.$state.value.set(...)`), which in turn updates your underlying data model signal.
 - **Disabled State:**
   - Reads the field's disabled status (`fieldNode.$state.disabled()`) and sets the `disabled` attribute/property on the UI control accordingly.
 - **Touched State:**
-  - Listens for interaction events (typically `blur`) on the UI control and updates the **field**'s touched status (`fieldNode.$state.touched` becomes `true` when the control is blurred for the first time).
+  - Listens for interaction events (typically `blur`) on the UI control and updates the field's touched status (`fieldNode.$state.touched` becomes `true` when the control is blurred for the first time).
 - **(Other States):** Depending on the control type and library features, other states like validity attributes (`aria-invalid`) might also be synchronized.
 
-This automatic synchronization significantly reduces the boilerplate code needed to connect your **field** logic to your template.
+This automatic synchronization significantly reduces the boilerplate code needed to connect your field logic to your template.
 
 ### Control compatibility
 
