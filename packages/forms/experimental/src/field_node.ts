@@ -11,14 +11,14 @@ import type {
   Form,
   FormError,
   FormField,
+  FormLogicContext,
   FormPath,
-  LogicArgument,
   SubmittedStatus,
   ValidationResult,
 } from './api/types';
 import {FormLogic, MetadataKey} from './logic_node';
-import {deepSignal} from './util/deep_signal';
 import {FormPathImpl} from './path_node';
+import {deepSignal} from './util/deep_signal';
 
 /**
  * Internal node in the form graph for a given field.
@@ -46,13 +46,13 @@ export class FormFieldImpl implements FormField<unknown> {
   /**
    * Lazily initialized value of `logicArgument`.
    */
-  private _logicArgument: LogicArgument<unknown> | undefined = undefined;
+  private _logicArgument: FormLogicContext<unknown> | undefined = undefined;
 
   /**
    * Value of the "context" argument passed to all logic functions, which supports e.g. resolving
    * paths in relation to this field.
    */
-  get logicArgument(): LogicArgument<unknown> {
+  get logicArgument(): FormLogicContext<unknown> {
     return (this._logicArgument ??= {
       value: this.value,
       resolve: <U>(target: FormPath<U>): Form<U> => {

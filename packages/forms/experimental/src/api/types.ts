@@ -147,9 +147,9 @@ export type SchemaFn<T> = (p: FormPath<T>) => void;
  */
 export type SchemaOrSchemaFn<T> = Schema<T> | SchemaFn<T>;
 
-export type LogicFn<TValue, TReturn> = (arg: LogicArgument<TValue>) => TReturn;
+export type LogicFn<TValue, TReturn> = (arg: FormLogicContext<TValue>) => TReturn;
 
-export interface LogicArgument<T> {
+export interface FormLogicContext<T> {
   readonly value: Signal<T>;
   resolve: <U>(path: FormPath<U>) => Form<U>;
 }
