@@ -26,6 +26,7 @@ ts_library(
     ),
     deps = [
         "//packages/core",
+        "//packages/router",
         "@npm//@types/node",
         "@npm//@webcontainer/api",
     ],
