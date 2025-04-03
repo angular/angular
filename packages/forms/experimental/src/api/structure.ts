@@ -9,7 +9,6 @@
 import {WritableSignal} from '@angular/core';
 
 import {FormFieldImpl} from '../field_node';
-import {FormLogic} from '../logic_node';
 import {assertPathIsCurrent, SchemaImpl} from '../schema';
 import type {
   Form,

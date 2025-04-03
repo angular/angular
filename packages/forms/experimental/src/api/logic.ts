@@ -154,10 +154,21 @@ export function error<T>(
 
   if (typeof message === 'function') {
     validate(path, (arg) => {
-      return predicate(arg) ? {kind: 'custom', message: message(arg)} : undefined;
+      return predicate(arg)
+        ? {
+            kind: 'custom',
+            message: message(arg),
+          }
+        : undefined;
     });
   } else {
-    const err = message === undefined ? {kind: 'custom'} : {kind: 'custom', message};
+    const err =
+      message === undefined
+        ? {kind: 'custom'}
+        : {
+            kind: 'custom',
+            message,
+          };
     validate(path, (arg) => {
       return predicate(arg) ? err : undefined;
     });

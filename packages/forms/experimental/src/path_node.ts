@@ -1,11 +1,4 @@
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-import {FormLogicContext, FormPath, LogicFn} from './api/types';
+import {FormPath, LogicArgument, LogicFn} from './api/types';
 import {FormFieldImpl} from './field_node';
 import {FormLogic, INDEX} from './logic_node';
 
@@ -45,7 +38,7 @@ export class FormPathImpl {
       return logicFn;
     }
 
-    return (arg: FormLogicContext<any>): TReturn => {
+    return (arg: LogicArgument<any>): TReturn => {
       const predicateField = arg.resolve(predicate.path).$api as FormFieldImpl;
       if (!predicate.fn(predicateField.logicArgument)) {
         // don't actually run the user function
