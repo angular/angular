@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-/// <reference types="dom-view-transitions" />
-
 import {DOCUMENT} from '@angular/common';
 import {
   afterNextRender,
@@ -56,37 +54,11 @@ export interface ViewTransitionsFeatureOptions {
  * @experimental
  */
 export interface ViewTransitionInfo {
-  // TODO(atscott): This type can/should be the built-in `ViewTransition` type
-  // from @types/dom-view-transitions but exporting that type from the public API is currently not
-  // supported by tooling.
   /**
    * The `ViewTransition` returned by the call to `startViewTransition`.
    * @see https://developer.mozilla.org/en-US/docs/Web/API/ViewTransition
    */
-  transition: {
-    /**
-     * @see https://developer.mozilla.org/en-US/docs/Web/API/ViewTransition/finished
-     */
-    finished: Promise<void>;
-    /**
-     * @see https://developer.mozilla.org/en-US/docs/Web/API/ViewTransition/ready
-     */
-    ready: Promise<void>;
-    /**
-     * @see https://developer.mozilla.org/en-US/docs/Web/API/ViewTransition/updateCallbackDone
-     */
-    updateCallbackDone: Promise<void>;
-    /**
-     * @see https://developer.mozilla.org/en-US/docs/Web/API/ViewTransition/skipTransition
-     */
-    skipTransition(): void;
-
-    /**
-     * @see https://developer.mozilla.org/en-US/docs/Web/API/ViewTransition#browser_compatibility
-     * @see https://developer.chrome.com/docs/web-platform/view-transitions/same-document#default_style_and_transition_reference
-     */
-    readonly types: Set<string>;
-  };
+  transition: ViewTransition;
   /**
    * The `ActivatedRouteSnapshot` that the navigation is transitioning from.
    */
@@ -131,8 +103,7 @@ export function createViewTransition(
       // routes (the DOM update). This view transition waits for the next change detection to
       // complete (below), which includes the update phase of the routed components.
       return createRenderPromise(injector);
-      // TODO(atscott): Types in DefinitelyTyped are not up-to-date
-    }) as ViewTransition & {readonly types: Set<string>};
+    });
     const {onViewTransitionCreated} = transitionOptions;
     if (onViewTransitionCreated) {
       runInInjectionContext(injector, () => onViewTransitionCreated({transition, from, to}));

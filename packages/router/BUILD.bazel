@@ -14,7 +14,6 @@ ng_module(
         "//packages/common",
         "//packages/core",
         "//packages/platform-browser",
-        "@npm//@types/dom-view-transitions",
         "@npm//rxjs",
     ],
 )
@@ -81,7 +80,6 @@ generate_api_docs(
         "//packages:common_files_and_deps_for_docs",
         "//packages/common:files_for_docgen",
         "//packages/common/http:files_for_docgen",
-        "@npm//@types/dom-view-transitions",
     ],
     entry_point = ":index.ts",
     module_name = "@angular/router",
