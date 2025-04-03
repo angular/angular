@@ -41,9 +41,11 @@ export class InteropNgControl
   get value(): any {
     return this.field().value();
   }
+
   get valid(): boolean {
     return this.field().valid();
   }
+
   get invalid(): boolean {
     return !this.field().valid();
   }
@@ -51,12 +53,15 @@ export class InteropNgControl
   get pending(): boolean | null {
     return false;
   }
+
   get disabled(): boolean {
     return this.field().disabled();
   }
+
   get enabled(): boolean {
     return !this.field().disabled();
   }
+
   get errors(): ValidationErrors | null {
     const errors = this.field().errors();
     if (errors.length === 0) {
@@ -68,18 +73,23 @@ export class InteropNgControl
     }
     return errObj;
   }
+
   get pristine(): boolean {
     return true;
   }
+
   get dirty(): boolean {
     return false;
   }
+
   get touched(): boolean {
     return this.field().touched();
   }
+
   get untouched(): boolean {
     return !this.field().touched();
   }
+
   get submitted(): boolean {
     return this.field().submittedStatus() === 'submitted';
   }

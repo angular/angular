@@ -93,15 +93,18 @@ export interface FormField<T> {
    * being submitted.
    */
   readonly submittedStatus: Signal<SubmittedStatus>;
+
   /**
    * Reactviely reads a metadata value from the field.
    * @param key The metadata key to read.
    */
   metadata<M>(key: MetadataKey<M>): M;
+
   /**
    * Sets the touched status of the field to `true`.
    */
   markAsTouched(): void;
+
   resetSubmittedStatus(): void;
 }
 
@@ -147,9 +150,9 @@ export type SchemaFn<T> = (p: FormPath<T>) => void;
  */
 export type SchemaOrSchemaFn<T> = Schema<T> | SchemaFn<T>;
 
-export type LogicFn<TValue, TReturn> = (arg: FormLogicContext<TValue>) => TReturn;
+export type LogicFn<TValue, TReturn> = (arg: LogicArgument<TValue>) => TReturn;
 
-export interface FormLogicContext<T> {
+export interface LogicArgument<T> {
   readonly value: Signal<T>;
   resolve: <U>(path: FormPath<U>) => Form<U>;
 }
