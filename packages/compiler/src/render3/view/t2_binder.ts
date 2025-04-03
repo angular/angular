@@ -22,12 +22,14 @@ import {
   BoundEvent,
   BoundText,
   Comment,
+  Component,
   Content,
   DeferredBlock,
   DeferredBlockError,
   DeferredBlockLoading,
   DeferredBlockPlaceholder,
   DeferredTrigger,
+  Directive,
   Element,
   ForLoopBlock,
   ForLoopBlockEmpty,
@@ -338,6 +340,8 @@ class Scope implements Visitor {
   }
 
   visitElement(element: Element) {
+    element.directives.forEach((node) => node.visit(this));
+
     // `Element`s in the template may have `Reference`s which are captured in the scope.
     element.references.forEach((node) => this.visitReference(node));
 
@@ -348,6 +352,8 @@ class Scope implements Visitor {
   }
 
   visitTemplate(template: Template) {
+    template.directives.forEach((node) => node.visit(this));
+
     // References on a <ng-template> are defined in the outer scope, so capture them before
     // processing the template's child scope.
     template.references.forEach((node) => this.visitReference(node));
@@ -416,6 +422,14 @@ class Scope implements Visitor {
 
   visitLetDeclaration(decl: LetDeclaration) {
     this.maybeDeclare(decl);
+  }
+
+  visitComponent(component: Component) {
+    throw new Error('TODO');
+  }
+
+  visitDirective(directive: Directive) {
+    throw new Error('TODO');
   }
 
   // Unused visitors.
@@ -536,6 +550,11 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
     // First, determine the HTML shape of the node for the purpose of directive matching.
     // Do this by building up a `CssSelector` for the node.
     const cssSelector = createCssSelectorFromNode(node);
+
+    // TODO(crisbeto): account for selectorless directives here.
+    if (node.directives.length > 0) {
+      throw new Error('TODO');
+    }
 
     // Next, use the `SelectorMatcher` to get the list of directives on the node.
     const directives: DirectiveT[] = [];
@@ -658,6 +677,14 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
 
   visitContent(content: Content): void {
     content.children.forEach((child) => child.visit(this));
+  }
+
+  visitComponent(component: Component) {
+    throw new Error('TODO');
+  }
+
+  visitDirective(directive: Directive) {
+    throw new Error('TODO');
   }
 
   // Unused visitors.
@@ -806,6 +833,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
     // Visit the inputs, outputs, and children of the element.
     element.inputs.forEach(this.visitNode);
     element.outputs.forEach(this.visitNode);
+    element.directives.forEach(this.visitNode);
     element.children.forEach(this.visitNode);
     element.references.forEach(this.visitNode);
   }
@@ -814,6 +842,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
     // First, visit inputs, outputs and template attributes of the template node.
     template.inputs.forEach(this.visitNode);
     template.outputs.forEach(this.visitNode);
+    template.directives.forEach(this.visitNode);
     template.templateAttrs.forEach(this.visitNode);
     template.references.forEach(this.visitNode);
 
@@ -833,6 +862,14 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
     if (this.rootNode !== null) {
       this.symbols.set(reference, this.rootNode);
     }
+  }
+
+  visitComponent(component: Component) {
+    throw new Error('TODO');
+  }
+
+  visitDirective(directive: Directive) {
+    throw new Error('TODO');
   }
 
   // Unused template visitors

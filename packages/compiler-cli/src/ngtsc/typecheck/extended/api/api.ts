@@ -15,12 +15,14 @@ import {
   TmplAstBoundDeferredTrigger,
   TmplAstBoundEvent,
   TmplAstBoundText,
+  TmplAstComponent,
   TmplAstContent,
   TmplAstDeferredBlock,
   TmplAstDeferredBlockError,
   TmplAstDeferredBlockLoading,
   TmplAstDeferredBlockPlaceholder,
   TmplAstDeferredTrigger,
+  TmplAstDirective,
   TmplAstElement,
   TmplAstForLoopBlock,
   TmplAstForLoopBlockEmpty,
@@ -185,6 +187,7 @@ class TemplateVisitor<Code extends ErrorCode>
     this.visitAllNodes(element.attributes);
     this.visitAllNodes(element.inputs);
     this.visitAllNodes(element.outputs);
+    this.visitAllNodes(element.directives);
     this.visitAllNodes(element.references);
     this.visitAllNodes(element.children);
   }
@@ -200,6 +203,8 @@ class TemplateVisitor<Code extends ErrorCode>
       this.visitAllNodes(template.inputs);
       this.visitAllNodes(template.outputs);
     }
+
+    this.visitAllNodes(template.directives);
 
     // TODO(crisbeto): remove this condition when deleting `canVisitStructuralAttributes`.
     if (this.check.canVisitStructuralAttributes || isInlineTemplate) {
@@ -289,6 +294,22 @@ class TemplateVisitor<Code extends ErrorCode>
 
   visitLetDeclaration(decl: TmplAstLetDeclaration): void {
     this.visitAst(decl.value);
+  }
+
+  visitComponent(component: TmplAstComponent) {
+    this.visitAllNodes(component.attributes);
+    this.visitAllNodes(component.inputs);
+    this.visitAllNodes(component.outputs);
+    this.visitAllNodes(component.directives);
+    this.visitAllNodes(component.references);
+    this.visitAllNodes(component.children);
+  }
+
+  visitDirective(directive: TmplAstDirective) {
+    this.visitAllNodes(directive.attributes);
+    this.visitAllNodes(directive.inputs);
+    this.visitAllNodes(directive.outputs);
+    this.visitAllNodes(directive.references);
   }
 
   getDiagnostics(template: TmplAstNode[]): NgTemplateDiagnostic<Code>[] {
