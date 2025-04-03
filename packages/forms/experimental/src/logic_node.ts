@@ -19,17 +19,17 @@ export const INDEX = Symbol('INDEX');
  * This can be logic associated with a specific field, or with all fields within in array or other
  * dynamic structure.
  */
-export class FormLogic {
+export class FieldLogicNode {
   readonly hidden = new BooleanOrLogic();
   readonly disabled = new BooleanOrLogic();
   readonly errors = new ArrayMergeLogic<FormError>();
 
   private readonly metadata = new Map<MetadataKey<unknown>, AbstractLogic<unknown>>();
-  private readonly children = new Map<PropertyKey, FormLogic>();
+  private readonly children = new Map<PropertyKey, FieldLogicNode>();
 
   private constructor(readonly pathParts: PropertyKey[]) {}
 
-  get element(): FormLogic {
+  get element(): FieldLogicNode {
     return this.getChild(INDEX);
   }
 
@@ -51,15 +51,15 @@ export class FormLogic {
   /**
    * Get or create a child `LogicNode` for the given property.
    */
-  getChild(key: PropertyKey): FormLogic {
+  getChild(key: PropertyKey): FieldLogicNode {
     if (!this.children.has(key)) {
-      this.children.set(key, new FormLogic([...this.pathParts, key]));
+      this.children.set(key, new FieldLogicNode([...this.pathParts, key]));
     }
     return this.children.get(key)!;
   }
 
-  static newRoot(): FormLogic {
-    return new FormLogic([]);
+  static newRoot(): FieldLogicNode {
+    return new FieldLogicNode([]);
   }
 }
 
