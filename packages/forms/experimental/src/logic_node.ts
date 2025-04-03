@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import type {FormError, FormPath, LogicArgument, LogicFn} from './api/types';
+import type {FieldContext, FormError, LogicFn} from './api/types';
 
 /**
  * Special key which is used to represent a dynamic index in a `FormLogic` path.
@@ -40,7 +40,7 @@ export class FormLogic {
     return this.metadata.get(key as MetadataKey<unknown>)! as AbstractLogic<T>;
   }
 
-  readMetadata<T>(key: MetadataKey<T>, arg: LogicArgument<any>): T {
+  readMetadata<T>(key: MetadataKey<T>, arg: FieldContext<any>): T {
     if (this.metadata.has(key as MetadataKey<unknown>)) {
       return this.metadata.get(key as MetadataKey<unknown>)!.compute(arg) as T;
     } else {
@@ -66,7 +66,7 @@ export class FormLogic {
 export abstract class AbstractLogic<TReturn, TValue = TReturn> {
   protected readonly fns: Array<LogicFn<any, TValue>> = [];
 
-  abstract compute(arg: LogicArgument<any>): TReturn;
+  abstract compute(arg: FieldContext<any>): TReturn;
 
   push(logicFn: LogicFn<any, TValue>) {
     this.fns.push(logicFn);
@@ -78,7 +78,7 @@ class BooleanOrLogic extends AbstractLogic<boolean> {
     return false;
   }
 
-  override compute(arg: LogicArgument<any>): boolean {
+  override compute(arg: FieldContext<any>): boolean {
     return this.fns.some((f) => f(arg));
   }
 }
@@ -87,7 +87,7 @@ class ArrayMergeLogic<TElement> extends AbstractLogic<
   TElement[],
   TElement | TElement[] | undefined
 > {
-  override compute(arg: LogicArgument<any>): TElement[] {
+  override compute(arg: FieldContext<any>): TElement[] {
     return this.fns.reduce((prev, f) => {
       const value = f(arg);
 
@@ -111,7 +111,7 @@ class MetadataMergeLogic<T> extends AbstractLogic<T> {
     super();
   }
 
-  override compute(arg: LogicArgument<any>): T {
+  override compute(arg: FieldContext<any>): T {
     return this.fns.reduce((prev, fn) => this.key.merge(prev, fn(arg)), this.key.defaultValue);
   }
 }

@@ -1,4 +1,4 @@
-import {FormPath, LogicArgument, LogicFn} from './api/types';
+import {FieldContext, FieldPath, LogicFn} from './api/types';
 import {FormFieldImpl} from './field_node';
 import {FormLogic, INDEX} from './logic_node';
 
@@ -9,16 +9,16 @@ const LOGIC = Symbol('LOGIC');
 
 export interface Predicate {
   readonly fn: LogicFn<any, boolean>;
-  readonly path: FormPath<any>;
+  readonly path: FieldPath<any>;
 }
 
 export class FormPathImpl {
   private readonly children = new Map<PropertyKey, FormPathImpl>();
 
-  readonly formPathProxy: FormPath<any> = new Proxy(
+  readonly formPathProxy: FieldPath<any> = new Proxy(
     this,
     FORM_PATH_PROXY_HANDLER,
-  ) as unknown as FormPath<any>;
+  ) as unknown as FieldPath<any>;
   private constructor(
     readonly logic: FormLogic,
     readonly key: symbol,
@@ -38,8 +38,8 @@ export class FormPathImpl {
       return logicFn;
     }
 
-    return (arg: LogicArgument<any>): TReturn => {
-      const predicateField = arg.resolve(predicate.path).$api as FormFieldImpl;
+    return (arg: FieldContext<any>): TReturn => {
+      const predicateField = arg.resolve(predicate.path).$state as FormFieldImpl;
       if (!predicate.fn(predicateField.logicArgument)) {
         // don't actually run the user function
         return defaultValue;
@@ -63,7 +63,7 @@ export class FormPathImpl {
     return new FormPathImpl(this.logic, Symbol(), this.predicate);
   }
 
-  static extractFromPath(formPath: FormPath<unknown>): FormPathImpl {
+  static extractFromPath(formPath: FieldPath<unknown>): FormPathImpl {
     return (formPath as any)[LOGIC] as FormPathImpl;
   }
 

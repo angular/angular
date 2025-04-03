@@ -29,10 +29,10 @@ describe('when', () => {
       });
     });
 
-    f.$api.value.set({first: 'meow', needLastName: false, last: ''});
-    expect(f.last.$api.errors()).toEqual([]);
-    f.$api.value.set({first: 'meow', needLastName: true, last: ''});
-    expect(f.last.$api.errors()).toEqual([{kind: 'required'}]);
+    f.$state.value.set({first: 'meow', needLastName: false, last: ''});
+    expect(f.last.$state.errors()).toEqual([]);
+    f.$state.value.set({first: 'meow', needLastName: true, last: ''});
+    expect(f.last.$state.errors()).toEqual([{kind: 'required'}]);
   });
 
   it('Disallows using non-local paths', () => {
@@ -68,10 +68,10 @@ describe('when', () => {
         applyEach(names.items, s2);
       });
     });
-    f.needLastName.$api.value.set(true);
-    expect(f.items[0].last.$api.errors()).toEqual([{kind: 'required1'}, {kind: 'required2'}]);
-    f.needLastName.$api.value.set(false);
-    expect(f.items[0].last.$api.errors()).toEqual([{kind: 'required1'}]);
+    f.needLastName.$state.value.set(true);
+    expect(f.items[0].last.$state.errors()).toEqual([{kind: 'required1'}, {kind: 'required2'}]);
+    f.needLastName.$state.value.set(false);
+    expect(f.items[0].last.$state.errors()).toEqual([{kind: 'required1'}]);
   });
 
   it('accepts a schema', () => {
@@ -84,10 +84,10 @@ describe('when', () => {
       applyWhen(path, needsLastNamePredicate, s);
     });
 
-    f.$api.value.set({first: 'meow', needLastName: false, last: ''});
-    expect(f.last.$api.errors()).toEqual([]);
-    f.$api.value.set({first: 'meow', needLastName: true, last: ''});
-    expect(f.last.$api.errors()).toEqual([{kind: 'required'}]);
+    f.$state.value.set({first: 'meow', needLastName: false, last: ''});
+    expect(f.last.$state.errors()).toEqual([]);
+    f.$state.value.set({first: 'meow', needLastName: true, last: ''});
+    expect(f.last.$state.errors()).toEqual([{kind: 'required'}]);
   });
 
   it('supports mix of conditional and non conditional validators', () => {
@@ -100,10 +100,10 @@ describe('when', () => {
       });
     });
 
-    f.$api.value.set({first: 'meow', needLastName: false, last: ''});
-    expect(f.last.$api.errors()).toEqual([{kind: 'short'}]);
-    f.$api.value.set({first: 'meow', needLastName: true, last: ''});
-    expect(f.last.$api.errors()).toEqual([{kind: 'short'}, {kind: 'required'}]);
+    f.$state.value.set({first: 'meow', needLastName: false, last: ''});
+    expect(f.last.$state.errors()).toEqual([{kind: 'short'}]);
+    f.$state.value.set({first: 'meow', needLastName: true, last: ''});
+    expect(f.last.$state.errors()).toEqual([{kind: 'short'}, {kind: 'required'}]);
   });
 
   it('supports array schema', () => {
@@ -120,9 +120,9 @@ describe('when', () => {
       });
     });
 
-    expect(f.items[0].last.$api.errors()).toEqual([{kind: 'required'}]);
-    f.needLastName.$api.value.set(false);
-    expect(f.items[0].last.$api.errors()).toEqual([]);
+    expect(f.items[0].last.$state.errors()).toEqual([{kind: 'required'}]);
+    f.needLastName.$state.value.set(false);
+    expect(f.items[0].last.$state.errors()).toEqual([]);
   });
 
   it('supports array function', () => {
@@ -138,9 +138,9 @@ describe('when', () => {
       });
     });
 
-    expect(f.items[0].last.$api.errors()).toEqual([{kind: 'required'}]);
-    f.needLastName.$api.value.set(false);
-    expect(f.items[0].last.$api.errors()).toEqual([]);
+    expect(f.items[0].last.$state.errors()).toEqual([{kind: 'required'}]);
+    f.needLastName.$state.value.set(false);
+    expect(f.items[0].last.$state.errors()).toEqual([]);
   });
 });
 
@@ -157,13 +157,13 @@ describe('applyWhenValue', () => {
       );
     });
 
-    expect(f.numOrNull.$api.errors()).toEqual([{kind: 'too-small'}]);
-    f.numOrNull.$api.value.set(5);
-    expect(f.numOrNull.$api.errors()).toEqual([{kind: 'too-small'}]);
-    f.numOrNull.$api.value.set(null);
-    expect(f.numOrNull.$api.errors()).toEqual([{kind: 'too-small'}]);
-    f.numOrNull.$api.value.set(15);
-    expect(f.numOrNull.$api.errors()).toEqual([]);
+    expect(f.numOrNull.$state.errors()).toEqual([{kind: 'too-small'}]);
+    f.numOrNull.$state.value.set(5);
+    expect(f.numOrNull.$state.errors()).toEqual([{kind: 'too-small'}]);
+    f.numOrNull.$state.value.set(null);
+    expect(f.numOrNull.$state.errors()).toEqual([{kind: 'too-small'}]);
+    f.numOrNull.$state.value.set(15);
+    expect(f.numOrNull.$state.errors()).toEqual([]);
   });
 
   it('accepts narrowing-predicate and schema for narrowed type', () => {
@@ -178,12 +178,12 @@ describe('applyWhenValue', () => {
       );
     });
 
-    expect(f.numOrNull.$api.errors()).toEqual([]);
-    f.numOrNull.$api.value.set(5);
-    expect(f.numOrNull.$api.errors()).toEqual([{kind: 'too-small'}]);
-    f.numOrNull.$api.value.set(null);
-    expect(f.numOrNull.$api.errors()).toEqual([]);
-    f.numOrNull.$api.value.set(15);
-    expect(f.numOrNull.$api.errors()).toEqual([]);
+    expect(f.numOrNull.$state.errors()).toEqual([]);
+    f.numOrNull.$state.value.set(5);
+    expect(f.numOrNull.$state.errors()).toEqual([{kind: 'too-small'}]);
+    f.numOrNull.$state.value.set(null);
+    expect(f.numOrNull.$state.errors()).toEqual([]);
+    f.numOrNull.$state.value.set(15);
+    expect(f.numOrNull.$state.errors()).toEqual([]);
   });
 });

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FormPath, Schema, SchemaFn} from './api/types';
+import {FieldPath, Schema, SchemaFn} from './api/types';
 import {FormPathImpl} from './path_node';
 
 let currentKey: symbol | undefined = undefined;
@@ -37,7 +37,7 @@ export class SchemaImpl {
   }
 }
 
-export function assertPathIsCurrent(path: FormPath<unknown>): void {
+export function assertPathIsCurrent(path: FieldPath<unknown>): void {
   if (currentKey !== FormPathImpl.extractFromPath(path).key) {
     throw new Error(`Wrong path!`);
   }

@@ -9,17 +9,17 @@
 import {WritableSignal} from '@angular/core';
 
 import {FormFieldImpl} from '../field_node';
+import {FormPathImpl} from '../path_node';
 import {assertPathIsCurrent, SchemaImpl} from '../schema';
 import type {
-  Form,
-  FormPath,
+  Field,
+  FieldPath,
   LogicFn,
   Schema,
   SchemaFn,
   SchemaOrSchemaFn,
   ServerError,
 } from './types';
-import {FormPathImpl} from '../path_node';
 
 /**
  * Creates a predefined set of logic that can be applied to a form of type `T`. `schema` accepts a
@@ -83,13 +83,13 @@ export function schema<T>(fn: SchemaFn<T>): Schema<T> {
 export function form<T>(
   model: WritableSignal<T>,
   schemaOrFn?: NoInfer<SchemaOrSchemaFn<T>>,
-): Form<T> {
+): Field<T> {
   const pathImpl = FormPathImpl.newRoot();
   if (schemaOrFn !== undefined) {
     extractSchema(schemaOrFn).apply(pathImpl);
   }
   const fieldRoot = FormFieldImpl.newRoot(model, pathImpl.logic);
-  return fieldRoot.formFieldProxy as Form<T>;
+  return fieldRoot.formFieldProxy as Field<T>;
 }
 
 /**
@@ -124,7 +124,7 @@ export function form<T>(
  * @param schemaOrFn A schema for an element of the array, or function that binds logic to an
  * element of the array.
  */
-export function applyEach<T>(path: FormPath<T[]>, schemaOrFn: NoInfer<SchemaOrSchemaFn<T>>): void {
+export function applyEach<T>(path: FieldPath<T[]>, schemaOrFn: NoInfer<SchemaOrSchemaFn<T>>): void {
   // applyEach(p, schema) = apply(p.element, schema)
   assertPathIsCurrent(path);
 
@@ -148,7 +148,7 @@ export function applyEach<T>(path: FormPath<T[]>, schemaOrFn: NoInfer<SchemaOrSc
  * @param path A path for the property to apply the schema to.
  * @param schema The schema to apply to the property
  */
-export function apply<T>(path: FormPath<T>, schemaOrFn: NoInfer<SchemaOrSchemaFn<T>>): void {
+export function apply<T>(path: FieldPath<T>, schemaOrFn: NoInfer<SchemaOrSchemaFn<T>>): void {
   assertPathIsCurrent(path);
 
   const childPathImpl = FormPathImpl.extractFromPath(path).withNewKey();
@@ -156,7 +156,7 @@ export function apply<T>(path: FormPath<T>, schemaOrFn: NoInfer<SchemaOrSchemaFn
 }
 
 export function applyWhen<T>(
-  path: FormPath<T>,
+  path: FieldPath<T>,
   predicate: LogicFn<T, boolean>,
   schemaOrFn: NoInfer<SchemaOrSchemaFn<T>>,
 ): void {
@@ -176,17 +176,17 @@ export function applyWhen<T>(
 }
 
 export function applyWhenValue<T, TNarrow extends T>(
-  path: FormPath<T>,
+  path: FieldPath<T>,
   predicate: (value: T) => value is TNarrow,
   schemaOrFn: NoInfer<SchemaOrSchemaFn<TNarrow>>,
 ): void;
 export function applyWhenValue<T>(
-  path: FormPath<T>,
+  path: FieldPath<T>,
   predicate: (value: T) => boolean,
   schemaOrFn: NoInfer<SchemaOrSchemaFn<T>>,
 ): void;
 export function applyWhenValue(
-  path: FormPath<unknown>,
+  path: FieldPath<unknown>,
   predicate: (value: unknown) => boolean,
   schemaOrFn: SchemaOrSchemaFn<unknown>,
 ) {
@@ -222,14 +222,14 @@ export function applyWhenValue(
  * errors.
  */
 export async function submit<T>(
-  form: Form<T>,
-  action: (form: Form<T>) => Promise<ServerError[] | void>,
+  form: Field<T>,
+  action: (form: Field<T>) => Promise<ServerError[] | void>,
 ) {
-  const api = form.$api as FormFieldImpl;
+  const api = form.$state as FormFieldImpl;
   api.setSubmittedStatus('submitting');
   const errors = (await action(form)) || [];
   for (const error of errors) {
-    (error.field.$api as FormFieldImpl).setServerErrors(error.error);
+    (error.field.$state as FormFieldImpl).setServerErrors(error.error);
   }
   api.setSubmittedStatus('submitted');
 }

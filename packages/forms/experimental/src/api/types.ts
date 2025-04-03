@@ -35,7 +35,7 @@ export interface FormError {
  * with.
  */
 export interface ServerError {
-  field: Form<unknown>;
+  field: Field<unknown>;
   error: ValidationResult;
 }
 
@@ -46,30 +46,30 @@ export interface ServerError {
 export type ValidationResult = FormError | FormError[] | undefined;
 
 /**
- * An object which is wrapped around the data type and gives access to the form state at any point
- * in the data structure. The structure of the form mimics the structure of the data type it is
- * wrapped around and allows accessing the `FormField` data at any point via the `$api` property.
+ * An object that represents a single field in a form. This includes both primitive value fields
+ * (e.g. fields that contain a `string` or `number`), as well as "grouping fields" that contain
+ * sub-fields. `Field` objects are arranged in a tree whose structure mimics the structue of the
+ * underlaying data. For example a `Field<{x: number}>` has a property `x` which contains a
+ * `Field<number>`. To access the state associated with a field, use the special `$state` property.
  *
- * @template T The type of the data which the form is wrapped around. A `Form` that is wrapped
- * around a `Record` type has properties of the same name as the record properties, that give access
- * to the `Form` for that respective property. A `Form` that is wrapped around an `Array` type can
- * be indexed to get access to the `Form` for the respective index of the array.
+ * @template T The type of the data which the field is wrapped around.
  */
-export type Form<T> = {
-  $api: FormField<T>;
+export type Field<T> = {
+  $state: FieldState<T>;
 } & (T extends Array<infer U>
-  ? Array<Form<U>>
+  ? Array<Field<U>>
   : T extends Record<PropertyKey, any>
-    ? {[K in keyof T]: Form<T[K]>}
+    ? {[K in keyof T]: Field<T[K]>}
     : unknown);
 
 /**
- * Contains all of the status information and metadata for a `Form`, exposed as signals.
+ * Contains all of the state (e.g. value, statuses, metadata) associated with a `Field`, exposed as
+ * signals.
  */
-export interface FormField<T> {
+export interface FieldState<T> {
   /**
    * A writable signal containing the value for this field. Updating this signal will update the
-   * data model that the form is bound to.
+   * data model that the field is bound to.
    */
   readonly value: WritableSignal<T>;
   /**
@@ -93,66 +93,73 @@ export interface FormField<T> {
    * being submitted.
    */
   readonly submittedStatus: Signal<SubmittedStatus>;
-
   /**
    * Reactviely reads a metadata value from the field.
    * @param key The metadata key to read.
    */
   metadata<M>(key: MetadataKey<M>): M;
-
   /**
    * Sets the touched status of the field to `true`.
    */
   markAsTouched(): void;
-
+  /**
+   * Resets the `submittedStatus` of the field and all descendant fields to unsubmitted.
+   */
   resetSubmittedStatus(): void;
 }
 
 /**
- * An object that represents a location in the form tree structure and is used to bind logic to a
- * particular part of the form structure prior to the creation of the actual form. Because the
- * FormPath exists prior to the form's creation, it cannot be used to access any of the data in the
- * form.
+ * An object that represents a location in the `Field` tree structure and is used to bind logic to a
+ * particular part of the structure prior to the creation of the form. Because the `FieldPath`
+ * exists prior to the form's creation, it cannot be used to access any of the field state.
  *
- * @template T The type of the data which the form is wrapped around. A `FormPath` that is wrapped
- * around a `Record` type has properties of the same name as the record properties, that give access
- * to the `FormPath` for that respective property. A `FormPath` for any other type is considered
- * terminal and does not allow further navigation of the form structure.
- *
- * @template TRoots The list of `Form` nodes that will be made available to any logic functions
- * bound to this `FormPath`. Each call to `schema`, `array`, or `apply` will make the root `Form` of
- * that operation available on the `FormPath` going forward, prepending it `TRoots` such that the
- * available `Form` nodes are ordered from lowest available node up to the root node of the whole
- * form structure.
+ * @template T The type of the data which the form is wrapped around.
  */
-export type FormPath<T> = {
+export type FieldPath<T> = {
   [ɵɵTYPE]: T;
 } & (T extends any[]
   ? {}
   : T extends Record<PropertyKey, any>
-    ? {[K in keyof T]: FormPath<T[K]>}
+    ? {[K in keyof T]: FieldPath<T[K]>}
     : {});
 
 /**
- * Contains logic form a `Form` of type `T`.
+ * Contains logic form a `Field` of type `T`.
  */
 export interface Schema<T> {
   readonly [ɵɵTYPE]: T;
 }
 
 /**
- * A function that binds schema logic to the given `FormPath`.
+ * A function that binds schema logic to the given `FieldPath`.
  */
-export type SchemaFn<T> = (p: FormPath<T>) => void;
+export type SchemaFn<T> = (p: FieldPath<T>) => void;
 
 /**
  * A predefined schema, or a function used to bind schema logic.
  */
 export type SchemaOrSchemaFn<T> = Schema<T> | SchemaFn<T>;
 
-export type LogicFn<TValue, TReturn> = (arg: LogicArgument<TValue>) => TReturn;
+/**
+ * A function that recevies the `FieldContext` for the field the logic is bound to and returns
+ * a specific result type.
+ *
+ * @template TValue The data type for the field the logic is bound to.
+ * @template TReturn The type of the result returned by the logic function.
+ */
+export type LogicFn<TValue, TReturn> = (ctx: FieldContext<TValue>) => TReturn;
 
-export interface LogicArgument<T> {
+/**
+ * An object containing context about the field a given logic function is bound to.
+ */
+export interface FieldContext<T> {
+  /**
+   * A signal of the value of the field that the logic function is bound to.
+   */
   readonly value: Signal<T>;
-  resolve: <U>(path: FormPath<U>) => Form<U>;
+  /**
+   * A function that gets the `Field` for a given `FieldPath`.
+   * This can be used by the `LogicFunction` to implement cross-field logic.
+   */
+  resolve: <U>(path: FieldPath<U>) => Field<U>;
 }

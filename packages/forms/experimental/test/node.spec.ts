@@ -6,13 +6,13 @@ import {DISABLED_REASON, REQUIRED} from '../src/logic_node';
 describe('Node', () => {
   it('is untouched initially', () => {
     const f = form(signal({a: 1, b: 2}));
-    expect(f.$api.touched()).toBe(false);
+    expect(f.$state.touched()).toBe(false);
   });
 
   it('can get a child of a key that exists', () => {
     const f = form(signal({a: 1, b: 2}));
     expect(f.a).toBeDefined();
-    expect(f.a.$api.value()).toBe(1);
+    expect(f.a.$state.value()).toBe(1);
   });
 
   describe('instances', () => {
@@ -51,38 +51,38 @@ describe('Node', () => {
   describe('touched', () => {
     it('can be marked as touched', () => {
       const f = form(signal({a: 1, b: 2}));
-      expect(f.$api.touched()).toBe(false);
+      expect(f.$state.touched()).toBe(false);
 
-      f.$api.markAsTouched();
-      expect(f.$api.touched()).toBe(true);
+      f.$state.markAsTouched();
+      expect(f.$state.touched()).toBe(true);
     });
 
     it('propagates from the children', () => {
       const f = form(signal({a: 1, b: 2}));
-      expect(f.$api.touched()).toBe(false);
+      expect(f.$state.touched()).toBe(false);
 
-      f.a.$api.markAsTouched();
-      expect(f.$api.touched()).toBe(true);
+      f.a.$state.markAsTouched();
+      expect(f.$state.touched()).toBe(true);
     });
 
     it('does not propagate down', () => {
       const f = form(signal({a: 1, b: 2}));
 
-      expect(f.a.$api.touched()).toBe(false);
-      f.$api.markAsTouched();
-      expect(f.a.$api.touched()).toBe(false);
+      expect(f.a.$state.touched()).toBe(false);
+      f.$state.markAsTouched();
+      expect(f.a.$state.touched()).toBe(false);
     });
 
     it('does not consider children that get removed', () => {
       const value = signal<{a: number; b?: number}>({a: 1, b: 2});
       const f = form(value);
-      expect(f.$api.touched()).toBe(false);
+      expect(f.$state.touched()).toBe(false);
 
-      f.b!.$api.markAsTouched();
-      expect(f.$api.touched()).toBe(true);
+      f.b!.$state.markAsTouched();
+      expect(f.$state.touched()).toBe(true);
 
       value.set({a: 2});
-      expect(f.$api.touched()).toBe(false);
+      expect(f.$state.touched()).toBe(false);
       expect(f.b).toBeUndefined();
     });
   });
@@ -101,14 +101,14 @@ describe('Node', () => {
         applyEach(p.names, (a) => {
           disabled(a.name, ({value, resolve}) => {
             const el = resolve(a);
-            expect(el.$api.value().name).toBe(value());
+            expect(el.$state.value().name).toBe(value());
             expect(resolve(p).names.findIndex((e) => e === el)).not.toBe(-1);
             return true;
           });
         });
       });
-      expect(f.names[0].name.$api.disabled()).toBe(true);
-      expect(f.names[1].name.$api.disabled()).toBe(true);
+      expect(f.names[0].name.$state.disabled()).toBe(true);
+      expect(f.names[1].name.$state.disabled()).toBe(true);
     });
 
     it('should support element-level logic', () => {
@@ -118,9 +118,9 @@ describe('Node', () => {
           disabled(a, ({value}) => value() % 2 === 0);
         });
       });
-      expect(f[0].$api.disabled()).toBe(false);
-      expect(f[1].$api.disabled()).toBe(true);
-      expect(f[2].$api.disabled()).toBe(false);
+      expect(f[0].$state.disabled()).toBe(false);
+      expect(f[1].$state.disabled()).toBe(true);
+      expect(f[2].$state.disabled()).toBe(false);
     });
 
     it('should support dynamic elements', () => {
@@ -132,17 +132,17 @@ describe('Node', () => {
         });
       });
       model.update((v) => [...v, 4]);
-      expect(f[3].$api.disabled()).toBe(true);
+      expect(f[3].$state.disabled()).toBe(true);
     });
 
     it('should support removing elements', () => {
       const value = signal([1, 2, 3]);
       const f = form(value);
-      f[2].$api.markAsTouched();
-      expect(f.$api.touched()).toBe(true);
+      f[2].$state.markAsTouched();
+      expect(f.$state.touched()).toBe(true);
 
       value.set([1, 2]);
-      expect(f.$api.touched()).toBe(false);
+      expect(f.$state.touched()).toBe(false);
     });
 
     describe('tracking', () => {
@@ -167,12 +167,12 @@ describe('Node', () => {
         disabled(p.a, ({value}) => value() !== 2);
       });
       const a = f.a;
-      expect(f.$api.disabled()).toBe(false);
-      expect(a.$api.disabled()).toBe(true);
+      expect(f.$state.disabled()).toBe(false);
+      expect(a.$state.disabled()).toBe(true);
 
-      a.$api.value.set(2);
-      expect(f.$api.disabled()).toBe(false);
-      expect(a.$api.disabled()).toBe(false);
+      a.$state.value.set(2);
+      expect(f.$state.disabled()).toBe(false);
+      expect(a.$state.disabled()).toBe(false);
     });
 
     it('should disable with reason', () => {
@@ -180,8 +180,8 @@ describe('Node', () => {
         disabled(p.a, () => true, 'a cannot be changed');
       });
 
-      expect(f.a.$api.disabled()).toBe(true);
-      expect(f.a.$api.metadata(DISABLED_REASON)).toBe('a cannot be changed');
+      expect(f.a.$state.disabled()).toBe(true);
+      expect(f.a.$state.metadata(DISABLED_REASON)).toBe('a cannot be changed');
     });
 
     it('should not have disabled reason if not disabled', () => {
@@ -189,13 +189,13 @@ describe('Node', () => {
         disabled(p.a, ({value}) => value() > 5, 'a cannot be changed');
       });
 
-      expect(f.a.$api.disabled()).toBe(false);
-      expect(f.a.$api.metadata(DISABLED_REASON)).toBe('');
+      expect(f.a.$state.disabled()).toBe(false);
+      expect(f.a.$state.metadata(DISABLED_REASON)).toBe('');
 
-      f.a.$api.value.set(6);
+      f.a.$state.value.set(6);
 
-      expect(f.a.$api.disabled()).toBe(true);
-      expect(f.a.$api.metadata(DISABLED_REASON)).toBe('a cannot be changed');
+      expect(f.a.$state.disabled()).toBe(true);
+      expect(f.a.$state.metadata(DISABLED_REASON)).toBe('a cannot be changed');
     });
 
     it('disabled reason should not propagate to children', () => {
@@ -203,10 +203,10 @@ describe('Node', () => {
         disabled(p, () => true, 'form unavailable');
       });
 
-      expect(f.$api.disabled()).toBe(true);
-      expect(f.$api.metadata(DISABLED_REASON)).toBe('form unavailable');
-      expect(f.a.$api.disabled()).toBe(true);
-      expect(f.a.$api.metadata(DISABLED_REASON)).toBe('');
+      expect(f.$state.disabled()).toBe(true);
+      expect(f.$state.metadata(DISABLED_REASON)).toBe('form unavailable');
+      expect(f.a.$state.disabled()).toBe(true);
+      expect(f.a.$state.metadata(DISABLED_REASON)).toBe('');
     });
   });
 
@@ -221,16 +221,16 @@ describe('Node', () => {
         });
       });
 
-      expect(f.a.$api.errors()).toEqual([]);
-      expect(f.a.$api.valid()).toBe(true);
-      expect(f.a.$api.errors()).toEqual([]);
-      expect(f.$api.valid()).toBe(true);
+      expect(f.a.$state.errors()).toEqual([]);
+      expect(f.a.$state.valid()).toBe(true);
+      expect(f.a.$state.errors()).toEqual([]);
+      expect(f.$state.valid()).toBe(true);
 
-      f.a.$api.value.set(11);
-      expect(f.a.$api.errors()).toEqual([{kind: 'too damn high'}]);
-      expect(f.a.$api.valid()).toBe(false);
-      expect(f.$api.errors()).toEqual([]);
-      expect(f.$api.valid()).toBe(false);
+      f.a.$state.value.set(11);
+      expect(f.a.$state.errors()).toEqual([{kind: 'too damn high'}]);
+      expect(f.a.$state.valid()).toBe(false);
+      expect(f.$state.errors()).toEqual([]);
+      expect(f.$state.valid()).toBe(false);
     });
 
     it('should validate with multiple errors', () => {
@@ -243,12 +243,12 @@ describe('Node', () => {
         });
       });
 
-      expect(f.a.$api.errors()).toEqual([]);
-      expect(f.a.$api.valid()).toBe(true);
+      expect(f.a.$state.errors()).toEqual([]);
+      expect(f.a.$state.valid()).toBe(true);
 
-      f.a.$api.value.set(11);
-      expect(f.a.$api.errors()).toEqual([{kind: 'too damn high'}, {kind: 'bad'}]);
-      expect(f.a.$api.valid()).toBe(false);
+      f.a.$state.value.set(11);
+      expect(f.a.$state.errors()).toEqual([{kind: 'too damn high'}, {kind: 'bad'}]);
+      expect(f.a.$state.valid()).toBe(false);
     });
 
     it('should validate with shorthand syntax', () => {
@@ -262,27 +262,27 @@ describe('Node', () => {
         );
       });
 
-      expect(f.a.$api.errors()).toEqual([]);
-      expect(f.a.$api.valid()).toBe(true);
+      expect(f.a.$state.errors()).toEqual([]);
+      expect(f.a.$state.valid()).toBe(true);
 
-      f.a.$api.value.set(2);
-      expect(f.a.$api.errors()).toEqual([{kind: 'custom'}]);
-      expect(f.a.$api.valid()).toBe(false);
+      f.a.$state.value.set(2);
+      expect(f.a.$state.errors()).toEqual([{kind: 'custom'}]);
+      expect(f.a.$state.valid()).toBe(false);
 
-      f.a.$api.value.set(11);
-      expect(f.a.$api.errors()).toEqual([
+      f.a.$state.value.set(11);
+      expect(f.a.$state.errors()).toEqual([
         {kind: 'custom'},
         {kind: 'custom', message: 'too damn high'},
       ]);
-      expect(f.a.$api.valid()).toBe(false);
+      expect(f.a.$state.valid()).toBe(false);
 
-      f.a.$api.value.set(101);
-      expect(f.a.$api.errors()).toEqual([
+      f.a.$state.value.set(101);
+      expect(f.a.$state.errors()).toEqual([
         {kind: 'custom'},
         {kind: 'custom', message: 'too damn high'},
         {kind: 'custom', message: '101 is much too high'},
       ]);
-      expect(f.a.$api.valid()).toBe(false);
+      expect(f.a.$state.valid()).toBe(false);
     });
 
     it('should validate required field', () => {
@@ -291,39 +291,39 @@ describe('Node', () => {
         required(name.first);
       });
 
-      expect(f.first.$api.errors()).toEqual([{kind: 'required'}]);
-      expect(f.first.$api.valid()).toBe(false);
-      expect(f.first.$api.metadata(REQUIRED)).toBe(true);
+      expect(f.first.$state.errors()).toEqual([{kind: 'required'}]);
+      expect(f.first.$state.valid()).toBe(false);
+      expect(f.first.$state.metadata(REQUIRED)).toBe(true);
 
-      f.first.$api.value.set('Bob');
+      f.first.$state.value.set('Bob');
 
-      expect(f.first.$api.errors()).toEqual([]);
-      expect(f.first.$api.valid()).toBe(true);
-      expect(f.first.$api.metadata(REQUIRED)).toBe(true);
+      expect(f.first.$state.errors()).toEqual([]);
+      expect(f.first.$state.valid()).toBe(true);
+      expect(f.first.$state.metadata(REQUIRED)).toBe(true);
     });
 
     it('should validate conditionally required field', () => {
       const data = signal({first: '', last: ''});
       const f = form(data, (name) => {
         // first name required if last name specified
-        required(name.first, ({resolve}) => resolve(name.last).$api.value() !== '');
+        required(name.first, ({resolve}) => resolve(name.last).$state.value() !== '');
       });
 
-      expect(f.first.$api.errors()).toEqual([]);
-      expect(f.first.$api.valid()).toBe(true);
-      expect(f.first.$api.metadata(REQUIRED)).toBe(false);
+      expect(f.first.$state.errors()).toEqual([]);
+      expect(f.first.$state.valid()).toBe(true);
+      expect(f.first.$state.metadata(REQUIRED)).toBe(false);
 
-      f.last.$api.value.set('Loblaw');
+      f.last.$state.value.set('Loblaw');
 
-      expect(f.first.$api.errors()).toEqual([{kind: 'required'}]);
-      expect(f.first.$api.valid()).toBe(false);
-      expect(f.first.$api.metadata(REQUIRED)).toBe(true);
+      expect(f.first.$state.errors()).toEqual([{kind: 'required'}]);
+      expect(f.first.$state.valid()).toBe(false);
+      expect(f.first.$state.metadata(REQUIRED)).toBe(true);
 
-      f.first.$api.value.set('Bob');
+      f.first.$state.value.set('Bob');
 
-      expect(f.first.$api.errors()).toEqual([]);
-      expect(f.first.$api.valid()).toBe(true);
-      expect(f.first.$api.metadata(REQUIRED)).toBe(true);
+      expect(f.first.$state.errors()).toEqual([]);
+      expect(f.first.$state.valid()).toBe(true);
+      expect(f.first.$state.metadata(REQUIRED)).toBe(true);
     });
 
     it('should support custom empty predicate', () => {
@@ -332,12 +332,12 @@ describe('Node', () => {
         required(item.quantity, undefined, undefined, (value) => value === 0);
       });
 
-      expect(f.quantity.$api.metadata(REQUIRED)).toBe(true);
-      expect(f.quantity.$api.errors()).toEqual([{kind: 'required'}]);
+      expect(f.quantity.$state.metadata(REQUIRED)).toBe(true);
+      expect(f.quantity.$state.errors()).toEqual([{kind: 'required'}]);
 
-      f.quantity.$api.value.set(1);
-      expect(f.quantity.$api.metadata(REQUIRED)).toBe(true);
-      expect(f.quantity.$api.errors()).toEqual([]);
+      f.quantity.$state.value.set(1);
+      expect(f.quantity.$state.metadata(REQUIRED)).toBe(true);
+      expect(f.quantity.$state.errors()).toEqual([]);
     });
 
     it('should link required error messages to their predicate', () => {
@@ -345,36 +345,36 @@ describe('Node', () => {
       const f = form(data, (tx) => {
         required(
           tx.name,
-          ({resolve}) => resolve(tx.country).$api.value() === 'USA',
+          ({resolve}) => resolve(tx.country).$state.value() === 'USA',
           'Name is required in your country',
         );
         required(
           tx.name,
-          ({resolve}) => resolve(tx.amount).$api.value() >= 1000,
+          ({resolve}) => resolve(tx.amount).$state.value() >= 1000,
           'Name is required for large transactions',
         );
       });
 
-      expect(f.name.$api.errors()).toEqual([]);
+      expect(f.name.$state.errors()).toEqual([]);
 
-      f.country.$api.value.set('USA');
-      expect(f.name.$api.errors()).toEqual([
+      f.country.$state.value.set('USA');
+      expect(f.name.$state.errors()).toEqual([
         {kind: 'required', message: 'Name is required in your country'},
       ]);
 
-      f.amount.$api.value.set(1000);
-      expect(f.name.$api.errors()).toEqual([
+      f.amount.$state.value.set(1000);
+      expect(f.name.$state.errors()).toEqual([
         {kind: 'required', message: 'Name is required in your country'},
         {kind: 'required', message: 'Name is required for large transactions'},
       ]);
 
-      f.country.$api.value.set('Canada');
-      expect(f.name.$api.errors()).toEqual([
+      f.country.$state.value.set('Canada');
+      expect(f.name.$state.errors()).toEqual([
         {kind: 'required', message: 'Name is required for large transactions'},
       ]);
 
-      f.amount.$api.value.set(100);
-      expect(f.name.$api.errors()).toEqual([]);
+      f.amount.$state.value.set(100);
+      expect(f.name.$state.errors()).toEqual([]);
     });
   });
 
@@ -383,7 +383,7 @@ describe('Node', () => {
       const data = signal({first: '', last: ''});
       const f = form(data, (name) => {
         // first name required if last name specified
-        required(name.first, ({resolve}) => resolve(name.last).$api.value() !== '');
+        required(name.first, ({resolve}) => resolve(name.last).$state.value() !== '');
       });
 
       await submit(f, (form) => {
@@ -395,7 +395,7 @@ describe('Node', () => {
         ]);
       });
 
-      expect(f.last.$api.errors()).toEqual([{kind: 'lastName'}]);
+      expect(f.last.$state.errors()).toEqual([{kind: 'lastName'}]);
     });
 
     it('maps errors to a field', async () => {
@@ -403,13 +403,13 @@ describe('Node', () => {
       const data = signal(initialValue);
       const f = form(data, (name) => {
         // first name required if last name specified
-        required(name.first, ({resolve}) => resolve(name.last).$api.value() !== '');
+        required(name.first, ({resolve}) => resolve(name.last).$state.value() !== '');
       });
 
       const submitSpy = jasmine.createSpy('submit');
 
       await submit(f, (form) => {
-        submitSpy(form.$api.value());
+        submitSpy(form.$state.value());
         return Promise.resolve();
       });
 
@@ -421,10 +421,10 @@ describe('Node', () => {
       const data = signal(initialValue);
       const f = form(data, (name) => {
         // first name required if last name specified
-        required(name.first, ({resolve}) => resolve(name.last).$api.value() !== '');
+        required(name.first, ({resolve}) => resolve(name.last).$state.value() !== '');
       });
 
-      expect(f.$api.submittedStatus()).toBe('unsubmitted');
+      expect(f.$state.submittedStatus()).toBe('unsubmitted');
 
       let resolve: VoidFunction | undefined;
 
@@ -434,16 +434,16 @@ describe('Node', () => {
         });
       });
 
-      expect(f.$api.submittedStatus()).toBe('submitting');
+      expect(f.$state.submittedStatus()).toBe('submitting');
 
       expect(resolve).toBeDefined();
       resolve?.();
 
       await result;
-      expect(f.$api.submittedStatus()).toBe('submitted');
+      expect(f.$state.submittedStatus()).toBe('submitted');
 
-      f.$api.resetSubmittedStatus();
-      expect(f.$api.submittedStatus()).toBe('unsubmitted');
+      f.$state.resetSubmittedStatus();
+      expect(f.$state.submittedStatus()).toBe('unsubmitted');
     });
 
     it('works on child fields', async () => {
@@ -451,13 +451,13 @@ describe('Node', () => {
       const data = signal(initialValue);
       const f = form(data, (name) => {
         // first name required if last name specified
-        required(name.first, ({resolve}) => resolve(name.last).$api.value() !== '');
+        required(name.first, ({resolve}) => resolve(name.last).$state.value() !== '');
       });
 
       const submitSpy = jasmine.createSpy('submit');
 
       await submit(f.first, (form) => {
-        submitSpy(form.$api.value());
+        submitSpy(form.$state.value());
         return Promise.resolve([
           {
             field: form,
@@ -490,7 +490,7 @@ describe('Node', () => {
         apply(p.address, addressSchema);
       });
 
-      expect(f.address.street.$api.disabled()).toBe(true);
+      expect(f.address.street.$state.disabled()).toBe(true);
     });
   });
 });
