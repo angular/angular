@@ -9,6 +9,7 @@
 import type {Type} from '@angular/core';
 import {HydrationStatus} from 'protocol';
 import {ngDebugClient} from './ng-debug-api/ng-debug-api';
+import {ɵHydratedNode as HydratedNode} from '@angular/core';
 
 let hydrationOverlayItems: HTMLElement[] = [];
 let selectedElementOverlay: HTMLElement | null = null;
@@ -64,6 +65,11 @@ export function findComponentAndHost(el: Node | undefined): {
   if (!el) {
     return {component: null, host: null};
   }
+
+  if ((el as HydratedNode).__ngDebugHydrationInfo__?.status === 'dehydrated') {
+    return {component: null, host: null};
+  }
+
   while (el) {
     const component = el instanceof HTMLElement && ng.getComponent!(el);
     if (component) {

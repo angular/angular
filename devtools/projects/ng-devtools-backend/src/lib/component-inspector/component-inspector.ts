@@ -125,7 +125,9 @@ export class ComponentInspector {
     const otherNodes = nodes.filter(({status}) => status?.status !== 'mismatched');
 
     for (const {node, status} of [...otherNodes, ...errorNodes]) {
-      highlightHydrationElement(node, status);
+      if (node instanceof Element) {
+        highlightHydrationElement(node, status);
+      }
     }
   }
 

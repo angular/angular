@@ -25,6 +25,7 @@ import {
   getOwningComponent,
   getRootComponents,
 } from './discovery_utils';
+import {getIncrementalHydrationInfo} from './hydration_utils';
 import {
   getDependenciesFromInjectable,
   getInjectorMetadata,
@@ -70,6 +71,7 @@ const globalUtilsFunctions = {
   'ɵsetProfiler': setProfiler,
   'ɵgetSignalGraph': getSignalGraph,
   'ɵgetDeferBlocks': getDeferBlocks,
+  'ɵgetIncrementalHydrationInfo': getIncrementalHydrationInfo,
 
   'getDirectiveMetadata': getDirectiveMetadata,
   'getComponent': getComponent,

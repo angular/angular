@@ -16,16 +16,36 @@ import {ComponentTreeNode} from '../interfaces';
 import {ngDebugClient} from '../ng-debug-api/ng-debug-api';
 import {isCustomElement} from '../utils';
 
+type HydrationInfo = ReturnType<FrameworkAgnosticGlobalUtils['ɵgetIncrementalHydrationInfo']> & {
+  deferChildren: Map<string, ComponentTreeNode[]>;
+};
+
 const extractViewTree = (
   domNode: Node | Element,
   result: ComponentTreeNode[],
+  hydrationInfo: HydrationInfo | undefined,
   getComponent?: FrameworkAgnosticGlobalUtils['getComponent'],
   getDirectives?: FrameworkAgnosticGlobalUtils['getDirectives'],
   getDirectiveMetadata?: FrameworkAgnosticGlobalUtils['getDirectiveMetadata'],
 ): ComponentTreeNode[] => {
-  // Ignore DOM Node if it came from a different frame. Use instanceof Node to check this.
-  if (!(domNode instanceof Node)) {
+  // Ignore DOM Node if it came from a different frame. Use instanceof Element to check this.
+  if (!(domNode instanceof HTMLElement)) {
     return result;
+  }
+
+  const isAngular = true;
+  if (isAngular) {
+    const nodes = insertDeferBlock(
+      domNode,
+      result,
+      hydrationInfo,
+      getComponent,
+      getDirectives,
+      getDirectiveMetadata,
+    );
+    if (nodes) {
+      return nodes;
+    }
   }
 
   const directives = getDirectives?.(domNode) ?? [];
@@ -43,7 +63,7 @@ const extractViewTree = (
     }),
     element: domNode.nodeName.toLowerCase(),
     nativeElement: domNode,
-    hydration: hydrationStatus(domNode as HydrationNode),
+    hydration: hydrationStatus(domNode),
   };
   if (!(domNode instanceof Element)) {
     result.push(componentTreeNode);
@@ -65,6 +85,7 @@ const extractViewTree = (
       extractViewTree(
         node,
         componentTreeNode.children,
+        hydrationInfo,
         getComponent,
         getDirectives,
         getDirectiveMetadata,
@@ -72,14 +93,105 @@ const extractViewTree = (
     );
   } else {
     domNode.childNodes.forEach((node) =>
-      extractViewTree(node, result, getComponent, getDirectives, getDirectiveMetadata),
+      extractViewTree(
+        node,
+        result,
+        hydrationInfo,
+        getComponent,
+        getDirectives,
+        getDirectiveMetadata,
+      ),
     );
   }
   return result;
 };
 
-function hydrationStatus(node: HydrationNode): HydrationStatus {
-  switch (node.__ngDebugHydrationInfo__?.status) {
+function insertDeferBlock(
+  domNode: HTMLElement,
+  result: ComponentTreeNode[],
+  hydrationInfo: HydrationInfo | undefined,
+  getComponent?: FrameworkAgnosticGlobalUtils['getComponent'],
+  getDirectives?: FrameworkAgnosticGlobalUtils['getDirectives'],
+  getDirectiveMetadata?: FrameworkAgnosticGlobalUtils['getDirectiveMetadata'],
+): ComponentTreeNode[] | undefined {
+  // Dehydrated nodes are not component/directive yet
+  // They are regular DOM nodes attached to a hydration boundary "ngb"
+  if (
+    hydrationInfo &&
+    (domNode as HydrationNode).__ngDebugHydrationInfo__?.status === 'dehydrated'
+  ) {
+    const blockId = domNode.getAttribute('ngb')!;
+    if (!hydrationInfo.deferChildren.has(blockId)) {
+      // We'll create a synthetic TreeNode for the defer block
+      // All elements hydrated within this block will be children of this node
+      const hydratedInfo = hydrationInfo.hydrationTriggers.get(blockId);
+
+      const deferedTreeNode: ComponentTreeNode = {
+        children: [],
+        component: null,
+        directives: [],
+        element: '@defer',
+        nativeElement: undefined, // The defer block only exists as a comment node
+        hydration: {
+          id: blockId,
+          status: 'hydration-boundary',
+          hydrate: hydratedInfo,
+          defer: {
+            hover: false,
+            idle: false,
+            interaction: false,
+            immediate: false,
+            timer: null,
+            viewport: false,
+            when: false,
+          },
+        },
+      };
+
+      hydrationInfo.deferChildren.set(blockId, deferedTreeNode.children);
+      result.push(deferedTreeNode);
+    }
+
+    const deferBlockTreeNode = hydrationInfo.deferChildren.get(blockId);
+    if (deferBlockTreeNode) {
+      // Where do we insert the new node? As a defer child or as a component child?
+      const isOnHydrationBoundaryLevel =
+        deferBlockTreeNode.length === 0 ||
+        deferBlockTreeNode[0]?.nativeElement?.parentElement === domNode.parentElement;
+
+      const deferedTreeNode: ComponentTreeNode = {
+        children: [],
+        component: null,
+        directives: [],
+        element: domNode.nodeName.toLowerCase(),
+        nativeElement: domNode,
+        hydration: {status: 'dehydrated'},
+      };
+      (isOnHydrationBoundaryLevel ? deferBlockTreeNode : result).push(deferedTreeNode);
+
+      domNode.childNodes.forEach((node) => {
+        extractViewTree(
+          node,
+          deferedTreeNode.children,
+          hydrationInfo,
+          getComponent,
+          getDirectives,
+          getDirectiveMetadata,
+        );
+      });
+    }
+    return result;
+  }
+
+  return undefined;
+}
+
+function hydrationStatus(node: Element): HydrationStatus {
+  if (!('__ngDebugHydrationInfo__' in node)) {
+    return null;
+  }
+  const hydratedNode = node as HydrationNode;
+  switch (hydratedNode.__ngDebugHydrationInfo__?.status) {
     case 'hydrated':
       return {status: 'hydrated'};
     case 'skipped':
@@ -87,8 +199,8 @@ function hydrationStatus(node: HydrationNode): HydrationStatus {
     case 'mismatched':
       return {
         status: 'mismatched',
-        expectedNodeDetails: node.__ngDebugHydrationInfo__.expectedNodeDetails,
-        actualNodeDetails: node.__ngDebugHydrationInfo__.actualNodeDetails,
+        expectedNodeDetails: hydratedNode.__ngDebugHydrationInfo__.expectedNodeDetails,
+        actualNodeDetails: hydratedNode.__ngDebugHydrationInfo__.actualNodeDetails,
       };
     default:
       return null;
@@ -102,14 +214,29 @@ export class RTreeStrategy {
     );
   }
 
-  build(element: Element): ComponentTreeNode[] {
+  build(appRootElement: Element): ComponentTreeNode[] {
     // We want to start from the root element so that we can find components which are attached to
     // the application ref and which host elements have been inserted with DOM APIs.
-    while (element.parentElement) {
-      element = element.parentElement;
+    let topMostElement = appRootElement;
+    while (topMostElement.parentElement) {
+      topMostElement = topMostElement.parentElement;
     }
 
     const ng = ngDebugClient();
-    return extractViewTree(element, [], ng.getComponent, ng.getDirectives, ng.getDirectiveMetadata);
+    const hydrationInfo: HydrationInfo = {
+      // If the global function isn' defined in this app context
+      hydrationTriggers: new Map(),
+
+      ...ng.ɵgetIncrementalHydrationInfo?.(appRootElement),
+      deferChildren: new Map(),
+    };
+    return extractViewTree(
+      topMostElement,
+      [],
+      hydrationInfo,
+      ng.getComponent,
+      ng.getDirectives,
+      ng.getDirectiveMetadata,
+    );
   }
 }
