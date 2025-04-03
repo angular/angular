@@ -28,7 +28,7 @@ export const IMPERATIVE_NAVIGATION = 'imperative';
  *
  * @publicApi
  */
-export enum EventType {
+export const enum EventType {
   NavigationStart,
   NavigationEnd,
   NavigationCancel,
@@ -174,7 +174,7 @@ export class NavigationEnd extends RouterEvent {
  *
  * @publicApi
  */
-export enum NavigationCancellationCode {
+export const enum NavigationCancellationCode {
   /**
    * A navigation failed because a guard returned a `UrlTree` to redirect.
    */
@@ -205,7 +205,7 @@ export enum NavigationCancellationCode {
  *
  * @publicApi
  */
-export enum NavigationSkippedCode {
+export const enum NavigationSkippedCode {
   /**
    * A navigation was skipped because the navigation URL was the same as the current Router URL.
    */
