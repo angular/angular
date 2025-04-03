@@ -124,3 +124,5 @@ export class MetadataKey<TValue> {
 }
 
 export const REQUIRED = new MetadataKey(false, (prev, next) => prev || next);
+
+export const DISABLED_REASON = new MetadataKey('', (prev, next) => next || prev);

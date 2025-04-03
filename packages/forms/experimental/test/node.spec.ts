@@ -1,7 +1,7 @@
 import {computed, signal} from '@angular/core';
 import {disabled, error, required, validate} from '../src/api/logic';
 import {apply, applyEach, form, schema, submit} from '../src/api/structure';
-import {REQUIRED} from '../src/logic_node';
+import {DISABLED_REASON, REQUIRED} from '../src/logic_node';
 
 describe('Node', () => {
   it('is untouched initially', () => {
@@ -173,6 +173,40 @@ describe('Node', () => {
       a.$api.value.set(2);
       expect(f.$api.disabled()).toBe(false);
       expect(a.$api.disabled()).toBe(false);
+    });
+
+    it('should disable with reason', () => {
+      const f = form(signal({a: 1, b: 2}), (p) => {
+        disabled(p.a, () => true, 'a cannot be changed');
+      });
+
+      expect(f.a.$api.disabled()).toBe(true);
+      expect(f.a.$api.metadata(DISABLED_REASON)).toBe('a cannot be changed');
+    });
+
+    it('should not have disabled reason if not disabled', () => {
+      const f = form(signal({a: 1, b: 2}), (p) => {
+        disabled(p.a, ({value}) => value() > 5, 'a cannot be changed');
+      });
+
+      expect(f.a.$api.disabled()).toBe(false);
+      expect(f.a.$api.metadata(DISABLED_REASON)).toBe('');
+
+      f.a.$api.value.set(6);
+
+      expect(f.a.$api.disabled()).toBe(true);
+      expect(f.a.$api.metadata(DISABLED_REASON)).toBe('a cannot be changed');
+    });
+
+    it('disabled reason should not propagate to children', () => {
+      const f = form(signal({a: 1, b: 2}), (p) => {
+        disabled(p, () => true, 'form unavailable');
+      });
+
+      expect(f.$api.disabled()).toBe(true);
+      expect(f.$api.metadata(DISABLED_REASON)).toBe('form unavailable');
+      expect(f.a.$api.disabled()).toBe(true);
+      expect(f.a.$api.metadata(DISABLED_REASON)).toBe('');
     });
   });
 
