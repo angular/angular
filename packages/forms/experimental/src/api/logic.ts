@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FormLogic, MetadataKey, REQUIRED} from '../logic_node';
+import {DISABLED_REASON, MetadataKey, REQUIRED} from '../logic_node';
 import {FormPathImpl} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
 import type {FormError, FormPath, LogicFn} from './types';
@@ -20,12 +20,19 @@ import {ValidationResult} from './types';
  * The predicate recevies the following arguments:
  * 1) The value of the field that may be disabled.
  * 2..n) The `Form` nodes for each of the roots available on the path.
+ * @param reason A user-facing message describing why the field is disabled.
  */
-export function disabled<T>(path: FormPath<T>, predicate: NoInfer<LogicFn<T, boolean>>): void {
+export function disabled<T>(
+  path: FormPath<T>,
+  predicate: NoInfer<LogicFn<T, boolean>>,
+  reason?: string,
+): void {
   assertPathIsCurrent(path);
 
   const pathImpl = FormPathImpl.extractFromPath(path);
+  const reasonFn: LogicFn<T, string> = (ctx) => (predicate(ctx) ? (reason ?? '') : '');
   pathImpl.logic.disabled.push(pathImpl.maybeWrapWithPredicate(predicate, false));
+  pathImpl.logic.getMetadata(DISABLED_REASON).push(pathImpl.maybeWrapWithPredicate(reasonFn, ''));
 }
 
 /**
