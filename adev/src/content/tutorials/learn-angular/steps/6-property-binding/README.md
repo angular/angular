@@ -34,7 +34,7 @@ Next, bind the `contentEditable` attribute of the `div` to the `isEditable` prop
 <docs-code highlight="[3]" language="angular-ts">
 @Component({
     ...
-    template: `<div [contentEditable]="{{isEditable}}"></div>`,
+    template: `<div [contentEditable]="isEditable"></div>`,
 })
 </docs-code>
 </docs-step>
