@@ -8,8 +8,8 @@
 
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {ExampleViewer} from './example-viewer.component';
-import {DocsContentLoader, ExampleMetadata, ExampleViewerContentLoader} from '../../../interfaces';
-import {DOCS_CONTENT_LOADER, EXAMPLE_VIEWER_CONTENT_LOADER} from '../../../providers';
+import {ExampleMetadata, ExampleViewerContentLoader} from '../../../interfaces';
+import {EXAMPLE_VIEWER_CONTENT_LOADER} from '../../../providers';
 import {Component, provideExperimentalZonelessChangeDetection, ComponentRef} from '@angular/core';
 import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
@@ -26,12 +26,9 @@ describe('ExampleViewer', () => {
 
   let loader: HarnessLoader;
   let exampleContentSpy: jasmine.SpyObj<ExampleViewerContentLoader>;
-  let contentServiceSpy: jasmine.SpyObj<DocsContentLoader>;
 
   beforeEach(() => {
     exampleContentSpy = jasmine.createSpyObj('ExampleContentLoader', ['loadPreview']);
-    contentServiceSpy = jasmine.createSpyObj('ContentLoader', ['getContent']);
-    contentServiceSpy.getContent.and.returnValue(Promise.resolve(undefined));
   });
 
   beforeEach(async () => {
@@ -41,7 +38,6 @@ describe('ExampleViewer', () => {
         // TODO: Find why tests warn that zone.js is still loaded
         provideExperimentalZonelessChangeDetection(),
         {provide: EXAMPLE_VIEWER_CONTENT_LOADER, useValue: exampleContentSpy},
-        {provide: DOCS_CONTENT_LOADER, useValue: contentServiceSpy},
         {provide: ActivatedRoute, useValue: {snapshot: {fragment: 'fragment'}}},
       ],
     }).compileComponents();
