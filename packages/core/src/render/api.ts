@@ -47,9 +47,11 @@ export abstract class RendererFactory2 {
  * rendering calls, or to render to something other than DOM.
  *
  * <div class="docs-alert docs-alert-important">
+ * <p>
  * Please be aware that usage of `Renderer2`, in context of accessing DOM elements, provides no
  * extra security which makes it equivalent to
- * {@link /best-practices/security#direct-use-of-the-dom-apis-and-explicit-sanitization-calls}.
+ * {@link /best-practices/security#direct-use-of-the-dom-apis-and-explicit-sanitization-calls Security vulnerabilities}.
+ * </p>
  * </div>
  *
  * Create your custom renderer using `RendererFactory2`.
