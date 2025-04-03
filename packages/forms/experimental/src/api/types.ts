@@ -31,8 +31,8 @@ export interface FormError {
 
 /**
  * An error that is returned from the server when submitting the form. It contains a reference to
- * the validation errors as well as a reference to the `Form` node those errors should be associated
- * with.
+ * the validation errors as well as a reference to the `Field` node those errors should be
+ * associated with.
  */
 export interface ServerError {
   field: Field<unknown>;

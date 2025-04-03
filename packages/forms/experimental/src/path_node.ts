@@ -3,9 +3,9 @@ import {FieldNode} from './field_node';
 import {FieldLogicNode, INDEX} from './logic_node';
 
 /**
- * Special key which is used to retrieve the `FormLogic` instance from its `FormPath` proxy wrapper.
+ * Special key which is used to retrieve the `FieldPathNode` instance from its `FieldPath` proxy wrapper.
  */
-const LOGIC = Symbol('LOGIC');
+const PATH = Symbol('PATH');
 
 export interface Predicate {
   readonly fn: LogicFn<any, boolean>;
@@ -15,9 +15,9 @@ export interface Predicate {
 export class FieldPathNode {
   private readonly children = new Map<PropertyKey, FieldPathNode>();
 
-  readonly formPathProxy: FieldPath<any> = new Proxy(
+  readonly fieldPathProxy: FieldPath<any> = new Proxy(
     this,
-    FORM_PATH_PROXY_HANDLER,
+    FIELD_PATH_PROXY_HANDLER,
   ) as unknown as FieldPath<any>;
   private constructor(
     readonly logic: FieldLogicNode,
@@ -40,7 +40,7 @@ export class FieldPathNode {
 
     return (arg: FieldContext<any>): TReturn => {
       const predicateField = arg.resolve(predicate.path).$state as FieldNode;
-      if (!predicate.fn(predicateField.logicArgument)) {
+      if (!predicate.fn(predicateField.fieldContext)) {
         // don't actually run the user function
         return defaultValue;
       }
@@ -64,7 +64,7 @@ export class FieldPathNode {
   }
 
   static extractFromPath(formPath: FieldPath<unknown>): FieldPathNode {
-    return (formPath as any)[LOGIC] as FieldPathNode;
+    return (formPath as any)[PATH] as FieldPathNode;
   }
 
   static newRoot(): FieldPathNode {
@@ -75,12 +75,12 @@ export class FieldPathNode {
 /**
  * Proxy handler which implements `FormPath` on top of a `LogicNode`.
  */
-export const FORM_PATH_PROXY_HANDLER: ProxyHandler<FieldPathNode> = {
+export const FIELD_PATH_PROXY_HANDLER: ProxyHandler<FieldPathNode> = {
   get(node: FieldPathNode, property: string | symbol) {
-    if (property === LOGIC) {
+    if (property === PATH) {
       return node;
     }
 
-    return node.getChild(property).formPathProxy;
+    return node.getChild(property).fieldPathProxy;
   },
 };

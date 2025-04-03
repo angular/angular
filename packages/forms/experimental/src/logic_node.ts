@@ -9,7 +9,7 @@
 import type {FieldContext, FormError, LogicFn} from './api/types';
 
 /**
- * Special key which is used to represent a dynamic index in a `FormLogic` path.
+ * Special key which is used to represent a dynamic index in a `FieldLogicNode` path.
  */
 export const INDEX = Symbol('INDEX');
 
@@ -27,7 +27,7 @@ export class FieldLogicNode {
   private readonly metadata = new Map<MetadataKey<unknown>, AbstractLogic<unknown>>();
   private readonly children = new Map<PropertyKey, FieldLogicNode>();
 
-  private constructor(readonly pathParts: PropertyKey[]) {}
+  private constructor(readonly pathKeys: PropertyKey[]) {}
 
   get element(): FieldLogicNode {
     return this.getChild(INDEX);
@@ -53,7 +53,7 @@ export class FieldLogicNode {
    */
   getChild(key: PropertyKey): FieldLogicNode {
     if (!this.children.has(key)) {
-      this.children.set(key, new FieldLogicNode([...this.pathParts, key]));
+      this.children.set(key, new FieldLogicNode([...this.pathKeys, key]));
     }
     return this.children.get(key)!;
   }

@@ -90,7 +90,7 @@ export function form<T>(
     extractSchema(schemaOrFn).apply(pathImpl);
   }
   const fieldRoot = FieldNode.newRoot(model, pathImpl.logic);
-  return fieldRoot.formFieldProxy as Field<T>;
+  return fieldRoot.fieldProxy as Field<T>;
 }
 
 /**
@@ -130,7 +130,7 @@ export function applyEach<T>(path: FieldPath<T[]>, schemaOrFn: NoInfer<SchemaOrS
   // applyEach(p, schema) = apply(p.element, schema)
   assertPathIsCurrent(path);
 
-  const elementPath = FieldPathNode.extractFromPath(path).element.formPathProxy;
+  const elementPath = FieldPathNode.extractFromPath(path).element.fieldPathProxy;
   apply(elementPath, schemaOrFn);
 }
 

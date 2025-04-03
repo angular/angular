@@ -18,7 +18,7 @@ export class SchemaImpl {
     let prevKey = currentKey;
     try {
       currentKey = path.key;
-      this.schemaFn(path.formPathProxy);
+      this.schemaFn(path.fieldPathProxy);
     } finally {
       currentKey = prevKey;
     }
