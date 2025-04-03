@@ -9,7 +9,16 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ExternalLink} from '@angular/docs';
 import {RouterLink} from '@angular/router';
-import {GITHUB, X, MEDIUM, YOUTUBE, BLUESKY} from './../../constants/links';
+import {
+  GITHUB,
+  X,
+  MEDIUM,
+  YOUTUBE,
+  BLUESKY,
+  REDDIT,
+  STACKOVERFLOW,
+  DISCORD,
+} from './../../constants/links';
 
 @Component({
   selector: 'footer[adev-footer]',
@@ -24,4 +33,7 @@ export class Footer {
   readonly YOUTUBE = YOUTUBE;
   readonly MEDIUM = MEDIUM;
   readonly BLUESKY = BLUESKY;
+  readonly REDDIT = REDDIT;
+  readonly DISCORD = DISCORD;
+  readonly STACKOVERFLOW = STACKOVERFLOW;
 }
