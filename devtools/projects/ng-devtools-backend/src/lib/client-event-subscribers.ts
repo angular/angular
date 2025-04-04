@@ -56,6 +56,7 @@ import {setConsoleReference} from './set-console-reference';
 import {serializeDirectiveState} from './state-serializer/state-serializer';
 import {runOutsideAngular, unwrapSignal} from './utils';
 import {DirectiveForestHooks} from './hooks/hooks';
+import {getSupportedApis} from './ng-debug-api/supported-apis';
 
 export const subscribeToClientEvents = (
   messageBus: MessageBus<Events>,
@@ -331,6 +332,7 @@ const checkForAngular = (messageBus: MessageBus<Events>): void => {
       devMode: appIsAngularInDevMode(),
       ivy: appIsIvy,
       hydration: isHydrationEnabled(),
+      supportedApis: getSupportedApis(),
     },
   ]);
 };
