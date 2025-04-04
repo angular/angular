@@ -256,6 +256,22 @@ describe('bootstrap', () => {
           }),
         ),
       );
+
+      it('runs in `NgZone`', inject([ApplicationRef], async (ref: ApplicationRef) => {
+        @Component({
+          selector: 'zone-comp',
+          template: `
+            <div>{{ name }}</div>
+          `,
+        })
+        class ZoneComp {
+          readonly inNgZone = NgZone.isInAngularZone();
+        }
+
+        createRootEl('zone-comp');
+        const comp = ref.bootstrap(ZoneComp);
+        expect(comp.instance.inNgZone).toBeTrue();
+      }));
     });
 
     describe('bootstrapImpl', () => {

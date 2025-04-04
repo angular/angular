@@ -510,59 +510,62 @@ export class ApplicationRef {
     rootSelectorOrNode?: string | any,
     injector: Injector = Injector.NULL,
   ): ComponentRef<C> {
-    profiler(ProfilerEvent.BootstrapComponentStart);
+    const ngZone = this._injector.get(NgZone);
+    return ngZone.run(() => {
+      profiler(ProfilerEvent.BootstrapComponentStart);
 
-    (typeof ngDevMode === 'undefined' || ngDevMode) && warnIfDestroyed(this._destroyed);
-    const isComponentFactory = componentOrFactory instanceof ComponentFactory;
-    const initStatus = this._injector.get(ApplicationInitStatus);
+      (typeof ngDevMode === 'undefined' || ngDevMode) && warnIfDestroyed(this._destroyed);
+      const isComponentFactory = componentOrFactory instanceof ComponentFactory;
+      const initStatus = this._injector.get(ApplicationInitStatus);
 
-    if (!initStatus.done) {
-      let errorMessage = '';
-      if (typeof ngDevMode === 'undefined' || ngDevMode) {
-        const standalone = !isComponentFactory && isStandalone(componentOrFactory);
-        errorMessage =
-          'Cannot bootstrap as there are still asynchronous initializers running.' +
-          (standalone
-            ? ''
-            : ' Bootstrap components in the `ngDoBootstrap` method of the root module.');
+      if (!initStatus.done) {
+        let errorMessage = '';
+        if (typeof ngDevMode === 'undefined' || ngDevMode) {
+          const standalone = !isComponentFactory && isStandalone(componentOrFactory);
+          errorMessage =
+            'Cannot bootstrap as there are still asynchronous initializers running.' +
+            (standalone
+              ? ''
+              : ' Bootstrap components in the `ngDoBootstrap` method of the root module.');
+        }
+        throw new RuntimeError(RuntimeErrorCode.ASYNC_INITIALIZERS_STILL_RUNNING, errorMessage);
       }
-      throw new RuntimeError(RuntimeErrorCode.ASYNC_INITIALIZERS_STILL_RUNNING, errorMessage);
-    }
 
-    let componentFactory: ComponentFactory<C>;
-    if (isComponentFactory) {
-      componentFactory = componentOrFactory;
-    } else {
-      const resolver = this._injector.get(ComponentFactoryResolver);
-      componentFactory = resolver.resolveComponentFactory(componentOrFactory)!;
-    }
-    this.componentTypes.push(componentFactory.componentType);
+      let componentFactory: ComponentFactory<C>;
+      if (isComponentFactory) {
+        componentFactory = componentOrFactory;
+      } else {
+        const resolver = this._injector.get(ComponentFactoryResolver);
+        componentFactory = resolver.resolveComponentFactory(componentOrFactory)!;
+      }
+      this.componentTypes.push(componentFactory.componentType);
 
-    // Create a factory associated with the current module if it's not bound to some other
-    const ngModule = isBoundToModule(componentFactory)
-      ? undefined
-      : this._injector.get(NgModuleRef);
-    const selectorOrNode = rootSelectorOrNode || componentFactory.selector;
-    const compRef = componentFactory.create(injector, [], selectorOrNode, ngModule);
-    const nativeElement = compRef.location.nativeElement;
-    const testability = compRef.injector.get(TESTABILITY, null);
-    testability?.registerApplication(nativeElement);
+      // Create a factory associated with the current module if it's not bound to some other
+      const ngModule = isBoundToModule(componentFactory)
+        ? undefined
+        : this._injector.get(NgModuleRef);
+      const selectorOrNode = rootSelectorOrNode || componentFactory.selector;
+      const compRef = componentFactory.create(injector, [], selectorOrNode, ngModule);
+      const nativeElement = compRef.location.nativeElement;
+      const testability = compRef.injector.get(TESTABILITY, null);
+      testability?.registerApplication(nativeElement);
 
-    compRef.onDestroy(() => {
-      this.detachView(compRef.hostView);
-      remove(this.components, compRef);
-      testability?.unregisterApplication(nativeElement);
+      compRef.onDestroy(() => {
+        this.detachView(compRef.hostView);
+        remove(this.components, compRef);
+        testability?.unregisterApplication(nativeElement);
+      });
+
+      this._loadComponent(compRef);
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        const _console = this._injector.get(Console);
+        _console.log(`Angular is running in development mode.`);
+      }
+
+      profiler(ProfilerEvent.BootstrapComponentEnd, compRef);
+
+      return compRef;
     });
-
-    this._loadComponent(compRef);
-    if (typeof ngDevMode === 'undefined' || ngDevMode) {
-      const _console = this._injector.get(Console);
-      _console.log(`Angular is running in development mode.`);
-    }
-
-    profiler(ProfilerEvent.BootstrapComponentEnd, compRef);
-
-    return compRef;
   }
 
   /**
