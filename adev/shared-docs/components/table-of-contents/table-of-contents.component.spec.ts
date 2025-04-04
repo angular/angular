@@ -12,7 +12,7 @@ import {RouterTestingModule} from '@angular/router/testing';
 import {TableOfContentsItem, TableOfContentsLevel} from '../../interfaces/index';
 import {TableOfContentsLoader} from '../../services/index';
 import {WINDOW} from '../../providers/index';
-import {provideExperimentalZonelessChangeDetection, signal} from '@angular/core';
+import {provideZonelessChangeDetection, signal} from '@angular/core';
 
 describe('TableOfContents', () => {
   let component: TableOfContents;
@@ -43,7 +43,7 @@ describe('TableOfContents', () => {
     await TestBed.configureTestingModule({
       imports: [TableOfContents, RouterTestingModule],
       providers: [
-        provideExperimentalZonelessChangeDetection(),
+        provideZonelessChangeDetection(),
         {
           provide: WINDOW,
           useValue: fakeWindow,

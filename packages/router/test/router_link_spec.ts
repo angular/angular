@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, inject, signal, provideExperimentalZonelessChangeDetection} from '@angular/core';
+import {Component, inject, signal, provideZonelessChangeDetection} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {Router, RouterLink, RouterModule, provideRouter} from '../index';
 
 describe('RouterLink', () => {
   beforeEach(() => {
-    TestBed.configureTestingModule({providers: [provideExperimentalZonelessChangeDetection()]});
+    TestBed.configureTestingModule({providers: [provideZonelessChangeDetection()]});
   });
 
   it('does not modify tabindex if already set on non-anchor element', async () => {

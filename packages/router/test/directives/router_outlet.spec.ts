@@ -10,7 +10,7 @@ import {CommonModule, NgForOf} from '@angular/common';
 import {
   Component,
   inject,
-  provideExperimentalZonelessChangeDetection,
+  provideZonelessChangeDetection,
   Input,
   Signal,
   Type,
@@ -487,7 +487,7 @@ describe('router outlet data', () => {
     TestBed.configureTestingModule({
       providers: [
         provideRouter([{path: '**', component: MyComponent}]),
-        provideExperimentalZonelessChangeDetection(),
+        provideZonelessChangeDetection(),
       ],
     });
 

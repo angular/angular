@@ -32,7 +32,7 @@ import {
   ViewChildren,
   ViewContainerRef,
   provideExperimentalCheckNoChangesForDebug,
-  provideExperimentalZonelessChangeDetection,
+  provideZonelessChangeDetection,
   ɵRuntimeError as RuntimeError,
   ɵRuntimeErrorCode as RuntimeErrorCode,
   afterRender,
@@ -47,7 +47,7 @@ describe('change detection', () => {
   it('can provide zone and zoneless (last one wins like any other provider) in TestBed', () => {
     expect(() => {
       TestBed.configureTestingModule({
-        providers: [provideExperimentalZonelessChangeDetection(), provideZoneChangeDetection()],
+        providers: [provideZonelessChangeDetection(), provideZoneChangeDetection()],
       });
       TestBed.inject(ApplicationRef);
     }).not.toThrow();
@@ -1428,7 +1428,7 @@ describe('change detection', () => {
             providers: [
               {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
               provideExperimentalCheckNoChangesForDebug({useNgZoneOnStable: true}),
-              provideExperimentalZonelessChangeDetection(),
+              provideZonelessChangeDetection(),
             ],
           });
 
@@ -1456,7 +1456,7 @@ describe('change detection', () => {
           TestBed.configureTestingModule({
             providers: [
               {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
-              provideExperimentalZonelessChangeDetection(),
+              provideZonelessChangeDetection(),
               provideExperimentalCheckNoChangesForDebug({useNgZoneOnStable: true}),
               {
                 provide: ErrorHandler,
@@ -1495,7 +1495,7 @@ describe('change detection', () => {
           let error: RuntimeError | undefined = undefined;
           TestBed.configureTestingModule({
             providers: [
-              provideExperimentalZonelessChangeDetection(),
+              provideZonelessChangeDetection(),
               provideExperimentalCheckNoChangesForDebug({useNgZoneOnStable: true}),
               {
                 provide: ErrorHandler,
@@ -1532,7 +1532,7 @@ describe('change detection', () => {
           let error: RuntimeError | undefined = undefined;
           TestBed.configureTestingModule({
             providers: [
-              provideExperimentalZonelessChangeDetection(),
+              provideZonelessChangeDetection(),
               provideExperimentalCheckNoChangesForDebug({interval: 5}),
               {
                 provide: ErrorHandler,
@@ -1558,7 +1558,7 @@ describe('change detection', () => {
           let error: RuntimeError | undefined = undefined;
           TestBed.configureTestingModule({
             providers: [
-              provideExperimentalZonelessChangeDetection(),
+              provideZonelessChangeDetection(),
               provideExperimentalCheckNoChangesForDebug({interval: 0}),
               {
                 provide: ErrorHandler,
@@ -1587,7 +1587,7 @@ describe('change detection', () => {
           let error: RuntimeError | undefined = undefined;
           TestBed.configureTestingModule({
             providers: [
-              provideExperimentalZonelessChangeDetection(),
+              provideZonelessChangeDetection(),
               provideExperimentalCheckNoChangesForDebug({interval: 0, exhaustive: false}),
               {
                 provide: ErrorHandler,

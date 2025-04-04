@@ -583,12 +583,6 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
           },
         ],
       },
-      {
-        label: 'Experimental features',
-        children: [
-          {label: 'Zoneless', path: 'guide/experimental/zoneless', contentPath: 'guide/zoneless'},
-        ],
-      },
     ],
   },
   {
@@ -752,6 +746,7 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             path: 'best-practices/skipping-subtrees',
             contentPath: 'best-practices/runtime-performance/skipping-subtrees',
           },
+          {label: 'Zoneless', path: 'guide/zoneless', contentPath: 'guide/zoneless'},
         ],
       },
       {

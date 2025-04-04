@@ -42,7 +42,7 @@ import {
   Pipe,
   PipeTransform,
   PLATFORM_ID,
-  provideExperimentalZonelessChangeDetection,
+  provideZonelessChangeDetection,
   Provider,
   QueryList,
   TemplateRef,
@@ -8036,7 +8036,7 @@ describe('platform-server full application hydration integration', () => {
         const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
           envProviders: [
             withDebugConsole(),
-            provideExperimentalZonelessChangeDetection() as unknown as Provider[],
+            provideZonelessChangeDetection() as unknown as Provider[],
           ],
         });
         const compRef = getComponentRef<SimpleComponent>(appRef);
@@ -8154,7 +8154,7 @@ describe('platform-server full application hydration integration', () => {
         class SimpleComponent {}
 
         const envProviders = [
-          provideExperimentalZonelessChangeDetection(),
+          provideZonelessChangeDetection(),
           {provide: PlatformLocation, useClass: MockPlatformLocation},
           provideRouter(routes),
         ] as unknown as Provider[];
