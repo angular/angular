@@ -14,13 +14,13 @@ fesm2022
   fesm2022/example.mjs.map
   fesm2022/imports.mjs
   fesm2022/imports.mjs.map
-  fesm2022/index-D4QyjRX7.mjs
-  fesm2022/index-D4QyjRX7.mjs.map
+  fesm2022/index-BPo6wTZX.mjs
+  fesm2022/index-BPo6wTZX.mjs.map
   fesm2022/secondary.mjs
   fesm2022/secondary.mjs.map
 imports
   imports/index.d.ts
-index.d-peWegT6k.d.ts
+index.d-Da_sa5Sg.d.ts
 index.d.ts
 logo.png
 package.json
@@ -176,7 +176,7 @@ export { MyModule };
  * License: MIT
  */
 
-export { s as sharedBetweenEntryPoints } from './index-D4QyjRX7.mjs';
+export { sharedBetweenEntryPoints } from './index-BPo6wTZX.mjs';
 import * as i0 from '@angular/core';
 import { Injectable } from '@angular/core';
 
@@ -206,7 +206,7 @@ export { MyService };
 //# sourceMappingURL=imports.mjs.map
 
 
---- fesm2022/index-D4QyjRX7.mjs ---
+--- fesm2022/index-BPo6wTZX.mjs ---
 
 /**
  * @license Angular v0.0.0
@@ -216,8 +216,8 @@ export { MyService };
 
 const sharedBetweenEntryPoints = 'This export is shared between entry-points';
 
-export { sharedBetweenEntryPoints as s };
-//# sourceMappingURL=index-D4QyjRX7.mjs.map
+export { sharedBetweenEntryPoints };
+//# sourceMappingURL=index-BPo6wTZX.mjs.map
 
 
 --- fesm2022/secondary.mjs ---
@@ -228,7 +228,7 @@ export { sharedBetweenEntryPoints as s };
  * License: MIT
  */
 
-export { s as sharedBetweenEntryPoints } from './index-D4QyjRX7.mjs';
+export { sharedBetweenEntryPoints } from './index-BPo6wTZX.mjs';
 import * as i0 from '@angular/core';
 import { NgModule } from '@angular/core';
 
@@ -256,7 +256,7 @@ export { SecondaryModule, a };
  */
 
 import * as i0 from '@angular/core';
-export { s as sharedBetweenEntryPoints } from '../index.d-peWegT6k.js';
+export { sharedBetweenEntryPoints } from '../index.d-Da_sa5Sg.js';
 
 declare class MySecondService {
     static ɵfac: i0.ɵɵFactoryDeclaration<MySecondService, never>;
@@ -273,7 +273,7 @@ declare class MyService {
 export { MyService };
 
 
---- index.d-peWegT6k.d.ts ---
+--- index.d-Da_sa5Sg.d.ts ---
 
 /**
  * @license Angular v0.0.0
@@ -283,7 +283,7 @@ export { MyService };
 
 declare const sharedBetweenEntryPoints = "This export is shared between entry-points";
 
-export { sharedBetweenEntryPoints as s };
+export { sharedBetweenEntryPoints };
 
 
 --- index.d.ts ---
@@ -349,7 +349,7 @@ export { MyModule };
  * License: MIT
  */
 
-export { s as sharedBetweenEntryPoints } from '../index.d-peWegT6k.js';
+export { sharedBetweenEntryPoints } from '../index.d-Da_sa5Sg.js';
 import * as i0 from '@angular/core';
 
 declare class SecondaryModule {
