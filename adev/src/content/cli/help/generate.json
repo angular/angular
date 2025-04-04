@@ -566,6 +566,15 @@
           "type": "boolean",
           "default": false,
           "description": "Skip the generation of a unit test file `spec.ts` for the new guard."
+        },
+        {
+          "name": "type-separator",
+          "type": "string",
+          "default": "-",
+          "enum": [
+            "-",
+            "."
+          ]
         }
       ],
       "aliases": [
@@ -815,6 +824,15 @@
           "type": "boolean",
           "default": true,
           "description": "Generate a standalone pipe. Standalone pipes are self-contained and don't need to be declared in an NgModule. They can be used independently or imported directly into other standalone components, directives, or pipes."
+        },
+        {
+          "name": "type-separator",
+          "type": "string",
+          "default": "-",
+          "enum": [
+            "-",
+            "."
+          ]
         }
       ],
       "aliases": [
