@@ -2,6 +2,19 @@
 
 This directory contains prototype code of how a future version of Angular Forms could look and function if built on top of signals. We're using this prototype to explore potential designs for such a system, to play with new ideas, identify challenges, and to demonstrate interoperability with the production version of `@angular/forms`.
 
+## Not yet supported
+* Asynchronous validation
+* Tracking items in arrays and moving items across arrays
+* Recursive logic
+* Validation on touch
+* Advanced metadata use cases (custom/user-defined/access in validators)
+* Dirty/Pristine state
+* Dynamic objects/tuples
+* Interop with Reactive/Template forms
+* Interop with custom schema libraries
+* Resetting the form
+* Typed errors
+
 ## FAQs
 
 ### Why are you working on this?
@@ -26,5 +39,4 @@ If we decide to make any changes to forms, then yes.
 
 We don't know, it depends on what we learn through this process!
 
-### Running tests
-yarn bazel test //packages/forms/experimental/test:test_web_chromium
+ 
