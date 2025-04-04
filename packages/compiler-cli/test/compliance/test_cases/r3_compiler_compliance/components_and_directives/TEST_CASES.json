@@ -215,6 +215,16 @@
         "full compile",
         "local compile"
       ]
+    },
+    {
+      "description": "should support nested component declarations",
+      "inputFiles": ["nested_component_definition.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid component definition",
+          "files": ["nested_component_definition.js"]
+        }
+      ]
     }
   ]
 }
