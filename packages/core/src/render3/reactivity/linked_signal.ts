@@ -22,8 +22,6 @@ const identityFn = <T>(v: T) => v;
 
 /**
  * Creates a writable signal whose value is initialized and reset by the linked, reactive computation.
- *
- * @developerPreview
  */
 export function linkedSignal<D>(
   computation: () => D,
