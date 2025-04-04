@@ -1,3 +1,5 @@
+@use '../../../../../styles/typography';
+
 .mdc-card.breadcrumb-card {
   padding: 0;
   width: 100%;
@@ -31,6 +33,7 @@
     }
 
     button {
+      @extend %monospaced;
       height: 24px;
 
       &.selected {
@@ -42,7 +45,6 @@
   .mdc-button {
     height: 20px;
     line-height: 20px;
-    font-size: 11px;
     margin-right: 5px;
     width: fit-content;
     color: var(--color-tree-node-element-name);
