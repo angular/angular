@@ -207,7 +207,7 @@ export type ComponentInputBindingFeature = RouterFeature<RouterFeatureKind.Compo
 export function convertToParamMap(params: Params): ParamMap;
 
 // @public
-export function createUrlTreeFromSnapshot(relativeTo: ActivatedRouteSnapshot, commands: any[], queryParams?: Params | null, fragment?: string | null): UrlTree;
+export function createUrlTreeFromSnapshot(relativeTo: ActivatedRouteSnapshot, commands: readonly any[], queryParams?: Params | null, fragment?: string | null): UrlTree;
 
 // @public
 export type Data = {
@@ -710,7 +710,7 @@ export class Router {
     readonly componentInputBindingEnabled: boolean;
     // (undocumented)
     config: Routes;
-    createUrlTree(commands: any[], navigationExtras?: UrlCreationOptions): UrlTree;
+    createUrlTree(commands: readonly any[], navigationExtras?: UrlCreationOptions): UrlTree;
     dispose(): void;
     get events(): Observable<Event_2>;
     getCurrentNavigation(): Navigation | null;
@@ -719,7 +719,7 @@ export class Router {
     isActive(url: string | UrlTree, exact: boolean): boolean;
     isActive(url: string | UrlTree, matchOptions: IsActiveMatchOptions): boolean;
     get lastSuccessfulNavigation(): Navigation | null;
-    navigate(commands: any[], extras?: NavigationExtras): Promise<boolean>;
+    navigate(commands: readonly any[], extras?: NavigationExtras): Promise<boolean>;
     navigateByUrl(url: string | UrlTree, extras?: NavigationBehaviorOptions): Promise<boolean>;
     navigated: boolean;
     // (undocumented)
@@ -821,7 +821,7 @@ class RouterLink implements OnChanges, OnDestroy {
     queryParamsHandling?: QueryParamsHandling | null;
     relativeTo?: ActivatedRoute | null;
     replaceUrl: boolean;
-    set routerLink(commandsOrUrlTree: any[] | string | UrlTree | null | undefined);
+    set routerLink(commandsOrUrlTree: readonly any[] | string | UrlTree | null | undefined);
     skipLocationChange: boolean;
     state?: {
         [k: string]: any;
