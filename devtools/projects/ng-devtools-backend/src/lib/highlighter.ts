@@ -11,6 +11,7 @@ import {HydrationStatus} from 'protocol';
 
 let hydrationOverlayItems: HTMLElement[] = [];
 let selectedElementOverlay: HTMLElement | null = null;
+let selectedElement: Node | null = null;
 
 declare const ng: GlobalDevModeUtils['ng'];
 
@@ -83,8 +84,12 @@ export function getDirectiveName(dir: Type<unknown> | undefined | null): string 
 }
 
 export function highlightSelectedElement(el: Node): void {
+  if (el === selectedElement) {
+    return;
+  }
   unHighlight();
   selectedElementOverlay = addHighlightForElement(el);
+  selectedElement = el;
 }
 
 export function highlightHydrationElement(el: Node, status: HydrationStatus) {
