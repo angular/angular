@@ -49,7 +49,7 @@ $transition: 200ms linear;
         color: var(--quaternary-contrast);
         font-size: clamp(1rem, 1vw, 2rem);
         line-height: 1.5;
-        width: clamp(375px, 50%, 600px);
+        width: clamp(345px, 50%, 600px);
         margin: 0 auto;
       }
 
@@ -91,6 +91,8 @@ $transition: 200ms linear;
           & {
             top: 6rem;
             left: var(--layout-padding);
+            /* Assuming the container width is identical to the viewport width (mobile device). */
+            max-width: calc(100% - var(--layout-padding) * 2);
           }
         }
 
