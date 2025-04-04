@@ -6,7 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ENVIRONMENT_INITIALIZER, EnvironmentInjector, inject, InjectionToken} from './di';
+import {
+  makeEnvironmentProviders,
+  provideEnvironmentInitializer,
+  ENVIRONMENT_INITIALIZER,
+  EnvironmentInjector,
+  inject,
+  InjectionToken,
+} from './di';
+import {DOCUMENT} from './document';
+import {DestroyRef} from './linker';
 
 /**
  * Provides a hook for centralized exception handling.
@@ -75,3 +84,41 @@ export const errorHandlerEnvironmentInitializer = {
   useValue: () => void inject(ErrorHandler),
   multi: true,
 };
+
+/**
+ * Provides an environment initializer which forwards unhandled errors to the ErrorHandler.
+ *
+ * The listeners added are for the window's 'unhandledrejection' and 'error' events.
+ *
+ * @publicApi
+ */
+export function provideBrowserUnhandledErrorListeners() {
+  return makeEnvironmentProviders([
+    provideEnvironmentInitializer(() => {
+      if (typeof ngServerMode !== 'undefined' && ngServerMode) {
+        return;
+      }
+      const window = inject(DOCUMENT).defaultView;
+      if (!window) {
+        return;
+      }
+
+      const errorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
+      const rejectionListener = (e: PromiseRejectionEvent) => {
+        errorHandler(e.reason);
+        e.preventDefault();
+      };
+      const errorListener = (e: ErrorEvent) => {
+        errorHandler(e.error);
+        e.preventDefault();
+      };
+
+      window.addEventListener('unhandledrejection', rejectionListener);
+      window.addEventListener('error', errorListener);
+      inject(DestroyRef).onDestroy(() => {
+        window.removeEventListener('error', errorListener);
+        window.removeEventListener('unhandledrejection', rejectionListener);
+      });
+    }),
+  ]);
+}
