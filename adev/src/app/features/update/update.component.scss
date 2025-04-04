@@ -1,7 +1,23 @@
-.page {
+@use '@angular/docs/styles/media-queries' as mq;
+
+::ng-deep adev-update-guide{
+  display: flex;
+  flex-flow: column;
+  align-items: center;
   padding: var(--layout-padding);
-  max-width: var(--page-width);
   container: update-guide-page / inline-size;
+}
+.page {
+  max-width: var(--page-width);
+  & > *{
+    @include mq.for-big-desktop-up{
+      padding-inline: 0px;
+    }
+  }
+
+  @include mq.for-tablet-landscape-down{
+    width: 100%;
+  }
 }
 
 h3,
