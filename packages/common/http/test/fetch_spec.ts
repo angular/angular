@@ -291,6 +291,20 @@ describe('FetchBackend', async () => {
     fetchMock.mockAbortEvent();
   });
 
+  it('should pass keepalive option to fetch', () => {
+    const req = new HttpRequest('GET', '/test', {keepalive: true});
+    backend.handle(req).subscribe();
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      '/test',
+      jasmine.objectContaining({
+        keepalive: true,
+      }),
+    );
+
+    fetchMock.mockFlush(HttpStatusCode.Ok, 'OK');
+  });
+
   describe('progress events', () => {
     it('are emitted for download progress', (done) => {
       backend
