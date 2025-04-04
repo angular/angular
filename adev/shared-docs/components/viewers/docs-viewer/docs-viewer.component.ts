@@ -41,8 +41,6 @@ import {Breadcrumb} from '../../breadcrumb/breadcrumb.component';
 import {CopySourceCodeButton} from '../../copy-source-code-button/copy-source-code-button.component';
 import {ExampleViewer} from '../example-viewer/example-viewer.component';
 
-/// <reference types="@types/dom-view-transitions" />
-
 const TOC_HOST_ELEMENT_NAME = 'docs-table-of-contents';
 export const ASSETS_EXAMPLES_PATH = 'assets/content/examples';
 export const DOCS_VIEWER_SELECTOR = 'docs-viewer';

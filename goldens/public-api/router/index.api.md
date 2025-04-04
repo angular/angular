@@ -1114,13 +1114,7 @@ export const VERSION: Version;
 export interface ViewTransitionInfo {
     from: ActivatedRouteSnapshot;
     to: ActivatedRouteSnapshot;
-    transition: {
-        finished: Promise<void>;
-        ready: Promise<void>;
-        updateCallbackDone: Promise<void>;
-        skipTransition(): void;
-        readonly types: Set<string>;
-    };
+    transition: ViewTransition;
 }
 
 // @public

@@ -4329,11 +4329,6 @@
   resolved "https://registry.yarnpkg.com/@types/dom-navigation/-/dom-navigation-1.0.5.tgz#5fd6ed014d3ee66b53b0733b6c50994c105b542d"
   integrity sha512-aM1Mr488jX62+6b9zdEtPHFnI7ILgvbII4BaBJMaqhhbDBupJJJ8+nXFVyQT1ptujOUAg6Sojkjk3j6rU73Bwg==
 
-"@types/dom-view-transitions@^1.0.1":
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/@types/dom-view-transitions/-/dom-view-transitions-1.0.6.tgz#e6c53f17826be079fafe6df03623f37fcd1b86ac"
-  integrity sha512-Q5IoDouTOcZKEs4nDpmUti2MXP48MQDBkS2nUQKFrsDeTFIaArVmhWUon28vlDfNkbbaK4EROu4Fv0iKObWjSg==
-
 "@types/duplexify@*":
   version "3.6.4"
   resolved "https://registry.yarnpkg.com/@types/duplexify/-/duplexify-3.6.4.tgz#aa7e916c33fcc05be8769546fd0441d9b368613e"
