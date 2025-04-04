@@ -13,7 +13,7 @@ import {
   ErrorHandler,
   VERSION,
   inject,
-  provideExperimentalZonelessChangeDetection,
+  provideZonelessChangeDetection,
   provideEnvironmentInitializer,
 } from '@angular/core';
 import {
@@ -72,7 +72,7 @@ export const appConfig: ApplicationConfig = {
       }),
       withComponentInputBinding(),
     ),
-    provideExperimentalZonelessChangeDetection(),
+    provideZonelessChangeDetection(),
     provideClientHydration(),
     provideHttpClient(withFetch()),
     provideEnvironmentInitializer(() => inject(AppScroller)),

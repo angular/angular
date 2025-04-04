@@ -18,7 +18,7 @@ import {Breadcrumb} from '../../breadcrumb/breadcrumb.component';
 import {NavigationState} from '../../../services';
 import {CopySourceCodeButton} from '../../copy-source-code-button/copy-source-code-button.component';
 import {TableOfContents} from '../../table-of-contents/table-of-contents.component';
-import {provideExperimentalZonelessChangeDetection} from '@angular/core';
+import {provideZonelessChangeDetection} from '@angular/core';
 
 describe('DocViewer', () => {
   let fixture: ComponentFixture<DocViewer>;
@@ -82,7 +82,7 @@ describe('DocViewer', () => {
       imports: [DocViewer],
       providers: [
         provideRouter([]),
-        provideExperimentalZonelessChangeDetection(),
+        provideZonelessChangeDetection(),
         {provide: EXAMPLE_VIEWER_CONTENT_LOADER, useValue: exampleContentSpy},
         {provide: NavigationState, useValue: navigationStateSpy},
       ],
