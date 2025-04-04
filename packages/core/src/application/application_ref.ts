@@ -10,7 +10,11 @@ import '../util/ng_hmr_mode';
 import '../util/ng_jit_mode';
 import '../util/ng_server_mode';
 
-import {setActiveConsumer, setThrowInvalidWriteToSignalError} from '../../primitives/signals';
+import {
+  setActiveConsumer,
+  getActiveConsumer,
+  setThrowInvalidWriteToSignalError,
+} from '../../primitives/signals';
 import {type Observable, Subject, type Subscription} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -44,6 +48,7 @@ import {NgZone} from '../zone/ng_zone';
 import {profiler} from '../render3/profiler';
 import {ProfilerEvent} from '../render3/profiler_types';
 import {EffectScheduler} from '../render3/reactivity/root_effect_scheduler';
+import {isReactiveLViewConsumer} from '../render3/reactive_lview_consumer';
 import {ApplicationInitStatus} from './application_init';
 import {TracingAction, TracingService, TracingSnapshot} from './tracing';
 
@@ -70,10 +75,15 @@ export function publishDefaultGlobalUtils() {
  */
 export function publishSignalConfiguration(): void {
   setThrowInvalidWriteToSignalError(() => {
-    throw new RuntimeError(
-      RuntimeErrorCode.SIGNAL_WRITE_FROM_ILLEGAL_CONTEXT,
-      ngDevMode && 'Writing to signals is not allowed in a `computed`.',
-    );
+    let errorMessage = '';
+    if (ngDevMode) {
+      const activeConsumer = getActiveConsumer();
+      errorMessage =
+        activeConsumer && isReactiveLViewConsumer(activeConsumer)
+          ? 'Writing to signals is not allowed while Angular renders the template (eg. interpolations)'
+          : 'Writing to signals is not allowed in a `computed`';
+    }
+    throw new RuntimeError(RuntimeErrorCode.SIGNAL_WRITE_FROM_ILLEGAL_CONTEXT, errorMessage);
   });
 }
 
