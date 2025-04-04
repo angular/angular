@@ -75,18 +75,22 @@ For more information regarding NgTemplateOutlet, see the [NgTemplateOutlets API 
 
 ## Using `<ng-container>` with structural directives
 
-You can also apply structural directives to `<ng-container>` elements. Common examples of this include `ngIf`and `ngFor`.
+You can also apply structural directives to `<ng-container>` elements. Common examples of this include `@if`and `@for`.
 
 ```angular-html
-<ng-container *ngIf="permissions == 'admin'">
-  <h1>Admin Dashboard</h1>
-  <admin-infographic></admin-infographic>
-</ng-container>
+@if (permissions == 'admin') {
+  <ng-container>
+    <h1>Admin Dashboard</h1>
+    <admin-infographic></admin-infographic>
+  </ng-container>
+}
 
-<ng-container *ngFor="let item of items; index as i; trackBy: trackByFn">
-  <h2>{{ item.title }}</h2>
-  <p>{{ item.description }}</p>
-</ng-container>
+@for (item of items; track $index; let i = $index) {
+  <ng-container>
+    <h2>{{ item.title }}</h2>
+    <p>{{ item.description }}</p>
+  </ng-container>
+}
 ```
 
 ## Using `<ng-container>` for injection
