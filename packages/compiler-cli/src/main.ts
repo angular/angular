@@ -33,6 +33,7 @@ export function main(
     project,
     rootNames,
     options,
+    projectReferences,
     errors: configErrors,
     watch,
     emitFlags,
@@ -53,6 +54,7 @@ export function main(
   const {diagnostics: compileDiags, program} = performCompilation({
     rootNames,
     options,
+    projectReferences,
     emitFlags,
     oldProgram,
     customTransformers,
@@ -76,6 +78,7 @@ export function mainDiagnosticsForTest(
   let {
     rootNames,
     options,
+    projectReferences,
     errors: configErrors,
     emitFlags,
   } = config || readNgcCommandLineAndConfiguration(args);
@@ -94,6 +97,7 @@ export function mainDiagnosticsForTest(
   const {diagnostics: compileDiags, program} = performCompilation({
     rootNames,
     options,
+    projectReferences,
     emitFlags,
     oldProgram,
     modifiedResourceFiles,
@@ -176,6 +180,7 @@ export function readCommandLineAndConfiguration(
     options,
     errors: config.errors,
     emitFlags: config.emitFlags,
+    projectReferences: config.projectReferences,
   };
 }
 

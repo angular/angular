@@ -255,6 +255,7 @@ export function exitCodeFromResult(diags: ReadonlyArray<ts.Diagnostic> | undefin
 export function performCompilation<CbEmitRes extends ts.EmitResult = ts.EmitResult>({
   rootNames,
   options,
+  projectReferences,
   host,
   oldProgram,
   emitCallback,
@@ -267,6 +268,7 @@ export function performCompilation<CbEmitRes extends ts.EmitResult = ts.EmitResu
 }: {
   rootNames: string[];
   options: api.CompilerOptions;
+  projectReferences?: readonly ts.ProjectReference[];
   host?: api.CompilerHost;
   oldProgram?: api.Program;
   emitCallback?: api.TsEmitCallback<CbEmitRes>;
@@ -288,7 +290,7 @@ export function performCompilation<CbEmitRes extends ts.EmitResult = ts.EmitResu
       host.getModifiedResourceFiles = () => modifiedResourceFiles;
     }
 
-    program = ng.createProgram({rootNames, host, options, oldProgram});
+    program = ng.createProgram({rootNames, host, options, projectReferences, oldProgram});
 
     const beforeDiags = Date.now();
     allDiagnostics.push(...gatherDiagnostics(program!));
