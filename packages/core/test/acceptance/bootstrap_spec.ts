@@ -14,7 +14,7 @@ import {
   forwardRef,
   NgModule,
   NgZone,
-  provideExperimentalZonelessChangeDetection,
+  provideZonelessChangeDetection,
   provideZoneChangeDetection,
   TestabilityRegistry,
   ViewContainerRef,
@@ -367,7 +367,7 @@ describe('bootstrap', () => {
 
           @NgModule({
             declarations: [App],
-            providers: [provideExperimentalZonelessChangeDetection()],
+            providers: [provideZonelessChangeDetection()],
             imports: [BrowserModule],
             bootstrap: [App],
           })

@@ -27,7 +27,7 @@ import {
   Input,
   NgZone,
   OnChanges,
-  provideExperimentalZonelessChangeDetection,
+  provideZonelessChangeDetection,
   QueryList,
   signal,
   SimpleChanges,
@@ -315,7 +315,7 @@ describe('reactivity', () => {
 
     it('should run root effects in creation order independent of dirty order', async () => {
       TestBed.configureTestingModule({
-        providers: [provideExperimentalZonelessChangeDetection()],
+        providers: [provideZonelessChangeDetection()],
       });
       const appRef = TestBed.inject(ApplicationRef);
 
@@ -343,7 +343,7 @@ describe('reactivity', () => {
 
     it('should check components made dirty from markForCheck() from an effect', async () => {
       TestBed.configureTestingModule({
-        providers: [provideExperimentalZonelessChangeDetection()],
+        providers: [provideZonelessChangeDetection()],
       });
 
       const source = signal('');
@@ -373,7 +373,7 @@ describe('reactivity', () => {
 
     it('should check components made dirty from markForCheck() from an effect in a service', async () => {
       TestBed.configureTestingModule({
-        providers: [provideExperimentalZonelessChangeDetection()],
+        providers: [provideZonelessChangeDetection()],
       });
 
       const source = signal('');
@@ -410,7 +410,7 @@ describe('reactivity', () => {
 
     it('should check views made dirty from markForCheck() from an effect in a directive', async () => {
       TestBed.configureTestingModule({
-        providers: [provideExperimentalZonelessChangeDetection()],
+        providers: [provideZonelessChangeDetection()],
       });
 
       const source = signal('');
