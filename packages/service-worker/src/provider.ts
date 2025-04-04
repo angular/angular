@@ -15,12 +15,15 @@ import {
   makeEnvironmentProviders,
   NgZone,
   provideAppInitializer,
+  ɵRuntimeError as RuntimeError,
+  ɵformatRuntimeError as formatRuntimeError,
 } from '@angular/core';
 import type {Observable} from 'rxjs';
 
 import {NgswCommChannel} from './low_level';
 import {SwPush} from './push';
 import {SwUpdate} from './update';
+import {RuntimeErrorCode} from './errors';
 
 export const SCRIPT = new InjectionToken<string>(ngDevMode ? 'NGSW_REGISTER_SCRIPT' : '');
 
@@ -79,8 +82,10 @@ export function ngswAppInitializer(): void {
           break;
         default:
           // Unknown strategy.
-          throw new Error(
-            `Unknown ServiceWorker registration strategy: ${options.registrationStrategy}`,
+          throw new RuntimeError(
+            RuntimeErrorCode.UNKNOWN_REGISTRATION_STRATEGY,
+            (typeof ngDevMode === 'undefined' || ngDevMode) &&
+              `Unknown ServiceWorker registration strategy: ${options.registrationStrategy}`,
           );
       }
     }
@@ -90,7 +95,15 @@ export function ngswAppInitializer(): void {
     readyToRegister.then(() =>
       navigator.serviceWorker
         .register(script, {scope: options.scope})
-        .catch((err) => console.error('Service worker registration failed with:', err)),
+        .catch((err) =>
+          console.error(
+            formatRuntimeError(
+              RuntimeErrorCode.SERVICE_WORKER_REGISTRATION_FAILED,
+              (typeof ngDevMode === 'undefined' || ngDevMode) &&
+                'Service worker registration failed with: ' + err,
+            ),
+          ),
+        ),
     );
   });
 }
