@@ -214,6 +214,7 @@ const config = {
     },
   },
   output: {
+    minifyInternalExports: false,
     sourcemap: !dtsMode,
     banner: bannerContent,
     entryFileNames: `[name].${outputExtension}`,
