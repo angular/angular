@@ -67,7 +67,22 @@ export function assignI18nSlotDependencies(job: CompilationJob) {
             continue;
           }
 
-          if (ir.hasDependsOnSlotContextTrait(updateOp) && updateOp.target !== createOp.xref) {
+          let target: ir.XrefId | null = null;
+          if (ir.hasDependsOnSlotContextTrait(updateOp)) {
+            target = updateOp.target;
+          } else if (
+            // Some expressions may consume slots as well (e.g. `storeLet`).
+            updateOp.kind === ir.OpKind.Statement ||
+            updateOp.kind === ir.OpKind.Variable
+          ) {
+            ir.visitExpressionsInOp(updateOp, (expr) => {
+              if (target === null && ir.hasDependsOnSlotContextTrait(expr)) {
+                target = expr.target;
+              }
+            });
+          }
+
+          if (target !== null && target !== createOp.xref) {
             break;
           }
 
