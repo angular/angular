@@ -113,20 +113,20 @@ As previously shown, `FieldState` instances expose reactive state signals like `
 
 Another key principle of Angular Signal Forms is that all field logic, such as validation rules or conditions for disabling fields, is defined **declaratively using TypeScript**. This means you specify the rules and conditions that determine a field's state upfront, when the field structure is defined. You don't imperatively command a field to change state later (e.g. there is no imperative `.disable()` method on the field state). Instead, you define _when_ `someField` should be disabled based on other signals or static conditions.
 
-The mechanism for defining this declarative logic is the `Schema`. Think of a `Schema` as a **blueprint** containing the rules (validators, disabled conditions, etc.) for a `Field` that manages a specific data type.
+The mechanism for defining this declarative logic is the `Schema`. Think of a `Schema` as a **blueprint** containing the rules (validators, disabled conditions, etc.) for a `Field` that manages a specific data type. A `Schema<T>` is simply a function that accepts a `FieldPath<T>` and defines logic for it.
 
 ### Creating and applying a schema
 
-You create a `Schema` using the `schema()` factory function, providing the data type the schema applies to as a generic argument. For example:
+You define a `Schema` as a function that is generic over the data type it applies to. For example:
 
-- `schema<string>(...)` defines rules for a `Field<string>`.
-- `schema<User>(...)` defines rules for a `Field<User>`.
+- A schema function of type `Schema<string>` defines rules for a `Field<string>`.
+- A schema function of type `Schema<User>` defines rules for a `Field<User>`.
 
 This ensures that your logic rules align with the structure of your field and your data model.
 
-The `schema()` factory accepts a single argument: a configuration function. Inside this function, you'll define the specific validation rules, disabled conditions, and other logic for the field structure. _How_ to define these rules will be covered shortly.
+Inside the schema function, you'll define the specific validation rules, disabled conditions, and other logic for the field structure. _How_ to define these rules will be covered shortly.
 
-Once you have defined a `Schema`, you associate it with your `Field` structure by passing it as the second argument to the `form()` function:
+Once you have defined a schema, you associate it with your `Field` structure by passing it as the second argument to the `form()` function:
 
 ```typescript
 // Define the data type for the form.
@@ -138,11 +138,11 @@ interface ConfirmedPassword {
 // Create the data model.
 const passwordModel = signal<ConfirmedPassword>({password: '', confirm: ''});
 
-// Create a schema for this data type.
-const passwordSchema = schema<ConfirmedPassword>(() => {
+// Define a schema for this data type.
+const passwordSchema: Schema<ConfirmedPassword> = (path: FieldPath<ConfirmedPassword>) => {
   // Logic rules (like validators) will be defined inside this function.
   // How to do this will be covered in the following sections.
-});
+};
 
 // Create the field structure, adding the logic from the schema.
 const passwordForm = form(passwordModel, passwordSchema);
@@ -151,28 +151,28 @@ const passwordForm = form(passwordModel, passwordSchema);
 // will be determined by the rules defined in passwordSchema.
 ```
 
-In this example, `passwordSchema` is created but doesn't contain any specific rules yet. The key takeaway here is the structure: you define a typed `Schema` using `schema()` and then link it to your `form()` instance alongside your data model signal.
+In this example, `passwordSchema` is defined but doesn't contain any specific rules yet. The key takeaway here is the structure: you define a typed schema and then link it to your `form()` instance alongside your data model signal.
 
 ### Defining logic rules within a schema
 
-The configuration function passed to `schema()` is where you can bind logic to specific fields in the field structure. The configuration function receives a single argument, a `FieldPath<T>`, where `T` is the data type of the schema (e.g., `FieldPath<ConfirmedPassword>` in the example above).
+The schema is where you bind logic to specific fields in the field structure. The schema function receives a single argument, a `FieldPath<T>`, where `T` is the data type of the schema (e.g., `FieldPath<ConfirmedPassword>` in the example above).
 
 The `FieldPath` acts as your tool for navigating the structure of your data model within the schema definition. It allows you to precisely target _where_ specific logic rules should apply. Navigating the `FieldPath` mirrors how you access properties on your data object or `Field` object.
 
 You use these navigated paths as the first argument to the built-in logic binding functions to specify which part of the field structure the logic applies to. For example:
 
 ```typescript
-const passwordSchema = schema<ConfirmedPassword>((path: FieldPath<ConfirmedPassword>) => {
+const passwordSchema: Schema<ConfirmedPassword> = (path: FieldPath<ConfirmedPassword>) => {
   // Adds validation logic to require a value for `password`.
   required(path.password);
   // Adds validation logic to require a value for `confirm`.
   required(path.confirm);
-});
+};
 ```
 
 #### Logic binding functions
 
-Angular Signal Forms provides several functions designed to be called within the `schema()` configuration function to bind logic rules to parts of your field structure. These functions all take a `FieldPath` as the first argument to indicate which field the logic applies to.
+Angular Signal Forms provides several functions designed to be called **within the schema function** to bind logic rules to parts of your field structure. These functions all take a `FieldPath` as the first argument to indicate which field the logic applies to.
 
 The currently supported logic binding functions are:
 
@@ -187,14 +187,14 @@ _Consult the JSDoc for the exact usage of each of these logic functions._
 
 #### Static definition, reactive execution
 
-It's crucial to understand that the `schema()` configuration function runs **only once** when the schema is created. Its purpose is to **statically define the structure of your field logic** and set up reactive computations.
+It's crucial to understand that the **schema function itself runs only once** when the form is created. Its purpose is to **statically define the structure of your field logic** and set up reactive computations.
 
-Therefore, you _should not_ place dynamic conditional logic (like `if` statements or `for` loops that conditionally call binding functions) directly within this configuration function's top level. Instead, the reactive nature comes from the logic functions themselves, which often take reactive functions as arguments. The goal here is to _declare_ the rules using the provided binding functions, not to execute imperative logic during schema creation.
+Therefore, you _should not_ place dynamic conditional logic (like `if` statements or `for` loops that conditionally call binding functions) directly within the schema function's top level. Instead, the reactive nature comes from the logic functions themselves, which often take reactive functions as arguments. The goal here is to _declare_ the rules using the provided binding functions, not to execute imperative logic during schema definition time.
 
 This is demonstrated in the following example:
 
 ```typescript
-const passwordSchema = schema<ConfirmedPassword>((path: FieldPath<ConfirmedPassword>) => {
+const passwordSchema: Schema<ConfirmedPassword> = (path: FieldPath<ConfirmedPassword>) => {
     // Define a reactive validation rule to check the password length.
     validate(path.password, ({value}: FieldContext<string>) => {
       // Return a FormError if the password is not long enough.
@@ -204,7 +204,7 @@ const passwordSchema = schema<ConfirmedPassword>((path: FieldPath<ConfirmedPassw
       // Otherwise return null to indicate no error.
       return null;
     });
-});
+};
 
 const passwordForm = form(signal({password: '', confirm: ''}), passwordSchema);
 
@@ -239,7 +239,7 @@ In some cases you may want to associate the logic with a common parent node in y
 Looking at the previous `ConfirmedPassword` example, password matching logic can be implemented by adding validation to the root `path`:
 
 ```typescript
-const passwordSchema = schema<ConfirmedPassword>((path: FieldPath<ConfirmedPassword>) => {
+const passwordSchema: Schema<ConfirmedPassword> = (path: FieldPath<ConfirmedPassword>) => {
     // Add validation at the root level that considers both the
     // `password` and `confirm` values.
     validate(path, ({value}: FieldContext<ConfirmedPassword>) => {
@@ -251,7 +251,7 @@ const passwordSchema = schema<ConfirmedPassword>((path: FieldPath<ConfirmedPassw
       // Otherwise return null to indicate no error.
       return null;
     });
-});
+};
 
 const passwordForm = form(signal({password: 'first', confirm: 'second'}), passwordSchema);
 ```
@@ -273,7 +273,7 @@ The `resolve()` function takes another `FieldPath` from anywhere in your field s
 Here's the same password matching validation, but associating the error with the `confirm` field instead:
 
 ```typescript
-const passwordSchema = schema<ConfirmedPassword>((path: FieldPath<ConfirmedPassword>) => {
+const passwordSchema: Schema<ConfirmedPassword> = (path: FieldPath<ConfirmedPassword>) => {
     // Add validation on the `confirm` field that considers both the
     // `password` and `confirm` values.
     validate(path.confirm, ({value, resolve}: FieldContext<string>) => {
@@ -286,7 +286,7 @@ const passwordSchema = schema<ConfirmedPassword>((path: FieldPath<ConfirmedPassw
       // Otherwise return null to indicate no error.
       return null;
     });
-});
+};
 
 const passwordForm = form(signal({password: 'first', confirm: 'second'}), passwordSchema);
 
@@ -321,21 +321,21 @@ interface Trip {
   end: SimpleDate;
 }
 
-// Create a schema to validate dates.
-const dateSchema = schema<SimpleDate>((datePath: FieldPath<SimpleDate>) => {
+// Define a schema to validate dates.
+const dateSchema: Schema<SimpleDate> = (datePath: FieldPath<SimpleDate>) => {
   error(datePath.month, ({value}) => value() < 1 || value() > 12, 'Invalid month');
   error(datePath.date, ({value}) => value() < 1 || value() > 31, 'Invalid date');
-});
+};
 
-// Create a schema for the trip that includes validation for its dates.
-const tripSchema = schema<Trip>((tripPath: FieldPath<Trip>) => {
+// Define a schema for the trip that includes validation for its dates.
+const tripSchema: Schema<Trip> = (tripPath: FieldPath<Trip>) => {
   // Define trip-specific logic.
   required(tripPath.destination);
 
   // Add in standard date logic for start and end date.
   apply(tripPath.start, dateSchema);
   apply(tripPath.end, dateSchema);
-});
+};
 
 const defaultDate: SimpleDate = {year: 0, month: 0, date: 0};
 
@@ -351,7 +351,7 @@ const tripForm = form(tripModel, tripSchema);
 Because the logic is _merged_ rather than _overwritten_, the parent schema can set up additional logic for the path with the applied schema if necessary.
 
 ```typescript
-const tripSchema = schema<Trip>((tripPath: FieldPath<Trip>) => {
+const tripSchema: Schema<Trip> = (tripPath: FieldPath<Trip>) => {
   // Trip-specific date logic, will be merged with standard date logic below.
   error(tripPath.start, ({value}) => compareToNow(value()) < 0, 'Trip must start in future');
 
@@ -364,7 +364,7 @@ const tripSchema = schema<Trip>((tripPath: FieldPath<Trip>) => {
     const startField = resolve(tripPath.start);
     return compareTo(value(), startField.$state.value()) < 0;
   }, 'Trip must end after it starts');
-});
+};
 ```
 
 #### Applying schema logic to an array
@@ -386,9 +386,9 @@ interface User {
   name: string;
 }
 
-const userSchema = schema<User>((userPath: FieldPath<User>) => {
+const userSchema: Schema<User> = (userPath: FieldPath<User>) => {
   disabled(userPath.username, () => true, 'Username cannot be changed');
-});
+};
 
 const usersModel = signal<User[]>([]);
 
@@ -403,7 +403,7 @@ usersForm[0].$state.disabled(); // true
 
 #### Conditionally applying schema logic
 
-We've established that the `schema()` configuration function runs only once to define the static structure of the logic. You cannot use dynamic `if` statements _within_ the configuration function to conditionally call logic binding functions like `validate` or `disabled`.
+We've established that the schema function runs only once to define the static structure of the logic. You cannot use dynamic `if` statements _within_ the schema function itself to conditionally call logic binding functions like `validate` or `disabled`.
 
 However, field structures often require logic that should only be active under certain conditions. For example, validation rules for billing details might only apply if the user hasn't selected "Same as shipping address".
 
@@ -422,17 +422,17 @@ interface Account {
   friendsAndFamily: string[];
 }
 
-const basicAccountSchema = schema<Account>((accountPath: FieldPath<Account>) => {
+const basicAccountSchema: Schema<Account> = (accountPath: FieldPath<Account>) => {
   error(accountPath.quality,
         ({value}) => value() === '4K', '4K not supported for basic accounts');
   error(accountPath.friendsAndFamily,
         ({value}) => value().length > 1, 'Basic account allows 1 friends & family user');
-});
+};
 
-const accountSchema = schema<Account>((accountPath: FieldPath<Account>) => {
+const accountSchema: Schema<Account> = (accountPath: FieldPath<Account>) => {
   // Apply the basic account logic only if the user is not premium.
   applyWhen(accountPath, ({value}) => !value().premiumTier, basicAccountSchema);
-});
+};
 
 const accountForm = form(signal({
   premiumTier: true,
@@ -472,21 +472,21 @@ interface Trip {
   end: SimpleDate|null;
 }
 
-// Create a schema to validate dates.
-const dateSchema = schema<SimpleDate>((datePath: FieldPath<SimpleDate>) => {
+// Define a schema to validate dates.
+const dateSchema: Schema<SimpleDate> = (datePath: FieldPath<SimpleDate>) => {
   error(datePath.month, ({value}) => value() < 1 || value() > 12, 'Invalid month');
   error(datePath.date, ({value}) => value() < 1 || value() > 31, 'Invalid date');
-});
+};
 
-// Create a schema for the trip that includes validation for its dates.
-const tripSchema = schema<Trip>((tripPath: FieldPath<Trip>) => {
+// Define a schema for the trip that includes validation for its dates.
+const tripSchema: Schema<Trip> = (tripPath: FieldPath<Trip>) => {
   // Define trip-specific logic.
   required(tripPath.destination);
 
   // Add in standard date logic for start and end date when they are not null.
   applyWhenValue(tripPath.start, (value): value is SimpleDate => value !== null, dateSchema);
   applyWhenValue(tripPath.end, (value): value is SimpleDate => value !== null, dateSchema);
-});
+};
 
 const tripModel = signal<Trip>({
   destination: '',
