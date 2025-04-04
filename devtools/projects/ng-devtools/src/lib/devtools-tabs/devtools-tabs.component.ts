@@ -95,6 +95,13 @@ export class DevToolsTabsComponent {
       this.routes.set(routes || []);
     });
 
+    // Change the tab to Components, if an element is selected via the inspector.
+    this._messageBus.on('selectComponent', () => {
+      if (this.activeTab() !== 'Components') {
+        this.changeTab('Components');
+      }
+    });
+
     if (typeof chrome !== 'undefined' && chrome.runtime !== undefined) {
       this.extensionVersion.set(chrome.runtime.getManifest().version);
     }
