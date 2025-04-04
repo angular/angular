@@ -85,6 +85,11 @@ export const routerProviders = [
  * user cancels the navigation using the stop button in the browser UI, pressing the escape key,
  * or initiates a document traversal (e.g. browser back/forward button). When this event
  * happens, it aborts any ongoing Router navigation.
+ *
+ * The benefit we get out of this is that the browser can better indicate a navigation is happening
+ * when we use the Navigation API. A loading indicator appears on the tab (in desktop chrome) and the
+ * refresh button changes to an "x" for stop. Site visitors can cancel the navigation using the stop
+ * button or the escape key (again, on desktop).
  */
 const initializeNavigationAdapter = () => {
   const router = inject(Router);
