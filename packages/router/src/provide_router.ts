@@ -14,7 +14,6 @@ import {
 } from '@angular/common';
 import {
   APP_BOOTSTRAP_LISTENER,
-  APP_INITIALIZER,
   ApplicationRef,
   ComponentRef,
   ENVIRONMENT_INITIALIZER,
@@ -24,6 +23,7 @@ import {
   Injector,
   makeEnvironmentProviders,
   NgZone,
+  provideAppInitializer,
   Provider,
   runInInjectionContext,
   Type,
@@ -108,7 +108,7 @@ export function rootRoute(router: Router): ActivatedRoute {
  */
 export interface RouterFeature<FeatureKind extends RouterFeatureKind> {
   ɵkind: FeatureKind;
-  ɵproviders: Provider[];
+  ɵproviders: Array<Provider | EnvironmentProviders>;
 }
 
 /**
@@ -116,7 +116,7 @@ export interface RouterFeature<FeatureKind extends RouterFeatureKind> {
  */
 function routerFeature<FeatureKind extends RouterFeatureKind>(
   kind: FeatureKind,
-  providers: Provider[],
+  providers: Array<Provider | EnvironmentProviders>,
 ): RouterFeature<FeatureKind> {
   return {ɵkind: kind, ɵproviders: providers};
 }
@@ -347,40 +347,34 @@ export type InitialNavigationFeature =
 export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNavigationFeature {
   const providers = [
     {provide: INITIAL_NAVIGATION, useValue: InitialNavigation.EnabledBlocking},
-    {
-      provide: APP_INITIALIZER,
-      multi: true,
-      deps: [Injector],
-      useFactory: (injector: Injector) => {
-        const locationInitialized: Promise<any> = injector.get(
-          LOCATION_INITIALIZED,
-          Promise.resolve(),
-        );
+    provideAppInitializer(() => {
+      const injector = inject(Injector);
+      const locationInitialized: Promise<any> = injector.get(
+        LOCATION_INITIALIZED,
+        Promise.resolve(),
+      );
 
-        return () => {
-          return locationInitialized.then(() => {
-            return new Promise((resolve) => {
-              const router = injector.get(Router);
-              const bootstrapDone = injector.get(BOOTSTRAP_DONE);
-              afterNextNavigation(router, () => {
-                // Unblock APP_INITIALIZER in case the initial navigation was canceled or errored
-                // without a redirect.
-                resolve(true);
-              });
-
-              injector.get(NavigationTransitions).afterPreactivation = () => {
-                // Unblock APP_INITIALIZER once we get to `afterPreactivation`. At this point, we
-                // assume activation will complete successfully (even though this is not
-                // guaranteed).
-                resolve(true);
-                return bootstrapDone.closed ? of(void 0) : bootstrapDone;
-              };
-              router.initialNavigation();
-            });
+      return locationInitialized.then(() => {
+        return new Promise((resolve) => {
+          const router = injector.get(Router);
+          const bootstrapDone = injector.get(BOOTSTRAP_DONE);
+          afterNextNavigation(router, () => {
+            // Unblock APP_INITIALIZER in case the initial navigation was canceled or errored
+            // without a redirect.
+            resolve(true);
           });
-        };
-      },
-    },
+
+          injector.get(NavigationTransitions).afterPreactivation = () => {
+            // Unblock APP_INITIALIZER once we get to `afterPreactivation`. At this point, we
+            // assume activation will complete successfully (even though this is not
+            // guaranteed).
+            resolve(true);
+            return bootstrapDone.closed ? of(void 0) : bootstrapDone;
+          };
+          router.initialNavigation();
+        });
+      });
+    }),
   ];
   return routerFeature(RouterFeatureKind.EnabledBlockingInitialNavigationFeature, providers);
 }
@@ -425,16 +419,9 @@ export type DisabledInitialNavigationFeature =
  */
 export function withDisabledInitialNavigation(): DisabledInitialNavigationFeature {
   const providers = [
-    {
-      provide: APP_INITIALIZER,
-      multi: true,
-      useFactory: () => {
-        const router = inject(Router);
-        return () => {
-          router.setUpLocationChangeListener();
-        };
-      },
-    },
+    provideAppInitializer(() => {
+      inject(Router).setUpLocationChangeListener();
+    }),
     {provide: INITIAL_NAVIGATION, useValue: InitialNavigation.Disabled},
   ];
   return routerFeature(RouterFeatureKind.DisabledInitialNavigationFeature, providers);
