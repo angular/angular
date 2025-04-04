@@ -1,7 +1,5 @@
 # Dependent state with `linkedSignal`
 
-IMPORTANT: `linkedSignal` is [developer preview](reference/releases#developer-preview). It's ready for you to try, but it might change before it is stable.
-
 You can use the `signal` function to hold some state in your Angular code. Sometimes, this state depends on some _other_ state. For example, imagine a component that lets the user select a shipping method for an order:
 
 ```typescript
