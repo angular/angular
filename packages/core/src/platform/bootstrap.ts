@@ -105,7 +105,7 @@ export function bootstrap<M>(
         throw new RuntimeError(
           RuntimeErrorCode.PROVIDED_BOTH_ZONE_AND_ZONELESS,
           'Invalid change detection configuration: ' +
-            'provideZoneChangeDetection and provideExperimentalZonelessChangeDetection cannot be used together.',
+            'provideZoneChangeDetection and provideZonelessChangeDetection cannot be used together.',
         );
       }
     }

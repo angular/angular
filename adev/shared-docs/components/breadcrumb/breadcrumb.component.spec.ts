@@ -13,7 +13,7 @@ import {NavigationState} from '../../services';
 import {NavigationItem} from '../../interfaces';
 import {By} from '@angular/platform-browser';
 import {RouterTestingModule} from '@angular/router/testing';
-import {provideExperimentalZonelessChangeDetection} from '@angular/core';
+import {provideZonelessChangeDetection} from '@angular/core';
 
 describe('Breadcrumb', () => {
   let fixture: ComponentFixture<Breadcrumb>;
@@ -25,7 +25,7 @@ describe('Breadcrumb', () => {
     TestBed.configureTestingModule({
       imports: [Breadcrumb, RouterTestingModule],
       providers: [
-        provideExperimentalZonelessChangeDetection(),
+        provideZonelessChangeDetection(),
         {
           provide: NavigationState,
           useValue: navigationStateSpy,

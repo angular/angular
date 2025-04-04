@@ -11,7 +11,7 @@ import {
   ApplicationRef,
   computed,
   PLATFORM_ID,
-  provideExperimentalZonelessChangeDetection,
+  provideZonelessChangeDetection,
   signal,
 } from '../../src/core';
 import {afterRenderEffect} from '../../src/render3/reactivity/after_render_effect';
@@ -227,10 +227,7 @@ describe('afterRenderEffect', () => {
 
   it('should schedule CD when dirty', async () => {
     TestBed.configureTestingModule({
-      providers: [
-        provideExperimentalZonelessChangeDetection(),
-        {provide: PLATFORM_ID, useValue: 'browser'},
-      ],
+      providers: [provideZonelessChangeDetection(), {provide: PLATFORM_ID, useValue: 'browser'}],
     });
 
     const log: string[] = [];
