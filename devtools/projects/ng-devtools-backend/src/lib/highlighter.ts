@@ -12,6 +12,7 @@ import {ngDebugClient} from './ng-debug-api/ng-debug-api';
 
 let hydrationOverlayItems: HTMLElement[] = [];
 let selectedElementOverlay: HTMLElement | null = null;
+let selectedElement: Node | null = null;
 
 const DEV_TOOLS_HIGHLIGHT_NODE_ID = '____ngDevToolsHighlight';
 
@@ -83,8 +84,12 @@ export function getDirectiveName(dir: Type<unknown> | undefined | null): string 
 }
 
 export function highlightSelectedElement(el: Node): void {
+  if (el === selectedElement) {
+    return;
+  }
   unHighlight();
   selectedElementOverlay = addHighlightForElement(el);
+  selectedElement = el;
 }
 
 export function highlightHydrationElement(el: Node, status: HydrationStatus) {
