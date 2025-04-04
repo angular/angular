@@ -7,21 +7,16 @@
  */
 
 import {ViewportScroller} from '@angular/common';
-import {
-  EnvironmentInjector,
-  inject,
-  Injectable,
-  InjectionToken,
-  NgZone,
-  OnDestroy,
-} from '@angular/core';
+import {Injectable, InjectionToken, NgZone, OnDestroy} from '@angular/core';
 import {Unsubscribable} from 'rxjs';
 
 import {
+  IMPERATIVE_NAVIGATION,
   NavigationEnd,
   NavigationSkipped,
   NavigationSkippedCode,
   NavigationStart,
+  NavigationTrigger,
   Scroll,
 } from './events';
 import {NavigationTransitions} from './navigation_transition';
@@ -35,7 +30,7 @@ export class RouterScroller implements OnDestroy {
   private scrollEventsSubscription?: Unsubscribable;
 
   private lastId = 0;
-  private lastSource: 'imperative' | 'popstate' | 'hashchange' | undefined = 'imperative';
+  private lastSource: NavigationTrigger | undefined = IMPERATIVE_NAVIGATION;
   private restoredId = 0;
   private store: {[key: string]: [number, number]} = {};
 

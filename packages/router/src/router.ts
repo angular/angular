@@ -23,14 +23,13 @@ import {createSegmentGroupFromRoute, createUrlTreeFromSegmentGroup} from './crea
 import {INPUT_BINDER} from './directives/router_outlet';
 import {RuntimeErrorCode} from './errors';
 import {
-  BeforeActivateRoutes,
   Event,
   IMPERATIVE_NAVIGATION,
+  isPublicRouterEvent,
   NavigationCancel,
   NavigationCancellationCode,
   NavigationEnd,
   NavigationTrigger,
-  PrivateRouterEvents,
   RedirectRequest,
 } from './events';
 import {NavigationBehaviorOptions, OnSameUrlNavigation, Routes} from './models';
@@ -685,8 +684,4 @@ function validateCommands(commands: string[]): void {
       );
     }
   }
-}
-
-function isPublicRouterEvent(e: Event | PrivateRouterEvents): e is Event {
-  return !(e instanceof BeforeActivateRoutes) && !(e instanceof RedirectRequest);
 }
