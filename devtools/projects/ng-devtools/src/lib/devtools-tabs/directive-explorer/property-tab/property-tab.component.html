@@ -6,3 +6,36 @@
   [currentSelectedElement]="currentSelectedElement()"
 >
 </ng-property-tab-body>
+
+@let hydration = currentSelectedElement().hydration;
+@if (hydration && hydration.status === 'hydration-boundary') {
+  <!-- @if (hydration.defer) {
+    <h2>Defer triggers</h2>
+    @if (hydration.defer.interaction) {
+      <p>On Interaction</p>
+    }
+    @if (hydration.defer.hover) {
+      <p>On hover</p>
+    }
+    @if (hydration.defer.timer) {
+      <p>On timer({{hydration.hydrate.timer}}ms)</p>
+    }
+  } -->
+
+  @if (hydration.hydrate) {
+    <h2>Hydration triggers</h2>
+    @if (!hydration.hydrate.enabled) {
+      <p>Hydration disabled</p>
+    } @else if (hydration.hydrate.enabled) {
+      @if (hydration.hydrate.interaction) {
+        <p>On Interaction</p>
+      }
+      @if (hydration.hydrate.hover) {
+        <p>On hover</p>
+      }
+      @if (hydration.hydrate.timer) {
+        <p>On timer({{hydration.hydrate.timer}}ms)</p>
+      }
+    }
+  }
+}

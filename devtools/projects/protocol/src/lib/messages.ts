@@ -29,11 +29,39 @@ export interface ComponentType {
 
 export type HydrationStatus =
   | null
-  | {status: 'hydrated' | 'skipped'}
+  | {status: 'hydrated' | 'skipped' | 'dehydrated'}
   | {
       status: 'mismatched';
       expectedNodeDetails: string | null;
       actualNodeDetails: string | null;
+    }
+  | {
+      status: 'hydration-boundary';
+      id: string;
+      hydrate:
+        | {
+            enabled: true;
+            idle: boolean;
+            immediate: boolean;
+            viewport: boolean;
+            timer: number | null;
+            hover: boolean;
+            when: boolean;
+            interaction: boolean;
+          }
+        | {enabled: false} // hydrate: never
+        | undefined;
+      defer:
+        | {
+            idle: boolean;
+            immediate: boolean;
+            viewport: boolean;
+            timer: number | null;
+            hover: boolean;
+            interaction: boolean;
+            when: boolean;
+          }
+        | undefined;
     };
 
 export interface DevToolsNode<DirType = DirectiveType, CmpType = ComponentType> {
@@ -41,7 +69,7 @@ export interface DevToolsNode<DirType = DirectiveType, CmpType = ComponentType> 
   directives: DirType[];
   component: CmpType | null;
   children: DevToolsNode<DirType, CmpType>[];
-  nativeElement?: Node;
+  nativeElement?: HTMLElement;
   resolutionPath?: SerializedInjector[];
   hydration: HydrationStatus;
   onPush?: boolean;

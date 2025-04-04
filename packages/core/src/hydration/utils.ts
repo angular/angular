@@ -285,6 +285,7 @@ export enum HydrationStatus {
   Hydrated = 'hydrated',
   Skipped = 'skipped',
   Mismatched = 'mismatched',
+  Dehydrated = 'dehydrated',
 }
 
 export type HydrationInfo =
@@ -295,6 +296,9 @@ export type HydrationInfo =
       status: HydrationStatus.Mismatched;
       actualNodeDetails: string | null;
       expectedNodeDetails: string | null;
+    }
+  | {
+      status: HydrationStatus.Dehydrated;
     };
 
 const HYDRATION_INFO_KEY = '__ngDebugHydrationInfo__';
@@ -595,10 +599,55 @@ export function getParentBlockHydrationQueue(
   return {parentBlockPromise, hydrationQueue};
 }
 
+export function markDehydratedNodes(rootElement: Element): void {
+  let walker = document.createTreeWalker(rootElement, NodeFilter.SHOW_COMMENT, null);
+
+  while (walker.nextNode()) {
+    const currentCommentNode = walker.currentNode as Comment;
+    if (currentCommentNode.textContent?.startsWith('ngh')) {
+      // const nodeId = currentCommentNode.textContent.split('ngh=')[1];
+      let currentSibling = currentCommentNode.previousSibling;
+      while (currentSibling?.nodeType === Node.ELEMENT_NODE) {
+        const hydrationInfo: HydrationInfo = {status: HydrationStatus.Dehydrated};
+        (currentSibling as HydratedNode)[HYDRATION_INFO_KEY] = hydrationInfo;
+
+        currentSibling = currentSibling.previousSibling;
+      }
+    }
+  }
+}
+
+function getDehydratedNodes(rootElement: Element): Map<HTMLElement, string> {
+  const map = new Map<HTMLElement, string>();
+
+  let walker = document.createTreeWalker(rootElement, NodeFilter.SHOW_COMMENT, null);
+
+  while (walker.nextNode()) {
+    const currentCommentNode = walker.currentNode as Comment;
+    if (currentCommentNode.textContent?.startsWith('ngh')) {
+      const nodeId = currentCommentNode.textContent.split('ngh=')[1];
+      const currentDeferBoundary = [];
+      let currentSibling = currentCommentNode.previousSibling;
+      while (currentSibling?.nodeType === Node.ELEMENT_NODE) {
+        (currentSibling as HydratedNode)[HYDRATION_INFO_KEY];
+        map.set(currentSibling as HTMLElement, nodeId);
+        currentDeferBoundary.unshift(currentSibling as HTMLElement);
+        currentSibling = currentSibling.previousSibling;
+      }
+    }
+  }
+
+  return map;
+}
+
+// iife to avoid toplevel access
+const hoverTrigger = (() => hoverEventNames.join(':;'))();
+const interactionTrigger = (() => interactionEventNames.join(':;'))();
+
 function gatherDeferBlocksByJSActionAttribute(doc: Document): Set<HTMLElement> {
   const jsactionNodes = doc.body.querySelectorAll('[jsaction]');
   const blockMap = new Set<HTMLElement>();
-  const eventTypes = [hoverEventNames.join(':;'), interactionEventNames.join(':;')].join('|');
+  const eventTypes = new RegExp(`${hoverTrigger}|${interactionTrigger}`);
   for (let node of jsactionNodes) {
     const attr = node.getAttribute('jsaction');
     const blockId = node.getAttribute('ngb');
@@ -755,5 +804,35 @@ export function verifySsrContentsIntegrity(doc: Document): void {
         'was produced during server side rendering. Make sure that there are no optimizations ' +
         'that remove comment nodes from HTML enabled on your CDN. Angular hydration ' +
         'relies on HTML produced by the server, including whitespaces and comment nodes.',
+  );
+}
+
+type HydrationTriggers = BlockSummary['hydrate'] & {
+  hover: boolean;
+  interaction: boolean;
+  when: boolean;
+  enabled: boolean; // false=hydrate never
+};
+
+export function hydrationTriggers(
+  injector: Injector,
+  element: Element,
+): Map<string, HydrationTriggers> {
+  const blockData = processBlockData(injector);
+
+  return new Map(
+    [...blockData.entries()].map(([blockId, blockSummary]: [string, BlockSummary]) => {
+      const jsactionTriggers = element.querySelector(`[ngb=${blockId}]`)?.getAttribute('jsaction');
+      return [
+        blockId,
+        {
+          ...blockSummary.hydrate,
+          hover: jsactionTriggers?.match(hoverTrigger) !== null,
+          interaction: jsactionTriggers?.match(interactionTrigger) !== null,
+          when: false, // TODO
+          enabled: false, // TODO gh pr checkout 59723
+        },
+      ];
+    }),
   );
 }
