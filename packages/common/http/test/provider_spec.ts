@@ -40,12 +40,12 @@ import {
   HttpFeature,
   HttpFeatureKind,
   provideHttpClient,
-  withFetch,
   withInterceptors,
   withInterceptorsFromDi,
   withJsonpSupport,
   withNoXsrfProtection,
   withRequestsMadeViaParent,
+  withXhr,
   withXsrfConfiguration,
 } from '../src/provider';
 
@@ -361,8 +361,8 @@ describe('provideHttpClient', () => {
     for (const backend of ['fetch', 'xhr']) {
       describe(`given '${backend}' backend`, () => {
         const commonHttpFeatures: HttpFeature<HttpFeatureKind>[] = [];
-        if (backend === 'fetch') {
-          commonHttpFeatures.push(withFetch());
+        if (backend === 'xhr') {
+          commonHttpFeatures.push(withXhr());
         }
 
         it('should have independent HTTP setups if not explicitly specified', async () => {
@@ -494,7 +494,7 @@ describe('provideHttpClient', () => {
           // `console.warn` produced for cases when `fetch`
           // is enabled and we are running in a browser.
           {provide: PLATFORM_ID, useValue: 'browser'},
-          provideHttpClient(withFetch()),
+          provideHttpClient(),
         ],
       });
       const fetchBackend = TestBed.inject(HttpBackend);
@@ -509,10 +509,7 @@ describe('provideHttpClient', () => {
 
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withFetch()),
-          {provide: HttpBackend, useClass: CustomBackendExtends},
-        ],
+        providers: [provideHttpClient(), {provide: HttpBackend, useClass: CustomBackendExtends}],
       });
 
       const backend = TestBed.inject(HttpBackend);
@@ -521,7 +518,7 @@ describe('provideHttpClient', () => {
 
     it(`fetch API should be used in child when 'withFetch' was used in parent injector`, () => {
       TestBed.configureTestingModule({
-        providers: [provideHttpClient(withFetch()), provideHttpClientTesting()],
+        providers: [provideHttpClient(), provideHttpClientTesting()],
       });
 
       const child = createEnvironmentInjector(
@@ -567,7 +564,7 @@ describe('provideHttpClient', () => {
           // `console.warn` produced in case `fetch` is not
           // enabled while running code on the server.
           {provide: PLATFORM_ID, useValue: 'server'},
-          provideHttpClient(),
+          provideHttpClient(withXhr()),
         ],
       });
 
