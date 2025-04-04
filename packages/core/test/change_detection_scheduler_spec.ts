@@ -14,6 +14,7 @@ import {
   ApplicationRef,
   ChangeDetectorRef,
   Component,
+  ComponentRef,
   createComponent,
   destroyPlatform,
   ElementRef,
@@ -51,6 +52,7 @@ import {RuntimeError, RuntimeErrorCode} from '../src/errors';
 import {scheduleCallbackWithRafRace} from '../src/util/callback_scheduler';
 import {ChangeDetectionSchedulerImpl} from '../src/change_detection/scheduling/zoneless_scheduling_impl';
 import {global} from '../src/util/global';
+import {provideNoopAnimations} from '@angular/platform-browser/animations';
 
 function isStable(injector = TestBed.inject(EnvironmentInjector)): boolean {
   return toSignal(injector.get(ApplicationRef).isStable, {requireSync: true, injector})();
@@ -374,6 +376,77 @@ describe('Angular with zoneless enabled', () => {
       appRef.attachView(component.hostView);
       expect(isStable()).toBe(false);
     });
+
+    it(
+      'when attaching view to ApplicationRef with animations',
+      withBody('<app></app>', async () => {
+        destroyPlatform();
+
+        @Component({
+          standalone: true,
+          template: `<p>Component created</p>`,
+        })
+        class DynamicComponent {
+          cdr = inject(ChangeDetectorRef);
+        }
+
+        @Component({
+          selector: 'app',
+          standalone: true,
+          template: `<main #outlet></main>`,
+        })
+        class App {
+          @ViewChild('outlet') outlet!: ElementRef<HTMLElement>;
+
+          envInjector = inject(EnvironmentInjector);
+          appRef = inject(ApplicationRef);
+          elementRef = inject(ElementRef);
+
+          createComponent() {
+            const host = document.createElement('div');
+            this.outlet.nativeElement.appendChild(host);
+
+            const ref = createComponent(DynamicComponent, {
+              environmentInjector: this.envInjector,
+              hostElement: host,
+            });
+
+            this.appRef.attachView(ref.hostView);
+
+            return ref;
+          }
+        }
+
+        const applicationRef = await bootstrapApplication(App, {
+          providers: [
+            provideZonelessChangeDetection(),
+            provideNoopAnimations(),
+            {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
+          ],
+        });
+
+        const component = applicationRef.components[0] as ComponentRef<App>;
+        const appNativeElement = component.instance.elementRef.nativeElement;
+
+        await applicationRef.whenStable();
+        expect(appNativeElement.innerHTML).toEqual('<main></main>');
+
+        const ref: ComponentRef<DynamicComponent> = component.instance.createComponent();
+        await applicationRef.whenStable();
+        expect(appNativeElement.innerHTML).toContain('<p>Component created</p>');
+
+        // Similating a case where invoking destroy also schedules a CD.
+        ref.instance.cdr.markForCheck();
+        ref.destroy();
+
+        // DOM is not synchronously removed because change detection hasn't run
+        expect(appNativeElement.innerHTML).toContain('<p>Component created</p>');
+        await applicationRef.whenStable();
+
+        expect(isStable()).toBe(true);
+        expect(appNativeElement.innerHTML).toEqual('<main></main>');
+      }),
+    );
 
     it('when a stable subscription synchronously causes another notification', async () => {
       const val = signal('initial');
