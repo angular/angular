@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT} from '@angular/common';
+import {DOCUMENT} from '@angular/core';
 import {Inject, Injectable, type ListenerOptions} from '@angular/core';
 
 import {EventManagerPlugin} from './event_manager';

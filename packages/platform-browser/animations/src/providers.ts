@@ -15,10 +15,9 @@ import {
   ɵWebAnimationsDriver as WebAnimationsDriver,
   ɵWebAnimationsStyleNormalizer as WebAnimationsStyleNormalizer,
 } from '@angular/animations/browser';
-import {DOCUMENT} from '@angular/common';
 import {
   ANIMATION_MODULE_TYPE,
-  inject,
+  DOCUMENT,
   Inject,
   Injectable,
   NgZone,

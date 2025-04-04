@@ -8,7 +8,6 @@
 
 import {
   CommonModule,
-  DOCUMENT,
   XhrFactory,
   ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID,
 } from '@angular/common';
@@ -17,6 +16,7 @@ import {
   ApplicationModule,
   ApplicationRef,
   createPlatformFactory,
+  DOCUMENT,
   ErrorHandler,
   InjectionToken,
   NgModule,

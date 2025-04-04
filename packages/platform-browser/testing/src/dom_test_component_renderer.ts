@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
-import {Inject, Injectable} from '@angular/core';
+import {ɵgetDOM as getDOM} from '@angular/common';
+import {DOCUMENT, Inject, Injectable} from '@angular/core';
 import {TestComponentRenderer} from '@angular/core/testing';
 
 /**

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT} from '@angular/common';
 import {
+  DOCUMENT,
   inject,
   Inject,
   Injectable,

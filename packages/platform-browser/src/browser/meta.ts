@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT, ɵDomAdapter as DomAdapter, ɵgetDOM as getDOM} from '@angular/common';
-import {Inject, Injectable} from '@angular/core';
+import {ɵDomAdapter as DomAdapter, ɵgetDOM as getDOM} from '@angular/common';
+import {Inject, Injectable, DOCUMENT} from '@angular/core';
 
 /**
  * Represents the attributes of an HTML `<meta>` element. The element itself is

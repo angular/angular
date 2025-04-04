@@ -7,13 +7,12 @@
  */
 
 import {
-  DOCUMENT,
   LocationChangeEvent,
   LocationChangeListener,
   PlatformLocation,
   ɵgetDOM as getDOM,
 } from '@angular/common';
-import {Inject, Injectable, Optional, ɵWritable as Writable} from '@angular/core';
+import {DOCUMENT, Inject, Injectable, Optional, ɵWritable as Writable} from '@angular/core';
 import {Subject} from 'rxjs';
 
 import {INITIAL_CONFIG, PlatformConfig} from './tokens';

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
-import {Inject, Injectable, type ListenerOptions} from '@angular/core';
+import {ɵgetDOM as getDOM} from '@angular/common';
+import {DOCUMENT, Inject, Injectable, type ListenerOptions} from '@angular/core';
 import {EventManagerPlugin} from '@angular/platform-browser';
 
 @Injectable()

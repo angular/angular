@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT} from '@angular/common';
 import {
   ANIMATION_MODULE_TYPE,
+  DOCUMENT,
   EnvironmentProviders,
   makeEnvironmentProviders,
   NgZone,

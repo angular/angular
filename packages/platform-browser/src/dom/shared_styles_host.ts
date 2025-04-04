@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT, isPlatformServer} from '@angular/common';
+import {isPlatformServer} from '@angular/common';
 import {
   APP_ID,
   CSP_NONCE,
+  DOCUMENT,
   Inject,
   Injectable,
   OnDestroy,

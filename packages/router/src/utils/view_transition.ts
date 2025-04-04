@@ -8,8 +8,8 @@
 
 /// <reference types="dom-view-transitions" />
 
-import {DOCUMENT} from '@angular/common';
 import {
+  DOCUMENT,
   afterNextRender,
   InjectionToken,
   Injector,
