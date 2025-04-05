@@ -27,6 +27,7 @@ import {
   Type,
   ViewChild,
   ViewContainerRef,
+  Injector,
 } from '../src/core';
 import {ErrorHandler} from '../src/error_handler';
 import {ComponentRef} from '../src/linker/component_factory';
