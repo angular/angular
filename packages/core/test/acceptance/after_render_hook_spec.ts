@@ -8,7 +8,6 @@
 
 import {PLATFORM_BROWSER_ID, PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
 import {
-  AfterRenderPhase,
   AfterRenderRef,
   ApplicationRef,
   ChangeDetectionStrategy,
@@ -435,108 +434,6 @@ describe('after render hooks', () => {
                 log.push('early-read-2');
               },
             });
-          }
-        }
-
-        TestBed.configureTestingModule({
-          declarations: [Root, CompA, CompB],
-          ...COMMON_CONFIGURATION,
-        });
-        createAndAttachComponent(Root);
-
-        expect(log).toEqual([]);
-        TestBed.inject(ApplicationRef).tick();
-        expect(log).toEqual([
-          'early-read-1',
-          'early-read-2',
-          'write-1',
-          'write-2',
-          'mixed-read-write-1',
-          'mixed-read-write-2',
-          'read-1',
-          'read-2',
-        ]);
-      });
-
-      it('should run callbacks in the correct phase and order when using deprecated phase flag', () => {
-        const log: string[] = [];
-
-        @Component({
-          selector: 'root',
-          template: `<comp-a></comp-a><comp-b></comp-b>`,
-          standalone: false,
-        })
-        class Root {}
-
-        @Component({
-          selector: 'comp-a',
-          standalone: false,
-        })
-        class CompA {
-          constructor() {
-            afterRender(
-              () => {
-                log.push('early-read-1');
-              },
-              {phase: AfterRenderPhase.EarlyRead},
-            );
-
-            afterRender(
-              () => {
-                log.push('write-1');
-              },
-              {phase: AfterRenderPhase.Write},
-            );
-
-            afterRender(
-              () => {
-                log.push('mixed-read-write-1');
-              },
-              {phase: AfterRenderPhase.MixedReadWrite},
-            );
-
-            afterRender(
-              () => {
-                log.push('read-1');
-              },
-              {phase: AfterRenderPhase.Read},
-            );
-          }
-        }
-
-        @Component({
-          selector: 'comp-b',
-          standalone: false,
-        })
-        class CompB {
-          constructor() {
-            afterRender(
-              () => {
-                log.push('read-2');
-              },
-              {phase: AfterRenderPhase.Read},
-            );
-
-            afterRender(
-              () => {
-                log.push('mixed-read-write-2');
-              },
-              {phase: AfterRenderPhase.MixedReadWrite},
-            );
-
-            afterRender(
-              () => {
-                log.push('write-2');
-              },
-              {phase: AfterRenderPhase.Write},
-            );
-
-            afterRender(
-              () => {
-                log.push('early-read-2');
-              },
-              {phase: AfterRenderPhase.EarlyRead},
-            );
           }
         }
 

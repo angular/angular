@@ -62,16 +62,6 @@ export function afterRenderEffect<E = never, W = never, M = never>(spec: {
 export interface AfterRenderOptions {
     injector?: Injector;
     manualCleanup?: boolean;
-    // @deprecated
-    phase?: AfterRenderPhase;
-}
-
-// @public @deprecated
-export enum AfterRenderPhase {
-    EarlyRead = 0,
-    MixedReadWrite = 2,
-    Read = 3,
-    Write = 1
 }
 
 // @public

@@ -104,7 +104,7 @@ export {
 } from './render3/ng_module_ref';
 export {createComponent, reflectComponentType, ComponentMirror} from './render3/component';
 export {isStandalone} from './render3/def_getters';
-export {AfterRenderPhase, AfterRenderRef} from './render3/after_render/api';
+export {AfterRenderRef} from './render3/after_render/api';
 export {publishExternalGlobalUtil as ɵpublishExternalGlobalUtil} from './render3/util/global_utils';
 export {
   AfterRenderOptions,
