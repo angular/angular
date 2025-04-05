@@ -69,8 +69,21 @@ Until Angular v9, Angular and Angular CLI versions were not synced.
 
 ## Browser support
 
-Angular supports most recent browsers.
-This includes the following specific versions:
+Angular uses the ["widely available" Baseline](https://web.dev/baseline) to define browser
+support. For each major version, Angular supports browsers included in the Baseline of a
+chosen date near the release date for that major.
+
+The "widely available" Baseline includes browsers released less than 30 months (2.5 years)
+of the chosen date within Baseline's core browser set (Chrome, Edge, Firefox, Safari) and
+targets supporting approximately 95% of web users.
+
+| Angular | Baseline Date | Browser Set                 |
+| ------- | ------------- | --------------------------- |
+| v20     | 2025-03-31    | [Browser Set][browsers-v20] |
+
+[browsers-v20]: https://browsersl.ist/#q=Chrome+%3E%3D+105%0AChromeAndroid+%3E%3D+105%0AEdge+%3E%3D+105%0AFirefox+%3E%3D+104%0AFirefoxAndroid+%3E%3D+104%0ASafari+%3E%3D+16%0AiOS+%3E%3D+16
+
+Angular versions prior to v20 support the following specific browser versions:
 
 | Browser | Supported versions                          |
 | :------ | :------------------------------------------ |
@@ -80,8 +93,6 @@ This includes the following specific versions:
 | Safari  | 2 most recent major versions                |
 | iOS     | 2 most recent major versions                |
 | Android | 2 most recent major versions                |
-
-HELPFUL: Angular's continuous integration process runs unit tests of the framework on all of these browsers for every pull request, using [Sauce Labs](https://saucelabs.com).
 
 ## Polyfills
 
