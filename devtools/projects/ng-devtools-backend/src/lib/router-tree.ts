@@ -7,9 +7,8 @@
  */
 
 import {Route} from 'protocol';
+import type {Route as AngularRoute} from '@angular/router';
 
-// todo(aleksanderbodurri): type these properly
-type AngularRoute = any;
 type Routes = any;
 type Router = any;
 
@@ -61,7 +60,7 @@ function assignChildrenToParent(
     const isActive = routePath === currentUrl;
 
     const routeConfig: Route = {
-      title: child.title,
+      title: child.title?.toString(), // can be a function, so convert to string
       pathMatch: child.pathMatch,
       component: childName,
       canActivateGuards: getGuardNames(child),
