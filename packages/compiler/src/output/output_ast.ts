@@ -683,23 +683,22 @@ export class TemplateLiteralExpr extends Expression {
   }
 }
 export class TemplateLiteralElementExpr extends Expression {
-  rawText: string;
+  readonly rawText: string;
 
   constructor(
-    public text: string,
+    readonly text: string,
     sourceSpan?: ParseSourceSpan | null,
     rawText?: string,
   ) {
     super(STRING_TYPE, sourceSpan);
 
-    // If `rawText` is not provided, try to extract the raw string from its
-    // associated `sourceSpan`. If that is also not available, "fake" the raw
-    // string instead by escaping the following control sequences:
+    // If `rawText` is not provided, "fake" the raw string by escaping the following sequences:
     // - "\" would otherwise indicate that the next character is a control character.
     // - "`" and "${" are template string control sequences that would otherwise prematurely
     // indicate the end of the template literal element.
-    this.rawText =
-      rawText ?? sourceSpan?.toString() ?? escapeForTemplateLiteral(escapeSlashes(text));
+    // Note that we can't rely on the `sourceSpan` here, because it may be incorrect (see
+    // https://github.com/angular/angular/pull/60267#discussion_r1986402524).
+    this.rawText = rawText ?? escapeForTemplateLiteral(escapeSlashes(text));
   }
 
   override visitExpression(visitor: ExpressionVisitor, context: any) {
