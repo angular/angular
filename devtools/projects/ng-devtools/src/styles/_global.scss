@@ -80,3 +80,21 @@ ng-devtools {
 .mat-mdc-menu-content {
   padding: 0 !important;
 }
+
+mat-form-field {
+  @include mat.form-field-density(-5);
+  @include mat.form-field-overrides(
+    (
+      container-text-size: 0.8rem,
+      outlined-label-text-size: 0.8rem,
+    )
+  );
+
+  mat-select {
+    @include mat.select-overrides(
+      (
+        trigger-text-size: 0.8rem,
+      )
+    );
+  }
+}

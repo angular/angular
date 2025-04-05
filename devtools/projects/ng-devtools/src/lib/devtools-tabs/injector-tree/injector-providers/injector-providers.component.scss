@@ -1,5 +1,3 @@
-@use '@angular/material' as mat;
-
 h2 {
   font-size: 0.875rem;
 }
@@ -18,28 +16,12 @@ h2 {
   gap: 0.5rem;
 
   mat-form-field {
-    @include mat.form-field-density(-5);
-    @include mat.form-field-overrides(
-      (
-        container-text-size: 0.8rem,
-        outlined-label-text-size: 0.8rem,
-      )
-    );
-
     &.token-search {
       flex: 1;
     }
 
     &.type-filter {
       width: 10rem;
-    }
-
-    mat-select {
-      @include mat.select-overrides(
-        (
-          trigger-text-size: 0.8rem,
-        )
-      );
     }
   }
 }
