@@ -1627,7 +1627,7 @@ export interface ResourceLoaderParams<R> {
         status: ResourceStatus;
     };
     // (undocumented)
-    request: Exclude<NoInfer<R>, undefined>;
+    request: NoInfer<Exclude<R, undefined>>;
 }
 
 // @public (undocumented)
