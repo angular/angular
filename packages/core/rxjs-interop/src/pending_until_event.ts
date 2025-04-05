@@ -10,7 +10,7 @@ import {assertInInjectionContext, PendingTasks, inject, Injector} from '../../sr
 import {MonoTypeOperatorFunction, Observable} from 'rxjs';
 
 /**
- * Operator which makes the application unstable until the observable emits, complets, errors, or is unsubscribed.
+ * Operator which makes the application unstable until the observable emits, completes, errors, or is unsubscribed.
  *
  * Use this operator in observables whose subscriptions are important for rendering and should be included in SSR serialization.
  *
