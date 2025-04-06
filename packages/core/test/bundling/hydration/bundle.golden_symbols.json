@@ -54,7 +54,6 @@
   "EventEmitter",
   "EventManager",
   "EventManagerPlugin",
-  "GenericBrowserDomAdapter",
   "HEADERS",
   "HTTP_ROOT_INTERCEPTOR_FNS",
   "HTTP_TRANSFER_CACHE_ORIGIN_MAP",

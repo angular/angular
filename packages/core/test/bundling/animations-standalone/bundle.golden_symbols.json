@@ -80,7 +80,6 @@
   "EventManager",
   "EventManagerPlugin",
   "FALSE_BOOLEAN_VALUES",
-  "GenericBrowserDomAdapter",
   "INJECTOR",
   "INJECTOR_DEF_TYPES",
   "INJECTOR_SCOPE",
