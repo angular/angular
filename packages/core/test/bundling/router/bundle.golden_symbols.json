@@ -80,7 +80,6 @@
   "EventManager",
   "EventManagerPlugin",
   "EventType2",
-  "GenericBrowserDomAdapter",
   "GuardsCheckEnd",
   "GuardsCheckStart",
   "HistoryStateManager",

@@ -72,7 +72,6 @@
   "EventEmitter",
   "EventManager",
   "EventManagerPlugin",
-  "GenericBrowserDomAdapter",
   "HYDRATE_TRIGGER_CLEANUP_FNS",
   "INJECTOR",
   "INJECTOR_DEF_TYPES",
