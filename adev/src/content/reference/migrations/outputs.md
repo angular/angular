@@ -22,7 +22,7 @@ ng generate @angular/core:output-migration
 **Before**
 
 ```typescript
-import {Component, Output} from '@angular/core';
+import {Component, Output, EventEmitter} from '@angular/core';
 
 @Component({
   template: `<button (click)="someMethod('test')">emit</button>`
