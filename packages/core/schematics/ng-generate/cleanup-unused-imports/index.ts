@@ -7,16 +7,20 @@
  */
 
 import {Rule} from '@angular-devkit/schematics';
+import {MigrationStage, runMigrationInDevkit} from '../../utils/tsurge/helpers/angular_devkit';
 import {UnusedImportsMigration} from './unused_imports_migration';
-import {runMigrationInDevkit} from '../../utils/tsurge/helpers/angular_devkit';
 
 export function migrate(): Rule {
   return async (tree, context) => {
     await runMigrationInDevkit({
       getMigration: () => new UnusedImportsMigration(),
       tree,
-      beforeProgramCreation: (tsconfigPath) => {
-        context.logger.info(`Preparing analysis for ${tsconfigPath}`);
+      beforeProgramCreation: (tsconfigPath, stage) => {
+        if (stage === MigrationStage.Analysis) {
+          context.logger.info(`Preparing analysis for: ${tsconfigPath}...`);
+        } else {
+          context.logger.info(`Running migration for: ${tsconfigPath}...`);
+        }
       },
       beforeUnitAnalysis: (tsconfigPath) => {
         context.logger.info(`Scanning for unused imports using ${tsconfigPath}`);
