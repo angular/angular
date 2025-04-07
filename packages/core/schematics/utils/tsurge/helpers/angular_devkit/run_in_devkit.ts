@@ -18,6 +18,14 @@ import {ProjectRootRelativePath} from '../../project_paths';
 import {ProgramInfo} from '../../program_info';
 import {getProjectTsConfigPaths} from '../../../../utils/project_tsconfig_paths';
 
+export enum MigrationStage {
+  /** The migration is analyzing an entrypoint */
+  Analysis,
+
+  /** The migration is about to migrate an entrypoint */
+  Migrate,
+}
+
 /** Information necessary to run a Tsurge migration in the devkit. */
 export interface TsurgeDevkitMigration {
   /** Instantiates the migration. */
@@ -27,13 +35,13 @@ export interface TsurgeDevkitMigration {
   tree: Tree;
 
   /** Called before a program is created. Useful to notify the user before processing starts. */
-  beforeProgramCreation?: (tsconfigPath: string) => void;
+  beforeProgramCreation?: (tsconfigPath: string, stage: MigrationStage) => void;
 
   /**
    * Called after a program is created. Useful when the
    * structure needs to be modified (e.g. filtering files).
    */
-  afterProgramCreation?: (info: ProgramInfo, fileSystem: FileSystem) => void;
+  afterProgramCreation?: (info: ProgramInfo, fileSystem: FileSystem, stage: MigrationStage) => void;
 
   /** Called before a unit is analyzed. Useful for logging. */
   beforeUnitAnalysis?: (tsconfigPath: string) => void;
@@ -55,21 +63,21 @@ export async function runMigrationInDevkit(config: TsurgeDevkitMigration): Promi
   if (!buildPaths.length && !testPaths.length) {
     throw new SchematicsException('Could not find any tsconfig file. Cannot run the migration.');
   }
+  const tsconfigPaths = [...buildPaths, ...testPaths];
 
   const fs = new DevkitMigrationFilesystem(config.tree);
   setFileSystem(fs);
 
   const migration = config.getMigration(fs);
   const unitResults: unknown[] = [];
-  const programInfos = [...buildPaths, ...testPaths].map((tsconfigPath) => {
-    config.beforeProgramCreation?.(tsconfigPath);
+
+  const isFunnelMigration = migration instanceof TsurgeFunnelMigration;
+  for (const tsconfigPath of tsconfigPaths) {
+    config.beforeProgramCreation?.(tsconfigPath, MigrationStage.Analysis);
     const baseInfo = migration.createProgram(tsconfigPath, fs);
     const info = migration.prepareProgram(baseInfo);
-    config.afterProgramCreation?.(info, fs);
-    return {info, tsconfigPath};
-  });
+    config.afterProgramCreation?.(info, fs, MigrationStage.Analysis);
 
-  for (const {info, tsconfigPath} of programInfos) {
     config.beforeUnitAnalysis?.(tsconfigPath);
     unitResults.push(await migration.analyze(info));
   }
@@ -85,12 +93,17 @@ export async function runMigrationInDevkit(config: TsurgeDevkitMigration): Promi
   const globalMeta = await migration.globalMeta(combined);
   let replacements: Replacement[];
 
-  if (migration instanceof TsurgeFunnelMigration) {
+  if (isFunnelMigration) {
     replacements = (await migration.migrate(globalMeta)).replacements;
   } else {
     replacements = [];
 
-    for (const {info} of programInfos) {
+    for (const tsconfigPath of tsconfigPaths) {
+      config.beforeProgramCreation?.(tsconfigPath, MigrationStage.Migrate);
+      const baseInfo = migration.createProgram(tsconfigPath, fs);
+      const info = migration.prepareProgram(baseInfo);
+      config.afterProgramCreation?.(info, fs, MigrationStage.Migrate);
+
       const result = await migration.migrate(globalMeta, info);
       replacements.push(...result.replacements);
     }
