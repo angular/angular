@@ -1,0 +1,7 @@
+filegroup(
+    name = "examples",
+    srcs = [
+        "//adev/src/content/examples/accessibility:ts_files",
+    ],
+    visibility = ["//visibility:public"],
+)

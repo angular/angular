@@ -1,4 +1,25 @@
+load("//tools:defaults.bzl", "ng_module")
+
 package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "ts_files",
+    srcs = glob(["src/app/**/*.ts"]),
+    visibility = ["//visibility:public"],
+)
+
+ng_module(
+    name = "example",
+    srcs = [":ts_files"],
+    assets = glob([
+        "src/app/**/*.html",
+        "src/app/**/*.css",
+    ]),
+    visibility = ["//visibility:public"],
+    deps = [
+        "@npm//@angular/core",
+    ],
+)
 
 exports_files([
     "src/app/app.component.html",
