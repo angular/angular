@@ -1,0 +1,28 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "index",
+    srcs = [
+        "index.ts",
+    ],
+    visibility = [
+        "//adev/shared-docs:__subpackages__",
+    ],
+    deps = [
+        "@npm//@types/node",
+        "@npm//typescript",
+    ],
+)
+
+filegroup(
+    name = "template",
+    srcs = ["previews.template"],
+    visibility = ["//visibility:public"],
+)
+
+exports_files([
+    "index.ts",
+    "previews.template",
+])
