@@ -8,7 +8,7 @@
 
 import {Rule} from '@angular-devkit/schematics';
 import {OutputMigration} from '../../migrations/output-migration/output-migration';
-import {runMigrationInDevkit} from '../../utils/tsurge/helpers/angular_devkit';
+import {MigrationStage, runMigrationInDevkit} from '../../utils/tsurge/helpers/angular_devkit';
 
 interface Options {
   path: string;
@@ -28,8 +28,12 @@ export function migrate(options: Options): Rule {
             );
           },
         }),
-      beforeProgramCreation: (tsconfigPath) => {
-        context.logger.info(`Preparing analysis for: ${tsconfigPath}...`);
+      beforeProgramCreation: (tsconfigPath, stage) => {
+        if (stage === MigrationStage.Analysis) {
+          context.logger.info(`Preparing analysis for: ${tsconfigPath}...`);
+        } else {
+          context.logger.info(`Running migration for: ${tsconfigPath}...`);
+        }
       },
       afterProgramCreation: (info, fs) => {
         const analysisPath = fs.resolve(options.analysisDir);
