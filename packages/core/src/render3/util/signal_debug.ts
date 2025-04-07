@@ -25,6 +25,7 @@ import {
   SIGNAL_NODE,
   SignalNode,
 } from '../../../primitives/signals';
+import {isLView} from '../interfaces/type_checks';
 
 export interface DebugSignalGraphNode {
   kind: string;
@@ -82,9 +83,10 @@ function getTemplateConsumer(injector: NodeInjector): ReactiveLViewConsumer | nu
   const lView = getNodeInjectorLView(injector)!;
   assertLView(lView);
   const templateLView = lView[tNode.index]!;
-  assertLView(templateLView);
-
-  return templateLView[REACTIVE_TEMPLATE_CONSUMER];
+  if (isLView(templateLView)) {
+    return templateLView[REACTIVE_TEMPLATE_CONSUMER] ?? null;
+  }
+  return null;
 }
 
 const signalDebugMap = new WeakMap<ReactiveNode, string>();
