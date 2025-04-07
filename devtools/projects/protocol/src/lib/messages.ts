@@ -17,9 +17,9 @@ import {
 } from '@angular/core';
 
 export interface DebugSignalGraphNode {
+  id: string;
   kind: string;
   label?: string;
-  value?: unknown;
 }
 
 export interface DebugSignalGraphEdge {

@@ -136,9 +136,6 @@ export class SignalsGraphVisualizer {
       .attr('class', 'node-label');
 
     nodePreview.append('div').text((x) => x.label!);
-    nodePreview
-      .append('div')
-      .text((x) => (typeof x.value == 'object' ? JSON.stringify(x.value) : `${x.value}`));
 
     this.simulation = d3
       .forceSimulation<SimulationNode>(nodes)

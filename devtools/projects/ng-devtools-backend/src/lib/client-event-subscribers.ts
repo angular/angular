@@ -550,5 +550,14 @@ const getSignalGraphCallback = (messageBus: MessageBus<Events>) => (element: Ele
   }
 
   const graph = ng.ɵgetSignalGraph?.(injector);
-  if (graph) messageBus.emit('latestSignalGraph', [graph]);
+  if (graph) {
+    const nodes = graph.nodes.map((node) => {
+      return {
+        id: node.id,
+        kind: node.kind,
+        label: node.label,
+      };
+    })
+    messageBus.emit('latestSignalGraph', [graph]);
+  }
 };

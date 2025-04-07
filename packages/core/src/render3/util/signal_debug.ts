@@ -28,6 +28,7 @@ import {
 
 export interface DebugSignalGraphNode {
   kind: string;
+  id: string;
   label?: string;
   value?: unknown;
 }
@@ -84,6 +85,9 @@ function getTemplateConsumer(injector: NodeInjector): ReactiveLViewConsumer | nu
   return templateLView[REACTIVE_TEMPLATE_CONSUMER];
 }
 
+const signalDebugMap = new WeakMap<ReactiveNode, string>();
+let counter = 0;
+
 function getNodesAndEdgesFromSignalMap(signalMap: ReadonlyMap<ReactiveNode, ReactiveNode[]>): {
   nodes: DebugSignalGraphNode[];
   edges: DebugSignalGraphEdge[];
@@ -95,27 +99,38 @@ function getNodesAndEdgesFromSignalMap(signalMap: ReadonlyMap<ReactiveNode, Reac
   for (const [consumer, producers] of signalMap.entries()) {
     const consumerIndex = nodes.indexOf(consumer);
 
+    let id = signalDebugMap.get(consumer);
+    if (!id) {
+      counter++;
+      id = `${consumer.debugName}-${counter}`;
+      signalDebugMap.set(consumer, id);
+    }
+
     // collect node
     if (isComputedNode(consumer) || isSignalNode(consumer)) {
       debugSignalGraphNodes.push({
         label: consumer.debugName,
         value: consumer.value,
         kind: consumer.kind,
+        id,
       });
     } else if (isTemplateEffectNode(consumer)) {
       debugSignalGraphNodes.push({
         label: consumer.debugName ?? consumer.lView?.[HOST]?.tagName?.toLowerCase?.(),
         kind: consumer.kind,
+        id,
       });
     } else if (isEffectNode(consumer)) {
       debugSignalGraphNodes.push({
         label: consumer.debugName,
         kind: consumer.kind,
+        id,
       });
     } else {
       debugSignalGraphNodes.push({
         label: consumer.debugName,
         kind: consumer.kind,
+        id,
       });
     }
 
