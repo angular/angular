@@ -62,6 +62,22 @@ esbuild_esm_bundle(
 )
 
 esbuild_esm_bundle(
+    name = "previews-bundle",
+    entry_point = "//adev/shared-docs/pipeline/examples/previews:index.ts",
+    external = [
+        "typescript",
+    ],
+    output = "previews.mjs",
+    platform = "node",
+    target = "es2022",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//adev/shared-docs/pipeline/examples/previews:index",
+        "@npm//typescript",
+    ],
+)
+
+esbuild_esm_bundle(
     name = "zip-bundle",
     entry_point = "//adev/shared-docs/pipeline/examples/zip:index.ts",
     output = "zip.mjs",
@@ -112,6 +128,7 @@ esbuild_esm_bundle(
 exports_files([
     "_guides.bzl",
     "_stackblitz.bzl",
+    "_previews.bzl",
     "_playground.bzl",
     "_tutorial.bzl",
     "_navigation.bzl",
@@ -126,6 +143,15 @@ nodejs_binary(
         "@npm//jsdom",
     ],
     entry_point = "//adev/shared-docs/pipeline:stackblitz.mjs",
+    visibility = ["//visibility:public"],
+)
+
+nodejs_binary(
+    name = "previews",
+    data = [
+        "@npm//typescript",
+    ],
+    entry_point = "//adev/shared-docs/pipeline:previews.mjs",
     visibility = ["//visibility:public"],
 )
 
