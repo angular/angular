@@ -169,6 +169,65 @@ describe('outputs', () => {
         });
       });
 
+      it('should not insert a TODO comment for emit function with no type', async () => {
+        await verify({
+          before: `
+              import {Directive, Output, EventEmitter} from '@angular/core';
+
+              @Directive()
+              export class TestDir {
+                @Output() someChange = new EventEmitter();
+
+                someMethod(): void {
+                  this.someChange.emit();
+                }
+              }
+            `,
+          after: `
+              import {Directive, output} from '@angular/core';
+
+              @Directive()
+              export class TestDir {
+                readonly someChange = output();
+
+                someMethod(): void {
+                  this.someChange.emit();
+                }
+              }
+            `,
+        });
+      });
+
+      it('should insert a TODO comment for emit function with type', async () => {
+        await verify({
+          before: `
+              import {Directive, Output, EventEmitter} from '@angular/core';
+
+              @Directive()
+              export class TestDir {
+                @Output() someChange = new EventEmitter<string>();
+
+                someMethod(): void {
+                  this.someChange.emit();
+                }
+              }
+            `,
+          after: `
+              import {Directive, output} from '@angular/core';
+
+              @Directive()
+              export class TestDir {
+                readonly someChange = output<string>();
+
+                someMethod(): void {
+                  // TODO: The 'emit' function requires a mandatory string argument
+                  this.someChange.emit();
+                }
+              }
+            `,
+        });
+      });
+
       it('should migrate multiple outputs', async () => {
         await verifyDeclaration({
           before:
