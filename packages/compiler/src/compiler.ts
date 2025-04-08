@@ -245,7 +245,7 @@ export {createCssSelectorFromNode} from './render3/view/util';
 export * from './resource_loader';
 export * from './schema/dom_element_schema_registry';
 export * from './schema/element_schema_registry';
-export * from './selector';
+export * from './directive_matching';
 export {Version} from './util';
 export * from './version';
 export {outputAst};

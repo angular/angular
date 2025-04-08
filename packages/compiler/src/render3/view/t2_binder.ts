@@ -16,7 +16,7 @@ import {
   SafePropertyRead,
   ThisReceiver,
 } from '../../expression_parser/ast';
-import {CssSelector, SelectorMatcher} from '../../selector';
+import {CssSelector, SelectorlessMatcher, SelectorMatcher} from '../../directive_matching';
 import {
   BoundAttribute,
   BoundEvent,
@@ -119,7 +119,7 @@ type DeferBlockScopes = [DeferredBlock, Scope][];
  *    where a host component (that owns the template) is located
  */
 export function findMatchingDirectivesAndPipes(template: string, directiveSelectors: string[]) {
-  const matcher = new SelectorMatcher<unknown[]>();
+  const matcher = new SelectorMatcher<DirectiveMeta[]>();
   for (const selector of directiveSelectors) {
     // Create a fake directive instance to account for the logic inside
     // of the `R3TargetBinder` class (which invokes the `hasBindingPropertyName`
@@ -137,11 +137,11 @@ export function findMatchingDirectivesAndPipes(template: string, directiveSelect
           return false;
         },
       },
-    };
+    } as unknown as DirectiveMeta;
     matcher.addSelectables(CssSelector.parse(selector), [fakeDirective]);
   }
   const parsedTemplate = parseTemplate(template, '' /* templateUrl */);
-  const binder = new R3TargetBinder(matcher as any);
+  const binder = new R3TargetBinder(matcher);
   const bound = binder.bind({template: parsedTemplate.nodes});
 
   const eagerDirectiveSelectors = bound.getEagerlyUsedDirectives().map((dir) => dir.selector!);
@@ -159,13 +159,18 @@ export function findMatchingDirectivesAndPipes(template: string, directiveSelect
   };
 }
 
+/** Object used to match template nodes to directives. */
+export type DirectiveMatcher<DirectiveT extends DirectiveMeta> =
+  | SelectorMatcher<DirectiveT[]>
+  | SelectorlessMatcher<DirectiveT[]>;
+
 /**
  * Processes `Target`s with a given set of directives and performs a binding operation, which
  * returns an object similar to TypeScript's `ts.TypeChecker` that contains knowledge about the
  * target.
  */
 export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetBinder<DirectiveT> {
-  constructor(private directiveMatcher: SelectorMatcher<DirectiveT[]>) {}
+  constructor(private directiveMatcher: DirectiveMatcher<DirectiveT>) {}
 
   /**
    * Perform a binding operation on the given `Target` and return a `BoundTarget` which contains
@@ -497,7 +502,7 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
   private isInDeferBlock = false;
 
   private constructor(
-    private matcher: SelectorMatcher<DirectiveT[]>,
+    private directiveMatcher: DirectiveMatcher<DirectiveT>,
     private directives: MatchedDirectives<DirectiveT>,
     private eagerDirectives: DirectiveT[],
     private bindings: BindingsMap<DirectiveT>,
@@ -518,14 +523,14 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
    */
   static apply<DirectiveT extends DirectiveMeta>(
     template: Node[],
-    selectorMatcher: SelectorMatcher<DirectiveT[]>,
+    directiveMatcher: DirectiveMatcher<DirectiveT>,
     directives: MatchedDirectives<DirectiveT>,
     eagerDirectives: DirectiveT[],
     bindings: BindingsMap<DirectiveT>,
     references: ReferenceMap<DirectiveT>,
   ): void {
     const matcher = new DirectiveBinder(
-      selectorMatcher,
+      directiveMatcher,
       directives,
       eagerDirectives,
       bindings,
@@ -547,23 +552,23 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
   }
 
   visitElementOrTemplate(node: Element | Template): void {
-    // First, determine the HTML shape of the node for the purpose of directive matching.
-    // Do this by building up a `CssSelector` for the node.
-    const cssSelector = createCssSelectorFromNode(node);
-
-    // TODO(crisbeto): account for selectorless directives here.
-    if (node.directives.length > 0) {
-      throw new Error('TODO');
-    }
-
-    // Next, use the `SelectorMatcher` to get the list of directives on the node.
     const directives: DirectiveT[] = [];
-    this.matcher.match(cssSelector, (_selector, results) => directives.push(...results));
-    if (directives.length > 0) {
-      this.directives.set(node, directives);
-      if (!this.isInDeferBlock) {
-        this.eagerDirectives.push(...directives);
+
+    if (this.directiveMatcher instanceof SelectorMatcher) {
+      // First, determine the HTML shape of the node for the purpose of directive matching.
+      // Do this by building up a `CssSelector` for the node.
+      const cssSelector = createCssSelectorFromNode(node);
+
+      this.directiveMatcher.match(cssSelector, (_selector, results) => directives.push(...results));
+
+      if (directives.length > 0) {
+        this.directives.set(node, directives);
+        if (!this.isInDeferBlock) {
+          this.eagerDirectives.push(...directives);
+        }
       }
+    } else {
+      throw new Error('TODO');
     }
 
     // Resolve any references that are created on this node.
