@@ -130,6 +130,9 @@ export interface ParseTemplateOptions {
 
   /** Whether the `@let` syntax is enabled. */
   enableLetSyntax?: boolean;
+
+  /** Whether the selectorless syntax is enabled. */
+  enableSelectorless?: boolean;
 }
 
 /**
@@ -153,6 +156,7 @@ export function parseTemplate(
     tokenizeExpansionForms: true,
     tokenizeBlocks: options.enableBlockSyntax ?? true,
     tokenizeLet: options.enableLetSyntax ?? true,
+    selectorlessEnabled: options.enableSelectorless ?? false,
   });
 
   if (
