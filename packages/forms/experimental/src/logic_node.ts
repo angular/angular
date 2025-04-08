@@ -8,7 +8,8 @@
 
 import {MetadataKey} from './api/metadata';
 import {type FieldContext, type FormError, type LogicFn} from './api/types';
-import {FieldPathNode} from './path_node';
+import {FieldNode} from './field_node';
+import {FieldPathNode, Predicate} from './path_node';
 
 /**
  * Special key which is used to represent a dynamic index in a `FieldLogicNode` path.
@@ -61,25 +62,21 @@ export class FieldLogicNode {
     return this.children.get(key)!;
   }
 
-  mergeIn(other: FieldLogicNode) {
+  mergeIn(other: FieldLogicNode, predicate?: Predicate) {
     // Merge standard logic.
-    this.hidden.mergeIn(other.hidden);
-    this.disabled.mergeIn(other.disabled);
-    this.errors.mergeIn(other.errors);
+    this.hidden.mergeIn(other.hidden, predicate, false);
+    this.disabled.mergeIn(other.disabled, predicate, false);
+    this.errors.mergeIn(other.errors, predicate, undefined);
 
     // Merge metadata.
-    for (const [key, otherMetadata] of other.metadata) {
-      if (!this.metadata.has(key)) {
-        this.metadata.set(key, otherMetadata);
-      } else {
-        this.metadata.get(key)!.mergeIn(otherMetadata);
-      }
+    for (const key of other.metadata.keys()) {
+      this.getMetadata(key).mergeIn(other.getMetadata(key), predicate, key.defaultValue);
     }
 
     // Merge children.
     for (const [key, otherChild] of other.children) {
       const child = this.getChild(key);
-      child.mergeIn(otherChild);
+      child.mergeIn(otherChild, predicate);
     }
 
     // Merging roots handled separately (see structure.ts, propagateRoots).
@@ -102,8 +99,11 @@ export abstract class AbstractLogic<TReturn, TValue = TReturn> {
     this.fns.push(logicFn);
   }
 
-  mergeIn(other: AbstractLogic<TReturn, TValue>) {
-    this.fns.push(...other.fns);
+  mergeIn(other: AbstractLogic<TReturn, TValue>, predicate?: Predicate, defaultValue?: TValue) {
+    const fns = predicate
+      ? other.fns.map((fn) => wrapWithPredicate(predicate, fn, defaultValue!))
+      : other.fns;
+    this.fns.push(...fns);
   }
 }
 
@@ -148,4 +148,19 @@ class MetadataMergeLogic<T> extends AbstractLogic<T> {
   override compute(arg: FieldContext<any>): T {
     return this.fns.reduce((prev, fn) => this.key.merge(prev, fn(arg)), this.key.defaultValue);
   }
+}
+
+export function wrapWithPredicate<TValue, TReturn>(
+  predicate: Predicate,
+  logicFn: LogicFn<TValue, TReturn>,
+  defaultValue: TReturn,
+) {
+  return (arg: FieldContext<any>): TReturn => {
+    const predicateField = arg.resolve(predicate.path).$state as FieldNode;
+    if (!predicate.fn(predicateField.fieldContext)) {
+      // don't actually run the user function
+      return defaultValue;
+    }
+    return logicFn(arg);
+  };
 }

@@ -221,7 +221,7 @@ export async function submit<T>(
 }
 
 function mergeInLogic(to: FieldPathNode, from: FieldPathNode) {
-  to.logic.mergeIn(from.logic);
+  to.logic.mergeIn(from.logic, to.predicate);
   propagateRoots(to.root, from, to.logic.pathKeys);
 }
 
