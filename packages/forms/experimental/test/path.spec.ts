@@ -13,7 +13,7 @@ import {apply, applyEach, applyWhen, form} from '../src/api/structure';
 import {FieldPathNode} from '../src/path_node';
 
 describe('path', () => {
-  fdescribe('roots', () => {
+  describe('roots', () => {
     it('should lift all root paths to top', () => {
       let rootPath!: FieldPath<unknown>;
       const paths: FieldPath<unknown>[] = [];
