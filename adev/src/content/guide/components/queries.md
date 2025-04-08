@@ -146,7 +146,7 @@ export class UserProfile { }
 
 If a child query (`viewChild` or `contentChild`) does not find a result, its value is `undefined`. This may occur if the target element is hidden by a control flow statement like `@if` or `@for`. Because of this, the child queries return a signal that include `undefined` in their value type.
 
-If some cases, especially with `viewChild`, you know with certainty that a specific child is always available. In other cases, you may want to strictly enforce that a specific child is present. For these cases, you can use a *required query*.
+In some cases, especially with `viewChild`, you know with certainty that a specific child is always available. In other cases, you may want to strictly enforce that a specific child is present. For these cases, you can use a *required query*.
 
 ```angular-ts
 @Component({/* ... */})
@@ -156,7 +156,7 @@ export class CustomCard {
 }
 ```
 
-If a required query does not find a matching result, Angular reports an error. Because this guarantees that a result is available, require queries do not automatically include `undefined` in the signal's value type.
+If a required query does not find a matching result, Angular reports an error. Because this guarantees that a result is available, required queries do not automatically include `undefined` in the signal's value type.
 
 ## Query locators
 
