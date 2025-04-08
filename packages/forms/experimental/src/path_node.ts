@@ -1,6 +1,5 @@
-import {FieldContext, FieldPath, LogicFn} from './api/types';
-import {FieldNode} from './field_node';
-import {DYNAMIC, FieldLogicNode} from './logic_node';
+import {FieldPath, LogicFn} from './api/types';
+import {DYNAMIC, FieldLogicNode, wrapWithPredicate} from './logic_node';
 
 /**
  * Special key which is used to retrieve the `FieldPathNode` instance from its `FieldPath` proxy wrapper.
@@ -44,14 +43,7 @@ export class FieldPathNode {
       return logicFn;
     }
 
-    return (arg: FieldContext<any>): TReturn => {
-      const predicateField = arg.resolve(predicate.path).$state as FieldNode;
-      if (!predicate.fn(predicateField.fieldContext)) {
-        // don't actually run the user function
-        return defaultValue;
-      }
-      return logicFn(arg);
-    };
+    return wrapWithPredicate(predicate, logicFn, defaultValue);
   }
 
   getChild(key: PropertyKey): FieldPathNode {

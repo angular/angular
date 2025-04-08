@@ -47,8 +47,7 @@ describe('when', () => {
     });
   });
 
-  // TODO: fix.
-  xit('supports merging two array schemas', () => {
+  it('supports merging two array schemas', () => {
     const data = signal({needLastName: true, items: [{first: '', last: ''}]});
 
     const s: Schema<User> = (namePath) => {
@@ -107,8 +106,7 @@ describe('when', () => {
     expect(f.last.$state.errors()).toEqual([{kind: 'short'}, {kind: 'required'}]);
   });
 
-  // TODO: fix.
-  xit('supports array schema', () => {
+  it('supports array schema', () => {
     const data = signal({needLastName: true, items: [{first: '', last: ''}]});
     const s: Schema<User> = (i) => {
       validate(i.last, ({value}) => {
