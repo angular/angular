@@ -472,3 +472,11 @@ export class SelectorContext<T = any> {
     return result;
   }
 }
+
+export class SelectorlessMatcher<T = unknown> {
+  constructor(private registry: Map<string, T>) {}
+
+  match(name: string): T | null {
+    return this.registry.get(name) ?? null;
+  }
+}

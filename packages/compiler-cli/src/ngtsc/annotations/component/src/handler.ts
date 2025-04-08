@@ -1047,6 +1047,8 @@ export class ComponentDecoratorHandler
         }
       }
     }
+
+    // TODO(crisbeto): implement for selectorless.
     const binder = new R3TargetBinder(matcher);
     const boundTemplate = binder.bind({template: analysis.template.diagNodes});
 
@@ -1076,6 +1078,7 @@ export class ComponentDecoratorHandler
       return;
     }
 
+    // TODO(crisbeto): implement for selectorless.
     const binder = new R3TargetBinder<TypeCheckableDirectiveMeta>(scope.matcher);
     const templateContext: TemplateContext = {
       nodes: meta.template.diagNodes,
@@ -2266,6 +2269,8 @@ function createTargetBinder(dependencies: Array<PipeMeta | DirectiveMeta | NgMod
       matcher.addSelectables(CssSelector.parse(dep.selector), [dep]);
     }
   }
+
+  // TODO(crisbeto): implement for selectorless.
   return new R3TargetBinder(matcher);
 }
 

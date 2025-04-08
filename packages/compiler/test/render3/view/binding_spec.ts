@@ -9,9 +9,13 @@
 import * as e from '../../../src/expression_parser/ast';
 import * as a from '../../../src/render3/r3_ast';
 import {DirectiveMeta, InputOutputPropertySet} from '../../../src/render3/view/t2_api';
-import {findMatchingDirectivesAndPipes, R3TargetBinder} from '../../../src/render3/view/t2_binder';
-import {parseTemplate} from '../../../src/render3/view/template';
-import {CssSelector, SelectorMatcher} from '../../../src/selector';
+import {
+  DirectiveMatcher,
+  findMatchingDirectivesAndPipes,
+  R3TargetBinder,
+} from '../../../src/render3/view/t2_binder';
+import {parseTemplate, ParseTemplateOptions} from '../../../src/render3/view/template';
+import {CssSelector, SelectorMatcher} from '../../../src/directive_matching';
 
 import {findExpression} from './util';
 

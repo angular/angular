@@ -10,7 +10,7 @@ import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
 import * as o from '../../output/output_ast';
 import {ParseError, ParseSourceSpan} from '../../parse_util';
-import {CssSelector} from '../../selector';
+import {CssSelector} from '../../directive_matching';
 import {ShadowCss} from '../../shadow_css';
 import {CompilationJobKind} from '../../template/pipeline/src/compilation';
 import {emitHostBindingFunction, emitTemplateFn, transform} from '../../template/pipeline/src/emit';

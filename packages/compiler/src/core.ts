@@ -12,7 +12,7 @@
 // This is important to prevent a build cycle, as @angular/core needs to
 // be compiled with the compiler.
 
-import {CssSelector} from './selector';
+import {CssSelector} from './directive_matching';
 
 // Stores the default value of `emitDistinctChangesOnly` when the `emitDistinctChangesOnly` is not
 // explicitly set.
