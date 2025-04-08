@@ -14,7 +14,7 @@ import {DestroyRef} from '../../linker/destroy_ref';
 import {performanceMarkFeature} from '../../util/performance';
 import {assertNotInReactiveContext} from '../reactivity/asserts';
 import {ViewContext} from '../view_context';
-import {AfterRenderPhase, AfterRenderRef} from './api';
+import {AfterRenderRef} from './api';
 import {
   AfterRenderHooks,
   AfterRenderImpl,
@@ -35,7 +35,7 @@ export type ɵFirstAvailable<T extends unknown[]> = T extends [infer H, ...infer
 /**
  * Options passed to `afterRender` and `afterNextRender`.
  *
- * @developerPreview
+ * @publicApi
  */
 export interface AfterRenderOptions {
   /**
@@ -365,7 +365,7 @@ export function afterNextRender<E = never, W = never, M = never>(
  * }
  * ```
  *
- * @developerPreview
+ * @publicApi
  */
 export function afterNextRender(
   callback: VoidFunction,

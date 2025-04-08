@@ -71,7 +71,7 @@ export const enum AfterRenderPhase {
 /**
  * A callback that runs after render.
  *
- * @developerPreview
+ * @publicApi
  */
 export interface AfterRenderRef {
   /**
