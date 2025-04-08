@@ -57,8 +57,9 @@ export class FieldNode implements FieldState<unknown> {
     return (this._fieldContext ??= {
       value: this.value,
       resolve: <U>(target: FieldPath<U>): Field<U> => {
+        // TODO: redo logic based on rootPaths.
         const currentPath = this.logic.pathKeys;
-        const targetPath = FieldPathNode.extractFromPath(target).logic.pathKeys;
+        const targetPath = FieldPathNode.unwrapFieldPath(target).logic.pathKeys;
 
         // Navigate from `currentPath` to `targetPath`. As an example, suppose that:
         // currentPath = [A, B, C, D]

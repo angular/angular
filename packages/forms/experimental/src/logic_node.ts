@@ -7,7 +7,8 @@
  */
 
 import {MetadataKey} from './api/metadata';
-import type {FieldContext, FormError, LogicFn} from './api/types';
+import {type FieldContext, type FormError, type LogicFn} from './api/types';
+import {FieldPathNode} from './path_node';
 
 /**
  * Special key which is used to represent a dynamic index in a `FieldLogicNode` path.
@@ -24,6 +25,7 @@ export class FieldLogicNode {
   readonly hidden = new BooleanOrLogic();
   readonly disabled = new BooleanOrLogic();
   readonly errors = new ArrayMergeLogic<FormError>();
+  readonly rootPaths = new Map<FieldPathNode, PropertyKey[]>();
 
   private readonly metadata = new Map<MetadataKey<unknown>, AbstractLogic<unknown>>();
   private readonly children = new Map<PropertyKey, FieldLogicNode>();
@@ -59,8 +61,10 @@ export class FieldLogicNode {
     return this.children.get(key)!;
   }
 
-  static newRoot(): FieldLogicNode {
-    return new FieldLogicNode([]);
+  static newRoot(path: FieldPathNode): FieldLogicNode {
+    const root = new FieldLogicNode([]);
+    root.rootPaths.set(path, []);
+    return root;
   }
 }
 
