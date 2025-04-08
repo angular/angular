@@ -6615,10 +6615,10 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
-cldr@7.8.0:
-  version "7.8.0"
-  resolved "https://registry.yarnpkg.com/cldr/-/cldr-7.8.0.tgz#c4394ba5055f6e73666a89ec439921d0d4717db0"
-  integrity sha512-9adDEXm2GNuOas66+p7hSb1nwwaWiAGkE3qcJZebcmK2WdwzbTfWnom2mPkX+wIgUnuCHFRwIuKaJ929Z2JnHw==
+cldr@7.9.0:
+  version "7.9.0"
+  resolved "https://registry.yarnpkg.com/cldr/-/cldr-7.9.0.tgz#1efd1926eea6e441c03a3ecd6089b9d7a659f2b7"
+  integrity sha512-fnIifk57sudBE5kJTqvAGxhe5hxnYNPl338y6AYd9DhVuleg5QtCgqlKCu7joOqZATK8FsHJmaS6ysV/IlBzjQ==
   dependencies:
     "@xmldom/xmldom" "^0.8.3"
     escodegen "^2.0.0"
@@ -15397,10 +15397,10 @@ select-hose@^2.0.0:
   resolved "https://registry.yarnpkg.com/select-hose/-/select-hose-2.0.0.tgz#625d8658f865af43ec962bfc376a37359a4994ca"
   integrity sha512-mEugaLK+YfkijB4fx0e6kImuJdCIt2LxCRcbEYPqRGCs4F2ogyfZU5IAZRdjCP8JPq2AtdNoC/Dux63d9Kiryg==
 
-"selenium-webdriver4@npm:selenium-webdriver@4.30.0":
-  version "4.30.0"
-  resolved "https://registry.yarnpkg.com/selenium-webdriver/-/selenium-webdriver-4.30.0.tgz#f7409ad363d64051a13159226f552af0f5a8d9ba"
-  integrity sha512-3DGtQI/xyAg05SrqzzpFaXRWYL+Kku3fsikCoBaxApKzhBMUX5UiHdPb2je2qKMf2PjJiEFaj0L5xELHYRbYMA==
+"selenium-webdriver4@npm:selenium-webdriver@4.31.0":
+  version "4.31.0"
+  resolved "https://registry.yarnpkg.com/selenium-webdriver/-/selenium-webdriver-4.31.0.tgz#3908152b9fcccd41411a58e30a099fc05a04dd2f"
+  integrity sha512-0MWEwypM0+c1NnZ87UEMxZdwphKoaK2UJ2qXzKWrJiM0gazFjgNVimxlHTOO90G2cOhphZqwpqSCJy62NTEzyA==
   dependencies:
     "@bazel/runfiles" "^6.3.1"
     jszip "^3.10.1"
