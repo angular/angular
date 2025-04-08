@@ -20,7 +20,6 @@ import {EffectRef} from '../reactivity/effect';
 import {
   InjectedService,
   InjectorCreatedInstance,
-  InjectorProfiler,
   InjectorProfilerContext,
   InjectorProfilerEvent,
   InjectorProfilerEventType,
@@ -102,10 +101,12 @@ export function getFrameworkDIDebugData(): DIDebugData {
  */
 export function setupFrameworkInjectorProfiler(): void {
   frameworkDIDebugData.reset();
-  setInjectorProfiler(injectorProfilerEventHandler);
+  setInjectorProfiler((injectorProfilerEvent) =>
+    handleInjectorProfilerEvent(injectorProfilerEvent),
+  );
 }
 
-function injectorProfilerEventHandler(injectorProfilerEvent: InjectorProfilerEvent): void {
+function handleInjectorProfilerEvent(injectorProfilerEvent: InjectorProfilerEvent): void {
   const {context, type} = injectorProfilerEvent;
 
   if (type === InjectorProfilerEventType.Inject) {
