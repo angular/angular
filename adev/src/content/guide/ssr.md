@@ -357,7 +357,7 @@ bootstrapApplication(AppComponent, {
 
 Some common browser APIs and capabilities might not be available on the server. Applications cannot make use of browser-specific global objects like `window`, `document`, `navigator`, or `location` as well as certain properties of `HTMLElement`.
 
-In general, code which relies on browser-specific symbols should only be executed in the browser, not on the server. This can be enforced through the [`afterRender`](api/core/afterRender) and [`afterNextRender`](api/core/afterNextRender) lifecycle hooks. These are only executed on the browser and skipped on the server.
+In general, code which relies on browser-specific symbols should only be executed in the browser, not on the server. This can be enforced through the [`afterRenderEffect`](api/core/afterRenderEffect) and [`afterNextRender`](api/core/afterNextRender) lifecycle hooks. These are only executed on the browser and skipped on the server.
 
 ```angular-ts
 import { Component, ViewChild, afterNextRender } from '@angular/core';

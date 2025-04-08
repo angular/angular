@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {afterRenderEffect, signal} from '../core_reactivity_export_internal';
 import type {Injector} from '../di';
 import {AfterRenderRef} from '../render3/after_render/api';
-import {afterRender} from '../render3/after_render/hooks';
 import {assertLContainer, assertLView} from '../render3/assert';
 import {CONTAINER_HEADER_OFFSET} from '../render3/interfaces/container';
 import {TNode} from '../render3/interfaces/node';
@@ -282,7 +282,13 @@ export function registerDomTrigger(
   const injector = initialLView[INJECTOR];
   const zone = injector.get(NgZone);
   let poll: AfterRenderRef;
+
+  // Dummy signal to make sure the afterRenderEffect always run.
+  const dummySignal = signal(0, {equal: () => false});
+
   function pollDomTrigger() {
+    dummySignal(); // Trigger the signal to make sure the always afterRenderEffect runs.
+
     // If the initial view was destroyed, we don't need to do anything.
     if (isDestroyed(initialLView)) {
       poll.destroy();
@@ -345,5 +351,5 @@ export function registerDomTrigger(
   }
 
   // Begin polling for the trigger.
-  poll = afterRender({read: pollDomTrigger}, {injector});
+  poll = afterRenderEffect({read: pollDomTrigger}, {injector});
 }

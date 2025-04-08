@@ -18,14 +18,14 @@ export class ProfilePhoto {
 The `nativeElement` property references the
 host [Element](https://developer.mozilla.org/docs/Web/API/Element) instance.
 
-You can use Angular's `afterRender` and `afterNextRender` functions to register a **render
+You can use Angular's `afterRenderEffect` and `afterNextRender` functions to register a **render
 callback** that runs when Angular has finished rendering the page.
 
 ```ts
 @Component({...})
 export class ProfilePhoto {
   constructor(elementRef: ElementRef) {
-    afterRender(() => {
+    afterNextRender(() => {
       // Focus the first input element in this component.
       elementRef.nativeElement.querySelector('input')?.focus();
     });
@@ -33,7 +33,7 @@ export class ProfilePhoto {
 }
 ```
 
-`afterRender` and `afterNextRender` must be called in an _injection context_, typically a
+`afterRenderEffect` and `afterNextRender` must be called in an _injection context_, typically a
 component's constructor.
 
 **Avoid direct DOM manipulation whenever possible.** Always prefer expressing your DOM's structure

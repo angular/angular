@@ -7,7 +7,7 @@
  */
 
 /**
- * The phase to run an `afterRender` or `afterNextRender` callback in.
+ * The phase to run an `afterRenderEffect` or `afterNextRender` callback in.
  *
  * Callbacks in the same phase run in the order they are registered. Phases run in the
  * following order after each render:
