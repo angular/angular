@@ -137,6 +137,7 @@ export type Schema<T> = (p: FieldPath<T>) => void;
  */
 export type LogicFn<TValue, TReturn> = (ctx: FieldContext<TValue>) => TReturn;
 
+export type Validator<T> = LogicFn<T, ValidationResult>;
 /**
  * An object containing context about the field a given logic function is bound to.
  */

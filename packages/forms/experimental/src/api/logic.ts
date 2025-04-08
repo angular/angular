@@ -9,8 +9,7 @@
 import {DISABLED_REASON, MetadataKey, REQUIRED} from '../logic_node';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
-import type {FieldPath, FormError, LogicFn} from './types';
-import {ValidationResult} from './types';
+import type {FieldPath, FormError, LogicFn, Validator} from './types';
 
 /**
  * Adds logic to a field to conditionally disable it.
@@ -52,13 +51,10 @@ export function hidden<T>(path: FieldPath<T>, logic: NoInfer<LogicFn<T, boolean>
  * Adds logic to a field to conditionally add validation errors to it.
  *
  * @param path The target path to add the validation logic to.
- * @param logic A `LogicFn<T, ValidationResult>` that returns the current validation errors.
+ * @param logic A `Validator<T>` that returns the current validation errors.
  * @template T The data type of the field the logic is being added to.
  */
-export function validate<T>(
-  path: FieldPath<T>,
-  logic: NoInfer<LogicFn<T, ValidationResult>>,
-): void {
+export function validate<T>(path: FieldPath<T>, logic: NoInfer<Validator<T>>): void {
   assertPathIsCurrent(path);
 
   const pathImpl = FieldPathNode.extractFromPath(path);
