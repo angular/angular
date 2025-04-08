@@ -76,7 +76,7 @@
     "@stackblitz/sdk": "^1.11.0",
     "@types/angular": "^1.6.47",
     "@types/babel__core": "7.20.5",
-    "@types/babel__generator": "7.6.8",
+    "@types/babel__generator": "7.27.0",
     "@types/bluebird": "^3.5.27",
     "@types/chrome": "^0.0.313",
     "@types/convert-source-map": "^2.0.0",
