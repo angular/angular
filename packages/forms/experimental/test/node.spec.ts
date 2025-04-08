@@ -97,7 +97,7 @@ describe('Node', () => {
       expect(f['length']).toBe(2);
     });
 
-    xit('should get the element node', () => {
+    it('should get the element node', () => {
       const f = form(signal({names: [{name: 'Alex'}, {name: 'Miles'}]}), (p) => {
         applyEach(p.names, (a) => {
           disabled(a.name, ({value, resolve}) => {

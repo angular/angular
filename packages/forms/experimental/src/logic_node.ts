@@ -13,7 +13,7 @@ import {FieldPathNode} from './path_node';
 /**
  * Special key which is used to represent a dynamic index in a `FieldLogicNode` path.
  */
-export const INDEX = Symbol('INDEX');
+export const DYNAMIC = Symbol('DYNAMIC');
 
 /**
  * Logic associated with a particular location (path) in a form.
@@ -33,7 +33,7 @@ export class FieldLogicNode {
   private constructor(readonly pathKeys: PropertyKey[]) {}
 
   get element(): FieldLogicNode {
-    return this.getChild(INDEX);
+    return this.getChild(DYNAMIC);
   }
 
   getMetadata<T>(key: MetadataKey<T>): AbstractLogic<T> {

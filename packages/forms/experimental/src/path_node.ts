@@ -1,6 +1,6 @@
 import {FieldContext, FieldPath, LogicFn} from './api/types';
 import {FieldNode} from './field_node';
-import {FieldLogicNode, INDEX} from './logic_node';
+import {DYNAMIC, FieldLogicNode} from './logic_node';
 
 /**
  * Special key which is used to retrieve the `FieldPathNode` instance from its `FieldPath` proxy wrapper.
@@ -32,7 +32,7 @@ export class FieldPathNode {
   }
 
   get element(): FieldPathNode {
-    return this.getChild(INDEX);
+    return this.getChild(DYNAMIC);
   }
 
   maybeWrapWithPredicate<TValue, TReturn>(
