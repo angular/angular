@@ -28,6 +28,7 @@ import {
   Provider,
   runInInjectionContext,
   Type,
+  ɵperformanceMarkFeature as performanceMarkFeature,
 } from '@angular/core';
 import {of, Subject} from 'rxjs';
 
@@ -789,6 +790,7 @@ export function withComponentInputBinding(): ComponentInputBindingFeature {
 export function withViewTransitions(
   options?: ViewTransitionsFeatureOptions,
 ): ViewTransitionsFeature {
+  performanceMarkFeature('NgRouterViewTransitions');
   const providers = [
     {provide: CREATE_VIEW_TRANSITION, useValue: createViewTransition},
     {
