@@ -96,7 +96,7 @@ export function form<T>(model: WritableSignal<T>, schema?: NoInfer<Schema<T>>): 
 export function applyEach<T>(path: FieldPath<T[]>, schema: NoInfer<Schema<T>>): void {
   assertPathIsCurrent(path);
 
-  const elementPath = FieldPathNode.extractFromPath(path).element.fieldPathProxy;
+  const elementPath = FieldPathNode.unwrapFieldPath(path).element.fieldPathProxy;
   apply(elementPath, schema);
 }
 
@@ -119,8 +119,10 @@ export function applyEach<T>(path: FieldPath<T[]>, schema: NoInfer<Schema<T>>): 
 export function apply<T>(path: FieldPath<T>, schema: NoInfer<Schema<T>>): void {
   assertPathIsCurrent(path);
 
-  const childPathImpl = FieldPathNode.extractFromPath(path).withNewKey();
-  new SchemaImpl(schema).apply(childPathImpl);
+  const pathNode = FieldPathNode.unwrapFieldPath(path);
+  const schemaRootPathNode = FieldPathNode.newRoot();
+  new SchemaImpl(schema).apply(schemaRootPathNode);
+  propagateRoots(pathNode.root, schemaRootPathNode, pathNode.logic.pathKeys);
 }
 
 /**
@@ -137,11 +139,10 @@ export function applyWhen<T>(
 ): void {
   assertPathIsCurrent(path);
 
-  const predicatedPathImpl = FieldPathNode.extractFromPath(path).withPredicate({
-    fn: logic,
-    path,
-  });
-  new SchemaImpl(schema).apply(predicatedPathImpl);
+  const pathNode = FieldPathNode.unwrapFieldPath(path);
+  const schemaRootPathNode = FieldPathNode.newRoot().withPredicate({fn: logic, path});
+  new SchemaImpl(schema).apply(schemaRootPathNode);
+  propagateRoots(pathNode.root, schemaRootPathNode, pathNode.logic.pathKeys);
 }
 
 /**
@@ -217,4 +218,14 @@ export async function submit<T>(
     (error.field.$state as FieldNode).setServerErrors(error.error);
   }
   api.setSubmittedStatus('submitted');
+}
+
+function propagateRoots(
+  parentRoot: FieldPathNode,
+  childRoot: FieldPathNode,
+  prefix: PropertyKey[],
+) {
+  for (const [root, pathKeys] of childRoot.logic.rootPaths) {
+    parentRoot.logic.rootPaths.set(root, [...prefix, ...pathKeys]);
+  }
 }
