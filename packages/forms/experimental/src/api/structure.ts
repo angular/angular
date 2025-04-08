@@ -122,7 +122,7 @@ export function apply<T>(path: FieldPath<T>, schema: NoInfer<Schema<T>>): void {
   const pathNode = FieldPathNode.unwrapFieldPath(path);
   const schemaRootPathNode = FieldPathNode.newRoot();
   new SchemaImpl(schema).apply(schemaRootPathNode);
-  propagateRoots(pathNode.root, schemaRootPathNode, pathNode.logic.pathKeys);
+  mergeInLogic(pathNode, schemaRootPathNode);
 }
 
 /**
@@ -142,7 +142,7 @@ export function applyWhen<T>(
   const pathNode = FieldPathNode.unwrapFieldPath(path);
   const schemaRootPathNode = FieldPathNode.newRoot().withPredicate({fn: logic, path});
   new SchemaImpl(schema).apply(schemaRootPathNode);
-  propagateRoots(pathNode.root, schemaRootPathNode, pathNode.logic.pathKeys);
+  mergeInLogic(pathNode, schemaRootPathNode);
 }
 
 /**
@@ -218,6 +218,11 @@ export async function submit<T>(
     (error.field.$state as FieldNode).setServerErrors(error.error);
   }
   api.setSubmittedStatus('submitted');
+}
+
+function mergeInLogic(to: FieldPathNode, from: FieldPathNode) {
+  to.logic.mergeIn(from.logic);
+  propagateRoots(to.root, from, to.logic.pathKeys);
 }
 
 function propagateRoots(

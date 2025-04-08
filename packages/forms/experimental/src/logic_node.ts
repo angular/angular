@@ -61,6 +61,31 @@ export class FieldLogicNode {
     return this.children.get(key)!;
   }
 
+  mergeIn(other: FieldLogicNode) {
+    // Merge standard logic.
+    this.hidden.mergeIn(other.hidden);
+    this.disabled.mergeIn(other.disabled);
+    this.errors.mergeIn(other.errors);
+
+    // Merge metadata.
+    for (const [key, otherMetadata] of other.metadata) {
+      if (!this.metadata.has(key)) {
+        this.metadata.set(key, otherMetadata);
+      } else {
+        this.metadata.get(key)!.mergeIn(otherMetadata);
+      }
+    }
+
+    // Merge children.
+    for (const [key, otherChild] of other.children) {
+      const child = this.getChild(key);
+      child.mergeIn(otherChild);
+    }
+
+    // Merging roots handled separately (see structure.ts, propagateRoots).
+    // TODO: clean this up.
+  }
+
   static newRoot(path: FieldPathNode): FieldLogicNode {
     const root = new FieldLogicNode([]);
     root.rootPaths.set(path, []);
@@ -75,6 +100,10 @@ export abstract class AbstractLogic<TReturn, TValue = TReturn> {
 
   push(logicFn: LogicFn<any, TValue>) {
     this.fns.push(logicFn);
+  }
+
+  mergeIn(other: AbstractLogic<TReturn, TValue>) {
+    this.fns.push(...other.fns);
   }
 }
 
