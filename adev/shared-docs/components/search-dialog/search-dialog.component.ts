@@ -9,6 +9,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   ElementRef,
   Injector,
   OnDestroy,
@@ -55,6 +56,7 @@ export class SearchDialog implements OnDestroy {
   items = viewChildren(SearchItem);
 
   private readonly search = inject(Search);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly relativeLink = new RelativeLink();
   private readonly router = inject(Router);
   private readonly window = inject(WINDOW);
@@ -91,7 +93,7 @@ export class SearchDialog implements OnDestroy {
     });
 
     fromEvent<KeyboardEvent>(this.window, 'keydown')
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((event) => {
         // When user presses Enter we can navigate to currently selected item in the search result list.
         if (event.key === 'Enter') {
