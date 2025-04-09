@@ -122,6 +122,24 @@ describe('httpResource', () => {
     expect(res.statusCode()).toBe(200);
   });
 
+  it('should return response headers & status when request errored', async () => {
+    const backend = TestBed.inject(HttpTestingController);
+    const res = httpResource(() => '/data', {injector: TestBed.inject(Injector)});
+    TestBed.flushEffects();
+    const req = backend.expectOne('/data');
+    req.flush([], {
+      headers: {
+        'X-Special': '123',
+      },
+      status: 429,
+      statusText: 'Too many requests',
+    });
+    await TestBed.inject(ApplicationRef).whenStable();
+    expect((res.error() as any).error).toEqual([]);
+    expect(res.headers()?.get('X-Special')).toBe('123');
+    expect(res.statusCode()).toBe(429);
+  });
+
   it('should support progress events', async () => {
     const backend = TestBed.inject(HttpTestingController);
     const res = httpResource(
