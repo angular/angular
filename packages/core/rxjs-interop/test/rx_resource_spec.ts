@@ -16,7 +16,7 @@ describe('rxResource()', () => {
     const injector = TestBed.inject(Injector);
     const appRef = TestBed.inject(ApplicationRef);
     const res = rxResource({
-      stream: () => of(1),
+      loader: () => of(1),
       injector,
     });
     await appRef.whenStable();
@@ -31,7 +31,7 @@ describe('rxResource()', () => {
     let lastSeenRequest: number = 0;
     rxResource({
       request,
-      stream: ({request}) => {
+      loader: ({request}) => {
         lastSeenRequest = request;
         return new Observable((sub) => {
           if (request === 2) {
@@ -61,7 +61,7 @@ describe('rxResource()', () => {
     const appRef = TestBed.inject(ApplicationRef);
     const response = new BehaviorSubject(1);
     const res = rxResource({
-      stream: () => response,
+      loader: () => response,
       injector,
     });
     await appRef.whenStable();
