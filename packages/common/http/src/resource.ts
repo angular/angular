@@ -25,7 +25,7 @@ import {Subscription} from 'rxjs';
 
 import {HttpRequest} from './request';
 import {HttpClient} from './client';
-import {HttpEventType, HttpProgressEvent, HttpResponseBase} from './response';
+import {HttpErrorResponse, HttpEventType, HttpProgressEvent, HttpResponseBase} from './response';
 import {HttpHeaders} from './headers';
 import {HttpParams} from './params';
 import {HttpResourceRef, HttpResourceOptions, HttpResourceRequest} from './resource_api';
@@ -353,7 +353,14 @@ class HttpResourceImpl<T>
                 break;
             }
           },
-          error: (error) => send({error}),
+          error: (error) => {
+            if (error instanceof HttpErrorResponse) {
+              this._headers.set(error.headers);
+              this._statusCode.set(error.status);
+            }
+
+            send({error});
+          },
           complete: () => {
             if (resolve) {
               send({error: new Error('Resource completed before producing a value')});
