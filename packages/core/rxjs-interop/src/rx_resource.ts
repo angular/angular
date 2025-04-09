@@ -18,34 +18,16 @@ import {
 import {Observable, Subscription} from 'rxjs';
 
 /**
- * Like `ResourceOptions` but uses an RxJS-based `stream`.
- *
- * @experimental
- */
-interface RxResourceStreamOptions<T, R> extends BaseResourceOptions<T, R> {
-  stream: (params: ResourceLoaderParams<R>) => Observable<T>;
-}
-
-/**
  * Like `ResourceOptions` but uses an RxJS-based `loader`.
  *
  * @experimental
- * @deprecated Use `stream` instead of `loader`.
  */
-interface RxResourceLoaderOptions<T, R> extends BaseResourceOptions<T, R> {
-  /** @deprecated Use `stream` instead of `loader`. */
+export interface RxResourceOptions<T, R> extends BaseResourceOptions<T, R> {
   loader: (params: ResourceLoaderParams<R>) => Observable<T>;
 }
 
 /**
- * Like `ResourceOptions` but uses an RxJS-based `stream`.
- *
- * @experimental
- */
-export type RxResourceOptions<T, R> = RxResourceStreamOptions<T, R> | RxResourceLoaderOptions<T, R>;
-
-/**
- * Like `resource` but uses an RxJS based `stream` which maps the request to an `Observable` of the
+ * Like `resource` but uses an RxJS based `loader` which maps the request to an `Observable` of the
  * resource's value.
  *
  * @experimental
@@ -55,7 +37,7 @@ export function rxResource<T, R>(
 ): ResourceRef<T>;
 
 /**
- * Like `resource` but uses an RxJS based `stream` which maps the request to an `Observable` of the
+ * Like `resource` but uses an RxJS based `loader` which maps the request to an `Observable` of the
  * resource's value.
  *
  * @experimental
@@ -85,11 +67,7 @@ export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T |
         resolve = undefined;
       }
 
-      // loader is kept for backwards compatibility
-      const streamOrLoader =
-        (opts as RxResourceStreamOptions<T, R>).stream ??
-        (opts as RxResourceLoaderOptions<T, R>).loader;
-      sub = streamOrLoader(params).subscribe({
+      sub = opts.loader(params).subscribe({
         next: (value) => send({value}),
         error: (error) => send({error}),
         complete: () => {
