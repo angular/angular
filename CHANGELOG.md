@@ -1,3 +1,45 @@
+<a name="20.0.0-next.6"></a>
+# 20.0.0-next.6 (2025-04-09)
+## Breaking Changes
+### core
+- Animations are guaranteed to be flushed when Angular
+  runs automatic change detection or manual calls to `ApplicationRef.tick`.
+  Prior to this change, animations would not be flushed in some situations
+  if change detection did not run on any views attached to the
+  application. This change can affect tests which may rely on the old
+  behavior, often by making assertions on DOM elements that should have
+  been removed but weren't because DOM removal is delayed until animations
+  are flushed.
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7a971766dc](https://github.com/angular/angular/commit/7a971766dc59691dc68da9439e180a6c4d7b17d8) | feat | add extended diagnostic for uninvoked track function on `@for` blocks ([#60495](https://github.com/angular/angular/pull/60495)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8744c9a165](https://github.com/angular/angular/commit/8744c9a165518b77d2037d1255827836326dadf4) | fix | ensure HMR works with different output module type ([#60797](https://github.com/angular/angular/pull/60797)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4e88e18a8e](https://github.com/angular/angular/commit/4e88e18a8ef0f19aed85316e80627ad6d2ec80a7) | feat | mark `toObservable` as stable ([#60449](https://github.com/angular/angular/pull/60449)) |
+| [8d050b5bfc](https://github.com/angular/angular/commit/8d050b5bfc49878f01777f71a37e34d5c1733b1b) | feat | stabilize linkedSignal API ([#60741](https://github.com/angular/angular/pull/60741)) |
+| [866cea9a05](https://github.com/angular/angular/commit/866cea9a057ac67fa3f679f1f3da18700926c15a) | feat | Stabilize PendingTasks Injectable ([#60716](https://github.com/angular/angular/pull/60716)) |
+| [39a4e00464](https://github.com/angular/angular/commit/39a4e00464465b1e5a7f894d0992254d43f5028f) | fix | fix ng generate @angular/core:output-migration. Fixes angular[#58650](https://github.com/angular/angular/pull/58650) ([#60763](https://github.com/angular/angular/pull/60763)) |
+| [0b69b61929](https://github.com/angular/angular/commit/0b69b619296231edfab0561480296c477e2c72ca) | fix | Flush animations when no component has been checked ([#58089](https://github.com/angular/angular/pull/58089)) |
+| [3d85d9363c](https://github.com/angular/angular/commit/3d85d9363c6dd02d2f14181bdad1dc0b05fedc31) | fix | reduce total memory usage of various migration schematics ([#60774](https://github.com/angular/angular/pull/60774)) |
+| [0ae1889560](https://github.com/angular/angular/commit/0ae18895605eef6b4946898ff0752ae3917c0057) | fix | run `ApplicationRef.prototype.bootstrap` in `NgZone` ([#60720](https://github.com/angular/angular/pull/60720)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5795e03cdf](https://github.com/angular/angular/commit/5795e03cdf25f4a96b73a49be915efbeeb398d83) | fix | Delay stabilization until next app synchronization ([#60656](https://github.com/angular/angular/pull/60656)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a22b13f990](https://github.com/angular/angular/commit/a22b13f99041eb6931471aaa81391f9ab0ad7c6d) | fix | Do not provide element completions in end tag ([#60616](https://github.com/angular/angular/pull/60616)) |
+| [b9cf414790](https://github.com/angular/angular/commit/b9cf414790f5217cd5c73f7520a11031bde6c864) | fix | Ensure dollar signs are escaped in completions ([#60597](https://github.com/angular/angular/pull/60597)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.2.6"></a>
 # 19.2.6 (2025-04-09)
 ### compiler
