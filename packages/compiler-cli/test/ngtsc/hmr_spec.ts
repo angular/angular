@@ -24,14 +24,18 @@ runInEachFileSystem(() => {
       env.tsconfig();
     });
 
-    function enableHmr(additionalOptions: Record<string, unknown> = {}): void {
+    function enableHmr(
+      additionalAngularOptions: Record<string, unknown> = {},
+      additionalCompilerOptions: Record<string, unknown> = {},
+    ): void {
       env.write(
         'tsconfig.json',
         JSON.stringify({
           extends: './tsconfig-base.json',
+          ...additionalCompilerOptions,
           angularCompilerOptions: {
             _enableHmr: true,
-            ...additionalOptions,
+            ...additionalAngularOptions,
           },
         }),
       );
@@ -970,6 +974,32 @@ runInEachFileSystem(() => {
       expect(jsContents).toContain('ɵreplaceMetadata(Cmp');
       expect(jsContents).toContain('newProp = 123');
       expect(hmrContents).toContain('export default function Cmp_UpdateMetadata');
+    });
+
+    it('should generate an HMR initializer and update function for a class that depends on multiple namespaces', () => {
+      enableHmr(undefined, {
+        compilerOptions: {
+          module: 'NodeNext',
+          moduleResolution: 'NodeNext',
+        },
+      });
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({selector: 'cmp', template: ''})
+          export class Cmp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const hmrContents = env.driveHmr('test.ts', 'Cmp');
+      expect(hmrContents).toContain(
+        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, Component) {',
+      );
     });
   });
 });
