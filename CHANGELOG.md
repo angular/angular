@@ -1,3 +1,26 @@
+<a name="19.2.6"></a>
+# 19.2.6 (2025-04-09)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3441f7b914](https://github.com/angular/angular/commit/3441f7b914c73ccdaacbcd935e945dc304c5962a) | fix | error if rawText isn't estimated correctly ([#60529](https://github.com/angular/angular/pull/60529)) ([#60753](https://github.com/angular/angular/pull/60753)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fc946c5f72](https://github.com/angular/angular/commit/fc946c5f7261ee3e49fa037bc55703b9ffcfbff3) | fix | ensure HMR works with different output module type ([#60797](https://github.com/angular/angular/pull/60797)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f2bfa3151e](https://github.com/angular/angular/commit/f2bfa3151ee7ecb335665d55741387bd67ebee9d) | fix | fix ng generate @angular/core:output-migration. Fixes angular[#58650](https://github.com/angular/angular/pull/58650) ([#60763](https://github.com/angular/angular/pull/60763)) |
+| [9241615ad0](https://github.com/angular/angular/commit/9241615ad0825156f4bf31bc4308372e4789e902) | fix | reduce total memory usage of various migration schematics ([#60776](https://github.com/angular/angular/pull/60776)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0e82d42774](https://github.com/angular/angular/commit/0e82d427743c1d22e1683da11f66e33846f38663) | fix | Do not provide element completions in end tag ([#60616](https://github.com/angular/angular/pull/60616)) |
+| [fcdef1019f](https://github.com/angular/angular/commit/fcdef1019fd28c7261590ba484a949c809b9ceaf) | fix | Ensure dollar signs are escaped in completions ([#60597](https://github.com/angular/angular/pull/60597)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.2.5"></a>
 # 19.2.5 (2025-04-02)
 ### 
