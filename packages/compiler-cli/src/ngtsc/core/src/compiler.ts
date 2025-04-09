@@ -966,7 +966,15 @@ export class NgCompiler {
     const nodeText = printer.printNode(ts.EmitHint.Unspecified, callback, sourceFile);
 
     return ts.transpileModule(nodeText, {
-      compilerOptions: this.options,
+      compilerOptions: {
+        ...this.options,
+
+        // Some module types can produce additional code (see #60795) whereas we need the
+        // HMR update module to use a native `export`. Override the `target` and `module`
+        // to ensure that it looks as expected.
+        module: ts.ModuleKind.ES2022,
+        target: ts.ScriptTarget.ES2022,
+      } as ts.CompilerOptions,
       fileName: sourceFile.fileName,
       reportDiagnostics: false,
     }).outputText;
