@@ -2,9 +2,9 @@
 
 Dependency injection (DI) in Angular is one of the framework's most powerful features. Consider dependency injection to be the ability for Angular to _provide_ resources you need for your application at runtime. A dependency could be a service or some other resources.
 
-You can learn more about [dependency injection in the Angular docs](guide/di). For now, you will get practice creating `injectable` resources.
+Note: Learn more about [dependency injection in the essentials guide](/essentials/dependency-injection).
 
-In this activity, you'll learn how to create an injectable service.
+In this activity, you'll learn how to create an `injectable` service.
 
 <hr>
 

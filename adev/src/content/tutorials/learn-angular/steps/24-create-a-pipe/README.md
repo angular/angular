@@ -2,6 +2,8 @@
 
 You can create custom pipes in Angular to fit your data transformation needs.
 
+Note: Learn more about [creating custom pipes in the in-depth guide](/guide/templates/pipes#creating-custom-pipes).
+
 In this activity, you will create a custom pipe and use it in your template.
 
 <hr>

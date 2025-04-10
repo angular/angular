@@ -2,9 +2,11 @@
 
 Components are the foundational building blocks for any Angular application. Each component has three parts:
 
-* TypeScript class
-* HTML template
-* CSS styles
+- TypeScript class
+- HTML template
+- CSS styles
+
+Note: Learn more about [components in the essentials guide](/essentials/components).
 
 In this activity, you'll learn how to update the template and styles of a component.
 
