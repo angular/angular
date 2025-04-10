@@ -20,7 +20,7 @@ cd angular
 yarn
 
 # Build and run local dev server
-# Note: Initial build will take some time
+# NOTE: Initial build will take some time
 yarn docs
 ```
 

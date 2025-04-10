@@ -181,7 +181,7 @@ const req = httpTesting.expectOne('/api/config');
 expect(req.request.headers.get('X-Authentication-Token')).toEqual(service.getAuthToken());
 </docs-code>
 
-A similar interceptor could be implemented with class based interceptors: 
+A similar interceptor could be implemented with class based interceptors:
 
 <docs-code language="ts">
 @Injectable()
@@ -204,7 +204,7 @@ TestBed.configureTestingModule({
   providers: [
     AuthService,
     provideHttpClient(withInterceptorsFromDi()),
-    provideHttpClientTesting(), 
+    provideHttpClientTesting(),
     // We rely on the HTTP_INTERCEPTORS token to register the AuthInterceptor as an HttpInterceptor
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
   ],
