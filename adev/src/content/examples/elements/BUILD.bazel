@@ -1,7 +1,0 @@
-package(default_visibility = ["//visibility:public"])
-
-exports_files([
-    "src/app/app.component.ts",
-    "src/app/popup.component.ts",
-    "src/app/popup.service.ts",
-])

@@ -6,7 +6,7 @@ generate_guides(
         "*.md",
     ]),
     data = [
-        "//adev/src/content/examples/angular-linker-plugin:webpack.config.mjs",
+        "//adev/src/content/examples",
     ],
     visibility = ["//adev:__subpackages__"],
 )

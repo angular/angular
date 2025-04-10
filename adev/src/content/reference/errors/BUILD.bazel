@@ -22,8 +22,7 @@ generate_guides(
         ":files",
     ],
     data = [
-        "//adev/src/content/examples/errors:cyclic-imports/child.component.ts",
-        "//adev/src/content/examples/errors:cyclic-imports/parent.component.ts",
+        "//adev/src/content/examples",
     ],
 )
 

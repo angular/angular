@@ -1,3 +1,0 @@
-package(default_visibility = ["//visibility:public"])
-
-exports_files(["src/app/self/self.component.ts"])
