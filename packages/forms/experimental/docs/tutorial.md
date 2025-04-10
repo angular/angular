@@ -82,10 +82,13 @@ We're going to build a feedback form with the following fields:
 
 ## Initial setup
 We assume that you have an Angular app already.
+You can see [the final app here](http://google3/experimental/users/kirjs/forms/app/feedback/)
 
 ### Defining data model
 First let's create an interface for our form:
+
 ```typescript
+// feedback.ts
 interface Friend {
   name: string;
   email: string;
@@ -104,8 +107,10 @@ interface Feedback {
   friends: Friend[];
 }
 ```
+
 ### Creating a new Feedback Component
 ```typescript
+// feedback.ts
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 
 @Component({
@@ -128,6 +133,7 @@ Signal forms don't own data; they use a user-provided signal as the source of tr
 So first, we need to create a signal with initial values:
 
 ```typescript
+// feedback.ts
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 
 @Component({/*...*/})
@@ -151,6 +157,7 @@ export class FeedbackComponent {
 A simple form just takes a signal with the data and produces matching field structure.
 
 ```typescript
+// feedback.ts
 import {
   form,  
 } from 'google3/experimental/angularsignalforms';
@@ -168,6 +175,7 @@ export class FeedbackComponent {
 Now in the template we can use new [field] directive.
 
 ```typescript
+// feedback.ts
 import {
   form,  
   FieldDirective,
@@ -211,6 +219,7 @@ Now let's make it interesting and add some validation rules.
 You can pass validation rules as a second argument to the `form` function.
 
 ```typescript
+// feedback.ts
 /* ... */
 export class FeedbackComponent { 
   /* ... */
@@ -225,6 +234,7 @@ export class FeedbackComponent {
 Now let's use the built-in `required` validator.
 
 ```typescript
+// feedback.ts
 import {
   form,
   FieldDirective,
@@ -270,7 +280,7 @@ We can use these in the template:
 ### Error structure
 
 Each error has a `kind` property and an optional `message`.
-```ts
+```typescript
 export interface FormError {
   kind: string;
   message?: string;
@@ -298,6 +308,7 @@ Throughout the tutorial, we're going to just output the error kind, but for this
 ### Handling email
 #### Making email required
 ```typescript
+// feedback.ts
 /* ... */
 export class FeedbackComponent {
   /* ... */
@@ -312,10 +323,12 @@ export class FeedbackComponent {
 #### Creating a custom email validator
 To create a custom validator, we'll import the `validate` function.
 ```typescript
+// feedback.ts
 import {
   form,
   FieldDirective,
   required,
+  // Import validate
   validate,
 } from 'google3/experimental/angularsignalforms';
 ```
@@ -323,6 +336,7 @@ import {
 Similar to `required`, it takes a path, but also a validator function:
 
 ```typescript
+// feedback.ts
 /* ... */
 export class FeedbackComponent {
   /* ... */
@@ -360,6 +374,7 @@ export class FeedbackComponent {
 
 First, let's make the passwords required:
 ```typescript
+// feedback.ts
 /* ... */
 export class FeedbackComponent {
   /* ... */
@@ -378,6 +393,7 @@ To do this, we will use the special `resolve` function provided to the validator
 > `resolve` can be used for cross-field validation.
 
 ```typescript
+// feedback.ts
 /* ... */
 export class FeedbackComponent {
   /* ... */
@@ -442,7 +458,7 @@ export class RatingComponent implements FormUiControl<number> {
 
 ### Displaying the stars
 This is unrelated to Forms.
-you can see it TODO(kirjs): add link
+you can see full implementation [here](http://google3/experimental/users/kirjs/forms/app/feedback/rating.ts)
 
 ### Using rating in the Feedback component template
 
@@ -461,6 +477,7 @@ We want the feedback text field to be required, but only enabled if the rating i
 We use the `disabled` rule for this.
 
 ```typescript
+// feedback.ts
 import {
   /* ... */
   disabled,
@@ -522,6 +539,7 @@ Now we need to specify `friend` part of the form. For this we will use a special
 This code should look familiar: Both fields are required, and the email has its own validator.
 
 ```typescript
+// friend.ts
 import {
   Field,
   Schema,
@@ -547,7 +565,7 @@ But, uh oh, the email validation code is duplicated from our main form. Let's ex
 We'll create a separate file for reusable validators.
 
 ```typescript
-// we'll keep our validators in validator.ts
+// validator.ts
 import {
   Validator
 } from 'google3/experimental/angularsignalforms';
@@ -560,6 +578,7 @@ export const emailValidator: Validator<string> =
 Now we can use it in the schema (don't forget to use in feedback component as well).
 
 ```typescript
+// friend.ts
 import {
   Field,
   Schema,
@@ -631,6 +650,7 @@ class FriendComponent {
 We can use the `applyEach` rule within our main form definition to apply the `friendSchema` to each element of the `friends` array.
 
 ```typescript
+// feedback.ts
 import {
   /* ... */  
   applyEach,
@@ -651,7 +671,7 @@ export class FeedbackComponent {
 ### Displaying friend list in the template
 First, we need to import `FriendComponent` into `FeedbackComponent`:
 ```typescript
-// feedback.component.ts
+// feedback.ts
 import {FriendComponent} from './friend';
 
 @Component({
@@ -695,6 +715,7 @@ We need to apply the `friendSchema` *only when* the `recommendToFriends` checkbo
 To do this we'll conditionally applySchema using `applyWhen`. It looks like this:
 
 ```typescript
+// feedback.ts
 /* ... */
 export class FeedbackComponent {
   /* ... */
@@ -711,6 +732,7 @@ export class FeedbackComponent {
 In our case:
 
 ```typescript
+// feedback.ts
 /* ... */
 export class FeedbackComponent {
   /* ... */
@@ -733,6 +755,7 @@ Now, `friendSchema` validation rules will only apply when `recommendToFriends` i
 Let's allow the user to add a new friend to the list.
 
 ```typescript
+// feedback.ts
 export class FeedbackComponent {
   /* ... */  
   addFriend() {
@@ -761,7 +784,7 @@ Now, add the button to the template inside the `@if` block:
 To handle form submission, use the `submit` function, passing it your form instance and an async submission handler.
 
 ```typescript
-// feedback.component.ts
+// feedback.ts
 import {
   /* ... */
   submit,
@@ -781,6 +804,7 @@ export class FeedbackComponent {
 You can return a list of server errors and map them to appropriate field here as well.
 
 ```typescript 
+// feedback.ts
 /* ... */
 export class FeedbackComponent {
   /* ... */
@@ -801,6 +825,7 @@ export class FeedbackComponent {
 This marks the end of the tutorial. Let's take a look at the complete form definition consolidating all the rules we've added:
 
 ```typescript
+// feedback.ts
 /* ... */
 export class FeedbackComponent {
   /* ... */
