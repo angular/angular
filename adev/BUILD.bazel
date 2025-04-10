@@ -62,6 +62,7 @@ APPLICATION_DEPS = [
     "@npm//marked",
     "@npm//ngx-progressbar",
     "@npm//rxjs",
+    "@npm//xhr2",
     "@npm//typescript",
     "@npm//@typescript/vfs",
     "@npm//@codemirror/state",
@@ -151,6 +152,7 @@ architect(
     name = "build",
     args = config_based_architect_flags + [
         "--output-path=build",
+        "",
     ],
     chdir = "$(RULEDIR)",
     data = ensure_local_package_deps(APPLICATION_DEPS) + APPLICATION_ASSETS + [

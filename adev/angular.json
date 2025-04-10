@@ -25,6 +25,9 @@
               // see https://github.com/xtermjs/xterm.js/pull/4940
               "self": "this"
             },
+            // Ensures we don't escape sandbox to the workspace root with the full node modules that
+            // might contain e.g. `@angular/core` from npm.
+            "preserveSymlinks": true,
             "outputMode": "static",
             "outputPath": "dist/angular-dev",
             "index": "src/index.html",

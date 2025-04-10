@@ -26,8 +26,6 @@ def _filter_external_npm_deps_impl(ctx):
     # Re-route all problematic direct dependency external NPM packages into `adev/node_modules`
     # without their transitive packages. This allows transitive dependency resolution to first look for
     # e.g. `@angular/core` in `adev/node_modules`, and falls back to top-level node modules.
-    # Note: This does not handle cases where Angular dependencies are transitive in deeper layers.
-    # This is something to be addressed separately via https://github.com/angular/angular/issues/54858.
     if has_problematic_transitive_dep and ctx.attr.target.label.workspace_name == "npm":
         providers.append(LinkablePackageInfo(
             package_name = package_name,
@@ -35,6 +33,8 @@ def _filter_external_npm_deps_impl(ctx):
             path = "external/npm/node_modules/%s" % package_name,
             files = ctx.attr.target[ExternalNpmPackageInfo].direct_sources,
         ))
+    elif LinkablePackageInfo in ctx.attr.target:
+        providers.append(ctx.attr.target[LinkablePackageInfo])
 
     return providers
 
@@ -49,7 +49,7 @@ filter_external_npm_deps = rule(
         "target": attr.label(
             mandatory = True,
             doc = "Target to filter",
-            providers = [ExternalNpmPackageInfo],
+            providers = [],
         ),
     },
 )

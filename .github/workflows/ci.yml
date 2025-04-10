@@ -107,10 +107,8 @@ jobs:
           google_credential: ${{ secrets.RBE_TRUSTED_BUILDS_USER }}
       - name: Install node modules
         run: yarn install --frozen-lockfile
-      # TODO: re-enable all tests once the next release is shipped
-      # Tests are broken because of https://github.com/angular/angular/issues/54858
-      #- name: Run tests
-      #  run: yarn bazel test //adev:test #//adev/...
+      - name: Run tests
+        run: yarn bazel test //adev/...
       - name: Build adev in fast mode to ensure it continues to work
         run: yarn bazel build //adev:build --config=release
 
