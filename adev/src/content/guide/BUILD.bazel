@@ -6,14 +6,7 @@ generate_guides(
         "*.md",
     ]),
     data = [
-        "//adev/src/content/examples/elements:src/app/app.component.ts",
-        "//adev/src/content/examples/elements:src/app/popup.component.ts",
-        "//adev/src/content/examples/elements:src/app/popup.service.ts",
-        "//adev/src/content/examples/security:src/app/bypass-security.component.html",
-        "//adev/src/content/examples/security:src/app/bypass-security.component.ts",
-        "//adev/src/content/examples/security:src/app/inner-html-binding.component.html",
-        "//adev/src/content/examples/security:src/app/inner-html-binding.component.ts",
-        "//adev/src/content/examples/ssr:server.ts",
+        "//adev/src/content/examples",
     ],
     visibility = ["//adev:__subpackages__"],
 )

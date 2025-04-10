@@ -1,8 +1,0 @@
-package(default_visibility = ["//visibility:public"])
-
-exports_files([
-    "src/app/reactive/favorite-color/favorite-color.component.spec.ts",
-    "src/app/reactive/favorite-color/favorite-color.component.ts",
-    "src/app/template/favorite-color/favorite-color.component.spec.ts",
-    "src/app/template/favorite-color/favorite-color.component.ts",
-])

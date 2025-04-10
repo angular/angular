@@ -1,9 +1,0 @@
-package(default_visibility = ["//visibility:public"])
-
-exports_files([
-    "src/app/app.component.css",
-    "src/app/app.component.html",
-    "src/app/crisis-list/crisis-list.component.html",
-    "src/app/heroes-list/heroes-list.component.html",
-    "src/app/page-not-found/page-not-found.component.html",
-])
