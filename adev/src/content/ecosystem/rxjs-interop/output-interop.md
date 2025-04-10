@@ -2,11 +2,11 @@
 
 TIP: This guide assumes you're familiar with [component and directive outputs](guide/components/outputs).
 
-The `@angular/rxjs-interop` package offers two APIs related to component and directive outputs.
+The `@angular/core/rxjs-interop` package offers two APIs related to component and directive outputs.
 
 ## Creating an output based on an RxJs Observable
 
-The `outputFromObservable` lets you create a component or directive output that emits based on an RxJS observable:
+The [`outputFromObservable`](/api/core/rxjs-interop/outputFromObservable) lets you create a component or directive output that emits based on an RxJS observable:
 
 <docs-code language="ts" highlight="[7]">
 import {Directive} from '@angular/core';
@@ -25,7 +25,7 @@ The `outputFromObservable` function has special meaning to the Angular compiler.
 
 When you `subscribe` to the output, Angular automatically forwards the subscription to the underlying observable. Angular stops forwarding values when the component or directive is destroyed.
 
-HELPFUL: Consider using `output()` directly if you can emit values imperatively.
+HELPFUL: Consider using [`output()`](/api/core/output) directly if you can emit values imperatively.
 
 ## Creating an RxJS Observable from a component or directive output
 
