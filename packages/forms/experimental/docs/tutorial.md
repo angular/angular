@@ -1,51 +1,13 @@
-Outline:
-*   Initial setup
-  *   Defining data model
-  *   Creating a new Feedback Component
-  *   Creating a signal with data
-*   Creating a simple form
-  *   Creating a form instance
-  *   Binding form field to an input
-  *   Verifying it works
-*   Adding Validation
-  *   Making name required:
-  *   Displaying validation errors
-  *   Error structure
-  *   Displaying an actual error
-  *   handling email
-    *   Making email required
-    *   Creating a custom email validator
-    *   Adding email field
-  *   Password and confirmation password
-    *   Validating passwords
-*   Custom components
-  *   Displaying the stars
-  *   Using rating in the Feedback component template
-*   Feedback text which is disabled if the rating is ⭐⭐⭐⭐⭐
-  *   Adding disabled rule
-  *   Displaying the feedback in the template
-*   Arrays and reusing parts of form (schemas)
-  *   Friend interface
-  *   Create friend schema
-  *   Reusing email validator
-  *   Creating Friend Component
-  *   Displaying name and email in Friend's template
-  *   Applying the friend schema to Array elemenets
-  *   Displaying friend list in the tempalte
-  *   Conditionally enabling/disabling validation with applyWhen
-  *   Adding items to the array
-*   Submitting the form
-  *   Handling submition errors
-
-
-
-
 # Signal Form Tutorial
-contacts: @kirjs @mmalerba @arick
+contacts:
+[@kirjs](https://moma.corp.google.com/person/kirjs)
+[@mmalerba](https://moma.corp.google.com/person/mmalerba)
+[@arick](https://moma.corp.google.com/person/arick)
 
-
+       
 ## 🚧🚧 This design is still work in progress
-
+> This tutorial assumes you are familiar with Angular and have an Angular app running. You could create a new one using [boq angular](http://go/boq-angular-new)
+ 
 The following things are not yet supported:
 * Asynchronous validation
 * Tracking items in arrays and moving items across arrays
@@ -60,12 +22,9 @@ The following things are not yet supported:
 * Typed errors
 
 
-## Disclaimer
 
-🚧🚧 This design is still work in progress, and subject to change.
 
-> This tutorial assumes you are familiar with Angular and have an Angular app running. You could create a new one using [boq angular](http://go/boq-angular-new)
-
+##  The form
 We're going to build a feedback form with the following fields:
 ```
 * text     [name] required
