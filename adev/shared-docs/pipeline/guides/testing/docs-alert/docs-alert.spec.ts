@@ -25,15 +25,10 @@ xdescribe('markdown to html', () => {
     markdownDocument = JSDOM.fragment(await parseMarkdown(markdownContent, {}));
   });
 
-  for (let level in AlertSeverityLevel) {
-    it(`should create a docs-alert for ${level}:`, () => {
-      const noteEl = markdownDocument.querySelector(`.docs-alert-${level.toLowerCase()}`);
-      // TLDR is written without a semi colon in the markdown, but is rendered
-      // with a colon, as such we have to adjust our expectation here.
-      if (level === AlertSeverityLevel.TLDR) {
-        level = 'TL;DR';
-      }
-      expect(noteEl?.textContent?.trim()).toMatch(`^${level}:`);
+  for (const [key, level] of Object.entries(AlertSeverityLevel)) {
+    it(`should create a docs-alert for ${key}:`, () => {
+      const noteEl = markdownDocument.querySelector(`.docs-alert-${key.toLowerCase()}`);
+      expect(noteEl?.textContent?.trim()).toMatch(new RegExp(`^${level}:`));
     });
   }
 

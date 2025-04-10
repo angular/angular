@@ -1,4 +1,4 @@
-Note: Use Note for ancillary/additional information that's not _essential_ to the main text.
+NOTE: Use Note for ancillary/additional information that's not _essential_ to the main text.
 This is a multiline note
 
 TIP: Use Tip to call out a specific task/action users can perform, or a fact that plays directly into a task/action.

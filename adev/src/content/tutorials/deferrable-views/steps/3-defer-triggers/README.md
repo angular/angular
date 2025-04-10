@@ -73,7 +73,7 @@ Next, update the template to include a button with the label "Show all comments"
 }
 </docs-code>
 
-Note: for more information on [template variables check the documentation](https://angular.dev/guide/templates/reference-variables#).
+NOTE: for more information on [template variables check the documentation](https://angular.dev/guide/templates/reference-variables#).
 
 </docs-step>
 

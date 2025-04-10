@@ -196,7 +196,7 @@ The server is now reading data from the HTTP request but the components that rel
 
 </docs-workflow>
 
-Note: This lesson relies on the `fetch` browser API. For the support of interceptors, please refer to the [Http Client documentation](/guide/http)
+NOTE: This lesson relies on the `fetch` browser API. For the support of interceptors, please refer to the [Http Client documentation](/guide/http)
 
 SUMMARY: In this lesson, you updated your app to use a local web server (`json-server`), and use asynchronous service methods to retrieve data.
 

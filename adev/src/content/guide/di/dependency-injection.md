@@ -100,16 +100,16 @@ NOTE: Declaring a service using `providers` causes the service to be included in
 
 ## Injecting/consuming a dependency
 
-Use Angular's `inject` function to retrieve dependencies. 
+Use Angular's `inject` function to retrieve dependencies.
 
 ```ts
-import {inject, Component} from 'angular/core'; 
+import {inject, Component} from 'angular/core';
 
 @Component({/* ... */})
 export class UserProfile {
   // You can use the `inject` function in property initializers.
   private userClient = inject(UserClient);
-  
+
   constructor() {
     // You can also use the `inject` function in a constructor.
     const logger = inject(Logger);
