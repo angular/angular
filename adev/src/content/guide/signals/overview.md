@@ -47,7 +47,9 @@ const count: WritableSignal<number> = signal(0);
 const doubleCount: Signal<number> = computed(() => count() * 2);
 ```
 
-The `doubleCount` signal depends on the `count` signal. Whenever `count` updates, Angular knows that `doubleCount` needs to update as well. Also the `computed` really should be pure functions.
+The `doubleCount` signal depends on the `count` signal. Whenever `count` updates, Angular knows that `doubleCount` needs to update as well. 
+
+NOTE: `computed` functions are intended to be pure functions.
 
 #### Computed signals are both lazily evaluated and memoized
 
