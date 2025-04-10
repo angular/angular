@@ -122,7 +122,6 @@ import {SourceFileValidator} from '../../validation';
 import {Xi18nContext} from '../../xi18n';
 import {DiagnosticCategoryLabel, NgCompilerAdapter, NgCompilerOptions} from '../api';
 
-import {coreHasSymbol} from './core_version';
 import {coreVersionSupportsFeature} from './feature_detection';
 import {angularJitApplicationTransform} from '../../transform/jit';
 import {untagAllTsFiles} from '../../shims';
@@ -1035,14 +1034,12 @@ export class NgCompiler {
     const checkTwoWayBoundEvents = this.options['_checkTwoWayBoundEvents'] ?? false;
 
     // Check whether the loaded version of `@angular/core` in the `ts.Program` supports unwrapping
-    // writable signals for type-checking. If this check fails to find a suitable .d.ts file, fall
-    // back to version detection. Only Angular versions greater than 17.2 have the necessary symbols
-    // to type check signals in two-way bindings. We also allow version 0.0.0 in case somebody is
+    // writable signals for type-checking. Only Angular versions greater than 17.2 have the necessary
+    // symbols to type check signals in two-way bindings. We also allow version 0.0.0 in case somebody is
     // using Angular at head.
-    let allowSignalsInTwoWayBindings =
-      coreHasSymbol(this.inputProgram, R3Identifiers.unwrapWritableSignal) ??
-      (this.angularCoreVersion === null ||
-        coreVersionSupportsFeature(this.angularCoreVersion, '>= 17.2.0'));
+    const allowSignalsInTwoWayBindings =
+      this.angularCoreVersion === null ||
+      coreVersionSupportsFeature(this.angularCoreVersion, '>= 17.2.0-0');
 
     // First select a type-checking configuration, based on whether full template type-checking is
     // requested.
