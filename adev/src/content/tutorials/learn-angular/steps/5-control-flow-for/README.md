@@ -48,7 +48,7 @@ Update the template to display each user name in a `p` element using the `@for` 
 }
 ```
 
-Note: the use of `track` is required, you may use the `id` or some other unique identifier.
+NOTE: the use of `track` is required, you may use the `id` or some other unique identifier.
 
 </docs-step>
 

@@ -66,7 +66,7 @@ expect(await configPromise).toEqual(DEFAULT_CONFIG);
 httpTesting.verify();
 </docs-code>
 
-Note: `expectOne` will fail if the test has made more than one request which matches the given criteria.
+NOTE: `expectOne` will fail if the test has made more than one request which matches the given criteria.
 
 As an alternative to asserting on `req.method`, you could instead use an expanded form of `expectOne` to also match the request method:
 
@@ -181,7 +181,7 @@ const req = httpTesting.expectOne('/api/config');
 expect(req.request.headers.get('X-Authentication-Token')).toEqual(service.getAuthToken());
 </docs-code>
 
-A similar interceptor could be implemented with class based interceptors: 
+A similar interceptor could be implemented with class based interceptors:
 
 <docs-code language="ts">
 @Injectable()
@@ -204,7 +204,7 @@ TestBed.configureTestingModule({
   providers: [
     AuthService,
     provideHttpClient(withInterceptorsFromDi()),
-    provideHttpClientTesting(), 
+    provideHttpClientTesting(),
     // We rely on the HTTP_INTERCEPTORS token to register the AuthInterceptor as an HttpInterceptor
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
   ],

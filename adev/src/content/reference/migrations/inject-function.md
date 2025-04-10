@@ -103,7 +103,7 @@ fixed in `inject()` which can cause new compilation errors to show up. If you en
 the migration will produce a non-null assertion after the `inject()` call to match the old type,
 at the expense of potentially hiding type errors.
 
-**Note:** non-null assertions won't be added to parameters that are already typed to be nullable,
+**NOTE:** non-null assertions won't be added to parameters that are already typed to be nullable,
 because the code that depends on them likely already accounts for their nullability.
 
 #### Before

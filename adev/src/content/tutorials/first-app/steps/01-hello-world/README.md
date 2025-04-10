@@ -8,7 +8,7 @@ This first lesson serves as the starting point from which each lesson in this tu
 
 The updated app you have after this lesson confirms that you and your IDE are ready to begin creating an Angular app.
 
-Note: If you are working with the embedded editor, skip to [step three](#create-%60hello-world%60).
+NOTE: If you are working with the embedded editor, skip to [step three](#create-%60hello-world%60).
 When working in the browser playground, you do not need to `ng serve` to run the app. Other commands like `ng generate` can be done in the console window to your right.
 
 <docs-workflow>
@@ -83,7 +83,7 @@ In this step, you update the Angular project files to change the displayed conte
 In your IDE:
 
 1. Open `first-app/src/index.html`.
-    Note: This step and the next are only for your local environment!
+    NOTE: This step and the next are only for your local environment!
 
 1. In `index.html`, replace the `<title>` element with this code to update the title of the app.
 
@@ -109,7 +109,7 @@ In your IDE:
 
 </docs-workflow>
 
-Summary: In this lesson, you updated a default Angular app to display *Hello world*.
+SUMMARY: In this lesson, you updated a default Angular app to display *Hello world*.
 In the process, you learned about the `ng serve` command to serve your app locally for testing.
 
 For more information about the topics covered in this lesson, visit:

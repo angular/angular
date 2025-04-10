@@ -29,7 +29,7 @@ In the **Terminal** pane of your IDE:
     ng serve
     </docs-code>
 
-    Note: This step is only for your local environment!
+    NOTE: This step is only for your local environment!
 
 1. Open a browser and navigate to `http://localhost:4200` to find the application.
 1. Confirm that the app builds without error.
@@ -64,7 +64,7 @@ In this step, you will copy over the pre-written styles for the `HousingLocation
 
 1. Open `src/app/housing-location/housing-location.component.css`, and paste the styles below into the file:
 
-    Note: In the browser, these can go in `src/app/housing-location/housing-location.component.ts` in the `styles` array.
+    NOTE: In the browser, these can go in `src/app/housing-location/housing-location.component.ts` in the `styles` array.
 
     <docs-code header="Add CSS styles to housing location to the component in src/app/housing-location/housing-location.component.css" path="adev/src/content/tutorials/first-app/steps/04-interfaces/src/app/housing-location/housing-location.component.css"/>
 
@@ -76,4 +76,4 @@ In this step, you will copy over the pre-written styles for the `HousingLocation
 
 </docs-workflow>
 
-Summary: In this lesson, you created a new component for your app and added it to the app's layout.
+SUMMARY: In this lesson, you created a new component for your app and added it to the app's layout.

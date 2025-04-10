@@ -1,6 +1,6 @@
 # Incremental Hydration
 
-Tip: Incremental hydration is currently in [developer preview](/reference/releases#developer-preview).
+TIP: Incremental hydration is currently in [developer preview](/reference/releases#developer-preview).
 
 **Incremental hydration** is an advanced type of [hydration](guide/hydration) that can leave sections of your application dehydrated and _incrementally_ trigger hydration of those sections as they are needed.
 
@@ -149,7 +149,7 @@ condition becomes truthy.
 }
 ```
 
-Note: `hydrate when` conditions only trigger when they are the top-most dehydrated `@defer` block. The condition provided for the trigger is
+NOTE: `hydrate when` conditions only trigger when they are the top-most dehydrated `@defer` block. The condition provided for the trigger is
 specified in the parent component, which needs to exist before it can be triggered. If the parent block is dehydrated, that expression will not yet
 be resolvable by Angular.
 
@@ -168,7 +168,7 @@ renders would load the `@defer` block dependencies on viewport.
 }
 ```
 
-Note: Using `hydrate never` prevents hydration of the entire nested subtree of a given `@defer` block. No other `hydrate` triggers fire for content nested underneath that block.
+NOTE: Using `hydrate never` prevents hydration of the entire nested subtree of a given `@defer` block. No other `hydrate` triggers fire for content nested underneath that block.
 
 ## Hydrate triggers alongside regular triggers
 

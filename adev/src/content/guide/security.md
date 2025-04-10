@@ -251,7 +251,7 @@ Content-Security-Policy: trusted-types angular angular#bundler; require-trusted-
 
 <docs-callout title="Community contributions">
 
-To learn more about troubleshooting Trusted Type configurations, the following resource might be helpful:
+To learn more about troubleshooting Trusted Type configurations, the following resource might be HELPFUL:
 
 [Prevent DOM-based cross-site scripting vulnerabilities with Trusted Types](https://web.dev/trusted-types/#how-to-use-trusted-types)
 

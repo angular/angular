@@ -24,7 +24,7 @@ To add SSR to an **existing** project, use the Angular CLI `ng add` command.
 ng add @angular/ssr
 ```
 
-Note: Interested in the latest SSR advancements in Angular? Take a look at the developer preview [hybrid rendering APIs](guide/hybrid-rendering).
+NOTE: Interested in the latest SSR advancements in Angular? Take a look at the developer preview [hybrid rendering APIs](guide/hybrid-rendering).
 
 These commands create and update application code to enable SSR and adds extra files to the project structure.
 
@@ -41,7 +41,7 @@ To verify that the application is server-side rendered, run it locally with `ng 
 
 ## Configure server-side rendering
 
-Note: In Angular v17 and later, `server.ts` is no longer used by `ng serve`. The dev server will use `main.server.ts` directly to perform server side rendering.
+NOTE: In Angular v17 and later, `server.ts` is no longer used by `ng serve`. The dev server will use `main.server.ts` directly to perform server side rendering.
 
 The `server.ts` file configures a Node.js Express server and Angular server-side rendering. `CommonEngine` is used to render an Angular application.
 

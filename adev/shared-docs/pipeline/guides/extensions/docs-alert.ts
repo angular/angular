@@ -10,12 +10,12 @@ import {RendererThis, Token, TokenizerThis, Tokens} from 'marked';
 
 /** Enum of all available alert severities. */
 export enum AlertSeverityLevel {
-  Note = 'NOTE',
-  Tip = 'TIP',
+  NOTE = 'NOTE',
+  TIP = 'TIP',
   TODO = 'TODO',
   QUESTION = 'QUESTION',
-  Summary = 'SUMMARY',
-  TLDR = 'TLDR',
+  SUMMARY = 'SUMMARY',
+  TLDR = 'TL;DR',
   CRITICAL = 'CRITICAL',
   IMPORTANT = 'IMPORTANT',
   HELPFUL = 'HELPFUL',
@@ -39,14 +39,14 @@ export const docsAlertExtension = {
   level: 'block' as const,
   tokenizer(this: TokenizerThis, src: string): DocsAlertToken | undefined {
     let match: DocsAlert | undefined;
-    for (let level in AlertSeverityLevel) {
+    for (const key of Object.keys(AlertSeverityLevel)) {
       // Capture group 1: all alert text content after the severity level
-      const rule = new RegExp('^s*' + level + ': (.*?)\n(\n|$)', 's');
+      const rule = new RegExp('^s*' + key + ': (.*?)\n(\n|$)', 's');
       const possibleMatch = rule.exec(src);
 
       if (possibleMatch?.[1]) {
         match = {
-          severityLevel: level,
+          severityLevel: key,
           alert: possibleMatch,
         };
       }
@@ -57,12 +57,11 @@ export const docsAlertExtension = {
         type: 'docs-alert',
         raw: match.alert[0],
         body: match.alert[1].trim(),
-        severityLevel: match.severityLevel,
+        severityLevel: match.severityLevel.toLowerCase(),
         tokens: [],
       };
-      token.body = `**${
-        token.severityLevel === AlertSeverityLevel.TLDR ? 'TL;DR' : token.severityLevel
-      }:** ${token.body}`;
+
+      token.body = `**${AlertSeverityLevel[match.severityLevel as keyof typeof AlertSeverityLevel]}:** ${token.body}`;
       this.lexer.blockTokens(token.body, token.tokens);
       return token;
     }

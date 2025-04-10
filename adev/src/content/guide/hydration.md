@@ -93,7 +93,7 @@ Event replay supports _native browser events_, for example `click`, `mouseover`,
 
 ---
 
-This feature ensures a consistent user experience, preventing user actions performed before Hydration from being ignored. Note: if you have [incremental hydration](guide/incremental-hydration) enabled, event replay is automatically enabled under the hood.
+This feature ensures a consistent user experience, preventing user actions performed before Hydration from being ignored. NOTE: if you have [incremental hydration](guide/incremental-hydration) enabled, event replay is automatically enabled under the hood.
 
 ## Constraints
 
@@ -123,7 +123,7 @@ As an example, here are some of the most common cases of this issue.
 
 If you are uncertain about whether your HTML is valid, you can use a [syntax validator](https://validator.w3.org/) to check it.
 
-Note: While the HTML standard does not require the `<tbody>` element inside tables, modern browsers automatically create a `<tbody>` element in tables that do not declare one. Because of this inconsistency, always explicitly declare a `<tbody>` element in tables to avoid hydration errors.
+NOTE: While the HTML standard does not require the `<tbody>` element inside tables, modern browsers automatically create a `<tbody>` element in tables that do not declare one. Because of this inconsistency, always explicitly declare a `<tbody>` element in tables to avoid hydration errors.
 
 ### Preserve Whitespaces Configuration
 

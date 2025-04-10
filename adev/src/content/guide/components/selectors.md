@@ -1,6 +1,6 @@
 # Component selectors
 
-Tip: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
 
 Every component defines
 a [CSS selector](https://developer.mozilla.org/docs/Web/CSS/CSS_selectors) that determines how

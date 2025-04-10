@@ -95,7 +95,7 @@ In the **Edit** pane of your IDE, in `src/app/home/home.component.ts`:
 
 </docs-workflow>
 
-Summary: In this lesson, you added an Angular service to your app and injected it into the `HomeComponent` class.
+SUMMARY: In this lesson, you added an Angular service to your app and injected it into the `HomeComponent` class.
 This compartmentalizes how your app gets its data.
 For now, the new service gets its data from a static array of data.
 In a later lesson, you'll refactor the service to get its data from an API endpoint.

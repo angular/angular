@@ -82,7 +82,7 @@ Update `app.component.ts` to include a `@loading` block with a minimum parameter
 }
 </docs-code>
 
-Note: this example uses two parameters, separated by the ; character.
+NOTE: this example uses two parameters, separated by the ; character.
 
 </docs-step>
 

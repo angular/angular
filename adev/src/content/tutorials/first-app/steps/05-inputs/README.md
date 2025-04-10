@@ -44,7 +44,7 @@ In the code editor:
 
 </docs-workflow>
 
-Summary: In this lesson, you created a new property decorated with the `@Input()` decorator. You also used the non-null assertion operator to notify the compiler that the value of the new property won't be `null` or `undefined`.
+SUMMARY: In this lesson, you created a new property decorated with the `@Input()` decorator. You also used the non-null assertion operator to notify the compiler that the value of the new property won't be `null` or `undefined`.
 
 <docs-pill-row>
   <docs-pill href="guide/components/inputs" title="Accepting data with input properties"/>
