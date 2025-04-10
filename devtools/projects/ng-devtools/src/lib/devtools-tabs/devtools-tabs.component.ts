@@ -24,16 +24,7 @@ import {ProfilerComponent} from './profiler/profiler.component';
 import {RouterTreeComponent} from './router-tree/router-tree.component';
 import {TabUpdate} from './tab-update/index';
 
-type ApiBoundTab = 'Profiler' | 'Router Tree' | 'Injector Tree';
-type Tab = 'Components' | ApiBoundTab;
-
-const API_BOUND_TABS: ApiBoundTab[] = ['Profiler', 'Injector Tree'];
-
-const TAB_TO_API: {[key in ApiBoundTab]: keyof SupportedApis} = {
-  Profiler: 'profiler',
-  'Injector Tree': 'dependencyInjection',
-  'Router Tree': 'routes',
-};
+type Tab = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree';
 
 @Component({
   selector: 'ng-devtools-tabs',
@@ -75,12 +66,19 @@ export class DevToolsTabsComponent {
 
   readonly tabs = computed<Tab[]>(() => {
     const supportedApis = this.supportedApis();
-    const apiBound: ApiBoundTab[] = API_BOUND_TABS.filter((tab) => supportedApis[TAB_TO_API[tab]]);
-    const tabs: Tab[] = ['Components', ...apiBound];
+    const tabs: Tab[] = ['Components'];
 
-    return supportedApis.routes && this.routerGraphEnabled() && this.routes().length > 0
-      ? [...tabs, 'Router Tree']
-      : tabs;
+    if (supportedApis.profiler) {
+      tabs.push('Profiler');
+    }
+    if (supportedApis.dependencyInjection) {
+      tabs.push('Injector Tree');
+    }
+    if (supportedApis.routes && this.routerGraphEnabled() && this.routes().length > 0) {
+      tabs.push('Router Tree');
+    }
+
+    return tabs;
   });
 
   profilingNotificationsSupported = Boolean(

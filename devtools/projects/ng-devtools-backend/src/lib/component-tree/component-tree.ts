@@ -46,7 +46,7 @@ import {
 import {mutateNestedProp} from '../property-mutation';
 import {ComponentTreeNode, DirectiveInstanceType, ComponentInstanceType} from '../interfaces';
 import {getRoots} from './get-roots';
-import {AcxChangeDetectionStrategy, ChangeDetectionStrategy, Framework} from './types';
+import {AcxChangeDetectionStrategy, ChangeDetectionStrategy, Framework} from './core-enums';
 
 export const injectorToId = new WeakMap<Injector | HTMLElement, string>();
 export const nodeInjectorToResolutionPath = new WeakMap<HTMLElement, SerializedInjector[]>();

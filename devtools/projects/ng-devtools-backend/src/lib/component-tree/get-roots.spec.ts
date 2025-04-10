@@ -16,12 +16,7 @@ function createRoot() {
 
 describe('getRoots', () => {
   afterEach(() => {
-    let child = document.body.firstChild;
-
-    while (child) {
-      document.body.removeChild(child);
-      child = document.body.firstChild;
-    }
+    document.body.replaceChildren();
   });
 
   it('should return root element', () => {

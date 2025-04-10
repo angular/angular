@@ -8,20 +8,12 @@
 
 import type {ɵFrameworkAgnosticGlobalUtils as GlobalUtils} from '@angular/core';
 import {getRoots} from '../component-tree/get-roots';
-import {Framework} from '../component-tree/types';
+import {Framework} from '../component-tree/core-enums';
 
-/**
- * Returns a handle to window.ng APIs (global angular debugging).
- *
- * @returns window.ng
- */
+/** Returns a handle to window.ng APIs (global angular debugging). */
 export const ngDebugClient = () => (window as any).ng as Partial<GlobalUtils>;
 
-/**
- * Type guard that checks whether a given debug API is supported within window.ng
- *
- * @returns whether the ng object includes the given debug API
- */
+/** Type guard that checks whether a given debug API is supported within window.ng */
 export function ngDebugApiIsSupported<T extends Partial<GlobalUtils>, K extends keyof T>(
   ng: T,
   api: K,
@@ -29,11 +21,7 @@ export function ngDebugApiIsSupported<T extends Partial<GlobalUtils>, K extends 
   return typeof ng[api] === 'function';
 }
 
-/**
- * Checks whether Dependency Injection debug API is supported within window.ng
- *
- * @returns boolean
- */
+/** Checks whether Dependency Injection debug API is supported within window.ng */
 export function ngDebugDependencyInjectionApiIsSupported(): boolean {
   const ng = ngDebugClient();
   if (!ngDebugApiIsSupported(ng, 'getInjector')) {
@@ -55,33 +43,29 @@ export function ngDebugDependencyInjectionApiIsSupported(): boolean {
   return true;
 }
 
-/**
- * Checks whether Profiler API is supported within window.ng
- *
- * @returns boolean
- */
+/** Checks whether Profiler API is supported within window.ng */
 export function ngDebugProfilerApiIsSupported(): boolean {
   const ng = ngDebugClient();
 
   // Temporary solution. Convert to an eligible API when available.
   // https://github.com/angular/angular/pull/60585#discussion_r2017047132
   // If there is a Wiz application, make Profiler API unavailable.
-  return !getRoots()
-    .map((el) => ng.getDirectiveMetadata?.(el)?.framework === Framework.Wiz)
-    .find((wiz) => wiz);
+  const roots = getRoots();
+  return (
+    !!roots.length &&
+    !roots.some((el) => ng.getDirectiveMetadata?.(el)?.framework === Framework.Wiz)
+  );
 }
 
-/**
- * Checks whether Router API is supported within window.ng
- *
- * @returns boolean
- */
+/** Checks whether Router API is supported within window.ng */
 export function ngDebugRoutesApiIsSupported(): boolean {
   const ng = ngDebugClient();
 
   // Temporary solution. Convert to `ɵgetLoadedRoutes` when available.
   // If there is a Wiz application, make Routes API unavailable.
-  return !getRoots()
-    .map((el) => ng.getDirectiveMetadata?.(el)?.framework === Framework.Wiz)
-    .find((wiz) => wiz);
+  const roots = getRoots();
+  return (
+    !!roots.length &&
+    !roots.some((el) => ng.getDirectiveMetadata?.(el)?.framework === Framework.Wiz)
+  );
 }

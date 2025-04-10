@@ -12,9 +12,17 @@ import {
   ngDebugProfilerApiIsSupported,
   ngDebugRoutesApiIsSupported,
 } from './ng-debug-api';
-import {Framework} from '../component-tree/types';
+import {Framework} from '../component-tree/core-enums';
 
 type Ng = ɵGlobalDevModeUtils['ng'];
+
+/** Add a root element to the body. */
+const mockRoot = () => {
+  document.body.replaceChildren();
+  const root = document.createElement('div');
+  root.setAttribute('ng-version', '');
+  document.body.appendChild(root);
+};
 
 /** Creates an `ng` object with a `getDirectiveMetadata` mock. */
 const createNgWithDirectiveMetadata = (
@@ -68,6 +76,7 @@ describe('ng-debug-api', () => {
   describe('ngDebugProfilerApiIsSupported', () => {
     // Tests must be updated after the temporary solutions
     // are replaced in favor of the stable API.
+    beforeEach(() => mockRoot());
 
     it('should support Profiler API', () => {
       (globalThis as any).ng = createNgWithDirectiveMetadata(Framework.Angular);
@@ -80,13 +89,14 @@ describe('ng-debug-api', () => {
     it('should NOT support Profiler API', () => {
       (globalThis as any).ng = createNgWithDirectiveMetadata(Framework.Wiz);
 
-      expect(ngDebugProfilerApiIsSupported()).toBeTrue();
+      expect(ngDebugRoutesApiIsSupported()).toBeFalse();
     });
   });
 
   describe('ngDebugRoutesApiIsSupported', () => {
     // Tests must be updated after the temporary solutions
     // are replaced in favor of the stable API.
+    beforeEach(() => mockRoot());
 
     it('should support Routes API', () => {
       (globalThis as any).ng = createNgWithDirectiveMetadata(Framework.Angular);
@@ -99,7 +109,7 @@ describe('ng-debug-api', () => {
     it('should NOT support Routes API', () => {
       (globalThis as any).ng = createNgWithDirectiveMetadata(Framework.Wiz);
 
-      expect(ngDebugRoutesApiIsSupported()).toBeTrue();
+      expect(ngDebugRoutesApiIsSupported()).toBeFalse();
     });
   });
 });

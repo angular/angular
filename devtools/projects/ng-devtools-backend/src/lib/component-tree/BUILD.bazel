@@ -9,16 +9,16 @@ ts_library(
 )
 
 ts_library(
-    name = "types",
-    srcs = ["types.ts"],
+    name = "core-enums",
+    srcs = ["core-enums.ts"],
 )
 
 ts_library(
     name = "component-tree",
     srcs = ["component-tree.ts"],
     deps = [
+        ":core-enums",
         ":get-roots",
-        ":types",
         "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
         "//devtools/projects/ng-devtools-backend/src/lib:property_mutation",
         "//devtools/projects/ng-devtools-backend/src/lib:utils",
