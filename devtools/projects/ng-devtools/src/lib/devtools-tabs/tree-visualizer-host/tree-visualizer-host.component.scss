@@ -1,8 +1,11 @@
+@use '../../../styles/typography';
+
 :host {
   display: block;
   height: 100%;
 
   svg {
+    @extend %body-medium-01;
     cursor: grab;
 
     &.panning {
@@ -65,7 +68,6 @@
             background: var(--blue-02);
             border-color: white;
             color: white;
-            font-weight: 400;
           }
 
           &.selected {
@@ -75,7 +77,7 @@
               background: white;
               border-width: 3px;
               border-color: var(--blue-02);
-              font-weight: 800;
+              font-weight: 600;
             }
           }
         }
@@ -134,7 +136,6 @@
 
         .node-label {
           color: black;
-          font-weight: 300;
           font-size: 18px;
           text-align: center;
         }

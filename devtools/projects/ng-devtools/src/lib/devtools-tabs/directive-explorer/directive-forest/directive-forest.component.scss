@@ -1,3 +1,5 @@
+@use '../../../../styles/typography';
+
 :host {
   width: 100%;
   height: 100%;
@@ -8,9 +10,7 @@
     color: var(--color-tree-node-element-name);
 
     cursor: default;
-    font-family: Menlo, monospace;
-    font-size: 11px;
-    line-height: 18px;
+    @extend %monospaced;
 
     white-space: nowrap;
     text-overflow: ellipsis;

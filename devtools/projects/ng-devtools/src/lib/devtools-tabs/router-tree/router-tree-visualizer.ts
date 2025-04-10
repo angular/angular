@@ -132,7 +132,6 @@ export class RouterTreeVisualizer {
       .attr('y', 21)
       .attr('class', 'legend-router-tree')
       .text('Eager loaded routes')
-      .style('font-size', '15px')
       .attr('alignment-baseline', 'middle');
 
     svg
@@ -141,7 +140,6 @@ export class RouterTreeVisualizer {
       .attr('y', 56)
       .attr('class', 'legend-router-tree')
       .text('Lazy Loaded Route')
-      .style('font-size', '15px')
       .attr('alignment-baseline', 'middle');
 
     svg
@@ -150,7 +148,6 @@ export class RouterTreeVisualizer {
       .attr('y', 92)
       .attr('class', 'legend-router-tree')
       .text('Active Route')
-      .style('font-size', '15px')
       .attr('alignment-baseline', 'middle');
 
     this.zoomController = this.d3.zoom<HTMLElement, unknown>().scaleExtent([0.1, 2]);

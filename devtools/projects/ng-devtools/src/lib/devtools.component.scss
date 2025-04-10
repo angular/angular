@@ -1,3 +1,5 @@
+@use '../styles/typography';
+
 @keyframes pulse {
   0% {
     box-shadow: 0 0 0 0px var(--dynamic-red-02);
@@ -29,8 +31,8 @@
   height: 100%;
   display: flex;
   align-items: center;
+
   .loading {
-    background: url('./images/angular.svg');
     border-radius: 50%;
     width: 125px;
     height: 125px;
@@ -41,9 +43,7 @@
 }
 
 .text-message {
-  font-weight: 500;
-  font-size: 1.2em;
-  padding: 5px;
+  @extend %heading-500;
   text-align: center;
   cursor: help;
 
@@ -61,8 +61,7 @@
 }
 
 .ng-dev-mode-causes {
-  font-weight: 500;
-  font-size: 1.2em;
+  @extend %body-medium-01;
   padding: 1rem;
   width: 80%;
   margin: auto;
