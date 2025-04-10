@@ -2,6 +2,8 @@
 
 Now that you've set up the app to use Angular Router, you need to define the routes.
 
+Note: Learn more about [defining a basic route in the in-depth guide](/guide/routing/common-router-tasks#defining-a-basic-route).
+
 In this activity, you'll learn how to add and configure routes with your app.
 
 <hr>
@@ -48,11 +50,11 @@ import {Routes} from '@angular/router';
 import {HomeComponent} from './home/home.component';
 
 export const routes: Routes = [
-  {
-    path: '',
-    title: 'App Home Page',
-    component: HomeComponent,
-  },
+{
+path: '',
+title: 'App Home Page',
+component: HomeComponent,
+},
 ];
 </docs-code>
 
