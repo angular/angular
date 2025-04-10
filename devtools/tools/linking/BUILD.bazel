@@ -12,6 +12,7 @@ nodejs_binary(
         ":linker_srcs",
         "//packages/compiler-cli/linker/babel",
         "@npm//@babel/core",
+        "@npm//@nginfra/angular-linking",
         "@npm//tinyglobby",
     ],
     entry_point = ":index.mjs",

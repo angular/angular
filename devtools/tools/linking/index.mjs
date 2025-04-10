@@ -35,33 +35,13 @@ async function main() {
     }),
   );
 
-  const fesmBundles = globSync('fesm2022/**/*.mjs', {cwd: outDir});
-  const tasks = [];
-  const babelOptions = {
-    plugins: [
-      [
-        linkerBabelPlugin,
-        {
-          // We compile with an unstamped version of the compiler, so ignore.
-          unknownDeclarationVersionHandling: 'ignore',
-        },
-      ],
-    ],
-  };
+  process.chdir(outDir);
 
-  for (const bundleFile of fesmBundles) {
-    tasks.push(
-      (async () => {
-        const filePath = path.join(outDir, bundleFile);
-        const content = await readFile(filePath, 'utf8');
-        const result = await transformAsync(content, {...babelOptions, filename: filePath});
+  // We compile with an unstamped version of the compiler, so ignore.
+  process.env['LINKER_UNKNOWN_DECLARATION_VERSION_HANDLING'] = 'ignore';
 
-        await writeFile(path.join(outDir, bundleFile), result.code);
-      })(),
-    );
-  }
-
-  await Promise.all(tasks);
+  // Run linking in cwd.
+  import('@nginfra/angular-linking');
 }
 
 main().catch((e) => {
