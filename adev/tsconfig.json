@@ -17,6 +17,7 @@
     "sourceMap": true,
     "declaration": false,
     "moduleResolution": "node",
+    "preserveSymlinks": true,
     "importHelpers": true,
     "target": "ES2022",
     "module": "ES2022",
@@ -31,8 +32,8 @@
     "skipLibCheck": true,
     "paths": {
       "@angular/docs": ["./shared-docs"],
-      "@angular/*": ["../packages/*"],
-    },
+      "@angular/*": ["../packages/*"]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

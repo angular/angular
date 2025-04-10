@@ -85,6 +85,7 @@ WELL_KNOWN_EXTERNALS = [
     "@angular/common/upgrade",
     "@angular/compiler",
     "@angular/core",
+    "@angular/core/rxjs-interop",
     "@angular/core/testing",
     "@angular/elements",
     "@angular/forms",
