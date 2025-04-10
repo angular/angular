@@ -90,10 +90,10 @@ withViewTransitions({
  onViewTransitionCreated: ({transition}) => {
    const router = inject(Router);
    const targetUrl = router.getCurrentNavigation()!.finalUrl!;
-   // Skip the transition if the only thing 
+   // Skip the transition if the only thing
    // changing is the fragment and queryParams
-   const config = { 
-     paths: 'exact', 
+   const config = {
+     paths: 'exact',
      matrixParams: 'exact',
      fragment: 'ignored',
      queryParams: 'ignored',
@@ -152,6 +152,6 @@ The view transition feature in the Angular router does not provide a way to dela
 
 ## Native View Transitions Alternative
 
-Animating the transition between routes can also be done with the `@angular/animations` package. 
+Animating the transition between routes can also be done with the `@angular/animations` package.
 The animation [triggers and transitions](/guide/animations/transition-and-triggers)
 can be derived from the router state, such as the current URL or `ActivatedRoute`.

@@ -43,7 +43,7 @@ In the **Terminal** pane of your IDE:
 
 1. Run this command to build and serve your app.
 
-    Note: This step is only for your local environment!
+    NOTE: This step is only for your local environment!
 
     <docs-code language="shell">
     ng serve
@@ -104,7 +104,7 @@ In the **Edit** pane of your IDE:
 
 1. Next, open `home.component.css` in the editor and update the content with these styles.
 
-    Note: In the browser, these can go in `src/app/home/home.component.ts` in the `styles` array.
+    NOTE: In the browser, these can go in `src/app/home/home.component.ts` in the `styles` array.
 
     <docs-code header="Replace in src/app/home/home.component.css" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/home/home.component.css"/>
 
@@ -117,7 +117,7 @@ In the **Edit** pane of your IDE:
 
 </docs-workflow>
 
-Summary: In this lesson, you created a new component for your app and gave it a filter edit control and button.
+SUMMARY: In this lesson, you created a new component for your app and gave it a filter edit control and button.
 
 For more information about the topics covered in this lesson, visit:
 

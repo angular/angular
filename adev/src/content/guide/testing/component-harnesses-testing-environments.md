@@ -2,7 +2,7 @@
 
 ## Before you start
 
-Tip: This guide assumes you've already read the [component harnesses overview guide](guide/testing/component-harnesses-overview). Read that first if you're new to using component harnesses.
+TIP: This guide assumes you've already read the [component harnesses overview guide](guide/testing/component-harnesses-overview). Read that first if you're new to using component harnesses.
 
 ### When does adding support for a test environment make sense?
 

@@ -309,7 +309,7 @@ export class HostComponent {
 
 Since `HostComponent` has the `host` option , no matter what the parent of `HostComponent` might have as a `flower.emoji` value, the `HostComponent` will use tulip <code>&#x1F337;</code>.
 
-### Modifiers with constructor injection  
+### Modifiers with constructor injection
 
 Similarly as presented before, the behavior of constructor injection can be modified with `@Optional()`, `@Self()`, `@SkipSelf()` and `@Host()`.
 
@@ -590,7 +590,7 @@ Here, it has a value of dog <code>&#x1F436;</code>.
 })
 export class ChildComponent {
   // inject services
-  flower = inject(FlowerService); 
+  flower = inject(FlowerService);
   animal = inject(AnimalService)
 ...
 }

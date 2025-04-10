@@ -1,8 +1,8 @@
 # Accepting data with input properties
 
-Tip: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
 
-Tip: If you're familiar with other web frameworks, input properties are similar to _props_.
+TIP: If you're familiar with other web frameworks, input properties are similar to _props_.
 
 When you use a component, you commonly want to pass some data to it. A component specifies the data that it accepts by declaring
 **inputs**:
@@ -62,11 +62,11 @@ import {Component, input} from '@angular/core';
 
 @Component({/*...*/})
 export class CustomSlider {
-  // Declare an input named 'value' with a default value of zero. 
+  // Declare an input named 'value' with a default value of zero.
   value = input(0);
 
   // Create a computed expression that reads the value input
-  label = computed(() => `The slider's value is ${this.value()}`); 
+  label = computed(() => `The slider's value is ${this.value()}`);
 }
 </docs-code>
 
@@ -148,8 +148,8 @@ import {Component, input, booleanAttribute, numberAttribute} from '@angular/core
 
 @Component({/*...*/})
 export class CustomSlider {
-  disabled = input(false, {transform: booleanAttribute}); 
-  value = input(0, {transform: numberAttribute}); 
+  disabled = input(false, {transform: booleanAttribute});
+  value = input(0, {transform: numberAttribute});
 }
 </docs-code>
 
@@ -192,7 +192,7 @@ export class CustomSlider {
   value = model(0);
 
   increment() {
-    // Update the model input with a new value, propagating the value to any bindings. 
+    // Update the model input with a new value, propagating the value to any bindings.
     this.value.update(oldValue => oldValue + 10);
   }
 }
@@ -205,7 +205,7 @@ export class CustomSlider {
   template: `<custom-slider [(value)]="volume" />`,
 })
 export class MediaControls {
-  // Create a writable signal for the `volume` local state. 
+  // Create a writable signal for the `volume` local state.
   volume = signal(0);
 }
 ```
@@ -269,7 +269,7 @@ Avoid adding prefixes for component inputs like you would with component selecto
 
 ## Declaring inputs with the `@Input` decorator
 
-Tip: While the Angular team recommends using the signal-based `input` function for new projects, the original decorator-based `@Input` API remains fully supported.
+TIP: While the Angular team recommends using the signal-based `input` function for new projects, the original decorator-based `@Input` API remains fully supported.
 
 You can alternatively declare component inputs by adding the `@Input` decorator to a property:
 

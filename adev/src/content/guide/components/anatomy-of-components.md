@@ -1,7 +1,7 @@
 <docs-decorative-header title="Anatomy of a component" imgSrc="adev/src/assets/images/components.svg"> <!-- markdownlint-disable-line -->
 </docs-decorative-header>
 
-Tip: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
 
 Every component must have:
 
@@ -72,7 +72,7 @@ export class UserProfile { }
 
 By default, Angular components are *standalone*, meaning that you can directly add them to the `imports` array of other components. Components created with an earlier version of Angular may instead specify `standalone: false` in their `@Component` decorator. For these components, you instead import the `NgModule` in which the component is defined. See the full [`NgModule` guide](guide/ngmodules) for details.
 
-Important: In Angular versions before 19.0.0, the `standalone` option defaults to `false`.
+IMPORTANT: In Angular versions before 19.0.0, the `standalone` option defaults to `false`.
 
 ### Showing components in a template
 

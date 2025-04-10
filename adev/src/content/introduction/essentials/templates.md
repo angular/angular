@@ -70,12 +70,12 @@ Angular lets you add event listeners to an element in your template with parenth
 ```angular-ts
 @Component({
   /*...*/
-  // Add an 'click' event handler that calls the `cancelSubscription` method. 
+  // Add an 'click' event handler that calls the `cancelSubscription` method.
   template: `<button (click)="cancelSubscription()">Cancel subscription</button>`,
 })
 export class UserProfile {
   /* ... */
-  
+
   cancelSubscription() { /* Your event handling code goes here. */  }
 }
 ```
@@ -85,12 +85,12 @@ If you need to pass the [event](https://developer.mozilla.org/docs/Web/API/Event
 ```angular-ts
 @Component({
   /*...*/
-  // Add an 'click' event handler that calls the `cancelSubscription` method. 
+  // Add an 'click' event handler that calls the `cancelSubscription` method.
   template: `<button (click)="cancelSubscription($event)">Cancel subscription</button>`,
 })
 export class UserProfile {
   /* ... */
-  
+
   cancelSubscription(event: Event) { /* Your event handling code goes here. */  }
 }
 ```
@@ -118,7 +118,7 @@ The `@if` block also supports an optional `@else` block:
   <!-- ... -->
 } @else {
   <h2>User settings</h2>
-  <!-- ... -->  
+  <!-- ... -->
 }
 ```
 
@@ -136,7 +136,7 @@ You can repeat part of a template multiple times with Angular's `@for` block:
 
 Angular's uses the `track` keyword, shown in the example above, to associate data with the DOM elements created by `@for`. See [_Why is track in @for blocks important?_](guide/templates/control-flow#why-is-track-in-for-blocks-important) for more info.
 
-Tip: Want to know more about Angular templates? See the [In-depth Templates guide](guide/templates) for the full details.
+TIP: Want to know more about Angular templates? See the [In-depth Templates guide](guide/templates) for the full details.
 
 ## Next Step
 
