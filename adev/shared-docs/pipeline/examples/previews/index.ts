@@ -9,12 +9,11 @@
 import * as fs from 'fs';
 import {readFile, writeFile} from 'fs/promises';
 import {join, relative} from 'path';
+import {glob} from 'tinyglobby';
 import ts from 'typescript';
 
 const [examplesDir, templateFilePath, outputFilePath] = process.argv.slice(2);
 
-const TYPESCRIPT_EXTENSION = '.ts';
-const SKIP_FILES_WITH_EXTENSIONS = ['.e2e-spec.ts', '.spec.ts', '.po.ts'];
 const EXAMPLES_PATH = `../../content/examples`;
 
 interface File {
@@ -29,10 +28,38 @@ interface AnalyzedFiles {
 
 main();
 
+/**
+ * Creates a map of example path to dynamic component import for loading embedded examples.
+ *
+ * For example, given the following inputs:
+ * examplesDir: 'adev/src/content/examples',
+ * templateFilePath: 'adev/shared-docs/pipeline/examples/previews/previews.template',
+ * outputFilePath: 'bazel-out/k8-fastbuild/bin/adev/src/assets/previews/previews.ts'
+ *
+ * The script will generate a mapping of all example components under adev/src/content/examples and
+ * fill them into the given template file, writing the result to the output file.
+ *
+ * It will replace the placeholder text `${previewsComponents}` in the template with mappings like:
+ * ['adev/src/content/examples/accessibility/src/app/app.component.ts']:
+ *   () => import('../../content/examples/accessibility/src/app/app.component').then(c => c.AppComponent),
+ * ['adev/src/content/examples/accessibility/src/app/progress-bar.component.ts']:
+ *   () => import('../../content/examples/accessibility/src/app/progress-bar.component').then(c => c.ExampleProgressbarComponent),
+ * ...
+ */
 async function main() {
-  const files = await retrieveAllTypescriptFiles(
-    examplesDir,
-    (path) => !SKIP_FILES_WITH_EXTENSIONS.some((extensionToSkip) => path.endsWith(extensionToSkip)),
+  const files = await glob(join(examplesDir, '**/*.ts'), {
+    ignore: ['**/*.e2e-spec.ts', '**/*.spec.ts', '**/*.po.ts'],
+  }).then((paths) =>
+    Promise.all(
+      paths.map((path) =>
+        readFile(path, {encoding: 'utf-8'}).then((fileContent) => {
+          return {
+            path: relative(examplesDir, path),
+            content: fileContent,
+          };
+        }),
+      ),
+    ),
   );
 
   const filesWithComponent = files
@@ -45,43 +72,6 @@ async function main() {
   const previewsComponentMap = generatePreviewsComponentMap(filesWithComponent);
 
   await writeFile(outputFilePath, previewsComponentMap);
-}
-
-/** Recursively search the provided directory for all typescript files and asynchronously load them. */
-function retrieveAllTypescriptFiles(
-  baseDir: string,
-  predicateFn: (path: string) => boolean,
-): Promise<File[]> {
-  const typescriptFiles: Promise<File>[] = [];
-
-  const checkFilesInDirectory = (dir: string) => {
-    const files = fs.readdirSync(dir, {withFileTypes: true});
-    for (const file of files) {
-      const fullPathToFile = join(dir, file.name);
-      const relativeFilePath = relative(baseDir, fullPathToFile);
-
-      if (
-        file.isFile() &&
-        file.name.endsWith(TYPESCRIPT_EXTENSION) &&
-        predicateFn(relativeFilePath)
-      ) {
-        typescriptFiles.push(
-          readFile(fullPathToFile, {encoding: 'utf-8'}).then((fileContent) => {
-            return {
-              path: relativeFilePath,
-              content: fileContent,
-            };
-          }),
-        );
-      } else if (file.isDirectory()) {
-        checkFilesInDirectory(fullPathToFile);
-      }
-    }
-  };
-
-  checkFilesInDirectory(baseDir);
-
-  return Promise.all(typescriptFiles);
 }
 
 /** Returns list of the `Standalone` @Component class names for given file */

@@ -6,13 +6,7 @@ generate_guides(
         "*.md",
     ]),
     data = [
-        "//adev/src/content/examples/pipes:src/app/exponential-strength.pipe.ts",
-        "//adev/src/content/examples/pipes:src/app/flying-heroes.component.html",
-        "//adev/src/content/examples/pipes:src/app/flying-heroes.component.ts",
-        "//adev/src/content/examples/pipes:src/app/flying-heroes.pipe.ts",
-        "//adev/src/content/examples/pipes:src/app/flying-heroes-impure.component.html",
-        "//adev/src/content/examples/pipes:src/app/hero-async-message.component.ts",
-        "//adev/src/content/examples/pipes:src/app/power-booster.component.ts",
+        "//adev/src/content/examples",
     ],
     visibility = ["//adev:__subpackages__"],
 )

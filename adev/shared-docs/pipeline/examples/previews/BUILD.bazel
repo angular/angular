@@ -12,6 +12,7 @@ ts_library(
     ],
     deps = [
         "@npm//@types/node",
+        "@npm//tinyglobby",
         "@npm//typescript",
     ],
 )

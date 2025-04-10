@@ -7,16 +7,7 @@ generate_guides(
     ]),
     data = [
         "//adev/src/assets/images:routing.svg",
-        "//adev/src/content/examples/router:src/app/app.component.1.html",
-        "//adev/src/content/examples/router:src/index.html",
-        "//adev/src/content/examples/router-tutorial:src/app/app.component.css",
-        "//adev/src/content/examples/router-tutorial:src/app/app.component.html",
-        "//adev/src/content/examples/router-tutorial:src/app/crisis-list/crisis-list.component.html",
-        "//adev/src/content/examples/router-tutorial:src/app/heroes-list/heroes-list.component.html",
-        "//adev/src/content/examples/router-tutorial:src/app/page-not-found/page-not-found.component.html",
-        "//adev/src/content/examples/routing-with-urlmatcher:src/app/app.component.html",
-        "//adev/src/content/examples/routing-with-urlmatcher:src/app/app.routes.ts",
-        "//adev/src/content/examples/routing-with-urlmatcher:src/app/profile/profile.component.html",
+        "//adev/src/content/examples",
     ],
     visibility = ["//adev:__subpackages__"],
 )
