@@ -112,6 +112,12 @@ export const COMPUTING: any = /* @__PURE__ */ Symbol('COMPUTING');
  */
 export const ERRORED: any = /* @__PURE__ */ Symbol('ERRORED');
 
+export const ComputedNode = {
+  UNSET,
+  COMPUTING,
+  ERRORED,
+} as const;
+
 // Note: Using an IIFE here to ensure that the spread assignment is not considered
 // a side-effect, ending up preserving `COMPUTED_NODE` and `REACTIVE_NODE`.
 // TODO: remove when https://github.com/evanw/esbuild/issues/3392 is resolved.
