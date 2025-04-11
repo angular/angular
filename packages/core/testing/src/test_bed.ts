@@ -155,7 +155,7 @@ export interface TestBed {
   /**
    * Execute any pending work required to synchronize model to the UI.
    *
-   * @publicApi
+   * @publicApi 20.0
    */
   tick(): void;
 }

@@ -369,8 +369,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
  * in patch versions. There are known feature gaps and API ergonomic considerations. We will iterate
  * on the exact API based on the feedback and our understanding of the problem and solution space.
  *
- * @publicApi
- * @developerPreview
+ * @developerPreview 20.0
  * @see {@link /api/platform-browser/bootstrapApplication bootstrapApplication}
  */
 export function provideZonelessChangeDetection(): EnvironmentProviders {

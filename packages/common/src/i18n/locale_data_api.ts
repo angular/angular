@@ -102,7 +102,8 @@ export enum TranslationWidth {
  * @see [Internationalization (i18n) Guide](guide/i18n)
  * @publicApi
  *
- * @deprecated Date locale data getters are deprecated
+ * @deprecated 18.0
+ * Date locale data getters are deprecated
  */
 export enum FormatWidth {
   /**

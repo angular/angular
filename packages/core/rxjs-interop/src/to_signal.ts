@@ -25,7 +25,7 @@ import {Observable, Subscribable} from 'rxjs';
 /**
  * Options for `toSignal`.
  *
- * @publicApi
+ * @publicApi 20.0
  */
 export interface ToSignalOptions<T> {
   /**
