@@ -21,7 +21,7 @@ jobs:
       workflows: ${{ steps.workflows.outputs.workflows }}
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@77fb8b4387755a887550b2e5c3fe1206ae130007
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@77b20173e6aee60aa43dd47cab8f2c3933651a1c
       - name: Install node modules
         run: yarn -s install --frozen-lockfile
       - id: workflows
@@ -36,9 +36,9 @@ jobs:
         workflow: ${{ fromJSON(needs.list.outputs.workflows) }}
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@77fb8b4387755a887550b2e5c3fe1206ae130007
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@77b20173e6aee60aa43dd47cab8f2c3933651a1c
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@77fb8b4387755a887550b2e5c3fe1206ae130007
+        uses: angular/dev-infra/github-actions/bazel/setup@77b20173e6aee60aa43dd47cab8f2c3933651a1c
       - name: Install node modules
         run: yarn -s install --frozen-lockfile
       # We utilize the google-github-actions/auth action to allow us to get an active credential using workflow
