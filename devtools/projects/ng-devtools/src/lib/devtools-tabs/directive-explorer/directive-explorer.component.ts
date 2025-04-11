@@ -48,6 +48,7 @@ import {MatSlideToggle} from '@angular/material/slide-toggle';
 import {FormsModule} from '@angular/forms';
 import {Platform} from '@angular/cdk/platform';
 import {MatSnackBarModule, MatSnackBar} from '@angular/material/snack-bar';
+import {SignalsTabComponent} from './signals-view/signals-tab.component';
 
 const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
   if ((a.component && !b.component) || (!a.component && b.component)) {
@@ -84,6 +85,7 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
     MatSlideToggle,
     FormsModule,
     MatSnackBarModule,
+    SignalsTabComponent,
   ],
 })
 export class DirectiveExplorerComponent {
@@ -96,6 +98,8 @@ export class DirectiveExplorerComponent {
   readonly directiveForestSplitArea = viewChild.required('directiveForestSplitArea', {
     read: ElementRef,
   });
+
+  readonly signalsTab = viewChild.required<SignalsTabComponent>('signalsTab');
 
   readonly currentSelectedElement = signal<IndexedNode | null>(null);
   readonly forest = signal<DevToolsNode[]>([]);

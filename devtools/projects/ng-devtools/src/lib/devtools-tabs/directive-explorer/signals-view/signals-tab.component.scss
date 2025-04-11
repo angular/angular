@@ -1,0 +1,34 @@
+:host {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  display: block;
+
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    ::ng-deep {
+      .node-label {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        word-wrap: break-word;
+      }
+    }
+  }
+  .no-signals {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
