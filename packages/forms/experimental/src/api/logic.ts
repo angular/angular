@@ -26,10 +26,10 @@ export function disabled<T>(
 ): void {
   assertPathIsCurrent(path);
 
-  const pathImpl = FieldPathNode.extractFromPath(path);
+  const pathNode = FieldPathNode.unwrapFieldPath(path);
   const reasonFn: LogicFn<T, string> = (ctx) => (logic(ctx) ? (reason ?? '') : '');
-  pathImpl.logic.disabled.push(pathImpl.maybeWrapWithPredicate(logic, false));
-  pathImpl.logic.getMetadata(DISABLED_REASON).push(pathImpl.maybeWrapWithPredicate(reasonFn, ''));
+  pathNode.logic.disabled.push(pathNode.maybeWrapWithPredicate(logic, false));
+  pathNode.logic.getMetadata(DISABLED_REASON).push(pathNode.maybeWrapWithPredicate(reasonFn, ''));
 }
 
 /**
@@ -43,8 +43,8 @@ export function disabled<T>(
 export function hidden<T>(path: FieldPath<T>, logic: NoInfer<LogicFn<T, boolean>>): void {
   assertPathIsCurrent(path);
 
-  const pathImpl = FieldPathNode.extractFromPath(path);
-  pathImpl.logic.hidden.push(pathImpl.maybeWrapWithPredicate(logic, false));
+  const pathNode = FieldPathNode.unwrapFieldPath(path);
+  pathNode.logic.hidden.push(pathNode.maybeWrapWithPredicate(logic, false));
 }
 
 /**
@@ -57,8 +57,8 @@ export function hidden<T>(path: FieldPath<T>, logic: NoInfer<LogicFn<T, boolean>
 export function validate<T>(path: FieldPath<T>, logic: NoInfer<Validator<T>>): void {
   assertPathIsCurrent(path);
 
-  const pathImpl = FieldPathNode.extractFromPath(path);
-  pathImpl.logic.errors.push(pathImpl.maybeWrapWithPredicate(logic, /* default value */ undefined));
+  const pathNode = FieldPathNode.unwrapFieldPath(path);
+  pathNode.logic.errors.push(pathNode.maybeWrapWithPredicate(logic, /* default value */ undefined));
 }
 
 /**
@@ -108,8 +108,8 @@ export function metadata<T, M>(
 ): void {
   assertPathIsCurrent(path);
 
-  const pathImpl = FieldPathNode.extractFromPath(path);
-  pathImpl.logic.getMetadata(key).push(pathImpl.maybeWrapWithPredicate(logic, key.defaultValue));
+  const pathNode = FieldPathNode.unwrapFieldPath(path);
+  pathNode.logic.getMetadata(key).push(pathNode.maybeWrapWithPredicate(logic, key.defaultValue));
 }
 
 /**

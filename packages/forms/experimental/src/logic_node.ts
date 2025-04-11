@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import type {FieldContext, FormError, LogicFn} from './api/types';
+import {type FieldContext, type FormError, type LogicFn} from './api/types';
+import {FieldNode} from './field_node';
+import {FieldPathNode, Predicate} from './path_node';
 
 /**
  * Special key which is used to represent a dynamic index in a `FieldLogicNode` path.
  */
-export const INDEX = Symbol('INDEX');
+export const DYNAMIC = Symbol('DYNAMIC');
 
 /**
  * Logic associated with a particular location (path) in a form.
@@ -23,6 +25,7 @@ export class FieldLogicNode {
   readonly hidden = new BooleanOrLogic();
   readonly disabled = new BooleanOrLogic();
   readonly errors = new ArrayMergeLogic<FormError>();
+  readonly rootPaths = new Map<FieldPathNode, PropertyKey[]>();
 
   private readonly metadata = new Map<MetadataKey<unknown>, AbstractLogic<unknown>>();
   private readonly children = new Map<PropertyKey, FieldLogicNode>();
@@ -30,7 +33,7 @@ export class FieldLogicNode {
   private constructor(readonly pathKeys: PropertyKey[]) {}
 
   get element(): FieldLogicNode {
-    return this.getChild(INDEX);
+    return this.getChild(DYNAMIC);
   }
 
   getMetadata<T>(key: MetadataKey<T>): AbstractLogic<T> {
@@ -58,8 +61,31 @@ export class FieldLogicNode {
     return this.children.get(key)!;
   }
 
-  static newRoot(): FieldLogicNode {
-    return new FieldLogicNode([]);
+  mergeIn(other: FieldLogicNode, predicate?: Predicate) {
+    // Merge standard logic.
+    this.hidden.mergeIn(other.hidden, predicate, false);
+    this.disabled.mergeIn(other.disabled, predicate, false);
+    this.errors.mergeIn(other.errors, predicate, undefined);
+
+    // Merge metadata.
+    for (const key of other.metadata.keys()) {
+      this.getMetadata(key).mergeIn(other.getMetadata(key), predicate, key.defaultValue);
+    }
+
+    // Merge children.
+    for (const [key, otherChild] of other.children) {
+      const child = this.getChild(key);
+      child.mergeIn(otherChild, predicate);
+    }
+
+    // Merging roots handled separately (see structure.ts, propagateRoots).
+    // TODO: clean this up.
+  }
+
+  static newRoot(path: FieldPathNode): FieldLogicNode {
+    const root = new FieldLogicNode([]);
+    root.rootPaths.set(path, []);
+    return root;
   }
 }
 
@@ -70,6 +96,13 @@ export abstract class AbstractLogic<TReturn, TValue = TReturn> {
 
   push(logicFn: LogicFn<any, TValue>) {
     this.fns.push(logicFn);
+  }
+
+  mergeIn(other: AbstractLogic<TReturn, TValue>, predicate?: Predicate, defaultValue?: TValue) {
+    const fns = predicate
+      ? other.fns.map((fn) => wrapWithPredicate(predicate, fn, defaultValue!))
+      : other.fns;
+    this.fns.push(...fns);
   }
 }
 
@@ -126,3 +159,18 @@ export class MetadataKey<TValue> {
 export const REQUIRED = new MetadataKey(false, (prev, next) => prev || next);
 
 export const DISABLED_REASON = new MetadataKey('', (prev, next) => next || prev);
+
+export function wrapWithPredicate<TValue, TReturn>(
+  predicate: Predicate,
+  logicFn: LogicFn<TValue, TReturn>,
+  defaultValue: TReturn,
+) {
+  return (arg: FieldContext<any>): TReturn => {
+    const predicateField = arg.resolve(predicate.path).$state as FieldNode;
+    if (!predicate.fn(predicateField.fieldContext)) {
+      // don't actually run the user function
+      return defaultValue;
+    }
+    return logicFn(arg);
+  };
+}

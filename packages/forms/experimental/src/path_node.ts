@@ -1,6 +1,5 @@
-import {FieldContext, FieldPath, LogicFn} from './api/types';
-import {FieldNode} from './field_node';
-import {FieldLogicNode, INDEX} from './logic_node';
+import {FieldPath, LogicFn} from './api/types';
+import {DYNAMIC, FieldLogicNode, wrapWithPredicate} from './logic_node';
 
 /**
  * Special key which is used to retrieve the `FieldPathNode` instance from its `FieldPath` proxy wrapper.
@@ -13,20 +12,26 @@ export interface Predicate {
 }
 
 export class FieldPathNode {
+  readonly root: FieldPathNode;
+  readonly logic: FieldLogicNode;
   private readonly children = new Map<PropertyKey, FieldPathNode>();
 
   readonly fieldPathProxy: FieldPath<any> = new Proxy(
     this,
     FIELD_PATH_PROXY_HANDLER,
   ) as unknown as FieldPath<any>;
+
   private constructor(
-    readonly logic: FieldLogicNode,
-    readonly key: symbol,
+    logic: FieldLogicNode | undefined,
+    root: FieldPathNode | undefined,
     readonly predicate: Predicate | undefined,
-  ) {}
+  ) {
+    this.logic = logic ?? FieldLogicNode.newRoot(this);
+    this.root = root ?? this;
+  }
 
   get element(): FieldPathNode {
-    return this.getChild(INDEX);
+    return this.getChild(DYNAMIC);
   }
 
   maybeWrapWithPredicate<TValue, TReturn>(
@@ -38,37 +43,29 @@ export class FieldPathNode {
       return logicFn;
     }
 
-    return (arg: FieldContext<any>): TReturn => {
-      const predicateField = arg.resolve(predicate.path).$state as FieldNode;
-      if (!predicate.fn(predicateField.fieldContext)) {
-        // don't actually run the user function
-        return defaultValue;
-      }
-      return logicFn(arg);
-    };
+    return wrapWithPredicate(predicate, logicFn, defaultValue);
   }
 
   getChild(key: PropertyKey): FieldPathNode {
     if (!this.children.has(key)) {
-      this.children.set(key, new FieldPathNode(this.logic.getChild(key), this.key, this.predicate));
+      this.children.set(
+        key,
+        new FieldPathNode(this.logic.getChild(key), this.root, this.predicate),
+      );
     }
     return this.children.get(key)!;
   }
 
   withPredicate(predicate: Predicate): FieldPathNode {
-    return new FieldPathNode(this.logic, Symbol(), predicate);
+    return new FieldPathNode(this.logic, this.root, predicate);
   }
 
-  withNewKey(): FieldPathNode {
-    return new FieldPathNode(this.logic, Symbol(), this.predicate);
-  }
-
-  static extractFromPath(formPath: FieldPath<unknown>): FieldPathNode {
+  static unwrapFieldPath(formPath: FieldPath<unknown>): FieldPathNode {
     return (formPath as any)[PATH] as FieldPathNode;
   }
 
   static newRoot(): FieldPathNode {
-    return new FieldPathNode(FieldLogicNode.newRoot(), Symbol(), undefined);
+    return new FieldPathNode(undefined, undefined, undefined);
   }
 }
 
