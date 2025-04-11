@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationRef, type Injector} from '@angular/core';
+import {ApplicationRef, type Injector, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 import {filter, map, switchMap, take} from 'rxjs/operators';
+
+import {RuntimeErrorCode} from './errors';
 
 export const ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not supported by this browser';
 
@@ -144,7 +146,14 @@ export class NgswCommChannel {
       this.worker =
         this.events =
         this.registration =
-          new Observable<never>((subscriber) => subscriber.error(new Error(ERR_SW_NOT_SUPPORTED)));
+          new Observable<never>((subscriber) =>
+            subscriber.error(
+              new RuntimeError(
+                RuntimeErrorCode.SERVICE_WORKER_DISABLED_OR_NOT_SUPPORTED_BY_THIS_BROWSER,
+                (typeof ngDevMode === 'undefined' || ngDevMode) && ERR_SW_NOT_SUPPORTED,
+              ),
+            ),
+          );
     } else {
       let currentWorker: ServiceWorker | null = null;
       const workerSubject = new Subject<ServiceWorker>();
