@@ -19,7 +19,6 @@ import {
   HttpParams,
   HttpStatusCode,
   provideHttpClient,
-  withFetch,
 } from '../public_api';
 import {FetchBackend, FetchFactory} from '../src/fetch';
 
@@ -424,7 +423,7 @@ describe('FetchBackend', async () => {
     beforeEach(() => {
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
-        providers: [provideHttpClient(withFetch())],
+        providers: [provideHttpClient()],
       });
     });
 
