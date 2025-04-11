@@ -66,6 +66,7 @@ import {
   standaloneTraitOrNgModule,
 } from './utils/ts_utils';
 import {filterAliasImports, isBoundEventWithSyntheticHandler, isWithin} from './utils';
+import {ModuleSpecifiers} from './utils/module_specifiers';
 
 type PropertyExpressionCompletionBuilder = CompletionBuilder<
   PropertyRead | PropertyWrite | EmptyExpr | SafePropertyRead | TmplAstBoundEvent
@@ -136,6 +137,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     private readonly component: ts.ClassDeclaration,
     private readonly node: N,
     private readonly targetDetails: TemplateTarget,
+    private readonly moduleSpecifiers: ModuleSpecifiers,
   ) {
     this.typeChecker = this.compiler.getCurrentProgram().getTypeChecker();
     this.templateTypeChecker = this.compiler.getTemplateTypeChecker();
@@ -774,7 +776,12 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
 
       codeActions =
         importOn !== null
-          ? getCodeActionToImportTheDirectiveDeclaration(this.compiler, importOn, directive)
+          ? getCodeActionToImportTheDirectiveDeclaration(
+              this.compiler,
+              importOn,
+              directive,
+              this.moduleSpecifiers,
+            )
           : undefined;
     }
 
