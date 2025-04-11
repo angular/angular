@@ -24,8 +24,9 @@ The following things are not yet supported:
 
 
 
-##  The form
+##  The feedback form
 We're going to build a feedback form with the following fields:
+
 ```
 * text     [name] required
 * text     [email] required, must have @
@@ -35,8 +36,8 @@ We're going to build a feedback form with the following fields:
 * text     [feedback] disabled if rating is 5, otherwise required
 * checkbox [recommendToFriends]
 * array    [friends] only displayed/validated when recommendToFriends is true
-   * text [name] required
-   * text [email] required, must have @
+   * text  [name] required
+   * text  [email] required, must have @
 ```   
 
 ## Initial setup
