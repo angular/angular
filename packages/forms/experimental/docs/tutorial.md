@@ -69,6 +69,7 @@ interface Feedback {
 ```
 
 ### Creating a new Feedback Component
+
 ```typescript
 // feedback.ts
 import {ChangeDetectionStrategy, Component} from '@angular/core';
@@ -226,6 +227,7 @@ form.name.$state.errors(); // Signal holding an array of validation errors
 ```
 
 We can use these in the template:
+
 ```html
 <mat-form-field>
     <mat-label>Name</mat-label>
@@ -240,12 +242,14 @@ We can use these in the template:
 ### Error structure
 
 Each error has a `kind` property and an optional `message`.
+
 ```typescript
 export interface FormError {
   kind: string;
   message?: string;
 }
 ```
+
 ### Displaying an actual error
 Throughout the tutorial, we're going to just output the error kind, but for this specific one, we'll display a nice translatable message.
 
@@ -267,6 +271,7 @@ Throughout the tutorial, we're going to just output the error kind, but for this
 
 ### Handling email
 #### Making email required
+
 ```typescript
 // feedback.ts
 /* ... */
@@ -282,6 +287,7 @@ export class FeedbackComponent {
 
 #### Creating a custom email validator
 To create a custom validator, we'll import the `validate` function.
+
 ```typescript
 // feedback.ts
 import {
@@ -318,6 +324,7 @@ export class FeedbackComponent {
 > This email check is intentionally very permissive to focus on the validation mechanism.
 
 #### Adding email field
+
 ```html
 <mat-form-field appearance="outline">
   <mat-label>Email</mat-label>
@@ -333,6 +340,7 @@ export class FeedbackComponent {
 #### Validating passwords
 
 First, let's make the passwords required:
+
 ```typescript
 // feedback.ts
 /* ... */
@@ -423,6 +431,7 @@ you can see full implementation [here](http://google3/experimental/users/kirjs/f
 ### Using rating in the Feedback component template
 
 After importing Rating component, you can use it like this:
+
 ```html
 <div>
     <label>Rating</label>
@@ -485,6 +494,7 @@ We'll create a separate `FriendComponent` and define a reusable schema for the f
 Most of the work in this section will happen in a new `friend.ts`.
 
 First, let's ensure the `Friend` interface is defined:
+
 ```typescript
 // friend.ts
 export interface Friend {
@@ -630,6 +640,7 @@ export class FeedbackComponent {
 
 ### Displaying friend list in the template
 First, we need to import `FriendComponent` into `FeedbackComponent`:
+
 ```typescript
 // feedback.ts
 import {FriendComponent} from './friend';
@@ -709,6 +720,7 @@ export class FeedbackComponent {
   });
 }
 ```
+
 Now, `friendSchema` validation rules will only apply when `recommendToFriends` is true.
 
 ### Adding items to the array
@@ -728,6 +740,7 @@ export class FeedbackComponent {
   
 ```
 Now, add the button to the template inside the `@if` block:
+
 ```html
 <!-- feedback.component.html -->
 @if (form.recommendToFriends.$state.value()) {
