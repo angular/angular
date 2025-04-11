@@ -90,7 +90,7 @@ export {
 export {ApplicationModule} from './application/application_module';
 export {AbstractType, Type} from './interface/type';
 export {EventEmitter} from './event_emitter';
-export {ErrorHandler} from './error_handler';
+export {ErrorHandler, provideBrowserGlobalErrorListeners} from './error_handler';
 export * from './core_private_export';
 export * from './core_render3_private_export';
 export * from './core_reactivity_export';
