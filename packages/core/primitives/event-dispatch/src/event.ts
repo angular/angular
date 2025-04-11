@@ -9,6 +9,7 @@
 import {EventHandlerInfo} from './event_handler';
 import {isCaptureEventType, EventType} from './event_type';
 import {KeyCode} from './key_code';
+import {userAgent} from './user_agent';
 
 /**
  * Gets a browser event type, if it would differ from the JSAction event type.
@@ -134,7 +135,7 @@ export function getTarget(e: Event): Element {
 /**
  * Whether we are on a Mac. Not pulling in useragent just for this.
  */
-let isMac: boolean = typeof navigator !== 'undefined' && /Macintosh/.test(navigator.userAgent);
+let isMac: boolean = /Macintosh/.test(userAgent);
 
 /**
  * Determines and returns whether the given event (which is assumed to be a
@@ -173,21 +174,13 @@ export function isModifiedClickEvent(e: Event): boolean {
 }
 
 /** Whether we are on WebKit (e.g., Chrome). */
-export const isWebKit: boolean =
-  typeof navigator !== 'undefined' &&
-  !/Opera/.test(navigator.userAgent) &&
-  /WebKit/.test(navigator.userAgent);
+export const isWebKit = !/Opera/.test(userAgent) && /WebKit/.test(userAgent);
 
 /** Whether we are on IE. */
-export const isIe: boolean =
-  typeof navigator !== 'undefined' &&
-  (/MSIE/.test(navigator.userAgent) || /Trident/.test(navigator.userAgent));
+export const isIe = /MSIE/.test(userAgent) || /Trident/.test(userAgent);
 
 /** Whether we are on Gecko (e.g., Firefox). */
-export const isGecko: boolean =
-  typeof navigator !== 'undefined' &&
-  !/Opera|WebKit/.test(navigator.userAgent) &&
-  /Gecko/.test(navigator.product);
+export const isGecko = !/Opera|WebKit/.test(userAgent) && /Gecko/.test(navigator.product);
 
 /**
  * Determines and returns whether the given element is a valid target for
