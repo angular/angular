@@ -36,8 +36,7 @@ import {ZONELESS_ENABLED} from './zoneless_scheduling';
  * When the `useNgZoneOnStable` option is `true`, this function will provide its own `NgZone` implementation and needs
  * to come after any other `NgZone` provider, including `provideZoneChangeDetection()` and `provideExperimentalZonelessChangeDetection()`.
  *
- * @experimental
- * @publicApi
+ * @experimental 19.0
  */
 export function provideExperimentalCheckNoChangesForDebug(options: {
   interval?: number;

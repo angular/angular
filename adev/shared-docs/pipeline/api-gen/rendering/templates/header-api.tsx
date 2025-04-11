@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {h} from 'preact';
+import {h, Fragment} from 'preact';
 import {EntryType, isDocEntryWithSourceInfo} from '../entities';
 import {DocEntryRenderable} from '../entities/renderables';
 import {
@@ -37,19 +37,7 @@ export function HeaderApi(props: {entry: DocEntryRenderable; showFullDescription
           <div className={`${HEADER_ENTRY_LABEL} type-${entry.entryType.toLowerCase()} full`}>
             {getEntryTypeDisplayName(entry.entryType)}
           </div>
-          {entry.isDeprecated && (
-            <div className={`${HEADER_ENTRY_LABEL} type-deprecated full`}>Deprecated</div>
-          )}
-          {entry.isDeveloperPreview && (
-            <div className={`${HEADER_ENTRY_LABEL} type-developer_preview full`}>
-              <a href="/reference/releases#developer-preview">Developer preview</a>
-            </div>
-          )}
-          {entry.isExperimental && (
-            <div className={`${HEADER_ENTRY_LABEL} type-experimental full`}>
-              <a href="/reference/releases#experimental">Experimental</a>
-            </div>
-          )}
+          {statusTag(entry)}
         </div>
         {sourceUrl && (
           <a
@@ -76,6 +64,69 @@ export function HeaderApi(props: {entry: DocEntryRenderable; showFullDescription
       <DocsPillRow links={entry.additionalLinks} />
     </header>
   );
+}
+
+function statusTag(entry: DocEntryRenderable) {
+  let tag: h.JSX.HTMLAttributes<HTMLDivElement> | null = null;
+
+  // Cascading Deprecated > Stable > Developer Preview > Experimental
+
+  if (entry.deprecated) {
+    tag =       <div
+        className={`${HEADER_ENTRY_LABEL} type-stable full`}
+        title={tagInVersionTooltip('deprecated', entry.deprecated)}
+      >
+        {tagInVersionString('deprecated', entry.deprecated)}
+      </div>;
+  } else if (entry.stable) {
+    tag = (
+      <div
+        className={`${HEADER_ENTRY_LABEL} type-stable full`}
+        title={tagInVersionTooltip('stable', entry.stable)}
+      >
+        {tagInVersionString('stable', entry.stable)}
+      </div>
+    );
+  } else if (entry.developerPreview) {
+    tag = (
+      <div
+        className={`${HEADER_ENTRY_LABEL} type-developer_preview full`}
+        title={tagInVersionTooltip('developer preview', entry.developerPreview)}
+      >
+        <a href="/reference/releases#developer-preview">
+          {tagInVersionString('developer preview', entry.developerPreview)}
+        </a>
+      </div>
+    );
+  } else if (entry.experimental) {
+    tag = (
+      <div
+        className={`${HEADER_ENTRY_LABEL} type-experimental full`}
+        title={tagInVersionTooltip('experimental', entry.experimental)}
+      >
+        <a href="/reference/releases#experimental">
+          {tagInVersionString('experimental', entry.experimental)}
+        </a>
+      </div>
+    );
+  }
+
+  return tag;
+}
+
+function tagInVersionString(label: string, tag: {version: string | undefined} | undefined) {
+  if(tag?.version) {
+    return <><span className="status-label">{label}</span><span className="status-version">{tag.version}</span></>;
+  }
+
+  return <>{label}</>;
+}
+
+function tagInVersionTooltip(
+  label: string,
+  tag: {version: string | undefined} | undefined,
+): string {
+  return tag?.version ? `${label} since ${tag.version}` : label;
 }
 
 function getEntryTypeDisplayName(entryType: EntryType | string): string {

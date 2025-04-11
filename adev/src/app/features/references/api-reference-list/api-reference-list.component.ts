@@ -100,12 +100,12 @@ export default class ApiReferenceList {
             (query == '' ? true : apiItem.title.toLocaleLowerCase().includes(query)) &&
             (type === ALL_TYPES_KEY || apiItem.itemType === type) &&
             ((status & STATUSES.stable &&
-              !apiItem.isDeveloperPreview &&
-              !apiItem.isDeprecated &&
-              !apiItem.isExperimental) ||
-              (status & STATUSES.deprecated && apiItem.isDeprecated) ||
-              (status & STATUSES.developerPreview && apiItem.isDeveloperPreview) ||
-              (status & STATUSES.experimental && apiItem.isExperimental))
+              !apiItem.developerPreview &&
+              !apiItem.deprecated &&
+              !apiItem.experimental) ||
+              (status & STATUSES.deprecated && apiItem.deprecated) ||
+              (status & STATUSES.developerPreview && apiItem.developerPreview) ||
+              (status & STATUSES.experimental && apiItem.experimental))
           );
         }),
       }))
