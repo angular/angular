@@ -37,6 +37,8 @@ import {emitEffectCreatedEvent, setInjectorProfilerContext} from '../debug/injec
 
 /**
  * A global reactive effect, which can be manually destroyed.
+ *
+ * @publicApi 20.0
  */
 export interface EffectRef {
   /**
@@ -59,6 +61,8 @@ export class EffectRefImpl implements EffectRef {
 
 /**
  * Options passed to the `effect` function.
+ *
+ * @publicApi 20.0
  */
 export interface CreateEffectOptions {
   /**
@@ -95,11 +99,15 @@ export interface CreateEffectOptions {
  * An effect can, optionally, register a cleanup function. If registered, the cleanup is executed
  * before the next effect run. The cleanup function makes it possible to "cancel" any work that the
  * previous effect run might have started.
+ *
+ * @publicApi 20.0
  */
 export type EffectCleanupFn = () => void;
 
 /**
  * A callback passed to the effect function that makes it possible to register cleanup logic.
+ *
+ * @publicApi 20.0
  */
 export type EffectCleanupRegisterFn = (cleanupFn: EffectCleanupFn) => void;
 
@@ -118,6 +126,8 @@ export type EffectCleanupRegisterFn = (cleanupFn: EffectCleanupFn) => void;
  * and have no connection to the component tree or change detection.
  *
  * `effect()` must be run in injection context, unless the `injector` option is manually specified.
+ *
+ * @publicApi 20.0
  */
 export function effect(
   effectFn: (onCleanup: EffectCleanupRegisterFn) => void,

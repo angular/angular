@@ -32,11 +32,11 @@ export function ClassMethodInfo(props: {
 
   return (
     <div
-      className={`${REFERENCE_MEMBER_CARD_ITEM} ${entry.isDeprecated ? 'docs-reference-card-item-deprecated' : ''}`}
+      className={`${REFERENCE_MEMBER_CARD_ITEM} ${entry.deprecated ? 'docs-reference-card-item-deprecated' : ''}`}
     >
       <RawHtml value={entry.htmlDescription} className={'docs-function-definition'} />
       {/* In case when method is overloaded we need to indicate which overload is deprecated */}
-      {entry.isDeprecated ? (
+      {entry.deprecated ? (
         <div>
           <DeprecatedLabel entry={entry} />
         </div>
