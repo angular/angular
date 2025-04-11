@@ -157,7 +157,8 @@ import {RuntimeErrorCode} from '../errors';
  * @ngModule CommonModule
  * @publicApi
  *
- * @deprecated Use the @if block instead. Intent to remove in v22
+ * @deprecated 20.0
+ * Use the @if block instead. Intent to remove in v22
  */
 @Directive({
   selector: '[ngIf]',
@@ -265,6 +266,9 @@ export class NgIf<T = unknown> {
 
 /**
  * @publicApi
+ *
+ * @deprecated 20.0
+ * The ngIf directive is deprecated in favor of the @if block instead.
  */
 export class NgIfContext<T = unknown> {
   public $implicit: T = null!;

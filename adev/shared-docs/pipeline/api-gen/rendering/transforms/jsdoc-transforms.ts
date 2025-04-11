@@ -9,12 +9,7 @@
 import {marked} from 'marked';
 import {JsDocTagEntry} from '../entities';
 
-import {
-  getDeprecatedEntry,
-  isDeprecatedEntry,
-  isDeveloperPreview,
-  isExperimental,
-} from '../entities/categorization';
+import {getDeprecatedEntry, getTagSinceVersion} from '../entities/categorization';
 import {LinkEntryRenderable} from '../entities/renderables';
 import {
   HasAdditionalLinks,
@@ -27,6 +22,7 @@ import {
   HasModuleName,
   HasRenderableJsDocTags,
   hasExperimentalFlag,
+  HasStableFlag,
 } from '../entities/traits';
 
 import {getLinkToModule} from './url-transforms';
@@ -110,16 +106,17 @@ function getHtmlForJsDocText(text: string): string {
 
 export function setEntryFlags<T extends HasJsDocTags & HasModuleName>(
   entry: T,
-): T & HasDeprecatedFlag & HasDeveloperPreviewFlag & hasExperimentalFlag {
+): T & HasDeprecatedFlag & HasDeveloperPreviewFlag & hasExperimentalFlag & HasStableFlag {
   const deprecationMessage = getDeprecatedEntry(entry);
   return {
     ...entry,
-    isDeprecated: isDeprecatedEntry(entry),
+    deprecated: getTagSinceVersion(entry, 'deprecated'),
     deprecationMessage: deprecationMessage
       ? getHtmlForJsDocText(deprecationMessage)
       : deprecationMessage,
-    isDeveloperPreview: isDeveloperPreview(entry),
-    isExperimental: isExperimental(entry),
+    developerPreview: getTagSinceVersion(entry, 'developerPreview'),
+    experimental: getTagSinceVersion(entry, 'experimental'),
+    stable: getTagSinceVersion(entry, 'publicApi'),
   };
 }
 

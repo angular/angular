@@ -27,5 +27,5 @@ export interface CliOption {
   description: string;
   positional?: number;
   aliases?: string[];
-  deprecated: boolean;
+  deprecated: {version: string | undefined} | undefined;
 }

@@ -574,7 +574,7 @@ export class NgIf<T = unknown> {
     static ɵfac: i0.ɵɵFactoryDeclaration<NgIf<any>, never>;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class NgIfContext<T = unknown> {
     // (undocumented)
     $implicit: T;

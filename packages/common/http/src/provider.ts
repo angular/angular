@@ -276,7 +276,7 @@ export function withJsonpSupport(): HttpFeature<HttpFeatureKind.JsonpSupport> {
  * this option.
  *
  * @see {@link provideHttpClient}
- * @publicApi
+ * @publicApi 19.0
  */
 export function withRequestsMadeViaParent(): HttpFeature<HttpFeatureKind.RequestsMadeViaParent> {
   return makeHttpFeature(HttpFeatureKind.RequestsMadeViaParent, [

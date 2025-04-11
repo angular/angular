@@ -19,8 +19,7 @@ import {exhaustiveCheckNoChangesInterval} from './scheduling/exhaustive_check_no
  * When Angular checks views a second time to ensure nothing has changed, `OnPush` components
  * will no longer be marked and not be checked.
  *
- * @developerPreview
- * @publicApi
+ * @developerPreview 20.0
  */
 export function provideCheckNoChangesConfig(options: {exhaustive: false}): EnvironmentProviders;
 /**
@@ -33,8 +32,7 @@ export function provideCheckNoChangesConfig(options: {exhaustive: false}): Envir
  *   This is useful because the check that runs after regular change detection does not work for components using `ChangeDetectionStrategy.OnPush`.
  *   This check is will surface any existing errors hidden by `OnPush` components.
  *
- * @developerPreview
- * @publicApi
+ * @developerPreview 20.0
  */
 export function provideCheckNoChangesConfig(options: {
   interval?: number;
