@@ -27383,7 +27383,7 @@ var createTokenAuth = function createTokenAuth2(token) {
 };
 
 // 
-var VERSION6 = "6.1.4";
+var VERSION6 = "6.1.5";
 
 // 
 var noop = () => {
