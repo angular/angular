@@ -19,3 +19,19 @@
   @include ref.reference-common();
   @include ref.cli-reference();
 }
+
+:host{
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  padding: var(--layout-padding);
+
+  & > *{
+    width: 100%;
+    
+    @include mq.for-desktop-up{
+      padding-inline: 0px;
+      width: var(--page-width);
+    }
+  }
+}
