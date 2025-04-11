@@ -57,12 +57,16 @@ import {serializeDirectiveState} from './state-serializer/state-serializer';
 import {runOutsideAngular, unwrapSignal} from './utils';
 import {DirectiveForestHooks} from './hooks/hooks';
 
+type InspectorRef = {ref: ComponentInspector | null};
+
 export const subscribeToClientEvents = (
   messageBus: MessageBus<Events>,
   depsForTestOnly?: {
     directiveForestHooks?: typeof DirectiveForestHooks;
   },
 ): void => {
+  const inspector: InspectorRef = {ref: null};
+
   messageBus.on('shutdown', shutdownCallback(messageBus));
 
   messageBus.on(
@@ -75,7 +79,7 @@ export const subscribeToClientEvents = (
   messageBus.on('startProfiling', startProfilingCallback(messageBus));
   messageBus.on('stopProfiling', stopProfilingCallback(messageBus));
 
-  messageBus.on('setSelectedComponent', selectedComponentCallback);
+  messageBus.on('setSelectedComponent', selectedComponentCallback(inspector));
 
   messageBus.on('getNestedProperties', getNestedPropertiesCallback(messageBus));
   messageBus.on('getRoutes', getRoutesCallback(messageBus));
@@ -94,7 +98,8 @@ export const subscribeToClientEvents = (
   });
 
   if (appIsAngularInDevMode() && appIsSupportedAngularVersion() && appIsAngularIvy()) {
-    setupInspector(messageBus);
+    inspector.ref = setupInspector(messageBus);
+
     // Often websites have `scroll` event listener which triggers
     // Angular's change detection. We don't want to constantly send
     // update requests, instead we want to request an update at most
@@ -175,12 +180,13 @@ const stopProfilingCallback = (messageBus: MessageBus<Events>) => () => {
   messageBus.emit('profilerResults', [stopProfiling()]);
 };
 
-const selectedComponentCallback = (position: ElementPosition) => {
+const selectedComponentCallback = (inspector: InspectorRef) => (position: ElementPosition) => {
   const node = queryDirectiveForest(
     position,
     initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
   );
   setConsoleReference({node, position});
+  inspector.ref?.highlightByPosition(position);
 };
 
 const getNestedPropertiesCallback =
@@ -335,7 +341,7 @@ const checkForAngular = (messageBus: MessageBus<Events>): void => {
   ]);
 };
 
-const setupInspector = (messageBus: MessageBus<Events>) => {
+const setupInspector = (messageBus: MessageBus<Events>): ComponentInspector => {
   const inspector = new ComponentInspector({
     onComponentEnter: (id: number) => {
       messageBus.emit('highlightComponent', [id]);
@@ -358,6 +364,8 @@ const setupInspector = (messageBus: MessageBus<Events>) => {
 
   messageBus.on('createHydrationOverlay', inspector.highlightHydrationNodes);
   messageBus.on('removeHydrationOverlay', inspector.removeHydrationHighlights);
+
+  return inspector;
 };
 
 export interface SerializableDirectiveInstanceType extends DirectiveType {
