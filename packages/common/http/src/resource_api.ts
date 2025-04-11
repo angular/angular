@@ -15,7 +15,7 @@ import {HttpContext} from './context';
 /**
  * The structure of an `httpResource` request which will be sent to the backend.
  *
- * @experimental
+ * @experimental 19.2
  */
 export interface HttpResourceRequest {
   /**
@@ -81,7 +81,7 @@ export interface HttpResourceRequest {
 /**
  * Options for creating an `httpResource`.
  *
- * @experimental
+ * @experimental 19.2
  */
 export interface HttpResourceOptions<TResult, TRaw> {
   /**
@@ -121,7 +121,7 @@ export interface HttpResourceOptions<TResult, TRaw> {
  * `HttpResource`s are backed by `HttpClient`, including support for interceptors, testing, and the
  * other features of the `HttpClient` API.
  *
- * @experimental
+ * @experimental 19.2
  */
 export interface HttpResourceRef<T> extends WritableResource<T>, ResourceRef<T> {
   /**

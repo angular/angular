@@ -13,7 +13,7 @@ import {WritableSignal} from '../render3/reactivity/signal';
 /**
  * Status of a `Resource`.
  *
- * @experimental
+ * @experimental 19.0
  */
 export enum ResourceStatus {
   /**
@@ -62,7 +62,7 @@ export enum ResourceStatus {
  * The usual way of creating a `Resource` is through the `resource` function, but various other APIs
  * may present `Resource` instances to describe their own concepts.
  *
- * @experimental
+ * @experimental 19.0
  */
 export interface Resource<T> {
   /**
@@ -109,7 +109,7 @@ export interface Resource<T> {
  *
  * Overwriting the value of a resource sets it to the 'local' state.
  *
- * @experimental
+ * @experimental 19.0
  */
 export interface WritableResource<T> extends Resource<T> {
   readonly value: WritableSignal<T>;
@@ -130,7 +130,7 @@ export interface WritableResource<T> extends Resource<T> {
 /**
  * A `WritableResource` created through the `resource` function.
  *
- * @experimental
+ * @experimental 19.0
  */
 export interface ResourceRef<T> extends WritableResource<T> {
   hasValue(): this is ResourceRef<Exclude<T, undefined>>;
@@ -145,7 +145,7 @@ export interface ResourceRef<T> extends WritableResource<T> {
  * Parameter to a `ResourceLoader` which gives the request and other options for the current loading
  * operation.
  *
- * @experimental
+ * @experimental 19.0
  */
 export interface ResourceLoaderParams<R> {
   request: Exclude<NoInfer<R>, undefined>;
@@ -158,14 +158,14 @@ export interface ResourceLoaderParams<R> {
 /**
  * Loading function for a `Resource`.
  *
- * @experimental
+ * @experimental 19.0
  */
 export type ResourceLoader<T, R> = (param: ResourceLoaderParams<R>) => PromiseLike<T>;
 
 /**
  * Streaming loader for a `Resource`.
  *
- * @experimental
+ * @experimental 19.0
  */
 export type ResourceStreamingLoader<T, R> = (
   param: ResourceLoaderParams<R>,
@@ -174,7 +174,7 @@ export type ResourceStreamingLoader<T, R> = (
 /**
  * Options to the `resource` function, for creating a resource.
  *
- * @experimental
+ * @experimental 19.0
  */
 export interface BaseResourceOptions<T, R> {
   /**
@@ -205,7 +205,7 @@ export interface BaseResourceOptions<T, R> {
 /**
  * Options to the `resource` function, for creating a resource.
  *
- * @experimental
+ * @experimental 19.0
  */
 export interface PromiseResourceOptions<T, R> extends BaseResourceOptions<T, R> {
   /**
@@ -222,7 +222,7 @@ export interface PromiseResourceOptions<T, R> extends BaseResourceOptions<T, R> 
 /**
  * Options to the `resource` function, for creating a resource.
  *
- * @experimental
+ * @experimental 19.0
  */
 export interface StreamingResourceOptions<T, R> extends BaseResourceOptions<T, R> {
   /**
@@ -238,11 +238,11 @@ export interface StreamingResourceOptions<T, R> extends BaseResourceOptions<T, R
 }
 
 /**
- * @experimental
+ * @experimental 19.0
  */
 export type ResourceOptions<T, R> = PromiseResourceOptions<T, R> | StreamingResourceOptions<T, R>;
 
 /**
- * @experimental
+ * @experimental 19.0
  */
 export type ResourceStreamItem<T> = {value: T} | {error: unknown};

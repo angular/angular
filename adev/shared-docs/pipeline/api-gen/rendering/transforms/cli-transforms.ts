@@ -52,7 +52,7 @@ export function getCliCardsRenderable(command: CliCommand): CliCardRenderable[] 
 function getRenderableOptions(items: CliOption[]): CliOptionRenderable[] {
   return items.map((option) => ({
     ...option,
-    isDeprecated: option.deprecated,
+    deprecated: option.deprecated ? {version: undefined} : undefined,
     description: marked.parse(option.description) as string,
   }));
 }

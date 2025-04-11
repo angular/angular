@@ -35,7 +35,7 @@ export type ɵFirstAvailable<T extends unknown[]> = T extends [infer H, ...infer
 /**
  * Options passed to `afterRender` and `afterNextRender`.
  *
- * @publicApi
+ * @publicApi 20.0
  */
 export interface AfterRenderOptions {
   /**
@@ -365,7 +365,7 @@ export function afterNextRender<E = never, W = never, M = never>(
  * }
  * ```
  *
- * @publicApi
+ * @publicApi 20.0
  */
 export function afterNextRender(
   callback: VoidFunction,
