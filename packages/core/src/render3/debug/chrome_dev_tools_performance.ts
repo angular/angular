@@ -9,6 +9,7 @@
 import {InjectionToken} from '../../di';
 import {isTypeProvider} from '../../di/provider_collection';
 import {assertDefined, assertEqual} from '../../util/assert';
+import {performanceMarkFeature} from '../../util/performance';
 import {setProfiler} from '../profiler';
 import {Profiler, ProfilerEvent} from '../profiler_types';
 import {stringifyForError} from '../util/stringify_utils';
@@ -224,7 +225,19 @@ function getProviderTokenMeasureName<T>(token: any) {
   }
 }
 
+/**
+ * Start listening to the Angular's internal performance-related events and route those to the Chrome DevTools performance panel.
+ * This enables Angular-specific data visualization when recording a performance profile directly in the Chrome DevTools.
+ *
+ * @returns a function that can be invoked to stop sending profiling data.
+ */
 export function enableProfiling() {
-  setInjectorProfiler(chromeDevToolsInjectorProfiler);
-  setProfiler(devToolsProfiler);
+  performanceMarkFeature('Chrome DevTools profiling');
+  const removeInjectorProfiler = setInjectorProfiler(chromeDevToolsInjectorProfiler);
+  const removeProfiler = setProfiler(devToolsProfiler);
+
+  return () => {
+    removeInjectorProfiler();
+    removeProfiler();
+  };
 }
