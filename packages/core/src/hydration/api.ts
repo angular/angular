@@ -48,6 +48,7 @@ import {
   enableRetrieveDeferBlockDataImpl,
   enableRetrieveHydrationInfoImpl,
   isIncrementalHydrationEnabled,
+  markDehydratedNodes,
   NGH_DATA_KEY,
   processBlockData,
   verifySsrContentsIntegrity,
@@ -370,12 +371,19 @@ export function withIncrementalHydration(): Provider[] {
       useFactory: () => {
         const injector = inject(Injector);
         const doc = getDocument();
+        const appRef = inject(ApplicationRef);
 
         return () => {
           const deferBlockData = processBlockData(injector);
           const commentsByBlockId = gatherDeferBlocksCommentNodes(doc, doc.body);
           processAndInitTriggers(injector, deferBlockData, commentsByBlockId);
           appendDeferBlocksToJSActionMap(doc, injector);
+
+          if (ngDevMode) {
+            for (const rootComponent of appRef.components) {
+              markDehydratedNodes(rootComponent.location.nativeElement);
+            }
+          }
         };
       },
       multi: true,

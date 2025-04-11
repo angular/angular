@@ -410,8 +410,4 @@ export class DirectiveForestComponent {
       this.highlightIDinTreeFromElement() === node.original.component?.id
     );
   }
-
-  isElement(node: FlatNode): boolean | null {
-    return node.original.component && node.original.component.isElement;
-  }
 }
