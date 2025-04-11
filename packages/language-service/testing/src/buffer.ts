@@ -72,6 +72,17 @@ export class OpenBuffer {
     return this.ngLS.getDefinitionAndBoundSpan(this.scriptInfo.fileName, this._cursor);
   }
 
+  getEncodedSemanticClassifications(
+    span?: ts.TextSpan,
+    format?: ts.SemanticClassificationFormat,
+  ): ts.Classifications {
+    return this.ngLS.getEncodedSemanticClassifications(
+      this.scriptInfo.fileName,
+      span ?? {start: 0, length: this.scriptInfo.getSnapshot().getLength()},
+      format ?? ts.SemanticClassificationFormat.TwentyTwenty,
+    );
+  }
+
   getCompletionsAtPosition(
     options?: ts.GetCompletionsAtPositionOptions,
   ): ts.WithMetadata<ts.CompletionInfo> | undefined {
