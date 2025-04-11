@@ -242,12 +242,15 @@ export interface UpdatedStateData {
 
 export interface Route {
   name?: string;
-  hash?: string | null;
-  specificity?: string | null;
+  hash?: string;
+  specificity?: string;
   handler?: string;
   pathMatch?: 'prefix' | 'full';
-  canActivateGuards?: string[] | null;
-  providers?: string[] | null;
+  canActivateGuards?: string[];
+  canActivateChildGuards?: string[];
+  canMatchGuards?: string[];
+  canDeactivateGuards?: string[];
+  providers?: string[];
   title?: string;
   children?: Array<Route>;
   data?: any;
@@ -298,6 +301,7 @@ export interface Events {
   setSelectedComponent: (position: ElementPosition) => void;
   getRoutes: () => void;
   updateRouterTree: (routes: Route[]) => void;
+  navigateRoute: (route: string) => void;
 
   componentTreeDirty: () => void;
   getLatestComponentExplorerView: (query?: ComponentExplorerViewQuery) => void;
