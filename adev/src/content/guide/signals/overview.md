@@ -49,6 +49,10 @@ const doubleCount: Signal<number> = computed(() => count() * 2);
 
 The `doubleCount` signal depends on the `count` signal. Whenever `count` updates, Angular knows that `doubleCount` needs to update as well.
 
+#### `computed` function must be pure
+
+That is, it should always be possible, given the state currently stored in signals, to run the computed and derive the full application state correctly.
+
 #### Computed signals are both lazily evaluated and memoized
 
 `doubleCount`'s derivation function does not run to calculate its value until the first time you read `doubleCount`. The calculated value is then cached, and if you read `doubleCount` again, it will return the cached value without recalculating.
