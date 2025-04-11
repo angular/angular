@@ -1620,7 +1620,7 @@ export interface ResourceLoaderParams<R> {
     request: Exclude<NoInfer<R>, undefined>;
 }
 
-// @public (undocumented)
+// @public
 export type ResourceOptions<T, R> = PromiseResourceOptions<T, R> | StreamingResourceOptions<T, R>;
 
 // @public
@@ -1643,7 +1643,7 @@ export enum ResourceStatus {
 // @public
 export type ResourceStreamingLoader<T, R> = (param: ResourceLoaderParams<R>) => PromiseLike<Signal<ResourceStreamItem<T>>>;
 
-// @public (undocumented)
+// @public
 export type ResourceStreamItem<T> = {
     value: T;
 } | {
