@@ -8,7 +8,7 @@
 
 import {DevToolsNode, ElementPosition} from 'protocol';
 
-import {buildDirectiveForest} from '../component-tree';
+import {buildDirectiveForest} from '../component-tree/component-tree';
 import {ComponentInstanceType, ComponentTreeNode, DirectiveInstanceType} from '../interfaces';
 
 export declare interface Type<T> extends Function {

@@ -1,0 +1,47 @@
+load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
+load("//devtools/tools:typescript.bzl", "ts_library", "ts_test_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "get-roots",
+    srcs = ["get-roots.ts"],
+)
+
+ts_library(
+    name = "core-enums",
+    srcs = ["core-enums.ts"],
+)
+
+ts_library(
+    name = "component-tree",
+    srcs = ["component-tree.ts"],
+    deps = [
+        ":core-enums",
+        ":get-roots",
+        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
+        "//devtools/projects/ng-devtools-backend/src/lib:property_mutation",
+        "//devtools/projects/ng-devtools-backend/src/lib:utils",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest",
+        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
+        "//devtools/projects/ng-devtools-backend/src/lib/state-serializer",
+        "//devtools/projects/protocol",
+        "//packages/core",
+    ],
+)
+
+ts_test_library(
+    name = "test_lib",
+    srcs = glob(["*.spec.ts"]),
+    deps = [
+        ":component-tree",
+        ":get-roots",
+        "//packages/core",
+        "@npm//jasmine",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    deps = [":test_lib"],
+)

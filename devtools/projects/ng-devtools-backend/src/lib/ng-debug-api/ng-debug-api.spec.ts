@@ -6,10 +6,34 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ɵGlobalDevModeUtils} from '@angular/core';
-import {ngDebugDependencyInjectionApiIsSupported} from './ng-debug-api';
+import {ɵDirectiveDebugMetadata, ɵGlobalDevModeUtils} from '@angular/core';
+import {
+  ngDebugDependencyInjectionApiIsSupported,
+  ngDebugProfilerApiIsSupported,
+  ngDebugRoutesApiIsSupported,
+} from './ng-debug-api';
+import {Framework} from '../component-tree/core-enums';
 
 type Ng = ɵGlobalDevModeUtils['ng'];
+
+/** Add a root element to the body. */
+const mockRoot = () => {
+  document.body.replaceChildren();
+  const root = document.createElement('div');
+  root.setAttribute('ng-version', '');
+  document.body.appendChild(root);
+};
+
+/** Creates an `ng` object with a `getDirectiveMetadata` mock. */
+const createNgWithDirectiveMetadata = (
+  framework: Framework,
+): Partial<Record<keyof Ng, () => void>> => ({
+  getDirectiveMetadata(): Partial<ɵDirectiveDebugMetadata> {
+    return {
+      framework,
+    };
+  },
+});
 
 describe('ng-debug-api', () => {
   afterEach(() => {
@@ -46,6 +70,46 @@ describe('ng-debug-api', () => {
 
       (globalThis as any).ng = {...goldenNg, ɵgetInjectorMetadata: undefined};
       expect(ngDebugDependencyInjectionApiIsSupported()).toBeFalse();
+    });
+  });
+
+  describe('ngDebugProfilerApiIsSupported', () => {
+    // Tests must be updated after the temporary solutions
+    // are replaced in favor of the stable API.
+    beforeEach(() => mockRoot());
+
+    it('should support Profiler API', () => {
+      (globalThis as any).ng = createNgWithDirectiveMetadata(Framework.Angular);
+      expect(ngDebugProfilerApiIsSupported()).toBeTrue();
+
+      (globalThis as any).ng = createNgWithDirectiveMetadata(Framework.ACX);
+      expect(ngDebugProfilerApiIsSupported()).toBeTrue();
+    });
+
+    it('should NOT support Profiler API', () => {
+      (globalThis as any).ng = createNgWithDirectiveMetadata(Framework.Wiz);
+
+      expect(ngDebugRoutesApiIsSupported()).toBeFalse();
+    });
+  });
+
+  describe('ngDebugRoutesApiIsSupported', () => {
+    // Tests must be updated after the temporary solutions
+    // are replaced in favor of the stable API.
+    beforeEach(() => mockRoot());
+
+    it('should support Routes API', () => {
+      (globalThis as any).ng = createNgWithDirectiveMetadata(Framework.Angular);
+      expect(ngDebugRoutesApiIsSupported()).toBeTrue();
+
+      (globalThis as any).ng = createNgWithDirectiveMetadata(Framework.ACX);
+      expect(ngDebugRoutesApiIsSupported()).toBeTrue();
+    });
+
+    it('should NOT support Routes API', () => {
+      (globalThis as any).ng = createNgWithDirectiveMetadata(Framework.Wiz);
+
+      expect(ngDebugRoutesApiIsSupported()).toBeFalse();
     });
   });
 });
