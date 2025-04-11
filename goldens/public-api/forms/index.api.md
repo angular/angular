@@ -329,6 +329,9 @@ export class FormBuilder {
 }
 
 // @public
+export type FormContainerDirective = NgForm | FormGroupDirective;
+
+// @public
 export interface FormControl<TValue = any> extends AbstractControl<TValue> {
     readonly defaultValue: TValue;
     getRawValue(): TValue;
