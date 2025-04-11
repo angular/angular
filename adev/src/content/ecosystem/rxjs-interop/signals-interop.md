@@ -1,12 +1,10 @@
 # RxJS interop with Angular signals
 
-IMPORTANT: The RxJS Interop package is available for [developer preview](reference/releases#developer-preview). It's ready for you to try, but it might change before it is stable.
-
 The `@angular/rxjs-interop` package offers APIs that help you integrate RxJS and Angular signals.
 
 ## Create a signal from an RxJs Observable with `toSignal`
 
-Use the `toSignal` function to create a signal which tracks the value of an Observable. It behaves similarly to the `async` pipe in templates, but is more flexible and can be used anywhere in an application.
+Use the [`toSignal`](/api/core/rxjs-interop/toSignal) function to create a signal which tracks the value of an Observable. It behaves similarly to the `async` pipe in templates, but is more flexible and can be used anywhere in an application.
 
 ```ts
 import { Component } from '@angular/core';
@@ -65,7 +63,7 @@ If an Observable used in `toSignal` completes, the signal continues to return th
 
 ## Create an RxJS Observable from a signal with `toObservable`
 
-Use the `toObservable` utility to create an `Observable` which tracks the value of a signal. The signal's value is monitored with an `effect` which emits the value to the Observable when it changes.
+Use the [`toObservable`](/api/core/rxjs-interop/toObservable) utility to create an `Observable` which tracks the value of a signal. The signal's value is monitored with an `effect` which emits the value to the Observable when it changes.
 
 ```ts
 import { Component, signal } from '@angular/core';
