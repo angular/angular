@@ -41,7 +41,7 @@ describe('path', () => {
           );
         }),
       );
-      const topRoots = FieldPathNode.unwrapFieldPath(rootPath).logic.rootPaths;
+      const topRoots = FieldPathNode.unwrapFieldPath(rootPath).subroots;
       expect(topRoots.size).toBe(5);
       expect(topRoots.get(FieldPathNode.unwrapFieldPath(paths[0]))).toEqual([]);
       expect(topRoots.get(FieldPathNode.unwrapFieldPath(paths[1]))).toEqual([]);

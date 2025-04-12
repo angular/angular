@@ -60,7 +60,7 @@ export class FieldNode implements FieldState<unknown> {
         const currentPathKeys = this.pathKeys;
 
         const targetNode = FieldPathNode.unwrapFieldPath(target);
-        const prefix = this.root.logic.rootPaths.get(targetNode.root);
+        const prefix = this.root.logicPath.subroots.get(targetNode.root);
         if (!prefix) {
           throw Error('Path is not part of this field tree.');
         }
@@ -84,12 +84,16 @@ export class FieldNode implements FieldState<unknown> {
 
   private readonly pathKeys: PropertyKey[];
 
+  private logic: FieldLogicNode;
+
   private constructor(
     readonly value: WritableSignal<unknown>,
-    private readonly logic: FieldLogicNode,
+    private readonly logicPath: FieldPathNode,
     readonly parent: FieldNode | undefined,
     readonly keyInParent: PropertyKey | undefined,
   ) {
+    this.logic = logicPath.logic;
+
     if (parent !== undefined && keyInParent !== undefined) {
       this.root = parent.root;
       this.pathKeys = [...parent.pathKeys, keyInParent];
@@ -299,27 +303,27 @@ export class FieldNode implements FieldState<unknown> {
       }
 
       // Determine the logic for the field that we're defining.
-      let childLogic: FieldLogicNode | undefined;
+      let childPath: FieldPathNode | undefined;
       if (Array.isArray(value)) {
         // Fields for array elements have their logic defined by the `element` mechanism.
         // TODO: other dynamic data
-        childLogic = this.logic.element;
+        childPath = this.logicPath.getChild(DYNAMIC);
       } else {
         // Fields for plain properties exist in our logic node's child map.
-        childLogic = this.logic.getChild(key);
+        childPath = this.logicPath.getChild(key);
       }
       childrenMap ??= new Map<PropertyKey, FieldNode>();
       childrenMap.set(
         key,
-        new FieldNode(deepSignal(this.value, key as never), childLogic, this, key),
+        new FieldNode(deepSignal(this.value, key as never), childPath, this, key),
       );
     }
 
     return childrenMap;
   }
 
-  static newRoot<T>(value: WritableSignal<T>, logic: FieldLogicNode): FieldNode {
-    return new FieldNode(value, logic, undefined, undefined);
+  static newRoot<T>(value: WritableSignal<T>, path: FieldPathNode): FieldNode {
+    return new FieldNode(value, path, undefined, undefined);
   }
 }
 

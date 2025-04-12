@@ -10,6 +10,7 @@ export class FieldPathNode {
   readonly root: FieldPathNode;
   readonly logic: FieldLogicNode;
   private readonly children = new Map<PropertyKey, FieldPathNode>();
+  readonly subroots = new Map<FieldPathNode, PropertyKey[]>();
 
   readonly fieldPathProxy: FieldPath<any> = new Proxy(
     this,
@@ -22,7 +23,12 @@ export class FieldPathNode {
     root: FieldPathNode | undefined,
   ) {
     this.logic = logic;
-    this.root = root ?? this;
+    if (root === undefined) {
+      this.root = this;
+      this.subroots.set(this, []);
+    } else {
+      this.root = root;
+    }
   }
 
   get element(): FieldPathNode {
@@ -39,15 +45,19 @@ export class FieldPathNode {
     return this.children.get(key)!;
   }
 
+  mergeIn(other: FieldPathNode) {
+    this.logic.mergeIn(other.logic);
+    for (const [root, pathKeys] of other.subroots) {
+      this.root.subroots.set(root, [...this.keys, ...pathKeys]);
+    }
+  }
+
   static unwrapFieldPath(formPath: FieldPath<unknown>): FieldPathNode {
     return (formPath as any)[PATH] as FieldPathNode;
   }
 
   static newRoot(predicate: Predicate | undefined): FieldPathNode {
-    const rootLogic = FieldLogicNode.newRoot(predicate);
-    const rootPath = new FieldPathNode([], rootLogic, undefined);
-    rootLogic.rootPaths.set(rootPath, []);
-    return rootPath;
+    return new FieldPathNode([], FieldLogicNode.newRoot(predicate), undefined);
   }
 }
 

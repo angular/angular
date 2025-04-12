@@ -52,11 +52,11 @@ import type {Field, FieldPath, LogicFn, Schema, ServerError} from './types';
  * @template The type of the data model.
  */
 export function form<T>(model: WritableSignal<T>, schema?: NoInfer<Schema<T>>): Field<T> {
-  const pathImpl = FieldPathNode.newRoot(undefined);
+  const pathNode = FieldPathNode.newRoot(undefined);
   if (schema !== undefined) {
-    new SchemaImpl(schema).apply(pathImpl);
+    new SchemaImpl(schema).apply(pathNode);
   }
-  const fieldRoot = FieldNode.newRoot(model, pathImpl.logic);
+  const fieldRoot = FieldNode.newRoot(model, pathNode);
   return fieldRoot.fieldProxy as Field<T>;
 }
 
@@ -122,7 +122,7 @@ export function apply<T>(path: FieldPath<T>, schema: NoInfer<Schema<T>>): void {
   const pathNode = FieldPathNode.unwrapFieldPath(path);
   const schemaRootPathNode = FieldPathNode.newRoot(undefined);
   new SchemaImpl(schema).apply(schemaRootPathNode);
-  mergeInLogic(pathNode, schemaRootPathNode);
+  pathNode.mergeIn(schemaRootPathNode);
 }
 
 /**
@@ -142,7 +142,7 @@ export function applyWhen<T>(
   const pathNode = FieldPathNode.unwrapFieldPath(path);
   const schemaRootPathNode = FieldPathNode.newRoot({fn: logic, path});
   new SchemaImpl(schema).apply(schemaRootPathNode);
-  mergeInLogic(pathNode, schemaRootPathNode);
+  pathNode.mergeIn(schemaRootPathNode);
 }
 
 /**
@@ -218,19 +218,4 @@ export async function submit<T>(
     (error.field.$state as FieldNode).setServerErrors(error.error);
   }
   api.setSubmittedStatus('submitted');
-}
-
-function mergeInLogic(to: FieldPathNode, from: FieldPathNode) {
-  to.logic.mergeIn(from.logic);
-  propagateRoots(to.root, from, to.keys);
-}
-
-function propagateRoots(
-  parentRoot: FieldPathNode,
-  childRoot: FieldPathNode,
-  prefix: PropertyKey[],
-) {
-  for (const [root, pathKeys] of childRoot.logic.rootPaths) {
-    parentRoot.logic.rootPaths.set(root, [...prefix, ...pathKeys]);
-  }
 }

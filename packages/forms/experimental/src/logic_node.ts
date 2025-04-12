@@ -9,7 +9,6 @@
 import {MetadataKey} from './api/metadata';
 import {type FieldContext, type FieldPath, type FormError, type LogicFn} from './api/types';
 import {FieldNode} from './field_node';
-import {FieldPathNode} from './path_node';
 
 /**
  * Special key which is used to represent a dynamic index in a `FieldLogicNode` path.
@@ -31,7 +30,6 @@ export class FieldLogicNode {
   readonly hidden: BooleanOrLogic;
   readonly disabled: BooleanOrLogic;
   readonly errors: ArrayMergeLogic<FormError>;
-  readonly rootPaths = new Map<FieldPathNode, PropertyKey[]>();
 
   private readonly metadata = new Map<MetadataKey<unknown>, AbstractLogic<unknown>>();
   private readonly children = new Map<PropertyKey, FieldLogicNode>();
