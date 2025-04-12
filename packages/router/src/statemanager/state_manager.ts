@@ -40,7 +40,6 @@ export abstract class StateManager {
   protected urlUpdateStrategy = this.options.urlUpdateStrategy || 'deferred';
 
   private currentUrlTree = this.urlSerializer.parse(this.location.path());
-
   /**
    * Returns the currently activated `UrlTree`.
    *
