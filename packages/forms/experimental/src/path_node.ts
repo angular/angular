@@ -1,15 +1,10 @@
-import {FieldPath, LogicFn} from './api/types';
-import {DYNAMIC, FieldLogicNode, wrapWithPredicate} from './logic_node';
+import {FieldPath} from './api/types';
+import {DYNAMIC, FieldLogicNode, Predicate} from './logic_node';
 
 /**
  * Special key which is used to retrieve the `FieldPathNode` instance from its `FieldPath` proxy wrapper.
  */
 const PATH = Symbol('PATH');
-
-export interface Predicate {
-  readonly fn: LogicFn<any, boolean>;
-  readonly path: FieldPath<any>;
-}
 
 export class FieldPathNode {
   readonly root: FieldPathNode;
@@ -22,11 +17,11 @@ export class FieldPathNode {
   ) as unknown as FieldPath<any>;
 
   private constructor(
-    logic: FieldLogicNode | undefined,
+    readonly keys: PropertyKey[],
+    logic: FieldLogicNode,
     root: FieldPathNode | undefined,
-    readonly predicate: Predicate | undefined,
   ) {
-    this.logic = logic ?? FieldLogicNode.newRoot(this);
+    this.logic = logic;
     this.root = root ?? this;
   }
 
@@ -34,38 +29,25 @@ export class FieldPathNode {
     return this.getChild(DYNAMIC);
   }
 
-  maybeWrapWithPredicate<TValue, TReturn>(
-    logicFn: LogicFn<TValue, TReturn>,
-    defaultValue: TReturn,
-  ): LogicFn<TValue, TReturn> {
-    const predicate = this.predicate;
-    if (!predicate) {
-      return logicFn;
-    }
-
-    return wrapWithPredicate(predicate, logicFn, defaultValue);
-  }
-
   getChild(key: PropertyKey): FieldPathNode {
     if (!this.children.has(key)) {
       this.children.set(
         key,
-        new FieldPathNode(this.logic.getChild(key), this.root, this.predicate),
+        new FieldPathNode([...this.keys, key], this.logic.getChild(key), this.root),
       );
     }
     return this.children.get(key)!;
-  }
-
-  withPredicate(predicate: Predicate): FieldPathNode {
-    return new FieldPathNode(this.logic, this.root, predicate);
   }
 
   static unwrapFieldPath(formPath: FieldPath<unknown>): FieldPathNode {
     return (formPath as any)[PATH] as FieldPathNode;
   }
 
-  static newRoot(): FieldPathNode {
-    return new FieldPathNode(undefined, undefined, undefined);
+  static newRoot(predicate: Predicate | undefined): FieldPathNode {
+    const rootLogic = FieldLogicNode.newRoot(predicate);
+    const rootPath = new FieldPathNode([], rootLogic, undefined);
+    rootLogic.rootPaths.set(rootPath, []);
+    return rootPath;
   }
 }
 

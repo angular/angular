@@ -59,23 +59,17 @@ export class FieldNode implements FieldState<unknown> {
       resolve: <U>(target: FieldPath<U>): Field<U> => {
         const currentPathKeys = this.pathKeys;
 
-        // TODO: pass root down the tree to avoid this.
-        let rootField: FieldNode = this;
-        while (rootField.parent) {
-          rootField = rootField.parent;
-        }
-
         const targetNode = FieldPathNode.unwrapFieldPath(target);
-        const prefix = rootField.logic.rootPaths.get(targetNode.root);
+        const prefix = this.root.logic.rootPaths.get(targetNode.root);
         if (!prefix) {
           throw Error('Path is not part of this field tree.');
         }
 
-        const targetPathKeys = [...prefix, ...targetNode.logic.pathKeys];
+        const targetPathKeys = [...prefix, ...targetNode.keys];
 
         // Navigate from the root to the target field, replacing dynamic placeholders with their
         // value from the current context.
-        let field: FieldNode = rootField;
+        let field: FieldNode = this.root;
         for (let idx = 0; idx < targetPathKeys.length; idx++) {
           const key = targetPathKeys[idx] === DYNAMIC ? currentPathKeys[idx] : targetPathKeys[idx];
           field = field.getChild(key)!;
@@ -86,7 +80,9 @@ export class FieldNode implements FieldState<unknown> {
     });
   }
 
-  private pathKeys: PropertyKey[];
+  private readonly root: FieldNode;
+
+  private readonly pathKeys: PropertyKey[];
 
   private constructor(
     readonly value: WritableSignal<unknown>,
@@ -94,8 +90,13 @@ export class FieldNode implements FieldState<unknown> {
     readonly parent: FieldNode | undefined,
     readonly keyInParent: PropertyKey | undefined,
   ) {
-    this.pathKeys =
-      parent !== undefined && keyInParent !== undefined ? [...parent.pathKeys, keyInParent] : [];
+    if (parent !== undefined && keyInParent !== undefined) {
+      this.root = parent.root;
+      this.pathKeys = [...parent.pathKeys, keyInParent];
+    } else {
+      this.root = this;
+      this.pathKeys = [];
+    }
 
     // We use a `linkedSignal` to preserve the instances of `FieldNode` for each child field even if
     // the value of this field changes its object identity.

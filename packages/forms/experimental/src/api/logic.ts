@@ -28,8 +28,8 @@ export function disabled<T>(
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
   const reasonFn: LogicFn<T, string> = (ctx) => (logic(ctx) ? (reason ?? '') : '');
-  pathNode.logic.disabled.push(pathNode.maybeWrapWithPredicate(logic, false));
-  pathNode.logic.getMetadata(DISABLED_REASON).push(pathNode.maybeWrapWithPredicate(reasonFn, ''));
+  pathNode.logic.disabled.push(logic);
+  pathNode.logic.getMetadata(DISABLED_REASON).push(reasonFn);
 }
 
 /**
@@ -44,7 +44,7 @@ export function hidden<T>(path: FieldPath<T>, logic: NoInfer<LogicFn<T, boolean>
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.logic.hidden.push(pathNode.maybeWrapWithPredicate(logic, false));
+  pathNode.logic.hidden.push(logic);
 }
 
 /**
@@ -58,7 +58,7 @@ export function validate<T>(path: FieldPath<T>, logic: NoInfer<Validator<T>>): v
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.logic.errors.push(pathNode.maybeWrapWithPredicate(logic, /* default value */ undefined));
+  pathNode.logic.errors.push(logic);
 }
 
 /**
@@ -109,7 +109,7 @@ export function metadata<T, M>(
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.logic.getMetadata(key).push(pathNode.maybeWrapWithPredicate(logic, key.defaultValue));
+  pathNode.logic.getMetadata(key).push(logic);
 }
 
 /**

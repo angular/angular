@@ -52,7 +52,7 @@ import type {Field, FieldPath, LogicFn, Schema, ServerError} from './types';
  * @template The type of the data model.
  */
 export function form<T>(model: WritableSignal<T>, schema?: NoInfer<Schema<T>>): Field<T> {
-  const pathImpl = FieldPathNode.newRoot();
+  const pathImpl = FieldPathNode.newRoot(undefined);
   if (schema !== undefined) {
     new SchemaImpl(schema).apply(pathImpl);
   }
@@ -120,7 +120,7 @@ export function apply<T>(path: FieldPath<T>, schema: NoInfer<Schema<T>>): void {
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  const schemaRootPathNode = FieldPathNode.newRoot();
+  const schemaRootPathNode = FieldPathNode.newRoot(undefined);
   new SchemaImpl(schema).apply(schemaRootPathNode);
   mergeInLogic(pathNode, schemaRootPathNode);
 }
@@ -140,7 +140,7 @@ export function applyWhen<T>(
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  const schemaRootPathNode = FieldPathNode.newRoot().withPredicate({fn: logic, path});
+  const schemaRootPathNode = FieldPathNode.newRoot({fn: logic, path});
   new SchemaImpl(schema).apply(schemaRootPathNode);
   mergeInLogic(pathNode, schemaRootPathNode);
 }
@@ -221,8 +221,8 @@ export async function submit<T>(
 }
 
 function mergeInLogic(to: FieldPathNode, from: FieldPathNode) {
-  to.logic.mergeIn(from.logic, to.predicate);
-  propagateRoots(to.root, from, to.logic.pathKeys);
+  to.logic.mergeIn(from.logic);
+  propagateRoots(to.root, from, to.keys);
 }
 
 function propagateRoots(
