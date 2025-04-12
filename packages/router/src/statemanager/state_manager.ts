@@ -39,7 +39,8 @@ export abstract class StateManager {
   protected urlHandlingStrategy = inject(UrlHandlingStrategy);
   protected urlUpdateStrategy = this.options.urlUpdateStrategy || 'deferred';
 
-  private currentUrlTree = new UrlTree();
+  private currentUrlTree = this.urlSerializer.parse(this.location.path());
+
   /**
    * Returns the currently activated `UrlTree`.
    *
