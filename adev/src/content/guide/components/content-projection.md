@@ -172,9 +172,7 @@ Angular can show *fallback content* for a component's `<ng-content>` placeholder
 ```angular-html
 <!-- Rendered DOM -->
 <custom-card>
-  <div class="card-shadow">
-    Hello
-    <div class="card-divider"></div>
+  <ng-content select="span"><span>Hello</span></ng-content>
     Default Body
   </div>
 </custom-card>
