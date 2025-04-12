@@ -1,0 +1,1014 @@
+{
+  "moduleLabel": "@angular/cdk/drag-drop",
+  "moduleName": "@angular/cdk/drag-drop",
+  "normalizedModuleName": "angular_cdk_drag_drop",
+  "entries": [
+    {
+      "name": "NoopAnimationDriver",
+      "isAbstract": false,
+      "entryType": "undecorated_class",
+      "members": [
+        {
+          "name": "validateStyleProperty",
+          "signatures": [
+            {
+              "name": "validateStyleProperty",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [
+                {"name": "returns", "comment": "Whether `prop` is a valid CSS property"}
+              ],
+              "params": [
+                {
+                  "name": "prop",
+                  "description": "",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n   * @returns Whether `prop` is a valid CSS property\n   */",
+              "returnType": "boolean"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "prop",
+                "description": "",
+                "type": "string",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "boolean",
+            "returnDescription": "Whether `prop` is a valid CSS property",
+            "generics": [],
+            "name": "validateStyleProperty",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [{"name": "returns", "comment": "Whether `prop` is a valid CSS property"}],
+            "rawComment": "/**\n   * @returns Whether `prop` is a valid CSS property\n   */"
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [{"name": "returns", "comment": "Whether `prop` is a valid CSS property"}],
+          "rawComment": "/**\n   * @returns Whether `prop` is a valid CSS property\n   */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "containsElement",
+          "signatures": [
+            {
+              "name": "containsElement",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [{"name": "returns", "comment": "Whether elm1 contains elm2."}],
+              "params": [
+                {
+                  "name": "elm1",
+                  "description": "",
+                  "type": "any",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "elm2",
+                  "description": "",
+                  "type": "any",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n   *\n   * @returns Whether elm1 contains elm2.\n   */",
+              "returnType": "boolean"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "elm1",
+                "description": "",
+                "type": "any",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "elm2",
+                "description": "",
+                "type": "any",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "boolean",
+            "returnDescription": "Whether elm1 contains elm2.",
+            "generics": [],
+            "name": "containsElement",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [{"name": "returns", "comment": "Whether elm1 contains elm2."}],
+            "rawComment": "/**\n   *\n   * @returns Whether elm1 contains elm2.\n   */"
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [{"name": "returns", "comment": "Whether elm1 contains elm2."}],
+          "rawComment": "/**\n   *\n   * @returns Whether elm1 contains elm2.\n   */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "getParentElement",
+          "signatures": [
+            {
+              "name": "getParentElement",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [
+                {
+                  "name": "returns",
+                  "comment": "Rhe parent of the given element or `null` if the element is the `document`"
+                }
+              ],
+              "params": [
+                {
+                  "name": "element",
+                  "description": "",
+                  "type": "unknown",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n   * @returns Rhe parent of the given element or `null` if the element is the `document`\n   */",
+              "returnType": "unknown"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "element",
+                "description": "",
+                "type": "unknown",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "unknown",
+            "returnDescription": "Rhe parent of the given element or `null` if the element is the `document`",
+            "generics": [],
+            "name": "getParentElement",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [
+              {
+                "name": "returns",
+                "comment": "Rhe parent of the given element or `null` if the element is the `document`"
+              }
+            ],
+            "rawComment": "/**\n   * @returns Rhe parent of the given element or `null` if the element is the `document`\n   */"
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [
+            {
+              "name": "returns",
+              "comment": "Rhe parent of the given element or `null` if the element is the `document`"
+            }
+          ],
+          "rawComment": "/**\n   * @returns Rhe parent of the given element or `null` if the element is the `document`\n   */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "query",
+          "signatures": [
+            {
+              "name": "query",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [
+                {
+                  "name": "returns",
+                  "comment": "The result of the query selector on the element. The array will contain up to 1 item\nif `multi` is  `false`."
+                }
+              ],
+              "params": [
+                {
+                  "name": "element",
+                  "description": "",
+                  "type": "any",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "selector",
+                  "description": "",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "multi",
+                  "description": "",
+                  "type": "boolean",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n   * @returns The result of the query selector on the element. The array will contain up to 1 item\n   *     if `multi` is  `false`.\n   */",
+              "returnType": "any[]"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "element",
+                "description": "",
+                "type": "any",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "selector",
+                "description": "",
+                "type": "string",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "multi",
+                "description": "",
+                "type": "boolean",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "any[]",
+            "returnDescription": "The result of the query selector on the element. The array will contain up to 1 item\nif `multi` is  `false`.",
+            "generics": [],
+            "name": "query",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [
+              {
+                "name": "returns",
+                "comment": "The result of the query selector on the element. The array will contain up to 1 item\nif `multi` is  `false`."
+              }
+            ],
+            "rawComment": "/**\n   * @returns The result of the query selector on the element. The array will contain up to 1 item\n   *     if `multi` is  `false`.\n   */"
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [
+            {
+              "name": "returns",
+              "comment": "The result of the query selector on the element. The array will contain up to 1 item\nif `multi` is  `false`."
+            }
+          ],
+          "rawComment": "/**\n   * @returns The result of the query selector on the element. The array will contain up to 1 item\n   *     if `multi` is  `false`.\n   */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "computeStyle",
+          "signatures": [
+            {
+              "name": "computeStyle",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [{"name": "returns", "comment": "The `defaultValue` or empty string"}],
+              "params": [
+                {
+                  "name": "element",
+                  "description": "",
+                  "type": "any",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "prop",
+                  "description": "",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "defaultValue",
+                  "description": "",
+                  "type": "string | undefined",
+                  "isOptional": true,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n   * @returns The `defaultValue` or empty string\n   */",
+              "returnType": "string"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "element",
+                "description": "",
+                "type": "any",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "prop",
+                "description": "",
+                "type": "string",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "defaultValue",
+                "description": "",
+                "type": "string | undefined",
+                "isOptional": true,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "string",
+            "returnDescription": "The `defaultValue` or empty string",
+            "generics": [],
+            "name": "computeStyle",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [{"name": "returns", "comment": "The `defaultValue` or empty string"}],
+            "rawComment": "/**\n   * @returns The `defaultValue` or empty string\n   */"
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [{"name": "returns", "comment": "The `defaultValue` or empty string"}],
+          "rawComment": "/**\n   * @returns The `defaultValue` or empty string\n   */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "animate",
+          "signatures": [
+            {
+              "name": "animate",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [{"name": "returns", "comment": "An `NoopAnimationPlayer`"}],
+              "params": [
+                {
+                  "name": "element",
+                  "description": "",
+                  "type": "any",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "keyframes",
+                  "description": "",
+                  "type": "Map<string, string | number>[]",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "duration",
+                  "description": "",
+                  "type": "number",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "delay",
+                  "description": "",
+                  "type": "number",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "easing",
+                  "description": "",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "previousPlayers",
+                  "description": "",
+                  "type": "any[]",
+                  "isOptional": true,
+                  "isRestParam": false
+                },
+                {
+                  "name": "scrubberAccessRequested",
+                  "description": "",
+                  "type": "boolean | undefined",
+                  "isOptional": true,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n   * @returns An `NoopAnimationPlayer`\n   */",
+              "returnType": "AnimationPlayer"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "element",
+                "description": "",
+                "type": "any",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "keyframes",
+                "description": "",
+                "type": "Map<string, string | number>[]",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "duration",
+                "description": "",
+                "type": "number",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "delay",
+                "description": "",
+                "type": "number",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "easing",
+                "description": "",
+                "type": "string",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "previousPlayers",
+                "description": "",
+                "type": "any[]",
+                "isOptional": true,
+                "isRestParam": false
+              },
+              {
+                "name": "scrubberAccessRequested",
+                "description": "",
+                "type": "boolean | undefined",
+                "isOptional": true,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "AnimationPlayer",
+            "returnDescription": "An `NoopAnimationPlayer`",
+            "generics": [],
+            "name": "animate",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [{"name": "returns", "comment": "An `NoopAnimationPlayer`"}],
+            "rawComment": "/**\n   * @returns An `NoopAnimationPlayer`\n   */"
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [{"name": "returns", "comment": "An `NoopAnimationPlayer`"}],
+          "rawComment": "/**\n   * @returns An `NoopAnimationPlayer`\n   */",
+          "memberType": "method",
+          "memberTags": []
+        }
+      ],
+      "generics": [],
+      "description": "",
+      "jsdocTags": [
+        {"name": "publicApi", "comment": "`AnimationDriver` implentation for Noop animations"}
+      ],
+      "rawComment": "/**\n * @publicApi\n *\n * `AnimationDriver` implentation for Noop animations\n */",
+      "implements": ["AnimationDriver"],
+      "source": {
+        "filePath": "/packages/animations/browser/src/render/animation_driver.ts",
+        "startLine": 18,
+        "endLine": 71
+      }
+    },
+    {
+      "name": "AnimationDriver",
+      "isAbstract": true,
+      "entryType": "undecorated_class",
+      "members": [
+        {
+          "name": "validateStyleProperty",
+          "signatures": [
+            {
+              "name": "validateStyleProperty",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "prop",
+                  "description": "",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "",
+              "returnType": "boolean"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "prop",
+                "description": "",
+                "type": "string",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "boolean",
+            "generics": [],
+            "name": "validateStyleProperty",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": ["abstract"]
+        },
+        {
+          "name": "validateAnimatableStyleProperty",
+          "type": "((prop: string) => boolean) | undefined",
+          "memberType": "property",
+          "memberTags": ["abstract", "optional"],
+          "description": "",
+          "jsdocTags": []
+        },
+        {
+          "name": "containsElement",
+          "signatures": [
+            {
+              "name": "containsElement",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "elm1",
+                  "description": "",
+                  "type": "any",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "elm2",
+                  "description": "",
+                  "type": "any",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "",
+              "returnType": "boolean"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "elm1",
+                "description": "",
+                "type": "any",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "elm2",
+                "description": "",
+                "type": "any",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "boolean",
+            "generics": [],
+            "name": "containsElement",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": ["abstract"]
+        },
+        {
+          "name": "getParentElement",
+          "signatures": [
+            {
+              "name": "getParentElement",
+              "entryType": "function",
+              "description": "Obtains the parent element, if any. `null` is returned if the element does not have a parent.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "element",
+                  "description": "",
+                  "type": "unknown",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n   * Obtains the parent element, if any. `null` is returned if the element does not have a parent.\n   */",
+              "returnType": "unknown"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "element",
+                "description": "",
+                "type": "unknown",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "unknown",
+            "generics": [],
+            "name": "getParentElement",
+            "description": "Obtains the parent element, if any. `null` is returned if the element does not have a parent.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/**\n   * Obtains the parent element, if any. `null` is returned if the element does not have a parent.\n   */"
+          },
+          "entryType": "function",
+          "description": "Obtains the parent element, if any. `null` is returned if the element does not have a parent.",
+          "jsdocTags": [],
+          "rawComment": "/**\n   * Obtains the parent element, if any. `null` is returned if the element does not have a parent.\n   */",
+          "memberType": "method",
+          "memberTags": ["abstract"]
+        },
+        {
+          "name": "query",
+          "signatures": [
+            {
+              "name": "query",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "element",
+                  "description": "",
+                  "type": "any",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "selector",
+                  "description": "",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "multi",
+                  "description": "",
+                  "type": "boolean",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "",
+              "returnType": "any[]"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "element",
+                "description": "",
+                "type": "any",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "selector",
+                "description": "",
+                "type": "string",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "multi",
+                "description": "",
+                "type": "boolean",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "any[]",
+            "generics": [],
+            "name": "query",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": ["abstract"]
+        },
+        {
+          "name": "computeStyle",
+          "signatures": [
+            {
+              "name": "computeStyle",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "element",
+                  "description": "",
+                  "type": "any",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "prop",
+                  "description": "",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "defaultValue",
+                  "description": "",
+                  "type": "string | undefined",
+                  "isOptional": true,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "",
+              "returnType": "string"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "element",
+                "description": "",
+                "type": "any",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "prop",
+                "description": "",
+                "type": "string",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "defaultValue",
+                "description": "",
+                "type": "string | undefined",
+                "isOptional": true,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "string",
+            "generics": [],
+            "name": "computeStyle",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": ["abstract"]
+        },
+        {
+          "name": "animate",
+          "signatures": [
+            {
+              "name": "animate",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "element",
+                  "description": "",
+                  "type": "any",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "keyframes",
+                  "description": "",
+                  "type": "Map<string, string | number>[]",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "duration",
+                  "description": "",
+                  "type": "number",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "delay",
+                  "description": "",
+                  "type": "number",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "easing",
+                  "description": "",
+                  "type": "string | null | undefined",
+                  "isOptional": true,
+                  "isRestParam": false
+                },
+                {
+                  "name": "previousPlayers",
+                  "description": "",
+                  "type": "any[] | undefined",
+                  "isOptional": true,
+                  "isRestParam": false
+                },
+                {
+                  "name": "scrubberAccessRequested",
+                  "description": "",
+                  "type": "boolean | undefined",
+                  "isOptional": true,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "",
+              "returnType": "any"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "element",
+                "description": "",
+                "type": "any",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "keyframes",
+                "description": "",
+                "type": "Map<string, string | number>[]",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "duration",
+                "description": "",
+                "type": "number",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "delay",
+                "description": "",
+                "type": "number",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "easing",
+                "description": "",
+                "type": "string | null | undefined",
+                "isOptional": true,
+                "isRestParam": false
+              },
+              {
+                "name": "previousPlayers",
+                "description": "",
+                "type": "any[] | undefined",
+                "isOptional": true,
+                "isRestParam": false
+              },
+              {
+                "name": "scrubberAccessRequested",
+                "description": "",
+                "type": "boolean | undefined",
+                "isOptional": true,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "any",
+            "generics": [],
+            "name": "animate",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": ["abstract"]
+        },
+        {
+          "name": "NOOP",
+          "type": "AnimationDriver",
+          "memberType": "property",
+          "memberTags": ["static"],
+          "description": "",
+          "jsdocTags": [{"name": "deprecated", "comment": "Use the NoopAnimationDriver class."}]
+        }
+      ],
+      "generics": [],
+      "description": "",
+      "jsdocTags": [{"name": "publicApi", "comment": ""}],
+      "rawComment": "/**\n * @publicApi\n */",
+      "implements": [],
+      "source": {
+        "filePath": "/packages/animations/browser/src/render/animation_driver.ts",
+        "startLine": 76,
+        "endLine": 106
+      }
+    }
+  ],
+  "symbols": [
+    ["Injectable", "@angular/core"],
+    ["NoopAnimationDriver", "@angular/cdk"],
+    ["AnimationDriver", "@angular/cdk"],
+    ["NoopAnimationDriver", "@angular/cdk"],
+    ["NoopAnimationDriver.validateStyleProperty", "@angular/cdk"],
+    ["NoopAnimationDriver.containsElement", "@angular/cdk"],
+    ["NoopAnimationDriver.getParentElement", "@angular/cdk"],
+    ["NoopAnimationDriver.query", "@angular/cdk"],
+    ["NoopAnimationDriver.computeStyle", "@angular/cdk"],
+    ["NoopAnimationDriver.animate", "@angular/cdk"],
+    ["AnimationDriver", "@angular/cdk"],
+    ["AnimationDriver.validateStyleProperty", "@angular/cdk"],
+    ["AnimationDriver.validateAnimatableStyleProperty", "@angular/cdk"],
+    ["AnimationDriver.containsElement", "@angular/cdk"],
+    ["AnimationDriver.getParentElement", "@angular/cdk"],
+    ["AnimationDriver.query", "@angular/cdk"],
+    ["AnimationDriver.computeStyle", "@angular/cdk"],
+    ["AnimationDriver.animate", "@angular/cdk"],
+    ["AnimationDriver.NOOP", "@angular/cdk"]
+  ]
+}
