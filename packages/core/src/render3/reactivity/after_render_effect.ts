@@ -267,7 +267,7 @@ export type ɵFirstAvailableSignal<T extends unknown[]> = T extends [infer H, ..
  * @param callback An effect callback function to register
  * @param options Options to control the behavior of the callback
  *
- * @experimental
+ * @publicApi
  */
 export function afterRenderEffect(
   callback: (onCleanup: EffectCleanupRegisterFn) => void,
@@ -331,7 +331,7 @@ export function afterRenderEffect(
  * Use `afterRenderEffect` to create effects that will read or write from the DOM and thus should
  * run after rendering.
  *
- * @experimental
+ * @publicApi
  */
 export function afterRenderEffect<E = never, W = never, M = never>(
   spec: {
@@ -344,7 +344,7 @@ export function afterRenderEffect<E = never, W = never, M = never>(
 ): AfterRenderRef;
 
 /**
- * @experimental
+ * @publicApi
  */
 export function afterRenderEffect<E = never, W = never, M = never>(
   callbackOrSpec:
