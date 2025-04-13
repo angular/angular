@@ -54,14 +54,15 @@ function insertDebugNameIntoCallExpression(
   const transformedConfigProperties = ts.factory.createObjectLiteralExpression(properties);
   const ngDevModeIdentifier = ts.factory.createIdentifier('ngDevMode');
 
-  let transformedSignalArgs: ts.NodeArray<ts.Expression>;
   const devModeCase = ts.factory.createArrayLiteralExpression([
     transformedConfigProperties,
     ...nodeArgs.slice(configPosition + 1),
   ]);
+
   const nonDevModeCase = signalExpressionIsRequired
     ? ts.factory.createArrayLiteralExpression(nodeArgs)
     : ts.factory.createArrayLiteralExpression(nodeArgs.slice(configPosition));
+
   const spreadElementContainingUpdatedOptions = ts.factory.createSpreadElement(
     ts.factory.createParenthesizedExpression(
       ts.factory.createConditionalExpression(
@@ -74,6 +75,7 @@ function insertDebugNameIntoCallExpression(
     ),
   );
 
+  let transformedSignalArgs: ts.NodeArray<ts.Expression>;
   if (signalExpressionIsRequired) {
     // options are the first arg for a required signals function
     transformedSignalArgs = ts.factory.createNodeArray([spreadElementContainingUpdatedOptions]);

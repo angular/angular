@@ -976,7 +976,9 @@ runInEachFileSystem(() => {
         env.driveMain();
 
         const jsContents = env.getContents('test.js');
-        expect(jsContents).toContain(`input(...(ngDevMode ? [{ debugName: "testInput" }] : []))`);
+        expect(jsContents).toContain(
+          `input(undefined, ...(ngDevMode ? [{ debugName: "testInput" }] : []))`,
+        );
       });
 
       it('should tree-shake away debug info if in prod mode', async () => {
