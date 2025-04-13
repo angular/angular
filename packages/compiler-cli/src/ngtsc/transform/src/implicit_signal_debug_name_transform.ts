@@ -55,45 +55,43 @@ function insertDebugNameIntoCallExpression(
   const ngDevModeIdentifier = ts.factory.createIdentifier('ngDevMode');
 
   let transformedSignalArgs: ts.NodeArray<ts.Expression>;
+  const devModeCase = ts.factory.createArrayLiteralExpression([
+    transformedConfigProperties,
+    ...nodeArgs.slice(configPosition + 1),
+  ]);
+  const nonDevModeCase = signalExpressionIsRequired
+    ? ts.factory.createArrayLiteralExpression(nodeArgs)
+    : ts.factory.createArrayLiteralExpression(nodeArgs.slice(configPosition));
+  const spreadElementContainingUpdatedOptions = ts.factory.createSpreadElement(
+    ts.factory.createParenthesizedExpression(
+      ts.factory.createConditionalExpression(
+        ngDevModeIdentifier,
+        /* question token */ undefined,
+        devModeCase,
+        /* colon token */ undefined,
+        nonDevModeCase,
+      ),
+    ),
+  );
+
   if (signalExpressionIsRequired) {
-    // signal function called with `.required`
-    // in this case the config parameter is the first arg
-    const conditionalSpreadElement = ts.factory.createSpreadElement(
-      ts.factory.createParenthesizedExpression(
-        ts.factory.createConditionalExpression(
-          ngDevModeIdentifier,
-          /* question token */ undefined,
-          ts.factory.createArrayLiteralExpression([
-            transformedConfigProperties,
-            ...nodeArgs.slice(configPosition + 1),
-          ]), // dev mode case
-          /* colon token */ undefined,
-          ts.factory.createArrayLiteralExpression(nodeArgs), // Non dev mode case
-        ),
-      ),
-    );
-    transformedSignalArgs = ts.factory.createNodeArray([conditionalSpreadElement]);
+    // options are the first arg for a required signals function
+    transformedSignalArgs = ts.factory.createNodeArray([spreadElementContainingUpdatedOptions]);
   } else {
-    // non required signal invocation case
-    const conditionalSpreadElement = ts.factory.createSpreadElement(
-      ts.factory.createParenthesizedExpression(
-        ts.factory.createConditionalExpression(
-          ngDevModeIdentifier,
-          /* question token */ undefined,
-          ts.factory.createArrayLiteralExpression([
-            transformedConfigProperties,
-            ...nodeArgs.slice(configPosition + 1),
-          ]), // dev mode case
-          /* colon token */ undefined,
-          ts.factory.createArrayLiteralExpression(nodeArgs.slice(configPosition)), // Non dev mode case
-        ),
-      ),
-    );
+    // For non required signal functions, the config object is the second argument. Two cases:
 
     if (nodeArgs[0] === undefined) {
-      transformedSignalArgs = ts.factory.createNodeArray([conditionalSpreadElement]);
+      // 1. if the first argument is undefined we need to explicitly create an undefined identifier in its place
+      transformedSignalArgs = ts.factory.createNodeArray([
+        ts.factory.createIdentifier('undefined'),
+        spreadElementContainingUpdatedOptions,
+      ]);
     } else {
-      transformedSignalArgs = ts.factory.createNodeArray([nodeArgs[0], conditionalSpreadElement]);
+      // 2. if the first argument is defined, we need to restore its original position in the args list
+      transformedSignalArgs = ts.factory.createNodeArray([
+        nodeArgs[0],
+        spreadElementContainingUpdatedOptions,
+      ]);
     }
   }
 
