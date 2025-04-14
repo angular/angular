@@ -9,7 +9,7 @@
 import {EnvironmentInjector, inject, Injectable} from '@angular/core';
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {Observable, of} from 'rxjs';
-import {delay, tap} from 'rxjs/operators';
+import {delay, tap, timeout} from 'rxjs/operators';
 
 import {Route, Routes} from '../src/models';
 import {recognize} from '../src/recognize';
@@ -1577,7 +1577,7 @@ describe('redirects', () => {
       );
     });
 
-    it('with a simple function returning a UrlTree', () => {
+    it('but it would cause an infinit loop if redirect route is sub route of the path containing the redirectTo', () => {
       checkRedirect(
         [
           {
@@ -1586,7 +1586,7 @@ describe('redirects', () => {
               new UrlTree(
                 new UrlSegmentGroup([], {
                   'primary': new UrlSegmentGroup(
-                    [new UrlSegment('a', {}), new UrlSegment('b', {}), new UrlSegment('c', {})],
+                    [new UrlSegment('a', {}), new UrlSegment('b', {}), new UrlSegment('d', {})],
                     {},
                   ),
                 }),
@@ -1596,7 +1596,35 @@ describe('redirects', () => {
         ],
         '/a/b',
         (t: UrlTree) => {
-          expectTreeToBe(t, '/a/b/c');
+          throw 'Should not reach';
+        },
+        undefined,
+        (e) => {
+          expect(e).toBeDefined();
+        },
+      );
+    });
+
+    it('with a simple function returning a UrlTree', () => {
+      checkRedirect(
+        [
+          {
+            path: 'a/b',
+            redirectTo: () =>
+              new UrlTree(
+                new UrlSegmentGroup([], {
+                  'primary': new UrlSegmentGroup(
+                    [new UrlSegment('c', {}), new UrlSegment('d', {}), new UrlSegment('e', {})],
+                    {},
+                  ),
+                }),
+              ),
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b',
+        (t: UrlTree) => {
+          expectTreeToBe(t, '/c/d/e');
         },
       );
     });
@@ -1604,12 +1632,12 @@ describe('redirects', () => {
     it('with a function using inject and returning a UrlTree', () => {
       checkRedirect(
         [
-          {path: 'a/b', redirectTo: () => inject(Router).parseUrl('/a/b/c')},
+          {path: 'a/b', redirectTo: () => inject(Router).parseUrl('/c/d/e')},
           {path: '**', component: ComponentC},
         ],
         '/a/b',
         (t: UrlTree) => {
-          expectTreeToBe(t, '/a/b/c');
+          expectTreeToBe(t, '/c/d/e');
         },
       );
     });
@@ -1637,12 +1665,12 @@ describe('redirects', () => {
     it('with a function using inject and returning a UrlTree with params', () => {
       checkRedirect(
         [
-          {path: 'a/b', redirectTo: () => inject(Router).parseUrl('/a;a1=1,a2=2/b/c?qp=123')},
+          {path: 'a/b', redirectTo: () => inject(Router).parseUrl('/c;a1=1,a2=2/d/e?qp=123')},
           {path: '**', component: ComponentC},
         ],
         '/a/b',
         (t: UrlTree) => {
-          expectTreeToBe(t, '/a;a1=1,a2=2/b/c?qp=123');
+          expectTreeToBe(t, '/c;a1=1,a2=2/d/e?qp=123');
         },
       );
     });
@@ -1793,6 +1821,575 @@ describe('redirects', () => {
     });
   });
 
+  describe('can use redirectTo as an observable', () => {
+    it('with a simple function returning an observable that emits a string', () => {
+      checkRedirect(
+        [
+          {path: 'a/b', redirectTo: () => of('other')},
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b',
+        (t: UrlTree) => {
+          expectTreeToBe(t, '/other');
+        },
+      );
+    });
+
+    it('but it would cause an infinit loop if redirect route is sub route of the path containing the redirectTo', () => {
+      checkRedirect(
+        [
+          {
+            path: 'a/b',
+            redirectTo: () =>
+              of(
+                new UrlTree(
+                  new UrlSegmentGroup([], {
+                    'primary': new UrlSegmentGroup(
+                      [new UrlSegment('a', {}), new UrlSegment('b', {}), new UrlSegment('d', {})],
+                      {},
+                    ),
+                  }),
+                ),
+              ),
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b',
+        (t: UrlTree) => {
+          throw 'Should not reach';
+        },
+        undefined,
+        (e) => {
+          expect(e).toBeDefined();
+        },
+      );
+    });
+
+    it('with a simple function returning an observable that emits a UrlTree', () => {
+      checkRedirect(
+        [
+          {
+            path: 'a/b',
+            redirectTo: () =>
+              of(
+                new UrlTree(
+                  new UrlSegmentGroup([], {
+                    'primary': new UrlSegmentGroup(
+                      [new UrlSegment('c', {}), new UrlSegment('d', {}), new UrlSegment('e', {})],
+                      {},
+                    ),
+                  }),
+                ),
+              ),
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b',
+        (t: UrlTree) => {
+          expectTreeToBe(t, '/c/d/e');
+        },
+      );
+    });
+
+    it('with a function using inject and returning an observable that emits a UrlTree', () => {
+      checkRedirect(
+        [
+          {
+            path: 'a/b',
+            redirectTo: () => {
+              const tree = inject(Router).parseUrl('/c/d/e');
+              return of(tree);
+            },
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b',
+        (t: UrlTree) => {
+          expectTreeToBe(t, '/c/d/e');
+        },
+      );
+    });
+
+    it('can access query params and redirect using them', () => {
+      checkRedirect(
+        [
+          {
+            path: 'a/b',
+            redirectTo: ({queryParams}) => {
+              const tree = inject(Router).parseUrl('other');
+              tree.queryParams = queryParams;
+              return of(tree);
+            },
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b?hl=en&q=hello',
+        (t: UrlTree) => {
+          expectTreeToBe(t, 'other?hl=en&q=hello');
+        },
+      );
+    });
+
+    it('with a function using inject and returning a UrlTree with params', () => {
+      checkRedirect(
+        [
+          {
+            path: 'a/b',
+            redirectTo: () => {
+              const tree = inject(Router).parseUrl('/c;a1=1,a2=2/d/e?qp=123');
+              return of(tree);
+            },
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b',
+        (t: UrlTree) => {
+          expectTreeToBe(t, '/c;a1=1,a2=2/d/e?qp=123');
+        },
+      );
+    });
+
+    it('receives positional params from the current route', () => {
+      checkRedirect(
+        [
+          {
+            path: ':id1/:id2',
+            redirectTo: ({params}) => {
+              const tree = inject(Router).parseUrl(
+                `/redirect?id1=${params['id1']}&id2=${params['id2']}`,
+              );
+              return of(tree);
+            },
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b',
+        (t: UrlTree) => {
+          expectTreeToBe(t, 'redirect?id1=a&id2=b');
+        },
+      );
+    });
+
+    it('receives params from the parent route', () => {
+      checkRedirect(
+        [
+          {
+            path: ':id1/:id2',
+            children: [
+              {
+                path: 'c',
+                redirectTo: ({params}) => {
+                  const tree = inject(Router).parseUrl(
+                    `/redirect?id1=${params['id1']}&id2=${params['id2']}`,
+                  );
+                  return of(tree);
+                },
+              },
+            ],
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b/c',
+        (t: UrlTree) => {
+          expectTreeToBe(t, 'redirect?id1=a&id2=b');
+        },
+      );
+    });
+
+    it('receives data from the parent componentless route', () => {
+      checkRedirect(
+        [
+          {
+            path: 'a/b',
+            data: {data1: 'hello', data2: 'world'},
+            children: [
+              {
+                path: 'c',
+                redirectTo: ({data}) => of(`/redirect?id1=${data['data1']}&id2=${data['data2']}`),
+              },
+            ],
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b/c',
+        (t: UrlTree) => {
+          expectTreeToBe(t, 'redirect?id1=hello&id2=world');
+        },
+      );
+    });
+
+    it('does not receive data from the parent route with component (default paramsInheritanceStrategy is emptyOnly)', () => {
+      checkRedirect(
+        [
+          {
+            path: 'a/b',
+            data: {data1: 'hello', data2: 'world'},
+            component: ComponentA,
+            children: [
+              {
+                path: 'c',
+                redirectTo: ({data}) => {
+                  expect(data['data1']).toBeUndefined();
+                  expect(data['data2']).toBeUndefined();
+                  return of(`/redirect`);
+                },
+              },
+            ],
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b/c',
+        (t: UrlTree) => {
+          expectTreeToBe(t, 'redirect');
+        },
+      );
+    });
+
+    it('has access to inherited data from all ancestor routes with paramsInheritanceStrategy always', () => {
+      checkRedirect(
+        [
+          {
+            path: 'a',
+            data: {data1: 'hello'},
+            component: ComponentA,
+            children: [
+              {
+                path: 'b',
+                data: {data2: 'world'},
+                component: ComponentB,
+                children: [
+                  {
+                    path: 'c',
+                    redirectTo: ({data}) => {
+                      expect(data['data1']).toBe('hello');
+                      expect(data['data2']).toBe('world');
+                      return of(`/redirect`);
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b/c',
+        (t: UrlTree) => {
+          expectTreeToBe(t, 'redirect');
+        },
+        'always',
+      );
+    });
+
+    it('has access to path params', () => {
+      checkRedirect(
+        [
+          {
+            path: 'a',
+            children: [
+              {
+                path: 'b',
+                redirectTo: ({params}) =>
+                  of(
+                    `/redirect?k1=${params['k1']}&k2=${params['k2']}&k3=${params['k3']}&k4=${params['k4']}`,
+                  ),
+              },
+            ],
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a;k1=v1;k2=v2/b;k3=v3;k4=v4',
+        (t: UrlTree) => {
+          expectTreeToBe(t, 'redirect?k1=v1&k2=v2&k3=v3&k4=v4');
+        },
+      );
+    });
+  });
+
+  describe('can use redirectTo as a promise', () => {
+    it('with a simple function returning a promise that emits a string', () => {
+      checkRedirect(
+        [
+          {path: 'a/b', redirectTo: async () => Promise.resolve('other')},
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b',
+        (t: UrlTree) => {
+          expectTreeToBe(t, '/other');
+        },
+      );
+    });
+
+    it('but it would cause an infinit loop if redirect route is sub route of the path containing the redirectTo', () => {
+      checkRedirect(
+        [
+          {
+            path: 'a/b',
+            redirectTo: async () =>
+              Promise.resolve(
+                new UrlTree(
+                  new UrlSegmentGroup([], {
+                    'primary': new UrlSegmentGroup(
+                      [new UrlSegment('a', {}), new UrlSegment('b', {}), new UrlSegment('d', {})],
+                      {},
+                    ),
+                  }),
+                ),
+              ),
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b',
+        (t: UrlTree) => {
+          throw 'Should not reach';
+        },
+        undefined,
+        (e) => {
+          expect(e).toBeDefined();
+        },
+      );
+    });
+
+    it('with a simple function returning an observable that emits a UrlTree', () => {
+      checkRedirect(
+        [
+          {
+            path: 'a/b',
+            redirectTo: async () =>
+              Promise.resolve(
+                new UrlTree(
+                  new UrlSegmentGroup([], {
+                    'primary': new UrlSegmentGroup(
+                      [new UrlSegment('c', {}), new UrlSegment('d', {}), new UrlSegment('e', {})],
+                      {},
+                    ),
+                  }),
+                ),
+              ),
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b',
+        (t: UrlTree) => {
+          expectTreeToBe(t, '/c/d/e');
+        },
+      );
+    });
+
+    it('with a function using inject and returning an observable that emits a UrlTree', () => {
+      checkRedirect(
+        [
+          {
+            path: 'a/b',
+            redirectTo: async () => {
+              const tree = inject(Router).parseUrl('/c/d/e');
+              return Promise.resolve(tree);
+            },
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b',
+        (t: UrlTree) => {
+          expectTreeToBe(t, '/c/d/e');
+        },
+      );
+    });
+
+    it('can access query params and redirect using them', () => {
+      checkRedirect(
+        [
+          {
+            path: 'a/b',
+            redirectTo: async ({queryParams}) => {
+              const tree = inject(Router).parseUrl('other');
+              tree.queryParams = queryParams;
+              return Promise.resolve(tree);
+            },
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b?hl=en&q=hello',
+        (t: UrlTree) => {
+          expectTreeToBe(t, 'other?hl=en&q=hello');
+        },
+      );
+    });
+
+    it('with a function using inject and returning a UrlTree with params', () => {
+      checkRedirect(
+        [
+          {
+            path: 'a/b',
+            redirectTo: async () => {
+              const tree = inject(Router).parseUrl('/c;a1=1,a2=2/d/e?qp=123');
+              return Promise.resolve(tree);
+            },
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b',
+        (t: UrlTree) => {
+          expectTreeToBe(t, '/c;a1=1,a2=2/d/e?qp=123');
+        },
+      );
+    });
+
+    it('receives positional params from the current route', () => {
+      checkRedirect(
+        [
+          {
+            path: ':id1/:id2',
+            redirectTo: async ({params}) => {
+              const tree = inject(Router).parseUrl(
+                `/redirect?id1=${params['id1']}&id2=${params['id2']}`,
+              );
+              return Promise.resolve(tree);
+            },
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b',
+        (t: UrlTree) => {
+          expectTreeToBe(t, 'redirect?id1=a&id2=b');
+        },
+      );
+    });
+
+    it('receives params from the parent route', () => {
+      checkRedirect(
+        [
+          {
+            path: ':id1/:id2',
+            children: [
+              {
+                path: 'c',
+                redirectTo: async ({params}) => {
+                  const tree = inject(Router).parseUrl(
+                    `/redirect?id1=${params['id1']}&id2=${params['id2']}`,
+                  );
+                  return Promise.resolve(tree);
+                },
+              },
+            ],
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b/c',
+        (t: UrlTree) => {
+          expectTreeToBe(t, 'redirect?id1=a&id2=b');
+        },
+      );
+    });
+
+    it('receives data from the parent componentless route', () => {
+      checkRedirect(
+        [
+          {
+            path: 'a/b',
+            data: {data1: 'hello', data2: 'world'},
+            children: [
+              {
+                path: 'c',
+                redirectTo: async ({data}) =>
+                  Promise.resolve(`/redirect?id1=${data['data1']}&id2=${data['data2']}`),
+              },
+            ],
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b/c',
+        (t: UrlTree) => {
+          expectTreeToBe(t, 'redirect?id1=hello&id2=world');
+        },
+      );
+    });
+
+    it('does not receive data from the parent route with component (default paramsInheritanceStrategy is emptyOnly)', () => {
+      checkRedirect(
+        [
+          {
+            path: 'a/b',
+            data: {data1: 'hello', data2: 'world'},
+            component: ComponentA,
+            children: [
+              {
+                path: 'c',
+                redirectTo: async ({data}) => {
+                  expect(data['data1']).toBeUndefined();
+                  expect(data['data2']).toBeUndefined();
+                  return Promise.resolve(`/redirect`);
+                },
+              },
+            ],
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b/c',
+        (t: UrlTree) => {
+          expectTreeToBe(t, 'redirect');
+        },
+      );
+    });
+
+    it('has access to inherited data from all ancestor routes with paramsInheritanceStrategy always', () => {
+      checkRedirect(
+        [
+          {
+            path: 'a',
+            data: {data1: 'hello'},
+            component: ComponentA,
+            children: [
+              {
+                path: 'b',
+                data: {data2: 'world'},
+                component: ComponentB,
+                children: [
+                  {
+                    path: 'c',
+                    redirectTo: async ({data}) => {
+                      expect(data['data1']).toBe('hello');
+                      expect(data['data2']).toBe('world');
+                      return Promise.resolve(`/redirect`);
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b/c',
+        (t: UrlTree) => {
+          expectTreeToBe(t, 'redirect');
+        },
+        'always',
+      );
+    });
+
+    it('has access to path params', () => {
+      checkRedirect(
+        [
+          {
+            path: 'a',
+            children: [
+              {
+                path: 'b',
+                redirectTo: async ({params}) =>
+                  Promise.resolve(
+                    `/redirect?k1=${params['k1']}&k2=${params['k2']}&k3=${params['k3']}&k4=${params['k4']}`,
+                  ),
+              },
+            ],
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a;k1=v1;k2=v2/b;k3=v3;k4=v4',
+        (t: UrlTree) => {
+          expectTreeToBe(t, 'redirect?k1=v1&k2=v2&k3=v3&k4=v4');
+        },
+      );
+    });
+  });
+
   // internal failure b/165719418
   it('does not fail with large configs', () => {
     const config: Routes = [];
@@ -1818,7 +2415,9 @@ function checkRedirect(
   url: string,
   callback: (t: UrlTree, state: RouterStateSnapshot) => void,
   paramsInheritanceStrategy?: ParamsInheritanceStrategy,
+  errorCallback?: (e: unknown) => void,
 ): void {
+  const redirectionTimeout = 10;
   recognize(
     TestBed.inject(EnvironmentInjector),
     TestBed.inject(RouterConfigLoader),
@@ -1827,12 +2426,17 @@ function checkRedirect(
     tree(url),
     new DefaultUrlSerializer(),
     paramsInheritanceStrategy,
-  ).subscribe({
-    next: (v) => callback(v.tree, v.state),
-    error: (e) => {
-      throw e;
-    },
-  });
+  )
+    .pipe(timeout(redirectionTimeout))
+    .subscribe({
+      next: (v) => callback(v.tree, v.state),
+      error: (e) => {
+        if (!errorCallback) {
+          throw e;
+        }
+        errorCallback(e);
+      },
+    });
 }
 
 function tree(url: string): UrlTree {

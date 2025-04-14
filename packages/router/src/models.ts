@@ -316,7 +316,7 @@ export type RedirectFunction = (
     ActivatedRouteSnapshot,
     'routeConfig' | 'url' | 'params' | 'queryParams' | 'fragment' | 'data' | 'outlet' | 'title'
   >,
-) => string | UrlTree;
+) => MaybeAsync<string | UrlTree>;
 
 /**
  * A policy for when to run guards and resolvers on a route.
