@@ -19,7 +19,7 @@ export interface Version {
 
 export type VersionMode = 'stable' | 'deprecated' | 'rc' | 'next' | number;
 
-export const INITIAL_ADEV_DOCS_VERSION = 18;
+export const INITIAL_ADEV_DOCS_VERSION = 19;
 export const VERSION_PLACEHOLDER = '{{version}}';
 export const MODE_PLACEHOLDER = '{{prefix}}';
 
