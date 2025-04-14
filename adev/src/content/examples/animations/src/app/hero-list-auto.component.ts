@@ -2,13 +2,11 @@ import {Component, Input, Output, EventEmitter} from '@angular/core';
 import {trigger, state, style, animate, transition} from '@angular/animations';
 
 import {Hero} from './hero';
-import {NgFor} from '@angular/common';
 
 @Component({
   selector: 'app-hero-list-auto',
   templateUrl: 'hero-list-auto.component.html',
   styleUrls: ['./hero-list-page.component.css'],
-  imports: [NgFor],
   // #docregion auto-calc
   animations: [
     trigger('shrinkOut', [
