@@ -382,7 +382,7 @@ export class Recognizer {
     const inherited = getInherited(currentSnapshot, parentRoute, this.paramsInheritanceStrategy);
     currentSnapshot.params = Object.freeze(inherited.params);
     currentSnapshot.data = Object.freeze(inherited.data);
-    const newTree = this.applyRedirects.applyRedirectCommands(
+    const newTree$: Observable<UrlTree> = this.applyRedirects.applyRedirectCommands(
       consumedSegments,
       route.redirectTo!,
       positionalParamSegments,
@@ -390,7 +390,8 @@ export class Recognizer {
       injector,
     );
 
-    return this.applyRedirects.lineralizeSegments(route, newTree).pipe(
+    return newTree$.pipe(
+      switchMap((newTree) => this.applyRedirects.lineralizeSegments(route, newTree)),
       mergeMap((newSegments: UrlSegment[]) => {
         return this.processSegment(
           injector,

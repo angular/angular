@@ -7,7 +7,7 @@
  */
 
 import {Injector, runInInjectionContext, ɵRuntimeError as RuntimeError} from '@angular/core';
-import {Observable, of, throwError} from 'rxjs';
+import {Observable, of, throwError, map, from} from 'rxjs';
 
 import {RuntimeErrorCode} from './errors';
 import {NavigationCancellationCode} from './events';
@@ -88,7 +88,8 @@ export class ApplyRedirects {
     posParams: {[k: string]: UrlSegment},
     currentSnapshot: ActivatedRouteSnapshot,
     injector: Injector,
-  ): UrlTree {
+  ): Observable<UrlTree> {
+    let finalRedirect: Observable<string | UrlTree>;
     if (typeof redirectTo !== 'string') {
       const redirectToFn = redirectTo;
       const {queryParams, fragment, routeConfig, url, outlet, params, data, title} =
@@ -96,23 +97,38 @@ export class ApplyRedirects {
       const newRedirect = runInInjectionContext(injector, () =>
         redirectToFn({params, data, queryParams, fragment, routeConfig, url, outlet, title}),
       );
-      if (newRedirect instanceof UrlTree) {
-        throw new AbsoluteRedirect(newRedirect);
+
+      if (newRedirect instanceof Observable) {
+        finalRedirect = newRedirect;
+      } else if (newRedirect instanceof Promise) {
+        finalRedirect = from(newRedirect);
+      } else {
+        finalRedirect = of(newRedirect);
       }
-
-      redirectTo = newRedirect;
+    } else {
+      finalRedirect = of(redirectTo);
     }
 
-    const newTree = this.applyRedirectCreateUrlTree(
-      redirectTo,
-      this.urlSerializer.parse(redirectTo),
-      segments,
-      posParams,
+    return finalRedirect.pipe(
+      map((finalRedirect) => {
+        if (finalRedirect instanceof UrlTree) {
+          throw new AbsoluteRedirect(finalRedirect);
+        }
+        redirectTo = finalRedirect;
+
+        const newTree = this.applyRedirectCreateUrlTree(
+          redirectTo,
+          this.urlSerializer.parse(redirectTo),
+          segments,
+          posParams,
+        );
+
+        if (redirectTo[0] === '/') {
+          throw new AbsoluteRedirect(newTree);
+        }
+        return newTree;
+      }),
     );
-    if (redirectTo[0] === '/') {
-      throw new AbsoluteRedirect(newTree);
-    }
-    return newTree;
   }
 
   applyRedirectCreateUrlTree(
