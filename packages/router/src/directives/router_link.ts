@@ -35,6 +35,7 @@ import {ActivatedRoute} from '../router_state';
 import {Params} from '../shared';
 import {isUrlTree, UrlTree} from '../url_tree';
 import {RuntimeErrorCode} from '../errors';
+import {ROUTER_CONFIGURATION} from '../router_config';
 
 /**
  * @description
@@ -226,6 +227,7 @@ export class RouterLink implements OnChanges, OnDestroy {
   onChanges = new Subject<RouterLink>();
 
   private readonly applicationErrorHandler = inject(ɵINTERNAL_APPLICATION_ERROR_HANDLER);
+  private readonly options = inject(ROUTER_CONFIGURATION, {optional: true});
 
   constructor(
     private router: Router,
@@ -253,15 +255,35 @@ export class RouterLink implements OnChanges, OnDestroy {
         )
       );
 
-    if (this.isAnchorElement) {
-      this.subscription = router.events.subscribe((s: Event) => {
-        if (s instanceof NavigationEnd) {
-          this.updateHref();
-        }
-      });
+    if (!this.isAnchorElement) {
+      this.subscribeToNavigationEventsIfNecessary();
     } else {
       this.setTabIndexIfNotOnNativeEl('0');
     }
+  }
+
+  private subscribeToNavigationEventsIfNecessary() {
+    if (this.subscription !== undefined || !this.isAnchorElement) {
+      return;
+    }
+
+    // preserving fragment in router state
+    let createSubcription = this.preserveFragment;
+    // preserving or merging with query params in router state
+    const dependsOnRouterState = (handling?: QueryParamsHandling | null) =>
+      handling === 'merge' || handling === 'preserve';
+    createSubcription ||= dependsOnRouterState(this.queryParamsHandling);
+    createSubcription ||=
+      !this.queryParamsHandling && !dependsOnRouterState(this.options?.defaultQueryParamsHandling);
+    if (!createSubcription) {
+      return;
+    }
+
+    this.subscription = this.router.events.subscribe((s: Event) => {
+      if (s instanceof NavigationEnd) {
+        this.updateHref();
+      }
+    });
   }
 
   /**
@@ -318,6 +340,7 @@ export class RouterLink implements OnChanges, OnDestroy {
     }
     if (this.isAnchorElement) {
       this.updateHref();
+      this.subscribeToNavigationEventsIfNecessary();
     }
     // This is subscribed to by `RouterLinkActive` so that it knows to update when there are changes
     // to the RouterLinks it's tracking.
