@@ -802,7 +802,8 @@ export type RouterHashLocationFeature = RouterFeature<RouterFeatureKind.RouterHa
 class RouterLink implements OnChanges, OnDestroy {
     constructor(router: Router, route: ActivatedRoute, tabIndexAttribute: string | null | undefined, renderer: Renderer2, el: ElementRef, locationStrategy?: LocationStrategy | undefined);
     fragment?: string;
-    href: string | null;
+    get href(): string | null;
+    set href(value: string | null);
     info?: unknown;
     // (undocumented)
     static ngAcceptInputType_preserveFragment: unknown;
@@ -819,6 +820,8 @@ class RouterLink implements OnChanges, OnDestroy {
     preserveFragment: boolean;
     queryParams?: Params | null;
     queryParamsHandling?: QueryParamsHandling | null;
+    // (undocumented)
+    protected readonly reactiveHref: i0.WritableSignal<string | null>;
     relativeTo?: ActivatedRoute | null;
     replaceUrl: boolean;
     set routerLink(commandsOrUrlTree: any[] | string | UrlTree | null | undefined);
