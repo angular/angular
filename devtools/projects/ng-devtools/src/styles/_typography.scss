@@ -1,6 +1,6 @@
 /* Default values */
-$font-family: 'Inter', Arial, sans-serif;
-$font-family-mono: Menlo, monospace;
+$font-family: system-ui, sans-serif;
+$font-family-mono: monospace;
 $font-size: 0.75rem; // 12px
 
 @mixin fonts {
@@ -8,12 +8,6 @@ $font-size: 0.75rem; // 12px
     --font-family: #{$font-family};
     --font-family: #{$font-family-mono};
     --font-size: #{$font-size};
-  }
-
-  @font-face {
-    font-family: 'Inter';
-    font-weight: 100 900;
-    src: url('../assets/Inter.ttf') format('truetype');
   }
 }
 
@@ -49,14 +43,14 @@ $font-size: 0.75rem; // 12px
 %body-01 {
   font-family: $font-family;
   font-size: $font-size; // 12px
-  font-weight: 350;
+  font-weight: 400;
   line-height: 1rem;
   letter-spacing: normal;
 }
 
 %body-medium-01 {
   @extend %body-01;
-  font-weight: 450;
+  font-weight: 500;
 }
 
 %body-bold-01 {
