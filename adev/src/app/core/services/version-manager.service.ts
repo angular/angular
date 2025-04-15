@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable, computed, inject, signal} from '@angular/core';
-import {VERSIONS_CONFIG} from '../constants/versions';
-import {WINDOW} from '@angular/docs';
-import {CURRENT_MAJOR_VERSION} from '../providers/current-version';
+import {DOCUMENT, Injectable, VERSION, computed, inject} from '@angular/core';
+import {httpResource} from '@angular/common/http';
+
+import versionJson from '../../../assets/others/versions.json';
 
 export interface Version {
   displayName: string;
-  version: VersionMode;
   url: string;
 }
 
@@ -23,17 +22,22 @@ export const INITIAL_ADEV_DOCS_VERSION = 18;
 export const VERSION_PLACEHOLDER = '{{version}}';
 export const MODE_PLACEHOLDER = '{{prefix}}';
 
+type VersionJson = {version: string; url: string};
+
+/**
+ * This service will rely on 2 sources of data for the list of versions.
+ *
+ * To have an up-to-date list of versions, it will fetch a json from the deployed website.
+ * As fallback it will use a local json file that is bundled with the app.
+ */
 @Injectable({
   providedIn: 'root',
 })
 export class VersionManager {
-  private readonly currentMajorVersion = inject(CURRENT_MAJOR_VERSION);
-  private readonly window = inject(WINDOW);
+  private document = inject(DOCUMENT);
 
-  // Note: We can assume that if the URL starts with v{{version}}, it is documentation for previous versions of Angular.
-  // Based on URL we can indicate as well if it's rc or next Docs version.
-  private get currentVersionMode(): VersionMode {
-    const hostname = this.window.location.hostname;
+  get currentDocsVersionMode(): VersionMode {
+    const hostname = this.document.location.hostname;
     if (hostname.startsWith('v')) return 'deprecated';
     if (hostname.startsWith('rc')) return 'rc';
     if (hostname.startsWith('next')) return 'next';
@@ -41,89 +45,49 @@ export class VersionManager {
     return 'stable';
   }
 
-  versions = signal<Version[]>([
-    ...this.getRecentVersions(),
-    ...this.getAdevVersions(),
-    ...this.getAioVersions(),
-  ]);
-
-  currentDocsVersion = computed(() => {
-    return this.versions().find(
-      (version) => version.version.toString() === this.currentVersionMode,
-    );
+  private localVersions = (versionJson as VersionJson[]).map((v) => {
+    return {
+      displayName: v.version,
+      url: v.url,
+    };
   });
 
-  // List of Angular Docs versions which includes current version, next and rc.
-  private getRecentVersions(): Version[] {
-    return [
-      {
-        url: this.getAdevDocsUrl('next'),
-        displayName: `next`,
-        version: 'next',
-      },
-      // Note: 'rc' should not be visible for now
-      // {
-      //   url: this.getAdevDocsUrl('rc'),
-      //   displayName: `rc`,
-      //   version: 'rc',
-      // },
-      {
-        url: 'https://angular.dev/',
-        displayName: this.getVersion(this.currentMajorVersion),
-        version: this.currentVersionMode,
-      },
-    ];
-  }
+  versions = computed(() => {
+    return this.remoteVersions.hasValue() ? this.remoteVersions.value() : this.localVersions;
+  });
 
-  // List of Angular Docs versions hosted on angular.dev domain.
-  private getAdevVersions(): Version[] {
-    const adevVersions: Version[] = [];
-    for (
-      let version = this.currentMajorVersion - 1;
-      version >= INITIAL_ADEV_DOCS_VERSION;
-      version--
-    ) {
-      adevVersions.push({
-        url: this.getAdevDocsUrl(version),
-        displayName: this.getVersion(version),
-        version: 'deprecated',
+  remoteVersions = httpResource(() => 'https://angular.dev/assets/others/versions.json', {
+    parse: (json) => {
+      if (!Array.isArray(json)) {
+        throw new Error('Invalid version data');
+      }
+      return json.map((v: unknown) => {
+        if (
+          v === undefined ||
+          v === null ||
+          typeof v !== 'object' ||
+          !('version' in v) ||
+          !('url' in v) ||
+          typeof v.version !== 'string' ||
+          typeof v.url !== 'string'
+        ) {
+          throw new Error('Invalid version data');
+        }
+
+        return {
+          displayName: v.version,
+          url: v.url,
+        };
       });
+    },
+  });
+
+  currentDocsVersion = computed(() => {
+    // In devmode the version is 0, so we'll target next (which is first on the list)
+    if (VERSION.major === '0') {
+      return this.versions()[0];
     }
-    return adevVersions;
-  }
 
-  // List of Angular Docs versions hosted on angular.io domain.
-  private getAioVersions(): Version[] {
-    return VERSIONS_CONFIG.aioVersions.map((item) =>
-      this.mapToVersion(item as Pick<Version, 'url' | 'version'>),
-    );
-  }
-
-  private mapToVersion(value: Pick<Version, 'url' | 'version'>): Version {
-    return {
-      ...value,
-      displayName: this.getVersion(value.version),
-    };
-  }
-
-  private getVersion(versionMode: VersionMode): string {
-    if (versionMode === 'stable' || versionMode === 'deprecated') {
-      return `v${this.currentMajorVersion}`;
-    }
-    if (Number.isInteger(versionMode)) {
-      return `v${versionMode}`;
-    }
-    return versionMode.toString();
-  }
-
-  private getAdevDocsUrl(version: VersionMode): string {
-    const docsUrlPrefix = isNaN(Number(version)) ? `` : 'v';
-
-    return VERSIONS_CONFIG.aDevVersionsLinkPattern
-      .replace(MODE_PLACEHOLDER, docsUrlPrefix)
-      .replace(
-        VERSION_PLACEHOLDER,
-        `${version.toString() === 'stable' ? '' : `${version.toString()}.`}`,
-      );
-  }
+    return this.versions().find((v) => v.displayName.includes(VERSION.major)) ?? this.versions()[0];
+  });
 }
