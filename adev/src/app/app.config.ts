@@ -32,7 +32,6 @@ import {AnalyticsService} from './core/services/analytics/analytics.service';
 import {ContentLoader} from './core/services/content-loader.service';
 import {CustomErrorHandler} from './core/services/errors-handling/error-handler';
 import {ExampleContentLoader} from './core/services/example-content-loader.service';
-import {CURRENT_MAJOR_VERSION} from './core/providers/current-version';
 import {routerProviders} from './router_providers';
 
 export const appConfig: ApplicationConfig = {
@@ -43,10 +42,6 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withFetch()),
     provideEnvironmentInitializer(() => inject(AnalyticsService)),
     provideAlgoliaSearchClient(environment),
-    {
-      provide: CURRENT_MAJOR_VERSION,
-      useValue: Number(VERSION.major),
-    },
     {provide: ENVIRONMENT, useValue: environment},
     {provide: ErrorHandler, useClass: CustomErrorHandler},
     {provide: PREVIEWS_COMPONENTS, useValue: PREVIEWS_COMPONENTS_MAP},
