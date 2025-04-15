@@ -13,7 +13,6 @@ import {
   inject,
   OnInit,
   PLATFORM_ID,
-  input,
   signal,
 } from '@angular/core';
 import {NavigationEnd, NavigationSkipped, Router, RouterOutlet} from '@angular/router';
