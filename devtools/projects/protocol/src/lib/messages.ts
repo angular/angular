@@ -20,6 +20,7 @@ export interface DebugSignalGraphNode {
   id: string;
   kind: string;
   label?: string;
+  preview: Descriptor;
 }
 
 export interface DebugSignalGraphEdge {

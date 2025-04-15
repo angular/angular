@@ -16,148 +16,146 @@ interface SignalsGraphVisualizerConfig {
   nodeLabelSize: [width: number, height: number];
 }
 
-let arrowDefId = 0;
-
 export class SignalsGraphVisualizer {
   public config: SignalsGraphVisualizerConfig;
 
+  private linkg: d3.Selection<SVGGElement, unknown, null, undefined>;
+  private nodeg: d3.Selection<SVGGElement, unknown, null, undefined>;
+
+  private simulation: d3.Simulation<SimulationNode, undefined>;
+
+  zoomController: d3.ZoomBehavior<HTMLElement, unknown> | null = null;
+
+  // preserve nodes so that we can preserve x,y positions
+  private nodes: SimulationNode[] = [];
+
+  selected: string | null = null;
+
   constructor(
     private _containerElement: HTMLElement,
-    private _graphElement: HTMLElement,
-    {nodeSize = [200, 500], nodeLabelSize = [250, 60]}: Partial<SignalsGraphVisualizerConfig> = {},
+    {nodeSize = [100, 75], nodeLabelSize = [250, 60]}: Partial<SignalsGraphVisualizerConfig> = {},
   ) {
     this.config = {
       nodeSize,
       nodeLabelSize,
     };
-  }
 
-  private d3 = d3;
-
-  private simulation: d3.Simulation<SimulationNode, undefined> | null = null;
-
-  zoomController: d3.ZoomBehavior<HTMLElement, unknown> | null = null;
-
-  zoomScale(scale: number) {
-    if (this.zoomController) {
-      this.zoomController.scaleTo(
-        this.d3.select<HTMLElement, unknown>(this._containerElement),
-        scale,
-      );
-    }
-  }
-
-  snapToNode(node: SimulationNode, scale = 1): void {
-    const svg = this.d3.select(this._containerElement);
-    const halfWidth = this._containerElement.clientWidth / 2;
-    const halfHeight = this._containerElement.clientHeight / 2;
-    const t = d3.zoomIdentity.translate(halfWidth - node.y!, halfHeight - node.x!).scale(scale);
-    svg.transition().duration(500).call(this.zoomController!.transform, t);
-  }
-
-  get graphElement(): HTMLElement {
-    return this._graphElement;
-  }
-
-  getNodeById(id: string): DebugSignalGraphNode | null {
-    const selection = this.d3
-      .select<HTMLElement, DebugSignalGraphNode>(this._containerElement)
-      .select(`.node[data-id="${id}"]`);
-    if (selection.empty()) {
-      return null;
-    }
-    return selection.datum();
-  }
-
-  cleanup(): void {
-    this.d3.select(this._graphElement).selectAll('*').remove();
-    this.simulation?.stop();
-    this.simulation = null;
-  }
-
-  render(injectorGraph: DebugSignalGraph): void {
-    // cleanup old graph
-    this.cleanup();
-
-    const svg = this.d3.select(this._containerElement);
-    const g = this.d3.select<HTMLElement, DebugSignalGraphNode>(this._graphElement);
-
+    const svg = d3.select(this._containerElement);
     svg.attr('height', '100%').attr('width', '100%');
+    const g = svg.append('g');
 
-    const width = this._containerElement.clientWidth;
-    const height = this._containerElement.clientHeight;
+    this.linkg = g.append('g').attr('stroke', '#999');
 
-    this.zoomController = this.d3.zoom<HTMLElement, unknown>().scaleExtent([0.1, 2]);
-    this.zoomController.on('start zoom end', (e: {transform: number}) => {
-      g.attr('transform', e.transform);
-    });
-    svg.call(this.zoomController);
-
-    const nodes = injectorGraph.nodes.map<SimulationNode>((x) => x);
-    const links = injectorGraph.edges.map((e) => ({
-      source: nodes[e.producer],
-      target: nodes[e.consumer],
-    }));
-
-    const linkG = g.append('g').attr('stroke', '#999');
-
-    linkG
+    this.linkg
       .append('animate')
       .attr('attributeName', 'stroke-dashoffset')
       .attr('dur', '1s')
       .attr('values', '0;20')
       .attr('repeatCount', 'indefinite');
 
-    const link = linkG
-      .selectAll()
+    this.nodeg = g.append('g').attr('fill', '#fff').attr('stroke', '#555');
+
+    this.zoomController = d3.zoom<HTMLElement, unknown>().scaleExtent([0.1, 2]);
+    this.zoomController.on('start zoom end', (e: {transform: number}) => {
+      g.attr('transform', e.transform);
+    });
+
+    const width = this._containerElement.clientWidth;
+    const height = this._containerElement.clientHeight;
+
+    this.simulation = d3
+      .forceSimulation<SimulationNode>(this.nodes)
+      .force('charge', d3.forceManyBody().strength(-400))
+      .force('center', d3.forceCenter(width / 2, height / 2));
+
+    svg.call(this.zoomController);
+  }
+
+  zoomScale(scale: number) {
+    if (this.zoomController) {
+      const svg = d3.select(this._containerElement);
+      this.zoomController.scaleTo(svg, scale);
+    }
+  }
+
+  cleanup(): void {
+    this.simulation.force('link', null).nodes([]).on('tick', null).stop();
+  }
+
+  setSelected(id: string) {
+    this.selected = id;
+    this.nodeg
+      .selectAll('foreignObject')
+      .select('div')
+      .classed('selected', (d) => (d as SimulationNode).id == this.selected);
+  }
+  render(injectorGraph: DebugSignalGraph): void {
+    const oldNodes = this.nodes;
+    this.nodes = injectorGraph.nodes.map((n) => {
+      const prev = oldNodes.find((x) => x.id == n.id) ?? {};
+      return {
+        ...prev, // preserve x,y,vx,vy,fx,fy
+        ...n,
+      };
+    });
+
+    const links = injectorGraph.edges.map((e) => ({
+      source: this.nodes[e.producer],
+      target: this.nodes[e.consumer],
+    }));
+
+    const link = this.linkg
+      .selectAll('line')
       .data(links)
       .join('line')
       .attr('class', 'link')
       .attr('stroke-width', 2)
       .attr('stroke-dasharray', '10');
 
-    const node = g
-      .append('g')
-      .attr('fill', '#fff')
-      .attr('stroke', '#555')
-      .selectAll()
-      .data(nodes)
-      .join('g');
+    const node = this.nodeg
+      .selectAll('foreignObject')
+      .data(this.nodes)
+      .join((e) => {
+        const obj = e.append('foreignObject');
+        const outer = obj
+          .append('xhtml:div')
+          .on('click', (e, x) => this.setSelected(x.id))
+          .attr(
+            'class',
+            (x) => `node-label kind-${x.kind} ${x.id == this.selected ? 'selected' : ''}`,
+          )
+        outer.append('div')
+          .classed('header', true)
+          .text((x) => x.label??'Unnamed');
+        outer.append('div').classed('body', true)
+          .text(x => x.preview.preview)
+        return obj;
+      })
+      .attr('width', this.config.nodeSize[0])
+      .attr('height', this.config.nodeSize[1]);
 
-    node.append('rect').attr('width', 100).attr('height', 100);
-
-    const nodePreview = node
-      .append('foreignObject')
-      .attr('width', 100)
-      .attr('height', 100)
-      .attr('x', 0)
-      .attr('y', 0)
-      .append('xhtml:div')
-      .attr('class', 'node-label');
-
-    nodePreview.append('div').text((x) => x.label!);
-
-    this.simulation = d3
-      .forceSimulation<SimulationNode>(nodes)
-      .force('link', d3.forceLink(links).distance(200))
-      .force('charge', d3.forceManyBody().strength(-400))
-      .force('center', d3.forceCenter(width / 2, height / 2))
-      .on('tick', ticked);
-
-    function ticked() {
+    const ticked = () => {
       link
         .attr('x1', (d) => d.source.x!)
         .attr('y1', (d) => d.source.y!)
         .attr('x2', (d) => d.target.x!)
         .attr('y2', (d) => d.target.y!);
-      node.attr('transform', (d) => `translate(${(d.x ?? 0) - 50},${(d.y ?? 0) - 50})`);
-    }
+      node
+        .attr('x', (d) => (d.x ?? 0) - this.config.nodeSize[0] / 2)
+        .attr('y', (d) => (d.y ?? 0) - this.config.nodeSize[1] / 2);
+    };
+    this.simulation
+      .nodes(this.nodes)
+      .force('link', d3.forceLink(links).distance(125))
+      .on('tick', ticked)
+      .alpha(1)
+      .restart();
   }
 
   resize() {
     const width = this._containerElement.clientWidth;
     const height = this._containerElement.clientHeight;
-    this.simulation?.force('center', d3.forceCenter(width / 2, height / 2));
-    this.simulation?.restart();
+    this.simulation.force('center', d3.forceCenter(width / 2, height / 2));
+    this.simulation.restart();
   }
 }

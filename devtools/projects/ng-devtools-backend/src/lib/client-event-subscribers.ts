@@ -53,7 +53,7 @@ import {ComponentTreeNode} from './interfaces';
 import {parseRoutes} from './router-tree';
 import {ngDebugClient, ngDebugDependencyInjectionApiIsSupported} from './ng-debug-api/ng-debug-api';
 import {setConsoleReference} from './set-console-reference';
-import {serializeDirectiveState} from './state-serializer/state-serializer';
+import {serializeDirectiveState, serializeValue} from './state-serializer/state-serializer';
 import {runOutsideAngular, unwrapSignal} from './utils';
 import {DirectiveForestHooks} from './hooks/hooks';
 
@@ -556,8 +556,9 @@ const getSignalGraphCallback = (messageBus: MessageBus<Events>) => (element: Ele
         id: node.id,
         kind: node.kind,
         label: node.label,
+        preview: serializeValue(node.value),
       };
     })
-    messageBus.emit('latestSignalGraph', [graph]);
+    messageBus.emit('latestSignalGraph', [{nodes, edges: graph.edges}]);
   }
 };

@@ -9,7 +9,7 @@ import {
   viewChild,
 } from '@angular/core';
 import {SignalsGraphVisualizer} from './signals-visualizer';
-import {DebugSignalGraph, DirectivePosition, ElementPosition, Events, MessageBus} from 'protocol';
+import {DirectivePosition, ElementPosition, Events, MessageBus} from 'protocol';
 
 @Component({
   templateUrl: './signals-tab.component.html',
@@ -19,7 +19,6 @@ import {DebugSignalGraph, DirectivePosition, ElementPosition, Events, MessageBus
 })
 export class SignalsTabComponent {
   private svgComponent = viewChild.required<ElementRef>('component');
-  private groupComponent = viewChild.required<ElementRef>('group');
 
   public currentElement = input<ElementPosition>();
 
@@ -50,12 +49,12 @@ export class SignalsTabComponent {
     effect(() => {
       this._messageBus.emit('getSignalGraph', [this.currentElement()]);
     });
+    this._messageBus.on('componentTreeDirty', () => {
+      this._messageBus.emit('getSignalGraph', [this.currentElement()]);
+    });
   }
 
   setUpSignalsVisualizer() {
-    this.signalsVisualizer = new SignalsGraphVisualizer(
-      this.svgComponent().nativeElement,
-      this.groupComponent().nativeElement,
-    );
+    this.signalsVisualizer = new SignalsGraphVisualizer(this.svgComponent().nativeElement);
   }
 }
