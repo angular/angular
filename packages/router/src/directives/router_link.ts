@@ -20,9 +20,11 @@ import {
   Renderer2,
   ɵRuntimeError as RuntimeError,
   SimpleChanges,
-  ɵɵsanitizeUrlOrResourceUrl,
   ɵINTERNAL_APPLICATION_ERROR_HANDLER,
   inject,
+  signal,
+  untracked,
+  HostAttributeToken,
 } from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
 
@@ -142,14 +144,25 @@ import {RuntimeErrorCode} from '../errors';
  */
 @Directive({
   selector: '[routerLink]',
+  host: {
+    '[attr.href]': 'reactiveHref()',
+  },
 })
 export class RouterLink implements OnChanges, OnDestroy {
+  /** @nodoc */
+  protected readonly reactiveHref = signal<string | null>(null);
   /**
    * Represents an `href` attribute value applied to a host element,
    * when a host element is an `<a>`/`<area>` tag or a compatible custom element.
    * For other tags, the value is `null`.
    */
-  href: string | null = null;
+  get href() {
+    return untracked(this.reactiveHref);
+  }
+  /** @deprecated */
+  set href(value: string | null) {
+    this.reactiveHref.set(value);
+  }
 
   /**
    * Represents the `target` attribute on a host element.
@@ -222,6 +235,8 @@ export class RouterLink implements OnChanges, OnDestroy {
     private readonly el: ElementRef,
     private locationStrategy?: LocationStrategy,
   ) {
+    // Set the initial href value to whatever exists on the host element already
+    this.reactiveHref.set(inject(new HostAttributeToken('href'), {optional: true}));
     const tagName = el.nativeElement.tagName?.toLowerCase();
     this.isAnchorElement =
       tagName === 'a' ||
@@ -392,30 +407,11 @@ export class RouterLink implements OnChanges, OnDestroy {
 
   private updateHref(): void {
     const urlTree = this.urlTree;
-    this.href =
+    this.reactiveHref.set(
       urlTree !== null && this.locationStrategy
-        ? this.locationStrategy?.prepareExternalUrl(this.router.serializeUrl(urlTree))
-        : null;
-
-    const sanitizedValue =
-      this.href === null
-        ? null
-        : // This class represents a directive that can be added to both `<a>` elements,
-          // as well as other elements. As a result, we can't define security context at
-          // compile time. So the security context is deferred to runtime.
-          // The `ɵɵsanitizeUrlOrResourceUrl` selects the necessary sanitizer function
-          // based on the tag and property names. The logic mimics the one from
-          // `packages/compiler/src/schema/dom_security_schema.ts`, which is used at compile time.
-          //
-          // Note: we should investigate whether we can switch to using `@HostBinding('attr.href')`
-          // instead of applying a value via a renderer, after a final merge of the
-          // `RouterLinkWithHref` directive.
-          ɵɵsanitizeUrlOrResourceUrl(
-            this.href,
-            this.el.nativeElement.tagName.toLowerCase(),
-            'href',
-          );
-    this.applyAttributeValue('href', sanitizedValue);
+        ? (this.locationStrategy?.prepareExternalUrl(this.router.serializeUrl(urlTree)) ?? '')
+        : null,
+    );
   }
 
   private applyAttributeValue(attrName: string, attrValue: string | null) {
