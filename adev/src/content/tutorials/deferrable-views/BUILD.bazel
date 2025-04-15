@@ -4,7 +4,14 @@ package(default_visibility = ["//adev:__subpackages__"])
 
 generate_guides(
     name = "deferrable-views-guides",
-    srcs = glob(["**/*.md"]),
+    srcs = glob(
+        [
+            "**/*.md",
+        ],
+        exclude = [
+            "**/node_modules/**/*.md",
+        ],
+    ),
 )
 
 filegroup(
