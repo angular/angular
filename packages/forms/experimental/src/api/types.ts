@@ -7,7 +7,7 @@
  */
 
 import {Signal, WritableSignal} from '@angular/core';
-import {MetadataKey} from '../logic_node';
+import {MetadataKey} from '@angular/forms/experimental/src/api/metadata';
 
 /**
  * Symbol used to retain generic type information when it would otherwise be lost.
@@ -137,6 +137,12 @@ export type Schema<T> = (p: FieldPath<T>) => void;
  */
 export type LogicFn<TValue, TReturn> = (ctx: FieldContext<TValue>) => TReturn;
 
+/**
+ * A Validator is a function that
+ *  takes a `logic argument` and returns a validation result.
+ *
+ *  @template T Value type
+ */
 export type Validator<T> = LogicFn<T, ValidationResult>;
 /**
  * An object containing context about the field a given logic function is bound to.

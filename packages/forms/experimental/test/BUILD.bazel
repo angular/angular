@@ -25,6 +25,9 @@ ts_library(
     ],
 )
 
+# To run this:
+# yarn bazel test //packages/forms/experimental/test:test_web_chromium
+
 karma_web_test_suite(
     name = "test_web",
     tags = [

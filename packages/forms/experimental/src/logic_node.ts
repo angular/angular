@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {MetadataKey} from './api/metadata';
 import type {FieldContext, FormError, LogicFn} from './api/types';
 
 /**
@@ -115,14 +116,3 @@ class MetadataMergeLogic<T> extends AbstractLogic<T> {
     return this.fns.reduce((prev, fn) => this.key.merge(prev, fn(arg)), this.key.defaultValue);
   }
 }
-
-export class MetadataKey<TValue> {
-  constructor(
-    readonly defaultValue: TValue,
-    readonly merge: (prev: TValue, next: TValue) => TValue,
-  ) {}
-}
-
-export const REQUIRED = new MetadataKey(false, (prev, next) => prev || next);
-
-export const DISABLED_REASON = new MetadataKey('', (prev, next) => next || prev);

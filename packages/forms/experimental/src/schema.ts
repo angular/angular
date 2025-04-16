@@ -27,6 +27,22 @@ export class SchemaImpl {
 
 export function assertPathIsCurrent(path: FieldPath<unknown>): void {
   if (currentKey !== FieldPathNode.extractFromPath(path).key) {
-    throw new Error(`Wrong path!`);
+    throw new Error(`🚨👮 Wrong path! 👮🚨
+
+This error happens when using a path from outside of schema:
+
+applyWhen(
+      path,
+      condition,
+      (pathWhenTrue /* <-- Use this, not path  */) => {
+        // ✅ This works
+        applyEach(pathWhenTrue.friends, friendSchema);
+        // 🚨 👮 🚓  You have to use nested path
+        // This produces a this error:
+        applyEach(path /*has to be pathWhenTrue*/.friends, friendSchema);
+      }
+    );
+
+    `);
   }
 }
