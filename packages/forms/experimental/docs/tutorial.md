@@ -8,19 +8,9 @@ contacts:
 ## 🚧🚧 This design is still work in progress
 > This tutorial assumes you are familiar with Angular and have an Angular app running. You could create a new one using [boq angular](http://go/boq-angular-new)
  
-The following things are not yet supported:
+We're still in early stages, but wanted to get feedback as early as possible.
 
-* Asynchronous validation
-* Tracking items in arrays and moving items across arrays
-* Recursive logic
-* Validation on touch
-* Advanced metadata use cases (custom/user-defined/access in validators)
-* Dirty/Pristine state
-* Dynamic objects/tuples
-* Interop with Reactive/Template forms
-* Interop with custom schema libraries
-* Resetting the form
-* Typed errors
+Consult [The testing doc](https://docs.google.com/document/d/1zxMQGCOrVr6LuDkCCUrpfDl7A6A21y9_cPtpAMyxQy4/edit?resourcekey=0-WBlxniv_JZ7B7GHDprxeGA&tab=t.0) for the list of things that are not yet implemented. 
 
 
 ##  The feedback form
