@@ -127,9 +127,8 @@ export class PreconnectLinkChecker {
 
   private queryPreconnectLinks(): Set<string> {
     const preconnectUrls = new Set<string>();
-    const selector = 'link[rel=preconnect]';
-    const links: HTMLLinkElement[] = Array.from(this.document.querySelectorAll(selector));
-    for (let link of links) {
+    const links = this.document.querySelectorAll<HTMLLinkElement>('link[rel=preconnect]');
+    for (const link of links) {
       const url = getUrl(link.href, this.window!);
       preconnectUrls.add(url.origin);
     }
