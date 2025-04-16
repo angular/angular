@@ -17,3 +17,4 @@ export * from './src/api/structure';
 export * from './src/api/logic';
 export * from './src/api/types';
 export * from './src/api/control';
+export * from './src/api/metadata';
