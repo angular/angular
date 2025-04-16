@@ -340,8 +340,6 @@ export function withI18nSupport(): Provider[] {
  * Returns a set of providers required to setup support for incremental hydration.
  * Requires hydration to be enabled separately.
  * Enabling incremental hydration also enables event replay for the entire app.
- *
- * @developerPreview
  */
 export function withIncrementalHydration(): Provider[] {
   const providers: Provider[] = [

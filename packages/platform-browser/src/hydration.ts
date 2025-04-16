@@ -133,7 +133,6 @@ export function withEventReplay(): HydrationFeature<HydrationFeatureKind.EventRe
  *   providers: [provideClientHydration(withIncrementalHydration())]
  * });
  * ```
- * @experimental
  * @publicApi
  * @see {@link provideClientHydration}
  */
