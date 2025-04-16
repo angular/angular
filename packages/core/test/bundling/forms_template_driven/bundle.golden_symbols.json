@@ -77,6 +77,8 @@
   "EventManagerPlugin",
   "FormControl",
   "FormGroup",
+  "FormResetEvent",
+  "FormSubmittedEvent",
   "FormsExampleModule",
   "FormsModule",
   "INJECTOR",
