@@ -37,13 +37,23 @@
             </mat-icon>
           </button>
         }
-        <span class="element-name" [class.angular-element]="isElement(node)">{{ node.name }}</span>
+        <span
+          class="element-name"
+          [class.non-element]="!node.original.resolutionPath"
+          [class.angular-element]="node.original.component?.isElement"
+        >
+          {{ node.name }}
+        </span>
 
         @if (node.directives) {
           <span class="dir-names">[{{ node.directives }}]</span>
         }
-        @if (isSelected(node)) {
+        @if (isSelected(node) && hydration) {
           <span class="console-reference"> == $ng0 </span>
+        }
+
+        @if (node.defer) {
+          <span class="on-push">{{node.defer.triggers}}</span>
         }
 
         @if (node.onPush) {
@@ -54,15 +64,19 @@
           @case ('hydrated') {
             <mat-icon matTooltip="Hydrated" class="hydration">water_drop</mat-icon>
           }
+          @case ('dehydrated') {
+            <mat-icon matTooltip="Dehydrated" class="hydration skipped">pending</mat-icon>
+          }
+
           @case ('skipped') {
-            <mat-icon matTooltip="Hydration skipped" class="hydration skipped"
-              >invert_colors_off</mat-icon
-            >
+            <mat-icon matTooltip="Hydration skipped" class="hydration skipped">
+              invert_colors_off
+            </mat-icon>
           }
           @case ('mismatched') {
-            <mat-icon matTooltip="Hydration mismatch" class="hydration mismatched"
-              >error_outline</mat-icon
-            >
+            <mat-icon matTooltip="Hydration mismatch" class="hydration mismatched">
+              error_outline
+            </mat-icon>
           }
         }
       </div>

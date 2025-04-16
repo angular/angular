@@ -15,6 +15,10 @@
     white-space: nowrap;
     text-overflow: ellipsis;
 
+    .non-element {
+      color: var(--color-tree-node-non-element-name);
+    }
+
     .tree-node-info {
       display: flex;
 

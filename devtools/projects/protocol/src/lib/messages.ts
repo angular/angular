@@ -29,21 +29,27 @@ export interface ComponentType {
 
 export type HydrationStatus =
   | null
-  | {status: 'hydrated' | 'skipped'}
+  | {status: 'hydrated' | 'skipped' | 'dehydrated'}
   | {
       status: 'mismatched';
       expectedNodeDetails: string | null;
       actualNodeDetails: string | null;
     };
 
+export type DeferInfo = {
+  id: string;
+  triggers: string[];
+} | null;
+
 export interface DevToolsNode<DirType = DirectiveType, CmpType = ComponentType> {
   element: string;
   directives: DirType[];
   component: CmpType | null;
   children: DevToolsNode<DirType, CmpType>[];
-  nativeElement?: Node;
+  nativeElement?: HTMLElement;
   resolutionPath?: SerializedInjector[];
   hydration: HydrationStatus;
+  defer: DeferInfo;
   onPush?: boolean;
 }
 

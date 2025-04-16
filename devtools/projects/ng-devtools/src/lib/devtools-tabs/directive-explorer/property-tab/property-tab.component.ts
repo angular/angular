@@ -20,7 +20,7 @@ import {PropertyTabHeaderComponent} from './property-tab-header.component';
   imports: [PropertyTabHeaderComponent, PropertyTabBodyComponent],
 })
 export class PropertyTabComponent {
-  readonly currentSelectedElement = input.required<IndexedNode>();
+  readonly currentSelectedElement = input.required<IndexedNode | null>();
   readonly viewSource = output<string>();
   readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
 }

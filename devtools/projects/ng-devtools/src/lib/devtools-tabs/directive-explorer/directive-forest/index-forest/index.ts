@@ -11,6 +11,9 @@ import {DevToolsNode, ElementPosition} from 'protocol';
 export interface IndexedNode extends DevToolsNode {
   position: ElementPosition;
   children: IndexedNode[];
+
+  // native elements are not serializable and thus not accessible in this structure
+  nativeElement?: never;
 }
 
 const indexTree = (
@@ -26,7 +29,9 @@ const indexTree = (
     directives: node.directives.map((d, i) => ({name: d.name, id: d.id})),
     children: node.children.map((n, i) => indexTree(n, i, position)),
     hydration: node.hydration,
+    defer: node.defer,
     onPush: node.onPush,
+    resolutionPath: node.resolutionPath,
   };
 };
 
