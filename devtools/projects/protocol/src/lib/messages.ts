@@ -43,6 +43,11 @@ export interface DebugSignalGraph {
   edges: DebugSignalGraphEdge[];
 }
 
+export interface SignalNodePosition{
+  element: ElementPosition;
+  signalId: string;
+}
+
 export interface DirectiveType {
   name: string;
   id: number;
@@ -314,8 +319,11 @@ export interface Events {
   inspectorStart: () => void;
   inspectorEnd: () => void;
 
-  getSignalGraph: (query: any) => void;
+  getSignalGraph: (query: ElementPosition) => void;
   latestSignalGraph: (graph: DebugSignalGraph) => void;
+  
+  getSignalNestedProperties: (position: SignalNodePosition, path: string[]) => void;
+  signalNestedProperties: (position: SignalNodePosition, data: Properties, path: string[]) => void;
 
   getNestedProperties: (position: DirectivePosition, path: string[]) => void;
   nestedProperties: (position: DirectivePosition, data: Properties, path: string[]) => void;

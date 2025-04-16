@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {effect, Signal, WritableSignal} from '@angular/core';
 import * as d3 from 'd3';
 import {DebugSignalGraph, DebugSignalGraphNode} from 'protocol';
 
@@ -29,10 +30,9 @@ export class SignalsGraphVisualizer {
   // preserve nodes so that we can preserve x,y positions
   private nodes: SimulationNode[] = [];
 
-  selected: string | null = null;
-
   constructor(
     private _containerElement: HTMLElement,
+    private _selected: WritableSignal<string | null>,
     {nodeSize = [100, 75], nodeLabelSize = [250, 60]}: Partial<SignalsGraphVisualizerConfig> = {},
   ) {
     this.config = {
@@ -71,6 +71,13 @@ export class SignalsGraphVisualizer {
     svg.call(this.zoomController);
   }
 
+  setSelected(selected: string | null) {
+    this.nodeg
+      .selectAll('foreignObject')
+      .select('div')
+      .classed('selected', (d) => (d as SimulationNode).id == selected);
+  }
+
   zoomScale(scale: number) {
     if (this.zoomController) {
       const svg = d3.select(this._containerElement);
@@ -82,13 +89,6 @@ export class SignalsGraphVisualizer {
     this.simulation.force('link', null).nodes([]).on('tick', null).stop();
   }
 
-  setSelected(id: string) {
-    this.selected = id;
-    this.nodeg
-      .selectAll('foreignObject')
-      .select('div')
-      .classed('selected', (d) => (d as SimulationNode).id == this.selected);
-  }
   render(injectorGraph: DebugSignalGraph): void {
     const oldNodes = this.nodes;
     this.nodes = injectorGraph.nodes.map((n) => {
@@ -112,6 +112,7 @@ export class SignalsGraphVisualizer {
       .attr('stroke-width', 2)
       .attr('stroke-dasharray', '10');
 
+    const selected = this._selected();
     const node = this.nodeg
       .selectAll('foreignObject')
       .data(this.nodes)
@@ -119,16 +120,16 @@ export class SignalsGraphVisualizer {
         const obj = e.append('foreignObject');
         const outer = obj
           .append('xhtml:div')
-          .on('click', (e, x) => this.setSelected(x.id))
-          .attr(
-            'class',
-            (x) => `node-label kind-${x.kind} ${x.id == this.selected ? 'selected' : ''}`,
-          )
-        outer.append('div')
+          .on('click', (e, x) => this._selected.set(x.id))
+          .attr('class', (x) => `node-label kind-${x.kind} ${x.id == selected ? 'selected' : ''}`);
+        outer
+          .append('div')
           .classed('header', true)
-          .text((x) => x.label??'Unnamed');
-        outer.append('div').classed('body', true)
-          .text(x => x.preview.preview)
+          .text((x) => x.label ?? 'Unnamed');
+        outer
+          .append('div')
+          .classed('body', true)
+          .text((x) => x.preview.preview);
         return obj;
       })
       .attr('width', this.config.nodeSize[0])

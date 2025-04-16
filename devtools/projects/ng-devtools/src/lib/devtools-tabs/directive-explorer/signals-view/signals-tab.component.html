@@ -1,4 +1,12 @@
 <svg #component></svg>
+@if (selectedNode()) {
+  <div class="overlay">
+    <div>{{selectedNode()!.label}}</div>
+    <div>
+      <ng-signals-value-tree [dataSource]="dataSource()!" [treeControl]="treeControl()" />
+    </div>
+  </div>
+}
 @if (empty()) {
   <div class="no-signals">No signals in this component</div>
 }

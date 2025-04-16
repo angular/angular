@@ -1,6 +1,7 @@
 import {
   afterNextRender,
   Component,
+  computed,
   effect,
   ElementRef,
   inject,
@@ -9,13 +10,18 @@ import {
   viewChild,
 } from '@angular/core';
 import {SignalsGraphVisualizer} from './signals-visualizer';
-import {DirectivePosition, ElementPosition, Events, MessageBus} from 'protocol';
+import {DebugSignalGraph, ElementPosition, Events, MessageBus, PropType} from 'protocol';
+import {FlatNode, Property, SignalsValueTreeComponent} from './signals-value-tree.component';
+import {FlatTreeControl} from '@angular/cdk/tree';
+import {arrayifyProps, SignalDataSource} from './signal-data-source';
+import {DataSource} from '@angular/cdk/collections';
+import {MatTreeFlattener} from '@angular/material/tree';
 
 @Component({
   templateUrl: './signals-tab.component.html',
   selector: 'ng-signals-tab',
   styleUrl: './signals-tab.component.scss',
-  imports: [],
+  imports: [SignalsValueTreeComponent],
 })
 export class SignalsTabComponent {
   private svgComponent = viewChild.required<ElementRef>('component');
@@ -26,7 +32,63 @@ export class SignalsTabComponent {
 
   private readonly _messageBus = inject<MessageBus<Events>>(MessageBus);
 
-  protected empty = signal(false);
+  private signalGraph = signal<DebugSignalGraph | null>(null);
+
+  private selected = signal<string | null>(null);
+
+  protected selectedNode = computed(() => {
+    const signalGraph = this.signalGraph();
+    if (!signalGraph) {
+      return undefined;
+    }
+    const selected = this.selected();
+    if (!selected) {
+      return undefined;
+    }
+    return signalGraph.nodes.find((node) => node.id === selected);
+  });
+
+  protected dataSource = computed<DataSource<FlatNode> | null>(() => {
+    const selected = this.selected();
+    const selectedNode = this.selectedNode();
+    if (!selectedNode || !selected) {
+      return null;
+    }
+
+    let out = new SignalDataSource(
+      selectedNode.preview,
+      new MatTreeFlattener<Property, FlatNode, FlatNode>(
+        (node, level) => ({
+          expandable: node.descriptor.expandable,
+          prop: node,
+          level,
+        }),
+        (node) => node.level,
+        (node) => node.expandable,
+        (prop) => {
+          const descriptor = prop.descriptor;
+          if (descriptor.type === PropType.Object || descriptor.type === PropType.Array) {
+            return arrayifyProps(descriptor.value || {}, prop);
+          }
+          return;
+        },
+      ),
+      this.treeControl(),
+      {element: this.currentElement()!, signalId: selected},
+      this._messageBus,
+    );
+
+    return out;
+  });
+
+  protected treeControl = computed<FlatTreeControl<FlatNode>>(() => {
+    return new FlatTreeControl(
+      (node) => node.level,
+      (node) => node.expandable,
+    );
+  });
+
+  protected empty = computed(() => !(this.signalGraph()?.nodes.length! > 0));
 
   constructor() {
     afterNextRender({
@@ -42,19 +104,35 @@ export class SignalsTabComponent {
       this.signalsVisualizer.resize();
     };
     this._messageBus.on('latestSignalGraph', (e) => {
-      this.empty.set(!(e.nodes?.length > 0));
+      this.signalGraph.set(e);
       this.signalsVisualizer.render(e);
     });
 
     effect(() => {
-      this._messageBus.emit('getSignalGraph', [this.currentElement()]);
+      const currentElement = this.currentElement();
+      if (currentElement) {
+        this._messageBus.emit('getSignalGraph', [currentElement]);
+      }
+      this.selected.set(null);
     });
     this._messageBus.on('componentTreeDirty', () => {
-      this._messageBus.emit('getSignalGraph', [this.currentElement()]);
+      const currentElement = this.currentElement();
+      if (currentElement) {
+        this._messageBus.emit('getSignalGraph', [currentElement]);
+      }
+    });
+
+    effect(() => {
+      const selected = this.selected();
+      // this will do nothing on the first run
+      this.signalsVisualizer?.setSelected(selected);
     });
   }
 
   setUpSignalsVisualizer() {
-    this.signalsVisualizer = new SignalsGraphVisualizer(this.svgComponent().nativeElement);
+    this.signalsVisualizer = new SignalsGraphVisualizer(
+      this.svgComponent().nativeElement,
+      this.selected,
+    );
   }
 }

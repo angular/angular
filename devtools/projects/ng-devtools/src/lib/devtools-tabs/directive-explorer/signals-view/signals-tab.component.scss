@@ -62,6 +62,13 @@
       }
     }
   }
+  .overlay {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    border: 1px solid black;
+    border-radius: 8px;
+  }
   .no-signals {
     position: absolute;
     top: 0;

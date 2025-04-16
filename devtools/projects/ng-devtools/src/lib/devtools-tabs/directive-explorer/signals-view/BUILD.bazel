@@ -26,11 +26,15 @@ ng_module(
     srcs = [
         "signals-tab.component.ts",
         "signals-visualizer.ts",
+        "signals-value-tree.component.ts",
+        "signal-data-source.ts",
     ],
     angular_assets = [
         "signals-tab.component.html",
+        "signals-value-tree.component.html",
     ] + _STYLE_LABELS,
     deps = [
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/diffing",
         "//devtools/projects/protocol",
         "//packages/common",
         "//packages/core",
