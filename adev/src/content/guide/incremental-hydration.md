@@ -1,7 +1,5 @@
 # Incremental Hydration
 
-TIP: Incremental hydration is currently in [developer preview](/reference/releases#developer-preview).
-
 **Incremental hydration** is an advanced type of [hydration](guide/hydration) that can leave sections of your application dehydrated and _incrementally_ trigger hydration of those sections as they are needed.
 
 ## Why use incremental hydration?
