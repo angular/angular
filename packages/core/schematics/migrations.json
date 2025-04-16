@@ -20,6 +20,11 @@
       "version": "20.0.0",
       "description": "Moves imports of `DOCUMENT` from `@angular/common` to `@angular/core`",
       "factory": "./bundles/document-core#migrate"
+    },
+    "http-xhr-backend": {
+      "version": "19.0.0",
+      "description": "Adds 'withXhr' to 'provideHttpClient' function calls when the 'HttpXhrBackend' is used. For more information see: https://angular.dev/api/common/http/withXhr",
+      "factory": "./bundles/http-xhr-backend#migrate"
     }
   }
 }
