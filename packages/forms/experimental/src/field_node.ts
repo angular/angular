@@ -16,9 +16,10 @@ import type {
   SubmittedStatus,
   ValidationResult,
 } from './api/types';
-import {FieldLogicNode, MetadataKey} from './logic_node';
+import {FieldLogicNode} from './logic_node';
 import {FieldPathNode} from './path_node';
 import {deepSignal} from './util/deep_signal';
+import {MetadataKey} from './api/metadata';
 
 /**
  * Internal node in the form graph for a given field.

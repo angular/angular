@@ -9,6 +9,7 @@ contacts:
 > This tutorial assumes you are familiar with Angular and have an Angular app running. You could create a new one using [boq angular](http://go/boq-angular-new)
  
 The following things are not yet supported:
+
 * Asynchronous validation
 * Tracking items in arrays and moving items across arrays
 * Recursive logic
@@ -20,8 +21,6 @@ The following things are not yet supported:
 * Interop with custom schema libraries
 * Resetting the form
 * Typed errors
-
-
 
 
 ##  The feedback form
@@ -399,6 +398,37 @@ export class FeedbackComponent {
 </mat-form-field>
 ```
 
+### Moving out the confirmation password validator
+Let's also take a look, what would it take to the confirmation validator outside of the form.
+
+To do this we'd create a constructor function, which would take a path with the password field.
+
+```typescript
+export function confirmationPasswordValidator(
+  path: FieldPath<{password: string}>,
+): Validator<string> {
+  return ({value, resolve}) => {
+    return value() === resolve(path.password).$state.value()
+      ? undefined
+      : {kind: 'confirmationPassword'};
+  };
+}
+```
+
+Now we can add it by passing relevant part of the path.
+```typescript
+// feedback.ts
+/* ... */
+export class FeedbackComponent {
+  /* ... */
+  readonly form = form(this.data, (path) => {
+    /* ... */
+    validate(path.confirmationPassword, confirmationPasswordValidator(path));
+  });
+}
+ 
+```
+
 ## Break time
 Ok, let's take a short break ☕🍪☕ before we dive into creating custom components.
 
@@ -677,31 +707,79 @@ Then, we'll display the list of friends, but only when the checkbox is checked.
     </fieldset>
 ```
 
-### Conditionally enabling/disabling validation with applyWhen
+### Hiding 
 The current setup works, but there's a small issue.
 If we create a friend with an error, and then hide it, the validation would still run, and the form would be marked as invalid.
 
-We need to apply the `friendSchema` *only when* the `recommendToFriends` checkbox is checked. We use `applyWhen` for this.
-
-To do this we'll conditionally applySchema using `applyWhen`. It looks like this:
+We can solve it by using `hidden` with a predicate to disabled the validation.
 
 ```typescript
 // feedback.ts
+import {
+  /* ... */  
+  applyEach,
+} from 'google3/experimental/angularsignalforms';
+
+import { friendSchema } from './friend';
+
 /* ... */
 export class FeedbackComponent {
   /* ... */
- readonly form = form(this.data, (path) => {    
-    applyWhen(
-      path,      
-      predicate,
-      schema
-    )
+  readonly form = form(this.data, (path) => {
+    /* ... */
+    applyEach(path.friends, friendSchema);
+    // Doesn't actually hide anything in the UI.
+    hidden(path.friends, ({resolve}) => {
+      return resolve(path.recommendToFriends).$state.value() === false  ;
+    });
   });
 }
 ```
+>  it's important to note, that hidden doesn't actually hide fields in the template, just disables validation. 
 
-In our case:
+### Conditionally enabling/disabling validation with applyWhen
+Sometimes we want to apply multiple rules based only if certain condition is true.
 
+For this we can use `applyWhen`.
+
+Let's look at an unrelated example, where we want to apply different rules depending on whether a pet is a cat or a dog.
+
+```typescript
+// unrelated-form.ts
+form(this.pet, (pet) => {
+  // Applies for all pets
+  required(pet.cute);
+  
+  // Rules that only apply for dogs.
+  applyWhen(
+    path,
+    ({value}) => value().type === 'dog',
+    (pathWhenTrue) => {
+      // Only required for dogs, but can be entered for cats
+      requred(pathWhenTrue.walksPerDay);
+      // Doesn't apply for dogs
+      hidden(pathWhenTrue.purringIntensity);
+    }
+  );
+
+  applyWhen(
+    path,
+    ({value}) => value().type === 'cat',
+    (pathWhenTrue) => {
+      // Those rules only apply for cats. 
+      requred(pathWhenTrue.a);
+      validate(pathWhenTrue.b, /* validation rules */);
+      applyEach(pathWhenTrue, /* array rules */);
+      applyWhen(/* we can even have nested apply whens. */);
+    }
+  );
+
+});
+```
+
+In our case, we could use applyWhen instead of hidden (although it might be an overkill for just one rule)
+
+It's also important to not use closured path, but use the one provided by the function:
 ```typescript
 // feedback.ts
 /* ... */
@@ -709,17 +787,22 @@ export class FeedbackComponent {
   /* ... */
   readonly form = form(this.data, (path) => {
     applyWhen(
+      path,
       ({value}) => value().recommendToFriends,
       (pathWhenTrue) => {
         applyEach(pathWhenTrue.friends, friendSchema);
         // 🚨 👮 🚓  You have to use nested path
         // This produces a Runtime error:
         applyEach(path /*has to be pathWhenTrue*/.friends, friendSchema);
+        // ✅ This works
+        applyEach(pathWhenTrue.friends, friendSchema);
       }
     );
   });
 }
 ```
+
+> `pathWhenTrue` could also just be called path, it's a stylistic chose.
 
 Now, `friendSchema` validation rules will only apply when `recommendToFriends` is true.
 
@@ -753,6 +836,7 @@ Now, add the button to the template inside the `@if` block:
   </button>
 }
 ```
+
 ## Submitting the form
 To handle form submission, use the `submit` function, passing it your form instance and an async submission handler.
 

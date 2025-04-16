@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DISABLED_REASON, MetadataKey, REQUIRED} from '../logic_node';
+import {DISABLED_REASON, MetadataKey, REQUIRED} from '../api/metadata';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
 import type {FieldPath, FormError, LogicFn, Validator} from './types';
