@@ -381,6 +381,9 @@ export interface SerializableComponentInstanceType extends ComponentType {
 export interface SerializableComponentTreeNode
   extends DevToolsNode<SerializableDirectiveInstanceType, SerializableComponentInstanceType> {
   children: SerializableComponentTreeNode[];
+  nativeElement?: never;
+  // Since the nativeElement is not serializable, we will use this boolean as backup
+  hasNativeElement: boolean;
 }
 
 // Here we drop properties to prepare the tree for serialization.
@@ -407,7 +410,11 @@ const prepareForestForSerialization = (
       })),
       children: prepareForestForSerialization(node.children, includeResolutionPath),
       hydration: node.hydration,
+      defer: node.defer,
       onPush: node.component ? isOnPushDirective(node.component) : false,
+
+      // native elements are not serializable
+      hasNativeElement: !!node.nativeElement,
     };
     serializedNodes.push(serializedNode);
 
@@ -420,7 +427,12 @@ const prepareForestForSerialization = (
 };
 
 function getNodeDIResolutionPath(node: ComponentTreeNode): SerializedInjector[] | undefined {
-  const nodeInjector = getInjectorFromElementNode(node.nativeElement!);
+  // Some nodes are not linked to HTMLElements, for example @defer blocks
+  if (!node.nativeElement) {
+    return undefined;
+  }
+
+  const nodeInjector = getInjectorFromElementNode(node.nativeElement);
   if (!nodeInjector) {
     return [];
   }

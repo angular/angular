@@ -13,6 +13,8 @@ import {FlatTreeControl} from '@angular/cdk/tree';
 import {TreeNodeComponent} from './tree-node.component';
 import {FlatNode} from '../component-data-source';
 
+type DeepPartial<T> = T extends object ? {[P in keyof T]?: DeepPartial<T[P]>} : T;
+
 const srcNode = {
   id: 'node',
   original: {
@@ -20,7 +22,7 @@ const srcNode = {
       id: 1337,
     },
   },
-};
+} as DeepPartial<FlatNode>;
 
 describe('TreeNodeComponent', () => {
   let component: TreeNodeComponent;

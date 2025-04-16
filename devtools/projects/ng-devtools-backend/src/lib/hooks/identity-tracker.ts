@@ -132,6 +132,7 @@ const indexTree = <T extends DevToolsNode<DirectiveInstanceType, ComponentInstan
     children: node.children.map((n, i) => indexTree(n, i, position)),
     nativeElement: node.nativeElement,
     hydration: node.hydration,
+    defer: node.defer,
   } as IndexedNode;
 };
 

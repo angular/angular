@@ -40,6 +40,7 @@ ng_module(
     deps = [
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab/defer-view",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab/property-view",
         "//devtools/projects/protocol",
         "//packages/common",

@@ -1,0 +1,27 @@
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//devtools/tools:ng_module.bzl", "ng_module")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "defer_view.component.scss_styles",
+    src = "defer-view.component.scss",
+    deps = ["//devtools/projects/ng-devtools/src/styles:typography"],
+)
+
+ng_module(
+    name = "defer-view",
+    srcs = [
+        "defer-view.component.ts",
+    ],
+    angular_assets = [
+        "defer-view.component.html",
+    ] + ["defer_view.component.scss_styles"],
+    deps = [
+        "//devtools/projects/protocol",
+        "//packages/core",
+        "@npm//@angular/material",
+        "@npm//@types",
+        "@npm//rxjs",
+    ],
+)

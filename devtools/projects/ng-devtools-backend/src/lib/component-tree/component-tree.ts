@@ -99,7 +99,7 @@ export const getLatestComponentState = (
   directiveForest = directiveForest ?? buildDirectiveForest();
 
   const node = queryDirectiveForest(query.selectedElement, directiveForest);
-  if (!node) {
+  if (!node || !node.nativeElement) {
     return;
   }
 

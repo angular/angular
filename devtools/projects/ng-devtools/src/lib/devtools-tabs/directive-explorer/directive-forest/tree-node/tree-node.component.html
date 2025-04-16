@@ -17,7 +17,12 @@
 
   <!-- The HTML should match directive-forest-utils/getFullNodeName output. -->
   <div class="node-name" #nodeName>
-    <span class="element-name" [class.angular-element]="isElement()">{{ node().name }}</span>
+    <span
+      class="element-name"
+      [class.non-element]="!node().original.hasNativeElement"
+      [class.angular-element]="isElement()"
+      >{{ node().name }}</span
+    >
     @if (node().directives) {
       <span class="dir-names">{{ directivesArrayString() }}</span>
     }
@@ -27,22 +32,34 @@
     <span class="on-push">OnPush</span>
   }
 
-  <!-- Shown/hidden via CSS -->
-  <span class="console-reference"> == $ng0 </span>
+  @let defer = node().defer;
+
+  @if (!defer && (!hydration || hydration.status !== 'dehydrated')) {
+    <!-- Shown/hidden via CSS -->
+    <span class="console-reference"> == $ng0 </span>
+  }
+
+  @if (defer && defer.currentBlock) {
+    <span class="on-push">(&#64;{{defer.currentBlock}})</span>
+  }
 
   @switch (hydration?.status) {
     @case ('hydrated') {
       <mat-icon matTooltip="Hydrated" class="hydration">water_drop</mat-icon>
     }
+    @case ('dehydrated') {
+      <mat-icon matTooltip="Dehydrated" class="hydration skipped">pending</mat-icon>
+    }
+
     @case ('skipped') {
-      <mat-icon matTooltip="Hydration skipped" class="hydration skipped"
-        >invert_colors_off</mat-icon
-      >
+      <mat-icon matTooltip="Hydration skipped" class="hydration skipped">
+        invert_colors_off
+      </mat-icon>
     }
     @case ('mismatched') {
-      <mat-icon matTooltip="Hydration mismatch" class="hydration mismatched"
-        >error_outline</mat-icon
-      >
+      <mat-icon matTooltip="Hydration mismatch" class="hydration mismatched">
+        error_outline
+      </mat-icon>
     }
   }
 </div>

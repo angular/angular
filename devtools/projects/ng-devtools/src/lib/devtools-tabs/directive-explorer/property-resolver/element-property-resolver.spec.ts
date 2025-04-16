@@ -29,6 +29,8 @@ const mockIndexedNode: IndexedNode = {
       name: 'BazDir',
     },
   ],
+  defer: null,
+  hasNativeElement: true,
   children: [],
   element: 'foo',
   position: [0],
