@@ -1,3 +1,20 @@
+<a name="19.2.7"></a>
+# 19.2.7 (2025-04-16)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [37ab6814f5](https://github.com/angular/angular/commit/37ab6814f5485434d9642b9f9c28dd430864247b) | fix | issue a warning instead of an error when `NgOptimizedImage` exceeds the preload limit ([#60883](https://github.com/angular/angular/pull/60883)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b144126612](https://github.com/angular/angular/commit/b144126612e2cd14cbccc8d3cf4e2136a2e540ff) | fix | inject migration: replace param with this. ([#60713](https://github.com/angular/angular/pull/60713)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d39e09da41](https://github.com/angular/angular/commit/d39e09da413732385a12ed21eb468649233e26d0) | fix | Include HTTP status code and headers when HTTP requests errored in `httpResource` ([#60802](https://github.com/angular/angular/pull/60802)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.0.0-next.6"></a>
 # 20.0.0-next.6 (2025-04-09)
 ## Breaking Changes
