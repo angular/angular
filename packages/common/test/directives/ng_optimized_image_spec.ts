@@ -140,7 +140,7 @@ describe('Image directive', () => {
         preloadLinks[0]!.remove();
       });
 
-      it('should error when the number of preloaded images is larger than the limit', () => {
+      it('should warn when the number of preloaded images is larger than the limit', () => {
         // Only run this test in a browser since the Node-based DOM mocks don't
         // allow to override `HTMLImageElement.prototype.setAttribute` easily.
         if (!isBrowser) return;
@@ -156,22 +156,23 @@ describe('Image directive', () => {
         });
 
         const template = `
-                  <img ngSrc="preloaderror2/img.png" width="150" height="50" priority>
-                  <img ngSrc="preloaderror3/img.png" width="150" height="50" priority>
-                  <img ngSrc="preloaderro4/img.png" width="150" height="50" priority>
-                  <img ngSrc="preloaderror5/img.png" width="150" height="50" priority>
-                  <img ngSrc="preloaderror6/img.png" width="150" height="50" priority>
-                  <img ngSrc="preloaderror7/img.png" width="150" height="50" priority>
-                  <img ngSrc="preloaderror8/img.png" width="150" height="50" priority>
-                  <img ngSrc="preloaderror9/img.png" width="150" height="50" priority>
-                  <img ngSrc="preloaderror10/img.png" width="150" height="50" priority>
-                  `;
+          <img ngSrc="preloaderror2/img.png" width="150" height="50" priority>
+          <img ngSrc="preloaderror3/img.png" width="150" height="50" priority>
+          <img ngSrc="preloaderro4/img.png" width="150" height="50" priority>
+          <img ngSrc="preloaderror5/img.png" width="150" height="50" priority>
+          <img ngSrc="preloaderror6/img.png" width="150" height="50" priority>
+          <img ngSrc="preloaderror7/img.png" width="150" height="50" priority>
+          <img ngSrc="preloaderror8/img.png" width="150" height="50" priority>
+          <img ngSrc="preloaderror9/img.png" width="150" height="50" priority>
+          <img ngSrc="preloaderror10/img.png" width="150" height="50" priority>
+        `;
 
-        expect(() => {
-          const fixture = createTestComponent(template);
-          fixture.detectChanges();
-        }).toThrowError(
-          'NG02961: The `NgOptimizedImage` directive has detected that more than 5 images were marked as priority. This might negatively affect an overall performance of the page. To fix this, remove the "priority" attribute from images with less priority.',
+        const consoleWarnSpy = spyOn(console, 'warn');
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+        expect(consoleWarnSpy.calls.count()).toBe(1);
+        expect(consoleWarnSpy.calls.argsFor(0)[0]).toMatch(
+          /NG02961: The `NgOptimizedImage` directive has detected that more than 5 images were marked as priority/,
         );
       });
     });
