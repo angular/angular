@@ -1,3 +1,25 @@
+<a name="20.0.0-next.7"></a>
+# 20.0.0-next.7 (2025-04-16)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cbbea70fa3](https://github.com/angular/angular/commit/cbbea70fa37b14e89e4f3459ae880116c0e894b1) | fix | issue a warning instead of an error when `NgOptimizedImage` exceeds the preload limit ([#60879](https://github.com/angular/angular/pull/60879)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [65adb3024d](https://github.com/angular/angular/commit/65adb3024d6ae2af14952f4afdb2b92b600da074) | feat | Add provider which reports unhandled errors on window to ErrorHandler ([#60704](https://github.com/angular/angular/pull/60704)) |
+| [c1bcae91dd](https://github.com/angular/angular/commit/c1bcae91ddb03efb04451799fbf92e9fd1e82026) | feat | expose performance data in Chrome DevTools ([#60789](https://github.com/angular/angular/pull/60789)) |
+| [727cda3856](https://github.com/angular/angular/commit/727cda385690066c0bbc94734e344cf5ad741e9a) | feat | mark linkedSignal API as public ([#60865](https://github.com/angular/angular/pull/60865)) |
+| [567522398f](https://github.com/angular/angular/commit/567522398ffc4149e726ef30d87b0169ae6f3e21) | feat | stabilize incremental hydration api ([#60888](https://github.com/angular/angular/pull/60888)) |
+| [bf8492b871](https://github.com/angular/angular/commit/bf8492b8711dd25f5a1488a7338f435b59b9e91c) | feat | stabilize withI18nSupport() api ([#60889](https://github.com/angular/angular/pull/60889)) |
+| [11d441ff8b](https://github.com/angular/angular/commit/11d441ff8bb80b0dd45efb3d7b716a466637a949) | fix | inject migration: replace param with this. ([#60713](https://github.com/angular/angular/pull/60713)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9f31947aad](https://github.com/angular/angular/commit/9f31947aad8331a02166d87d98ac2d4ed5aa701b) | fix | Include HTTP status code and headers when HTTP requests errored in `httpResource` ([#60802](https://github.com/angular/angular/pull/60802)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.2.7"></a>
 # 19.2.7 (2025-04-16)
 ### common
